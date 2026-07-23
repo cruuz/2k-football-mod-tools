@@ -1,0 +1,60 @@
+{
+  "schema": "nfl2k5_crib_mod_studio_composed_smoke/v1",
+  "date": "2026-07-17",
+  "classification": "positive_product_composition_build_and_independent_verify",
+  "product_flow": {
+    "session_replace_revert_route_used": true,
+    "canonical_project_generated_by_studio_session": true,
+    "build_service_atomic_publication_used": true,
+    "backend_build_passed": true,
+    "independent_reconstruction_verify_passed": true
+  },
+  "logical_edits": [
+    {
+      "kind": "torso",
+      "asset_id": "nfl2k5.uniform.09a0.torso"
+    },
+    {
+      "kind": "crib_scene_texture",
+      "asset_id": "nfl2k5.crib.scene.c0002.t022",
+      "selector": "crib_scene_texture:room:22",
+      "material": "bar_monitor"
+    }
+  ],
+  "source": {
+    "size": 6300499968,
+    "sha256": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9",
+    "modified": false
+  },
+  "verified_output": {
+    "size": 6300499968,
+    "sha256": "ea2150b32a024affab087f8a2d8d586b7d5e78a9251dac2942e4afbdea9a175e",
+    "logical_edit_count": 2,
+    "physical_changed_byte_count": 732619,
+    "all_bytes_outside_selected_spans_identical": true,
+    "xdvdfs_layout_identical": true,
+    "default_xbe_identical": true,
+    "independently_verified": true
+  },
+  "project_payload": {
+    "crib_fields": [
+      "kind",
+      "selector",
+      "user_png"
+    ],
+    "compiled_scne_span_serialized": false,
+    "retail_original_serialized": false,
+    "retail_bytes_in_shareable_project": false
+  },
+  "artifact_disposition": {
+    "temporary_verified_xiso_is_not_a_release_payload": true,
+    "temporary_verified_xiso_removed_after_recording": true
+  },
+  "claim_boundary": {
+    "offline_product_composition_proved": true,
+    "runtime_visibility_proved": false,
+    "xemu_launched": false,
+    "general_scne_texture_writing_proved": false,
+    "general_model_import_proved": false
+  }
+}

@@ -1,0 +1,1105 @@
+{
+  "archive_envelope": {
+    "fixed_outer_allocation_bytes": 436224,
+    "iff": {
+      "allowed_changed_header_fields": [
+        {
+          "absolute_offset": 8,
+          "field": "file_length",
+          "rule": "84 + rebuilt H7A stored length"
+        },
+        {
+          "absolute_offset": 56,
+          "field": "block compressed_length",
+          "rule": "20 + rebuilt H7A payload length"
+        }
+      ],
+      "block_count": 1,
+      "block_descriptor": {
+        "byte_order": "big-endian u32 fields",
+        "fields": [
+          {
+            "name": "name_hash",
+            "offset": 32,
+            "retail_value": "0xbb05a9c1"
+          },
+          {
+            "name": "type_hash",
+            "offset": 36,
+            "retail_value": "0xbb05a9c1"
+          },
+          {
+            "name": "unknown_08",
+            "offset": 40,
+            "retail_value": 32
+          },
+          {
+            "name": "uncompressed_length",
+            "offset": 44,
+            "retail_value": 2294304
+          },
+          {
+            "name": "unknown_10",
+            "offset": 48,
+            "retail_value": 7
+          },
+          {
+            "name": "start_offset",
+            "offset": 52,
+            "retail_value": 84
+          },
+          {
+            "mutable": true,
+            "name": "compressed_length_including_h7a_header",
+            "offset": 56,
+            "retail_value": 435245
+          },
+          {
+            "name": "indexed",
+            "offset": 60,
+            "retail_value": 0
+          }
+        ],
+        "offset": 32,
+        "size_bytes": 32
+      },
+      "block_start": 84,
+      "file_count": 1,
+      "file_descriptor": {
+        "byte_order": "big-endian u32 fields",
+        "fields": [
+          {
+            "name": "file_id_crc32",
+            "offset": 68,
+            "retail_value": "0x60b9adf9"
+          },
+          {
+            "name": "type_crc32",
+            "offset": 72,
+            "retail_value": "0xc61649b2"
+          },
+          {
+            "name": "block_offset_count",
+            "offset": 76,
+            "retail_value": 1
+          },
+          {
+            "name": "first_block_offset",
+            "offset": 80,
+            "retail_value": 0
+          }
+        ],
+        "offset": 68,
+        "size_bytes": 16
+      },
+      "file_pointer": {
+        "field_offset": 64,
+        "retail_stored_value": 5,
+        "target_offset": 68
+      },
+      "header_fields": [
+        {
+          "name": "magic",
+          "offset": 0,
+          "retail_value": "0xff3bef94"
+        },
+        {
+          "name": "header_size",
+          "offset": 4,
+          "retail_value": 84
+        },
+        {
+          "mutable": true,
+          "name": "file_length_excluding_name_footer",
+          "offset": 8,
+          "retail_value": 435329
+        },
+        {
+          "name": "zero",
+          "offset": 12,
+          "retail_value": 0
+        },
+        {
+          "name": "block_count",
+          "offset": 16,
+          "retail_value": 1
+        },
+        {
+          "name": "block_table_pointer",
+          "offset": 20,
+          "retail_stored_value": 13,
+          "target_offset": 32
+        },
+        {
+          "name": "file_count",
+          "offset": 24,
+          "retail_value": 1
+        },
+        {
+          "name": "file_pointer_table_pointer",
+          "offset": 28,
+          "retail_stored_value": 37,
+          "target_offset": 64
+        }
+      ],
+      "header_pointer_formula": "target = pointer_field_offset + stored_big_endian_u32 - 1",
+      "header_sha256": "52b64f7bca29edafb3646ed92b6e818fe7b1ec543fbcaea8f8beeeb80ace6332",
+      "header_size": 84,
+      "inner_file": {
+        "decoded_length": 2294304,
+        "file_id_crc32": "0x60b9adf9",
+        "index": 0,
+        "name": "roster",
+        "type": "ROST",
+        "type_crc32": "0xc61649b2"
+      },
+      "name_footer": {
+        "header_byte_order": {
+          "magic": "big-endian u32",
+          "payload_size": "little-endian u32"
+        },
+        "magic": "0xaa171516",
+        "payload_layout": {
+          "file_count_at_payload_offset_0_little_endian_u32": 1,
+          "pointer_byte_order": "little-endian u32",
+          "pointer_formula": "target = pointer_field_offset + stored_value - 1, with offsets relative to footer payload",
+          "record_fields": [
+            "name pointer at record +0",
+            "type pointer at record +4"
+          ],
+          "strings": {
+            "encoding": "UTF-16LE NUL-terminated",
+            "name": "roster",
+            "type": "ROST"
+          }
+        },
+        "preservation_rule": "copy all 96 bytes bit-exact immediately after the rebuilt file_length",
+        "retail_payload_size_bytes": 88,
+        "retail_sha256": "70f420d23342ac94ad3ce62f1acfe986f69f6b8c9a4461323b087f80d783a6d7",
+        "total_bytes": 96
+      },
+      "retail_file_length_excluding_name_footer": 435329,
+      "write_rule": "copy the 84-byte retail header, update only big-endian u32 offsets 8 and 56, append the rebuilt H7A stream, relocate the exact footer, and zero-fill to 436224 bytes",
+      "zero_tail": {
+        "retail_bytes": 799,
+        "rule": "all unused bytes after the relocated footer through the fixed outer allocation are zero"
+      }
+    },
+    "outer_directory": {
+      "alignment_bytes": 2048,
+      "directory_sha256": "2463120a5fd4aacec49e50585eb23a4fc3ee27759f7bd11b407d35a2ab809942",
+      "directory_size_bytes": 18604,
+      "entry_count": 1543,
+      "entry_record": {
+        "byte_order": "big-endian u32 fields",
+        "fields": [
+          {
+            "name": "name_id",
+            "offset": 0
+          },
+          {
+            "name": "virtual_offset_blocks",
+            "offset": 4
+          },
+          {
+            "name": "allocation_size_blocks",
+            "offset": 8
+          }
+        ],
+        "offset": 88,
+        "size_bytes": 12
+      },
+      "fixed_header": {
+        "byte_order": "big-endian u32 fields",
+        "fields": [
+          {
+            "name": "magic",
+            "offset": 0,
+            "retail_value": "0xaa00b3bf"
+          },
+          {
+            "name": "alignment",
+            "offset": 4,
+            "retail_value": 2048
+          },
+          {
+            "name": "pack_count",
+            "offset": 8,
+            "retail_value": 4
+          },
+          {
+            "name": "reserved_0c",
+            "offset": 12,
+            "retail_value": 0
+          },
+          {
+            "name": "entry_count",
+            "offset": 16,
+            "retail_value": 1543
+          },
+          {
+            "name": "reserved_14",
+            "offset": 20,
+            "retail_value": 0
+          }
+        ],
+        "size_bytes": 24
+      },
+      "magic": "0xaa00b3bf",
+      "pack_descriptor": {
+        "byte_order": "big-endian",
+        "fields": [
+          {
+            "name": "size_blocks",
+            "offset": 0,
+            "type": "u32"
+          },
+          {
+            "name": "reserved",
+            "offset": 4,
+            "retail_value": 0,
+            "type": "u32"
+          },
+          {
+            "encoding": "UTF-16BE, NUL-padded, safe basename",
+            "name": "name",
+            "offset": 8,
+            "size_bytes": 8
+          }
+        ],
+        "offset": 24,
+        "size_bytes": 16
+      },
+      "packs": [
+        {
+          "name": "0A",
+          "size_blocks": 557056,
+          "size_bytes": 1140850688,
+          "virtual_end": 1140850688,
+          "virtual_start": 0
+        },
+        {
+          "name": "0B",
+          "size_blocks": 524335,
+          "size_bytes": 1073838080,
+          "virtual_end": 2214688768,
+          "virtual_start": 1140850688
+        },
+        {
+          "name": "1A",
+          "size_blocks": 557056,
+          "size_bytes": 1140850688,
+          "virtual_end": 3355539456,
+          "virtual_start": 2214688768
+        },
+        {
+          "name": "1B",
+          "size_blocks": 252916,
+          "size_bytes": 517971968,
+          "virtual_end": 3873511424,
+          "virtual_start": 3355539456
+        }
+      ],
+      "routing_rule": "virtual entry ranges are mapped into the cumulative pack extents; entry 1126 must remain wholly inside 0A"
+    },
+    "outer_entry": {
+      "allocation_size_blocks": 213,
+      "index": 1126,
+      "name_id": "0xbceffd46",
+      "pack": "0A",
+      "pack_offset": 47699968,
+      "retail_sha256": "e98dd07b38caa73ea2ce91eed19bef68896f9b63830a9169af4b7f22d8788cc7",
+      "virtual_offset": 47699968,
+      "virtual_offset_blocks": 23291
+    },
+    "retail_volume": {
+      "complete_copy_rule": "output size remains exact; bytes outside entry 1126 are copied bit-exact and the outer directory is not rewritten",
+      "name": "0A",
+      "outside_target_spans": {
+        "prefix": {
+          "end_exclusive": 47699968,
+          "sha256": "e771b5533d94ae0f9e5dc6dccf6fd81d13a93894b1e01807e69a10ce8407e550",
+          "start": 0
+        },
+        "suffix": {
+          "end_exclusive": 1140850688,
+          "sha256": "cebb3cf73db1047d74a08ea4c8eb86ef38ed7c3472b23ee92fa835ad0c56bb0c",
+          "start": 48136192
+        }
+      },
+      "sha256": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+      "size_bytes": 1140850688
+    }
+  },
+  "claim_boundary": {
+    "all_24_built_in_teams_can_be_mutually_unique_offline": true,
+    "all_40_team_slots_can_be_mutually_unique": false,
+    "archive_growth_required": false,
+    "bytes_1_through_7_semantics_proved": false,
+    "emulator_runtime_visibility_proved": false,
+    "executable_patch_required_for_offline_24_built_in_assignment": false,
+    "original_xbox_360_hardware_proved": false,
+    "production_gui_exposed": false,
+    "retail_source_mutated": false,
+    "selector_byte_0_filename_ownership_proved": true
+  },
+  "compression": {
+    "descriptor_order": "least-significant bit first",
+    "fixed_payload_limit_arithmetic": "436224 outer - 84 IFF header - 20 H7A header - 96 footer = 436024 payload bytes",
+    "fixed_payload_limit_bytes": 436024,
+    "h7a_header": {
+      "byte_order": "big-endian u32 fields",
+      "codec_or_unknown": 7,
+      "fields": [
+        {
+          "name": "magic",
+          "offset": 0,
+          "retail_value": "0x0e4837c3"
+        },
+        {
+          "name": "decoded_size",
+          "offset": 4,
+          "retail_value": 2294304
+        },
+        {
+          "meaning": "includes the 20-byte H7A header",
+          "mutable": true,
+          "name": "compressed_length",
+          "offset": 8,
+          "retail_value": 435245
+        },
+        {
+          "name": "codec_or_unknown",
+          "offset": 12,
+          "retail_value": 7
+        },
+        {
+          "name": "shift",
+          "offset": 16,
+          "retail_value": 10
+        }
+      ],
+      "header_bytes": 20,
+      "magic": "0x0e4837c3",
+      "retail_decoded_sha256": "e959d3067ebcdbeb4f08979fa74d9fa61cf90fd91b90793863e6a3313be7f7ff",
+      "retail_decoded_size": 2294304,
+      "retail_header_sha256": "07a3c2e92213e58d51dd3bf5ab51b9e8b78a2bfb88395ec45fb597e29f41cc8a",
+      "retail_payload_bytes": 435225,
+      "retail_payload_sha256": "5edfc03a03d7ae308e7dc6ffd38af863c543a49429e75654ba2eb5746bbdde12",
+      "shift": 10
+    },
+    "match": {
+      "copy_rule": "for length iterations append output[current_length - distance], permitting overlapping forward copy",
+      "distance": "word & ((1 << shift) - 1)",
+      "distance_bounds": "1..1023 and no greater than bytes already decoded",
+      "length": "(word >> shift) + 3",
+      "length_bounds": "3..66 and must not exceed the declared decoded size",
+      "overlapping_forward_copy": true,
+      "serialized_word": "big-endian u16"
+    },
+    "retail_token_inventory": {
+      "descriptor_bytes": 35502,
+      "literal_tokens": 168307,
+      "match_tokens": 115708,
+      "payload_consumed_bytes": 435225,
+      "total_tokens": 284015,
+      "trailing_alignment_bytes": 0
+    },
+    "stream_termination": "decode exactly 2294304 bytes; after the token that reaches that size, every unread payload byte must be zero; retail has no unread bytes",
+    "token": {
+      "descriptor_bit_0": "one literal byte",
+      "descriptor_bit_1": "one match word",
+      "group_layout": "one descriptor byte followed immediately by the data for up to eight tokens selected by descriptor bits 0 through 7",
+      "last_descriptor_rule": "stop processing bits when decoded size is reached; writer emits unused descriptor bits as zero"
+    },
+    "token_preserving_writer_algorithm": {
+      "constraints": {
+        "match_distance": "1..1023",
+        "match_length": "3..66",
+        "new_token_may_cross_retail_token_output_boundary": false,
+        "output_payload_size_bytes": "435225..436024; preserving a retail literal one-for-one and replacing any non-preserved match with one or more tokens cannot make this admitted stream smaller than retail",
+        "output_token_count": "at least the 284015 retail tokens",
+        "retail_token_output_intervals_cover_decoded_output_exactly": true
+      },
+      "name": "same-distance retail-token fragmentation",
+      "procedure": [
+        "parse the retail semantic tokens and each token's decoded output interval",
+        "for a retail literal, emit the wanted byte at that interval",
+        "for a retail match with distance d and interval [start,end), find the maximal run at cursor for which wanted[cursor+i] equals wanted[cursor+i-d], bounded by end",
+        "emit a same-distance match when that run is at least 3 bytes; otherwise emit one wanted literal; repeat to the retail token endpoint",
+        "repack the resulting tokens eight per LSB-first descriptor without token-data padding",
+        "independently decode the entire payload and require exact equality with the wanted 2294304-byte ROST"
+      ],
+      "semantic_preservation_definition": "a retail token is counted preserved only when its replacement is exactly one token of the same kind, literal value or match distance, and decoded length; descriptor bytes may change when a neighboring token splits"
+    },
+    "writer_rule": "identity returns the retail outer span verbatim; changed output must independently decode exactly, preserve the footer, fit the fixed payload limit, and zero the remaining allocation tail"
+  },
+  "evidence_authorities": {
+    "filename_consumer": {
+      "default_xex_sha256": "981a57143b0a665b2220f72366e1368c5374b91c77a22d93945439d51a2cd28f",
+      "function_virtual_address": "0x849d6bd0",
+      "jersey_filename_template_virtual_address": "0x845f1cdc",
+      "jersey_selector_hash": "0xe80198f0",
+      "jersey_selector_slot": 4,
+      "proved_read": "the function resolves config slot 4 through the selected bank accessor, reads byte 0 of that selector record, and supplies it as the numeric formatter argument for uniform_jersey_{0:D2}.iff"
+    },
+    "focused_pseudocode": {
+      "path": "reports/assets/apf_uniform_ghidra/uniform_focused_pseudo_c.c",
+      "sha256": "7fb1e054eefff45469406b36ccc21213f9dbf23150a703f0707b2aae49bb3b3d",
+      "size_bytes": 7902
+    },
+    "uniform_inventory": {
+      "path": "reports/assets/apf_uniform_inventory.json",
+      "sha256": "b3ad0e44af0163b30857e20c7c4e90ceb89cbc3dbc8cc41508fce3aaf1c136c7",
+      "size_bytes": 4350600
+    },
+    "uniform_texture_format_spec": {
+      "path": "reports/specs/apf2k8_uniform_texture_formats.v2.json",
+      "sha256": "08ef2528097f4a4c6d26bb6eab486b8f4cde183064e23a97ace4e85c83dc79d7",
+      "size_bytes": 67332
+    },
+    "uniform_trace": {
+      "path": "reports/assets/apf_uniform_ghidra/uniform_trace.txt",
+      "sha256": "296061f139ed14148e87f8e276263b4d528346da2c303e870d854d9d79508c82",
+      "size_bytes": 9945
+    }
+  },
+  "format": "APF 2K8 on-disc ROST jersey selector assignment",
+  "manifest_contract": {
+    "canonical_serialization": "UTF-8 JSON from json.dumps(value, indent=2, sort_keys=True) followed by one LF; duplicate keys and non-finite numbers rejected",
+    "maximum_serialized_bytes": 2097152,
+    "schema_file": "reports/specs/apf2k8_jersey_selector_patch_manifest.schema.json",
+    "schema_id": "apf2k8_jersey_selector_patch/v1",
+    "semantic_validation_rule": "every x-semantic-validations rule in the manifest schema is mandatory; JSON Schema validation alone is insufficient"
+  },
+  "pointer_encoding": {
+    "byte_order": "big-endian u32",
+    "formula": "target = pointer_field_offset + sign_extend_32(stored_value) - 1",
+    "null_allowed_for_root_config_or_selector_pointer": false,
+    "target_bounds": "0 <= target < 2294304"
+  },
+  "recipe_contract": {
+    "assignment_order": "strictly increasing team_index",
+    "canonical_serialization": "UTF-8 JSON from json.dumps(value, indent=2, sort_keys=True) followed by one LF; duplicate keys and non-finite numbers rejected",
+    "full_unique_mode": {
+      "asset_indices": "a permutation of 0..23",
+      "assignment_count": 24,
+      "team_indices": "exactly 0..23 in order"
+    },
+    "identity_rule": "replacement_asset_index may equal expected_retail_asset_index and must produce a byte-identical outer span and copied volume",
+    "maximum_serialized_bytes": 65536,
+    "schema_file": "reports/specs/apf2k8_jersey_selector_assignment_recipe.schema.json",
+    "schema_id": "apf2k8_jersey_selector_assignment_recipe/v1",
+    "semantic_only_validations": [
+      "targeted-mode team indices are unique and strictly increasing",
+      "the canonical byte serialization is exact; this is outside JSON instance semantics"
+    ],
+    "targeted_mode": {
+      "asset_index_range": "0..23",
+      "assignment_count": "1..24",
+      "team_index_range": "0..23"
+    }
+  },
+  "roster_layout": {
+    "built_in_team_reference": [
+      {
+        "bank_selector_offsets": [
+          1967000,
+          1966888
+        ],
+        "bank_selector_record_indices": [
+          46,
+          32
+        ],
+        "retail_asset_index": 6,
+        "team_index": 0,
+        "team_name": "Americans"
+      },
+      {
+        "bank_selector_offsets": [
+          1970360,
+          1970248
+        ],
+        "bank_selector_record_indices": [
+          466,
+          452
+        ],
+        "retail_asset_index": 11,
+        "team_index": 1,
+        "team_name": "Assassins"
+      },
+      {
+        "bank_selector_offsets": [
+          1967448,
+          1967336
+        ],
+        "bank_selector_record_indices": [
+          102,
+          88
+        ],
+        "retail_asset_index": 0,
+        "team_index": 2,
+        "team_name": "Beasts"
+      },
+      {
+        "bank_selector_offsets": [
+          1969464,
+          1969352
+        ],
+        "bank_selector_record_indices": [
+          354,
+          340
+        ],
+        "retail_asset_index": 2,
+        "team_index": 3,
+        "team_name": "Cobras"
+      },
+      {
+        "bank_selector_offsets": [
+          1968120,
+          1968008
+        ],
+        "bank_selector_record_indices": [
+          186,
+          172
+        ],
+        "retail_asset_index": 23,
+        "team_index": 4,
+        "team_name": "Cougars"
+      },
+      {
+        "bank_selector_offsets": [
+          1969016,
+          1968904
+        ],
+        "bank_selector_record_indices": [
+          298,
+          284
+        ],
+        "retail_asset_index": 19,
+        "team_index": 5,
+        "team_name": "Cyclones"
+      },
+      {
+        "bank_selector_offsets": [
+          1971928,
+          1971816
+        ],
+        "bank_selector_record_indices": [
+          662,
+          648
+        ],
+        "retail_asset_index": 13,
+        "team_index": 6,
+        "team_name": "Federals"
+      },
+      {
+        "bank_selector_offsets": [
+          1968568,
+          1968456
+        ],
+        "bank_selector_record_indices": [
+          242,
+          228
+        ],
+        "retail_asset_index": 4,
+        "team_index": 7,
+        "team_name": "Firebirds"
+      },
+      {
+        "bank_selector_offsets": [
+          1968344,
+          1968232
+        ],
+        "bank_selector_record_indices": [
+          214,
+          200
+        ],
+        "retail_asset_index": 23,
+        "team_index": 8,
+        "team_name": "Gunslingers"
+      },
+      {
+        "bank_selector_offsets": [
+          1969688,
+          1969576
+        ],
+        "bank_selector_record_indices": [
+          382,
+          368
+        ],
+        "retail_asset_index": 23,
+        "team_index": 9,
+        "team_name": "Indians"
+      },
+      {
+        "bank_selector_offsets": [
+          1967672,
+          1967560
+        ],
+        "bank_selector_record_indices": [
+          130,
+          116
+        ],
+        "retail_asset_index": 23,
+        "team_index": 10,
+        "team_name": "Iron Men"
+      },
+      {
+        "bank_selector_offsets": [
+          1970136,
+          1970024
+        ],
+        "bank_selector_record_indices": [
+          438,
+          424
+        ],
+        "retail_asset_index": 23,
+        "team_index": 11,
+        "team_name": "Knights"
+      },
+      {
+        "bank_selector_offsets": [
+          1969240,
+          1969128
+        ],
+        "bank_selector_record_indices": [
+          326,
+          312
+        ],
+        "retail_asset_index": 23,
+        "team_index": 12,
+        "team_name": "Legends"
+      },
+      {
+        "bank_selector_offsets": [
+          1970584,
+          1970472
+        ],
+        "bank_selector_record_indices": [
+          494,
+          480
+        ],
+        "retail_asset_index": 23,
+        "team_index": 13,
+        "team_name": "Minutemen"
+      },
+      {
+        "bank_selector_offsets": [
+          1967896,
+          1967784
+        ],
+        "bank_selector_record_indices": [
+          158,
+          144
+        ],
+        "retail_asset_index": 23,
+        "team_index": 14,
+        "team_name": "Red Dogs"
+      },
+      {
+        "bank_selector_offsets": [
+          1968792,
+          1968680
+        ],
+        "bank_selector_record_indices": [
+          270,
+          256
+        ],
+        "retail_asset_index": 23,
+        "team_index": 15,
+        "team_name": "Rhinos"
+      },
+      {
+        "bank_selector_offsets": [
+          1967224,
+          1967112
+        ],
+        "bank_selector_record_indices": [
+          74,
+          60
+        ],
+        "retail_asset_index": 23,
+        "team_index": 16,
+        "team_name": "Rollers"
+      },
+      {
+        "bank_selector_offsets": [
+          1971704,
+          1971592
+        ],
+        "bank_selector_record_indices": [
+          634,
+          620
+        ],
+        "retail_asset_index": 2,
+        "team_index": 17,
+        "team_name": "Rustlers"
+      },
+      {
+        "bank_selector_offsets": [
+          1970808,
+          1970696
+        ],
+        "bank_selector_record_indices": [
+          522,
+          508
+        ],
+        "retail_asset_index": 8,
+        "team_index": 18,
+        "team_name": "Sailors"
+      },
+      {
+        "bank_selector_offsets": [
+          1971256,
+          1971144
+        ],
+        "bank_selector_record_indices": [
+          578,
+          564
+        ],
+        "retail_asset_index": 23,
+        "team_index": 19,
+        "team_name": "Scorpions"
+      },
+      {
+        "bank_selector_offsets": [
+          1971032,
+          1970920
+        ],
+        "bank_selector_record_indices": [
+          550,
+          536
+        ],
+        "retail_asset_index": 23,
+        "team_index": 20,
+        "team_name": "Sharks"
+      },
+      {
+        "bank_selector_offsets": [
+          1971480,
+          1971368
+        ],
+        "bank_selector_record_indices": [
+          606,
+          592
+        ],
+        "retail_asset_index": 23,
+        "team_index": 21,
+        "team_name": "Top Guns"
+      },
+      {
+        "bank_selector_offsets": [
+          1966776,
+          1966664
+        ],
+        "bank_selector_record_indices": [
+          18,
+          4
+        ],
+        "retail_asset_index": 4,
+        "team_index": 22,
+        "team_name": "Wasps"
+      },
+      {
+        "bank_selector_offsets": [
+          1969912,
+          1969800
+        ],
+        "bank_selector_record_indices": [
+          410,
+          396
+        ],
+        "retail_asset_index": 2,
+        "team_index": 23,
+        "team_name": "Werewolves"
+      }
+    ],
+    "decoded_resource": {
+      "length_bytes": 2294304,
+      "retail_sha256": "e959d3067ebcdbeb4f08979fa74d9fa61cf90fd91b90793863e6a3313be7f7ff"
+    },
+    "placeholder_slots": {
+      "authorization": "read-only in recipe v1",
+      "count": 16,
+      "retail_asset_groups": [
+        {
+          "asset_index": 13,
+          "count": 1,
+          "team_index_maximum": 24,
+          "team_index_minimum": 24
+        },
+        {
+          "asset_index": 12,
+          "count": 15,
+          "team_index_maximum": 39,
+          "team_index_minimum": 25
+        }
+      ],
+      "team_index_maximum": 39,
+      "team_index_minimum": 24
+    },
+    "root": {
+      "array_end_offset": 2049940,
+      "count_pointer_pair_count": 40,
+      "pair_layout": {
+        "count": "big-endian u32 at pair +0",
+        "pair_offset": "index * 8",
+        "pointer": "big-endian one-based field-local signed relative u32 at pair +4"
+      },
+      "retail_counts": [
+        2254,
+        0,
+        1,
+        31,
+        40,
+        295,
+        199,
+        199,
+        199,
+        42,
+        5957,
+        69,
+        650,
+        1050,
+        3200,
+        266,
+        266,
+        3724,
+        266,
+        40,
+        93,
+        204,
+        212,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "retail_offsets": [
+        332,
+        748660,
+        748660,
+        752664,
+        753780,
+        769140,
+        771500,
+        776276,
+        781052,
+        785828,
+        793388,
+        1913304,
+        1914132,
+        1919332,
+        1927732,
+        1953332,
+        1953864,
+        1966632,
+        1996424,
+        1997756,
+        2003836,
+        2017972,
+        2024500,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940,
+        2049940
+      ],
+      "retail_strides": [
+        332,
+        null,
+        4004,
+        36,
+        384,
+        8,
+        24,
+        24,
+        24,
+        180,
+        188,
+        12,
+        8,
+        8,
+        8,
+        2,
+        48,
+        8,
+        5,
+        152,
+        152,
+        32,
+        120,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "size_bytes": 332,
+      "special_fields": {
+        "array_end_pointer_0x140": {
+          "field_offset": 320,
+          "retail_target": 2049940
+        },
+        "array_end_pointer_0x144": {
+          "field_offset": 324,
+          "retail_target": 2049940
+        },
+        "string_pool_pointer_0x148": {
+          "field_offset": 328,
+          "retail_target": 2053940
+        }
+      },
+      "storage_rule": "for each table, next_offset - offset = count * stride; null stride is admitted only for zero-count tables; table 18 alone has two additional zero alignment bytes",
+      "string_pool": {
+        "encoding": "UTF-16BE NUL-terminated strings",
+        "length_bytes": 240364,
+        "offset": 2053940,
+        "rule": "parses exactly through decoded offset 2294304"
+      },
+      "table_18_alignment_padding_bytes": 2,
+      "workspace": {
+        "all_zero": true,
+        "length_bytes": 4000,
+        "offset": 2049940
+      }
+    },
+    "selector_pointer_graph": {
+      "referenced_record_count": 1120,
+      "rule": "all 40 * 2 * 14 pointer targets are aligned table-17 records and are pairwise distinct"
+    },
+    "selector_records": {
+      "asset_index": {
+        "byte_offset": 0,
+        "catalog": "uniform_jersey_{asset_index:02d}.iff",
+        "catalog_count": 24,
+        "consumer": "XEX function 0x849d6bd0"
+      },
+      "opaque_preserved_bytes": {
+        "byte_offset": 1,
+        "byte_size": 7
+      },
+      "retail_count": 3724,
+      "retail_root_table_index": 17,
+      "retail_start": 1966632,
+      "stride_bytes": 8
+    },
+    "team_configs": {
+      "bank_count": 2,
+      "jersey_selector_slot": 4,
+      "pointer_count_per_bank": 14,
+      "pointer_prefix_bytes": 112,
+      "retail_count": 40,
+      "retail_root_table_index": 19,
+      "retail_start": 1997756,
+      "stride_bytes": 152
+    },
+    "teams": {
+      "built_in_team_indices": {
+        "maximum": 23,
+        "minimum": 0
+      },
+      "config_pointer_byte_offset": 188,
+      "retail_count": 40,
+      "retail_root_table_index": 4,
+      "retail_start": 753780,
+      "stride_bytes": 384
+    },
+    "write_authority": "for each authorized built-in team, resolve its table-19 config pointer and require config index == team index, then resolve bank 0 and bank 1 slot-4 pointers into aligned table-17 records; require both retail byte-0 values equal the recipe expectation; replace byte 0 only"
+  },
+  "schema": "apf2k8_roster_jersey_selector_writeback/v1",
+  "serializer_reference_vectors": {
+    "full_24_built_in_unique": {
+      "decoded_changed_byte_count": 30,
+      "decoded_sha256": "13997341f21a8ead74fc7526c28d7f2dfe8ff886abc64acd243ff96448db0cd2",
+      "file_length_after": 435366,
+      "headroom_bytes": 762,
+      "outer_entry_sha256": "0bc194aca869c3acee359e6c7fa906c02e0ced328a1f95e13cd1e092a640a627",
+      "output_token_count": 284047,
+      "payload_bytes": 435262,
+      "payload_sha256": "3d9d90f139e96803a1ff3d80a2d3f76c45ce20d174e722c91285ed1a45cc12fa",
+      "recipe_path": "reports/asset_samples/apf_roster/jersey_all_24_built_in_unique.v1.json",
+      "recipe_sha256": "0f4a93b1c446db5fd5a341cc11f2b997b47ca0ef68f1883e5596f0956b2e0de1",
+      "retail_tokens_split_or_replaced": 20,
+      "zero_tail_bytes": 762
+    },
+    "identity": {
+      "decoded_changed_byte_count": 0,
+      "decoded_sha256": "e959d3067ebcdbeb4f08979fa74d9fa61cf90fd91b90793863e6a3313be7f7ff",
+      "file_length_after": 435329,
+      "headroom_bytes": 799,
+      "outer_entry_sha256": "e98dd07b38caa73ea2ce91eed19bef68896f9b63830a9169af4b7f22d8788cc7",
+      "output_token_count": 284015,
+      "payload_bytes": 435225,
+      "payload_sha256": "5edfc03a03d7ae308e7dc6ffd38af863c543a49429e75654ba2eb5746bbdde12",
+      "recipe_path": "reports/asset_samples/apf_roster/jersey_wasps_identity.v1.json",
+      "recipe_sha256": "b0ac83eeca1b662a7c4f78710ec9b6a65c2a307ba5bf4cf40420179a2aa96bec",
+      "retail_tokens_split_or_replaced": 0,
+      "rule": "return the complete retail outer span verbatim without invoking the encoder",
+      "zero_tail_bytes": 799
+    },
+    "wasps_team_22_asset_4_to_21": {
+      "decoded_changed_byte_count": 2,
+      "decoded_sha256": "7222f3df1beb94928b649b0b664894baf0f0934fabee30e88519da2ee835b376",
+      "file_length_after": 435335,
+      "headroom_bytes": 793,
+      "outer_entry_sha256": "ac5b93fd6f60a751b4bb085666dc91fa1f24ca1b497dfa82fcaaa5a31d946583",
+      "output_token_count": 284023,
+      "payload_bytes": 435231,
+      "payload_sha256": "8ac85217c64dc5a212ad43b20d02f473e9c1128859c34d2cb2f36f78be64131b",
+      "recipe_path": "reports/asset_samples/apf_roster/jersey_wasps_4_to_21_targeted.v1.json",
+      "recipe_sha256": "c98584b027325a021fc3554766dcf11d5d6f1ab66824198132bfbe71c0b35147",
+      "retail_tokens_split_or_replaced": 5,
+      "zero_tail_bytes": 793
+    }
+  },
+  "verification_requirements": [
+    "bind the format specification, recipe schema, retail source, recipe, copied output, manifest, and optional report reservation to stable no-follow descriptors",
+    "reparse the APF outer fixed header, four pack descriptors, all 1543 entry records, and derive entry 1126 routing from the pinned directory bytes",
+    "reparse IFF, H7A, footer, the complete ROST root vectors, team-to-config pointers, and all 1120 selector pointers without writer imports",
+    "reconstruct the wanted decoded ROST from the canonical recipe and compare the complete decoded output against retail, permitting only the two derived selector byte-0 offsets per changed assignment",
+    "require selector bytes 1..7, every pointer, every root table, and every other decoded byte to remain exact",
+    "independently reconstruct the preservation-aware H7A token stream and require the complete fixed outer entry to equal that reconstruction",
+    "compare the complete copied 0A outside the fixed outer-entry span and independently hash the complete source and output",
+    "reconstruct and compare the complete canonical manifest, including every cross-field semantic rule in its schema",
+    "reject overflow, unknown source identities, aliases among supplied input/output/report paths, symlink path components, hardlink aliases, pre-existing requested outputs, and pathname or inode replacement while a checked descriptor or reservation is live"
+  ]
+}

@@ -1,0 +1,2321 @@
+{
+  "schema": "apf2k8_uniform_texture_formats/v1",
+  "title": "APF 2K8 closed uniform texture format specification",
+  "scope": {
+    "game": "All-Pro Football 2K8 (USA Xbox 360)",
+    "retail_volume": {
+      "name": "0A",
+      "size": 1140850688,
+      "sha256": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+    },
+    "closed_families": [
+      "jersey_color",
+      "pants_color",
+      "helmet_color"
+    ],
+    "asset_indices_per_family": 24,
+    "spec_boundary": "exact fixed-allocation texture transport; not a general APF TXTR or mesh specification"
+  },
+  "contains_retail_pixels": false,
+  "source_pins": [
+    {
+      "id": "jersey_layout",
+      "path": "reports/assets/apf_jersey_family_layout.json",
+      "size": 366329,
+      "sha256": "f359a2ecd92e2305e29f2a34f1d0084ee8b2bb277a2f0bd43a1c76e12abb55dc",
+      "schema": "apf_jersey_family_layout/v1"
+    },
+    {
+      "id": "pants_layout",
+      "path": "reports/assets/apf_pants_family_layout.json",
+      "size": 274896,
+      "sha256": "82241aefe6728a7426552663ee69ecffbdabca01f4359e8322edf75775adf293",
+      "schema": "apf_pants_family_layout/v1"
+    },
+    {
+      "id": "helmet_layout",
+      "path": "reports/assets/apf_helmet_family_layout.json",
+      "size": 280394,
+      "sha256": "72bf3efd4495e03fb856e0fb776313c842ebfafeb8d20d19f91318d7161aba03",
+      "schema": "apf_helmet_family_layout/v1"
+    },
+    {
+      "id": "jersey_roundtrip",
+      "path": "reports/assets/apf_jersey_family_patch_roundtrip.json",
+      "size": 5199,
+      "sha256": "e46ca976517b736ffb7b181f1ea812d9146cc1ff660bf789cdb3454d9e179e68",
+      "schema": "apf_jersey_family_patch_roundtrip/v1"
+    },
+    {
+      "id": "pants_roundtrip",
+      "path": "reports/assets/apf_pants_family_patch_roundtrip.json",
+      "size": 4568,
+      "sha256": "28fa3fe162eea2eb11a152f96b045b324f816b5a512bedabdfc9735bba7c43ca",
+      "schema": "apf_pants_family_patch_roundtrip/v1"
+    },
+    {
+      "id": "helmet_roundtrip",
+      "path": "reports/assets/apf_helmet_family_patch_roundtrip.json",
+      "size": 5225,
+      "sha256": "ee9980d8d163e247f12a658d570d6a10575ec9000d9e4ab802a4f16800fb1df5",
+      "schema": "apf_helmet_family_patch_roundtrip/v1"
+    },
+    {
+      "id": "selector_sharing",
+      "path": "reports/assets/uniform_texture_sharing.json",
+      "size": 414887,
+      "sha256": "eb37c92a2e2aeaf6d458028e5e5273110c80b3cdbaeb2b5925af99327f4cec6a",
+      "schema": "uniform_texture_sharing_audit/v1"
+    },
+    {
+      "id": "uniform_inventory",
+      "path": "reports/assets/apf_uniform_inventory.json",
+      "size": 4350600,
+      "sha256": "b3ad0e44af0163b30857e20c7c4e90ceb89cbc3dbc8cc41508fce3aaf1c136c7",
+      "schema": "apf_uniform_inventory/v1"
+    },
+    {
+      "id": "jersey_xenia_runtime",
+      "path": "reports/assets/apf_uniform_xenia_runtime.json",
+      "size": 9287,
+      "sha256": "0eabe929101c08d7e83b36ed6ef12e61e18703d3d7bbdb6808650a1181d021bf",
+      "schema": "apf_uniform_xenia_runtime/v1"
+    }
+  ],
+  "outer_archive_format": {
+    "byte_order": "big-endian",
+    "magic_u32": "0xaa00b3bf",
+    "fixed_header_bytes": 24,
+    "alignment_bytes": 2048,
+    "pack_descriptor_bytes": 16,
+    "entry_record_bytes": 12,
+    "entry_record_fields": [
+      "name_id_u32be",
+      "offset_blocks_u32be",
+      "size_blocks_u32be"
+    ],
+    "pack_descriptor_fields": [
+      "size_blocks_u32be",
+      "reserved_zero_u32be",
+      "name_utf16be_8_bytes"
+    ],
+    "entry_offset_rule": "virtual_offset_bytes = offset_blocks * alignment_bytes",
+    "entry_size_rule": "fixed_allocation_bytes = size_blocks * alignment_bytes",
+    "name_id_rule": "CRC32(uppercase ASCII exact filename)",
+    "selected_families_are_single_segment_in_pack_0A": true
+  },
+  "iff_format": {
+    "byte_order": "big-endian except name-footer payload",
+    "magic_u32": "0xff3bef94",
+    "fixed_header_bytes": 32,
+    "block_descriptor_bytes": 32,
+    "header_fields": [
+      [
+        0,
+        "magic_u32be"
+      ],
+      [
+        4,
+        "header_size_u32be"
+      ],
+      [
+        8,
+        "file_length_excluding_footer_u32be"
+      ],
+      [
+        12,
+        "zero_u32be"
+      ],
+      [
+        16,
+        "block_count_u32be"
+      ],
+      [
+        20,
+        "block_table_relptr_u32be"
+      ],
+      [
+        24,
+        "file_count_u32be"
+      ],
+      [
+        28,
+        "file_pointer_table_relptr_u32be"
+      ]
+    ],
+    "relative_pointer_rule": "target = pointer_field_offset + stored_u32be - 1",
+    "block_descriptor_fields": [
+      [
+        0,
+        "name_hash_u32be"
+      ],
+      [
+        4,
+        "type_hash_u32be"
+      ],
+      [
+        8,
+        "alignment_or_flags_u32be_semantics_unknown"
+      ],
+      [
+        12,
+        "uncompressed_length_u32be"
+      ],
+      [
+        16,
+        "codec_field_u32be"
+      ],
+      [
+        20,
+        "start_offset_u32be"
+      ],
+      [
+        24,
+        "stored_length_u32be"
+      ],
+      [
+        28,
+        "indexed_u32be"
+      ]
+    ],
+    "file_descriptor_fields": [
+      "file_id_u32be",
+      "type_hash_u32be",
+      "offset_count_u32be",
+      "one_decompressed_block_offset_u32be_per_present_part"
+    ],
+    "absent_part_sentinel_u32": "0xffffffff",
+    "footer": {
+      "magic_u32be": "0xaa171516",
+      "payload_size_u32le_at_footer_plus_4": true,
+      "payload_pointer_byte_order": "little-endian",
+      "names_encoding": "UTF-16LE NUL-terminated",
+      "pointer_rule": "target = pointer_field_offset + stored_u32le - 1",
+      "must_remain_bit_exact_on_write": true
+    }
+  },
+  "h7a_format": {
+    "byte_order": "big-endian header and big-endian 16-bit match words",
+    "magic_u32": "0x0e4837c3",
+    "header_bytes": 20,
+    "header_fields": [
+      [
+        0,
+        "magic_u32be"
+      ],
+      [
+        4,
+        "uncompressed_length_u32be"
+      ],
+      [
+        8,
+        "stored_length_including_header_u32be"
+      ],
+      [
+        12,
+        "codec_field_u32be"
+      ],
+      [
+        16,
+        "window_shift_u32be"
+      ]
+    ],
+    "flag_order": "one descriptor byte, least-significant bit first, up to 8 tokens",
+    "literal_flag": 0,
+    "match_flag": 1,
+    "match_distance_rule": "distance = match_word & ((1 << shift) - 1)",
+    "match_length_rule": "length = ((match_word >> shift) & ((1 << (16 - shift)) - 1)) + 3",
+    "distance_bounds": "1 <= distance <= bytes_already_decoded",
+    "output_rule": "decode exactly declared uncompressed length; reject overrun, underrun, or nonzero trailing compressed bytes",
+    "rebuild_rule": "preserve each retail block shift and codec field; require encode-decode exact before IFF rebuild"
+  },
+  "txtr_format": {
+    "dram_descriptor_bytes": 224,
+    "byte_order": "big-endian descriptor dwords",
+    "fields": [
+      [
+        0,
+        "file_id_u32be"
+      ],
+      [
+        96,
+        "declared_width_u16be"
+      ],
+      [
+        98,
+        "declared_height_u16be"
+      ],
+      [
+        112,
+        "base_data_length_u32be"
+      ],
+      [
+        116,
+        "mip_data_length_u32be"
+      ],
+      [
+        148,
+        "xenos_texture_fetch_6xu32be"
+      ]
+    ],
+    "fetch_decode": {
+      "type": "dword0 bits 0..1",
+      "pitch_pixels": "((dword0 >> 22) & 0x1ff) << 5",
+      "tiled": "dword0 bit 31",
+      "format": "dword1 bits 0..5",
+      "endianness": "dword1 bits 6..7",
+      "stacked": "dword1 bit 10",
+      "base_address_pages": "dword1 >> 12",
+      "width": "(dword2 & 0x1fff) + 1",
+      "height": "((dword2 >> 13) & 0x1fff) + 1",
+      "swizzle": "(dword3 >> 1) & 0xfff",
+      "mip_min_level": "(dword4 >> 2) & 0xf",
+      "mip_max_level": "(dword4 >> 6) & 0xf",
+      "dimension": "(dword5 >> 9) & 0x3",
+      "packed_mips": "dword5 bit 11",
+      "mip_address_pages": "dword5 >> 12"
+    }
+  },
+  "xenos_transport": {
+    "reference": {
+      "project": "Xenia",
+      "commit": "95a5c3ee250f80c3b9d139658649d9ffb6db3eec"
+    },
+    "block_geometry_pixels": [
+      4,
+      4
+    ],
+    "storage_pitch_alignment_blocks": 32,
+    "operation_order_encode": [
+      "encode logical row-major 4x4 blocks",
+      "swap bytes within each 16-bit word for endianness mode 1",
+      "place each block at xenos_tiled_2d_offset"
+    ],
+    "operation_order_decode": [
+      "read each block from xenos_tiled_2d_offset",
+      "swap bytes within each 16-bit word for endianness mode 1",
+      "decode logical row-major blocks"
+    ],
+    "tiled_2d_formula": {
+      "inputs": [
+        "x_block",
+        "y_block",
+        "pitch_blocks_aligned_32",
+        "bytes_per_block_log2"
+      ],
+      "outer_blocks": "(((y >> 5) * (pitch >> 5)) + (x >> 5)) << 6",
+      "inner_blocks": "(((y >> 1) & 7) << 3) | (x & 7)",
+      "outer_inner_bytes": "(outer_blocks | inner_blocks) << bytes_per_block_log2",
+      "bank": "(y >> 4) & 1",
+      "pipe": "((x >> 3) & 3) ^ (((y >> 3) & 1) << 1)",
+      "byte_offset": "((y & 1) << 4) | (pipe << 6) | (bank << 11) | (outer_inner_bytes & 0xf) | (((outer_inner_bytes >> 4) & 1) << 5) | (((outer_inner_bytes >> 5) & 7) << 8) | ((outer_inner_bytes >> 8) << 12)"
+    },
+    "packed_tail_origin_rule": "Xenia GetPackedTileOffset; origins in 4x4 compression blocks",
+    "endianness_mode_1": "8-in-16: reverse each two-byte unit; operation is self-inverse"
+  },
+  "fixed_allocation_safety": {
+    "fail_closed": true,
+    "never_grow_or_relocate_outer_entry": true,
+    "validate_selected_retail_entry_sha256_before_edit": true,
+    "reject_if_rebuilt_iff_plus_footer_exceeds_selected_allocation": true,
+    "preserve_zero_slack_to_exact_allocation_length": true,
+    "source_volume_never_opened_for_write": true,
+    "destination_created_exclusively": true,
+    "copied_volume_must_equal_source_outside_selected_allocation": true,
+    "independent_verifier_required": true
+  },
+  "per_slot_allocation_fields": [
+    "asset_index",
+    "outer_name",
+    "outer_name_id",
+    "outer_table_index",
+    "pack_name",
+    "pack_offset_bytes",
+    "fixed_allocation_bytes",
+    "retail_entry_sha256",
+    "h7a_shift_profile"
+  ],
+  "mip_layout_fields": [
+    "level",
+    "width",
+    "height",
+    "data_offset_bytes",
+    "allocation_length_bytes",
+    "pitch_blocks",
+    "origin_block_x",
+    "origin_block_y",
+    "packed_tail",
+    "logical_block_count"
+  ],
+  "families": {
+    "jersey_color": {
+      "family": "uniform_jersey",
+      "asset_index_range": [
+        0,
+        23
+      ],
+      "outer_name_template": "uniform_jersey_{asset_index:02d}.iff",
+      "inner_file": {
+        "index": 0,
+        "name": "jersey_color",
+        "type": "TXTR",
+        "file_id": "0x1ff6ec38"
+      },
+      "iff_instance": {
+        "header_size_bytes": 120,
+        "block_count": 2,
+        "file_count": 1,
+        "block_uncompressed_lengths": [
+          224,
+          1441792
+        ],
+        "block_name_type_hashes": [
+          [
+            "0xbb05a9c1",
+            "0xbb05a9c1"
+          ],
+          [
+            "0x411536d5",
+            "0x411536d5"
+          ]
+        ],
+        "footer_payload_bytes": 140,
+        "footer_total_bytes": 148,
+        "footer_name_count": 1
+      },
+      "target_parts": [
+        [
+          0,
+          0,
+          0,
+          224
+        ],
+        [
+          1,
+          1,
+          0,
+          1441792
+        ]
+      ],
+      "related_resources_must_remain_exact": [
+        "entire DRAM descriptor part",
+        "inactive tiled and packed-tail bytes",
+        "name footer",
+        "outer allocation slack",
+        "all bytes outside selected outer allocation"
+      ],
+      "txtr_descriptor": {
+        "vc_file_id": "0x1ff6ec38",
+        "vc_width": 1024,
+        "vc_height": 1024,
+        "vc_base_data_length": 1048576,
+        "vc_mip_data_length": 393216,
+        "fetch_offset": 148,
+        "fetch_dwords": [
+          "0x88000002",
+          "0x00000054",
+          "0x007fe3ff",
+          "0x00a80d10",
+          "0x00000203",
+          "0x00100a00"
+        ],
+        "fetch_type": 2,
+        "pitch_pixels": 1024,
+        "tiled": true,
+        "format": 20,
+        "format_name": "DXT4_5",
+        "endianness": 1,
+        "endianness_name": "8in16",
+        "request_size": 0,
+        "stacked": false,
+        "base_address_pages": 0,
+        "width": 1024,
+        "height": 1024,
+        "stack_depth_minus_one": 0,
+        "swizzle": 1672,
+        "swizzle_components": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "mip_min_level": 0,
+        "mip_max_level": 8,
+        "dimension": 1,
+        "dimension_name": "2D_or_stacked",
+        "packed_mips": true,
+        "mip_address_pages": 256,
+        "warnings": []
+      },
+      "codec": {
+        "xenos_format": 20,
+        "xenos_format_name": "DXT4_5",
+        "logical_codec": "BC3/DXT5",
+        "bytes_per_block": 16,
+        "stored_channels": "RGBA",
+        "production_encoder_proved": false
+      },
+      "png_input_contract": {
+        "format": "PNG",
+        "width": 1024,
+        "height": 1024,
+        "mode": "RGBA",
+        "max_file_bytes": 67108864,
+        "alpha_rule": "stored RGBA accepted",
+        "channel_rule": "RGBA supplies BC3 color and alpha",
+        "mip_filter": "Pillow BOX"
+      },
+      "mip_layout": [
+        [
+          0,
+          1024,
+          1024,
+          0,
+          1048576,
+          256,
+          0,
+          0,
+          false,
+          65536
+        ],
+        [
+          1,
+          512,
+          512,
+          1048576,
+          262144,
+          128,
+          0,
+          0,
+          false,
+          16384
+        ],
+        [
+          2,
+          256,
+          256,
+          1310720,
+          65536,
+          64,
+          0,
+          0,
+          false,
+          4096
+        ],
+        [
+          3,
+          128,
+          128,
+          1376256,
+          16384,
+          32,
+          0,
+          0,
+          false,
+          1024
+        ],
+        [
+          4,
+          64,
+          64,
+          1392640,
+          16384,
+          32,
+          0,
+          0,
+          false,
+          256
+        ],
+        [
+          5,
+          32,
+          32,
+          1409024,
+          16384,
+          32,
+          0,
+          0,
+          false,
+          64
+        ],
+        [
+          6,
+          16,
+          16,
+          1425408,
+          16384,
+          32,
+          4,
+          0,
+          true,
+          16
+        ],
+        [
+          7,
+          8,
+          8,
+          1425408,
+          16384,
+          32,
+          2,
+          0,
+          true,
+          4
+        ],
+        [
+          8,
+          4,
+          4,
+          1425408,
+          16384,
+          32,
+          1,
+          0,
+          true,
+          1
+        ]
+      ],
+      "selector_sharing": {
+        "selector_slot": 4,
+        "asset_index_byte_in_selector_record": 0,
+        "selector_record_bytes": 8,
+        "team_count": 40,
+        "banks_per_team": 2,
+        "team_bank_use_count": 80,
+        "asset_use_counts_by_asset_index": [
+          2,
+          0,
+          6,
+          0,
+          4,
+          0,
+          2,
+          0,
+          2,
+          0,
+          0,
+          2,
+          30,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          26
+        ],
+        "used_asset_indices": [
+          0,
+          2,
+          4,
+          6,
+          8,
+          11,
+          12,
+          13,
+          19,
+          23
+        ],
+        "unused_asset_indices": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          10,
+          14,
+          15,
+          16,
+          17,
+          18,
+          20,
+          21,
+          22
+        ],
+        "editing_asset_affects_all_listed_owners": true,
+        "selector_writer_proved": false
+      },
+      "per_slot_fixed_allocations": [
+        [
+          0,
+          "uniform_jersey_00.iff",
+          "0x1ebc0299",
+          186,
+          "0A",
+          112531456,
+          20480,
+          "a15b56eb5227707be63f4b7e020e509853eb5e545085deb501fcbf57e13e7073",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          1,
+          "uniform_jersey_01.iff",
+          "0x23dc2b29",
+          216,
+          "0A",
+          112551936,
+          26624,
+          "c5ca0e96916af41ef4a867f5b3cafa2fd481eac30eb3121789c33b250a9870cc",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          2,
+          "uniform_jersey_02.iff",
+          "0x647c51f9",
+          608,
+          "0A",
+          112578560,
+          28672,
+          "5c1e588909024f2799fc72e43c4734246fd60ddcbe2362fec4ad15f176cf511f",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          3,
+          "uniform_jersey_03.iff",
+          "0x591c7849",
+          535,
+          "0A",
+          112607232,
+          20480,
+          "836d82a1b78f79d99ef43d161b01ab6fdd0c9f1ae3b88b9797f7a79fe5b3239f",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          4,
+          "uniform_jersey_04.iff",
+          "0xeb3ca459",
+          1420,
+          "0A",
+          112627712,
+          30720,
+          "00c76bf9beb6f2e0e408f1621249d14a7142b7786e5f72b7c079653cb0f7e0de",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          5,
+          "uniform_jersey_05.iff",
+          "0xd65c8de9",
+          1277,
+          "0A",
+          112658432,
+          30720,
+          "48ad1b824c553f64fe71f607b4b1e82f015bc152130e2af585ce6a8a5c226088",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          6,
+          "uniform_jersey_06.iff",
+          "0x91fcf739",
+          875,
+          "0A",
+          112689152,
+          32768,
+          "9f4740ddbbcc86d1d7a880a50f12d9e2580e049633b9beb065fc193a78130ca2",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          7,
+          "uniform_jersey_07.iff",
+          "0xac9cde89",
+          1033,
+          "0A",
+          112721920,
+          28672,
+          "dbba289711a38c621188232e6a61c9ccdc265321b51660f8c5e506a0db249fe1",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          8,
+          "uniform_jersey_08.iff",
+          "0x2ecc4958",
+          289,
+          "0A",
+          112750592,
+          26624,
+          "507b6cc4947fc48e671acd46c38cc4a9dd19f65315c8dc24226ab974b080b4f6",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          9,
+          "uniform_jersey_09.iff",
+          "0x13ac60e8",
+          119,
+          "0A",
+          112777216,
+          30720,
+          "127bce7a8692a049e13cffa329353884d0d9c9288fd8e9cb3a8f83543bd51626",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          10,
+          "uniform_jersey_10.iff",
+          "0xd5e0d13c",
+          1274,
+          "0A",
+          112807936,
+          22528,
+          "6271db19528c17126dcc8b671feda89570570a4c14161869bb06d655d5727846",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          11,
+          "uniform_jersey_11.iff",
+          "0xe880f88c",
+          1399,
+          "0A",
+          112830464,
+          26624,
+          "c6431e12112ddc37d4a41cfbf40bdbc36d86a499262b3712c990e10b19d21835",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          12,
+          "uniform_jersey_12.iff",
+          "0xaf20825c",
+          1048,
+          "0A",
+          112857088,
+          26624,
+          "5b7f410fe644da641d2577e6930ccc5e88df45419c3139aa711b11e909dd3d2d",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          13,
+          "uniform_jersey_13.iff",
+          "0x9240abec",
+          878,
+          "0A",
+          112883712,
+          43008,
+          "49824b8cb566443d80b6d4358d113aa082e1cbd708819cfa51ccea8da10ccda6",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          14,
+          "uniform_jersey_14.iff",
+          "0x206077fc",
+          196,
+          "0A",
+          112926720,
+          34816,
+          "f485b7d7880289098bad006a3d767dfb63f8de9db2e8bdaa7d3e85ae1778fd70",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          15,
+          "uniform_jersey_15.iff",
+          "0x1d005e4c",
+          179,
+          "0A",
+          112961536,
+          30720,
+          "7e2f7ba97f2b404bda08e9ccff66694fe994efecbeb8ba1747ad4ce5a98e1704",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          16,
+          "uniform_jersey_16.iff",
+          "0x5aa0249c",
+          544,
+          "0A",
+          112992256,
+          34816,
+          "2b609e184052e74a4fb64aedc9e00ab2d5daf03f186f7a2ed2f1567e26472d5a",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          17,
+          "uniform_jersey_17.iff",
+          "0x67c00d2c",
+          628,
+          "0A",
+          113027072,
+          57344,
+          "e0a0eeb1501ba2a11ae9caa4cef9cbd26e4cb7df48a0d88e7e45c5515b6ec86e",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          18,
+          "uniform_jersey_18.iff",
+          "0xe5909afd",
+          1375,
+          "0A",
+          113084416,
+          28672,
+          "95116b56621ce992eefea5c0e55051bb28d977a2162f29bc268145b6f852e4ef",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          19,
+          "uniform_jersey_19.iff",
+          "0xd8f0b34d",
+          1292,
+          "0A",
+          113113088,
+          34816,
+          "11d3b3e278be124b05a73d214381afdc3ead12a62fd263d65582de3baa8f229c",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          20,
+          "uniform_jersey_20.iff",
+          "0x5374a392",
+          495,
+          "0A",
+          113147904,
+          43008,
+          "8518172b744e98225c7da5c53e647d989a9fbb25580510fb5e893695da5e1aa1",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          21,
+          "uniform_jersey_21.iff",
+          "0x6e148a22",
+          671,
+          "0A",
+          113190912,
+          34816,
+          "e154898f02eb5935858a551d63f360dc0b44bf7114f70fd82ebb32489970d5de",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          22,
+          "uniform_jersey_22.iff",
+          "0x29b4f0f2",
+          247,
+          "0A",
+          113225728,
+          32768,
+          "341c9ce0e6ea27b8eff92243f60a66675f34738d1e81e2a9eda3550fc65c7a49",
+          [
+            8,
+            8
+          ]
+        ],
+        [
+          23,
+          "uniform_jersey_23.iff",
+          "0x14d4d942",
+          128,
+          "0A",
+          113258496,
+          14336,
+          "151c5b0c52f9734f705ad0949847ac0718bb08430108688d63e513a44c8b1ade",
+          [
+            8,
+            8
+          ]
+        ]
+      ],
+      "write_contract": {
+        "source_opened_read_only": true,
+        "output_must_not_exist": true,
+        "source_output_alias_rejected": true,
+        "all_mips_regenerated": true,
+        "inactive_bytes_preserved": true,
+        "h7a_encode_decode_exact": true,
+        "rebuilt_iff_reparsed": true,
+        "footer_preserved_bit_exact": true,
+        "related_parts_preserved_bit_exact": true,
+        "fixed_allocation_overflow_rejected": true,
+        "bytes_outside_selected_allocation_preserved": true,
+        "independent_verifier_rederives_png_mips_and_archive_diff": true
+      },
+      "claim_flags": {
+        "format_closed_for_declared_24_slot_family": true,
+        "read_write_byte_roundtrip_proved_all_24": true,
+        "copied_volume_write_proved": true,
+        "arbitrary_png_guaranteed_to_fit": false,
+        "xenia_runtime_visibility": {
+          "proved_for_asset_indices": [
+            6
+          ],
+          "solid_color_target_binding_only": true,
+          "generalized_all_24": false
+        },
+        "xbox_360_hardware_proved": false,
+        "production_encoder_proved": false,
+        "pattern_orientation_alpha_and_distant_mips_proved": false
+      },
+      "known_unknowns": [
+        "BC3 alpha, asymmetric UV orientation, fine-detail, and distant-mip runtime fidelity are not generalized by the solid-color asset-6 witness.",
+        "The deterministic encoder is not a production perceptual BC3 backend.",
+        "Arbitrary detailed images may exceed a slot's H7A-compressed fixed allocation and must be refused.",
+        "Selector rewriting and all-team de-aliasing are separate unproved formats."
+      ]
+    },
+    "helmet_color": {
+      "family": "uniform_helmet",
+      "asset_index_range": [
+        0,
+        23
+      ],
+      "outer_name_template": "uniform_helmet_{asset_index:02d}.iff",
+      "inner_file": {
+        "index": 0,
+        "name": "helmet_color",
+        "type": "TXTR",
+        "file_id": "0xcf7f3bdf"
+      },
+      "iff_instance": {
+        "header_size_bytes": 144,
+        "block_count": 2,
+        "file_count": 2,
+        "block_uncompressed_lengths": [
+          448,
+          1835008
+        ],
+        "block_name_type_hashes": [
+          [
+            "0xbb05a9c1",
+            "0xbb05a9c1"
+          ],
+          [
+            "0x411536d5",
+            "0x411536d5"
+          ]
+        ],
+        "footer_payload_bytes": 274,
+        "footer_total_bytes": 282,
+        "footer_name_count": 2
+      },
+      "target_parts": [
+        [
+          0,
+          0,
+          0,
+          224
+        ],
+        [
+          1,
+          1,
+          0,
+          393216
+        ]
+      ],
+      "related_resources_must_remain_exact": [
+        "both DRAM descriptor parts",
+        "helmet_normal VRAM bytes 0x60000..0x1bffff",
+        "inactive tiled and packed-tail bytes",
+        "name footer",
+        "outer allocation slack",
+        "all bytes outside selected outer allocation"
+      ],
+      "txtr_descriptor": {
+        "vc_file_id": "0xcf7f3bdf",
+        "vc_width": 256,
+        "vc_height": 1024,
+        "vc_base_data_length": 262144,
+        "vc_mip_data_length": 131072,
+        "fetch_offset": 148,
+        "fetch_dwords": [
+          "0x82000002",
+          "0x00000071",
+          "0x007fe0ff",
+          "0x00a80d10",
+          "0x00000183",
+          "0x00040a00"
+        ],
+        "fetch_type": 2,
+        "pitch_pixels": 256,
+        "tiled": true,
+        "format": 49,
+        "format_name": "DXN",
+        "endianness": 1,
+        "endianness_name": "8in16",
+        "request_size": 0,
+        "stacked": false,
+        "base_address_pages": 0,
+        "width": 256,
+        "height": 1024,
+        "stack_depth_minus_one": 0,
+        "swizzle": 1672,
+        "swizzle_components": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "mip_min_level": 0,
+        "mip_max_level": 6,
+        "dimension": 1,
+        "dimension_name": "2D_or_stacked",
+        "packed_mips": true,
+        "mip_address_pages": 64,
+        "warnings": []
+      },
+      "codec": {
+        "xenos_format": 49,
+        "xenos_format_name": "DXN",
+        "logical_codec": "BC5: two independent BC4 channels",
+        "bytes_per_block": 16,
+        "stored_channels": "raw R and G data channels",
+        "production_encoder_proved": false
+      },
+      "png_input_contract": {
+        "format": "PNG",
+        "width": 256,
+        "height": 1024,
+        "mode": "RGBA",
+        "max_file_bytes": 67108864,
+        "alpha_rule": "every alpha byte must equal 255",
+        "channel_rule": "R and G are raw DXN channels; every B byte must be 0; shader meanings unknown",
+        "mip_filter": "Pillow BOX"
+      },
+      "mip_layout": [
+        [
+          0,
+          256,
+          1024,
+          0,
+          262144,
+          64,
+          0,
+          0,
+          false,
+          16384
+        ],
+        [
+          1,
+          128,
+          512,
+          262144,
+          65536,
+          32,
+          0,
+          0,
+          false,
+          4096
+        ],
+        [
+          2,
+          64,
+          256,
+          327680,
+          32768,
+          32,
+          0,
+          0,
+          false,
+          1024
+        ],
+        [
+          3,
+          32,
+          128,
+          360448,
+          16384,
+          32,
+          0,
+          0,
+          false,
+          256
+        ],
+        [
+          4,
+          16,
+          64,
+          376832,
+          16384,
+          32,
+          4,
+          0,
+          true,
+          64
+        ],
+        [
+          5,
+          8,
+          32,
+          376832,
+          16384,
+          32,
+          2,
+          0,
+          true,
+          16
+        ],
+        [
+          6,
+          4,
+          16,
+          376832,
+          16384,
+          32,
+          1,
+          0,
+          true,
+          4
+        ]
+      ],
+      "selector_sharing": {
+        "selector_slot": 3,
+        "asset_index_byte_in_selector_record": 0,
+        "selector_record_bytes": 8,
+        "team_count": 40,
+        "banks_per_team": 2,
+        "team_bank_use_count": 80,
+        "asset_use_counts_by_asset_index": [
+          8,
+          32,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          2,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          34,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "used_asset_indices": [
+          0,
+          1,
+          8,
+          9,
+          12,
+          16
+        ],
+        "unused_asset_indices": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          10,
+          11,
+          13,
+          14,
+          15,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "editing_asset_affects_all_listed_owners": true,
+        "selector_writer_proved": false
+      },
+      "per_slot_fixed_allocations": [
+        [
+          0,
+          "uniform_helmet_00.iff",
+          "0x2002fc95",
+          194,
+          "0A",
+          190324736,
+          555008,
+          "08e345dd36eb0c49f148e4b810ab226e7bbd75263077ad7ecb9a836cfb3c4525",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          1,
+          "uniform_helmet_01.iff",
+          "0x1d62d525",
+          181,
+          "0A",
+          190879744,
+          557056,
+          "3502fe12041c585bfefd9e0ec4af92899bed21c8987ef3c3bf69bfaea30e3786",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          2,
+          "uniform_helmet_02.iff",
+          "0x5ac2aff5",
+          545,
+          "0A",
+          191436800,
+          552960,
+          "5ca8d94cde1565a6d72eedee078f15339992a746e611f1641b57de7609069608",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          3,
+          "uniform_helmet_03.iff",
+          "0x67a28645",
+          627,
+          "0A",
+          191989760,
+          552960,
+          "8728e27493b9ce78ee129670f89bfbabb7b1fa6329ebfd09025d15a0bd427b0c",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          4,
+          "uniform_helmet_04.iff",
+          "0xd5825a55",
+          1272,
+          "0A",
+          192542720,
+          552960,
+          "8728e27493b9ce78ee129670f89bfbabb7b1fa6329ebfd09025d15a0bd427b0c",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          5,
+          "uniform_helmet_05.iff",
+          "0xe8e273e5",
+          1403,
+          "0A",
+          193095680,
+          552960,
+          "2337ab2c6e7a1c58db50e08ca9124bbdca6e651f68de039f9158d6891634f80f",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          6,
+          "uniform_helmet_06.iff",
+          "0xaf420935",
+          1049,
+          "0A",
+          193648640,
+          555008,
+          "9f978bda4be9ddaa97138d9f17ac89fd28706d38ef2712de4f1dfc70831fbbd6",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          7,
+          "uniform_helmet_07.iff",
+          "0x92222085",
+          877,
+          "0A",
+          194203648,
+          555008,
+          "6dbcd85281cb07ecb72478c292e9fb1109413b0829ae1de98c562e940baf2064",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          8,
+          "uniform_helmet_08.iff",
+          "0x1072b754",
+          97,
+          "0A",
+          194758656,
+          555008,
+          "a8cee5e3dfc5b4754f78100f718c34b5277530996f530c51d12bf134b880cd7e",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          9,
+          "uniform_helmet_09.iff",
+          "0x2d129ee4",
+          276,
+          "0A",
+          195313664,
+          552960,
+          "111d00477b3a2903a80815e72a83498dd6f7f6ef2064d61a1a80eb754c65ca86",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          10,
+          "uniform_helmet_10.iff",
+          "0xeb5e2f30",
+          1423,
+          "0A",
+          195866624,
+          559104,
+          "9d9ba7d39bacbf81af2af55897d0f001508091d2eedb688c04fc6541190b7fc7",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          11,
+          "uniform_helmet_11.iff",
+          "0xd63e0680",
+          1275,
+          "0A",
+          196425728,
+          577536,
+          "57bd0ddb7f48a5ab2e7be1171a6082e4f2c6b3a57a283301b1ef8dfaa980907e",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          12,
+          "uniform_helmet_12.iff",
+          "0x919e7c50",
+          873,
+          "0A",
+          197003264,
+          593920,
+          "b97700f387c7f3a86c70a56db2df205722f2633092273ec4107afa45f99d24da",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          13,
+          "uniform_helmet_13.iff",
+          "0xacfe55e0",
+          1036,
+          "0A",
+          197597184,
+          555008,
+          "df9c0a78119d189e13e68350356b20211b8fccf311c42331400f99e49846357b",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          14,
+          "uniform_helmet_14.iff",
+          "0x1ede89f0",
+          188,
+          "0A",
+          198152192,
+          583680,
+          "3265484e1fb0d59a6f4321a3da482a9dff817560e8e98ff206d62d8151d88900",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          15,
+          "uniform_helmet_15.iff",
+          "0x23bea040",
+          215,
+          "0A",
+          198735872,
+          567296,
+          "2cb2d2d7eee88c5ac159879dbbdd627412b87b4745134219020f9b614d901415",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          16,
+          "uniform_helmet_16.iff",
+          "0x641eda90",
+          606,
+          "0A",
+          199303168,
+          575488,
+          "947f06666314062e77bfecbd16a5b0e34400cae5fbec8411607f668486aae7f2",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          17,
+          "uniform_helmet_17.iff",
+          "0x597ef320",
+          537,
+          "0A",
+          199878656,
+          569344,
+          "833128896fae96dcb662d297e32849abdf4b5cf77ffad293c49d65dc2d6046a1",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          18,
+          "uniform_helmet_18.iff",
+          "0xdb2e64f1",
+          1309,
+          "0A",
+          200448000,
+          569344,
+          "8537019b883f6d6235b35868d7a1a9a49613a2cb3f60e8a873a94fbbe7b4b7c8",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          19,
+          "uniform_helmet_19.iff",
+          "0xe64e4d41",
+          1381,
+          "0A",
+          201017344,
+          598016,
+          "732841be66af156a33278230c1183be20c7f1d6d924eac9fb5f604fc5db962bf",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          20,
+          "uniform_helmet_20.iff",
+          "0x6dca5d9e",
+          668,
+          "0A",
+          201615360,
+          569344,
+          "0b947dada2785522c7799af493cf6b95bc47922b31342817a9e6f612090f9760",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          21,
+          "uniform_helmet_21.iff",
+          "0x50aa742e",
+          477,
+          "0A",
+          202184704,
+          559104,
+          "f44898b611b033c6dd774256ea7ce88c248112bb11409c8b3d41752243ec6ac4",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          22,
+          "uniform_helmet_22.iff",
+          "0x170a0efe",
+          142,
+          "0A",
+          202743808,
+          573440,
+          "d9195d70e89ee91209bd1cd896dc1215f566daed551bae371b6109f4b8527c43",
+          [
+            8,
+            10
+          ]
+        ],
+        [
+          23,
+          "uniform_helmet_23.iff",
+          "0x2a6a274e",
+          257,
+          "0A",
+          203317248,
+          548864,
+          "f86247304ea722e6ef4293639df45cd3a26fb9b25efe3932dcf2b5a2333a65c7",
+          [
+            8,
+            10
+          ]
+        ]
+      ],
+      "write_contract": {
+        "source_opened_read_only": true,
+        "output_must_not_exist": true,
+        "source_output_alias_rejected": true,
+        "all_mips_regenerated": true,
+        "inactive_bytes_preserved": true,
+        "h7a_encode_decode_exact": true,
+        "rebuilt_iff_reparsed": true,
+        "footer_preserved_bit_exact": true,
+        "related_parts_preserved_bit_exact": true,
+        "fixed_allocation_overflow_rejected": true,
+        "bytes_outside_selected_allocation_preserved": true,
+        "independent_verifier_rederives_png_mips_and_archive_diff": true
+      },
+      "claim_flags": {
+        "format_closed_for_declared_24_slot_family": true,
+        "read_write_byte_roundtrip_proved_all_24": true,
+        "copied_volume_write_proved": true,
+        "arbitrary_png_guaranteed_to_fit": false,
+        "xenia_runtime_visibility": {
+          "proved_for_asset_indices": [],
+          "generalized_all_24": false
+        },
+        "xbox_360_hardware_proved": false,
+        "production_encoder_proved": false,
+        "raw_channel_meanings_named": false
+      },
+      "known_unknowns": [
+        "The shader meanings and composition of helmet_color R and G are not proved; they remain raw data channels.",
+        "No changed helmet_color asset has a Xenia or Xbox 360 hardware runtime witness.",
+        "The deterministic paired-BC4 encoder is not a production perceptual DXN backend.",
+        "Arbitrary images may exceed a slot's H7A-compressed fixed allocation and must be refused.",
+        "Selector rewriting and per-team de-aliasing are separate unproved formats."
+      ]
+    },
+    "pants_color": {
+      "family": "uniform_pants",
+      "asset_index_range": [
+        0,
+        23
+      ],
+      "outer_name_template": "uniform_pants_{asset_index:02d}.iff",
+      "inner_file": {
+        "index": 2,
+        "name": "pants_color",
+        "type": "TXTR",
+        "file_id": "0x9717866d"
+      },
+      "iff_instance": {
+        "header_size_bytes": 192,
+        "block_count": 2,
+        "file_count": 4,
+        "block_uncompressed_lengths": [
+          896,
+          1376256
+        ],
+        "block_name_type_hashes": [
+          [
+            "0xbb05a9c1",
+            "0xbb05a9c1"
+          ],
+          [
+            "0x411536d5",
+            "0x411536d5"
+          ]
+        ],
+        "footer_payload_bytes": 572,
+        "footer_total_bytes": 580,
+        "footer_name_count": 4
+      },
+      "target_parts": [
+        [
+          0,
+          0,
+          0,
+          224
+        ],
+        [
+          1,
+          1,
+          0,
+          196608
+        ]
+      ],
+      "related_resources_must_remain_exact": [
+        "all four DRAM descriptor parts",
+        "pants_light_normal VRAM",
+        "pants_medium_normal VRAM",
+        "pants_heavy_normal VRAM",
+        "inactive tiled and packed-tail bytes",
+        "name footer",
+        "outer allocation slack",
+        "all bytes outside selected outer allocation"
+      ],
+      "txtr_descriptor": {
+        "vc_file_id": "0x9717866d",
+        "vc_width": 512,
+        "vc_height": 512,
+        "vc_base_data_length": 131072,
+        "vc_mip_data_length": 65536,
+        "fetch_offset": 148,
+        "fetch_dwords": [
+          "0x84000002",
+          "0x00000052",
+          "0x003fe1ff",
+          "0x00a80d10",
+          "0x000001c3",
+          "0x00020a00"
+        ],
+        "fetch_type": 2,
+        "pitch_pixels": 512,
+        "tiled": true,
+        "format": 18,
+        "format_name": "DXT1",
+        "endianness": 1,
+        "endianness_name": "8in16",
+        "request_size": 0,
+        "stacked": false,
+        "base_address_pages": 0,
+        "width": 512,
+        "height": 512,
+        "stack_depth_minus_one": 0,
+        "swizzle": 1672,
+        "swizzle_components": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "mip_min_level": 0,
+        "mip_max_level": 7,
+        "dimension": 1,
+        "dimension_name": "2D_or_stacked",
+        "packed_mips": true,
+        "mip_address_pages": 32,
+        "warnings": []
+      },
+      "codec": {
+        "xenos_format": 18,
+        "xenos_format_name": "DXT1",
+        "logical_codec": "BC1 opaque four-color mode",
+        "bytes_per_block": 8,
+        "stored_channels": "RGB565 endpoints plus 2-bit indices",
+        "production_encoder_proved": false
+      },
+      "png_input_contract": {
+        "format": "PNG",
+        "width": 512,
+        "height": 512,
+        "mode": "RGBA",
+        "max_file_bytes": 67108864,
+        "alpha_rule": "every alpha byte must equal 255",
+        "channel_rule": "RGB encoded as opaque four-color BC1; transparency rejected",
+        "mip_filter": "Pillow BOX"
+      },
+      "mip_layout": [
+        [
+          0,
+          512,
+          512,
+          0,
+          131072,
+          128,
+          0,
+          0,
+          false,
+          16384
+        ],
+        [
+          1,
+          256,
+          256,
+          131072,
+          32768,
+          64,
+          0,
+          0,
+          false,
+          4096
+        ],
+        [
+          2,
+          128,
+          128,
+          163840,
+          8192,
+          32,
+          0,
+          0,
+          false,
+          1024
+        ],
+        [
+          3,
+          64,
+          64,
+          172032,
+          8192,
+          32,
+          0,
+          0,
+          false,
+          256
+        ],
+        [
+          4,
+          32,
+          32,
+          180224,
+          8192,
+          32,
+          0,
+          0,
+          false,
+          64
+        ],
+        [
+          5,
+          16,
+          16,
+          188416,
+          8192,
+          32,
+          4,
+          0,
+          true,
+          16
+        ],
+        [
+          6,
+          8,
+          8,
+          188416,
+          8192,
+          32,
+          2,
+          0,
+          true,
+          4
+        ],
+        [
+          7,
+          4,
+          4,
+          188416,
+          8192,
+          32,
+          1,
+          0,
+          true,
+          1
+        ]
+      ],
+      "selector_sharing": {
+        "selector_slot": 9,
+        "asset_index_byte_in_selector_record": 0,
+        "selector_record_bytes": 8,
+        "team_count": 40,
+        "banks_per_team": 2,
+        "team_bank_use_count": 80,
+        "asset_use_counts_by_asset_index": [
+          8,
+          0,
+          14,
+          0,
+          6,
+          0,
+          4,
+          0,
+          0,
+          0,
+          2,
+          4,
+          0,
+          34,
+          0,
+          0,
+          0,
+          2,
+          2,
+          2,
+          0,
+          0,
+          2,
+          0
+        ],
+        "used_asset_indices": [
+          0,
+          2,
+          4,
+          6,
+          10,
+          11,
+          13,
+          17,
+          18,
+          19,
+          22
+        ],
+        "unused_asset_indices": [
+          1,
+          3,
+          5,
+          7,
+          8,
+          9,
+          12,
+          14,
+          15,
+          16,
+          20,
+          21,
+          23
+        ],
+        "editing_asset_affects_all_listed_owners": true,
+        "selector_writer_proved": false
+      },
+      "per_slot_fixed_allocations": [
+        [
+          0,
+          "uniform_pants_00.iff",
+          "0xe7ffaa9d",
+          1394,
+          "0A",
+          203866112,
+          786432,
+          "aeca7752cde61694471805186b6b4a54ebaa6ffab6e90c33df13802394203f1c",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          1,
+          "uniform_pants_01.iff",
+          "0xda9f832d",
+          1306,
+          "0A",
+          204652544,
+          786432,
+          "51f33166e3b2d7ec66d3cd9efada1b870897453039dd067448bfdc87d31be9a9",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          2,
+          "uniform_pants_02.iff",
+          "0x9d3ff9fd",
+          944,
+          "0A",
+          205438976,
+          786432,
+          "ce0d42caa03b813eeb916ae36e13170ccbb48bb8a71b7dd78ef23bd17f0bf0c4",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          3,
+          "uniform_pants_03.iff",
+          "0xa05fd04d",
+          959,
+          "0A",
+          206225408,
+          786432,
+          "afcd4b776d3a385bba74fd32454143484c2788ea959a6b08ab70156ae22e5f62",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          4,
+          "uniform_pants_04.iff",
+          "0x127f0c5d",
+          111,
+          "0A",
+          207011840,
+          782336,
+          "8b9db7bdc0f1d863233c0d52041b467c4d3ed8b349ffba904d134a1273ec35b8",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          5,
+          "uniform_pants_05.iff",
+          "0x2f1f25ed",
+          292,
+          "0A",
+          207794176,
+          786432,
+          "00d23965c4fd7a5c8fa269389ea5fb618689bebbed3602fe7f3f0a954b55522b",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          6,
+          "uniform_pants_06.iff",
+          "0x68bf5f3d",
+          633,
+          "0A",
+          208580608,
+          788480,
+          "a75d5196e7dc6dffedfd55638586808a8550ff5b1e748fd069fc0082ef71c96d",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          7,
+          "uniform_pants_07.iff",
+          "0x55df768d",
+          511,
+          "0A",
+          209369088,
+          786432,
+          "cd24924d64dee07c5a8c82054457031e61967c1cf99ac22154f47261ec8280c8",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          8,
+          "uniform_pants_08.iff",
+          "0xd78fe15c",
+          1284,
+          "0A",
+          210155520,
+          786432,
+          "e597d0bdb1b5f3bc13cee527583aa5c47ed2c156d9abfddd715f28680e309e76",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          9,
+          "uniform_pants_09.iff",
+          "0xeaefc8ec",
+          1419,
+          "0A",
+          210941952,
+          802816,
+          "376a0ba861d1890af64a13e5dda00457b0c13ef0cd21066018de148bdc6b92c6",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          10,
+          "uniform_pants_10.iff",
+          "0x2ca37938",
+          274,
+          "0A",
+          211744768,
+          808960,
+          "5c2aace60226cacd2f70a22213ca8fd79e54cd4891a405533d02b612a7c08c7d",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          11,
+          "uniform_pants_11.iff",
+          "0x11c35088",
+          107,
+          "0A",
+          212553728,
+          798720,
+          "4b55e39cc47868fd77b7b38da5afd60589cb0c81fd1101cfdc1587a431d19cc3",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          12,
+          "uniform_pants_12.iff",
+          "0x56632a58",
+          517,
+          "0A",
+          213352448,
+          778240,
+          "8501d923179426f1ae0e538e0b5d20faff18f3d3a1305971a07f4ba04c9a09d9",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          13,
+          "uniform_pants_13.iff",
+          "0x6b0303e8",
+          652,
+          "0A",
+          214130688,
+          790528,
+          "0e929640fe388010c9e7d6bdbece1150daf4b8e648d9b93599e013ad6e70789e",
+          [
+            8,
+            12
+          ]
+        ],
+        [
+          14,
+          "uniform_pants_14.iff",
+          "0xd923dff8",
+          1293,
+          "0A",
+          214921216,
+          798720,
+          "aa4cb972c2d405652c9a294cae3ad8b7a81ef21ebbddb66db74410a80efd12d8",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          15,
+          "uniform_pants_15.iff",
+          "0xe443f648",
+          1370,
+          "0A",
+          215719936,
+          802816,
+          "611df0a4a673d3fcc57dc416c572b968bc8d281c55e50645e6b6206d113041d2",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          16,
+          "uniform_pants_16.iff",
+          "0xa3e38c98",
+          981,
+          "0A",
+          216522752,
+          808960,
+          "1ad5b96f929c7aa1ef33f11bd315e5466aa0fffe74254640ab9b4b24a4711971",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          17,
+          "uniform_pants_17.iff",
+          "0x9e83a528",
+          950,
+          "0A",
+          217331712,
+          804864,
+          "8f62c6a0a8a4b3ac5177f5eeaf54d4d3740b20ce50b3fc231099b534f7c19fec",
+          [
+            8,
+            12
+          ]
+        ],
+        [
+          18,
+          "uniform_pants_18.iff",
+          "0x1cd332f9",
+          177,
+          "0A",
+          218136576,
+          804864,
+          "998890cd6f02c9857ca8d0e82f57618412b0d622925199271990e37695629905",
+          [
+            8,
+            12
+          ]
+        ],
+        [
+          19,
+          "uniform_pants_19.iff",
+          "0x21b31b49",
+          202,
+          "0A",
+          218941440,
+          808960,
+          "656726f2c266d8af14c169dbd5031609021f326654e3cab8477c653734e0c5ed",
+          [
+            8,
+            12
+          ]
+        ],
+        [
+          20,
+          "uniform_pants_20.iff",
+          "0xaa370b96",
+          1017,
+          "0A",
+          219750400,
+          802816,
+          "2d75fb70aefc7f691aab55ccd0ba18d4a4923ef7d9660e312b50a2f337f597ee",
+          [
+            8,
+            12
+          ]
+        ],
+        [
+          21,
+          "uniform_pants_21.iff",
+          "0x97572226",
+          903,
+          "0A",
+          220553216,
+          811008,
+          "52b5d069923575b30381ff2531dcd3f1b3dfcf99b994c2fbd9a780c13dfbc721",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          22,
+          "uniform_pants_22.iff",
+          "0xd0f758f6",
+          1237,
+          "0A",
+          221364224,
+          782336,
+          "2b0f801d1f66a2a0500c74fc4f899ac931ae68d1a02f776b7a445873129dbf8b",
+          [
+            8,
+            11
+          ]
+        ],
+        [
+          23,
+          "uniform_pants_23.iff",
+          "0xed977146",
+          1437,
+          "0A",
+          222146560,
+          786432,
+          "5cb3fc26dfe277bf68c19a12a4aef57098f646727ac4aa26f619d22f5227c88d",
+          [
+            8,
+            11
+          ]
+        ]
+      ],
+      "write_contract": {
+        "source_opened_read_only": true,
+        "output_must_not_exist": true,
+        "source_output_alias_rejected": true,
+        "all_mips_regenerated": true,
+        "inactive_bytes_preserved": true,
+        "h7a_encode_decode_exact": true,
+        "rebuilt_iff_reparsed": true,
+        "footer_preserved_bit_exact": true,
+        "related_parts_preserved_bit_exact": true,
+        "fixed_allocation_overflow_rejected": true,
+        "bytes_outside_selected_allocation_preserved": true,
+        "independent_verifier_rederives_png_mips_and_archive_diff": true
+      },
+      "claim_flags": {
+        "format_closed_for_declared_24_slot_family": true,
+        "read_write_byte_roundtrip_proved_all_24": true,
+        "copied_volume_write_proved": true,
+        "arbitrary_png_guaranteed_to_fit": false,
+        "xenia_runtime_visibility": {
+          "proved_for_asset_indices": [],
+          "generalized_all_24": false
+        },
+        "xbox_360_hardware_proved": false,
+        "production_encoder_proved": false,
+        "opaque_color_transport_proved": true
+      },
+      "known_unknowns": [
+        "No changed pants_color asset has a Xenia or Xbox 360 hardware runtime witness.",
+        "The deterministic encoder is not a production perceptual BC1 backend.",
+        "Arbitrary detailed images may exceed a slot's H7A-compressed fixed allocation and must be refused.",
+        "The three DXN normal maps are preserved but not editable through this family contract.",
+        "Selector rewriting and per-team de-aliasing are separate unproved formats."
+      ]
+    }
+  },
+  "global_known_unknowns": [
+    "IFF block-descriptor field +0x08 is structurally pinned but its semantic name is unknown.",
+    "H7A is closed for the observed decode/encode class, but the retail compressor's optimization strategy is not claimed to be reproduced.",
+    "The raw Xenos swizzle value 1672 and components [0,1,2,3] are pinned; shader-level interpretation beyond each family contract is not inferred.",
+    "This v1 specification excludes shoulder_color because its all-24 proof was still in flight when the three-family closure was frozen.",
+    "This is not a mesh, skeleton, attachment, material-binding, or general IFF specification."
+  ]
+}

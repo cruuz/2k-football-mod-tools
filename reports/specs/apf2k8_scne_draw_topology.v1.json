@@ -1,0 +1,321 @@
+{
+  "byte_conventions": {
+    "draw_fields": "big-endian u32",
+    "index_components": "big-endian u16 or u32",
+    "relative_pointer": "target = (field_offset + stored_u32 - 1) modulo 2^32; stored zero is null"
+  },
+  "changed_count_boundary": {
+    "required_updates": [
+      "node +0xa8 index_count and index payload extent",
+      "every draw first/count/capacity/minimum/range field",
+      "mesh descriptor vertex_count and every stream byte_length/end pointer",
+      "complete source-record remap across every active vertex stream",
+      "bounds/culling ownership and compressed-part budget"
+    ],
+    "status": "deferred"
+  },
+  "claim_flags": {
+    "bounds_culling_proved": false,
+    "changed_count_writer_implemented": false,
+    "draw_index_coupling_corpus_proved": true,
+    "draw_layout_proved": true,
+    "hardware_proved": false,
+    "node17_independent_offline_verifier_proved": true,
+    "node17_same_footprint_profile_closed": true,
+    "node17_writer_implemented": true,
+    "production_ready": false,
+    "runtime_proved": false
+  },
+  "corpus_proof": {
+    "decoded_block_bytes": 819738940,
+    "decoded_unique_blocks": 783,
+    "degenerate_triangles": 250936,
+    "draw_records": 47112,
+    "draw_word_distinct_counts": [
+      1,
+      6559,
+      1941,
+      1941,
+      1,
+      5615,
+      1527,
+      295,
+      243,
+      1,
+      1,
+      4
+    ],
+    "draw_word_maximums": [
+      6,
+      267952,
+      104601,
+      104599,
+      0,
+      161971,
+      62999,
+      4294967257,
+      242,
+      0,
+      0,
+      3
+    ],
+    "draw_word_minimums": [
+      6,
+      0,
+      3,
+      1,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "final_flag_distribution": {
+      "0": 2738,
+      "1": 42156,
+      "2": 398,
+      "3": 1820
+    },
+    "index_width_nodes": {
+      "16": 13003,
+      "32": 3
+    },
+    "material_slot_distinct": 243,
+    "material_slot_maximum": 242,
+    "material_slot_minimum": 0,
+    "mesh_nodes": 13006,
+    "nondegenerate_triangles": 11522582,
+    "optional_pointer_nonnull": 764,
+    "optional_pointer_null": 46348,
+    "partitioned_nodes": 13006,
+    "path": "reports/assets/apf_scne_draw_topology_corpus.v1.json",
+    "restart_elements": 4217225,
+    "scne_resources": 1303,
+    "serialized_indices": 24519417,
+    "sha256": "ca4465e7e7723c1363d42f2c7b9564e740bb1a6049279fb5055ee14309d3711b"
+  },
+  "data_policy": {
+    "contains_only_aggregate_metrics_hashes_offsets_and_semantic_invariants": true,
+    "contains_retail_draw_record_payloads": false,
+    "contains_retail_index_sequences": false,
+    "contains_retail_vertex_coordinates": false
+  },
+  "draw_record": {
+    "fields": [
+      {
+        "name": "draw_primitive_code",
+        "offset_bytes": 0,
+        "rule": "6 in every retail draw; passed to native submission; paired mesh descriptor primitive is 5/D3DPT_TRIANGLESTRIP",
+        "size_bytes": 4,
+        "status": "proved_renderer_and_corpus",
+        "storage": "u32be"
+      },
+      {
+        "name": "first_element",
+        "offset_bytes": 4,
+        "rule": "first serialized index element; all draw windows exactly partition the node index payload",
+        "size_bytes": 4,
+        "status": "proved_renderer_and_corpus",
+        "storage": "u32be"
+      },
+      {
+        "name": "element_count",
+        "offset_bytes": 8,
+        "rule": "serialized strip elements in this draw, including restart values",
+        "size_bytes": 4,
+        "status": "proved_renderer_and_corpus",
+        "storage": "u32be"
+      },
+      {
+        "name": "primitive_capacity",
+        "offset_bytes": 12,
+        "rule": "element_count - 2; not the restart/degenerate-filtered triangle count",
+        "size_bytes": 4,
+        "status": "proved_corpus",
+        "storage": "u32be"
+      },
+      {
+        "name": "base_vertex",
+        "offset_bytes": 16,
+        "rule": "passed to indexed submission; zero in every retail draw",
+        "size_bytes": 4,
+        "status": "proved_renderer_and_corpus",
+        "storage": "u32be"
+      },
+      {
+        "name": "minimum_vertex",
+        "offset_bytes": 20,
+        "rule": "minimum non-restart index in this draw window",
+        "size_bytes": 4,
+        "status": "proved_corpus",
+        "storage": "u32be"
+      },
+      {
+        "name": "vertex_range",
+        "offset_bytes": 24,
+        "rule": "maximum non-restart index - minimum_vertex + 1",
+        "size_bytes": 4,
+        "status": "proved_corpus",
+        "storage": "u32be"
+      },
+      {
+        "name": "optional_draw_state",
+        "offset_bytes": 28,
+        "rule": "null in 46,348 draws; every 764 non-null one-based self-relative target is in-system and 8-byte aligned; relocated/runtime value is forwarded to the constant/state uploader; payload meaning remains unproved",
+        "size_bytes": 4,
+        "status": "partly_proved",
+        "storage": "relptr_u32be_or_null"
+      },
+      {
+        "name": "material_slot",
+        "offset_bytes": 32,
+        "rule": "material = instance_material_base + slot * 0xf0",
+        "size_bytes": 4,
+        "status": "proved_renderer",
+        "storage": "u32be"
+      },
+      {
+        "name": "reserved_24",
+        "offset_bytes": 36,
+        "rule": "zero in all retail draws; preserve",
+        "size_bytes": 4,
+        "status": "proved_zero_corpus",
+        "storage": "u32be"
+      },
+      {
+        "name": "reserved_28",
+        "offset_bytes": 40,
+        "rule": "zero in all retail draws; preserve",
+        "size_bytes": 4,
+        "status": "proved_zero_corpus",
+        "storage": "u32be"
+      },
+      {
+        "name": "render_flags_2c",
+        "offset_bytes": 44,
+        "rule": "retail values 0..3; exact meaning unproved; preserve",
+        "size_bytes": 4,
+        "status": "observed",
+        "storage": "u32be"
+      }
+    ],
+    "size_bytes": 48,
+    "window_contract": [
+      "sort records by first_element; windows must begin at zero, be contiguous and nonoverlapping, and end at node.index_count",
+      "for each window require element_count >= 3 and first_element + element_count <= node.index_count",
+      "primitive_capacity equals element_count - 2 even when restart or repeated-index degenerates reduce emitted triangles",
+      "minimum_vertex and vertex_range are derived from non-restart elements before applying base_vertex"
+    ]
+  },
+  "mandatory_rejections": [
+    "source/corpus/profile hash or structural drift",
+    "draw windows that overlap, leave gaps, or escape the index allocation",
+    "index outside the admitted vertex range, restart, duplicate, unexpected degenerate, or winding/decode mismatch",
+    "any draw, descriptor, declaration, stream, vertex, hierarchy, matrix, material, unknown, sibling-part, footer, or outer-complement change",
+    "decoded-part growth, H7A overflow, source mutation, unsafe output path, or non-exclusive publication"
+  ],
+  "native_topology": {
+    "decode": [
+      "restart clears the current strip",
+      "after three elements, alternate strip winding; omit repeated-index triangles as degenerates",
+      "every non-restart element must be below vertex_count"
+    ],
+    "descriptor_primitive_code": 5,
+    "descriptor_primitive_name": "D3DPT_TRIANGLESTRIP",
+    "draw_submission_primitive_code": 6,
+    "index_widths_bits": [
+      16,
+      32
+    ],
+    "restart": {
+      "16": 65535,
+      "32": 4294967295
+    }
+  },
+  "renderer_proof": {
+    "path": "reports/assets/apf_player_shadow_skin_semantics_ghidra/player_shadow_skin_palette_trace.txt",
+    "renderer_contract": "the per-draw loop selects a 0x30-byte record; the native submission path forwards record +0x00 primitive code, +0x04 first element, +0x08 element count, +0x10 base vertex, and relocated/runtime +0x1c optional state",
+    "required_instruction_count": 8,
+    "sha256": "2e3b301a085bbbfb1ff7f735a05358c222efe14807b540ad440885b07af120c2"
+  },
+  "same_footprint_profile": {
+    "admission": [
+      "recipe supplies exactly four JSON integers and no additional topology fields",
+      "indices are a permutation of 0,1,2,3 with no restart or duplicate",
+      "native strip decode emits exactly two nondegenerate triangles",
+      "the one draw remains first=0, count=4, capacity=2, base=0, minimum=0, range=4",
+      "all 48 draw bytes, all vertex/declaration/descriptor bytes, every pointer, and all non-index SCNE bytes remain exact",
+      "the eight-byte decoded index allocation does not grow or move"
+    ],
+    "compressed_container_rule": "rebuild only stadium DRAM block 0; decoded length and fixed outer allocation remain exact; reject H7A overflow before publication",
+    "implementation": {
+      "changed_verification": {
+        "path": "reports/assets/apf_stadium_node17_same_footprint_topology_verification.json",
+        "sha256": "e953270fa7ea8c0535a95cdffd944b9463177d731bea4451a1be9a3872e5e953",
+        "size_bytes": 2459
+      },
+      "independent_verifier": {
+        "path": "tools/apf_stadium_node17_topology_verify.py",
+        "sha256": "2da959176066b5b202eaf5794161d0c205f71b64d5ebd5b8519652cec5c76f3c",
+        "size_bytes": 31202
+      },
+      "noop_verification": {
+        "path": "reports/assets/apf_stadium_node17_same_footprint_topology_noop_verification.json",
+        "sha256": "d27a30a3b3a254ee6dd7916e5bee38a2690b2b504b5b19faf1d9531048cf626a",
+        "size_bytes": 2457
+      },
+      "proof_recipe_helper": {
+        "path": "tools/apf_stadium_node17_topology_proof_recipes.py",
+        "sha256": "719dc86cd31849501b0c3755b5cc86f198c352ba1df99ee86f1a8f95f66765d4",
+        "size_bytes": 4627
+      },
+      "proof_report_generator": {
+        "path": "tools/apf_stadium_node17_topology_proof.py",
+        "sha256": "9e4cafb1c51ab366b6acdf8ddbd5d66957f63b7bebed2281bab92621c9803ce0",
+        "size_bytes": 10576
+      },
+      "public_nonretail_recipe": {
+        "path": "reports/asset_samples/apf_scene/stadium_node17_nonretail_permuted_strip_recipe.json",
+        "sha256": "9fb9262a415632e7b430375c35cefcd4a72128c029172dcd59ca1f695c49cb99",
+        "size_bytes": 1568
+      },
+      "recipe_schema": {
+        "path": "reports/specs/apf2k8_scne_same_footprint_topology_recipe.schema.json",
+        "sha256": "a201d33a1fd44daebb05e68ded770c08966ff6b8bf28267e8603df91fb63bb8e",
+        "size_bytes": 5949
+      },
+      "writer": {
+        "path": "tools/apf_stadium_node17_topology_patch.py",
+        "sha256": "f94ae1306e5483820a133bad4cd01d4a8acd0dead2cb7fffef0b2730b7842a32",
+        "size_bytes": 26804
+      }
+    },
+    "profile": "outer14_inner8_node17_four_be16_strip/v1",
+    "runtime_status": "unproved",
+    "status": "offline_writer_and_independent_verifier_implemented_runtime_unproved",
+    "target": {
+      "draw_record_offset": 375712,
+      "draw_record_sha256": "161a2e06c0b875b6679423f490c2c89691d1da9899003768a0f4eac01cfe873f",
+      "draw_record_size_bytes": 48,
+      "index_buffer_offset": 375760,
+      "index_buffer_sha256": "96b383ee0d221556a56277315db425256549a46ccc5217a392181783327a6dc5",
+      "index_buffer_size_bytes": 8,
+      "index_component_bits": 16,
+      "index_count": 4,
+      "inner_file_index": 8,
+      "inner_name": "stadium",
+      "node_index": 17,
+      "node_name": "polySurface19930",
+      "outer_table_index": 14,
+      "vertex_count": 4
+    },
+    "why_draw_rewrite_is_forbidden": "the admitted permutation preserves every derived draw invariant; changing a draw byte would expand the proof surface without being mechanically necessary"
+  },
+  "schema": "apf2k8_scne_draw_topology/v1",
+  "spec_version": 1,
+  "status": "all retail draw/index relationships are corpus-closed; node17 same-footprint index replacement has a fail-closed copied-volume writer and independent offline verifier; runtime acceptance remains unproved",
+  "title": "APF 2K8 Xbox 360 SCNE draw/topology coupling"
+}

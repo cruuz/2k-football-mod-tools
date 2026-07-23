@@ -1,0 +1,412 @@
+{
+  "inputs": {
+    "disc_roster_audit": {
+      "path": "reports/assets/nfl2k5_player_roster_audit.json",
+      "sha256": "795336ad0092e6ba6c806e314bb7515ecc0e11103bd889557229f4f1a92451c2",
+      "size": 2842500
+    },
+    "draft_integrity_probe": {
+      "path": "reports/gameplay_tuning/nfl_draft_weight_xbe_integrity_probe.json",
+      "sha256": "4e4aa2574c7e57f8adabb77b688dc12e879fb6009551afa3b1d76132fc26f7f8",
+      "size": 5720
+    },
+    "function_ledger": {
+      "path": "research/functions/nfl2k5/functions.tsv",
+      "sha256": "902eb0e5f504bcc24ee55aa895d8fa65e4cb3db05409eb8daaf147e3d74f28f7",
+      "size": 9431836
+    },
+    "gameplay_draft_audit": {
+      "path": "reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json",
+      "sha256": "c53522ee0f4151291f154720a1d457ff7368fb256fbf5845561f4ad68289524b",
+      "size": 53996
+    },
+    "pseudo_cap_validator": {
+      "path": "research/functions/nfl2k5/pseudo_c/shard_011776_012287.c",
+      "sha256": "a61121bbc422d79ff15649b7e3137ac22f7cef3598fb722740a620f9d24de6df",
+      "size": 577357
+    },
+    "pseudo_cap_value": {
+      "path": "research/functions/nfl2k5/pseudo_c/shard_006144_006655.c",
+      "sha256": "970edf65b824a52b9d55de97ddb220e725de331d0ea8a96e2ceab3330567cca3",
+      "size": 483072
+    },
+    "pseudo_season_gate": {
+      "path": "research/functions/nfl2k5/pseudo_c/shard_009728_010239.c",
+      "sha256": "3f835439c51715804acbf91b4556027235bc86222eee4a806e38f41de1fc3bdd",
+      "size": 682015
+    },
+    "pseudo_super_bowl": {
+      "path": "research/functions/nfl2k5/pseudo_c/shard_005632_006143.c",
+      "sha256": "49cdfffd281b809d460bbc25e13b93b26f21febbfab4c8ec7eba1f677ef6488b",
+      "size": 573061
+    },
+    "roster_inventory": {
+      "path": "reports/assets/nfl2k5_roster.json",
+      "sha256": "de5676af8e996be1ff1ce62ac50e507af89f6ad111e2708c286553c65e7d1f79",
+      "size": 5742274
+    },
+    "xbox_xbe": {
+      "path": "extracted/ESPN NFL 2K5 (USA)/default.xbe",
+      "sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "size": 11948032
+    }
+  },
+  "matrix": [
+    {
+      "archive_only_fix": false,
+      "blockers": [
+        "changing .rdata invalidates its stored SHA-1",
+        "repairing the section digest changes the RSA-signed XBE header",
+        "no before/after deterministic fantasy-draft runtime trial exists",
+        "Xbox proof does not identify PS2 ELF addresses"
+      ],
+      "current_proof": "exact static algorithm and constant table",
+      "current_writer_safe": false,
+      "feasibility": "near-term experiment, not a released fix",
+      "id": "cpu_fantasy_draft_priority",
+      "likely_mutation_layer": [
+        "Xbox default.xbe or emulator memory patch"
+      ],
+      "proof": {
+        "pick_path": "0x0036F0A0..0x0036F145 -> 0x0036F830..0x0036F938",
+        "priority_builder": "0x0036EE70..0x0036F095",
+        "table_file_offset": "0x0057EAA8",
+        "table_virtual_address": "0x00589588",
+        "weight_count": 17
+      },
+      "smallest_safe_next": "Apply one weight change only in an authorized copied-XBE/emulator lane, independently verify changed bytes, boot it, and compare seeded CPU drafts.",
+      "user_limitation": "draft and trade logic"
+    },
+    {
+      "archive_only_fix": false,
+      "blockers": [
+        "the CPU-generated offer builder is not yet completely owned",
+        "several valuation inputs and constants still lack stable semantic names",
+        "no deterministic identical-offer before/after runtime trial exists",
+        "XBE integrity handling is still required for a persistent executable patch",
+        "Xbox proof does not identify PS2 ELF addresses"
+      ],
+      "current_proof": "exact legality, valuation, balance, and accept/counteroffer path",
+      "current_writer_safe": false,
+      "feasibility": "near-term threshold/valuation experiment; generator remains open",
+      "id": "cpu_trade_evaluation",
+      "likely_mutation_layer": [
+        "Xbox default.xbe decision code",
+        "franchise runtime/save state"
+      ],
+      "proof": {
+        "acceptance_threshold": {
+          "consumer": "0x002BC380 accept/decline gate",
+          "float_le_hex": "85eb513f",
+          "value": 0.8199999928474426,
+          "virtual_address": "0x005156A4"
+        },
+        "cpu_acceptance_or_offer_scoring_function_proved": true,
+        "cpu_generated_offer_builder_proved": false,
+        "proved_path": "0x002BAD00 salary/cap legality -> 0x002BAE90 value/slot validation -> 0x002BB760 normalized balance -> 0x002BC380 accept/counteroffer gate -> 0x002BC090 counteroffer search or 0x002BC670 execution",
+        "trade_feature_present": true,
+        "trade_save_records_mapped": false
+      },
+      "smallest_safe_next": "Change only the 0.82 threshold in an authorized copied-XBE/emulator lane and replay an identical controlled offer to prove the decision boundary.",
+      "user_limitation": "draft and trade logic"
+    },
+    {
+      "archive_only_fix": false,
+      "blockers": [
+        "runtime team +0x124 storage/units are not yet serialized to a save field",
+        "cap baseline, annual growth, penalties, and exceptions are not mapped",
+        "no controlled franchise save fixture",
+        "Xbox proof does not identify PS2 ELF addresses"
+      ],
+      "current_proof": "exact season-entry gate, not an accurate cap model",
+      "current_writer_safe": false,
+      "feasibility": "good static foothold; model and serialization still open",
+      "id": "salary_cap_enforcement",
+      "likely_mutation_layer": [
+        "Xbox default.xbe financial code",
+        "franchise runtime/save state"
+      ],
+      "proof": {
+        "annual_cap_growth_formula_proved": false,
+        "cap_value_path": "0x0013ECA0..0x0013ECF8",
+        "roster_count_field": "+0x11C; gate requires count < 0x37",
+        "season_advance_owner": "0x002480B0..0x0024869A",
+        "team_total_field": "+0x124 in the runtime team object",
+        "validator": "0x002BF950..0x002BF980"
+      },
+      "smallest_safe_next": "Capture two saves differing by one contract and one season boundary; map the signed/container delta, then watch +0x124 and the 0x0013ECA0 result.",
+      "user_limitation": "salary cap and contracts"
+    },
+    {
+      "archive_only_fix": false,
+      "blockers": [
+        "salary, years, bonus/penalty, expiration, and cap-hit fields are not proved",
+        "save integrity and load precedence are unmapped",
+        "CPU negotiation and re-signing consumers are not owned",
+        "Xbox proof does not identify PS2 ELF addresses"
+      ],
+      "current_proof": "contract screens exist; dynamic contract schema is unproved",
+      "current_writer_safe": false,
+      "feasibility": "requires save-schema recovery before tuning",
+      "id": "contract_model_and_serialization",
+      "likely_mutation_layer": [
+        "franchise save/runtime objects",
+        "Xbox default.xbe negotiation/progression code"
+      ],
+      "proof": {
+        "dashboard_save_container_mapped": false,
+        "disc_offsets_are_franchise_save_offsets": false,
+        "disc_player_stride": "0x54",
+        "disc_roster_contract_fields_promoted": false
+      },
+      "smallest_safe_next": "Obtain same-season before/after saves for a single known contract edit and a next-season save, then prove field encoding and integrity without writing.",
+      "user_limitation": "salary cap and contracts"
+    },
+    {
+      "archive_only_fix": false,
+      "blockers": [
+        "the desired future venue sequence or rotation policy is not specified",
+        "no year 5/6 controlled runtime reproduction validates the static root cause",
+        "an XBE code/data change still crosses section-digest and signed-header integrity",
+        "Xbox proof does not identify PS2 ELF addresses"
+      ],
+      "current_proof": "exact year-indexed stadium selector and five-year root cause",
+      "current_writer_safe": false,
+      "feasibility": "exact executable fix target; runtime patch not performed",
+      "id": "future_super_bowl_stadium_assignment",
+      "likely_mutation_layer": [
+        "Xbox default.xbe schedule/venue selection",
+        "franchise save schedule state"
+      ],
+      "proof": {
+        "all_season_indices_at_or_above_5_collapse_to_s45": true,
+        "classifier_condition": "franchise phase/mode 9 and week 0x14",
+        "default_mapping": {
+          "condition": "season_index >= 5",
+          "display_name": "Ulterior Super Bowl Stadium",
+          "location": "San Jose, CA",
+          "roster_stadium_index": 40,
+          "stadium_key": "s45"
+        },
+        "five_year_failure_reproduced_in_this_workspace": false,
+        "season_index_mapping": [
+          {
+            "display_name": "Super Bowl 2005 Stadium",
+            "location": "Jacksonville, FL",
+            "roster_stadium_index": 35,
+            "season_index": 0,
+            "stadium_key": "s40"
+          },
+          {
+            "display_name": "Super Bowl 2006 Stadium",
+            "location": "Detroit, MI",
+            "roster_stadium_index": 36,
+            "season_index": 1,
+            "stadium_key": "s42"
+          },
+          {
+            "display_name": "Super Bowl 2007 Stadium",
+            "location": "Miami, FL",
+            "roster_stadium_index": 37,
+            "season_index": 2,
+            "stadium_key": "s43"
+          },
+          {
+            "display_name": "Super Bowl 2008 Stadium",
+            "location": "Tempe, AZ",
+            "roster_stadium_index": 38,
+            "season_index": 3,
+            "stadium_key": "s41"
+          },
+          {
+            "display_name": "Super Bowl Future Stadium",
+            "location": "Los Angeles, CA",
+            "roster_stadium_index": 39,
+            "season_index": 4,
+            "stadium_key": "s44"
+          }
+        ],
+        "super_bowl_classifier": "0x00133A30..0x00133A4C",
+        "venue_rotation_table_proved": true,
+        "venue_selector": "0x001332B0..0x00133350",
+        "year_to_venue_mapping_proved": true
+      },
+      "smallest_safe_next": "Choose the intended post-index-4 venue policy, patch only an authorized copied-XBE/emulator lane, and verify year 5/6 venue selection plus changed bytes.",
+      "user_limitation": "Super Bowl stadium assignment five years in the future"
+    }
+  ],
+  "platform_boundary": {
+    "canonical_binary": "retail original-Xbox default.xbe",
+    "canonical_binary_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "conclusion": "The Xbox results prove subsystem ownership and likely mutation layers, not reusable PCSX2/PS2 patch offsets. A PS2 ELF and controlled PS2 saves are required for a PCSX2-targeted implementation.",
+    "pcsx2_ps2_executable_is_a_canonical_input": false,
+    "xbox_virtual_addresses_transfer_to_ps2": false
+  },
+  "schema": "nfl2k5_franchise_limit_feasibility/v1",
+  "scope": {
+    "arbitrary_offsets_used": false,
+    "emulator_launched": false,
+    "game_binary_modified": false,
+    "operation": "read-only evidence join and feasibility classification",
+    "patch_recipe_emitted": false,
+    "save_modified": false
+  },
+  "static_proof_anchors": {
+    "cap_and_roster_validator": {
+      "checked_semantics": [
+        "param_1 + 0x124",
+        "FUN_0013eca0(0)",
+        "return *(byte *)(param_1 + 0x11c) < 0x37;"
+      ],
+      "function_text_sha256": "526514c95c7cc578b245922fbcdcda9a2dc380ecad89b9561f89f880298640d0",
+      "source": "research/functions/nfl2k5/pseudo_c/shard_011776_012287.c",
+      "symbol": "FUN_002bf950"
+    },
+    "cap_value_path": {
+      "checked_semantics": [
+        "param_3 = DAT_00e3c278 - uVar2;",
+        "FUN_0013e9a0"
+      ],
+      "function_text_sha256": "4ba6a98a8e623b19b7200e84794348c53d163eed265b59761b47a19531ec1937",
+      "source": "research/functions/nfl2k5/pseudo_c/shard_006144_006655.c",
+      "symbol": "FUN_0013eca0"
+    },
+    "cpu_trade_evaluation": {
+      "acceptance_threshold": {
+        "consumer": "0x002BC380 accept/decline gate",
+        "float_le_hex": "85eb513f",
+        "value": 0.8199999928474426,
+        "virtual_address": "0x005156A4"
+      },
+      "bounded_interpretation": "The fixed 0.82 constant is an exact acceptance/counteroffer threshold. It is not proof that lowering it alone improves every CPU trade outcome.",
+      "cpu_generated_offer_builder_proved": false,
+      "functions": {
+        "accept_decline_gate": {
+          "byte_size": 752,
+          "sha256": "400c75e30cd3043257746063738f255f0cb831800e05be6ca3db52a64d74c679",
+          "virtual_address": "0x002BC380"
+        },
+        "counteroffer_search": {
+          "byte_size": 742,
+          "sha256": "53bfb4ea839ba9fa0fd7616d31607a2814499c3e5585087d21c1db6f2ac139ce",
+          "virtual_address": "0x002BC090"
+        },
+        "normalized_balance_score": {
+          "byte_size": 142,
+          "sha256": "e0ec784cbfe5fe808ab32788e77df1d36a207864cc52748511d19df4e7a5d7d3",
+          "virtual_address": "0x002BB760"
+        },
+        "player_valuation": {
+          "byte_size": 1082,
+          "sha256": "04c68607c55cfd54db5a8a94f522bc2f61b6914914dba84b05c511d8d8a4d39c",
+          "virtual_address": "0x002BD440"
+        },
+        "salary_and_roster_legality": {
+          "byte_size": 311,
+          "sha256": "ea86f188ffa66201bd8eebff018cfa64a454c48c6e3799c99f1ba4fb9979bef6",
+          "virtual_address": "0x002BAD00"
+        },
+        "trade_value_and_slot_validator": {
+          "byte_size": 803,
+          "sha256": "23c786a715f668a51323a1b980a0478e2d2fa0635a3bc90d9f17b20280287409",
+          "virtual_address": "0x002BAE90"
+        }
+      },
+      "proved_path": "0x002BAD00 salary/cap legality -> 0x002BAE90 value/slot validation -> 0x002BB760 normalized balance -> 0x002BC380 accept/counteroffer gate -> 0x002BC090 counteroffer search or 0x002BC670 execution",
+      "runtime_effect_proved": false,
+      "writer_emitted": false
+    },
+    "season_advance_gate": {
+      "checked_semantics": [
+        "case 7:",
+        "FUN_002bf950();",
+        "under the salary cap",
+        "maximum of 54 players"
+      ],
+      "function_text_sha256": "76507c72fe2af37bd81b1e6bb6bc60e4a84a2f4f30532ea8c3732c24fa9fecb0",
+      "source": "research/functions/nfl2k5/pseudo_c/shard_009728_010239.c",
+      "symbol": "FUN_002480b0"
+    },
+    "super_bowl_classifier": {
+      "checked_semantics": [
+        "iVar1 == 9",
+        "iVar1 == 0x14",
+        "return 1;"
+      ],
+      "function_text_sha256": "11318c3de0440f22e3a69a2a1195a23275e4cf0d8c7ddf68c8aefc877a2b2fb4",
+      "source": "research/functions/nfl2k5/pseudo_c/shard_005632_006143.c",
+      "symbol": "FUN_00133a30"
+    },
+    "super_bowl_venue_selector": {
+      "default_mapping": {
+        "condition": "season_index >= 5",
+        "display_name": "Ulterior Super Bowl Stadium",
+        "location": "San Jose, CA",
+        "roster_stadium_index": 40,
+        "stadium_key": "s45"
+      },
+      "pregame_route": "0x00134040 calls the selector only after 0x00133A30 reports Super Bowl, then passes its stadium record to setter 0x00077470",
+      "root_cause": "all franchise seasons at index 5 or later collapse to stadium key s45",
+      "runtime_reproduced": false,
+      "season_index_getter": "0x000C4EB0 returns franchise state global 0x00E576B8",
+      "season_index_increment": "0x00247B40 calls getter, increments ECX, calls 0x000C4EA0",
+      "season_index_mapping": [
+        {
+          "display_name": "Super Bowl 2005 Stadium",
+          "location": "Jacksonville, FL",
+          "roster_stadium_index": 35,
+          "season_index": 0,
+          "stadium_key": "s40"
+        },
+        {
+          "display_name": "Super Bowl 2006 Stadium",
+          "location": "Detroit, MI",
+          "roster_stadium_index": 36,
+          "season_index": 1,
+          "stadium_key": "s42"
+        },
+        {
+          "display_name": "Super Bowl 2007 Stadium",
+          "location": "Miami, FL",
+          "roster_stadium_index": 37,
+          "season_index": 2,
+          "stadium_key": "s43"
+        },
+        {
+          "display_name": "Super Bowl 2008 Stadium",
+          "location": "Tempe, AZ",
+          "roster_stadium_index": 38,
+          "season_index": 3,
+          "stadium_key": "s41"
+        },
+        {
+          "display_name": "Super Bowl Future Stadium",
+          "location": "Los Angeles, CA",
+          "roster_stadium_index": 39,
+          "season_index": 4,
+          "stadium_key": "s44"
+        }
+      ],
+      "selector": "0x001332B0..0x00133350",
+      "selector_sha256": "1b17980494fd9dc22ac2117d48a8773ee54542a5bc5bef0ee9ab2a5ad246e762",
+      "stadium_record_source": "ROST root +0x10 count / +0x14 table, 0x80-byte stadium records; selector compares record +0x0C name and returns the matching record",
+      "writer_emitted": false
+    }
+  },
+  "summary": {
+    "answer": "All five subproblems are plausible executable/save-system fixes, but none is currently a safe public writer. Draft priority, trade acceptance, and the Super Bowl five-year collapse now have exact XBE owners; salary-cap enforcement has a strong code foothold; contract serialization and the CPU offer generator still need controlled save/runtime ownership.",
+    "archive_only_fix_count": 0,
+    "current_safe_writer_count": 0,
+    "exact_static_footholds": [
+      "CPU fantasy-draft priority",
+      "CPU trade acceptance/valuation path",
+      "salary-cap season-entry gate",
+      "Super Bowl year-to-stadium selector and five-year root cause"
+    ],
+    "row_count": 5,
+    "unowned_targets": [
+      "CPU-generated trade offer builder",
+      "dynamic contract save schema and financial progression model"
+    ]
+  }
+}

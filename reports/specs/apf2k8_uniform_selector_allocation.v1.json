@@ -1,0 +1,257 @@
+{
+  "allocation_contract": {
+    "deterministic_tie_break": [
+      "retain the first team in scope that owns each retail asset identity",
+      "select duplicate teams in increasing team-index order",
+      "assign absent catalog asset indices in increasing numeric order"
+    ],
+    "minimum_change_proof": "Raising the distinct count from d to U requires at least U-d changed team assignments; the deterministic construction changes exactly U-d duplicate owners and introduces one absent identity per change.",
+    "objective_order": [
+      "maximize the number of distinct asset-index byte-0 values inside the selected scope",
+      "minimize changed team-family assignments among maximum-distinct plans",
+      "apply the deterministic tie break"
+    ],
+    "scope_capacity_upper_bound": "U = min(team_count_in_scope, catalog_count)",
+    "scopes": {
+      "all_40": {
+        "team_count": 40,
+        "team_index_maximum": 39,
+        "team_index_minimum": 0
+      },
+      "built_in_24": {
+        "outside_scope_records_remain_retail": true,
+        "team_count": 24,
+        "team_index_maximum": 23,
+        "team_index_minimum": 0
+      }
+    }
+  },
+  "capacity_results": {
+    "all_40": {
+      "combined_changed_selector_byte_count": 250,
+      "combined_changed_team_family_assignment_count": 125,
+      "combined_h7a_payload_headroom_bytes": 297,
+      "combined_h7a_payload_size_bytes": 435727,
+      "scope_internally_isolatable_families": [
+        "logo",
+        "textlogo"
+      ]
+    },
+    "built_in_24": {
+      "combined_changed_selector_byte_count": 190,
+      "combined_changed_team_family_assignment_count": 95,
+      "combined_h7a_payload_headroom_bytes": 496,
+      "combined_h7a_payload_size_bytes": 435528,
+      "scope_internally_isolatable_families": [
+        "helmet",
+        "jersey",
+        "logo",
+        "textlogo",
+        "number",
+        "pants",
+        "shoulder",
+        "sock"
+      ]
+    },
+    "h7a_payload_limit_bytes": 436024,
+    "per_family_and_combined_plans_fit": true
+  },
+  "claim_boundary": {
+    "all_40_plan_authorized_for_online_or_user_slots": false,
+    "archive_or_executable_growth_performed": false,
+    "bank_zero_or_one_named_home_or_away": false,
+    "binary_fit_is_a_generic_writer_proof": false,
+    "opaque_selector_bytes_1_through_7_interpreted": false,
+    "retail_game_data_written": false,
+    "runtime_visibility_proved": false,
+    "scope_internal_isolation_implies_isolation_from_unchanged_outside_scope": false
+  },
+  "family_contracts": [
+    {
+      "all_40_changed_team_count": 0,
+      "all_40_distinct_upper_bound": 3,
+      "built_in_24_changed_team_count": 0,
+      "built_in_24_distinct_upper_bound": 3,
+      "catalog_count": 3,
+      "family": "glove",
+      "physical_families": [
+        "glove"
+      ],
+      "selector_slot": 2
+    },
+    {
+      "all_40_changed_team_count": 18,
+      "all_40_distinct_upper_bound": 24,
+      "built_in_24_changed_team_count": 18,
+      "built_in_24_distinct_upper_bound": 24,
+      "catalog_count": 24,
+      "family": "helmet",
+      "physical_families": [
+        "helmet"
+      ],
+      "selector_slot": 3
+    },
+    {
+      "all_40_changed_team_count": 14,
+      "all_40_distinct_upper_bound": 24,
+      "built_in_24_changed_team_count": 15,
+      "built_in_24_distinct_upper_bound": 24,
+      "catalog_count": 24,
+      "family": "jersey",
+      "physical_families": [
+        "jersey"
+      ],
+      "selector_slot": 4
+    },
+    {
+      "all_40_changed_team_count": 16,
+      "all_40_distinct_upper_bound": 40,
+      "built_in_24_changed_team_count": 0,
+      "built_in_24_distinct_upper_bound": 24,
+      "catalog_count": 118,
+      "family": "logo",
+      "physical_families": [
+        "logo"
+      ],
+      "selector_slot": 5
+    },
+    {
+      "all_40_changed_team_count": 16,
+      "all_40_distinct_upper_bound": 40,
+      "built_in_24_changed_team_count": 0,
+      "built_in_24_distinct_upper_bound": 24,
+      "catalog_count": 206,
+      "family": "textlogo",
+      "physical_families": [
+        "textlogo"
+      ],
+      "selector_slot": 6
+    },
+    {
+      "all_40_changed_team_count": 3,
+      "all_40_distinct_upper_bound": 11,
+      "built_in_24_changed_team_count": 4,
+      "built_in_24_distinct_upper_bound": 11,
+      "catalog_count": 11,
+      "family": "font",
+      "physical_families": [
+        "font"
+      ],
+      "selector_slot": 7
+    },
+    {
+      "all_40_changed_team_count": 17,
+      "all_40_distinct_upper_bound": 24,
+      "built_in_24_changed_team_count": 17,
+      "built_in_24_distinct_upper_bound": 24,
+      "catalog_count": 24,
+      "family": "number",
+      "physical_families": [
+        "number"
+      ],
+      "selector_slot": 8
+    },
+    {
+      "all_40_changed_team_count": 13,
+      "all_40_distinct_upper_bound": 24,
+      "built_in_24_changed_team_count": 13,
+      "built_in_24_distinct_upper_bound": 24,
+      "catalog_count": 24,
+      "family": "pants",
+      "physical_families": [
+        "pants"
+      ],
+      "selector_slot": 9
+    },
+    {
+      "all_40_changed_team_count": 0,
+      "all_40_distinct_upper_bound": 11,
+      "built_in_24_changed_team_count": 0,
+      "built_in_24_distinct_upper_bound": 11,
+      "catalog_count": 11,
+      "family": "shoe",
+      "physical_families": [
+        "shoe"
+      ],
+      "selector_slot": 10
+    },
+    {
+      "all_40_changed_team_count": 10,
+      "all_40_distinct_upper_bound": 24,
+      "built_in_24_changed_team_count": 10,
+      "built_in_24_distinct_upper_bound": 24,
+      "catalog_count": 24,
+      "family": "shoulder",
+      "physical_families": [
+        "shoulder",
+        "shoulder_normal"
+      ],
+      "selector_slot": 11
+    },
+    {
+      "all_40_changed_team_count": 18,
+      "all_40_distinct_upper_bound": 24,
+      "built_in_24_changed_team_count": 18,
+      "built_in_24_distinct_upper_bound": 24,
+      "catalog_count": 24,
+      "family": "sock",
+      "physical_families": [
+        "sock"
+      ],
+      "selector_slot": 12
+    }
+  ],
+  "machine_reports": {
+    "allocation": {
+      "path": "reports/assets/apf_uniform_selector_allocation.json",
+      "schema": "apf2k8_uniform_selector_allocation/v1"
+    },
+    "capacity_probe": {
+      "path": "reports/assets/apf_uniform_selector_capacity_probe.json",
+      "schema": "apf2k8_uniform_selector_capacity_probe/v1"
+    }
+  },
+  "schema": "apf2k8_uniform_selector_allocation_spec/v1",
+  "source_contract": {
+    "bank_count": 2,
+    "decoded_roster_sha256": "e959d3067ebcdbeb4f08979fa74d9fa61cf90fd91b90793863e6a3313be7f7ff",
+    "filename_owned_selector_slots": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "inventory_path": "reports/assets/apf_uniform_inventory.json",
+    "inventory_schema": "apf_uniform_inventory/v1",
+    "inventory_sha256": "b3ad0e44af0163b30857e20c7c4e90ceb89cbc3dbc8cc41508fce3aaf1c136c7",
+    "inventory_size_bytes": 4350600,
+    "physical_catalog_family_count": 12,
+    "retail_outer_entry_sha256": "e98dd07b38caa73ea2ce91eed19bef68896f9b63830a9169af4b7f22d8788cc7",
+    "retail_volume_sha256": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+    "selector_byte_authority": "byte 0 is the filename asset index for slots 2..12; bytes 1..7 remain opaque",
+    "selector_slot_count": 11,
+    "team_count": 40
+  },
+  "writer_admission": {
+    "admitted_fail_closed_selector_writer_families": [
+      "jersey"
+    ],
+    "generic_or_additional_family_writer_available": false,
+    "non_jersey_plan_status": "binary-feasible allocation recipe only",
+    "required_before_admission": [
+      "a canonical family-aware recipe schema binding family, selector slot, catalog count, expected retail byte, replacement byte, team scope, and claim flags",
+      "writer-side re-derivation of every target through the pinned ROST root, team, config, and selector pointer graph rather than trusting report offsets",
+      "an exact authorization proof that only byte 0 of both selected neutral-bank records changed while bytes 1..7 and every other decoded byte remained exact",
+      "bounded token-preserving H7A rebuild, footer relocation, zero-tail proof, and exclusive copied-volume transaction under the fixed outer allocation",
+      "a separately implemented verifier that independently parses the outer directory, IFF, H7A, ROST pointer graph, recipe, output volume, and complete canonical manifest",
+      "a policy decision and separate evidence before any online-slot or user-slot write is admitted"
+    ]
+  }
+}

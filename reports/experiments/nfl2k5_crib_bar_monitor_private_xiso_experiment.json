@@ -1,0 +1,90 @@
+{
+  "schema": "nfl2k5_crib_bar_monitor_private_xiso_experiment/v1",
+  "date": "2026-07-17",
+  "classification": "positive_offline_fixed_span_copied_xiso_experiment",
+  "target": {
+    "selector": "crib_scene_texture:room:22",
+    "asset_id": "nfl2k5.crib.scene.c0002.t022",
+    "scene": "room",
+    "texture_index": 22,
+    "material": "bar_monitor",
+    "shape": "r2_living_room",
+    "shape_index": 4,
+    "submesh_index": 3,
+    "dimensions": [
+      128,
+      128
+    ],
+    "format": "P8",
+    "mip_levels": 5
+  },
+  "source": {
+    "xiso_size": 6300499968,
+    "xiso_sha256": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9",
+    "opened_read_only": true,
+    "modified": false
+  },
+  "nonretail_test_png": {
+    "description": "deterministic four-color pseudorandom 2x2-block pattern",
+    "png_size": 2513,
+    "png_sha256": "9e9388d33b45dde302f5cc0dd39b7287e87ea4722a704195210e485146caf310",
+    "rgba_sha256": "4b126812758c815929bb396c615324a57da265cd95d77b358db7ecf97d1d460a",
+    "strict_rgba8_noninterlaced": true
+  },
+  "compile": {
+    "decoded_size": 2608384,
+    "decoded_sha256": "0a5db5308eadfaa8df211f8390f85987cfcfd5d20067a204efc417dc3e7923a7",
+    "decoded_changed_byte_count": 22576,
+    "decoded_changed_run_count": 217,
+    "decoded_changes_bounded_to_target_allocation": true,
+    "system_geometry_identical": true,
+    "replacement_allocation_sha256": "4e29cc308697369d8fa151c4457957e5d21f221bade28a11df7a5af7ce9ba0e3",
+    "encoded_bytes": 1585467,
+    "retail_consumed_cap": 1588484,
+    "stored_bytes": 1588496,
+    "unused_stored_bytes": 3029,
+    "exact_minimum_overlap_scratch_bytes": 3013,
+    "required_aligned_scratch_bytes": 3040,
+    "conservative_corpus_scratch_cap": 3120,
+    "opaque_tail_bytes_preserved": 12,
+    "opaque_tail_sha256": "1066822350173c85ed6e2f120f240915988c32a894d0c433569ed7637864796e",
+    "replacement_span_size": 1588528,
+    "replacement_span_sha256": "ee95ab4cb5d129545a1b43b968d77c7fd852f8f0ec4385678b1d7dd45a3edd0e",
+    "independent_decode_and_scne_reparse_passed": true
+  },
+  "copied_xiso": {
+    "size": 6300499968,
+    "sha256": "dc086733b4f0c16680cd3cfeca4689ef2ab15ab534e9e07439ec7b0fa87ce6d7",
+    "target_absolute_offset": 5399363856,
+    "target_span_bytes": 1588528,
+    "changed_byte_count": 657914,
+    "changed_run_count": 8086,
+    "all_differences_inside_selected_fixed_span": true,
+    "xdvdfs_tree_and_layout_identical": true,
+    "default_xbe_identical": true,
+    "fresh_process_png_reconstruction_equal": true,
+    "fresh_process_full_image_comparison_passed": true,
+    "verified_staging_inode_published_atomically": true,
+    "partial_requested_xiso_name_never_exposed": true
+  },
+  "negative_control": {
+    "input": "solid-color 128x128 RGBA8 PNG",
+    "result": "refused_before_output_creation",
+    "reason": "recompression required more than the conservative 3120-byte observed SCNE loader-scratch envelope",
+    "human_readable_error_present": true
+  },
+  "artifact_policy": {
+    "temporary_modded_xiso_is_private_and_not_a_release_payload": true,
+    "temporary_modded_xiso_removed_after_verification": true,
+    "report_contains_retail_bytes": false,
+    "tool_contains_retail_bytes": false,
+    "project_integration_should_store_only_user_png_and_metadata": true
+  },
+  "claim_boundary": {
+    "offline_writer_and_copied_xiso_verifier_proved": true,
+    "runtime_visibility_proved": false,
+    "texture_only_not_geometry_replacement": true,
+    "general_scne_texture_writer_proved": false,
+    "general_model_import_proved": false
+  }
+}

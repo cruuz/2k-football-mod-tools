@@ -1,0 +1,1360 @@
+{
+  "schema": "apf2k8_uniform_targets/v1",
+  "game": "apf2k8_xbox360_usa",
+  "source_0a_sha256": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+  "purpose": "Hashes, indices, names, and allocation sizes only. Contains no game payloads, pixels, compressed texture data, or preimages.",
+  "families": {
+    "jersey": [
+      {
+        "asset_index": 0,
+        "outer_name": "uniform_jersey_00.iff",
+        "outer_name_id": "0x1ebc0299",
+        "outer_table_index": 186,
+        "outer_allocation": {
+          "size": 20480,
+          "sha256": "a15b56eb5227707be63f4b7e020e509853eb5e545085deb501fcbf57e13e7073"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "cf5f8ec231b2720f7116014132ddcc63d708aefacf51990f12a94d49c0d7e11a"
+        }
+      },
+      {
+        "asset_index": 1,
+        "outer_name": "uniform_jersey_01.iff",
+        "outer_name_id": "0x23dc2b29",
+        "outer_table_index": 216,
+        "outer_allocation": {
+          "size": 26624,
+          "sha256": "c5ca0e96916af41ef4a867f5b3cafa2fd481eac30eb3121789c33b250a9870cc"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "072a8abd8a64c0ebf0b8fc65e82dbe0b17272a25ef08435d0a0e515dd8936ba2"
+        }
+      },
+      {
+        "asset_index": 2,
+        "outer_name": "uniform_jersey_02.iff",
+        "outer_name_id": "0x647c51f9",
+        "outer_table_index": 608,
+        "outer_allocation": {
+          "size": 28672,
+          "sha256": "5c1e588909024f2799fc72e43c4734246fd60ddcbe2362fec4ad15f176cf511f"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "7b7168ab1c86f7a2b4cd1fe96cd323d63d94f5eb481388958b8974118047f6b7"
+        }
+      },
+      {
+        "asset_index": 3,
+        "outer_name": "uniform_jersey_03.iff",
+        "outer_name_id": "0x591c7849",
+        "outer_table_index": 535,
+        "outer_allocation": {
+          "size": 20480,
+          "sha256": "836d82a1b78f79d99ef43d161b01ab6fdd0c9f1ae3b88b9797f7a79fe5b3239f"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "b91758f8ac11ae28ef09048d7f1e0f1a6bf1866eb6e2149dd10541ad0d772736"
+        }
+      },
+      {
+        "asset_index": 4,
+        "outer_name": "uniform_jersey_04.iff",
+        "outer_name_id": "0xeb3ca459",
+        "outer_table_index": 1420,
+        "outer_allocation": {
+          "size": 30720,
+          "sha256": "00c76bf9beb6f2e0e408f1621249d14a7142b7786e5f72b7c079653cb0f7e0de"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "3f9a6e313ac326cd31a6a887dc6114186ce7a8737ed8ca1b2b56a3fa6bda54e8"
+        }
+      },
+      {
+        "asset_index": 5,
+        "outer_name": "uniform_jersey_05.iff",
+        "outer_name_id": "0xd65c8de9",
+        "outer_table_index": 1277,
+        "outer_allocation": {
+          "size": 30720,
+          "sha256": "48ad1b824c553f64fe71f607b4b1e82f015bc152130e2af585ce6a8a5c226088"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "e759111ba565c27e274e189eeb1c992a980c86c7b5cf4c1752f903905f19eab0"
+        }
+      },
+      {
+        "asset_index": 6,
+        "outer_name": "uniform_jersey_06.iff",
+        "outer_name_id": "0x91fcf739",
+        "outer_table_index": 875,
+        "outer_allocation": {
+          "size": 32768,
+          "sha256": "9f4740ddbbcc86d1d7a880a50f12d9e2580e049633b9beb065fc193a78130ca2"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "027e49dc8b1445cba4ec73c9cdadada15360ac755f87b5c4b6db6f8772c95cdf"
+        }
+      },
+      {
+        "asset_index": 7,
+        "outer_name": "uniform_jersey_07.iff",
+        "outer_name_id": "0xac9cde89",
+        "outer_table_index": 1033,
+        "outer_allocation": {
+          "size": 28672,
+          "sha256": "dbba289711a38c621188232e6a61c9ccdc265321b51660f8c5e506a0db249fe1"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "41140158ca83e37ed3cced1739c027dbef5a47e88f85b705a010666f836b2e2b"
+        }
+      },
+      {
+        "asset_index": 8,
+        "outer_name": "uniform_jersey_08.iff",
+        "outer_name_id": "0x2ecc4958",
+        "outer_table_index": 289,
+        "outer_allocation": {
+          "size": 26624,
+          "sha256": "507b6cc4947fc48e671acd46c38cc4a9dd19f65315c8dc24226ab974b080b4f6"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "36ce137530899da38187a7784eecee82bd77e2b0821b24a30575b00a6e360019"
+        }
+      },
+      {
+        "asset_index": 9,
+        "outer_name": "uniform_jersey_09.iff",
+        "outer_name_id": "0x13ac60e8",
+        "outer_table_index": 119,
+        "outer_allocation": {
+          "size": 30720,
+          "sha256": "127bce7a8692a049e13cffa329353884d0d9c9288fd8e9cb3a8f83543bd51626"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "b6e1c06b307f8ba65a3429214ada4bd43fe762936e8c5546664329439797253d"
+        }
+      },
+      {
+        "asset_index": 10,
+        "outer_name": "uniform_jersey_10.iff",
+        "outer_name_id": "0xd5e0d13c",
+        "outer_table_index": 1274,
+        "outer_allocation": {
+          "size": 22528,
+          "sha256": "6271db19528c17126dcc8b671feda89570570a4c14161869bb06d655d5727846"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "906e523eb793f8661e77710270c435c8fcd99c70ba616e1ade07bb5633c5d4e5"
+        }
+      },
+      {
+        "asset_index": 11,
+        "outer_name": "uniform_jersey_11.iff",
+        "outer_name_id": "0xe880f88c",
+        "outer_table_index": 1399,
+        "outer_allocation": {
+          "size": 26624,
+          "sha256": "c6431e12112ddc37d4a41cfbf40bdbc36d86a499262b3712c990e10b19d21835"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "bf8113ce363b641bcb4dc6efdde2c592381c230e1a6abbe02ac8922a2f9be28c"
+        }
+      },
+      {
+        "asset_index": 12,
+        "outer_name": "uniform_jersey_12.iff",
+        "outer_name_id": "0xaf20825c",
+        "outer_table_index": 1048,
+        "outer_allocation": {
+          "size": 26624,
+          "sha256": "5b7f410fe644da641d2577e6930ccc5e88df45419c3139aa711b11e909dd3d2d"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "d92b3daf89d9b4fa62b7fa6eab4f64c6e0c278d911212889c60aa5c19d545ba7"
+        }
+      },
+      {
+        "asset_index": 13,
+        "outer_name": "uniform_jersey_13.iff",
+        "outer_name_id": "0x9240abec",
+        "outer_table_index": 878,
+        "outer_allocation": {
+          "size": 43008,
+          "sha256": "49824b8cb566443d80b6d4358d113aa082e1cbd708819cfa51ccea8da10ccda6"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "d207e5048a0e717b28c1602893c161e32a37ca65cfc6040210ddee1c45ab990e"
+        }
+      },
+      {
+        "asset_index": 14,
+        "outer_name": "uniform_jersey_14.iff",
+        "outer_name_id": "0x206077fc",
+        "outer_table_index": 196,
+        "outer_allocation": {
+          "size": 34816,
+          "sha256": "f485b7d7880289098bad006a3d767dfb63f8de9db2e8bdaa7d3e85ae1778fd70"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "cfd5ff273f6226aecd931b5ac5a29621f1d88b5c051229e5c4c2d7eedb46dc7f"
+        }
+      },
+      {
+        "asset_index": 15,
+        "outer_name": "uniform_jersey_15.iff",
+        "outer_name_id": "0x1d005e4c",
+        "outer_table_index": 179,
+        "outer_allocation": {
+          "size": 30720,
+          "sha256": "7e2f7ba97f2b404bda08e9ccff66694fe994efecbeb8ba1747ad4ce5a98e1704"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "7fec393ce0fb6195574524f112f248eaead8938397227c420555a7b54be962f7"
+        }
+      },
+      {
+        "asset_index": 16,
+        "outer_name": "uniform_jersey_16.iff",
+        "outer_name_id": "0x5aa0249c",
+        "outer_table_index": 544,
+        "outer_allocation": {
+          "size": 34816,
+          "sha256": "2b609e184052e74a4fb64aedc9e00ab2d5daf03f186f7a2ed2f1567e26472d5a"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "20c534af448dd6ffef66eb357c2505b223d0ed1a2269da58dee9c6b22556b939"
+        }
+      },
+      {
+        "asset_index": 17,
+        "outer_name": "uniform_jersey_17.iff",
+        "outer_name_id": "0x67c00d2c",
+        "outer_table_index": 628,
+        "outer_allocation": {
+          "size": 57344,
+          "sha256": "e0a0eeb1501ba2a11ae9caa4cef9cbd26e4cb7df48a0d88e7e45c5515b6ec86e"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "b4c9d10c5f8a883452876bd94f3fdaa52ceded56e46158ec3dfbd316d11ef359"
+        }
+      },
+      {
+        "asset_index": 18,
+        "outer_name": "uniform_jersey_18.iff",
+        "outer_name_id": "0xe5909afd",
+        "outer_table_index": 1375,
+        "outer_allocation": {
+          "size": 28672,
+          "sha256": "95116b56621ce992eefea5c0e55051bb28d977a2162f29bc268145b6f852e4ef"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "11ae233573e59d83ef70ac9cd410bd6b95d2a004d55e27cdf9c2838a3da8f09a"
+        }
+      },
+      {
+        "asset_index": 19,
+        "outer_name": "uniform_jersey_19.iff",
+        "outer_name_id": "0xd8f0b34d",
+        "outer_table_index": 1292,
+        "outer_allocation": {
+          "size": 34816,
+          "sha256": "11d3b3e278be124b05a73d214381afdc3ead12a62fd263d65582de3baa8f229c"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "71a41fd9f8337082715878e07b3432ab7734a5cb76114f21bb841516c408ca47"
+        }
+      },
+      {
+        "asset_index": 20,
+        "outer_name": "uniform_jersey_20.iff",
+        "outer_name_id": "0x5374a392",
+        "outer_table_index": 495,
+        "outer_allocation": {
+          "size": 43008,
+          "sha256": "8518172b744e98225c7da5c53e647d989a9fbb25580510fb5e893695da5e1aa1"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "aaf8f966e872ed2383fa49a510cd210e2f965b2b02c98c41dd6cfc602766a4fc"
+        }
+      },
+      {
+        "asset_index": 21,
+        "outer_name": "uniform_jersey_21.iff",
+        "outer_name_id": "0x6e148a22",
+        "outer_table_index": 671,
+        "outer_allocation": {
+          "size": 34816,
+          "sha256": "e154898f02eb5935858a551d63f360dc0b44bf7114f70fd82ebb32489970d5de"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "458fe80e8a0643deadce64d2bea79d43edede3431a46d6811e5e0f73e6a54479"
+        }
+      },
+      {
+        "asset_index": 22,
+        "outer_name": "uniform_jersey_22.iff",
+        "outer_name_id": "0x29b4f0f2",
+        "outer_table_index": 247,
+        "outer_allocation": {
+          "size": 32768,
+          "sha256": "341c9ce0e6ea27b8eff92243f60a66675f34738d1e81e2a9eda3550fc65c7a49"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "d73376df74adc901bdfb18e9e8c1200c7ac5af4797e0e0ed9a256d85c9c58775"
+        }
+      },
+      {
+        "asset_index": 23,
+        "outer_name": "uniform_jersey_23.iff",
+        "outer_name_id": "0x14d4d942",
+        "outer_table_index": 128,
+        "outer_allocation": {
+          "size": 14336,
+          "sha256": "151c5b0c52f9734f705ad0949847ac0718bb08430108688d63e513a44c8b1ade"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "bc0e850acad44b88e87d4396ad3093aeb1df2ca09685447288806e29098c526e"
+        }
+      }
+    ],
+    "pants": [
+      {
+        "asset_index": 0,
+        "outer_name": "uniform_pants_00.iff",
+        "outer_name_id": "0xe7ffaa9d",
+        "outer_table_index": 1394,
+        "outer_allocation": {
+          "size": 786432,
+          "sha256": "aeca7752cde61694471805186b6b4a54ebaa6ffab6e90c33df13802394203f1c"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "60f7f3dd4a163f7f165bbe0941290887c3be3c34ae8e0c49301957ea45745a57"
+        }
+      },
+      {
+        "asset_index": 1,
+        "outer_name": "uniform_pants_01.iff",
+        "outer_name_id": "0xda9f832d",
+        "outer_table_index": 1306,
+        "outer_allocation": {
+          "size": 786432,
+          "sha256": "51f33166e3b2d7ec66d3cd9efada1b870897453039dd067448bfdc87d31be9a9"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "97d3e96758498605e0704d61fe331ae74044f6836531abea44f096e24f60a9cc"
+        }
+      },
+      {
+        "asset_index": 2,
+        "outer_name": "uniform_pants_02.iff",
+        "outer_name_id": "0x9d3ff9fd",
+        "outer_table_index": 944,
+        "outer_allocation": {
+          "size": 786432,
+          "sha256": "ce0d42caa03b813eeb916ae36e13170ccbb48bb8a71b7dd78ef23bd17f0bf0c4"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "d01fc54c28e72e697d4aa3e0d385502db42f8612fcffc8b07903137ccfbb4d50"
+        }
+      },
+      {
+        "asset_index": 3,
+        "outer_name": "uniform_pants_03.iff",
+        "outer_name_id": "0xa05fd04d",
+        "outer_table_index": 959,
+        "outer_allocation": {
+          "size": 786432,
+          "sha256": "afcd4b776d3a385bba74fd32454143484c2788ea959a6b08ab70156ae22e5f62"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "b8bcf5efb3ef6085cbe75cff4878a8ca6b563bda9a4f7560c2481d170abb0834"
+        }
+      },
+      {
+        "asset_index": 4,
+        "outer_name": "uniform_pants_04.iff",
+        "outer_name_id": "0x127f0c5d",
+        "outer_table_index": 111,
+        "outer_allocation": {
+          "size": 782336,
+          "sha256": "8b9db7bdc0f1d863233c0d52041b467c4d3ed8b349ffba904d134a1273ec35b8"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "a96a4a57639e33449d65f09b63d86134802695f168aa11e2c2f040d385d54d95"
+        }
+      },
+      {
+        "asset_index": 5,
+        "outer_name": "uniform_pants_05.iff",
+        "outer_name_id": "0x2f1f25ed",
+        "outer_table_index": 292,
+        "outer_allocation": {
+          "size": 786432,
+          "sha256": "00d23965c4fd7a5c8fa269389ea5fb618689bebbed3602fe7f3f0a954b55522b"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "9c6b2ba08c36680cc0c637cf043667060de77bfa71e1077617bfce0e7666c078"
+        }
+      },
+      {
+        "asset_index": 6,
+        "outer_name": "uniform_pants_06.iff",
+        "outer_name_id": "0x68bf5f3d",
+        "outer_table_index": 633,
+        "outer_allocation": {
+          "size": 788480,
+          "sha256": "a75d5196e7dc6dffedfd55638586808a8550ff5b1e748fd069fc0082ef71c96d"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "192a2d7758af198208ffa7bcbbaa7805deb9c4ea6b678aae0927c9ce514834f1"
+        }
+      },
+      {
+        "asset_index": 7,
+        "outer_name": "uniform_pants_07.iff",
+        "outer_name_id": "0x55df768d",
+        "outer_table_index": 511,
+        "outer_allocation": {
+          "size": 786432,
+          "sha256": "cd24924d64dee07c5a8c82054457031e61967c1cf99ac22154f47261ec8280c8"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "ac9a1711c9588a762f01f1a64cf4a4c5e6922d7e0ddc13ae39a780c74b349217"
+        }
+      },
+      {
+        "asset_index": 8,
+        "outer_name": "uniform_pants_08.iff",
+        "outer_name_id": "0xd78fe15c",
+        "outer_table_index": 1284,
+        "outer_allocation": {
+          "size": 786432,
+          "sha256": "e597d0bdb1b5f3bc13cee527583aa5c47ed2c156d9abfddd715f28680e309e76"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "307c90511440f9420b0141fe380a06f291c2a121931cae14f3644fc4e6af7300"
+        }
+      },
+      {
+        "asset_index": 9,
+        "outer_name": "uniform_pants_09.iff",
+        "outer_name_id": "0xeaefc8ec",
+        "outer_table_index": 1419,
+        "outer_allocation": {
+          "size": 802816,
+          "sha256": "376a0ba861d1890af64a13e5dda00457b0c13ef0cd21066018de148bdc6b92c6"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "32b6b5f1fe595e5291fb4de498113db370cd79761172d9a17a68dd7ef9be8c4f"
+        }
+      },
+      {
+        "asset_index": 10,
+        "outer_name": "uniform_pants_10.iff",
+        "outer_name_id": "0x2ca37938",
+        "outer_table_index": 274,
+        "outer_allocation": {
+          "size": 808960,
+          "sha256": "5c2aace60226cacd2f70a22213ca8fd79e54cd4891a405533d02b612a7c08c7d"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "97321c60485e64865441a7fa2d30b893b9269acfd1430c4239089190423a73ff"
+        }
+      },
+      {
+        "asset_index": 11,
+        "outer_name": "uniform_pants_11.iff",
+        "outer_name_id": "0x11c35088",
+        "outer_table_index": 107,
+        "outer_allocation": {
+          "size": 798720,
+          "sha256": "4b55e39cc47868fd77b7b38da5afd60589cb0c81fd1101cfdc1587a431d19cc3"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "d55ab331d36477682f07c108727a848c598c4aae63eebd27988d43ecddf448b8"
+        }
+      },
+      {
+        "asset_index": 12,
+        "outer_name": "uniform_pants_12.iff",
+        "outer_name_id": "0x56632a58",
+        "outer_table_index": 517,
+        "outer_allocation": {
+          "size": 778240,
+          "sha256": "8501d923179426f1ae0e538e0b5d20faff18f3d3a1305971a07f4ba04c9a09d9"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "c1f97e19bf67b869a3e1b2a4c660296e81c99db0c969c3c3ebd70a2e2737ce95"
+        }
+      },
+      {
+        "asset_index": 13,
+        "outer_name": "uniform_pants_13.iff",
+        "outer_name_id": "0x6b0303e8",
+        "outer_table_index": 652,
+        "outer_allocation": {
+          "size": 790528,
+          "sha256": "0e929640fe388010c9e7d6bdbece1150daf4b8e648d9b93599e013ad6e70789e"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "b8196d1bf8f8f48c85e5e786d19047828631bfdcf1c1298198767ed6c30ae301"
+        }
+      },
+      {
+        "asset_index": 14,
+        "outer_name": "uniform_pants_14.iff",
+        "outer_name_id": "0xd923dff8",
+        "outer_table_index": 1293,
+        "outer_allocation": {
+          "size": 798720,
+          "sha256": "aa4cb972c2d405652c9a294cae3ad8b7a81ef21ebbddb66db74410a80efd12d8"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "8b309d5cf196e90f5505797ea2d37a77deff4d41454cac57f535ba04a5298bd0"
+        }
+      },
+      {
+        "asset_index": 15,
+        "outer_name": "uniform_pants_15.iff",
+        "outer_name_id": "0xe443f648",
+        "outer_table_index": 1370,
+        "outer_allocation": {
+          "size": 802816,
+          "sha256": "611df0a4a673d3fcc57dc416c572b968bc8d281c55e50645e6b6206d113041d2"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "4e1b549ad0d8b96a9332605747fb706803a6b2a4fed4934ab4fd2dde64ce7585"
+        }
+      },
+      {
+        "asset_index": 16,
+        "outer_name": "uniform_pants_16.iff",
+        "outer_name_id": "0xa3e38c98",
+        "outer_table_index": 981,
+        "outer_allocation": {
+          "size": 808960,
+          "sha256": "1ad5b96f929c7aa1ef33f11bd315e5466aa0fffe74254640ab9b4b24a4711971"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "da9b152a192b70fdc8ecd9db3d1ebc06c1ebf227627f36385b87484ab5426e17"
+        }
+      },
+      {
+        "asset_index": 17,
+        "outer_name": "uniform_pants_17.iff",
+        "outer_name_id": "0x9e83a528",
+        "outer_table_index": 950,
+        "outer_allocation": {
+          "size": 804864,
+          "sha256": "8f62c6a0a8a4b3ac5177f5eeaf54d4d3740b20ce50b3fc231099b534f7c19fec"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "20b444129d15c96c98fb6de55aa69b086d551dfbb2bfb2277ef555c07b95ed18"
+        }
+      },
+      {
+        "asset_index": 18,
+        "outer_name": "uniform_pants_18.iff",
+        "outer_name_id": "0x1cd332f9",
+        "outer_table_index": 177,
+        "outer_allocation": {
+          "size": 804864,
+          "sha256": "998890cd6f02c9857ca8d0e82f57618412b0d622925199271990e37695629905"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "c4dfbcfb3eff814009a4b6093ffa7ca0043477d824f324ed31e36a3da9925cad"
+        }
+      },
+      {
+        "asset_index": 19,
+        "outer_name": "uniform_pants_19.iff",
+        "outer_name_id": "0x21b31b49",
+        "outer_table_index": 202,
+        "outer_allocation": {
+          "size": 808960,
+          "sha256": "656726f2c266d8af14c169dbd5031609021f326654e3cab8477c653734e0c5ed"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "20d7f82d758e227712a65956c5ef7a1995fb729ca0c4cde79c88292e7e821eb4"
+        }
+      },
+      {
+        "asset_index": 20,
+        "outer_name": "uniform_pants_20.iff",
+        "outer_name_id": "0xaa370b96",
+        "outer_table_index": 1017,
+        "outer_allocation": {
+          "size": 802816,
+          "sha256": "2d75fb70aefc7f691aab55ccd0ba18d4a4923ef7d9660e312b50a2f337f597ee"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "9d798b518fe167cbf1252cabc840ed4da8f2601f124d39787f5513b5798d44b8"
+        }
+      },
+      {
+        "asset_index": 21,
+        "outer_name": "uniform_pants_21.iff",
+        "outer_name_id": "0x97572226",
+        "outer_table_index": 903,
+        "outer_allocation": {
+          "size": 811008,
+          "sha256": "52b5d069923575b30381ff2531dcd3f1b3dfcf99b994c2fbd9a780c13dfbc721"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "0487d5bb813394d1e5996933a6804815e52b9bc46695240f512a96d0a04463cf"
+        }
+      },
+      {
+        "asset_index": 22,
+        "outer_name": "uniform_pants_22.iff",
+        "outer_name_id": "0xd0f758f6",
+        "outer_table_index": 1237,
+        "outer_allocation": {
+          "size": 782336,
+          "sha256": "2b0f801d1f66a2a0500c74fc4f899ac931ae68d1a02f776b7a445873129dbf8b"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "252cfa3087f81e9020261ebc466228d48c881871b893c1e0dbc2041a9ae005e9"
+        }
+      },
+      {
+        "asset_index": 23,
+        "outer_name": "uniform_pants_23.iff",
+        "outer_name_id": "0xed977146",
+        "outer_table_index": 1437,
+        "outer_allocation": {
+          "size": 786432,
+          "sha256": "5cb3fc26dfe277bf68c19a12a4aef57098f646727ac4aa26f619d22f5227c88d"
+        },
+        "inner_file": {
+          "index": 2,
+          "texture_sha256": "3381de4ca9f3a477f25989dfc8b744e7916046b7aa369f61a9a2f7dc0963ec9e"
+        }
+      }
+    ],
+    "helmet": [
+      {
+        "asset_index": 0,
+        "outer_name": "uniform_helmet_00.iff",
+        "outer_name_id": "0x2002fc95",
+        "outer_table_index": 194,
+        "outer_allocation": {
+          "size": 555008,
+          "sha256": "08e345dd36eb0c49f148e4b810ab226e7bbd75263077ad7ecb9a836cfb3c4525"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "efaeca3c8808ff11e4341a6f6523657189abef4c3351ba8cfcdbb7962f229789"
+        }
+      },
+      {
+        "asset_index": 1,
+        "outer_name": "uniform_helmet_01.iff",
+        "outer_name_id": "0x1d62d525",
+        "outer_table_index": 181,
+        "outer_allocation": {
+          "size": 557056,
+          "sha256": "3502fe12041c585bfefd9e0ec4af92899bed21c8987ef3c3bf69bfaea30e3786"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "d4f4a6fac53d7d45e1184aad7dc56c6d60fb79f9efa74b1e6a73bf564c597500"
+        }
+      },
+      {
+        "asset_index": 2,
+        "outer_name": "uniform_helmet_02.iff",
+        "outer_name_id": "0x5ac2aff5",
+        "outer_table_index": 545,
+        "outer_allocation": {
+          "size": 552960,
+          "sha256": "5ca8d94cde1565a6d72eedee078f15339992a746e611f1641b57de7609069608"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "c3ccb983e596ebb1b3cf191ca2f743876656dc4f327082374811f3ce7e9cf118"
+        }
+      },
+      {
+        "asset_index": 3,
+        "outer_name": "uniform_helmet_03.iff",
+        "outer_name_id": "0x67a28645",
+        "outer_table_index": 627,
+        "outer_allocation": {
+          "size": 552960,
+          "sha256": "8728e27493b9ce78ee129670f89bfbabb7b1fa6329ebfd09025d15a0bd427b0c"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "82d65afb41f12dee65100b7da148c3b693ddaa19d27f2ccbb95eb5d193a336e4"
+        }
+      },
+      {
+        "asset_index": 4,
+        "outer_name": "uniform_helmet_04.iff",
+        "outer_name_id": "0xd5825a55",
+        "outer_table_index": 1272,
+        "outer_allocation": {
+          "size": 552960,
+          "sha256": "8728e27493b9ce78ee129670f89bfbabb7b1fa6329ebfd09025d15a0bd427b0c"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "82d65afb41f12dee65100b7da148c3b693ddaa19d27f2ccbb95eb5d193a336e4"
+        }
+      },
+      {
+        "asset_index": 5,
+        "outer_name": "uniform_helmet_05.iff",
+        "outer_name_id": "0xe8e273e5",
+        "outer_table_index": 1403,
+        "outer_allocation": {
+          "size": 552960,
+          "sha256": "2337ab2c6e7a1c58db50e08ca9124bbdca6e651f68de039f9158d6891634f80f"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "bcf1cd513b44e6260dd2d6b642cb05907bd22fced6bf2bd567d37b1924a931ea"
+        }
+      },
+      {
+        "asset_index": 6,
+        "outer_name": "uniform_helmet_06.iff",
+        "outer_name_id": "0xaf420935",
+        "outer_table_index": 1049,
+        "outer_allocation": {
+          "size": 555008,
+          "sha256": "9f978bda4be9ddaa97138d9f17ac89fd28706d38ef2712de4f1dfc70831fbbd6"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "d06029058edd37bcdf6ffa05740d4c8ba129e22b091a4bdd6f71376d70ef35c3"
+        }
+      },
+      {
+        "asset_index": 7,
+        "outer_name": "uniform_helmet_07.iff",
+        "outer_name_id": "0x92222085",
+        "outer_table_index": 877,
+        "outer_allocation": {
+          "size": 555008,
+          "sha256": "6dbcd85281cb07ecb72478c292e9fb1109413b0829ae1de98c562e940baf2064"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "3aca996db006d02b05df358b6dc06b7feec8e0bcdeb01a027506b403fd309a02"
+        }
+      },
+      {
+        "asset_index": 8,
+        "outer_name": "uniform_helmet_08.iff",
+        "outer_name_id": "0x1072b754",
+        "outer_table_index": 97,
+        "outer_allocation": {
+          "size": 555008,
+          "sha256": "a8cee5e3dfc5b4754f78100f718c34b5277530996f530c51d12bf134b880cd7e"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "550973c46ee587055c22de14bb12f3fa3172da0f5b6438ff298cb81577737862"
+        }
+      },
+      {
+        "asset_index": 9,
+        "outer_name": "uniform_helmet_09.iff",
+        "outer_name_id": "0x2d129ee4",
+        "outer_table_index": 276,
+        "outer_allocation": {
+          "size": 552960,
+          "sha256": "111d00477b3a2903a80815e72a83498dd6f7f6ef2064d61a1a80eb754c65ca86"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "cfd41d8de754a51bc3a0ee0fd4043a420ebc50bed6ca2a9b92b525dd4bd8fcb2"
+        }
+      },
+      {
+        "asset_index": 10,
+        "outer_name": "uniform_helmet_10.iff",
+        "outer_name_id": "0xeb5e2f30",
+        "outer_table_index": 1423,
+        "outer_allocation": {
+          "size": 559104,
+          "sha256": "9d9ba7d39bacbf81af2af55897d0f001508091d2eedb688c04fc6541190b7fc7"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "d42e1f6fbcd958d9d60bb8ed77421d5ee920f72ae225c8eedd6aba1212acab6d"
+        }
+      },
+      {
+        "asset_index": 11,
+        "outer_name": "uniform_helmet_11.iff",
+        "outer_name_id": "0xd63e0680",
+        "outer_table_index": 1275,
+        "outer_allocation": {
+          "size": 577536,
+          "sha256": "57bd0ddb7f48a5ab2e7be1171a6082e4f2c6b3a57a283301b1ef8dfaa980907e"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "5a42cf3b38804811afa910090b97eba6bd464754431c3aab888f25b2796a44ba"
+        }
+      },
+      {
+        "asset_index": 12,
+        "outer_name": "uniform_helmet_12.iff",
+        "outer_name_id": "0x919e7c50",
+        "outer_table_index": 873,
+        "outer_allocation": {
+          "size": 593920,
+          "sha256": "b97700f387c7f3a86c70a56db2df205722f2633092273ec4107afa45f99d24da"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "0bb60db810b8d651fa5805be0adffc7cb70fcdfb1a155c301256581fcc7b63e0"
+        }
+      },
+      {
+        "asset_index": 13,
+        "outer_name": "uniform_helmet_13.iff",
+        "outer_name_id": "0xacfe55e0",
+        "outer_table_index": 1036,
+        "outer_allocation": {
+          "size": 555008,
+          "sha256": "df9c0a78119d189e13e68350356b20211b8fccf311c42331400f99e49846357b"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "74020a614621ec1809b84f2ecd507e26b4581b2a6e11b40babc517cc41673ca7"
+        }
+      },
+      {
+        "asset_index": 14,
+        "outer_name": "uniform_helmet_14.iff",
+        "outer_name_id": "0x1ede89f0",
+        "outer_table_index": 188,
+        "outer_allocation": {
+          "size": 583680,
+          "sha256": "3265484e1fb0d59a6f4321a3da482a9dff817560e8e98ff206d62d8151d88900"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "6e70b2c099c072723542a11d1239afdfd4cc4bf59f88a01e0c41d1a7565bcb87"
+        }
+      },
+      {
+        "asset_index": 15,
+        "outer_name": "uniform_helmet_15.iff",
+        "outer_name_id": "0x23bea040",
+        "outer_table_index": 215,
+        "outer_allocation": {
+          "size": 567296,
+          "sha256": "2cb2d2d7eee88c5ac159879dbbdd627412b87b4745134219020f9b614d901415"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "2976854e067ee81077c3ef5b5699937cf717a339e66675f0a1d74785d4cabdef"
+        }
+      },
+      {
+        "asset_index": 16,
+        "outer_name": "uniform_helmet_16.iff",
+        "outer_name_id": "0x641eda90",
+        "outer_table_index": 606,
+        "outer_allocation": {
+          "size": 575488,
+          "sha256": "947f06666314062e77bfecbd16a5b0e34400cae5fbec8411607f668486aae7f2"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "7ef96fbf2ec636900d0f1f016d8e9c2470a04668b592069e2c93f77d95ecf995"
+        }
+      },
+      {
+        "asset_index": 17,
+        "outer_name": "uniform_helmet_17.iff",
+        "outer_name_id": "0x597ef320",
+        "outer_table_index": 537,
+        "outer_allocation": {
+          "size": 569344,
+          "sha256": "833128896fae96dcb662d297e32849abdf4b5cf77ffad293c49d65dc2d6046a1"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "1458e7e872cfc9e6184f4edd74e52dad80dfa045c88c127a9ae0a3d5ad34f416"
+        }
+      },
+      {
+        "asset_index": 18,
+        "outer_name": "uniform_helmet_18.iff",
+        "outer_name_id": "0xdb2e64f1",
+        "outer_table_index": 1309,
+        "outer_allocation": {
+          "size": 569344,
+          "sha256": "8537019b883f6d6235b35868d7a1a9a49613a2cb3f60e8a873a94fbbe7b4b7c8"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "63e5a1704ca89e195c57bb17fd6c4a12674f36237ef066bc1ba639ea2a52d1dd"
+        }
+      },
+      {
+        "asset_index": 19,
+        "outer_name": "uniform_helmet_19.iff",
+        "outer_name_id": "0xe64e4d41",
+        "outer_table_index": 1381,
+        "outer_allocation": {
+          "size": 598016,
+          "sha256": "732841be66af156a33278230c1183be20c7f1d6d924eac9fb5f604fc5db962bf"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "0448a332beb5c514bd38cd35f251e68335acb4f1586f66a6dc38c83cebc2b21c"
+        }
+      },
+      {
+        "asset_index": 20,
+        "outer_name": "uniform_helmet_20.iff",
+        "outer_name_id": "0x6dca5d9e",
+        "outer_table_index": 668,
+        "outer_allocation": {
+          "size": 569344,
+          "sha256": "0b947dada2785522c7799af493cf6b95bc47922b31342817a9e6f612090f9760"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "930e5dc1258a8d47b6b9cb4c00b8b32f222d4ebfe24e0a3dc919360e92e1f767"
+        }
+      },
+      {
+        "asset_index": 21,
+        "outer_name": "uniform_helmet_21.iff",
+        "outer_name_id": "0x50aa742e",
+        "outer_table_index": 477,
+        "outer_allocation": {
+          "size": 559104,
+          "sha256": "f44898b611b033c6dd774256ea7ce88c248112bb11409c8b3d41752243ec6ac4"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "d8cf909256ca14e4479038c28d8d448abaf76b475c274580fe1d1bc746cf8a82"
+        }
+      },
+      {
+        "asset_index": 22,
+        "outer_name": "uniform_helmet_22.iff",
+        "outer_name_id": "0x170a0efe",
+        "outer_table_index": 142,
+        "outer_allocation": {
+          "size": 573440,
+          "sha256": "d9195d70e89ee91209bd1cd896dc1215f566daed551bae371b6109f4b8527c43"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "e77d7b0cd8ed620eefc98fd27e8d97d44b4336b72de1b0a8f286356e673096ea"
+        }
+      },
+      {
+        "asset_index": 23,
+        "outer_name": "uniform_helmet_23.iff",
+        "outer_name_id": "0x2a6a274e",
+        "outer_table_index": 257,
+        "outer_allocation": {
+          "size": 548864,
+          "sha256": "f86247304ea722e6ef4293639df45cd3a26fb9b25efe3932dcf2b5a2333a65c7"
+        },
+        "inner_file": {
+          "index": 0,
+          "texture_sha256": "a6619f482fee91a315f76cdcd8705d39b6ce11077c435ccc696142e130c27762"
+        }
+      }
+    ],
+    "shoulder": [
+      {
+        "asset_index": 0,
+        "outer_name": "uniform_shoulder_00.iff",
+        "outer_name_id": "0xe827d559",
+        "outer_table_index": 1396,
+        "outer_allocation": {
+          "size": 792576,
+          "sha256": "ece6a73b847792a4aa89cc8f1e92dce3042d1d7a9a99a9c6a46fd5ad6f174b57"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "e8945aed6296ffa810cad7e469fb1e9bf30128ef24216ac6a410b8930ca2569d"
+        }
+      },
+      {
+        "asset_index": 1,
+        "outer_name": "uniform_shoulder_01.iff",
+        "outer_name_id": "0xd547fce9",
+        "outer_table_index": 1269,
+        "outer_allocation": {
+          "size": 786432,
+          "sha256": "41a116b3065cace22791d8619609f71727f92612a50f93ef38ff2c136ae2f61d"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "66f52daa8ef577b62078e056d89e5caa5487be8c92085c42b85ccee0b9dfec02"
+        }
+      },
+      {
+        "asset_index": 2,
+        "outer_name": "uniform_shoulder_02.iff",
+        "outer_name_id": "0x92e78639",
+        "outer_table_index": 881,
+        "outer_allocation": {
+          "size": 811008,
+          "sha256": "3d4e422520ce18cb56594d9564591b80d0e29621eb576c4a6a05714f96e051d1"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "276b01c6cc0d40d1091e5e301088be63958d8fac43c471768c089a037f75bd32"
+        }
+      },
+      {
+        "asset_index": 3,
+        "outer_name": "uniform_shoulder_03.iff",
+        "outer_name_id": "0xaf87af89",
+        "outer_table_index": 1052,
+        "outer_allocation": {
+          "size": 794624,
+          "sha256": "2ca9a31c88a46009d8f87aa1441b732f3f725f9faa67abf55282d2d904653399"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "4ad999f4409f70b92ff8142b3a18b2d0739c70d56af6e69d85ff8462c493aadb"
+        }
+      },
+      {
+        "asset_index": 4,
+        "outer_name": "uniform_shoulder_04.iff",
+        "outer_name_id": "0x1da77399",
+        "outer_table_index": 182,
+        "outer_allocation": {
+          "size": 772096,
+          "sha256": "1bc41f13c831456fb8576e78b0b9f370739a9b3536ba2c2441d38eb0ca88a938"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "59f1b428410422188b48e9ca31f6cbfd92fc7525d6318caf1eb6f589ec56e906"
+        }
+      },
+      {
+        "asset_index": 5,
+        "outer_name": "uniform_shoulder_05.iff",
+        "outer_name_id": "0x20c75a29",
+        "outer_table_index": 198,
+        "outer_allocation": {
+          "size": 815104,
+          "sha256": "f00ca55686625768b02ac19a026b66012b52cff8bae46a1d315c2c372e016b92"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "a142edbee2100e6443fdb56b0a3e62d095b625d46747b792e359b39e94853068"
+        }
+      },
+      {
+        "asset_index": 6,
+        "outer_name": "uniform_shoulder_06.iff",
+        "outer_name_id": "0x676720f9",
+        "outer_table_index": 624,
+        "outer_allocation": {
+          "size": 774144,
+          "sha256": "eee79b489250fd6273dd084122726dd60c6954da24d83ee4a8ee2123de4e1e45"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "3e0355b5f653fb510930c0de30d4d9546940afab4426e2ebeda569984e9e45d8"
+        }
+      },
+      {
+        "asset_index": 7,
+        "outer_name": "uniform_shoulder_07.iff",
+        "outer_name_id": "0x5a070949",
+        "outer_table_index": 541,
+        "outer_allocation": {
+          "size": 798720,
+          "sha256": "3f8a19a36af340a3a377b828e6a81ed6ad096df7189220921cc4e8947a6861b1"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "6cebc9fe9d807c386eda09a31349564d2a82a3febccdb2784f955616a4721a90"
+        }
+      },
+      {
+        "asset_index": 8,
+        "outer_name": "uniform_shoulder_08.iff",
+        "outer_name_id": "0xd8579e98",
+        "outer_table_index": 1288,
+        "outer_allocation": {
+          "size": 774144,
+          "sha256": "4fefc75d105c090e5bc819d0f76bc04837fddc2d7e33667aa11cad2acc66f482"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "a49aed9fd742ec1084b25c6190b0acecbf12a2f75d87c1dea39111a84dfaaeed"
+        }
+      },
+      {
+        "asset_index": 9,
+        "outer_name": "uniform_shoulder_09.iff",
+        "outer_name_id": "0xe537b728",
+        "outer_table_index": 1373,
+        "outer_allocation": {
+          "size": 774144,
+          "sha256": "39f01e7fad193ff14c5217e04e80e768b135d0a9d6daefcc57c557fc8b7896c7"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "cb3bf3bd75c3fff8c74bccf89583f67e91d275ed853c5f1b3e5e5d78c6b90f1b"
+        }
+      },
+      {
+        "asset_index": 10,
+        "outer_name": "uniform_shoulder_10.iff",
+        "outer_name_id": "0x237b06fc",
+        "outer_table_index": 212,
+        "outer_allocation": {
+          "size": 770048,
+          "sha256": "aff91c106a24487b8e76fe2406adca193076b971f50d841016070442a5bf925b"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "41b0d33b52e7cca4dc4ddb0661d48c2ee8f025d2fc5f7619f32509150aff61cb"
+        }
+      },
+      {
+        "asset_index": 11,
+        "outer_name": "uniform_shoulder_11.iff",
+        "outer_name_id": "0x1e1b2f4c",
+        "outer_table_index": 184,
+        "outer_allocation": {
+          "size": 790528,
+          "sha256": "a022042be65e15033a1e77413261a8b32264aec397e997d9a600a0913b4bde16"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "9cf6a7fcd7a7a2363b2111ec0c979f6a6ef9f3d5dc1b03e840d88784aade28c8"
+        }
+      },
+      {
+        "asset_index": 12,
+        "outer_name": "uniform_shoulder_12.iff",
+        "outer_name_id": "0x59bb559c",
+        "outer_table_index": 539,
+        "outer_allocation": {
+          "size": 776192,
+          "sha256": "0ad8dec00a7e66bb98078ad4c6e0696592e955c1363ed543b54fbad37fe86887"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "9495a8a1a8c0fec7a9ca675cf751fe6147c60f3c08a33dec77aec647e505727c"
+        }
+      },
+      {
+        "asset_index": 13,
+        "outer_name": "uniform_shoulder_13.iff",
+        "outer_name_id": "0x64db7c2c",
+        "outer_table_index": 610,
+        "outer_allocation": {
+          "size": 768000,
+          "sha256": "635a46de7b2cc018f7910dfb62b0684592ece05fdf011f240828a98b6a89707d"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "77709625ea1c5dd1446361c48534af381e641470eb776df9decf75bcdeb81f51"
+        }
+      },
+      {
+        "asset_index": 14,
+        "outer_name": "uniform_shoulder_14.iff",
+        "outer_name_id": "0xd6fba03c",
+        "outer_table_index": 1279,
+        "outer_allocation": {
+          "size": 765952,
+          "sha256": "08430ad99f7c96536e11ed5d1f607caa586f0cba7c9bb804ea691d6149b256bd"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "3362a3ed3b5548e695e28a301ed80d045acc2ac3a3311236507ed2095ed6dba5"
+        }
+      },
+      {
+        "asset_index": 15,
+        "outer_name": "uniform_shoulder_15.iff",
+        "outer_name_id": "0xeb9b898c",
+        "outer_table_index": 1426,
+        "outer_allocation": {
+          "size": 782336,
+          "sha256": "0d5ee1559cfb182194805d2a1e85dceeeb574ad286b45afc56d011334208cb47"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "14b4b50add9d117cf67379bbfc5938f41e9d293eb9b3a1f763b311dd4249e23d"
+        }
+      },
+      {
+        "asset_index": 16,
+        "outer_name": "uniform_shoulder_16.iff",
+        "outer_name_id": "0xac3bf35c",
+        "outer_table_index": 1030,
+        "outer_allocation": {
+          "size": 796672,
+          "sha256": "69e9ab14d4c5abe46ab6d841dd4506b8316add9e3903068142f7df48e0622fd5"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "69d42beb68b8291b4bdbb499e622a76e184a21cbfbb8110154c1893e05545b47"
+        }
+      },
+      {
+        "asset_index": 17,
+        "outer_name": "uniform_shoulder_17.iff",
+        "outer_name_id": "0x915bdaec",
+        "outer_table_index": 872,
+        "outer_allocation": {
+          "size": 800768,
+          "sha256": "ad1b9fd14daf96fb893b4219c1eca22c8b313e8eefe9526b182aab807223ba2a"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "37243212af8ec30b8633e23de3dc16e3236188a4d36a4992ed0a3b8e796f6dd7"
+        }
+      },
+      {
+        "asset_index": 18,
+        "outer_name": "uniform_shoulder_18.iff",
+        "outer_name_id": "0x130b4d3d",
+        "outer_table_index": 115,
+        "outer_allocation": {
+          "size": 774144,
+          "sha256": "31a1b246cf781ed87aeb7de0171543bc9c7afb36d0c38c5b0511e1c3644b31cf"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "4fcc273559df183e1b82bca8886572d71c424f98688b01661e00537da408ca16"
+        }
+      },
+      {
+        "asset_index": 19,
+        "outer_name": "uniform_shoulder_19.iff",
+        "outer_name_id": "0x2e6b648d",
+        "outer_table_index": 284,
+        "outer_allocation": {
+          "size": 772096,
+          "sha256": "9f7c22087d26aa4dd2dff2442f9cdeb7c5dcf395683b251f4936e722e14429a0"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "fb993353260c0ce79630badb08468ced1aac1801c7018da536248ca0e714f027"
+        }
+      },
+      {
+        "asset_index": 20,
+        "outer_name": "uniform_shoulder_20.iff",
+        "outer_name_id": "0xa5ef7452",
+        "outer_table_index": 997,
+        "outer_allocation": {
+          "size": 770048,
+          "sha256": "981868b6c30e9f3adaec42a355f3f5c042bc3d3c9f2f4cd4fded047dbae5b367"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "2b90a54e5735fc868a35b3a498878a7ab9614ae5bf3c1508ca7a80c10b74493b"
+        }
+      },
+      {
+        "asset_index": 21,
+        "outer_name": "uniform_shoulder_21.iff",
+        "outer_name_id": "0x988f5de2",
+        "outer_table_index": 912,
+        "outer_allocation": {
+          "size": 780288,
+          "sha256": "ad7cc5cf7cfff96b8d009880dfaf718fcb2eb649abfd841cb4cae9c5257146a1"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "624e20f61f8004ffbd05246f8afec3c237e7c94410a4e543ea5deb183e85845b"
+        }
+      },
+      {
+        "asset_index": 22,
+        "outer_name": "uniform_shoulder_22.iff",
+        "outer_name_id": "0xdf2f2732",
+        "outer_table_index": 1338,
+        "outer_allocation": {
+          "size": 802816,
+          "sha256": "e22fe061b6fd689edc4ab87d18c29242880bf3473681065d631e63c24db7a845"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "9a2fdc84f66cad9c1ff8613915c8f4555f6ac77cad0008f6520e48df05a3591a"
+        }
+      },
+      {
+        "asset_index": 23,
+        "outer_name": "uniform_shoulder_23.iff",
+        "outer_name_id": "0xe24f0e82",
+        "outer_table_index": 1359,
+        "outer_allocation": {
+          "size": 765952,
+          "sha256": "0b9a252c335cc6f324604971206cc502f427a52cef796f91bcbabbd256e97570"
+        },
+        "inner_file": {
+          "index": 3,
+          "texture_sha256": "bc0e850acad44b88e87d4396ad3093aeb1df2ca09685447288806e29098c526e"
+        }
+      }
+    ]
+  }
+}

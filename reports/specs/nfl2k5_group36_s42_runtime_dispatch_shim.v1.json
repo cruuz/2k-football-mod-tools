@@ -1,0 +1,139 @@
+{
+  "artifacts": {
+    "expanded_wall_dispatch": {
+      "manifest_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/expanded-wall-s42-dispatch-workflow.json",
+      "manifest_sha256": "4fd1d53323c39cef94d7b5ac2a17a4c7d8669abff126f83a5eeda8a451b3e5c0",
+      "output_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/ESPN-NFL-2K5-group36-expanded-wall-s42-dispatch.xiso.iso",
+      "output_sha256": "3c2917114ec7005e21c24c7fdf971adfdd54c051e89ecf2c4f93beb64a73dc16"
+    },
+    "retail_control_dispatch": {
+      "manifest_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/s42-dispatch-control-workflow.json",
+      "manifest_sha256": "e619cf3fa5eae3eea4a09e97f681db96df968041c6746dda68a013dd6ddbef89",
+      "output_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/ESPN-NFL-2K5-s42-dispatch-control.xiso.iso",
+      "output_sha256": "32a4f45e5d3d53f1ee1780165d9ffdaa36995a154a62e39c313e0e467b63b9a5"
+    }
+  },
+  "claims": {
+    "diagnostic_only": true,
+    "offline_two_byte_dispatch_shim_proved": true,
+    "original_xbox_hardware_proved": false,
+    "production_ready": false,
+    "public_editor_exposed": false,
+    "xemu_geometry_visibility_proved": false,
+    "xemu_target_outer_loaded_proved": false
+  },
+  "dispatch_edit": {
+    "after_utf16le_hex": "7300340032000000",
+    "allowed_xiso_changed_byte_offsets_decimal": [
+      1635418436,
+      1635418438
+    ],
+    "allowed_xiso_changed_byte_offsets_hex": [
+      "0x617a8144",
+      "0x617a8146"
+    ],
+    "before_utf16le_hex": "7300310038000000",
+    "changed_relative_bytes": [
+      2,
+      4
+    ],
+    "replacement": "s18 -> s42",
+    "written_allocation_bytes": 8
+  },
+  "format": {
+    "relative_pointer": {
+      "byte_order": "little",
+      "formula": "target = field_offset + signed_i32_stored_value - 1",
+      "null_value": 0
+    },
+    "roster": {
+      "body_absolute_xiso_offset": "0x61732020",
+      "body_size": 593760,
+      "inner_magic_body_offset": "0x0c",
+      "inner_version": 17,
+      "outer_wrapper_absolute_xiso_offset": "0x61732000",
+      "outer_wrapper_pack0_offset": "0x392800",
+      "outer_wrapper_size": 32,
+      "outer_wrapper_words": [
+        "ROST",
+        593760,
+        593760,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "root_offset": "0x40",
+      "stadium_count": 82,
+      "stadium_stride": "0x80",
+      "stadium_table_offset": "0xb0"
+    },
+    "stadium_18": {
+      "asset_code_field_in_record": "0x0c",
+      "asset_code_pointer_field_body_offset": "0x9bc",
+      "asset_code_string_absolute_xiso_offset": "0x617a8142",
+      "asset_code_string_body_offset": "0x76122",
+      "asset_code_target_aligned_relative_pointer_fields": [
+        "0x9bc"
+      ],
+      "index": 18,
+      "record_body_offset": "0x9b0",
+      "retail_asset_code": "s18",
+      "retail_name": "Giants Stadium"
+    }
+  },
+  "loader_ownership": {
+    "active_stadium_accessor": "0x00077460",
+    "asset_code_load": "0x00062c76 MOV EDX,[EAX+0x0c]",
+    "filename_format": "%s%c%c.iff",
+    "filename_format_address": "0x00e610a0",
+    "filename_format_callsite": "0x00062c82",
+    "night_clear_result": "s42nd.iff",
+    "read_only_trace": ".codex-tmp/s42_runtime_dispatch/out/trace.txt"
+  },
+  "schema": "nfl2k5_group36_s42_runtime_dispatch_shim/v1",
+  "source_profiles": {
+    "expanded_wall": {
+      "geometry_xiso_manifest_sha256": "80a5361c8b514f7215683d7ae7afdf91a365f4ac64d1736ba76ba349c9d69f95",
+      "native_geometry_manifest_sha256": "8d5454101129b8fc626cb42ac238ca49c6b39a4c0bdd52649fb1eba0a62d6417",
+      "native_volume9_sha256": "c4ad271186e47389d00bd4131866548c8eec2320770bfeb5ce9f9ae44f3d5bad",
+      "recipe_sha256": "3ee45f7b36fae28e51814e7695dc9bbd20d3ea4ac3a722ca53e9bf1264639625",
+      "requires_existing_independent_geometry_xiso_verifier": true,
+      "source_xiso_sha256": "a17ce0bd1f37d3c361245334586346a5f43b5a9374ffe05fe5e41b101a10137c"
+    },
+    "retail_control": {
+      "requires_existing_independent_geometry_xiso_verifier": false,
+      "source_xiso_sha256": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9",
+      "volume9_sha256": "779b37455fc44cd7eb60674b926d7ccaf9cd6bd9d894157a1d68119281790c7a"
+    }
+  },
+  "strict_verification": {
+    "complete_6300499968_byte_source_output_comparison": true,
+    "default_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "fail_if_output_or_manifest_exists": true,
+    "output_exclusively_created": true,
+    "pack0_extent": {
+      "path": "vc_53450030/0",
+      "sector": 796479,
+      "size": 193710080,
+      "source_sha256": "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d"
+    },
+    "pack9_extent": {
+      "path": "vc_53450030/9",
+      "sector": 35531,
+      "size": 634941440
+    },
+    "reparse_and_compare_xdvdfs_tree_and_extents": true,
+    "require_exact_two_byte_difference_set": true,
+    "require_source_hash_unchanged_after_write_or_verify": true,
+    "verify_roster_wrapper_root_table_pointer_and_unique_target": true,
+    "verify_source_and_output_volume9_profile_hash_exact": true
+  },
+  "tools": {
+    "independent_verifier": "tools/nfl_stadium_group36_s42_dispatch_xiso_verify.py",
+    "test": "tests/test_nfl_stadium_group36_s42_dispatch_xiso.py",
+    "validator": "tools/validate_nfl_stadium_group36_s42_dispatch_xiso.sh",
+    "writer": "tools/nfl_stadium_group36_s42_dispatch_xiso_patch.py"
+  }
+}

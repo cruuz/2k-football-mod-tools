@@ -1,0 +1,381 @@
+{
+  "artifacts": {
+    "native": {
+      "manifest_path": "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/native/manifest.json",
+      "manifest_sha256": "3ea96253b1e858dc7e5c88e782e3aea92e84f87f1ef0d1f3795816562b2a4f97",
+      "manifest_size": 7326,
+      "output_path": "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/native/9",
+      "output_sha256": "5e983c0727d903aef298df7320bffe7cf5ae4bcf91720438cb9bcd26edff54fc",
+      "output_size": 634941440,
+      "verification_path": "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/native-verification.json",
+      "verification_sha256": "7c75c38a1aaab7fe38d8898d1447fa47d35792a10c9f0c833f316a8ce2b12e3c",
+      "verification_size": 3024
+    },
+    "retail_xiso": {
+      "manifest_path": "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/retail-xiso-workflow.json",
+      "manifest_sha256": "d414ff52fc5332f7c0bc2bc3b1a44aa7a93e28b2ba3565f832fd2af472901253",
+      "manifest_size": 3235,
+      "output_path": "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/ESPN-NFL-2K5-upper-deck-wide-overlay8-retail.xiso.iso",
+      "output_sha256": "c24c543e4518862b4de4886a1432a99c5a7651291653457927c9a9f3165f6ddc",
+      "output_size": 6300499968,
+      "verification_path": "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/retail-xiso-verification.json",
+      "verification_sha256": "47e7dfdb086a73866ff15228a2cebdabf75dae90cf545c167da8dec1d941bb70",
+      "verification_size": 629
+    },
+    "runtime_queue": {
+      "path": "reports/specs/nfl2k5_upper_deck_wide_overlay8_runtime_queue.v1.json",
+      "sha256": "6537545cffa8946675edceca4b901c678d27d78a0f428a15e663aec336fdd844",
+      "size": 9841,
+      "status": "offline_runtime_lane_fully_prepared_spark_mcp_unavailable"
+    },
+    "s42_diagnostic_xiso": {
+      "manifest_path": "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/s42-xiso-workflow.json",
+      "manifest_sha256": "40f5637011407be8e3f4cf59058cb9bef15cf44a90c92e905f45433927cb46c2",
+      "manifest_size": 4028,
+      "output_path": "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/ESPN-NFL-2K5-upper-deck-wide-overlay8-s42-visible-night.xiso.iso",
+      "output_sha256": "7effd276abea02aa41573ae30a8cba537ced4520b0f807809789872d864bbc60",
+      "output_size": 6300499968,
+      "verification_path": "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/s42-xiso-verification.json",
+      "verification_sha256": "afb366b97baa80dc48ba25100c8b3e24d47b3ae2feec05fbfdd7875bbe3eb254",
+      "verification_size": 626
+    }
+  },
+  "board_byte_map": {
+    "count_controls": [
+      {
+        "decoded_span": [
+          30540,
+          30542
+        ],
+        "kind": "shape_vertex_count_u16le",
+        "retail_count": 12
+      },
+      {
+        "decoded_span": [
+          69887,
+          69888
+        ],
+        "encoding": "count_minus_one_in_high_DRAW_ARRAYS_parameter_byte",
+        "kind": "draw_vertex_count",
+        "retail_count": 12
+      }
+    ],
+    "decoded_resource_sha256": "229db9f309bf69eaa28901ae6e2e15b26a279b3f1f37abed01e36041c5e5ead8",
+    "disc_resource_span": [
+      205566528,
+      206475440
+    ],
+    "material": {
+      "index": 1,
+      "name": "sign01"
+    },
+    "pack9_resource_span": [
+      132799040,
+      133707952
+    ],
+    "primitive": "NV097_SET_BEGIN_END_QUADS_plus_DRAW_ARRAYS",
+    "retail_quad_groups": [
+      {
+        "attribute_record_span": [
+          70080,
+          70120
+        ],
+        "classification": "full_width_base_quad",
+        "position_record_span": [
+          69920,
+          69968
+        ],
+        "source_vertex_ids": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "attribute_record_span": [
+          70120,
+          70160
+        ],
+        "classification": "right_inset_overlay_quad",
+        "position_record_span": [
+          69968,
+          70016
+        ],
+        "source_vertex_ids": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "attribute_record_span": [
+          70160,
+          70200
+        ],
+        "classification": "left_inset_overlay_quad",
+        "position_record_span": [
+          70016,
+          70064
+        ],
+        "source_vertex_ids": [
+          8,
+          9,
+          10,
+          11
+        ]
+      }
+    ],
+    "static_mapping_derivation": [
+      "All twelve records are one material-1 sign01 QUADS draw in shape upper_deck.",
+      "Records 0 through 3 form the largest rectangle and contain the XY extents of both smaller rectangles.",
+      "Records 4 through 7 and 8 through 11 form disjoint right and left inset rectangles at nearby, depth-separated planes.",
+      "The three-rectangle proportions match the full-width suspended board plus two inset sign panels visible in the pinned s42 control frame. This is a strong static and visual mapping, not a direct per-draw runtime trace."
+    ],
+    "streams": [
+      {
+        "decoded_span": [
+          69920,
+          70064
+        ],
+        "record_count": 12,
+        "role": "FLOAT3_position",
+        "stream_index": 0,
+        "stride_bytes": 12
+      },
+      {
+        "decoded_span": [
+          70080,
+          70200
+        ],
+        "record_count": 12,
+        "role": "complete_packed_attribute_record_with_zero_transform_selector",
+        "stream_index": 1,
+        "stride_bytes": 10
+      }
+    ]
+  },
+  "candidate": {
+    "decoded_changed_byte_count": 32,
+    "decoded_changed_offsets": [
+      30540,
+      69887,
+      69968,
+      69969,
+      69970,
+      69971,
+      69972,
+      69973,
+      69976,
+      69977,
+      69980,
+      69981,
+      69982,
+      69983,
+      69984,
+      69985,
+      69988,
+      69989,
+      70120,
+      70121,
+      70122,
+      70124,
+      70125,
+      70126,
+      70127,
+      70130,
+      70131,
+      70132,
+      70134,
+      70135,
+      70136,
+      70137
+    ],
+    "decoded_changed_offsets_sha256": "d1dab8e6d02116db114ff017b7722f48a0f01d620b867104cb6ea19a7fcfebfa",
+    "disc_difference_from_each_corresponding_control": {
+      "authorized_span": [
+        205566528,
+        206475440
+      ],
+      "changed_byte_count": 856572,
+      "changed_run_count": 38041,
+      "outside_authorized_span_exact": true
+    },
+    "geometry_effect": [
+      "Retain the complete retail full-width base quad as output records 0 through 3.",
+      "Build output records 4 through 7 from source IDs 8, 9, 6, 7, joining the outer left and right overlay corners into one wide overlay quad.",
+      "The wide overlay has the same winding as all three retail quads, is nondegenerate and nearly planar, remains inside the retail base extents, and has more than twice the combined area of the two retail inset overlays.",
+      "Every position and packed attribute byte comes from one complete retail source record; no external coordinate or attribute value is admitted."
+    ],
+    "logical_output_quads": [
+      {
+        "role": "retained_full_width_base",
+        "source_vertex_ids": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "role": "new_wide_overlay_from_retail_outer_corners",
+        "source_vertex_ids": [
+          8,
+          9,
+          6,
+          7
+        ]
+      }
+    ],
+    "native_compression": {
+      "consumed_bytes": 908851,
+      "fixed_final_tail_exact": true,
+      "minimum_alias_scratch_bytes": 13,
+      "physical_stream_tails_exact": true,
+      "retail_consumed_cap_bytes": 908864,
+      "scratch_bytes": 32
+    },
+    "recipe_path": "reports/asset_samples/nfl_scne/stadium_upper_deck_wide_overlay8_source_subset_recipe.v1.json",
+    "recipe_sha256": "df3a552a9387cb351d3918fddf6cea106418ae1f908fce5d9b6c8f3f7c762056",
+    "recipe_size": 310
+  },
+  "claims": {
+    "arbitrary_external_geometry_proved": false,
+    "board_asset_static_mapping_narrowed": true,
+    "changed_count_disc_transport_proved": true,
+    "controller_lane_released": true,
+    "direct_upper_deck_runtime_visibility_proved": false,
+    "installable_layout_identical_retail_xiso_built": true,
+    "original_xbox_hardware_proved": false,
+    "positive_visibility_candidate_built": true,
+    "production_ready": false,
+    "retail_xbe_preserved_in_retail_profile": true,
+    "runtime_launch_prepared": true,
+    "s42_diagnostic_layer_isolated_from_board_geometry": true
+  },
+  "data_policy": {
+    "contains_modified_archive_bytes": false,
+    "contains_retail_attribute_values": false,
+    "contains_retail_position_values": false,
+    "contains_source_vertex_ids": true,
+    "retail_disc_required_from_user": true
+  },
+  "prior_runtime_sentinel": {
+    "control_frame": {
+      "path": ".codex-tmp/nfl2k5-group36-geometry-xemu-20260713/logs/control-s42nd-replay-matched.png",
+      "role": "s42nd end-zone-facing frame containing the suspended board",
+      "sha256": "201b4d68bd105f9548892254a62ab4e48162b25b6d548ef78972252698a9ba79",
+      "size": 602224
+    },
+    "geometry_difference_from_s42_control": {
+      "authorized_span": [
+        205566528,
+        206475440
+      ],
+      "changed_byte_count": 822164,
+      "changed_run_count": 42649,
+      "decoded_changed_byte_count": 48,
+      "outside_authorized_span_exact": true
+    },
+    "interpretation": "The prior group36 authored-wall pair proves that this exact s42nd SCNE resource accepts a same-footprint static geometry edit and visibly affects rendering. It does not directly prove that shape 1 upper_deck is the suspended board draw.",
+    "runtime_authority_path": "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json",
+    "runtime_authority_sha256": "33d76b3bbc9d11b52af6cf2861cf2890574a6d5b6820df8972d8419a63459d60",
+    "runtime_authority_size": 12051,
+    "shape_index": 4,
+    "shape_name": "group36"
+  },
+  "runtime_next_step": {
+    "controller_lane_released": true,
+    "emulator_launched_for_this_candidate": false,
+    "required_pair": [
+      "Pinned s42 visible-night control XISO with retail geometry.",
+      "Pinned wide-overlay8 s42 visible-night diagnostic XISO."
+    ],
+    "required_protocol": "Use the same xemu build, teams, play state, end-zone-facing replay route, camera inputs, and board-containing frame. The positive proof is a wide sign overlay across the board in the candidate frame that is absent from the control frame.",
+    "runtime_queue_path": "reports/specs/nfl2k5_upper_deck_wide_overlay8_runtime_queue.v1.json",
+    "spark_hands_available_to_root_or_subagent": false,
+    "stopping_reason": "The controller/event19 lane was explicitly released, but /home/noah/AGENTS.md requires spark-hands for every GUI launch, operation, capture, and visual judgment, and neither root nor this subagent exposes spark_desktop_task or spark_look. The exact configs, isolated HDD overlays, evidence paths, and Spark goal are prepared without launching xemu."
+  },
+  "s42_control_from_retail": {
+    "changed_byte_count": 45,
+    "changed_byte_paths": [
+      {
+        "changed_byte_count": 43,
+        "path": "default.xbe",
+        "roles": [
+          "20-byte .text section digest",
+          "20-byte .data section digest",
+          "one-byte global time-suffix branch",
+          "two-byte s42 Quick Game availability word"
+        ]
+      },
+      {
+        "changed_byte_count": 2,
+        "path": "vc_53450030/0",
+        "roles": [
+          "roster record 18 asset-code characters s18 to s42"
+        ]
+      }
+    ],
+    "changed_byte_runs": [
+      [
+        2397076,
+        2397096
+      ],
+      [
+        2397804,
+        2397824
+      ],
+      [
+        2735201,
+        2735202
+      ],
+      [
+        13457596,
+        13457598
+      ],
+      [
+        1635418436,
+        1635418437
+      ],
+      [
+        1635418438,
+        1635418439
+      ]
+    ],
+    "changed_run_count": 6,
+    "difference_ledger": {
+      "changed_after_bytes_sha256": "fc37c140bfd4e8c2f93303c3f5c60e24cfad5405ef5657ceb078a88ee3ed67b2",
+      "changed_before_bytes_sha256": "5f66aa704a1cb9d4816e622bdf64f76f781343a34b2e91ad70be1633d7bfce9c",
+      "changed_offset_u64le_sha256": "eff0449db5fcbdcd35c20ad881d00962bfedc111f029870e04239f4fc5c9bbdf",
+      "changed_run_pairs_u64le_sha256": "3c733edd661801c5eb6b1ce8366b40f3cd0a1b3111d0807c90f620cf93c29afc"
+    },
+    "pack9_geometry_sha256": "779b37455fc44cd7eb60674b926d7ccaf9cd6bd9d894157a1d68119281790c7a",
+    "pack9_is_retail_exact": true,
+    "retail_xiso_sha256": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9",
+    "s42_control_xiso_sha256": "863ba00df855efdf54b85d568516b1ed0f7bbd33ddb77096ce3e16da4e702383",
+    "signed_chain_warning": "The diagnostic XBE has internally recomputed section digests, but the unchanged retail RSA signature does not attest the modified signed header. Use the retail-XBE candidate for a retail-signed executable chain."
+  },
+  "schema": "nfl2k5_upper_deck_board_map_wide_overlay8/v1",
+  "status": "offline_positive_visibility_candidate_complete_runtime_pair_pending",
+  "target": {
+    "chunk_index": 5,
+    "outer_id": "0xe4d6b0bc",
+    "outer_index": 3280,
+    "scene_index": 2648,
+    "scene_name": "stadium",
+    "shape_index": 1,
+    "shape_name": "upper_deck",
+    "target_id": "nfl2k5/stadium/o3280/c5/s1"
+  },
+  "verification": {
+    "focused_test": "tests/test_nfl_stadium_upper_deck_wide_overlay8.py",
+    "independent_native_verifier": "tools/nfl_stadium_upper_deck_subset_verify.py",
+    "independent_retail_xiso_verifier": "tools/nfl_stadium_upper_deck_subset_xiso_verify.py",
+    "independent_s42_xiso_verifier": "tools/nfl_stadium_upper_deck_s42_xiso_verify.py",
+    "tests_passed": 7,
+    "validator": "tools/validate_nfl_stadium_upper_deck_wide_overlay8.sh"
+  },
+  "version": 1
+}

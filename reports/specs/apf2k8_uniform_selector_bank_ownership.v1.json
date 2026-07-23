@@ -1,0 +1,298 @@
+{
+  "claims": {
+    "all_non_font_pairs_share_the_anchored_resource_class_split": true,
+    "all_twelve_filename_templates_have_home_and_away_wrappers": true,
+    "arbitrary_selector_writer_authorized": false,
+    "bank_0_is_home": true,
+    "bank_1_is_away": true,
+    "gameplay_runtime_consumption_proved": false,
+    "logo_selection_preview_consumption_proved": false,
+    "selector_bytes_1_through_7_semantics_proved": false
+  },
+  "family_pair_count": 12,
+  "family_pairs": [
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": "0x84E318C0",
+        "selector_mode": 0,
+        "wrapper": "0x849DBEB0"
+      },
+      "family": "glove",
+      "home": {
+        "bank_index": 0,
+        "resource_class": "0x84E30180",
+        "selector_mode": 1,
+        "wrapper": "0x849DB758"
+      },
+      "selector_hash": "0x5A37FC45",
+      "selector_slot": 2,
+      "template": "uniform_glove_{0:D2}.iff"
+    },
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": "0x84E318C0",
+        "selector_mode": 0,
+        "wrapper": "0x849DC0C0"
+      },
+      "family": "helmet",
+      "home": {
+        "bank_index": 0,
+        "resource_class": "0x84E30180",
+        "selector_mode": 1,
+        "wrapper": "0x849DB950"
+      },
+      "selector_hash": "0x7D06EB90",
+      "selector_slot": 3,
+      "template": "uniform_helmet_{0:D2}.iff"
+    },
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": "0x84E318C0",
+        "selector_mode": 0,
+        "wrapper": "0x849DBB40"
+      },
+      "family": "jersey",
+      "home": {
+        "bank_index": 0,
+        "resource_class": "0x84E30180",
+        "selector_mode": 1,
+        "wrapper": "0x849DB410"
+      },
+      "selector_hash": "0xE80198F0",
+      "selector_slot": 4,
+      "template": "uniform_jersey_{0:D2}.iff"
+    },
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": "0x84E318C0",
+        "selector_mode": 0,
+        "wrapper": "0x849DC010"
+      },
+      "family": "logo",
+      "home": {
+        "bank_index": 0,
+        "resource_class": "0x84E30180",
+        "selector_mode": 1,
+        "wrapper": "0x849DB8A8"
+      },
+      "selector_hash": "0x44BC352D",
+      "selector_slot": 5,
+      "template": "uniform_logo_{0:D2}.iff"
+    },
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": "0x84E318C0",
+        "selector_mode": 0,
+        "wrapper": "0x849DBF60"
+      },
+      "family": "textlogo",
+      "home": {
+        "bank_index": 0,
+        "resource_class": "0x84E30180",
+        "selector_mode": 1,
+        "wrapper": "0x849DB800"
+      },
+      "selector_hash": "0xE31B6285",
+      "selector_slot": 6,
+      "template": "uniform_textlogo_{0:D2}.iff"
+    },
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": null,
+        "selector_mode": 0,
+        "wrapper": "0x849DAB60"
+      },
+      "family": "font",
+      "home": {
+        "bank_index": 0,
+        "resource_class": null,
+        "selector_mode": 1,
+        "wrapper": "0x849DA9B8"
+      },
+      "selector_hash": "0x70A6A7EC",
+      "selector_slot": 7,
+      "template": "uniform_font_{0:D2}.iff"
+    },
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": "0x84E318C0",
+        "selector_mode": 0,
+        "wrapper": "0x849DBCA0"
+      },
+      "family": "number",
+      "home": {
+        "bank_index": 0,
+        "resource_class": "0x84E30180",
+        "selector_mode": 1,
+        "wrapper": "0x849DB560"
+      },
+      "selector_hash": "0x913C1A62",
+      "selector_slot": 8,
+      "template": "uniform_number_{0:D2}.iff"
+    },
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": "0x84E318C0",
+        "selector_mode": 0,
+        "wrapper": "0x849DC170"
+      },
+      "family": "pants",
+      "home": {
+        "bank_index": 0,
+        "resource_class": "0x84E30180",
+        "selector_mode": 1,
+        "wrapper": "0x849DB9F8"
+      },
+      "selector_hash": "0xBDBDD2EE",
+      "selector_slot": 9,
+      "template": "uniform_pants_{0:D2}.iff"
+    },
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": "0x84E318C0",
+        "selector_mode": 0,
+        "wrapper": "0x849DBE00"
+      },
+      "family": "shoe",
+      "home": {
+        "bank_index": 0,
+        "resource_class": "0x84E30180",
+        "selector_mode": 1,
+        "wrapper": "0x849DB6B0"
+      },
+      "selector_hash": "0x61850777",
+      "selector_slot": 10,
+      "template": "uniform_shoe_{0:D2}.iff"
+    },
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": "0x84E318C0",
+        "selector_mode": 0,
+        "wrapper": "0x849DBBF0"
+      },
+      "family": "shoulder",
+      "home": {
+        "bank_index": 0,
+        "resource_class": "0x84E30180",
+        "selector_mode": 1,
+        "wrapper": "0x849DB4B8"
+      },
+      "selector_hash": "0x56ED5F4B",
+      "selector_slot": 11,
+      "template": "uniform_shoulder_{0:D2}.iff"
+    },
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": "0x84E318C0",
+        "selector_mode": 0,
+        "wrapper": "0x849DC378"
+      },
+      "family": "shoulder_normal",
+      "home": {
+        "bank_index": 0,
+        "resource_class": "0x84E30180",
+        "selector_mode": 1,
+        "wrapper": "0x849DC2C8"
+      },
+      "selector_hash": "0xB5D10480",
+      "selector_slot": 11,
+      "template": "uniform_shoulder_normal_{0:D2}.iff"
+    },
+    {
+      "away": {
+        "bank_index": 1,
+        "resource_class": "0x84E318C0",
+        "selector_mode": 0,
+        "wrapper": "0x849DBD50"
+      },
+      "family": "sock",
+      "home": {
+        "bank_index": 0,
+        "resource_class": "0x84E30180",
+        "selector_mode": 1,
+        "wrapper": "0x849DB608"
+      },
+      "selector_hash": "0x2FC773F9",
+      "selector_slot": 12,
+      "template": "uniform_sock_{0:D2}.iff"
+    }
+  ],
+  "limitations": [
+    "This is static executable ownership proof; it does not replace a gameplay runtime witness.",
+    "The seven opaque bytes after each filename asset index remain unnamed.",
+    "The result orients the two existing 14-pointer banks but does not authorize new selector values."
+  ],
+  "orientation_anchors": {
+    "away": {
+      "bank_index": 1,
+      "family": "shoulder_normal",
+      "literal": {
+        "address": "0x845F21F4",
+        "value": "AWAY"
+      },
+      "resource_class": "0x84E318C0",
+      "selector_mode": 0,
+      "wrapper": "0x849DC378"
+    },
+    "home": {
+      "bank_index": 0,
+      "family": "shoulder_normal",
+      "literal": {
+        "address": "0x845F21E8",
+        "value": "HOME"
+      },
+      "resource_class": "0x84E30180",
+      "selector_mode": 1,
+      "wrapper": "0x849DC2C8"
+    }
+  },
+  "schema": "apf2k8_uniform_selector_bank_ownership/v1",
+  "selector": {
+    "address": "0x849D6BD0",
+    "mode_0": {
+      "accessor_equation": "config[slot + 14]",
+      "active_team_accessor": "0x84682798",
+      "bank_accessor": "0x847080C8",
+      "bank_index": 1
+    },
+    "mode_1": {
+      "accessor_equation": "config[slot]",
+      "active_team_accessor": "0x84682730",
+      "bank_accessor": "0x84687D88",
+      "bank_index": 0
+    },
+    "team_uniform_config_field": "+0xBC"
+  },
+  "source_authority": {
+    "executable_md5": "217eea6084c3d03f0f1143802b1f5636",
+    "export_manifest": {
+      "path": "research/functions/apf2k8/manifest.json",
+      "sha256": "9c5186fc9345d2079eebd9f7f3612043a9aa3a8d7a09a6950d3a37573b78de9e"
+    },
+    "focused_trace": {
+      "path": "reports/assets/apf_uniform_ghidra/uniform_trace.txt",
+      "sha256": "296061f139ed14148e87f8e276263b4d528346da2c303e870d854d9d79508c82"
+    },
+    "ledger_shard": {
+      "path": "research/functions/apf2k8/ledger/apf2k8_functions_12288_12799.jsonl",
+      "sha256": "7c7492c3c6ade7c7f6ea4071e35021bf46544326d616b95ee7f187c6053b2e9d"
+    },
+    "pseudo_c_shard": {
+      "path": "research/functions/apf2k8/pseudo_c/apf2k8_pseudoc_12544_12799.c",
+      "sha256": "23caba576140b12daebfbeb4b437b269205200796f4f0deaa1a5534afb049c7b"
+    }
+  },
+  "status": "static_home_away_bank_orientation_closed",
+  "wrapper_count": 24
+}

@@ -1,0 +1,41 @@
+{
+  "$id": "https://local.visualconcepts.invalid/schemas/nfl2k5-menu-back-audio-recipe-v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "purpose": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema": {
+      "const": "nfl2k5_menu_back_audio_recipe/v1"
+    },
+    "target": {
+      "const": "menu-back_01"
+    },
+    "wav": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "wav_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "wav_size": {
+      "maximum": 16777216,
+      "minimum": 44,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema",
+    "purpose",
+    "target",
+    "wav",
+    "wav_size",
+    "wav_sha256"
+  ],
+  "title": "NFL 2K5 fixed menu-back audio replacement recipe",
+  "type": "object"
+}

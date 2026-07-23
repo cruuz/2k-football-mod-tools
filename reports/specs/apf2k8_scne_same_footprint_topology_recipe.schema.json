@@ -1,0 +1,189 @@
+{
+    "$id": "apf2k8_scne_same_footprint_topology_recipe/v1",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "description": "Fail-closed recipe for replacing only the four BE16 strip elements of APF 2K8 stadium outer14/inner8/node17. It does not authorize draw, vertex, stream, material, bounds, or count edits.",
+    "properties": {
+        "claim_flags": {
+            "additionalProperties": false,
+            "properties": {
+                "changed_count_proved": {
+                    "const": false
+                },
+                "emulator_runtime_visibility_proved": {
+                    "const": false
+                },
+                "material_or_vertex_authoring_proved": {
+                    "const": false
+                },
+                "production_mesh_importer_proved": {
+                    "const": false
+                },
+                "same_footprint_topology_only": {
+                    "const": true
+                },
+                "xbox_360_hardware_proved": {
+                    "const": false
+                }
+            },
+            "required": [
+                "changed_count_proved",
+                "emulator_runtime_visibility_proved",
+                "material_or_vertex_authoring_proved",
+                "production_mesh_importer_proved",
+                "same_footprint_topology_only",
+                "xbox_360_hardware_proved"
+            ],
+            "type": "object"
+        },
+        "game": {
+            "additionalProperties": false,
+            "properties": {
+                "platform": {
+                    "const": "Xbox 360"
+                },
+                "title": {
+                    "const": "All-Pro Football 2K8"
+                }
+            },
+            "required": [
+                "platform",
+                "title"
+            ],
+            "type": "object"
+        },
+        "indices": {
+            "items": {
+                "maximum": 3,
+                "minimum": 0,
+                "type": "integer"
+            },
+            "maxItems": 4,
+            "minItems": 4,
+            "type": "array",
+            "uniqueItems": true
+        },
+        "operation": {
+            "const": "replace_node17_exact_four_be16_strip"
+        },
+        "schema": {
+            "const": "apf2k8_scne_same_footprint_topology_recipe/v1"
+        },
+        "source_contract": {
+            "additionalProperties": false,
+            "properties": {
+                "index_pack": {
+                    "const": "0A"
+                },
+                "index_sha256": {
+                    "const": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+                },
+                "physical_pack": {
+                    "const": "1A"
+                },
+                "physical_pack_sha256": {
+                    "const": "9f48974f4a63d1827a1ca6bbe847aeaa6911cdb884f84f4d3bbd0a9a1eb6eacb"
+                }
+            },
+            "required": [
+                "index_pack",
+                "index_sha256",
+                "physical_pack",
+                "physical_pack_sha256"
+            ],
+            "type": "object"
+        },
+        "target": {
+            "additionalProperties": false,
+            "properties": {
+                "draw_record_sha256": {
+                    "const": "161a2e06c0b875b6679423f490c2c89691d1da9899003768a0f4eac01cfe873f"
+                },
+                "index_component_bits": {
+                    "const": 16
+                },
+                "index_count": {
+                    "const": 4
+                },
+                "inner_file_id": {
+                    "const": "0xe604044f"
+                },
+                "inner_file_index": {
+                    "const": 8
+                },
+                "inner_name": {
+                    "const": "stadium"
+                },
+                "inner_type": {
+                    "const": "SCNE"
+                },
+                "node_index": {
+                    "const": 17
+                },
+                "node_name": {
+                    "const": "polySurface19930"
+                },
+                "outer_name_id": {
+                    "const": "0x02bae370"
+                },
+                "outer_table_index": {
+                    "const": 14
+                },
+                "vertex_count": {
+                    "const": 4
+                }
+            },
+            "required": [
+                "draw_record_sha256",
+                "index_component_bits",
+                "index_count",
+                "inner_file_id",
+                "inner_file_index",
+                "inner_name",
+                "inner_type",
+                "node_index",
+                "node_name",
+                "outer_name_id",
+                "outer_table_index",
+                "vertex_count"
+            ],
+            "type": "object"
+        },
+        "topology": {
+            "additionalProperties": false,
+            "properties": {
+                "native_primitive": {
+                    "const": "D3DPT_TRIANGLESTRIP"
+                },
+                "restart_value": {
+                    "const": 65535
+                },
+                "serialized_byte_order": {
+                    "const": "big-endian"
+                },
+                "vertex_order": {
+                    "const": "existing_native_vertex_order"
+                }
+            },
+            "required": [
+                "native_primitive",
+                "restart_value",
+                "serialized_byte_order",
+                "vertex_order"
+            ],
+            "type": "object"
+        }
+    },
+    "required": [
+        "claim_flags",
+        "game",
+        "indices",
+        "operation",
+        "schema",
+        "source_contract",
+        "target",
+        "topology"
+    ],
+    "title": "APF 2K8 node17 same-footprint topology recipe",
+    "type": "object"
+}

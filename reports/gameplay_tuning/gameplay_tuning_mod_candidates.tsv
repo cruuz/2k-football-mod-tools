@@ -1,0 +1,10 @@
+game	feature	mechanism	status	executable_mutation_required	copy_only_iso_feasible	notes
+NFL 2K5	stock 21 gameplay sliders	UI callbacks / profile state	proved 0..1 UI	yes for executable defaults	no	final per-play consumers unresolved
+NFL 2K5	out-of-range sliders	raw setter/import vector	candidate only	not necessarily if save payload is solved	no	no clamp on proved import path; downstream safety unknown
+NFL 2K5	CPU fantasy-draft position priorities	17-float .rdata table	exact executable-patch candidate	yes	no	table owner and pick path proved; runtime patch untested
+NFL 2K5	catch/drop frequency	Catching sliders plus final outcome logic	partially mapped	unknown	no	slider owner proved; final catch/drop branch and polarity not proved
+APF 2K8	stock 21 gameplay sliders	offline/online UI callbacks / 21-float profile state	proved 0..1 UI	yes for executable defaults	no	raw importer and runtime synchronization proved
+APF 2K8	out-of-range sliders	raw 21-float importer	candidate only	not necessarily if save payload is solved	no	importer does not clamp; final consumers and stability unknown
+APF 2K8	CPU fantasy-draft priorities	retained 17-float table / old UI cluster	lineage only	unknown	no	identical table exists but no direct/ref/materialized owner was found
+APF 2K8	franchise mode	state/UI/database/schedule/save executable systems	not data-only	yes	no	cannot be ported by assets or slider/profile edits
+cross-title	2K5 franchise into APF	code and schema integration	requires executable reimplementation/patching	yes	no	shared lineage lowers research cost but does not create a drop-in module

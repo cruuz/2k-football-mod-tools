@@ -1,0 +1,1778 @@
+{
+  "byte_conventions": {
+    "h7a_match_word_byte_order": "big-endian",
+    "iff_scalar_byte_order": "big-endian except little-endian name-footer payload",
+    "one_based_self_relative_pointer": {
+      "encode_formula": "stored_u32 = target_offset - pointer_field_offset + 1",
+      "non_null_target_formula": "target_offset = pointer_field_offset + stored_u32 - 1",
+      "null_value": 0,
+      "storage": "u32 in the containing structure's byte order",
+      "writer_rule": "reject zero where a required table/string/stream pointer has nonzero count; reject target outside its owning decompressed part"
+    },
+    "scne_float_byte_order": "big-endian IEEE-754 binary32",
+    "scne_name_encoding": "UTF-16BE NUL-terminated",
+    "scne_scalar_byte_order": "big-endian"
+  },
+  "catalog_dispatcher_implementation_witness": {
+    "changed_all_zero_node3": {
+      "allocation_slack_after_bytes": 1513,
+      "authorized_lane_bytes": 288,
+      "block0_stored_length_after": 3299595,
+      "block0_stored_length_before": 3299082,
+      "changed_decoded_block0_bytes": 284,
+      "draw_record_count": 3,
+      "node_name": "polySurface19821",
+      "operation": "replace all 24 positions with the public nonretail all-zero witness",
+      "output_1a_sha256": "bae670cdc1f07a5201a21c6a7ecadb5499c7c2d46dff2a78f4342cf9ce8a7e33",
+      "output_outer_sha256": "ad58fc4b0adee1044c3c55df987d04d24875eb0f042e146ccd032f18a3664505",
+      "output_stadium_dram_sha256": "af1efab4cab214ef796258d685eeb5fd9608c3ee238147fde610bd3eeac0b4c1",
+      "target_id": "outer14.inner8.node3",
+      "vertex_count": 24
+    },
+    "claim_boundary": "catalog-backed same-count FLOAT32x3 dispatcher and node3 offline bytes proved; this POSITION witness does not prove topology/count changes, runtime rigidity or visibility, material/UV/skin authoring, hardware acceptance, general SCNE dispatch, or production import",
+    "fixed_outer_allocation_bytes": 12931072,
+    "full_no_op_recipe_policy": "derive exact retail node3 positions only into a caller-owned temporary path; print and retain hashes/metrics only",
+    "no_op": {
+      "complete_1a_byte_identical": true,
+      "h7a_recompressed": false,
+      "source_and_output_1a_sha256": "9f48974f4a63d1827a1ca6bbe847aeaa6911cdb884f84f4d3bbd0a9a1eb6eacb",
+      "source_and_output_outer_sha256": "347503ffdcd910b57425584869e1520238b1298e516f643936568b83d5a5a07a"
+    },
+    "physical_input_output_pack": "source complete game directory indexed by 0A; copied sibling 1A only",
+    "preservation": {
+      "all_scne_bytes_outside_selected_position_lanes_exact": true,
+      "block1_stored_footer_tail_and_pack_complement_exact": true,
+      "iff_header_complement_and_file_descriptors_exact": true,
+      "independent_verifier_imports_any_position_writer": false,
+      "independent_verifier_rederives_manifest_every_field": true,
+      "node_matrix_hierarchy_draw_index_declarations_descriptor_exact": true,
+      "non_target_parts_exact": 12,
+      "sibling_parts_exact": 11,
+      "stadium_vram_exact": true,
+      "target_stream_non_position_interleaves_exact": true
+    },
+    "public_recipe_sample": "node3 with 24 all-zero nonretail authored positions",
+    "recipe_schema": "apf2k8_scne_catalog_position_recipe/v2",
+    "refusals": {
+      "allocation_overflow": true,
+      "forbidden_structural_mutation": true,
+      "symlink_or_hardlink_alias": true,
+      "unsafe_publication_path_replacement": true,
+      "wrong_catalog_hash_target_or_count": true
+    },
+    "retail_or_retail_derived_recipe_coordinates_committed": false,
+    "scope": "all 77 frozen-catalog additional targets are structurally authorized for exact same-count FLOAT32x3_BE POSITION0 replacement; node3 is the second complete byte-level witness"
+  },
+  "claim_flags": {
+    "attachment_rules_proved": false,
+    "changed_topology_writer_proved": true,
+    "changed_vertex_count_writer_proved": false,
+    "complete_scne_read_grammar_proved": false,
+    "complete_scne_serializer_proved": false,
+    "emulator_runtime_visibility_proved": false,
+    "fixed_allocation_required_by_current_profile": true,
+    "general_scne_same_count_position_dispatcher_implemented": false,
+    "general_scne_topology_dispatcher_implemented": false,
+    "independent_changed_span_verification_required": true,
+    "material_uv_writer_proved": false,
+    "no_op_whole_entry_byte_identity_required": true,
+    "outer14_additional_static_target_catalog_proved": true,
+    "outer14_catalog_all_77_targets_structurally_authorized": true,
+    "outer14_catalog_same_count_position_dispatcher_implemented": true,
+    "pinned_outer14_node17_offline_structural_writeback_proved": true,
+    "pinned_outer14_node17_same_count_position_writer_implemented": true,
+    "pinned_outer14_node17_same_footprint_topology_offline_roundtrip_proved": true,
+    "pinned_outer14_node17_same_footprint_topology_writer_implemented": true,
+    "pinned_outer14_node3_offline_structural_writeback_proved": true,
+    "pinned_outer14_node3_representative_h7a_rebuild_fit_proved": true,
+    "pinned_outer14_node3_writer_implemented": true,
+    "production_mesh_importer_proved": false,
+    "same_count_position_profile_specified": true,
+    "same_count_position_writer_implemented": false,
+    "skinned_mesh_writer_proved": false,
+    "static_runtime_classification_proved": false,
+    "xbox_360_hardware_acceptance_proved": false
+  },
+  "container_ownership": {
+    "h7a": {
+      "changed_block_rebuild_rule": [
+        "preserve window_shift and codec_field",
+        "require encode then independent decode to reproduce the intended decompressed block byte-for-byte",
+        "update only stored_length/start offsets/file_length fields required by repacking",
+        "reject if active IFF plus exact footer exceeds fixed outer allocation"
+      ],
+      "magic_hex": "0x0e4837c3",
+      "magic_u32be": 239613891,
+      "no_op_rule": "do not recompress; return the original outer-entry bytes verbatim",
+      "token_grammar": {
+        "decode_invariants": [
+          "distance >= 1 and distance <= bytes already emitted",
+          "no match may overrun declared uncompressed length",
+          "decoder must emit exactly declared uncompressed length",
+          "remaining stored payload bytes, if any, must all be zero"
+        ],
+        "descriptor": "one byte, least-significant bit first, at most eight following tokens",
+        "distance_formula": "word & ((1 << shift) - 1)",
+        "length_formula": "((word >> shift) & ((1 << (16 - shift)) - 1)) + 3",
+        "literal_flag": 0,
+        "literal_payload": "one byte",
+        "match_flag": 1,
+        "match_payload": "one u16be word"
+      },
+      "wrapper_fields": [
+        {
+          "name": "magic",
+          "offset_bytes": 0,
+          "rule": "must equal 0x0e4837c3",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "uncompressed_length",
+          "offset_bytes": 4,
+          "rule": "must equal IFF descriptor uncompressed_length",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "stored_length_including_wrapper",
+          "offset_bytes": 8,
+          "rule": "must equal IFF descriptor stored_length",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "codec_field",
+          "offset_bytes": 12,
+          "rule": "must equal and preserve IFF descriptor codec_field",
+          "size_bytes": 4,
+          "status": "partly_proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "window_shift",
+          "offset_bytes": 16,
+          "rule": "1..15; preserve retail value",
+          "size_bytes": 4,
+          "status": "proved_transport",
+          "storage": "u32be"
+        }
+      ],
+      "wrapper_size_bytes": 20
+    },
+    "iff": {
+      "block_descriptor": {
+        "fields": [
+          {
+            "name": "name_hash",
+            "offset_bytes": 0,
+            "rule": "CRC32 label when known; preserve",
+            "size_bytes": 4,
+            "status": "proved_identity",
+            "storage": "u32be"
+          },
+          {
+            "name": "type_hash",
+            "offset_bytes": 4,
+            "rule": "CRC32 label when known; preserve",
+            "size_bytes": 4,
+            "status": "proved_identity",
+            "storage": "u32be"
+          },
+          {
+            "name": "alignment_or_flags",
+            "offset_bytes": 8,
+            "rule": "preserve bit-exact",
+            "size_bytes": 4,
+            "status": "unknown",
+            "storage": "u32be"
+          },
+          {
+            "name": "uncompressed_length",
+            "offset_bytes": 12,
+            "rule": "fixed for same-count profile",
+            "size_bytes": 4,
+            "status": "proved",
+            "storage": "u32be"
+          },
+          {
+            "name": "codec_field",
+            "offset_bytes": 16,
+            "rule": "must equal H7A wrapper field and be preserved",
+            "size_bytes": 4,
+            "status": "partly_proved",
+            "storage": "u32be"
+          },
+          {
+            "name": "stored_start_offset",
+            "offset_bytes": 20,
+            "rule": "may be recomputed during same-entry block packing",
+            "size_bytes": 4,
+            "status": "proved",
+            "storage": "u32be"
+          },
+          {
+            "name": "stored_length",
+            "offset_bytes": 24,
+            "rule": "includes H7A wrapper when compressed",
+            "size_bytes": 4,
+            "status": "proved",
+            "storage": "u32be"
+          },
+          {
+            "name": "indexed",
+            "offset_bytes": 28,
+            "rule": "preserve bit-exact",
+            "size_bytes": 4,
+            "status": "unknown",
+            "storage": "u32be"
+          }
+        ],
+        "known_block_hashes": {
+          "DRAM": "0xbb05a9c1",
+          "SRAM": "0x76cbc6e7",
+          "VRAM": "0x411536d5"
+        },
+        "size_bytes": 32
+      },
+      "file_pointer_and_descriptor": {
+        "absent_part_sentinel_u32": 4294967295,
+        "descriptor_prefix_size_bytes": 12,
+        "fields": [
+          {
+            "name": "file_id",
+            "offset_bytes": 0,
+            "rule": "CRC32(exact ASCII name)",
+            "size_bytes": 4,
+            "status": "proved_identity",
+            "storage": "u32be"
+          },
+          {
+            "name": "type_hash",
+            "offset_bytes": 4,
+            "rule": "CRC32(exact ASCII type); SCNE is 0xe26c9b5d",
+            "size_bytes": 4,
+            "status": "proved_identity",
+            "storage": "u32be"
+          },
+          {
+            "name": "offset_count",
+            "offset_bytes": 8,
+            "rule": "must be <= block_count",
+            "size_bytes": 4,
+            "status": "proved",
+            "storage": "u32be"
+          },
+          {
+            "name": "decompressed_block_offsets",
+            "offset_bytes": 12,
+            "rule": "one offset per represented block; 0xffffffff means absent part",
+            "size_bytes": 0,
+            "status": "proved",
+            "storage": "offset_count*u32be"
+          }
+        ],
+        "file_pointer_table_entry": "one relptr_u32be per file; each must resolve to the next packed descriptor",
+        "part_range_derivation": [
+          "for one decompressed block, retain files whose represented offset is not 0xffffffff",
+          "sort those files by decompressed offset",
+          "part.start is that file's offset",
+          "part.end is the next present file's offset or the block uncompressed_length",
+          "require 0 <= start <= end <= uncompressed_length"
+        ]
+      },
+      "header_fields": [
+        {
+          "name": "magic",
+          "offset_bytes": 0,
+          "rule": "must equal 0xff3bef94",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "header_size",
+          "offset_bytes": 4,
+          "rule": "bounds header, block descriptors, pointer table, file descriptors, and header padding",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "file_length_excluding_name_footer",
+          "offset_bytes": 8,
+          "rule": "end of stored block body and start of name footer",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "zero",
+          "offset_bytes": 12,
+          "rule": "preserve exactly; retail parser requires no authored semantic",
+          "size_bytes": 4,
+          "status": "observed",
+          "storage": "u32be"
+        },
+        {
+          "name": "block_count",
+          "offset_bytes": 16,
+          "rule": "number of 0x20-byte block descriptors",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "block_table_pointer",
+          "offset_bytes": 20,
+          "rule": "must resolve to +0x20",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "relptr_u32be"
+        },
+        {
+          "name": "file_count",
+          "offset_bytes": 24,
+          "rule": "number of file pointers and packed file descriptors",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "file_pointer_table",
+          "offset_bytes": 28,
+          "rule": "must resolve immediately after block descriptors",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "relptr_u32be"
+        }
+      ],
+      "header_size_bytes": 32,
+      "magic_hex": "0xff3bef94",
+      "magic_u32be": 4282118036,
+      "name_footer": {
+        "magic_hex": "0xaa171516",
+        "magic_u32be": 2853639446,
+        "names": "UTF-16LE NUL-terminated",
+        "payload_byte_order": "little-endian",
+        "payload_size_at_footer_plus_4": "u32le",
+        "pointer_rule": "one-based self-relative u32le",
+        "write_rule": "footer bytes must remain bit-exact; footer may move only because preceding stored block lengths changed"
+      },
+      "scne_part_ownership": {
+        "additional_parts": "799 SCNE files also own one VRAM part; 504 are DRAM-only; no retail SCNE owns an SRAM part",
+        "mandatory_preservation": [
+          "selected SCNE VRAM part, if present",
+          "every SRAM block and every file part that occupies it",
+          "all nonselected file parts sharing the changed DRAM block",
+          "all bytes of the selected SCNE DRAM part outside approved POSITION0 lanes",
+          "all other decompressed blocks and their stored bytes where their start offsets need not move"
+        ],
+        "position_write_owner": "only the selected SCNE DRAM part and only its proved POSITION0 component byte lanes",
+        "system_part": "every one of 1,303 SCNE files owns exactly one DRAM part; the SCNE grammar and vertex streams parsed here live wholly inside that part",
+        "three_block_packages": "SRAM may still exist as a sibling block in the containing IFF, and block ordering is not globally fixed; resolve ownership by block hash/descriptor, never by assuming block index 1 is VRAM"
+      }
+    },
+    "outer_archive": {
+      "allocation_model": "each outer entry has a fixed indexed allocation; this profile may replace only a copied entry with exactly the same byte length",
+      "writer_requirements": [
+        "never open the user-supplied source volume for write",
+        "copy all source volumes before mutation",
+        "preserve every byte outside the selected outer allocation",
+        "reject a rebuilt active IFF plus footer that exceeds the selected allocation",
+        "reject nonzero allocation-tail bytes unless a separately proved rule explains and preserves them",
+        "do not borrow slack from the following entry or move another outer entry"
+      ]
+    }
+  },
+  "corpus_proof": {
+    "dram_only_scne": 504,
+    "dram_vram_scne": 799,
+    "draw_records": 47112,
+    "hierarchy_records": 40991,
+    "hierarchy_semantic_variants": 8,
+    "index_width_distribution": {
+      "16": 13003,
+      "32": 3
+    },
+    "matrix_semantic_variants": 49,
+    "mesh_descriptor_count_one_nodes": 13006,
+    "mesh_nodes": 13006,
+    "position_formats": {
+      "float32x3": 12416,
+      "snorm10_10_10": 225,
+      "snorm16x4": 365
+    },
+    "primitive_type_5_nodes": 13006,
+    "retail_0a_sha256": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+    "scenes_with_portme": 57,
+    "scne_resources": 1303,
+    "scne_sram_part_count": 0,
+    "serialized_indices": 24519417,
+    "source_vertices": 16217141,
+    "stream_count_distribution": {
+      "1": 12713,
+      "2": 292,
+      "3": 1
+    },
+    "stream_enabled_one": 13300,
+    "stream_records": 13300,
+    "structural_failures": 0,
+    "vertex_declarations": 43098
+  },
+  "data_policy": {
+    "allowed_evidence": "format constants, aggregate counts, hashes, field offsets, algorithms, and claim boundaries only",
+    "contains_retail_archive_bytes": false,
+    "contains_retail_geometry": false,
+    "contains_retail_index_values": false,
+    "contains_retail_stream_payloads": false,
+    "contains_retail_vertex_values": false
+  },
+  "game": {
+    "platform": "Xbox 360",
+    "region_evidence": "USA retail archive identity",
+    "source_volume_identity_sha256": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+    "title": "All-Pro Football 2K8"
+  },
+  "known_unknowns": {
+    "attributes": [
+      "complete NORMAL/TANGENT/BINORMAL transforms",
+      "UV conventions and texture channels",
+      "COLOR semantics",
+      "all non-POSITION format inverses in context"
+    ],
+    "container": [
+      "general size-changing SCNE relocation",
+      "production H7A packing strategy",
+      "runtime memory allocation and 360 memory ceiling effects"
+    ],
+    "deformation": [
+      "joint palette",
+      "blend-index meaning",
+      "weight normalization",
+      "bind/inverse-bind matrices",
+      "morph target storage",
+      "CurveAnim/SingleMoCap/CDAN binding"
+    ],
+    "hierarchy_and_attachment": [
+      "which hierarchy records are bones",
+      "attachment/socket rules",
+      "helmet/head attachment",
+      "matrix application order",
+      "runtime parent overrides"
+    ],
+    "mesh_node": [
+      "type/flag words",
+      "hash_10",
+      "unknown ranges",
+      "optional mesh pointer",
+      "unknown packed-stream low 16 bits"
+    ],
+    "rendering": [
+      "optional draw-state payload meaning",
+      "render_flags_2c bit meanings",
+      "shader programs",
+      "samplers",
+      "TXTR binding behind material slots",
+      "bounds/culling coupling",
+      "runtime buffer ownership"
+    ],
+    "scne_envelope": [
+      "unknown header ranges",
+      "matrix-table ownership",
+      "non-finite matrix variants",
+      "bounds/culling coupling"
+    ]
+  },
+  "next_closure_steps": [
+    "runtime-witness the pinned outer14/inner8 node17 position and topology edits and the node3 deformation in Xenia",
+    "recover matrix and attachment ownership before calling any cataloged node independently rigid",
+    "extend beyond the frozen outer14 stadium catalog only after an equally strict hashes-only target derivation and independent byte verifier",
+    "generalize topology only through hashes-only target admission plus per-target draw/index re-derivation; retain the pinned node17 profile as the only implemented APF topology target until then",
+    "recover bounds/culling, material, and UV ownership before changed-count or textured external-mesh import",
+    "recover attachment and skin rules before treating gameplay helmet/head resources as static shells"
+  ],
+  "outer14_stadium_static_target_catalog": {
+    "additional_target_count": 77,
+    "contains_retail_vertex_values": false,
+    "eligible_including_node17": 78,
+    "schema": "apf2k8_stadium_static_position_target_catalog/v1",
+    "scope": "outer14/inner8/stadium only; excludes already implemented node17",
+    "selected_second_target_handoff": {
+      "allocation_slack_after_bytes": 1367,
+      "authorized_position_lane_bytes": 288,
+      "changed_inner_part": "file8/part0 only",
+      "downstream_catalog_dispatcher_now_implemented": true,
+      "downstream_node3_writer_and_independent_verifier_proved": true,
+      "draw_record_count": 3,
+      "historical_catalog_generation_time_writer_complete": false,
+      "index_count": 32,
+      "node_index": 3,
+      "node_name": "polySurface19821",
+      "representative_operation": "local-only exact +1 X/+2 Y/+3 Z serialized translation",
+      "runtime_rigid_attachment_proved": false,
+      "runtime_visibility_proved": false,
+      "stored_block0_length_after": 3299741,
+      "stream_stride_bytes": 24,
+      "vertex_count": 24
+    },
+    "selection": {
+      "deformation_gate": "no BLENDINDICES* or BLENDWEIGHT* declarations",
+      "position": "one bounded FLOAT32x3 POSITION0 declaration",
+      "runtime_rigidity_inferred": false,
+      "structural_spans": "node, ordinal-correlated matrix slot, hierarchy, draw, index, declarations, descriptor, stream records, payload, and strided position-lane hashes",
+      "topology": "validated BE16/BE32 D3DPT_TRIANGLESTRIP indices"
+    },
+    "shared_container_envelope": {
+      "fixed_outer_allocation_bytes": 12931072,
+      "inner_part_count": 13,
+      "maximum_stored_block0_bytes": 3301108,
+      "non_target_part_count_per_position_edit": 12,
+      "overflow_rule": "fail closed before pack write",
+      "source_headroom_bytes": 2026,
+      "source_stored_block0_bytes": 3299082
+    }
+  },
+  "pinned_implementation_witness": {
+    "changed_plus_1_2_3": {
+      "allocation_slack_after_bytes": 1391,
+      "authorized_lane_bytes": 48,
+      "block0_stored_length_after": 3299717,
+      "block0_stored_length_before": 3299082,
+      "changed_decoded_dram_bytes": 14,
+      "operation": "add +1 X, +2 Y, +3 Z to all four authored positions",
+      "output_1a_sha256": "6f275ccb780acfee0cba9cd59c38e4bb2aedb18d01dec7030d61546441026b40",
+      "output_outer_sha256": "89ec32ee6da2a73f494667c01aa8ea9968c49c97317ec85d3c0342c84eb632fa",
+      "output_stadium_dram_sha256": "6ccfc27ed46491961378fc170409d9e183bcb3302ccc444be80f8e710821b02a"
+    },
+    "claim_boundary": "this pinned POSITION witness proves offline bytes for one target only; catalog dispatch is established separately by the v2 witness; it does not itself prove topology, rigid attachment, runtime visibility, material/UV/skin authoring, general SCNE dispatch, or production import",
+    "fixed_outer_allocation_bytes": 12931072,
+    "full_proof_recipe_policy": "derive from the user-owned source into temporary paths; retain hashes and metrics only",
+    "no_op": {
+      "complete_1a_byte_identical": true,
+      "h7a_recompressed": false,
+      "source_and_output_1a_sha256": "9f48974f4a63d1827a1ca6bbe847aeaa6911cdb884f84f4d3bbd0a9a1eb6eacb",
+      "source_and_output_outer_sha256": "347503ffdcd910b57425584869e1520238b1298e516f643936568b83d5a5a07a"
+    },
+    "physical_input_output_pack": "source complete game directory indexed by 0A; copied sibling 1A only",
+    "preservation": {
+      "block1_stored_footer_tail_and_pack_complement_exact": true,
+      "iff_header_complement_and_file_descriptors_exact": true,
+      "independent_verifier_imports_production_writer_or_parsers": false,
+      "matrix_hierarchy_draw_index_declarations_descriptor_exact": true,
+      "non_target_parts_exact": 12,
+      "sibling_parts_exact": 11,
+      "stadium_vram_exact": true,
+      "uv_normal_interleaves_exact": true
+    },
+    "public_recipe_sample": "four all-zero nonretail authored positions",
+    "recipe_schema": "apf2k8_scne_same_count_position_recipe/v1",
+    "retail_or_retail_derived_recipe_coordinates_committed": false,
+    "scope": "outer14/inner8/stadium/node17/polySurface19930 only; exactly four serialized object-space FLOAT32x3 positions"
+  },
+  "pinned_same_footprint_topology_implementation_witness": {
+    "changed_nonretail_permutation": {
+      "allocation_slack_after_bytes": 1403,
+      "authorized_index_bytes": 8,
+      "block0_stored_length_after": 3299705,
+      "block0_stored_length_before": 3299082,
+      "changed_decoded_dram_bytes": 2,
+      "native_degenerate_triangle_count": 0,
+      "native_triangle_count": 2,
+      "output_1a_sha256": "7768585fdbfa37144f3b153292da16b6f9beb95b4e3b12c15f62e95c98500df9",
+      "output_index_buffer_sha256": "f206bdbe6ccb7e731c14e4f828fc341338dbf5626182ffe99503107f58d375f3",
+      "output_outer_sha256": "c3421aa724ff1e8e991524f0394346d3ac3e4703f14d203fb596d1030258f17d",
+      "output_stadium_dram_sha256": "5527a6eac6bf35de5f7aa5cb3521d7a7b967901b93dac109dce51d5de3c6a5cb"
+    },
+    "claim_boundary": "same-footprint node17 index permutation is byte-proved offline; changed vertex count, draw rewriting, bounds/culling ownership, runtime acceptance, hardware acceptance, and production import remain unproved",
+    "draw_coupling": {
+      "draw_record_bytes_preserved": 48,
+      "material_slot_preserved": true,
+      "optional_draw_state_preserved": true,
+      "reason": "every admitted permutation retains first=0, count=4, capacity=2, base=0, minimum=0, range=4",
+      "render_flags_preserved": true
+    },
+    "fixed_outer_allocation_bytes": 12931072,
+    "no_op": {
+      "changed_decoded_dram_bytes": 0,
+      "complete_1a_byte_identical": true,
+      "h7a_recompressed": false,
+      "source_and_output_1a_sha256": "9f48974f4a63d1827a1ca6bbe847aeaa6911cdb884f84f4d3bbd0a9a1eb6eacb",
+      "source_and_output_outer_sha256": "347503ffdcd910b57425584869e1520238b1298e516f643936568b83d5a5a07a"
+    },
+    "physical_input_output_pack": "source complete game directory indexed by 0A; copied sibling 1A only",
+    "preservation": {
+      "all_decoded_bytes_outside_index_allocation_exact": true,
+      "all_output_1a_bytes_outside_outer14_exact": true,
+      "declarations_descriptor_matrix_hierarchy_node_exact": true,
+      "draw_record_exact": true,
+      "independent_verifier_imports_topology_writer_or_production_parser": false,
+      "non_target_parts_exact": 12,
+      "sibling_parts_exact": 11,
+      "stadium_vram_exact": true,
+      "stored_block1_footer_and_iff_header_complement_exact": true,
+      "vertex_stream_exact": true
+    },
+    "profile": "outer14_inner8_node17_four_be16_strip/v1",
+    "public_recipe_sample": "nonretail permutation of 0,1,2,3; no retail sequence is committed",
+    "recipe_schema": "apf2k8_scne_same_footprint_topology_recipe/v1",
+    "scope": "outer14/inner8/stadium/node17/polySurface19930 only; exactly four serialized BE16 strip elements inside the existing eight-byte allocation"
+  },
+  "schema": "apf2k8_scne_static_serializer/v1",
+  "scne": {
+    "draw_record": {
+      "count_corpus": 47112,
+      "fields": [
+        {
+          "name": "draw_primitive_code",
+          "offset_bytes": 0,
+          "rule": "6 in every retail draw; forwarded to native submission; separate enum domain from descriptor primitive 5",
+          "size_bytes": 4,
+          "status": "proved_renderer_and_corpus",
+          "storage": "u32be"
+        },
+        {
+          "name": "first_element",
+          "offset_bytes": 4,
+          "rule": "first serialized index element; sorted draw windows exactly partition the node index payload",
+          "size_bytes": 4,
+          "status": "proved_renderer_and_corpus",
+          "storage": "u32be"
+        },
+        {
+          "name": "element_count",
+          "offset_bytes": 8,
+          "rule": "serialized elements in this draw including restart values; at least 3",
+          "size_bytes": 4,
+          "status": "proved_renderer_and_corpus",
+          "storage": "u32be"
+        },
+        {
+          "name": "primitive_capacity",
+          "offset_bytes": 12,
+          "rule": "element_count - 2; not restart/degenerate-filtered triangle count",
+          "size_bytes": 4,
+          "status": "proved_corpus",
+          "storage": "u32be"
+        },
+        {
+          "name": "base_vertex",
+          "offset_bytes": 16,
+          "rule": "forwarded to indexed submission; zero in all 47,112 retail draws",
+          "size_bytes": 4,
+          "status": "proved_renderer_and_corpus",
+          "storage": "u32be"
+        },
+        {
+          "name": "minimum_vertex",
+          "offset_bytes": 20,
+          "rule": "minimum non-restart index inside this draw window",
+          "size_bytes": 4,
+          "status": "proved_corpus",
+          "storage": "u32be"
+        },
+        {
+          "name": "vertex_range",
+          "offset_bytes": 24,
+          "rule": "maximum non-restart index - minimum_vertex + 1",
+          "size_bytes": 4,
+          "status": "proved_corpus",
+          "storage": "u32be"
+        },
+        {
+          "name": "optional_draw_state",
+          "offset_bytes": 28,
+          "rule": "46,348 null; all 764 non-null targets are in-system and 8-byte aligned; relocated/runtime value is forwarded but payload meaning is unknown",
+          "size_bytes": 4,
+          "status": "partly_proved",
+          "storage": "relptr_u32be_or_null"
+        },
+        {
+          "name": "material_slot",
+          "offset_bytes": 32,
+          "rule": "material address = instance material base + slot * 0xf0; retail slots 0..242",
+          "size_bytes": 4,
+          "status": "proved_renderer",
+          "storage": "u32be"
+        },
+        {
+          "name": "reserved_24",
+          "offset_bytes": 36,
+          "rule": "zero in every retail draw; preserve",
+          "size_bytes": 4,
+          "status": "proved_zero_corpus",
+          "storage": "u32be"
+        },
+        {
+          "name": "reserved_28",
+          "offset_bytes": 40,
+          "rule": "zero in every retail draw; preserve",
+          "size_bytes": 4,
+          "status": "proved_zero_corpus",
+          "storage": "u32be"
+        },
+        {
+          "name": "render_flags_2c",
+          "offset_bytes": 44,
+          "rule": "retail values 0..3; exact meaning unknown; preserve",
+          "size_bytes": 4,
+          "status": "observed",
+          "storage": "u32be"
+        }
+      ],
+      "remaining_unknowns": [
+        "optional_draw_state payload meaning",
+        "render_flags_2c bit meanings",
+        "shader, sampler, and TXTR binding behind material objects",
+        "bounds/culling coupling"
+      ],
+      "size_bytes": 48,
+      "status": "field layout and index-window coupling proved across the complete retail corpus; selected renderer forwarding and material-slot stride proved from XEX code",
+      "window_contract": [
+        "sort records by first_element; windows begin at zero, are contiguous and nonoverlapping, and end at node.index_count",
+        "first_element + element_count never exceeds node.index_count",
+        "primitive_capacity equals element_count - 2 even when restart or repeated-index degenerates reduce emitted triangles",
+        "minimum_vertex and vertex_range derive from non-restart elements before base_vertex"
+      ],
+      "write_rule": "preserve all 48 bytes unless a separately specified profile proves every affected derived field; the pinned same-footprint node17 permutation preserves all derived fields and therefore forbids draw mutation"
+    },
+    "hierarchy_table": {
+      "byte_length_formula": "0x20 + (count - 1) * 0x30 + 0x10 for count > 0",
+      "claim_boundary": "names and graph links are proved; skeleton, joint palette, attachment socket, bind matrix, inverse bind, and runtime transform meanings are not",
+      "core_fields": [
+        {
+          "name": "name",
+          "offset_bytes": 0,
+          "rule": "UTF-16BE NUL-terminated",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "relptr_u32be"
+        },
+        {
+          "name": "name_crc32",
+          "offset_bytes": 4,
+          "rule": "CRC32(exact ASCII name)",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "parent",
+          "offset_bytes": 8,
+          "rule": "-1 or record index",
+          "size_bytes": 2,
+          "status": "proved_graph",
+          "storage": "i16be"
+        },
+        {
+          "name": "first_child",
+          "offset_bytes": 10,
+          "rule": "-1 or record index",
+          "size_bytes": 2,
+          "status": "proved_graph",
+          "storage": "i16be"
+        },
+        {
+          "name": "next_sibling",
+          "offset_bytes": 12,
+          "rule": "-1 or record index",
+          "size_bytes": 2,
+          "status": "proved_graph",
+          "storage": "i16be"
+        },
+        {
+          "name": "reserved",
+          "offset_bytes": 14,
+          "rule": "preserve bit-exact",
+          "size_bytes": 2,
+          "status": "unknown",
+          "storage": "u16be"
+        },
+        {
+          "name": "vector_a",
+          "offset_bytes": 16,
+          "rule": "present only before terminal record; preserve bit-exact",
+          "size_bytes": 16,
+          "status": "unknown",
+          "storage": "4*f32be"
+        },
+        {
+          "name": "vector_b",
+          "offset_bytes": 32,
+          "rule": "present only before terminal record; preserve bit-exact",
+          "size_bytes": 16,
+          "status": "unknown",
+          "storage": "4*f32be"
+        }
+      ],
+      "header_size_bytes": 32,
+      "header_status": "eight opaque u32be words; preserve bit-exact",
+      "ordinary_record_size_bytes": 48,
+      "record_core_size_bytes": 16,
+      "terminal_rule": "the last record has only the 0x10-byte core and omits vector_a/vector_b",
+      "variants": "eight tables fail the common child/sibling-versus-parent identity; preserve all signed indices and reject hierarchy authoring"
+    },
+    "index_strip": {
+      "component_byte_order": "big-endian",
+      "component_width_field": "mesh_node +0xa4",
+      "primitive_name": "D3DPT_TRIANGLESTRIP",
+      "primitive_type": 5,
+      "read_algorithm": [
+        "restart value clears the current strip",
+        "after the first two elements, emit (a,b,c) for even triangle number and (b,a,c) for odd triangle number",
+        "omit triangles whose three indices are not distinct",
+        "require every non-restart index < vertex_count"
+      ],
+      "supported_widths": [
+        {
+          "bits": 16,
+          "bytes": 2,
+          "restart_value": 65535,
+          "retail_nodes": 13003
+        },
+        {
+          "bits": 32,
+          "bytes": 4,
+          "restart_value": 4294967295,
+          "retail_nodes": 3
+        }
+      ],
+      "write_claim": "same_count_position_only/v1 preserves every index byte; outer14_inner8_node17_four_be16_strip/v1 may replace only the existing four-element BE16 allocation with a permutation of 0,1,2,3 while preserving all draw fields"
+    },
+    "mesh_descriptor": {
+      "byte_length_formula": "0x14 + stream_count * 0x18",
+      "fields": [
+        {
+          "name": "unknown_00",
+          "offset_bytes": 0,
+          "rule": "preserve bit-exact",
+          "size_bytes": 4,
+          "status": "unknown",
+          "storage": "opaque_u32be"
+        },
+        {
+          "name": "optional_pointer_raw",
+          "offset_bytes": 4,
+          "rule": "do not resolve or rewrite without loader proof",
+          "size_bytes": 4,
+          "status": "unknown",
+          "storage": "opaque_u32be"
+        },
+        {
+          "name": "vertex_count",
+          "offset_bytes": 8,
+          "rule": "must equal each stream byte_length / stride",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "packed_stream_count",
+          "offset_bytes": 12,
+          "rule": "high 16 bits are stream_count; preserve low 16 bits",
+          "size_bytes": 4,
+          "status": "partly_proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "primitive_type",
+          "offset_bytes": 16,
+          "rule": "5 in all retail nodes; read as D3DPT_TRIANGLESTRIP",
+          "size_bytes": 4,
+          "status": "proved_corpus",
+          "storage": "u32be"
+        }
+      ],
+      "minimum_prefix_size_bytes": 20,
+      "stream_count_decode": "(packed_stream_count >> 16) & 0xffff",
+      "stream_count_retail_distribution": {
+        "1": 12713,
+        "2": 292,
+        "3": 1
+      },
+      "stream_record": {
+        "fields": [
+          {
+            "name": "flags",
+            "offset_bytes": 0,
+            "rule": "preserve bit-exact",
+            "size_bytes": 4,
+            "status": "unknown",
+            "storage": "opaque_u32be"
+          },
+          {
+            "name": "enabled",
+            "offset_bytes": 4,
+            "rule": "1 in all 13,300 retail stream records; preserve",
+            "size_bytes": 4,
+            "status": "observed",
+            "storage": "u32be"
+          },
+          {
+            "name": "stride",
+            "offset_bytes": 8,
+            "rule": "nonzero",
+            "size_bytes": 4,
+            "status": "proved",
+            "storage": "u32be"
+          },
+          {
+            "name": "byte_length",
+            "offset_bytes": 12,
+            "rule": "vertex_count * stride",
+            "size_bytes": 4,
+            "status": "proved",
+            "storage": "u32be"
+          },
+          {
+            "name": "start",
+            "offset_bytes": 16,
+            "rule": "first payload byte",
+            "size_bytes": 4,
+            "status": "proved",
+            "storage": "relptr_u32be"
+          },
+          {
+            "name": "end",
+            "offset_bytes": 20,
+            "rule": "one-past-last payload byte",
+            "size_bytes": 4,
+            "status": "proved",
+            "storage": "relptr_u32be"
+          }
+        ],
+        "invariants": [
+          "end >= start",
+          "end - start == byte_length",
+          "byte_length == vertex_count * stride",
+          "both resolved targets are within the selected SCNE DRAM part, allowing end == part length"
+        ],
+        "size_bytes": 24
+      }
+    },
+    "mesh_node": {
+      "fields": [
+        {
+          "name": "name",
+          "offset_bytes": 0,
+          "rule": "UTF-16BE NUL-terminated",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "relptr_u32be"
+        },
+        {
+          "name": "name_crc32",
+          "offset_bytes": 4,
+          "rule": "CRC32(exact ASCII name)",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "unknown_08",
+          "offset_bytes": 8,
+          "rule": "preserve bit-exact",
+          "size_bytes": 4,
+          "status": "unknown",
+          "storage": "opaque_u32be"
+        },
+        {
+          "name": "type_or_flags_0c",
+          "offset_bytes": 12,
+          "rule": "preserve bit-exact",
+          "size_bytes": 4,
+          "status": "unknown",
+          "storage": "opaque_u32be"
+        },
+        {
+          "name": "hash_10",
+          "offset_bytes": 16,
+          "rule": "preserve bit-exact",
+          "size_bytes": 4,
+          "status": "unknown",
+          "storage": "opaque_u32be"
+        },
+        {
+          "name": "unknown_14_5f",
+          "offset_bytes": 20,
+          "rule": "preserve bit-exact",
+          "size_bytes": 76,
+          "status": "unknown",
+          "storage": "opaque"
+        },
+        {
+          "name": "hierarchy_count",
+          "offset_bytes": 96,
+          "rule": "retail range 1..109",
+          "size_bytes": 4,
+          "status": "proved_extent",
+          "storage": "u32be"
+        },
+        {
+          "name": "hierarchy",
+          "offset_bytes": 100,
+          "rule": "variable terminal-short hierarchy table",
+          "size_bytes": 4,
+          "status": "proved_extent",
+          "storage": "relptr_u32be"
+        },
+        {
+          "name": "unknown_68_7b",
+          "offset_bytes": 104,
+          "rule": "preserve bit-exact",
+          "size_bytes": 20,
+          "status": "unknown",
+          "storage": "opaque"
+        },
+        {
+          "name": "draw_record_count",
+          "offset_bytes": 124,
+          "rule": "retail range 1..206",
+          "size_bytes": 4,
+          "status": "proved_extent",
+          "storage": "u32be"
+        },
+        {
+          "name": "draw_records",
+          "offset_bytes": 128,
+          "rule": "draw_record_count * 0x30; complete field layout and index-window coupling are specified below",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "relptr_u32be"
+        },
+        {
+          "name": "mesh_descriptor_count",
+          "offset_bytes": 132,
+          "rule": "exactly 1 in all 13,006 retail nodes",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "mesh_descriptor",
+          "offset_bytes": 136,
+          "rule": "one variable descriptor in retail corpus",
+          "size_bytes": 4,
+          "status": "proved_extent",
+          "storage": "relptr_u32be"
+        },
+        {
+          "name": "unknown_8c_97",
+          "offset_bytes": 140,
+          "rule": "preserve bit-exact",
+          "size_bytes": 12,
+          "status": "unknown",
+          "storage": "opaque"
+        },
+        {
+          "name": "vertex_declaration_count",
+          "offset_bytes": 152,
+          "rule": "count of 0x40-byte records",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "vertex_declarations",
+          "offset_bytes": 156,
+          "rule": "vertex_declaration_count * 0x40",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "relptr_u32be"
+        },
+        {
+          "name": "unknown_a0",
+          "offset_bytes": 160,
+          "rule": "preserve bit-exact",
+          "size_bytes": 4,
+          "status": "unknown",
+          "storage": "opaque_u32be"
+        },
+        {
+          "name": "index_component_bits",
+          "offset_bytes": 164,
+          "rule": "16 or 32",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "index_count",
+          "offset_bytes": 168,
+          "rule": "number of serialized strip elements including restart values",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "index_buffer",
+          "offset_bytes": 172,
+          "rule": "index_count * (index_component_bits / 8)",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "relptr_u32be"
+        }
+      ],
+      "size_bytes": 176
+    },
+    "position0_formats": [
+      {
+        "declaration_transform": "none; vector_10/vector_20/vector_30 remain preserved metadata",
+        "decode_raw": "x,y,z = three consecutive f32be values; reject non-finite values",
+        "element_size_bytes": 12,
+        "format_code": 2761657,
+        "format_code_hex": "0x002a23b9",
+        "name": "float32x3",
+        "preserved_lanes": "all bytes in the stride outside these 12 bytes",
+        "retail_node_count": 12416,
+        "safe_inverse": [
+          "require exactly three finite input components",
+          "convert each component to IEEE-754 binary32 and reject overflow/non-finite result",
+          "write exactly 12 bytes at POSITION0 byte_offset for the same vertex",
+          "decode back from the patched bytes and require exact equality to the accepted binary32 values"
+        ],
+        "xex_inverse": "write three native Xbox 360 binary32 values; serialized bytes are big-endian"
+      },
+      {
+        "decode_position": "position.xyz = vector_10.xyz + normalized.xyz * vector_20.xyz",
+        "decode_snorm": "signed = int16(raw); normalized = max(signed, -32767) / 32767.0",
+        "element_size_bytes": 8,
+        "format_code": 1712474,
+        "format_code_hex": "0x001a215a",
+        "name": "snorm16x4",
+        "noncanonical_raw_minimum": "source -32768 decodes as -1.0; a no-op must preserve it instead of canonicalizing to -32767",
+        "raw_layout": "four consecutive i16be lanes x,y,z,w",
+        "retail_node_count": 365,
+        "safe_xyz_inverse": [
+          "require finite position, finite center, and strictly positive finite scale for x/y/z",
+          "normalized = (position - center) / scale",
+          "reject normalized outside [-1,1] before clamping; never silently clamp an edited position",
+          "quantized = trunc(normalized * 32767) toward zero",
+          "write only x/y/z i16be lanes",
+          "preserve the source w lane bytes at element offsets +6..+7",
+          "decode back and require per-axis error <= scale / 32767 plus one binary32 ULP"
+        ],
+        "xex_inverse": "for each supplied normalized lane: clamp [-1,1], multiply by 32767, truncate toward zero, store i16be"
+      },
+      {
+        "decode_position": "position.xyz = vector_10.xyz + normalized.xyz * vector_20.xyz",
+        "decode_snorm": "sign-extend each 10-bit lane; normalized = max(signed, -511) / 511.0",
+        "element_size_bytes": 4,
+        "format_code": 2761095,
+        "format_code_hex": "0x002a2187",
+        "name": "snorm10_10_10",
+        "noncanonical_raw_minimum": "source signed -512 decodes as -1.0; a no-op must preserve it instead of canonicalizing to -511",
+        "raw_layout": {
+          "unknown_bits_preserved": [
+            30,
+            31
+          ],
+          "x_bits": [
+            0,
+            9
+          ],
+          "y_bits": [
+            10,
+            19
+          ],
+          "z_bits": [
+            20,
+            29
+          ]
+        },
+        "retail_node_count": 225,
+        "safe_xyz_inverse": [
+          "require finite position, finite center, and strictly positive finite scale for x/y/z",
+          "normalized = (position - center) / scale",
+          "reject normalized outside [-1,1] before clamping; never silently clamp an edited position",
+          "quantized = trunc(normalized * 511) toward zero",
+          "replace bits 0..29 with the three masked lanes while preserving source bits 30..31",
+          "decode back and require per-axis error <= scale / 511 plus one binary32 ULP"
+        ],
+        "xex_inverse": "clamp xyz [-1,1], multiply by 511, truncate toward zero, mask each to 10 bits, pack x | (y << 10) | (z << 20)"
+      }
+    ],
+    "system_part": {
+      "byte_order": "big-endian",
+      "fields": [
+        {
+          "name": "root_name",
+          "offset_bytes": 0,
+          "rule": "UTF-16BE name equals exact inner resource name",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "relptr_u32be"
+        },
+        {
+          "name": "unknown_04_3b",
+          "offset_bytes": 4,
+          "rule": "preserve bit-exact",
+          "size_bytes": 56,
+          "status": "unknown",
+          "storage": "opaque"
+        },
+        {
+          "name": "matrix_count",
+          "offset_bytes": 60,
+          "rule": "count of 0x40-byte matrix-like records; ownership not proved",
+          "size_bytes": 4,
+          "status": "proved_extent",
+          "storage": "u32be"
+        },
+        {
+          "name": "matrices",
+          "offset_bytes": 64,
+          "rule": "matrix_count * 0x40 bytes",
+          "size_bytes": 4,
+          "status": "proved_extent",
+          "storage": "relptr_u32be"
+        },
+        {
+          "name": "mesh_node_count",
+          "offset_bytes": 68,
+          "rule": "count of 0xB0-byte mesh nodes",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "mesh_nodes",
+          "offset_bytes": 72,
+          "rule": "mesh_node_count * 0xB0 bytes",
+          "size_bytes": 4,
+          "status": "proved",
+          "storage": "relptr_u32be"
+        },
+        {
+          "name": "unknown_4c_63",
+          "offset_bytes": 76,
+          "rule": "preserve bit-exact",
+          "size_bytes": 24,
+          "status": "unknown",
+          "storage": "opaque"
+        }
+      ],
+      "matrix_record": {
+        "observed_shape": "normally 16 big-endian float32 words",
+        "size_bytes": 64,
+        "status": "extent proved; transform/bounds/camera/bind ownership unknown",
+        "variant_warning": "49 scenes contain 104 non-finite components; never normalize, repair, or rewrite them"
+      },
+      "minimum_header_bytes": 100
+    },
+    "vertex_declaration": {
+      "fields": [
+        {
+          "name": "indexed_semantic_crc",
+          "offset_bytes": 0,
+          "rule": "CRC32 such as POSITION0",
+          "size_bytes": 4,
+          "status": "proved_identity",
+          "storage": "u32be"
+        },
+        {
+          "name": "semantic_crc",
+          "offset_bytes": 4,
+          "rule": "CRC32 such as POSITION",
+          "size_bytes": 4,
+          "status": "proved_identity",
+          "storage": "u32be"
+        },
+        {
+          "name": "layout_word",
+          "offset_bytes": 8,
+          "rule": "stream and byte-offset subfields; preserve other bits",
+          "size_bytes": 4,
+          "status": "partly_proved",
+          "storage": "u32be"
+        },
+        {
+          "name": "format_code",
+          "offset_bytes": 12,
+          "rule": "XEX Function_84B8BE00 format selector",
+          "size_bytes": 4,
+          "status": "proved_dispatch",
+          "storage": "u32be"
+        },
+        {
+          "name": "vector_10",
+          "offset_bytes": 16,
+          "rule": "POSITION normalized formats use xyz as center; otherwise preserve",
+          "size_bytes": 16,
+          "status": "partly_proved",
+          "storage": "4*f32be"
+        },
+        {
+          "name": "vector_20",
+          "offset_bytes": 32,
+          "rule": "POSITION normalized formats use xyz as scale; otherwise preserve",
+          "size_bytes": 16,
+          "status": "partly_proved",
+          "storage": "4*f32be"
+        },
+        {
+          "name": "vector_30",
+          "offset_bytes": 48,
+          "rule": "preserve bit-exact",
+          "size_bytes": 16,
+          "status": "unknown",
+          "storage": "4*f32be"
+        }
+      ],
+      "layout_word": {
+        "byte_offset": {
+          "bit_count": 8,
+          "bit_offset": 16,
+          "decode": "(layout >> 16) & 0xff"
+        },
+        "stream_index": {
+          "bit_count": 8,
+          "bit_offset": 8,
+          "decode": "(layout >> 8) & 0xff"
+        },
+        "unknown_preserve_mask_hex": "0xff0000ff",
+        "writer_rule": "never reconstruct the word from only named fields; preserve the full source word"
+      },
+      "position_identity": {
+        "indexed_semantic": "POSITION0",
+        "indexed_semantic_crc32_hex": "0x46e6cb71",
+        "semantic": "POSITION",
+        "semantic_crc32_hex": "0x801f78b9"
+      },
+      "size_bytes": 64
+    }
+  },
+  "scope": {
+    "catalog_backed_implemented_write_target_count": 77,
+    "closed_read_contracts": [
+      "IFF/H7A ownership and decompressed file-part boundaries",
+      "big-endian SCNE envelope and bounded pointer traversal",
+      "0xB0 mesh-node table and variable hierarchy-table extent",
+      "0x40 vertex declarations and stream/byte-offset layout fields",
+      "single mesh descriptor with one to three exact-size streams",
+      "POSITION0 decode for every retail node in three formats",
+      "BE16/BE32 triangle-strip index validation and read-side expansion"
+    ],
+    "implemented_write_targets": [
+      "outer14/inner8/stadium/node17/polySurface19930: four FLOAT32x3 positions through the pinned v1 writer",
+      "outer14/inner8/stadium/node17/polySurface19930: one fixed four-element BE16 strip through the invariant-preserving same-footprint topology writer",
+      "all 77 additional targets in the frozen outer14/inner8 stadium hashes-only catalog: exact catalog-derived same-count FLOAT32x3 positions through the v2 dispatcher"
+    ],
+    "not_closed": [
+      "changed vertex count or changed topology outside the pinned node17 same-footprint profile",
+      "draw-record rewriting outside the invariant-preserving node17 profile or material serialization",
+      "UV, normal, tangent, color, blend-index, or blend-weight authoring",
+      "matrix, skeleton, inverse-bind, morph, attachment, or animation serialization",
+      "general SCNE relocation or size-changing file-part repacking",
+      "runtime visibility, Xbox 360 hardware acceptance, or production-quality mesh import"
+    ],
+    "specified_write_contracts": [
+      "same_count_position_only/v1",
+      "outer14_inner8_node17_four_be16_strip/v1"
+    ]
+  },
+  "source_pins": [
+    {
+      "id": "scene_inventory",
+      "path": "reports/assets/apf_scene_inventory.json",
+      "role": "complete 1,303-resource structural and POSITION/topology evidence ledger",
+      "schema": "apf_scene_inventory/v1",
+      "sha256": "2243b5a3eb4dfcdebdda055e1a6fd9399b12b2704338f80ae4529d8476e85a17",
+      "size_bytes": 99250791
+    },
+    {
+      "id": "inner_manifest",
+      "path": "reports/manifests/apf_inner.json",
+      "role": "complete IFF/H7A block, file, part, footer, and DRAM/VRAM/SRAM ownership ledger",
+      "schema": "apf_inner_manifest/v1",
+      "sha256": "b57772a88e969db47aca6add24b1387ab2470b53cdb2f6f21bd4a3d8999fb6d1",
+      "size_bytes": 9509144
+    },
+    {
+      "id": "scene_parser",
+      "path": "tools/apf_scene.py",
+      "role": "strict SCNE parser, POSITION decoder, strip decoder, and corpus generator",
+      "schema": null,
+      "sha256": "8b8c87249e33fb0606074b3f9047befad4eef94106ac5df3fa58f0b602730dcf",
+      "size_bytes": 56792
+    },
+    {
+      "id": "iff_h7a_parser",
+      "path": "tools/apf_inner.py",
+      "role": "strict IFF/H7A parser and part-range derivation",
+      "schema": null,
+      "sha256": "dde4573cb79b9a90c16537fe283cf6ce63a7da3d84e68f0a606438de0e3cdec1",
+      "size_bytes": 63440
+    },
+    {
+      "id": "iff_h7a_rebuild_proof",
+      "path": "tools/apf_texture_patch.py",
+      "role": "proved copied-entry H7A encode/decode and fixed-allocation IFF rebuild pattern",
+      "schema": null,
+      "sha256": "6a4ae4ab13ce8478c4adef6bf464e6ab6c83a692b12a65cab24906fe0da588c1",
+      "size_bytes": 43155
+    },
+    {
+      "id": "xex_vertex_encoder_pseudoc",
+      "path": "research/functions/apf2k8/pseudo_c/apf2k8_pseudoc_18688_18943.c",
+      "role": "XEX-derived Function_84B8BE00 inverse-format evidence and helper FUN_84B8BD88",
+      "schema": null,
+      "sha256": "2264c1b155e84696584dbee72cc7b7b657b331095d06ba3b3115da450cecc1c9",
+      "size_bytes": 224321
+    },
+    {
+      "id": "xex_reconstruction_report",
+      "path": "reports/headers/apf2k8_xex_report.json",
+      "role": "executable identity and reconstruction evidence",
+      "schema": "apf2k8-xex-recon-v1",
+      "sha256": "dfd21f9db2fdb683b2dbd0390d351fdac84ba1e796a0e0c5e0e60c28827f3f1c",
+      "size_bytes": 293129
+    },
+    {
+      "id": "scene_research",
+      "path": "docs/research/apf_scene.md",
+      "role": "human-auditable derivation, examples, limitations, and reproduction contract",
+      "schema": null,
+      "sha256": "7ec123153e9b7da418206b4af6e29781e0e5c3f4d239850a20c04fd8dff10ec0",
+      "size_bytes": 24225
+    },
+    {
+      "id": "static_gltf_research",
+      "path": "docs/research/apf_static_gltf.md",
+      "role": "complete read-side glTF corpus scope and omission contract",
+      "schema": null,
+      "sha256": "985ec80a769e2f1157dbb794b36b56369553fffaee355477e4ce4e1da6c9e757",
+      "size_bytes": 4460
+    },
+    {
+      "id": "same_count_recipe_schema",
+      "path": "reports/specs/apf2k8_scne_same_count_position_recipe.schema.json",
+      "role": "constant-pinned four-FLOAT3 recipe grammar for the first write-back target",
+      "schema": null,
+      "sha256": "8094a4a64325728082091e87ba3fcd0e5ed30c8c6f06f1e7074934720438af51",
+      "size_bytes": 4064
+    },
+    {
+      "id": "same_count_nonretail_sample_recipe",
+      "path": "reports/asset_samples/apf_scene/stadium_polySurface19930_nonretail_zero_recipe.json",
+      "role": "public recipe-shape sample with four independently authored all-zero positions and no retail geometry",
+      "schema": "apf2k8_scne_same_count_position_recipe/v1",
+      "sha256": "fc3b3e010cc534634470e29e8395a5e56c6b0cbc2d714464355a27be3f59764b",
+      "size_bytes": 1938
+    },
+    {
+      "id": "same_count_local_proof_recipe_generator",
+      "path": "tools/apf_stadium_static_position_proof_recipes.py",
+      "role": "derives retail/no-op and +1/+2/+3 proof recipes only into user-local temporary paths",
+      "schema": null,
+      "sha256": "7b8202a0287ec2e74279ad00fbf84c356cb02154848b29b5591cce6b4167a1cb",
+      "size_bytes": 4943
+    },
+    {
+      "id": "same_count_writer",
+      "path": "tools/apf_stadium_static_position_patch.py",
+      "role": "fail-closed copied-1A writer for outer14/inner8/node17 only",
+      "schema": null,
+      "sha256": "8f5e03ab306e2b985c4bf4058d855da6d9530daf304c1b6b164e589cbea61c5d",
+      "size_bytes": 42766
+    },
+    {
+      "id": "same_count_independent_verifier",
+      "path": "tools/apf_stadium_static_position_verify.py",
+      "role": "stdlib-only independent outer/IFF/H7A/SCNE/parser and preservation verifier",
+      "schema": null,
+      "sha256": "545d3f362ad4bf94a8d9ccff303ec0d37608c60a22af9bbbc18a7c10ab76415e",
+      "size_bytes": 48792
+    },
+    {
+      "id": "same_count_roundtrip_report",
+      "path": "reports/assets/apf_scne_same_count_position_roundtrip.json",
+      "role": "complete copied-1A no-op and +1/+2/+3 independent byte-level witnesses",
+      "schema": "apf2k8_scne_same_count_position_roundtrip/v1",
+      "sha256": "5e85c58cf258b19ab40f7b046f7da3010a510dac8d2cd83ede976883af8ab5dd",
+      "size_bytes": 6971
+    },
+    {
+      "id": "stadium_static_target_catalog",
+      "path": "reports/assets/apf_stadium_static_position_target_catalog.json",
+      "role": "hashes-only outer14/inner8 catalog of 77 additional bounded FLOAT32x3/no-blend same-count targets and exact node3 handoff",
+      "schema": "apf2k8_stadium_static_position_target_catalog/v1",
+      "sha256": "e2b21ebf4d358358627d26b7d7ea3c6cf600ea3f9d1e139cb9caa8ff1748a424",
+      "size_bytes": 456821
+    },
+    {
+      "id": "stadium_static_target_catalog_generator",
+      "path": "tools/apf_stadium_static_target_catalog.py",
+      "role": "deterministically re-derives target spans, all part ownership, H7A envelope, and the local-only node3 fit witness",
+      "schema": null,
+      "sha256": "cc412804d43ebbb18230531fa9082362cb8daaa27b493663106911e400c9cefc",
+      "size_bytes": 35099
+    },
+    {
+      "id": "stadium_static_target_catalog_research",
+      "path": "docs/research/apf_stadium_static_target_catalog.md",
+      "role": "human-readable catalog scope, fixed-allocation boundary, second-target selection, and non-runtime claim boundary",
+      "schema": null,
+      "sha256": "8eb81e7afaa065fedaef9a338ef5fc5c541268e57da52060a0b3c879d49a7fbe",
+      "size_bytes": 2700
+    },
+    {
+      "id": "catalog_position_recipe_schema",
+      "path": "reports/specs/apf2k8_scne_catalog_position_recipe.schema.json",
+      "role": "canonical v2 recipe contract that pins the hashes-only catalog and derives count, stride, lane offset, and FLOAT32x3_BE encoding from target_id",
+      "schema": null,
+      "sha256": "41fcf955c65d81bb5da2d229d6a2ffee692a9c5ae80eda1c0849911c90950277",
+      "size_bytes": 5585
+    },
+    {
+      "id": "catalog_position_nonretail_sample_recipe",
+      "path": "reports/asset_samples/apf_scene/stadium_node3_nonretail_zero_recipe.json",
+      "role": "public node3 recipe-shape witness with 24 independently authored all-zero positions and no retail geometry",
+      "schema": "apf2k8_scne_catalog_position_recipe/v2",
+      "sha256": "329d3290201407f1acb905d432bf8b53547a654fd895cd37a347ae979c4b60a9",
+      "size_bytes": 2971
+    },
+    {
+      "id": "catalog_position_local_proof_recipe_generator",
+      "path": "tools/apf_stadium_catalog_position_proof_recipes.py",
+      "role": "derives the exact node3 no-op recipe only into a caller-owned local path without printing or committing retail coordinates",
+      "schema": null,
+      "sha256": "b0a53188d67d4ef9ae5974bc4708311ce3c0b83d9d3bfd7d06127699d840f653",
+      "size_bytes": 3889
+    },
+    {
+      "id": "catalog_position_writer",
+      "path": "tools/apf_stadium_catalog_position_patch.py",
+      "role": "fail-closed copied-1A v2 dispatcher for all 77 additional hashes-only outer14 stadium targets",
+      "schema": null,
+      "sha256": "67f6385add0ee9a3851be36a598b2f989c8cc962d2185028e3d47bccf1656c99",
+      "size_bytes": 32870
+    },
+    {
+      "id": "catalog_position_independent_verifier",
+      "path": "tools/apf_stadium_catalog_position_verify.py",
+      "role": "writer-independent catalog/IFF/H7A/SCNE target re-derivation and complete manifest/byte verifier",
+      "schema": null,
+      "sha256": "90c7d10a58cd2587031910b1b895b680862e29398da8a56a1755262c3e800419",
+      "size_bytes": 35956
+    },
+    {
+      "id": "catalog_position_roundtrip_report",
+      "path": "reports/assets/apf_scne_catalog_position_roundtrip.json",
+      "role": "node3 complete copied-1A no-op and public all-zero changed witnesses plus all 77-target dispatcher claim boundary",
+      "schema": "apf2k8_scne_catalog_position_roundtrip/v2",
+      "sha256": "a701d74927e8a9ee36d24ffe33624016acc7058d6439ae7c60450489748f631b",
+      "size_bytes": 5919
+    },
+    {
+      "id": "catalog_position_research",
+      "path": "docs/research/apf_stadium_catalog_position_writeback.md",
+      "role": "human-auditable v2 dispatcher, node3 proof, preservation, refusal, and remaining-runtime-boundary record",
+      "schema": null,
+      "sha256": "28e7cd0f91ca70dd0140104237093cba8be1b657d6d0f1a61a5f13d75ed0d4b7",
+      "size_bytes": 5679
+    },
+    {
+      "id": "draw_topology_spec",
+      "path": "reports/specs/apf2k8_scne_draw_topology.v1.json",
+      "role": "normative full 0x30 draw-record layout, corpus-wide index coupling, and bounded node17 same-footprint topology profile",
+      "schema": "apf2k8_scne_draw_topology/v1",
+      "sha256": "560865eb765d9af09d6246f594d213f965afcc89e77a8da854767775a2eee1da",
+      "size_bytes": 11851
+    },
+    {
+      "id": "draw_topology_corpus",
+      "path": "reports/assets/apf_scne_draw_topology_corpus.v1.json",
+      "role": "complete 1,303-resource draw/index relationship proof with aggregate-only topology evidence",
+      "schema": "apf2k8_scne_draw_topology_corpus/v1",
+      "sha256": "ca4465e7e7723c1363d42f2c7b9564e740bb1a6049279fb5055ee14309d3711b",
+      "size_bytes": 3591
+    },
+    {
+      "id": "draw_topology_generator",
+      "path": "tools/apf_scne_draw_topology_spec.py",
+      "role": "strict corpus scanner, canonical topology-spec generator, and source-backed validator",
+      "schema": null,
+      "sha256": "91b61b651e96646eaaf7dd8fc590f30f13fda205e0c0cd5d37b789dc6050eec5",
+      "size_bytes": 30576
+    },
+    {
+      "id": "same_footprint_topology_recipe_schema",
+      "path": "reports/specs/apf2k8_scne_same_footprint_topology_recipe.schema.json",
+      "role": "constant-pinned four-index permutation recipe grammar for the node17 topology target",
+      "schema": null,
+      "sha256": "a201d33a1fd44daebb05e68ded770c08966ff6b8bf28267e8603df91fb63bb8e",
+      "size_bytes": 5949
+    },
+    {
+      "id": "same_footprint_topology_nonretail_sample",
+      "path": "reports/asset_samples/apf_scene/stadium_node17_nonretail_permuted_strip_recipe.json",
+      "role": "public nonretail four-index permutation witness containing no retail index sequence",
+      "schema": "apf2k8_scne_same_footprint_topology_recipe/v1",
+      "sha256": "9fb9262a415632e7b430375c35cefcd4a72128c029172dcd59ca1f695c49cb99",
+      "size_bytes": 1568
+    },
+    {
+      "id": "same_footprint_topology_writer",
+      "path": "tools/apf_stadium_node17_topology_patch.py",
+      "role": "fail-closed copied-1A same-footprint topology writer for outer14/inner8/node17 only",
+      "schema": null,
+      "sha256": "f94ae1306e5483820a133bad4cd01d4a8acd0dead2cb7fffef0b2730b7842a32",
+      "size_bytes": 26804
+    },
+    {
+      "id": "same_footprint_topology_independent_verifier",
+      "path": "tools/apf_stadium_node17_topology_verify.py",
+      "role": "writer-independent stdlib-only IFF/H7A/SCNE topology and complete-preservation verifier",
+      "schema": null,
+      "sha256": "2da959176066b5b202eaf5794161d0c205f71b64d5ebd5b8519652cec5c76f3c",
+      "size_bytes": 31202
+    },
+    {
+      "id": "same_footprint_topology_roundtrip",
+      "path": "reports/assets/apf_stadium_node17_same_footprint_topology_roundtrip.json",
+      "role": "complete copied-1A no-op and public nonretail changed-index byte-level witnesses",
+      "schema": "apf2k8_scne_same_footprint_topology_roundtrip/v1",
+      "sha256": "3294bec0a2906433885391cc826c47fe4cd6c0fb601a1840ffb46b24dadc34b4",
+      "size_bytes": 6781
+    },
+    {
+      "id": "draw_topology_research",
+      "path": "docs/research/apf_scne_draw_topology_writeback.md",
+      "role": "human-auditable draw-field derivation, bounded writer proof, refusals, and remaining boundary",
+      "schema": null,
+      "sha256": "c517bb4ba0207b385f114ba06a738e3a9e63a0d4929f6e2c9522207ac316b3e8",
+      "size_bytes": 7186
+    }
+  ],
+  "spec_version": 1,
+  "status": "read grammar, full draw/index coupling, the pinned node17 same-count POSITION writer, its same-footprint topology writer, and the catalog-backed POSITION dispatcher for 77 additional outer14/inner8 structural-static candidates are proved offline; no general SCNE dispatcher, runtime rigidity, changed-count, material authoring, hardware, or production-import claim",
+  "title": "All-Pro Football 2K8 Xbox 360 static SCNE serializer specification",
+  "write_profiles": {
+    "outer14_inner8_node17_four_be16_strip/v1": {
+      "allowed_changes": [
+        "only the eight decoded index-buffer bytes may differ inside the selected SCNE",
+        "IFF stored offsets/lengths and file_length only as mechanically required by H7A recompression"
+      ],
+      "changed_write_verification": [
+        "independently parse the output container and re-derive the selected SCNE, draw, and eight-byte index span without importing the writer or production parser",
+        "require the output sequence to equal the admitted permutation and re-decode to two nondegenerate strip triangles",
+        "require the changed decoded-byte interval set to be a subset of the eight authorized index bytes",
+        "require the complete draw record, vertex stream, declarations, descriptor, matrix, hierarchy, sibling parts, VRAM, footer, and copied-volume complement to retain exact source hashes",
+        "independently H7A-decode the changed block and require exact intended decompressed bytes",
+        "reject before publication if the recompressed active IFF plus footer exceeds the fixed outer allocation"
+      ],
+      "draw_preservation_reason": "all admitted permutations retain every derived draw invariant, so rewriting any of the 48 draw bytes is unnecessary and forbidden",
+      "failure_policy": "reject any identity, schema, type, count, permutation, decode, invariant, preservation, alias, range, compression, or fixed-allocation mismatch",
+      "forbidden_changes": [
+        "any draw byte, draw count, pointer, primitive code, material slot, optional state, reserved word, or render flag",
+        "vertex count, stream payload or layout, declaration, descriptor, matrix, hierarchy, node metadata, bounds, or unknown bytes",
+        "index width, index count, allocation size or offset, restart insertion, duplicate index, or degenerate output",
+        "any sibling file part, SCNE VRAM byte, footer byte, fixed outer allocation length, or copied-volume byte outside outer14",
+        "changed vertex count, material/UV/normal authoring, skin/attachment changes, or general SCNE dispatch"
+      ],
+      "implementation_status": "offline copied-volume writer and writer-independent verifier implemented for exactly one target; runtime unproved",
+      "implemented_target": {
+        "draw_record_count": 1,
+        "index_allocation_bytes": 8,
+        "index_component_bits": 16,
+        "index_count": 4,
+        "inner_file_index": 8,
+        "inner_name": "stadium",
+        "node_index": 17,
+        "node_name": "polySurface19930",
+        "outer_table_index": 14,
+        "physical_pack": "1A",
+        "vertex_count": 4
+      },
+      "input_contract": [
+        "recipe and every source/profile hash match the pinned schema and retail identity",
+        "recipe contains exactly four JSON integers and no additional topology fields",
+        "indices are exactly one permutation of 0,1,2,3 with no restart or duplicate",
+        "native triangle-strip decode emits exactly two nondegenerate triangles",
+        "the one draw remains first=0, count=4, capacity=2, base=0, minimum=0, range=4",
+        "the existing eight-byte BE16 allocation stays at its source offset and no structural extent changes"
+      ],
+      "no_op_contract": {
+        "action": "if all four source indices are requested unchanged, bypass H7A encoding and return the original outer-entry and complete copied 1A bytes",
+        "required_result": "zero decoded changes, no recompression, and complete copied-volume byte identity"
+      },
+      "purpose": "smallest fail-closed changed-topology boundary with invariant-preserving draw coupling",
+      "runtime_status": "unproved"
+    },
+    "same_count_position_only/v1": {
+      "allowed_changes": [
+        "float32x3: 12 POSITION0 bytes per vertex",
+        "snorm16x4: first 6 POSITION0 bytes per vertex; preserve w lane",
+        "snorm10_10_10: packed bits 0..29 per vertex; preserve bits 30..31",
+        "IFF block stored offsets/lengths and file_length only as mechanically required by H7A recompression"
+      ],
+      "catalog_dispatcher": {
+        "authorized_target_count": 77,
+        "catalog_schema": "apf2k8_stadium_static_position_target_catalog/v1",
+        "catalog_sha256": "e2b21ebf4d358358627d26b7d7ea3c6cf600ea3f9d1e139cb9caa8ff1748a424",
+        "general_scne_dispatch_implemented": false,
+        "implemented_format": "FLOAT32x3_BE only",
+        "independent_verifier_imports_writer": false,
+        "recipe_schema": "apf2k8_scne_catalog_position_recipe/v2",
+        "selection": "canonical target_id; derive exact vertex_count, stream_index, stream_start, stride, byte_offset, lane width, format, and structural hashes from the catalog",
+        "target_scope": "every additional_targets row in the frozen outer14/inner8/stadium catalog"
+      },
+      "changed_write_verification": [
+        "construct the intended decompressed DRAM block from a source copy and change only approved position lanes",
+        "independently decode every patched POSITION0 and compare to the accepted input under the format-specific bound",
+        "derive a changed-byte interval set and require it to be a subset of approved lanes",
+        "hash every selected-SCNE non-position span and every sibling file part before/after; require equality",
+        "require every selected-SCNE VRAM part, every SRAM block, all other decompressed blocks, and the footer to be byte-identical",
+        "H7A-decode the rebuilt changed block and require byte identity with the intended decompressed block",
+        "reparse the rebuilt IFF and independently re-derive every file-part range",
+        "require identical file IDs, types, counts, offsets in decompressed blocks, uncompressed block lengths, footer payload, and outer allocation length",
+        "require all copied-volume bytes outside the selected outer allocation to retain their source hashes"
+      ],
+      "failure_policy": "reject on any mismatch, ambiguity, unsupported layout, range escape, alias, count change, allocation overflow, non-finite value, or unverifiable preservation claim",
+      "forbidden_changes": [
+        "vertex_count, stream_count, stride, byte_length, declarations, layout words, or declaration vectors",
+        "mesh/node/hierarchy/matrix/draw counts, pointers, records, names, hashes, or unknown words",
+        "index width, index count, index payload, restart placement, primitive type, or topology",
+        "normal, tangent, binormal, UV, color, blend, material, shader, sampler, skin, morph, attachment, or animation data",
+        "selected SCNE VRAM bytes, any SRAM bytes, any sibling file part, footer bytes, or bytes outside the selected fixed outer allocation",
+        "growth of any decompressed block, SCNE part, outer allocation, or archive table"
+      ],
+      "implementation_status": "implemented for the pinned node17 target and all 77 additional targets authorized by the frozen outer14 stadium hashes-only catalog; no general SCNE or non-FLOAT32x3 dispatcher",
+      "implemented_target": {
+        "authorized_lane_bytes": 48,
+        "catalog_eligible_node_dispatch_implemented": true,
+        "format": "FLOAT32x3_BE",
+        "inner_file_index": 8,
+        "inner_name": "stadium",
+        "node_index": 17,
+        "node_name": "polySurface19930",
+        "outer_table_index": 14,
+        "physical_pack": "1A",
+        "stream_stride_bytes": 24,
+        "vertex_count": 4
+      },
+      "input_contract": [
+        "selected retail identity and every evidence/layout invariant must match this spec",
+        "exactly one existing mesh node and its POSITION0 declaration are selected",
+        "input has exactly vertex_count finite XYZ positions in original serialized vertex order",
+        "node contains neither BLENDINDICES* nor BLENDWEIGHT* declarations; this is a structural static-candidate gate, not proof of runtime attachment independence",
+        "position declaration uses one of the three closed formats",
+        "position element is bounded by its stream stride and does not overlap any other declared element lane",
+        "all declaration format sizes needed for overlap checking are known; otherwise reject",
+        "all position payload lanes are disjoint from structural tables, index payload, and other stream payloads except their owning interleaved stream"
+      ],
+      "no_op_contract": {
+        "action": "if unchanged, bypass POSITION encoding, H7A encoding, IFF rebuilding, and archive writing",
+        "external_identity": "compare imported accessor bytes/values to the exact canonical exported POSITION accessor for the same source proof",
+        "reason": "normalized raw minima and H7A tokenization can have multiple equivalent encodings; decode equality is weaker than byte identity",
+        "required_result": "the complete selected outer-entry byte string and copied volume are byte-for-byte identical to source"
+      },
+      "purpose": "first fail-closed structural boundary for edited raw-coordinate static-candidate geometry",
+      "runtime_status": "unproved"
+    }
+  }
+}

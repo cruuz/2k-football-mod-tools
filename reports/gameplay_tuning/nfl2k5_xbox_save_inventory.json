@@ -1,0 +1,1042 @@
+{
+  "containers": [
+    {
+      "directory": {
+        "attributes": "0x10",
+        "cluster_count": 1,
+        "dirent_offset": "0x00000000AC02F140",
+        "fatx_timestamps_raw": {
+          "accessed": "0x34E89C0B",
+          "created": "0x34E89C0B",
+          "updated": "0x34E89C0B"
+        },
+        "file_size": 0,
+        "first_cluster": 63
+      },
+      "directory_id": "256B40374FD6",
+      "display_name": "Franchise1",
+      "files": {
+        "EXTRA": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC0AB0C0",
+          "fatx_timestamps_raw": {
+            "accessed": "0x34E89C0B",
+            "created": "0x34E89C0B",
+            "updated": "0x34E89C0B"
+          },
+          "file_size": 20,
+          "first_cluster": 110,
+          "sha256": "ab292994ec39120fa02c384353bc4214582597b95cb0968e27c7719f8627aa00"
+        },
+        "SAVEGAME.DAT": {
+          "attributes": "0x00",
+          "cluster_count": 44,
+          "dirent_offset": "0x00000000AC0AB080",
+          "fatx_timestamps_raw": {
+            "accessed": "0x34E89C0B",
+            "created": "0x34E89C0B",
+            "updated": "0x34E89C0B"
+          },
+          "file_size": 720044,
+          "first_cluster": 66,
+          "sha256": "0db746fe2c8ae2102fdd420863a5e5bcddec4b83ac3e234568824c337e4422a7"
+        },
+        "SaveMeta.xbx": {
+          "attributes": "0x04",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC0AB000",
+          "fatx_timestamps_raw": {
+            "accessed": "0x34E89C0B",
+            "created": "0x34E89C0B",
+            "updated": "0x34E89C0B"
+          },
+          "file_size": 36,
+          "first_cluster": 64,
+          "sha256": "a4d0ad6764014a2d329305ed0a67556b3ccd4f3ff4a586cd5cd553292d42a1dd"
+        },
+        "TYPE": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC0AB040",
+          "fatx_timestamps_raw": {
+            "accessed": "0x34E89C0B",
+            "created": "0x34E89C0B",
+            "updated": "0x34E89C0B"
+          },
+          "file_size": 8,
+          "first_cluster": 65,
+          "sha256": "e34f8bde35a05623c31a575035f88948e36f837d93ab774479b7aa71bf1c8a0b"
+        }
+      },
+      "type": "FXG"
+    },
+    {
+      "directory": {
+        "attributes": "0x10",
+        "cluster_count": 1,
+        "dirent_offset": "0x00000000AC02F100",
+        "fatx_timestamps_raw": {
+          "accessed": "0x327FAC82",
+          "created": "0x327FAC81",
+          "updated": "0x327FAC81"
+        },
+        "file_size": 0,
+        "first_cluster": 58
+      },
+      "directory_id": "83C3760943CB",
+      "display_name": "Settings1",
+      "files": {
+        "EXTRA": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC0970C0",
+          "fatx_timestamps_raw": {
+            "accessed": "0x327FAC82",
+            "created": "0x327FAC82",
+            "updated": "0x327FAC82"
+          },
+          "file_size": 20,
+          "first_cluster": 62,
+          "sha256": "16ea662484225e252db4dae2dbc08d21b9d39484ecd97a68f120fea1c9e93a6f"
+        },
+        "SAVEGAME.DAT": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC097080",
+          "fatx_timestamps_raw": {
+            "accessed": "0x327FAC82",
+            "created": "0x327FAC81",
+            "updated": "0x327FAC81"
+          },
+          "file_size": 736,
+          "first_cluster": 61,
+          "sha256": "b4e40e69fa7014d5172a52ff3821b88485e3255272ad5a884687b2c48a7204d9"
+        },
+        "SaveMeta.xbx": {
+          "attributes": "0x04",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC097000",
+          "fatx_timestamps_raw": {
+            "accessed": "0x327FAC81",
+            "created": "0x327FAC81",
+            "updated": "0x327FAC81"
+          },
+          "file_size": 34,
+          "first_cluster": 59,
+          "sha256": "a5a01e90d85c31aadadb6167cd906baa1ae84dab95cd65f727b0a6067a21a163"
+        },
+        "TYPE": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC097040",
+          "fatx_timestamps_raw": {
+            "accessed": "0x327FAC81",
+            "created": "0x327FAC81",
+            "updated": "0x327FAC81"
+          },
+          "file_size": 8,
+          "first_cluster": 60,
+          "sha256": "c98adf1d5898ca9cdf9a02055315ac9efb34762f63411a66643bf25329824401"
+        }
+      },
+      "type": "STG"
+    },
+    {
+      "directory": {
+        "attributes": "0x10",
+        "cluster_count": 1,
+        "dirent_offset": "0x00000000AC02F180",
+        "fatx_timestamps_raw": {
+          "accessed": "0x32D45280",
+          "created": "0x32D45280",
+          "updated": "0x32D45280"
+        },
+        "file_size": 0,
+        "first_cluster": 226
+      },
+      "directory_id": "0CE11954A556",
+      "display_name": "06lions",
+      "files": {
+        "EXTRA": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC3370C0",
+          "fatx_timestamps_raw": {
+            "accessed": "0x32D45280",
+            "created": "0x32D45280",
+            "updated": "0x32D45280"
+          },
+          "file_size": 20,
+          "first_cluster": 230,
+          "sha256": "d48c9adcea38c9ab17ebcd5a1532c8e00f43d3b31458e194f1f32e2fe45946ae"
+        },
+        "SAVEGAME.DAT": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC337080",
+          "fatx_timestamps_raw": {
+            "accessed": "0x32D45280",
+            "created": "0x32D45280",
+            "updated": "0x32D45280"
+          },
+          "file_size": 11368,
+          "first_cluster": 229,
+          "sha256": "5ce0b3afd82a4e03dd9a805137ccaeaf251b7f7c03b091b62b5f27698e20ae4e"
+        },
+        "SaveMeta.xbx": {
+          "attributes": "0x04",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC337000",
+          "fatx_timestamps_raw": {
+            "accessed": "0x32D45280",
+            "created": "0x32D45280",
+            "updated": "0x32D45280"
+          },
+          "file_size": 30,
+          "first_cluster": 227,
+          "sha256": "ea262d341e0f910f6aeb600554c2ebcd6d8cbcc8cc829cf74095d5d0bc008598"
+        },
+        "TYPE": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC337040",
+          "fatx_timestamps_raw": {
+            "accessed": "0x32D45280",
+            "created": "0x32D45280",
+            "updated": "0x32D45280"
+          },
+          "file_size": 8,
+          "first_cluster": 228,
+          "sha256": "1ada706357f59a278e7f930430bd8c8cea6a2136f10d095d981035c1568e192f"
+        }
+      },
+      "type": "TMM"
+    },
+    {
+      "directory": {
+        "attributes": "0x10",
+        "cluster_count": 1,
+        "dirent_offset": "0x00000000AC02F1C0",
+        "fatx_timestamps_raw": {
+          "accessed": "0x32FE2407",
+          "created": "0x32FE2407",
+          "updated": "0x32FE2407"
+        },
+        "file_size": 0,
+        "first_cluster": 231
+      },
+      "directory_id": "0D1C1954A556",
+      "display_name": "07lions",
+      "files": {
+        "EXTRA": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC34B0C0",
+          "fatx_timestamps_raw": {
+            "accessed": "0x32FE2407",
+            "created": "0x32FE2407",
+            "updated": "0x32FE2407"
+          },
+          "file_size": 20,
+          "first_cluster": 235,
+          "sha256": "857d54ca49603cadc2d3b0550a479e8035f1351d5fe5cbb8f7d0acd4cca76cba"
+        },
+        "SAVEGAME.DAT": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC34B080",
+          "fatx_timestamps_raw": {
+            "accessed": "0x32FE2407",
+            "created": "0x32FE2407",
+            "updated": "0x32FE2407"
+          },
+          "file_size": 11368,
+          "first_cluster": 234,
+          "sha256": "2a82c61b2e086cde8989420f8876452cce2031f1da51ab86bffe4b750798e50c"
+        },
+        "SaveMeta.xbx": {
+          "attributes": "0x04",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC34B000",
+          "fatx_timestamps_raw": {
+            "accessed": "0x32FE2407",
+            "created": "0x32FE2407",
+            "updated": "0x32FE2407"
+          },
+          "file_size": 30,
+          "first_cluster": 232,
+          "sha256": "295d65e38bcac96eb09f5e36c5a3eb0e1875b68ca0abf0b4f835273db0d61e62"
+        },
+        "TYPE": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC34B040",
+          "fatx_timestamps_raw": {
+            "accessed": "0x32FE2407",
+            "created": "0x32FE2407",
+            "updated": "0x32FE2407"
+          },
+          "file_size": 8,
+          "first_cluster": 233,
+          "sha256": "1ada706357f59a278e7f930430bd8c8cea6a2136f10d095d981035c1568e192f"
+        }
+      },
+      "type": "TMM"
+    },
+    {
+      "directory": {
+        "attributes": "0x10",
+        "cluster_count": 1,
+        "dirent_offset": "0x00000000AC02F200",
+        "fatx_timestamps_raw": {
+          "accessed": "0x334B040A",
+          "created": "0x334B040A",
+          "updated": "0x334B040A"
+        },
+        "file_size": 0,
+        "first_cluster": 236
+      },
+      "directory_id": "0D5711F4A556",
+      "display_name": "08Lions",
+      "files": {
+        "EXTRA": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC35F0C0",
+          "fatx_timestamps_raw": {
+            "accessed": "0x334B040A",
+            "created": "0x334B040A",
+            "updated": "0x334B040A"
+          },
+          "file_size": 20,
+          "first_cluster": 240,
+          "sha256": "7f3cc84847b32a96a90acb0ff8b489654f47ba7030dd835e7948af013c7c9952"
+        },
+        "SAVEGAME.DAT": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC35F080",
+          "fatx_timestamps_raw": {
+            "accessed": "0x334B040A",
+            "created": "0x334B040A",
+            "updated": "0x334B040A"
+          },
+          "file_size": 11368,
+          "first_cluster": 239,
+          "sha256": "bc38fa456be430f27bede232bfef37463f680cddd13caffdca569c8145636d36"
+        },
+        "SaveMeta.xbx": {
+          "attributes": "0x04",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC35F000",
+          "fatx_timestamps_raw": {
+            "accessed": "0x334B040A",
+            "created": "0x334B040A",
+            "updated": "0x334B040A"
+          },
+          "file_size": 30,
+          "first_cluster": 237,
+          "sha256": "c2bb97011cbdafbf35083f60ce47c3629e42f7c0bc25230605053b7d1edcef11"
+        },
+        "TYPE": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC35F040",
+          "fatx_timestamps_raw": {
+            "accessed": "0x334B040A",
+            "created": "0x334B040A",
+            "updated": "0x334B040A"
+          },
+          "file_size": 8,
+          "first_cluster": 238,
+          "sha256": "1ada706357f59a278e7f930430bd8c8cea6a2136f10d095d981035c1568e192f"
+        }
+      },
+      "type": "TMM"
+    },
+    {
+      "directory": {
+        "attributes": "0x10",
+        "cluster_count": 1,
+        "dirent_offset": "0x00000000AC02F240",
+        "fatx_timestamps_raw": {
+          "accessed": "0x339D098C",
+          "created": "0x339D098B",
+          "updated": "0x339D098B"
+        },
+        "file_size": 0,
+        "first_cluster": 241
+      },
+      "directory_id": "0D921954A556",
+      "display_name": "09lions",
+      "files": {
+        "EXTRA": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC3730C0",
+          "fatx_timestamps_raw": {
+            "accessed": "0x339D098C",
+            "created": "0x339D098C",
+            "updated": "0x339D098C"
+          },
+          "file_size": 20,
+          "first_cluster": 245,
+          "sha256": "4e72ebdd150f5052dbd2628bfa548d28e75e86606a2725bea1f2a2be166b918f"
+        },
+        "SAVEGAME.DAT": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC373080",
+          "fatx_timestamps_raw": {
+            "accessed": "0x339D098C",
+            "created": "0x339D098B",
+            "updated": "0x339D098B"
+          },
+          "file_size": 11368,
+          "first_cluster": 244,
+          "sha256": "823d526fb608eaa80bb44779e6d9b5a5bac6155ea493e9f0814a7f4e63ec5f3a"
+        },
+        "SaveMeta.xbx": {
+          "attributes": "0x04",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC373000",
+          "fatx_timestamps_raw": {
+            "accessed": "0x339D098B",
+            "created": "0x339D098B",
+            "updated": "0x339D098B"
+          },
+          "file_size": 30,
+          "first_cluster": 242,
+          "sha256": "584c63a40c443fe541f34790f5ad1fc4d36eafa8a6ed472df876015b845a7338"
+        },
+        "TYPE": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC373040",
+          "fatx_timestamps_raw": {
+            "accessed": "0x339D098B",
+            "created": "0x339D098B",
+            "updated": "0x339D098B"
+          },
+          "file_size": 8,
+          "first_cluster": 243,
+          "sha256": "1ada706357f59a278e7f930430bd8c8cea6a2136f10d095d981035c1568e192f"
+        }
+      },
+      "type": "TMM"
+    },
+    {
+      "directory": {
+        "attributes": "0x10",
+        "cluster_count": 1,
+        "dirent_offset": "0x00000000AC02F280",
+        "fatx_timestamps_raw": {
+          "accessed": "0x342D81AC",
+          "created": "0x342D81AC",
+          "updated": "0x342D81AC"
+        },
+        "file_size": 0,
+        "first_cluster": 246
+      },
+      "directory_id": "0B7F1954B2EF",
+      "display_name": "10lions",
+      "files": {
+        "EXTRA": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC3870C0",
+          "fatx_timestamps_raw": {
+            "accessed": "0x342D81AC",
+            "created": "0x342D81AC",
+            "updated": "0x342D81AC"
+          },
+          "file_size": 20,
+          "first_cluster": 250,
+          "sha256": "ce7107d185cd3ce80dd4202fef4604785b4d1caaf40fe4f895b952fd657236ac"
+        },
+        "SAVEGAME.DAT": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC387080",
+          "fatx_timestamps_raw": {
+            "accessed": "0x342D81AC",
+            "created": "0x342D81AC",
+            "updated": "0x342D81AC"
+          },
+          "file_size": 11368,
+          "first_cluster": 249,
+          "sha256": "5eb577fbdbaeca0b70e46b47dc7fcc7649d0b177d41f051df27629e0532ea77e"
+        },
+        "SaveMeta.xbx": {
+          "attributes": "0x04",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC387000",
+          "fatx_timestamps_raw": {
+            "accessed": "0x342D81AC",
+            "created": "0x342D81AC",
+            "updated": "0x342D81AC"
+          },
+          "file_size": 30,
+          "first_cluster": 247,
+          "sha256": "1d6b47599f44f31af87292a102a9404df7c6ca3115d63dc6bf09702d4bb9faae"
+        },
+        "TYPE": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC387040",
+          "fatx_timestamps_raw": {
+            "accessed": "0x342D81AC",
+            "created": "0x342D81AC",
+            "updated": "0x342D81AC"
+          },
+          "file_size": 8,
+          "first_cluster": 248,
+          "sha256": "1ada706357f59a278e7f930430bd8c8cea6a2136f10d095d981035c1568e192f"
+        }
+      },
+      "type": "TMM"
+    },
+    {
+      "directory": {
+        "attributes": "0x10",
+        "cluster_count": 1,
+        "dirent_offset": "0x00000000AC02F0C0",
+        "fatx_timestamps_raw": {
+          "accessed": "0x34E8B8D7",
+          "created": "0x34E8B8D7",
+          "updated": "0x34E8B8D7"
+        },
+        "file_size": 0,
+        "first_cluster": 36
+      },
+      "directory_id": "006F00611262",
+      "display_name": "Noah",
+      "files": {
+        "EXTRA": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC03F0C0",
+          "fatx_timestamps_raw": {
+            "accessed": "0x34E8B8D7",
+            "created": "0x34E8B8D7",
+            "updated": "0x34E8B8D7"
+          },
+          "file_size": 20,
+          "first_cluster": 41,
+          "sha256": "2b5e67e30dc6628614c20f44c20e21b16d84fb7a71d7393d4cb2295fd7c72d80"
+        },
+        "SAVEGAME.DAT": {
+          "attributes": "0x00",
+          "cluster_count": 2,
+          "dirent_offset": "0x00000000AC03F080",
+          "fatx_timestamps_raw": {
+            "accessed": "0x34E8B8D7",
+            "created": "0x34E8B8D7",
+            "updated": "0x34E8B8D7"
+          },
+          "file_size": 20720,
+          "first_cluster": 39,
+          "sha256": "f204eba5094dc93813f6103ec5f5617c7f00586fbbd297970c0a51869fb4ea66"
+        },
+        "SaveMeta.xbx": {
+          "attributes": "0x04",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC03F000",
+          "fatx_timestamps_raw": {
+            "accessed": "0x34E8B8D7",
+            "created": "0x34E8B8D7",
+            "updated": "0x34E8B8D7"
+          },
+          "file_size": 24,
+          "first_cluster": 37,
+          "sha256": "2a7f05a18fa60dc1d3002ec4921c178381e9427ac26d72c1064736635179fdd8"
+        },
+        "TYPE": {
+          "attributes": "0x00",
+          "cluster_count": 1,
+          "dirent_offset": "0x00000000AC03F040",
+          "fatx_timestamps_raw": {
+            "accessed": "0x34E8B8D7",
+            "created": "0x34E8B8D7",
+            "updated": "0x34E8B8D7"
+          },
+          "file_size": 8,
+          "first_cluster": 38,
+          "sha256": "1f4a3cd985b4c8de337e94dcdb26c417d0d4a30d1461f6783529344e3970d22b"
+        }
+      },
+      "type": "USR"
+    }
+  ],
+  "executable_evidence": {
+    "code_witnesses": {
+      "container_filename_dispatch": {
+        "range": "0x0004B1F0-0x0004B291",
+        "sha256": "de6bf3a31e9ddb6fddd18ac58367e4f629fe6d68bbf0f778cee9acb8838efc33",
+        "size": 162
+      },
+      "signature_begin": {
+        "range": "0x0004B2A0-0x0004B2F0",
+        "sha256": "b5d4bbcdfba146e16697d982421dfaaadc743fd0e4e24e2fd855cff34b0a0af4",
+        "size": 81
+      },
+      "signature_read_compare": {
+        "range": "0x0004D520-0x0004D62B",
+        "sha256": "1134911b43c8abf692b1890fcfe05136d6a506526eeb52d9e63a447d769f1162",
+        "size": 268
+      },
+      "signature_write_close": {
+        "range": "0x0004C880-0x0004C8DE",
+        "sha256": "1903039f9287fe5d892a217833205f3dbb72425d4b9b3a2628413c2447f41247",
+        "size": 95
+      },
+      "slider_synchronizer": {
+        "range": "0x000E3DC0-0x000E3F05",
+        "sha256": "1847cb3768d1b71bef0d92e2154b69880a7ffde1adeefe1aa98eb343af1b8c18",
+        "size": 326
+      }
+    },
+    "filename_dispatch": {
+      "calls_XCreateSaveGame": true,
+      "only_pointer_immediates": [
+        {
+          "filename": "SAVEGAME.DAT",
+          "reference": "0x0004B254",
+          "target": "0x00E60B24"
+        },
+        {
+          "filename": "EXTRA",
+          "reference": "0x0004B27E",
+          "target": "0x00E60B40"
+        },
+        {
+          "filename": "TYPE",
+          "reference": "0x0004B269",
+          "target": "0x00E60B4C"
+        }
+      ],
+      "owner": "0x0004B1F0",
+      "selector": {
+        "0": "EXTRA",
+        "1": "TYPE",
+        "other": "SAVEGAME.DAT"
+      },
+      "utf16_filename_addresses": {
+        "EXTRA": "0x00E60B40",
+        "SAVEGAME.DAT": "0x00E60B24",
+        "TYPE": "0x00E60B4C"
+      }
+    },
+    "signature_owner": {
+      "api_call_ownership": {
+        "XCalculateSignatureBegin": {
+          "address": "0x0001FE1F",
+          "direct_caller_count": 8,
+          "other_direct_caller_count": 7,
+          "save_container_direct_callers": [
+            "0x0004B2A0:FUN_0004b2a0"
+          ]
+        },
+        "XCalculateSignatureEnd": {
+          "address": "0x0001FE81",
+          "direct_caller_count": 9,
+          "other_direct_caller_count": 7,
+          "save_container_direct_callers": [
+            "0x0004C880:FUN_0004c880",
+            "0x0004D520:FUN_0004d520"
+          ]
+        },
+        "XCalculateSignatureUpdate": {
+          "address": "0x0001FE33",
+          "direct_caller_count": 8,
+          "other_direct_caller_count": 7,
+          "save_container_direct_callers": [
+            "0x0004D520:FUN_0004d520"
+          ]
+        }
+      },
+      "begin": {
+        "XCalculateSignatureBegin_mode": 0,
+        "call": "0x0004B2BB",
+        "owner": "0x0004B2A0"
+      },
+      "current_EXTRA_cryptographically_recomputed": false,
+      "reason_not_recomputed": "XCalculateSignature mode 0 uses Xbox platform key state; this audit does not extract keys or implement a signature writer",
+      "stream_update_and_read_validation": {
+        "compares_calculated_result_to_EXTRA": true,
+        "ends_at_read_boundary": true,
+        "owner": "0x0004D520",
+        "reads_EXTRA_size": 20,
+        "updates_with_transferred_SAVEGAME_DAT_bytes": true
+      },
+      "write_close": {
+        "ends_signature": true,
+        "owner": "0x0004C880",
+        "writes_EXTRA_size": 20
+      }
+    },
+    "slider_runtime_join": {
+      "descriptor_count": 21,
+      "descriptor_table": "0x00501F54",
+      "save_vector_order_matches_synchronizer": true,
+      "standalone_globals": {
+        "Fumble": "0x00E60208",
+        "Injury": "0x00E60204",
+        "Interception": "0x00E6020C"
+      },
+      "synchronizer_order": [
+        "CPU Blocking",
+        "CPU Passing",
+        "CPU Running",
+        "CPU Catching",
+        "CPU Coverage",
+        "CPU Pursuit",
+        "CPU Tackling",
+        "CPU Kicking",
+        "CPU Fatigue",
+        "Human Blocking",
+        "Human Passing",
+        "Human Running",
+        "Human Catching",
+        "Human Coverage",
+        "Human Pursuit",
+        "Human Tackling",
+        "Human Kicking",
+        "Human Fatigue"
+      ],
+      "synchronizer_owner": "0x000E3DC0",
+      "vector_globals": {
+        "CPU Blocking": "0x00E600F8",
+        "CPU Catching": "0x00E60118",
+        "CPU Coverage": "0x00E60104",
+        "CPU Fatigue": "0x00E60114",
+        "CPU Kicking": "0x00E60110",
+        "CPU Passing": "0x00E600FC",
+        "CPU Pursuit": "0x00E60108",
+        "CPU Running": "0x00E60100",
+        "CPU Tackling": "0x00E6010C",
+        "Human Blocking": "0x00E600D4",
+        "Human Catching": "0x00E600F4",
+        "Human Coverage": "0x00E600E0",
+        "Human Fatigue": "0x00E600F0",
+        "Human Kicking": "0x00E600EC",
+        "Human Passing": "0x00E600D8",
+        "Human Pursuit": "0x00E600E4",
+        "Human Running": "0x00E600DC",
+        "Human Tackling": "0x00E600E8"
+      }
+    }
+  },
+  "inputs": {
+    "function_ledger": {
+      "path": "research/functions/nfl2k5/functions.tsv",
+      "sha256": "902eb0e5f504bcc24ee55aa895d8fa65e4cb3db05409eb8daaf147e3d74f28f7",
+      "size": 9431836
+    },
+    "raw_hdd": {
+      "bytes_per_cluster": 16384,
+      "fatx_serial": "0x5B206DDA",
+      "opened_read_only": true,
+      "partition": "E",
+      "path": "xemu-hdd-readonly.raw",
+      "sha256": "a495f735a6ca39ca7f476757d832fab5f535270cc675552c8c1ae9e32263fa13",
+      "size": 8589934592
+    },
+    "retail_xbe": {
+      "path": "extracted/ESPN NFL 2K5 (USA)/default.xbe",
+      "sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "size": 11948032
+    }
+  },
+  "modding_boundary": {
+    "blocking_items": [
+      "prove the exact settings/franchise serializer and load precedence",
+      "perform controlled one-slider save deltas and runtime reload tests",
+      "use the game's XCalculateSignature mode-0 owner or another authorized platform-backed signing path without extracting platform keys",
+      "verify changed SAVEGAME.DAT and EXTRA together on a copied HDD image"
+    ],
+    "read_only_slider_inspector_ready": true,
+    "stock_range_writer_ready": false
+  },
+  "schema": "nfl2k5_xbox_save_inventory/v1",
+  "scope": {
+    "platform_keys_read_or_emitted": false,
+    "read_only": true,
+    "retail_or_save_bytes_emitted": false,
+    "runtime_load_test_performed": false,
+    "save_writer_exposed": false,
+    "signature_writer_exposed": false,
+    "source_image_modified": false
+  },
+  "slider_snapshot": {
+    "aligned_prefix_comparison": {
+      "differing_byte_count": 120,
+      "equal_byte_count": 616,
+      "equal_u32_slot_count": 137,
+      "u32_slot_count": 184
+    },
+    "classification": "exact observed save-field join; serializer function and safe writer remain unproved",
+    "franchise1_payload_size": 720044,
+    "franchise1_settings_prefix_sha256": "71164badf9f2bd063ba4e7a9fb93da9c112a20b4a4e075c9b43673420444e75a",
+    "franchise1_settings_prefix_size": 736,
+    "franchise1_sha256": "0db746fe2c8ae2102fdd420863a5e5bcddec4b83ac3e234568824c337e4422a7",
+    "franchise1_tail_sha256": "415ccc1bca130c09f8dec173b917b009d44607c51c2f7fb17c870a8c50d7636f",
+    "franchise1_tail_size": 719308,
+    "physical_storage_order": [
+      "Injury",
+      "Fumble",
+      "Interception",
+      "CPU Blocking",
+      "CPU Passing",
+      "CPU Running",
+      "CPU Catching",
+      "CPU Coverage",
+      "CPU Pursuit",
+      "CPU Tackling",
+      "CPU Kicking",
+      "CPU Fatigue",
+      "Human Blocking",
+      "Human Passing",
+      "Human Running",
+      "Human Catching",
+      "Human Coverage",
+      "Human Pursuit",
+      "Human Tackling",
+      "Human Kicking",
+      "Human Fatigue"
+    ],
+    "rows": [
+      {
+        "franchise1": 0.5,
+        "group": "standalone",
+        "label": "Injury",
+        "offset": "0x284",
+        "physical_index": 0,
+        "semantic_index": 18,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "group": "standalone",
+        "label": "Fumble",
+        "offset": "0x288",
+        "physical_index": 1,
+        "semantic_index": 19,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.525,
+        "group": "standalone",
+        "label": "Interception",
+        "offset": "0x28C",
+        "physical_index": 2,
+        "semantic_index": 20,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.675,
+        "group": "cpu_vector",
+        "label": "CPU Blocking",
+        "offset": "0x298",
+        "physical_index": 3,
+        "semantic_index": 9,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.525,
+        "group": "cpu_vector",
+        "label": "CPU Passing",
+        "offset": "0x29C",
+        "physical_index": 4,
+        "semantic_index": 10,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.7,
+        "group": "cpu_vector",
+        "label": "CPU Running",
+        "offset": "0x2A0",
+        "physical_index": 5,
+        "semantic_index": 11,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "group": "cpu_vector",
+        "label": "CPU Catching",
+        "offset": "0x2A4",
+        "physical_index": 6,
+        "semantic_index": 12,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "group": "cpu_vector",
+        "label": "CPU Coverage",
+        "offset": "0x2A8",
+        "physical_index": 7,
+        "semantic_index": 13,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "group": "cpu_vector",
+        "label": "CPU Pursuit",
+        "offset": "0x2AC",
+        "physical_index": 8,
+        "semantic_index": 14,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "group": "cpu_vector",
+        "label": "CPU Tackling",
+        "offset": "0x2B0",
+        "physical_index": 9,
+        "semantic_index": 15,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.475,
+        "group": "cpu_vector",
+        "label": "CPU Kicking",
+        "offset": "0x2B4",
+        "physical_index": 10,
+        "semantic_index": 16,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.8,
+        "group": "cpu_vector",
+        "label": "CPU Fatigue",
+        "offset": "0x2B8",
+        "physical_index": 11,
+        "semantic_index": 17,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.675,
+        "group": "human_vector",
+        "label": "Human Blocking",
+        "offset": "0x2BC",
+        "physical_index": 12,
+        "semantic_index": 0,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.45,
+        "group": "human_vector",
+        "label": "Human Passing",
+        "offset": "0x2C0",
+        "physical_index": 13,
+        "semantic_index": 1,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.8,
+        "group": "human_vector",
+        "label": "Human Running",
+        "offset": "0x2C4",
+        "physical_index": 14,
+        "semantic_index": 2,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.35,
+        "group": "human_vector",
+        "label": "Human Catching",
+        "offset": "0x2C8",
+        "physical_index": 15,
+        "semantic_index": 3,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.35,
+        "group": "human_vector",
+        "label": "Human Coverage",
+        "offset": "0x2CC",
+        "physical_index": 16,
+        "semantic_index": 4,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.35,
+        "group": "human_vector",
+        "label": "Human Pursuit",
+        "offset": "0x2D0",
+        "physical_index": 17,
+        "semantic_index": 5,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "group": "human_vector",
+        "label": "Human Tackling",
+        "offset": "0x2D4",
+        "physical_index": 18,
+        "semantic_index": 6,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.525,
+        "group": "human_vector",
+        "label": "Human Kicking",
+        "offset": "0x2D8",
+        "physical_index": 19,
+        "semantic_index": 7,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 1.0,
+        "group": "human_vector",
+        "label": "Human Fatigue",
+        "offset": "0x2DC",
+        "physical_index": 20,
+        "semantic_index": 8,
+        "settings1": 0.5
+      }
+    ],
+    "semantic_order": [
+      "Human Blocking",
+      "Human Passing",
+      "Human Running",
+      "Human Catching",
+      "Human Coverage",
+      "Human Pursuit",
+      "Human Tackling",
+      "Human Kicking",
+      "Human Fatigue",
+      "CPU Blocking",
+      "CPU Passing",
+      "CPU Running",
+      "CPU Catching",
+      "CPU Coverage",
+      "CPU Pursuit",
+      "CPU Tackling",
+      "CPU Kicking",
+      "CPU Fatigue",
+      "Injury",
+      "Fumble",
+      "Interception"
+    ],
+    "settings1_payload_size": 736,
+    "settings1_sha256": "b4e40e69fa7014d5172a52ff3821b88485e3255272ad5a884687b2c48a7204d9"
+  },
+  "summary": {
+    "franchise_payload_size": 720044,
+    "safe_writer_proved": false,
+    "save_container_count": 8,
+    "save_type_counts": {
+      "FXG": 1,
+      "STG": 1,
+      "TMM": 5,
+      "USR": 1
+    },
+    "settings_payload_size": 736,
+    "settings_prefix_join_proved": true,
+    "signature_owner_proved": true,
+    "slider_field_count": 21,
+    "title_id": "53450030"
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "evidence": [
+    {
+      "report": "menu_state_trace.json",
+      "sha256": "ecd93117a3a808a16697c23ae10e3225953bcb4dabda30afabdc5c02911974f1"
+    },
+    {
+      "report": "nfl_main_menu_live_state.json",
+      "sha256": "a5d4b64962fefb2e5dbee4768d120172c0642405df2a0137759e2bce3737b89a"
+    }
+  ],
+  "game": "NFL 2K5",
+  "known_blockers": [
+    {
+      "id": "cold_boot_predecessor",
+      "needed": "retail runtime trace of the state installation and lifecycle survival",
+      "status": "unproved"
+    },
+    {
+      "id": "selected_row_visual",
+      "needed": "loaded-layout frame trace linking selection to a timeline or primitive",
+      "status": "unproved"
+    },
+    {
+      "id": "physical_pixel_mapping",
+      "needed": "Xbox GPU viewport, projection, and overscan recovery",
+      "status": "unproved"
+    }
+  ],
+  "layout_reachability": [
+    {
+      "layout": "main_menu_sub",
+      "relation": "descriptor_selected",
+      "status": "proved_if_resource_loaded"
+    },
+    {
+      "layout": "main_navi",
+      "relation": "serialized_child_of_main_menu_sub",
+      "status": "proved"
+    }
+  ],
+  "mutation_supported": false,
+  "platform": "original_xbox",
+  "query": "main_menu",
+  "read_only": true,
+  "rendering": {
+    "alternate_direct_font_path_is_default": false,
+    "default_path": "serialized_layout",
+    "logical_canvas": [
+      640,
+      480
+    ],
+    "physical_framebuffer_mapping": "unproved"
+  },
+  "schema": "mod_editor_named_main_menu_inspector/v1",
+  "source_pin": {
+    "file": "default.xbe",
+    "sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+  },
+  "state": {
+    "cold_boot_reachability": "unproved",
+    "descriptor_owned": true,
+    "initial_selection": "Quick Game",
+    "initial_selection_status": "proved_static_initialization",
+    "name": "Main Menu",
+    "rows": [
+      {
+        "activation": {
+          "kind": "push_target_state",
+          "status": "proved",
+          "target": "Team Select"
+        },
+        "initially_drawable": true,
+        "label": "Quick Game",
+        "position": 0
+      },
+      {
+        "activation": {
+          "kind": "push_target_state",
+          "status": "proved",
+          "target": "Game Modes"
+        },
+        "initially_drawable": true,
+        "label": "Game Modes",
+        "position": 1
+      },
+      {
+        "activation": {
+          "kind": "native_callback",
+          "status": "callback_owner_proved",
+          "target": "The Crib"
+        },
+        "initially_drawable": true,
+        "label": "The Crib|TM|",
+        "position": 2
+      },
+      {
+        "activation": {
+          "kind": "push_target_state",
+          "status": "proved",
+          "target": "Features"
+        },
+        "initially_drawable": true,
+        "label": "Features",
+        "position": 3
+      },
+      {
+        "activation": {
+          "kind": "push_target_state",
+          "status": "proved",
+          "target": "Options"
+        },
+        "initially_drawable": true,
+        "label": "Options",
+        "position": 4
+      },
+      {
+        "activation": {
+          "kind": "push_target_state",
+          "status": "proved",
+          "target": "XboxLive Sign-in"
+        },
+        "initially_drawable": true,
+        "label": "Xbox Live",
+        "position": 5
+      },
+      {
+        "activation": {
+          "kind": "push_target_state",
+          "status": "proved",
+          "target": "Extras"
+        },
+        "initially_drawable": true,
+        "label": "Extras",
+        "position": 6
+      }
+    ]
+  }
+}

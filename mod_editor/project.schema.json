@@ -1,0 +1,152 @@
+{
+  "$id": "vc_mod_project/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "game": {
+      "enum": [
+        "nfl2k5",
+        "apf2k8"
+      ]
+    },
+    "log": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "level": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "level",
+          "message",
+          "timestamp"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "name": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "output_path": {
+      "type": "string"
+    },
+    "project_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "replacements": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "capability_id": {
+            "pattern": "^[a-z0-9][a-z0-9_.-]+$",
+            "type": "string"
+          },
+          "item_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "replacement_path": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "target_id": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "capability_id",
+          "item_id",
+          "replacement_path",
+          "target_id"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "schema": {
+      "const": "vc_mod_project/v1"
+    },
+    "source": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "detected_game": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fingerprint_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "inspected_path": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            },
+            "recognized": {
+              "type": "boolean"
+            },
+            "selected_path": {
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "size": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "detected_game",
+            "fingerprint_id",
+            "inspected_path",
+            "kind",
+            "note",
+            "recognized",
+            "selected_path",
+            "sha256",
+            "size"
+          ],
+          "type": "object"
+        }
+      ]
+    }
+  },
+  "required": [
+    "game",
+    "log",
+    "name",
+    "output_path",
+    "project_id",
+    "replacements",
+    "schema",
+    "source"
+  ],
+  "title": "Visual Concepts football mod project",
+  "type": "object"
+}

@@ -1,0 +1,169 @@
+{
+  "artifact_profile": {
+    "changed_native_volume": {
+      "geometry_manifest_sha256": "c8033acaf39f032d69d05e0a3f4a2ea235f35867dd40b7450547df49fa7c7917",
+      "geometry_manifest_size": 4321,
+      "path": ".geometry-proof/changed-output/9",
+      "sha256": "6bc202ee8a01caaa02885c58810fe9add2dae7afd862793a6a479622d63770e4",
+      "size": 634941440
+    },
+    "output_xiso": {
+      "path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/ESPN-NFL-2K5-group36-geometry-v2.xiso.iso",
+      "sha256": "67910ea934a891c32de6bf5ddc00eae4c7c696589763773fd3453c6f7bf65c0e",
+      "size": 6300499968,
+      "workflow_manifest_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/workflow-v2.json",
+      "workflow_manifest_sha256": "e0ef2d1cd9b82a7377200436deb4f982c6e76d90f86b4618fc6cbe7d7a008db1",
+      "workflow_manifest_size": 3060
+    },
+    "public_nonretail_recipe": {
+      "path": "reports/asset_samples/nfl_scne/stadium_group36_zero_positions_permuted_quad_recipe.json",
+      "sha256": "e940739abb9f901607ce2b3c35a629b2cf3ccbda0ba11c4d8963fccadad078fe",
+      "size": 1786
+    },
+    "retail_source_xiso": {
+      "path": "ESPN NFL 2K5 (USA).xiso.iso",
+      "sha256": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9",
+      "size": 6300499968
+    }
+  },
+  "claims": {
+    "changed_count_mesh_writeback_proved": false,
+    "layout_identical_copy_only_xiso": true,
+    "offline_native_geometry_transport_proved": true,
+    "original_xbox_hardware_proved": false,
+    "production_ready": false,
+    "target_group36_loaded_at_runtime": false,
+    "xemu_boot_acceptance_observed_after_transport_manifest": true,
+    "xemu_geometry_visibility_proved": false
+  },
+  "data_policy": {
+    "contains_replacement_bytes": false,
+    "contains_retail_geometry_values": false,
+    "contains_retail_payload_bytes": false,
+    "hashes_sizes_offsets_and_structure_only": true,
+    "public_recipe_contains_only_authored_nonretail_values": true
+  },
+  "difference_ledger": {
+    "actual_witness": {
+      "changed_after_bytes_sha256": "d5e5c6d8a67ac00e0134207dca3fc6f60a857fc97624739ed5714b920d98d2a8",
+      "changed_before_bytes_sha256": "a59dc18bc7e154306e75ac204e5e2f8c02b2f0b8fe0fcbb0e18fd9fc0b741148",
+      "changed_byte_count": 857950,
+      "changed_offset_u32le_sha256": "df8a29f16d85bcc9b7c657bc69c12c0b2a677d90cb51199e553bf63df4ccb177",
+      "changed_run_count": 24046,
+      "changed_run_pairs_u32le_sha256": "a1832a77325ac660f13d5a299353cc256e864c4c7ac33cf82f8b4f67e5aca720"
+    },
+    "changed_after_bytes_encoding": "concatenate each output byte whose value differs, in ascending relative-offset order",
+    "changed_before_bytes_encoding": "concatenate each source byte whose value differs, in ascending relative-offset order",
+    "changed_offset_encoding": "concatenate one unsigned 32-bit little-endian relative span offset for every changed byte, ascending",
+    "changed_run_encoding": "coalesce adjacent changed offsets into half-open [start,end) runs, then concatenate unsigned 32-bit little-endian start,end pairs",
+    "hash_algorithm": "SHA-256",
+    "offset_origin": "authorized SCNE span start"
+  },
+  "fail_closed_contract": {
+    "artifact_identity": [
+      "source XISO, changed native volume, output XISO, and manifest must be distinct non-symlink regular files",
+      "source XISO, extracted index, extracted pack, native changed volume, recipe, workflow manifest, and output XISO must match their pinned sizes and SHA-256 values",
+      "the writer opens sources read-only, reserves new output names exclusively, and retains descriptor/path identity checks through publication"
+    ],
+    "forbidden_mutations": [
+      "any XISO byte outside [205566528,206475440)",
+      "any XDVDFS directory node, root descriptor, file extent, filename, file count, or allocation change",
+      "any default.xbe byte",
+      "any vc_53450030/0 byte",
+      "any vc_53450030/9 byte outside pack-relative [132799040,133707952)",
+      "a no-op replacement span",
+      "a changed native volume that fails its independent native geometry verifier"
+    ],
+    "manifest": {
+      "canonicalization": "UTF-8 JSON, indent=2, sort_keys=true, allow_nan=false, one trailing newline",
+      "maximum_verifier_input_bytes": 65536,
+      "required_root_keys_exact": [
+        "claims",
+        "native_geometry_proof",
+        "output",
+        "patch",
+        "schema",
+        "source",
+        "xdvdfs"
+      ],
+      "schema": "nfl2k5_group36_geometry_xiso_patch/v1"
+    },
+    "refusal_result": "no transport result is accepted; writer-owned incomplete outputs are removed only after inode ownership checks"
+  },
+  "format": {
+    "authorized_patch": {
+      "absolute_end_exclusive": 206475440,
+      "absolute_span_offset": 205566528,
+      "output_pack_sha256": "6bc202ee8a01caaa02885c58810fe9add2dae7afd862793a6a479622d63770e4",
+      "pack_relative_end_exclusive": 133707952,
+      "pack_relative_span_offset": 132799040,
+      "replacement_span_sha256": "196cc284f6b2e0ad08462fe1cbad6ad773e3ad5365ca7af3fa854cd789c24119",
+      "source_pack_sha256": "779b37455fc44cd7eb60674b926d7ccaf9cd6bd9d894157a1d68119281790c7a",
+      "source_span_sha256": "0cd1977a6097851f9366d935098bdd9e97144f3ffce0f8690593c2623fbbd73a",
+      "span_size": 908912
+    },
+    "disc": {
+      "container": "Xbox XISO with XDVDFS filesystem",
+      "file_count": 19,
+      "sector_size": 2048,
+      "size": 6300499968,
+      "xdvdfs_directory_extents": 2,
+      "xdvdfs_directory_nodes": 20,
+      "xdvdfs_root_sector": 33,
+      "xdvdfs_root_size": 108
+    },
+    "extents": {
+      "default.xbe": {
+        "attributes": 32,
+        "byte_offset": 2396160,
+        "sector": 1170,
+        "sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+        "size": 11948032
+      },
+      "vc_53450030/0": {
+        "attributes": 32,
+        "byte_offset": 1631188992,
+        "sector": 796479,
+        "sha256": "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d",
+        "size": 193710080
+      },
+      "vc_53450030/9": {
+        "attributes": 32,
+        "byte_offset": 72767488,
+        "sector": 35531,
+        "sha256": "779b37455fc44cd7eb60674b926d7ccaf9cd6bd9d894157a1d68119281790c7a",
+        "size": 634941440
+      }
+    }
+  },
+  "independent_verification": {
+    "complete_disc_comparison": true,
+    "default_xbe_rehashed": true,
+    "native_geometry_verifier_rerun": true,
+    "output_pack_equals_independently_verified_changed_volume": true,
+    "source_rehashed_before_return": true,
+    "transport_verifier_imports_native_geometry_writer": false,
+    "transport_verifier_imports_transport_writer": false,
+    "xdvdfs_reparsed_for_source_and_output": true
+  },
+  "runtime_evidence_boundary": {
+    "boot_observation": "A subsequent isolated xemu 0.8.135 run of the exact output XISO SHA-256 reached rendered title and attract-mode gameplay and exited cleanly. This is archive/boot acceptance only and is outside the v1 writer manifest.",
+    "geometry_visibility": "Unproved: the edited s42nd.iff target was not established as loaded for the boot observation, and the public changed fixture is an absence-style edit.",
+    "manifest_reason_for_false_xemu_fields": "The transport writer and independent transport verifier do not launch an emulator. Their checked workflow correctly records xemu_boot_proved=false and xemu_geometry_visibility_proved=false.",
+    "production_and_hardware": "No original Xbox witness and no production-readiness claim."
+  },
+  "schema": "nfl2k5_group36_geometry_xiso_transport/v1",
+  "transport_algorithm": [
+    "Require mode=patched from the independent native group36 geometry verifier.",
+    "Open and pin the retail XISO and changed copied volume by type, size, inode identity, and SHA-256.",
+    "Parse XDVDFS and pin the filesystem shape plus vc_53450030/9, vc_53450030/0, and default.xbe extents and hashes.",
+    "Read the pinned retail SCNE span and the same pack-relative span from the independently verified changed volume.",
+    "Derive the complete changed-byte and changed-run ledger; refuse a no-op.",
+    "Exclusively create a layout-identical copy of the retail XISO and pwrite exactly the authorized span.",
+    "Read back the span and compare every source/output disc byte, refusing any difference outside the span or any ledger-count mismatch.",
+    "Reparse XDVDFS, require the original tree and extents, require exact default.xbe, and require output volume 9 to equal the independently verified changed volume.",
+    "Publish a canonical, exclusively created manifest only after all checks pass.",
+    "Independently verify from read-only descriptors without importing either writer, re-deriving native geometry, XDVDFS, span, ledger, full-disc difference count, and all claims."
+  ],
+  "version": 1
+}

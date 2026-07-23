@@ -1,0 +1,52 @@
+{
+  "$id": "nfl2k5_catalog_static_position_recipe.v2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A catalog-selected exact-count FLOAT3 position replacement. The procedural loader derives and enforces the exact vertex count from the pinned target row; JSON Schema alone cannot express that cross-document constraint.",
+  "properties": {
+    "catalog": {
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "nfl2k5_stadium_static_target_catalog/v1"
+        },
+        "sha256": {
+          "const": "f44472856044a5d8a50d18476a4c7af18ef98bcc3f7cf1d567db2b33d5336bfa"
+        }
+      },
+      "required": [
+        "schema",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "positions": {
+      "items": {
+        "items": {
+          "type": "number"
+        },
+        "maxItems": 3,
+        "minItems": 3,
+        "type": "array"
+      },
+      "maxItems": 1877,
+      "minItems": 1,
+      "type": "array"
+    },
+    "schema": {
+      "const": "nfl2k5_catalog_static_position_recipe/v2"
+    },
+    "target_id": {
+      "pattern": "^nfl2k5/stadium/o3280/c5/s[0-9]+$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "catalog",
+    "positions",
+    "schema",
+    "target_id"
+  ],
+  "title": "NFL 2K5 catalog static-position recipe v2",
+  "type": "object"
+}

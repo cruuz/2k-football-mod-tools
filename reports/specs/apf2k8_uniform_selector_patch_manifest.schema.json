@@ -1,0 +1,374 @@
+{
+  "$comment": "Canonical manifest emitted for the one deterministic APF 2K8 built-in all-family selector plan. JSON Schema validates local shape/constants; the independent verifier performs every x-semantic-validation from retail bytes and reconstructs the complete document.",
+  "$defs": {
+    "family": {
+      "additionalProperties": false,
+      "properties": {
+        "assignment_count": {
+          "const": 24
+        },
+        "catalog_capacity_upper_bound": {
+          "maximum": 24,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "catalog_count": {
+          "maximum": 256,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "changed_team_count": {
+          "maximum": 24,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "changed_team_indices": {
+          "items": {
+            "maximum": 23,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 24,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "distinct_asset_count_after": {
+          "maximum": 24,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "distinct_asset_count_before": {
+          "maximum": 24,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "family": {
+          "enum": [
+            "glove",
+            "helmet",
+            "jersey",
+            "logo",
+            "textlogo",
+            "font",
+            "number",
+            "pants",
+            "shoe",
+            "shoulder",
+            "sock"
+          ]
+        },
+        "physical_families": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "type": "array"
+        },
+        "selector_slot": {
+          "maximum": 12,
+          "minimum": 2,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "assignment_count",
+        "catalog_capacity_upper_bound",
+        "catalog_count",
+        "changed_team_count",
+        "changed_team_indices",
+        "distinct_asset_count_after",
+        "distinct_asset_count_before",
+        "family",
+        "physical_families",
+        "selector_slot"
+      ],
+      "type": "object"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "claim_flags": {
+      "const": {
+        "all_family_plans_reach_catalog_upper_bound_offline": true,
+        "all_online_and_user_slots_bit_exact": true,
+        "archive_growth_required": false,
+        "emulator_runtime_visibility_proved": false,
+        "original_xbox_360_hardware_proved": false,
+        "production_gui_exposed": false,
+        "selector_byte_0_filename_ownership_proved": true,
+        "selector_bytes_1_through_7_semantics_proved": false
+      }
+    },
+    "compression": {
+      "additionalProperties": false,
+      "properties": {
+        "fixed_payload_limit_bytes": {
+          "const": 436024
+        },
+        "headroom_bytes_after": {
+          "const": 496
+        },
+        "output_token_count": {
+          "const": 284334
+        },
+        "payload_sha256_after": {
+          "const": "3ecaf03d32456650a721d515ca47f2b4373347e21a85678df2e9b52b1ba881c8"
+        },
+        "payload_size_after": {
+          "const": 435528
+        },
+        "payload_size_before": {
+          "const": 435225
+        },
+        "retail_payload_consumed_bytes": {
+          "const": 435225
+        },
+        "retail_token_count": {
+          "const": 284015
+        },
+        "retail_tokens_preserved_semantically": {
+          "const": 283826
+        },
+        "retail_tokens_split_or_replaced": {
+          "const": 189
+        },
+        "retail_zero_alignment_bytes": {
+          "const": 0
+        },
+        "shift": {
+          "const": 10
+        }
+      },
+      "required": [
+        "fixed_payload_limit_bytes",
+        "headroom_bytes_after",
+        "output_token_count",
+        "payload_sha256_after",
+        "payload_size_after",
+        "payload_size_before",
+        "retail_payload_consumed_bytes",
+        "retail_token_count",
+        "retail_tokens_preserved_semantically",
+        "retail_tokens_split_or_replaced",
+        "retail_zero_alignment_bytes",
+        "shift"
+      ],
+      "type": "object"
+    },
+    "families": {
+      "items": {
+        "$ref": "#/$defs/family"
+      },
+      "maxItems": 11,
+      "minItems": 11,
+      "type": "array"
+    },
+    "mode": {
+      "const": "changed"
+    },
+    "preservation": {
+      "additionalProperties": false,
+      "properties": {
+        "authorized_decoded_byte_count": {
+          "const": 528
+        },
+        "changed_decoded_offsets_sha256": {
+          "const": "605468e121e70934e7e5b40664ebb45264e4946b851b8de6e898d16f87948ca0"
+        },
+        "decoded_changed_byte_count": {
+          "const": 190
+        },
+        "decoded_output_sha256": {
+          "const": "90bc181b311f0f637fe2ab994845ae10a5b3202652d633c990e6b9450a79387f"
+        },
+        "footer_bit_exact": {
+          "const": true
+        },
+        "online_and_user_team_selector_records_bit_exact": {
+          "const": true
+        },
+        "opaque_selector_bytes_1_through_7_bit_exact": {
+          "const": true
+        },
+        "other_decoded_bytes_bit_exact": {
+          "const": true
+        },
+        "output_zero_tail_bytes": {
+          "const": 496
+        },
+        "rebuilt_iff_reparsed": {
+          "const": true
+        }
+      },
+      "required": [
+        "authorized_decoded_byte_count",
+        "changed_decoded_offsets_sha256",
+        "decoded_changed_byte_count",
+        "decoded_output_sha256",
+        "footer_bit_exact",
+        "online_and_user_team_selector_records_bit_exact",
+        "opaque_selector_bytes_1_through_7_bit_exact",
+        "other_decoded_bytes_bit_exact",
+        "output_zero_tail_bytes",
+        "rebuilt_iff_reparsed"
+      ],
+      "type": "object"
+    },
+    "recipe": {
+      "const": {
+        "assignment_count": 264,
+        "changed_team_family_assignment_count": 95,
+        "family_count": 11,
+        "schema": "apf2k8_uniform_selector_assignment_recipe/v1",
+        "sha256": "440226a974aa9719b706a039eafafb7ffef9c2389b2e461c8ba25bcf22e24727",
+        "size_bytes": 38317
+      }
+    },
+    "result": {
+      "additionalProperties": false,
+      "properties": {
+        "copied_volume": {
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "outside_outer_entry_prefix_sha256": {
+              "const": "e771b5533d94ae0f9e5dc6dccf6fd81d13a93894b1e01807e69a10ce8407e550"
+            },
+            "outside_outer_entry_suffix_sha256": {
+              "const": "cebb3cf73db1047d74a08ea4c8eb86ef38ed7c3472b23ee92fa835ad0c56bb0c"
+            },
+            "sha256": {
+              "const": "d2823acba35284dc35f08d3a9706476d08aba95120ccbbd168b987904f643d5a"
+            },
+            "size_bytes": {
+              "const": 1140850688
+            }
+          },
+          "required": [
+            "name",
+            "outside_outer_entry_prefix_sha256",
+            "outside_outer_entry_suffix_sha256",
+            "sha256",
+            "size_bytes"
+          ],
+          "type": "object"
+        },
+        "file_length_after": {
+          "const": 435632
+        },
+        "outer_entry_sha256": {
+          "const": "5ecd30925837e8e847a00d1b81474955455bae5d94de0778998af26c1c59ec1d"
+        },
+        "outer_entry_size": {
+          "const": 436224
+        }
+      },
+      "required": [
+        "copied_volume",
+        "file_length_after",
+        "outer_entry_sha256",
+        "outer_entry_size"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "apf2k8_uniform_selector_patch/v1"
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "allocation_report_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "allocation_report_size_bytes": {
+          "const": 264669
+        },
+        "capacity_report_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "capacity_report_size_bytes": {
+          "const": 18842
+        },
+        "decoded_roster_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "manifest_schema_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "manifest_schema_size_bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "outer_entry_index": {
+          "const": 1126
+        },
+        "outer_entry_pack_offset": {
+          "const": 47699968
+        },
+        "outer_entry_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "recipe_schema_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "recipe_schema_size_bytes": {
+          "const": 6196
+        },
+        "retail_0A_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "retail_0A_size_bytes": {
+          "const": 1140850688
+        }
+      },
+      "required": [
+        "allocation_report_sha256",
+        "allocation_report_size_bytes",
+        "capacity_report_sha256",
+        "capacity_report_size_bytes",
+        "decoded_roster_sha256",
+        "manifest_schema_sha256",
+        "manifest_schema_size_bytes",
+        "outer_entry_index",
+        "outer_entry_pack_offset",
+        "outer_entry_sha256",
+        "recipe_schema_sha256",
+        "recipe_schema_size_bytes",
+        "retail_0A_sha256",
+        "retail_0A_size_bytes"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "claim_flags",
+    "compression",
+    "families",
+    "mode",
+    "preservation",
+    "recipe",
+    "result",
+    "schema",
+    "source"
+  ],
+  "title": "APF 2K8 deterministic built-in all-family selector patch manifest",
+  "type": "object",
+  "x-semantic-validations": [
+    "the complete manifest must be canonical sorted UTF-8 JSON with one trailing LF",
+    "the independent verifier must reconstruct the complete manifest rather than trust any supplied field",
+    "the eleven family rows and changed-team vectors must exactly match the pinned allocation report and recipe",
+    "the complete copied volume must differ only inside outer entry 1126",
+    "the output H7A must decode to the independently reconstructed 2294304-byte wanted ROST",
+    "only the 190 planned byte-zero records may differ and all online/user records must remain exact",
+    "footer relocation and all 496 remaining fixed-allocation bytes must be exact"
+  ]
+}

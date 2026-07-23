@@ -1,0 +1,320 @@
+{
+  "schema": "apf2k8_player_ratings/v1",
+  "game": "apf2k8_xbox360",
+  "scope": "on_disc_roster_base_ratings_editable",
+  "source_contract": {
+    "resource": "roster_english.iff outer 1126 inner 0 ROST",
+    "player_record_stride": 332,
+    "player_record_stride_hex": "0x14C",
+    "candidate_region_start": 186,
+    "candidate_region_start_hex": "0xBA",
+    "candidate_region_end_inclusive": 217,
+    "candidate_region_end_inclusive_hex": "0xD9",
+    "populated_stock_rating_block_records": 1437,
+    "total_player_records": 2254
+  },
+  "scale": {
+    "storage": "unsigned_byte",
+    "native_minimum": 0,
+    "native_maximum": 100,
+    "stock_observed_minimum": 0,
+    "stock_observed_maximum": 99,
+    "default_ui_minimum": 0,
+    "default_ui_maximum": 99,
+    "display_policy": "Show the stored integer exactly. Never rescale, clip, or silently translate a native value of 100 to 99."
+  },
+  "field_count": 28,
+  "named_field_count": 27,
+  "fields": [
+    {
+      "id": "speed",
+      "label": "Speed",
+      "relative_offset": 186,
+      "relative_offset_hex": "0xBA",
+      "display_order": 0,
+      "formula_modifier_index": 0,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "agility",
+      "label": "Agility",
+      "relative_offset": 187,
+      "relative_offset_hex": "0xBB",
+      "display_order": 1,
+      "formula_modifier_index": 1,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "strength",
+      "label": "Strength",
+      "relative_offset": 193,
+      "relative_offset_hex": "0xC1",
+      "display_order": 2,
+      "formula_modifier_index": 2,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "jumping",
+      "label": "Jumping",
+      "relative_offset": 194,
+      "relative_offset_hex": "0xC2",
+      "display_order": 3,
+      "formula_modifier_index": 3,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "pass_arm_strength",
+      "label": "Pass Arm Strength",
+      "relative_offset": 188,
+      "relative_offset_hex": "0xBC",
+      "display_order": 4,
+      "formula_modifier_index": 6,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "stamina",
+      "label": "Stamina",
+      "relative_offset": 190,
+      "relative_offset_hex": "0xBE",
+      "display_order": 5,
+      "formula_modifier_index": 9,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "aggressiveness",
+      "label": "Aggressiveness",
+      "relative_offset": 216,
+      "relative_offset_hex": "0xD8",
+      "display_order": 6,
+      "formula_modifier_index": 27,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "consistency",
+      "label": "Consistency",
+      "relative_offset": 215,
+      "relative_offset_hex": "0xD7",
+      "display_order": 7,
+      "formula_modifier_index": 22,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "kick_power",
+      "label": "Kick Power",
+      "relative_offset": 191,
+      "relative_offset_hex": "0xBF",
+      "display_order": 8,
+      "formula_modifier_index": 7,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "kicking_style",
+      "label": "Kicking Style",
+      "relative_offset": 209,
+      "relative_offset_hex": "0xD1",
+      "display_order": 9,
+      "formula_modifier_index": 26,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "durability",
+      "label": "Durability",
+      "relative_offset": 192,
+      "relative_offset_hex": "0xC0",
+      "display_order": 10,
+      "formula_modifier_index": 11,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "coverage",
+      "label": "Coverage",
+      "relative_offset": 195,
+      "relative_offset_hex": "0xC3",
+      "display_order": 11,
+      "formula_modifier_index": 20,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "run_route",
+      "label": "Run Route",
+      "relative_offset": 196,
+      "relative_offset_hex": "0xC4",
+      "display_order": 12,
+      "formula_modifier_index": 14,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "tackle",
+      "label": "Tackle",
+      "relative_offset": 198,
+      "relative_offset_hex": "0xC6",
+      "display_order": 13,
+      "formula_modifier_index": 17,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "break_tackle",
+      "label": "Break Tackle",
+      "relative_offset": 199,
+      "relative_offset_hex": "0xC7",
+      "display_order": 14,
+      "formula_modifier_index": 12,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "pass_accuracy",
+      "label": "Pass Accuracy",
+      "relative_offset": 200,
+      "relative_offset_hex": "0xC8",
+      "display_order": 15,
+      "formula_modifier_index": 5,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "pass_read_coverage",
+      "label": "Pass Read Coverage",
+      "relative_offset": 201,
+      "relative_offset_hex": "0xC9",
+      "display_order": 16,
+      "formula_modifier_index": 13,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "catch",
+      "label": "Catch",
+      "relative_offset": 202,
+      "relative_offset_hex": "0xCA",
+      "display_order": 17,
+      "formula_modifier_index": 4,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "run_blocking",
+      "label": "Run Blocking",
+      "relative_offset": 203,
+      "relative_offset_hex": "0xCB",
+      "display_order": 18,
+      "formula_modifier_index": 15,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "pass_blocking",
+      "label": "Pass Blocking",
+      "relative_offset": 204,
+      "relative_offset_hex": "0xCC",
+      "display_order": 19,
+      "formula_modifier_index": 16,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "secure_ball",
+      "label": "Secure Ball",
+      "relative_offset": 205,
+      "relative_offset_hex": "0xCD",
+      "display_order": 20,
+      "formula_modifier_index": 10,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "pass_rush",
+      "label": "Pass Rush",
+      "relative_offset": 206,
+      "relative_offset_hex": "0xCE",
+      "display_order": 21,
+      "formula_modifier_index": 18,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "run_coverage",
+      "label": "Run Coverage",
+      "relative_offset": 207,
+      "relative_offset_hex": "0xCF",
+      "display_order": 22,
+      "formula_modifier_index": 19,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "kick_accuracy",
+      "label": "Kick Accuracy",
+      "relative_offset": 208,
+      "relative_offset_hex": "0xD0",
+      "display_order": 23,
+      "formula_modifier_index": 8,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "leadership",
+      "label": "Leadership",
+      "relative_offset": 211,
+      "relative_offset_hex": "0xD3",
+      "display_order": 24,
+      "formula_modifier_index": 23,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "unknown_rating_24",
+      "label": "Unknown Rating 24",
+      "relative_offset": 212,
+      "relative_offset_hex": "0xD4",
+      "display_order": 25,
+      "formula_modifier_index": 24,
+      "label_status": "neutral_unresolved"
+    },
+    {
+      "id": "composure",
+      "label": "Composure",
+      "relative_offset": 213,
+      "relative_offset_hex": "0xD5",
+      "display_order": 26,
+      "formula_modifier_index": 21,
+      "label_status": "xex_ui_named"
+    },
+    {
+      "id": "scramble",
+      "label": "Scramble",
+      "relative_offset": 214,
+      "relative_offset_hex": "0xD6",
+      "display_order": 27,
+      "formula_modifier_index": 25,
+      "label_status": "xex_ui_named"
+    }
+  ],
+  "excluded_neighbor_bytes": [
+    {
+      "relative_offset": 189,
+      "relative_offset_hex": "0xBD",
+      "status": "unknown_unassigned"
+    },
+    {
+      "relative_offset": 197,
+      "relative_offset_hex": "0xC5",
+      "status": "unknown_unassigned"
+    },
+    {
+      "relative_offset": 210,
+      "relative_offset_hex": "0xD2",
+      "status": "unknown_unassigned"
+    },
+    {
+      "relative_offset": 217,
+      "relative_offset_hex": "0xD9",
+      "status": "height_in_inches_consumer_proved"
+    }
+  ],
+  "separation": {
+    "overall": "Derived and rounded from position-specific formula tables; never stored or written as a base rating.",
+    "abilities": "Separate packed bits around player offsets 0x18 through 0x2C; not inferred from base-rating values.",
+    "star_tier": "Gold, Silver, and Bronze storage is not mapped and must not be inferred from ratings or ability count.",
+    "runtime_modifiers": "Effective getters may apply a per-attribute multiplier when player +0x20 high bits are set; its fatigue, injury, boost, or tier semantics remain unresolved.",
+    "global_sliders": "Difficulty and gameplay sliders are separate systems and are not player ratings."
+  },
+  "runtime": {
+    "status": "token_preserving_runtime_loaded",
+    "reason": "A token-preserving ROST build changed Dan Marino's stored Speed byte from 40 to 99, booted in Xenia, and loaded/rendered the edited player record without the former startup crash. The desktop editor therefore exposes semantic per-attribute replacement under a strict public 0..99 authoring limit. A source value of native 100 is still displayed exactly and can be reverted, but the product does not author new 100 values. The game has no numeric ratings screen, so the isolated on-field effect of each attribute remains a separate gameplay-validation question."
+  },
+  "public_distribution": {
+    "contains_retail_bytes": false,
+    "contains_player_values": false,
+    "metadata_contents": "field names, integer offsets, scale contracts, and findings only"
+  }
+}

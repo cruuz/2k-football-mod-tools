@@ -1,0 +1,631 @@
+{
+  "$defs": {
+    "artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "size": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "size"
+      ],
+      "type": "object"
+    },
+    "camera_step": {
+      "additionalProperties": false,
+      "properties": {
+        "duration_seconds": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]+\\.[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gap_seconds": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]+\\.[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "input": {
+          "enum": [
+            "button_b_zoom_out",
+            "dpad_up",
+            "left_stick_down"
+          ]
+        },
+        "press_seconds": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]+\\.[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tap_count": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "duration_seconds",
+        "gap_seconds",
+        "input",
+        "press_seconds",
+        "tap_count"
+      ],
+      "type": "object"
+    },
+    "run": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "additionalProperties": false,
+          "properties": {
+            "config": {
+              "$ref": "#/$defs/artifact"
+            },
+            "hdd": {
+              "$ref": "#/$defs/artifact"
+            },
+            "screenshots": {
+              "items": {
+                "$ref": "#/$defs/screenshot"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "workflow_manifest": {
+              "$ref": "#/$defs/artifact"
+            },
+            "xiso": {
+              "$ref": "#/$defs/artifact"
+            }
+          },
+          "required": [
+            "config",
+            "hdd",
+            "screenshots",
+            "workflow_manifest",
+            "xiso"
+          ],
+          "type": "object"
+        },
+        "profile": {
+          "enum": [
+            "expanded_wall_diagnostic",
+            "retail_geometry_diagnostic_control"
+          ]
+        },
+        "runtime": {
+          "additionalProperties": false,
+          "properties": {
+            "authored_wall_visible": {
+              "type": "boolean"
+            },
+            "clean_shutdown_observed": {
+              "const": true
+            },
+            "exit_code": {
+              "const": 0
+            },
+            "hdd_qemu_img_check": {
+              "const": "no errors"
+            },
+            "render_observation": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "selection": {
+              "$ref": "#/$defs/selection"
+            },
+            "shutdown_method": {
+              "const": "WM_DELETE_WINDOW"
+            },
+            "target_outer_derivation": {
+              "const": "record18 asset s42 + forced time suffix n + clear weather suffix d => s42nd.iff"
+            }
+          },
+          "required": [
+            "authored_wall_visible",
+            "clean_shutdown_observed",
+            "exit_code",
+            "hdd_qemu_img_check",
+            "render_observation",
+            "selection",
+            "shutdown_method",
+            "target_outer_derivation"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "artifacts",
+        "profile",
+        "runtime"
+      ],
+      "type": "object"
+    },
+    "screenshot": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "geometry_frame",
+            "target_selection"
+          ]
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "size": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "role",
+        "sha256",
+        "size"
+      ],
+      "type": "object"
+    },
+    "selection": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_asset_code": {
+          "const": "s42"
+        },
+        "roster_record_index": {
+          "const": 18
+        },
+        "time_of_day": {
+          "const": "Night"
+        },
+        "visible_label": {
+          "const": "Giants Stadium"
+        },
+        "weather": {
+          "const": "Clear"
+        }
+      },
+      "required": [
+        "actual_asset_code",
+        "roster_record_index",
+        "time_of_day",
+        "visible_label",
+        "weather"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:nfl2k5-group36-xemu-runtime-result:v2",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "claims": {
+      "additionalProperties": false,
+      "properties": {
+        "changed_count_mesh_writeback_proved": {
+          "const": false
+        },
+        "control_target_outer_loaded_proved": {
+          "const": true
+        },
+        "diagnostic_only": {
+          "const": true
+        },
+        "distribution_ready": {
+          "const": false
+        },
+        "expanded_target_outer_loaded_proved": {
+          "const": true
+        },
+        "general_static_mesh_runtime_writeback_proved": {
+          "const": false
+        },
+        "geometry_visibility_proved": {
+          "const": true
+        },
+        "geometry_visibility_scope_pinned_xemu_diagnostic_only": {
+          "const": true
+        },
+        "original_xbox_hardware_proved": {
+          "const": false
+        },
+        "pixel_aligned_matched_pair_proved": {
+          "const": false
+        },
+        "production_ready": {
+          "const": false
+        },
+        "public_editor_exposed": {
+          "const": false
+        },
+        "retail_signed_executable_chain_preserved": {
+          "const": false
+        },
+        "runtime_gpu_trace_proved": {
+          "const": false
+        },
+        "s42_quick_game_selectability_proved": {
+          "const": true
+        },
+        "same_camera_sequence_proved": {
+          "const": true
+        },
+        "strict_v1_exact_frame_branch_satisfied": {
+          "const": false
+        },
+        "target_outer_loaded_proved": {
+          "const": true
+        },
+        "xemu_boot_acceptance_proved": {
+          "const": true
+        },
+        "xemu_clean_shutdown_pair_observed": {
+          "const": true
+        }
+      },
+      "required": [
+        "changed_count_mesh_writeback_proved",
+        "control_target_outer_loaded_proved",
+        "diagnostic_only",
+        "distribution_ready",
+        "expanded_target_outer_loaded_proved",
+        "general_static_mesh_runtime_writeback_proved",
+        "geometry_visibility_proved",
+        "geometry_visibility_scope_pinned_xemu_diagnostic_only",
+        "original_xbox_hardware_proved",
+        "pixel_aligned_matched_pair_proved",
+        "production_ready",
+        "public_editor_exposed",
+        "retail_signed_executable_chain_preserved",
+        "runtime_gpu_trace_proved",
+        "s42_quick_game_selectability_proved",
+        "same_camera_sequence_proved",
+        "strict_v1_exact_frame_branch_satisfied",
+        "target_outer_loaded_proved",
+        "xemu_boot_acceptance_proved",
+        "xemu_clean_shutdown_pair_observed"
+      ],
+      "type": "object"
+    },
+    "date": {
+      "const": "2026-07-13"
+    },
+    "emulator": {
+      "additionalProperties": false,
+      "properties": {
+        "application": {
+          "const": "app.xemu.xemu"
+        },
+        "commit": {
+          "const": "6318bb112091635ef908255019e4d42956bc5fa8"
+        },
+        "renderer": {
+          "const": "llvmpipe / LLVM 21.1.8 / Mesa 26.1.4"
+        },
+        "version": {
+          "const": "0.8.135"
+        }
+      },
+      "required": [
+        "application",
+        "commit",
+        "renderer",
+        "version"
+      ],
+      "type": "object"
+    },
+    "offline_proof": {
+      "additionalProperties": false,
+      "properties": {
+        "archive_index": {
+          "$ref": "#/$defs/artifact"
+        },
+        "expanded_geometry_manifest": {
+          "$ref": "#/$defs/artifact"
+        },
+        "expanded_geometry_volume": {
+          "$ref": "#/$defs/artifact"
+        },
+        "expanded_payload": {
+          "additionalProperties": false,
+          "properties": {
+            "decoded_changed_byte_count": {
+              "const": 48
+            },
+            "degenerate_triangle_count": {
+              "const": 0
+            },
+            "fixed_tail_exact": {
+              "const": true
+            },
+            "independent_verifier_passed": {
+              "const": true
+            },
+            "nondegenerate_triangle_count": {
+              "const": 2
+            },
+            "outer_id": {
+              "const": "0xe4d6b0bc"
+            },
+            "outer_index": {
+              "const": 3280
+            },
+            "outside_authorized_geometry_bit_exact": {
+              "const": true
+            },
+            "outside_target_chunk_bit_exact": {
+              "const": true
+            },
+            "shape_name": {
+              "const": "group36"
+            }
+          },
+          "required": [
+            "decoded_changed_byte_count",
+            "degenerate_triangle_count",
+            "fixed_tail_exact",
+            "independent_verifier_passed",
+            "nondegenerate_triangle_count",
+            "outer_id",
+            "outer_index",
+            "outside_authorized_geometry_bit_exact",
+            "outside_target_chunk_bit_exact",
+            "shape_name"
+          ],
+          "type": "object"
+        },
+        "expanded_recipe": {
+          "$ref": "#/$defs/artifact"
+        },
+        "force_n_spec": {
+          "$ref": "#/$defs/artifact"
+        },
+        "independent_verifier": {
+          "$ref": "#/$defs/artifact"
+        },
+        "visibility_unlock_spec": {
+          "$ref": "#/$defs/artifact"
+        }
+      },
+      "required": [
+        "archive_index",
+        "expanded_geometry_manifest",
+        "expanded_geometry_volume",
+        "expanded_payload",
+        "expanded_recipe",
+        "force_n_spec",
+        "independent_verifier",
+        "visibility_unlock_spec"
+      ],
+      "type": "object"
+    },
+    "pair": {
+      "additionalProperties": false,
+      "properties": {
+        "camera_protocol": {
+          "additionalProperties": false,
+          "properties": {
+            "comparison_limitation": {
+              "const": "same replay route and end-zone-facing sequence, but not pixel-aligned because play and team state differ"
+            },
+            "end_zone_facing": {
+              "const": true
+            },
+            "pixel_aligned": {
+              "const": false
+            },
+            "same_play_state": {
+              "const": false
+            },
+            "same_sequence": {
+              "const": true
+            },
+            "same_team_state": {
+              "const": false
+            },
+            "steps": {
+              "items": {
+                "$ref": "#/$defs/camera_step"
+              },
+              "maxItems": 3,
+              "minItems": 3,
+              "type": "array"
+            }
+          },
+          "required": [
+            "comparison_limitation",
+            "end_zone_facing",
+            "pixel_aligned",
+            "same_play_state",
+            "same_sequence",
+            "same_team_state",
+            "steps"
+          ],
+          "type": "object"
+        },
+        "diagnostic_layers": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 4,
+          "type": "array"
+        },
+        "id": {
+          "const": "nfl2k5_group36_s42_visible_night_control_expanded/v2"
+        },
+        "target": {
+          "additionalProperties": false,
+          "properties": {
+            "actual_asset_code": {
+              "const": "s42"
+            },
+            "outer_filename": {
+              "const": "s42nd.iff"
+            },
+            "outer_id": {
+              "const": "0xe4d6b0bc"
+            },
+            "outer_index": {
+              "const": 3280
+            },
+            "roster_record_index": {
+              "const": 18
+            },
+            "stadium_family": {
+              "const": "Super Bowl 2006 Stadium / Ford Field"
+            },
+            "time_of_day": {
+              "const": "Night"
+            },
+            "visible_label": {
+              "const": "Giants Stadium"
+            },
+            "weather": {
+              "const": "Clear"
+            }
+          },
+          "required": [
+            "actual_asset_code",
+            "outer_filename",
+            "outer_id",
+            "outer_index",
+            "roster_record_index",
+            "stadium_family",
+            "time_of_day",
+            "visible_label",
+            "weather"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "camera_protocol",
+        "diagnostic_layers",
+        "id",
+        "target"
+      ],
+      "type": "object"
+    },
+    "proof_boundary": {
+      "additionalProperties": false,
+      "properties": {
+        "comparison_standard": {
+          "const": "uniquely authored diagnostic geometry plus independently verified payload and repeated deterministic camera sequence"
+        },
+        "geometry_visibility_scope": {
+          "const": "the exact pinned group36 expanded-wall payload visibly affects rendering in xemu 0.8.135 for s42nd.iff"
+        },
+        "not_proved": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 5,
+          "type": "array"
+        },
+        "positive_derivation": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 4,
+          "type": "array"
+        },
+        "target_load_derivation": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 5,
+          "type": "array"
+        }
+      },
+      "required": [
+        "comparison_standard",
+        "geometry_visibility_scope",
+        "not_proved",
+        "positive_derivation",
+        "target_load_derivation"
+      ],
+      "type": "object"
+    },
+    "runs": {
+      "additionalProperties": false,
+      "properties": {
+        "control": {
+          "$ref": "#/$defs/run"
+        },
+        "expanded_wall": {
+          "$ref": "#/$defs/run"
+        }
+      },
+      "required": [
+        "control",
+        "expanded_wall"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "nfl2k5_group36_xemu_runtime_result/v2"
+    },
+    "status": {
+      "const": "pinned_xemu_diagnostic_geometry_visible"
+    }
+  },
+  "required": [
+    "claims",
+    "date",
+    "emulator",
+    "offline_proof",
+    "pair",
+    "proof_boundary",
+    "runs",
+    "schema",
+    "status"
+  ],
+  "title": "NFL 2K5 group36 pinned positive xemu runtime result",
+  "type": "object"
+}

@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>NFL 2K5 / APF 2K8 Modding Status Answers</title>
+  <style>
+    @page { size: Letter; margin: 0.62in 0.68in; }
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: #172033;
+      background: #fff;
+      font: 10.2pt/1.42 Arial, Helvetica, sans-serif;
+    }
+    h1 { margin: 0 0 4px; font-size: 22pt; line-height: 1.12; color: #10182a; }
+    .subtitle { color: #536078; margin-bottom: 18px; }
+    .summary {
+      border-left: 5px solid #3157b7;
+      background: #eef3ff;
+      padding: 10px 13px;
+      margin: 0 0 17px;
+    }
+    h2 {
+      margin: 18px 0 7px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #cbd4e7;
+      color: #183b88;
+      font-size: 14.2pt;
+      page-break-after: avoid;
+    }
+    h3 { margin: 11px 0 4px; font-size: 10.6pt; color: #243352; }
+    p { margin: 5px 0 8px; }
+    ul { margin: 5px 0 9px 19px; padding: 0; }
+    li { margin: 2px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 11px; }
+    tr { break-inside: avoid; page-break-inside: avoid; }
+    th, td { border: 1px solid #cbd4e7; padding: 6px 7px; vertical-align: top; }
+    th { background: #edf1f8; text-align: left; color: #243352; }
+    code { font: 9pt Consolas, Menlo, monospace; color: #1b3779; }
+    .proved { color: #146c3b; font-weight: 700; }
+    .blocked { color: #9a471b; font-weight: 700; }
+    .boundary { color: #6a3ca0; font-weight: 700; }
+    .small { font-size: 8.8pt; color: #58647a; }
+    .avoid-break { page-break-inside: avoid; }
+    .runtime-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 9px 0 11px;
+      page-break-inside: avoid;
+    }
+    .runtime-pair figure { margin: 0; }
+    .runtime-pair img { width: 100%; display: block; border: 1px solid #aeb9cf; }
+    .runtime-pair figcaption { margin-top: 3px; font-size: 8pt; color: #58647a; }
+    footer { margin-top: 20px; padding-top: 7px; border-top: 1px solid #cbd4e7; }
+  </style>
+</head>
+<body>
+  <h1>NFL 2K5 / APF 2K8 Modding Status</h1>
+  <div class="subtitle">Answers to the five implementation questions · Evidence snapshot: July 13, 2026</div>
+
+  <div class="summary">
+    <strong>Current closeout:</strong> The normative NFL and APF static-SCNE specifications
+    are now machine-readable, and each title has one independently verified, fail-closed
+    same-count stadium-position write-back witness. APF also has one fixed-footprint
+    topology writer. NFL's pinned <code>group36</code> edit has now crossed the runtime gate:
+    paired control/expanded diagnostic runs deterministically loaded <code>s42nd.iff</code>
+    in xemu, and the authored replacement rendered as a giant wall that is absent from the
+    retail-geometry control. This is one fixed-footprint xemu witness—not a general
+    edited-glTF importer, original-hardware proof, or production-ready disc path. A separate
+    NFL <code>upper_deck</code> writer now closes an offline 12-to-8/4 synchronized
+    source-subset count path with independent whole-volume verification; its runtime behavior
+    remains untested. Full-game decompilation remains deferred.
+  </div>
+
+  <h2>1. Mesh write-back status</h2>
+  <p><span class="proved">The first real read → edit → write → independently verify
+  loop is now closed in both titles, for one pinned four-vertex stadium target each.</span>
+  APF additionally has one independently verified same-count index-strip rewrite. NFL now
+  also has one target-specific static changed-count loop for source-derived 12-to-8/4
+  records. There is still no general edited-glTF → SCNE importer.</p>
+
+  <h3>Proved read side</h3>
+  <ul>
+    <li><strong>NFL 2K5:</strong> all 4,616 SCNE resources and 54,966 shapes parse. Position streams and all 276,642 NV2A topology streams are bounded and decoded.</li>
+    <li><strong>APF 2K8:</strong> all 1,303 SCNE resources and 13,006 mesh nodes parse. Three position encodings, vertex declarations, streams, and BE16/BE32 indices are understood.</li>
+    <li>Both games have extensive static position/topology export to glTF.</li>
+  </ul>
+
+  <h3>Proved write side</h3>
+  <ul>
+    <li><strong>NFL 2K5:</strong> <code>stadium/group36</code>, four little-endian
+    <code>FLOAT3</code> positions. A no-op reproduces the complete 634,941,440-byte volume
+    exactly. The changed witness differs only in the 48-byte decoded position span; its
+    recompressed bytes remain inside the original chunk, preserve the fixed 16-byte opaque
+    tail, and pass a standalone stdlib verifier. The verified native span has also been
+    transplanted into a layout-identical copied XISO; full-disc comparison proves that only
+    the authorized 908,912-byte outer span changed. Later paired diagnostic runs used the
+    same Super Bowl 2006 / Night / Clear route and deterministic replay-camera sequence. Both
+    reached Ford Field; only the expanded build rendered the independently authored wall.
+    This proves target load and visible geometry for this exact four-vertex fixture in xemu.
+    The selector and forced-night diagnostic shims refresh XBE section digests but do not
+    preserve the retail RSA-signed executable chain, so hardware and production claims remain
+    false. Separately, shape 1 <code>upper_deck</code> now has a copied-volume writer for
+    logical counts 8 and 4. It copies complete synchronized 12-byte position and 10-byte
+    attribute/selector records from the pinned 12-record source, updates the two coupled count
+    controls, preserves both physical stream tails, and passes a standard-library-only
+    verifier that independently reconstructs the whole decoded SCNE and copied volume. The
+    8-vertex result changes only the two decoded count bytes; the nonidentity 4-record result
+    changes 64 decoded bytes and yields two nondegenerate triangles. Neither changed-count
+    output has a runtime witness.</li>
+    <li><strong>APF 2K8:</strong> outer 14 / <code>stadium</code> / node 17
+    <code>polySurface19930</code>, four big-endian <code>FLOAT3</code> position lanes inside
+    a 24-byte interleaved stream. A no-op reproduces the complete 1,140,850,688-byte
+    <code>1A</code> volume exactly. The +1/+2/+3 XYZ witness rebuilds IFF/H7A, changes only
+    stadium DRAM part 0, and preserves all 12 non-target parts. A separate fixed-footprint
+    writer can permute the node's existing four BE16 strip indices: its changed witness
+    alters only 2 of the authorized 8 decoded index bytes, leaves the draw record untouched,
+    and independently decodes to exactly two nondegenerate triangles.</li>
+  </ul>
+  <div class="runtime-pair">
+    <figure>
+      <img src="../.codex-tmp/nfl2k5-group36-geometry-xemu-20260713/logs/control-s42nd-replay-matched.png" alt="Retail-geometry control replay view of Ford Field">
+      <figcaption>Control: the pinned Ford Field replay view has no added wall.</figcaption>
+    </figure>
+    <figure>
+      <img src="../.codex-tmp/nfl2k5-group36-geometry-xemu-20260713/logs/expanded-replay-zoomout30.png" alt="Expanded group36 diagnostic showing a giant authored wall">
+      <figcaption>Expanded: the same end-zone-facing replay sequence exposes the authored <code>group36</code> wall.</figcaption>
+    </figure>
+  </div>
+  <p>The same-count position recipes reject changed counts, topology, declarations,
+  non-finite or silently rounded values, allocation overflow, source aliases, existing
+  outputs, and unsafe path publication. The dedicated <code>upper_deck</code> recipe admits
+  only 4 or 8 distinct source-record IDs and no external position or attribute values. The
+  APF topology profile permits only a duplicate-free permutation of the same four vertex
+  ordinals. General changed topology still requires command/index generation, pointer
+  relocation, and broader archive reconstruction.</p>
+  <p>Static stadium geometry is materially closer than gameplay helmet shells. One pinned NFL
+  four-vertex deformation is now visibly proved in xemu, but arbitrary topology, bounds,
+  materials, semantic attachment/ownership, catalog-wide routing, and hardware acceptance
+  remain unproved. NFL helmet
+  geometry is embedded in a skinned/morphed <code>hi_head</code>; APF <code>helmet_00</code>
+  also carries blend indices and weights. Narrow same-count stadium deformation and one APF
+  same-footprint strip rewrite are proved; arbitrary stadium conformance, NFL topology
+  generation, and gameplay helmet-shell import remain substantially farther away. For NFL's
+  12-vertex static <code>upper_deck</code>, the archive writer and independent verifier now
+  close 8/4-record source-subset output inside the fixed slot, but no runtime witness,
+  external-value authoring, bounds/culling ownership, or other-target authorization exists.</p>
+
+  <h2>2. Scorebug / HUD rendering facts</h2>
+  <p><span class="proved">NFL runtime ownership has been touched.</span> The material binder
+  <code>0x000FC1A0</code>, initializer <code>0x000FCCD0</code>, and update/draw body
+  <code>0x000FCE70</code> are mapped. <code>score_buga</code> and <code>shield_espn</code>
+  have positive live xemu witnesses.</p>
+  <p><span class="boundary">Position is not one proved editable scalar.</span> SCNE stores local
+  geometry, but the NFL update/draw path performs state-dependent transform-like writes,
+  accumulates offsets, changes flags, and animates values. Final position and visibility are
+  runtime-composed. APF similarly composes seven separate scorebug SCNE components, but its
+  corresponding update/position owner is not yet mapped.</p>
+  <p>No safe-area or cross-presentation location assumption is proved. Moving raw geometry
+  could desynchronize text/logo anchors or be overwritten, but that failure has not yet been
+  witnessed. The safe next test is transform-write watchpoints followed by a copied-SCNE
+  position experiment across gameplay, replay, and lower-third states.</p>
+
+  <h2>3. Catch/drop formula</h2>
+  <p><span class="blocked">The final catch-versus-drop formula has not been located in either executable.</span>
+  No single threshold or drop-rate constant is proved.</p>
+  <ul>
+    <li>Both games have exact Human/CPU Catching sliders from <code>0.0</code> to <code>1.0</code> in <code>0.025</code> increments.</li>
+    <li>NFL has exact Catching globals and an aggregate routine consuming all 18 Human/CPU controls, but it is not the final outcome branch.</li>
+    <li>APF editable Catching values reach runtime copies; recovered direct references are writes rather than the final gameplay read.</li>
+    <li>Even monotonic slider polarity in every gameplay situation remains unproved.</li>
+  </ul>
+  <p>Drops being emergent from ratings, timing, contact, animation, and RNG is plausible but not
+  established; a later single comparison could still exist. The next safe experiment is a
+  Catching-value watchpoint during controlled identical pass attempts, followed through RNG
+  and the final outcome branch.</p>
+
+  <h2>4. Fixed-allocation reality for meshes</h2>
+  <p>Current safe tools must treat archive extents as fixed. That does not prove an immutable
+  engine-level per-mesh slot; it means a size-changing repacker is not available.</p>
+  <table>
+    <thead><tr><th>Target</th><th>Measured allocation condition</th></tr></thead>
+    <tbody>
+      <tr><td>NFL proved <code>group36</code> target</td><td>The decoded vertex count and 48-byte position span are fixed. Recompressed VC-LZ consumption may not cross the retail 908,864-byte boundary or the fixed final 16-byte tail. A deliberately high-entropy replacement is rejected.</td></tr>
+      <tr><td>NFL <code>upper_deck</code> source subset</td><td>The logical count may shrink from 12 to 8 or 4, but both physical streams remain allocated for 12 records and their unused tails remain exact. The proved 8/4 builds consume 908,863 and 908,822 bytes respectively under the same 908,864-byte cap; the resource does not grow or relocate.</td></tr>
+      <tr><td>APF proved node 17 target</td><td>Outer allocation is fixed at 12,931,072 bytes. Retail has 2,026 bytes of package slack; the changed witness leaves 1,391 bytes after H7A recompression. That is package compression slack, not permission to add vertices.</td></tr>
+      <tr><td>APF <code>global.iff</code> / <code>helmet_00</code></td><td>1,772 package-tail bytes, but they are not directly usable vertex headroom because compression and 441 other files share the container.</td></tr>
+    </tbody>
+  </table>
+  <p>Without relayout, growth mechanically overwrites the next resource or exceeds the indexed
+  outer extent. A conformer must reject it. Loader refusal/crash behavior for an intentionally
+  over-budget mesh is unknown. The Xbox 64 MB runtime ceiling cannot be inferred from these
+  disc allocations; complete live stadium memory ownership has not been measured.</p>
+
+  <h2>5. Audio format and replacement status</h2>
+  <table>
+    <thead><tr><th>Title</th><th>Decode status</th><th>Write/runtime status</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>NFL 2K5</td>
+        <td>All 850 standalone AUDO resources decode to PCM WAV.</td>
+        <td>One strict <code>menu-back_01</code> slot has an independently verified copied-XISO writer: mono PCM16LE, 16 kHz, 5,696 frames, encoded into the existing 3,204-byte ADPCM allocation. It has not been audibly witnessed and its selector owner remains unproved.</td>
+      </tr>
+      <tr>
+        <td>APF 2K8</td>
+        <td>2,229 of 2,261 standalone AUDO occurrences decode as XMA1.</td>
+        <td>No writer: validated XMA1 encoding, valid-bit/loop handling, and archive repacking remain incomplete.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Player-name speech versus full lines</h3>
+  <p>Separate indexed banks structurally exist:</p>
+  <ul>
+    <li><strong>NFL:</strong> <code>players.bin</code> 22,420 entries; <code>lines.bin</code> 30,269; <code>teams.bin</code> 251.</li>
+    <li><strong>APF:</strong> <code>players.bin</code> 11,797 entries; <code>lines.bin</code> 31,826; <code>teams.bin</code> 1,498.</li>
+  </ul>
+  <p>Exact player-ID → cue routing is unresolved, so <code>players.bin</code> is not yet a proved
+  editable name-read table.</p>
+
+  <h2>Current machine-readable foundation</h2>
+  <p>The primary mesh contracts are
+  <code>reports/specs/nfl2k5_xbox_static_scne.v1.json</code> and
+  <code>reports/specs/apf2k8_scne_static_serializer.v1.json</code>. The APF draw/topology
+  contract is <code>reports/specs/apf2k8_scne_draw_topology.v1.json</code>; NFL's first
+  changed-count boundary is
+  <code>reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json</code>, while its later
+  implemented offline result is pinned by
+  <code>reports/specs/nfl2k5_upper_deck_source_subset_writeback_closure.v1.json</code>; exact
+  disc transport is specified by
+  <code>reports/specs/nfl2k5_group36_geometry_xiso_transport.v1.json</code>. The exact runtime
+  route is split into machine-readable <code>s42</code> dispatch, Quick Game visibility, and
+  forced-night diagnostic specifications. Its closed result schema is
+  <code>reports/specs/nfl2k5_group36_xemu_runtime_result.v2.schema.json</code>,
+  and the scoped positive result is
+  <code>reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json</code>; it explicitly
+  keeps pixel alignment and the older protocol's exact-frame branch false while recording the
+  repeated end-zone-facing camera sequence, unique authored wall, and independent payload
+  proof. It remains separate from the older selector-skip negative. Each artifact keeps the
+  still-false general-writer,
+  signed-retail-chain, original-hardware, and production claims explicit. Recipe schemas are
+  machine-readable and contain no retail geometry. The next mesh step is catalog and semantic
+  ownership generalization, followed by a fail-closed static conformer; arbitrary edited-glTF
+  import, auto-decimation, materials/UVs, collision, LODs, helmets, and skinned write-back are
+  not yet implemented.</p>
+
+  <div class="avoid-break">
+    <h2>Appendix: the four original limitations</h2>
+    <table>
+      <thead><tr><th>Limitation</th><th>Can it be fixed?</th><th>Current exact boundary</th></tr></thead>
+      <tbody>
+        <tr><td>Draft and trade logic</td><td><strong>Draft: likely, and closest.</strong><br>Trade: not yet owned.</td><td>NFL’s 17-position CPU fantasy-draft weight table and ranking/pick path are proved. A copied-XBE/emulator integrity and seeded-runtime test is still required. CPU trade offer scoring and accept/decline ownership remain unmapped.</td></tr>
+        <tr><td>Salary cap and contracts</td><td><strong>Potentially, but not by bypassing one check.</strong></td><td>The salary-cap enforcement gate and runtime comparison chain are mapped. Contract salary/years/penalty/expiration encoding, cap growth, negotiation, save integrity, and season rollover are not closed.</td></tr>
+        <tr><td>Super Bowl stadium after year five</td><td><strong>Yes; the Xbox root cause is statically closed.</strong></td><td>Season indices 0–4 select five stadium keys; every index ≥5 falls through to <code>s45</code>. The intended future rotation policy and a reversible executable/runtime test are still required. Xbox addresses are not PS2/PCSX2 patch offsets.</td></tr>
+        <tr><td>Shared uniform textures</td><td><strong>NFL Xbox: largely removed as a storage blocker.<br>APF: real sharing still needs selector remapping.</strong></td><td>All 3,170 audited NFL torso/pants/sleeve/live-helmet targets occupy independent non-overlapping XISO spans even when decoded content matches. APF jersey, pants, helmet, and shoulder assets are genuinely shared by team/bank selectors; current writers correctly affect every owner, and no safe selector-duplication/remap writer exists yet.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="small">
+    Generated from the repository’s hash-pinned reports, validators, executable ownership
+    maps, and current public-editor capability registry. “Proved” means the stated evidence
+    boundary only; it does not generalize to runtime or hardware where explicitly marked unproved.
+  </footer>
+</body>
+</html>

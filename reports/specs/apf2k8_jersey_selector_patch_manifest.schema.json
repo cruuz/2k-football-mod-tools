@@ -1,0 +1,569 @@
+{
+  "$comment": "Canonical manifest emitted by the fail-closed APF 2K8 ROST jersey-selector writer. JSON Schema validates local structure and constants; x-semantic-validations are mandatory cross-field and byte-derived checks performed by an independent verifier.",
+  "$defs": {
+    "assignment": {
+      "additionalProperties": false,
+      "properties": {
+        "bank_selector_record_indices": {
+          "items": {
+            "maximum": 3723,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "changed": {
+          "type": "boolean"
+        },
+        "expected_retail_asset_index": {
+          "maximum": 23,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "replacement_asset_index": {
+          "maximum": 23,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "team_index": {
+          "maximum": 23,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "team_name": {
+          "enum": [
+            "Americans",
+            "Assassins",
+            "Beasts",
+            "Cobras",
+            "Cougars",
+            "Cyclones",
+            "Federals",
+            "Firebirds",
+            "Gunslingers",
+            "Indians",
+            "Iron Men",
+            "Knights",
+            "Legends",
+            "Minutemen",
+            "Red Dogs",
+            "Rhinos",
+            "Rollers",
+            "Rustlers",
+            "Sailors",
+            "Scorpions",
+            "Sharks",
+            "Top Guns",
+            "Wasps",
+            "Werewolves"
+          ]
+        }
+      },
+      "required": [
+        "bank_selector_record_indices",
+        "changed",
+        "expected_retail_asset_index",
+        "replacement_asset_index",
+        "team_index",
+        "team_name"
+      ],
+      "type": "object"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "no_op"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "properties": {
+          "assignments": {
+            "items": {
+              "properties": {
+                "changed": {
+                  "const": false
+                }
+              }
+            }
+          },
+          "claim_flags": {
+            "properties": {
+              "all_24_built_in_teams_mutually_unique_offline": {
+                "const": false
+              }
+            }
+          },
+          "compression": {
+            "properties": {
+              "changed_path_recompressed": {
+                "const": false
+              },
+              "headroom_bytes_after": {
+                "const": 799
+              },
+              "identity_noop_returned_source_span_verbatim": {
+                "const": true
+              },
+              "output_token_count": {
+                "const": 284015
+              },
+              "payload_sha256_after": {
+                "const": "5edfc03a03d7ae308e7dc6ffd38af863c543a49429e75654ba2eb5746bbdde12"
+              },
+              "payload_size_after": {
+                "const": 435225
+              },
+              "retail_tokens_preserved_semantically": {
+                "const": 284015
+              },
+              "retail_tokens_split_or_replaced": {
+                "const": 0
+              }
+            }
+          },
+          "preservation": {
+            "properties": {
+              "decoded_changed_byte_count": {
+                "const": 0
+              },
+              "decoded_output_sha256": {
+                "const": "e959d3067ebcdbeb4f08979fa74d9fa61cf90fd91b90793863e6a3313be7f7ff"
+              },
+              "output_zero_tail_bytes": {
+                "const": 799
+              }
+            }
+          },
+          "result": {
+            "properties": {
+              "copied_volume": {
+                "properties": {
+                  "sha256": {
+                    "const": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+                  }
+                }
+              },
+              "file_length_after": {
+                "const": 435329
+              },
+              "outer_entry_sha256": {
+                "const": "e98dd07b38caa73ea2ce91eed19bef68896f9b63830a9169af4b7f22d8788cc7"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "assignments": {
+            "contains": {
+              "properties": {
+                "changed": {
+                  "const": true
+                }
+              },
+              "required": [
+                "changed"
+              ]
+            },
+            "minContains": 1
+          },
+          "compression": {
+            "properties": {
+              "changed_path_recompressed": {
+                "const": true
+              },
+              "identity_noop_returned_source_span_verbatim": {
+                "const": false
+              }
+            }
+          },
+          "preservation": {
+            "properties": {
+              "decoded_changed_byte_count": {
+                "maximum": 48,
+                "minimum": 2,
+                "multipleOf": 2
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "assignments": {
+      "items": {
+        "$ref": "#/$defs/assignment"
+      },
+      "maxItems": 24,
+      "minItems": 1,
+      "type": "array"
+    },
+    "claim_flags": {
+      "additionalProperties": false,
+      "properties": {
+        "all_24_built_in_teams_mutually_unique_offline": {
+          "type": "boolean"
+        },
+        "all_40_on_disc_team_slots_mutually_unique": {
+          "const": false
+        },
+        "archive_growth_required": {
+          "const": false
+        },
+        "emulator_runtime_visibility_proved": {
+          "const": false
+        },
+        "original_xbox_360_hardware_proved": {
+          "const": false
+        },
+        "production_gui_exposed": {
+          "const": false
+        },
+        "selector_byte_0_filename_ownership_proved": {
+          "const": true
+        },
+        "selector_bytes_1_through_7_semantics_proved": {
+          "const": false
+        }
+      },
+      "required": [
+        "all_24_built_in_teams_mutually_unique_offline",
+        "all_40_on_disc_team_slots_mutually_unique",
+        "archive_growth_required",
+        "emulator_runtime_visibility_proved",
+        "original_xbox_360_hardware_proved",
+        "production_gui_exposed",
+        "selector_byte_0_filename_ownership_proved",
+        "selector_bytes_1_through_7_semantics_proved"
+      ],
+      "type": "object"
+    },
+    "compression": {
+      "additionalProperties": false,
+      "properties": {
+        "changed_path_recompressed": {
+          "type": "boolean"
+        },
+        "fixed_payload_limit_bytes": {
+          "const": 436024
+        },
+        "headroom_bytes_after": {
+          "maximum": 799,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "identity_noop_returned_source_span_verbatim": {
+          "type": "boolean"
+        },
+        "output_token_count": {
+          "minimum": 284015,
+          "type": "integer"
+        },
+        "payload_sha256_after": {
+          "$ref": "#/$defs/sha256"
+        },
+        "payload_size_after": {
+          "maximum": 436024,
+          "minimum": 435225,
+          "type": "integer"
+        },
+        "payload_size_before": {
+          "const": 435225
+        },
+        "retail_payload_consumed_bytes": {
+          "const": 435225
+        },
+        "retail_token_count": {
+          "const": 284015
+        },
+        "retail_tokens_preserved_semantically": {
+          "maximum": 284015,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "retail_tokens_split_or_replaced": {
+          "maximum": 284015,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "retail_zero_alignment_bytes": {
+          "const": 0
+        },
+        "shift": {
+          "const": 10
+        }
+      },
+      "required": [
+        "changed_path_recompressed",
+        "fixed_payload_limit_bytes",
+        "headroom_bytes_after",
+        "identity_noop_returned_source_span_verbatim",
+        "output_token_count",
+        "payload_sha256_after",
+        "payload_size_after",
+        "payload_size_before",
+        "retail_payload_consumed_bytes",
+        "retail_token_count",
+        "retail_tokens_preserved_semantically",
+        "retail_tokens_split_or_replaced",
+        "retail_zero_alignment_bytes",
+        "shift"
+      ],
+      "type": "object"
+    },
+    "mode": {
+      "enum": [
+        "no_op",
+        "changed"
+      ]
+    },
+    "preservation": {
+      "additionalProperties": false,
+      "properties": {
+        "authorized_decoded_byte_count": {
+          "maximum": 48,
+          "minimum": 2,
+          "multipleOf": 2,
+          "type": "integer"
+        },
+        "decoded_changed_byte_count": {
+          "maximum": 48,
+          "minimum": 0,
+          "multipleOf": 2,
+          "type": "integer"
+        },
+        "decoded_output_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "footer_bit_exact": {
+          "const": true
+        },
+        "opaque_selector_bytes_1_through_7_bit_exact": {
+          "const": true
+        },
+        "other_decoded_bytes_bit_exact": {
+          "const": true
+        },
+        "output_zero_tail_bytes": {
+          "maximum": 799,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "rebuilt_iff_reparsed": {
+          "const": true
+        }
+      },
+      "required": [
+        "authorized_decoded_byte_count",
+        "decoded_changed_byte_count",
+        "decoded_output_sha256",
+        "footer_bit_exact",
+        "opaque_selector_bytes_1_through_7_bit_exact",
+        "other_decoded_bytes_bit_exact",
+        "output_zero_tail_bytes",
+        "rebuilt_iff_reparsed"
+      ],
+      "type": "object"
+    },
+    "recipe": {
+      "additionalProperties": false,
+      "properties": {
+        "assignment_count": {
+          "maximum": 24,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "mode": {
+          "enum": [
+            "targeted",
+            "full_built_in_unique"
+          ]
+        },
+        "schema": {
+          "const": "apf2k8_jersey_selector_assignment_recipe/v1"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "size_bytes": {
+          "maximum": 65536,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "assignment_count",
+        "mode",
+        "schema",
+        "sha256",
+        "size_bytes"
+      ],
+      "type": "object"
+    },
+    "result": {
+      "additionalProperties": false,
+      "properties": {
+        "copied_volume": {
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "minLength": 1,
+              "pattern": "^(?!\\.\\.?$)[^/\\\\]+$",
+              "type": "string"
+            },
+            "outside_outer_entry_prefix_sha256": {
+              "const": "e771b5533d94ae0f9e5dc6dccf6fd81d13a93894b1e01807e69a10ce8407e550"
+            },
+            "outside_outer_entry_suffix_sha256": {
+              "const": "cebb3cf73db1047d74a08ea4c8eb86ef38ed7c3472b23ee92fa835ad0c56bb0c"
+            },
+            "sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "size_bytes": {
+              "const": 1140850688
+            }
+          },
+          "required": [
+            "name",
+            "outside_outer_entry_prefix_sha256",
+            "outside_outer_entry_suffix_sha256",
+            "sha256",
+            "size_bytes"
+          ],
+          "type": "object"
+        },
+        "file_length_after": {
+          "maximum": 436128,
+          "minimum": 435329,
+          "type": "integer"
+        },
+        "outer_entry_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "outer_entry_size": {
+          "const": 436224
+        }
+      },
+      "required": [
+        "copied_volume",
+        "file_length_after",
+        "outer_entry_sha256",
+        "outer_entry_size"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "apf2k8_jersey_selector_patch/v1"
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "decoded_roster_sha256": {
+          "const": "e959d3067ebcdbeb4f08979fa74d9fa61cf90fd91b90793863e6a3313be7f7ff"
+        },
+        "format_spec_sha256": {
+          "const": "c769e983132f8c6041e8a1961585b7e2f96113cf892b590fdc0d48b1218575f1"
+        },
+        "format_spec_size_bytes": {
+          "const": 33352
+        },
+        "outer_entry_index": {
+          "const": 1126
+        },
+        "outer_entry_pack_offset": {
+          "const": 47699968
+        },
+        "outer_entry_sha256": {
+          "const": "e98dd07b38caa73ea2ce91eed19bef68896f9b63830a9169af4b7f22d8788cc7"
+        },
+        "retail_0A_sha256": {
+          "const": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+        },
+        "retail_0A_size_bytes": {
+          "const": 1140850688
+        }
+      },
+      "required": [
+        "decoded_roster_sha256",
+        "format_spec_sha256",
+        "format_spec_size_bytes",
+        "outer_entry_index",
+        "outer_entry_pack_offset",
+        "outer_entry_sha256",
+        "retail_0A_sha256",
+        "retail_0A_size_bytes"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "assignments",
+    "claim_flags",
+    "compression",
+    "mode",
+    "preservation",
+    "recipe",
+    "result",
+    "schema",
+    "source"
+  ],
+  "title": "APF 2K8 jersey selector patch manifest",
+  "type": "object",
+  "x-semantic-validations": [
+    {
+      "id": "canonical_json_bytes",
+      "rule": "1..2097152 bytes containing a UTF-8 JSON object, duplicate keys rejected, finite JSON numbers only, serialized as json.dumps(value, indent=2, sort_keys=True) followed by one LF"
+    },
+    {
+      "id": "assignment_derivation",
+      "rule": "assignments are unique and strictly increasing by team_index; team_name, expected retail asset, and both bank_selector_record_indices equal the pointer-derived retail reference for that team; changed equals replacement_asset_index != expected_retail_asset_index"
+    },
+    {
+      "id": "recipe_binding",
+      "rule": "recipe assignment_count, mode, SHA-256, and size exactly describe the separately supplied canonical recipe"
+    },
+    {
+      "id": "compression_arithmetic",
+      "rule": "payload_size_after + headroom_bytes_after = 436024; retail_tokens_preserved_semantically + retail_tokens_split_or_replaced = 284015; file_length_after = 84 + 20 + payload_size_after; output_zero_tail_bytes = 436224 - file_length_after - 96 and therefore equals headroom_bytes_after"
+    },
+    {
+      "id": "compression_rederivation",
+      "rule": "payload SHA-256, output token count, semantic preservation counts, and rebuilt outer-entry SHA-256 are independently recomputed from the output bytes using the format specification"
+    },
+    {
+      "id": "decoded_preservation",
+      "rule": "authorized_decoded_byte_count = 2 * recipe.assignment_count; decoded_changed_byte_count = 2 * count(assignments where changed); only the two pointer-derived selector byte-0 offsets per assigned team may differ from retail; decoded_output_sha256 is recomputed"
+    },
+    {
+      "id": "claim_derivation",
+      "rule": "all_24_built_in_teams_mutually_unique_offline is true exactly when the complete post-recipe built-in asset vector has 24 distinct values; no runtime, hardware, GUI, opaque-byte, all-40-slot, or archive-growth claim may be inferred"
+    },
+    {
+      "id": "complete_volume_binding",
+      "rule": "copied_volume.name equals the output path basename; size and SHA-256 are recomputed over the bound output; prefix [0,47699968) and suffix [48136192,1140850688) equal the pinned retail source byte-for-byte"
+    },
+    {
+      "id": "format_authority_binding",
+      "rule": "source.format_spec_sha256 and source.format_spec_size_bytes identify the exact checked format specification used for the build"
+    }
+  ]
+}

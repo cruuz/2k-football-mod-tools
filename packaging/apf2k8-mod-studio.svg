@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">APF 2K8 Mod Studio</title>
+  <desc id="description">A football, four texture swatches, and an editing pen over a field.</desc>
+  <defs>
+    <linearGradient id="tile" x1="56" y1="35" x2="456" y2="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#30275f"/>
+      <stop offset="0.55" stop-color="#171b3d"/>
+      <stop offset="1" stop-color="#0c112a"/>
+    </linearGradient>
+    <linearGradient id="ball" x1="128" y1="118" x2="350" y2="338" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffb33c"/>
+      <stop offset="1" stop-color="#ed5d2f"/>
+    </linearGradient>
+    <linearGradient id="pen" x1="313" y1="318" x2="442" y2="436" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#74e7ff"/>
+      <stop offset="1" stop-color="#31a6e6"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#030615" flood-opacity="0.55"/>
+    </filter>
+    <clipPath id="rounded-tile">
+      <rect x="20" y="20" width="472" height="472" rx="104"/>
+    </clipPath>
+  </defs>
+
+  <rect x="20" y="20" width="472" height="472" rx="104" fill="url(#tile)"/>
+  <g clip-path="url(#rounded-tile)" fill="none" stroke="#9ca8e8" stroke-linecap="round">
+    <path d="M78 86v340M434 86v340" stroke-width="4" opacity="0.18"/>
+    <path d="M20 151h472M20 256h472M20 361h472" stroke-width="3" opacity="0.14"/>
+    <path d="M108 124v25m52-25v25m52-25v25m52-25v25m52-25v25m52-25v25m-260 214v25m52-25v25m52-25v25m52-25v25m52-25v25" stroke-width="7" opacity="0.18"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <path d="M105 281c-2-57 31-113 88-148 56-34 122-39 172-17 14 6 22 20 19 35-11 57-47 110-103 143-55 33-119 38-168 18-8-3-13-8-13-8s5-13 5-23Z" fill="url(#ball)" stroke="#ffd289" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M134 296c33-4 75-18 117-43 43-26 79-58 102-90" fill="none" stroke="#fff3da" stroke-width="10" stroke-linecap="round"/>
+    <g fill="none" stroke="#fff7e8" stroke-width="9" stroke-linecap="round">
+      <path d="m215 207 24 39"/>
+      <path d="m238 193 24 38"/>
+      <path d="m261 179 24 37"/>
+      <path d="m284 166 23 35"/>
+    </g>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="76" y="344" width="48" height="48" rx="11" fill="#f05e44" stroke="#ffd2a5" stroke-width="5"/>
+    <rect x="130" y="344" width="48" height="48" rx="11" fill="#f2bb3c" stroke="#ffe5a6" stroke-width="5"/>
+    <rect x="184" y="344" width="48" height="48" rx="11" fill="#52d4ad" stroke="#baffeb" stroke-width="5"/>
+    <rect x="238" y="344" width="48" height="48" rx="11" fill="#5fa7ff" stroke="#c6e3ff" stroke-width="5"/>
+  </g>
+
+  <g transform="rotate(-7 370 374)" filter="url(#shadow)">
+    <path d="m294 410 25-70 84-84c10-10 26-10 36 0l17 17c10 10 10 26 0 36l-84 84-70 25c-6 2-10-3-8-8Z" fill="url(#pen)" stroke="#bfefff" stroke-width="8" stroke-linejoin="round"/>
+    <path d="m320 339 53 53" fill="none" stroke="#1679b8" stroke-width="10"/>
+    <path d="m409 250 53 53" fill="none" stroke="#9eeaff" stroke-width="12"/>
+    <path d="m294 410 29-10-19-19Z" fill="#f5fbff" stroke="#d2f4ff" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+
+  <rect x="20" y="20" width="472" height="472" rx="104" fill="none" stroke="#b8c1ff" stroke-width="6" opacity="0.42"/>
+</svg>

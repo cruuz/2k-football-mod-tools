@@ -1,0 +1,234 @@
+{
+  "artifact_under_test": {
+    "path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/ESPN-NFL-2K5-group36-geometry-v2.xiso.iso",
+    "sha256": "67910ea934a891c32de6bf5ddc00eae4c7c696589763773fd3453c6f7bf65c0e",
+    "size": 6300499968,
+    "workflow": {
+      "path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/workflow-v2.json",
+      "sha256": "e0ef2d1cd9b82a7377200436deb4f982c6e76d90f86b4618fc6cbe7d7a008db1",
+      "size": 3060
+    }
+  },
+  "claims": {
+    "artifact_booted_in_xemu": false,
+    "exact_outer_filename_static_identity_proved": true,
+    "exact_outer_variant_loaded_at_runtime": false,
+    "geometry_visibility_proved": false,
+    "original_xbox_hardware_proved": false,
+    "prepared_isolated_harness": true,
+    "retail_source_modified": false,
+    "super_bowl_2006_route_reached": false
+  },
+  "date": "2026-07-13",
+  "emulator": {
+    "application": "app.xemu.xemu",
+    "binary_sha256": "360b857b2b0047d338d3530e55dd8995bfee50bbca40d242b5cc2a13df69504a",
+    "flatpak_commit": "998fb7d93048da8b4dc98665d09f7e81ff4e73bedb732b67b7ad97a6f55d4316",
+    "version": "0.8.135"
+  },
+  "evidence_standard": {
+    "boot_acceptance_requires": [
+      "xemu log identifies version 0.8.135, this isolated config, and the exact patched XISO as the cdrom",
+      "an observed title or gameplay frame proves the title executed",
+      "the patched XISO hash is unchanged after execution",
+      "xemu exits through WM_DELETE_WINDOW with exit code zero and without a forced kill",
+      "the fresh child overlay passes qemu-img check after shutdown",
+      "the backing overlay and live xemu config/HDD hashes remain unchanged"
+    ],
+    "geometry_visibility_requires_one_of": [
+      "a matched retail-versus-patched capture at the exact same s42 outer variant and camera with a localized, reproducible difference attributable to group36",
+      "a runtime resource/GPU trace proving outer ID 0xe4d6b0bc was loaded and the decoded group36 position/index payload reached the draw path"
+    ],
+    "insufficient_evidence": [
+      "booting to PRESS START",
+      "unrelated attract-mode gameplay",
+      "a Super Bowl XL field logo without exact environment-variant ownership",
+      "no crash",
+      "a negative screenshot with no visible difference"
+    ]
+  },
+  "harness": {
+    "backing_overlay": {
+      "path": ".codex-tmp/nfl2k5-scorebug-xemu-20260712/xbox_hdd.qcow2",
+      "sha256": "329d8a0bce5947b0e58dd2a4066180851fb9d53172e1567662c5aee73dbbcb9d",
+      "size": 79495168
+    },
+    "config": {
+      "path": ".codex-tmp/nfl2k5-group36-xemu-20260713/xemu.toml",
+      "sha256": "65528e10c37847f1912f8f1c24df7b58a56d914b3da1d1a059ce1fdce123276d",
+      "size": 1004
+    },
+    "firmware": {
+      "bootrom_sha256": "e99e3a772bf5f5d262786aee895664eb96136196e37732fe66e14ae062f20335",
+      "eeprom_sha256": "52142e8293aada6343cb07c9aa816b60a6d84bddc230594269ec99f6d188b516",
+      "flashrom_sha256": "34f1c8ded59116436065783f8ad2ef0939df3cbfc76277ec9e5c41bf9ccb93cd"
+    },
+    "fresh_child_overlay_initial": {
+      "backing_format": "qcow2",
+      "format": "qcow2",
+      "path": ".codex-tmp/nfl2k5-group36-xemu-20260713/xbox_hdd.qcow2",
+      "qemu_img_check": "no errors",
+      "sha256": "09e42e4e24c476d1d7809d31e61acecc45930a74847e7a9f8d795d9be8e3dcc6",
+      "size": 196736
+    },
+    "sandbox_probe": {
+      "patched_xiso_readable_and_not_writable": true,
+      "result": "XEMU_GROUP36_SANDBOX_PATHS_PASS",
+      "run_directory_writable": true
+    }
+  },
+  "isolation": {
+    "flatpak_default_host_access": "read-only",
+    "live_config_before": {
+      "path": "/home/noah/.var/app/app.xemu.xemu/data/xemu/xemu/xemu.toml",
+      "sha256": "6fd3c50412978ccac828ef6613bf566841ed3988a45263ff9bce7a54ed6c259e",
+      "size": 863
+    },
+    "live_hdd_before": {
+      "path": "/home/noah/.var/app/app.xemu.xemu/data/xemu/xemu/xbox_hdd.qcow2",
+      "sha256": "ccd94e4f52b18ae7e171d95223e994a0028b13f22a2417d2bfb1175480e947b3",
+      "size": 1769668608
+    },
+    "only_additional_write_grant": ".codex-tmp/nfl2k5-group36-xemu-20260713",
+    "patched_xiso_writable_inside_flatpak": false,
+    "retail_xiso_selected": false
+  },
+  "launch_contract": {
+    "audio_driver": "dummy",
+    "display": ":99",
+    "graphics": "llvmpipe requested through LIBGL_ALWAYS_SOFTWARE=1",
+    "nested_display": "Xephyr 1280x720 with Metacity",
+    "no_input_boot_phase": true,
+    "run_directory": ".codex-tmp/nfl2k5-group36-xemu-20260713",
+    "shutdown": "DISPLAY=:99 python3 tools/x11_window.py close 'xemu |'",
+    "xemu_arguments": [
+      "-config_path",
+      "/media/noah/Storage/for codex 1.0/.codex-tmp/nfl2k5-group36-xemu-20260713/xemu.toml",
+      "-dvd_path",
+      "/media/noah/Storage/for codex 1.0/build/nfl2k5-stadium-group36-geometry-xiso-20260713/ESPN-NFL-2K5-group36-geometry-v2.xiso.iso"
+    ]
+  },
+  "schema": "nfl2k5_group36_xemu_runtime_witness_protocol/v1",
+  "status": "isolated no-input boot harness prepared and headlessly path-checked; outer 3280 is statically identified as s42nd.iff (night/dry-clear), but no emulator render, deterministic menu dispatch, exact runtime load, or geometry visibility has been observed",
+  "target_route": {
+    "controlled_franchise_save_available": false,
+    "franchise_static_route": "season index 1 Super Bowl selects stadium key s42",
+    "no_input_attract_mode_is_target_route": false,
+    "outer_id": "0xe4d6b0bc",
+    "outer_index": 3280,
+    "quick_game_s42_selectability_runtime_proved": false,
+    "scene": "chunk 5 / scene 2648 stadium / shape 4 group36",
+    "stadium_key": "s42",
+    "stadium_name": "Super Bowl 2006 Stadium",
+    "variant_resolution": {
+      "filename_hash_rule": "CRC32(uppercase UTF-16LE exact filename)",
+      "matrix": [
+        {
+          "filename": "s42dd.iff",
+          "outer_id": "0x0ee158dd",
+          "outer_index": 3174,
+          "precipitation_code": "d",
+          "time_code": "d",
+          "time_of_day": "Day",
+          "weather_family": "dry/clear"
+        },
+        {
+          "filename": "s42ad.iff",
+          "outer_id": "0x96422fcd",
+          "outer_index": 3227,
+          "precipitation_code": "d",
+          "time_code": "a",
+          "time_of_day": "Afternoon",
+          "weather_family": "dry/clear"
+        },
+        {
+          "filename": "s42nd.iff",
+          "outer_id": "0xe4d6b0bc",
+          "outer_index": 3280,
+          "precipitation_code": "d",
+          "time_code": "n",
+          "time_of_day": "Night",
+          "weather_family": "dry/clear"
+        },
+        {
+          "filename": "s42dr.iff",
+          "outer_id": "0x2451a972",
+          "outer_index": 3333,
+          "precipitation_code": "r",
+          "time_code": "d",
+          "time_of_day": "Day",
+          "weather_family": "rain"
+        },
+        {
+          "filename": "s42ar.iff",
+          "outer_id": "0xbcf2de62",
+          "outer_index": 3386,
+          "precipitation_code": "r",
+          "time_code": "a",
+          "time_of_day": "Afternoon",
+          "weather_family": "rain"
+        },
+        {
+          "filename": "s42nr.iff",
+          "outer_id": "0xce664113",
+          "outer_index": 3439,
+          "precipitation_code": "r",
+          "time_code": "n",
+          "time_of_day": "Night",
+          "weather_family": "rain"
+        },
+        {
+          "filename": "s42ds.iff",
+          "outer_id": "0xcb93c24c",
+          "outer_index": 3492,
+          "precipitation_code": "s",
+          "time_code": "d",
+          "time_of_day": "Day",
+          "weather_family": "snow"
+        },
+        {
+          "filename": "s42as.iff",
+          "outer_id": "0x5330b55c",
+          "outer_index": 3545,
+          "precipitation_code": "s",
+          "time_code": "a",
+          "time_of_day": "Afternoon",
+          "weather_family": "snow"
+        },
+        {
+          "filename": "s42ns.iff",
+          "outer_id": "0x21a42a2d",
+          "outer_index": 3598,
+          "precipitation_code": "s",
+          "time_code": "n",
+          "time_of_day": "Night",
+          "weather_family": "snow"
+        }
+      ],
+      "menu_selection_to_filename_runtime_proved": false,
+      "static_filename_mapping_proved": true,
+      "target_filename": "s42nd.iff",
+      "target_menu_candidate": {
+        "stadium": "Super Bowl 2006 Stadium",
+        "time_of_day": "Night",
+        "weather": "Clear"
+      },
+      "ui_labels_from_xbe": {
+        "time_of_day_in_order": [
+          "Day",
+          "Afternoon",
+          "Night"
+        ],
+        "weather_in_order": [
+          "Clear",
+          "Light Rain",
+          "Heavy Rain",
+          "Flurries",
+          "Heavy Snow",
+          "Random"
+        ]
+      },
+      "variant_count": 9
+    }
+  }
+}

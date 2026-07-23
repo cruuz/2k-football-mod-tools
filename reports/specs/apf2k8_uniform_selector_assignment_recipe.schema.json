@@ -1,0 +1,226 @@
+{
+  "$comment": "The JSON Schema covers local shape and bounds. The x-semantic-validations are mandatory: the writer and independent verifier compare the complete canonical recipe with the deterministic built-in plan in the hash-pinned allocation report, then re-derive all targets from the retail ROST pointer graph.",
+  "$defs": {
+    "assignment": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_retail_asset_index": {
+          "maximum": 255,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "replacement_asset_index": {
+          "maximum": 255,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "team_index": {
+          "maximum": 23,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "expected_retail_asset_index",
+        "replacement_asset_index",
+        "team_index"
+      ],
+      "type": "object"
+    },
+    "family": {
+      "additionalProperties": false,
+      "properties": {
+        "assignments": {
+          "items": {
+            "$ref": "#/$defs/assignment"
+          },
+          "maxItems": 24,
+          "minItems": 24,
+          "type": "array"
+        },
+        "catalog_count": {
+          "maximum": 256,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "family": {
+          "enum": [
+            "glove",
+            "helmet",
+            "jersey",
+            "logo",
+            "textlogo",
+            "font",
+            "number",
+            "pants",
+            "shoe",
+            "shoulder",
+            "sock"
+          ]
+        },
+        "physical_families": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "type": "array"
+        },
+        "selector_slot": {
+          "maximum": 12,
+          "minimum": 2,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "assignments",
+        "catalog_count",
+        "family",
+        "physical_families",
+        "selector_slot"
+      ],
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "allocation_strategy": {
+      "const": "minimum_changes_maximum_scope_internal_distinctness"
+    },
+    "claim_flags": {
+      "additionalProperties": false,
+      "properties": {
+        "all_family_plans_reach_catalog_upper_bound_requested": {
+          "const": true
+        },
+        "archive_growth_requested": {
+          "const": false
+        },
+        "emulator_runtime_visibility_proved": {
+          "const": false
+        },
+        "online_or_user_slot_authoring_requested": {
+          "const": false
+        },
+        "original_xbox_360_hardware_proved": {
+          "const": false
+        },
+        "selector_bytes_1_through_7_authoring_requested": {
+          "const": false
+        }
+      },
+      "required": [
+        "all_family_plans_reach_catalog_upper_bound_requested",
+        "archive_growth_requested",
+        "emulator_runtime_visibility_proved",
+        "online_or_user_slot_authoring_requested",
+        "original_xbox_360_hardware_proved",
+        "selector_bytes_1_through_7_authoring_requested"
+      ],
+      "type": "object"
+    },
+    "families": {
+      "items": {
+        "$ref": "#/$defs/family"
+      },
+      "maxItems": 11,
+      "minItems": 11,
+      "type": "array"
+    },
+    "game": {
+      "const": {
+        "platform": "Xbox 360",
+        "title": "All-Pro Football 2K8"
+      }
+    },
+    "operation": {
+      "const": "replace_uniform_selector_byte0_in_both_banks"
+    },
+    "schema": {
+      "const": "apf2k8_uniform_selector_assignment_recipe/v1"
+    },
+    "scope": {
+      "const": {
+        "slot_kind": "built_in",
+        "team_count": 24,
+        "team_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ]
+      }
+    },
+    "source_contract": {
+      "additionalProperties": false,
+      "properties": {
+        "allocation_report_sha256": {
+          "const": "389efe3a90839bcc2210df6292817920b7bbfa1f2c0389ee632b2915adcdbef6"
+        },
+        "decoded_roster_sha256": {
+          "const": "e959d3067ebcdbeb4f08979fa74d9fa61cf90fd91b90793863e6a3313be7f7ff"
+        },
+        "outer_entry_index": {
+          "const": 1126
+        },
+        "outer_entry_sha256": {
+          "const": "e98dd07b38caa73ea2ce91eed19bef68896f9b63830a9169af4b7f22d8788cc7"
+        },
+        "retail_0A_sha256": {
+          "const": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+        }
+      },
+      "required": [
+        "allocation_report_sha256",
+        "decoded_roster_sha256",
+        "outer_entry_index",
+        "outer_entry_sha256",
+        "retail_0A_sha256"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "allocation_strategy",
+    "claim_flags",
+    "families",
+    "game",
+    "operation",
+    "schema",
+    "scope",
+    "source_contract"
+  ],
+  "title": "APF 2K8 deterministic built-in all-family selector recipe",
+  "type": "object",
+  "x-semantic-validations": [
+    "the complete document must be canonical sorted UTF-8 JSON with one trailing LF",
+    "families must exactly match the eleven ordered family contracts in the pinned allocation report",
+    "every family must contain teams 0 through 23 exactly once in increasing order",
+    "every expected and replacement asset must exactly match that family's pinned deterministic built-in plan",
+    "replacement values must remain below the family-specific catalog count",
+    "all 1120 retail team-bank-slot pointers must be independently derived, aligned, distinct, and retain equal bank byte-zero values before editing",
+    "only byte zero of the two derived records for changed built-in team-family assignments may differ",
+    "online and user teams 24 through 39 are never admitted by this recipe version"
+  ]
+}

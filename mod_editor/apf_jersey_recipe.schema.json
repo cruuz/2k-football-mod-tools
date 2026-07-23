@@ -1,0 +1,26 @@
+{
+  "$id": "https://local.visualconcepts.invalid/schemas/apf2k8-jersey-color-recipe-v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "asset_index": {
+      "maximum": 23,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "png": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema": {
+      "const": "apf2k8_jersey_color_recipe/v1"
+    }
+  },
+  "required": [
+    "schema",
+    "asset_index",
+    "png"
+  ],
+  "title": "APF 2K8 jersey-color replacement recipe",
+  "type": "object"
+}

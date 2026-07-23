@@ -1,0 +1,71 @@
+# ============================================================================
+# 2K Football Mod Tools — public beta repository ignore list
+#
+# This workspace doubles as a private reverse-engineering lab.  NOTHING retail
+# or bulky may ever be committed: no game images, no extracted game data, no
+# Ghidra projects, no build artifacts.  The release archives shipped as GitHub
+# Release assets are independently verified retail-free by the packaging gate.
+# ============================================================================
+
+# --- Retail game data (NEVER commit) ---------------------------------------
+ESPN NFL 2K5 (USA).xiso.iso
+extracted/
+All-Pro Football 2K8 (USA)/
+*.iso
+*.qcow2
+
+# --- Build outputs / artifacts / asset caches ------------------------------
+build/
+build-clang/
+build-sanitize/
+build-static-recomp-apf/
+artifacts/
+assets/
+
+# --- Ghidra / reverse-engineering heavy data -------------------------------
+ghidra_projects/
+research/
+tools/vendor/
+tools/ghidra-home/
+tools/__pycache__/
+tools/generated/
+
+# --- Generated reports (large).  Small pinned specs are kept. --------------
+reports/assets/
+reports/cut_content/
+reports/static_recomp/
+reports/manifests/
+reports/headers/
+reports/asset_samples/
+reports/cross_title/
+
+# --- Internal-only documentation (large PDF/HTML dossiers) -----------------
+docs/updates/
+
+# --- Local working / scratch / agent state ---------------------------------
+.codex-tmp/
+.codex/
+.agents/
+.geometry-proof/
+.pytest_cache/
+release-staging/
+
+# --- Python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# --- OS / editor cruft ----------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# --- Stray media ----------------------------------------------------------
+*.mp4
+*.avi
+*.mkv
+*.png.tmp

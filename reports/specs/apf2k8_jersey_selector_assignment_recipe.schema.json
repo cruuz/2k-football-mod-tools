@@ -1,0 +1,1154 @@
+{
+  "$comment": "This schema validates every JSON-instance constraint expressible without comparing array elements. The x-semantic-validations list is mandatory companion validation for canonical bytes and targeted assignment ordering.",
+  "$defs": {
+    "assignment": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 0
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 6
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 1
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 11
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 2
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 3
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 2
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 4
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 5
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 19
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 6
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 13
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 7
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 4
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 8
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 9
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 10
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 11
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 12
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 13
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 14
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 15
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 16
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 17
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 2
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 18
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 8
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 19
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 20
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 21
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 23
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 22
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 4
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "team_index": {
+                "const": 23
+              }
+            },
+            "required": [
+              "team_index"
+            ]
+          },
+          "then": {
+            "properties": {
+              "expected_retail_asset_index": {
+                "const": 2
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "expected_retail_asset_index": {
+          "maximum": 23,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "replacement_asset_index": {
+          "maximum": 23,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "team_index": {
+          "maximum": 23,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "team_index",
+        "expected_retail_asset_index",
+        "replacement_asset_index"
+      ],
+      "type": "object"
+    },
+    "replacement_permutation": {
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 0
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 1
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 2
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 3
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 4
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 5
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 6
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 7
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 8
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 9
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 10
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 11
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 12
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 13
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 14
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 15
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 16
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 17
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 18
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 19
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 20
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 21
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 22
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "properties": {
+              "replacement_asset_index": {
+                "const": 23
+              }
+            },
+            "required": [
+              "replacement_asset_index"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 1
+        }
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "full_built_in_unique"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "properties": {
+          "assignments": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/replacement_permutation"
+              }
+            ],
+            "items": false,
+            "maxItems": 24,
+            "minItems": 24,
+            "prefixItems": [
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 0
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 1
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 2
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 3
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 4
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 5
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 6
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 7
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 8
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 9
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 10
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 11
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 12
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 13
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 14
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 15
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 16
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 17
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 18
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 19
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 20
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 21
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 22
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "team_index": {
+                    "const": 23
+                  }
+                }
+              }
+            ]
+          },
+          "claim_flags": {
+            "properties": {
+              "all_24_built_in_teams_mutually_unique_requested": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "claim_flags": {
+            "properties": {
+              "all_24_built_in_teams_mutually_unique_requested": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "assignments": {
+      "items": {
+        "$ref": "#/$defs/assignment"
+      },
+      "maxItems": 24,
+      "minItems": 1,
+      "type": "array"
+    },
+    "claim_flags": {
+      "additionalProperties": false,
+      "properties": {
+        "all_24_built_in_teams_mutually_unique_requested": {
+          "type": "boolean"
+        },
+        "archive_growth_requested": {
+          "const": false
+        },
+        "emulator_runtime_visibility_proved": {
+          "const": false
+        },
+        "original_xbox_360_hardware_proved": {
+          "const": false
+        },
+        "selector_bytes_1_through_7_authoring_requested": {
+          "const": false
+        }
+      },
+      "required": [
+        "all_24_built_in_teams_mutually_unique_requested",
+        "archive_growth_requested",
+        "selector_bytes_1_through_7_authoring_requested",
+        "emulator_runtime_visibility_proved",
+        "original_xbox_360_hardware_proved"
+      ],
+      "type": "object"
+    },
+    "game": {
+      "additionalProperties": false,
+      "properties": {
+        "platform": {
+          "const": "Xbox 360"
+        },
+        "title": {
+          "const": "All-Pro Football 2K8"
+        }
+      },
+      "required": [
+        "title",
+        "platform"
+      ],
+      "type": "object"
+    },
+    "mode": {
+      "enum": [
+        "targeted",
+        "full_built_in_unique"
+      ]
+    },
+    "operation": {
+      "const": "replace_jersey_selector_byte0_in_both_banks"
+    },
+    "schema": {
+      "const": "apf2k8_jersey_selector_assignment_recipe/v1"
+    },
+    "source_contract": {
+      "additionalProperties": false,
+      "properties": {
+        "outer_entry_index": {
+          "const": 1126
+        },
+        "outer_entry_sha256": {
+          "const": "e98dd07b38caa73ea2ce91eed19bef68896f9b63830a9169af4b7f22d8788cc7"
+        },
+        "retail_0A_sha256": {
+          "const": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+        }
+      },
+      "required": [
+        "retail_0A_sha256",
+        "outer_entry_index",
+        "outer_entry_sha256"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema",
+    "operation",
+    "mode",
+    "game",
+    "source_contract",
+    "claim_flags",
+    "assignments"
+  ],
+  "title": "APF 2K8 jersey selector assignment recipe",
+  "type": "object",
+  "x-semantic-validations": [
+    {
+      "id": "canonical_json_bytes",
+      "rule": "1..65536 bytes containing a UTF-8 JSON object, duplicate keys rejected, finite JSON numbers only, serialized as json.dumps(value, indent=2, sort_keys=True) followed by one LF"
+    },
+    {
+      "id": "targeted_team_order",
+      "rule": "in targeted mode, assignment team_index values are unique and strictly increasing"
+    }
+  ]
+}

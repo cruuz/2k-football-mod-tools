@@ -1,0 +1,104 @@
+{
+  "schema": "nfl2k5_mod_studio_streaming_ausb_product_flow/v1",
+  "date": "2026-07-20",
+  "result": "GO",
+  "scope": {
+    "headless": true,
+    "gui_or_emulator_opened": false,
+    "runtime_claimed": false
+  },
+  "source_proof": {
+    "supported_xiso_sha256": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9",
+    "size": 6300499968,
+    "mode": "0644",
+    "link_count": 1,
+    "mtime_ns": 1779378318024066300,
+    "ctime_ns": 1783671391302352601,
+    "complete_stat_equal_before_after": true,
+    "backend_sha256_equal_before_after": true,
+    "opened_read_only": true,
+    "modified": false
+  },
+  "selection": {
+    "logical_asset_id": "nfl2k5.audio.ausb.o0003.c0213.r07227",
+    "family": "commentary",
+    "channels": 1,
+    "sample_rate_hz": 22050,
+    "frame_count": 4736,
+    "duration_seconds": 0.21478458,
+    "canonical_wav_size": 9516,
+    "physical_owner_count": 1,
+    "shared_alias": false
+  },
+  "authored_wav": {
+    "generator": "xorshift32-seed-0x324B354D-plus-integer-square-marker",
+    "canonical_pcm16le": true,
+    "mode": "0600",
+    "size": 9516,
+    "sha256": "4407baa36574d94f1ee5f16c296f7a568abf92b2348747b1b4a349648223452f",
+    "modified_state_sha256_equal": true,
+    "play_preparation_sha256_equal": true,
+    "wav_export_sha256_equal": true,
+    "fresh_project_import_sha256_equal": true
+  },
+  "shareable_project": {
+    "archive_size": 9936,
+    "archive_sha256": "67369075d32bc6dc9b4543643a24ca91bcfe3c42cd3f6b9f98a5fffda4d3353d",
+    "project_manifest_sha256": "0ae75158b828ad795720ce229124f26fe2ad8addee12ea4129080640ced18f15",
+    "member_count": 2,
+    "logical_audio_edit_count": 1,
+    "payload_policy": "user-replacements-only",
+    "only_user_wav_payload": true,
+    "contains_source_path_or_identity": false,
+    "contains_physical_or_canonical_slot_id": false,
+    "contains_offsets_or_private_origin_fields": false,
+    "contains_retail_audio_bytes": false
+  },
+  "fresh_session_import": {
+    "loaded_replacement_count": 1,
+    "modified_count": 1,
+    "physical_audio_edit_count": 1,
+    "canonical_logical_edit_count": 1,
+    "canonical_kind": "ausb_audio",
+    "affected_owner_count": 1
+  },
+  "build_and_verify": {
+    "logical_edit_count": 1,
+    "physical_span_count": 1,
+    "selected_span_bytes": 2664,
+    "changed_byte_count": 2568,
+    "output_size": 6300499968,
+    "output_sha256": "da60fa4248338dc4ab03036aa57a5d573c8ab71eac7092682102682ae2cf935c",
+    "internal_manifest_size": 11687,
+    "internal_manifest_sha256": "5cf116e26ddf5b304802535f0e59f94e81af11dd0bbb64b6acc9f4f78a143ddd",
+    "artifact_file_count": 1,
+    "build_pass": true,
+    "independent_verify_pass": true,
+    "independently_verified": true
+  },
+  "private_safety_inputs": {
+    "existing_exact_inventory_reused": true,
+    "existing_containment_inventory_reused": true,
+    "both_files_unchanged": true,
+    "private_paths_or_origin_values_recorded_here": false
+  },
+  "cleanup": {
+    "generated_xiso_bytes_deleted": 6300499968,
+    "generated_xiso_removed": true,
+    "temporary_authored_wav_project_exports_and_sessions_removed": true,
+    "source_cache_removed": false,
+    "sealed_release_packages_touched": false
+  },
+  "timings_seconds": {
+    "first_source_load": 27.917,
+    "slot_selection": 1.37,
+    "replace_and_private_inventory_load": 118.35,
+    "play_and_export": 1.385,
+    "save_and_inspect_project": 0.271,
+    "fresh_source_and_project_load": 154.924,
+    "backend_build": 163.448,
+    "backend_independent_verify": 147.709,
+    "build_service_total": 311.17,
+    "whole_experiment": 617.176
+  }
+}

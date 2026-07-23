@@ -1,0 +1,180 @@
+{
+  "artifacts": {
+    "s42_control": {
+      "output_manifest_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/s42-visible-night-control-workflow.json",
+      "output_manifest_sha256": "cb503cc117909eb78048dc96f68a1b1ccd12c6223781eba6742e6a0c12cff5db",
+      "output_xiso_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/ESPN-NFL-2K5-s42-visible-night-control.xiso.iso",
+      "output_xiso_sha256": "863ba00df855efdf54b85d568516b1ed0f7bbd33ddb77096ce3e16da4e702383",
+      "source_visibility_manifest_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/s42-visible-control-workflow.json",
+      "source_visibility_manifest_sha256": "88b4e1e0a5911ba7c2fa6b92d61eaf5b7b47605d9a61d4208cffbbcb1eefbdbe",
+      "source_visibility_xiso_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/ESPN-NFL-2K5-s42-visible-control.xiso.iso",
+      "source_visibility_xiso_sha256": "9070f267b585758c1a274c03baf6c925872b061c9f6a47e2ddfba3f5176fab40",
+      "volume9_sha256": "779b37455fc44cd7eb60674b926d7ccaf9cd6bd9d894157a1d68119281790c7a"
+    },
+    "s42_expanded_wall": {
+      "output_manifest_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/expanded-wall-s42-visible-night-workflow.json",
+      "output_manifest_sha256": "a003d7f04e23c291e28c577923d332080f74bca8a749881972325a82f285a97b",
+      "output_xiso_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/ESPN-NFL-2K5-group36-expanded-wall-s42-visible-night.xiso.iso",
+      "output_xiso_sha256": "d41c44882919a00282c184fcc85b4ec139e17b48ee7681960808cc14947bab72",
+      "source_visibility_manifest_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/expanded-wall-s42-visible-workflow.json",
+      "source_visibility_manifest_sha256": "166ba6a28318e289446f0814edd9bcddb28360bd4ad16b13dfa22f82634429b7",
+      "source_visibility_xiso_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/ESPN-NFL-2K5-group36-expanded-wall-s42-visible.xiso.iso",
+      "source_visibility_xiso_sha256": "f098af98efd2c545f4eea15bdb8cddac0668bd53eb77ab2077b592d465646ea6",
+      "volume9_sha256": "c4ad271186e47389d00bd4131866548c8eec2320770bfeb5ce9f9ae44f3d5bad"
+    }
+  },
+  "claims": {
+    "diagnostic_only": true,
+    "internal_data_and_text_section_digests_valid": true,
+    "offline_force_n_dataflow_proved": true,
+    "original_xbox_hardware_proved": false,
+    "production_ready": false,
+    "public_editor_exposed": false,
+    "retail_signed_executable_chain_preserved": false,
+    "s42_asset_dispatch_preserved": true,
+    "s42_visibility_unlock_preserved": true,
+    "weather_suffix_preserved": true,
+    "xemu_boot_acceptance_proved": false,
+    "xemu_geometry_visibility_proved": false,
+    "xemu_stadium_selectability_proved": false,
+    "xemu_target_outer_loaded_proved": false
+  },
+  "composition": {
+    "force_n_source_layer": "the pinned independently verified s42 visibility-unlock output, never the retail XISO",
+    "layers_in_order": [
+      "pinned retail or independently verified expanded-wall geometry XISO",
+      "stadium-18 ROST asset code s18 -> s42",
+      "s42 availability-table unlock id 0x014b -> 0",
+      "global stadium outer-name time suffix forced to n"
+    ],
+    "retail_inputs_opened_for_write": false,
+    "source_visibility_verifier_rerun_before_copy": true
+  },
+  "dataflow": {
+    "active_stadium_asset_code": "0x00062c71 CALL 0x00077460; 0x00062c76 MOV EDX,[EAX+0x0c]",
+    "argument_block": {
+      "offset_0x00": "u32 asset-code pointer",
+      "offset_0x04": "u16 time suffix",
+      "offset_0x06": "u16 weather suffix"
+    },
+    "format": "%s%c%c.iff",
+    "format_address": "0x00e610a0",
+    "format_callsite": "0x00062c82",
+    "time": {
+      "patched_final_assignment": "0x00062c62 MOV EDI,0x6e",
+      "register": "EDI",
+      "retail_candidates": {
+        "afternoon": "a",
+        "day": "d",
+        "night": "n"
+      },
+      "store": "0x00062c6c MOV word ptr [ESP+0x0c],DI"
+    },
+    "weather": {
+      "register": "ESI",
+      "retail_candidates": {
+        "clear_dry": "d",
+        "rain": "r",
+        "snow": "s"
+      },
+      "store": "0x00062c67 MOV word ptr [ESP+0x0e],SI",
+      "unchanged_by_patch": true
+    }
+  },
+  "instruction_patch": {
+    "after_hex": "7400",
+    "after_instruction": "JZ 0x00062c62",
+    "before_hex": "7405",
+    "before_instruction": "JZ 0x00062c67",
+    "changed_byte": {
+      "after_hex": "00",
+      "before_hex": "05",
+      "default_xbe_file_offset": "0x00052c61",
+      "guest_virtual_address": "0x00062c61",
+      "xiso_absolute_offset": "0x0029bc61"
+    },
+    "effect": "taken and non-taken paths both reach the existing MOV EDI,0x6e",
+    "global_scope": "all stadium outer filenames built by FUN_00062be0; not conditional on s42",
+    "instruction_default_xbe_file_offset": "0x00052c60",
+    "instruction_guest_virtual_address": "0x00062c60",
+    "source_context_hex": "85c07405bf6e000000668974240e66897c240c",
+    "source_context_occurrences_in_pinned_xbe": 1
+  },
+  "integrity": {
+    "default_xbe": {
+      "output_sha256": "c6abdd77be89594ee19dbfd8dbfa300b592a5a2ed1af2276e5e132678e50cc27",
+      "rsa_signature_bytes_changed": false,
+      "rsa_signature_sha256": "4648f39dab19e1108e68daf993f72db693eed9f1db96d22bde7cdfcff661f107",
+      "signed_header_sha1_after": "80c507386b62ac1dddb4dc21750355ee5861babc",
+      "signed_header_sha1_before": "85c32209d9479a93af52b03efc83ee92dec28d26",
+      "source_visibility_sha256": "955ddffebbefe9f53d915d7728daf4e6224f946935b3549a1976615cff73dd6b"
+    },
+    "source_visibility_data_section": {
+      "digest_sha1": "8011736208bf6320358ee1b1cdaf29d421f80c24",
+      "s42_unlock_file_offset": "0x00a8c8bc",
+      "s42_unlock_value_le_hex": "00000000",
+      "unchanged_by_force_n": true
+    },
+    "text_section": {
+      "digest_file_offset": "0x00000394",
+      "digest_sha1_after": "a013179864b328a3bda23b60f4cee9b9ed7dcc9d",
+      "digest_sha1_before": "72edb599858a06a0f88c6ae446907e3977f4fec6",
+      "raw_file_offset": "0x00001000",
+      "raw_size": 4256020,
+      "stored_digest_changed_byte_count": 20,
+      "virtual_address": "0x00011000",
+      "virtual_size": 4256020
+    }
+  },
+  "runtime_contract": {
+    "expected_outer_names": {
+      "clear": "s42nd.iff",
+      "rain": "s42nr.iff",
+      "snow": "s42ns.iff"
+    },
+    "global_game_time_state_changed": false,
+    "required_runtime_witness": "matched fresh-HDD control and expanded-wall runs proving s42 selection, target outer load, and visible geometry",
+    "risk": "presentation systems outside this filename builder may continue to observe the selected Day/Afternoon value",
+    "runtime_witness_present": false
+  },
+  "schema": "nfl2k5_group36_s42_force_n_runtime_shim/v1",
+  "tools": {
+    "independent_verifier": "tools/nfl_stadium_group36_s42_force_n_xiso_verify.py",
+    "test": "tests/test_nfl_stadium_group36_s42_force_n_xiso.py",
+    "validator": "tools/validate_nfl_stadium_group36_s42_force_n_xiso.sh",
+    "writer": "tools/nfl_stadium_group36_s42_force_n_xiso_patch.py"
+  },
+  "xdvdfs_transport": {
+    "actual_changed_byte_count_per_visibility_source": 21,
+    "all_other_6300499947_bytes_exact": true,
+    "allowed_changed_byte_offsets_decimal": [
+      2397076,
+      2397077,
+      2397078,
+      2397079,
+      2397080,
+      2397081,
+      2397082,
+      2397083,
+      2397084,
+      2397085,
+      2397086,
+      2397087,
+      2397088,
+      2397089,
+      2397090,
+      2397091,
+      2397092,
+      2397093,
+      2397094,
+      2397095,
+      2735201
+    ],
+    "default_xbe_byte_offset": "0x00249000",
+    "default_xbe_sector": 1170,
+    "default_xbe_size": 11948032,
+    "pack0_sha256": "57d5ea1703e952cfca9b0f5175b5c9f9bc0bda3eb6676db9f8b6b0e074bddae9",
+    "tree_and_all_extents_identical": true,
+    "xiso_size": 6300499968
+  }
+}

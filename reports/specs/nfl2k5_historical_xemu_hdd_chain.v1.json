@@ -1,0 +1,123 @@
+{
+  "boundary": {
+    "guest_content_replayable": false,
+    "historical_runtime_reexecuted": false,
+    "missing_base_reconstructed": false,
+    "substitution_allowed": false
+  },
+  "nodes": [
+    {
+      "backing": null,
+      "captured_path": "/media/noah/Storage/.codex-tmp/nfl2k5-xemu-jersey-tset-controller-20260711/xbox_hdd.qcow2",
+      "id": "jersey_tset_controller_base",
+      "retained": false,
+      "sha256": "96bf4b69a2b1b2f71ca9ceb7a989b40c23fde8b979ff686b8155a218bd1846e5",
+      "size": 1769668608
+    },
+    {
+      "backing": "jersey_tset_controller_base",
+      "captured_path": "/media/noah/Storage/.codex-tmp/nfl2k5-away-cacheclear-xemu-20260711/xbox_hdd.qcow2",
+      "id": "away_cacheclear",
+      "retained": true,
+      "sha256": "43b6cea37aa0c5a02b50a822211842fe761da64cc2aaf75ecaad2fbdfe582ab4",
+      "size": 983040
+    },
+    {
+      "backing": "jersey_tset_controller_base",
+      "captured_path": "/media/noah/Storage/.codex-tmp/nfl2k5-actual-jersey-binding-away-xemu-20260711/xbox_hdd.qcow2",
+      "id": "away_binding_negative",
+      "retained": true,
+      "sha256": "539d9fb4bef10fa68abe7a47bfaf444bfad20d131b04461e1fb8246f740face5",
+      "size": 2293760
+    },
+    {
+      "backing": "jersey_tset_controller_base",
+      "captured_path": "/media/noah/Storage/.codex-tmp/nfl2k5-xemu-lions-png-donorbase-controller-20260711/xbox_hdd.qcow2",
+      "id": "lions_png_donorbase",
+      "retained": true,
+      "sha256": "f739a1084b50b3342e6d011e2f98c0170042c4208be5b4410bbcfb0056f51037",
+      "size": 33751040
+    },
+    {
+      "backing": "away_cacheclear",
+      "captured_path": "/media/noah/Storage/for codex 1.0/.codex-tmp/nfl2k5-scorebug-xemu-20260712/xbox_hdd.qcow2",
+      "id": "scorebug_runtime",
+      "retained": true,
+      "sha256": "329d8a0bce5947b0e58dd2a4066180851fb9d53172e1567662c5aee73dbbcb9d",
+      "size": 79495168
+    },
+    {
+      "backing": "away_cacheclear",
+      "captured_path": "/media/noah/Storage/for codex 1.0/.codex-tmp/nfl2k5-scorebug-font-magenta-xemu-20260712/xbox_hdd.qcow2",
+      "id": "scorebug_font_runtime",
+      "retained": true,
+      "sha256": "356e897e746745f84dfbed5be235be350a729188fb280fa717b2073601fd05be",
+      "size": 10223616
+    },
+    {
+      "backing": "away_cacheclear",
+      "captured_path": "/media/noah/Storage/for codex 1.0/.codex-tmp/nfl2k5-scorebug-shield-xemu-20260712/xbox_hdd.qcow2",
+      "id": "scorebug_shield_runtime",
+      "retained": true,
+      "sha256": "4f268e63c5cee45b9eef5bde3cf62ab88c56db6f82f2d0b6edb4835c62bdea57",
+      "size": 14942208
+    },
+    {
+      "backing": "scorebug_runtime",
+      "captured_path": "/media/noah/Storage/for codex 1.0/.codex-tmp/nfl2k5-group36-geometry-xemu-20260713/xbox_hdd.qcow2",
+      "id": "group36_root",
+      "retained": true,
+      "sha256": "d8a7ff3f9df84a630472776100ed53a6478d3739ebda37c3727d94ac5196eff6",
+      "size": 393216
+    },
+    {
+      "backing": "group36_root",
+      "captured_path": "/media/noah/Storage/for codex 1.0/.codex-tmp/nfl2k5-group36-geometry-xemu-20260713/xbox_hdd-control-dispatch.qcow2",
+      "id": "group36_control_dispatch",
+      "retained": true,
+      "sha256": "b2969beea4aeb1db384558390cce7cc9c1ce0c8aca42fe215b52075e2ece6938",
+      "size": 589824
+    },
+    {
+      "backing": "group36_root",
+      "captured_path": "/media/noah/Storage/for codex 1.0/.codex-tmp/nfl2k5-group36-geometry-xemu-20260713/xbox_hdd-s42-selection-seed.qcow2",
+      "id": "group36_selection_seed",
+      "retained": true,
+      "sha256": "c9cc3689794a9b5d0b7cb470607db701f4807d7116d0666f5470af456a291800",
+      "size": 3866624
+    },
+    {
+      "backing": "group36_selection_seed",
+      "captured_path": "/media/noah/Storage/for codex 1.0/.codex-tmp/nfl2k5-group36-geometry-xemu-20260713/xbox_hdd-s42-visible-night-control-matched.qcow2",
+      "id": "group36_control_matched",
+      "retained": true,
+      "sha256": "29cc4518d077d15d605fa3668c109286867737c529044e0b9fb52c343a12a5ef",
+      "size": 7012352
+    },
+    {
+      "backing": "group36_selection_seed",
+      "captured_path": "/media/noah/Storage/for codex 1.0/.codex-tmp/nfl2k5-group36-geometry-xemu-20260713/xbox_hdd-s42-visible-night-expanded.qcow2",
+      "id": "group36_expanded",
+      "retained": true,
+      "sha256": "f43edbf83f16ff6d233dfb712963ca68554a77020ffd63b2cabe5d049cef1dc2",
+      "size": 5439488
+    },
+    {
+      "backing": "group36_control_matched",
+      "captured_path": "/media/noah/Storage/for codex 1.0/.codex-tmp/nfl2k5-upper-deck-xemu-20260716/xbox_hdd-upper-deck.qcow2",
+      "id": "upper_deck_runtime",
+      "retained": true,
+      "sha256": "c7e5a6eb8c336c84b08f3b852f9e87dd6ecbd8f2dd732e79a09aa6a007827ff1",
+      "size": 589824
+    },
+    {
+      "backing": "upper_deck_runtime",
+      "captured_path": "/media/noah/Storage/for codex 1.0/.codex-tmp/nfl2k5-upper-deck-xemu-20260716/xbox_hdd-control-after-upper-deck.qcow2",
+      "id": "upper_deck_control_after",
+      "retained": true,
+      "sha256": "9e2782584ab261f544c3694c7f32bfafeba45aa07ce11eb5efd950f30b949062",
+      "size": 2293760
+    }
+  ],
+  "schema": "nfl2k5_historical_xemu_hdd_chain/v1"
+}

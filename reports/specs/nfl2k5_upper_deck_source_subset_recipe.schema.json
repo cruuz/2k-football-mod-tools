@@ -1,0 +1,84 @@
+{
+  "$id": "nfl2k5_upper_deck_source_subset_recipe/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Fail-closed authoring envelope for a future NFL 2K5 upper_deck source-record subset writer. This schema admits no external positions or attribute values.",
+  "oneOf": [
+    {
+      "properties": {
+        "new_vertex_count": {
+          "const": 4
+        },
+        "source_vertex_ids": {
+          "items": {
+            "maximum": 11,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array",
+          "uniqueItems": true
+        }
+      }
+    },
+    {
+      "properties": {
+        "new_vertex_count": {
+          "const": 8
+        },
+        "source_vertex_ids": {
+          "items": {
+            "maximum": 11,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 8,
+          "minItems": 8,
+          "type": "array",
+          "uniqueItems": true
+        }
+      }
+    }
+  ],
+  "properties": {
+    "new_vertex_count": {
+      "description": "Changed native vertex and DRAW_ARRAYS count. The 12-vertex identity case is a byte-exact no-op path, not a changed recipe.",
+      "enum": [
+        4,
+        8
+      ],
+      "type": "integer"
+    },
+    "schema": {
+      "const": "nfl2k5_upper_deck_source_subset_recipe/v1"
+    },
+    "source_decoded_sha256": {
+      "const": "229db9f309bf69eaa28901ae6e2e15b26a279b3f1f37abed01e36041c5e5ead8"
+    },
+    "source_vertex_ids": {
+      "description": "Distinct source-record IDs in authored native-quad order. Every selected record must be copied in full across both active streams.",
+      "items": {
+        "maximum": 11,
+        "minimum": 0,
+        "type": "integer"
+      },
+      "maxItems": 8,
+      "minItems": 4,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "target_id": {
+      "const": "nfl2k5/stadium/o3280/c5/s1"
+    }
+  },
+  "required": [
+    "schema",
+    "target_id",
+    "source_decoded_sha256",
+    "new_vertex_count",
+    "source_vertex_ids"
+  ],
+  "title": "NFL 2K5 upper_deck source-subset recipe v1",
+  "type": "object"
+}

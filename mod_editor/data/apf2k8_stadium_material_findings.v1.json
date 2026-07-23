@@ -1,0 +1,46 @@
+{
+  "schema": "apf2k8_mod_studio_stadium_material_findings/v1",
+  "outcome": "texture_owner_unresolved",
+  "experiment": {
+    "scene_name": "stadium",
+    "scene_mesh_nodes": 116,
+    "draw_records": 328,
+    "serialized_material_records": 113,
+    "shader_family_records": 13,
+    "minimum_material_slot": 0,
+    "maximum_material_slot": 112,
+    "out_of_range_material_slots": 0,
+    "known_named_texture_identities_checked": 737,
+    "named_texture_identity_matches_in_scene_system_part": 0,
+    "same_package_named_texture_candidates": 3,
+    "same_package_identity_matches_in_scene_system_part": 0
+  },
+  "proved": {
+    "draw_to_serialized_material_slot": true,
+    "material_slot_to_serialized_material_record": true,
+    "serialized_material_to_shader_family": true,
+    "mesh_to_named_texture_identity": false,
+    "texture_writer_safe_to_expose": false
+  },
+  "runtime_capture": {
+    "route": "Wine-hosted Xenia instruction breakpoint",
+    "outcome": "host_breakpoint_intercepted",
+    "game_frame_rendered": false,
+    "guest_registers_captured": false,
+    "configuration_restored": true
+  },
+  "boundary": {
+    "material_payload_status": "Opaque material parameters remain serialized behind each material record.",
+    "texture_reference_status": "No named TXTR identity occurs in the scene system part, including the serialized material roster and payloads.",
+    "package_candidate_status": "The three same-package TXTR resources are package-level candidates only; none is statically referenced by identity.",
+    "gpu_part_status": "The scene has a separate GPU-memory part, but the static material-to-GPU-resource join is not decoded.",
+    "product_behavior": "Show scene node, draw, material slot, and shader-family identity; keep texture owner unresolved and Replace/Revert disabled."
+  },
+  "missing_runtime_fields": [
+    "the loaded stadium instance material-array base",
+    "the selected pixel-shader eight-entry texture mapping",
+    "the live texture object in each selected material texture record",
+    "the guest allocation or resource identity behind each live texture object"
+  ],
+  "best_next_experiment": "Use a small instrumented Xenia build or a native-Windows guest debugger that logs one known stadium draw at the renderer handoff without raising a Wine host breakpoint. Capture the material-array base, selected pixel-shader mapping, every live texture-object pointer, and each guest allocation and dimensions. A matching allocation proves an owner; no match falsifies the same-package candidates and identifies the next loader boundary."
+}

@@ -1,0 +1,51 @@
+{
+  "$id": "nfl2k5_upper_deck_source_triangle_mesh/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Source-indexed triangle authoring boundary for the pinned NFL 2K5 upper_deck changed-count writer. Triangle elements are retail source-record IDs, never external position or attribute values.",
+  "properties": {
+    "attribute_policy": {
+      "const": "copy_complete_source_records"
+    },
+    "primitive": {
+      "const": "TRIANGLES"
+    },
+    "schema": {
+      "const": "nfl2k5_upper_deck_source_triangle_mesh/v1"
+    },
+    "source_decoded_sha256": {
+      "const": "229db9f309bf69eaa28901ae6e2e15b26a279b3f1f37abed01e36041c5e5ead8"
+    },
+    "target_id": {
+      "const": "nfl2k5/stadium/o3280/c5/s1"
+    },
+    "triangles": {
+      "description": "Two or four oriented triangles over source IDs 0..11. Each native quad must be the exact oriented pair (a,b,c) and (a,c,d), modulo cyclic triangle rotation and triangle/quad list order.",
+      "items": {
+        "items": {
+          "maximum": 11,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "maxItems": 3,
+        "minItems": 3,
+        "type": "array",
+        "uniqueItems": true
+      },
+      "maxItems": 4,
+      "minItems": 2,
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schema",
+    "target_id",
+    "source_decoded_sha256",
+    "primitive",
+    "attribute_policy",
+    "triangles"
+  ],
+  "title": "NFL 2K5 upper_deck source-indexed triangle mesh v1",
+  "type": "object"
+}

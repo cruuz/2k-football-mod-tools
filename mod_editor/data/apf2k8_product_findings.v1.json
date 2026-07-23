@@ -1,0 +1,108 @@
+{
+  "schema": "apf2k8_mod_studio_product_findings/v1",
+  "gameplay": {
+    "stock_ui_range": {
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "step": 0.025
+    },
+    "sliders": [
+      "Human Blocking",
+      "Human Passing",
+      "Human Running",
+      "Human Catching",
+      "Human Coverage",
+      "Human Pursuit",
+      "Human Tackling",
+      "Human Kicking",
+      "Human Fatigue",
+      "CPU Blocking",
+      "CPU Passing",
+      "CPU Running",
+      "CPU Catching",
+      "CPU Coverage",
+      "CPU Pursuit",
+      "CPU Tackling",
+      "CPU Kicking",
+      "CPU Fatigue",
+      "Injury",
+      "Fumble",
+      "Interception"
+    ],
+    "platform_proof": {
+      "exact_serialized_value_count": 21,
+      "exact_serialized_byte_count": 84,
+      "offline_and_online_controls_share_callbacks_and_state": true,
+      "catching_runtime_copy_mapped": true,
+      "final_catch_or_drop_consumer_proved": false
+    },
+    "current_values_available": false,
+    "observed_fixture_values_available": false,
+    "save_or_profile_writer_available": false,
+    "executable_writer_available": false,
+    "out_of_range_runtime_safety_proved": false,
+    "warning": "The 21 names, stock range, serialization order, and control ownership are mapped. These are definitions, not values read from the user's current profile. No settings, profile, or executable writer is available, and values outside the stock range are not proved safe.",
+    "draft_lineage": {
+      "position_weights": [
+        {"position_code": 0, "position": "QB", "weight": 2.0},
+        {"position_code": 1, "position": "K", "weight": 0.1},
+        {"position_code": 2, "position": "P", "weight": 0.2},
+        {"position_code": 3, "position": "WR", "weight": 1.4},
+        {"position_code": 4, "position": "CB", "weight": 1.0},
+        {"position_code": 5, "position": "FS", "weight": 1.1},
+        {"position_code": 6, "position": "SS", "weight": 1.1},
+        {"position_code": 7, "position": "RB", "weight": 1.7},
+        {"position_code": 8, "position": "FB", "weight": 1.0},
+        {"position_code": 9, "position": "TE", "weight": 1.2},
+        {"position_code": 10, "position": "OLB", "weight": 1.2},
+        {"position_code": 11, "position": "ILB", "weight": 0.7},
+        {"position_code": 12, "position": "C", "weight": 0.5},
+        {"position_code": 13, "position": "G", "weight": 1.1},
+        {"position_code": 14, "position": "T", "weight": 1.3},
+        {"position_code": 15, "position": "DT", "weight": 1.4},
+        {"position_code": 16, "position": "DE", "weight": 1.3}
+      ],
+      "proof_status": {
+        "table_copy_count": 2,
+        "cpu_selector_owner_proved": false,
+        "ranking_algorithm_proved": false,
+        "classification": "retained lineage; live APF control not proved"
+      },
+      "safe_writer_available": false,
+      "runtime_patch_performed": false,
+      "warning": "The two retained APF table copies match NFL's weights, but no live APF CPU selector owns them. They are lineage evidence, not an effective draft-AI control."
+    }
+  },
+  "presentation": {
+    "field_scorebug": {
+      "components": [
+        {"name": "scorebug_bottombar", "mesh_count": 46, "triangle_count": 221, "writer_available": false},
+        {"name": "scorebug_titlebar", "mesh_count": 5, "triangle_count": 31, "writer_available": false},
+        {"name": "scorebug_team_logos", "mesh_count": 4, "triangle_count": 8, "writer_available": false},
+        {"name": "scorebug_infobar", "mesh_count": 4, "triangle_count": 149, "writer_available": false},
+        {"name": "scorebug_messages", "mesh_count": 2, "triangle_count": 14, "writer_available": false},
+        {"name": "scorebug_blackbar", "mesh_count": 1, "triangle_count": 5, "writer_available": false},
+        {"name": "scorebug_statbar", "mesh_count": 8, "triangle_count": 181, "writer_available": false}
+      ],
+      "geometry_writer_available": false,
+      "runtime_behavior_writer_available": false
+    },
+    "season_gamecast_is_separate": true,
+    "digital_font": {
+      "name": "digital_font",
+      "dimensions": [128, 128],
+      "format": "DXT5A",
+      "stored_channel": "alpha only",
+      "required_png_rgb": [255, 255, 255],
+      "fixed_vram_size": 8192,
+      "exclusive_logical_owner": true,
+      "copy_only_writer_proved": true,
+      "all_unrelated_global_parts_preserved": true,
+      "global_ui_side_effect_warning_required": true,
+      "production_encoder_ready": false,
+      "runtime_visibility_proved": false
+    },
+    "safe_writer_count": 1,
+    "warning": "Only the shared alpha-only digital_font has a proved copied-volume writer. The seven SCNE components, clocks, identity, visibility, timing, GameCast, replay/halftime, and audio remain separate and read-only."
+  }
+}

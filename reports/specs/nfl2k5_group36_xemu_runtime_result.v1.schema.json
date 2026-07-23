@@ -1,0 +1,312 @@
+{
+  "$defs": {
+    "artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "size": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "size"
+      ],
+      "type": "object"
+    },
+    "artifacts": {
+      "additionalProperties": false,
+      "properties": {
+        "config": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/artifact"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hdd": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/artifact"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "screenshots": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "selector_after",
+                  "selector_before",
+                  "selector_intermediate",
+                  "target_visible",
+                  "title_or_gameplay"
+                ]
+              },
+              "sha256": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "size": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "path",
+              "role",
+              "sha256",
+              "size"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "xiso": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/artifact"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "config",
+        "hdd",
+        "screenshots",
+        "xiso"
+      ],
+      "type": "object"
+    },
+    "outcome": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_screenshot_roles": {
+          "items": {
+            "enum": [
+              "selector_after",
+              "selector_before",
+              "selector_intermediate",
+              "target_visible",
+              "title_or_gameplay"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "kind": {
+          "enum": [
+            "boot_acceptance",
+            "selector_skip_negative",
+            "target_visible"
+          ]
+        },
+        "observation": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "evidence_screenshot_roles",
+        "kind",
+        "observation"
+      ],
+      "type": "object"
+    },
+    "run": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "$ref": "#/$defs/artifacts"
+        },
+        "observation_status": {
+          "enum": [
+            "observed",
+            "unobserved"
+          ]
+        },
+        "outcomes": {
+          "items": {
+            "$ref": "#/$defs/outcome"
+          },
+          "type": "array"
+        },
+        "profile": {
+          "enum": [
+            "expanded_wall",
+            "retail_control"
+          ]
+        },
+        "reason": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifacts",
+        "observation_status",
+        "outcomes",
+        "profile",
+        "reason"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:nfl2k5-group36-xemu-runtime-result:v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "claims": {
+      "additionalProperties": false,
+      "properties": {
+        "control_selector_skip_negative_observed": {
+          "type": "boolean"
+        },
+        "control_target_visible": {
+          "type": "boolean"
+        },
+        "expanded_selector_skip_negative_observed": {
+          "type": "boolean"
+        },
+        "expanded_target_visible": {
+          "type": "boolean"
+        },
+        "geometry_visibility_proved": {
+          "type": "boolean"
+        },
+        "original_xbox_hardware_proved": {
+          "type": "boolean"
+        },
+        "paired_target_visible": {
+          "type": "boolean"
+        },
+        "production_ready": {
+          "type": "boolean"
+        },
+        "s42_index18_quick_game_skip_observed": {
+          "type": "boolean"
+        },
+        "target_outer_loaded_proved": {
+          "type": "boolean"
+        },
+        "xemu_boot_acceptance_proved": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "control_selector_skip_negative_observed",
+        "control_target_visible",
+        "expanded_selector_skip_negative_observed",
+        "expanded_target_visible",
+        "geometry_visibility_proved",
+        "original_xbox_hardware_proved",
+        "paired_target_visible",
+        "production_ready",
+        "s42_index18_quick_game_skip_observed",
+        "target_outer_loaded_proved",
+        "xemu_boot_acceptance_proved"
+      ],
+      "type": "object"
+    },
+    "date": {
+      "const": "2026-07-13"
+    },
+    "emulator": {
+      "additionalProperties": false,
+      "properties": {
+        "application": {
+          "const": "app.xemu.xemu"
+        },
+        "version": {
+          "const": "0.8.135"
+        }
+      },
+      "required": [
+        "application",
+        "version"
+      ],
+      "type": "object"
+    },
+    "pair": {
+      "additionalProperties": false,
+      "properties": {
+        "dispatch": {
+          "type": "object"
+        },
+        "id": {
+          "const": "nfl2k5_group36_s42_control_expanded/v1"
+        },
+        "target": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "dispatch",
+        "id",
+        "target"
+      ],
+      "type": "object"
+    },
+    "runs": {
+      "additionalProperties": false,
+      "properties": {
+        "control": {
+          "$ref": "#/$defs/run"
+        },
+        "expanded_wall": {
+          "$ref": "#/$defs/run"
+        }
+      },
+      "required": [
+        "control",
+        "expanded_wall"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "nfl2k5_group36_xemu_runtime_result/v1"
+    },
+    "status": {
+      "enum": [
+        "boot_acceptance",
+        "selector_skip_negative",
+        "target_visible",
+        "unobserved"
+      ]
+    }
+  },
+  "required": [
+    "claims",
+    "date",
+    "emulator",
+    "pair",
+    "runs",
+    "schema",
+    "status"
+  ],
+  "title": "NFL 2K5 group36 paired xemu runtime result",
+  "type": "object"
+}

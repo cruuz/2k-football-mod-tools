@@ -1,0 +1,46 @@
+{
+  "schema": "apf2k8_player_positions/v1",
+  "game": "apf2k8_xbox360",
+  "scope": "on_disc_roster_player_position_editable",
+  "source_contract": {
+    "resource": "roster_english.iff outer 1126 inner 0 ROST",
+    "total_player_records": 2254,
+    "player_record_stride": 332,
+    "player_record_stride_hex": "0x14C",
+    "semantic_relative_offset": 52,
+    "semantic_relative_offset_hex": "0x34",
+    "mirror_relative_offset": 53,
+    "mirror_relative_offset_hex": "0x35",
+    "source_mirror_required": true
+  },
+  "code_minimum": 0,
+  "code_maximum": 16,
+  "positions": [
+    {"code": 0, "abbreviation": "QB", "name": "Quarterback"},
+    {"code": 1, "abbreviation": "K", "name": "Kicker"},
+    {"code": 2, "abbreviation": "P", "name": "Punter"},
+    {"code": 3, "abbreviation": "WR", "name": "Wide Receiver"},
+    {"code": 4, "abbreviation": "CB", "name": "Cornerback"},
+    {"code": 5, "abbreviation": "FS", "name": "Free Safety"},
+    {"code": 6, "abbreviation": "SS", "name": "Strong Safety"},
+    {"code": 7, "abbreviation": "HB", "name": "Halfback"},
+    {"code": 8, "abbreviation": "FB", "name": "Fullback"},
+    {"code": 9, "abbreviation": "TE", "name": "Tight End"},
+    {"code": 10, "abbreviation": "OLB", "name": "Outside Linebacker"},
+    {"code": 11, "abbreviation": "ILB", "name": "Inside Linebacker"},
+    {"code": 12, "abbreviation": "C", "name": "Center"},
+    {"code": 13, "abbreviation": "G", "name": "Guard"},
+    {"code": 14, "abbreviation": "T", "name": "Tackle"},
+    {"code": 15, "abbreviation": "DT", "name": "Defensive Tackle"},
+    {"code": 16, "abbreviation": "DE", "name": "Defensive End"}
+  ],
+  "runtime": {
+    "status": "offline_writer_proved_runtime_spot_check_pending",
+    "reason": "The semantic +0x34 byte and all 17 labels are executable-backed. Every stock record mirrors that value at opaque byte +0x35, so the bounded writer changes both bytes atomically and refuses a source record whose pair already differs. The token-preserving ROST transport is runtime-proved for names and runtime-loaded for one rating, but a changed position has not yet been spot-checked in Xenia."
+  },
+  "public_distribution": {
+    "contains_retail_bytes": false,
+    "contains_player_values": false,
+    "metadata_contents": "position codes, labels, record-relative offsets, and safety findings only"
+  }
+}

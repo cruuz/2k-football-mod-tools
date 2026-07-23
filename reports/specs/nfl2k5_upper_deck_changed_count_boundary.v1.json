@@ -1,0 +1,645 @@
+{
+  "claim_flags": {
+    "arbitrary_external_vertex_authoring_proved": false,
+    "bounds_or_culling_serializer_proved": false,
+    "changed_count_archive_writer_implemented": false,
+    "collision_or_lod_ownership_proved": false,
+    "independent_changed_count_verifier_implemented": false,
+    "original_xbox_hardware_proved": false,
+    "production_ready": false,
+    "runtime_visibility_proved": false,
+    "source_subset_record_copy_algorithm_specified": true,
+    "target_structure_closed_for_prefix_shrink_probe": true,
+    "two_count_bytes_and_fixed_span_fit_probed": true
+  },
+  "data_policy": {
+    "contains_hashes_offsets_counts_and_structural_semantics": true,
+    "contains_modified_archive_bytes": false,
+    "contains_retail_attribute_values": false,
+    "contains_retail_command_payload": false,
+    "contains_retail_index_values": false,
+    "contains_retail_vertex_values": false
+  },
+  "evidence_classification": {
+    "blockers": [
+      "bounds/frustum culling owner fields and update semantics are not recovered",
+      "collision and LOD ownership for this stadium shape are not recovered",
+      "runtime acceptance of changed VC-LZ scratch and changed count is untested",
+      "arbitrary external positions, UVs, normals, colors, materials, and topology are outside this source-record subset profile",
+      "an exhaustive proof that no semantics-unknown or runtime-created alias consumes the shortened logical tails is still missing"
+    ],
+    "candidate_not_implemented": [
+      "count-only copied-volume prefix-shrink writer and independent verifier",
+      "nonidentity ordered source-subset remap using complete records in both streams",
+      "runtime witness for both four- and eight-vertex variants"
+    ],
+    "derived": [
+      "the admissible count set {4,8,12} follows from start-zero DRAW_ARRAYS, QUADS groups of four, source count 12, and the one-byte count encoding",
+      "a source subset can retain unknown attributes only by copying each selected vertex's entire record in every active stream",
+      "logical tails created by a smaller count are preservation regions, not writable allocation"
+    ],
+    "proved": [
+      "shape count field, both streams, all active record lanes, one submesh/material, and complete six-word push grammar are bounded and source-hash pinned",
+      "loader relocates the enumerated pointers, conditionally relocates +0x60 by blend count, and derives total push bytes from primary counts",
+      "runtime clone sizing/copy functions 0x000234a0 and 0x00023510 consume stream0_stride * vertex_count",
+      "count-only reductions to eight and four reparse with draw_count equal to vertex_count and fit the fixed VC-LZ span in memory"
+    ]
+  },
+  "future_writer_fail_closed_contract": {
+    "authorized_decoded_changes": [
+      "u16le shape vertex_count field",
+      "high count byte of the one DRAW_ARRAYS parameter",
+      "for a nonidentity subset only, complete records in each stream prefix through new_count*stride"
+    ],
+    "independent_verifier_requirements": [
+      "must not import writer, production parser, compressor, or serializer modules",
+      "rederive target identity, every pointer/span/declaration/stride/count, the complete six-word command grammar, and exact authorized changed-byte set",
+      "reconstruct every destination record from source ID and compare both complete stream prefixes plus exact physical tails",
+      "decode final topology to ordered quads, require draw_count == vertex_count and all references below count",
+      "independently decompress the complete fixed resource and hash the final tail, wrapper complement, sibling bytes, source, output, and copied-volume complement"
+    ],
+    "mandatory_preservation": [
+      "all physical bytes after each new logical stream end",
+      "all declarations, strides, pointers, non-count command bits, records, tables, unknowns, gaps, and sibling payloads",
+      "system_bytes, video_bytes, decoded length, outer offset/size, fixed final 16-byte tail, and copied-volume complement"
+    ],
+    "mandatory_rejections": [
+      "new count outside {4,8}, duplicate/out-of-range/non-integer source ID, or subset length mismatch",
+      "any external POSITION or shader-specific attribute value in this source-subset-only profile",
+      "any command other than the existing start-zero DRAW_ARRAYS range or any change to its headers/mode/start/word count",
+      "any pointer, alias, declaration, stride, material, transform, selector semantics, morph, skin, bounds, collision, or LOD ambiguity touched by the request",
+      "VC-LZ cap overflow, scratch outside a separately accepted runtime boundary, failed full decode, fixed-tail drift, or unauthorized byte difference",
+      "source mutation, existing output, aliasing source/output paths, or non-exclusive publication"
+    ],
+    "no_op_rule": "new_count 12 with identity source order must return the validated retail resource/volume bytes verbatim without recompression"
+  },
+  "interval_and_alias_ledger": {
+    "aligned_raw_word_scan": {
+      "proof_limit": "this heuristic does not exclude unaligned, encoded, executable-created, or semantics-unknown aliases",
+      "scope": "every four-byte-aligned word in the decoded system buffer interpreted conservatively as a one-based relative pointer",
+      "stream0_candidates": [
+        {
+          "containing_payload_class": "unclassified_aligned_word",
+          "field_offset": 30676,
+          "target_offset": 69920
+        }
+      ],
+      "stream1_candidates": [
+        {
+          "containing_payload_class": "unclassified_aligned_word",
+          "field_offset": 30680,
+          "target_offset": 70080
+        },
+        {
+          "containing_payload_class": "nfl2k5/stadium/o3280/c5/s63:attribute_stream_1",
+          "field_offset": 399120,
+          "target_offset": 70153
+        }
+      ],
+      "stream1_nonowner_explanation": "the extra aligned value occurs inside another shape's fully bounded vertex stream, not a recovered structural pointer field"
+    },
+    "logical_end_formula": "stream_start + new_count * stride",
+    "ordered_target_intervals": [
+      {
+        "end": 69744,
+        "name": "transform",
+        "policy": "preserve",
+        "start": 69632
+      },
+      {
+        "end": 69872,
+        "name": "submesh",
+        "policy": "preserve except no fields in this profile",
+        "start": 69744
+      },
+      {
+        "end": 69896,
+        "name": "push",
+        "policy": "only draw count byte may change",
+        "start": 69872
+      },
+      {
+        "end": 69920,
+        "name": "alignment_gap_before_stream0",
+        "policy": "preserve; not capacity",
+        "start": 69896
+      },
+      {
+        "end": 70064,
+        "name": "stream0_physical",
+        "policy": "prefix whole-record remap; logical tail exact",
+        "start": 69920
+      },
+      {
+        "end": 70080,
+        "name": "alignment_gap_between_streams",
+        "policy": "preserve; not capacity",
+        "start": 70064
+      },
+      {
+        "end": 70200,
+        "name": "stream1_physical",
+        "policy": "prefix whole-record remap; logical tail exact",
+        "start": 70080
+      },
+      {
+        "end": 70400,
+        "name": "gap_before_next_shape_payload",
+        "policy": "preserve; not capacity",
+        "start": 70200
+      }
+    ],
+    "recognized_owner_pointers": {
+      "push": [
+        69864
+      ],
+      "stream0": [
+        30676
+      ],
+      "stream1": [
+        30680
+      ]
+    }
+  },
+  "prefix_shrink_probe": {
+    "method": "in-memory only; leave both physical streams exact, reduce shape count and the existing start-zero DRAW_ARRAYS count, reparse full SCNE, recompress under the retail cap, and independently decode the rebuilt stream",
+    "modified_archive_published": false,
+    "not_proved": [
+      "runtime loader acceptance of the changed wrapper scratch",
+      "visibility, culling, collision, LOD, or semantic usefulness",
+      "whole-record nonidentity subset remap on retail bytes",
+      "writer publication safety or independent verifier separation"
+    ],
+    "probes": [
+      {
+        "aligned_scratch_bytes": 32,
+        "changed_decoded_byte_count": 2,
+        "changed_decoded_offsets": [
+          30540,
+          69887
+        ],
+        "decoded_sha256": "dffa0cc9aa4599c94fe436ec8599c8b9597eacb0d377865c6454a733cf56f272",
+        "encoded_sha256": "09a02cccb40f017445289d9b3db2067df75f6fa9f1e8e22099b5a5f789c1ae5a",
+        "fixed_final_tail_exact": true,
+        "full_decode_exact": true,
+        "independent_writer_verifier_used": false,
+        "literal_count": 508198,
+        "match_count": 158650,
+        "minimum_alias_scratch_bytes": 1,
+        "new_vertex_count": 8,
+        "output_archive_published": false,
+        "outside_two_count_bytes_bit_exact": true,
+        "physical_stream_payloads_changed": false,
+        "rebuilt_consumed_bytes": 908863,
+        "rebuilt_fixed_span_sha256": "68c60f2055c8b4d343dad8a16610fdecf45fb060893201ee98902a3d931dc829",
+        "reparsed_all_references_in_bounds": true,
+        "reparsed_draw_vertex_count": 8,
+        "reparsed_maximum_vertex_index": 7,
+        "reparsed_shape_vertex_count": 8,
+        "retail_consumed_cap_bytes": 908864,
+        "runtime_tested": false,
+        "total_stored_padding_bytes": 17,
+        "zero_gap_bytes": 1
+      },
+      {
+        "aligned_scratch_bytes": 32,
+        "changed_decoded_byte_count": 2,
+        "changed_decoded_offsets": [
+          30540,
+          69887
+        ],
+        "decoded_sha256": "329af0d6fb1b506db646016df10c288375bcb1ed73a80195950e8e5cd40225c9",
+        "encoded_sha256": "c49990b5d9be27bcc608fd3faa76c052ae3bf18e7066fac0bc66399174d6590b",
+        "fixed_final_tail_exact": true,
+        "full_decode_exact": true,
+        "independent_writer_verifier_used": false,
+        "literal_count": 508195,
+        "match_count": 158651,
+        "minimum_alias_scratch_bytes": 2,
+        "new_vertex_count": 4,
+        "output_archive_published": false,
+        "outside_two_count_bytes_bit_exact": true,
+        "physical_stream_payloads_changed": false,
+        "rebuilt_consumed_bytes": 908862,
+        "rebuilt_fixed_span_sha256": "60e8b3589d2332528348caf371d7b4d0fe789a51d5b93eb2202c8b0edf086cc9",
+        "reparsed_all_references_in_bounds": true,
+        "reparsed_draw_vertex_count": 4,
+        "reparsed_maximum_vertex_index": 3,
+        "reparsed_shape_vertex_count": 4,
+        "retail_consumed_cap_bytes": 908864,
+        "runtime_tested": false,
+        "total_stored_padding_bytes": 18,
+        "zero_gap_bytes": 2
+      }
+    ],
+    "proof_scope": "serialized count/control coupling and deterministic fixed-span fit only",
+    "source_archive_modified": false
+  },
+  "recipe_contract": {
+    "admitted_changed_counts": [
+      4,
+      8
+    ],
+    "external_positions_or_attributes_admitted": false,
+    "path": "reports/specs/nfl2k5_upper_deck_source_subset_recipe.schema.json",
+    "schema": "nfl2k5_upper_deck_source_subset_recipe/v1",
+    "sha256": "4fac01c6cffe03481b456899ec2b2f3cd25f74954d5db94ccb3b8351f841ca4b",
+    "source_vertex_id_domain": [
+      0,
+      11
+    ],
+    "source_vertex_ids_must_be_unique": true,
+    "writer_implemented": false
+  },
+  "schema": "nfl2k5_upper_deck_changed_count_boundary/v1",
+  "shape_and_coupled_fields": {
+    "inactive_blend_pointer_alias": {
+      "count": 0,
+      "count_field_offset": 30546,
+      "interpretation": "serialized pointer aliases the submesh start but loader relocation/use is conditional on nonzero blend count",
+      "pointer_field_offset": 30560,
+      "pointer_target": 69744,
+      "writer_policy": "preserve count and pointer bytes exactly; never treat alias target as blend capacity"
+    },
+    "loader_derived_fields_preserved": [
+      {
+        "evidence_status": "proved-at-0x00022f90",
+        "offset": 30552,
+        "runtime_meaning": "loader recomputes total primary push bytes; six words derive 24 bytes",
+        "serialized_value": 0
+      }
+    ],
+    "other_count_fields_preserved": [
+      {
+        "name": "morph_channel_count",
+        "offset": 30542,
+        "value": 0
+      },
+      {
+        "name": "base_transform_count",
+        "offset": 30544,
+        "value": 1
+      },
+      {
+        "name": "blended_palette_count",
+        "offset": 30546,
+        "value": 0
+      },
+      {
+        "name": "submesh_count",
+        "offset": 30548,
+        "value": 1
+      }
+    ],
+    "pointer_ledger": [
+      {
+        "encoding": "s32le one-based self-relative",
+        "evidence_status": "proved-loader-conditional",
+        "field_offset": 30560,
+        "null": false,
+        "role": "blended-palette table; inactive because blend_count is zero",
+        "target_offset": 69744,
+        "writer_policy": "preserve_exact"
+      },
+      {
+        "encoding": "s32le one-based self-relative",
+        "evidence_status": "proved",
+        "field_offset": 30564,
+        "null": false,
+        "role": "one 0x70-byte transform record",
+        "target_offset": 69632,
+        "writer_policy": "preserve_exact"
+      },
+      {
+        "encoding": "s32le one-based self-relative",
+        "evidence_status": "proved",
+        "field_offset": 30576,
+        "null": false,
+        "role": "one 0x80-byte submesh record",
+        "target_offset": 69744,
+        "writer_policy": "preserve_exact"
+      },
+      {
+        "encoding": "s32le one-based self-relative",
+        "evidence_status": "proved-structure-only",
+        "field_offset": 30580,
+        "null": true,
+        "role": "morph table; count is zero",
+        "target_offset": null,
+        "writer_policy": "preserve_exact"
+      },
+      {
+        "encoding": "s32le one-based self-relative",
+        "evidence_status": "proved-pointer-semantics-unknown",
+        "field_offset": 30584,
+        "null": true,
+        "role": "relocated shape pointer with unresolved semantics",
+        "target_offset": null,
+        "writer_policy": "preserve_exact"
+      },
+      {
+        "encoding": "s32le one-based self-relative",
+        "evidence_status": "proved-pointer-semantics-unknown",
+        "field_offset": 30588,
+        "null": true,
+        "role": "relocated shape pointer with unresolved semantics",
+        "target_offset": null,
+        "writer_policy": "preserve_exact"
+      },
+      {
+        "encoding": "s32le one-based self-relative",
+        "evidence_status": "proved",
+        "field_offset": 30676,
+        "null": false,
+        "role": "vertex stream 0",
+        "target_offset": 69920,
+        "writer_policy": "preserve_exact"
+      },
+      {
+        "encoding": "s32le one-based self-relative",
+        "evidence_status": "proved",
+        "field_offset": 30680,
+        "null": false,
+        "role": "vertex stream 1",
+        "target_offset": 70080,
+        "writer_policy": "preserve_exact"
+      },
+      {
+        "encoding": "s32le one-based self-relative",
+        "evidence_status": "proved",
+        "field_offset": 69864,
+        "null": false,
+        "role": "six-word NV2A push stream",
+        "target_offset": 69872,
+        "writer_policy": "preserve_exact"
+      }
+    ],
+    "shape_record": {
+      "end_offset": 30720,
+      "offset": 30464,
+      "sha256": "d21f873cb462d47cda45f62325101d085fa25786a563dbcf531ac594c05db4d3",
+      "size_bytes": 256
+    },
+    "shape_version": 2,
+    "source_vertex_count": 12,
+    "vertex_count_field": {
+      "consumer_closure": "partial; no exhaustive bounds/collision/LOD/culling ownership proof",
+      "encoding": "u16le",
+      "evidence_status": "proved-serialized-and-runtime-allocation-consumer",
+      "offset": 30540,
+      "runtime_consumers": [
+        "0x000234a0 sizes copied stream-0 bytes as stream0_stride * vertex_count",
+        "0x00023510 copies that same stream-0 byte count into the runtime shape clone",
+        "NV2A topology must independently remain below the serialized count"
+      ]
+    }
+  },
+  "source_evidence": {
+    "complete_function_export_shard_for_scne_consumers": {
+      "path": "research/functions/nfl2k5/pseudo_c/shard_000000_000511.c",
+      "sha256": "58637c7fa52456e7b615a24692301b8567063d998056c06b7528fca0f312f4c1",
+      "size_bytes": 705559
+    },
+    "future_source_subset_recipe_schema": {
+      "path": "reports/specs/nfl2k5_upper_deck_source_subset_recipe.schema.json",
+      "sha256": "4fac01c6cffe03481b456899ec2b2f3cd25f74954d5db94ccb3b8351f841ca4b",
+      "size_bytes": 2209
+    },
+    "nfl_parent_static_scne_spec": {
+      "path": "reports/specs/nfl2k5_xbox_static_scne.v1.json",
+      "sha256": "d1e684a0b86c3a933355217174938cb95c5192eb2680c8b9698f7eb15ac39884",
+      "size_bytes": 47126
+    },
+    "resource_decoder_and_compressor": {
+      "path": "tools/nfl_txtr.py",
+      "sha256": "15327068fcfa0de55022c4704212f5010e73ff4710d4c1f4ce3804c1b8e30139",
+      "size_bytes": 42563
+    },
+    "resource_wrapper_parser": {
+      "path": "tools/nfl_scene_probe.py",
+      "sha256": "0cab4e10367c950aada642853995b6a954e82b7e37c88c0539abd2a90a78dc2e",
+      "size_bytes": 39862
+    },
+    "scne_parser": {
+      "path": "tools/nfl_scne_inventory.py",
+      "sha256": "1925041fb672fd9529d3cd7d01bdbbc2758e73eb1e14042c25c9ec454e6f5b5c",
+      "size_bytes": 50116
+    },
+    "shape_loader_and_skin_pseudo_c": {
+      "path": "reports/assets/nfl_transform_semantics_ghidra/nfl_transform_semantics_focused_pseudo_c.c",
+      "sha256": "8dec09544d3d8b182f8028f37f8d0641f4cc60c6521ca7e852f27d75fbe05e5e",
+      "size_bytes": 74384
+    },
+    "stadium_catalog_generator": {
+      "path": "tools/nfl_stadium_static_target_catalog.py",
+      "sha256": "35adf4e719f4e057bf687fa4d658d730966ccba2c4494d92454c287706f89ee4",
+      "size_bytes": 41962
+    },
+    "stadium_target_catalog": {
+      "path": "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json",
+      "sha256": "f44472856044a5d8a50d18476a4c7af18ef98bcc3f7cf1d567db2b33d5336bfa",
+      "size_bytes": 858600
+    },
+    "upper_deck_same_count_roundtrip": {
+      "path": "reports/assets/nfl_stadium_catalog_position_patch_roundtrip.v2.json",
+      "sha256": "05ab26057b0ebd244a0a090d2268f1cac49b3b820269b410e38c5e6b89a6d9c3",
+      "size_bytes": 7150
+    }
+  },
+  "source_identity": {
+    "archive_index": {
+      "name": "0",
+      "sha256": "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d",
+      "size_bytes": 193710080
+    },
+    "chunk_index": 5,
+    "decoded_sha256": "229db9f309bf69eaa28901ae6e2e15b26a279b3f1f37abed01e36041c5e5ead8",
+    "decoded_size_bytes": 1524864,
+    "outer_id": "0xe4d6b0bc",
+    "outer_index": 3280,
+    "scene_index": 2648,
+    "scene_name": "stadium",
+    "volume": {
+      "name": "9",
+      "sha256": "779b37455fc44cd7eb60674b926d7ccaf9cd6bd9d894157a1d68119281790c7a",
+      "size_bytes": 634941440
+    }
+  },
+  "status": "target-specific requirements and in-memory fixed-span prefix-shrink probes proved; no writer, independent verifier, runtime, bounds, or production claim",
+  "target_selection": {
+    "selection_is_runtime_claim": false,
+    "selection_is_writer_claim": false,
+    "shape_index": 1,
+    "shape_name": "upper_deck",
+    "target_id": "nfl2k5/stadium/o3280/c5/s1",
+    "why_selected_over_group36": [
+      "12 source vertices admit useful reductions to eight or four while group36 starts at four",
+      "one material, one submesh, and one start-zero DRAW_ARRAYS QUADS batch eliminate index-buffer and command-capacity relayout",
+      "both active streams have completely bounded fixed records and can be remapped as opaque whole records",
+      "primary and secondary command word counts, push pointer, headers, methods, primitive mode, and allocation can remain exact"
+    ]
+  },
+  "title": "NFL 2K5 upper_deck fixed-footprint source-subset changed-vertex-count boundary",
+  "topology_contract": {
+    "admissible_vertex_counts": [
+      4,
+      8,
+      12
+    ],
+    "auxiliary_index": 1,
+    "changed_vertex_counts": [
+      4,
+      8
+    ],
+    "command_capacity_result": "closed for this profile because no command is added or removed and the six-word span remains fully occupied",
+    "derivation": "one DRAW_ARRAYS range starts at zero; QUADS consumes complete groups of four; source has 12 vertices; count field holds one-through-256",
+    "material_index": 1,
+    "must_remain_exact": [
+      "all three command headers, instructions, methods, parameter counts, and word positions",
+      "QUADS begin mode, END marker, DRAW_ARRAYS start, push pointer, and six-word primary count",
+      "submesh/material/auxiliary indices and the entire secondary-count path"
+    ],
+    "no_op_vertex_count": 12,
+    "only_mutable_topology_bits": {
+      "bit_mask": "0xff000000",
+      "count_byte_offset": 69887,
+      "encode": "(new_count - 1) << 24 with preserved start zero",
+      "parameter_offset": 69884
+    },
+    "primary_word_count": 6,
+    "primary_word_count_field_offset": 69868,
+    "push": {
+      "command_count": 3,
+      "commands": [
+        {
+          "header_offset": 69872,
+          "instruction": 0,
+          "method": "0x17fc",
+          "parameter_count": 1,
+          "parameter_offsets": [
+            69876
+          ],
+          "primitive": "QUADS",
+          "semantic": "SET_BEGIN_END"
+        },
+        {
+          "count_bit_mask": "0xff000000",
+          "count_byte_offset": 69887,
+          "draw_count": 12,
+          "header_offset": 69880,
+          "instruction": 0,
+          "method": "0x1810",
+          "parameter_count": 1,
+          "parameter_offsets": [
+            69884
+          ],
+          "preserved_start_bit_mask": "0x00ffffff",
+          "semantic": "DRAW_ARRAYS",
+          "start": 0
+        },
+        {
+          "header_offset": 69888,
+          "instruction": 0,
+          "method": "0x17fc",
+          "parameter_count": 1,
+          "parameter_offsets": [
+            69892
+          ],
+          "primitive": "END",
+          "semantic": "SET_BEGIN_END"
+        }
+      ],
+      "retail_command_words_embedded": false,
+      "span": {
+        "end_offset": 69896,
+        "offset": 69872,
+        "sha256": "6811dd478e03b4be22628c3f07c27d2dcb7791b98e0f409086e3c4267bfce1b0",
+        "size_bytes": 24
+      },
+      "word_count": 6
+    },
+    "push_pointer_field_offset": 69864,
+    "secondary_word_count": 0,
+    "secondary_word_count_field_offset": 69870,
+    "submesh_record": {
+      "end_offset": 69872,
+      "offset": 69744,
+      "sha256": "78e7e127e21d480719364b10f7ea59ccf3ac866a8a3edd7dcd44b660ed31e3dd",
+      "size_bytes": 128
+    }
+  },
+  "version": 1,
+  "vertex_record_contract": {
+    "active_stream_count": 2,
+    "arbitrary_position_edit_policy": "blocked; this first changed-count profile copies source positions exactly because bounds/culling ownership is unresolved",
+    "declarations_preserved_exact": true,
+    "reference_remap_algorithm": "remap_stream_prefix in the spec generator; unit-tested only on synthetic nonretail records",
+    "source_subset_rule": [
+      "recipe length is the new vertex_count and must be four or eight for a changed build",
+      "each source ID is a distinct integer in [0,12); source order is the authored native quad order",
+      "copy the selected source's complete 12-byte stream-0 record and complete 10-byte stream-1 record to the corresponding destination prefix slot",
+      "do not decode, synthesize, normalize, weld, or independently reorder shader-specific lanes",
+      "bytes after new_count*stride through the original physical end remain exact retail tail bytes and are not slack"
+    ],
+    "streams": [
+      {
+        "pointer_field_offset": 30676,
+        "record_bytes_covered_by_declarations": 12,
+        "record_lanes": [
+          {
+            "format": "FLOAT3",
+            "offset": 0,
+            "register": 0,
+            "semantic": "POSITION",
+            "size_bytes": 12
+          }
+        ],
+        "source_physical_span": {
+          "end_offset": 70064,
+          "offset": 69920,
+          "sha256": "95164ce59e125ac1775003846a1eb780c63f001c65f2b3da8d2aebd20fbe67f7",
+          "size_bytes": 144
+        },
+        "stream_index": 0,
+        "stride_bytes": 12,
+        "stride_field_offset": 30660
+      },
+      {
+        "pointer_field_offset": 30680,
+        "record_bytes_covered_by_declarations": 10,
+        "record_lanes": [
+          {
+            "format": "D3DCOLOR",
+            "offset": 0,
+            "register": 3,
+            "semantic": "shader-specific-preserve",
+            "size_bytes": 4
+          },
+          {
+            "format": "NORMSHORT2",
+            "offset": 4,
+            "register": 6,
+            "semantic": "shader-specific-preserve",
+            "size_bytes": 4
+          },
+          {
+            "format": "SHORT1",
+            "offset": 8,
+            "register": 1,
+            "semantic": "sole-transform selector; preserve by whole-record copy",
+            "size_bytes": 2
+          }
+        ],
+        "source_physical_span": {
+          "end_offset": 70200,
+          "offset": 70080,
+          "sha256": "5ad69b6eff91ed58f1882d08f9f69b299d0ea32d53cf729a6c0fb8a2a7c7cabe",
+          "size_bytes": 120
+        },
+        "stream_index": 1,
+        "stride_bytes": 10,
+        "stride_field_offset": 30662
+      }
+    ]
+  }
+}

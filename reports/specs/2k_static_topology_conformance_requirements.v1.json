@@ -1,0 +1,713 @@
+{
+  "claim_flags": {
+    "apf_topology_writer_implemented": true,
+    "automatic_decimator_implemented": false,
+    "bounds_culling_proved": false,
+    "changed_vertex_count_writer_implemented": false,
+    "edited_gltf_importer_implemented": false,
+    "hardware_proved": false,
+    "material_uv_normal_writer_proved": false,
+    "nfl_changed_count_target_contract_probed": true,
+    "nfl_same_footprint_profile_selected": true,
+    "nfl_selected_profile_offline_writeback_proved": true,
+    "nfl_topology_writer_implemented": true,
+    "production_ready": false,
+    "requirements_specified": true,
+    "runtime_proved": false
+  },
+  "data_policy": {
+    "allowed_evidence": "identities, offsets, extents, hashes, aggregate counts, encodings, algorithms, and rejection rules",
+    "contains_retail_command_payload": false,
+    "contains_retail_geometry": false,
+    "contains_retail_index_values": false,
+    "contains_retail_vertex_values": false
+  },
+  "definitions": {
+    "fixed_budget": "all decoded parts, archive allocations, and neighboring objects retain their retail extents; compression must fit without borrowing adjacent storage",
+    "independent_verifier": "a verifier that does not import writer, production parser, compressor, or serializer modules and independently derives every authorized changed span",
+    "same_footprint": "the native decoded structural span begins at the same address and has the same declared byte/word count as retail",
+    "source_vertex_subset": "each output vertex names one distinct source vertex and copies that source vertex's complete record in every active stream before any separately authorized POSITION edit",
+    "topology_change": "any change to a native index element, primitive mode, command stream, restart placement, draw range, submesh membership, index count, or vertex count"
+  },
+  "first_profile_selection": {
+    "exit_criteria": [
+      "canonical recipe/schema with no retail-derived indices",
+      "fail-closed copied-volume writer changing only four located index halfwords and optional already-proved positions",
+      "independent native push and full-container verifier",
+      "whole-volume no-op identity, changed-span proof, VC-LZ overflow refusal, and mutation tests",
+      "runtime witness before any runtime-supported label"
+    ],
+    "selected": "nfl2k5_group36_same_footprint_quad_index_replace/v1",
+    "selection_is_implementation_claim": true,
+    "selection_is_runtime_claim": false,
+    "why_not_apf_first": "historically, APF node17 was deferred because its draw record was opaque; that draw/index coupling is now corpus-closed and the analogous bounded writer is implemented, without changing which profile was completed first",
+    "why_not_changed_count_first": "changed count expands the proof surface to vertex-record remap, count fields, logical stream extents, possible aliases, bounds, and draw-range ownership"
+  },
+  "gap_matrix": [
+    {
+      "apf2k8": "77 catalog targets dispatched with two byte-level witnesses",
+      "area": "same-count POSITION",
+      "needed_for_conformer": "runtime/semantic ownership before production exposure",
+      "nfl2k5": "75 catalog targets dispatched with two byte-level witnesses"
+    },
+    {
+      "apf2k8": "BE16/BE32 triangle strips plus full draw windows corpus-proved",
+      "area": "native topology read",
+      "needed_for_conformer": "general deterministic inverse and target admission beyond pinned profiles",
+      "nfl2k5": "NV2A methods and modes corpus-proved"
+    },
+    {
+      "apf2k8": "selected node17 four-BE16 strip profile offline writer and independent verifier proved; runtime unproved",
+      "area": "same-footprint index write",
+      "needed_for_conformer": "runtime witnesses and per-target generalization",
+      "nfl2k5": "selected group36 quad profile offline writer and independent verifier proved; runtime unproved"
+    },
+    {
+      "apf2k8": "descriptor, streams, and draw fields known; coordinated writer unimplemented",
+      "area": "changed vertex count",
+      "needed_for_conformer": "count writers, independent verification, bounds ownership, and runtime",
+      "nfl2k5": "upper_deck two-byte count control plus fixed-span 4/8 in-memory probes proved; archive writer unimplemented"
+    },
+    {
+      "apf2k8": "UV/normal contextual inverses incomplete",
+      "area": "arbitrary new vertex records",
+      "needed_for_conformer": "all active attribute writers",
+      "nfl2k5": "register semantics/inverses incomplete"
+    },
+    {
+      "apf2k8": "draw material slot and 0xf0 stride proved; material payload/bindings opaque",
+      "area": "materials/submeshes",
+      "needed_for_conformer": "binding serializers",
+      "nfl2k5": "material index read; records mostly opaque"
+    },
+    {
+      "apf2k8": "unknown",
+      "area": "bounds/culling",
+      "needed_for_conformer": "owner fields plus runtime witness",
+      "nfl2k5": "unknown"
+    },
+    {
+      "apf2k8": "H7A/IFF/outer cap proved",
+      "area": "fixed allocation",
+      "needed_for_conformer": "budget estimator before mutation",
+      "nfl2k5": "VC-LZ and outer cap proved"
+    }
+  ],
+  "implementation_sequence": [
+    "runtime-witness that exact NFL topology change",
+    "implement the upper_deck count-only prefix shrink with an independent verifier, then prove nonidentity whole-record subset remap",
+    "runtime-witness the completed APF node17 same-footprint strip remap before exposing runtime support",
+    "APF source-vertex-subset decimation after coordinated draw/count/end-pointer and bounds closure",
+    "only then add arbitrary external vertex attributes, material binding, and automatic target-budget decimation"
+  ],
+  "schema": "2k_static_topology_conformance_requirements/v1",
+  "scope": {
+    "covers": [
+      "native index or draw-command encoding",
+      "vertex declarations, streams, and record-preserving remap constraints",
+      "pointer, relocation, alias, and fixed-allocation rules",
+      "bounds/culling unknowns",
+      "container recompression limits",
+      "no-op and changed-output independent verification",
+      "mandatory refusal conditions"
+    ],
+    "does_not_claim": [
+      "a topology writer outside the selected NFL group36 and APF node17 same-footprint profiles",
+      "changed vertex-count archive write-back",
+      "edited-glTF import",
+      "automatic decimation",
+      "material, UV, normal, skin, attachment, collision, or LOD authoring",
+      "emulator or hardware acceptance"
+    ],
+    "purpose": "define the implemented NFL group36 and APF node17 same-footprint topology boundaries and the exact fail-closed gap to fixed-budget changed-count conformance writers"
+  },
+  "shared_conformance_contract": {
+    "allocation_ledger": {
+      "required_intervals": [
+        "every structural record and pointer field",
+        "every vertex stream's logical and physical capacity",
+        "every index/push stream's logical and physical capacity",
+        "all compressed and uncompressed part boundaries",
+        "all sibling file parts and outer-entry boundaries"
+      ],
+      "rules": [
+        "prove intervals are bounded, nonoverlapping except for exact documented aliases, and owned by the selected object",
+        "padding, alignment bytes, compression savings, and bytes after a logical end are not writable capacity without independent ownership proof",
+        "do not grow any decompressed part, outer entry, pack volume, or archive directory",
+        "do not move a neighboring record, stream, file part, or outer entry"
+      ]
+    },
+    "bounds_and_culling": {
+      "current_status": "not recovered for either title",
+      "rules": [
+        "preserve all candidate bounds, matrix, transform, hierarchy, node flag, draw, collision, and LOD bytes",
+        "a same-position index remap may retain the exact retail position set and therefore the retail geometric AABB",
+        "a source-subset profile must keep every accepted position inside the source decoded AABB, but containment is only a conservative gate and not proof of runtime culling correctness",
+        "reject new positions outside the source AABB until the owning bounds serializer and runtime consumer are proved",
+        "runtime visibility may be claimed only after camera-frustum and representative-distance witnesses show no unexpected culling"
+      ]
+    },
+    "changed_output_verification": [
+      "construct the intended decoded object from a source copy and mutate only profile-authorized lanes",
+      "derive the exact decoded changed-byte set and require it to be a subset of the authorized interval/bit mask",
+      "independently decode native topology and compare ordered batches, primitive modes, restart placement, winding, nondegenerate triangles, and all vertex bounds to the admitted authoring result",
+      "independently decode every changed POSITION under its exact native format and compare under the format-specific exact/error rule",
+      "hash every preserved table, unknown field, stream lane, sibling part, footer/tail, archive entry, and copied-volume complement",
+      "independently decompress the rebuilt fixed span to the intended complete decoded bytes",
+      "reparse all final pointers, extents, counts, declarations, streams, index/push commands, and archive routing",
+      "retain source and output hashes plus structural metrics only; do not commit retail-derived geometry"
+    ],
+    "external_mesh_admission": {
+      "attribute_rule": "new arbitrary vertices are forbidden until every active native attribute has a proved semantic and inverse; a source-vertex subset decimation profile may instead copy complete source records across every stream",
+      "duplicate_and_degenerate_rule": "reject duplicate primitive ownership, out-of-range indices, implicit vertex welding, or unrequested degenerates; format-required degenerates must be explicit in the profile and independently removed to the intended triangle list",
+      "required": [
+        "one explicitly selected source target with exact archive, resource, node/shape, declaration, stream, topology, and source-hash identity",
+        "one indexed primitive; POSITION count equals the admitted native vertex count; all coordinates finite and canonical binary32",
+        "explicit source coordinate space; no implicit axis, unit, winding, or transform conversion",
+        "no sparse accessors, morph targets, skin, joints, weights, animation, compression extension, instancing, or unrecognized extension",
+        "native submesh/material count and ownership remain unchanged unless a later profile proves their serializers"
+      ],
+      "topology_rule": "input triangles must be converted to the selected native primitive grammar deterministically, then decoded again and compared to the admitted nondegenerate triangle multiset with winding retained"
+    },
+    "mandatory_rejections": [
+      "source identity, parser grammar, declaration, stream, topology, or allocation drift",
+      "unknown native primitive, command method, attribute format, semantic, pointer, or draw-range dependency touched by the requested edit",
+      "non-finite, noncanonical, silently rounded, out-of-range, or excess-count input",
+      "attribute overlap, stream overlap, pointer alias, interior reference, or ownership ambiguity",
+      "unproved material/submesh split, new material, new stream, new declaration, skin, morph, attachment, collision, or LOD",
+      "topology decode mismatch, winding mismatch, unexpected degenerates, invalid restart, or index at least vertex_count",
+      "decoded-span growth, fixed allocation overflow, recompression overflow, failed independent decompression, or any unauthorized byte change",
+      "writer/verifier dependency coupling, source mutation, non-exclusive output publication, or a no-op that is not whole-pack identical"
+    ],
+    "no_op_verification": [
+      "after canonical native encoding for an exact byte comparison, detect identity before decoded-object mutation or container recompression",
+      "return the original complete selected resource/outer-entry bytes verbatim",
+      "require complete copied pack/volume byte identity and matching SHA-256",
+      "reparse the source and output independently and require identical interval, pointer, topology, stream, and ownership ledgers"
+    ],
+    "pointer_and_alias_rules": [
+      "independently enumerate every pointer that resolves into or through a proposed changed span",
+      "reject interior aliases, shared stream payloads, shared index/push spans, or overlapping table records unless every owner is selected and the profile authorizes the joint update",
+      "preserve all pointer bytes for a same-footprint profile",
+      "for a future relayout profile, encode one-based self-relative pointers from the final field and target offsets, decode them independently, and reject null/non-null or range changes not explicitly authorized"
+    ]
+  },
+  "source_evidence": {
+    "apf_draw_topology_corpus": {
+      "path": "reports/assets/apf_scne_draw_topology_corpus.v1.json",
+      "sha256": "ca4465e7e7723c1363d42f2c7b9564e740bb1a6049279fb5055ee14309d3711b",
+      "size_bytes": 3591
+    },
+    "apf_draw_topology_spec": {
+      "path": "reports/specs/apf2k8_scne_draw_topology.v1.json",
+      "sha256": "560865eb765d9af09d6246f594d213f965afcc89e77a8da854767775a2eee1da",
+      "size_bytes": 11851
+    },
+    "apf_parent_spec": {
+      "path": "reports/specs/apf2k8_scne_static_serializer.v1.json",
+      "sha256": "e7eeaf35d897d188d6a0c2faa5e0300a741d751204bc4fae1222460bc980802b",
+      "size_bytes": 75274
+    },
+    "apf_roundtrip_report": {
+      "path": "reports/assets/apf_scne_same_count_position_roundtrip.json",
+      "sha256": "5e85c58cf258b19ab40f7b046f7da3010a510dac8d2cd83ede976883af8ab5dd",
+      "size_bytes": 6971
+    },
+    "apf_same_count_writer": {
+      "path": "tools/apf_stadium_static_position_patch.py",
+      "sha256": "8f5e03ab306e2b985c4bf4058d855da6d9530daf304c1b6b164e589cbea61c5d",
+      "size_bytes": 42766
+    },
+    "apf_topology_independent_verifier": {
+      "path": "tools/apf_stadium_node17_topology_verify.py",
+      "sha256": "2da959176066b5b202eaf5794161d0c205f71b64d5ebd5b8519652cec5c76f3c",
+      "size_bytes": 31202
+    },
+    "apf_topology_parser_and_exporter": {
+      "path": "tools/apf_scene.py",
+      "sha256": "8b8c87249e33fb0606074b3f9047befad4eef94106ac5df3fa58f0b602730dcf",
+      "size_bytes": 56792
+    },
+    "apf_topology_public_nonretail_recipe": {
+      "path": "reports/asset_samples/apf_scene/stadium_node17_nonretail_permuted_strip_recipe.json",
+      "sha256": "9fb9262a415632e7b430375c35cefcd4a72128c029172dcd59ca1f695c49cb99",
+      "size_bytes": 1568
+    },
+    "apf_topology_recipe_schema": {
+      "path": "reports/specs/apf2k8_scne_same_footprint_topology_recipe.schema.json",
+      "sha256": "a201d33a1fd44daebb05e68ded770c08966ff6b8bf28267e8603df91fb63bb8e",
+      "size_bytes": 5949
+    },
+    "apf_topology_roundtrip_report": {
+      "path": "reports/assets/apf_stadium_node17_same_footprint_topology_roundtrip.json",
+      "sha256": "3294bec0a2906433885391cc826c47fe4cd6c0fb601a1840ffb46b24dadc34b4",
+      "size_bytes": 6781
+    },
+    "apf_topology_writer": {
+      "path": "tools/apf_stadium_node17_topology_patch.py",
+      "sha256": "f94ae1306e5483820a133bad4cd01d4a8acd0dead2cb7fffef0b2730b7842a32",
+      "size_bytes": 26804
+    },
+    "nfl_bulk_exporter": {
+      "path": "tools/nfl_static_gltf.py",
+      "sha256": "860655825d81f1d55958213048ac1c2d71fe9db8f77792fed303d7f2af29bdbe",
+      "size_bytes": 34715
+    },
+    "nfl_group36_geometry_independent_verifier": {
+      "path": "tools/nfl_stadium_group36_geometry_verify.py",
+      "sha256": "3b14f95c73d64def0a352ea09c106c4ecbc43eea79b5ae59cb4bb72f2db6f1e6",
+      "size_bytes": 25899
+    },
+    "nfl_group36_geometry_nonretail_recipe": {
+      "path": "reports/asset_samples/nfl_scne/stadium_group36_zero_positions_permuted_quad_recipe.json",
+      "sha256": "e940739abb9f901607ce2b3c35a629b2cf3ccbda0ba11c4d8963fccadad078fe",
+      "size_bytes": 1786
+    },
+    "nfl_group36_geometry_recipe_schema": {
+      "path": "reports/specs/nfl2k5_group36_same_footprint_geometry_recipe.schema.json",
+      "sha256": "98a3467b4ece8876f9e613a46aedbfbf5e98ed7d9ae6d913a637276d65051802",
+      "size_bytes": 2691
+    },
+    "nfl_group36_geometry_roundtrip_report": {
+      "path": "reports/assets/nfl_stadium_group36_same_footprint_geometry_roundtrip.json",
+      "sha256": "75e20ced325aa09f75ba0831a28eaee1436ae31b669985396f967d047d0aff20",
+      "size_bytes": 5488
+    },
+    "nfl_group36_geometry_writer": {
+      "path": "tools/nfl_stadium_group36_geometry_patch.py",
+      "sha256": "0361d4b22286271c6d0f0328f3c86b5ace0f8fc8ef829a387242025e299c1967",
+      "size_bytes": 27657
+    },
+    "nfl_parent_spec": {
+      "path": "reports/specs/nfl2k5_xbox_static_scne.v1.json",
+      "sha256": "d1e684a0b86c3a933355217174938cb95c5192eb2680c8b9698f7eb15ac39884",
+      "size_bytes": 47126
+    },
+    "nfl_roundtrip_report": {
+      "path": "reports/assets/nfl_stadium_group36_position_patch_roundtrip.json",
+      "sha256": "45f65c16b4b4d25a30fb63643d3ec1a8f7476a8993e3ca370df33c244cbbef05",
+      "size_bytes": 7455
+    },
+    "nfl_same_count_writer": {
+      "path": "tools/nfl_stadium_group36_position_patch.py",
+      "sha256": "d781d49a8adaa23941e5854f734d531b458d1da70c6725f5ad0f2c7c1f92e82b",
+      "size_bytes": 31961
+    },
+    "nfl_topology_exporter": {
+      "path": "tools/nfl_scne_gltf.py",
+      "sha256": "ceb466f37bc41c1b9484bdac5500cac53161a44405f47c4d165bccee137f169f",
+      "size_bytes": 14579
+    },
+    "nfl_topology_parser": {
+      "path": "tools/nfl_scne_inventory.py",
+      "sha256": "1925041fb672fd9529d3cd7d01bdbbc2758e73eb1e14042c25c9ec454e6f5b5c",
+      "size_bytes": 50116
+    },
+    "nfl_upper_deck_changed_count_boundary": {
+      "path": "reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json",
+      "sha256": "54e6d20dcf9c525a5248d94b4f45516425f0e69702df31dfd93fc351efd43eab",
+      "size_bytes": 25285
+    }
+  },
+  "status": "NFL group36 and APF node17 same-footprint topology writers are offline byte-proved; NFL upper_deck changed-count control boundary is probed; changed-count archive writers, runtime, and hardware acceptance remain unproved",
+  "title": "NFL 2K5 Xbox and APF 2K8 Xbox 360 fixed-budget static-topology conformance requirements",
+  "titles": {
+    "apf2k8_xbox360": {
+      "analogous_same_footprint_profile": {
+        "admission": "exactly four JSON integers forming one permutation of 0,1,2,3; no restart, duplicate, extra topology field, or alternative width/count is accepted",
+        "degenerate_policy": {
+          "winding_rule": "decode with native alternating triangle-strip parity and compare the exact ordered triangles to the admitted permutation",
+          "writer_rule": "reject every duplicate or restart and independently require exactly two nondegenerate triangles and zero degenerates"
+        },
+        "draw_invariants": {
+          "draw_record_exact": true,
+          "material_slot_optional_state_and_render_flags_exact": true,
+          "reason": "permutation preserves first=0, count=4, capacity=2, base=0, minimum=0, range=4"
+        },
+        "implemented_boundary": "rewrite only the existing eight decoded BE16 index bytes; preserve width/count/pointer/primitive, all 48 draw bytes, all vertex and structural bytes, all sibling parts, and the complete copied-volume complement",
+        "proof": {
+          "allocation_slack_after_bytes": 1403,
+          "authorized_decoded_bytes": 8,
+          "block0_stored_length_after": 3299705,
+          "block0_stored_length_before": 3299082,
+          "changed_decoded_bytes": 2,
+          "fixed_outer_allocation_bytes": 12931072,
+          "independent_verifier_imports_writer_or_production_parser": false,
+          "native_degenerate_triangle_count": 0,
+          "native_triangle_count": 2,
+          "no_op_complete_1a_byte_identical": true,
+          "no_op_recompressed": false
+        },
+        "remaining_before_generalization": [
+          "runtime visibility and culling witness for this exact profile",
+          "hashes-only target admission and per-target draw/index invariant derivation before supporting another APF node",
+          "bounds/culling ownership before changed-count or out-of-source-AABB geometry"
+        ],
+        "schema": "outer14_inner8_node17_four_be16_strip/v1",
+        "status": "offline_writer_and_independent_verifier_implemented_runtime_unproved",
+        "target": {
+          "draw_record_count": 1,
+          "draw_record_sha256": "161a2e06c0b875b6679423f490c2c89691d1da9899003768a0f4eac01cfe873f",
+          "index_component_bits": 16,
+          "index_count": 4,
+          "index_decoded_offset": 375760,
+          "index_sha256": "96b383ee0d221556a56277315db425256549a46ccc5217a392181783327a6dc5",
+          "index_size_bytes": 8,
+          "inner_file_index": 8,
+          "inner_name": "stadium",
+          "node_index": 17,
+          "node_name": "polySurface19930",
+          "outer_table_index": 14,
+          "vertex_count": 4
+        }
+      },
+      "container_limit": {
+        "decoded": "selected SCNE DRAM and VRAM part lengths remain exact; all sibling parts remain exact",
+        "h7a": "recompress only the changed block with preserved shift/codec and require independent full-block decode",
+        "headroom": "zero allocation tail and H7A savings are transport headroom only, not permission to grow a decoded SCNE part",
+        "iff": "update only mechanically required stored offsets/lengths/file_length; preserve footer and file descriptors; active IFF must fit the fixed outer allocation",
+        "outer": "copy pack before mutation, preserve entry length and every pack byte outside it, and reject allocation overflow"
+      },
+      "fixed_budget_subset_profile_gap": {
+        "arbitrary_external_mesh_blockers": [
+          "TEXCOORD float16 inverse and UV convention",
+          "NORMAL/TANGENT/BINORMAL contextual inverse and handedness",
+          "materials, shaders, samplers, and selected SCNE VRAM ownership",
+          "skin, attachment, collision, LOD, and bounds serialization"
+        ],
+        "required_structural_updates": [
+          "mesh vertex_count",
+          "every stream byte_length and end relative pointer",
+          "index_count and index payload prefix",
+          "every affected draw first_element, element_count, primitive_capacity, minimum_vertex, and vertex_range field"
+        ],
+        "status": "same_footprint_closed_changed_count_unimplemented",
+        "still_required": [
+          "implement deterministic draw-window repartition and independently re-derive every changed draw field",
+          "preserve or prove the optional draw-state payload, material slot, reserved words, and render flags for every affected draw",
+          "prove pointer/alias ownership for shrunken stream and index logical spans",
+          "define deterministic triangle-stripification, restart, winding, degeneracy, and BE16/BE32 selection rules",
+          "prove bounds/culling and matrix/attachment ownership",
+          "add changed-count independent writer/verifier and Xenia witness"
+        ]
+      },
+      "native_topology_encoding": {
+        "decode": [
+          "restart clears the current strip and resets parity",
+          "emit (a,b,c) on even strip triangle and (b,a,c) on odd strip triangle",
+          "omit triangles with fewer than three distinct indices",
+          "require every non-restart index below vertex_count"
+        ],
+        "index_count": "u32be at mesh node +0xa8, includes restart elements",
+        "index_pointer": "one-based self-relative u32be at mesh node +0xac",
+        "primitive": "mesh descriptor +0x10 equals D3DPT_TRIANGLESTRIP (5)",
+        "restart": {
+          "16": "0xffff",
+          "32": "0xffffffff"
+        },
+        "storage": "u16be or u32be selected by mesh node +0xa4",
+        "write_status": "offline same-footprint writer and independent verifier implemented for the pinned node17 four-BE16 permutation profile; no general APF topology dispatcher"
+      },
+      "read_status": {
+        "draw_record_semantics": "all 47,112 full 0x30 layouts and draw/index windows recovered; optional-state payload and final render-flag meaning remain opaque",
+        "draw_windows_partition_all_node_index_payloads": true,
+        "index_width_distribution": {
+          "16": 13003,
+          "32": 3
+        },
+        "primitive_type": 5,
+        "topology": "BE16/BE32 D3DPT_TRIANGLESTRIP payloads bounded for all 13,006 retail nodes"
+      },
+      "records_and_pointers": {
+        "declaration_stride": 64,
+        "draw_record_fields": {
+          "0x00": "draw primitive code; 6 corpus-wide and forwarded to native submission",
+          "0x04": "first serialized index element",
+          "0x08": "element count including restarts",
+          "0x0c": "primitive capacity = element_count - 2",
+          "0x10": "base vertex; zero corpus-wide and forwarded",
+          "0x14": "minimum non-restart index",
+          "0x18": "maximum - minimum + 1",
+          "0x1c": "optional one-based self-relative draw state; payload meaning unproved",
+          "0x20": "material slot; address stride 0xf0 proved from renderer",
+          "0x24": "reserved zero; preserve",
+          "0x28": "reserved zero; preserve",
+          "0x2c": "render flags 0..3; meaning unproved; preserve"
+        },
+        "draw_record_stride": 48,
+        "draw_window_contract": "sorted windows begin at zero, are contiguous and nonoverlapping, end at node.index_count, and derive capacity/minimum/range from their serialized element windows",
+        "first_safe_write_boundary": "preserve node, hierarchy, matrix, draw, declaration, descriptor, stream metadata, pointer, count, primitive, and unknown bytes; node17 topology is writable only because all admitted permutations preserve every draw invariant",
+        "mesh_node_stride": 176,
+        "relative_target": "pointer_field_offset + stored_u32 - 1"
+      },
+      "vertex_and_stream_constraints": {
+        "changed_vertex_count_future_rule": [
+          "new count is positive and no greater than source unless a full relocation and attribute writer is proved",
+          "copy each source-subset vertex's complete 24-byte record to the new stream prefix",
+          "update vertex_count, byte_length, and stream end pointer consistently while preserving stream start/stride/flags/enabled",
+          "leave bytes after the new logical end exact; never treat them as writable slack"
+        ],
+        "declaration": "0x40-byte semantic record; stream=(layout>>8)&0xff, byte_offset=(layout>>16)&0xff; preserve layout mask 0xff0000ff",
+        "first_target": "one 24-byte stream: POSITION0 float32x3 bytes 0..11, TEXCOORD0 float16x4 bytes 12..19, NORMAL0 snorm10_10_10 bytes 20..23",
+        "mesh_descriptor": "vertex_count u32be at +0x08; high 16 bits of +0x0c are stream_count; low 16 bits remain opaque",
+        "stream_invariants": "end-start == byte_length == vertex_count*stride; all targets stay in the selected DRAM part",
+        "stream_record": "0x18 bytes with flags, enabled, stride, byte_length, start relptr, end relptr"
+      }
+    },
+    "nfl2k5_xbox": {
+      "container_limit": {
+        "decoded": "system_bytes and video_bytes remain exact",
+        "headroom": "compression savings and padding are not mesh allocation headroom",
+        "outer": "entry offset and size stay exact; every byte outside the selected resource span stays exact",
+        "vc_lz": "rebuilt consumed stream must not exceed the pinned retail consumed boundary; preserve the fixed opaque tail; independently derive alias scratch"
+      },
+      "fixed_budget_subset_profile_gap": {
+        "arbitrary_external_mesh_blockers": [
+          "register semantics and inverses for normal, UV, color, selector/attachment, and shader-specific lanes",
+          "material/texture binding and transform/attachment ownership",
+          "bounds, collision, and LOD serialization"
+        ],
+        "selected_probe_boundary": {
+          "active_stream_strides": [
+            12,
+            10
+          ],
+          "archive_writer_implemented": false,
+          "changed_vertex_counts": [
+            4,
+            8
+          ],
+          "count_4_rebuilt_consumed_bytes": 908862,
+          "count_8_rebuilt_consumed_bytes": 908863,
+          "coupled_changed_bytes_for_prefix_shrink": [
+            30540,
+            69887
+          ],
+          "independent_verifier_implemented": false,
+          "native_topology": "one six-word start-zero DRAW_ARRAYS QUADS batch",
+          "physical_stream_bytes_changed_by_count_only_probes": false,
+          "recipe_schema_path": "reports/specs/nfl2k5_upper_deck_source_subset_recipe.schema.json",
+          "recipe_schema_sha256": "4fac01c6cffe03481b456899ec2b2f3cd25f74954d5db94ccb3b8351f841ca4b",
+          "retail_consumed_cap_bytes": 908864,
+          "runtime_proved": false,
+          "shape_name": "upper_deck",
+          "source_vertex_count": 12,
+          "spec_path": "reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json",
+          "spec_schema": "nfl2k5_upper_deck_changed_count_boundary/v1",
+          "spec_sha256": "54e6d20dcf9c525a5248d94b4f45516425f0e69702df31dfd93fc351efd43eab",
+          "target_id": "nfl2k5/stadium/o3280/c5/s1"
+        },
+        "status": "upper_deck_target_contract_and_count_only_fixed_span_probes_proved_writer_not_implemented",
+        "still_required": [
+          "implement and independently verify the exact upper_deck shape-count plus existing DRAW_ARRAYS-count mutation without changing its six-word command footprint",
+          "prove a nonidentity complete-record prefix remap across both active streams on retail bytes; keep every logical tail exact",
+          "close semantics-unknown/runtime alias ownership for both shortened logical stream tails",
+          "recover bounds/culling, collision, and LOD ownership or retain source positions and obtain a conservative runtime witness",
+          "runtime-witness both four- and eight-vertex variants before exposing changed-count support"
+        ],
+        "would_enable": "source-derived vertex-count reduction and deterministic decimation while retaining opaque per-vertex attributes"
+      },
+      "native_topology_encoding": {
+        "header": {
+          "accepted_signature": "(header & 0xe0030003) in {0x00000000,0x40000000}",
+          "boundary": "header plus parameter_count words must fit primary_command_word_count",
+          "instruction": "(header >> 29) & 7",
+          "method": "header & 0x1ffc",
+          "parameter_count": "(header >> 18) & 0x7ff"
+        },
+        "methods": {
+          "0x17fc": "SET_BEGIN_END; primitive 0 ends the current batch",
+          "0x1800": "ARRAY_ELEMENT16; two u16 indices in each u32 parameter, low halfword first",
+          "0x1808": "ARRAY_ELEMENT32; one u32 index per parameter",
+          "0x1810": "DRAW_ARRAYS; start=low24, count=high8+1"
+        },
+        "primitive_modes": {
+          "0": "END",
+          "1": "POINTS",
+          "10": "POLYGON",
+          "2": "LINES",
+          "3": "LINE_LOOP",
+          "4": "LINE_STRIP",
+          "5": "TRIANGLES",
+          "6": "TRIANGLE_STRIP",
+          "7": "TRIANGLE_FAN",
+          "8": "QUADS",
+          "9": "QUAD_STRIP"
+        },
+        "single_batch_word_budget": {
+          "ARRAY_ELEMENT16_even_indices": "5 + index_count/2",
+          "ARRAY_ELEMENT32": "5 + index_count",
+          "DRAW_ARRAYS": "5 + range_count",
+          "rule": "the first profile preserves original headers and word count; a later serializer must reject any generated stream larger than a separately proved owned command capacity"
+        },
+        "word_storage": "u32le"
+      },
+      "read_status": {
+        "observed_batches": {
+          "QUADS": 1429,
+          "TRIANGLE_STRIP": 275213
+        },
+        "topology": "proved for all 276,642 bounded submesh push streams",
+        "unknown_methods_in_corpus": 0,
+        "vertex_references_in_bounds": true
+      },
+      "records_and_pointers": {
+        "first_profile_rule": "preserve every count, pointer, record, declaration, stream, material, transform, and unknown byte; change only authorized ARRAY_ELEMENT16 halfwords",
+        "future_subset_rule": "primary word count may decrease only after proving no alias and exact command-prefix ownership; push pointer stays fixed and unused tail bytes stay exact",
+        "primary_word_count": "u16le at +0x7c",
+        "relative_target": "pointer_field_offset - 1 + s32le(stored)",
+        "secondary_word_count": "u16le at +0x7e; semantics unknown and immutable",
+        "shape_stride": 256,
+        "submesh_push_pointer": "s32le one-based self-relative at +0x78",
+        "submesh_stride": 128
+      },
+      "selected_first_topology_profile": {
+        "allowed_decoded_changes": [
+          "the four u16 index halfwords inside the two already located ARRAY_ELEMENT16 parameter words",
+          "optionally the already proved 48 FLOAT3 POSITION bytes under the existing same-count writer contract"
+        ],
+        "authoring_input": "exactly four ordered u16 vertex IDs, each below vertex_count; duplicates are structurally encodable and are not silently rejected by the mechanical serializer boundary",
+        "degenerate_policy": {
+          "claim_boundary": "structural encodability does not prove that a degenerate quad is useful, visible, or runtime accepted",
+          "first_non_degenerate_witness": "use a permutation of every integer in [0,vertex_count) exactly once",
+          "mechanical_boundary": "duplicate IDs are accepted only when explicitly present in the authored four-element list; the independent decoder reports the resulting degenerate/nondegenerate triangles"
+        },
+        "immutable_profile_contract": {
+          "authorized_changes": {
+            "changed_allocation_or_relocation": false,
+            "changed_command_headers_methods_counts_modes_or_pointers": false,
+            "changed_stream_declarations_material_transform_selectors_or_bounds": false,
+            "changed_vertex_or_index_count": false,
+            "same_count_positions": true,
+            "same_count_quad_indices": true
+          },
+          "claim_boundary": {
+            "automatic_decimator": false,
+            "material_uv_normal_writer": false,
+            "offline_structural_write_back": true,
+            "original_xbox_hardware": false,
+            "production_mesh_importer": false,
+            "runtime_visibility": false,
+            "xemu_visibility": false
+          },
+          "container_budget": {
+            "codec": "VC-LZ",
+            "decoded_size_bytes": 1524864,
+            "fixed_opaque_tail_bytes": 16,
+            "fixed_opaque_tail_sha256": "cb57e42b9b8d9e1cba31e18c38dbc3347c8caa1361fcf7fe9cfad5b9f138fae4",
+            "fixed_outer_and_chunk_allocation": true,
+            "offset_bits": 12,
+            "retail_consumed_cap_bytes": 908864,
+            "scratch_cap_bytes": 64,
+            "stream_tag": 1
+          },
+          "position_lane": {
+            "component_type": "float32_le",
+            "components_per_vertex": 3,
+            "coordinate_space": "raw_xbox",
+            "decoded_offset": 78368,
+            "size_bytes": 48,
+            "stride_bytes": 12
+          },
+          "profile_id": "nfl2k5_group36_same_footprint_quad_index_replace/v1",
+          "quad_index_lane": {
+            "begin_end_method_code": "0x17fc",
+            "command_sequence": [
+              "SET_BEGIN_END(QUADS)",
+              "ARRAY_ELEMENT16(count=2)",
+              "SET_BEGIN_END(END)"
+            ],
+            "component_type": "uint16_le",
+            "index_count": 4,
+            "index_method": "NV097_ARRAY_ELEMENT16",
+            "index_method_code": "0x1800",
+            "index_order": "native_quad_order",
+            "maximum_id": 3,
+            "minimum_id": 0,
+            "parameter_decoded_offset": 78332,
+            "parameter_size_bytes": 8,
+            "primitive_method": "NV097_SET_BEGIN_END_QUADS",
+            "primitive_mode": 8,
+            "push_decoded_offset": 78320,
+            "push_size_bytes": 28
+          },
+          "schema": "2k_static_topology_immutable_profile_contract/v1",
+          "source_identity": {
+            "decoded_sha256": "229db9f309bf69eaa28901ae6e2e15b26a279b3f1f37abed01e36041c5e5ead8",
+            "outer_id": "0xe4d6b0bc",
+            "position_stream_sha256": "65ab99a567a43ebe13c38f6921834896f56f609d954573bb3ae94d414562ab7d",
+            "push_sha256": "f1fe835f194447d442a92f13548fde128425d3b8e839f16971a389a96968d3f2"
+          },
+          "target": {
+            "chunk_index": 5,
+            "outer_index": 3280,
+            "primary_command_word_count": 7,
+            "scene_index": 2648,
+            "scene_name": "stadium",
+            "secondary_command_word_count": 0,
+            "shape_index": 4,
+            "shape_name": "group36",
+            "submesh_count": 1,
+            "vertex_count": 4
+          }
+        },
+        "implemented_proof": "the writer and independently implemented push parser reconstruct the requested ordered quad, prove exact changed halfwords and optional proved positions, satisfy the VC-LZ/fixed-tail/full-volume contract, and retain every runtime/hardware/production claim false",
+        "must_remain_exact": [
+          "all seven command headers/word positions, QUADS mode, begin/end placement, methods, parameter counts, push pointer, and primary/secondary word counts",
+          "vertex count, vertex set for topology-only use, two stream payloads, declarations, transform/root/selectors, material and submesh records",
+          "all decoded bytes outside the authorized index halfwords and optional proved position lanes"
+        ],
+        "profile_contract_reference": {
+          "fingerprint": "668cfc91f6ff398e23a649a695dec950ad8e2529f32a772d65bd8861a447e284",
+          "fingerprint_algorithm": "sha256-canonical-json-indent2-sortkeys-v1",
+          "id": "nfl2k5_group36_same_footprint_quad_index_replace/v1"
+        },
+        "profile_rejections": [
+          "anything other than exactly four integer IDs, or any negative/out-of-range/non-u16 ID",
+          "changed command header, primitive mode, method, word count, submesh/material, declaration, stream, transform, or vertex count",
+          "any request whose intended primitive cannot be represented as exactly one native quad with the admitted ordered IDs"
+        ],
+        "reason_selected": "reuses the only byte-proved static-position target, preserves the entire vertex set and AABB, has one material/submesh/batch, and changes no pointer, count, command header, primitive mode, draw range, stream, or allocation",
+        "schema": "nfl2k5_group36_same_footprint_quad_index_replace/v1",
+        "source_command_shape": [
+          "exactly one SET_BEGIN_END(QUADS) command",
+          "exactly one ARRAY_ELEMENT16 command carrying four indices in two parameter words",
+          "exactly one SET_BEGIN_END(END) command"
+        ],
+        "status": "offline_writer_and_independent_verifier_implemented_runtime_unproved",
+        "target": {
+          "chunk_index": 5,
+          "outer_index": 3280,
+          "primary_command_word_count": 7,
+          "push_decoded_offset": 78320,
+          "push_sha256": "f1fe835f194447d442a92f13548fde128425d3b8e839f16971a389a96968d3f2",
+          "push_size_bytes": 28,
+          "scene_index": 2648,
+          "scene_name": "stadium",
+          "secondary_command_word_count": 0,
+          "shape_index": 4,
+          "shape_name": "group36",
+          "submesh_count": 1,
+          "vertex_count": 4
+        }
+      },
+      "vertex_and_stream_constraints": {
+        "changed_vertex_count_future_rule": [
+          "new count must be positive, at most source count, and fit u16",
+          "without full attribute inverses, every output vertex must be a unique source-vertex subset member and its complete record must be copied in every active stream",
+          "stream strides/pointers/declarations remain exact; copied records occupy each stream prefix; bytes after new_count*stride remain bit-exact and unowned by the writer",
+          "shape vertex_count is updated once; every topology reference must be below it"
+        ],
+        "declaration": "16 register descriptors: (byte_offset<<16)|(stream_index<<8)|format_code",
+        "first_target": [
+          "register 0 FLOAT3 in stream 0 at offset 0, stride 12",
+          "register 1 SHORT1, register 3 D3DCOLOR, and register 6 NORMSHORT2 in stream 1, stride 10",
+          "all non-POSITION streams and lanes remain bit-exact for the selected first profile"
+        ],
+        "shape_vertex_count": "u16le at shape +0x4c; currently immutable",
+        "streams": "8 stride/pointer slots; active span is pointer through vertex_count*stride in the decoded system buffer"
+      }
+    }
+  },
+  "version": 1
+}

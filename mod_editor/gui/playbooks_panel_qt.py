@@ -1,0 +1,905 @@
+"""Read-only PyQt panel for NFL 2K5's 37 private PLAY resources.
+
+The panel is the mandated Phase 4 fallback: a useful structured inspector ships
+even though route drawing and safe write-back did not decode inside the spike.
+Retail PLAY bodies and decoded names are supplied only by the user's active
+source cache.  This module contains presentation logic, structural metadata,
+and findings text; it never persists a playbook or contributes project edits.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+import re
+from typing import Callable, Iterable, Protocol, runtime_checkable
+
+from mod_editor.core.errors import ValidationError
+from mod_editor.core.nfl2k5_playbook_inspector import (
+    Nfl2k5Playbook,
+    PLAY_FAMILY_LABELS,
+    PlaybookFormation,
+    PlaybookPlay,
+    corpus_counts,
+)
+
+
+ProgressSink = Callable[[str, int, int], None]
+
+
+PLAY_EDITOR_FINDINGS_PLAIN_TEXT = """\
+Route drawing and editing — Coming Soon
+The six-hour Play Editor spike recovered a complete read-only structure, but it
+did not recover enough coordinate, opcode, player-role, save-container, and
+inverse-compiler semantics to write a route safely. The v1.0 product therefore
+ships this structured viewer and keeps Replace/Import disabled.
+
+What is exact now
+All 37 PLAY books are parsed from the user's private cache. The viewer exposes
+1,533 formations, 9,251 plays, eight exact play-family values, 101,761 player
+assignment references, 32,502 complete chains, and all 91,833 eight-byte nodes.
+Formation links retain link slot, group, and packed value. Plays retain the
+complete flags/ID word. Every assignment retains its descriptor word and chain
+start. Every node retains opcode, flags, six operand bytes, and all eight raw
+bytes; unknown opcodes are not given invented football meanings.
+
+Why editing remains blocked
+The eleven slot roles, formation-coordinate axes and scale, opcodes 0x01–0x1B,
+operand meanings, authoring validation rules, custom-play save ownership, and a
+format-preserving inverse compiler are still unknown. Guessing could turn a
+route into blocking, coverage, an invalid target, or a corrupt play.
+
+Best next spike
+Create four controlled game-authored custom-play fixtures: move one receiver
+only along X, move the same receiver only along Y, add one route waypoint, and
+change one route type without moving its points. Diff each private save and
+confirm the changed fields with runtime read watchpoints before authoring is
+unlocked.
+
+Retail-data boundary
+Only parser code and these findings ship. Stock play names, formations, route
+nodes, and raw PLAY resources stay in the user's private cache. Raw Export makes
+a new user-owned file; shareable Mod Studio projects never contain PLAY data.
+"""
+
+
+PLAY_EDITOR_FINDINGS_HTML = """
+<h2 style="color:#ffca80">Route drawing and editing — Coming Soon</h2>
+<p>The six-hour Play Editor spike recovered a complete read-only structure, but
+not enough coordinate, opcode, player-role, save-container, or inverse-compiler
+semantics to write a route safely. v1.0 therefore ships this inspector and keeps
+Replace/Import disabled.</p>
+<h3 style="color:#62e6ad">What is exact now</h3>
+<p>All <b>37 PLAY books</b> are read from your private cache: 1,533 formations,
+9,251 plays, eight exact play families, 101,761 assignment references, 32,502
+complete chains, and all 91,833 eight-byte nodes. Link slots, groups, packed
+values, complete play words, assignment descriptors, chain starts, opcodes,
+flags, operands, and raw node bytes remain visible without invented meanings.</p>
+<h3 style="color:#ffca80">Why editing remains blocked</h3>
+<p>The eleven slot roles, coordinate axes/scale, opcode and operand meanings,
+cross-record validation, custom-play save ownership, and a format-preserving
+inverse compiler remain unknown. Guessing could silently turn a route into a
+block, coverage assignment, invalid target, or corrupt play.</p>
+<h3 style="color:#7fc8ff">Best next spike</h3>
+<p>Create four controlled game-authored fixtures: X-only movement, Y-only
+movement, one added waypoint, and one route-type change. Diff each private save
+and confirm changed fields with runtime read watchpoints.</p>
+<h3>Retail-data boundary</h3>
+<p>Only parser code and status metadata ship. Stock names, formations, nodes,
+and raw PLAY bodies stay in your private cache. Raw exports are user-owned files;
+shareable Mod Studio projects never contain PLAY data.</p>
+"""
+
+
+@dataclass(frozen=True, slots=True)
+class PlaybookBrowserResult:
+    books: tuple[Nfl2k5Playbook, ...]
+    catalog_total: int
+    formation_total: int
+    play_total: int
+    chain_total: int
+    node_total: int
+
+    @property
+    def match_total(self) -> int:
+        return len(self.books)
+
+
+@dataclass(frozen=True, slots=True)
+class FormationPlayRow:
+    link_index: int
+    group: int
+    packed_value: int
+    play: PlaybookPlay
+
+
+@dataclass(frozen=True, slots=True)
+class PlaybookActionState:
+    can_export: bool
+
+
+def playbook_search_text(book: Nfl2k5Playbook) -> str:
+    """Build the complete local search haystack for one decoded private book."""
+
+    return " ".join((
+        book.asset_id,
+        book.book_name,
+        str(book.outer_index),
+        *(formation.name for formation in book.formations),
+        *(play.name for play in book.plays),
+        *(play.family_label for play in book.plays),
+        *(category.name for category in book.categories),
+    )).replace("_", " ").casefold()
+
+
+def filter_playbooks(
+    books: Iterable[Nfl2k5Playbook],
+    *,
+    search: str = "",
+    family_id: int | None = None,
+) -> PlaybookBrowserResult:
+    """Filter decoded books without importing Qt or touching private files."""
+
+    if family_id is not None and (
+        type(family_id) is not int or not 0 <= family_id < len(PLAY_FAMILY_LABELS)
+    ):
+        raise ValidationError("Play family must be one of the eight decoded values.")
+    rows = tuple(books)
+    words = tuple(
+        word for word in search.replace("_", " ").casefold().split() if word
+    )
+    selected = tuple(
+        book for book in rows
+        if (
+            family_id is None
+            or any(play.family_id == family_id for play in book.plays)
+        )
+        and (
+            not words
+            or all(word in playbook_search_text(book) for word in words)
+        )
+    )
+    counts = corpus_counts(rows)
+    return PlaybookBrowserResult(
+        books=selected,
+        catalog_total=counts["books"],
+        formation_total=counts["formations"],
+        play_total=counts["plays"],
+        chain_total=counts["chains"],
+        node_total=counts["nodes"],
+    )
+
+
+def formation_play_rows(
+    book: Nfl2k5Playbook,
+    formation: PlaybookFormation | int,
+) -> tuple[FormationPlayRow, ...]:
+    """Resolve exact formation link metadata without losing packed fields."""
+
+    index = formation if isinstance(formation, int) else formation.index
+    if type(index) is not int or not 0 <= index < len(book.formations):
+        raise ValidationError(f"Playbook {book.book_name} has no formation {index}.")
+    return tuple(
+        FormationPlayRow(
+            link_index=link.link_index,
+            group=link.group,
+            packed_value=link.packed_value,
+            play=book.plays[link.play_index],
+        )
+        for link in book.formations[index].play_links
+    )
+
+
+def playbook_action_state(
+    book: Nfl2k5Playbook | None, *, source_ready: bool, busy: bool
+) -> PlaybookActionState:
+    return PlaybookActionState(
+        can_export=bool(book is not None and source_ready and not busy)
+    )
+
+
+def suggested_playbook_filename(book: Nfl2k5Playbook) -> str:
+    """Return a filesystem-safe suggestion derived from private display text."""
+
+    stem = re.sub(r"[^A-Za-z0-9._-]+", "_", book.book_name).strip("._-")
+    return f"{book.outer_index:04d}_{stem or 'playbook'}_PLAY.bin"
+
+
+@runtime_checkable
+class PlaybooksPanelHost(Protocol):
+    """Complete source-bound facade surface consumed by the viewer."""
+
+    @property
+    def source_ready(self) -> bool: ...
+
+    @property
+    def playbook_available(self) -> bool: ...
+
+    def browse_playbooks(
+        self, search: str, progress: ProgressSink
+    ) -> Iterable[Nfl2k5Playbook]: ...
+
+    def export_playbook(
+        self, asset_id: str, destination: Path, progress: ProgressSink
+    ) -> Path: ...
+
+
+from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, pyqtSignal
+from PyQt5.QtWidgets import (
+    QAbstractItemView,
+    QComboBox,
+    QFileDialog,
+    QFrame,
+    QHeaderView,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QProgressBar,
+    QPushButton,
+    QSplitter,
+    QTabWidget,
+    QTableWidget,
+    QTableWidgetItem,
+    QTextBrowser,
+    QVBoxLayout,
+    QWidget,
+)
+
+
+class _TaskSignals(QObject):
+    result = pyqtSignal(object)
+    error = pyqtSignal(str)
+    progress = pyqtSignal(str, int, int)
+    finished = pyqtSignal()
+
+
+class _Task(QRunnable):
+    def __init__(self, operation: Callable[[ProgressSink], object]) -> None:
+        super().__init__()
+        self.operation = operation
+        self.signals = _TaskSignals()
+        self.setAutoDelete(False)
+
+    def run(self) -> None:
+        try:
+            result = self.operation(self.signals.progress.emit)
+        except BaseException as exc:
+            self.signals.error.emit(str(exc).strip() or exc.__class__.__name__)
+        else:
+            self.signals.result.emit(result)
+        finally:
+            self.signals.finished.emit()
+
+
+class PlaybooksPanel(QWidget):
+    """Structured viewer for all private PLAY books; deliberately no writer."""
+
+    error_raised = pyqtSignal(str)
+
+    def __init__(self, host: PlaybooksPanelHost, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        if not isinstance(host, PlaybooksPanelHost):
+            raise TypeError("Playbooks panel host does not implement PlaybooksPanelHost")
+        self.host = host
+        self._all_books: tuple[Nfl2k5Playbook, ...] = ()
+        self.browser = PlaybookBrowserResult((), 0, 0, 0, 0, 0)
+        self.selected_asset_id: str | None = None
+        self._visible_play_rows: tuple[FormationPlayRow, ...] = ()
+        self._busy = False
+        self._loaded = False
+        self._refresh_after_task = False
+        self._generation = 0
+        self._tasks: set[_Task] = set()
+        self._pool = QThreadPool(self)
+        self._search_timer = QTimer(self)
+        self._search_timer.setSingleShot(True)
+        self._search_timer.setInterval(180)
+        self._search_timer.timeout.connect(self._apply_filters)
+        self.setObjectName("playbooksPanel")
+        self._build_ui()
+        self._apply_style()
+        self._connect()
+        self.reset_for_source()
+
+    def _build_ui(self) -> None:
+        root = QVBoxLayout(self)
+        root.setContentsMargins(24, 22, 24, 22)
+        root.setSpacing(12)
+
+        header = QHBoxLayout()
+        titles = QVBoxLayout()
+        title = QLabel("Playbooks & Plays")
+        title.setObjectName("playTitle")
+        subtitle = QLabel(
+            "Inspect every stock book, formation, family, player assignment, "
+            "and exact raw node chain from your own XISO."
+        )
+        subtitle.setObjectName("playMuted")
+        subtitle.setWordWrap(True)
+        titles.addWidget(title)
+        titles.addWidget(subtitle)
+        self.count_label = QLabel("Load XISO")
+        self.count_label.setObjectName("playCountPill")
+        header.addLayout(titles, 1)
+        header.addWidget(self.count_label)
+        root.addLayout(header)
+
+        boundary = QLabel(
+            "ROUTE DRAWING / EDITING — COMING SOON  •  Viewer and raw Export are "
+            "available now; Replace and Import stay disabled."
+        )
+        boundary.setObjectName("playBoundary")
+        boundary.setWordWrap(True)
+        root.addWidget(boundary)
+
+        splitter = QSplitter(Qt.Horizontal)
+        browser_card = QFrame()
+        browser_card.setObjectName("playCard")
+        browser_layout = QVBoxLayout(browser_card)
+        browser_layout.setContentsMargins(14, 14, 14, 14)
+        browser_layout.setSpacing(9)
+        self.search = QLineEdit()
+        self.search.setClearButtonEnabled(True)
+        self.search.setPlaceholderText("Search book, formation, play, category, family…")
+        self.family_filter = QComboBox()
+        self.family_filter.addItem("All eight play families", None)
+        for family_id, label in enumerate(PLAY_FAMILY_LABELS):
+            self.family_filter.addItem(label, family_id)
+        browser_layout.addWidget(self.search)
+        browser_layout.addWidget(self.family_filter)
+        self.book_table = QTableWidget(0, 3)
+        self.book_table.setHorizontalHeaderLabels(("Book", "Formations", "Plays"))
+        self.book_table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.book_table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.book_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.book_table.setAlternatingRowColors(True)
+        self.book_table.verticalHeader().setVisible(False)
+        book_header = self.book_table.horizontalHeader()
+        book_header.setSectionResizeMode(0, QHeaderView.Stretch)
+        book_header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        book_header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        browser_layout.addWidget(self.book_table, 1)
+        self.match_label = QLabel("Load your XISO to inspect 37 books")
+        self.match_label.setObjectName("playMuted")
+        browser_layout.addWidget(self.match_label)
+        splitter.addWidget(browser_card)
+
+        self.tabs = QTabWidget()
+        inspector = QWidget()
+        inspector_layout = QVBoxLayout(inspector)
+        inspector_layout.setContentsMargins(14, 12, 14, 12)
+        inspector_layout.setSpacing(9)
+        detail_header = QHBoxLayout()
+        detail_titles = QVBoxLayout()
+        self.book_title = QLabel("Select a playbook")
+        self.book_title.setObjectName("playDetailTitle")
+        self.book_meta = QLabel(
+            "PLAY data is read lazily from the private cache and never added to projects."
+        )
+        self.book_meta.setObjectName("playMuted")
+        self.book_meta.setWordWrap(True)
+        detail_titles.addWidget(self.book_title)
+        detail_titles.addWidget(self.book_meta)
+        self.export_button = QPushButton("Export Selected Raw PLAY")
+        self.export_button.setObjectName("playPrimaryButton")
+        detail_header.addLayout(detail_titles, 1)
+        detail_header.addWidget(self.export_button)
+        inspector_layout.addLayout(detail_header)
+
+        formation_row = QHBoxLayout()
+        formation_label = QLabel("Formation")
+        formation_label.setObjectName("playFieldLabel")
+        self.formation_combo = QComboBox()
+        self.formation_combo.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        formation_row.addWidget(formation_label)
+        formation_row.addWidget(self.formation_combo, 1)
+        inspector_layout.addLayout(formation_row)
+
+        self.play_table = QTableWidget(0, 6)
+        self.play_table.setHorizontalHeaderLabels(
+            ("Link", "Group", "Play", "Name", "Family", "Full word")
+        )
+        self._configure_table(self.play_table, stretch_column=3)
+        self.play_table.setMinimumHeight(210)
+        inspector_layout.addWidget(self.play_table, 4)
+
+        self.play_meta = QLabel(
+            "Choose a formation play to expose all eleven assignment descriptors."
+        )
+        self.play_meta.setObjectName("playRawNote")
+        self.play_meta.setWordWrap(True)
+        inspector_layout.addWidget(self.play_meta)
+
+        raw_split = QSplitter(Qt.Horizontal)
+        self.assignment_table = QTableWidget(0, 5)
+        self.assignment_table.setHorizontalHeaderLabels(
+            ("Slot", "Descriptor", "Chain start", "Extent", "Nodes")
+        )
+        self._configure_table(self.assignment_table, stretch_column=1)
+        self.assignment_table.setToolTip(
+            "Slot roles remain unknown; descriptor words are shown exactly."
+        )
+        raw_split.addWidget(self.assignment_table)
+        self.node_table = QTableWidget(0, 6)
+        self.node_table.setHorizontalHeaderLabels(
+            ("Node", "Opcode", "Flags", "Operands (6 bytes)", "Raw 8 bytes", "End")
+        )
+        self._configure_table(self.node_table, stretch_column=4)
+        self.node_table.setToolTip(
+            "Opcodes and operands remain semantic unknowns and are not renamed."
+        )
+        raw_split.addWidget(self.node_table)
+        raw_split.setStretchFactor(0, 4)
+        raw_split.setStretchFactor(1, 6)
+        inspector_layout.addWidget(raw_split, 5)
+        self.tabs.addTab(inspector, "Structured inspector")
+
+        findings = QTextBrowser()
+        findings.setObjectName("playFindings")
+        findings.setOpenExternalLinks(False)
+        findings.setHtml(PLAY_EDITOR_FINDINGS_HTML)
+        self.tabs.addTab(findings, "Why editing is Coming Soon")
+        splitter.addWidget(self.tabs)
+        splitter.setStretchFactor(0, 3)
+        splitter.setStretchFactor(1, 7)
+        root.addWidget(splitter, 1)
+
+        progress_row = QHBoxLayout()
+        self.progress_label = QLabel("Ready")
+        self.progress_label.setObjectName("playMuted")
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setFixedWidth(180)
+        self.progress_bar.hide()
+        progress_row.addWidget(self.progress_label)
+        progress_row.addStretch(1)
+        progress_row.addWidget(self.progress_bar)
+        root.addLayout(progress_row)
+
+    @staticmethod
+    def _configure_table(table: QTableWidget, *, stretch_column: int) -> None:
+        table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        table.setSelectionMode(QAbstractItemView.SingleSelection)
+        table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        table.setAlternatingRowColors(True)
+        table.verticalHeader().setVisible(False)
+        header = table.horizontalHeader()
+        for column in range(table.columnCount()):
+            header.setSectionResizeMode(
+                column,
+                QHeaderView.Stretch
+                if column == stretch_column else QHeaderView.ResizeToContents,
+            )
+
+    def _connect(self) -> None:
+        self.search.textChanged.connect(lambda _text: self._search_timer.start())
+        self.family_filter.currentIndexChanged.connect(self._apply_filters)
+        self.book_table.itemSelectionChanged.connect(self._book_selected)
+        self.formation_combo.currentIndexChanged.connect(self._formation_selected)
+        self.play_table.itemSelectionChanged.connect(self._play_selected)
+        self.assignment_table.itemSelectionChanged.connect(self._assignment_selected)
+        self.export_button.clicked.connect(self._export_selected)
+        self.error_raised.connect(
+            lambda message: QMessageBox.warning(self, "Playbooks & Plays", message)
+        )
+
+    def reset_for_source(self) -> None:
+        """Drop all decoded private values before a different source is used."""
+
+        self._generation += 1
+        self._loaded = False
+        self._all_books = ()
+        self.browser = PlaybookBrowserResult((), 0, 0, 0, 0, 0)
+        self.selected_asset_id = None
+        self._visible_play_rows = ()
+        for table in (
+            self.book_table, self.play_table, self.assignment_table, self.node_table
+        ):
+            table.clearContents()
+            table.setRowCount(0)
+        self.formation_combo.clear()
+        self.book_title.setText("Select a playbook")
+        self.book_meta.setText(
+            "Load your NFL 2K5 XISO to read the 37 private PLAY resources."
+        )
+        self.count_label.setText("Load XISO")
+        self.match_label.setText("Load your XISO to inspect 37 books")
+        self.progress_label.setText("Ready")
+        self._refresh_controls()
+
+    def refresh(self, *, force: bool = False) -> None:
+        if not self.host.source_ready or not self.host.playbook_available:
+            self.reset_for_source()
+            return
+        if self._loaded and not force:
+            self._apply_filters()
+            return
+        if self._busy:
+            self._refresh_after_task = True
+            return
+        self._generation += 1
+        generation = self._generation
+
+        def ready(value: object) -> None:
+            if generation != self._generation:
+                return
+            books = tuple(value)  # type: ignore[arg-type]
+            if len(books) != 37 or not all(
+                isinstance(book, Nfl2k5Playbook) for book in books
+            ):
+                self.error_raised.emit(
+                    "The active source did not return the expected 37 playbooks."
+                )
+                return
+            self._all_books = books
+            self._loaded = True
+            self.progress_label.setText("Structured PLAY viewer ready")
+            self._apply_filters()
+
+        self._run(
+            lambda progress: tuple(self.host.browse_playbooks("", progress)),
+            ready,
+        )
+
+    def _apply_filters(self, *_args: object) -> None:
+        wanted = self.selected_asset_id
+        try:
+            self.browser = filter_playbooks(
+                self._all_books,
+                search=self.search.text(),
+                family_id=self.family_filter.currentData(),
+            )
+        except Exception as exc:
+            self.error_raised.emit(str(exc).strip() or exc.__class__.__name__)
+            return
+        self.book_table.blockSignals(True)
+        self.book_table.clearContents()
+        self.book_table.setRowCount(len(self.browser.books))
+        selected_row = -1
+        for row, book in enumerate(self.browser.books):
+            values = (book.book_name, str(len(book.formations)), str(len(book.plays)))
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(value)
+                item.setData(Qt.UserRole, book.asset_id)
+                if column == 0:
+                    item.setToolTip(book.asset_id)
+                self.book_table.setItem(row, column, item)
+            if book.asset_id == wanted:
+                selected_row = row
+        if selected_row < 0 and self.browser.books:
+            selected_row = 0
+        self.book_table.blockSignals(False)
+        self.count_label.setText(
+            f"{self.browser.catalog_total:,} books · "
+            f"{self.browser.play_total:,} plays · {self.browser.node_total:,} nodes"
+        )
+        self.match_label.setText(
+            f"{self.browser.match_total:,} matching book"
+            f"{'s' if self.browser.match_total != 1 else ''} · "
+            f"{self.browser.formation_total:,} formations · "
+            f"{self.browser.chain_total:,} exact chains"
+        )
+        if selected_row >= 0:
+            self.book_table.selectRow(selected_row)
+            self._book_selected()
+        else:
+            self.selected_asset_id = None
+            self._show_book(None)
+
+    def _selected_book(self) -> Nfl2k5Playbook | None:
+        if self.selected_asset_id is None:
+            return None
+        return next(
+            (book for book in self._all_books if book.asset_id == self.selected_asset_id),
+            None,
+        )
+
+    def _book_selected(self) -> None:
+        rows = self.book_table.selectionModel().selectedRows()
+        if not rows:
+            self.selected_asset_id = None
+            self._show_book(None)
+            return
+        item = self.book_table.item(rows[0].row(), 0)
+        self.selected_asset_id = str(item.data(Qt.UserRole))
+        self._show_book(self._selected_book())
+
+    def _show_book(self, book: Nfl2k5Playbook | None) -> None:
+        self.formation_combo.blockSignals(True)
+        self.formation_combo.clear()
+        if book is None:
+            self.book_title.setText("No playbook selected")
+            self.book_meta.setText("Broaden the search or choose another family.")
+            self.formation_combo.blockSignals(False)
+            self._clear_structure()
+            self._refresh_controls()
+            return
+        self.book_title.setText(book.book_name)
+        categories = ", ".join(category.name for category in book.categories)
+        self.book_meta.setText(
+            f"Outer entry {book.outer_index} · {len(book.formations):,} formations · "
+            f"{len(book.plays):,} plays · {len(book.chains):,} exact chains · "
+            f"{book.node_count:,} nodes\n{book.asset_id}\n"
+            f"Categories: {categories or 'none declared'}"
+        )
+        for formation in book.formations:
+            self.formation_combo.addItem(
+                f"{formation.index:02d} · {formation.name} "
+                f"({len(formation.play_links)} linked plays)",
+                formation.index,
+            )
+        self.formation_combo.blockSignals(False)
+        if book.formations:
+            self.formation_combo.setCurrentIndex(0)
+            self._formation_selected()
+        else:
+            self._clear_structure()
+        self._refresh_controls()
+
+    def _clear_structure(self) -> None:
+        self._visible_play_rows = ()
+        for table in (self.play_table, self.assignment_table, self.node_table):
+            table.clearContents()
+            table.setRowCount(0)
+        self.play_meta.setText(
+            "Choose a formation play to expose all eleven assignment descriptors."
+        )
+
+    def _formation_selected(self, *_args: object) -> None:
+        book = self._selected_book()
+        formation_index = self.formation_combo.currentData()
+        if book is None or formation_index is None:
+            self._clear_structure()
+            return
+        self._visible_play_rows = formation_play_rows(book, int(formation_index))
+        self.play_table.blockSignals(True)
+        self.play_table.clearContents()
+        self.play_table.setRowCount(len(self._visible_play_rows))
+        for row, linked in enumerate(self._visible_play_rows):
+            values = (
+                str(linked.link_index),
+                str(linked.group),
+                str(linked.play.index),
+                linked.play.name,
+                f"{linked.play.family_id} · {linked.play.family_label}",
+                f"0x{linked.play.flags_or_id:08x}",
+            )
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(value)
+                item.setData(Qt.UserRole, row)
+                if column == 0:
+                    item.setToolTip(f"Packed formation value 0x{linked.packed_value:04x}")
+                self.play_table.setItem(row, column, item)
+        self.play_table.blockSignals(False)
+        self.assignment_table.setRowCount(0)
+        self.node_table.setRowCount(0)
+        if self._visible_play_rows:
+            self.play_table.selectRow(0)
+            self._play_selected()
+        else:
+            self.play_meta.setText("This formation has no active play links.")
+
+    def _selected_linked_play(self) -> FormationPlayRow | None:
+        rows = self.play_table.selectionModel().selectedRows()
+        if not rows:
+            return None
+        index = rows[0].row()
+        return (
+            self._visible_play_rows[index]
+            if 0 <= index < len(self._visible_play_rows) else None
+        )
+
+    def _play_selected(self) -> None:
+        book = self._selected_book()
+        linked = self._selected_linked_play()
+        if book is None or linked is None:
+            self.assignment_table.setRowCount(0)
+            self.node_table.setRowCount(0)
+            return
+        play = linked.play
+        self.play_meta.setText(
+            f"Play {play.index} · family {play.family_id} ({play.family_label}) · "
+            f"full flags/ID word 0x{play.flags_or_id:08x} · formation link "
+            f"{linked.link_index} / group {linked.group} / packed "
+            f"0x{linked.packed_value:04x}. Slot roles remain unknown."
+        )
+        self.assignment_table.blockSignals(True)
+        self.assignment_table.clearContents()
+        self.assignment_table.setRowCount(len(play.assignments))
+        for row, assignment in enumerate(play.assignments):
+            chain = book.chain(assignment.chain_start_index)
+            values = (
+                str(assignment.slot_index),
+                f"0x{assignment.descriptor_word:08x}",
+                str(assignment.chain_start_index),
+                f"{chain.start_index}–{chain.end_index - 1}",
+                str(chain.node_count),
+            )
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(value)
+                item.setData(Qt.UserRole, assignment.chain_start_index)
+                self.assignment_table.setItem(row, column, item)
+        self.assignment_table.blockSignals(False)
+        if play.assignments:
+            self.assignment_table.selectRow(0)
+            self._assignment_selected()
+
+    def _assignment_selected(self) -> None:
+        book = self._selected_book()
+        rows = self.assignment_table.selectionModel().selectedRows()
+        if book is None or not rows:
+            self.node_table.setRowCount(0)
+            return
+        item = self.assignment_table.item(rows[0].row(), 0)
+        start_index = int(item.data(Qt.UserRole))
+        chain = book.chain(start_index)
+        self.node_table.clearContents()
+        self.node_table.setRowCount(len(chain.nodes))
+        for row, node in enumerate(chain.nodes):
+            values = (
+                str(node.index),
+                f"0x{node.opcode:02x}",
+                f"0x{node.flags:02x}",
+                node.operands_hex,
+                node.raw_hex,
+                "yes" if node.ends_chain else "",
+            )
+            for column, value in enumerate(values):
+                self.node_table.setItem(row, column, QTableWidgetItem(value))
+
+    def _refresh_controls(self) -> None:
+        state = playbook_action_state(
+            self._selected_book(),
+            source_ready=self.host.source_ready,
+            busy=self._busy,
+        )
+        self.export_button.setEnabled(state.can_export)
+        self.book_table.setEnabled(not self._busy)
+        self.search.setEnabled(not self._busy)
+        self.family_filter.setEnabled(not self._busy)
+
+    def _export_selected(self) -> None:
+        book = self._selected_book()
+        if book is None:
+            return
+        selected, _filter = QFileDialog.getSaveFileName(
+            self,
+            "Export exact raw PLAY resource",
+            str(Path.home() / suggested_playbook_filename(book)),
+            "Raw PLAY resource (*.bin);;All files (*)",
+        )
+        if not selected:
+            return
+        destination = Path(selected)
+
+        def ready(value: object) -> None:
+            self.progress_label.setText(f"Exported {Path(value).name}")
+
+        self._run(
+            lambda progress: self.host.export_playbook(
+                book.asset_id, destination, progress
+            ),
+            ready,
+        )
+
+    def _run(
+        self,
+        operation: Callable[[ProgressSink], object],
+        ready: Callable[[object], None],
+    ) -> None:
+        if self._busy:
+            return
+        self._busy = True
+        self.progress_bar.setRange(0, 0)
+        self.progress_bar.show()
+        self._refresh_controls()
+        task = _Task(operation)
+        self._tasks.add(task)
+        task.signals.result.connect(ready)
+        task.signals.progress.connect(self._progress)
+        task.signals.error.connect(self.error_raised.emit)
+
+        def finished() -> None:
+            self._tasks.discard(task)
+            self._busy = False
+            self.progress_bar.hide()
+            self._refresh_controls()
+            if self._refresh_after_task:
+                self._refresh_after_task = False
+                QTimer.singleShot(0, self.refresh)
+
+        task.signals.finished.connect(finished)
+        self._pool.start(task)
+
+    def _progress(self, stage: str, completed: int, total: int) -> None:
+        self.progress_label.setText(stage or "Working…")
+        if total > 0:
+            self.progress_bar.setRange(0, total)
+            self.progress_bar.setValue(max(0, min(total, completed)))
+        else:
+            self.progress_bar.setRange(0, 0)
+
+    def _apply_style(self) -> None:
+        self.setStyleSheet(
+            """
+            QWidget#playbooksPanel {
+                background: #111823; color: #eaf0f8;
+                font-family: Inter, "Noto Sans", sans-serif; font-size: 13px;
+            }
+            QLabel#playTitle { color: #fff; font-size: 27px; font-weight: 750; }
+            QLabel#playDetailTitle { color: #fff; font-size: 20px; font-weight: 700; }
+            QLabel#playMuted, QLabel#playFieldLabel { color: #91a0b5; }
+            QLabel#playCountPill {
+                color: #7fc8ff; background: #162d46; border: 1px solid #28597d;
+                border-radius: 10px; padding: 5px 10px; font-weight: 650;
+            }
+            QLabel#playBoundary {
+                color: #ffd08a; background: #352818; border: 1px solid #79562a;
+                border-radius: 9px; padding: 10px 13px; font-weight: 700;
+            }
+            QLabel#playRawNote {
+                color: #cbd6e4; background: #172130; border: 1px solid #28384d;
+                border-radius: 8px; padding: 8px;
+            }
+            QFrame#playCard {
+                background: #151f2c; border: 1px solid #28384d; border-radius: 10px;
+            }
+            QLineEdit, QComboBox {
+                color: #eaf0f8; background: #151f2c; border: 1px solid #34475e;
+                border-radius: 7px; padding: 7px 9px; min-height: 20px;
+            }
+            QLineEdit:focus, QComboBox:focus { border-color: #4f9cf9; }
+            QTableWidget {
+                color: #dce5f1; background: #151f2c;
+                alternate-background-color: #182433; border: 1px solid #28384d;
+                gridline-color: #26364a; selection-background-color: #244f76;
+                selection-color: #fff;
+            }
+            QHeaderView::section {
+                color: #91a0b5; background: #121b27; border: none;
+                border-bottom: 1px solid #304158; padding: 7px; font-weight: 650;
+            }
+            QTabWidget::pane {
+                background: #151f2c; border: 1px solid #28384d; border-radius: 8px;
+            }
+            QTabBar::tab {
+                color: #9dabc0; background: #121b27; border: 1px solid #28384d;
+                padding: 8px 14px;
+            }
+            QTabBar::tab:selected { color: #fff; background: #1b2b3e; }
+            QTextBrowser#playFindings {
+                color: #d9e3ef; background: #151f2c; border: none; padding: 14px;
+            }
+            QPushButton {
+                color: #dce8f7; background: #233247; border: 1px solid #3a506b;
+                border-radius: 7px; padding: 8px 13px; font-weight: 600;
+            }
+            QPushButton:hover { background: #2a3d56; }
+            QPushButton:disabled { color: #68778b; background: #192330; }
+            QPushButton#playPrimaryButton {
+                color: #07131d; background: #62b9f2; border-color: #62b9f2;
+            }
+            QProgressBar {
+                background: #172130; border: 1px solid #304158;
+                border-radius: 4px; height: 7px;
+            }
+            QProgressBar::chunk { background: #62b9f2; border-radius: 3px; }
+            """
+        )
+
+
+__all__ = [
+    "FormationPlayRow",
+    "PLAY_EDITOR_FINDINGS_HTML",
+    "PLAY_EDITOR_FINDINGS_PLAIN_TEXT",
+    "PlaybookActionState",
+    "PlaybookBrowserResult",
+    "PlaybooksPanel",
+    "PlaybooksPanelHost",
+    "filter_playbooks",
+    "formation_play_rows",
+    "playbook_action_state",
+    "playbook_search_text",
+    "suggested_playbook_filename",
+]

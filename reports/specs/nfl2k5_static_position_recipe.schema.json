@@ -1,0 +1,53 @@
+{
+  "$id": "https://local.visualconcepts.invalid/schemas/nfl2k5-static-position-recipe-v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "encoding": {
+      "const": {
+        "component_type": "float32_le",
+        "components_per_vertex": 3,
+        "coordinate_space": "raw_xbox",
+        "stride_bytes": 12,
+        "vertex_count": 4
+      }
+    },
+    "positions": {
+      "items": {
+        "items": {
+          "type": "number"
+        },
+        "maxItems": 3,
+        "minItems": 3,
+        "type": "array"
+      },
+      "maxItems": 4,
+      "minItems": 4,
+      "type": "array"
+    },
+    "schema": {
+      "const": "nfl2k5_static_position_recipe/v1"
+    },
+    "target": {
+      "const": {
+        "chunk_index": 5,
+        "decoded_sha256": "229db9f309bf69eaa28901ae6e2e15b26a279b3f1f37abed01e36041c5e5ead8",
+        "outer_id": "0xe4d6b0bc",
+        "outer_index": 3280,
+        "position_stream_sha256": "65ab99a567a43ebe13c38f6921834896f56f609d954573bb3ae94d414562ab7d",
+        "scene_index": 2648,
+        "scene_name": "stadium",
+        "shape_index": 4,
+        "shape_name": "group36"
+      }
+    }
+  },
+  "required": [
+    "schema",
+    "target",
+    "encoding",
+    "positions"
+  ],
+  "title": "NFL 2K5 group36 four-vertex static-position replacement recipe",
+  "type": "object"
+}

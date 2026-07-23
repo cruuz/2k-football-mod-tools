@@ -1,0 +1,22 @@
+physical_index	semantic_index	label	group	offset	settings1	franchise1
+0	18	Injury	standalone	0x284	0.5	0.5
+1	19	Fumble	standalone	0x288	0.5	0.5
+2	20	Interception	standalone	0x28C	0.5	0.525
+3	9	CPU Blocking	cpu_vector	0x298	0.5	0.675
+4	10	CPU Passing	cpu_vector	0x29C	0.5	0.525
+5	11	CPU Running	cpu_vector	0x2A0	0.5	0.7
+6	12	CPU Catching	cpu_vector	0x2A4	0.5	0.5
+7	13	CPU Coverage	cpu_vector	0x2A8	0.5	0.5
+8	14	CPU Pursuit	cpu_vector	0x2AC	0.5	0.5
+9	15	CPU Tackling	cpu_vector	0x2B0	0.5	0.5
+10	16	CPU Kicking	cpu_vector	0x2B4	0.5	0.475
+11	17	CPU Fatigue	cpu_vector	0x2B8	0.5	0.8
+12	0	Human Blocking	human_vector	0x2BC	0.5	0.675
+13	1	Human Passing	human_vector	0x2C0	0.5	0.45
+14	2	Human Running	human_vector	0x2C4	0.5	0.8
+15	3	Human Catching	human_vector	0x2C8	0.5	0.35
+16	4	Human Coverage	human_vector	0x2CC	0.5	0.35
+17	5	Human Pursuit	human_vector	0x2D0	0.5	0.35
+18	6	Human Tackling	human_vector	0x2D4	0.5	0.5
+19	7	Human Kicking	human_vector	0x2D8	0.5	0.525
+20	8	Human Fatigue	human_vector	0x2DC	0.5	1.0

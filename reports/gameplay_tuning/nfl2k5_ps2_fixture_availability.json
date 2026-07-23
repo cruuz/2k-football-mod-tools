@@ -1,0 +1,163 @@
+{
+  "limitations": [
+    {
+      "address_reuse_from_xbox_allowed": false,
+      "id": "draft_trade_logic",
+      "ps2_owner_status": "unmapped_no_verified_ps2_elf_or_save_fixture",
+      "required_ps2_evidence": "Hash-pinned MIPS ELF plus controlled fantasy-draft and trade save/runtime deltas.",
+      "safe_ps2_patch_ready": false,
+      "xbox_comparator_only": "Xbox evidence separates a 17-position fantasy-draft priority surface from still-unmapped trade valuation. This is only a PS2 search hypothesis, not shared code ownership."
+    },
+    {
+      "address_reuse_from_xbox_allowed": false,
+      "id": "salary_cap_contracts",
+      "ps2_owner_status": "unmapped_no_verified_ps2_elf_or_save_fixture",
+      "required_ps2_evidence": "Hash-pinned MIPS ELF plus one-field-at-a-time salary, years, bonus, penalty, and cap-state save pairs.",
+      "safe_ps2_patch_ready": false,
+      "xbox_comparator_only": "Xbox has a mapped cap-enforcement gate, while contract encoding and negotiation remain unresolved. No PS2 semantic or address follows from that result."
+    },
+    {
+      "address_reuse_from_xbox_allowed": false,
+      "id": "super_bowl_future_stadium",
+      "ps2_owner_status": "unmapped_no_verified_ps2_elf_or_save_fixture",
+      "required_ps2_evidence": "Hash-pinned MIPS ELF plus copied franchise saves or traces for Super Bowl indices 0 through at least 6.",
+      "safe_ps2_patch_ready": false,
+      "xbox_comparator_only": "Xbox selects five explicit future venues and then a fallback. The PS2 branch/table shape is unknown until independently recovered from its MIPS ELF."
+    },
+    {
+      "address_reuse_from_xbox_allowed": false,
+      "id": "shared_team_textures",
+      "ps2_owner_status": "unmapped_no_verified_ps2_elf_or_save_fixture",
+      "required_ps2_evidence": "Verified PS2 disc/ELF, per-team uniform selector joins, and controlled PCSX2 GS dumps for identical uniform slots.",
+      "safe_ps2_patch_ready": false,
+      "xbox_comparator_only": "Xbox native asset spans and PCSX2 replacement hashes are different mechanisms. PS2 sharing must be established from its disc selectors and GS texture dumps."
+    }
+  ],
+  "local_evidence": {
+    "memory_cards": [
+      {
+        "format_magic": "Sony PS2 Memory Card Format 1.2.0.0",
+        "nfl2k5_marker_occurrence_count": 0,
+        "path": "/home/noah/.var/app/net.pcsx2.PCSX2/config/PCSX2/memcards/Mcd001.ps2",
+        "save_directory_markers": [
+          "BASLUS-20238",
+          "BASLUS-20238slot00",
+          "BASLUS-20529ADemons",
+          "BASLUS-20529FFran 1",
+          "BASLUS-20529OOBook 1",
+          "BASLUS-20529TSett 1",
+          "BASLUS-20529UPro 1",
+          "BASLUS-20991PProf1",
+          "BASLUS-20991SSett1",
+          "BASLUS-210580000GD01",
+          "BASLUS-210580000SE",
+          "BASLUS-21367B2617095",
+          "BASLUS-21367Dab390ab",
+          "BASLUS-21367O95bd4d0",
+          "BASLUS-21671",
+          "BASLUS-21671S1"
+        ],
+        "sha256": "811ed6525e124c8222d151e5eb69442875387bdfd5d88e451097eaf620ac803a",
+        "size": 8650752
+      },
+      {
+        "format_magic": "Sony PS2 Memory Card Format 1.2.0.0",
+        "nfl2k5_marker_occurrence_count": 0,
+        "path": "/home/noah/.var/app/net.pcsx2.PCSX2/config/PCSX2/memcards/Mcd002.ps2",
+        "save_directory_markers": [],
+        "sha256": "bd4a6c2303426f9d22c3c17e14619b83b6cbc679d4c25ad669605e591bdcb256",
+        "size": 8650752
+      }
+    ],
+    "pcsx2_texture_root": {
+      "exists": true,
+      "path": "/home/noah/.var/app/net.pcsx2.PCSX2/config/PCSX2/textures",
+      "regular_file_count": 0,
+      "target_serial_file_count": 0,
+      "target_serial_files": []
+    },
+    "rejected_named_disc_suspects": [
+      {
+        "accepted_as_target_ps2_disc": false,
+        "classification": "xdvdfs_xbox",
+        "exists": true,
+        "path": "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso",
+        "reason": "Xbox XDVDFS image, not a PS2 disc",
+        "size": 6300499968
+      },
+      {
+        "accepted_as_target_ps2_disc": false,
+        "classification": "xdvdfs_xbox",
+        "exists": true,
+        "path": "/home/noah/Downloads/ESPN NFL 2K5 (USA)/ESPN NFL 2K5 (USA).xiso.iso",
+        "reason": "Xbox XDVDFS image, not a PS2 disc",
+        "size": 6300499968
+      }
+    ],
+    "scan": {
+      "exact_size_disc_candidates": [],
+      "extracted_elf_candidates": [],
+      "loose_save_candidates": [],
+      "roots": [
+        "/media/noah/Storage/for codex 1.0",
+        "/home/noah/Downloads",
+        "/media/noah/12TB HDD/Backups/Emulation/Roms/PCSX2 Games",
+        "/media/noah/12TB HDD/Backups/Full Desktop Backup/Emulation/Roms/PCSX2 Games",
+        "/media/noah/12TB HDD/Backups/Old 2012 Flash Drive Backup/Emulation/ISOs/PS2",
+        "/media/noah/12TB HDD/Backups/Rom Archive/PlayStation 2"
+      ]
+    }
+  },
+  "schema": "nfl2k5_ps2_fixture_audit/v1",
+  "scope": {
+    "disc_or_save_payload_bytes_emitted": false,
+    "elf_decompilation_performed": false,
+    "read_only_source_access": true,
+    "retail_or_emulator_source_modified": false,
+    "xbox_addresses_reused": false
+  },
+  "source_authorities": {
+    "pcsx2_game_index": {
+      "entry": {
+        "compat": 5,
+        "name": "ESPN - NFL 2K5",
+        "region": "NTSC-U",
+        "serial": "SLUS-20919"
+      },
+      "path": "/var/lib/flatpak/app/net.pcsx2.PCSX2/current/active/files/bin/resources/GameIndex.yaml",
+      "sha256": "bc7d17e87b623f5c36775465be7e94b12c8fac1fc3c90c185d970c3c9e50e77b",
+      "size": 2662382
+    },
+    "pcsx2_redump_database": {
+      "entry": {
+        "md5": "46ef5e7a2e155994e7c3e5627293e068",
+        "name": "ESPN NFL 2K5 (USA)",
+        "serial": "SLUS-20919",
+        "size": 4665081856,
+        "version": "1.01"
+      },
+      "path": "/var/lib/flatpak/app/net.pcsx2.PCSX2/current/active/files/bin/resources/RedumpDatabase.yaml",
+      "sha256": "aa8ebbc304e332fd9f7f6f71e2904849e23e8100a579537c93f156967a4a2e6d",
+      "size": 1898666
+    }
+  },
+  "summary": {
+    "all_four_ps2_owners_mapped": false,
+    "expected_iso_present": false,
+    "extracted_boot_elf_present": false,
+    "memory_card_count": 2,
+    "pcsx2_texture_dump_present": false,
+    "safe_ps2_patch_ready": false,
+    "save_directory_marker_present": false,
+    "serial": "SLUS-20919"
+  },
+  "target": {
+    "boot_elf_expected_name": "SLUS_209.19",
+    "disc_version": "1.01",
+    "expected_iso_md5": "46ef5e7a2e155994e7c3e5627293e068",
+    "expected_iso_size": 4665081856,
+    "platform": "PlayStation 2",
+    "region": "NTSC-U",
+    "serial": "SLUS-20919"
+  }
+}

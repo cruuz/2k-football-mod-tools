@@ -1,0 +1,2367 @@
+{
+  "catalog": {
+    "path": "/media/noah/Storage/for codex 1.0/mod_editor/data/nfl2k5_crib_catalog.v1.json",
+    "sha256": "2f862fc6602bb23d433f0599c519839be9cd43ca6cd42bc22aeb7b94d56d305a",
+    "size": 709752
+  },
+  "claims": {
+    "all_25_have_exact_material_and_submesh_consumers": true,
+    "bar_monitor_has_safe_offline_fixed_span_writer": true,
+    "general_model_import_proved": false,
+    "retail_bytes_embedded_in_report": false,
+    "runtime_visibility_proved": false
+  },
+  "resources": [
+    {
+      "chunk_index": 2,
+      "chunk_offset": 114960,
+      "compression_magic": "0xfeedbeef",
+      "decoded_sha256": "e1627f1e0f3f64b9f3ddd61606bda56924ab1525f14efc573ee1ef17d77ba3f0",
+      "decoded_size": 2608384,
+      "lz": {
+        "consumed_bytes": 1588484,
+        "declared_output_size": 2608384,
+        "length_bits": 4,
+        "literal_count": 928528,
+        "match_count": 255944,
+        "offset_bits": 12,
+        "stream_tag": 1
+      },
+      "outer_id": "0xc61a9833",
+      "outer_index": 4248,
+      "overlap_scratch_bytes": 16,
+      "scene_index": 4186,
+      "scene_name": "room",
+      "span_sha256": "defc083de29b3b2dc3e2dd6681cfc2cd7ee13b30b213f9f84f8bd4f75e7296dd",
+      "span_size": 1588528,
+      "stored_size": 1588496,
+      "system_bytes": 666240,
+      "video_bytes": 1942144,
+      "xiso_absolute_span_offset": 5399363856
+    },
+    {
+      "chunk_index": 86,
+      "chunk_offset": 3636160,
+      "compression_magic": "0xfeedbeef",
+      "decoded_sha256": "f2906ece9b02ed0e76123076d371ccb14f6f08b377ab755cff919b6b93990a19",
+      "decoded_size": 167552,
+      "lz": {
+        "consumed_bytes": 86237,
+        "declared_output_size": 167552,
+        "length_bits": 5,
+        "literal_count": 49175,
+        "match_count": 14544,
+        "offset_bits": 11,
+        "stream_tag": 1
+      },
+      "outer_id": "0xc61a9833",
+      "outer_index": 4248,
+      "overlap_scratch_bytes": 16,
+      "scene_index": 4199,
+      "scene_name": "air_hockey",
+      "span_sha256": "954e7c77bb2708127140de31f0812384f62fbe5ffe02465a746b54d48ad82ac7",
+      "span_size": 86272,
+      "stored_size": 86240,
+      "system_bytes": 55040,
+      "video_bytes": 112512,
+      "xiso_absolute_span_offset": 5402885056
+    },
+    {
+      "chunk_index": 90,
+      "chunk_offset": 3886256,
+      "compression_magic": "0xfeedbeef",
+      "decoded_sha256": "9b685666a189c0a4cab97032c398b6028f9909038e9b452227fb5eaff80c11b3",
+      "decoded_size": 219392,
+      "lz": {
+        "consumed_bytes": 70698,
+        "declared_output_size": 219392,
+        "length_bits": 6,
+        "literal_count": 41520,
+        "match_count": 11284,
+        "offset_bits": 10,
+        "stream_tag": 1
+      },
+      "outer_id": "0xc61a9833",
+      "outer_index": 4248,
+      "overlap_scratch_bytes": 16,
+      "scene_index": 4203,
+      "scene_name": "dart_machine",
+      "span_sha256": "e00eae3acaea033302129fa6c1f354d66dcd927fe5678d4fb7ddd40874932301",
+      "span_size": 70736,
+      "stored_size": 70704,
+      "system_bytes": 42496,
+      "video_bytes": 176896,
+      "xiso_absolute_span_offset": 5403135152
+    },
+    {
+      "chunk_index": 105,
+      "chunk_offset": 4650560,
+      "compression_magic": "0xfeedbeef",
+      "decoded_sha256": "146a5685cd1b346500461d6d3e078982526fafbdc9e5e5ee92910eeef6ee3785",
+      "decoded_size": 77440,
+      "lz": {
+        "consumed_bytes": 31235,
+        "declared_output_size": 77440,
+        "length_bits": 5,
+        "literal_count": 16540,
+        "match_count": 5938,
+        "offset_bits": 11,
+        "stream_tag": 1
+      },
+      "outer_id": "0xc61a9833",
+      "outer_index": 4248,
+      "overlap_scratch_bytes": 16,
+      "scene_index": 4218,
+      "scene_name": "phone",
+      "span_sha256": "1550ccc3dfbfc28d915ee6440d1d0c192579b9e8f1163be9f420649668972d72",
+      "span_size": 31280,
+      "stored_size": 31248,
+      "system_bytes": 9600,
+      "video_bytes": 67840,
+      "xiso_absolute_span_offset": 5403899456
+    },
+    {
+      "chunk_index": 108,
+      "chunk_offset": 4810544,
+      "compression_magic": "0xfeedbeef",
+      "decoded_sha256": "f1bde42234f59bc65ccfb9197c1b3ed92691406bc83fc286723ccebeae6c18a4",
+      "decoded_size": 206720,
+      "lz": {
+        "consumed_bytes": 108928,
+        "declared_output_size": 206720,
+        "length_bits": 4,
+        "literal_count": 42547,
+        "match_count": 28731,
+        "offset_bits": 12,
+        "stream_tag": 1
+      },
+      "outer_id": "0xc61a9833",
+      "outer_index": 4248,
+      "overlap_scratch_bytes": 16,
+      "scene_index": 4221,
+      "scene_name": "soda_machine",
+      "span_sha256": "b4fa5d9893ac16d6edb2c48592ae814c2cf48ccf7f1ab5b25d47f743d349ffba",
+      "span_size": 108960,
+      "stored_size": 108928,
+      "system_bytes": 6912,
+      "video_bytes": 199808,
+      "xiso_absolute_span_offset": 5404059440
+    },
+    {
+      "chunk_index": 111,
+      "chunk_offset": 4976912,
+      "compression_magic": "0xfeedbeef",
+      "decoded_sha256": "72887be9a1eb20e3981c93bb3cbe0baaaa08a3d81730a9c661ccb39758c44078",
+      "decoded_size": 9216,
+      "lz": {
+        "consumed_bytes": 4948,
+        "declared_output_size": 9216,
+        "length_bits": 5,
+        "literal_count": 1883,
+        "match_count": 1327,
+        "offset_bits": 11,
+        "stream_tag": 1
+      },
+      "outer_id": "0xc61a9833",
+      "outer_index": 4248,
+      "overlap_scratch_bytes": 16,
+      "scene_index": 4224,
+      "scene_name": "ticker",
+      "span_sha256": "ff07308d0164771b169b34933b897a9ebf08de942d4914fbb535d3353cf515d8",
+      "span_size": 4992,
+      "stored_size": 4960,
+      "system_bytes": 2688,
+      "video_bytes": 6528,
+      "xiso_absolute_span_offset": 5404225808
+    },
+    {
+      "chunk_index": 112,
+      "chunk_offset": 4981904,
+      "compression_magic": "0xfeedbeef",
+      "decoded_sha256": "493fc01e672fc5ff22779eebbe0c8a9c753c517c1f8c883970bedeb0d7cd0ade",
+      "decoded_size": 149120,
+      "lz": {
+        "consumed_bytes": 85833,
+        "declared_output_size": 149120,
+        "length_bits": 5,
+        "literal_count": 49324,
+        "match_count": 14275,
+        "offset_bits": 11,
+        "stream_tag": 58
+      },
+      "outer_id": "0xc61a9833",
+      "outer_index": 4248,
+      "overlap_scratch_bytes": 80,
+      "scene_index": 4225,
+      "scene_name": "trivia_machine",
+      "span_sha256": "7562d85fe0d0b5b06c507fe67a91765268f37bb7677f3f63da4286388b5e9f1a",
+      "span_size": 85872,
+      "stored_size": 85840,
+      "system_bytes": 11648,
+      "video_bytes": 137472,
+      "xiso_absolute_span_offset": 5404230800
+    }
+  ],
+  "schema": "nfl2k5_crib_electronics_ownership/v1",
+  "scne_inventory": {
+    "path": "/media/noah/Storage/for codex 1.0/reports/assets/nfl2k5_scne_inventory.json",
+    "sha256": "8aa5f3d952b2264455280039793ef92a5a382dcec31680b2375bede24b4b2444",
+    "size": 13756367
+  },
+  "selection": {
+    "rule": "electronics/console-like texture-only reskin candidates",
+    "scene_resource_count": 7,
+    "scene_texture_indices": {
+      "air_hockey": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "dart_machine": [
+        0,
+        1
+      ],
+      "phone": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "room": [
+        22,
+        31,
+        32,
+        39,
+        40
+      ],
+      "soda_machine": [
+        0,
+        1
+      ],
+      "ticker": [
+        0
+      ],
+      "trivia_machine": [
+        0,
+        1,
+        2
+      ]
+    },
+    "texture_count": 25
+  },
+  "source": {
+    "modified": false,
+    "opened_read_only": true,
+    "pack_path": "vc_53450030/C",
+    "pack_sector": 2554593,
+    "pack_sha256": "ce3af83768640230499f10d1d0a9799fc9ea56809a8a8a788679c78744f54090",
+    "pack_size": 315131904,
+    "xiso_path": "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso",
+    "xiso_sha256": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9",
+    "xiso_size": 6300499968
+  },
+  "textures": [
+    {
+      "asset_id": "nfl2k5.crib.scene.c0002.t022",
+      "chunk_index": 2,
+      "consumers": [
+        {
+          "command_offset": 354196,
+          "draw_array_vertex_count": 6,
+          "index_element_count": 72,
+          "material_index": 43,
+          "material_name": "bar_monitor",
+          "maximum_vertex_index": 618,
+          "node_indices": [
+            4
+          ],
+          "node_names": [
+            "r2_living_room"
+          ],
+          "primary_command_word_count": 43,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 4,
+          "shape_name": "r2_living_room",
+          "shape_record_offset": 42448,
+          "shape_record_sha256": "8e5ad6f8279dea0afe1027c80678694f190fa9fb1c880e7ac928d8564ea98cf2",
+          "shape_total_submeshes": 20,
+          "submesh_index": 3,
+          "submesh_record_offset": 349936,
+          "submesh_record_sha256": "6c9c8ac20d6da023c91da5b604d32a41cc886946f09acd9829ed3d841eff39d5",
+          "vertex_count": 2927,
+          "vertex_streams": [
+            {
+              "byte_size": 35124,
+              "end_offset": 399124,
+              "offset": 364000,
+              "stream_index": 0,
+              "stride": 12
+            },
+            {
+              "byte_size": 29270,
+              "end_offset": 428406,
+              "offset": 399136,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 24880,
+      "descriptor_sha256": "6eb6d404b554fa7045d39f52802961151508533666d47681c39822f9c23e5a7d",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 128,
+      "material_indices": [
+        43
+      ],
+      "material_names": [
+        "bar_monitor"
+      ],
+      "mip_levels": 5,
+      "packed_format": "0x07750b29",
+      "palette_offset": 761920,
+      "pixel_offset": 740096,
+      "rgba_sha256": "1c422972318922fa79d0a8dd5c8827d70277c1c92ebb87a67f0cd80ca27ce075",
+      "scene_name": "room",
+      "selector": "crib_scene_texture:room:22",
+      "texture_index": 22,
+      "width": 128,
+      "writer_status": "bounded_png_to_copied_xiso_writer_proved_offline"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0002.t031",
+      "chunk_index": 2,
+      "consumers": [
+        {
+          "command_offset": 428784,
+          "draw_array_vertex_count": 20,
+          "index_element_count": 0,
+          "material_index": 54,
+          "material_name": "screen_espn",
+          "maximum_vertex_index": 19,
+          "node_indices": [
+            5
+          ],
+          "node_names": [
+            "screen_espn_A"
+          ],
+          "primary_command_word_count": 6,
+          "primitive_mode_counts": {
+            "END": 1,
+            "QUADS": 1
+          },
+          "shape_index": 5,
+          "shape_name": "screen_espn_A",
+          "shape_record_offset": 42704,
+          "shape_record_sha256": "27770cec3a2d0c782c024636e7d87f021130a29fce6d075c6998c7a0b378f9e3",
+          "shape_total_submeshes": 1,
+          "submesh_index": 0,
+          "submesh_record_offset": 428656,
+          "submesh_record_sha256": "2dca198acc60f819d3067e54405fad75471ea83718f9589ad53a71f4d51d880d",
+          "vertex_count": 20,
+          "vertex_streams": [
+            {
+              "byte_size": 240,
+              "end_offset": 429072,
+              "offset": 428832,
+              "stream_index": 0,
+              "stride": 12
+            },
+            {
+              "byte_size": 200,
+              "end_offset": 429288,
+              "offset": 429088,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 25168,
+      "descriptor_sha256": "3524cdf649531ac20a30b241fb9a98638c6199c90d2709061d0b31ede074ba61",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 128,
+      "material_indices": [
+        54
+      ],
+      "material_names": [
+        "screen_espn"
+      ],
+      "mip_levels": 5,
+      "packed_format": "0x07750b29",
+      "palette_offset": 916160,
+      "pixel_offset": 894336,
+      "rgba_sha256": "49b83910d353ad876c76c76ce42de86f0d73b09b44d5646893ac411e196acf68",
+      "scene_name": "room",
+      "selector": "crib_scene_texture:room:31",
+      "texture_index": 31,
+      "width": 128,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0002.t032",
+      "chunk_index": 2,
+      "consumers": [
+        {
+          "command_offset": 429552,
+          "draw_array_vertex_count": 20,
+          "index_element_count": 0,
+          "material_index": 55,
+          "material_name": "screen_crib",
+          "maximum_vertex_index": 19,
+          "node_indices": [
+            6
+          ],
+          "node_names": [
+            "screen_crib_A"
+          ],
+          "primary_command_word_count": 6,
+          "primitive_mode_counts": {
+            "END": 1,
+            "QUADS": 1
+          },
+          "shape_index": 6,
+          "shape_name": "screen_crib_A",
+          "shape_record_offset": 42960,
+          "shape_record_sha256": "1742fe1cbe0ceaa708ac03c92a8941684b45b42123d468532e6d0c870dae18d2",
+          "shape_total_submeshes": 1,
+          "submesh_index": 0,
+          "submesh_record_offset": 429424,
+          "submesh_record_sha256": "4e8fad658d774dbd550adeec57fab5092a985d0a01c1a821d708505e26d6db44",
+          "vertex_count": 20,
+          "vertex_streams": [
+            {
+              "byte_size": 240,
+              "end_offset": 429840,
+              "offset": 429600,
+              "stream_index": 0,
+              "stride": 12
+            },
+            {
+              "byte_size": 200,
+              "end_offset": 430056,
+              "offset": 429856,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 25200,
+      "descriptor_sha256": "11e18a78786f2a9aa9dc361276f93ce190f756a05218c73692347f07bf1262c7",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 128,
+      "material_indices": [
+        55
+      ],
+      "material_names": [
+        "screen_crib"
+      ],
+      "mip_levels": 5,
+      "packed_format": "0x07750b29",
+      "palette_offset": 939072,
+      "pixel_offset": 917248,
+      "rgba_sha256": "bbe68208529017f8d91a4dbc27ec8114203a05003f6072155c3add722b0b8463",
+      "scene_name": "room",
+      "selector": "crib_scene_texture:room:32",
+      "texture_index": 32,
+      "width": 128,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0002.t039",
+      "chunk_index": 2,
+      "consumers": [
+        {
+          "command_offset": 525808,
+          "draw_array_vertex_count": 51,
+          "index_element_count": 442,
+          "material_index": 92,
+          "material_name": "jukebox_shell_m",
+          "maximum_vertex_index": 310,
+          "node_indices": [
+            38
+          ],
+          "node_names": [
+            "jukebox"
+          ],
+          "primary_command_word_count": 240,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 38,
+          "shape_name": "jukebox",
+          "shape_record_offset": 51152,
+          "shape_record_sha256": "df23e2818acc0daa070465e010c46ee297e6fc87db5f849dc11441a62c8edd03",
+          "shape_total_submeshes": 3,
+          "submesh_index": 0,
+          "submesh_record_offset": 525424,
+          "submesh_record_sha256": "957393e7eea6d14c11d523468a1164e1c7110a287524e5883dc6528ba1194d6d",
+          "vertex_count": 341,
+          "vertex_streams": [
+            {
+              "byte_size": 4092,
+              "end_offset": 531004,
+              "offset": 526912,
+              "stream_index": 0,
+              "stride": 12
+            },
+            {
+              "byte_size": 3410,
+              "end_offset": 534418,
+              "offset": 531008,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 25424,
+      "descriptor_sha256": "38c7f883b34a0ccd5c92bfe3cd47dd59aeb35ca701cd8418c434745e7fdded8b",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 256,
+      "material_indices": [
+        92
+      ],
+      "material_names": [
+        "jukebox_shell_m"
+      ],
+      "mip_levels": 6,
+      "packed_format": "0x08860b29",
+      "palette_offset": 1601728,
+      "pixel_offset": 1514368,
+      "rgba_sha256": "47aed3f7b8362f42388e5ddd4ee0597f91c7b314555ca4ebe77d6a93c62c69c8",
+      "scene_name": "room",
+      "selector": "crib_scene_texture:room:39",
+      "texture_index": 39,
+      "width": 256,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0002.t040",
+      "chunk_index": 2,
+      "consumers": [
+        {
+          "command_offset": 526768,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 6,
+          "material_index": 93,
+          "material_name": "jukebox_screen_m",
+          "maximum_vertex_index": 314,
+          "node_indices": [
+            38
+          ],
+          "node_names": [
+            "jukebox"
+          ],
+          "primary_command_word_count": 8,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 38,
+          "shape_name": "jukebox",
+          "shape_record_offset": 51152,
+          "shape_record_sha256": "df23e2818acc0daa070465e010c46ee297e6fc87db5f849dc11441a62c8edd03",
+          "shape_total_submeshes": 3,
+          "submesh_index": 1,
+          "submesh_record_offset": 525552,
+          "submesh_record_sha256": "afb4435c30f03207c7d91bf584f38ff824b70f542e768acd7ee6c2e4c21df4c8",
+          "vertex_count": 341,
+          "vertex_streams": [
+            {
+              "byte_size": 4092,
+              "end_offset": 531004,
+              "offset": 526912,
+              "stream_index": 0,
+              "stride": 12
+            },
+            {
+              "byte_size": 3410,
+              "end_offset": 534418,
+              "offset": 531008,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 25456,
+      "descriptor_sha256": "2610b14300a8ec7dd993cc78cf8a6091f39d66d604c75da0c9eca4e340ae0492",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 256,
+      "material_indices": [
+        93
+      ],
+      "material_names": [
+        "jukebox_screen_m"
+      ],
+      "mip_levels": 6,
+      "packed_format": "0x08860b29",
+      "palette_offset": 1690176,
+      "pixel_offset": 1602816,
+      "rgba_sha256": "0edefce8e20e6d71af5bbf6aeb48940b9c446db84be94254625a558b88537190",
+      "scene_name": "room",
+      "selector": "crib_scene_texture:room:40",
+      "texture_index": 40,
+      "width": 256,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0086.t000",
+      "chunk_index": 86,
+      "consumers": [
+        {
+          "command_offset": 4592,
+          "draw_array_vertex_count": 38,
+          "index_element_count": 960,
+          "material_index": 2,
+          "material_name": "air_hockey_m_01",
+          "maximum_vertex_index": 600,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "air_hockey_01"
+          ],
+          "primary_command_word_count": 500,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "air_hockey_01",
+          "shape_record_offset": 2336,
+          "shape_record_sha256": "6a99715faf44898243d5962a10893ebc408e6a59bf86512450c1cf8892520122",
+          "shape_total_submeshes": 13,
+          "submesh_index": 0,
+          "submesh_record_offset": 2928,
+          "submesh_record_sha256": "8aba26d4d02b3d0ffc5d4ee9fac102ffbf560435886c5b6dc4377cb9f6727f4b",
+          "vertex_count": 2681,
+          "vertex_streams": [
+            {
+              "byte_size": 16086,
+              "end_offset": 27126,
+              "offset": 11040,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 26810,
+              "end_offset": 53946,
+              "offset": 27136,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 448,
+      "descriptor_sha256": "96976b1e93950e6558902c95eea6743e7bed81817361122e91d797d94abfee26",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 128,
+      "material_indices": [
+        2
+      ],
+      "material_names": [
+        "air_hockey_m_01"
+      ],
+      "mip_levels": 5,
+      "packed_format": "0x07750b29",
+      "palette_offset": 21824,
+      "pixel_offset": 0,
+      "rgba_sha256": "e760c154e4207e07fe9c127f4b30a3e18015e0550f41b68b14c275bde3370eb8",
+      "scene_name": "air_hockey",
+      "selector": "crib_scene_texture:air_hockey:0",
+      "texture_index": 0,
+      "width": 128,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0086.t001",
+      "chunk_index": 86,
+      "consumers": [
+        {
+          "command_offset": 6592,
+          "draw_array_vertex_count": 5,
+          "index_element_count": 30,
+          "material_index": 3,
+          "material_name": "air_hockey_m_03",
+          "maximum_vertex_index": 621,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "air_hockey_01"
+          ],
+          "primary_command_word_count": 22,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "air_hockey_01",
+          "shape_record_offset": 2336,
+          "shape_record_sha256": "6a99715faf44898243d5962a10893ebc408e6a59bf86512450c1cf8892520122",
+          "shape_total_submeshes": 13,
+          "submesh_index": 1,
+          "submesh_record_offset": 3056,
+          "submesh_record_sha256": "8edb5b16bc2aded1c676a5d1a0e9250ecf5077e5dbd789f23637c83a14214c8e",
+          "vertex_count": 2681,
+          "vertex_streams": [
+            {
+              "byte_size": 16086,
+              "end_offset": 27126,
+              "offset": 11040,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 26810,
+              "end_offset": 53946,
+              "offset": 27136,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 480,
+      "descriptor_sha256": "e830dc31ac05fb25bb4104ff6600c3a1e73d7dbde3a959a0871583178e0d0e76",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 64,
+      "material_indices": [
+        3
+      ],
+      "material_names": [
+        "air_hockey_m_03"
+      ],
+      "mip_levels": 4,
+      "packed_format": "0x06640b29",
+      "palette_offset": 28352,
+      "pixel_offset": 22912,
+      "rgba_sha256": "22c7fa2a880aa09fb87f9d4a6c100475b8e01f342f411072fff9c0ea7926595a",
+      "scene_name": "air_hockey",
+      "selector": "crib_scene_texture:air_hockey:1",
+      "texture_index": 1,
+      "width": 64,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0086.t002",
+      "chunk_index": 86,
+      "consumers": [
+        {
+          "command_offset": 8788,
+          "draw_array_vertex_count": 782,
+          "index_element_count": 478,
+          "material_index": 5,
+          "material_name": "air_hockey_m_5",
+          "maximum_vertex_index": 2462,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "air_hockey_01"
+          ],
+          "primary_command_word_count": 422,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "air_hockey_01",
+          "shape_record_offset": 2336,
+          "shape_record_sha256": "6a99715faf44898243d5962a10893ebc408e6a59bf86512450c1cf8892520122",
+          "shape_total_submeshes": 13,
+          "submesh_index": 5,
+          "submesh_record_offset": 3568,
+          "submesh_record_sha256": "38d32f0f8aafe6a7f58f15683197a0bcb9155d9a4cfe96d017cef452cab502d4",
+          "vertex_count": 2681,
+          "vertex_streams": [
+            {
+              "byte_size": 16086,
+              "end_offset": 27126,
+              "offset": 11040,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 26810,
+              "end_offset": 53946,
+              "offset": 27136,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 512,
+      "descriptor_sha256": "d8747be5bb07fc9cef76545ff8331e746d925ee890c7889ef34ff2131514728a",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 64,
+      "material_indices": [
+        5
+      ],
+      "material_names": [
+        "air_hockey_m_5"
+      ],
+      "mip_levels": 4,
+      "packed_format": "0x06740b29",
+      "palette_offset": 40320,
+      "pixel_offset": 29440,
+      "rgba_sha256": "92d8f3865cefd7e79bd6da44e1f109b350ca786f9943c23b6593c0ca5b2a6279",
+      "scene_name": "air_hockey",
+      "selector": "crib_scene_texture:air_hockey:2",
+      "texture_index": 2,
+      "width": 128,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0086.t003",
+      "chunk_index": 86,
+      "consumers": [
+        {
+          "command_offset": 7108,
+          "draw_array_vertex_count": 332,
+          "index_element_count": 324,
+          "material_index": 6,
+          "material_name": "air_hockey_m_04",
+          "maximum_vertex_index": 1227,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "air_hockey_01"
+          ],
+          "primary_command_word_count": 215,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "air_hockey_01",
+          "shape_record_offset": 2336,
+          "shape_record_sha256": "6a99715faf44898243d5962a10893ebc408e6a59bf86512450c1cf8892520122",
+          "shape_total_submeshes": 13,
+          "submesh_index": 3,
+          "submesh_record_offset": 3312,
+          "submesh_record_sha256": "50ee0a5a3465d14ac3849b83be20559a0242c15435a36f8ed509d32e0cce0a2b",
+          "vertex_count": 2681,
+          "vertex_streams": [
+            {
+              "byte_size": 16086,
+              "end_offset": 27126,
+              "offset": 11040,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 26810,
+              "end_offset": 53946,
+              "offset": 27136,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        },
+        {
+          "command_offset": 7968,
+          "draw_array_vertex_count": 179,
+          "index_element_count": 364,
+          "material_index": 11,
+          "material_name": "air_hockey_m_paddles",
+          "maximum_vertex_index": 1501,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "air_hockey_01"
+          ],
+          "primary_command_word_count": 205,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "air_hockey_01",
+          "shape_record_offset": 2336,
+          "shape_record_sha256": "6a99715faf44898243d5962a10893ebc408e6a59bf86512450c1cf8892520122",
+          "shape_total_submeshes": 13,
+          "submesh_index": 4,
+          "submesh_record_offset": 3440,
+          "submesh_record_sha256": "a8f0307c403dabf2ef1c2cdf42283ebfb25515b03729f69b350da8976de869ff",
+          "vertex_count": 2681,
+          "vertex_streams": [
+            {
+              "byte_size": 16086,
+              "end_offset": 27126,
+              "offset": 11040,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 26810,
+              "end_offset": 53946,
+              "offset": 27136,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 544,
+      "descriptor_sha256": "e8d295adae688f80ed1000f29b4a9ff977e63119b363d910f91a1011f216ae69",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 128,
+      "material_indices": [
+        6,
+        11
+      ],
+      "material_names": [
+        "air_hockey_m_04",
+        "air_hockey_m_paddles"
+      ],
+      "mip_levels": 5,
+      "packed_format": "0x07750b29",
+      "palette_offset": 63168,
+      "pixel_offset": 41344,
+      "rgba_sha256": "bfd587f1e2ee36439c92a0a777aeb7bcb4a8b54206b3aec5df6f3cc03fe6f7e4",
+      "scene_name": "air_hockey",
+      "selector": "crib_scene_texture:air_hockey:3",
+      "texture_index": 3,
+      "width": 128,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0086.t004",
+      "chunk_index": 86,
+      "consumers": [
+        {
+          "command_offset": 10940,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 24,
+          "material_index": 7,
+          "material_name": "air_hockey_m_timer",
+          "maximum_vertex_index": 2676,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "air_hockey_01"
+          ],
+          "primary_command_word_count": 17,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "air_hockey_01",
+          "shape_record_offset": 2336,
+          "shape_record_sha256": "6a99715faf44898243d5962a10893ebc408e6a59bf86512450c1cf8892520122",
+          "shape_total_submeshes": 13,
+          "submesh_index": 11,
+          "submesh_record_offset": 4336,
+          "submesh_record_sha256": "52e04f2e75767e2ae2fdbf69193715b01cb844e3cb2205b34021eb8079570fc9",
+          "vertex_count": 2681,
+          "vertex_streams": [
+            {
+              "byte_size": 16086,
+              "end_offset": 27126,
+              "offset": 11040,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 26810,
+              "end_offset": 53946,
+              "offset": 27136,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 576,
+      "descriptor_sha256": "4b2aababc4455d1914629947d22270966e07086a57079af32a77f795435d1b86",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 32,
+      "material_indices": [
+        7
+      ],
+      "material_names": [
+        "air_hockey_m_timer"
+      ],
+      "mip_levels": 3,
+      "packed_format": "0x05530b29",
+      "palette_offset": 65600,
+      "pixel_offset": 64256,
+      "rgba_sha256": "95303111f8bd505e5ca0280542fed1abcdd10846d97d4ddebba960ad2ef8b9ef",
+      "scene_name": "air_hockey",
+      "selector": "crib_scene_texture:air_hockey:4",
+      "texture_index": 4,
+      "width": 32,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0086.t005",
+      "chunk_index": 86,
+      "consumers": [
+        {
+          "command_offset": 6680,
+          "draw_array_vertex_count": 44,
+          "index_element_count": 186,
+          "material_index": 10,
+          "material_name": "air_hockey_m_puck",
+          "maximum_vertex_index": 747,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "air_hockey_01"
+          ],
+          "primary_command_word_count": 107,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "air_hockey_01",
+          "shape_record_offset": 2336,
+          "shape_record_sha256": "6a99715faf44898243d5962a10893ebc408e6a59bf86512450c1cf8892520122",
+          "shape_total_submeshes": 13,
+          "submesh_index": 2,
+          "submesh_record_offset": 3184,
+          "submesh_record_sha256": "2db457d0dc726c822f30837e0623b7c2bbbb8c544eb0d18f6de3dfa5fe6a5f79",
+          "vertex_count": 2681,
+          "vertex_streams": [
+            {
+              "byte_size": 16086,
+              "end_offset": 27126,
+              "offset": 11040,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 26810,
+              "end_offset": 53946,
+              "offset": 27136,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 608,
+      "descriptor_sha256": "bcb2ea0a6b01b91a428aec047aeb9675196c32da30d6c4c26f2280f9188eaa1d",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 128,
+      "material_indices": [
+        10
+      ],
+      "material_names": [
+        "air_hockey_m_puck"
+      ],
+      "mip_levels": 5,
+      "packed_format": "0x07750b29",
+      "palette_offset": 88512,
+      "pixel_offset": 66688,
+      "rgba_sha256": "28a107e5fa9ee9e7a99b0ba49cf9c9a88576dcea0b8c0ea7049829515997e7c4",
+      "scene_name": "air_hockey",
+      "selector": "crib_scene_texture:air_hockey:5",
+      "texture_index": 5,
+      "width": 128,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0086.t006",
+      "chunk_index": 86,
+      "consumers": [
+        {
+          "command_offset": 11008,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 6,
+          "material_index": 12,
+          "material_name": "zshadow",
+          "maximum_vertex_index": 2680,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "air_hockey_01"
+          ],
+          "primary_command_word_count": 8,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "air_hockey_01",
+          "shape_record_offset": 2336,
+          "shape_record_sha256": "6a99715faf44898243d5962a10893ebc408e6a59bf86512450c1cf8892520122",
+          "shape_total_submeshes": 13,
+          "submesh_index": 12,
+          "submesh_record_offset": 4464,
+          "submesh_record_sha256": "386529e1eb6aa9314a0d2c252ad8a5984aca2272fe63fa66abd9dadee7232c42",
+          "vertex_count": 2681,
+          "vertex_streams": [
+            {
+              "byte_size": 16086,
+              "end_offset": 27126,
+              "offset": 11040,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 26810,
+              "end_offset": 53946,
+              "offset": 27136,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 640,
+      "descriptor_sha256": "9f4f3d54bdf76ba68949a66517e8cd9f91dc5065259326679cf326d1210f84a0",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 128,
+      "material_indices": [
+        12
+      ],
+      "material_names": [
+        "zshadow"
+      ],
+      "mip_levels": 5,
+      "packed_format": "0x07750b29",
+      "palette_offset": 111424,
+      "pixel_offset": 89600,
+      "rgba_sha256": "adfe0270ea0728f0995dd9d8ccaf68123a9e344bc334c70d3d5436279e28ca8f",
+      "scene_name": "air_hockey",
+      "selector": "crib_scene_texture:air_hockey:6",
+      "texture_index": 6,
+      "width": 128,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0090.t000",
+      "chunk_index": 90,
+      "consumers": [
+        {
+          "command_offset": 2672,
+          "draw_array_vertex_count": 71,
+          "index_element_count": 608,
+          "material_index": 1,
+          "material_name": "dart_m_01",
+          "maximum_vertex_index": 422,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "dart_machine"
+          ],
+          "primary_command_word_count": 336,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "dart_machine",
+          "shape_record_offset": 1280,
+          "shape_record_sha256": "b17481c01c8d950dd89d8eb709f8639287e53ea1fa2f4076f938f373bb29aea0",
+          "shape_total_submeshes": 6,
+          "submesh_index": 0,
+          "submesh_record_offset": 1904,
+          "submesh_record_sha256": "c2667db93b690485d3facbb72fbf790e106758905e7ade35a6e9cba6bf300461",
+          "vertex_count": 2168,
+          "vertex_streams": [
+            {
+              "byte_size": 13008,
+              "end_offset": 20112,
+              "offset": 7104,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 21680,
+              "end_offset": 41808,
+              "offset": 20128,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 448,
+      "descriptor_sha256": "48424f9d39bd059e187604d5d93d92ed15b51bfce045f983b5740dd76ed92017",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 256,
+      "material_indices": [
+        1
+      ],
+      "material_names": [
+        "dart_m_01"
+      ],
+      "mip_levels": 6,
+      "packed_format": "0x08860b29",
+      "palette_offset": 87360,
+      "pixel_offset": 0,
+      "rgba_sha256": "5e903f6daecb6a136c5825609f8a653f4b1700ac841a583f5648a369cd2e4ea8",
+      "scene_name": "dart_machine",
+      "selector": "crib_scene_texture:dart_machine:0",
+      "texture_index": 0,
+      "width": 256,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0090.t001",
+      "chunk_index": 90,
+      "consumers": [
+        {
+          "command_offset": 4920,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 346,
+          "material_index": 5,
+          "material_name": "dart_m_02",
+          "maximum_vertex_index": 1646,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "dart_machine"
+          ],
+          "primary_command_word_count": 178,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "dart_machine",
+          "shape_record_offset": 1280,
+          "shape_record_sha256": "b17481c01c8d950dd89d8eb709f8639287e53ea1fa2f4076f938f373bb29aea0",
+          "shape_total_submeshes": 6,
+          "submesh_index": 2,
+          "submesh_record_offset": 2160,
+          "submesh_record_sha256": "92b9e2ae854105c8d9bc6b2a3e96864b74492c038e72f61aec7963bdf9bfc18d",
+          "vertex_count": 2168,
+          "vertex_streams": [
+            {
+              "byte_size": 13008,
+              "end_offset": 20112,
+              "offset": 7104,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 21680,
+              "end_offset": 41808,
+              "offset": 20128,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        },
+        {
+          "command_offset": 5632,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 316,
+          "material_index": 2,
+          "material_name": "dart_m_03",
+          "maximum_vertex_index": 1827,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "dart_machine"
+          ],
+          "primary_command_word_count": 163,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "dart_machine",
+          "shape_record_offset": 1280,
+          "shape_record_sha256": "b17481c01c8d950dd89d8eb709f8639287e53ea1fa2f4076f938f373bb29aea0",
+          "shape_total_submeshes": 6,
+          "submesh_index": 3,
+          "submesh_record_offset": 2288,
+          "submesh_record_sha256": "f718630871e98e5f845fe6a5450e7bd9233cdba874e6b9a070ae5de679b669e3",
+          "vertex_count": 2168,
+          "vertex_streams": [
+            {
+              "byte_size": 13008,
+              "end_offset": 20112,
+              "offset": 7104,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 21680,
+              "end_offset": 41808,
+              "offset": 20128,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        },
+        {
+          "command_offset": 6284,
+          "draw_array_vertex_count": 77,
+          "index_element_count": 214,
+          "material_index": 4,
+          "material_name": "dart_m_04",
+          "maximum_vertex_index": 2047,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "dart_machine"
+          ],
+          "primary_command_word_count": 115,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "dart_machine",
+          "shape_record_offset": 1280,
+          "shape_record_sha256": "b17481c01c8d950dd89d8eb709f8639287e53ea1fa2f4076f938f373bb29aea0",
+          "shape_total_submeshes": 6,
+          "submesh_index": 4,
+          "submesh_record_offset": 2416,
+          "submesh_record_sha256": "29c212f680cc5dd85709c69d3a9a7b0983729938f8a128908029fce0a01dd6ed",
+          "vertex_count": 2168,
+          "vertex_streams": [
+            {
+              "byte_size": 13008,
+              "end_offset": 20112,
+              "offset": 7104,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 21680,
+              "end_offset": 41808,
+              "offset": 20128,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        },
+        {
+          "command_offset": 6744,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 160,
+          "material_index": 3,
+          "material_name": "dart_m_06",
+          "maximum_vertex_index": 2167,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "dart_machine"
+          ],
+          "primary_command_word_count": 85,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "dart_machine",
+          "shape_record_offset": 1280,
+          "shape_record_sha256": "b17481c01c8d950dd89d8eb709f8639287e53ea1fa2f4076f938f373bb29aea0",
+          "shape_total_submeshes": 6,
+          "submesh_index": 5,
+          "submesh_record_offset": 2544,
+          "submesh_record_sha256": "ae628da0a1ebc3fde85c3a8a0e226d44e7493cdbc638701a2e2574578428f54c",
+          "vertex_count": 2168,
+          "vertex_streams": [
+            {
+              "byte_size": 13008,
+              "end_offset": 20112,
+              "offset": 7104,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 21680,
+              "end_offset": 41808,
+              "offset": 20128,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 480,
+      "descriptor_sha256": "28f195399a81c18e50faa3240a07fb769c6af149a08b325a35f3fb4c69505566",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 256,
+      "material_indices": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "material_names": [
+        "dart_m_03",
+        "dart_m_06",
+        "dart_m_04",
+        "dart_m_02"
+      ],
+      "mip_levels": 6,
+      "packed_format": "0x08860b29",
+      "palette_offset": 175808,
+      "pixel_offset": 88448,
+      "rgba_sha256": "fe9fa38d6c7627026bfeee63920e1fe1012ba1e53ec97b65e18d4d02807ffcef",
+      "scene_name": "dart_machine",
+      "selector": "crib_scene_texture:dart_machine:1",
+      "texture_index": 1,
+      "width": 256,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0105.t000",
+      "chunk_index": 105,
+      "consumers": [
+        {
+          "command_offset": 4296,
+          "draw_array_vertex_count": 14,
+          "index_element_count": 86,
+          "material_index": 0,
+          "material_name": "phoneC",
+          "maximum_vertex_index": 199,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "phone"
+          ],
+          "primary_command_word_count": 54,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "phone",
+          "shape_record_offset": 1968,
+          "shape_record_sha256": "a3ff1d2c0fd2bccbac0c8004aed188767fe93092f6342fbde31bc2873d2d74f4",
+          "shape_total_submeshes": 5,
+          "submesh_index": 2,
+          "submesh_record_offset": 3440,
+          "submesh_record_sha256": "68b45abf1fbe94713692a1e9ace9be4ee6a97f1e28f5b4eb72e3eae02f8ec836",
+          "vertex_count": 208,
+          "vertex_streams": [
+            {
+              "byte_size": 1248,
+              "end_offset": 5824,
+              "offset": 4576,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2080,
+              "end_offset": 7904,
+              "offset": 5824,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 624,
+      "descriptor_sha256": "59d9690c204789019b03d94da59a00d1ef7371b59639767b75be6e7b2d1927d1",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 64,
+      "material_indices": [
+        0
+      ],
+      "material_names": [
+        "phoneC"
+      ],
+      "mip_levels": 4,
+      "packed_format": "0x06640b29",
+      "palette_offset": 5440,
+      "pixel_offset": 0,
+      "rgba_sha256": "277e0a46d142039fe3e707a04d1f478f2ec0373b8d5c2ffa93da784a4a858c1d",
+      "scene_name": "phone",
+      "selector": "crib_scene_texture:phone:0",
+      "texture_index": 0,
+      "width": 64,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0105.t001",
+      "chunk_index": 105,
+      "consumers": [
+        {
+          "command_offset": 3824,
+          "draw_array_vertex_count": 50,
+          "index_element_count": 162,
+          "material_index": 1,
+          "material_name": "phoneA",
+          "maximum_vertex_index": 131,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "phone"
+          ],
+          "primary_command_word_count": 100,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "phone",
+          "shape_record_offset": 1968,
+          "shape_record_sha256": "a3ff1d2c0fd2bccbac0c8004aed188767fe93092f6342fbde31bc2873d2d74f4",
+          "shape_total_submeshes": 5,
+          "submesh_index": 0,
+          "submesh_record_offset": 3184,
+          "submesh_record_sha256": "bd79a85ed3f110d9bcbca58a01280d139d443895a24fbb916830e0b13ee12749",
+          "vertex_count": 208,
+          "vertex_streams": [
+            {
+              "byte_size": 1248,
+              "end_offset": 5824,
+              "offset": 4576,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2080,
+              "end_offset": 7904,
+              "offset": 5824,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 656,
+      "descriptor_sha256": "393b36304a49b0f0b2321edf4d967625beee4cf0e84d441a4ce6316fe320a6b3",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 128,
+      "material_indices": [
+        1
+      ],
+      "material_names": [
+        "phoneA"
+      ],
+      "mip_levels": 5,
+      "packed_format": "0x07750b29",
+      "palette_offset": 28352,
+      "pixel_offset": 6528,
+      "rgba_sha256": "b56e3d6773f305ff4e17215e88cab17558cad55e1d00989dd8c76943f3d4f48a",
+      "scene_name": "phone",
+      "selector": "crib_scene_texture:phone:1",
+      "texture_index": 1,
+      "width": 128,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0105.t002",
+      "chunk_index": 105,
+      "consumers": [
+        {
+          "command_offset": 4224,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 26,
+          "material_index": 2,
+          "material_name": "phoneB",
+          "maximum_vertex_index": 141,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "phone"
+          ],
+          "primary_command_word_count": 18,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "phone",
+          "shape_record_offset": 1968,
+          "shape_record_sha256": "a3ff1d2c0fd2bccbac0c8004aed188767fe93092f6342fbde31bc2873d2d74f4",
+          "shape_total_submeshes": 5,
+          "submesh_index": 1,
+          "submesh_record_offset": 3312,
+          "submesh_record_sha256": "8bd1543a3b828181ebe00f1bdd17bce106f68538d47ee74e8f2f400e7700c02f",
+          "vertex_count": 208,
+          "vertex_streams": [
+            {
+              "byte_size": 1248,
+              "end_offset": 5824,
+              "offset": 4576,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2080,
+              "end_offset": 7904,
+              "offset": 5824,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 688,
+      "descriptor_sha256": "d1bcb67e3127e379b7d4364fdd858bc9dbeec03a835a68a493b96a3b1bf51748",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 64,
+      "material_indices": [
+        2
+      ],
+      "material_names": [
+        "phoneB"
+      ],
+      "mip_levels": 4,
+      "packed_format": "0x06640b29",
+      "palette_offset": 34880,
+      "pixel_offset": 29440,
+      "rgba_sha256": "c387c57b848ff04bd7a533f737e2d3c86f784e73d132c606c62ae8d018ba876e",
+      "scene_name": "phone",
+      "selector": "crib_scene_texture:phone:2",
+      "texture_index": 2,
+      "width": 64,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0105.t003",
+      "chunk_index": 105,
+      "consumers": [
+        {
+          "command_offset": 4544,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 6,
+          "material_index": 3,
+          "material_name": "phoneE",
+          "maximum_vertex_index": 207,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "phone"
+          ],
+          "primary_command_word_count": 8,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "phone",
+          "shape_record_offset": 1968,
+          "shape_record_sha256": "a3ff1d2c0fd2bccbac0c8004aed188767fe93092f6342fbde31bc2873d2d74f4",
+          "shape_total_submeshes": 5,
+          "submesh_index": 4,
+          "submesh_record_offset": 3696,
+          "submesh_record_sha256": "d54abc1c18ca5af5c3e73e68c3e71ae69b963608187d5e823f0168d2ddc154ba",
+          "vertex_count": 208,
+          "vertex_streams": [
+            {
+              "byte_size": 1248,
+              "end_offset": 5824,
+              "offset": 4576,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2080,
+              "end_offset": 7904,
+              "offset": 5824,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 720,
+      "descriptor_sha256": "49dc80ea757475eb43a7e6d6a6c1f3b82f97a8d59b2c3096339a0f1ed3dfe035",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 64,
+      "material_indices": [
+        3
+      ],
+      "material_names": [
+        "phoneE"
+      ],
+      "mip_levels": 4,
+      "packed_format": "0x06640b29",
+      "palette_offset": 41408,
+      "pixel_offset": 35968,
+      "rgba_sha256": "106e80b76280bd0a4781f068f7e9c97858afd3c9e2ed1839ffd9849766f09d49",
+      "scene_name": "phone",
+      "selector": "crib_scene_texture:phone:3",
+      "texture_index": 3,
+      "width": 64,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0105.t004",
+      "chunk_index": 105,
+      "consumers": [
+        {
+          "command_offset": 4512,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 6,
+          "material_index": 4,
+          "material_name": "phoneD",
+          "maximum_vertex_index": 203,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "phone"
+          ],
+          "primary_command_word_count": 8,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "phone",
+          "shape_record_offset": 1968,
+          "shape_record_sha256": "a3ff1d2c0fd2bccbac0c8004aed188767fe93092f6342fbde31bc2873d2d74f4",
+          "shape_total_submeshes": 5,
+          "submesh_index": 3,
+          "submesh_record_offset": 3568,
+          "submesh_record_sha256": "a89b65b6a50626243ac8b8a25e346ed05aad250e637337c6404026ed8b3d1982",
+          "vertex_count": 208,
+          "vertex_streams": [
+            {
+              "byte_size": 1248,
+              "end_offset": 5824,
+              "offset": 4576,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2080,
+              "end_offset": 7904,
+              "offset": 5824,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 752,
+      "descriptor_sha256": "d1187ce5aa7cedfbd5da0ab8f11cc2535a8dc20b354637d5d58f0e45a9fec37a",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 32,
+      "material_indices": [
+        4
+      ],
+      "material_names": [
+        "phoneD"
+      ],
+      "mip_levels": 3,
+      "packed_format": "0x05530b29",
+      "palette_offset": 43840,
+      "pixel_offset": 42496,
+      "rgba_sha256": "4ff4b6c3a062bb1d2674dd134bfa4490aa554c0a58a17f9d626ace217e8d5bad",
+      "scene_name": "phone",
+      "selector": "crib_scene_texture:phone:4",
+      "texture_index": 4,
+      "width": 32,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0108.t000",
+      "chunk_index": 108,
+      "consumers": [
+        {
+          "command_offset": 2484,
+          "draw_array_vertex_count": 31,
+          "index_element_count": 202,
+          "material_index": 0,
+          "material_name": "machine_detail_m",
+          "maximum_vertex_index": 211,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "soda_machine_01"
+          ],
+          "primary_command_word_count": 118,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "soda_machine_01",
+          "shape_record_offset": 1056,
+          "shape_record_sha256": "cf066f14b323412e00f94042f7b217562bb0f26263bdcbb038c7eca48a3bd581",
+          "shape_total_submeshes": 4,
+          "submesh_index": 3,
+          "submesh_record_offset": 2032,
+          "submesh_record_sha256": "c8a492513e6aab16c7a627f83acdd2369c4d1b773902877875da3693bdaa7246",
+          "vertex_count": 212,
+          "vertex_streams": [
+            {
+              "byte_size": 1272,
+              "end_offset": 4248,
+              "offset": 2976,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2120,
+              "end_offset": 6376,
+              "offset": 4256,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 448,
+      "descriptor_sha256": "48424f9d39bd059e187604d5d93d92ed15b51bfce045f983b5740dd76ed92017",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 256,
+      "material_indices": [
+        0
+      ],
+      "material_names": [
+        "machine_detail_m"
+      ],
+      "mip_levels": 6,
+      "packed_format": "0x08860b29",
+      "palette_offset": 87360,
+      "pixel_offset": 0,
+      "rgba_sha256": "879ea69e17d208a4d43a6ba80b5b7a73d9cbe361554c5c90b817df232db01a78",
+      "scene_name": "soda_machine",
+      "selector": "crib_scene_texture:soda_machine:0",
+      "texture_index": 0,
+      "width": 256,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0108.t001",
+      "chunk_index": 108,
+      "consumers": [
+        {
+          "command_offset": 2160,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 66,
+          "material_index": 1,
+          "material_name": "soda_background_m",
+          "maximum_vertex_index": 35,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "soda_machine_01"
+          ],
+          "primary_command_word_count": 38,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "soda_machine_01",
+          "shape_record_offset": 1056,
+          "shape_record_sha256": "cf066f14b323412e00f94042f7b217562bb0f26263bdcbb038c7eca48a3bd581",
+          "shape_total_submeshes": 4,
+          "submesh_index": 0,
+          "submesh_record_offset": 1648,
+          "submesh_record_sha256": "71c1c5aaed17e5b2487af8031e7986299e6e3a5a7851ba4aa31392352c956312",
+          "vertex_count": 212,
+          "vertex_streams": [
+            {
+              "byte_size": 1272,
+              "end_offset": 4248,
+              "offset": 2976,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2120,
+              "end_offset": 6376,
+              "offset": 4256,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 480,
+      "descriptor_sha256": "28f195399a81c18e50faa3240a07fb769c6af149a08b325a35f3fb4c69505566",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 256,
+      "material_indices": [
+        1
+      ],
+      "material_names": [
+        "soda_background_m"
+      ],
+      "mip_levels": 6,
+      "packed_format": "0x08860b29",
+      "palette_offset": 175808,
+      "pixel_offset": 88448,
+      "rgba_sha256": "3296f664e54dc279f4768faac47c854fbaf9519809dea64100e08ab14ae04481",
+      "scene_name": "soda_machine",
+      "selector": "crib_scene_texture:soda_machine:1",
+      "texture_index": 1,
+      "width": 256,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0111.t000",
+      "chunk_index": 111,
+      "consumers": [
+        {
+          "command_offset": 1776,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 6,
+          "material_index": 2,
+          "material_name": "display_dots",
+          "maximum_vertex_index": 3,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "ticker"
+          ],
+          "primary_command_word_count": 8,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "ticker",
+          "shape_record_offset": 880,
+          "shape_record_sha256": "491fcef6970be7152f0dd3c705e21bfd79f92ec185ac4d9e9157a59051ad089e",
+          "shape_total_submeshes": 3,
+          "submesh_index": 0,
+          "submesh_record_offset": 1392,
+          "submesh_record_sha256": "848b7a576768defa178281deff4df7c0ff7e230fcae3201b7ec14a584475af77",
+          "vertex_count": 22,
+          "vertex_streams": [
+            {
+              "byte_size": 132,
+              "end_offset": 2052,
+              "offset": 1920,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 220,
+              "end_offset": 2300,
+              "offset": 2080,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 464,
+      "descriptor_sha256": "59d9690c204789019b03d94da59a00d1ef7371b59639767b75be6e7b2d1927d1",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 64,
+      "material_indices": [
+        2
+      ],
+      "material_names": [
+        "display_dots"
+      ],
+      "mip_levels": 4,
+      "packed_format": "0x06640b29",
+      "palette_offset": 5440,
+      "pixel_offset": 0,
+      "rgba_sha256": "e7c047077f0d521bc5020bc35f5633e7295fe76bd75e6fa3d3a5b8b991aaf761",
+      "scene_name": "ticker",
+      "selector": "crib_scene_texture:ticker:0",
+      "texture_index": 0,
+      "width": 64,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0112.t000",
+      "chunk_index": 112,
+      "consumers": [
+        {
+          "command_offset": 5104,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 216,
+          "material_index": 0,
+          "material_name": "trivia_machine001c_export_vcHwShader3",
+          "maximum_vertex_index": 141,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "bartop_trivia"
+          ],
+          "primary_command_word_count": 113,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "bartop_trivia",
+          "shape_record_offset": 2384,
+          "shape_record_sha256": "c1afd4705e659b2556d7dd1dee1550c77be9c52de3ab51c479b759321ef6b622",
+          "shape_total_submeshes": 13,
+          "submesh_index": 0,
+          "submesh_record_offset": 3440,
+          "submesh_record_sha256": "2039eea4acd56189fcaa9ef484c1e4391a772809fb0b5389b50b264f7e223832",
+          "vertex_count": 258,
+          "vertex_streams": [
+            {
+              "byte_size": 1548,
+              "end_offset": 7724,
+              "offset": 6176,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2580,
+              "end_offset": 10324,
+              "offset": 7744,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 528,
+      "descriptor_sha256": "96976b1e93950e6558902c95eea6743e7bed81817361122e91d797d94abfee26",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 128,
+      "material_indices": [
+        0
+      ],
+      "material_names": [
+        "trivia_machine001c_export_vcHwShader3"
+      ],
+      "mip_levels": 5,
+      "packed_format": "0x07750b29",
+      "palette_offset": 21824,
+      "pixel_offset": 0,
+      "rgba_sha256": "43a139441e9b963a50c28f7929e6bcf4aa77da1fd6cc1ed0feb91f713ec36031",
+      "scene_name": "trivia_machine",
+      "selector": "crib_scene_texture:trivia_machine:0",
+      "texture_index": 0,
+      "width": 128,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0112.t001",
+      "chunk_index": 112,
+      "consumers": [
+        {
+          "command_offset": 6036,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 4,
+          "material_index": 4,
+          "material_name": "screenA",
+          "maximum_vertex_index": 245,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "bartop_trivia"
+          ],
+          "primary_command_word_count": 7,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "bartop_trivia",
+          "shape_record_offset": 2384,
+          "shape_record_sha256": "c1afd4705e659b2556d7dd1dee1550c77be9c52de3ab51c479b759321ef6b622",
+          "shape_total_submeshes": 13,
+          "submesh_index": 9,
+          "submesh_record_offset": 4592,
+          "submesh_record_sha256": "22e0ddde17c42c63d534727dbc94ae45b4226a770f5f354fd8e938d527b4b3af",
+          "vertex_count": 258,
+          "vertex_streams": [
+            {
+              "byte_size": 1548,
+              "end_offset": 7724,
+              "offset": 6176,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2580,
+              "end_offset": 10324,
+              "offset": 7744,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        },
+        {
+          "command_offset": 6064,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 4,
+          "material_index": 3,
+          "material_name": "screenB",
+          "maximum_vertex_index": 249,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "bartop_trivia"
+          ],
+          "primary_command_word_count": 7,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "bartop_trivia",
+          "shape_record_offset": 2384,
+          "shape_record_sha256": "c1afd4705e659b2556d7dd1dee1550c77be9c52de3ab51c479b759321ef6b622",
+          "shape_total_submeshes": 13,
+          "submesh_index": 10,
+          "submesh_record_offset": 4720,
+          "submesh_record_sha256": "da06e9deed8d43fbf904f063137f321d8cbd66bf314f49a5a302f94d4bb4dc0c",
+          "vertex_count": 258,
+          "vertex_streams": [
+            {
+              "byte_size": 1548,
+              "end_offset": 7724,
+              "offset": 6176,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2580,
+              "end_offset": 10324,
+              "offset": 7744,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        },
+        {
+          "command_offset": 6092,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 4,
+          "material_index": 2,
+          "material_name": "screenC",
+          "maximum_vertex_index": 253,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "bartop_trivia"
+          ],
+          "primary_command_word_count": 7,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "bartop_trivia",
+          "shape_record_offset": 2384,
+          "shape_record_sha256": "c1afd4705e659b2556d7dd1dee1550c77be9c52de3ab51c479b759321ef6b622",
+          "shape_total_submeshes": 13,
+          "submesh_index": 11,
+          "submesh_record_offset": 4848,
+          "submesh_record_sha256": "c2a0e485626281a22031409abe918412d23a1c2db59c3885ffaa6c5189d8bfac",
+          "vertex_count": 258,
+          "vertex_streams": [
+            {
+              "byte_size": 1548,
+              "end_offset": 7724,
+              "offset": 6176,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2580,
+              "end_offset": 10324,
+              "offset": 7744,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        },
+        {
+          "command_offset": 6120,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 4,
+          "material_index": 1,
+          "material_name": "screenD",
+          "maximum_vertex_index": 257,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "bartop_trivia"
+          ],
+          "primary_command_word_count": 7,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "bartop_trivia",
+          "shape_record_offset": 2384,
+          "shape_record_sha256": "c1afd4705e659b2556d7dd1dee1550c77be9c52de3ab51c479b759321ef6b622",
+          "shape_total_submeshes": 13,
+          "submesh_index": 12,
+          "submesh_record_offset": 4976,
+          "submesh_record_sha256": "ce2fb9426429351a07e29921a2e960cb05214450f2f7015aa7bb3674274067fc",
+          "vertex_count": 258,
+          "vertex_streams": [
+            {
+              "byte_size": 1548,
+              "end_offset": 7724,
+              "offset": 6176,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2580,
+              "end_offset": 10324,
+              "offset": 7744,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 560,
+      "descriptor_sha256": "20038659a0741cf5bbda62fd4859e1519edae96ccba787a4bf69f741dfb35586",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 256,
+      "material_indices": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "material_names": [
+        "screenD",
+        "screenC",
+        "screenB",
+        "screenA"
+      ],
+      "mip_levels": 6,
+      "packed_format": "0x08860b29",
+      "palette_offset": 110272,
+      "pixel_offset": 22912,
+      "rgba_sha256": "3535f21a2b76b57a8af95248916ceb28fb18febd8f5d57ceb23ec9e47ac4de6d",
+      "scene_name": "trivia_machine",
+      "selector": "crib_scene_texture:trivia_machine:1",
+      "texture_index": 1,
+      "width": 256,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    },
+    {
+      "asset_id": "nfl2k5.crib.scene.c0112.t002",
+      "chunk_index": 112,
+      "consumers": [
+        {
+          "command_offset": 5556,
+          "draw_array_vertex_count": 0,
+          "index_element_count": 30,
+          "material_index": 5,
+          "material_name": "trivia_machine001c_export_vcHwShader4",
+          "maximum_vertex_index": 161,
+          "node_indices": [
+            0
+          ],
+          "node_names": [
+            "bartop_trivia"
+          ],
+          "primary_command_word_count": 20,
+          "primitive_mode_counts": {
+            "END": 1,
+            "TRIANGLE_STRIP": 1
+          },
+          "shape_index": 0,
+          "shape_name": "bartop_trivia",
+          "shape_record_offset": 2384,
+          "shape_record_sha256": "c1afd4705e659b2556d7dd1dee1550c77be9c52de3ab51c479b759321ef6b622",
+          "shape_total_submeshes": 13,
+          "submesh_index": 1,
+          "submesh_record_offset": 3568,
+          "submesh_record_sha256": "4825c0ec864494bbaf01e3a8fcde924e21c258a36d597a7a8fa55e2521c1d5a1",
+          "vertex_count": 258,
+          "vertex_streams": [
+            {
+              "byte_size": 1548,
+              "end_offset": 7724,
+              "offset": 6176,
+              "stream_index": 0,
+              "stride": 6
+            },
+            {
+              "byte_size": 2580,
+              "end_offset": 10324,
+              "offset": 7744,
+              "stream_index": 1,
+              "stride": 10
+            }
+          ]
+        }
+      ],
+      "descriptor_offset": 592,
+      "descriptor_sha256": "39e57bbf362472ebfb8079d94a239caa38d0959b6c838ae5652f9ec4fcdf4c70",
+      "exact_material_and_submesh_ownership": true,
+      "format_name": "P8",
+      "height": 64,
+      "material_indices": [
+        5
+      ],
+      "material_names": [
+        "trivia_machine001c_export_vcHwShader4"
+      ],
+      "mip_levels": 4,
+      "packed_format": "0x06640b29",
+      "palette_offset": 116800,
+      "pixel_offset": 111360,
+      "rgba_sha256": "28e135e17088db16a5e128ce8cfdee69dad7d85041b981e4dbe65998f5878259",
+      "scene_name": "trivia_machine",
+      "selector": "crib_scene_texture:trivia_machine:2",
+      "texture_index": 2,
+      "width": 64,
+      "writer_status": "preview_export_only_no_fixed_span_writer"
+    }
+  ]
+}

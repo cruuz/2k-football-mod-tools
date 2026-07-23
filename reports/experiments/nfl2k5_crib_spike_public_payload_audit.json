@@ -1,0 +1,69 @@
+{
+  "schema": "nfl2k5_crib_spike_public_payload_audit/v1",
+  "date": "2026-07-17",
+  "result": "pass_metadata_code_docs_only",
+  "scope": [
+    {
+      "path": "tools/nfl_crib_bar_monitor_png_xiso.py",
+      "size": 33498,
+      "sha256": "7fb62c120e213557f6b043db82eb8022ad265e2e6a582f988a27efa4d6379633",
+      "kind": "python_source"
+    },
+    {
+      "path": "tools/nfl_crib_bar_monitor_png_verify.py",
+      "size": 8394,
+      "sha256": "750d0be85c28514ab9429e0c4446dbc8cec14b31400f41058c1a62548bc20797",
+      "kind": "python_source"
+    },
+    {
+      "path": "tools/nfl_crib_electronics_ownership.py",
+      "size": 15495,
+      "sha256": "f2029eacfab0e0460443dc3c9e1aed3d2b85c56992e2ee8e8ebca6a84ec3b0a7",
+      "kind": "python_source"
+    },
+    {
+      "path": "tests/test_nfl_crib_bar_monitor_png_xiso.py",
+      "size": 4209,
+      "sha256": "56d81703dcdaf2977c3500908368d3ef4a8846daa1db2be8e506597be950d9d4",
+      "kind": "python_test_source"
+    },
+    {
+      "path": "docs/research/nfl2k5_crib_electronics_model_swap_spike.md",
+      "size": 14764,
+      "sha256": "dc858b83a0eaaa95939099680e77b547b03821f40084c6472bedf79d96027589",
+      "kind": "markdown_findings"
+    },
+    {
+      "path": "reports/experiments/nfl2k5_crib_electronics_ownership.json",
+      "size": 73851,
+      "sha256": "4f95f42ae5264da28c3153c797d90362c54692e2d4581f404a6c019e213d3fab",
+      "kind": "metadata_json"
+    },
+    {
+      "path": "reports/experiments/nfl2k5_crib_bar_monitor_private_xiso_experiment.json",
+      "size": 3555,
+      "sha256": "f0ea87b0226d99f5b6c042c547d5cde5a9ed4941b4522e4f401c00b0e166aaec",
+      "kind": "metadata_json"
+    }
+  ],
+  "structural_checks": {
+    "all_scoped_files_are_utf8_text": true,
+    "binary_retail_artifacts_in_scope": [],
+    "xiso_or_iso_files_in_scope": [],
+    "compiled_scne_txtr_or_outer_spans_in_scope": [],
+    "retail_png_exports_in_scope": [],
+    "retail_gltf_or_bin_exports_in_scope": [],
+    "embedded_base64_or_data_uri_payloads": [],
+    "embedded_retail_opaque_tail_literal": false,
+    "retail_tail_is_read_from_and_hash_bound_to_user_source_at_runtime": true,
+    "replacement_span_is_compiled_from_user_source_and_user_png_at_runtime": true,
+    "shareable_project_contract_is_selector_plus_user_png_plus_metadata_only": true
+  },
+  "private_artifact_disposition": {
+    "temporary_modded_xisos_removed": 2,
+    "temporary_retail_gltf_bin_exports_removed": true,
+    "temporary_previews_and_manifests_removed": true,
+    "recovery": "not recoverable from temporary directories; all are deterministically reproducible from the user's legally dumped source and the nonretail test recipe"
+  },
+  "claim": "The scoped Crib spike payload contains no retail game byte payloads. Retail identity is represented only by hashes, sizes, offsets, selectors, and structural metadata."
+}

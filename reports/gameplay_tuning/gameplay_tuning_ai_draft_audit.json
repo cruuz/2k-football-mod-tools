@@ -1,0 +1,1793 @@
+{
+  "apf2k8": {
+    "catch_drop_result": {
+      "direct_refs_to_runtime_copies_are_writes_only": true,
+      "direction_or_polarity_claimed": false,
+      "editable_globals": [
+        "0x84F3F9C0",
+        "0x84F3F9E4"
+      ],
+      "final_computed_or_indexed_consumer_proved": false,
+      "runtime_copies": [
+        "0x84F3FC44",
+        "0x84F3FC20"
+      ]
+    },
+    "fantasy_draft_lineage": {
+      "aligned_fullword_pointers_to_table": [],
+      "classification": "retained lineage/orphan candidate, not a public draft-AI control",
+      "computed_or_toc_owner_exhaustively_excluded": false,
+      "conventional_lis_addi_or_ori_materializations": [],
+      "cpu_selector_proved": false,
+      "direct_ghidra_references_to_table": [],
+      "priority_tables": [
+        {
+          "flat_pe_offset": "0x000F4B70",
+          "rows": [
+            {
+              "position": "QB",
+              "position_code": 0,
+              "weight": 2.0
+            },
+            {
+              "position": "K",
+              "position_code": 1,
+              "weight": 0.1
+            },
+            {
+              "position": "P",
+              "position_code": 2,
+              "weight": 0.2
+            },
+            {
+              "position": "WR",
+              "position_code": 3,
+              "weight": 1.4
+            },
+            {
+              "position": "CB",
+              "position_code": 4,
+              "weight": 1.0
+            },
+            {
+              "position": "FS",
+              "position_code": 5,
+              "weight": 1.1
+            },
+            {
+              "position": "SS",
+              "position_code": 6,
+              "weight": 1.1
+            },
+            {
+              "position": "RB",
+              "position_code": 7,
+              "weight": 1.7
+            },
+            {
+              "position": "FB",
+              "position_code": 8,
+              "weight": 1.0
+            },
+            {
+              "position": "TE",
+              "position_code": 9,
+              "weight": 1.2
+            },
+            {
+              "position": "OLB",
+              "position_code": 10,
+              "weight": 1.2
+            },
+            {
+              "position": "ILB",
+              "position_code": 11,
+              "weight": 0.7
+            },
+            {
+              "position": "C",
+              "position_code": 12,
+              "weight": 0.5
+            },
+            {
+              "position": "G",
+              "position_code": 13,
+              "weight": 1.1
+            },
+            {
+              "position": "T",
+              "position_code": 14,
+              "weight": 1.3
+            },
+            {
+              "position": "DT",
+              "position_code": 15,
+              "weight": 1.4
+            },
+            {
+              "position": "DE",
+              "position_code": 16,
+              "weight": 1.3
+            }
+          ],
+          "virtual_address": "0x820F4B70"
+        },
+        {
+          "flat_pe_offset": "0x000053F0",
+          "rows": [
+            {
+              "position": "QB",
+              "position_code": 0,
+              "weight": 2.0
+            },
+            {
+              "position": "K",
+              "position_code": 1,
+              "weight": 0.1
+            },
+            {
+              "position": "P",
+              "position_code": 2,
+              "weight": 0.2
+            },
+            {
+              "position": "WR",
+              "position_code": 3,
+              "weight": 1.4
+            },
+            {
+              "position": "CB",
+              "position_code": 4,
+              "weight": 1.0
+            },
+            {
+              "position": "FS",
+              "position_code": 5,
+              "weight": 1.1
+            },
+            {
+              "position": "SS",
+              "position_code": 6,
+              "weight": 1.1
+            },
+            {
+              "position": "RB",
+              "position_code": 7,
+              "weight": 1.7
+            },
+            {
+              "position": "FB",
+              "position_code": 8,
+              "weight": 1.0
+            },
+            {
+              "position": "TE",
+              "position_code": 9,
+              "weight": 1.2
+            },
+            {
+              "position": "OLB",
+              "position_code": 10,
+              "weight": 1.2
+            },
+            {
+              "position": "ILB",
+              "position_code": 11,
+              "weight": 0.7
+            },
+            {
+              "position": "C",
+              "position_code": 12,
+              "weight": 0.5
+            },
+            {
+              "position": "G",
+              "position_code": 13,
+              "weight": 1.1
+            },
+            {
+              "position": "T",
+              "position_code": 14,
+              "weight": 1.3
+            },
+            {
+              "position": "DT",
+              "position_code": 15,
+              "weight": 1.4
+            },
+            {
+              "position": "DE",
+              "position_code": 16,
+              "weight": 1.3
+            }
+          ],
+          "virtual_address": "0x820053F0"
+        }
+      ],
+      "retained_function_cluster": {
+        "functions": {
+          "0x84680058": {
+            "callee_count": 0,
+            "callees": [],
+            "caller_count": 2,
+            "callers": [
+              "0x846F7EC8",
+              "0x8477A120"
+            ],
+            "direct_strings": [],
+            "pseudo_c": "pseudo_c/apf2k8_pseudoc_01280_01535.c",
+            "range": "0x84680058-0x8468005F"
+          },
+          "0x846801B8": {
+            "callee_count": 1,
+            "callees": [
+              "0x8467F1F0"
+            ],
+            "caller_count": 0,
+            "callers": [],
+            "direct_strings": [],
+            "pseudo_c": "pseudo_c/apf2k8_pseudoc_01280_01535.c",
+            "range": "0x846801B8-0x84680213"
+          },
+          "0x84680C00": {
+            "callee_count": 1,
+            "callees": [
+              "0x846E55B8"
+            ],
+            "caller_count": 0,
+            "callers": [],
+            "direct_strings": [
+              "automatically finish all remaining draft picks for all selected teams?",
+              "fantasy draft"
+            ],
+            "pseudo_c": "pseudo_c/apf2k8_pseudoc_01280_01535.c",
+            "range": "0x84680C00-0x84680C8F"
+          },
+          "0x84680C90": {
+            "callee_count": 1,
+            "callees": [
+              "0x846E55B8"
+            ],
+            "caller_count": 0,
+            "callers": [],
+            "direct_strings": [
+              "fantasy draft",
+              "quitting will reset all unsaved data. cancel the draft?"
+            ],
+            "pseudo_c": "pseudo_c/apf2k8_pseudoc_01280_01535.c",
+            "range": "0x84680C90-0x84680D1B"
+          },
+          "0x84681030": {
+            "callee_count": 3,
+            "callees": [
+              "0x846807E0",
+              "0x846F0AB0",
+              "0x84B3E6F0"
+            ],
+            "caller_count": 0,
+            "callers": [],
+            "direct_strings": [
+              "fantasy draft round %d"
+            ],
+            "pseudo_c": "pseudo_c/apf2k8_pseudoc_01280_01535.c",
+            "range": "0x84681030-0x846810BF"
+          },
+          "0x84681258": {
+            "callee_count": 5,
+            "callees": [
+              "0x8467F1F0",
+              "0x84680768",
+              "0x8473D290",
+              "0x84746BB0",
+              "0x84AB9930"
+            ],
+            "caller_count": 0,
+            "callers": [],
+            "direct_strings": [],
+            "pseudo_c": "pseudo_c/apf2k8_pseudoc_01280_01535.c",
+            "range": "0x84681258-0x846812CB"
+          },
+          "0x846813C8": {
+            "callee_count": 6,
+            "callees": [
+              "0x8467ED60",
+              "0x846F0288",
+              "0x846F5798",
+              "0x846F8D30",
+              "0x8474ECE0",
+              "0x84A56AC0"
+            ],
+            "caller_count": 0,
+            "callers": [],
+            "direct_strings": [],
+            "pseudo_c": "pseudo_c/apf2k8_pseudoc_01280_01535.c",
+            "range": "0x846813C8-0x84681437"
+          },
+          "0x846819F8": {
+            "callee_count": 2,
+            "callees": [
+              "0x84680D58",
+              "0x84A56AC0"
+            ],
+            "caller_count": 0,
+            "callers": [],
+            "direct_strings": [],
+            "pseudo_c": "pseudo_c/apf2k8_pseudoc_01280_01535.c",
+            "range": "0x846819F8-0x84681A47"
+          },
+          "0x84681A48": {
+            "callee_count": 2,
+            "callees": [
+              "0x84680D58",
+              "0x84A56AC0"
+            ],
+            "caller_count": 0,
+            "callers": [],
+            "direct_strings": [],
+            "pseudo_c": "pseudo_c/apf2k8_pseudoc_01280_01535.c",
+            "range": "0x84681A48-0x84681A87"
+          },
+          "0x84681A88": {
+            "callee_count": 1,
+            "callees": [
+              "0x84BD6DE4"
+            ],
+            "caller_count": 0,
+            "callers": [],
+            "direct_strings": [],
+            "pseudo_c": "pseudo_c/apf2k8_pseudoc_01280_01535.c",
+            "range": "0x84681A88-0x84681A8F"
+          }
+        },
+        "range": "0x84680058-0x84681A8F"
+      },
+      "semantically_identical_to_nfl": true
+    },
+    "function_evidence": {
+      "0x8470A578": {
+        "callee_count": 0,
+        "callees": [],
+        "caller_count": 12,
+        "callers": [
+          "0x846B3F98",
+          "0x846B4030",
+          "0x846BF868",
+          "0x846BFCD0",
+          "0x846BFEC8",
+          "0x846D5B08",
+          "0x846D5F70",
+          "0x846D6178",
+          "0x8470CFE0",
+          "0x84724998",
+          "0x84724D58",
+          "0x84724DE0"
+        ],
+        "direct_strings": [],
+        "pseudo_c": "pseudo_c/apf2k8_pseudoc_03584_03839.c",
+        "range": "0x8470A578-0x8470A62B"
+      },
+      "0x8470A630": {
+        "callee_count": 1,
+        "callees": [
+          "0x849FE0D0"
+        ],
+        "caller_count": 2,
+        "callers": [
+          "0x8471F2A0",
+          "0x847251A8"
+        ],
+        "direct_strings": [],
+        "pseudo_c": "pseudo_c/apf2k8_pseudoc_03584_03839.c",
+        "range": "0x8470A630-0x8470A757"
+      },
+      "0x8471F2A0": {
+        "callee_count": 2,
+        "callees": [
+          "0x8470A630",
+          "0x84B45CE8"
+        ],
+        "caller_count": 2,
+        "callers": [
+          "0x846BF868",
+          "0x846D5B08"
+        ],
+        "direct_strings": [],
+        "pseudo_c": "pseudo_c/apf2k8_pseudoc_03840_04095.c",
+        "range": "0x8471F2A0-0x8471F2D3"
+      },
+      "0x847251A8": {
+        "callee_count": 3,
+        "callees": [
+          "0x8470A630",
+          "0x84724DE0",
+          "0x849FD978"
+        ],
+        "caller_count": 4,
+        "callers": [
+          "0x84725270",
+          "0x847252B0",
+          "0x84725348",
+          "0x847253A8"
+        ],
+        "direct_strings": [],
+        "pseudo_c": "pseudo_c/apf2k8_pseudoc_04096_04351.c",
+        "range": "0x847251A8-0x8472526B"
+      },
+      "0x849FE0D0": {
+        "callee_count": 1,
+        "callees": [
+          "0x849FD978"
+        ],
+        "caller_count": 37,
+        "callers": [
+          "0x8470A630",
+          "0x84A41B40",
+          "0x84A41BD0",
+          "0x84A41C78",
+          "0x84A41D08",
+          "0x84A41DB0",
+          "0x84A41E40",
+          "0x84A41EE8",
+          "0x84A41F78",
+          "0x84A42020",
+          "0x84A420B0",
+          "0x84A42158",
+          "0x84A421E8",
+          "0x84A42290",
+          "0x84A42320",
+          "0x84A423C8",
+          "0x84A42458",
+          "0x84A42500",
+          "0x84A42590",
+          "0x84A42638",
+          "0x84A426C8",
+          "0x84A42770",
+          "0x84A42800",
+          "0x84A428A8",
+          "0x84A42938",
+          "0x84A429E0",
+          "0x84A42A70",
+          "0x84A42B18",
+          "0x84A42BA8",
+          "0x84A42C50",
+          "0x84A42CE0",
+          "0x84A42D88",
+          "0x84A42E18",
+          "0x84A42EC0",
+          "0x84A42F50",
+          "0x84A42FF8",
+          "0x84A43088"
+        ],
+        "direct_strings": [],
+        "pseudo_c": "pseudo_c/apf2k8_pseudoc_13056_13311.c",
+        "range": "0x849FE0D0-0x849FE183"
+      }
+    },
+    "sliders": {
+      "constants": {
+        "0x820009A0": 0.0,
+        "0x820009A4": 1.0,
+        "0x820B4518": 0.02500000037252903,
+        "0x820BACD0": 0.9750000238418579
+      },
+      "exporter": {
+        "element_count": 21,
+        "range": "0x8470A578-0x8470A62B",
+        "witness": {
+          "flat_pe_offset": "0x0270A578",
+          "range": "0x8470A578-0x8470A62B",
+          "sha256": "72ae45eafd6cd68c21225b55988a5da8701eb8a63271c029d659c72ad7cf3327",
+          "size": 180
+        }
+      },
+      "focused_ghidra_trace": {
+        "program_md5": "217eea6084c3d03f0f1143802b1f5636",
+        "schema": "vc_apf_gameplay_tuning_trace/v1",
+        "targets": {
+          "0x820F4B70": {
+            "aligned_fullword_occurrences": [],
+            "references": []
+          },
+          "0x84680058": {
+            "aligned_fullword_occurrences": [],
+            "references": [
+              "0x846F7F0C:UNCONDITIONAL_CALL:0x846F7EC8",
+              "0x8477A168:UNCONDITIONAL_CALL:0x8477A120"
+            ]
+          },
+          "0x84681A88": {
+            "aligned_fullword_occurrences": [
+              "0x844DDB98:.pdata"
+            ],
+            "references": []
+          },
+          "0x8470A578": {
+            "aligned_fullword_occurrences": [],
+            "references": [
+              "0x846B4010:UNCONDITIONAL_CALL:0x846B3F98",
+              "0x846B40D8:UNCONDITIONAL_CALL:0x846B4030",
+              "0x846BF8D4:UNCONDITIONAL_CALL:0x846BF868",
+              "0x846BFCEC:UNCONDITIONAL_CALL:0x846BFCD0",
+              "0x846BFF04:UNCONDITIONAL_CALL:0x846BFEC8",
+              "0x846D5B74:UNCONDITIONAL_CALL:0x846D5B08",
+              "0x846D5F8C:UNCONDITIONAL_CALL:0x846D5F70",
+              "0x846D61B4:UNCONDITIONAL_CALL:0x846D6178",
+              "0x8470D0C8:UNCONDITIONAL_CALL:0x8470CFE0",
+              "0x84724A40:UNCONDITIONAL_CALL:0x84724998",
+              "0x84724DCC:UNCONDITIONAL_CALL:0x84724D58",
+              "0x84724E88:UNCONDITIONAL_CALL:0x84724DE0"
+            ]
+          },
+          "0x8470A630": {
+            "aligned_fullword_occurrences": [
+              "0x844E19C8:.pdata"
+            ],
+            "references": [
+              "0x8470D19C:UNCONDITIONAL_CALL:none",
+              "0x8471F2C0:UNCONDITIONAL_CALL:0x8471F2A0",
+              "0x84725250:UNCONDITIONAL_CALL:0x847251A8"
+            ]
+          },
+          "0x84E4B088": {
+            "aligned_fullword_occurrences": [
+              "0x820E8F54:.rdata"
+            ],
+            "references": []
+          },
+          "0x84E4C7C8": {
+            "aligned_fullword_occurrences": [
+              "0x820E94C4:.rdata"
+            ],
+            "references": []
+          },
+          "0x84F3F9C0": {
+            "aligned_fullword_occurrences": [],
+            "references": [
+              "0x84707C50:READ:none",
+              "0x8470A5C8:READ:0x8470A578",
+              "0x8470A6BC:WRITE:0x8470A630",
+              "0x847C6860:WRITE:none",
+              "0x847C6870:READ:none",
+              "0x849FE178:READ:0x849FE0D0",
+              "0x84A42524:READ:0x84A42500",
+              "0x84A42540:WRITE:0x84A42500",
+              "0x84A4256C:WRITE:0x84A42500",
+              "0x84A425B4:READ:0x84A42590",
+              "0x84A425D0:WRITE:0x84A42590",
+              "0x84A425F4:WRITE:0x84A42590"
+            ]
+          },
+          "0x84F3F9E4": {
+            "aligned_fullword_occurrences": [],
+            "references": [
+              "0x84707D70:READ:none",
+              "0x8470A610:READ:0x8470A578",
+              "0x8470A728:WRITE:0x8470A630",
+              "0x847C6980:WRITE:none",
+              "0x847C6990:READ:none",
+              "0x849FE130:READ:0x849FE0D0",
+              "0x84A4301C:READ:0x84A42FF8",
+              "0x84A43038:WRITE:0x84A42FF8",
+              "0x84A43064:WRITE:0x84A42FF8",
+              "0x84A430AC:READ:0x84A43088",
+              "0x84A430C8:WRITE:0x84A43088",
+              "0x84A430EC:WRITE:0x84A43088"
+            ]
+          },
+          "0x84F3FC20": {
+            "aligned_fullword_occurrences": [],
+            "references": [
+              "0x849FD940:WRITE:0x849FD910",
+              "0x849FDEFC:WRITE:0x849FDEB0",
+              "0x849FE134:WRITE:0x849FE0D0"
+            ]
+          },
+          "0x84F3FC44": {
+            "aligned_fullword_occurrences": [],
+            "references": [
+              "0x849FD964:WRITE:0x849FD910",
+              "0x849FDF20:WRITE:0x849FDEB0",
+              "0x849FE17C:WRITE:0x849FE0D0"
+            ]
+          }
+        }
+      },
+      "human_catching_decrement": {
+        "range": "0x84A42590-0x84A42613",
+        "witness": {
+          "flat_pe_offset": "0x02A42590",
+          "range": "0x84A42590-0x84A42613",
+          "sha256": "f3d8999ab440325631442a5587bf6bca1bca83f2c21bbb69f0b9e1caed75c552",
+          "size": 132
+        }
+      },
+      "human_catching_increment": {
+        "range": "0x84A42500-0x84A4258B",
+        "witness": {
+          "flat_pe_offset": "0x02A42500",
+          "range": "0x84A42500-0x84A4258B",
+          "sha256": "07ce73c9c4a7292c47d7908ef29ea347f5b49be014f90045835905ce11c255c8",
+          "size": 140
+        }
+      },
+      "importer": {
+        "element_count": 21,
+        "order": [
+          {
+            "editable_global": "0x84F3F99C",
+            "label": "Interception",
+            "parameter_index": 0
+          },
+          {
+            "editable_global": "0x84F3F9A0",
+            "label": "Human Blocking",
+            "parameter_index": 1
+          },
+          {
+            "editable_global": "0x84F3F9A4",
+            "label": "Human Passing",
+            "parameter_index": 2
+          },
+          {
+            "editable_global": "0x84F3F9A8",
+            "label": "Human Running",
+            "parameter_index": 3
+          },
+          {
+            "editable_global": "0x84F3F9C0",
+            "label": "Human Catching",
+            "parameter_index": 4
+          },
+          {
+            "editable_global": "0x84F3F9AC",
+            "label": "Human Coverage",
+            "parameter_index": 5
+          },
+          {
+            "editable_global": "0x84F3F9B0",
+            "label": "Human Pursuit",
+            "parameter_index": 6
+          },
+          {
+            "editable_global": "0x84F3F9B4",
+            "label": "Human Tackling",
+            "parameter_index": 7
+          },
+          {
+            "editable_global": "0x84F3F9B8",
+            "label": "Human Kicking",
+            "parameter_index": 8
+          },
+          {
+            "editable_global": "0x84F3F9BC",
+            "label": "Human Fatigue",
+            "parameter_index": 9
+          },
+          {
+            "editable_global": "0x84F3F9C4",
+            "label": "CPU Blocking",
+            "parameter_index": 10
+          },
+          {
+            "editable_global": "0x84F3F9C8",
+            "label": "CPU Passing",
+            "parameter_index": 11
+          },
+          {
+            "editable_global": "0x84F3F9CC",
+            "label": "CPU Running",
+            "parameter_index": 12
+          },
+          {
+            "editable_global": "0x84F3F9E4",
+            "label": "CPU Catching",
+            "parameter_index": 13
+          },
+          {
+            "editable_global": "0x84F3F9D0",
+            "label": "CPU Coverage",
+            "parameter_index": 14
+          },
+          {
+            "editable_global": "0x84F3F9D4",
+            "label": "CPU Pursuit",
+            "parameter_index": 15
+          },
+          {
+            "editable_global": "0x84F3F9D8",
+            "label": "CPU Tackling",
+            "parameter_index": 16
+          },
+          {
+            "editable_global": "0x84F3F9DC",
+            "label": "CPU Kicking",
+            "parameter_index": 17
+          },
+          {
+            "editable_global": "0x84F3F9E0",
+            "label": "CPU Fatigue",
+            "parameter_index": 18
+          },
+          {
+            "editable_global": "0x84F3F9E8",
+            "label": "Injury",
+            "parameter_index": 19
+          },
+          {
+            "editable_global": "0x84F3F9EC",
+            "label": "Fumble",
+            "parameter_index": 20
+          }
+        ],
+        "range": "0x8470A630-0x8470A757",
+        "range_clamp_observed": false,
+        "serialized_size": 84,
+        "witness": {
+          "flat_pe_offset": "0x0270A630",
+          "range": "0x8470A630-0x8470A757",
+          "sha256": "280a2b4fea89646e1fc9762d8971d60fa8b8dc49940aec9b956b5dae1da8cac0",
+          "size": 296
+        }
+      },
+      "offline_descriptor": {
+        "address": "0x820E8F38",
+        "name": "OptionsMenu_AISlidersMenu",
+        "table": "0x84E4B088"
+      },
+      "offline_records": [
+        {
+          "callbacks": {
+            "current": "0x84707B48",
+            "decrement": "0x84A41BD0",
+            "increment": "0x84A41B40",
+            "maximum": "0x84A41C58",
+            "minimum": "0x84A41C68"
+          },
+          "editable_global": "0x84F3F9A0",
+          "flat_pe_offset": "0x02E4B0E8",
+          "index": 0,
+          "label": "Human Blocking",
+          "row_virtual_address": "0x84E4B0E8"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707B68",
+            "decrement": "0x84A41D08",
+            "increment": "0x84A41C78",
+            "maximum": "0x84A41D90",
+            "minimum": "0x84A41DA0"
+          },
+          "editable_global": "0x84F3F9A4",
+          "flat_pe_offset": "0x02E4B148",
+          "index": 1,
+          "label": "Human Passing",
+          "row_virtual_address": "0x84E4B148"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707B88",
+            "decrement": "0x84A41E40",
+            "increment": "0x84A41DB0",
+            "maximum": "0x84A41EC8",
+            "minimum": "0x84A41ED8"
+          },
+          "editable_global": "0x84F3F9A8",
+          "flat_pe_offset": "0x02E4B1A8",
+          "index": 2,
+          "label": "Human Running",
+          "row_virtual_address": "0x84E4B1A8"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707C48",
+            "decrement": "0x84A42590",
+            "increment": "0x84A42500",
+            "maximum": "0x84A42618",
+            "minimum": "0x84A42628"
+          },
+          "editable_global": "0x84F3F9C0",
+          "flat_pe_offset": "0x02E4B208",
+          "index": 3,
+          "label": "Human Catching",
+          "row_virtual_address": "0x84E4B208"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707BA8",
+            "decrement": "0x84A41F78",
+            "increment": "0x84A41EE8",
+            "maximum": "0x84A42000",
+            "minimum": "0x84A42010"
+          },
+          "editable_global": "0x84F3F9AC",
+          "flat_pe_offset": "0x02E4B268",
+          "index": 4,
+          "label": "Human Coverage",
+          "row_virtual_address": "0x84E4B268"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707BC8",
+            "decrement": "0x84A420B0",
+            "increment": "0x84A42020",
+            "maximum": "0x84A42138",
+            "minimum": "0x84A42148"
+          },
+          "editable_global": "0x84F3F9B0",
+          "flat_pe_offset": "0x02E4B2C8",
+          "index": 5,
+          "label": "Human Pursuit",
+          "row_virtual_address": "0x84E4B2C8"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707BE8",
+            "decrement": "0x84A421E8",
+            "increment": "0x84A42158",
+            "maximum": "0x84A42270",
+            "minimum": "0x84A42280"
+          },
+          "editable_global": "0x84F3F9B4",
+          "flat_pe_offset": "0x02E4B328",
+          "index": 6,
+          "label": "Human Tackling",
+          "row_virtual_address": "0x84E4B328"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707C08",
+            "decrement": "0x84A42320",
+            "increment": "0x84A42290",
+            "maximum": "0x84A423A8",
+            "minimum": "0x84A423B8"
+          },
+          "editable_global": "0x84F3F9B8",
+          "flat_pe_offset": "0x02E4B388",
+          "index": 7,
+          "label": "Human Kicking",
+          "row_virtual_address": "0x84E4B388"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707C28",
+            "decrement": "0x84A42458",
+            "increment": "0x84A423C8",
+            "maximum": "0x84A424E0",
+            "minimum": "0x84A424F0"
+          },
+          "editable_global": "0x84F3F9BC",
+          "flat_pe_offset": "0x02E4B3E8",
+          "index": 8,
+          "label": "Human Fatigue",
+          "row_virtual_address": "0x84E4B3E8"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707C68",
+            "decrement": "0x84A426C8",
+            "increment": "0x84A42638",
+            "maximum": "0x84A42750",
+            "minimum": "0x84A42760"
+          },
+          "editable_global": "0x84F3F9C4",
+          "flat_pe_offset": "0x02E4B448",
+          "index": 9,
+          "label": "CPU Blocking",
+          "row_virtual_address": "0x84E4B448"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707C88",
+            "decrement": "0x84A42800",
+            "increment": "0x84A42770",
+            "maximum": "0x84A42888",
+            "minimum": "0x84A42898"
+          },
+          "editable_global": "0x84F3F9C8",
+          "flat_pe_offset": "0x02E4B4A8",
+          "index": 10,
+          "label": "CPU Passing",
+          "row_virtual_address": "0x84E4B4A8"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707CA8",
+            "decrement": "0x84A42938",
+            "increment": "0x84A428A8",
+            "maximum": "0x84A429C0",
+            "minimum": "0x84A429D0"
+          },
+          "editable_global": "0x84F3F9CC",
+          "flat_pe_offset": "0x02E4B508",
+          "index": 11,
+          "label": "CPU Running",
+          "row_virtual_address": "0x84E4B508"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707D68",
+            "decrement": "0x84A43088",
+            "increment": "0x84A42FF8",
+            "maximum": "0x84A43110",
+            "minimum": "0x84A43120"
+          },
+          "editable_global": "0x84F3F9E4",
+          "flat_pe_offset": "0x02E4B568",
+          "index": 12,
+          "label": "CPU Catching",
+          "row_virtual_address": "0x84E4B568"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707CC8",
+            "decrement": "0x84A42A70",
+            "increment": "0x84A429E0",
+            "maximum": "0x84A42AF8",
+            "minimum": "0x84A42B08"
+          },
+          "editable_global": "0x84F3F9D0",
+          "flat_pe_offset": "0x02E4B5C8",
+          "index": 13,
+          "label": "CPU Coverage",
+          "row_virtual_address": "0x84E4B5C8"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707CE8",
+            "decrement": "0x84A42BA8",
+            "increment": "0x84A42B18",
+            "maximum": "0x84A42C30",
+            "minimum": "0x84A42C40"
+          },
+          "editable_global": "0x84F3F9D4",
+          "flat_pe_offset": "0x02E4B628",
+          "index": 14,
+          "label": "CPU Pursuit",
+          "row_virtual_address": "0x84E4B628"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707D08",
+            "decrement": "0x84A42CE0",
+            "increment": "0x84A42C50",
+            "maximum": "0x84A42D68",
+            "minimum": "0x84A42D78"
+          },
+          "editable_global": "0x84F3F9D8",
+          "flat_pe_offset": "0x02E4B688",
+          "index": 15,
+          "label": "CPU Tackling",
+          "row_virtual_address": "0x84E4B688"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707D28",
+            "decrement": "0x84A42E18",
+            "increment": "0x84A42D88",
+            "maximum": "0x84A42EA0",
+            "minimum": "0x84A42EB0"
+          },
+          "editable_global": "0x84F3F9DC",
+          "flat_pe_offset": "0x02E4B6E8",
+          "index": 16,
+          "label": "CPU Kicking",
+          "row_virtual_address": "0x84E4B6E8"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707D48",
+            "decrement": "0x84A42F50",
+            "increment": "0x84A42EC0",
+            "maximum": "0x84A42FD8",
+            "minimum": "0x84A42FE8"
+          },
+          "editable_global": "0x84F3F9E0",
+          "flat_pe_offset": "0x02E4B748",
+          "index": 17,
+          "label": "CPU Fatigue",
+          "row_virtual_address": "0x84E4B748"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707D88",
+            "decrement": "0x84A43188",
+            "increment": "0x84A43130",
+            "maximum": "0x84A431D8",
+            "minimum": "0x84A431E8"
+          },
+          "editable_global": "0x84F3F9E8",
+          "flat_pe_offset": "0x02E4B7A8",
+          "index": 18,
+          "label": "Injury",
+          "row_virtual_address": "0x84E4B7A8"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707DA8",
+            "decrement": "0x84A43250",
+            "increment": "0x84A431F8",
+            "maximum": "0x84A432A0",
+            "minimum": "0x84A432B0"
+          },
+          "editable_global": "0x84F3F9EC",
+          "flat_pe_offset": "0x02E4B808",
+          "index": 19,
+          "label": "Fumble",
+          "row_virtual_address": "0x84E4B808"
+        },
+        {
+          "callbacks": {
+            "current": "0x84707B28",
+            "decrement": "0x84A41AD0",
+            "increment": "0x84A41A78",
+            "maximum": "0x84A41B20",
+            "minimum": "0x84A41B30"
+          },
+          "editable_global": "0x84F3F99C",
+          "flat_pe_offset": "0x02E4B868",
+          "index": 20,
+          "label": "Interception",
+          "row_virtual_address": "0x84E4B868"
+        }
+      ],
+      "online_descriptor": {
+        "address": "0x820E94A8",
+        "name": "OptionsMenu_OnlineAISlidersMenu",
+        "table": "0x84E4C7C8"
+      },
+      "online_records_share_callbacks_and_globals": true,
+      "runtime_sync": {
+        "cpu_catching_destination": "0x84F3FC20",
+        "cpu_catching_source": "0x84F3F9E4",
+        "human_catching_destination": "0x84F3FC44",
+        "human_catching_source": "0x84F3F9C0",
+        "range": "0x849FE0D0-0x849FE183",
+        "witness": {
+          "flat_pe_offset": "0x029FE0D0",
+          "range": "0x849FE0D0-0x849FE183",
+          "sha256": "ce83efa34ea52715445f2953638ce18f2c095d20eb22f74a3e32fc792a8092d5",
+          "size": 180
+        }
+      },
+      "serialized_copy_owner": {
+        "copies_exact_bytes": 84,
+        "range": "0x8471F2A0-0x8471F2D3",
+        "then_calls_importer": true
+      }
+    }
+  },
+  "executable_integrity_boundary": {
+    "apf_xex": {
+      "compression": "normal_lzx",
+      "copy_only_asset_archive_edit_reaches_values": false,
+      "encryption": "normal_aes",
+      "page_descriptor_count": 824,
+      "slider_code_and_state_inside_default_xex": true
+    },
+    "nfl_xbe": {
+      "copy_only_asset_archive_edit_reaches_values": false,
+      "section_sha1_digest_present": true,
+      "slider_and_draft_data_inside_signed_default_xbe": true
+    },
+    "save_profile_alternative": {
+      "container_or_integrity_mapped": false,
+      "load_precedence_mapped": false,
+      "raw_slider_payload_candidate": true,
+      "writer_safe_to_release": false
+    }
+  },
+  "inputs": {
+    "apf_decoded_pe": {
+      "sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+      "size": 54001664
+    },
+    "apf_function_manifest_sha256": "9c5186fc9345d2079eebd9f7f3612043a9aa3a8d7a09a6950d3a37573b78de9e",
+    "apf_xex": {
+      "path": "extracted/All-Pro Football 2K8 (USA)/default.xex",
+      "sha256": "981a57143b0a665b2220f72366e1368c5374b91c77a22d93945439d51a2cd28f"
+    },
+    "ghidra_trace_sha256": "1779d9746138f7c520dfd3118cb802a8d31ebf7970acff61b5de36c1d72bda6f",
+    "nfl_function_ledger_sha256": "902eb0e5f504bcc24ee55aa895d8fa65e4cb3db05409eb8daaf147e3d74f28f7",
+    "nfl_xbe": {
+      "path": "extracted/ESPN NFL 2K5 (USA)/default.xbe",
+      "sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    }
+  },
+  "modding_conclusions": {
+    "apf_cpu_draft_logic": "retained table/code lineage is real, but no selector ownership is proved",
+    "franchise_2k5_to_apf": "not an asset/data-only mod; requires executable/state/UI/database/save integration",
+    "frequent_drops": "Catching controls are exact; final catch/drop branch and code-level polarity remain PORTME",
+    "nfl_cpu_draft_logic": "17 position-priority weights are exact and patchable only through default.xbe/emulator patch work",
+    "sliders_beyond_stock": "raw import paths accept them, but do not expose publicly until all final consumers and runtime stability are proved",
+    "stock_slider_editor": "possible after save/profile container and integrity mapping, or via executable/emulator patching"
+  },
+  "nfl2k5": {
+    "catch_drop_result": {
+      "cpu_global": "0x00E60118",
+      "direction_or_polarity_claimed": false,
+      "final_success_drop_branch_proved": false,
+      "human_global": "0x00E600F4",
+      "slider_label_semantics_proved": true
+    },
+    "cpu_fantasy_draft": {
+      "algorithm": "score each position using best available player evaluation times (base weight + 4.0 if empty, else target_count - current_count), sort positions, then rank-weight candidate selection",
+      "classification": "exact executable-patch candidate; runtime patch not performed",
+      "corrected_priority_builder_boundary": {
+        "correction": "raw contiguous body reaches the restoring RET at 0x0036F095",
+        "file_offset": "0x0035EE70",
+        "ledger_reported_range": "0x0036EE70-0x0036EE7C",
+        "range": "0x0036EE70-0x0036F095",
+        "sha256": "a699603a726e4d42dc10087c5cceb8e060c69f7892ab4dc7c76917469d144e9d",
+        "size": 550,
+        "table_pointer_occurrences": [
+          "0x0036EEFA",
+          "0x0036EF22"
+        ]
+      },
+      "functions": {
+        "0x000E3B90": {
+          "callee_count": 8,
+          "callees": [
+            "0x000E2DB0:FUN_000e2db0",
+            "0x000E3120:FUN_000e3120",
+            "0x000E32A0:FUN_000e32a0",
+            "0x000E3330:FUN_000e3330",
+            "0x000E3350:FUN_000e3350",
+            "0x000E3740:FUN_000e3740",
+            "0x001400E0:FUN_001400e0",
+            "0x00140100:FUN_00140100"
+          ],
+          "caller_count": 1,
+          "callers": [
+            "0x00077C50:FUN_00077c50"
+          ],
+          "ledger_range": "0x000E3B90-0x000E3DB7",
+          "pseudo_c": "pseudo_c/shard_004608_005119.c"
+        },
+        "0x000E3DC0": {
+          "callee_count": 2,
+          "callees": [
+            "0x000E3120:FUN_000e3120",
+            "0x000E3740:FUN_000e3740"
+          ],
+          "caller_count": 0,
+          "callers": [],
+          "ledger_range": "0x000E3DC0-0x000E3F05",
+          "pseudo_c": "pseudo_c/shard_004608_005119.c"
+        },
+        "0x0010E050": {
+          "callee_count": 0,
+          "callees": [],
+          "caller_count": 1,
+          "callers": [
+            "0x0010EB10:FUN_0010eb10"
+          ],
+          "ledger_range": "0x0010E050-0x0010E0FA",
+          "pseudo_c": "pseudo_c/shard_005120_005631.c"
+        },
+        "0x0036EDD0": {
+          "callee_count": 4,
+          "callees": [
+            "0x000C4C50:FUN_000c4c50",
+            "0x000E6670:FUN_000e6670",
+            "0x002424F0:FUN_002424f0",
+            "0x00242500:FUN_00242500"
+          ],
+          "caller_count": 1,
+          "callers": [
+            "0x0036F0A0:FUN_0036f0a0"
+          ],
+          "ledger_range": "0x0036EDD0-0x0036EE6B",
+          "pseudo_c": "pseudo_c/shard_013824_014335.c"
+        },
+        "0x0036EE70": {
+          "callee_count": 0,
+          "callees": [],
+          "caller_count": 1,
+          "callers": [
+            "0x0036F0A0:FUN_0036f0a0"
+          ],
+          "ledger_range": "0x0036EE70-0x0036EE7C",
+          "pseudo_c": "pseudo_c/shard_013824_014335.c"
+        },
+        "0x0036F0A0": {
+          "callee_count": 5,
+          "callees": [
+            "0x000C4C50:FUN_000c4c50",
+            "0x000E6670:FUN_000e6670",
+            "0x00242500:FUN_00242500",
+            "0x0036EDD0:FUN_0036edd0",
+            "0x0036EE70:FUN_0036ee70"
+          ],
+          "caller_count": 1,
+          "callers": [
+            "0x0036F830:FUN_0036f830"
+          ],
+          "ledger_range": "0x0036F0A0-0x0036F145",
+          "pseudo_c": "pseudo_c/shard_013824_014335.c"
+        },
+        "0x0036F830": {
+          "callee_count": 12,
+          "callees": [
+            "0x0004A400:thunk_FUN_0004a3e0",
+            "0x000C3EE0:FUN_000c3ee0",
+            "0x000C3F00:FUN_000c3f00",
+            "0x000C4C50:FUN_000c4c50",
+            "0x00145AE0:FUN_00145ae0",
+            "0x0014D3C0:FUN_0014d3c0",
+            "0x0014E440:FUN_0014e440",
+            "0x002424F0:FUN_002424f0",
+            "0x002425C0:FUN_002425c0",
+            "0x002BD260:FUN_002bd260",
+            "0x003228A0:FUN_003228a0",
+            "0x0036F0A0:FUN_0036f0a0"
+          ],
+          "caller_count": 0,
+          "callers": [],
+          "ledger_range": "0x0036F830-0x0036F938",
+          "pseudo_c": "pseudo_c/shard_013824_014335.c"
+        }
+      },
+      "pick_path": "0x0036F830-0x0036F938",
+      "priority_table": {
+        "file_offset": "0x0057EAA8",
+        "rows": [
+          {
+            "position": "QB",
+            "position_code": 0,
+            "weight": 2.0
+          },
+          {
+            "position": "K",
+            "position_code": 1,
+            "weight": 0.1
+          },
+          {
+            "position": "P",
+            "position_code": 2,
+            "weight": 0.2
+          },
+          {
+            "position": "WR",
+            "position_code": 3,
+            "weight": 1.4
+          },
+          {
+            "position": "CB",
+            "position_code": 4,
+            "weight": 1.0
+          },
+          {
+            "position": "FS",
+            "position_code": 5,
+            "weight": 1.1
+          },
+          {
+            "position": "SS",
+            "position_code": 6,
+            "weight": 1.1
+          },
+          {
+            "position": "RB",
+            "position_code": 7,
+            "weight": 1.7
+          },
+          {
+            "position": "FB",
+            "position_code": 8,
+            "weight": 1.0
+          },
+          {
+            "position": "TE",
+            "position_code": 9,
+            "weight": 1.2
+          },
+          {
+            "position": "OLB",
+            "position_code": 10,
+            "weight": 1.2
+          },
+          {
+            "position": "ILB",
+            "position_code": 11,
+            "weight": 0.7
+          },
+          {
+            "position": "C",
+            "position_code": 12,
+            "weight": 0.5
+          },
+          {
+            "position": "G",
+            "position_code": 13,
+            "weight": 1.1
+          },
+          {
+            "position": "T",
+            "position_code": 14,
+            "weight": 1.3
+          },
+          {
+            "position": "DT",
+            "position_code": 15,
+            "weight": 1.4
+          },
+          {
+            "position": "DE",
+            "position_code": 16,
+            "weight": 1.3
+          }
+        ],
+        "section": ".rdata",
+        "virtual_address": "0x00589588"
+      }
+    },
+    "sliders": {
+      "aggregate_consumer": {
+        "address": "0x0010E050",
+        "is_final_catch_drop_outcome": false,
+        "range": "0x0010E050-0x0010E0FA",
+        "uses_all_18_human_cpu_globals": true,
+        "witness": {
+          "file_offset": "0x000FE050",
+          "range": "0x0010E050-0x0010E0FA",
+          "sha256": "9f70052ce56308b73081dfb29995e6c40c0eb51e6035a51ead2060bf90caf01e",
+          "size": 171
+        }
+      },
+      "constants": {
+        "0x004E4180": 0.0,
+        "0x004E419C": 1.0,
+        "0x004F6B48": 0.02500000037252903,
+        "0x00503C08": 0.9750000238418579
+      },
+      "human_catching_direct_setter": {
+        "address": "0x000E23A0",
+        "editable_global": "0x00E600F4",
+        "range_clamp_observed": false,
+        "stores_raw_32_bit_argument_before_notification": true,
+        "witness": {
+          "file_offset": "0x000D23A0",
+          "range": "0x000E23A0-0x000E23AD",
+          "sha256": "9e3894eb1fa3eac2060e62236370bc6b844d0e0955b88fa775ce3ee65d812d7a",
+          "size": 14
+        }
+      },
+      "indexed_reload": {
+        "observed_copy_range": "0x000E397E-0x000E3AFD",
+        "owner": "0x000E3B90",
+        "range_clamp_observed": false,
+        "witness": {
+          "file_offset": "0x000D397E",
+          "range": "0x000E397E-0x000E3AFD",
+          "sha256": "ee8583423b9474ab6e45483d10248e3344c50acdab3a8ac531fa46766947ef20",
+          "size": 384
+        }
+      },
+      "records": [
+        {
+          "callbacks": {
+            "current": "0x0014A490",
+            "decrement": "0x0014A430",
+            "increment": "0x0014A3D0",
+            "maximum": "0x0014A4A0",
+            "minimum": "0x0014A4B0"
+          },
+          "editable_global": "0x00E600D4",
+          "index": 0,
+          "label": "Human Blocking",
+          "row_file_offset": "0x004F7474",
+          "row_virtual_address": "0x00501F54"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014A580",
+            "decrement": "0x0014A520",
+            "increment": "0x0014A4C0",
+            "maximum": "0x0014A590",
+            "minimum": "0x0014A5A0"
+          },
+          "editable_global": "0x00E600D8",
+          "index": 1,
+          "label": "Human Passing",
+          "row_file_offset": "0x004F74A8",
+          "row_virtual_address": "0x00501F88"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014A670",
+            "decrement": "0x0014A610",
+            "increment": "0x0014A5B0",
+            "maximum": "0x0014A680",
+            "minimum": "0x0014A690"
+          },
+          "editable_global": "0x00E600DC",
+          "index": 2,
+          "label": "Human Running",
+          "row_file_offset": "0x004F74DC",
+          "row_virtual_address": "0x00501FBC"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014AC10",
+            "decrement": "0x0014ABB0",
+            "increment": "0x0014AB50",
+            "maximum": "0x0014AC20",
+            "minimum": "0x0014AC30"
+          },
+          "editable_global": "0x00E600F4",
+          "index": 3,
+          "label": "Human Catching",
+          "row_file_offset": "0x004F7510",
+          "row_virtual_address": "0x00501FF0"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014A760",
+            "decrement": "0x0014A700",
+            "increment": "0x0014A6A0",
+            "maximum": "0x0014A770",
+            "minimum": "0x0014A780"
+          },
+          "editable_global": "0x00E600E0",
+          "index": 4,
+          "label": "Human Coverage",
+          "row_file_offset": "0x004F7544",
+          "row_virtual_address": "0x00502024"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014A850",
+            "decrement": "0x0014A7F0",
+            "increment": "0x0014A790",
+            "maximum": "0x0014A860",
+            "minimum": "0x0014A870"
+          },
+          "editable_global": "0x00E600E4",
+          "index": 5,
+          "label": "Human Pursuit",
+          "row_file_offset": "0x004F7578",
+          "row_virtual_address": "0x00502058"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014A940",
+            "decrement": "0x0014A8E0",
+            "increment": "0x0014A880",
+            "maximum": "0x0014A950",
+            "minimum": "0x0014A960"
+          },
+          "editable_global": "0x00E600E8",
+          "index": 6,
+          "label": "Human Tackling",
+          "row_file_offset": "0x004F75AC",
+          "row_virtual_address": "0x0050208C"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014AA30",
+            "decrement": "0x0014A9D0",
+            "increment": "0x0014A970",
+            "maximum": "0x0014AA40",
+            "minimum": "0x0014AA50"
+          },
+          "editable_global": "0x00E600EC",
+          "index": 7,
+          "label": "Human Kicking",
+          "row_file_offset": "0x004F75E0",
+          "row_virtual_address": "0x005020C0"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014AB20",
+            "decrement": "0x0014AAC0",
+            "increment": "0x0014AA60",
+            "maximum": "0x0014AB30",
+            "minimum": "0x0014AB40"
+          },
+          "editable_global": "0x00E600F0",
+          "index": 8,
+          "label": "Human Fatigue",
+          "row_file_offset": "0x004F7614",
+          "row_virtual_address": "0x005020F4"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014AD00",
+            "decrement": "0x0014ACA0",
+            "increment": "0x0014AC40",
+            "maximum": "0x0014AD10",
+            "minimum": "0x0014AD20"
+          },
+          "editable_global": "0x00E600F8",
+          "index": 9,
+          "label": "CPU Blocking",
+          "row_file_offset": "0x004F7648",
+          "row_virtual_address": "0x00502128"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014ADF0",
+            "decrement": "0x0014AD90",
+            "increment": "0x0014AD30",
+            "maximum": "0x0014AE00",
+            "minimum": "0x0014AE10"
+          },
+          "editable_global": "0x00E600FC",
+          "index": 10,
+          "label": "CPU Passing",
+          "row_file_offset": "0x004F767C",
+          "row_virtual_address": "0x0050215C"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014AEE0",
+            "decrement": "0x0014AE80",
+            "increment": "0x0014AE20",
+            "maximum": "0x0014AEF0",
+            "minimum": "0x0014AF00"
+          },
+          "editable_global": "0x00E60100",
+          "index": 11,
+          "label": "CPU Running",
+          "row_file_offset": "0x004F76B0",
+          "row_virtual_address": "0x00502190"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014B480",
+            "decrement": "0x0014B420",
+            "increment": "0x0014B3C0",
+            "maximum": "0x0014B490",
+            "minimum": "0x0014B4A0"
+          },
+          "editable_global": "0x00E60118",
+          "index": 12,
+          "label": "CPU Catching",
+          "row_file_offset": "0x004F76E4",
+          "row_virtual_address": "0x005021C4"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014AFD0",
+            "decrement": "0x0014AF70",
+            "increment": "0x0014AF10",
+            "maximum": "0x0014AFE0",
+            "minimum": "0x0014AFF0"
+          },
+          "editable_global": "0x00E60104",
+          "index": 13,
+          "label": "CPU Coverage",
+          "row_file_offset": "0x004F7718",
+          "row_virtual_address": "0x005021F8"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014B0C0",
+            "decrement": "0x0014B060",
+            "increment": "0x0014B000",
+            "maximum": "0x0014B0D0",
+            "minimum": "0x0014B0E0"
+          },
+          "editable_global": "0x00E60108",
+          "index": 14,
+          "label": "CPU Pursuit",
+          "row_file_offset": "0x004F774C",
+          "row_virtual_address": "0x0050222C"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014B1B0",
+            "decrement": "0x0014B150",
+            "increment": "0x0014B0F0",
+            "maximum": "0x0014B1C0",
+            "minimum": "0x0014B1D0"
+          },
+          "editable_global": "0x00E6010C",
+          "index": 15,
+          "label": "CPU Tackling",
+          "row_file_offset": "0x004F7780",
+          "row_virtual_address": "0x00502260"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014B2A0",
+            "decrement": "0x0014B240",
+            "increment": "0x0014B1E0",
+            "maximum": "0x0014B2B0",
+            "minimum": "0x0014B2C0"
+          },
+          "editable_global": "0x00E60110",
+          "index": 16,
+          "label": "CPU Kicking",
+          "row_file_offset": "0x004F77B4",
+          "row_virtual_address": "0x00502294"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014B390",
+            "decrement": "0x0014B330",
+            "increment": "0x0014B2D0",
+            "maximum": "0x0014B3A0",
+            "minimum": "0x0014B3B0"
+          },
+          "editable_global": "0x00E60114",
+          "index": 17,
+          "label": "CPU Fatigue",
+          "row_file_offset": "0x004F77E8",
+          "row_virtual_address": "0x005022C8"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014C250",
+            "decrement": "0x0014C200",
+            "increment": "0x0014C1B0",
+            "maximum": "0x0014C260",
+            "minimum": "0x0014C270"
+          },
+          "editable_global": "0x00E60204",
+          "index": 18,
+          "label": "Injury",
+          "row_file_offset": "0x004F781C",
+          "row_virtual_address": "0x005022FC"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014C320",
+            "decrement": "0x0014C2D0",
+            "increment": "0x0014C280",
+            "maximum": "0x0014C330",
+            "minimum": "0x0014C340"
+          },
+          "editable_global": "0x00E60208",
+          "index": 19,
+          "label": "Fumble",
+          "row_file_offset": "0x004F7850",
+          "row_virtual_address": "0x00502330"
+        },
+        {
+          "callbacks": {
+            "current": "0x0014C3F0",
+            "decrement": "0x0014C3A0",
+            "increment": "0x0014C350",
+            "maximum": "0x0014C400",
+            "minimum": "0x0014C410"
+          },
+          "editable_global": "0x00E6020C",
+          "index": 20,
+          "label": "Interception",
+          "row_file_offset": "0x004F7884",
+          "row_virtual_address": "0x00502364"
+        }
+      ],
+      "synchronizer": {
+        "indexed_vector_base": "0x00E60218",
+        "owner": "0x000E3DC0",
+        "range": "0x000E3DC0-0x000E3F05",
+        "vector_order_cpu_then_human": [
+          "0x00E600F8",
+          "0x00E600FC",
+          "0x00E60100",
+          "0x00E60118",
+          "0x00E60104",
+          "0x00E60108",
+          "0x00E6010C",
+          "0x00E60110",
+          "0x00E60114",
+          "0x00E600D4",
+          "0x00E600D8",
+          "0x00E600DC",
+          "0x00E600F4",
+          "0x00E600E0",
+          "0x00E600E4",
+          "0x00E600E8",
+          "0x00E600EC",
+          "0x00E600F0"
+        ],
+        "witness": {
+          "file_offset": "0x000D3DC0",
+          "range": "0x000E3DC0-0x000E3F05",
+          "sha256": "1847cb3768d1b71bef0d92e2154b69880a7ffde1adeefe1aa98eb343af1b8c18",
+          "size": 326
+        }
+      },
+      "table": {
+        "file_offset": "0x004F7474",
+        "record_stride": 52,
+        "virtual_address": "0x00501F54"
+      }
+    }
+  },
+  "portme": [
+    {
+      "address": "0x00E600F4/0x00E60118",
+      "game": "NFL 2K5",
+      "task": "identify final catch/drop consumer and polarity"
+    },
+    {
+      "address": "0x000E3B90",
+      "game": "NFL 2K5",
+      "task": "prove every out-of-range slider consumer safe"
+    },
+    {
+      "address": "0x000E3DC0",
+      "game": "NFL 2K5",
+      "task": "map save/profile container, integrity, and precedence"
+    },
+    {
+      "address": "0x00589588",
+      "game": "NFL 2K5",
+      "task": "runtime-test copied executable draft-weight patch and signature/digest handling"
+    },
+    {
+      "address": "0x84F3FC44/0x84F3FC20",
+      "game": "APF 2K8",
+      "task": "resolve computed/indexed catch consumers"
+    },
+    {
+      "address": "0x8470A630",
+      "game": "APF 2K8",
+      "task": "prove all out-of-range slider consumers safe"
+    },
+    {
+      "address": "0x8471F2A0",
+      "game": "APF 2K8",
+      "task": "map exact profile container/integrity/precedence"
+    },
+    {
+      "address": "0x820F4B70",
+      "game": "APF 2K8",
+      "task": "resolve a CPU selector or prove retained table dead"
+    },
+    {
+      "address": "unresolved",
+      "game": "cross-title",
+      "task": "map and integrate franchise state, DB, schedule, contracts, UI, and saves"
+    }
+  ],
+  "schema": "vc_gameplay_tuning_ai_draft_audit/v1",
+  "scope": {
+    "emulator_or_game_launched": false,
+    "franchise_port_claimed": false,
+    "originals_modified": false,
+    "out_of_range_runtime_safety_claimed": false,
+    "read_only": true,
+    "save_or_profile_fixture_supplied": false
+  },
+  "shared_slider_schema": {
+    "labels": [
+      "Human Blocking",
+      "Human Passing",
+      "Human Running",
+      "Human Catching",
+      "Human Coverage",
+      "Human Pursuit",
+      "Human Tackling",
+      "Human Kicking",
+      "Human Fatigue",
+      "CPU Blocking",
+      "CPU Passing",
+      "CPU Running",
+      "CPU Catching",
+      "CPU Coverage",
+      "CPU Pursuit",
+      "CPU Tackling",
+      "CPU Kicking",
+      "CPU Fatigue",
+      "Injury",
+      "Fumble",
+      "Interception"
+    ],
+    "labels_identical": true
+  },
+  "summary": {
+    "apf_equivalent_draft_owner_proved": false,
+    "copy_only_iso_gameplay_tuning_proved": false,
+    "nfl_cpu_draft_owner_proved": true,
+    "nfl_cpu_draft_weight_count": 17,
+    "shared_slider_count": 21,
+    "stock_ui_maximum": 1.0,
+    "stock_ui_minimum": 0.0,
+    "stock_ui_step": 0.025
+  }
+}

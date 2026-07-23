@@ -1,0 +1,172 @@
+{
+    "$id": "apf2k8_scne_catalog_position_recipe/v2",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "description": "Fail-closed recipe for replacing every serialized POSITION0 lane of one hashes-only APF stadium catalog target without changing vertex count, topology, declarations, interleaves, attachment data, or allocation.",
+    "properties": {
+        "catalog": {
+            "additionalProperties": false,
+            "properties": {
+                "schema": {
+                    "const": "apf2k8_stadium_static_position_target_catalog/v1"
+                },
+                "sha256": {
+                    "const": "e2b21ebf4d358358627d26b7d7ea3c6cf600ea3f9d1e139cb9caa8ff1748a424"
+                },
+                "size_bytes": {
+                    "const": 456821
+                }
+            },
+            "required": [
+                "schema",
+                "sha256",
+                "size_bytes"
+            ],
+            "type": "object"
+        },
+        "claim_flags": {
+            "additionalProperties": false,
+            "properties": {
+                "changed_topology_proved": {
+                    "const": false
+                },
+                "emulator_runtime_visibility_proved": {
+                    "const": false
+                },
+                "material_or_uv_authoring_proved": {
+                    "const": false
+                },
+                "production_mesh_importer_proved": {
+                    "const": false
+                },
+                "rigid_attachment_proved": {
+                    "const": false
+                },
+                "same_count_position_only": {
+                    "const": true
+                },
+                "skin_authoring_proved": {
+                    "const": false
+                },
+                "xbox_360_hardware_proved": {
+                    "const": false
+                }
+            },
+            "required": [
+                "changed_topology_proved",
+                "emulator_runtime_visibility_proved",
+                "material_or_uv_authoring_proved",
+                "production_mesh_importer_proved",
+                "rigid_attachment_proved",
+                "same_count_position_only",
+                "skin_authoring_proved",
+                "xbox_360_hardware_proved"
+            ],
+            "type": "object"
+        },
+        "coordinate_space": {
+            "const": "serialized_scne_object_space"
+        },
+        "game": {
+            "additionalProperties": false,
+            "properties": {
+                "platform": {
+                    "const": "Xbox 360"
+                },
+                "title": {
+                    "const": "All-Pro Football 2K8"
+                }
+            },
+            "required": [
+                "platform",
+                "title"
+            ],
+            "type": "object"
+        },
+        "operation": {
+            "const": "replace_catalog_target_exact_same_count_position0"
+        },
+        "position_type": {
+            "additionalProperties": false,
+            "properties": {
+                "component": {
+                    "const": "IEEE754_BINARY32"
+                },
+                "serialized_byte_order": {
+                    "const": "big-endian"
+                },
+                "shape": {
+                    "const": "FLOAT3"
+                }
+            },
+            "required": [
+                "component",
+                "serialized_byte_order",
+                "shape"
+            ],
+            "type": "object"
+        },
+        "positions": {
+            "description": "Exactly the catalog target vertex_count entries, in retail stream order. The writer additionally requires every number to be finite and exactly representable as binary32.",
+            "items": {
+                "items": {
+                    "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3,
+                "type": "array"
+            },
+            "minItems": 1,
+            "type": "array"
+        },
+        "schema": {
+            "const": "apf2k8_scne_catalog_position_recipe/v2"
+        },
+        "source_contract": {
+            "additionalProperties": false,
+            "properties": {
+                "index_pack": {
+                    "const": "0A"
+                },
+                "index_sha256": {
+                    "const": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+                },
+                "physical_pack": {
+                    "const": "1A"
+                },
+                "physical_pack_sha256": {
+                    "const": "9f48974f4a63d1827a1ca6bbe847aeaa6911cdb884f84f4d3bbd0a9a1eb6eacb"
+                }
+            },
+            "required": [
+                "index_pack",
+                "index_sha256",
+                "physical_pack",
+                "physical_pack_sha256"
+            ],
+            "type": "object"
+        },
+        "target_id": {
+            "pattern": "^outer14\\.inner8\\.node[0-9]+$",
+            "type": "string"
+        },
+        "vertex_order": {
+            "const": "retail_stream_order"
+        }
+    },
+    "required": [
+        "catalog",
+        "claim_flags",
+        "coordinate_space",
+        "game",
+        "operation",
+        "position_type",
+        "positions",
+        "schema",
+        "source_contract",
+        "target_id",
+        "vertex_order"
+    ],
+    "title": "APF 2K8 catalog-backed exact same-count POSITION0 recipe v2",
+    "type": "object"
+}

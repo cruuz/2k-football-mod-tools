@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apf2k8_scne_same_count_position_recipe/v1",
+  "title": "APF 2K8 same-count SCNE POSITION0 recipe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "operation",
+    "game",
+    "source_contract",
+    "target",
+    "coordinate_space",
+    "vertex_order",
+    "position_type",
+    "positions",
+    "claim_flags"
+  ],
+  "properties": {
+    "schema": {"const": "apf2k8_scne_same_count_position_recipe/v1"},
+    "operation": {"const": "replace_exact_same_count_position0"},
+    "game": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "platform"],
+      "properties": {
+        "title": {"const": "All-Pro Football 2K8"},
+        "platform": {"const": "Xbox 360"}
+      }
+    },
+    "source_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index_pack", "physical_pack", "index_sha256", "physical_pack_sha256"],
+      "properties": {
+        "index_pack": {"const": "0A"},
+        "physical_pack": {"const": "1A"},
+        "index_sha256": {"const": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"},
+        "physical_pack_sha256": {"const": "9f48974f4a63d1827a1ca6bbe847aeaa6911cdb884f84f4d3bbd0a9a1eb6eacb"}
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outer_table_index",
+        "outer_name_id",
+        "inner_file_index",
+        "inner_name",
+        "inner_file_id",
+        "inner_type",
+        "node_index",
+        "node_name",
+        "node_name_crc32",
+        "vertex_count",
+        "stream_index",
+        "stream_stride_bytes",
+        "position_byte_offset",
+        "position_format_code"
+      ],
+      "properties": {
+        "outer_table_index": {"const": 14},
+        "outer_name_id": {"const": "0x02bae370"},
+        "inner_file_index": {"const": 8},
+        "inner_name": {"const": "stadium"},
+        "inner_file_id": {"const": "0xe604044f"},
+        "inner_type": {"const": "SCNE"},
+        "node_index": {"const": 17},
+        "node_name": {"const": "polySurface19930"},
+        "node_name_crc32": {"const": "0xb13b08b6"},
+        "vertex_count": {"const": 4},
+        "stream_index": {"const": 0},
+        "stream_stride_bytes": {"const": 24},
+        "position_byte_offset": {"const": 0},
+        "position_format_code": {"const": "0x002a23b9"}
+      }
+    },
+    "coordinate_space": {"const": "serialized_scne_object_space"},
+    "vertex_order": {"const": "retail_stream_order"},
+    "position_type": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shape", "component", "serialized_byte_order"],
+      "properties": {
+        "shape": {"const": "FLOAT3"},
+        "component": {"const": "IEEE754_BINARY32"},
+        "serialized_byte_order": {"const": "big-endian"}
+      }
+    },
+    "positions": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "array",
+        "minItems": 3,
+        "maxItems": 3,
+        "items": {"type": "number"}
+      }
+    },
+    "claim_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "same_count_position_only",
+        "changed_topology_proved",
+        "rigid_attachment_proved",
+        "material_or_uv_authoring_proved",
+        "skin_authoring_proved",
+        "emulator_runtime_visibility_proved",
+        "xbox_360_hardware_proved",
+        "production_mesh_importer_proved"
+      ],
+      "properties": {
+        "same_count_position_only": {"const": true},
+        "changed_topology_proved": {"const": false},
+        "rigid_attachment_proved": {"const": false},
+        "material_or_uv_authoring_proved": {"const": false},
+        "skin_authoring_proved": {"const": false},
+        "emulator_runtime_visibility_proved": {"const": false},
+        "xbox_360_hardware_proved": {"const": false},
+        "production_mesh_importer_proved": {"const": false}
+      }
+    }
+  }
+}

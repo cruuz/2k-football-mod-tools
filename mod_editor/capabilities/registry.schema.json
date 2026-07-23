@@ -1,0 +1,453 @@
+{
+  "$id": "urn:vc-mod-capability-registry:v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "registry.schema.json"
+    },
+    "capabilities": {
+      "items": {
+        "$ref": "#/$defs/capability"
+      },
+      "minItems": 38,
+      "type": "array"
+    },
+    "classification_definitions": {
+      "additionalProperties": false,
+      "properties": {
+        "extract-only": {
+          "type": "string"
+        },
+        "offline-writer-proved": {
+          "type": "string"
+        },
+        "read-only-mapped": {
+          "type": "string"
+        },
+        "runtime-proved": {
+          "type": "string"
+        },
+        "unknown": {
+          "type": "string"
+        },
+        "unsafe/deferred": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "extract-only",
+        "offline-writer-proved",
+        "read-only-mapped",
+        "runtime-proved",
+        "unknown",
+        "unsafe/deferred"
+      ],
+      "type": "object"
+    },
+    "games": {
+      "items": {
+        "$ref": "#/$defs/game"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "type": "array"
+    },
+    "schema": {
+      "const": "vc_mod_capability_registry/v1"
+    },
+    "surfaces": {
+      "items": {
+        "enum": [
+          "audio",
+          "catching_drops",
+          "colors",
+          "cpu_ai_draft",
+          "crib_assets",
+          "cross_title_model_conversion",
+          "franchise_restoration_cross_title",
+          "gameplay_tuning_sliders",
+          "logos_cards",
+          "menus",
+          "mode_state_routing",
+          "models_shap_scne",
+          "players_rosters",
+          "portraits_faces",
+          "saves",
+          "schedules_franchise",
+          "scorebug_presentation",
+          "scripts_config",
+          "stadiums_fields",
+          "uniforms"
+        ]
+      },
+      "maxItems": 20,
+      "minItems": 20,
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "$schema",
+    "capabilities",
+    "classification_definitions",
+    "games",
+    "schema",
+    "surfaces"
+  ],
+  "title": "Visual Concepts football mod-editor capability registry",
+  "type": "object",
+  "$defs": {
+    "backend": {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "module": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "operation": {
+          "enum": [
+            "export",
+            "inspect",
+            "none",
+            "write"
+          ]
+        }
+      },
+      "required": [
+        "command",
+        "module",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "capability": {
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "$ref": "#/$defs/backend"
+        },
+        "classification": {
+          "enum": [
+            "extract-only",
+            "offline-writer-proved",
+            "read-only-mapped",
+            "runtime-proved",
+            "unknown",
+            "unsafe/deferred"
+          ]
+        },
+        "evidence": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "game": {
+          "enum": [
+            "apf2k8_xbox360",
+            "nfl2k5_xbox"
+          ]
+        },
+        "gui": {
+          "$ref": "#/$defs/gui"
+        },
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9_.-]+$",
+          "type": "string"
+        },
+        "input_constraints": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "portme": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "public_distribution": {
+          "$ref": "#/$defs/publicDistribution"
+        },
+        "runtime": {
+          "$ref": "#/$defs/runtime"
+        },
+        "selectors": {
+          "$ref": "#/$defs/selectors"
+        },
+        "source_container": {
+          "$ref": "#/$defs/sourceContainer"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "surface": {
+          "enum": [
+            "audio",
+            "catching_drops",
+            "colors",
+            "cpu_ai_draft",
+            "crib_assets",
+            "cross_title_model_conversion",
+            "franchise_restoration_cross_title",
+            "gameplay_tuning_sliders",
+            "logos_cards",
+            "menus",
+            "mode_state_routing",
+            "models_shap_scne",
+            "players_rosters",
+            "portraits_faces",
+            "saves",
+            "schedules_franchise",
+            "scorebug_presentation",
+            "scripts_config",
+            "stadiums_fields",
+            "uniforms"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "validation_command": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "backend",
+        "classification",
+        "evidence",
+        "game",
+        "gui",
+        "id",
+        "input_constraints",
+        "portme",
+        "public_distribution",
+        "runtime",
+        "selectors",
+        "source_container",
+        "summary",
+        "surface",
+        "title",
+        "validation_command"
+      ],
+      "type": "object"
+    },
+    "game": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "enum": [
+            "apf2k8_xbox360",
+            "nfl2k5_xbox"
+          ]
+        },
+        "platform": {
+          "type": "string"
+        },
+        "public_input": {
+          "type": "string"
+        },
+        "retail_identity": {
+          "additionalProperties": false,
+          "properties": {
+            "content_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "executable_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "content_sha256",
+            "executable_sha256"
+          ],
+          "type": "object"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "platform",
+        "public_input",
+        "retail_identity",
+        "title"
+      ],
+      "type": "object"
+    },
+    "gui": {
+      "additionalProperties": false,
+      "properties": {
+        "default_enabled": {
+          "type": "boolean"
+        },
+        "expose": {
+          "type": "boolean"
+        },
+        "mode": {
+          "enum": [
+            "deferred",
+            "edit",
+            "export",
+            "view"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "default_enabled",
+        "expose",
+        "mode",
+        "reason"
+      ],
+      "type": "object"
+    },
+    "publicDistribution": {
+      "additionalProperties": false,
+      "properties": {
+        "game_data": {
+          "const": "never-bundle-retail-data"
+        },
+        "mod_payload": {
+          "enum": [
+            "metadata-only",
+            "user-authored-inputs-and-recipes",
+            "none-until-safe"
+          ]
+        },
+        "rule": {
+          "type": "string"
+        },
+        "tooling": {
+          "const": "source-and-schemas-only"
+        }
+      },
+      "required": [
+        "game_data",
+        "mod_payload",
+        "rule",
+        "tooling"
+      ],
+      "type": "object"
+    },
+    "runtime": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "negative",
+            "not-applicable",
+            "not-tested",
+            "partial",
+            "visible-proved"
+          ]
+        }
+      },
+      "required": [
+        "evidence",
+        "scope",
+        "status"
+      ],
+      "type": "object"
+    },
+    "selectorField": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "allowed",
+        "name",
+        "required"
+      ],
+      "type": "object"
+    },
+    "selectors": {
+      "additionalProperties": false,
+      "properties": {
+        "fields": {
+          "items": {
+            "$ref": "#/$defs/selectorField"
+          },
+          "type": "array"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "fields",
+        "notes"
+      ],
+      "type": "object"
+    },
+    "sourceContainer": {
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "type": "string"
+        },
+        "hash_pins": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "resource": {
+          "type": "string"
+        },
+        "retail_file": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "format",
+        "hash_pins",
+        "resource",
+        "retail_file"
+      ],
+      "type": "object"
+    }
+  }
+}

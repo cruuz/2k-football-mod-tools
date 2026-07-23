@@ -1,0 +1,49 @@
+{
+  "$id": "urn:vc-mod-editor:apf2k8-digital-font-recipe:v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "alpha_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "png": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "type": "string"
+    },
+    "png_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "png_size": {
+      "maximum": 16777216,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "schema": {
+      "const": "apf2k8_digital_font_recipe/v1"
+    },
+    "scope": {
+      "const": "shared-global-ui"
+    },
+    "stored_channel": {
+      "const": "alpha"
+    },
+    "target": {
+      "const": "digital_font"
+    }
+  },
+  "required": [
+    "alpha_sha256",
+    "png",
+    "png_sha256",
+    "png_size",
+    "schema",
+    "scope",
+    "stored_channel",
+    "target"
+  ],
+  "title": "APF 2K8 shared digital_font alpha-only recipe",
+  "type": "object"
+}

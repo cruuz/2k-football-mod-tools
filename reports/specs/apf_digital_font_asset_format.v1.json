@@ -1,0 +1,305 @@
+{
+  "schema": "apf_digital_font_asset_format/v1",
+  "title": "APF 2K8 global digital_font DXT5A/TXTR/H7A asset contract",
+  "scope": {
+    "game": "All-Pro Football 2K8 (USA)",
+    "platform": "Xbox 360",
+    "asset": "digital_font",
+    "offline_writer_proved": true,
+    "runtime_visibility_proved": false,
+    "hardware_fidelity_proved": false,
+    "production_perceptual_encoder_proved": false
+  },
+  "source_gate": {
+    "volume_name": "0A",
+    "volume_size": 1140850688,
+    "volume_sha256": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+    "outer_table_index": 1310,
+    "outer_name": "global.iff",
+    "outer_name_id": "0xdb5e3e48",
+    "outer_physical_offset": 22480896,
+    "outer_fixed_allocation": 25028608,
+    "outer_retail_sha256": "752bc94e99ae0bc1a3ec732c5b4912ef6ef234149183e76dc059973c714d792d",
+    "inner_file_index": 246,
+    "inner_name": "digital_font",
+    "inner_file_id": "0x899d899d",
+    "inner_type": "TXTR"
+  },
+  "iff": {
+    "byte_order": "big",
+    "magic": "0xff3bef94",
+    "fixed_header_size": 32,
+    "block_descriptor_size": 32,
+    "block_count": 3,
+    "file_count": 442,
+    "file_part_count": 751,
+    "name_footer": {
+      "magic": "0xaa170116",
+      "total_length": 54182,
+      "payload_length": 54174,
+      "name_count": 442,
+      "retail_sha256": "0a53be8380e3221c6faf500ab8d78929f9908e6e1c72e4fd6ab04be2b7c62615",
+      "must_be_bit_exact_after_rebuild": true
+    },
+    "retail_zero_tail_slack": 1772,
+    "blocks": [
+      {
+        "index": 0,
+        "name": "DRAM",
+        "storage": "H7A",
+        "decoded_length": 6082684,
+        "retail_stored_length": 3074009,
+        "h7a_shift": 12,
+        "must_be_stored_bit_exact_after_font_edit": true
+      },
+      {
+        "index": 1,
+        "name": "VRAM",
+        "storage": "H7A",
+        "decoded_length": 46637056,
+        "retail_stored_length": 21742997,
+        "h7a_shift": 10,
+        "must_be_recompressed_after_font_edit": true,
+        "decoded_bytes_outside_target_must_be_bit_exact": true
+      },
+      {
+        "index": 2,
+        "name": "SRAM",
+        "storage": "raw",
+        "decoded_length": 145408,
+        "retail_stored_length": 145408,
+        "h7a_shift": null,
+        "must_be_stored_bit_exact_after_font_edit": true
+      }
+    ]
+  },
+  "h7a": {
+    "header": {
+      "byte_order": "big",
+      "size": 20,
+      "fields": [
+        {
+          "name": "magic",
+          "offset": 0,
+          "type": "u32",
+          "required_value": "0x0e4837c3"
+        },
+        {
+          "name": "uncompressed_length",
+          "offset": 4,
+          "type": "u32"
+        },
+        {
+          "name": "stored_length_including_header",
+          "offset": 8,
+          "type": "u32"
+        },
+        {
+          "name": "iff_block_unknown_10",
+          "offset": 12,
+          "type": "u32"
+        },
+        {
+          "name": "shift",
+          "offset": 16,
+          "type": "u32",
+          "valid_range_inclusive": [
+            1,
+            15
+          ]
+        }
+      ]
+    },
+    "token_stream": {
+      "descriptor_type": "u8",
+      "tokens_per_descriptor": 8,
+      "descriptor_bit_order": "least-significant bit first",
+      "descriptor_bit_zero": "one literal u8 follows",
+      "descriptor_bit_one": "one big-endian u16 back-reference follows",
+      "back_reference": {
+        "distance_mask_expression": "(1 << shift) - 1",
+        "distance_expression": "word & distance_mask",
+        "length_expression": "((word >> shift) & ((1 << (16 - shift)) - 1)) + 3",
+        "distance_zero_valid": false,
+        "overlapping_copy_valid": true
+      },
+      "trailing_zero_alignment_bytes_valid": true,
+      "trailing_nonzero_bytes_valid": false
+    }
+  },
+  "txtr": {
+    "dram_part": {
+      "block_index": 0,
+      "offset": 6070048,
+      "length": 224,
+      "retail_sha256": "b4fb4a9ddaea8a65806c3a861597f3b1c828d41c9b9b7daa14d48af542039b2f",
+      "must_be_bit_exact_after_edit": true
+    },
+    "vram_part": {
+      "block_index": 1,
+      "offset": 6565888,
+      "length": 8192,
+      "retail_sha256": "e9d70fda8bdb0950068f9da19c405d4e206a789387a6de396ef88cb028022ccd",
+      "exclusive_owner": true
+    },
+    "vc_header": {
+      "byte_order": "big",
+      "file_id": "0x899d899d",
+      "declared_width": 128,
+      "declared_height": 128,
+      "base_data_length": 8192,
+      "mip_data_length": 0,
+      "fetch_constant_offset": 148
+    },
+    "xenos_fetch_constant": {
+      "byte_order": "big",
+      "dwords": [
+        "0x810000fe",
+        "0x0000007b",
+        "0x000fe07f",
+        "0x00a802da",
+        "0x00000003",
+        "0x00000200"
+      ],
+      "fetch_type": 2,
+      "pitch_pixels": 128,
+      "tiled": true,
+      "format_value": 59,
+      "format_name": "DXT5A",
+      "endianness_value": 1,
+      "endianness_name": "8in16",
+      "stacked": false,
+      "width": 128,
+      "height": 128,
+      "swizzle_components": [
+        5,
+        5,
+        5,
+        0
+      ],
+      "swizzle_semantics": "displayed RGBA is constant one, constant one, constant one, stored scalar",
+      "mip_min_level": 0,
+      "mip_max_level": 0,
+      "dimension": 1,
+      "packed_mips": false,
+      "mip_address_pages": 0
+    }
+  },
+  "dxt5a": {
+    "semantic_alias": "BC3 alpha block / unsigned BC4-style scalar block",
+    "block_width_pixels": 4,
+    "block_height_pixels": 4,
+    "bytes_per_block": 8,
+    "logical_width_blocks": 32,
+    "logical_height_blocks": 32,
+    "logical_block_count": 1024,
+    "logical_linear_length": 8192,
+    "block_byte_layout": [
+      {
+        "name": "endpoint_0",
+        "offset": 0,
+        "length": 1,
+        "type": "u8"
+      },
+      {
+        "name": "endpoint_1",
+        "offset": 1,
+        "length": 1,
+        "type": "u8"
+      },
+      {
+        "name": "selectors",
+        "offset": 2,
+        "length": 6,
+        "type": "u48_little",
+        "bits_per_pixel": 3,
+        "pixel_order": "row-major 4x4",
+        "selector_expression": "(selectors >> (pixel_index * 3)) & 7"
+      }
+    ],
+    "palette": {
+      "when_endpoint_0_greater_than_endpoint_1": [
+        "endpoint_0",
+        "endpoint_1",
+        "(endpoint_0 * 6 + endpoint_1 * 1) // 7",
+        "(endpoint_0 * 5 + endpoint_1 * 2) // 7",
+        "(endpoint_0 * 4 + endpoint_1 * 3) // 7",
+        "(endpoint_0 * 3 + endpoint_1 * 4) // 7",
+        "(endpoint_0 * 2 + endpoint_1 * 5) // 7",
+        "(endpoint_0 * 1 + endpoint_1 * 6) // 7"
+      ],
+      "when_endpoint_0_less_than_or_equal_to_endpoint_1": [
+        "endpoint_0",
+        "endpoint_1",
+        "(endpoint_0 * 4 + endpoint_1 * 1) // 5",
+        "(endpoint_0 * 3 + endpoint_1 * 2) // 5",
+        "(endpoint_0 * 2 + endpoint_1 * 3) // 5",
+        "(endpoint_0 * 1 + endpoint_1 * 4) // 5",
+        "0",
+        "255"
+      ]
+    }
+  },
+  "xenos_transport": {
+    "encode_order": [
+      "encode row-major linear DXT5A blocks",
+      "swap bytes within every 16-bit pair",
+      "place each block at the Xenos 2D tiled byte offset"
+    ],
+    "decode_order": [
+      "gather each block from the Xenos 2D tiled byte offset",
+      "swap bytes within every 16-bit pair",
+      "decode row-major linear DXT5A blocks"
+    ],
+    "pitch_blocks_aligned": 32,
+    "bytes_per_block_log2": 3,
+    "tile_address_reference": "Xenia texture_address.h-derived 2D tiled mapping implemented and independently duplicated by the verifier",
+    "complete_allocation_coverage_required": true,
+    "transport_roundtrip_must_be_bit_exact": true
+  },
+  "png_contract": {
+    "container": "PNG",
+    "width": 128,
+    "height": 128,
+    "decoded_mode": "RGBA",
+    "rgb_required_value": [
+      255,
+      255,
+      255
+    ],
+    "stored_channel": "alpha",
+    "symlink_input_allowed": false,
+    "maximum_file_bytes": 16777216
+  },
+  "writer_invariants": {
+    "source_opened_for_write": false,
+    "outputs_created_exclusively": true,
+    "source_as_output_allowed": false,
+    "existing_output_overwrite_allowed": false,
+    "fixed_outer_allocation_growth_allowed": false,
+    "arbitrary_png_fit_guaranteed": false,
+    "changed_logical_parts_allowed": [
+      {
+        "file_index": 246,
+        "part_index": 1,
+        "block_index": 1
+      }
+    ],
+    "unrelated_logical_part_count": 750,
+    "all_unrelated_logical_parts_must_be_bit_exact": true,
+    "decoded_vram_outside_target_must_be_bit_exact": true,
+    "dram_and_sram_stored_blocks_must_be_bit_exact": true,
+    "name_footer_must_be_bit_exact": true,
+    "rebuilt_iff_must_reparse": true,
+    "h7a_decode_after_encode_must_equal_intended_block": true,
+    "reports_may_contain_retail_or_replacement_bytes": false
+  },
+  "claim_boundary": {
+    "offline_asset_transport_proved": true,
+    "copied_volume_rebuild_proved": true,
+    "runtime_visibility_proved": false,
+    "field_scorebug_only_ownership_proved": false,
+    "global_ui_consumer_set_mapped": false,
+    "original_xbox_or_xbox_360_hardware_tested": false
+  }
+}

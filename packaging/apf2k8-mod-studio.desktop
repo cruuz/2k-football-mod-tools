@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=APF 2K8 Mod Studio
+GenericName=All-Pro Football 2K8 Modding Tool
+Comment=Browse and build mods from your own All-Pro Football 2K8 Xbox 360 disc
+Exec=apf2k8-mod-studio
+TryExec=apf2k8-mod-studio
+Icon=apf2k8-mod-studio
+Terminal=false
+Categories=Game;
+Keywords=football;APF;2K8;Xbox 360;mod;uniform;texture;
+StartupNotify=true
+X-GNOME-UsesNotifications=true

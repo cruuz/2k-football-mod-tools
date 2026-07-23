@@ -1,0 +1,723 @@
+{
+  "fantasy_draft": {
+    "access": "read-only constants; no game binary or save opened",
+    "copy_only_archive_fix": false,
+    "game": "ESPN NFL 2K5",
+    "game_id": "nfl2k5",
+    "platform": "original Xbox",
+    "position_weight_count": 17,
+    "position_weights": [
+      {
+        "position": "QB",
+        "position_code": 0,
+        "weight": 2.0
+      },
+      {
+        "position": "K",
+        "position_code": 1,
+        "weight": 0.1
+      },
+      {
+        "position": "P",
+        "position_code": 2,
+        "weight": 0.2
+      },
+      {
+        "position": "WR",
+        "position_code": 3,
+        "weight": 1.4
+      },
+      {
+        "position": "CB",
+        "position_code": 4,
+        "weight": 1.0
+      },
+      {
+        "position": "FS",
+        "position_code": 5,
+        "weight": 1.1
+      },
+      {
+        "position": "SS",
+        "position_code": 6,
+        "weight": 1.1
+      },
+      {
+        "position": "RB",
+        "position_code": 7,
+        "weight": 1.7
+      },
+      {
+        "position": "FB",
+        "position_code": 8,
+        "weight": 1.0
+      },
+      {
+        "position": "TE",
+        "position_code": 9,
+        "weight": 1.2
+      },
+      {
+        "position": "OLB",
+        "position_code": 10,
+        "weight": 1.2
+      },
+      {
+        "position": "ILB",
+        "position_code": 11,
+        "weight": 0.7
+      },
+      {
+        "position": "C",
+        "position_code": 12,
+        "weight": 0.5
+      },
+      {
+        "position": "G",
+        "position_code": 13,
+        "weight": 1.1
+      },
+      {
+        "position": "T",
+        "position_code": 14,
+        "weight": 1.3
+      },
+      {
+        "position": "DT",
+        "position_code": 15,
+        "weight": 1.4
+      },
+      {
+        "position": "DE",
+        "position_code": 16,
+        "weight": 1.3
+      }
+    ],
+    "proof_status": {
+      "classification": "exact Xbox executable-patch candidate",
+      "cpu_selector_owner_proved": true,
+      "ranking_algorithm_proved": true,
+      "table_copy_count": 1
+    },
+    "runtime_patch_performed": false,
+    "safe_writer_available": false,
+    "schema": "mod_editor_draft_priority_inspection/v1",
+    "source_report": {
+      "path": "reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json",
+      "schema": "vc_gameplay_tuning_ai_draft_audit/v1",
+      "sha256": "c53522ee0f4151291f154720a1d457ff7368fb256fbf5845561f4ad68289524b",
+      "size": 53996
+    },
+    "warning": "These are live Xbox CPU fantasy-draft priorities, but changing them crosses signed-executable integrity and has no released writer or deterministic runtime trial."
+  },
+  "franchise": {
+    "access": "read-only feasibility evidence; no game binary or save opened",
+    "archive_only_fix_count": 0,
+    "game": "ESPN NFL 2K5",
+    "game_id": "nfl2k5",
+    "pcsx2_fixture_report": {
+      "path": "reports/gameplay_tuning/nfl2k5_ps2_fixture_availability.json",
+      "schema": "nfl2k5_ps2_fixture_audit/v1",
+      "sha256": "f5fd78fecf5b4e3486a6aaed96b949b336507c3c3aa7ac9fed92b52d0074ee6b",
+      "size": 6581
+    },
+    "pcsx2_limitation_status": [
+      {
+        "id": "draft_trade_logic",
+        "owner_status": "unmapped_no_verified_ps2_elf_or_save_fixture",
+        "required_evidence": "Hash-pinned MIPS ELF plus controlled fantasy-draft and trade save/runtime deltas.",
+        "safe_patch_ready": false,
+        "xbox_address_reuse_allowed": false
+      },
+      {
+        "id": "salary_cap_contracts",
+        "owner_status": "unmapped_no_verified_ps2_elf_or_save_fixture",
+        "required_evidence": "Hash-pinned MIPS ELF plus one-field-at-a-time salary, years, bonus, penalty, and cap-state save pairs.",
+        "safe_patch_ready": false,
+        "xbox_address_reuse_allowed": false
+      },
+      {
+        "id": "super_bowl_future_stadium",
+        "owner_status": "unmapped_no_verified_ps2_elf_or_save_fixture",
+        "required_evidence": "Hash-pinned MIPS ELF plus copied franchise saves or traces for Super Bowl indices 0 through at least 6.",
+        "safe_patch_ready": false,
+        "xbox_address_reuse_allowed": false
+      },
+      {
+        "id": "shared_team_textures",
+        "owner_status": "unmapped_no_verified_ps2_elf_or_save_fixture",
+        "required_evidence": "Verified PS2 disc/ELF, per-team uniform selector joins, and controlled PCSX2 GS dumps for identical uniform slots.",
+        "safe_patch_ready": false,
+        "xbox_address_reuse_allowed": false
+      }
+    ],
+    "pcsx2_local_fixture_status": {
+      "boot_elf_present": false,
+      "expected_iso_present": false,
+      "safe_patch_ready": false,
+      "save_marker_present": false,
+      "texture_dump_present": false
+    },
+    "pcsx2_patch_coordinates_available": false,
+    "pcsx2_target": {
+      "boot_elf_expected_name": "SLUS_209.19",
+      "disc_version": "1.01",
+      "expected_iso_md5": "46ef5e7a2e155994e7c3e5627293e068",
+      "expected_iso_size": 4665081856,
+      "serial": "SLUS-20919"
+    },
+    "platform": "original Xbox",
+    "safe_writer_count": 0,
+    "schema": "mod_editor_nfl_franchise_matrix_inspection/v1",
+    "source_report": {
+      "path": "reports/gameplay_tuning/nfl_franchise_limit_feasibility.json",
+      "schema": "nfl2k5_franchise_limit_feasibility/v1",
+      "sha256": "cabb89966a93bf3e067638be744f807f2f1ad4f152a742a8648e2a2f52ceb9dc",
+      "size": 17707
+    },
+    "target_count": 5,
+    "targets": [
+      {
+        "archive_only_fix": false,
+        "current_proof": "exact static algorithm and constant table",
+        "current_writer_safe": false,
+        "feasibility": "near-term experiment, not a released fix",
+        "id": "cpu_fantasy_draft_priority",
+        "likely_mutation_layer": [
+          "Xbox default.xbe or emulator memory patch"
+        ],
+        "named_evidence": {
+          "deterministic_runtime_trial_complete": false,
+          "position_weight_count": 17,
+          "static_ranking_algorithm_owned": true
+        },
+        "requirements_before_write": [
+          "authorized copied-executable or emulator-memory experiment",
+          "independent executable-integrity verification",
+          "seeded before/after CPU draft comparison",
+          "separate PS2 executable ownership for PCSX2"
+        ],
+        "user_limitation": "draft and trade logic"
+      },
+      {
+        "archive_only_fix": false,
+        "current_proof": "exact legality, valuation, balance, and accept/counteroffer path",
+        "current_writer_safe": false,
+        "feasibility": "near-term threshold/valuation experiment; generator remains open",
+        "id": "cpu_trade_evaluation",
+        "likely_mutation_layer": [
+          "Xbox default.xbe decision code",
+          "franchise runtime/save state"
+        ],
+        "named_evidence": {
+          "cpu_offer_or_acceptance_evaluator_owned": true,
+          "trade_feature_present": true,
+          "trade_save_records_mapped": false
+        },
+        "requirements_before_write": [
+          "controlled franchise save",
+          "CPU-generated offer trace through final accept or decline",
+          "field-level valuation ownership and deterministic oracle",
+          "separate PS2 executable ownership for PCSX2"
+        ],
+        "user_limitation": "draft and trade logic"
+      },
+      {
+        "archive_only_fix": false,
+        "current_proof": "exact season-entry gate, not an accurate cap model",
+        "current_writer_safe": false,
+        "feasibility": "good static foothold; model and serialization still open",
+        "id": "salary_cap_enforcement",
+        "likely_mutation_layer": [
+          "Xbox default.xbe financial code",
+          "franchise runtime/save state"
+        ],
+        "named_evidence": {
+          "annual_cap_growth_formula_proved": false,
+          "maximum_roster_count_allowed_by_gate": 54,
+          "runtime_team_total_comparison_owned": true,
+          "save_field_encoding_proved": false,
+          "season_entry_validator_owned": true
+        },
+        "requirements_before_write": [
+          "one-variable contract save pair",
+          "season-boundary save pair",
+          "cap units, growth, penalties, and exceptions mapping",
+          "separate PS2 executable ownership for PCSX2"
+        ],
+        "user_limitation": "salary cap and contracts"
+      },
+      {
+        "archive_only_fix": false,
+        "current_proof": "contract screens exist; dynamic contract schema is unproved",
+        "current_writer_safe": false,
+        "feasibility": "requires save-schema recovery before tuning",
+        "id": "contract_model_and_serialization",
+        "likely_mutation_layer": [
+          "franchise save/runtime objects",
+          "Xbox default.xbe negotiation/progression code"
+        ],
+        "named_evidence": {
+          "contract_screens_present": true,
+          "disc_roster_fields_are_franchise_fields": false,
+          "dynamic_contract_fields_proved": false,
+          "save_container_mapped": false
+        },
+        "requirements_before_write": [
+          "same-season one-contract before/after saves",
+          "next-season progression save",
+          "field encoding, integrity, and load precedence proof",
+          "CPU negotiation and re-signing ownership"
+        ],
+        "user_limitation": "salary cap and contracts"
+      },
+      {
+        "archive_only_fix": false,
+        "current_proof": "exact year-indexed stadium selector and five-year root cause",
+        "current_writer_safe": false,
+        "feasibility": "exact executable fix target; runtime patch not performed",
+        "id": "future_super_bowl_stadium_assignment",
+        "likely_mutation_layer": [
+          "Xbox default.xbe schedule/venue selection",
+          "franchise save schedule state"
+        ],
+        "named_evidence": {
+          "franchise_super_bowl_week_owned": true,
+          "season_five_and_later": {
+            "all_later_seasons_collapse_here": true,
+            "location": "San Jose, CA",
+            "stadium_name": "Ulterior Super Bowl Stadium"
+          },
+          "season_zero_through_four": [
+            {
+              "location": "Jacksonville, FL",
+              "season_index": 0,
+              "stadium_name": "Super Bowl 2005 Stadium"
+            },
+            {
+              "location": "Detroit, MI",
+              "season_index": 1,
+              "stadium_name": "Super Bowl 2006 Stadium"
+            },
+            {
+              "location": "Miami, FL",
+              "season_index": 2,
+              "stadium_name": "Super Bowl 2007 Stadium"
+            },
+            {
+              "location": "Tempe, AZ",
+              "season_index": 3,
+              "stadium_name": "Super Bowl 2008 Stadium"
+            },
+            {
+              "location": "Los Angeles, CA",
+              "season_index": 4,
+              "stadium_name": "Super Bowl Future Stadium"
+            }
+          ],
+          "year_five_or_six_runtime_reproduction_complete": false,
+          "year_to_venue_selector_owned": true
+        },
+        "requirements_before_write": [
+          "chosen post-season-four venue policy",
+          "year-five and year-six controlled runtime reproduction",
+          "authorized copied-executable integrity handling",
+          "separate PS2 executable ownership for PCSX2"
+        ],
+        "user_limitation": "Super Bowl stadium assignment five years in the future"
+      }
+    ],
+    "warning": "The Xbox results prove subsystem ownership and likely mutation layers, not reusable PCSX2/PS2 patch offsets. A PS2 ELF and controlled PS2 saves are required for a PCSX2-targeted implementation."
+  },
+  "game": "ESPN NFL 2K5",
+  "product_boundary": "This is an evidence-backed inspector, not a settings or executable writer. No preset or writeback is enabled here.",
+  "read_only": true,
+  "saves": {
+    "access": "sanitized read-only evidence; no HDD image or save opened",
+    "container_count": 8,
+    "containers": [
+      {
+        "display_name": "Franchise1",
+        "extra_size": 20,
+        "savegame_size": 720044,
+        "type": "FXG"
+      },
+      {
+        "display_name": "Settings1",
+        "extra_size": 20,
+        "savegame_size": 736,
+        "type": "STG"
+      },
+      {
+        "display_name": "06lions",
+        "extra_size": 20,
+        "savegame_size": 11368,
+        "type": "TMM"
+      },
+      {
+        "display_name": "07lions",
+        "extra_size": 20,
+        "savegame_size": 11368,
+        "type": "TMM"
+      },
+      {
+        "display_name": "08Lions",
+        "extra_size": 20,
+        "savegame_size": 11368,
+        "type": "TMM"
+      },
+      {
+        "display_name": "09lions",
+        "extra_size": 20,
+        "savegame_size": 11368,
+        "type": "TMM"
+      },
+      {
+        "display_name": "10lions",
+        "extra_size": 20,
+        "savegame_size": 11368,
+        "type": "TMM"
+      },
+      {
+        "display_name": "Noah",
+        "extra_size": 20,
+        "savegame_size": 20720,
+        "type": "USR"
+      }
+    ],
+    "game": "ESPN NFL 2K5",
+    "game_id": "nfl2k5",
+    "integrity_boundary": {
+      "extra_size": 20,
+      "platform_keys_read_or_emitted": false,
+      "safe_writer_available": false,
+      "savegame_signature_owned": true,
+      "signature_mode": 0
+    },
+    "observed_slider_values": [
+      {
+        "franchise1": 0.675,
+        "name": "Human Blocking",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.45,
+        "name": "Human Passing",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.8,
+        "name": "Human Running",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.35,
+        "name": "Human Catching",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.35,
+        "name": "Human Coverage",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.35,
+        "name": "Human Pursuit",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "name": "Human Tackling",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.525,
+        "name": "Human Kicking",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 1.0,
+        "name": "Human Fatigue",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.675,
+        "name": "CPU Blocking",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.525,
+        "name": "CPU Passing",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.7,
+        "name": "CPU Running",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "name": "CPU Catching",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "name": "CPU Coverage",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "name": "CPU Pursuit",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "name": "CPU Tackling",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.475,
+        "name": "CPU Kicking",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.8,
+        "name": "CPU Fatigue",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "name": "Injury",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "name": "Fumble",
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.525,
+        "name": "Interception",
+        "settings1": 0.5
+      }
+    ],
+    "platform": "original Xbox",
+    "schema": "mod_editor_nfl_save_inventory_inspection/v1",
+    "source_report": {
+      "path": "reports/gameplay_tuning/nfl2k5_xbox_save_inventory.json",
+      "schema": "nfl2k5_xbox_save_inventory/v1",
+      "sha256": "52cd53b218b9608197c43721f2e874865ed9cf29ef6d75e03e2c3b996bbc344d",
+      "size": 31477
+    },
+    "title_id": "53450030",
+    "warning": "This is a metadata-only snapshot of observed saves. Editing requires one-variable serializer proof, platform-backed signing, a copied HDD, and an independent clean game reload."
+  },
+  "schema": "nfl2k5_mod_studio_gameplay_inspection/v1",
+  "sliders": {
+    "access": "read-only definitions; no game binary or save opened",
+    "copy_only_archive_fix": false,
+    "current_values_available": false,
+    "executable_writer_available": false,
+    "game": "ESPN NFL 2K5",
+    "game_id": "nfl2k5",
+    "observed_fixture_values_available": true,
+    "observed_save_report": {
+      "path": "reports/gameplay_tuning/nfl2k5_xbox_save_inventory.json",
+      "schema": "nfl2k5_xbox_save_inventory/v1",
+      "sha256": "52cd53b218b9608197c43721f2e874865ed9cf29ef6d75e03e2c3b996bbc344d",
+      "size": 31477
+    },
+    "out_of_range_runtime_safety_proved": false,
+    "platform": "original Xbox",
+    "platform_proof": {
+      "all_human_cpu_controls_reach_an_aggregate_consumer": true,
+      "catching_named_setter_mapped": true,
+      "final_catch_or_drop_branch_proved": false
+    },
+    "save_or_profile_writer_available": false,
+    "schema": "mod_editor_gameplay_slider_inspection/v1",
+    "slider_count": 21,
+    "sliders": [
+      {
+        "current_profile_value_available": false,
+        "index": 0,
+        "name": "Human Blocking",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.675,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 1,
+        "name": "Human Passing",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.45,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 2,
+        "name": "Human Running",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.8,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 3,
+        "name": "Human Catching",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.35,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 4,
+        "name": "Human Coverage",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.35,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 5,
+        "name": "Human Pursuit",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.35,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 6,
+        "name": "Human Tackling",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.5,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 7,
+        "name": "Human Kicking",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.525,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 8,
+        "name": "Human Fatigue",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 1.0,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 9,
+        "name": "CPU Blocking",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.675,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 10,
+        "name": "CPU Passing",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.525,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 11,
+        "name": "CPU Running",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.7,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 12,
+        "name": "CPU Catching",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.5,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 13,
+        "name": "CPU Coverage",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.5,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 14,
+        "name": "CPU Pursuit",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.5,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 15,
+        "name": "CPU Tackling",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.5,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 16,
+        "name": "CPU Kicking",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.475,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 17,
+        "name": "CPU Fatigue",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.8,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 18,
+        "name": "Injury",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.5,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 19,
+        "name": "Fumble",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.5,
+        "observed_settings1_value": 0.5
+      },
+      {
+        "current_profile_value_available": false,
+        "index": 20,
+        "name": "Interception",
+        "named_menu_control_mapped": true,
+        "observed_franchise1_value": 0.525,
+        "observed_settings1_value": 0.5
+      }
+    ],
+    "source_report": {
+      "path": "reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json",
+      "schema": "vc_gameplay_tuning_ai_draft_audit/v1",
+      "sha256": "c53522ee0f4151291f154720a1d457ff7368fb256fbf5845561f4ad68289524b",
+      "size": 53996
+    },
+    "stock_ui_range": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "step": 0.025
+    },
+    "warning": "The names, stock range, and control ownership are mapped. NFL also shows values from one pinned Settings1/Franchise1 report; these are not live values from the user's current profile. No settings writer is available, and values outside the stock range are not proved safe."
+  }
+}

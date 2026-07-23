@@ -1,0 +1,347 @@
+{
+  "artifacts": {
+    "nonidentity4_recipe": {
+      "path": "reports/asset_samples/nfl_scne/stadium_upper_deck_nonidentity4_source_subset_recipe.v1.json",
+      "sha256": "546700178dfd2bf116beaa9bcd534c4be38a0b2f2d450590c809d605b428b311",
+      "size_bytes": 284
+    },
+    "orchestration_test": {
+      "path": "tests/nfl_stadium_upper_deck_subset_patch_test.py",
+      "sha256": "3674494bfcb9ee5364613b3ab60f7b7631ee59edeea58518076c12ff931d5b70",
+      "size_bytes": 11830
+    },
+    "prefix8_recipe": {
+      "path": "reports/asset_samples/nfl_scne/stadium_upper_deck_prefix8_source_subset_recipe.v1.json",
+      "sha256": "6ab4313098939202f528820cc25862cc8a289907562d61c1d5431b57a9c511e6",
+      "size_bytes": 310
+    },
+    "roundtrip_report": {
+      "path": "reports/assets/nfl_stadium_upper_deck_source_subset_roundtrip.v1.json",
+      "sha256": "b3fde5789a6a499073d13c6deba1d5ceb3b228126154ccbba1bbb62ca88fd40b",
+      "size_bytes": 12554
+    },
+    "verifier": {
+      "path": "tools/nfl_stadium_upper_deck_subset_verify.py",
+      "sha256": "8eaf78f4a0a4a26777d2b9d672e50d4298b3b4f3afd2565c84947ceb799e1585",
+      "size_bytes": 64069,
+      "standard_library_only": true,
+      "writer_imported": false
+    },
+    "verifier_tests": {
+      "path": "tests/test_nfl_stadium_upper_deck_subset_verify.py",
+      "sha256": "31b0dfd851f00de7be295c3fc70b86803d03ddd2d1357c77a53201d22022116b",
+      "size_bytes": 13955
+    },
+    "writer": {
+      "path": "tools/nfl_stadium_upper_deck_subset_patch.py",
+      "sha256": "0b20b0d365fa2bb99745b305a52c0372c1db2214d8986b1e409fb2aa09a2ea10",
+      "size_bytes": 49632
+    },
+    "writer_tests": {
+      "path": "tests/test_nfl_stadium_upper_deck_subset_patch.py",
+      "sha256": "741ed78b40871d0f8fda68031852a37407b28eef697970583fce4ea0eda340f3",
+      "size_bytes": 15840
+    }
+  },
+  "authority": {
+    "changed_count_boundary": {
+      "implementation_claims_are_intentionally_frozen_false": true,
+      "path": "reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json",
+      "schema": "nfl2k5_upper_deck_changed_count_boundary/v1",
+      "sha256": "54e6d20dcf9c525a5248d94b4f45516425f0e69702df31dfd93fc351efd43eab",
+      "size_bytes": 25285
+    },
+    "recipe_schema": {
+      "path": "reports/specs/nfl2k5_upper_deck_source_subset_recipe.schema.json",
+      "schema": "nfl2k5_upper_deck_source_subset_recipe/v1",
+      "sha256": "4fac01c6cffe03481b456899ec2b2f3cd25f74954d5db94ccb3b8351f841ca4b",
+      "size_bytes": 2209
+    },
+    "static_target_catalog": {
+      "authorized_target_count": 75,
+      "path": "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json",
+      "schema": "nfl2k5_stadium_static_target_catalog/v1",
+      "sha256": "f44472856044a5d8a50d18476a4c7af18ef98bcc3f7cf1d567db2b33d5336bfa",
+      "size_bytes": 858600
+    }
+  },
+  "claim_flags": {
+    "arbitrary_external_vertex_authoring_proved": false,
+    "bounds_or_culling_serializer_proved": false,
+    "changed_count_source_subset_writer_implemented": true,
+    "collision_or_lod_ownership_proved": false,
+    "count_only_prefix8_whole_volume_proved": true,
+    "distribution_ready": false,
+    "edited_gltf_import_proved": false,
+    "gui_exposed": false,
+    "identity_noop_whole_volume_exact": true,
+    "independent_changed_count_verifier_implemented": true,
+    "nonidentity_synchronized_whole_record_remap_proved": true,
+    "original_xbox_hardware_proved": false,
+    "production_ready": false,
+    "runtime_visibility_proved": false,
+    "skinned_mesh_writeback_proved": false,
+    "static_non_skinned_target_specific_writeback_proved": true
+  },
+  "commands": {
+    "checked_roundtrip_publication": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 tests/nfl_stadium_upper_deck_subset_patch_test.py --report reports/assets/nfl_stadium_upper_deck_source_subset_roundtrip.v1.json",
+      "result": "NFL_UPPER_DECK_SUBSET_ROUNDTRIP_PASS",
+      "status": "pass"
+    },
+    "dedicated_verifier_suite": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_nfl_stadium_upper_deck_subset_verify",
+      "result": "10 tests passed",
+      "status": "pass"
+    },
+    "focused_writer_suite": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 tests/test_nfl_stadium_upper_deck_subset_patch.py",
+      "result": "11 tests passed",
+      "status": "pass"
+    }
+  },
+  "data_policy": {
+    "contains_modified_archive_bytes": false,
+    "contains_retail_attribute_records": false,
+    "contains_retail_vertex_positions": false,
+    "contains_source_vertex_id_lists": false,
+    "output_manifests_contain_retail_records": false,
+    "recipes_are_user_reproducible_metadata": true,
+    "retail_archive_required_from_user": true
+  },
+  "format_contract": {
+    "archive_mapping": {
+      "entry_id": "0xe4d6b0bc",
+      "entry_index": 3280,
+      "entry_size_bytes": 1390448,
+      "index_entry_offset_blocks": 1747476,
+      "outer_pack_offset": 132411392,
+      "outer_sha256": "3b2a505e2f0cab433fbe74c5211e4b370112e4e70a2ad45f1fa39a59af9a92cd",
+      "pack_number": 9
+    },
+    "compression": {
+      "codec": "VC-LZ",
+      "decoded_size_bytes": 1524864,
+      "fixed_final_tail_bytes": 16,
+      "fixed_final_tail_sha256": "cb57e42b9b8d9e1cba31e18c38dbc3347c8caa1361fcf7fe9cfad5b9f138fae4",
+      "offset_bits": 12,
+      "retail_consumed_cap_bytes": 908864,
+      "scratch_alignment_bytes": 16,
+      "scratch_derivation": "align16(max(stored_size - consumed_size, minimum_backward_copy_alias_scratch))",
+      "stream_tag": 1,
+      "system_bytes": 577792,
+      "video_bytes": 947072
+    },
+    "outer_resource_chain": {
+      "derived_by": "walk 11 concatenated resources using wrapper_size_32_plus_stored_size",
+      "ends_exactly_at_outer_size": true,
+      "resource_count": 11,
+      "resource_offsets": [
+        0,
+        116720,
+        138224,
+        314128,
+        314224,
+        387648,
+        1296560,
+        1297136,
+        1310720,
+        1324304,
+        1346016
+      ],
+      "target_resource_index": 5,
+      "target_resource_offset": 387648
+    },
+    "shape": {
+      "decoded_shape_offset": 30464,
+      "draw_arrays_count_byte_decoded_offset": 69887,
+      "draw_arrays_start": 0,
+      "material_index": 1,
+      "name": "upper_deck",
+      "native_primitive": "QUADS",
+      "primary_command_word_count": 6,
+      "scene_index": 2648,
+      "scene_name": "stadium",
+      "secondary_command_word_count": 0,
+      "shape_index": 1,
+      "source_vertex_count": 12,
+      "target_id": "nfl2k5/stadium/o3280/c5/s1",
+      "transform_count": 1,
+      "vertex_count_u16le_decoded_offset": 30540
+    },
+    "streams": [
+      {
+        "active_attribute_contract": "little-endian FLOAT3 position record",
+        "decoded_physical_span": [
+          69920,
+          70064
+        ],
+        "physical_record_count": 12,
+        "source_sha256": "95164ce59e125ac1775003846a1eb780c63f001c65f2b3da8d2aebd20fbe67f7",
+        "stream_index": 0,
+        "stride_bytes": 12
+      },
+      {
+        "active_attribute_contract": "opaque 8-byte attribute prefix plus signed little-endian transform selector",
+        "decoded_physical_span": [
+          70080,
+          70200
+        ],
+        "physical_record_count": 12,
+        "selector_offset_within_record": 8,
+        "selector_value_for_all_source_records": 0,
+        "source_sha256": "5ad69b6eff91ed58f1882d08f9f69b299d0ea32d53cf729a6c0fb8a2a7c7cabe",
+        "stream_index": 1,
+        "stride_bytes": 10
+      }
+    ],
+    "target_resource": {
+      "fixed_pack_span": [
+        132799040,
+        133707952
+      ],
+      "fixed_span_bytes": 908912,
+      "source_decoded_sha256": "229db9f309bf69eaa28901ae6e2e15b26a279b3f1f37abed01e36041c5e5ead8",
+      "source_span_sha256": "0cd1977a6097851f9366d935098bdd9e97144f3ffce0f8690593c2623fbbd73a",
+      "stored_body_bytes": 908880,
+      "wrapper_bytes": 32
+    }
+  },
+  "implementation_contract": {
+    "changed_modes": {
+      "admitted_vertex_counts": [
+        4,
+        8
+      ],
+      "complete_records_copied_across_every_active_stream": true,
+      "count_only_prefix_mode": "identity source order truncated to the requested logical prefix",
+      "external_positions_or_attributes_admitted": false,
+      "physical_stream_tails_preserved": true,
+      "source_subset_mode": "distinct source record IDs are copied in one synchronized order across both active streams",
+      "source_vertex_id_range": [
+        0,
+        11
+      ],
+      "source_vertex_ids_must_be_distinct": true
+    },
+    "identity_mode": {
+      "compressor_invoked": false,
+      "request_surface": "--identity-noop only",
+      "source_order_required": true,
+      "source_span_returned_verbatim": true,
+      "vertex_count": 12
+    },
+    "publication": {
+      "copied_volume_only": true,
+      "exclusive_new_output_directory": true,
+      "manifest_contains_hashes_and_counts_not_retail_records": true,
+      "output_directory_exact_files": [
+        "9",
+        "manifest.json"
+      ],
+      "retail_source_modified": false,
+      "source_hardlink_alias_refused": true,
+      "symlink_redirection_refused": true
+    },
+    "writer_fail_closed_order": [
+      "pin authority files and retail index/volume identities",
+      "derive the outer entry and inner resource chain",
+      "fully decode and validate the source SCNE",
+      "derive the target and active record layouts from pinned authority",
+      "reconstruct the complete intended decoded SCNE",
+      "verify the exact authorized decoded difference set",
+      "recompress under the retail consumed cap or refuse",
+      "independently decode the rebuilt stream and compare all decoded bytes",
+      "derive scratch and preserve the fixed final tail",
+      "publish only a copied volume and canonical manifest",
+      "recheck retail and published path identities"
+    ]
+  },
+  "limitations": [
+    "This closes one target-specific static non-skinned source-subset/count writer, not arbitrary external geometry authoring.",
+    "No new position, normal, UV, material, weight, index, collision, LOD, bound, or culling value is accepted by the changed-count recipe.",
+    "The logical count may shrink to four or eight while the two physical stream allocations remain fixed at twelve records; unused physical tails are retained byte-for-byte.",
+    "The large copied-volume byte difference count is recompression churn inside the one authorized fixed resource; decoded changes remain exactly bounded and all bytes outside that resource remain exact.",
+    "Runtime visibility, runtime ownership, original Xbox hardware acceptance, production use, public GUI exposure, and distribution readiness are unproved.",
+    "This result does not generalize to other stadium shapes, helmet shells, skinned players, edited glTF import, auto-decimation, or relocation."
+  ],
+  "results": {
+    "count_only_prefix8": {
+      "consumed_bytes": 908863,
+      "decoded_changed_byte_count": 2,
+      "decoded_sha256": "dffa0cc9aa4599c94fe436ec8599c8b9597eacb0d377865c6454a733cf56f272",
+      "nondegenerate_triangle_count": 4,
+      "output_volume_sha256": "e381146a3269693180b54eaeb7fe43e8cd6e4d9b7dc370243f388c8c22cdf5bc",
+      "scratch_bytes": 32,
+      "stream_prefix_changed_byte_counts": [
+        0,
+        0
+      ],
+      "vertex_count": 8,
+      "zero_gap_bytes": 1
+    },
+    "identity_noop": {
+      "consumed_bytes": 908864,
+      "decoded_changed_byte_count": 0,
+      "decoded_sha256": "229db9f309bf69eaa28901ae6e2e15b26a279b3f1f37abed01e36041c5e5ead8",
+      "output_volume_sha256": "779b37455fc44cd7eb60674b926d7ccaf9cd6bd9d894157a1d68119281790c7a",
+      "pack_changed_byte_count": 0,
+      "scratch_bytes": 16,
+      "vertex_count": 12,
+      "zero_gap_bytes": 0
+    },
+    "nonidentity_source_subset4": {
+      "consumed_bytes": 908822,
+      "decoded_changed_byte_count": 64,
+      "decoded_sha256": "5503271598c6f55edb0f4d19b5232cadd55a9869029bf343287cb2157c4b9f93",
+      "nondegenerate_triangle_count": 2,
+      "output_volume_sha256": "65f3775e804db6c93a9f560737c6879d2fa8fb81e21559f33e755c5f8173d290",
+      "scratch_bytes": 64,
+      "stream_prefix_changed_byte_counts": [
+        34,
+        28
+      ],
+      "vertex_count": 4,
+      "zero_gap_bytes": 42
+    },
+    "refusals": {
+      "bad_wrapper_scratch": true,
+      "content_preserving_manifest_inode_swap": true,
+      "duplicate_source_ids": true,
+      "existing_output_directory": true,
+      "fixed_final_tail_mutation": true,
+      "hardlink_source_alias": true,
+      "manifest_overclaim": true,
+      "nonzero_consumed_cap_gap": true,
+      "outside_target_resource_mutation": true,
+      "report_inside_output_directory": true
+    },
+    "retail_source_unchanged": true
+  },
+  "schema": "nfl2k5_upper_deck_source_subset_writeback_closure/v1",
+  "scope": {
+    "closed_on": "2026-07-13",
+    "game": "ESPN NFL 2K5 USA",
+    "platform": "original Xbox archive format",
+    "status": "offline-byte-roundtrip-proved",
+    "target_id": "nfl2k5/stadium/o3280/c5/s1"
+  },
+  "verification_contract": {
+    "artifact_binding": {
+      "authorities_source_output_manifest_and_recipe_use_stable_no_follow_file_descriptors": true,
+      "content_hashes_rechecked_before_completion": true,
+      "directory_and_child_inodes_rechecked": true,
+      "report_is_published_outside_output_then_output_is_rechecked": true
+    },
+    "independent_reconstruction": {
+      "complete_copied_volume_compared": true,
+      "complete_expected_manifest_reconstructed": true,
+      "decoded_authorized_complement_compared": true,
+      "inner_resource_location_derived_from_wrapper_chain": true,
+      "source_subset_records_rebuilt_without_importing_writer": true,
+      "stream_tails_compared": true,
+      "vc_lz_decoder_and_scratch_derivation_reimplemented": true
+    },
+    "verifier_import_policy": "audited Python standard library only; no writer, project archive, SCNE, or compression module imports"
+  }
+}

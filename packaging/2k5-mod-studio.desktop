@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=2K5 Mod Studio
+GenericName=NFL 2K5 Modding Tool
+Comment=Browse, edit, and build mods for your own ESPN NFL 2K5 Xbox disc
+Exec=2k5-mod-studio
+TryExec=2k5-mod-studio
+Icon=2k5-mod-studio
+Terminal=false
+Categories=Game;
+Keywords=NFL;football;2K5;Xbox;mod;uniform;texture;
+StartupNotify=true
+X-GNOME-UsesNotifications=true

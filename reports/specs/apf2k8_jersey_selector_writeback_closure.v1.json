@@ -1,0 +1,99 @@
+{
+  "admitted_operations": {
+    "full_built_in_unique": {
+      "assignment_count": 24,
+      "asset_rule": "replacement indices are a permutation of 0..23",
+      "proved_decoded_changed_byte_count": 30,
+      "team_rule": "exactly built-in team indices 0..23"
+    },
+    "identity": {
+      "rule": "an assignment whose replacement equals its retail value returns the complete retail outer span and copied 0A verbatim"
+    },
+    "targeted": {
+      "assignment_count": "1..24",
+      "asset_index_range": "0..23",
+      "team_index_range": "0..23",
+      "write_rule": "derive and replace byte 0 of both bank slot-4 selector records only"
+    }
+  },
+  "authorities": [
+    {
+      "path": "reports/specs/apf2k8_roster_jersey_selector_writeback.v1.json",
+      "role": "complete format and serializer authority",
+      "sha256": "096137aff8e8f447c1b62bc4e76eef68a910ad60c451a6e8d6bd40dbf9ffeec4",
+      "size_bytes": 8853
+    },
+    {
+      "path": "reports/specs/apf2k8_jersey_selector_assignment_recipe.schema.json",
+      "role": "recipe shape authority",
+      "sha256": "2953cddea3e8ee773b6e224d0f2dcf432ef2472ac8552c50f21e1d1411177576",
+      "size_bytes": 3042
+    }
+  ],
+  "claim_boundary": {
+    "all_24_built_in_teams_mutually_unique_offline": true,
+    "all_40_on_disc_team_slots_mutually_unique": false,
+    "archive_growth_required": false,
+    "emulator_runtime_visibility_proved": false,
+    "original_xbox_360_hardware_proved": false,
+    "physical_jersey_texture_authoring_part_of_this_writer": false,
+    "production_gui_exposed": false,
+    "save_game_override_behavior_proved": false,
+    "selector_byte_0_filename_ownership_proved": true,
+    "selector_bytes_1_through_7_semantics_proved": false
+  },
+  "closure_evidence": {
+    "path": "reports/assets/apf_jersey_selector_writeback_roundtrip.v1.json",
+    "sha256": "f010cc2a72d915038168424d8b82799fd98bdb4756276f6e13f8299c061133f3",
+    "size_bytes": 5780
+  },
+  "implementation": {
+    "independent_verifier": {
+      "imports_project_parser_or_writer": false,
+      "path": "tools/apf_jersey_selector_verify.py",
+      "sha256": "a84be6cfe1ea08e3e78480663213227c2a7f98bc6cb989566a5117323bc36afd",
+      "size_bytes": 53918,
+      "standard_library_only": true
+    },
+    "writer": {
+      "path": "tools/apf_jersey_selector_patch.py",
+      "sha256": "6d36c0e617793227e4ba23b47389b1a9668fa98e55fc496acd736528cb730bfd",
+      "size_bytes": 38635
+    }
+  },
+  "preservation_contract": [
+    "source, recipe, authorities, output, and manifest are bound or published with no-follow/inode checks and aliases are rejected",
+    "the retail 0A length/hash and complete outer directory identity are pinned before deriving entry 1126",
+    "both jersey selector destinations are re-derived through ROST root tables and one-based relative pointers",
+    "selector bytes 1..7, every pointer, every root table, and every unauthorized decoded ROST byte remain exact",
+    "identity bypasses H7A encoding and returns the complete retail outer span verbatim",
+    "changed output independently decodes to the complete intended 2294304-byte ROST",
+    "the 96-byte name footer relocates bit-exactly and the remaining fixed allocation is zero",
+    "the H7A payload may not exceed 436024 bytes",
+    "the complete copied 0A before and after the fixed outer-entry span remains exact",
+    "the independent verifier reconstructs the complete canonical writer manifest and rejects extra claims"
+  ],
+  "schema": "apf2k8_jersey_selector_writeback_closure/v1",
+  "tests": [
+    {
+      "count": 10,
+      "path": "tests/test_apf_jersey_selector_patch.py",
+      "sha256": "d0c1e9da4523318d3baa0af5180a7b2df89dbb1ffbcf713b2a6fea4125098ca8",
+      "size_bytes": 7347
+    },
+    {
+      "count": 12,
+      "path": "tests/test_apf_jersey_selector_verify.py",
+      "sha256": "b514478f655edc1ce57741e7d6647b54288ef9e3bc1a2cb758343d94ab580cef",
+      "size_bytes": 17904
+    }
+  ],
+  "validation": {
+    "command": "bash tools/validate_apf_jersey_selector_patch.sh",
+    "expected_final_line": "APF_JERSEY_SELECTOR_VALIDATION_PASS writer_tests=10 verifier_tests=12 identity_changes=0 targeted_changes=2 full_changes=30 full_payload=435262 full_headroom=762 independent_verifier=true runtime=false hardware=false",
+    "script_path": "tools/validate_apf_jersey_selector_patch.sh",
+    "script_sha256": "4286a5e9dd546963f1a28bcfdf77c6e009acb206e3cf19fd8555056b518b9ad1",
+    "script_size_bytes": 2703,
+    "status": "pass"
+  }
+}

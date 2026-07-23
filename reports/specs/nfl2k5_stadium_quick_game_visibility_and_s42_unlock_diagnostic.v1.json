@@ -1,0 +1,287 @@
+{
+  "artifacts": {
+    "control": {
+      "manifest_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/s42-visible-control-workflow.json",
+      "manifest_sha256": "88b4e1e0a5911ba7c2fa6b92d61eaf5b7b47605d9a61d4208cffbbcb1eefbdbe",
+      "manifest_size": 6701,
+      "output_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/ESPN-NFL-2K5-s42-visible-control.xiso.iso",
+      "output_sha256": "9070f267b585758c1a274c03baf6c925872b061c9f6a47e2ddfba3f5176fab40",
+      "output_size": 6300499968,
+      "source_dispatch_sha256": "32a4f45e5d3d53f1ee1780165d9ffdaa36995a154a62e39c313e0e467b63b9a5"
+    },
+    "expanded_wall": {
+      "manifest_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/expanded-wall-s42-visible-workflow.json",
+      "manifest_sha256": "166ba6a28318e289446f0814edd9bcddb28360bd4ad16b13dfa22f82634429b7",
+      "manifest_size": 6808,
+      "output_path": "build/nfl2k5-stadium-group36-geometry-xiso-20260713/ESPN-NFL-2K5-group36-expanded-wall-s42-visible.xiso.iso",
+      "output_sha256": "f098af98efd2c545f4eea15bdb8cddac0668bd53eb77ab2077b592d465646ea6",
+      "output_size": 6300499968,
+      "source_dispatch_sha256": "3c2917114ec7005e21c24c7fdf971adfdd54c051e89ecf2c4f93beb64a73dc16"
+    }
+  },
+  "claims": {
+    "diagnostic_only": true,
+    "distribution_ready": false,
+    "offline_exact_visibility_condition_proved": true,
+    "offline_zero_unlock_id_path_proved": true,
+    "original_xbox_hardware_proved": false,
+    "production_ready": false,
+    "retail_signed_executable_chain_preserved": false,
+    "xemu_boot_acceptance_proved": false,
+    "xemu_geometry_visibility_proved": false,
+    "xemu_stadium_selectability_proved": false,
+    "xemu_target_outer_loaded_proved": false
+  },
+  "diagnostic_patch": {
+    "actual_changed_byte_count": 22,
+    "changed_xiso_offsets_decimal": [
+      2397804,
+      2397805,
+      2397806,
+      2397807,
+      2397808,
+      2397809,
+      2397810,
+      2397811,
+      2397812,
+      2397813,
+      2397814,
+      2397815,
+      2397816,
+      2397817,
+      2397818,
+      2397819,
+      2397820,
+      2397821,
+      2397822,
+      2397823,
+      13457596,
+      13457597
+    ],
+    "changed_xiso_offsets_hex": [
+      "0x0024966c",
+      "0x0024966d",
+      "0x0024966e",
+      "0x0024966f",
+      "0x00249670",
+      "0x00249671",
+      "0x00249672",
+      "0x00249673",
+      "0x00249674",
+      "0x00249675",
+      "0x00249676",
+      "0x00249677",
+      "0x00249678",
+      "0x00249679",
+      "0x0024967a",
+      "0x0024967b",
+      "0x0024967c",
+      "0x0024967d",
+      "0x0024967e",
+      "0x0024967f",
+      "0x00cd58bc",
+      "0x00cd58bd"
+    ],
+    "data_section_digest": {
+      "after": "8011736208bf6320358ee1b1cdaf29d421f80c24",
+      "before": "8c86ae03ba27ffd03d09a3b8ca21d61e74a9337c",
+      "changed_byte_count": 20,
+      "file_offset": "0x0000066c",
+      "xiso_absolute_offset": "0x0024966c"
+    },
+    "default_xbe": {
+      "output_sha256": "955ddffebbefe9f53d915d7728daf4e6224f946935b3549a1976615cff73dd6b",
+      "rsa_signature_bytes_changed": false,
+      "signed_header_after_sha1": "85c32209d9479a93af52b03efc83ee92dec28d26",
+      "signed_header_before_sha1": "5c1dfe46aea5959344a7b0a112dc7000343f0df6",
+      "signed_header_changed": true,
+      "source_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+    },
+    "effect": "Every exact s42 availability-table match calls the zero-id path, which returns visible before profile lookup.",
+    "global_scope": "all stadium records whose exact asset-code string is s42",
+    "preserved": {
+      "all_xdvdfs_extents": true,
+      "expanded_wall_pack9_sha256": "c4ad271186e47389d00bd4131866548c8eec2320770bfeb5ce9f9ae44f3d5bad",
+      "pack0_sha256": "57d5ea1703e952cfca9b0f5175b5c9f9bc0bda3eb6676db9f8b6b0e074bddae9",
+      "retail_control_pack9_sha256": "779b37455fc44cd7eb60674b926d7ccaf9cd6bd9d894157a1d68119281790c7a",
+      "s42_roster_dispatch_allocation": true,
+      "xdvdfs_tree": true
+    },
+    "unlock_word": {
+      "after_hex": "00000000",
+      "before_hex": "4b010000",
+      "changed_data_byte_count": 2,
+      "file_offset": "0x00a8c8bc",
+      "row_index": 4,
+      "virtual_address": "0x00a9723c",
+      "xiso_absolute_offset": "0x00cd58bc"
+    }
+  },
+  "executable_format": {
+    "data_section": {
+      "digest_file_offset": "0x0000066c",
+      "index": 13,
+      "name": ".data",
+      "raw_file_offset": "0x00a5f000",
+      "raw_size": "0x0008f95c",
+      "virtual_address": "0x00a69980",
+      "virtual_size": "0x003f6988"
+    },
+    "default_xbe_extent": {
+      "sector": 1170,
+      "size": 11948032,
+      "xiso_absolute_offset": "0x00249000"
+    },
+    "section_digest_formula": "SHA1(little_endian_u32(raw_size) || raw_section_bytes)"
+  },
+  "quick_game_visibility": {
+    "asset_code_field": {
+      "record_offset": "0x0c",
+      "type": "pointer to UTF-16LE zero-terminated string"
+    },
+    "availability_lookup": {
+      "function": "0x0010e920",
+      "matched_result": "return FUN_0010e8f0(row.unlock_id)",
+      "no_match_result": 1,
+      "string_compare_function": "0x00030c40",
+      "table_base_virtual_address": "0x00a97218",
+      "table_row_count": 9,
+      "table_row_layout": [
+        {
+          "name": "asset_code_pointer",
+          "offset": 0,
+          "type": "u32_le_virtual_address"
+        },
+        {
+          "name": "unlock_id",
+          "offset": 4,
+          "type": "u32_le"
+        }
+      ],
+      "table_stride": 8,
+      "table_values": [
+        {
+          "asset_code": "s39",
+          "asset_code_virtual_address": "0x00e70d08",
+          "row": 0,
+          "unlock_id": "0x00000147"
+        },
+        {
+          "asset_code": "s48",
+          "asset_code_virtual_address": "0x00e70d10",
+          "row": 1,
+          "unlock_id": "0x00000148"
+        },
+        {
+          "asset_code": "s40",
+          "asset_code_virtual_address": "0x00e70d18",
+          "row": 2,
+          "unlock_id": "0x00000149"
+        },
+        {
+          "asset_code": "s41",
+          "asset_code_virtual_address": "0x00e70d20",
+          "row": 3,
+          "unlock_id": "0x0000014a"
+        },
+        {
+          "asset_code": "s42",
+          "asset_code_virtual_address": "0x00e70d28",
+          "row": 4,
+          "unlock_id": "0x0000014b"
+        },
+        {
+          "asset_code": "s43",
+          "asset_code_virtual_address": "0x00e70d30",
+          "row": 5,
+          "unlock_id": "0x0000014c"
+        },
+        {
+          "asset_code": "s44",
+          "asset_code_virtual_address": "0x00e70d38",
+          "row": 6,
+          "unlock_id": "0x0000014d"
+        },
+        {
+          "asset_code": "s45",
+          "asset_code_virtual_address": "0x00e70d40",
+          "row": 7,
+          "unlock_id": "0x0000014e"
+        },
+        {
+          "asset_code": "s36",
+          "asset_code_virtual_address": "0x00e70d48",
+          "row": 8,
+          "unlock_id": "0x0000014f"
+        }
+      ]
+    },
+    "exact_condition": "skip = (availability(asset_code) == 0) || (asset_code == s32 && mode not in {0,1,2})",
+    "next_selector": {
+      "advance_function": "0x00077480",
+      "function": "0x002c15d0",
+      "loop_condition": "while skip_predicate() != 0"
+    },
+    "previous_selector": {
+      "advance_function": "0x000774e0",
+      "function": "0x002c1600",
+      "loop_condition": "while skip_predicate() != 0"
+    },
+    "record18_failure": "Changing record18 asset code from s18 to s42 changes an unmatched key into row 4. Unlock id 0x14b is absent on the observed profile, availability returns zero, and the selector skips the record.",
+    "s32_mode_exception": {
+      "asset_code": "s32",
+      "asset_code_virtual_address": "0x00e9aa74",
+      "mode_global": "0x00e5ff80",
+      "visible_modes": [
+        0,
+        1,
+        2
+      ]
+    },
+    "skip_predicate": {
+      "function": "0x002c0c20",
+      "returns_skip": 1,
+      "returns_visible": 0
+    },
+    "unlock_test": {
+      "function": "0x0010e8f0",
+      "nonzero_id_no_profile_result": 0,
+      "nonzero_id_profile_path": "FUN_00191d20 then FUN_0013fba0 unlock-bit test",
+      "zero_id_result": 1
+    }
+  },
+  "rost_stadium_format": {
+    "asset_code_pointer_offset": "0x0c",
+    "preview_numeric_id_offset": "0x7c",
+    "preview_numeric_id_use": "FUN_002c0a90 formats stadium_s%02d; this byte is not read by the Quick Game visibility predicate",
+    "record18": {
+      "asset_code_after_dispatch_shim": "s42",
+      "asset_code_before_dispatch_shim": "s18",
+      "asset_code_pointer_field_body_offset": "0x09bc",
+      "asset_code_string_body_offset": "0x076122",
+      "preview_numeric_id": 18,
+      "record_body_offset": "0x09b0"
+    },
+    "record36": {
+      "asset_code": "s42",
+      "preview_numeric_id": 42
+    },
+    "stadium_count": 82,
+    "stadium_table_body_offset": "0x00b0",
+    "stadium_table_stride": "0x80"
+  },
+  "schema": "nfl2k5_stadium_quick_game_visibility_and_s42_unlock_diagnostic/v1",
+  "source_evidence": {
+    "ghidra_program_md5": "444064a9ec984dd29d2c05a43f5c96e8",
+    "read_only_trace": ".codex-tmp/s42_visibility_analysis/out/trace.txt",
+    "read_only_trace_sha256": "60d7a3c239cdeec5f052e8395063a76907e5cd7c4748eaf8b3b2e1bd209b509d",
+    "retail_default_xbe_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+    "runtime_observation": "The prior record18 s18-to-s42 dispatch image was skipped during Quick Game cycling; no target outer-load or geometry witness was obtained.",
+    "runtime_observation_report": "reports/assets/nfl2k5_group36_s42_xemu_runtime_partial.v1.json"
+  },
+  "tools": {
+    "independent_verifier": "tools/nfl_stadium_group36_s42_visibility_unlock_xiso_verify.py",
+    "test": "tests/test_nfl_stadium_group36_s42_visibility_unlock_xiso.py",
+    "writer": "tools/nfl_stadium_group36_s42_visibility_unlock_xiso_patch.py"
+  }
+}
