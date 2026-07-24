@@ -228,7 +228,7 @@ def _read_regular_snapshot(
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | \
         getattr(os, "O_CLOEXEC", 0)
     try:
-        descriptor = os.open(resolved, flags)
+        descriptor = os.open(resolved, flags | getattr(os, "O_BINARY", 0))
     except OSError as exc:
         raise ValidationError(f"{label} could not be opened safely: {resolved}") from exc
     try:
@@ -296,7 +296,7 @@ def _write_private_snapshot(path: Path, payload: bytes) -> Path:
         getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
     descriptor: int | None = None
     try:
-        descriptor = os.open(path, flags, 0o600)
+        descriptor = os.open(path, flags | getattr(os, "O_BINARY", 0), 0o600)
         cursor = 0
         while cursor < len(payload):
             written = os.write(descriptor, payload[cursor:])
@@ -533,7 +533,7 @@ def _private_audio_inventory_file(
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | \
         getattr(os, "O_CLOEXEC", 0)
     try:
-        descriptor = os.open(path.name, flags, dir_fd=directory_fd)
+        descriptor = os.open(path.name, flags | getattr(os, "O_BINARY", 0), dir_fd=directory_fd)
     except OSError as exc:
         raise _audio_safety_error(
             f"{label} could not be opened safely at {path} ({exc})"
@@ -796,7 +796,7 @@ class Nfl2k5BuildService:
                 manifest, staged_xiso, source, output)
             descriptor = os.open(
                 staged_xiso, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-                getattr(os, "O_CLOEXEC", 0))
+                getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
             publish_attempted = False
             committed = False
             try:

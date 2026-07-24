@@ -114,7 +114,7 @@ def _atomic_bytes(path: Path, payload: bytes) -> None:
     temporary = path.with_name(f".{path.name}.{os.getpid()}.{uuid4().hex}.tmp")
     descriptor = os.open(
         temporary,
-        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
         0o600,
     )
     try:

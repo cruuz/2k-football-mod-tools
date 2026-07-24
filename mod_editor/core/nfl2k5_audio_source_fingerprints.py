@@ -983,7 +983,7 @@ class Nfl2k5AudioSourceFingerprintStore:
         flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) \
             | getattr(os, "O_CLOEXEC", 0)
         try:
-            descriptor = os.open(path, flags)
+            descriptor = os.open(path, flags | getattr(os, "O_BINARY", 0))
         except OSError as exc:
             raise AudioSourceFingerprintError(
                 f"Could not open the private source-audio inventory: {exc}"

@@ -348,7 +348,7 @@ def _write_new(path: Path, payload: bytes) -> None:
     try:
         descriptor = os.open(
             path,
-            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
             0o600,
         )
     except FileExistsError as exc:

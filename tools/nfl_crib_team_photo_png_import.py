@@ -92,7 +92,7 @@ def read_png(path: Path) -> tuple[Path, bytes, bytes]:
     resolved = path.resolve(strict=True)
     descriptor = os.open(
         resolved,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)
@@ -511,7 +511,7 @@ def _exclusive_write(path: Path, payload: bytes) -> tuple[Path, tuple[int, int]]
     descriptor = os.open(
         target,
         os.O_CREAT | os.O_EXCL | os.O_WRONLY
-        | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         0o600,
     )
     identity = (os.fstat(descriptor).st_dev, os.fstat(descriptor).st_ino)

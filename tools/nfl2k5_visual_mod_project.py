@@ -578,7 +578,7 @@ def read_regular_bounded(path: Path, maximum: int, label: str) \
     resolved = path.resolve(strict=True)
     descriptor = os.open(
         resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-        getattr(os, "O_CLOEXEC", 0))
+        getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
     try:
         opened = os.fstat(descriptor)
         identity = (opened.st_dev, opened.st_ino)
@@ -966,7 +966,7 @@ def resolve_asset(project: ProjectFile, text: str,
 def verify_input_pin(pin: InputPin) -> None:
     descriptor = os.open(
         pin.path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-        getattr(os, "O_CLOEXEC", 0))
+        getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
     try:
         current = os.fstat(descriptor)
         require(stat.S_ISREG(current.st_mode) and
@@ -2129,7 +2129,7 @@ def _safe_text_pack_sha256(pack: Any) -> str:
     )
     descriptor = os.open(
         path,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)
@@ -2781,7 +2781,7 @@ def validate_source(source_path: Path) \
             "source XISO must be a non-symlink regular file")
     source = source_path.resolve(strict=True)
     descriptor = os.open(source, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-                         getattr(os, "O_CLOEXEC", 0))
+                         getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
     try:
         info = os.fstat(descriptor)
         identity = common.fd_identity(descriptor)
@@ -3789,7 +3789,7 @@ def verify(project_path: Path, source_path: Path, output_path: Path,
                 "output XISO must be a non-symlink regular file")
         output = output_path.resolve(strict=True)
         output_fd = os.open(output, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-                            getattr(os, "O_CLOEXEC", 0))
+                            getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
         output_info = os.fstat(output_fd)
         output_identity = common.fd_identity(output_fd)
         require(stat.S_ISREG(output_info.st_mode) and

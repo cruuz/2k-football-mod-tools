@@ -67,7 +67,7 @@ def pin_large_file(
     resolved = path.resolve(strict=True)
     descriptor = os.open(
         resolved,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         info = os.fstat(descriptor)
@@ -177,7 +177,7 @@ def verify_output_span(output: Path, identity: tuple[int, int],
                        replacement_span: bytes) -> os.stat_result:
     descriptor = os.open(
         output,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         info = os.fstat(descriptor)

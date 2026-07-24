@@ -151,7 +151,7 @@ def _read_report(path: Path) -> tuple[Path, bytes, dict[str, Any]]:
     resolved = path.resolve(strict=True)
     descriptor = os.open(
         resolved,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)

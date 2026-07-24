@@ -475,7 +475,7 @@ class Nfl2k5AudioSourceContainmentStore:
             try:
                 descriptor = os.open(
                     basename,
-                    flags,
+                    flags | getattr(os, "O_BINARY", 0),
                     0o600,
                     dir_fd=directory_fd,
                 )
@@ -545,7 +545,7 @@ class Nfl2k5AudioSourceContainmentStore:
             try:
                 descriptor = os.open(
                     path.name,
-                    flags,
+                    flags | getattr(os, "O_BINARY", 0),
                     dir_fd=directory_fd,
                 )
             except OSError as exc:

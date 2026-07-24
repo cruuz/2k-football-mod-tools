@@ -47,7 +47,7 @@ def _read_report(path: Path) -> dict[str, Any]:
         raise ValidationError("Uniform-sharing report must be a non-symlink regular file")
     descriptor = os.open(
         path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-        getattr(os, "O_CLOEXEC", 0)
+        getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0)
     )
     try:
         opened = os.fstat(descriptor)
@@ -93,7 +93,7 @@ def _read_pants_report(path: Path) -> dict[str, Any]:
         raise ValidationError("APF pants report must be a non-symlink regular file")
     descriptor = os.open(
         path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-        getattr(os, "O_CLOEXEC", 0)
+        getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0)
     )
     try:
         opened = os.fstat(descriptor)
@@ -139,7 +139,7 @@ def _read_helmet_report(path: Path) -> dict[str, Any]:
         raise ValidationError("APF helmet report must be a non-symlink regular file")
     descriptor = os.open(
         path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-        getattr(os, "O_CLOEXEC", 0)
+        getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0)
     )
     try:
         opened = os.fstat(descriptor)
@@ -185,7 +185,7 @@ def _read_shoulder_report(path: Path) -> dict[str, Any]:
         raise ValidationError("APF shoulder report must be a non-symlink regular file")
     descriptor = os.open(
         path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-        getattr(os, "O_CLOEXEC", 0)
+        getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0)
     )
     try:
         opened = os.fstat(descriptor)

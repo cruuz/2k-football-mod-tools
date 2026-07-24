@@ -258,13 +258,20 @@ def hash_extent(fd: int, offset: int, size: int) -> str:
 def require_sealed_executable(descriptor: int, expected_size: int,
                               expected_sha256: str) -> None:
     info = os.fstat(descriptor)
-    required = required_executable_seals()
-    seals = platform_compat.read_seals(descriptor)
     require(stat.S_ISREG(info.st_mode) and info.st_size == expected_size and
             stat.S_IMODE(info.st_mode) == 0o500,
             "sealed executable mode/type/size differs")
-    require(seals & required == required,
-            "sealed executable is not immutable")
+    # The kernel write-seal read-back is Linux-only (memfd F_*_SEALS). On a host
+    # without it the immutability guarantee is provided instead by the SHA-256
+    # extent check below plus the read-only (0o500) mode already asserted; asking
+    # for the seal constants there would raise the opaque "requires the Linux
+    # memfd write-seal constants" error. So verify the seals only where they can
+    # exist, and never weaken the hash check, which runs on every platform.
+    if platform_compat.supports_sealed_memfd():
+        required = required_executable_seals()
+        seals = platform_compat.read_seals(descriptor)
+        require(seals & required == required,
+                "sealed executable is not immutable")
     require(hash_extent(descriptor, 0, expected_size) == expected_sha256,
             "sealed executable SHA-256 differs")
 

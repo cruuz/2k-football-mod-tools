@@ -75,7 +75,7 @@ def _read_regular(path: Path, *, maximum: int, label: str) -> _RegularBytes:
     resolved = requested.resolve(strict=True)
     descriptor = os.open(
         resolved,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)
@@ -205,7 +205,7 @@ def _write_new_json(path: Path, document: object) -> Path:
             | os.O_CREAT
             | os.O_EXCL
             | getattr(os, "O_CLOEXEC", 0)
-            | getattr(os, "O_NOFOLLOW", 0),
+            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
             0o644,
         )
         opened = os.fstat(descriptor)

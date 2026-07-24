@@ -1161,7 +1161,7 @@ def _reserve_new(path: Path) -> OutputReservation:
     try:
         descriptor = os.open(
             path,
-            os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC,
+            os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | getattr(os, "O_BINARY", 0),
             0o644,
         )
     except FileExistsError as exc:
@@ -1310,7 +1310,7 @@ def _write_copied_volume(
     if source_volume.resolve() == output_volume.resolve():
         raise PatchError("refusing to patch the source APF volume")
     output_volume.parent.mkdir(parents=True, exist_ok=True)
-    source_descriptor = os.open(source_volume, os.O_RDONLY | os.O_CLOEXEC)
+    source_descriptor = os.open(source_volume, os.O_RDONLY | os.O_CLOEXEC | getattr(os, "O_BINARY", 0))
     output_descriptor: int | None = None
     output_identity: tuple[int, int] | None = None
     try:
@@ -1323,7 +1323,7 @@ def _write_copied_volume(
         try:
             output_descriptor = os.open(
                 output_volume,
-                os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC,
+                os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | getattr(os, "O_BINARY", 0),
                 stat.S_IMODE(source_metadata.st_mode),
             )
         except FileExistsError as exc:

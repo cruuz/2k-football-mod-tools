@@ -196,7 +196,7 @@ def _read_private_sheet(source: Path) -> tuple[str, str]:
         raise PlayerRatingSheetError("The ratings sheet is empty or unexpectedly large")
     descriptor = os.open(
         source,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)

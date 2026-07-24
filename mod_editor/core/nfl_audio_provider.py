@@ -360,7 +360,7 @@ class Nfl2k5MenuBackAudioProvider:
             )
         descriptor = os.open(
             path,
-            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         )
         try:
             opened = os.fstat(descriptor)
@@ -538,7 +538,7 @@ class Nfl2k5MenuBackAudioProvider:
                 | os.O_CREAT
                 | os.O_EXCL
                 | getattr(os, "O_NOFOLLOW", 0)
-                | getattr(os, "O_CLOEXEC", 0),
+                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
                 0o600,
             )
             try:

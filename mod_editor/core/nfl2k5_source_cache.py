@@ -295,7 +295,7 @@ class Nfl2k5SourceCache:
         pack_folder.mkdir(parents=True)
         descriptor = os.open(
             source, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-            getattr(os, "O_CLOEXEC", 0))
+            getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
         try:
             opened = os.fstat(descriptor)
             if not stat.S_ISREG(opened.st_mode) or opened.st_size != SOURCE_SIZE:
@@ -315,7 +315,7 @@ class Nfl2k5SourceCache:
                 output = pack_folder / name
                 flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | \
                     getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
-                target_fd = os.open(output, flags, 0o600)
+                target_fd = os.open(output, flags | getattr(os, "O_BINARY", 0), 0o600)
                 try:
                     position = entry.byte_offset
                     remaining = entry.size
@@ -402,7 +402,7 @@ class Nfl2k5SourceCache:
         payload = (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
         temporary = path.with_name(f".{path.name}.tmp")
         flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
-        descriptor = os.open(temporary, flags, 0o600)
+        descriptor = os.open(temporary, flags | getattr(os, "O_BINARY", 0), 0o600)
         try:
             with os.fdopen(descriptor, "wb", closefd=True) as stream:
                 stream.write(payload)

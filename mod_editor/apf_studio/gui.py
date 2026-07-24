@@ -298,7 +298,7 @@ def _copy_new(source: Path, destination: Path) -> Path:
     destination.parent.mkdir(parents=True, exist_ok=True)
     descriptor = os.open(
         destination,
-        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0),
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         0o644,
     )
     try:

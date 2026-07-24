@@ -232,7 +232,7 @@ class XeniaLauncher:
                 | os.O_CREAT
                 | os.O_TRUNC
                 | getattr(os, "O_NOFOLLOW", 0)
-                | getattr(os, "O_CLOEXEC", 0),
+                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
                 0o600,
             )
             with os.fdopen(log_descriptor, "wb") as log:

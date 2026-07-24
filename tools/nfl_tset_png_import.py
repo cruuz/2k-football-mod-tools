@@ -429,7 +429,7 @@ def exclusive_write(path: Path, payload: bytes) -> tuple[int, int]:
     descriptor = os.open(
         target,
         os.O_CREAT | os.O_EXCL | os.O_WRONLY |
-        getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         0o644,
     )
     identity = (os.fstat(descriptor).st_dev, os.fstat(descriptor).st_ino)

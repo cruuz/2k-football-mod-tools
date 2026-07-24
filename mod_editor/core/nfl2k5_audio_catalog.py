@@ -1438,7 +1438,7 @@ def _atomic_write(path: Path, payload: bytes, *, replace: bool = False) -> Path:
     temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     descriptor = os.open(
         temporary,
-        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
         0o600,
     )
     try:
@@ -1506,7 +1506,7 @@ def _stream_entry_to_new_file(
         descriptor = os.open(
             temporary,
             os.O_WRONLY | os.O_CREAT | os.O_EXCL
-            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             0o600,
         )
         written = 0

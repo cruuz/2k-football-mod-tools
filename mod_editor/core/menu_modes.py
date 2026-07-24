@@ -80,7 +80,7 @@ def _read_regular_file(path: Path, expected_size: int) -> bytes:
         raise ValidationError("Pinned menu evidence must be a non-symlink regular file")
     descriptor = os.open(
         path,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)

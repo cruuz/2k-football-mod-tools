@@ -64,7 +64,7 @@ def _atomic_write(path: Path, payload: bytes, *, replace: bool = False) -> None:
         raise ValidationError(f"Refusing to replace a symbolic link: {path}")
     temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
-    descriptor = os.open(temporary, flags, 0o600)
+    descriptor = os.open(temporary, flags | getattr(os, "O_BINARY", 0), 0o600)
     try:
         with os.fdopen(descriptor, "wb", closefd=True) as stream:
             stream.write(payload)
@@ -265,7 +265,7 @@ def copy_user_asset_atomic(source: Path, destination: Path) -> None:
     try:
         with source.open("rb") as reader:
             flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
-            descriptor = os.open(temporary, flags, 0o600)
+            descriptor = os.open(temporary, flags | getattr(os, "O_BINARY", 0), 0o600)
             with os.fdopen(descriptor, "wb", closefd=True) as writer:
                 shutil.copyfileobj(reader, writer, 1024 * 1024)
                 writer.flush()

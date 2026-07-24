@@ -73,7 +73,7 @@ def pin_small_file(path: Path, label: str, expected_size: int | None = None) -> 
     resolved = path.resolve(strict=True)
     descriptor = os.open(
         resolved,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         info = os.fstat(descriptor)
@@ -100,7 +100,7 @@ def verify_pin(pin: PinnedFile, label: str) -> None:
                    f"{label} pathname was swapped")
     descriptor = os.open(
         pin.path,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         common.require(common.fd_identity(descriptor) == (pin.device, pin.inode),
@@ -205,7 +205,7 @@ def run(
 
     source_fd = os.open(
         source,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     output_owned: common.OwnedFile | None = None
     manifest_owned: common.OwnedFile | None = None

@@ -248,7 +248,7 @@ def project_target_identity(path: Path) -> ProjectTargetIdentity:
         descriptor = os.open(
             requested,
             os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         )
     except FileNotFoundError as exc:
         raise ValidationError(
@@ -476,7 +476,7 @@ def save_project_archive(
     temporary = output.with_name(f".{output.name}.{os.getpid()}.{uuid4().hex}.tmp")
     descriptor = os.open(
         temporary,
-        os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+        os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
         0o600,
     )
     try:
@@ -720,7 +720,7 @@ def load_project_archive(
                 descriptor = os.open(
                     staged,
                     os.O_WRONLY | os.O_CREAT | os.O_EXCL |
-                    getattr(os, "O_NOFOLLOW", 0),
+                    getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
                     0o600,
                 )
                 with os.fdopen(descriptor, "wb", closefd=True) as output:
@@ -791,7 +791,7 @@ def load_project_archive(
                 staged = stage / f"{_asset_key(asset_id)}.png"
                 descriptor = os.open(
                     staged,
-                    os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+                    os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
                     0o600,
                 )
                 with os.fdopen(descriptor, "wb", closefd=True) as output:

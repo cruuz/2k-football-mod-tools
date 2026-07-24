@@ -86,7 +86,7 @@ def load_report(path: Path = DEFAULT_REPORT) -> tuple[Path, bytes, dict[str, Any
             "portrait compatibility report must be a non-symlink regular file")
     resolved = path.resolve(strict=True)
     descriptor = os.open(resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-                         getattr(os, "O_CLOEXEC", 0))
+                         getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
     try:
         opened = os.fstat(descriptor)
         require(stat.S_ISREG(opened.st_mode) and

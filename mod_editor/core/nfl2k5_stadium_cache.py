@@ -313,7 +313,7 @@ class Nfl2k5StadiumCacheCoordinator:
         lock_path = parent / LOCK_NAME
         lock_fd = os.open(
             lock_path,
-            os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0),
+            os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
             0o600,
         )
         try:

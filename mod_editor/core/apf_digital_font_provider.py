@@ -55,7 +55,7 @@ class Apf2k8DigitalFontProvider:
     module_pins: Mapping[str, str] = {
         "tools/apf_inner.py": "75a74b34524b3861785b916e3470862bccfe278825a63aa2dccb924849ae9606",
         "tools/apf_outer.py": "eb89734ed3ad0205ff7d8732b2f7f93368eff861ccbc5e1473d4e21f25e8a62e",
-        "tools/apf_texture_patch.py": "c1793694f82fc285b825d142a552f5e487d233c68cdf2bf21a07ddc27b1578cf",
+        "tools/apf_texture_patch.py": "246243be4eb6821fe70f6fa7ac7ab134cf023da299b2a452964d87e136aab19b",
         "tools/apf_xenos_dxt5a.py": "c95e556e55de81b8576da2e3bd3311018137cb449167c74121be3d5010ff5443",
         "tools/apf_digital_font_layout.py": "c4b8b724f125d9a29970f06a5edc4dd92c4cf074eb7ce8f6f879be2b32ebd7b1",
         "tools/apf_digital_font_transport.py": "a4b08c3ad31d195aa1b3e312a54690b42faba83de93369b732669264d959d481",
@@ -280,7 +280,7 @@ class Apf2k8DigitalFontProvider:
                     | os.O_CREAT
                     | os.O_EXCL
                     | getattr(os, "O_NOFOLLOW", 0)
-                    | getattr(os, "O_CLOEXEC", 0),
+                    | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
                     0o400,
                 )
                 try:
@@ -394,7 +394,7 @@ class Apf2k8DigitalFontProvider:
                 path,
                 os.O_RDONLY
                 | getattr(os, "O_NOFOLLOW", 0)
-                | getattr(os, "O_CLOEXEC", 0),
+                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             )
         except OSError as exc:
             raise ProviderError(

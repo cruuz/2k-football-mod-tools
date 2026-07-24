@@ -157,7 +157,7 @@ def _publish_new_export(payload: bytes, destination: Path) -> Path:
     try:
         descriptor = os.open(
             requested,
-            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
             0o600,
         )
     except FileExistsError as exc:
@@ -210,7 +210,7 @@ def _read_product_snapshot(
         path,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)

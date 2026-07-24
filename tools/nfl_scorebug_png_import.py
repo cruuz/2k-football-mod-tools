@@ -73,7 +73,7 @@ def open_regular(path: Path, maximum: int, label: str) -> tuple[Path, bytes]:
             f"{label} must be a non-symlink regular file")
     resolved = path.resolve(strict=True)
     descriptor = os.open(resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-                         getattr(os, "O_CLOEXEC", 0))
+                         getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
     try:
         info = os.fstat(descriptor)
         require(stat.S_ISREG(info.st_mode) and info.st_size <= maximum and
@@ -317,7 +317,7 @@ def build_import(index_path: Path, audit_path: Path, target_name: str,
 def create_file(path: Path, payload: bytes) -> tuple[int, int]:
     descriptor = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY |
                          getattr(os, "O_NOFOLLOW", 0) |
-                         getattr(os, "O_CLOEXEC", 0), 0o644)
+                         getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0), 0o644)
     info = os.fstat(descriptor)
     identity = (info.st_dev, info.st_ino)
     success = False

@@ -508,7 +508,7 @@ def _copy_atomic(source: Path, destination: Path, *, replace: bool) -> Path:
     temporary = destination.with_name(f".{destination.name}.{os.getpid()}.tmp")
     source_fd = os.open(
         source,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     output_fd: int | None = None
     try:
@@ -522,7 +522,7 @@ def _copy_atomic(source: Path, destination: Path, *, replace: bool) -> Path:
         output_fd = os.open(
             temporary,
             os.O_WRONLY | os.O_CREAT | os.O_EXCL
-            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             0o600,
         )
         remaining = opened.st_size
@@ -575,7 +575,7 @@ def _replace_atomic_bytes(destination: Path, payload: bytes) -> Path:
         descriptor = os.open(
             temporary,
             os.O_WRONLY | os.O_CREAT | os.O_EXCL
-            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             0o600,
         )
         view = memoryview(payload)

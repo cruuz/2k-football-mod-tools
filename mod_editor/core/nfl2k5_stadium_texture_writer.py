@@ -1552,7 +1552,7 @@ class Nfl2k5StadiumTextureWriter:
 
         source_fd = os.open(
             source,
-            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         )
         output_owned: xiso.OwnedFile | None = None
         manifest_owned: xiso.OwnedFile | None = None

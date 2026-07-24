@@ -997,7 +997,7 @@ def _file_name_has_content_identity_at(
             name,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             dir_fd=parent_descriptor,
         )
     except OSError:
@@ -1092,7 +1092,7 @@ def _write_exclusive_at(directory_descriptor: int, name: str, data: bytes) -> No
         | os.O_CREAT
         | os.O_EXCL
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         0o600,
         dir_fd=directory_descriptor,
     )
@@ -1235,7 +1235,7 @@ def _create_audio_replacement_zip_at(
         | os.O_CREAT
         | os.O_EXCL
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         0o600,
         dir_fd=parent_descriptor,
     )
@@ -1581,7 +1581,7 @@ def _read_regular_bounded_at(
         name,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         dir_fd=directory_descriptor,
     )
     try:
@@ -1663,7 +1663,7 @@ def _stream_regular_bounded_at(
         name,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         dir_fd=directory_descriptor,
     )
     destination_descriptor: int | None = None
@@ -1679,7 +1679,7 @@ def _stream_regular_bounded_at(
                 | os.O_CREAT
                 | os.O_EXCL
                 | getattr(os, "O_NOFOLLOW", 0)
-                | getattr(os, "O_CLOEXEC", 0),
+                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
                 0o600,
             )
             published_destination = True
@@ -1880,7 +1880,7 @@ def _extract_zip_member_at(
         | os.O_CREAT
         | os.O_EXCL
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         0o600,
         dir_fd=directory_descriptor,
     )
@@ -2076,7 +2076,7 @@ def _materialized_audio_replacement_pack(
             requested,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         )
     except OSError as exc:
         raise AudioReplacementPackError(

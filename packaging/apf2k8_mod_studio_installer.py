@@ -187,7 +187,7 @@ def _read_small_regular(path: Path, label: str, maximum: int = MAX_RECORD_BYTES)
     flags = os.O_RDONLY
     if hasattr(os, "O_NOFOLLOW"):
         flags |= getattr(os, "O_NOFOLLOW", 0)
-    descriptor = os.open(path, flags)
+    descriptor = os.open(path, flags | getattr(os, "O_BINARY", 0))
     try:
         opened = os.fstat(descriptor)
         if not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1:
@@ -291,14 +291,14 @@ def _copy_release_file(source: Path, destination: Path) -> str:
     flags = os.O_RDONLY
     if hasattr(os, "O_NOFOLLOW"):
         flags |= getattr(os, "O_NOFOLLOW", 0)
-    source_fd = os.open(source, flags)
+    source_fd = os.open(source, flags | getattr(os, "O_BINARY", 0))
     destination_fd = -1
     digest = hashlib.sha256()
     try:
         opened = os.fstat(source_fd)
         if not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1:
             raise InstallError(f"release file changed while opening: {source}")
-        destination_fd = os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        destination_fd = os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0), 0o600)
         completed = 0
         while block := os.read(source_fd, 1024 * 1024):
             digest.update(block)

@@ -302,7 +302,7 @@ def _read_authenticated_file(
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) \
         | getattr(os, "O_CLOEXEC", 0)
     try:
-        descriptor = os.open(path, flags)
+        descriptor = os.open(path, flags | getattr(os, "O_BINARY", 0))
     except OSError as exc:
         raise AudioSourceScanError(f"Could not open {stage}: {exc}") from exc
     try:
@@ -749,7 +749,7 @@ class Nfl2k5AudioSourceScanner:
         flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) \
             | getattr(os, "O_CLOEXEC", 0)
         try:
-            descriptor = os.open(selected, flags)
+            descriptor = os.open(selected, flags | getattr(os, "O_BINARY", 0))
         except OSError as exc:
             raise AudioSourceScanError(f"Could not open source XISO read-only: {exc}") from exc
         opened = os.fstat(descriptor)

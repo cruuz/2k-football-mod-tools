@@ -595,7 +595,7 @@ def load_reserve_plan(source: Path) -> ReserveRosterPlan:
         source,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)

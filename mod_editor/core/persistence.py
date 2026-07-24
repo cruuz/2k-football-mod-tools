@@ -23,7 +23,7 @@ def save_project(project: ModProject, destination: Path) -> Path:
     payload = json.dumps(project.to_document(), indent=2, sort_keys=True) + "\n"
     try:
         flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
-        descriptor = os.open(temporary, flags, 0o600)
+        descriptor = os.open(temporary, flags | getattr(os, "O_BINARY", 0), 0o600)
         with os.fdopen(descriptor, "w", encoding="utf-8") as output:
             output.write(payload)
             output.flush()

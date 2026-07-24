@@ -225,7 +225,7 @@ def _copy_regular(
     destination.parent.mkdir(parents=True, exist_ok=True)
     source_fd = os.open(
         source,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         destination_fd = os.open(
@@ -234,7 +234,7 @@ def _copy_regular(
             | os.O_CREAT
             | os.O_EXCL
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             stat.S_IMODE(supplied.st_mode),
         )
     except BaseException:
@@ -885,7 +885,7 @@ class ApfBuildService:
                 output_pack,
                 os.O_RDWR
                 | getattr(os, "O_NOFOLLOW", 0)
-                | getattr(os, "O_CLOEXEC", 0),
+                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             )
             try:
                 pack_size = os.fstat(descriptor).st_size
@@ -1389,7 +1389,7 @@ class ApfBuildService:
                     source_pack,
                     os.O_RDONLY
                     | getattr(os, "O_NOFOLLOW", 0)
-                    | getattr(os, "O_CLOEXEC", 0),
+                    | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
                 )
             except OSError as exc:
                 raise BuildError(
@@ -1946,7 +1946,7 @@ class ApfBuildService:
                     os.O_WRONLY
                     | os.O_CREAT
                     | os.O_EXCL
-                    | getattr(os, "O_CLOEXEC", 0),
+                    | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
                     0o600,
                 )
                 try:
@@ -2075,14 +2075,14 @@ class ApfBuildService:
             source_pack,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         )
         try:
             output_fd = os.open(
                 output_pack,
                 os.O_RDONLY
                 | getattr(os, "O_NOFOLLOW", 0)
-                | getattr(os, "O_CLOEXEC", 0),
+                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             )
         except BaseException:
             os.close(source_fd)
