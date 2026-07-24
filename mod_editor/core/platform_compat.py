@@ -482,6 +482,21 @@ def _windows_security_api() -> _WindowsSecurityApi:
         ctypes.POINTER(ctypes.c_wchar_p),
     ]
     advapi32.ConvertSidToStringSidW.restype = boolean
+    # The reverse conversion plus the membership test, used to answer "is the
+    # SID that owns this object an identity my own token holds?" -- the question
+    # an elevated process must ask, because Windows stamps its new files
+    # BUILTIN\Administrators rather than with the user SID.
+    advapi32.ConvertStringSidToSidW.argtypes = [
+        ctypes.c_wchar_p,
+        ctypes.POINTER(ctypes.c_void_p),
+    ]
+    advapi32.ConvertStringSidToSidW.restype = boolean
+    advapi32.CheckTokenMembership.argtypes = [
+        handle,
+        ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_int),
+    ]
+    advapi32.CheckTokenMembership.restype = boolean
     # GetAce(PACL, DWORD index, LPVOID *pAce): fills a pointer to the ACE at
     # ``index`` *inside* the DACL, used by the owner-only privacy check to walk
     # every ACE and refuse a foreign visibility grant.
@@ -569,6 +584,49 @@ def _windows_current_user_sid() -> str:
     """The user SID of the process token, i.e. "who am I" on Windows."""
 
     return _windows_token_sid(_TOKEN_USER_CLASS, "user")
+
+
+def _windows_token_holds_sid(sid_text: str) -> bool:
+    """Whether the current process token carries ``sid_text`` as an identity.
+
+    ``CheckTokenMembership(NULL, sid, ...)`` asks Windows the question that
+    matters here: is the account this process is running as a member of the
+    group that owns the object?  It is needed because an elevated process's new
+    files are frequently stamped ``BUILTIN\\Administrators`` -- an identity the
+    token genuinely holds, but which is neither its ``TokenUser`` nor its
+    ``TokenOwner`` SID.  Returns ``False``, never raises, when the SID cannot be
+    converted or the membership cannot be established: an unanswerable
+    membership question is not a match.
+    """
+
+    try:
+        api = _windows_security_api()
+    except OwnershipCheckError:
+        return False
+    convert = getattr(api.advapi32, "ConvertStringSidToSidW", None)
+    check = getattr(api.advapi32, "CheckTokenMembership", None)
+    if convert is None or check is None:
+        return False
+    sid = ctypes.c_void_p()
+    try:
+        if not convert(ctypes.c_wchar_p(sid_text), ctypes.byref(sid)):
+            return False
+    except (OSError, TypeError, ValueError):
+        return False
+    try:
+        member = ctypes.c_int(0)
+        if not check(None, sid, ctypes.byref(member)):
+            return False
+        return bool(member.value)
+    except (OSError, TypeError, ValueError):
+        return False
+    finally:
+        free = getattr(api.kernel32, "LocalFree", None)
+        if free is not None:
+            try:
+                free(sid)
+            except OSError:
+                pass
 
 
 def _windows_default_owner_sid() -> str | None:
@@ -1445,6 +1503,14 @@ def describe_ownership(
         matched = "current user SID"
     elif default_owner_sid is not None and owner_sid == default_owner_sid:
         matched = "token default-owner SID"
+    elif _windows_token_holds_sid(owner_sid):
+        # An elevated process's new files are commonly stamped
+        # BUILTIN\Administrators, which is neither TokenUser nor TokenOwner but
+        # IS an identity this token holds.  Asking CheckTokenMembership is the
+        # platform's own answer to "is this mine?"; refusing here would refuse
+        # the process's own files and make the private cache unusable for an
+        # administrator while proving nothing.
+        matched = "token group membership"
     else:
         matched = None
     return OwnershipCheck(
@@ -2596,6 +2662,16 @@ def verify_private_root_placement(path: str | os.PathLike[str], label: str) -> N
             f"({user_private_root()}) on Windows, which is where its "
             f"other-users-excluded ACL comes from; it is at {os.fspath(path)!r}"
         )
+    if not os.path.exists(path):
+        # A root that has not been created yet has no DACL to read, and
+        # "unreadable" must not be conflated with "readable and permissive":
+        # that would make this raise for every first run, before the very
+        # directory whose ACL it wants to inspect exists.  Placement -- all that
+        # can be asserted about a name -- has been asserted above, and the ACL
+        # itself is established at creation by :func:`create_private_directory` /
+        # :func:`harden_private_directory` and re-checked by
+        # :func:`verify_private_directory` on every subsequent open.
+        return
     if _windows_dacl_enforced():
         verdict = windows_directory_privacy(path=os.fspath(path))
         if not (verdict.queried and verdict.restricted_to_current_user):

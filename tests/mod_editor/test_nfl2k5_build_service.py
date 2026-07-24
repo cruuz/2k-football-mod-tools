@@ -36,8 +36,45 @@ from mod_editor.core.nfl2k5_source_cache import (
 )
 
 
+def _mark_sparse_on_windows(stream) -> None:
+    """Ask NTFS to make this file sparse before it is extended.
+
+    ``truncate`` leaves a hole on ext4/APFS, but on NTFS it physically
+    zero-fills unless the file has been flagged sparse first -- so the
+    5.87 GiB source-size fixtures below would each write six gigabytes of
+    zeroes, which is how this file reached the CI per-file timeout on the
+    Windows runner.  ``FSCTL_SET_SPARSE`` is the documented way to ask for the
+    hole.  Best effort: if the control code is unavailable or refused, the
+    truncate still produces a correct (merely slow) file, so a failure here
+    must never fail the test.
+    """
+
+    if not platform_compat.IS_WINDOWS:
+        return
+    try:
+        import ctypes
+        import msvcrt
+
+        fsctl_set_sparse = 0x000900C4
+        handle = msvcrt.get_osfhandle(stream.fileno())
+        returned = ctypes.c_ulong(0)
+        ctypes.windll.kernel32.DeviceIoControl(
+            ctypes.c_void_p(handle),
+            ctypes.c_ulong(fsctl_set_sparse),
+            None,
+            0,
+            None,
+            0,
+            ctypes.byref(returned),
+            None,
+        )
+    except Exception:  # pragma: no cover - fixture speed only, never fatal
+        pass
+
+
 def _sparse(path: Path, size: int, prefix: bytes = b"") -> None:
     with path.open("wb") as stream:
+        _mark_sparse_on_windows(stream)
         if prefix:
             stream.write(prefix)
         stream.truncate(size)
