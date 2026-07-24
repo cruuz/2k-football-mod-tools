@@ -117,19 +117,27 @@ jobs:
           # Linux/macOS and with Git-for-Windows bash on windows-latest; if it is
           # somehow absent we fall back to running without it. Exit 124 = timed
           # out; we record it as a failure with a clear marker.
+          # timeout -k 30 also SIGKILLs 30s after SIGTERM. Crucially we write
+          # each test's output to a FILE, not a $(...) capture: if a hung test
+          # leaves grandchild processes holding the pipe, a command substitution
+          # blocks forever even after timeout kills the test itself (this is
+          # exactly how the Windows/ubuntu jobs stalled to the 30-min limit with
+          # no summary). Reading a file with `cat` never blocks on a live writer.
           TMO=""
-          command -v timeout >/dev/null 2>&1 && TMO="timeout 420"
+          command -v timeout >/dev/null 2>&1 && TMO="timeout -k 30 420"
+          OUTF="$(mktemp)"
 
           for f in tests/mod_editor/test_*.py; do
             [ -e "$f" ] || continue   # glob did not match -> skip literal pattern
             found=1
             name=$(basename "$f")
             if [ "$name" = "$isolated" ]; then
-              out=$(env -u PYTHONPATH $TMO "$PY" "$f" 2>&1); rc=$?
+              env -u PYTHONPATH $TMO "$PY" "$f" >"$OUTF" 2>&1; rc=$?
             else
-              out=$(PYTHONPATH="$repo" $TMO "$PY" "$f" 2>&1); rc=$?
+              PYTHONPATH="$repo" $TMO "$PY" "$f" >"$OUTF" 2>&1; rc=$?
             fi
-            if [ "$rc" -eq 124 ]; then
+            out=$(cat "$OUTF")
+            if [ "$rc" -eq 124 ] || [ "$rc" -eq 137 ]; then
               out="$out -- TIMED OUT after 420s (killed by CI per-file timeout)"
             fi
 
