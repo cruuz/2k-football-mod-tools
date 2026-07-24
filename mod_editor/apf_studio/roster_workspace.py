@@ -564,11 +564,10 @@ def save_reserve_plan(plan: ReserveRosterPlan, destination: Path) -> Path:
         descriptor = -1
         os.link(temporary, destination)
         published = True
-        directory_fd = os.open(destination.parent, os.O_RDONLY)
-        try:
-            os.fsync(directory_fd)
-        finally:
-            os.close(directory_fd)
+        # Commit the new directory entry where the platform offers that; the
+        # plan file's own bytes were flushed above, so on Windows -- which has
+        # no directory-flush primitive -- only the entry's ordering is lost.
+        platform_compat.fsync_directory(destination.parent)
         if destination.read_bytes() != data:
             raise RosterWorkspaceError("Published reserve plan failed verification")
     except BaseException:

@@ -28,6 +28,7 @@ import sys
 import tempfile
 from typing import Callable, Protocol, Sequence
 
+from . import platform_compat
 from .errors import ModEditorError, OutputRefusedError, ValidationError
 from .nfl2k5_source_cache import (
     INVENTORY_SIZE,
@@ -36,6 +37,7 @@ from .nfl2k5_source_cache import (
     SOURCE_SIZE,
     SourceCache,
 )
+from .platform_compat import fsync_directory, fsync_fd
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -403,13 +405,16 @@ def _last_message(result: CommandResult) -> str:
 
 
 def _fsync_directory(path: Path) -> None:
-    descriptor = os.open(
-        path, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) |
-        getattr(os, "O_CLOEXEC", 0))
-    try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+    """Commit the directory entry a publish just created, where that exists.
+
+    Delegates to :func:`platform_compat.fsync_directory`, which performs the
+    POSIX ``O_RDONLY | O_DIRECTORY`` flush this used to open by hand and reports
+    ``False`` on Windows, the one platform with no directory-flush primitive at
+    all.  The published file itself is always flushed separately, so the Windows
+    gap costs the directory entry's ordering guarantee, not the payload's.
+    """
+
+    fsync_directory(path)
 
 
 def _link_then_unlink(source: Path, destination: Path) -> None:
@@ -511,7 +516,7 @@ def _private_audio_inventory_file(
     if (
         not stat.S_ISREG(named.st_mode)
         or stat.S_ISLNK(named.st_mode)
-        or named.st_uid != os.getuid()
+        or not platform_compat.is_owned_by_current_user(named, path=path)
         or named.st_nlink != 1
         or stat.S_IMODE(named.st_mode) != 0o600
     ):
@@ -552,7 +557,9 @@ def _private_audio_inventory_file(
         )
         if (
             not stat.S_ISREG(opened.st_mode)
-            or opened.st_uid != os.getuid()
+            or not platform_compat.is_owned_by_current_user(
+                opened, fd=descriptor
+            )
             or opened.st_nlink != 1
             or stat.S_IMODE(opened.st_mode) != 0o600
             or (
@@ -591,7 +598,9 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
     if (
         not stat.S_ISDIR(named_root.st_mode)
         or stat.S_ISLNK(named_root.st_mode)
-        or named_root.st_uid != os.getuid()
+        or not platform_compat.is_owned_by_current_user(
+            named_root, path=selected_root
+        )
         or stat.S_IMODE(named_root.st_mode) != 0o700
     ):
         raise _audio_safety_error(
@@ -622,7 +631,9 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
         opened_root = os.fstat(root_fd)
         if (
             not stat.S_ISDIR(opened_root.st_mode)
-            or opened_root.st_uid != os.getuid()
+            or not platform_compat.is_owned_by_current_user(
+                opened_root, fd=root_fd
+            )
             or stat.S_IMODE(opened_root.st_mode) != 0o700
             or (opened_root.st_dev, opened_root.st_ino)
             != (named_root.st_dev, named_root.st_ino)
@@ -647,7 +658,9 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
         if (
             not stat.S_ISDIR(named_derived.st_mode)
             or stat.S_ISLNK(named_derived.st_mode)
-            or named_derived.st_uid != os.getuid()
+            or not platform_compat.is_owned_by_current_user(
+                named_derived, path=derived
+            )
             or stat.S_IMODE(named_derived.st_mode) != 0o700
         ):
             raise _audio_safety_error(
@@ -663,7 +676,9 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
         opened_derived = os.fstat(derived_fd)
         if (
             not stat.S_ISDIR(opened_derived.st_mode)
-            or opened_derived.st_uid != os.getuid()
+            or not platform_compat.is_owned_by_current_user(
+                opened_derived, fd=derived_fd
+            )
             or stat.S_IMODE(opened_derived.st_mode) != 0o700
             or (opened_derived.st_dev, opened_derived.st_ino)
             != (named_derived.st_dev, named_derived.st_ino)
@@ -790,7 +805,13 @@ class Nfl2k5BuildService:
                     raise Nfl2k5BuildError(
                         "The staged XISO changed after verification; no output was published."
                     )
-                os.fsync(descriptor)
+                # Flush the exact inode just pinned above.  On POSIX this is the
+                # same ``os.fsync(descriptor)`` it always was; on Windows, where
+                # a read-only handle cannot be flushed, the helper reopens by
+                # path and re-checks ``(st_dev, st_ino)`` against this very
+                # descriptor, so the "verified inode" guarantee is preserved
+                # rather than traded away for portability.
+                fsync_fd(descriptor, path=staged_xiso)
                 _emit(
                     progress, BuildStage.PUBLISHING, 3, 4,
                     "Publishing the verified XISO",

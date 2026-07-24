@@ -23,13 +23,14 @@ import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
-import shutil
 import stat
 import tempfile
 from typing import Iterable, Iterator, Mapping
 from uuid import uuid4
 import zipfile
 import zlib
+
+from mod_editor.core import platform_compat
 
 from .audio_encoding import (
     MAX_WAV_OVERHEAD_BYTES,
@@ -837,6 +838,28 @@ def _file_stat_identity(
     )
 
 
+def _private_staging_directory(prefix: str, label: str) -> Path:
+    """Create one private scratch directory for game-derived audio, and verify it.
+
+    ``mkdtemp`` is the right primitive on both platforms -- ``0o700`` on POSIX,
+    and on Windows a directory under the per-user ``%TEMP%``, which has no mode
+    bits at all.  What differs is what can be *checked* afterwards, so the check
+    is delegated to :mod:`~mod_editor.core.platform_compat`: the unchanged
+    owner-only ``0o700`` assertion on POSIX, and on Windows the strongest
+    equivalent available -- a real, non-reparse-point directory.  A failure is
+    fatal rather than a warning: decoded retail audio is about to be written
+    here.
+    """
+
+    staging = Path(tempfile.mkdtemp(prefix=prefix))
+    try:
+        platform_compat.verify_private_directory(staging, label)
+    except platform_compat.PrivatePathError as exc:
+        platform_compat.remove_private_tree(staging, ignore_errors=True)
+        raise AudioReplacementPackError(str(exc)) from exc
+    return staging
+
+
 def _open_pinned_directory(
     path: Path,
     *,
@@ -1396,7 +1419,12 @@ def create_audio_replacement_template(
                 raise AudioReplacementPackError(
                     "The audio-template ZIP changed during publication"
                 )
-            os.fsync(parent_descriptor)
+            # Commit the publish through the directory descriptor this
+            # transaction pinned, never by re-opening the directory by name.
+            # POSIX issues the same single fsync as before; Windows has no
+            # directory-flush primitive and the helper reports that rather than
+            # letting a skipped flush read as a completed one.
+            platform_compat.fsync_directory_fd(parent_descriptor)
             if not _path_still_names_directory(target.parent, parent_identity):
                 raise AudioReplacementPackError(
                     "The replacement-template parent changed during publication"
@@ -1455,7 +1483,7 @@ def create_audio_replacement_template(
             label="private replacement-template payload folder",
         )
         try:
-            os.fsync(payload_descriptor)
+            platform_compat.fsync_directory_fd(payload_descriptor)
         finally:
             os.close(payload_descriptor)
         _write_exclusive_at(staging_descriptor, MANIFEST_FILENAME, manifest_data)
@@ -1464,7 +1492,7 @@ def create_audio_replacement_template(
             README_FILENAME,
             readme_data,
         )
-        os.fsync(staging_descriptor)
+        platform_compat.fsync_directory_fd(staging_descriptor)
         if not _path_still_names_directory(target.parent, parent_identity):
             raise AudioReplacementPackError(
                 "The replacement-template parent changed before publication"
@@ -1490,7 +1518,7 @@ def create_audio_replacement_template(
             raise AudioReplacementPackError(
                 "The replacement-template staging folder changed during publication"
             )
-        os.fsync(parent_descriptor)
+        platform_compat.fsync_directory_fd(parent_descriptor)
         if not _path_still_names_directory(target.parent, parent_identity):
             raise AudioReplacementPackError(
                 "The replacement-template parent changed during publication"
@@ -2074,7 +2102,10 @@ def _materialized_audio_replacement_pack(
             "The audio replacement-pack ZIP changed while it was opened"
         )
 
-    temporary = Path(tempfile.mkdtemp(prefix="apf-audio-pack-import-"))
+    temporary = _private_staging_directory(
+        "apf-audio-pack-import-",
+        "The private audio replacement-pack extraction folder",
+    )
     stream = os.fdopen(descriptor, "rb", closefd=False)
     try:
         try:
@@ -2261,8 +2292,8 @@ def _materialized_audio_replacement_pack(
                             PurePosixPath(name).name,
                             maximum=payload_limits[name],
                         )
-                os.fsync(payload_descriptor)
-                os.fsync(root_descriptor)
+                platform_compat.fsync_directory_fd(payload_descriptor)
+                platform_compat.fsync_directory_fd(root_descriptor)
             finally:
                 if payload_descriptor is not None:
                     os.close(payload_descriptor)
@@ -2284,7 +2315,10 @@ def _materialized_audio_replacement_pack(
             os.close(descriptor)
         except OSError:
             pass
-        shutil.rmtree(temporary, ignore_errors=True)
+        # Not ``shutil.rmtree``: extracted payloads can carry the read-only
+        # attribute on Windows, which refuses to delete such a file at all and
+        # would leave the user's temp directory holding decoded game audio.
+        platform_compat.remove_private_tree(temporary, ignore_errors=True)
 
 
 def _parse_entry_baseline(
@@ -2879,7 +2913,10 @@ def materialize_audio_replacement_pcm(
             "The PCM16 replacement plan has no pinned filesystem identity"
         )
     maximum = _pcm_wav_maximum(supplied.entry.target, supplied.entry.asset_id)
-    temporary = Path(tempfile.mkdtemp(prefix="apf-audio-pcm-input-"))
+    temporary = _private_staging_directory(
+        "apf-audio-pcm-input-",
+        "The private PCM16 replacement staging folder",
+    )
     copied = temporary / "input.wav"
     try:
         root_descriptor, root_identity, root_opened = _open_pinned_directory(
@@ -2936,7 +2973,9 @@ def materialize_audio_replacement_pcm(
             os.close(root_descriptor)
         yield copied
     finally:
-        shutil.rmtree(temporary, ignore_errors=True)
+        # Same reasoning as the ZIP import path: a read-only copy is undeletable
+        # on Windows, so the attribute is cleared before the tree is removed.
+        platform_compat.remove_private_tree(temporary, ignore_errors=True)
 
 
 __all__ = [

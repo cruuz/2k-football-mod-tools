@@ -4,13 +4,19 @@
 This verifier deliberately does not import the writer.  It parses the retail
 XDVDFS tree itself, pins every retail extent, scans both 6.30 GB images, and
 asks the pinned XboxDev extract-xiso build to list both trees.
+
+Kernel write-seals are reached through :mod:`mod_editor.core.platform_compat`
+rather than a module-scope ``import fcntl``.  That import does not exist on
+Windows, so it made this module -- which five sibling verifiers import purely
+for its XDVDFS parser -- impossible to even load there.  The seal contract
+itself is unchanged: sealing is still required before the pinned extract-xiso
+copy is executed, and it still fails closed where seals are unavailable.
 """
 
 from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
-import fcntl
 import hashlib
 import json
 import os
@@ -20,6 +26,12 @@ import stat
 import struct
 import subprocess
 import sys
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from mod_editor.core import platform_compat  # noqa: E402
 
 
 SECTOR = 2048
@@ -113,10 +125,18 @@ VIRTUAL_PATCHES = tuple(
 )
 
 FileIdentity = tuple[int, int, int, int, int, int, int]
-REQUIRED_EXECUTABLE_SEALS = (
-    fcntl.F_SEAL_WRITE | fcntl.F_SEAL_GROW |
-    fcntl.F_SEAL_SHRINK | fcntl.F_SEAL_SEAL
-)
+
+
+def required_executable_seals() -> int:
+    """The write-seal set the pinned extract-xiso copy must carry.
+
+    Resolved on demand instead of at import time: the seal names live in
+    :mod:`fcntl`, and evaluating them at module scope is what stopped this file
+    importing at all on a platform without that module.  The value is identical
+    to the constant it replaces (``WRITE | GROW | SHRINK | SEAL``).
+    """
+
+    return platform_compat.write_seal_mask()
 
 
 def file_identity(info: os.stat_result) -> FileIdentity:
@@ -238,11 +258,12 @@ def hash_extent(fd: int, offset: int, size: int) -> str:
 def require_sealed_executable(descriptor: int, expected_size: int,
                               expected_sha256: str) -> None:
     info = os.fstat(descriptor)
-    seals = fcntl.fcntl(descriptor, fcntl.F_GET_SEALS)
+    required = required_executable_seals()
+    seals = platform_compat.read_seals(descriptor)
     require(stat.S_ISREG(info.st_mode) and info.st_size == expected_size and
             stat.S_IMODE(info.st_mode) == 0o500,
             "sealed executable mode/type/size differs")
-    require(seals & REQUIRED_EXECUTABLE_SEALS == REQUIRED_EXECUTABLE_SEALS,
+    require(seals & required == required,
             "sealed executable is not immutable")
     require(hash_extent(descriptor, 0, expected_size) == expected_sha256,
             "sealed executable SHA-256 differs")
@@ -251,10 +272,12 @@ def require_sealed_executable(descriptor: int, expected_size: int,
 def sealed_executable_copy(source_fd: int, expected_size: int,
                            expected_sha256: str) -> int:
     """Copy exact executable bytes to a write-sealed anonymous Linux inode."""
+    # Same capability question as before -- memfd plus the F_*_SEALS commands --
+    # asked through the one module allowed to know about fcntl, so a platform
+    # that has neither is refused here instead of at import time.
     require(hasattr(os, "memfd_create") and
             hasattr(os, "MFD_ALLOW_SEALING") and
-            hasattr(fcntl, "F_ADD_SEALS") and
-            hasattr(fcntl, "F_GET_SEALS"),
+            platform_compat.supports_sealed_memfd(),
             "sealed memfd execution is unavailable")
     descriptor = -1
     try:
@@ -281,8 +304,7 @@ def sealed_executable_copy(source_fd: int, expected_size: int,
                 "executable changed while making sealed copy")
         os.fchmod(descriptor, 0o500)
         os.fsync(descriptor)
-        fcntl.fcntl(descriptor, fcntl.F_ADD_SEALS,
-                    REQUIRED_EXECUTABLE_SEALS)
+        platform_compat.add_seals(descriptor, required_executable_seals())
         require_sealed_executable(
             descriptor, expected_size, expected_sha256
         )

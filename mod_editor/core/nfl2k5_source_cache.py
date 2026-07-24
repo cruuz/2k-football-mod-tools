@@ -13,7 +13,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import shutil
 import stat
 import subprocess
 import sys
@@ -62,6 +61,23 @@ class SourceCache:
 
 
 def default_cache_root() -> Path:
+    """Where the private, XISO-derived cache lives, per platform.
+
+    POSIX keeps the historical ``~/.cache/2k5-mod-studio``; its confidentiality
+    comes from the ``0o700`` mode bits on the directories inside it.
+
+    Windows has no mode bits to rely on, so the location *is* the guarantee: the
+    cache goes under ``%LOCALAPPDATA%`` (``platform_compat.user_private_root``),
+    the per-user application-data root whose ACL excludes other accounts and is
+    inherited by everything created beneath it.  ``~/.cache`` on Windows would be
+    an ordinary folder under the profile with no such intent, and on a machine
+    with a roaming profile it would also sync the user's game-derived cache to a
+    file server.  Both platforms therefore satisfy
+    :func:`~mod_editor.core.platform_compat.is_within_user_private_root`.
+    """
+
+    if platform_compat.IS_WINDOWS:
+        return platform_compat.user_private_root() / "2k5-mod-studio" / "cache"
     return Path.home() / ".cache" / "2k5-mod-studio"
 
 
@@ -121,6 +137,12 @@ class Nfl2k5SourceCache:
             )
 
         self.cache_root.mkdir(parents=True, exist_ok=True)
+        # On Windows the cache root's ACL *is* its privacy, so assert the tree
+        # was created somewhere that grants one.  A no-op on POSIX, where the
+        # 0o700 modes below carry the guarantee wherever the root lives.
+        platform_compat.verify_private_root_placement(
+            self.cache_root, "The private NFL 2K5 source cache root"
+        )
         final = self.cache_root / SOURCE_SHA256
         cached = self._load_existing(final, source)
         if cached is not None:
@@ -130,6 +152,13 @@ class Nfl2k5SourceCache:
         temporary = Path(tempfile.mkdtemp(
             prefix=f".{SOURCE_SHA256[:12]}.indexing-", dir=self.cache_root))
         try:
+            # ``mkdtemp`` creates 0o700 on POSIX and an ordinary directory on
+            # Windows, which has no directory modes; re-verify whichever of
+            # those this platform actually promises before any game bytes land
+            # in it.  Inside the try so a refusal still removes the staging tree.
+            self._require_private_directory(
+                temporary, "The private NFL 2K5 indexing staging directory"
+            )
             self._extract_packs(selected, temporary, progress)
             inventory = self._build_inventory(temporary, progress)
             pack0 = temporary / PACK_FOLDER / "0"
@@ -161,17 +190,53 @@ class Nfl2k5SourceCache:
                 existing = self._load_existing(final, source)
                 if existing is None:
                     raise ValidationError("Another indexing process published an invalid cache")
-                shutil.rmtree(temporary)
+                platform_compat.remove_private_tree(temporary)
                 return existing
         except BaseException:
             if temporary.exists():
-                shutil.rmtree(temporary)
+                # Not ``shutil.rmtree``: the staging tree holds files this
+                # product deliberately makes read-only, which Windows refuses to
+                # delete at all.  The helper clears that attribute first there
+                # and is exactly ``shutil.rmtree`` on POSIX.
+                platform_compat.remove_private_tree(temporary)
             raise
         result = self._load_existing(final, source)
         if result is None:
             raise ValidationError("Game index publication failed")
         _emit(progress, "Game index ready", 1, 1)
         return result
+
+    @staticmethod
+    def _require_private_directory(path: Path, label: str) -> None:
+        """Re-verify a private staging directory in this platform's own terms.
+
+        POSIX: the unchanged owner-only ``0o700`` assertion.  Windows:
+        directories carry no mode there, so the check is that this is a real,
+        non-reparse-point directory inheriting the cache root's ACL -- the
+        strongest guarantee that platform offers, named by
+        :func:`~mod_editor.core.platform_compat.privacy_guarantee` rather than
+        quietly skipped.
+        """
+
+        try:
+            platform_compat.verify_private_directory(path, label)
+        except platform_compat.PrivatePathError as exc:
+            raise ValidationError(str(exc)) from exc
+
+    @staticmethod
+    def _require_private_file(path: Path, label: str, *, fd: int | None = None) -> None:
+        """Re-verify a private staging file in this platform's own terms.
+
+        ``0o600`` on POSIX.  On Windows the same file reads back ``0o666``,
+        because the only permission bit there is owner-write; that honest value
+        is asserted instead, and it confers no privacy -- the cache root's ACL
+        does (see :func:`default_cache_root`).
+        """
+
+        try:
+            platform_compat.verify_private_file(path, label, fd=fd)
+        except platform_compat.PrivatePathError as exc:
+            raise ValidationError(str(exc)) from exc
 
     def _load_existing(self, root: Path, source: SourceRecord) -> SourceCache | None:
         marker_path = root / "cache.json"
@@ -273,6 +338,14 @@ class Nfl2k5SourceCache:
                     os.close(target_fd)
                 if output.stat().st_size != entry.size:
                     raise ValidationError(f"Private cache size mismatch for pack {name}")
+                # The 0o600 creation mode above is still filtered through umask
+                # on POSIX and reduced to "not read-only" on Windows, so harden
+                # the pack and re-verify it against what this platform can
+                # actually promise before it is published.
+                platform_compat.harden_private_file(output)
+                self._require_private_file(
+                    output, f"The private NFL 2K5 archive pack {name}"
+                )
             current = os.fstat(descriptor)
             if (current.st_dev, current.st_ino, current.st_size) != \
                     (opened.st_dev, opened.st_ino, opened.st_size):
@@ -338,4 +411,11 @@ class Nfl2k5SourceCache:
         except BaseException:
             temporary.unlink(missing_ok=True)
             raise
+        # Same reasoning as the archive packs: the creation mode is advisory on
+        # both platforms, so the staged marker is hardened and re-verified in
+        # this platform's own terms before it becomes the published cache.json.
+        platform_compat.harden_private_file(temporary)
+        Nfl2k5SourceCache._require_private_file(
+            temporary, "The private NFL 2K5 cache marker"
+        )
         os.replace(temporary, path)

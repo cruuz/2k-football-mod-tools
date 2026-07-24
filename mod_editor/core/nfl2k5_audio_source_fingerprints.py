@@ -902,7 +902,12 @@ class Nfl2k5AudioSourceFingerprintStore:
                 == (staged_identity[0], staged_identity[1], len(payload)),
                 "Private source-audio inventory changed during publication",
             )
-            os.fsync(directory_fd)
+            # Flush the directory descriptor this transaction pinned, rather
+            # than re-opening the directory by name and throwing that pin away.
+            # POSIX issues the same single fsync as before; Windows has no
+            # directory-flush primitive at all and the helper reports that
+            # instead of letting a skipped flush look like a completed one.
+            platform_compat.fsync_directory_fd(directory_fd)
             os.lseek(descriptor, 0, os.SEEK_SET)
             confirmed = bytearray()
             while len(confirmed) <= len(payload):
@@ -944,7 +949,7 @@ class Nfl2k5AudioSourceFingerprintStore:
                 "Private source-audio inventory changed during publication",
             )
             os.fsync(descriptor)
-            os.fsync(directory_fd)
+            platform_compat.fsync_directory_fd(directory_fd)
             if publication_guard is not None:
                 publication_guard("after_publication")
         except BaseException:
@@ -954,7 +959,7 @@ class Nfl2k5AudioSourceFingerprintStore:
                     path.name,
                     published_identity,
                 ):
-                    os.fsync(directory_fd)
+                    platform_compat.fsync_directory_fd(directory_fd)
             raise
         finally:
             if descriptor is not None:
@@ -966,7 +971,7 @@ class Nfl2k5AudioSourceFingerprintStore:
                     staged_identity,
                 ):
                     try:
-                        os.fsync(directory_fd)
+                        platform_compat.fsync_directory_fd(directory_fd)
                     except OSError:
                         pass
             os.close(directory_fd)

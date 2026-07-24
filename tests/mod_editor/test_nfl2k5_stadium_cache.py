@@ -3,10 +3,13 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import stat
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
+from mod_editor.core import platform_compat
 from mod_editor.core.model import SourceRecord
 from mod_editor.core.nfl2k5_source_cache import SOURCE_SHA256, SourceCache
 from mod_editor.core.nfl2k5_stadium_cache import (
@@ -17,6 +20,7 @@ from mod_editor.core.nfl2k5_stadium_cache import (
     WorkerCommandResult,
 )
 from mod_editor.core.nfl2k5_stadium_studio import Nfl2k5StadiumStudio
+from tests.mod_editor.test_platform_compat import simulated_windows_filesystem
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -239,6 +243,83 @@ class StadiumCacheCoordinatorTests(unittest.TestCase):
         self.assertTrue(
             (self.root / "derived" / ".stadium-studio-v1.staging").is_dir()
         )
+
+    def test_private_derived_cache_is_owner_only_on_posix(self) -> None:
+        # The POSIX confidentiality contract, asserted exactly as before the
+        # port: 0o700 directories and a 0o600 lock file, re-verified by the
+        # coordinator itself after it creates them.
+        if platform_compat.IS_WINDOWS:
+            self.skipTest("POSIX mode privacy does not exist on Windows")
+        Nfl2k5StadiumCacheCoordinator(
+            runner=SyntheticSuccessfulRunner(), free_space_reserve=0
+        ).ensure(self.cache)
+
+        derived = self.root / "derived"
+        self.assertEqual(stat.S_IMODE(derived.stat().st_mode), 0o700)
+        self.assertEqual(
+            stat.S_IMODE((derived / ".stadium-studio-v1.lock").stat().st_mode), 0o600
+        )
+        self.assertEqual(platform_compat.private_directory_mode(), 0o700)
+        self.assertEqual(platform_compat.private_file_mode(), 0o600)
+
+    def test_private_derived_cache_takes_the_windows_branch_and_still_verifies(
+        self,
+    ) -> None:
+        # Forced Windows semantics on this host: the derived cache directory
+        # reports 0o777 and the lock file 0o666, because Windows implements
+        # neither.  The coordinator must accept exactly those values -- the
+        # honest expectation for that platform -- and still refuse anything its
+        # own OS *can* police.  msvcrt is genuinely absent here, so only the
+        # advisory-lock primitive is stubbed; every privacy decision is real.
+        with simulated_windows_filesystem():
+            with (
+                patch(
+                    "mod_editor.core.nfl2k5_stadium_cache.exclusive_nonblocking_lock"
+                ),
+                patch("mod_editor.core.nfl2k5_stadium_cache.release_lock"),
+            ):
+                result = Nfl2k5StadiumCacheCoordinator(
+                    runner=SyntheticSuccessfulRunner(), free_space_reserve=0
+                ).ensure(self.cache)
+
+            derived = self.root / "derived"
+            self.assertEqual(stat.S_IMODE(derived.stat().st_mode), 0o777)
+            self.assertEqual(
+                stat.S_IMODE((derived / ".stadium-studio-v1.lock").stat().st_mode),
+                0o666,
+            )
+            self.assertEqual(platform_compat.private_directory_mode(), 0o777)
+            self.assertEqual(platform_compat.private_file_mode(), 0o666)
+            self.assertFalse(platform_compat.privacy_guarantee().posix_mode_privacy)
+            self.assertEqual(result.root.name, "stadium-studio-v1")
+            self.assertTrue(result.private)
+            self.assertFalse(result.shareable)
+
+    def test_windows_branch_still_refuses_a_symlinked_lock_file(self) -> None:
+        # Windows has no O_NOFOLLOW, so the lock file's open() *does* follow a
+        # symlink there.  The privacy re-verification is what closes that gap:
+        # it lstats the name, compares it against the descriptor it was handed,
+        # and refuses the substitution.  Weaker platform, same guarantee.
+        derived = self.root / "derived"
+        derived.mkdir(mode=0o700)
+        planted = self.root / "planted.lock"
+        planted.write_bytes(b"")
+        lock_path = derived / ".stadium-studio-v1.lock"
+        try:
+            lock_path.symlink_to(planted)
+        except (OSError, NotImplementedError):
+            self.skipTest("this platform/account cannot create symlinks")
+        with simulated_windows_filesystem():
+            with (
+                patch(
+                    "mod_editor.core.nfl2k5_stadium_cache.exclusive_nonblocking_lock"
+                ),
+                patch("mod_editor.core.nfl2k5_stadium_cache.release_lock"),
+            ):
+                with self.assertRaisesRegex(StadiumCacheError, "is a symlink"):
+                    Nfl2k5StadiumCacheCoordinator(
+                        runner=SyntheticSuccessfulRunner(), free_space_reserve=0
+                    ).ensure(self.cache)
 
     def test_runtime_sources_do_not_depend_on_research_outputs(self) -> None:
         for relative in (

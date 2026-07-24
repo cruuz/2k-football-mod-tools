@@ -507,14 +507,10 @@ def publish_owned(staging: common.OwnedFile, final: Path) -> tuple[Path, tuple[i
         raise BarMonitorError(f"final output appeared during build: {final}") from exc
     require(common.path_identity(final) == staging.identity,
             "published pathname does not reference the verified staging inode")
-    parent_fd = os.open(
-        final.parent,
-        os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0),
-    )
-    try:
-        os.fsync(parent_fd)
-    finally:
-        os.close(parent_fd)
+    # Commit the hard link's directory entry where the platform offers that.
+    # Windows has no directory-flush primitive, so the helper reports ``False``
+    # instead of pretending the entry reached the platter.
+    platform_compat.fsync_directory(final.parent)
     return final, staging.identity
 
 

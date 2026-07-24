@@ -28,7 +28,18 @@ from typing import Callable, Protocol, Sequence
 
 from .errors import ValidationError
 from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
-from .platform_compat import exclusive_nonblocking_lock, release_lock
+from .platform_compat import (
+    PrivatePathError,
+    create_private_directory,
+    exclusive_nonblocking_lock,
+    fsync_directory,
+    harden_private_directory,
+    harden_private_file,
+    privacy_guarantee,
+    release_lock,
+    verify_private_directory,
+    verify_private_file,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -294,16 +305,32 @@ class Nfl2k5StadiumCacheCoordinator:
         sink = progress or (lambda _stage, _completed, _total: None)
         root, pack0, inventory = self._validate_source_cache(cache)
         parent = root / PRIVATE_PARENT
-        parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+        create_private_directory(parent, parents=True, exist_ok=True)
         if parent.is_symlink():
             raise StadiumCacheError("Private derived-cache directory cannot be a symlink")
-        os.chmod(parent, 0o700)
+        harden_private_directory(parent)
+        self._require_private_directory(parent, "The private derived-cache directory")
         lock_path = parent / LOCK_NAME
         lock_fd = os.open(
             lock_path,
             os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0),
             0o600,
         )
+        try:
+            # The creation mode above is subject to umask on POSIX and decides
+            # only the read-only attribute on Windows, so the lock file is
+            # hardened and then re-verified against whatever this platform can
+            # actually promise.  Done before the lock is taken so a failure
+            # cannot leave an unlocked descriptor to release.
+            harden_private_file(lock_path)
+            self._require_private_file(
+                lock_path,
+                "The Stadium Studio single-writer lock file",
+                fd=lock_fd,
+            )
+        except BaseException:
+            os.close(lock_fd)
+            raise
         try:
             try:
                 exclusive_nonblocking_lock(lock_fd)
@@ -324,8 +351,11 @@ class Nfl2k5StadiumCacheCoordinator:
                         "The resumable Stadium Studio staging path is not a private directory"
                     )
             else:
-                staging.mkdir(mode=0o700)
-            os.chmod(staging, 0o700)
+                create_private_directory(staging)
+            harden_private_directory(staging)
+            self._require_private_directory(
+                staging, "The resumable Stadium Studio staging directory"
+            )
             worker = _regular_file(self.worker, "Stadium Studio worker")
             sink("Preparing private Stadium Studio assets", 0, EXPECTED_STADIUM_SCENES)
             argv = (
@@ -353,11 +383,10 @@ class Nfl2k5StadiumCacheCoordinator:
                     "Another process published Stadium Studio assets unexpectedly"
                 )
             os.replace(staging, final)
-            directory_fd = os.open(parent, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
-            try:
-                os.fsync(directory_fd)
-            finally:
-                os.close(directory_fd)
+            # Commit the rename's directory entry where the platform can; on
+            # Windows there is no directory-flush primitive and the helper says
+            # so rather than pretending the entry was committed.
+            fsync_directory(parent)
             sink("Stadium Studio private assets ready", 1, 1)
             # Re-resolve every path after the directory rename.
             return self._validate_result(final, cache.source.sha256)
@@ -366,6 +395,42 @@ class Nfl2k5StadiumCacheCoordinator:
                 release_lock(lock_fd)
             finally:
                 os.close(lock_fd)
+
+    @staticmethod
+    def _require_private_directory(path: Path, label: str) -> None:
+        """Re-verify one private cache directory, in this platform's terms.
+
+        On POSIX that is the unchanged owner-only ``0o700`` assertion.  On
+        Windows, where a directory carries no mode at all, it is the strongest
+        check that platform supports -- a real, non-reparse-point directory
+        inheriting the private cache root's ACL.  The difference is stated by
+        :func:`~mod_editor.core.platform_compat.privacy_guarantee`, never
+        silently skipped, and a failure is fatal here: this directory is about
+        to hold bytes derived from the user's own game image.
+        """
+
+        try:
+            verify_private_directory(path, label)
+        except PrivatePathError as exc:
+            raise StadiumCacheError(
+                f"{exc} ({privacy_guarantee().mechanism} privacy is in force here)"
+            ) from exc
+
+    @staticmethod
+    def _require_private_file(path: Path, label: str, *, fd: int | None = None) -> None:
+        """Re-verify one private cache file, in this platform's terms.
+
+        ``0o600`` on POSIX; on Windows the same file necessarily reads back
+        ``0o666`` -- writable, no privacy from the mode -- and that honest
+        expectation is what gets asserted there instead of the POSIX number.
+        """
+
+        try:
+            verify_private_file(path, label, fd=fd)
+        except PrivatePathError as exc:
+            raise StadiumCacheError(
+                f"{exc} ({privacy_guarantee().mechanism} privacy is in force here)"
+            ) from exc
 
     @staticmethod
     def _validate_source_cache(cache: SourceCache) -> tuple[Path, Path, Path]:

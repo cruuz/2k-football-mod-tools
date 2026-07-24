@@ -31,6 +31,12 @@ import tempfile
 import time
 from typing import Any, Callable, Iterable, Sequence
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from mod_editor.core import platform_compat  # noqa: E402
+
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER_PATH = Path(__file__).resolve()
@@ -1396,7 +1402,11 @@ def publish_report(path: Path, payload: bytes) -> None:
             raise ValidationRunError("could not link anonymous report staging storage") from exc
         _verify_published_report(parent_descriptor, path.name, descriptor, payload)
         _verify_report_parent(path, parent)
-        os.fsync(parent_descriptor)
+        # Commit through the directory descriptor this publication pinned, never
+        # by re-opening the directory by name.  POSIX issues the same single
+        # fsync; Windows has no directory-flush primitive and the helper reports
+        # that instead of letting a skipped flush look like a completed one.
+        platform_compat.fsync_directory_fd(parent_descriptor)
         _verify_report_parent(path, parent)
         _verify_published_report(parent_descriptor, path.name, descriptor, payload)
         _verify_report_parent(path, parent)

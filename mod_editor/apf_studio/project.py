@@ -33,6 +33,8 @@ from .models import (
     DRAFT_LOGO_OUTER_INDEX,
     Modification,
 )
+from mod_editor.core.platform_compat import fsync_directory
+
 from .player_ratings import PlayerRatingsError, load_player_rating_schema
 from .player_positions import PlayerPositionsError, load_player_position_schema
 
@@ -554,18 +556,13 @@ class WorkspaceStateStore:
                     raise ProjectError("APF workspace state destination is unsafe")
             os.replace(temporary, self.state_path)
             try:
-                parent_descriptor = os.open(
-                    self.root,
-                    os.O_RDONLY
-                    | getattr(os, "O_DIRECTORY", 0)
-                    | getattr(os, "O_CLOEXEC", 0),
-                )
+                # Best-effort commit of the rename's directory entry.  The
+                # helper performs the POSIX ``O_DIRECTORY`` flush and returns
+                # ``False`` on Windows, which has no directory-flush primitive;
+                # either way the state file itself was already flushed above.
+                fsync_directory(self.root)
             except OSError:
                 return
-            try:
-                os.fsync(parent_descriptor)
-            finally:
-                os.close(parent_descriptor)
         finally:
             temporary.unlink(missing_ok=True)
 

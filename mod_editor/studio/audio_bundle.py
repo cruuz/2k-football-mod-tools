@@ -30,6 +30,7 @@ from mod_editor.core.nfl2k5_audio_catalog import (
     Nfl2k5StreamingAudioBank,
     Nfl2k5StreamingAudioRange,
 )
+from mod_editor.core.platform_compat import fsync_path
 
 
 AUDIO_BUNDLE_SCHEMA = "nfl2k5_mod_studio_audio_bundle_export/v1"
@@ -613,14 +614,9 @@ def export_audio_bundle(
                 },
             )
         os.chmod(archive_path, 0o644)
-        descriptor = os.open(
-            archive_path,
-            os.O_RDONLY
-            | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
-        )
-        try:
-            os.fsync(descriptor)
-        finally:
-            os.close(descriptor)
+        # Get the finished ZIP onto stable storage before it is published.  The
+        # helper keeps the POSIX ``O_RDONLY | O_NOFOLLOW`` open this replaced and
+        # switches only Windows to a writable handle, which is the sole access
+        # mode ``FlushFileBuffers`` accepts there.
+        fsync_path(archive_path, follow_symlinks=False)
         return _exclusive_publish(archive_path, target)

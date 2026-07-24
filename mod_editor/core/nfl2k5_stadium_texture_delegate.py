@@ -28,6 +28,7 @@ from .nfl2k5_stadium_texture_writer import (
     SHARED_OWNERSHIP_NOTE,
     TARGET_TEXTURE_ID,
 )
+from .platform_compat import fsync_directory
 
 
 EDIT_SCHEMA = "2k5_mod_studio_private_stadium_texture_edit/v1"
@@ -227,14 +228,11 @@ class Nfl2k5Cement01TextureDelegate:
                 temporary_pointer = self.target_root / f".current.{generation_name}.tmp"
                 _write_exclusive(temporary_pointer, pointer_payload)
                 os.replace(temporary_pointer, self.pointer)
-                directory_fd = os.open(
-                    self.target_root,
-                    os.O_RDONLY | getattr(os, "O_DIRECTORY", 0),
-                )
-                try:
-                    os.fsync(directory_fd)
-                finally:
-                    os.close(directory_fd)
+                # Commit the pointer rename's directory entry where the platform
+                # provides that.  POSIX runs the same ``O_DIRECTORY`` flush this
+                # opened by hand; Windows has no directory-flush primitive and
+                # the helper reports that rather than pretending it committed.
+                fsync_directory(self.target_root)
                 published = True
                 self._compiled = {compiled.replacement_png_sha256: compiled}
                 result = self._load_current()

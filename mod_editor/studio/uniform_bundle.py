@@ -34,6 +34,7 @@ from mod_editor.core.nfl2k5_uniform_catalog import (
     UniformAsset,
     UniformSet,
 )
+from mod_editor.core.platform_compat import fsync_path
 
 from .session import BatchReplaceResult, StudioSession
 
@@ -612,8 +613,10 @@ class TeamKitBundleService:
                                 _zip_info(relative), files[relative].read_bytes()
                             )
                     os.chmod(archive_path, 0o600)
-                    with archive_path.open("rb") as stream:
-                        os.fsync(stream.fileno())
+                    # The Team Kit ZIP is flushed before the hard link publishes
+                    # it.  Windows cannot flush a read-only handle, so the helper
+                    # opens read-write there and ``O_RDONLY`` everywhere else.
+                    fsync_path(archive_path)
                     try:
                         os.link(archive_path, requested, follow_symlinks=False)
                     except FileExistsError as exc:

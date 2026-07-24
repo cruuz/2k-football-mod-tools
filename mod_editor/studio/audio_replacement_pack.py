@@ -45,6 +45,7 @@ from mod_editor.core.nfl2k5_audio_catalog import (
     Nfl2k5AudioService,
     Nfl2k5StreamingAudioRange,
 )
+from mod_editor.core.platform_compat import fsync_path
 
 from .session import BatchReplaceResult, StudioSession
 
@@ -1360,8 +1361,10 @@ class AudioReplacementPackService:
                             _zip_directory_info(REPLACEMENTS_DIRECTORY), b""
                         )
                     os.chmod(archive_path, 0o600)
-                    with archive_path.open("rb") as stream:
-                        os.fsync(stream.fileno())
+                    # Durable before the hard link below names it.  POSIX still
+                    # flushes through a read-only open; Windows needs the
+                    # writable handle ``FlushFileBuffers`` demands.
+                    fsync_path(archive_path)
                     with zipfile.ZipFile(archive_path, "r") as verify:
                         _require(
                             all(not name.casefold().endswith(".wav")

@@ -360,16 +360,20 @@ class Nfl2k5AudioSourceContainmentStore:
             == (root_named.st_dev, root_named.st_ino)
             and stat.S_ISDIR(parent_opened.st_mode)
             and stat.S_ISDIR(parent_named.st_mode)
+            # Ownership is asked through platform_compat rather than compared as
+            # a raw uid: Windows reports st_uid == 0 for every file, so an inline
+            # comparison would degrade into a check that always passes there.
+            and platform_compat.is_owned_by_current_user(
+                parent_opened, fd=parent_fd
+            )
             and (
                 parent_opened.st_dev,
                 parent_opened.st_ino,
-                parent_opened.st_uid,
                 parent_opened.st_mode & 0o777,
             )
             == (
                 parent_named.st_dev,
                 parent_named.st_ino,
-                os.getuid(),
                 0o700,
             ),
             f"Private containment-cache directory changed during {stage}",
@@ -433,7 +437,9 @@ class Nfl2k5AudioSourceContainmentStore:
             _require(
                 stat.S_ISDIR(opened.st_mode)
                 and stat.S_ISDIR(named.st_mode)
-                and opened.st_uid == os.getuid()
+                and platform_compat.is_owned_by_current_user(
+                    opened, fd=parent_fd
+                )
                 and (opened.st_dev, opened.st_ino)
                 == (named.st_dev, named.st_ino),
                 "Private containment-cache directory is not source-confined",
@@ -527,7 +533,7 @@ class Nfl2k5AudioSourceContainmentStore:
                 ) from exc
             _require(
                 stat.S_ISREG(named.st_mode)
-                and named.st_uid == os.getuid()
+                and platform_compat.is_owned_by_current_user(named, path=path)
                 and named.st_nlink == 1
                 and named.st_mode & 0o777 == 0o600,
                 "Private containment inventory must be a mode-0600, non-linked file",
@@ -550,7 +556,9 @@ class Nfl2k5AudioSourceContainmentStore:
                 opened = os.fstat(descriptor)
                 _require(
                     stat.S_ISREG(opened.st_mode)
-                    and opened.st_uid == os.getuid()
+                    and platform_compat.is_owned_by_current_user(
+                        opened, fd=descriptor
+                    )
                     and opened.st_nlink == 1
                     and opened.st_mode & 0o777 == 0o600
                     and (opened.st_dev, opened.st_ino, opened.st_size)
@@ -677,7 +685,9 @@ class Nfl2k5AudioSourceContainmentStore:
             )
             _require(
                 stat.S_ISREG(opened.st_mode)
-                and opened.st_uid == os.getuid()
+                and platform_compat.is_owned_by_current_user(
+                    opened, fd=descriptor
+                )
                 and opened.st_nlink == 1
                 and opened.st_mode & 0o777 == 0o600
                 and (
@@ -720,7 +730,7 @@ class Nfl2k5AudioSourceContainmentStore:
             final = os.stat(path.name, dir_fd=directory_fd, follow_symlinks=False)
             _require(
                 stat.S_ISREG(final.st_mode)
-                and final.st_uid == os.getuid()
+                and platform_compat.is_owned_by_current_user(final, path=path)
                 and final.st_nlink == 1
                 and final.st_mode & 0o777 == 0o600
                 and (final.st_dev, final.st_ino, final.st_size)
@@ -733,7 +743,12 @@ class Nfl2k5AudioSourceContainmentStore:
                 directory_fd,
                 "containment publication",
             )
-            os.fsync(directory_fd)
+            # Flush the directory descriptor this transaction pinned, rather
+            # than re-opening the directory by name and throwing that pin away.
+            # POSIX issues the same single fsync as before; Windows has no
+            # directory-flush primitive at all and the helper reports that
+            # instead of letting a skipped flush look like a completed one.
+            platform_compat.fsync_directory_fd(directory_fd)
             os.lseek(descriptor, 0, os.SEEK_SET)
             confirmed = bytearray()
             while len(confirmed) <= len(payload):
@@ -753,7 +768,9 @@ class Nfl2k5AudioSourceContainmentStore:
             _require(
                 bytes(confirmed) == payload
                 and stat.S_ISREG(after.st_mode)
-                and after.st_uid == os.getuid()
+                and platform_compat.is_owned_by_current_user(
+                    after, fd=descriptor
+                )
                 and after.st_nlink == 1
                 and after.st_mode & 0o777 == 0o600
                 and (
@@ -775,7 +792,7 @@ class Nfl2k5AudioSourceContainmentStore:
                 "Private containment inventory changed during publication",
             )
             os.fsync(descriptor)
-            os.fsync(directory_fd)
+            platform_compat.fsync_directory_fd(directory_fd)
             publication_guard("after_publication")
             self._verify_open_parent(
                 root,
@@ -790,7 +807,7 @@ class Nfl2k5AudioSourceContainmentStore:
                     path.name,
                     published_identity,
                 ):
-                    os.fsync(directory_fd)
+                    platform_compat.fsync_directory_fd(directory_fd)
             raise
         finally:
             if descriptor is not None:
@@ -802,7 +819,7 @@ class Nfl2k5AudioSourceContainmentStore:
                     staged_identity,
                 ):
                     try:
-                        os.fsync(directory_fd)
+                        platform_compat.fsync_directory_fd(directory_fd)
                     except OSError:
                         pass
             os.close(directory_fd)

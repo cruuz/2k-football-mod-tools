@@ -27,9 +27,20 @@ import sys
 from typing import Any, Iterable
 from uuid import uuid4
 
-from nfl_outer import FormatError, parse_archive, read_entry_range
-from nfl_scene_probe import ProbeError, ResourceRecord, decode_resource, parse_inventory
-from nfl_scne_embedded_texture_png import parse_png_rgba
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from mod_editor.core import platform_compat  # noqa: E402
+
+from nfl_outer import FormatError, parse_archive, read_entry_range  # noqa: E402
+from nfl_scene_probe import (  # noqa: E402
+    ProbeError,
+    ResourceRecord,
+    decode_resource,
+    parse_inventory,
+)
+from nfl_scne_embedded_texture_png import parse_png_rgba  # noqa: E402
 from nfl_scne_inventory import (
     DESCRIPTOR_SIZE,
     ScneError,
@@ -86,11 +97,16 @@ def _mkdir_private(path: Path) -> None:
 
 
 def _fsync_directory(path: Path) -> None:
-    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
-    try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+    """Commit a directory entry this worker just published, where possible.
+
+    Delegates to :func:`platform_compat.fsync_directory`, which runs the POSIX
+    ``O_RDONLY | O_DIRECTORY`` flush this used to open by hand and reports
+    ``False`` on Windows, the one platform with no directory-flush primitive.
+    Each published file is flushed separately, so the Windows gap costs the
+    directory entry's ordering guarantee, never the payload's durability.
+    """
+
+    platform_compat.fsync_directory(path)
 
 
 def _atomic_bytes(path: Path, payload: bytes) -> None:
