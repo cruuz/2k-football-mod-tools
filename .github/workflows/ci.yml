@@ -94,6 +94,12 @@ jobs:
       - name: Run the mod_editor test suite
         shell: bash
         run: |
+          # GitHub runs `run:` blocks with `bash -e`, so an assignment whose
+          # command substitution fails (out=$(python3 failing_test.py)) aborts
+          # the WHOLE step at the first red test - before the per-file report or
+          # the SUMMARY line ever prints. We collect rc per file ourselves and
+          # exit non-zero at the end, so turn -e off for this loop.
+          set +e
           export QT_QPA_PLATFORM=offscreen
           repo="${GITHUB_WORKSPACE:-$PWD}"
           cd "$repo" || { echo "cannot cd to repo root: $repo"; exit 2; }
@@ -157,7 +163,14 @@ jobs:
         with:
           python-version: '3.12'
       - name: Validate the capability registry
-        run: python3 mod_editor/capabilities/validate_registry.py
+        # --skip-file-checks is required on a fresh checkout, NOT a relaxation:
+        # 139 of the registry's 224 evidence paths live under docs/research/ and
+        # reports/<generated>/, which .gitignore deliberately excludes from the
+        # published repo ("Generated reports (large)"). Their absence in a clean
+        # clone is by design, so asserting they exist here only tests the
+        # checkout, not the registry. Schema, ids, classifications, surfaces and
+        # every backend/gui contract are still fully validated.
+        run: python3 mod_editor/capabilities/validate_registry.py --skip-file-checks
 
   # ---------------------------------------------------------------------------
   # Retail-free release gates for BOTH products, staged and run exactly as
