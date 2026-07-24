@@ -67,6 +67,7 @@ from .nfl2k5_source_cache import (
     SOURCE_SIZE,
     SourceCache,
 )
+from . import platform_compat
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -267,7 +268,7 @@ def _sha256_fd(
     while completed < length:
         _check_cancelled(cancelled, stage)
         request = min(block_size, length - completed)
-        payload = os.pread(descriptor, request, offset + completed)
+        payload = platform_compat.pread(descriptor, request, offset + completed)
         _require(
             len(payload) == request,
             f"Short read while {stage.lower()} at byte {completed:,}",
@@ -317,7 +318,7 @@ def _read_authenticated_file(
         while completed < expected_size:
             _check_cancelled(cancelled, stage)
             request = min(READ_BLOCK, expected_size - completed)
-            payload = os.pread(descriptor, request, completed)
+            payload = platform_compat.pread(descriptor, request, completed)
             _require(len(payload) == request, f"Short read while authenticating {stage}")
             digest.update(payload)
             if capture:
@@ -841,7 +842,7 @@ class Nfl2k5AudioSourceScanner:
         parts: list[bytes] = []
         completed = 0
         while completed < size:
-            payload = os.pread(
+            payload = platform_compat.pread(
                 descriptor,
                 size - completed,
                 extent.byte_offset + offset + completed,
@@ -1417,7 +1418,7 @@ class Nfl2k5AudioSourceScanner:
                 request = min(
                     batch_size - len(pending), span.length - completed_in_span
                 )
-                payload = os.pread(
+                payload = platform_compat.pread(
                     descriptor,
                     request,
                     extent.byte_offset + span.pack_offset + completed_in_span,

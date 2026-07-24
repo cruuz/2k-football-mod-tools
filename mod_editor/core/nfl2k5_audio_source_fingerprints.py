@@ -37,6 +37,7 @@ from .nfl2k5_ausb_fixed_slots import (
     streaming_slot_write_plan,
 )
 from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
+from . import platform_compat
 
 
 SCHEMA = "2k5_mod_studio_audio_source_pcm_fingerprints/v1"
@@ -839,7 +840,7 @@ class Nfl2k5AudioSourceFingerprintStore:
             temporary_basename = Path(temporary_name).name
             initial = os.fstat(descriptor)
             staged_identity = (initial.st_dev, initial.st_ino)
-            os.fchmod(descriptor, 0o600)
+            platform_compat.fchmod(descriptor, 0o600, path=temporary_name)
             view = memoryview(payload)
             written = 0
             while written < len(view):

@@ -14,6 +14,8 @@ import zipfile
 
 from PIL import Image
 
+from mod_editor.core import platform_compat
+
 from .backend import ensure_tools_importable
 from .catalog import ApfCatalog
 from .inspectors import ExportIdentity, InspectorRow
@@ -88,7 +90,7 @@ def _exclusive_copy(
                     if written <= 0:
                         raise OSError("short write")
                     view = view[written:]
-        os.fchmod(descriptor, 0o644)
+        platform_compat.fchmod(descriptor, 0o644, path=temporary)
         os.fsync(descriptor)
         os.close(descriptor)
         descriptor = -1
@@ -905,7 +907,7 @@ class ApfAssetIO:
                         offset += count
                         report(offset, entry.size)
                 stream.flush()
-                os.fchmod(stream.fileno(), 0o644)
+                platform_compat.fchmod(stream.fileno(), 0o644, path=temporary)
                 os.fsync(stream.fileno())
             os.link(temporary, destination)
             temporary.unlink()

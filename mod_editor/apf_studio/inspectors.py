@@ -20,6 +20,8 @@ import re
 import tempfile
 from typing import Callable, Iterable, Mapping
 
+from mod_editor.core import platform_compat
+
 from .backend import ensure_tools_importable
 from .models import (
     ApfSource,
@@ -572,7 +574,7 @@ def export_semantic_rows(
             descriptor = -1
             output.write(payload)
             output.flush()
-            os.fchmod(output.fileno(), 0o644)
+            platform_compat.fchmod(output.fileno(), 0o644, path=temporary)
             os.fsync(output.fileno())
         os.link(temporary, destination)
         temporary.unlink()
@@ -706,7 +708,7 @@ def export_player_rating_sheet(
             descriptor = -1
             output.write(payload)
             output.flush()
-            os.fchmod(output.fileno(), 0o600)
+            platform_compat.fchmod(output.fileno(), 0o600, path=temporary)
             os.fsync(output.fileno())
         os.link(temporary, destination)
         temporary.unlink()

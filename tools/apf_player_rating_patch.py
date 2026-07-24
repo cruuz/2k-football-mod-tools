@@ -32,6 +32,7 @@ import apf_outer
 import apf_roster
 import apf_texture_patch
 
+from mod_editor.core import platform_compat
 from mod_editor.apf_studio.player_ratings import (
     PlayerRatingField,
     PlayerRatingsError,
@@ -577,7 +578,7 @@ def write_private_outer_entry(
     temporary = Path(temporary_name)
     published = False
     try:
-        os.fchmod(descriptor, 0o600)
+        platform_compat.fchmod(descriptor, 0o600, path=temporary)
         view = memoryview(result.entry_bytes)
         while view:
             written = os.write(descriptor, view)

@@ -187,7 +187,9 @@ FORBIDDEN_SUFFIXES = frozenset(
 )
 ALLOWED_SUFFIXES = frozenset(
     {
+        ".bat",
         ".cfg",
+        ".command",
         ".css",
         ".desktop",
         ".html",
@@ -201,6 +203,10 @@ ALLOWED_SUFFIXES = frozenset(
         ".txt",
     }
 )
+# Double-click launchers that must carry the owner-executable bit or they will
+# silently fail to start (a macOS .command, a Unix .sh). A Windows .bat is not
+# executed through a Unix mode bit, so it is deliberately excluded here.
+EXECUTABLE_LAUNCHER_SUFFIXES = frozenset({".command", ".sh"})
 ALLOWED_SUFFIXLESS_NAMES = frozenset({"copying", "license", "notice"})
 
 # Renaming a known retail file to a text-looking extension must not bypass the
@@ -466,6 +472,8 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
             raise ReleaseCheckError(f"retail/container/media suffix is forbidden: {relative}")
         if suffix not in ALLOWED_SUFFIXES and path.name.casefold() not in ALLOWED_SUFFIXLESS_NAMES:
             raise ReleaseCheckError(f"unapproved release file type: {relative}")
+        if suffix in EXECUTABLE_LAUNCHER_SUFFIXES and not info.st_mode & stat.S_IXUSR:
+            raise ReleaseCheckError(f"launcher script is not executable: {relative}")
         metadata_contract = REVIEWED_METADATA.get(relative)
         maximum_size = (
             metadata_contract[0] if metadata_contract is not None

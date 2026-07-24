@@ -26,6 +26,12 @@ import tempfile
 from typing import Iterable, Mapping
 import uuid
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from mod_editor.core import platform_compat  # noqa: E402
+
 
 APP_ID = "apf2k8-mod-studio"
 PRODUCT_NAME = "APF 2K8 Mod Studio"
@@ -180,7 +186,7 @@ def _read_small_regular(path: Path, label: str, maximum: int = MAX_RECORD_BYTES)
         raise InstallError(f"{label} is unexpectedly large: {path}")
     flags = os.O_RDONLY
     if hasattr(os, "O_NOFOLLOW"):
-        flags |= os.O_NOFOLLOW
+        flags |= getattr(os, "O_NOFOLLOW", 0)
     descriptor = os.open(path, flags)
     try:
         opened = os.fstat(descriptor)
@@ -205,7 +211,7 @@ def _atomic_write(path: Path, payload: bytes, mode: int) -> None:
     descriptor, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.writing-", dir=path.parent)
     temporary = Path(temporary_name)
     try:
-        os.fchmod(descriptor, mode)
+        platform_compat.fchmod(descriptor, mode, path=temporary)
         with os.fdopen(descriptor, "wb", closefd=True) as stream:
             stream.write(payload)
             stream.flush()
@@ -284,7 +290,7 @@ def _copy_release_file(source: Path, destination: Path) -> str:
     _ensure_directory(destination.parent)
     flags = os.O_RDONLY
     if hasattr(os, "O_NOFOLLOW"):
-        flags |= os.O_NOFOLLOW
+        flags |= getattr(os, "O_NOFOLLOW", 0)
     source_fd = os.open(source, flags)
     destination_fd = -1
     digest = hashlib.sha256()
@@ -304,7 +310,7 @@ def _copy_release_file(source: Path, destination: Path) -> str:
         if completed != opened.st_size or completed != source_info.st_size:
             raise InstallError(f"release file changed while copying: {source}")
         executable = bool(opened.st_mode & stat.S_IXUSR)
-        os.fchmod(destination_fd, 0o755 if executable else 0o644)
+        platform_compat.fchmod(destination_fd, 0o755 if executable else 0o644, path=destination)
         os.fsync(destination_fd)
     finally:
         os.close(source_fd)

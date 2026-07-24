@@ -8,6 +8,7 @@ assets and does not touch a user's source directly; every operation crosses the
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime
 import html
 import json
@@ -15,6 +16,7 @@ import os
 from pathlib import Path
 import shutil
 import sys
+import tempfile
 import threading
 import traceback
 from typing import Any, Callable, Iterable
@@ -127,6 +129,11 @@ from .stadium_material_findings import load_stadium_material_findings
 PRODUCT_NAME = "APF 2K8 Mod Studio"
 PROJECT_EXTENSION = ".apf2k8mod"
 PAGE_SIZE = 100
+# Minimum height reserved for a scrolled workspace page.  Pages are wrapped in a
+# resizable QScrollArea so the shell's own minimum height stays independent of
+# each page's full content height; a tall page scrolls inside this viewport
+# instead of forcing the whole window past a 1080p display.
+WORKSPACE_PAGE_MIN_HEIGHT = 400
 
 
 def _window_icon() -> QIcon | None:
@@ -158,16 +165,16 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.GETTING_STARTED: "Load your own game, make familiar PNG edits, then build a separate playable copy.",
     ApfCategory.UNIFORMS: "Edit all 96 mapped material-color textures and browse or export every one of the 408 indexed uniform and equipment records.",
     ApfCategory.ROSTERS: "Browse every mapped player and team, replace nonempty player first/last names and team display names under their exact source limits, choose any of 17 exact player positions, edit 28 native 0–99 base ratings per player, or safely export/import all 2,254 players through a private ratings CSV. Shared name allocations change every disclosed owner together; team abbreviations and roster structure remain locked.",
-    ApfCategory.TEAM_IDENTITY: "Browse team-facing resources and follow the capability registry as identity editing unlocks.",
-    ApfCategory.LOGOS: "Edit the bounded 128×128 draft logo and inventory other team art without overstating ownership.",
+    ApfCategory.TEAM_IDENTITY: "Browse team-facing resources; more identity editing unlocks here as each field is proven safe.",
+    ApfCategory.LOGOS: "Replace the shared 512×512 team-logo crest and the 128×128 draft logo, and browse every indexed logo and team-art record.",
     ApfCategory.SCOREBUG: "Edit the proved digital_font mask and inspect the rest of the broadcast presentation inventory.",
-    ApfCategory.FIELD_ART: "Find turf, end-zone, midfield, and related field resources without hiding undecoded records.",
-    ApfCategory.STADIUMS: "Explore private source-derived stadium geometry in 3D; package textures remain export-only until material ownership is proved.",
+    ApfCategory.FIELD_ART: "Replace the six proven field textures — endzone layers, practice overlays, and the divot base — and browse the complete field-art inventory.",
+    ApfCategory.STADIUMS: "Explore your game's stadium geometry in 3D; stadium textures stay export-only until material ownership is proven.",
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, author from PCM WAV with your own encoder, or batch-stage exact-slot replacements from a retail-free XMA1 or PCM16 WAV folder or ZIP.",
-    ApfCategory.GAMEPLAY: "Track sliders and gameplay experiments without presenting unproved patches as safe edits.",
+    ApfCategory.GAMEPLAY: "Inspect mapped sliders and follow gameplay research; nothing is offered as an edit until it is proven safe.",
     ApfCategory.PLAYBOOKS: "Inspect mapped PLAY and DRCT structures while route authoring semantics remain under study.",
-    ApfCategory.FRANCHISE: "Keep season, schedule, save, and franchise research visible without blocking usable tools.",
+    ApfCategory.FRANCHISE: "Browse season, schedule, save, and franchise structures while deeper franchise editing is researched.",
     ApfCategory.ALL_ASSETS: "Every record the live indexer sees appears here, including opaque and export-only resources.",
 }
 
@@ -237,6 +244,24 @@ def _status_text(status: ApfStatus) -> str:
     }[status]
 
 
+def _spec_pill(text: str, *, emphasis: bool = False, tooltip: str = "") -> QLabel:
+    """One compact fact chip so the input contract is scannable at a glance.
+
+    The focused editor panels (digital font, team logo, field art) surface the
+    exact required PNG size and format as pills above their prose, so a modder
+    can read the contract before choosing a file.  ``emphasis`` marks the one
+    non-negotiable fact (the exact dimensions) in the accent color.
+    """
+
+    pill = QLabel(text)
+    pill.setObjectName("specPill")
+    if emphasis:
+        pill.setProperty("emphasis", True)
+    if tooltip:
+        pill.setToolTip(tooltip)
+    return pill
+
+
 def _asset_product_action(asset: ApfAsset) -> AssetActionBinding | None:
     return asset_action_binding(
         asset.asset_id,
@@ -292,6 +317,31 @@ def _copy_new(source: Path, destination: Path) -> Path:
         raise
     os.close(descriptor)
     return destination
+
+
+def _link_reference(source: Path, destination: Path) -> None:
+    """Reference one read-only pack beside a staged volume without copying it.
+
+    An APF index only parses under its own pack name and beside every sibling
+    pack it declares, so chaining two writers over one volume needs those packs
+    visible next to the intermediate copy.  A link is a reference, not a copy:
+    no pack is duplicated, and the user's game is still never opened for
+    writing.  Symlinks are tried first because they work across filesystems; a
+    hard link is the fallback for platforms that restrict symlink creation.
+    """
+
+    failures: list[str] = []
+    for linker in (os.symlink, os.link):
+        try:
+            linker(source, destination)
+            return
+        except (OSError, NotImplementedError, AttributeError) as exc:
+            failures.append(f"{getattr(linker, '__name__', 'link')}: {exc}")
+    raise RuntimeError(
+        f"Could not reference the sibling pack {source.name} beside the staged "
+        f"volume ({'; '.join(failures)}). This build needs the packs your game "
+        "declares to be visible next to its own copy."
+    )
 
 
 class _TaskSignals(QObject):
@@ -644,8 +694,12 @@ class CapabilityPanel(QFrame):
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
-        display: list[tuple[str, str, ApfStatus, str]] = [
-            (card.title, card.summary, card.status, "\n".join(card.findings[:2]))
+        # Each entry: title, summary, status, tooltip findings, badge override.
+        # A None badge falls back to the shared status wording; the pre-load
+        # placeholder overrides it because "Coming soon" would misread a page
+        # that is simply waiting for a game.
+        display: list[tuple[str, str, ApfStatus, str, str | None]] = [
+            (card.title, card.summary, card.status, "\n".join(card.findings[:2]), None)
             for card in cards
         ]
         if not display:
@@ -653,21 +707,23 @@ class CapabilityPanel(QFrame):
                 display.append(
                     (
                         "Complete category inventory",
-                        f"{inventory_count:,} indexed assets are visible here; each row identifies decoded export versus raw-only access.",
+                        f"All {inventory_count:,} records in this category are browsable; each row shows decoded export versus raw-only access.",
                         ApfStatus.EXPORT_ONLY,
-                        "Editing stays locked until a bounded writer owns the exact resource.",
+                        "Rows unlock for editing only after a writer for that exact resource is proven byte-exact.",
+                        None,
                     )
                 )
             else:
                 display.append(
                     (
-                        "Load your game to inspect capabilities",
-                        "The UI is ready; capability status comes from the live registry after source recognition.",
+                        "Load a game to see what's editable here",
+                        "Capability cards appear once your APF 2K8 ISO or game folder is recognized. The source is opened read-only.",
                         ApfStatus.COMING_SOON,
-                        "Your original game is opened read-only.",
+                        "Nothing is ever written to your original files.",
+                        "○ No game loaded",
                     )
                 )
-        for index, (title, summary, status, findings) in enumerate(display):
+        for index, (title, summary, status, findings, badge_text) in enumerate(display):
             card = QFrame()
             card.setObjectName("capabilityCard")
             card.setProperty("status", status.value)
@@ -682,7 +738,7 @@ class CapabilityPanel(QFrame):
             name = WordElidedLabel(title)
             name.setObjectName("capabilityTitle")
             name.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-            badge = QLabel(_status_text(status))
+            badge = QLabel(badge_text or _status_text(status))
             badge.setObjectName("statusBadge")
             badge.setStyleSheet(
                 f"color: {_status_color(status)}; border-color: {_status_color(status)};"
@@ -1519,8 +1575,15 @@ class UniformStudioPage(QWidget):
             self.list.setCurrentItem(selected_item)
         elif self.list.count():
             self.list.setCurrentRow(0)
-        else:
+        elif self.facade.source_ready:
             self._clear_detail("No uniform textures match that search.")
+        else:
+            # Before a game is loaded the list is empty because there is no
+            # source yet, not because a search failed; say so honestly.
+            self._clear_detail(
+                "Uniform textures · exact-size RGBA PNG\n"
+                "Load your game to browse and edit all 96 mapped slots."
+            )
 
     def _selected_asset(self) -> UniformAsset | None:
         item = self.list.currentItem()
@@ -1541,9 +1604,12 @@ class UniformStudioPage(QWidget):
         color = "#39d98a" if modified else _status_color(asset.status)
         self.modified_badge.setStyleSheet(f"color: {color}; border-color: {color};")
         self.contract.setText(f"PNG contract\n{asset.png_contract}")
+        self.contract.setVisible(True)
         teams = ", ".join(asset.affected_teams) if asset.affected_teams else "No current team selector references this physical slot."
         self.teams.setText(f"Selector ownership\n{teams}")
+        self.teams.setVisible(True)
         self.notes.setText("\n".join(asset.notes))
+        self.notes.setVisible(bool(asset.notes))
         self.export_button.setEnabled(True)
         self.replace_button.setEnabled(True)
         self.revert_button.setEnabled(modified)
@@ -1583,9 +1649,14 @@ class UniformStudioPage(QWidget):
         self.modified_badge.setStyleSheet("")
         self.preview.setAcceptDrops(False)
         self.preview.set_message(message)
+        # These rows carry their own card backgrounds, so an empty string
+        # would still paint a hollow box; hide them until they have content.
         self.contract.setText("")
+        self.contract.setVisible(False)
         self.teams.setText("")
+        self.teams.setVisible(False)
         self.notes.setText("")
+        self.notes.setVisible(False)
         self.export_button.setEnabled(False)
         self.replace_button.setEnabled(False)
         self.revert_button.setEnabled(False)
@@ -1683,7 +1754,9 @@ class DigitalFontPanel(QFrame):
         box = QHBoxLayout(self)
         box.setContentsMargins(16, 14, 16, 14)
         box.setSpacing(16)
-        self.preview = ImageDropLabel("Load your game to preview digital_font.")
+        self.preview = ImageDropLabel(
+            "digital_font · 128×128 RGBA PNG\nLoad your game to see the original mask."
+        )
         self.preview.setFixedSize(220, 220)
         self.preview.pngDropped.connect(self._replace_path)
         box.addWidget(self.preview)
@@ -1696,13 +1769,39 @@ class DigitalFontPanel(QFrame):
         title_row.addWidget(title)
         title_row.addStretch(1)
         title_row.addWidget(self.status)
+        specs = QHBoxLayout()
+        specs.setSpacing(6)
+        specs.addWidget(
+            _spec_pill(
+                "128×128 RGBA PNG",
+                emphasis=True,
+                tooltip=(
+                    "The writer accepts exactly 128×128; any other size is "
+                    "refused before it can enter your project."
+                ),
+            )
+        )
+        specs.addWidget(
+            _spec_pill(
+                "Alpha-only mask",
+                tooltip=(
+                    "The game reads only the alpha channel of this texture. "
+                    "Keep RGB solid white and draw the digits in alpha."
+                ),
+            )
+        )
+        specs.addStretch(1)
         description = QLabel(
-            "The public writer owns outer 1310 / inner 246. Export a 128×128 RGBA PNG, "
-            "keep RGB solid white, and draw only in the alpha channel. Replace stores your "
-            "original automatically; Revert removes only this edit."
+            "Export the mask, keep RGB solid white, and draw only in the alpha "
+            "channel. Replace stores your original automatically; Revert removes "
+            "only this edit."
         )
         description.setObjectName("cardBody")
         description.setWordWrap(True)
+        description.setToolTip(
+            "The proved writer owns exactly outer 1310 / inner 246 (digital_font), "
+            "a 128×128 DXT5A alpha mask."
+        )
         self.path_note = QLabel("No source loaded.")
         self.path_note.setObjectName("metadataText")
         self.path_note.setWordWrap(True)
@@ -1725,10 +1824,14 @@ class DigitalFontPanel(QFrame):
         actions.addWidget(self.revert_button)
         actions.addStretch(1)
         content.addLayout(title_row)
+        content.addLayout(specs)
         content.addWidget(description)
         content.addWidget(self.path_note)
-        content.addStretch(1)
+        # Actions stay attached to the copy above; leftover panel height falls
+        # below them so the edit workflow never sinks toward a distant bottom
+        # edge inside a tall tab pane.
         content.addLayout(actions)
+        content.addStretch(1)
         box.addLayout(content, 1)
         self.set_context()
 
@@ -1752,7 +1855,9 @@ class DigitalFontPanel(QFrame):
         color = "#39d98a" if ready else "#8795aa"
         self.status.setStyleSheet(f"color: {color}; border-color: {color};")
         if not ready:
-            self.preview.set_message("Load your game to preview digital_font.")
+            self.preview.set_message(
+                "digital_font · 128×128 RGBA PNG\nLoad your game to see the original mask."
+            )
             self.path_note.setText("No source loaded.")
             return
         modification = self.facade.require_session().modification(DIGITAL_FONT_EDIT_ID)
@@ -1840,6 +1945,649 @@ class DigitalFontPanel(QFrame):
         self.modifiedChanged.emit()
 
 
+class ApfTeamLogoPanel(QFrame):
+    """Focused editor for the offline-proved shared team-logo crest.
+
+    This surface is intentionally self-contained.  It reads the loaded game's
+    read-only ``0A`` to render a source-derived preview of ``uniform_logo_01``
+    ``logo_l0`` (the shared team-logo texture that is the helmet crest), stages
+    exactly one 512x512 RGBA PNG, and presents one "Team Logo" build that runs
+    two offline-proved writers in sequence so the edit lands in both places the
+    disc stores this crest:
+
+    * ``apf2k8.logos_cards.team_logo`` (``tools/apf_logo_patch.py``) rewrites the
+      crest base level inside the ``uniform_logo_01`` package, byte-preserving
+      the packed mip tail and the sibling ``logo_l1`` layer;
+    * ``apf2k8.logos_cards.team_logo_cache`` (``tools/apf_logocache_patch.py``)
+      rewrites the matching catalog entry inside the prebuilt, runtime-resident
+      ``uniform_logocache`` aggregate.
+
+    The package write lands in an intermediate copy that the cache write then
+    consumes, so the single delivered volume carries both edits.  Each writer
+    byte-diffs the whole copied volume so only its own fixed extents change, each
+    is paired with an independent verifier, and the retail source is never opened
+    for writing.  Either writer failing fails the whole action.
+
+    The panel never mutates the shared editing session, so it never marks
+    unrelated project state modified, and it makes no in-game/runtime claim:
+    which runtime surface reads which copy -- helmet crest, team-select grid, or
+    scorebug -- is not statically recoverable and is unproved without a Xenia
+    capture.
+    """
+
+    # tools/apf_logo_patch.py is the authority for these pins; the panel mirrors
+    # them only for honest, read-only-safe labels and its 512x512 stage guard.
+    _OUTER_INDEX = 36
+    _INNER_INDEX = 1
+    _WIDTH = 512
+    _HEIGHT = 512
+    _OUTER_NAME = "uniform_logo_01.iff"
+    _INNER_NAME = "logo_l0"
+    # uniform_logo_01 is catalog index 1 inside uniform_logocache, whose layers
+    # are named 01_logo_l0 / 01_logo_l1.  tools/apf_logocache_patch.py re-checks
+    # this against its pinned retail directory and payload and fails closed.
+    _CACHE_CATALOG_INDEX = 1
+
+    def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
+        super().__init__()
+        self.facade = facade
+        self.run_task = run_task
+        self._staged_png: Path | None = None
+        self._preview_dir: Path | None = None
+        self.setObjectName("panel")
+        box = QHBoxLayout(self)
+        box.setContentsMargins(16, 14, 16, 14)
+        box.setSpacing(16)
+        self.preview = ImageDropLabel(
+            "Team logo crest · 512×512 RGBA PNG\nLoad your game to see the original."
+        )
+        self.preview.setFixedSize(220, 220)
+        self.preview.pngDropped.connect(self._stage_path)
+        box.addWidget(self.preview)
+
+        content = QVBoxLayout()
+        title_row = QHBoxLayout()
+        title = QLabel("Team logo — shared crest")
+        title.setObjectName("panelTitle")
+        self.status = QLabel("Not loaded")
+        self.status.setObjectName("statusBadge")
+        title_row.addWidget(title)
+        title_row.addStretch(1)
+        title_row.addWidget(self.status)
+
+        specs = QHBoxLayout()
+        specs.setSpacing(6)
+        specs.addWidget(
+            _spec_pill(
+                "512×512 RGBA PNG",
+                emphasis=True,
+                tooltip=(
+                    "The writers accept exactly 512×512; any other size is "
+                    "refused before anything is staged."
+                ),
+            )
+        )
+        specs.addWidget(
+            _spec_pill(
+                "4-bit color channels",
+                tooltip=(
+                    "The stored format is Xenos 4_4_4_4 — one nibble per channel, "
+                    "16 levels each — so colors are quantized on write and the "
+                    "build reports the exact decode-back error."
+                ),
+            )
+        )
+        specs.addWidget(
+            _spec_pill(
+                "Writes package + logo cache",
+                tooltip=(
+                    "One Team Logo build writes the crest into both places the "
+                    "disc stores it: the uniform_logo_01 package (logo_l0) and "
+                    "the matching entry of the prebuilt uniform_logocache "
+                    "aggregate."
+                ),
+            )
+        )
+        specs.addStretch(1)
+
+        slot_row = QHBoxLayout()
+        slot_row.setSpacing(8)
+        slot_label = QLabel("Team slot:")
+        slot_label.setObjectName("metadataText")
+        self.slot = QComboBox()
+        self.slot.setObjectName("comboField")
+        self.slot.addItem(
+            "uniform_logo_01 — shared team logo / helmet crest (offline-proved)"
+        )
+        self.slot.setToolTip(
+            "The offline-proved writers own exactly the shared uniform_logo_01 "
+            "logo_l0 base level (outer 36 / inner 1) and its matching entry in "
+            "the prebuilt logo cache. Additional per-team logo slots are not "
+            "proved yet, so only this target is selectable."
+        )
+        slot_row.addWidget(slot_label)
+        slot_row.addWidget(self.slot, 1)
+
+        description = QLabel(
+            "This is the shared team-logo texture that serves as the helmet "
+            "crest. Drop or choose an exact 512×512 RGBA PNG — colors are stored "
+            "at 4 bits per channel, and the build reports exactly how far "
+            "quantization moved them. One build writes the crest into both "
+            "places the disc stores it. Which screen reads which copy is not "
+            "proved without a Xenia capture."
+        )
+        description.setObjectName("cardBody")
+        description.setWordWrap(True)
+        description.setToolTip(
+            "Full contract: the offline-proved writers own outer 36 / inner 1 "
+            "(logo_l0) and the matching uniform_logocache entry. The packed mip "
+            "tail and the sibling logo_l1 layer are byte-preserved. Which "
+            "runtime surface reads which copy — helmet crest, team-select grid, "
+            "or scorebug — is not proved without a Xenia capture."
+        )
+        self.path_note = QLabel("No source loaded.")
+        self.path_note.setObjectName("metadataText")
+        self.path_note.setWordWrap(True)
+
+        actions = QHBoxLayout()
+        actions.setSpacing(8)
+        self.export_button = QPushButton("Export original PNG…")
+        self.export_button.setObjectName("secondaryButton")
+        self.replace_button = QPushButton("Replace PNG…")
+        self.replace_button.setObjectName("primaryButton")
+        self.revert_button = QPushButton("Revert")
+        self.revert_button.setObjectName("dangerQuietButton")
+        self.build_button = QPushButton("Build copied 0A (team logo)…")
+        self.build_button.setObjectName("secondaryButton")
+        self.export_button.setToolTip(
+            "Export the current source-derived 512×512 RGBA crest PNG from your game."
+        )
+        self.replace_button.setToolTip(
+            "Choose an edited 512×512 RGBA PNG or drop it onto the preview."
+        )
+        self.revert_button.setToolTip("Nothing to revert—no replacement is staged.")
+        self.build_button.setToolTip(
+            "Copy your 0A and write this crest into both the uniform_logo_01 "
+            "package and the prebuilt logo cache through the offline-proved "
+            "writers and their independent full-volume verifiers."
+        )
+        self.export_button.clicked.connect(self._export_original)
+        self.replace_button.clicked.connect(self._choose_replacement)
+        self.revert_button.clicked.connect(self._revert)
+        self.build_button.clicked.connect(self._build_copied_volume)
+        actions.addWidget(self.export_button)
+        actions.addWidget(self.replace_button)
+        actions.addWidget(self.revert_button)
+        actions.addWidget(self.build_button)
+        actions.addStretch(1)
+
+        content.addLayout(title_row)
+        content.addLayout(specs)
+        content.addLayout(slot_row)
+        content.addWidget(description)
+        content.addWidget(self.path_note)
+        # Keep the edit workflow with its copy; spare height goes below.
+        content.addLayout(actions)
+        content.addStretch(1)
+        box.addLayout(content, 1)
+        self.set_context()
+
+    def set_context(self) -> None:
+        ready = self.facade.source_ready
+        staged = self._staged_png is not None
+        self.slot.setEnabled(ready)
+        self.export_button.setEnabled(ready)
+        self.replace_button.setEnabled(ready)
+        self.build_button.setEnabled(ready and staged)
+        self.revert_button.setEnabled(staged)
+        self.revert_button.setToolTip(
+            "Discard the staged replacement PNG and show your original crest again."
+            if staged
+            else "Nothing to revert—no replacement is staged."
+        )
+        self.build_button.setToolTip(
+            "Copy your 0A and write this crest into both the uniform_logo_01 "
+            "package and the prebuilt logo cache through the offline-proved "
+            "writers and their independent full-volume verifiers."
+            if (ready and staged)
+            else "Load your game and stage a 512×512 RGBA PNG to build."
+        )
+        self.preview.setAcceptDrops(ready)
+        if staged and ready:
+            self.status.setText("● Staged")
+            color = "#39d98a"
+        elif ready:
+            self.status.setText(_status_text(ApfStatus.EDITABLE))
+            color = "#39d98a"
+        else:
+            self.status.setText("○ Not loaded")
+            color = "#8795aa"
+        self.status.setStyleSheet(f"color: {color}; border-color: {color};")
+
+        if not ready:
+            self.preview.set_message(
+                "Team logo crest · 512×512 RGBA PNG\n"
+                "Load your game to see the original."
+            )
+            self.path_note.setText(
+                "No game loaded yet — preview, export, and Replace unlock once "
+                "your source is recognized."
+            )
+            return
+        if staged:
+            self.preview.set_image(self._staged_png)
+            self.path_note.setText(
+                "Current preview: your staged 512×512 RGBA replacement. Build copies "
+                "your 0A and writes only the crest; your source game stays untouched."
+            )
+            return
+        self.preview.set_loading("Decoding the original crest from your game…")
+        self.path_note.setText(
+            "Current preview: original crest decoded from your own game (read-only)."
+        )
+        self.run_task(
+            "Decoding team-logo crest",
+            self._decode_source_operation,
+            self._apply_preview,
+            False,
+        )
+
+    def _writer_module(self) -> Any:
+        root = Path(__file__).resolve().parents[2]
+        for candidate in (str(root), str(root / "tools")):
+            if candidate not in sys.path:
+                sys.path.insert(0, candidate)
+        import apf_logo_patch  # noqa: E402 - tools/ writer added to sys.path above
+
+        return apf_logo_patch
+
+    def _preview_path(self, name: str) -> Path:
+        if self._preview_dir is None:
+            self._preview_dir = Path(tempfile.mkdtemp(prefix="apf-team-logo-"))
+        return self._preview_dir / name
+
+    def _declared_sibling_packs(self, index_path: Path) -> tuple[str, ...]:
+        """The pack names this volume declares, other than the index itself."""
+
+        self._writer_module()  # puts tools/ on sys.path for apf_outer
+        import apf_outer  # noqa: E402
+
+        archive = apf_outer.parse_archive(index_path)
+        return tuple(
+            pack.name for pack in archive.packs if pack.name != index_path.name
+        )
+
+    def _decode_source_operation(
+        self, progress: Callable[[str, int, int], None]
+    ) -> Path:
+        source = self.facade.source
+        if source is None:
+            raise RuntimeError("Load your APF 2K8 game first.")
+        index_path = Path(source.index_0a)
+        progress("Reading the read-only team-logo crest", 0, 0)
+        writer = self._writer_module()
+        import apf_inner  # noqa: E402 - resolved once the writer added tools/
+        import apf_outer  # noqa: E402
+        from PIL import Image
+
+        archive = apf_outer.parse_archive(index_path)
+        entry = archive.entries[writer.ENTRY_INDEX]
+        with apf_inner.ArchiveReader(archive) as reader:
+            record = apf_inner.parse_iff(reader, entry)
+            blocks = [
+                apf_inner.decode_block(reader, record, index, 1 << 30)
+                for index in range(record.block_count)
+            ]
+        target = record.files[writer.FILE_INDEX]
+        dram_part, vram_part = target.parts[0], target.parts[1]
+        dram = blocks[dram_part.block_index][
+            dram_part.offset : dram_part.offset + dram_part.length
+        ]
+        metadata = apf_inner.parse_txtr_metadata(dram)
+        base = blocks[vram_part.block_index][
+            vram_part.offset : vram_part.offset + writer.BASE_LEN
+        ]
+        rgba = writer.decode_4444_base(metadata, base)
+        output = self._preview_path("team_logo_source.png")
+        Image.frombytes("RGBA", (writer.WIDTH, writer.HEIGHT), rgba).save(output)
+        return output
+
+    def _apply_preview(self, result: object) -> None:
+        # A stage (drop/choose) may have won the race while the decode ran; keep
+        # the staged preview rather than overwriting it with the original.
+        if self._staged_png is not None:
+            return
+        self.preview.set_image(Path(str(result)))
+
+    def _export_original(self) -> None:
+        destination, _filter = QFileDialog.getSaveFileName(
+            self,
+            "Export source-derived team-logo PNG",
+            str(Path.home() / "apf-team-logo.png"),
+            "RGBA PNG (*.png)",
+        )
+        if not destination:
+            return
+        path = Path(destination)
+        if not path.suffix:
+            path = path.with_suffix(".png")
+        if path.exists():
+            QMessageBox.information(
+                self,
+                "Choose a new filename",
+                "Exports never overwrite an existing file. Choose a new filename and try again.",
+            )
+            return
+
+        def operation(progress: Callable[[str, int, int], None]) -> Path:
+            decoded = self._decode_source_operation(progress)
+            return _copy_new(decoded, path)
+
+        self.run_task(
+            "Exporting team-logo PNG",
+            operation,
+            lambda result: QMessageBox.information(
+                self, "PNG exported", f"Saved to:\n{Path(str(result))}"
+            ),
+            True,
+        )
+
+    def _choose_replacement(self) -> None:
+        path, _filter = QFileDialog.getOpenFileName(
+            self,
+            "Choose edited 512×512 RGBA team-logo PNG",
+            str(Path.home()),
+            "RGBA PNG (*.png)",
+        )
+        if path:
+            self._stage_path(Path(path))
+
+    def _stage_path(self, path: Path) -> None:
+        if not self.facade.source_ready:
+            return
+        pixmap = QPixmap(str(path))
+        if pixmap.isNull():
+            QMessageBox.information(
+                self,
+                "Choose a PNG",
+                "That file could not be read as a PNG. Choose a "
+                f"{self._WIDTH}×{self._HEIGHT} RGBA PNG and try again.",
+            )
+            return
+        if (pixmap.width(), pixmap.height()) != (self._WIDTH, self._HEIGHT):
+            QMessageBox.information(
+                self,
+                "Wrong PNG size",
+                f"The team-logo crest must be exactly {self._WIDTH}×{self._HEIGHT}. "
+                f"That PNG is {pixmap.width()}×{pixmap.height()}. The offline-proved "
+                "writer will also refuse any other size.",
+            )
+            return
+        self._staged_png = Path(path)
+        self.set_context()
+
+    def _revert(self) -> None:
+        self._staged_png = None
+        self.set_context()
+
+    def _build_copied_volume(self) -> None:
+        source = self.facade.source
+        if not self.facade.source_ready or source is None or self._staged_png is None:
+            return
+        destination, _filter = QFileDialog.getSaveFileName(
+            self,
+            "Choose the new copied 0A volume to create",
+            str(Path.home() / "APF-team-logo" / "0A"),
+            "APF 0A volume (0A);;All files (*)",
+        )
+        if not destination:
+            return
+        out_volume = Path(destination)
+        package_manifest = (
+            out_volume.parent / f"{out_volume.name}.team_logo_package.json"
+        )
+        cache_manifest = out_volume.parent / f"{out_volume.name}.team_logo_cache.json"
+        if (
+            out_volume.exists()
+            or package_manifest.exists()
+            or cache_manifest.exists()
+        ):
+            QMessageBox.information(
+                self,
+                "Choose a new location",
+                "The proved writers never overwrite existing files. Pick a folder and "
+                "name that do not exist yet, then try again.",
+            )
+            return
+        index_path = Path(source.index_0a)
+        confirm = QMessageBox.question(
+            self,
+            "Build copied 0A (team logo)?",
+            "This copies your entire ~1.1 GB 0A volume to the chosen path and "
+            "replaces the shared team-logo crest in both places the disc stores "
+            "it: the uniform_logo_01 package (logo_l0) and the matching entry in "
+            "the prebuilt uniform_logocache aggregate. Both writes go through "
+            "offline-proved writers; each byte-diffs the whole copied volume so "
+            "only its own fixed extents change, and your source game is never "
+            "modified.\n\n"
+            "This writes only the 0A volume and only this team-logo edit — not other "
+            "Mod Studio edits. Boot it alongside your own unmodified game packs.\n\n"
+            "The two writes are chained through one intermediate copy, so the "
+            "destination needs roughly twice the volume size free while it builds; "
+            "the intermediate is removed when the build finishes.\n\n"
+            f"Source (read-only): {index_path}\n"
+            f"New copied 0A: {out_volume}\n"
+            f"Manifests: {package_manifest.name}\n"
+            f"           {cache_manifest.name}\n\n"
+            "Which runtime surface reads which copy — helmet crest, team-select "
+            "grid, or scorebug — is not proved without a Xenia capture.\n\n"
+            "Proceed?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if confirm != QMessageBox.Yes:
+            return
+        staged = self._staged_png
+
+        def operation(progress: Callable[[str, int, int], None]) -> dict[str, object]:
+            import subprocess
+
+            tools = Path(__file__).resolve().parents[2] / "tools"
+
+            def run(writer: Path, arguments: list[str], stage: str) -> None:
+                progress(stage, 0, 0)
+                completed = subprocess.run(
+                    [sys.executable, str(writer), *arguments],
+                    cwd=str(tools.parent),
+                    capture_output=True,
+                    text=True,
+                )
+                if completed.returncode != 0:
+                    raise RuntimeError(
+                        completed.stderr.strip()
+                        or completed.stdout.strip()
+                        or f"The {writer.stem} writer failed."
+                    )
+
+            # One Team Logo action, two proved writers.  The package write lands
+            # in an intermediate copy; the cache write then reads that copy and
+            # produces the volume the author keeps, so the delivered 0A carries
+            # both edits.  Either writer failing raises, and both writers remove
+            # their own partial outputs, so a failed build leaves nothing behind
+            # but the workspace this cleans up.
+            siblings = self._declared_sibling_packs(index_path)
+            out_volume.parent.mkdir(parents=True, exist_ok=True)
+            workspace = Path(
+                tempfile.mkdtemp(
+                    prefix=".apf-team-logo-build-", dir=str(out_volume.parent)
+                )
+            )
+            retained: Path | None = None
+            try:
+                # The cache writer re-parses its --index volume, and an APF index
+                # only parses under its own pack name beside every sibling pack it
+                # declares.  Stage the intermediate that way and reference the
+                # siblings by link, so no pack is copied and the retail source is
+                # still never opened for writing.
+                staged_volume = workspace / index_path.name
+                for pack in siblings:
+                    _link_reference(index_path.parent / pack, workspace / pack)
+                staged_manifest = workspace / "team_logo_package.json"
+                run(
+                    tools / "apf_logo_patch.py",
+                    [
+                        "--index",
+                        str(index_path),
+                        "--png",
+                        str(staged),
+                        "--output-volume",
+                        str(staged_volume),
+                        "--manifest",
+                        str(staged_manifest),
+                    ],
+                    "Copying volume and writing the crest package through the proved writer",
+                )
+                run(
+                    tools / "apf_logocache_patch.py",
+                    [
+                        "--index",
+                        str(staged_volume),
+                        "--catalog-index",
+                        str(self._CACHE_CATALOG_INDEX),
+                        "--png",
+                        str(staged),
+                        "--output-volume",
+                        str(out_volume),
+                        "--manifest",
+                        str(cache_manifest),
+                    ],
+                    "Writing the same crest into the prebuilt logo cache",
+                )
+                try:
+                    retained = _copy_new(staged_manifest, package_manifest)
+                except OSError:
+                    # The volume and its cache manifest are already written and
+                    # verified; only the package-stage evidence copy failed.
+                    retained = None
+            finally:
+                shutil.rmtree(workspace, ignore_errors=True)
+            return {
+                "volume": out_volume,
+                "cache_manifest": cache_manifest,
+                "package_manifest": retained,
+            }
+
+        self.run_task(
+            "Building copied 0A (team logo)",
+            operation,
+            self._build_complete,
+            True,
+        )
+
+    def _build_complete(self, result: object) -> None:
+        report = result if isinstance(result, dict) else {}
+        volume = report.get("volume")
+        cache_manifest = report.get("cache_manifest")
+        package_manifest = report.get("package_manifest")
+        detail = ""
+        if package_manifest is not None:
+            try:
+                document = json.loads(
+                    Path(str(package_manifest)).read_text(encoding="utf-8")
+                )
+                metrics = document.get("base_data", {}).get("decode_back_metrics", {})
+                max_error = metrics.get("maximum_absolute_error")
+                if max_error is not None:
+                    detail += (
+                        f"\n\nDecode-back max per-channel error: {max_error} "
+                        "(0 = exact; larger means 4-bit quantization moved a color)."
+                    )
+            except (OSError, ValueError):
+                pass
+        try:
+            document = json.loads(
+                Path(str(cache_manifest)).read_text(encoding="utf-8")
+            )
+            copied = document.get("copied_volume") or {}
+            if copied.get("output_volume_sha256"):
+                detail += f"\nCopied 0A sha256: {copied['output_volume_sha256']}"
+        except (OSError, ValueError):
+            pass
+        evidence = f"Cache manifest:\n{cache_manifest}\n"
+        if package_manifest is not None:
+            evidence += f"Package manifest:\n{package_manifest}"
+        else:
+            evidence += (
+                "Package manifest: the package-stage evidence copy could not be "
+                "written; the copied volume and its cache manifest are unaffected."
+            )
+        QMessageBox.information(
+            self,
+            "Copied 0A built",
+            "The offline-proved writers copied your 0A and wrote the same crest "
+            "into both the uniform_logo_01 package and the prebuilt "
+            "uniform_logocache aggregate, each verified against the whole "
+            f"volume.\n\nCopied 0A:\n{volume}\n\n{evidence}{detail}\n\n"
+            "The two manifests are the evidence chain: the package manifest "
+            "covers your game → the intermediate copy, and the cache manifest "
+            "covers that copy → this volume. Because this volume carries both "
+            "edits, running a single-writer verifier straight from your game to "
+            "this volume reports the other writer's extent as unexpected; that is "
+            "the verifier's one-writer scope, not a fault in this volume.\n\n"
+            "Which runtime surface reads which copy — helmet crest, team-select "
+            "grid, or scorebug — is not proved without a Xenia capture.",
+        )
+
+
+class LogosStudioPage(QWidget):
+    """Logos & Team Art: the offline-proved team-logo crest editor plus the full
+    category browser (draft_logo and every other logo/team-art record)."""
+
+    modifiedChanged = pyqtSignal()
+
+    def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
+        super().__init__()
+        self.facade = facade
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 16, 24, 16)
+        layout.setSpacing(10)
+        layout.addWidget(PageHeading(ApfCategory.LOGOS))
+        self.capabilities = CapabilityPanel(ApfCategory.LOGOS)
+        layout.addWidget(self.capabilities)
+        tabs = QTabWidget()
+        tabs.setObjectName("workspaceTabs")
+        self.team_logo = ApfTeamLogoPanel(facade, run_task)
+        self.browser = AssetBrowser(facade, ApfCategory.LOGOS, run_task)
+        # Browser edits (e.g. draft_logo) participate in the shared session and
+        # mark the project modified; the standalone team-logo crest panel does not.
+        self.browser.modifiedChanged.connect(self.modifiedChanged)
+        tabs.addTab(self.team_logo, "Team Logo")
+        tabs.addTab(self.browser, "All Logo && Team Art")
+        layout.addWidget(tabs, 1)
+
+    def set_context(self) -> None:
+        if self.facade.source_ready:
+            count = len(
+                self.facade.browse_assets(
+                    category=ApfCategory.LOGOS,
+                    limit=len(self.facade.require_catalog().assets) + 1,
+                )
+            )
+            self.capabilities.set_cards(
+                self.facade.capability_cards(ApfCategory.LOGOS),
+                catalog_ready=True,
+                inventory_count=count,
+            )
+        else:
+            self.capabilities.set_cards(())
+        self.team_logo.set_context()
+        self.browser.set_context()
+
+    def refresh(self) -> None:
+        self.team_logo.set_context()
+        self.browser.refresh()
+
+
 class CatalogCategoryPage(QWidget):
     """Capability cards plus a category-filtered universal browser."""
 
@@ -1885,21 +2633,636 @@ class CatalogCategoryPage(QWidget):
         self.browser.refresh()
 
 
+@dataclass(frozen=True)
+class _FieldArtTarget:
+    """One offline-proved, writable field-art base texture offered by the editor."""
+
+    entry_index: int
+    file_index: int
+    name: str
+    width: int
+    height: int
+    codec: str
+    lossless: bool
+    note: str
+
+    @property
+    def key(self) -> tuple[int, int]:
+        return (self.entry_index, self.file_index)
+
+    @property
+    def label(self) -> str:
+        return (
+            f"{self.name} — {self.width}×{self.height} {self.codec} "
+            f"(outer {self.entry_index} / inner {self.file_index})"
+        )
+
+
+# tools/apf_field_art_patch.py is the authority for these pins: its frozen
+# per-slot contracts re-validate the outer entry, the inner file, the Xenos
+# descriptor, the base/mip lengths, and the retail entry/base SHA-256, and it
+# refuses anything that disagrees.  The panel mirrors them only for honest
+# labels and its exact-size stage guard.  The deferred families (field_radiance
+# DXT5A and the divot_Grass* weather textures, 5_6_5) are deliberately absent:
+# the writer refuses them with a typed error, so they are never offered here.
+FIELD_ART_COVERED_TARGETS: tuple[_FieldArtTarget, ...] = (
+    _FieldArtTarget(
+        6, 0, "endzone_l0", 2048, 512, "DXT1", False,
+        "Endzone base layer. The sibling endzone_l1 layer, the descriptor pad, "
+        "and the packed mip tail all stay byte-identical.",
+    ),
+    _FieldArtTarget(
+        6, 1, "endzone_l1", 2048, 512, "DXT1", False,
+        "Endzone second layer. The sibling endzone_l0 layer, the descriptor pad, "
+        "and the packed mip tail all stay byte-identical.",
+    ),
+    _FieldArtTarget(
+        659, 18, "pc_field_goal", 256, 256, "DXT1", False,
+        "Practice field-goal overlay. Every other inner part of the shared "
+        "package stays byte-identical.",
+    ),
+    _FieldArtTarget(
+        659, 23, "Field_Pass_text", 128, 128, "BC3", False,
+        "Practice passing overlay. Every other inner part of the shared package "
+        "stays byte-identical.",
+    ),
+    _FieldArtTarget(
+        659, 252, "Stride_number_field", 128, 128, "BC3", False,
+        "Practice stride-number overlay. Every other inner part of the shared "
+        "package stays byte-identical.",
+    ),
+    _FieldArtTarget(
+        53, 0, "divots", 64, 64, "8_8_8_8", True,
+        "Base divot texture, uncompressed and lossless. The divot_GrassRain / "
+        "GrassSnow / GrassDry weather textures are a deferred 5_6_5 codec.",
+    ),
+)
+
+
+class ApfFieldArtPanel(QFrame):
+    """Focused editor for the offline-proved, writable field-art base textures.
+
+    This surface mirrors :class:`ApfTeamLogoPanel` and is deliberately
+    self-contained.  It reads the loaded game's read-only ``0A`` to render a
+    source-derived preview of the selected pinned slot, stages exactly one PNG
+    at that slot's exact base dimensions, and routes the build through the
+    offline ``apf2k8.field_art.base_texture`` capability whose backend is
+    ``tools/apf_field_art_patch.py``.  That writer copies the whole volume,
+    rewrites only the selected base mip level, byte-preserves the descriptor
+    pad, the packed mip tail, and every sibling inner part, reparses the
+    rebuilt entry in RAM before it is written, and pairs the write with an
+    independent verifier; the retail source is never opened for writing.
+
+    Only the six slots proved bit-exact offline are offered.  The deferred
+    field-art families (``field_radiance`` and the ``divot_Grass*`` weather
+    textures) and the SCNE/CurveAnim rows have no bounded writer and stay
+    locked in the inventory browser below.
+
+    The panel never mutates the shared editing session, so it never marks
+    unrelated project state modified, and it makes no in-game/runtime claim:
+    what a changed field texture looks like in play is unproved without a Xenia
+    capture.
+    """
+
+    def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
+        super().__init__()
+        self.facade = facade
+        self.run_task = run_task
+        self._staged: dict[tuple[int, int], Path] = {}
+        self._preview_dir: Path | None = None
+        self._preview_token = 0
+        self.setObjectName("panel")
+        box = QHBoxLayout(self)
+        box.setContentsMargins(16, 14, 16, 14)
+        box.setSpacing(16)
+        self.preview = ImageDropLabel(
+            "Field art · exact-size RGBA PNG\nLoad your game to see the original."
+        )
+        self.preview.setFixedSize(220, 220)
+        self.preview.pngDropped.connect(self._stage_path)
+        box.addWidget(self.preview)
+
+        content = QVBoxLayout()
+        title_row = QHBoxLayout()
+        title = QLabel("Field art — proven base textures")
+        title.setObjectName("panelTitle")
+        self.status = QLabel("Not loaded")
+        self.status.setObjectName("statusBadge")
+        title_row.addWidget(title)
+        title_row.addStretch(1)
+        title_row.addWidget(self.status)
+
+        # The three chips restate the selected slot's contract at a glance:
+        # exact size (the one fact a modder must honor before picking a file),
+        # stored codec, and the write's scope.  Text updates per selection.
+        specs = QHBoxLayout()
+        specs.setSpacing(6)
+        self.size_pill = _spec_pill(
+            "2048×512 RGBA PNG",
+            emphasis=True,
+            tooltip=(
+                "The writer accepts exactly this size for the selected texture; "
+                "any other size is refused before anything is staged."
+            ),
+        )
+        self.codec_pill = _spec_pill(
+            "DXT1 · re-encoded",
+            tooltip=(
+                "The codec the game stores this texture in. Compressed codecs "
+                "re-encode your colors and the build reports the exact "
+                "decode-back error; uncompressed slots are lossless."
+            ),
+        )
+        self.scope_pill = _spec_pill(
+            "Writes this texture only",
+            tooltip=(
+                "A build copies your 0A and regenerates only this slot's base "
+                "mip level; every other byte of the volume stays identical."
+            ),
+        )
+        specs.addWidget(self.size_pill)
+        specs.addWidget(self.codec_pill)
+        specs.addWidget(self.scope_pill)
+        specs.addStretch(1)
+
+        slot_row = QHBoxLayout()
+        slot_row.setSpacing(8)
+        slot_label = QLabel("Texture:")
+        slot_label.setObjectName("metadataText")
+        self.slot = QComboBox()
+        self.slot.setObjectName("comboField")
+        for target in FIELD_ART_COVERED_TARGETS:
+            self.slot.addItem(target.label)
+        self.slot.setToolTip(
+            "Only the field-art slots the offline writer proved bit-exact are "
+            "selectable. field_radiance (DXT5A) and the divot_Grass* weather "
+            "textures (5_6_5) are deferred codecs, and the SCNE/CurveAnim rows "
+            "have no serializer, so none of them are offered here."
+        )
+        slot_row.addWidget(slot_label)
+        slot_row.addWidget(self.slot, 1)
+
+        self.description = QLabel("")
+        self.description.setObjectName("cardBody")
+        self.description.setWordWrap(True)
+        self.lock_note = QLabel(
+            "Locked for now: field_radiance and the weather divot textures use "
+            "codecs that aren't proven yet, so they stay browse & export-only "
+            "in the inventory below."
+        )
+        self.lock_note.setObjectName("metadataText")
+        self.lock_note.setWordWrap(True)
+        self.path_note = QLabel("No source loaded.")
+        self.path_note.setObjectName("metadataText")
+        self.path_note.setWordWrap(True)
+
+        actions = QHBoxLayout()
+        actions.setSpacing(8)
+        self.export_button = QPushButton("Export original PNG…")
+        self.export_button.setObjectName("secondaryButton")
+        self.replace_button = QPushButton("Replace PNG…")
+        self.replace_button.setObjectName("primaryButton")
+        self.revert_button = QPushButton("Revert")
+        self.revert_button.setObjectName("dangerQuietButton")
+        self.build_button = QPushButton("Build copied 0A (this texture only)…")
+        self.build_button.setObjectName("secondaryButton")
+        self.export_button.clicked.connect(self._export_original)
+        self.replace_button.clicked.connect(self._choose_replacement)
+        self.revert_button.clicked.connect(self._revert)
+        self.build_button.clicked.connect(self._build_copied_volume)
+        actions.addWidget(self.export_button)
+        actions.addWidget(self.replace_button)
+        actions.addWidget(self.revert_button)
+        actions.addWidget(self.build_button)
+        actions.addStretch(1)
+
+        content.addLayout(title_row)
+        content.addLayout(specs)
+        content.addLayout(slot_row)
+        content.addWidget(self.description)
+        content.addWidget(self.lock_note)
+        content.addWidget(self.path_note)
+        # Keep the edit workflow with its copy; spare height goes below.
+        content.addLayout(actions)
+        content.addStretch(1)
+        box.addLayout(content, 1)
+        # Connected only once every widget set_context() touches exists.
+        self.slot.currentIndexChanged.connect(self._target_changed)
+        self.set_context()
+
+    def current_target(self) -> _FieldArtTarget:
+        index = self.slot.currentIndex()
+        if not 0 <= index < len(FIELD_ART_COVERED_TARGETS):
+            return FIELD_ART_COVERED_TARGETS[0]
+        return FIELD_ART_COVERED_TARGETS[index]
+
+    def staged_path(self, target: _FieldArtTarget) -> Path | None:
+        return self._staged.get(target.key)
+
+    def _target_changed(self, _index: int = -1) -> None:
+        self.set_context()
+
+    def set_context(self) -> None:
+        ready = self.facade.source_ready
+        target = self.current_target()
+        staged = self.staged_path(target)
+        self.slot.setEnabled(ready)
+        self.export_button.setEnabled(ready)
+        self.replace_button.setEnabled(ready)
+        self.build_button.setEnabled(ready and staged is not None)
+        self.revert_button.setEnabled(staged is not None)
+        self.export_button.setToolTip(
+            f"Export the current source-derived {target.width}×{target.height} "
+            f"RGBA {target.name} PNG from your game."
+            if ready
+            else "Load your game to export this texture."
+        )
+        self.replace_button.setToolTip(
+            f"Choose an edited {target.width}×{target.height} RGBA PNG for "
+            f"{target.name}, or drop it onto the preview."
+            if ready
+            else "Load your game to stage a replacement."
+        )
+        self.revert_button.setToolTip(
+            f"Discard the staged replacement PNG and show your original "
+            f"{target.name} again."
+            if staged is not None
+            else "Nothing to revert—no replacement is staged for this texture."
+        )
+        self.build_button.setToolTip(
+            "Copy your 0A and write only this one field-art texture through the "
+            "offline-proved writer and its independent verifier."
+            if (ready and staged is not None)
+            else (
+                f"Load your game and stage a {target.width}×{target.height} RGBA "
+                "PNG to build."
+            )
+        )
+        self.preview.setAcceptDrops(ready)
+        codec_display = target.codec.replace("_", "·")
+        self.size_pill.setText(f"{target.width}×{target.height} RGBA PNG")
+        self.codec_pill.setText(
+            f"{codec_display} · lossless"
+            if target.lossless
+            else f"{codec_display} · re-encoded"
+        )
+        lead = target.note.split(".")[0].strip()
+        codec_sentence = (
+            "This slot is uncompressed, so your pixels land losslessly."
+            if target.lossless
+            else (
+                f"{target.codec} re-encodes colors in 4×4 blocks, and the build "
+                "reports the exact decode-back error."
+            )
+        )
+        self.description.setText(
+            f"{lead}. Drop or choose an exact {target.width}×{target.height} "
+            f"RGBA PNG — any other size is refused. {codec_sentence} Only this "
+            "base level changes — the packed mip tail keeps its original bytes — "
+            "and how the edit looks in play is not proved without a Xenia "
+            "capture."
+        )
+        self.description.setToolTip(
+            f"Full contract: the offline-proved writer owns outer "
+            f"{target.entry_index} / inner {target.file_index} ({target.name}), "
+            f"a {target.width}×{target.height} Xenos {target.codec} texture. "
+            f"{target.note} Only the base mip level is regenerated; the packed "
+            "mip tail is byte-preserved, so it stays stale relative to your edit."
+        )
+
+        self._preview_token += 1
+        if not ready:
+            self.status.setText("○ Not loaded")
+            self.status.setStyleSheet("color: #8795aa; border-color: #8795aa;")
+            self.preview.set_message(
+                f"{target.name} · {target.width}×{target.height} RGBA PNG\n"
+                "Load your game to see the original."
+            )
+            self.path_note.setText(
+                "No game loaded yet — preview, export, and Replace unlock once "
+                "your source is recognized."
+            )
+            return
+        if staged is not None:
+            self.status.setText("● Staged")
+            self.status.setStyleSheet("color: #39d98a; border-color: #39d98a;")
+            self.preview.set_image(staged)
+            self.path_note.setText(
+                f"Current preview: your staged {target.width}×{target.height} RGBA "
+                "replacement. Build copies your 0A and writes only this texture; "
+                "your source game stays untouched."
+            )
+            return
+        self.status.setText(_status_text(ApfStatus.EDITABLE))
+        self.status.setStyleSheet("color: #39d98a; border-color: #39d98a;")
+        self.preview.set_loading(f"Decoding the original {target.name} from your game…")
+        self.path_note.setText(
+            f"Current preview: original {target.name} decoded from your own game "
+            "(read-only)."
+        )
+        token = self._preview_token
+        self.run_task(
+            f"Decoding {target.name}",
+            lambda progress: self._decode_source_operation(target, progress),
+            lambda result: self._apply_preview(target, token, result),
+            False,
+        )
+
+    def _writer_module(self) -> Any:
+        root = Path(__file__).resolve().parents[2]
+        for candidate in (str(root), str(root / "tools")):
+            if candidate not in sys.path:
+                sys.path.insert(0, candidate)
+        import apf_field_art_patch  # noqa: E402 - tools/ writer added to sys.path above
+
+        return apf_field_art_patch
+
+    def _writer_path(self) -> Path:
+        return Path(__file__).resolve().parents[2] / "tools" / "apf_field_art_patch.py"
+
+    def _preview_path(self, name: str) -> Path:
+        if self._preview_dir is None:
+            self._preview_dir = Path(tempfile.mkdtemp(prefix="apf-field-art-"))
+        return self._preview_dir / name
+
+    def _decode_source_operation(
+        self, target: _FieldArtTarget, progress: Callable[[str, int, int], None]
+    ) -> tuple[bool, object]:
+        try:
+            source = self.facade.source
+            if source is None:
+                raise RuntimeError("Load your APF 2K8 game first.")
+            index_path = Path(source.index_0a)
+            progress(f"Reading the read-only {target.name} texture", 0, 0)
+            writer = self._writer_module()
+            import apf_inner  # noqa: E402 - resolved once the writer added tools/
+            import apf_outer  # noqa: E402
+            from PIL import Image
+
+            contract = writer._CONTRACTS.get(target.key)
+            if contract is None:
+                raise RuntimeError(
+                    f"{target.name} is not a pinned writable field-art slot."
+                )
+            archive = apf_outer.parse_archive(index_path)
+            entry = archive.entries[contract.entry_index]
+            with apf_inner.ArchiveReader(archive) as reader:
+                record = apf_inner.parse_iff(reader, entry)
+                blocks = [
+                    apf_inner.decode_block(reader, record, index, 1 << 30)
+                    for index in range(record.block_count)
+                ]
+            _file, _pixel_part, _descriptor, pixel_bytes, metadata = (
+                writer._resolve_target(record, blocks, contract)
+            )
+            head_len = len(pixel_bytes) - contract.base_len - contract.mip_len
+            if head_len < 0:
+                raise RuntimeError(
+                    f"{target.name} pixel part is smaller than its pinned base "
+                    "and mip tail."
+                )
+            base = pixel_bytes[head_len : head_len + contract.base_len]
+            width, height, rgba = apf_inner.decode_txtr_base_rgba(metadata, base)
+            output = self._preview_path(f"{contract.name}_source.png")
+            Image.frombytes("RGBA", (width, height), rgba).save(output)
+            return True, output
+        except Exception as exc:  # surfaced inline in the preview, not as a modal
+            return False, str(exc)
+
+    def _apply_preview(
+        self, target: _FieldArtTarget, token: int, result: object
+    ) -> None:
+        # A slot change or a stage (drop/choose) may have won the race while the
+        # decode ran; keep whatever the panel shows now rather than overwriting it.
+        if token != self._preview_token or self.current_target().key != target.key:
+            return
+        if self.staged_path(target) is not None:
+            return
+        ok, value = result  # type: ignore[misc]
+        if ok:
+            self.preview.set_image(Path(str(value)))
+        else:
+            self.preview.set_error(str(value))
+
+    def _export_original(self) -> None:
+        target = self.current_target()
+        destination, _filter = QFileDialog.getSaveFileName(
+            self,
+            f"Export source-derived {target.name} PNG",
+            str(Path.home() / f"apf-{target.name}.png"),
+            "RGBA PNG (*.png)",
+        )
+        if not destination:
+            return
+        path = Path(destination)
+        if not path.suffix:
+            path = path.with_suffix(".png")
+        if path.exists():
+            QMessageBox.information(
+                self,
+                "Choose a new filename",
+                "Exports never overwrite an existing file. Choose a new filename and try again.",
+            )
+            return
+
+        def operation(progress: Callable[[str, int, int], None]) -> Path:
+            ok, value = self._decode_source_operation(target, progress)
+            if not ok:
+                raise RuntimeError(str(value))
+            return _copy_new(Path(str(value)), path)
+
+        self.run_task(
+            f"Exporting {target.name} PNG",
+            operation,
+            lambda result: QMessageBox.information(
+                self, "PNG exported", f"Saved to:\n{Path(str(result))}"
+            ),
+            True,
+        )
+
+    def _choose_replacement(self) -> None:
+        target = self.current_target()
+        path, _filter = QFileDialog.getOpenFileName(
+            self,
+            f"Choose edited {target.width}×{target.height} RGBA {target.name} PNG",
+            str(Path.home()),
+            "RGBA PNG (*.png)",
+        )
+        if path:
+            self._stage_path(Path(path))
+
+    def _stage_path(self, path: Path) -> None:
+        if not self.facade.source_ready:
+            return
+        target = self.current_target()
+        pixmap = QPixmap(str(path))
+        if pixmap.isNull():
+            QMessageBox.information(
+                self,
+                "Choose a PNG",
+                "That file could not be read as a PNG. Choose a "
+                f"{target.width}×{target.height} RGBA PNG and try again.",
+            )
+            return
+        if (pixmap.width(), pixmap.height()) != (target.width, target.height):
+            QMessageBox.information(
+                self,
+                "Wrong PNG size",
+                f"{target.name} must be exactly {target.width}×{target.height}. "
+                f"That PNG is {pixmap.width()}×{pixmap.height()}. The "
+                "offline-proved writer will also refuse any other size.",
+            )
+            return
+        self._staged[target.key] = Path(path)
+        self.set_context()
+
+    def _revert(self) -> None:
+        self._staged.pop(self.current_target().key, None)
+        self.set_context()
+
+    def _build_copied_volume(self) -> None:
+        source = self.facade.source
+        target = self.current_target()
+        staged = self.staged_path(target)
+        if not self.facade.source_ready or source is None or staged is None:
+            return
+        destination, _filter = QFileDialog.getSaveFileName(
+            self,
+            "Choose the new copied 0A volume to create",
+            str(Path.home() / f"APF-{target.name}" / "0A"),
+            "APF 0A volume (0A);;All files (*)",
+        )
+        if not destination:
+            return
+        out_volume = Path(destination)
+        manifest = out_volume.parent / f"{out_volume.name}.field_art_patch.json"
+        if out_volume.exists() or manifest.exists():
+            QMessageBox.information(
+                self,
+                "Choose a new location",
+                "The proved writer never overwrites existing files. Pick a folder and "
+                "name that do not exist yet, then try again.",
+            )
+            return
+        index_path = Path(source.index_0a)
+        confirm = QMessageBox.question(
+            self,
+            "Build copied 0A (one field-art texture)?",
+            "This copies your entire ~1.1 GB 0A volume to the chosen path and "
+            f"replaces only the {target.name} base texture (outer "
+            f"{target.entry_index} / inner {target.file_index}) through the "
+            "offline-proved writer. The descriptor pad, the packed mip tail, "
+            "every sibling inner part, and every other byte of the volume are "
+            "verified unchanged, and your source game is never modified.\n\n"
+            "One build writes exactly one field-art texture: the writer is pinned "
+            "to the retail bytes of each slot, so re-running it against an "
+            "already-edited volume is not proved and will be refused.\n\n"
+            "This writes only the 0A volume and only this field-art edit — not other "
+            "Mod Studio edits. Boot it alongside your own unmodified game packs.\n\n"
+            f"Source (read-only): {index_path}\n"
+            f"New copied 0A: {out_volume}\n"
+            f"Manifest: {manifest}\n\n"
+            "Proceed?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if confirm != QMessageBox.Yes:
+            return
+
+        def operation(progress: Callable[[str, int, int], None]) -> Path:
+            import subprocess
+
+            writer_path = self._writer_path()
+            progress(
+                f"Copying volume and writing {target.name} through the proved writer",
+                0,
+                0,
+            )
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(writer_path),
+                    "--index",
+                    str(index_path),
+                    "--png",
+                    str(staged),
+                    "--entry-index",
+                    str(target.entry_index),
+                    "--file-index",
+                    str(target.file_index),
+                    "--output-volume",
+                    str(out_volume),
+                    "--manifest",
+                    str(manifest),
+                ],
+                cwd=str(writer_path.parents[1]),
+                capture_output=True,
+                text=True,
+            )
+            if completed.returncode != 0:
+                raise RuntimeError(
+                    completed.stderr.strip()
+                    or completed.stdout.strip()
+                    or "The field-art writer failed."
+                )
+            return manifest
+
+        self.run_task(
+            f"Building copied 0A ({target.name})",
+            operation,
+            self._build_complete,
+            True,
+        )
+
+    def _build_complete(self, manifest_path: object) -> None:
+        path = Path(str(manifest_path))
+        detail = ""
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+            metrics = document.get("base_data", {}).get("decode_back_metrics", {})
+            max_error = metrics.get("maximum_absolute_error")
+            copied = document.get("copied_volume") or {}
+            if max_error is not None:
+                detail += (
+                    f"\n\nDecode-back max per-channel error: {max_error} "
+                    "(0 = exact; larger means block compression moved a color)."
+                )
+            if copied.get("output_volume_sha256"):
+                detail += f"\nCopied 0A sha256: {copied['output_volume_sha256']}"
+        except (OSError, ValueError):
+            pass
+        QMessageBox.information(
+            self,
+            "Copied 0A built",
+            "The offline-proved field-art writer copied your 0A and wrote only "
+            f"this texture, verified against the whole volume.\n\nManifest:\n{path}"
+            f"{detail}\n\nOnly the base mip level was regenerated; the packed mip "
+            "tail is byte-preserved. How this looks in play is not proved without "
+            "a Xenia capture.",
+        )
+
+
 class FieldArtStudioPage(QWidget):
     """Reviewed APF field-art families over the universal asset browser.
 
-    This page deliberately adds discovery, not authorship.  Every semantic row
-    is still the original catalog identity consumed by :class:`AssetBrowser`,
-    so preview and export keep using the existing bounded I/O path.  The page
-    never manufactures selector, material, stadium, or team ownership.
+    Authorship on this page is exactly the six base-texture slots the offline
+    writer proved bit-exact; :class:`ApfFieldArtPanel` owns them and routes
+    every write through ``tools/apf_field_art_patch.py``.  Everything else stays
+    discovery: each semantic row below is still the original catalog identity
+    consumed by :class:`AssetBrowser`, so preview and export keep using the
+    existing bounded I/O path, and the page never manufactures selector,
+    material, stadium, or team ownership.
     """
 
     modifiedChanged = pyqtSignal()
 
     ACTION_LOCK_REASON = (
-        "Replace and Revert are locked: archive-package co-location does not "
-        "prove the runtime field material or its team/stadium selector, and no "
-        "bounded Field Art writer exists yet."
+        "This full Field Art inventory is browse and export-only. The six "
+        "offline-proved base textures are edited in the Field Art editor above; "
+        "here, archive-package co-location still does not prove the runtime "
+        "field material or its team/stadium selector, and the deferred codecs "
+        "(field_radiance, the divot_Grass* weather textures) and the "
+        "SCNE/CurveAnim rows have no bounded writer at all."
     )
 
     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
@@ -1913,6 +3276,11 @@ class FieldArtStudioPage(QWidget):
         layout.addWidget(PageHeading(ApfCategory.FIELD_ART))
         self.capabilities = CapabilityPanel(ApfCategory.FIELD_ART)
         layout.addWidget(self.capabilities)
+
+        # The bounded authorship surface: only the slots the offline writer
+        # proved.  The inventory below stays browse/export-only.
+        self.editor = ApfFieldArtPanel(facade, run_task)
+        layout.addWidget(self.editor)
 
         semantic_panel = QFrame()
         semantic_panel.setObjectName("panel")
@@ -2004,7 +3372,8 @@ class FieldArtStudioPage(QWidget):
             "Semantic families are unavailable; the raw catalog remains visible below."
         )
         self.package_note.setText(
-            "Replace and Revert stay locked until ownership and a bounded writer are proved."
+            "This inventory stays browse/export-only; only the six offline-proved "
+            "base textures in the Field Art editor above are writable."
         )
         self.browser.set_included_asset_ids(None)
 
@@ -2100,6 +3469,7 @@ class FieldArtStudioPage(QWidget):
             self.group_filter.setCurrentIndex(index)
 
     def set_context(self) -> None:
+        self.editor.set_context()
         if not self.facade.source_ready:
             self.capabilities.set_cards(())
             self._clear_semantic_view("Load a game to map Field Art")
@@ -2128,6 +3498,7 @@ class FieldArtStudioPage(QWidget):
         self._group_changed()
 
     def refresh(self) -> None:
+        self.editor.set_context()
         self.browser.refresh()
 
 
@@ -11185,6 +12556,9 @@ class ApfStudioMainWindow(QMainWindow):
             elif category is ApfCategory.FIELD_ART:
                 page = FieldArtStudioPage(self.facade, self._run_task)
                 page.modifiedChanged.connect(self._mark_document_changed)  # type: ignore[attr-defined]
+            elif category is ApfCategory.LOGOS:
+                page = LogosStudioPage(self.facade, self._run_task)
+                page.modifiedChanged.connect(self._mark_document_changed)  # type: ignore[attr-defined]
             elif category in specialized:
                 inspector_title, loader = specialized[category]
                 page = InspectorCategoryPage(
@@ -11202,7 +12576,35 @@ class ApfStudioMainWindow(QMainWindow):
                 page = CatalogCategoryPage(self.facade, category, self._run_task)
                 page.modifiedChanged.connect(self._mark_document_changed)  # type: ignore[attr-defined]
             self._pages[category] = page
-            self.pages.addWidget(page)
+            self.pages.addWidget(self._wrap_scrollable_page(page))
+
+    def _wrap_scrollable_page(self, page: QWidget) -> QScrollArea:
+        """Host a workspace page inside a resizable vertical scroll area.
+
+        The stacked workspace previously inherited the tallest page's full
+        content height as the window's minimum, which pushed the footer action
+        bar (Configure Xenia / Build Game Folder / Launch in Xenia) off a 1080p
+        screen.  Wrapping each page keeps the shell's minimum height bounded by
+        :data:`WORKSPACE_PAGE_MIN_HEIGHT` while a taller page scrolls in place
+        rather than growing the window.  The page keeps its own identity in
+        ``self._pages`` so category dispatch and inspector wiring are unchanged.
+        """
+
+        scroll = QScrollArea()
+        scroll.setObjectName("pageScroll")
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setWidget(page)
+        # QScrollArea.setWidget() force-enables autoFillBackground on the page
+        # it adopts, which repainted every workspace page in the platform's
+        # default light palette on top of the dark theme.  Undo it so pages
+        # stay transparent over the shared #0b111c workspace background.
+        page.setAutoFillBackground(False)
+        scroll.viewport().setAutoFillBackground(False)
+        scroll.setMinimumHeight(WORKSPACE_PAGE_MIN_HEIGHT)
+        return scroll
 
     def _build_footer(self) -> QWidget:
         footer = QFrame()
@@ -12396,6 +13798,14 @@ class ApfStudioMainWindow(QMainWindow):
                 background: #101827; border: 1px solid #516079; border-radius: 7px;
                 padding: 3px 7px; font-size: 10px; font-weight: 800;
             }
+            QLabel#specPill {
+                color: #c3cfe0; background: #16233a; border: 1px solid #33455f;
+                border-radius: 7px; padding: 3px 8px; font-size: 10px;
+                font-weight: 750;
+            }
+            QLabel#specPill[emphasis="true"] {
+                color: #ffb77e; border-color: #7c4d2b; background: #201a16;
+            }
             QLabel#findingText {
                 color: #b0bed1; background: #0d1624; border-radius: 6px;
                 padding: 8px 10px; font-size: 11px;
@@ -12414,6 +13824,13 @@ class ApfStudioMainWindow(QMainWindow):
             }
             QPushButton#primaryButton, QToolButton#primaryButton {
                 background: #f08a4b; color: #1a0e08; border: none;
+            }
+            /* Keep the Load APF Game menu arrow inside the button instead of
+               Qt's default bottom-right corner overhang. */
+            QToolButton#primaryButton { padding-right: 26px; }
+            QToolButton#primaryButton::menu-indicator {
+                subcontrol-origin: padding; subcontrol-position: center right;
+                right: 9px;
             }
             QPushButton#primaryButton:hover, QToolButton#primaryButton:hover { background: #ffab72; }
             QPushButton#primaryButton:disabled, QToolButton#primaryButton:disabled {
@@ -12544,7 +13961,7 @@ class ApfStudioMainWindow(QMainWindow):
             QTreeWidget:focus, QPlainTextEdit:focus {
                 border: 2px solid #f08a4b;
             }
-            QTableWidget#assetTable {
+            QTableWidget#assetTable, QTableWidget#fieldArtGroupTable {
                 background: #0c1421; alternate-background-color: #101a2a;
                 border: 1px solid #27364b; border-radius: 8px; gridline-color: #1e2b3e;
                 selection-background-color: #29445f; selection-color: white; outline: none;
@@ -12605,15 +14022,37 @@ class ApfStudioMainWindow(QMainWindow):
                 border-radius: 8px; top: -1px;
             }
             QTabWidget#workspaceTabs::tab-bar { left: 12px; }
-            QTabWidget#workspaceTabs QTabBar::tab {
+            /* The wide top-level tab treatment applies only to the workspace
+               tab widget's own bar (child combinator).  Nested editor tab
+               widgets style themselves smaller below so sub-tabs read as a
+               level down in the hierarchy and never overflow into scroller
+               arrows inside a narrow detail pane. */
+            QTabWidget#workspaceTabs > QTabBar::tab {
                 background: #142136; color: #9fb0c6; border: 1px solid #2d3e55;
                 border-bottom: none; border-top-left-radius: 7px;
                 border-top-right-radius: 7px; min-height: 34px;
                 min-width: 190px; padding: 0 24px; margin-right: 6px;
                 font-weight: 750;
             }
-            QTabWidget#workspaceTabs QTabBar::tab:selected {
+            QTabWidget#workspaceTabs > QTabBar::tab:selected {
                 background: #21344d; color: #ffffff; border-color: #49627e;
+            }
+            QTabWidget#rosterEditorTabs::pane {
+                background: #0f1827; border: 1px solid #27364b;
+                border-radius: 8px; top: -1px;
+            }
+            QTabWidget#rosterEditorTabs::tab-bar { left: 8px; }
+            QTabWidget#rosterEditorTabs > QTabBar::tab {
+                background: #101b2c; color: #9fb0c6; border: 1px solid #2a3a51;
+                border-bottom: none; border-top-left-radius: 6px;
+                border-top-right-radius: 6px; min-height: 28px;
+                padding: 0 16px; margin-right: 4px;
+            }
+            QTabWidget#rosterEditorTabs > QTabBar::tab:selected {
+                background: #21344d; color: #ffffff; border-color: #49627e;
+            }
+            QTabWidget#rosterEditorTabs > QTabBar::tab:disabled {
+                color: #5f6c80;
             }
             QPlainTextEdit#decodedFields {
                 background: #080f19; color: #bcd0e6; border: 1px solid #27374d;
@@ -12633,6 +14072,13 @@ class ApfStudioMainWindow(QMainWindow):
             QScrollBar:vertical { background: #101827; width: 10px; margin: 2px; }
             QScrollBar::handle:vertical { background: #34455e; min-height: 28px; border-radius: 4px; }
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+            QScrollBar:horizontal { background: #101827; height: 10px; margin: 2px; }
+            QScrollBar::handle:horizontal { background: #34455e; min-width: 28px; border-radius: 4px; }
+            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0; }
+            QToolTip {
+                background: #192438; color: #edf3fc;
+                border: 1px solid #3b4d68; padding: 6px;
+            }
             """
         )
 
@@ -12704,8 +14150,11 @@ __all__ = [
     "AUDIO_DIRECT_DROP_CONTRACT",
     "AUDIO_REPLACEMENT_IMPORT_CONFIRMATION_CONTRACT",
     "AudioReplacementDropZone",
+    "ApfFieldArtPanel",
     "ApfStudioMainWindow",
+    "ApfTeamLogoPanel",
     "AssetBrowser",
+    "FIELD_ART_COVERED_TARGETS",
     "BaseRatingsPanel",
     "CatalogCategoryPage",
     "DigitalFontPanel",
@@ -12714,6 +14163,7 @@ __all__ = [
     "ImageDropLabel",
     "InspectorBrowser",
     "InspectorCategoryPage",
+    "LogosStudioPage",
     "PRODUCT_NAME",
     "RatingSheetImportPreviewDialog",
     "ScorebugStudioPage",

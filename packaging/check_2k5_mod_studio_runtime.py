@@ -86,15 +86,15 @@ EXPECTED_PRIVATE_STADIUM_TEXTURES = 23_838
 # widening Nfl2k5UnifiedVisualProvider.module_pins would misstate ownership.
 RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
-        "1f694d75ae7bd4d427ffa2a43060f2cad0c812495b99a7415b018ec6d0c3f1cb",
+        "8134bd5420d8996cc7893bb3fdd6e843f7289427a1e590d0f362ec4fee633e24",
     "mod_editor/gui/studio_qt.py":
-        "b3c2ba478b78026a3c5f74eec71ef675706d8cc644eb6bde5465fd1ffd59f282",
+        "5bca8438e5d450a34ae639592d37b60c5c3c4a66ba63a97fc3b5ceac53e79410",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "dccca3f40586ca4ada486f025f37d5bab3dbf1dbfe2c611f285c0c25ce950847",
     "mod_editor/studio/facade.py":
-        "06ad7b55e47531b905d075dc247bef34924fa9f24b4d5a4b71326e5cd9307ccd",
+        "d014367104519787049ea8096214c920c2787cc87ec526c19443ecf70e33ce6e",
     "mod_editor/studio/project_archive.py":
         "fb329802a94581d5ceac227c0050d7eeea8ee8986041c9a7925e41624cc4d601",
     "mod_editor/studio/session.py":

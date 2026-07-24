@@ -20,6 +20,12 @@ import struct
 import sys
 from typing import Any
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from mod_editor.core import platform_compat  # noqa: E402
+
 import nfl_crib_team_photo_png_import as photo
 from nfl_scene_probe import ResourceRecord, decode_resource
 from nfl_scne_inventory import parse_scene
@@ -530,8 +536,8 @@ def compare_images(source_fd: int, output_fd: int, size: int,
     target_end = absolute + len(replacement)
     while position < size:
         request = min(COMPARE_CHUNK, size - position)
-        before = os.pread(source_fd, request, position)
-        after = os.pread(output_fd, request, position)
+        before = platform_compat.pread(source_fd, request, position)
+        after = platform_compat.pread(output_fd, request, position)
         require(len(before) == request and len(after) == request,
                 "short read during full copied-XISO comparison")
         source_hash.update(before)

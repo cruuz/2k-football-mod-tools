@@ -37,6 +37,7 @@ try:
     from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
     from .nfl2k5_stadium_cache import StadiumCacheResult
     from .nfl2k5_stadium_studio import StadiumTexture
+    from . import platform_compat
 except ImportError:
     # The sealed unified provider loads this reviewed file directly from its
     # pinned execution bundle.  Its narrow span compiler needs no product
@@ -78,6 +79,28 @@ except ImportError:
         raise ValidationError(
             "Private Stadium manifests are unavailable in unified-provider mode"
         )
+
+    from types import SimpleNamespace
+
+    def _positional_read(fd: int, count: int, offset: int) -> bytes:
+        # Byte-identical stand-in for platform_compat.pread used only by the
+        # flat sealed-provider closure, which has no package context to import
+        # the sibling from.  That closure runs on the POSIX build host, so the
+        # positional-read primitive is present and used directly; the seek
+        # fallback exists purely so this never regresses another platform.
+        primitive = getattr(os, "pread", None)
+        if primitive is not None:
+            return primitive(fd, count, offset)
+        if count <= 0:
+            return b""
+        restore = os.lseek(fd, 0, os.SEEK_CUR)
+        try:
+            os.lseek(fd, offset, os.SEEK_SET)
+            return os.read(fd, count)
+        finally:
+            os.lseek(fd, restore, os.SEEK_SET)
+
+    platform_compat = SimpleNamespace(pread=_positional_read)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -437,7 +460,7 @@ def _sha256_fd(fd: int, offset: int = 0, length: int | None = None) -> str:
     remaining = length
     while remaining is None or remaining:
         request = COPY_BLOCK if remaining is None else min(COPY_BLOCK, remaining)
-        block = os.pread(fd, request, position)
+        block = platform_compat.pread(fd, request, position)
         if not block:
             break
         digest.update(block)

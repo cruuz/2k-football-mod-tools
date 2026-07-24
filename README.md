@@ -65,18 +65,27 @@ This is a **beta**. What that means here:
 
 ## Requirements
 
-- **Linux** (primary, tested). Python 3, PyQt5, Pillow.
-  ```bash
-  sudo apt install python3 python3-pyqt5 python3-pil
-  ```
+- **Python 3, PyQt5, Pillow** — on Linux, Windows, or macOS.
+  - **Linux** (Debian/Mint/Ubuntu):
+    ```bash
+    sudo apt install python3 python3-pyqt5 python3-pil
+    ```
+  - **Windows / macOS** (the `apt` line above is Linux-only): install Python 3
+    from [python.org](https://www.python.org/downloads/), then:
+    ```bash
+    pip install PyQt5 Pillow
+    ```
 - An emulator to run your modded game:
   - **xemu** for ESPN NFL 2K5.
   - **Xenia Canary** for All-Pro Football 2K8.
 - Your own legally dumped game disc (an `.iso`/XISO, or its extracted folder).
 
-**Windows / macOS:** the editor is Python + PyQt5 + Pillow, which run on those
-platforms, but no launcher/installer is bundled and they are **untested**.
-See the cross-platform notes in the getting-started docs.
+**Platform support.** The automated CI matrix runs the test suite on **Linux,
+Windows, and macOS**. The desktop app itself has been smoke-tested on **Linux**;
+on Windows and macOS the test suite passes in CI but the GUI has not yet been
+manually driven, so treat those two as usable-but-unverified for hands-on
+editing. Double-click launchers are bundled for all three platforms (see
+*Install*).
 
 ---
 
@@ -84,19 +93,29 @@ See the cross-platform notes in the getting-started docs.
 
 ### From a release archive (recommended)
 1. Download the release archive for your editor from the
-   [Releases](../../releases) page and verify it:
+   [Releases](../../releases) page and verify it (on Windows use
+   `certutil -hashfile <archive> SHA256` and compare against the `.sha256`):
    ```bash
    sha256sum -c 2K5-Mod-Studio-*.tar.gz.sha256      # must say OK
    ```
-2. Extract and either install per-user (no `sudo`) or run portable:
-   ```bash
-   tar -xzf 2K5-Mod-Studio-*.tar.gz
-   cd 2K5-Mod-Studio-*/
-   ./install.sh            # app-menu shortcut + command on PATH
-   # or, portable:
-   ./2K5-Mod-Studio.sh
-   ```
-   (APF 2K8 Mod Studio uses `APF-2K8-Mod-Studio.sh`.)
+2. Extract it, then launch for your platform:
+   - **Linux** — install per-user (no `sudo`) or run portable:
+     ```bash
+     tar -xzf 2K5-Mod-Studio-*.tar.gz
+     cd 2K5-Mod-Studio-*/
+     ./install.sh            # app-menu shortcut + command on PATH
+     # or, portable:
+     ./2K5-Mod-Studio.sh
+     ```
+   - **Windows** — extract the archive, then double-click
+     **`2K5-Mod-Studio.bat`**.
+   - **macOS** — extract the archive, then double-click
+     **`2K5-Mod-Studio.command`** (the first time, right-click it and choose
+     **Open** to clear Gatekeeper).
+
+   Each launcher checks for Python 3, PyQt5, and Pillow and shows a plain
+   message if something is missing. (APF 2K8 Mod Studio ships the same three
+   launchers named `APF-2K8-Mod-Studio.sh` / `.bat` / `.command`.)
 
 ### From source
 ```bash

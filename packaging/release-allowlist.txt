@@ -4,6 +4,11 @@
 # A trailing slash permits a directory subtree, while the checker still applies
 # its safe-text, size, symlink, hardlink, forbidden-directory, and suffix gates.
 
+# Cross-platform double-click launchers. Linux uses
+# tools/launch_2k5_mod_studio.sh via the desktop entry.
+2K5-Mod-Studio.bat
+2K5-Mod-Studio.command
+
 mod_editor/__init__.py
 mod_editor/__main__.py
 mod_editor/capabilities/validate_registry.py
@@ -49,6 +54,7 @@ mod_editor/core/nfl_audio.py
 mod_editor/core/nfl_audio_provider.py
 mod_editor/core/output.py
 mod_editor/core/persistence.py
+mod_editor/core/platform_compat.py
 mod_editor/core/presentation_inspection.py
 mod_editor/core/product_catalog.py
 mod_editor/core/providers.py

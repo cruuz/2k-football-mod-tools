@@ -26,6 +26,8 @@ import tempfile
 import time
 from typing import Callable, Mapping
 
+from mod_editor.core import platform_compat
+
 
 PCM16_TEMPLATE_SCHEMA = "apf2k8_audio_pcm16_template/v1"
 EXTERNAL_XMA1_ENCODER_SCHEMA = "apf2k8_external_xma1_encoder/v1"
@@ -298,7 +300,7 @@ def _source_identity(info: os.stat_result) -> tuple[int, int, int, int, int, int
 
 def _read_at(descriptor: int, count: int, offset: int, label: str) -> bytes:
     try:
-        data = os.pread(descriptor, count, offset)
+        data = platform_compat.pread(descriptor, count, offset)
     except OSError as exc:
         raise AudioEncodingError(f"Could not read {label}: {exc}") from exc
     if len(data) != count:
@@ -691,7 +693,7 @@ def _clean_stderr(path: Path) -> str:
                     "The XMA1 encoder diagnostic output changed while opening"
                 )
             wanted = min(2000, opened.st_size)
-            data = os.pread(descriptor, wanted, opened.st_size - wanted)
+            data = platform_compat.pread(descriptor, wanted, opened.st_size - wanted)
             if len(data) != wanted:
                 raise AudioEncodingError(
                     "The XMA1 encoder diagnostic output changed while reading"

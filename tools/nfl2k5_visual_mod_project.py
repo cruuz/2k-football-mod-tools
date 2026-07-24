@@ -29,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from mod_editor.core import platform_compat  # noqa: E402
 from mod_editor.core.model import SourceRecord  # noqa: E402
 from mod_editor.core.errors import ModEditorError  # noqa: E402
 from mod_editor.core.nfl2k5_audio_catalog import (  # noqa: E402
@@ -587,7 +588,7 @@ def read_regular_bounded(path: Path, maximum: int, label: str) \
                 0 < opened.st_size <= maximum,
                 f"{label} pathname/type/size changed")
         payload = common.read_exact(descriptor, 0, opened.st_size)
-        require(not os.pread(descriptor, 1, opened.st_size), f"{label} grew while reading")
+        require(not platform_compat.pread(descriptor, 1, opened.st_size), f"{label} grew while reading")
         current = resolved.stat(follow_symlinks=False)
         require((current.st_dev, current.st_ino, current.st_size) ==
                 (opened.st_dev, opened.st_ino, opened.st_size),
@@ -3245,8 +3246,8 @@ def stream_pair(source_fd: int, output_fd: int, start: int, length: int,
     remaining = length
     while remaining:
         amount = min(HASH_BLOCK, remaining)
-        before = os.pread(source_fd, amount, position)
-        after = os.pread(output_fd, amount, position)
+        before = platform_compat.pread(source_fd, amount, position)
+        after = platform_compat.pread(output_fd, amount, position)
         require(len(before) == amount and len(after) == amount,
                 "short read during union-span verification")
         if require_equal:

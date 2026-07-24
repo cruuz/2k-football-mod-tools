@@ -16,7 +16,6 @@ its result marker and both product manifests are independently checked.
 from __future__ import annotations
 
 from dataclasses import dataclass
-import fcntl
 import hashlib
 import json
 import os
@@ -29,6 +28,7 @@ from typing import Callable, Protocol, Sequence
 
 from .errors import ValidationError
 from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
+from .platform_compat import exclusive_nonblocking_lock, release_lock
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -306,7 +306,7 @@ class Nfl2k5StadiumCacheCoordinator:
         )
         try:
             try:
-                fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                exclusive_nonblocking_lock(lock_fd)
             except BlockingIOError as exc:
                 raise StadiumCacheError(
                     "Stadium Studio assets are already being prepared by another "
@@ -363,7 +363,7 @@ class Nfl2k5StadiumCacheCoordinator:
             return self._validate_result(final, cache.source.sha256)
         finally:
             try:
-                fcntl.flock(lock_fd, fcntl.LOCK_UN)
+                release_lock(lock_fd)
             finally:
                 os.close(lock_fd)
 

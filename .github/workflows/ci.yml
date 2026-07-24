@@ -1,0 +1,283 @@
+# Real cross-platform verification for the 2K Football Mod Tools.
+#
+# This project's defect history comes from being developed blind on one OS. CI
+# is the fix: it runs the full test suite on Linux, macOS, and Windows, checks
+# the capability registry, and re-runs BOTH retail-free release gates so a
+# release can never regress the retail-free guarantee.
+#
+# Safety rules baked in here:
+#   * No secrets, no network beyond pip and apt.
+#   * NOTHING is uploaded as an artifact. This repository is legally required to
+#     stay retail-free, so no build output, staged release, or game-derived byte
+#     ever leaves a runner.
+#   * Read-only GITHUB_TOKEN (permissions: contents: read).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Newer pushes to the same ref cancel stale, still-running jobs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Full test suite on every supported OS x Python. This is the whole point of
+  # the release: prove the tools work on real Windows and macOS, not just Linux.
+  # ---------------------------------------------------------------------------
+  tests:
+    name: tests (${{ matrix.os }}, py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.11', '3.12']
+    env:
+      # Qt needs a display. The offscreen platform plugin gives it one with no
+      # X server / no window, on every OS.
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # PyQt5's xcb/offscreen plugins are dynamically linked against system libs
+      # that GitHub's Ubuntu image does not ship by default. Without these the
+      # very first `import PyQt5.QtWidgets` aborts with an xcb/EGL load error.
+      - name: Install Qt system libraries (Linux only)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            libegl1 \
+            libgl1 \
+            libxkbcommon-x11-0 \
+            libdbus-1-3 \
+            libxcb-icccm4 \
+            libxcb-image0 \
+            libxcb-keysyms1 \
+            libxcb-randr0 \
+            libxcb-render-util0 \
+            libxcb-shape0 \
+            libxcb-xfixes0 \
+            libxcb-xinerama0 \
+            libxcb-cursor0
+
+      - name: Install Python dependencies (PyQt5, Pillow)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install PyQt5 Pillow
+
+      # One bash step for all three OSes (Windows runners ship Git Bash, which
+      # `shell: bash` selects). The suite is NOT unittest-discoverable
+      # (tests/mod_editor has no __init__.py); each file is run as a script with
+      # PYTHONPATH pinned to the repo root ( == ${{ github.workspace }} ).
+      #
+      # test_apf_studio_installer.py is the one exception: it stages a clean
+      # release and runs the packaged runtime gate in a subprocess that inherits
+      # the environment, and an inherited PYTHONPATH=repo makes `mod_editor`
+      # resolve to the repo tree instead of the staged clean package
+      # ("mod_editor is not the tested APF namespace package"). That is a
+      # test-isolation artifact, not a product bug, so that ONE file is run the
+      # way it is designed to run: with PYTHONPATH cleared.
+      - name: Run the mod_editor test suite
+        shell: bash
+        run: |
+          export QT_QPA_PLATFORM=offscreen
+          repo="${GITHUB_WORKSPACE:-$PWD}"
+          cd "$repo" || { echo "cannot cd to repo root: $repo"; exit 2; }
+
+          # Windows runners expose the interpreter as `python`; a bare `python3`
+          # there can hit the Microsoft Store stub.
+          if [ "${RUNNER_OS:-}" = "Windows" ]; then PY=python; else PY=python3; fi
+
+          isolated="test_apf_studio_installer.py"
+          found=0; passed=0; failed=0; total_tests=0; failed_list=""
+
+          for f in tests/mod_editor/test_*.py; do
+            [ -e "$f" ] || continue   # glob did not match -> skip literal pattern
+            found=1
+            name=$(basename "$f")
+            if [ "$name" = "$isolated" ]; then
+              out=$(env -u PYTHONPATH "$PY" "$f" 2>&1); rc=$?
+            else
+              out=$(PYTHONPATH="$repo" "$PY" "$f" 2>&1); rc=$?
+            fi
+
+            n=$(printf '%s\n' "$out" | grep -oE 'Ran [0-9]+ test' | grep -oE '[0-9]+' | tail -1)
+            [ -n "$n" ] && total_tests=$((total_tests + n))
+
+            if [ "$rc" -eq 0 ]; then
+              passed=$((passed + 1))
+              printf 'PASS  %s  (%s tests)\n' "$name" "${n:-?}"
+            else
+              failed=$((failed + 1))
+              failed_list="$failed_list $name"
+              printf 'FAIL  %s  (rc=%s)\n' "$name" "$rc"
+              printf '%s\n' "$out" | tail -40
+              echo "----------------------------------------------------------------------"
+            fi
+          done
+
+          if [ "$found" -eq 0 ]; then
+            echo "no test files found under tests/mod_editor/test_*.py"; exit 2
+          fi
+
+          total_files=$((passed + failed))
+          echo "======================================================================"
+          echo "SUMMARY: files=$total_files passed=$passed failed=$failed tests=$total_tests"
+          if [ "$failed" -ne 0 ]; then
+            echo "FAILED FILES:$failed_list"
+            exit 1
+          fi
+          echo "ALL TEST FILES PASSED"
+
+  # ---------------------------------------------------------------------------
+  # Capability registry validation (stdlib only, no Qt). Cheap gate that keeps
+  # the public capability surface honest.
+  # ---------------------------------------------------------------------------
+  capability-registry:
+    name: capability registry (Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate the capability registry
+        run: python3 mod_editor/capabilities/validate_registry.py
+
+  # ---------------------------------------------------------------------------
+  # Retail-free release gates for BOTH products, staged and run exactly as
+  # documented in packaging/README.md (2K5) and the APF changelog.
+  #
+  # The gates are fail-closed on release COMPLETENESS. The retail-free reviewed
+  # metadata (reports/assets/*.json) and the vendored extract-xiso are shippable
+  # release-build inputs that are intentionally gitignored: the release tarball
+  # is assembled locally and published as a GitHub Release asset, so a normal
+  # lean checkout does not contain them (see .gitignore). This job therefore
+  # detects those inputs and:
+  #   * runs the FULL gate when they are present (any regression fails the job), or
+  #   * SKIPS LOUDLY with an explicit notice when they are absent -- never a
+  #     silent green, and never a weakened check.
+  # ---------------------------------------------------------------------------
+  release-gates:
+    name: retail-free release gates (Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Qt system libraries and desktop-file-utils
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            desktop-file-utils \
+            libegl1 libgl1 libxkbcommon-x11-0 libdbus-1-3 \
+            libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 \
+            libxcb-render-util0 libxcb-shape0 libxcb-xfixes0 libxcb-xinerama0 libxcb-cursor0
+
+      - name: Install Python dependencies (PyQt5, Pillow)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install PyQt5 Pillow
+
+      - name: Stage and run BOTH retail-free release gates
+        shell: bash
+        run: |
+          set -e
+          export QT_QPA_PLATFORM=offscreen
+          repo="${GITHUB_WORKSPACE:-$PWD}"
+          cd "$repo"
+          stage_root="${RUNNER_TEMP:-/tmp}/release-gates"
+          rm -rf "$stage_root"; mkdir -p "$stage_root"
+
+          # Copy exactly the allowlisted paths (matching the checker's own parse:
+          # strip, skip blank/`#`) into a fresh staging tree, outside the
+          # workspace so the run leaves no untracked files behind. Preserves the
+          # executable bit for launchers / the vendored extractor.
+          stage_release() {   # $1 = allowlist path  $2 = destination stage dir
+            ALLOWLIST="$1" DEST="$2" ROOT="$repo" python3 <<'PY'
+          import os, pathlib, shutil, sys
+          root = pathlib.Path(os.environ["ROOT"])
+          allow = pathlib.Path(os.environ["ALLOWLIST"])
+          dest = pathlib.Path(os.environ["DEST"])
+          staged = 0; absent = []
+          for raw in allow.read_text(encoding="utf-8").splitlines():
+              line = raw.strip()
+              if not line or line.startswith("#"):
+                  continue
+              src = root / line
+              if not src.exists():
+                  absent.append(line); continue
+              out = dest / line
+              out.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(src, out)
+              if os.access(src, os.X_OK):
+                  os.chmod(out, os.stat(out).st_mode | 0o111)
+              staged += 1
+          print(f"  staged {staged} files; {len(absent)} declared inputs absent from this checkout")
+          for a in absent:
+              print(f"    absent: {a}")
+          PY
+          }
+
+          # Presence sentinels for the intentionally-gitignored release-build
+          # inputs. If a maintainer commits only a partial set, the gate itself
+          # will still fail-closed and name what is missing.
+          have_2k5=1; [ -f "reports/assets/nfl2k5_audo_import_capacity.json" ] || have_2k5=0
+          have_apf=1; [ -f "tools/vendor/extract-xiso/build/extract-xiso" ] || have_apf=0
+
+          if [ "$have_2k5" -eq 1 ]; then
+            echo "=================== 2K5 Mod Studio retail-free release gate ==================="
+            s="$stage_root/2k5"; mkdir -p "$s"
+            stage_release packaging/release-allowlist.txt "$s"
+            # Exactly the sequence documented in packaging/README.md.
+            python3 packaging/check_2k5_mod_studio_release.py "$s"
+            python3 "$s/packaging/check_2k5_mod_studio_runtime.py"
+            desktop-file-validate "$s/packaging/2k5-mod-studio.desktop"
+            bash -n "$s/tools/launch_2k5_mod_studio.sh"
+            python3 packaging/check_2k5_mod_studio_release.py "$s"
+          else
+            echo "::notice title=2K5 release gate skipped::Retail-free release-build inputs (the eleven reviewed reports/assets/*.json catalogs) are gitignored and absent from this checkout; they are assembled locally into the shipped release tarball. Run this job on a complete release tree to exercise the full 2K5 retail-free gate."
+          fi
+
+          if [ "$have_apf" -eq 1 ]; then
+            echo "=================== APF 2K8 Mod Studio retail-free release gate ==================="
+            a="$stage_root/apf"; mkdir -p "$a"
+            stage_release packaging/apf2k8-release-allowlist.txt "$a"
+            # The two source-free commands from the APF changelog. The optional
+            # --source integration check is deliberately NOT run: it requires a
+            # private retail image, which must never touch a CI runner.
+            python3 packaging/check_apf2k8_mod_studio_release.py "$a"
+            python3 "$a/packaging/check_apf2k8_mod_studio_runtime.py"
+            # Same launcher/desktop hygiene the 2K5 gate documents, for parity.
+            desktop-file-validate "$a/packaging/apf2k8-mod-studio.desktop"
+            bash -n "$a/tools/launch_apf2k8_mod_studio.sh"
+            python3 packaging/check_apf2k8_mod_studio_release.py "$a"
+          else
+            echo "::notice title=APF release gate skipped::The vendored tools/vendor/extract-xiso extractor is gitignored and absent from this checkout; it is bundled locally into the shipped release tarball. Run this job on a complete release tree to exercise the full APF retail-free gate."
+          fi
+
+          if [ "$have_2k5" -eq 0 ] && [ "$have_apf" -eq 0 ]; then
+            echo "Both release gates were skipped: no release-build inputs are present in this lean checkout."
+          else
+            echo "ALL AVAILABLE RETAIL-FREE RELEASE GATES PASSED"
+          fi

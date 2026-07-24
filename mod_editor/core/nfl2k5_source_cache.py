@@ -22,6 +22,7 @@ from typing import Callable
 
 from .errors import ValidationError
 from .model import GameId, SourceRecord
+from . import platform_compat
 from .sources import SourceInspector
 
 
@@ -254,7 +255,7 @@ class Nfl2k5SourceCache:
                     position = entry.byte_offset
                     remaining = entry.size
                     while remaining:
-                        block = os.pread(descriptor, min(COPY_BLOCK, remaining), position)
+                        block = platform_compat.pread(descriptor, min(COPY_BLOCK, remaining), position)
                         if not block:
                             raise ValidationError(f"Short XISO read while indexing pack {name}")
                         view = memoryview(block)

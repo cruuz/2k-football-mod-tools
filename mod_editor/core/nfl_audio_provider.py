@@ -4,20 +4,27 @@ from __future__ import annotations
 
 import ast
 from contextlib import contextmanager
-import fcntl
 import hashlib
 import io
 import json
 import os
 from pathlib import Path
 import re
+import shutil
 import stat
 import sys
+import tempfile
 from typing import Iterator
 import zipfile
 
 from .capabilities import Capability, Classification
 from .errors import OutputRefusedError
+from .platform_compat import (
+    SealIntegrityError,
+    pread,
+    seal_readonly,
+    supports_sealed_memfd,
+)
 from .model import GameId
 from .nfl_audio import (
     NFL_MENU_BACK_AUDIO_FRAME_COUNT,
@@ -52,7 +59,7 @@ class Nfl2k5MenuBackAudioProvider:
         "<retail.xiso.iso> --input-wav <menu-back.wav> --output-xiso "
         "<new.xiso.iso> --manifest <manifest.json>"
     )
-    backend_module_sha256 = "e271c73aeccb76bd480ab9f955bba434cae6391d28ceff3f1a5c7fde46eee450"
+    backend_module_sha256 = "abc005f08124167da503e621ee0a1d6bec16049a90a8ae063e9773c0ed137022"
     verifier_module = "tools/nfl_audo_wav_xiso_verify.py"
     verifier_module_sha256 = "34e4be8c3226e84609765cf94c293ff6318c22577b1455e9d8fea97851231064"
     writer_dependency_module = "tools/nfl_uniform_color_xiso_direct_patch.py"
@@ -460,16 +467,22 @@ class Nfl2k5MenuBackAudioProvider:
                 info.external_attr = (stat.S_IFREG | 0o444) << 16
                 stream.writestr(info, payloads[name])
         raw = archive.getvalue()
-        required = (
-            "memfd_create",
-            "MFD_ALLOW_SEALING",
-            "MFD_CLOEXEC",
-        )
-        if any(not hasattr(os, name) for name in required) or any(
-            not hasattr(fcntl, name)
-            for name in ("F_ADD_SEALS", "F_GET_SEALS", "F_SEAL_GROW", "F_SEAL_SEAL", "F_SEAL_SHRINK", "F_SEAL_WRITE")
-        ):
-            raise ProviderError("NFL audio execution requires sealed anonymous Linux files")
+        if supports_sealed_memfd():
+            with self._sealed_memfd_module(raw, label) as module:
+                yield module
+        else:
+            with self._read_only_file_module(raw, label) as module:
+                yield module
+
+    @contextmanager
+    def _sealed_memfd_module(self, raw: bytes, label: str) -> Iterator[Path]:
+        """Linux path: an anonymous, kernel-write-sealed ``memfd`` closure.
+
+        The staged bytes cannot be modified afterwards even by this process, and
+        the executable is handed to the subprocess through ``/proc/self/fd`` --
+        never a lookup-able pathname an attacker could swap.
+        """
+
         descriptor = os.memfd_create(
             f"nfl2k5-audio-{label}", os.MFD_CLOEXEC | os.MFD_ALLOW_SEALING
         )
@@ -480,18 +493,14 @@ class Nfl2k5MenuBackAudioProvider:
                 if written <= 0:
                     raise ProviderError("NFL audio staged closure write was incomplete")
                 cursor += written
-            os.fchmod(descriptor, 0o400)
-            seals = (
-                fcntl.F_SEAL_GROW
-                | fcntl.F_SEAL_SEAL
-                | fcntl.F_SEAL_SHRINK
-                | fcntl.F_SEAL_WRITE
-            )
-            fcntl.fcntl(descriptor, fcntl.F_ADD_SEALS, seals)
-            if fcntl.fcntl(descriptor, fcntl.F_GET_SEALS) & seals != seals:
-                raise ProviderError("NFL audio staged closure did not acquire every write seal")
+            try:
+                seal_readonly(descriptor, None)
+            except SealIntegrityError as exc:
+                raise ProviderError(
+                    "NFL audio staged closure did not acquire every write seal"
+                ) from exc
             opened = os.fstat(descriptor)
-            staged = os.pread(descriptor, opened.st_size, 0)
+            staged = pread(descriptor, opened.st_size, 0)
             if (
                 opened.st_size != len(raw)
                 or len(staged) != opened.st_size
@@ -508,6 +517,65 @@ class Nfl2k5MenuBackAudioProvider:
             yield proc_path
         finally:
             os.close(descriptor)
+
+    @contextmanager
+    def _read_only_file_module(self, raw: bytes, label: str) -> Iterator[Path]:
+        """Non-Linux path: a private, read-only, hash-verified file closure.
+
+        Without ``memfd`` write-seals there is no kernel guarantee of
+        immutability, so integrity is proved instead by making the file
+        read-only inside a fresh private directory and re-verifying that its
+        bytes still hash to the closure we intended to stage.  The file is
+        removed when the context exits.
+        """
+
+        workdir = Path(tempfile.mkdtemp(prefix=f"nfl2k5-audio-{label}-"))
+        module_path = workdir / "sealed-closure.zip"
+        try:
+            descriptor = os.open(
+                module_path,
+                os.O_RDWR
+                | os.O_CREAT
+                | os.O_EXCL
+                | getattr(os, "O_NOFOLLOW", 0)
+                | getattr(os, "O_CLOEXEC", 0),
+                0o600,
+            )
+            try:
+                cursor = 0
+                while cursor < len(raw):
+                    written = os.write(descriptor, raw[cursor:])
+                    if written <= 0:
+                        raise ProviderError("NFL audio staged closure write was incomplete")
+                    cursor += written
+                seal = seal_readonly(descriptor, os.fspath(module_path))
+                opened = os.fstat(descriptor)
+                staged = pread(descriptor, opened.st_size, 0)
+                if (
+                    seal.sealed
+                    or not seal.read_only
+                    or opened.st_size != len(raw)
+                    or len(staged) != opened.st_size
+                    or seal.sha256 != hashlib.sha256(raw).hexdigest()
+                    or hashlib.sha256(staged).digest() != hashlib.sha256(raw).digest()
+                ):
+                    raise ProviderError("NFL audio sealed closure bytes changed")
+            finally:
+                os.close(descriptor)
+            visible = module_path.lstat()
+            if (
+                not stat.S_ISREG(visible.st_mode)
+                or stat.S_ISLNK(visible.st_mode)
+                or visible.st_size != len(raw)
+            ):
+                raise ProviderError("NFL audio sealed closure identity differs")
+            yield module_path
+        finally:
+            try:
+                module_path.chmod(stat.S_IWRITE | stat.S_IREAD)
+            except OSError:
+                pass
+            shutil.rmtree(workdir, ignore_errors=True)
 
     @staticmethod
     def _absolute(path: Path) -> Path:

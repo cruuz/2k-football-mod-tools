@@ -23,6 +23,8 @@ import stat
 import tempfile
 from typing import Iterable, Mapping, Sequence
 
+from mod_editor.core import platform_compat
+
 
 SCHEMA = "apf2k8_roster_reserve_plan/v1"
 GAME = "apf2k8_xbox360"
@@ -550,7 +552,7 @@ def save_reserve_plan(plan: ReserveRosterPlan, destination: Path) -> Path:
     temporary = Path(temporary_name)
     published = False
     try:
-        os.fchmod(descriptor, 0o600)
+        platform_compat.fchmod(descriptor, 0o600, path=temporary)
         view = memoryview(data)
         while view:
             written = os.write(descriptor, view)

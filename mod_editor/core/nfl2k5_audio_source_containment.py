@@ -58,6 +58,7 @@ from .nfl2k5_ausb_fixed_slots import (
     streaming_slot_write_plan,
 )
 from .nfl2k5_source_cache import SourceCache
+from . import platform_compat
 
 
 EXPECTED_SOURCE_CUE_COUNT = 54_420
@@ -438,7 +439,7 @@ class Nfl2k5AudioSourceContainmentStore:
                 "Private containment-cache directory is not source-confined",
             )
             if create:
-                os.fchmod(parent_fd, 0o700)
+                platform_compat.fchmod(parent_fd, 0o700, path=root / _PRIVATE_PARENT_NAME)
             self._verify_open_parent(
                 root,
                 root_fd,
@@ -660,7 +661,7 @@ class Nfl2k5AudioSourceContainmentStore:
             )
             initial = os.fstat(descriptor)
             staged_identity = (initial.st_dev, initial.st_ino)
-            os.fchmod(descriptor, 0o600)
+            platform_compat.fchmod(descriptor, 0o600, path=path.parent / temporary_basename)
             view = memoryview(payload)
             written = 0
             while written < len(view):

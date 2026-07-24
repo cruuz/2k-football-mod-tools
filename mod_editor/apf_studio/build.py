@@ -5,7 +5,6 @@ from __future__ import annotations
 import ctypes
 from dataclasses import dataclass
 import errno
-import fcntl
 import hashlib
 import json
 import os
@@ -14,6 +13,9 @@ import shutil
 import stat
 import tempfile
 from typing import Callable, Iterable, Mapping
+
+from mod_editor.core import platform_compat
+from mod_editor.core.platform_compat import try_reflink
 
 from .backend import ensure_tools_importable
 from .models import (
@@ -50,7 +52,6 @@ from .uniform_targets import compile_uniform_patch
 
 Progress = Callable[[str, int, int], None]
 BUILD_SCHEMA = "apf2k8_mod_studio_build/v1"
-FICLONE = 0x40049409
 AT_FDCWD = -100
 RENAME_NOREPLACE = 1
 BUILD_SPACE_MARGIN = 512 * 1024 * 1024
@@ -251,21 +252,10 @@ def _copy_regular(
             supplied.st_size,
         ):
             raise BuildError(f"Source identity changed while opening {source.name}")
-        cloned = False
-        try:
-            fcntl.ioctl(destination_fd, FICLONE, source_fd)
-            cloned = True
+        cloned = try_reflink(destination_fd, source_fd)
+        if cloned:
             copied = opened.st_size
             progress("Copying a safe, separate game folder", completed_before + copied, total)
-        except OSError as exc:
-            if exc.errno not in {
-                errno.EOPNOTSUPP,
-                errno.ENOTTY,
-                errno.EXDEV,
-                errno.EINVAL,
-                errno.ENOSYS,
-            }:
-                raise
         if not cloned:
             os.ftruncate(destination_fd, 0)
             os.lseek(source_fd, 0, os.SEEK_SET)
@@ -296,7 +286,7 @@ def _copy_regular(
                     completed_before + copied,
                     total,
                 )
-        os.fchmod(destination_fd, stat.S_IMODE(supplied.st_mode))
+        platform_compat.fchmod(destination_fd, stat.S_IMODE(supplied.st_mode), path=destination)
         os.fsync(destination_fd)
         after_source = os.fstat(source_fd)
         after_destination = os.fstat(destination_fd)
@@ -1427,7 +1417,7 @@ class ApfBuildService:
                 cursor = 0
                 while cursor < span.length:
                     count = min(8 * 1024 * 1024, span.length - cursor)
-                    data = os.pread(
+                    data = platform_compat.pread(
                         descriptor,
                         count,
                         span.pack_offset + cursor,
@@ -2129,7 +2119,7 @@ class ApfBuildService:
                     source_size,
                     pack_name,
                 )
-                source_data = os.pread(source_fd, span.size, span.offset)
+                source_data = platform_compat.pread(source_fd, span.size, span.offset)
                 if len(source_data) != span.size:
                     raise BuildError(
                         f"Could not re-read source span for {span.label}"
@@ -2139,7 +2129,7 @@ class ApfBuildService:
                     and _hash_bytes(source_data) != span.source_span_sha256
                 ):
                     raise BuildError(f"Source span changed for {span.label}")
-                actual = os.pread(output_fd, span.size, span.offset)
+                actual = platform_compat.pread(output_fd, span.size, span.offset)
                 if len(actual) != span.size or actual != span.data:
                     raise BuildError(
                         f"Output {span.label} differs from the compiled edit"
@@ -2175,8 +2165,8 @@ class ApfBuildService:
         cursor = 0
         while cursor < size:
             count = min(8 * 1024 * 1024, size - cursor)
-            before = os.pread(source_fd, count, offset + cursor)
-            after = os.pread(output_fd, count, offset + cursor)
+            before = platform_compat.pread(source_fd, count, offset + cursor)
+            after = platform_compat.pread(output_fd, count, offset + cursor)
             if len(before) != count or before != after:
                 raise BuildError(
                     f"Output {pack_name} changed outside the compiled APF edit spans"
