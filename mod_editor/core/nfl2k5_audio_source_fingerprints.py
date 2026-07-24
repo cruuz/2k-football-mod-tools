@@ -359,11 +359,19 @@ def _private_derived_directory(root: Path, path: Path) -> Path:
 
 
 def _rename_noreplace_at(
-    directory_fd: int,
+    directory: int | platform_compat.DirHandle,
     source_name: str,
     destination_name: str,
 ) -> None:
     """Atomically publish one complete file without replacing a race winner.
+
+    ``directory`` is the pinned private-cache directory.  A raw POSIX directory
+    descriptor is accepted and wrapped in a borrowed
+    :class:`~mod_editor.core.platform_compat.DirHandle`, so the ``dir_fd``-relative
+    publish stays byte-for-byte what it was on Linux and macOS -- and so the
+    atomic-publish tests that patch this helper and drive a raw ``dir_fd`` keep
+    working.  A Windows :class:`~mod_editor.core.platform_compat.DirHandle`, which
+    has no descriptor, re-verifies its realpath pin and publishes by path instead.
 
     The OS-primitive layer lives in :mod:`platform_compat`: Linux keeps
     ``renameat2(RENAME_NOREPLACE)`` byte-for-byte; macOS and any POSIX kernel or
@@ -371,16 +379,21 @@ def _rename_noreplace_at(
     ``FileExistsError`` if the destination exists) then unlink the staging name,
     leaving the same single-link inode ``renameat2`` would have.  A destination
     that already exists is the concurrent-publication signal on every platform.
-    Windows cannot open the directory descriptor this stages through, so it fails
-    closed there with the historical message rather than a silent, clobbering
-    path-based publish.
+    A bare ``dir_fd`` cannot be published through on Windows (no directory
+    descriptor exists there) and still fails closed with the historical message;
+    routed through a Windows handle the same publish succeeds via the re-verified
+    realpath, never a silent clobbering path publish.
     """
 
+    handle = (
+        directory
+        if isinstance(directory, platform_compat.DirHandle)
+        else platform_compat.DirHandle._borrow_posix_fd(directory)
+    )
     try:
-        platform_compat.publish_no_replace(
+        handle.publish_no_replace(
             source_name,
             destination_name,
-            dir_fd=directory_fd,
             is_directory=False,
         )
     except FileExistsError as exc:
@@ -393,14 +406,27 @@ def _rename_noreplace_at(
 
 
 def _unlink_owned_name_at(
-    directory_fd: int,
+    directory: int | platform_compat.DirHandle,
     name: str,
     identity: tuple[int, int],
 ) -> bool:
-    """Best-effort cleanup that never removes a replacement inode."""
+    """Best-effort cleanup that never removes a replacement inode.
 
+    ``directory`` is a raw POSIX directory descriptor -- wrapped in a borrowed
+    :class:`~mod_editor.core.platform_compat.DirHandle` so the ``dir_fd``-relative
+    ``stat``/``unlink`` stay byte-for-byte identical -- or a Windows handle that
+    re-verifies its realpath pin before each step.  Either way a vanished, changed
+    or swapped directory surfaces as :class:`OSError` (a Windows pin refusal
+    subclasses it) and is treated as "nothing owned to remove", exactly as before.
+    """
+
+    handle = (
+        directory
+        if isinstance(directory, platform_compat.DirHandle)
+        else platform_compat.DirHandle._borrow_posix_fd(directory)
+    )
     try:
-        current = os.stat(name, dir_fd=directory_fd, follow_symlinks=False)
+        current = handle.stat(name, follow=False)
     except OSError:
         return False
     if (
@@ -409,7 +435,7 @@ def _unlink_owned_name_at(
     ):
         return False
     try:
-        os.unlink(name, dir_fd=directory_fd)
+        handle.unlink(name)
     except OSError:
         return False
     return True
@@ -793,12 +819,15 @@ class Nfl2k5AudioSourceFingerprintStore:
         platform_compat.harden_private_directory(resolved_parent)
         _private_derived_directory(root, parent)
 
-        directory_fd = os.open(
-            resolved_parent,
-            os.O_RDONLY
-            | getattr(os, "O_DIRECTORY", 0)
-            | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+        directory = platform_compat.open_dir_handle(resolved_parent)
+        # The publish/cleanup helpers take a raw dir_fd on POSIX -- byte-identical,
+        # and the shape the atomic-publish tests patch and drive through
+        # os.open(dir_fd=...) -- or the handle itself on Windows, which has no
+        # descriptor to hand them.
+        dir_ref: int | platform_compat.DirHandle = (
+            directory.dir_fd
+            if directory.mechanism == platform_compat.DIRHANDLE_POSIX_DIR_FD
+            else directory
         )
         descriptor: int | None = None
         temporary_name: str | None = None
@@ -806,13 +835,11 @@ class Nfl2k5AudioSourceFingerprintStore:
         staged_identity: tuple[int, int] | None = None
         published_identity: tuple[int, int] | None = None
         try:
-            parent_opened = os.fstat(directory_fd)
+            parent_opened = directory.fstat()
             parent_named = parent.lstat()
             _require(
                 stat.S_ISDIR(parent_opened.st_mode)
-                and platform_compat.is_owned_by_current_user(
-                    parent_opened, fd=directory_fd
-                )
+                and directory.is_owned_by_current_user(parent_opened)
                 and platform_compat.is_private_directory_mode(parent_opened)
                 and (parent_opened.st_dev, parent_opened.st_ino)
                 == (parent_named.st_dev, parent_named.st_ino),
@@ -838,11 +865,7 @@ class Nfl2k5AudioSourceFingerprintStore:
                 written += count
             os.fsync(descriptor)
             opened = os.fstat(descriptor)
-            named = os.stat(
-                temporary_basename,
-                dir_fd=directory_fd,
-                follow_symlinks=False,
-            )
+            named = directory.stat(temporary_basename, follow=False)
             _require(
                 stat.S_ISREG(opened.st_mode)
                 and platform_compat.is_owned_by_current_user(
@@ -871,16 +894,12 @@ class Nfl2k5AudioSourceFingerprintStore:
             if publication_guard is not None:
                 publication_guard("before_publication")
             _rename_noreplace_at(
-                directory_fd,
+                dir_ref,
                 temporary_basename,
                 path.name,
             )
             published_identity = staged_identity
-            final = os.stat(
-                path.name,
-                dir_fd=directory_fd,
-                follow_symlinks=False,
-            )
+            final = directory.stat(path.name, follow=False)
             _require(
                 stat.S_ISREG(final.st_mode)
                 and platform_compat.is_owned_by_current_user(final, path=path)
@@ -895,7 +914,7 @@ class Nfl2k5AudioSourceFingerprintStore:
             # POSIX issues the same single fsync as before; Windows has no
             # directory-flush primitive at all and the helper reports that
             # instead of letting a skipped flush look like a completed one.
-            platform_compat.fsync_directory_fd(directory_fd)
+            directory.fsync()
             os.lseek(descriptor, 0, os.SEEK_SET)
             confirmed = bytearray()
             while len(confirmed) <= len(payload):
@@ -907,11 +926,7 @@ class Nfl2k5AudioSourceFingerprintStore:
                     break
                 confirmed.extend(block)
             after = os.fstat(descriptor)
-            named_after = os.stat(
-                path.name,
-                dir_fd=directory_fd,
-                follow_symlinks=False,
-            )
+            named_after = directory.stat(path.name, follow=False)
             _require(
                 bytes(confirmed) == payload
                 and stat.S_ISREG(after.st_mode)
@@ -939,32 +954,32 @@ class Nfl2k5AudioSourceFingerprintStore:
                 "Private source-audio inventory changed during publication",
             )
             os.fsync(descriptor)
-            platform_compat.fsync_directory_fd(directory_fd)
+            directory.fsync()
             if publication_guard is not None:
                 publication_guard("after_publication")
         except BaseException:
             if published_identity is not None:
                 if _unlink_owned_name_at(
-                    directory_fd,
+                    dir_ref,
                     path.name,
                     published_identity,
                 ):
-                    platform_compat.fsync_directory_fd(directory_fd)
+                    directory.fsync()
             raise
         finally:
             if descriptor is not None:
                 os.close(descriptor)
             if temporary_basename is not None and staged_identity is not None:
                 if _unlink_owned_name_at(
-                    directory_fd,
+                    dir_ref,
                     temporary_basename,
                     staged_identity,
                 ):
                     try:
-                        platform_compat.fsync_directory_fd(directory_fd)
+                        directory.fsync()
                     except OSError:
                         pass
-            os.close(directory_fd)
+            directory.close()
 
     def _load(
         self,

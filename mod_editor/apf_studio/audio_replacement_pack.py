@@ -62,12 +62,6 @@ MAX_PAYLOAD_FILES = MAX_PACK_ENTRIES
 MAX_ARCHIVE_MEMBERS = MAX_PACK_ENTRIES + 3
 MAX_EXPANDED_PACK_BYTES = 64 * 1024 * 1024 * 1024
 TEMPLATE_PAYLOADS_INCLUDED = False
-_DIRECTORY_OPEN_FLAGS = (
-    os.O_RDONLY
-    | getattr(os, "O_DIRECTORY", 0)
-    | getattr(os, "O_NOFOLLOW", 0)
-    | getattr(os, "O_CLOEXEC", 0)
-)
 
 INPUT_CONTRACT: Mapping[str, object] = {
     "container": "RIFF",
@@ -858,59 +852,95 @@ def _private_staging_directory(prefix: str, label: str) -> Path:
     return staging
 
 
+def _as_handle(
+    parent: int | platform_compat.DirHandle,
+) -> platform_compat.DirHandle:
+    """Adapt a raw POSIX directory descriptor or a DirHandle to a DirHandle.
+
+    The ZIP publish is driven, on POSIX, through a raw directory descriptor --
+    both to keep that transaction byte-identical and because the
+    directory-descriptor race tests exercise it by that exact fd.  A raw
+    descriptor is wrapped in a non-owning borrowed handle so the helper body can
+    address every step through the same DirHandle at-operations the Windows
+    realpath pin uses; on POSIX those borrowed at-operations are the identical
+    ``dir_fd=`` calls, so behaviour is unchanged.  A DirHandle (the Windows path,
+    where no descriptor exists) is used as-is.
+    """
+
+    if isinstance(parent, platform_compat.DirHandle):
+        return parent
+    return platform_compat.DirHandle._borrow_posix_fd(parent)
+
+
+def _scandir_handle(handle: platform_compat.DirHandle):
+    """Enumerate the pinned directory -- POSIX descriptor or Windows realpath.
+
+    POSIX keeps the byte-identical ``os.scandir(<dir_fd>)`` that pins the
+    enumeration to the directory inode the handle holds open, so a swap of the
+    parent path cannot redirect it.  Windows has no directory descriptor, so it
+    scandirs the handle's realpath; the surrounding ``_directory_unchanged`` /
+    ``_path_still_names_directory`` checks -- which re-verify the pin through
+    ``handle.fstat()`` -- bracket the enumeration exactly as they did the
+    descriptor form.  Only ``DirEntry.name`` is consumed at every call site, so
+    the two forms are interchangeable.
+    """
+
+    if handle.mechanism == platform_compat.DIRHANDLE_POSIX_DIR_FD:
+        return os.scandir(handle.dir_fd)
+    return os.scandir(handle.realpath)
+
+
 def _open_pinned_directory(
     path: Path,
     *,
     label: str,
-) -> tuple[int, AudioReplacementDirectoryIdentity, os.stat_result]:
-    """Open one directory and bind later work to that exact inode."""
+) -> tuple[platform_compat.DirHandle, AudioReplacementDirectoryIdentity, os.stat_result]:
+    """Open one directory and bind later work to that exact inode.
+
+    Returns a DirHandle -- a POSIX directory descriptor where one exists
+    (byte-for-byte the pin this used to open by hand), else a realpath+inode pin
+    on Windows -- with the identity/stat snapshots the later path-based re-checks
+    compare against.
+    """
 
     try:
         before = path.stat(follow_symlinks=False)
-        descriptor = os.open(path, _DIRECTORY_OPEN_FLAGS)
+        handle = platform_compat.open_dir_handle(path)
     except OSError as exc:
         raise AudioReplacementPackError(f"Could not open {label}: {exc}") from exc
-    opened = os.fstat(descriptor)
+    opened = handle.fstat()
     if (
         not stat.S_ISDIR(before.st_mode)
         or stat.S_ISLNK(before.st_mode)
         or not stat.S_ISDIR(opened.st_mode)
         or (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino)
     ):
-        os.close(descriptor)
+        handle.close()
         raise AudioReplacementPackError(f"The {label} changed while it was opened")
-    return descriptor, _directory_identity(opened), opened
+    return handle, _directory_identity(opened), opened
 
 
 def _open_directory_at(
-    parent_descriptor: int,
+    parent_handle: platform_compat.DirHandle,
     name: str,
     *,
     label: str,
-) -> tuple[int, AudioReplacementDirectoryIdentity, os.stat_result]:
+) -> tuple[platform_compat.DirHandle, AudioReplacementDirectoryIdentity, os.stat_result]:
     try:
-        before = os.stat(
-            name,
-            dir_fd=parent_descriptor,
-            follow_symlinks=False,
-        )
-        descriptor = os.open(
-            name,
-            _DIRECTORY_OPEN_FLAGS,
-            dir_fd=parent_descriptor,
-        )
+        before = parent_handle.stat(name, follow=False)
+        handle = parent_handle.open_dir(name)
     except OSError as exc:
         raise AudioReplacementPackError(f"Could not open {label}: {exc}") from exc
-    opened = os.fstat(descriptor)
+    opened = handle.fstat()
     if (
         not stat.S_ISDIR(before.st_mode)
         or stat.S_ISLNK(before.st_mode)
         or not stat.S_ISDIR(opened.st_mode)
         or (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino)
     ):
-        os.close(descriptor)
+        handle.close()
         raise AudioReplacementPackError(f"The {label} changed while it was opened")
-    return descriptor, _directory_identity(opened), opened
+    return handle, _directory_identity(opened), opened
 
 
 def _path_still_names_directory(
@@ -929,16 +959,12 @@ def _path_still_names_directory(
 
 
 def _directory_name_has_identity_at(
-    parent_descriptor: int,
+    parent_handle: platform_compat.DirHandle,
     name: str,
     identity: AudioReplacementDirectoryIdentity,
 ) -> bool:
     try:
-        info = os.stat(
-            name,
-            dir_fd=parent_descriptor,
-            follow_symlinks=False,
-        )
+        info = parent_handle.stat(name, follow=False)
     except OSError:
         return False
     return (
@@ -949,7 +975,7 @@ def _directory_name_has_identity_at(
 
 
 def _file_name_is_owned_inode_at(
-    parent_descriptor: int,
+    parent_handle: platform_compat.DirHandle,
     name: str,
     identity: AudioReplacementFileIdentity,
 ) -> bool:
@@ -961,11 +987,7 @@ def _file_name_is_owned_inode_at(
     """
 
     try:
-        info = os.stat(
-            name,
-            dir_fd=parent_descriptor,
-            follow_symlinks=False,
-        )
+        info = parent_handle.stat(name, follow=False)
     except OSError:
         return False
     return (
@@ -977,7 +999,7 @@ def _file_name_is_owned_inode_at(
 
 
 def _file_name_has_content_identity_at(
-    parent_descriptor: int,
+    parent_handle: platform_compat.DirHandle,
     name: str,
     identity: AudioReplacementFileIdentity,
     *,
@@ -993,12 +1015,11 @@ def _file_name_has_content_identity_at(
     ):
         return False
     try:
-        descriptor = os.open(
+        descriptor = parent_handle.open(
             name,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
             | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
-            dir_fd=parent_descriptor,
         )
     except OSError:
         return False
@@ -1033,11 +1054,7 @@ def _file_name_has_content_identity_at(
                 break
             digest.update(block)
         after = os.fstat(descriptor)
-        named_after = os.stat(
-            name,
-            dir_fd=parent_descriptor,
-            follow_symlinks=False,
-        )
+        named_after = parent_handle.stat(name, follow=False)
         if (
             _file_stat_identity(_file_identity(after))
             != _file_stat_identity(candidate)
@@ -1056,14 +1073,14 @@ def _file_name_has_content_identity_at(
 
 
 def _file_name_has_strict_content_identity_at(
-    parent_descriptor: int,
+    parent_handle: platform_compat.DirHandle,
     name: str,
     identity: AudioReplacementFileIdentity,
 ) -> bool:
     """Require unchanged ctime and content before publishing a staging ZIP."""
 
     return _file_name_has_content_identity_at(
-        parent_descriptor,
+        parent_handle,
         name,
         identity,
         tolerate_rename_ctime=False,
@@ -1071,22 +1088,24 @@ def _file_name_has_strict_content_identity_at(
 
 
 def _file_name_has_published_content_identity_at(
-    parent_descriptor: int,
+    parent_handle: platform_compat.DirHandle,
     name: str,
     identity: AudioReplacementFileIdentity,
 ) -> bool:
     """Verify published bytes while allowing only rename's expected ctime change."""
 
     return _file_name_has_content_identity_at(
-        parent_descriptor,
+        parent_handle,
         name,
         identity,
         tolerate_rename_ctime=True,
     )
 
 
-def _write_exclusive_at(directory_descriptor: int, name: str, data: bytes) -> None:
-    descriptor = os.open(
+def _write_exclusive_at(
+    directory_handle: platform_compat.DirHandle, name: str, data: bytes
+) -> None:
+    descriptor = directory_handle.open(
         name,
         os.O_WRONLY
         | os.O_CREAT
@@ -1094,7 +1113,6 @@ def _write_exclusive_at(directory_descriptor: int, name: str, data: bytes) -> No
         | getattr(os, "O_NOFOLLOW", 0)
         | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         0o600,
-        dir_fd=directory_descriptor,
     )
     try:
         view = memoryview(data)
@@ -1131,24 +1149,24 @@ def _zip_directory_info(name: str) -> zipfile.ZipInfo:
 
 
 def _clear_owned_template_directory(
-    directory_descriptor: int,
+    directory_handle: platform_compat.DirHandle,
     payload_directory: str = PAYLOAD_DIRECTORY,
 ) -> None:
     """Best-effort removal of only the three names this writer owns."""
 
     for name in (MANIFEST_FILENAME, README_FILENAME):
         try:
-            os.unlink(name, dir_fd=directory_descriptor)
+            directory_handle.unlink(name)
         except OSError:
             pass
     try:
-        os.rmdir(payload_directory, dir_fd=directory_descriptor)
+        directory_handle.rmdir(payload_directory)
     except OSError:
         pass
 
 
 def _publish_name_noreplace(
-    parent_descriptor: int,
+    parent_handle: platform_compat.DirHandle,
     staging_name: str,
     destination_name: str,
     *,
@@ -1162,16 +1180,15 @@ def _publish_name_noreplace(
     byte-for-byte.  macOS and any POSIX kernel without it publish a file with
     ``os.link`` + unlink and a folder by reserving the name with ``os.mkdir``
     then ``os.rename`` -- both refuse an existing destination
-    (``FileExistsError``).  Windows cannot open the directory descriptor this
-    stages through, so it fails closed there with the historical message rather
-    than a silent, clobbering path-based publish.
+    (``FileExistsError``).  Windows, which has no directory descriptor, publishes
+    by the handle's re-verified realpath (its native no-clobber ``os.rename``)
+    rather than failing closed.
     """
 
     try:
-        platform_compat.publish_no_replace(
+        parent_handle.publish_no_replace(
             staging_name,
             destination_name,
-            dir_fd=parent_descriptor,
             is_directory=is_directory,
         )
     except FileExistsError as exc:
@@ -1184,14 +1201,14 @@ def _publish_name_noreplace(
 
 
 def _publish_directory_noreplace(
-    parent_descriptor: int,
+    parent_handle: platform_compat.DirHandle,
     staging_name: str,
     destination_name: str,
 ) -> None:
     """Atomically publish one complete folder without replacing a race winner."""
 
     _publish_name_noreplace(
-        parent_descriptor,
+        parent_handle,
         staging_name,
         destination_name,
         object_label="folder",
@@ -1200,14 +1217,19 @@ def _publish_directory_noreplace(
 
 
 def _publish_file_noreplace(
-    parent_descriptor: int,
+    parent: int | platform_compat.DirHandle,
     staging_name: str,
     destination_name: str,
 ) -> None:
-    """Atomically publish one complete file without replacing a race winner."""
+    """Atomically publish one complete file without replacing a race winner.
+
+    Accepts a raw POSIX directory descriptor (the byte-identical transaction, and
+    what the directory-descriptor race tests drive it through) or a DirHandle
+    (Windows); :func:`_as_handle` unifies them onto one at-operation.
+    """
 
     _publish_name_noreplace(
-        parent_descriptor,
+        _as_handle(parent),
         staging_name,
         destination_name,
         object_label="ZIP",
@@ -1216,20 +1238,27 @@ def _publish_file_noreplace(
 
 
 def _create_audio_replacement_zip_at(
-    parent_descriptor: int,
+    parent: int | platform_compat.DirHandle,
     staging_name: str,
     *,
     manifest_data: bytes,
     payload_directory: str = PAYLOAD_DIRECTORY,
     readme_data: bytes | None = None,
 ) -> AudioReplacementFileIdentity:
-    """Build and verify one deterministic metadata-only ZIP under a pinned parent."""
+    """Build and verify one deterministic metadata-only ZIP under a pinned parent.
+
+    ``parent`` is a raw POSIX directory descriptor (the byte-identical
+    transaction, and what the directory-descriptor race tests drive it through)
+    or a DirHandle (Windows); :func:`_as_handle` unifies them onto one
+    at-operation for every step.
+    """
 
     if payload_directory not in {PAYLOAD_DIRECTORY, PCM_PAYLOAD_DIRECTORY}:
         raise AudioReplacementPackError("Unknown audio-template payload directory")
     selected_readme = _README.encode("utf-8") if readme_data is None else readme_data
 
-    descriptor = os.open(
+    parent_handle = _as_handle(parent)
+    descriptor = parent_handle.open(
         staging_name,
         os.O_RDWR
         | os.O_CREAT
@@ -1237,7 +1266,6 @@ def _create_audio_replacement_zip_at(
         | getattr(os, "O_NOFOLLOW", 0)
         | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         0o600,
-        dir_fd=parent_descriptor,
     )
     stream = os.fdopen(descriptor, "w+b", closefd=False)
     try:
@@ -1293,12 +1321,12 @@ def _create_audio_replacement_zip_at(
         stream.close()
         os.close(descriptor)
         if failed_identity is not None and _file_name_is_owned_inode_at(
-            parent_descriptor,
+            parent_handle,
             staging_name,
             failed_identity,
         ):
             try:
-                os.unlink(staging_name, dir_fd=parent_descriptor)
+                parent_handle.unlink(staging_name)
             except OSError:
                 pass
         raise
@@ -1357,16 +1385,24 @@ def create_audio_replacement_template(
             "ZIP audio templates need a filename ending in .zip"
         )
     target.parent.mkdir(parents=True, exist_ok=True)
-    parent_descriptor, parent_identity, _parent_info = _open_pinned_directory(
+    parent_handle, parent_identity, _parent_info = _open_pinned_directory(
         target.parent,
         label="replacement-template parent",
     )
     staging_name = f".apf-audio-{uuid4().hex}.tmp"
     if normalized_container == "zip":
+        # Raw descriptor on POSIX so the ZIP publish helpers stay byte-identical
+        # (and the directory-descriptor race tests can drive them through that
+        # fd); the handle itself on Windows, which has no descriptor to hand out.
+        zip_parent = (
+            parent_handle.dir_fd
+            if parent_handle.mechanism == platform_compat.DIRHANDLE_POSIX_DIR_FD
+            else parent_handle
+        )
         staging_identity: AudioReplacementFileIdentity | None = None
         try:
             try:
-                os.stat(target.name, dir_fd=parent_descriptor, follow_symlinks=False)
+                parent_handle.stat(target.name, follow=False)
             except FileNotFoundError:
                 pass
             else:
@@ -1374,13 +1410,13 @@ def create_audio_replacement_template(
             if input_kind == "xma1":
                 # Preserve the exact Alpha.26 v1 call and deterministic archive.
                 staging_identity = _create_audio_replacement_zip_at(
-                    parent_descriptor,
+                    zip_parent,
                     staging_name,
                     manifest_data=manifest_data,
                 )
             else:
                 staging_identity = _create_audio_replacement_zip_at(
-                    parent_descriptor,
+                    zip_parent,
                     staging_name,
                     manifest_data=manifest_data,
                     payload_directory=payload_directory,
@@ -1391,7 +1427,7 @@ def create_audio_replacement_template(
                     "The replacement-template parent changed before publication"
                 )
             if not _file_name_has_strict_content_identity_at(
-                parent_descriptor,
+                parent_handle,
                 staging_name,
                 staging_identity,
             ):
@@ -1399,30 +1435,30 @@ def create_audio_replacement_template(
                     "The audio-template ZIP staging file changed before publication"
                 )
             _publish_file_noreplace(
-                parent_descriptor,
+                zip_parent,
                 staging_name,
                 target.name,
             )
             if not _file_name_has_published_content_identity_at(
-                parent_descriptor,
+                parent_handle,
                 target.name,
                 staging_identity,
             ):
                 raise AudioReplacementPackError(
                     "The audio-template ZIP changed during publication"
                 )
-            # Commit the publish through the directory descriptor this
-            # transaction pinned, never by re-opening the directory by name.
-            # POSIX issues the same single fsync as before; Windows has no
-            # directory-flush primitive and the helper reports that rather than
-            # letting a skipped flush read as a completed one.
-            platform_compat.fsync_directory_fd(parent_descriptor)
+            # Commit the publish through the directory this transaction pinned,
+            # never by re-opening it by name.  POSIX issues the same single fsync
+            # as before; Windows has no directory-flush primitive and the handle
+            # reports that rather than letting a skipped flush read as a
+            # completed one.
+            parent_handle.fsync()
             if not _path_still_names_directory(target.parent, parent_identity):
                 raise AudioReplacementPackError(
                     "The replacement-template parent changed during publication"
                 )
             if not _file_name_has_published_content_identity_at(
-                parent_descriptor,
+                parent_handle,
                 target.name,
                 staging_identity,
             ):
@@ -1433,18 +1469,18 @@ def create_audio_replacement_template(
             if staging_identity is not None:
                 for candidate_name in (staging_name, target.name):
                     if not _file_name_is_owned_inode_at(
-                        parent_descriptor,
+                        parent_handle,
                         candidate_name,
                         staging_identity,
                     ):
                         continue
                     try:
-                        os.unlink(candidate_name, dir_fd=parent_descriptor)
+                        parent_handle.unlink(candidate_name)
                     except OSError:
                         pass
             raise
         finally:
-            os.close(parent_descriptor)
+            parent_handle.close()
         return AudioReplacementTemplateReceipt(
             path=target,
             entry_count=len(entries),
@@ -1453,44 +1489,44 @@ def create_audio_replacement_template(
             input_kind=input_kind,
         )
 
-    staging_descriptor: int | None = None
+    staging_handle: platform_compat.DirHandle | None = None
     staging_identity: AudioReplacementDirectoryIdentity | None = None
     try:
         try:
-            os.stat(target.name, dir_fd=parent_descriptor, follow_symlinks=False)
+            parent_handle.stat(target.name, follow=False)
         except FileNotFoundError:
             pass
         else:
             raise FileExistsError(target)
-        os.mkdir(staging_name, mode=0o700, dir_fd=parent_descriptor)
-        staging_descriptor, staging_identity, _info = _open_directory_at(
-            parent_descriptor,
+        parent_handle.mkdir(staging_name, 0o700)
+        staging_handle, staging_identity, _info = _open_directory_at(
+            parent_handle,
             staging_name,
             label="private replacement-template staging folder",
         )
-        os.mkdir(payload_directory, mode=0o700, dir_fd=staging_descriptor)
-        payload_descriptor, _payload_identity, _payload_info = _open_directory_at(
-            staging_descriptor,
+        staging_handle.mkdir(payload_directory, 0o700)
+        payload_handle, _payload_identity, _payload_info = _open_directory_at(
+            staging_handle,
             payload_directory,
             label="private replacement-template payload folder",
         )
         try:
-            platform_compat.fsync_directory_fd(payload_descriptor)
+            payload_handle.fsync()
         finally:
-            os.close(payload_descriptor)
-        _write_exclusive_at(staging_descriptor, MANIFEST_FILENAME, manifest_data)
+            payload_handle.close()
+        _write_exclusive_at(staging_handle, MANIFEST_FILENAME, manifest_data)
         _write_exclusive_at(
-            staging_descriptor,
+            staging_handle,
             README_FILENAME,
             readme_data,
         )
-        platform_compat.fsync_directory_fd(staging_descriptor)
+        staging_handle.fsync()
         if not _path_still_names_directory(target.parent, parent_identity):
             raise AudioReplacementPackError(
                 "The replacement-template parent changed before publication"
             )
         if not _directory_name_has_identity_at(
-            parent_descriptor,
+            parent_handle,
             staging_name,
             staging_identity,
         ):
@@ -1498,43 +1534,43 @@ def create_audio_replacement_template(
                 "The replacement-template staging folder changed before publication"
             )
         _publish_directory_noreplace(
-            parent_descriptor,
+            parent_handle,
             staging_name,
             target.name,
         )
         if not _directory_name_has_identity_at(
-            parent_descriptor,
+            parent_handle,
             target.name,
             staging_identity,
         ):
             raise AudioReplacementPackError(
                 "The replacement-template staging folder changed during publication"
             )
-        platform_compat.fsync_directory_fd(parent_descriptor)
+        parent_handle.fsync()
         if not _path_still_names_directory(target.parent, parent_identity):
             raise AudioReplacementPackError(
                 "The replacement-template parent changed during publication"
             )
     except BaseException:
-        if staging_descriptor is not None:
-            _clear_owned_template_directory(staging_descriptor, payload_directory)
+        if staging_handle is not None:
+            _clear_owned_template_directory(staging_handle, payload_directory)
         if staging_identity is not None:
             for candidate_name in (staging_name, target.name):
                 if not _directory_name_has_identity_at(
-                    parent_descriptor,
+                    parent_handle,
                     candidate_name,
                     staging_identity,
                 ):
                     continue
                 try:
-                    os.rmdir(candidate_name, dir_fd=parent_descriptor)
+                    parent_handle.rmdir(candidate_name)
                 except OSError:
                     pass
         raise
     finally:
-        if staging_descriptor is not None:
-            os.close(staging_descriptor)
-        os.close(parent_descriptor)
+        if staging_handle is not None:
+            staging_handle.close()
+        parent_handle.close()
     return AudioReplacementTemplateReceipt(
         path=target,
         entry_count=len(entries),
@@ -1545,21 +1581,17 @@ def create_audio_replacement_template(
 
 
 def _read_regular_bounded_at(
-    directory_descriptor: int,
+    directory_handle: platform_compat.DirHandle,
     name: str,
     *,
     maximum: int,
     label: str,
     expected_identity: AudioReplacementFileIdentity | None = None,
 ) -> bytes:
-    """Read one dirfd-relative private file through one stable descriptor."""
+    """Read one pinned-directory-relative private file through one stable descriptor."""
 
     try:
-        before = os.stat(
-            name,
-            dir_fd=directory_descriptor,
-            follow_symlinks=False,
-        )
+        before = directory_handle.stat(name, follow=False)
     except OSError as exc:
         raise AudioReplacementPackError(f"Could not open {label}: {exc}") from exc
     identity = _file_identity(before)
@@ -1577,12 +1609,11 @@ def _read_regular_bounded_at(
         raise AudioReplacementPackError(
             f"The {label} changed, exceeds its size limit, or is not one private regular file"
         )
-    descriptor = os.open(
+    descriptor = directory_handle.open(
         name,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
         | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
-        dir_fd=directory_descriptor,
     )
     try:
         opened = os.fstat(descriptor)
@@ -1630,7 +1661,7 @@ def _read_regular_bounded_at(
 
 
 def _stream_regular_bounded_at(
-    directory_descriptor: int,
+    directory_handle: platform_compat.DirHandle,
     name: str,
     *,
     maximum: int,
@@ -1641,7 +1672,7 @@ def _stream_regular_bounded_at(
     """Hash or privately copy one pinned file without loading it into memory."""
 
     try:
-        before = os.stat(name, dir_fd=directory_descriptor, follow_symlinks=False)
+        before = directory_handle.stat(name, follow=False)
     except OSError as exc:
         raise AudioReplacementPackError(f"Could not open {label}: {exc}") from exc
     identity = _file_identity(before)
@@ -1659,12 +1690,11 @@ def _stream_regular_bounded_at(
         raise AudioReplacementPackError(
             f"The {label} changed, exceeds its size limit, or is not one private regular file"
         )
-    source_descriptor = os.open(
+    source_descriptor = directory_handle.open(
         name,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
         | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
-        dir_fd=directory_descriptor,
     )
     destination_descriptor: int | None = None
     published_destination = False
@@ -1867,14 +1897,14 @@ def _read_zip_member(
 def _extract_zip_member_at(
     archive: zipfile.ZipFile,
     member: zipfile.ZipInfo,
-    directory_descriptor: int,
+    directory_handle: platform_compat.DirHandle,
     name: str,
     *,
     maximum: int,
 ) -> None:
     """Stream one bounded member to one exclusive private regular file."""
 
-    descriptor = os.open(
+    descriptor = directory_handle.open(
         name,
         os.O_WRONLY
         | os.O_CREAT
@@ -1882,7 +1912,6 @@ def _extract_zip_member_at(
         | getattr(os, "O_NOFOLLOW", 0)
         | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         0o600,
-        dir_fd=directory_descriptor,
     )
     try:
         try:
@@ -1925,7 +1954,7 @@ def _extract_zip_member_at(
     except BaseException:
         os.close(descriptor)
         try:
-            os.unlink(name, dir_fd=directory_descriptor)
+            directory_handle.unlink(name)
         except OSError:
             pass
         raise
@@ -2253,15 +2282,15 @@ def _materialized_audio_replacement_pack(
                     f"It needs about {(expanded_total + reserve) / (1024 ** 3):.1f} GiB."
                 )
 
-            root_descriptor, _root_identity, _root_opened = _open_pinned_directory(
+            root_handle, _root_identity, _root_opened = _open_pinned_directory(
                 temporary,
                 label="private audio replacement ZIP extraction folder",
             )
-            payload_descriptor: int | None = None
+            payload_handle: platform_compat.DirHandle | None = None
             try:
-                os.mkdir(payload_directory, mode=0o700, dir_fd=root_descriptor)
-                payload_descriptor, _identity, _opened = _open_directory_at(
-                    root_descriptor,
+                root_handle.mkdir(payload_directory, 0o700)
+                payload_handle, _identity, _opened = _open_directory_at(
+                    root_handle,
                     payload_directory,
                     label=(
                         "private audio replacement ZIP "
@@ -2272,24 +2301,24 @@ def _materialized_audio_replacement_pack(
                     if info.is_dir():
                         continue
                     if name == MANIFEST_FILENAME:
-                        _write_exclusive_at(root_descriptor, name, manifest_data)
+                        _write_exclusive_at(root_handle, name, manifest_data)
                     elif name == README_FILENAME:
-                        _write_exclusive_at(root_descriptor, name, readme_data)
+                        _write_exclusive_at(root_handle, name, readme_data)
                     else:
-                        assert payload_descriptor is not None
+                        assert payload_handle is not None
                         _extract_zip_member_at(
                             archive,
                             info,
-                            payload_descriptor,
+                            payload_handle,
                             PurePosixPath(name).name,
                             maximum=payload_limits[name],
                         )
-                platform_compat.fsync_directory_fd(payload_descriptor)
-                platform_compat.fsync_directory_fd(root_descriptor)
+                payload_handle.fsync()
+                root_handle.fsync()
             finally:
-                if payload_descriptor is not None:
-                    os.close(payload_descriptor)
-                os.close(root_descriptor)
+                if payload_handle is not None:
+                    payload_handle.close()
+                root_handle.close()
 
         after = os.fstat(descriptor)
         if (
@@ -2454,7 +2483,7 @@ def _parse_entry(
 
 def _load_audio_replacement_pack_at(
     selected_root: Path,
-    root_descriptor: int,
+    root_handle: platform_compat.DirHandle,
     root_identity: AudioReplacementDirectoryIdentity,
     root_opened: os.stat_result,
     *,
@@ -2474,7 +2503,7 @@ def _load_audio_replacement_pack_at(
         PCM_PAYLOAD_DIRECTORY,
     }
     discovered_root_names: set[str] = set()
-    with os.scandir(root_descriptor) as iterator:
+    with _scandir_handle(root_handle) as iterator:
         for directory_entry in iterator:
             if directory_entry.name not in recognized_root_names:
                 raise AudioReplacementPackError(
@@ -2489,7 +2518,7 @@ def _load_audio_replacement_pack_at(
             + ", ".join(sorted(missing_contract_names))
         )
     manifest_data = _read_regular_bounded_at(
-        root_descriptor,
+        root_handle,
         MANIFEST_FILENAME,
         maximum=MAX_MANIFEST_BYTES,
         label="audio replacement manifest",
@@ -2528,7 +2557,7 @@ def _load_audio_replacement_pack_at(
         else _ACCEPTED_README_BYTES
     )
     readme_data = _read_regular_bounded_at(
-        root_descriptor,
+        root_handle,
         README_FILENAME,
         maximum=max(map(len, accepted_readmes)),
         label="replacement-pack README",
@@ -2615,8 +2644,8 @@ def _load_audio_replacement_pack_at(
                 f"Audio target shape or alias ownership changed: {entry.asset_id}"
             )
 
-    payload_descriptor, payload_identity, payload_opened = _open_directory_at(
-        root_descriptor,
+    payload_handle, payload_identity, payload_opened = _open_directory_at(
+        root_handle,
         payload_directory,
         label=f"replacement-pack {payload_directory} folder",
     )
@@ -2631,7 +2660,7 @@ def _load_audio_replacement_pack_at(
             # must fail before any user-controlled payload byte is opened,
             # copied, or hashed. The second pass repeats this ceiling so a
             # concurrent insertion can cause at most one bounded refusal.
-            with os.scandir(payload_descriptor) as iterator:
+            with _scandir_handle(payload_handle) as iterator:
                 for supplied_count, _directory_entry in enumerate(
                     iterator, start=1
                 ):
@@ -2642,13 +2671,13 @@ def _load_audio_replacement_pack_at(
                             "authored set."
                         )
             if not _directory_unchanged(
-                payload_opened, os.fstat(payload_descriptor)
+                payload_opened, payload_handle.fstat()
             ):
                 raise AudioReplacementPackError(
                     "The replacement-pack pcm16 folder changed during its "
                     "fail-fast file-count check"
                 )
-        with os.scandir(payload_descriptor) as iterator:
+        with _scandir_handle(payload_handle) as iterator:
             for index, directory_entry in enumerate(iterator, start=1):
                 if index > MAX_PAYLOAD_FILES:
                     raise AudioReplacementPackError(
@@ -2662,10 +2691,9 @@ def _load_audio_replacement_pack_at(
                     )
                 entry = entry_by_name.get(directory_entry.name)
                 try:
-                    info = os.stat(
+                    info = payload_handle.stat(
                         directory_entry.name,
-                        dir_fd=payload_descriptor,
-                        follow_symlinks=False,
+                        follow=False,
                     )
                 except OSError as exc:
                     raise AudioReplacementPackError(
@@ -2695,7 +2723,7 @@ def _load_audio_replacement_pack_at(
                     )
                 if input_kind == "pcm16":
                     content_identity = _stream_regular_bounded_at(
-                        payload_descriptor,
+                        payload_handle,
                         directory_entry.name,
                         maximum=maximum,
                         label=f"{payload_directory}/{directory_entry.name}",
@@ -2703,7 +2731,7 @@ def _load_audio_replacement_pack_at(
                     )
                 else:
                     data = _read_regular_bounded_at(
-                        payload_descriptor,
+                        payload_handle,
                         directory_entry.name,
                         maximum=maximum,
                         label=f"{payload_directory}/{directory_entry.name}",
@@ -2717,13 +2745,13 @@ def _load_audio_replacement_pack_at(
                     selected_root / payload_directory / directory_entry.name,
                     content_identity,
                 )
-        if not _directory_unchanged(payload_opened, os.fstat(payload_descriptor)):
+        if not _directory_unchanged(payload_opened, payload_handle.fstat()):
             raise AudioReplacementPackError(
                 f"The replacement-pack {payload_directory} folder changed "
                 "during enumeration"
             )
     finally:
-        os.close(payload_descriptor)
+        payload_handle.close()
     supplied = tuple(
         SuppliedAudioReplacement(
             entry,
@@ -2749,7 +2777,7 @@ def _load_audio_replacement_pack_at(
             "per import; remove or split this authored set."
         )
     if (
-        not _directory_unchanged(root_opened, os.fstat(root_descriptor))
+        not _directory_unchanged(root_opened, root_handle.fstat())
         or not _path_still_names_directory(selected_root, root_identity)
     ):
         raise AudioReplacementPackError(
@@ -2778,21 +2806,21 @@ def load_audio_replacement_pack(
     """Open and validate one pack through a pinned root-directory descriptor."""
 
     selected_root = _absolute_destination(root)
-    root_descriptor, root_identity, root_opened = _open_pinned_directory(
+    root_handle, root_identity, root_opened = _open_pinned_directory(
         selected_root,
         label="audio replacement-pack folder",
     )
     try:
         return _load_audio_replacement_pack_at(
             selected_root,
-            root_descriptor,
+            root_handle,
             root_identity,
             root_opened,
             expected_source_sha256=expected_source_sha256,
             live_rows=live_rows,
         )
     finally:
-        os.close(root_descriptor)
+        root_handle.close()
 
 
 @contextmanager
@@ -2835,7 +2863,7 @@ def read_audio_replacement_payload(
         raise AudioReplacementPackError(
             "The audio replacement plan has no pinned filesystem identity"
         )
-    root_descriptor, root_identity, root_opened = _open_pinned_directory(
+    root_handle, root_identity, root_opened = _open_pinned_directory(
         plan.root,
         label="audio replacement-pack folder",
     )
@@ -2844,8 +2872,8 @@ def read_audio_replacement_payload(
             raise AudioReplacementPackError(
                 "The audio replacement-pack folder changed after validation"
             )
-        payload_descriptor, payload_identity, payload_opened = _open_directory_at(
-            root_descriptor,
+        payload_handle, payload_identity, payload_opened = _open_directory_at(
+            root_handle,
             PAYLOAD_DIRECTORY,
             label="replacement-pack xma1 folder",
         )
@@ -2855,7 +2883,7 @@ def read_audio_replacement_payload(
                     "The replacement-pack xma1 folder changed after validation"
                 )
             data = _read_regular_bounded_at(
-                payload_descriptor,
+                payload_handle,
                 supplied.entry.replacement_file.name,
                 maximum=maximum,
                 label=(
@@ -2866,15 +2894,15 @@ def read_audio_replacement_payload(
             )
             if not _directory_unchanged(
                 payload_opened,
-                os.fstat(payload_descriptor),
+                payload_handle.fstat(),
             ):
                 raise AudioReplacementPackError(
                     "The replacement-pack xma1 folder changed while a payload was read"
                 )
         finally:
-            os.close(payload_descriptor)
+            payload_handle.close()
         if (
-            not _directory_unchanged(root_opened, os.fstat(root_descriptor))
+            not _directory_unchanged(root_opened, root_handle.fstat())
             or not _path_still_names_directory(plan.root, plan.root_identity)
         ):
             raise AudioReplacementPackError(
@@ -2882,7 +2910,7 @@ def read_audio_replacement_payload(
             )
         return data
     finally:
-        os.close(root_descriptor)
+        root_handle.close()
 
 
 @contextmanager
@@ -2911,7 +2939,7 @@ def materialize_audio_replacement_pcm(
     )
     copied = temporary / "input.wav"
     try:
-        root_descriptor, root_identity, root_opened = _open_pinned_directory(
+        root_handle, root_identity, root_opened = _open_pinned_directory(
             plan.root,
             label="PCM16 replacement-pack folder",
         )
@@ -2920,8 +2948,8 @@ def materialize_audio_replacement_pcm(
                 raise AudioReplacementPackError(
                     "The PCM16 replacement-pack folder changed after validation"
                 )
-            payload_descriptor, payload_identity, payload_opened = _open_directory_at(
-                root_descriptor,
+            payload_handle, payload_identity, payload_opened = _open_directory_at(
+                root_handle,
                 PCM_PAYLOAD_DIRECTORY,
                 label="replacement-pack pcm16 folder",
             )
@@ -2931,7 +2959,7 @@ def materialize_audio_replacement_pcm(
                         "The replacement-pack pcm16 folder changed after validation"
                     )
                 copied_identity = _stream_regular_bounded_at(
-                    payload_descriptor,
+                    payload_handle,
                     supplied.entry.replacement_file.name,
                     maximum=maximum,
                     label=f"PCM16 replacement {supplied.entry.asset_id}",
@@ -2947,22 +2975,22 @@ def materialize_audio_replacement_pcm(
                     )
                 if not _directory_unchanged(
                     payload_opened,
-                    os.fstat(payload_descriptor),
+                    payload_handle.fstat(),
                 ):
                     raise AudioReplacementPackError(
                         "The replacement-pack pcm16 folder changed while a WAV was copied"
                     )
             finally:
-                os.close(payload_descriptor)
+                payload_handle.close()
             if (
-                not _directory_unchanged(root_opened, os.fstat(root_descriptor))
+                not _directory_unchanged(root_opened, root_handle.fstat())
                 or not _path_still_names_directory(plan.root, plan.root_identity)
             ):
                 raise AudioReplacementPackError(
                     "The PCM16 replacement-pack folder changed while a WAV was copied"
                 )
         finally:
-            os.close(root_descriptor)
+            root_handle.close()
         yield copied
     finally:
         # Same reasoning as the ZIP import path: a read-only copy is undeletable

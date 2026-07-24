@@ -344,18 +344,25 @@ class OwnershipCallSiteTests(unittest.TestCase):
             root = Path(name)
             root.chmod(0o700)
             root_fd, parent_fd = store._open_private_parent(root, create=True)
-            os.close(parent_fd)
-            os.close(root_fd)
+            # _open_private_parent now returns DirHandle objects (portable
+            # directory transactions), not raw ints, so close via the handle.
+            parent_fd.close()
+            root_fd.close()
 
-            saved = platform_compat.is_owned_by_current_user
+            # _open_private_parent now performs its ownership check through the
+            # DirHandle method (parent_handle.is_owned_by_current_user), so patch
+            # that method, not the module-level function, to simulate a cache
+            # planted by another user. The check is still enforced (a _require in
+            # _open_private_parent); this only follows the new call path.
+            saved = platform_compat.DirHandle.is_owned_by_current_user
             try:
-                platform_compat.is_owned_by_current_user = (
-                    lambda info, **kwargs: False  # noqa: ARG005
+                platform_compat.DirHandle.is_owned_by_current_user = (
+                    lambda self, info=None: False  # noqa: ARG005
                 )
                 with self.assertRaises(AudioSourceContainmentError):
                     store._open_private_parent(root, create=False)
             finally:
-                platform_compat.is_owned_by_current_user = saved
+                platform_compat.DirHandle.is_owned_by_current_user = saved
 
     def test_no_guarded_module_calls_os_getuid_directly_any_more(self) -> None:
         # A single missed site would raise AttributeError on Windows, which is

@@ -498,15 +498,15 @@ def _audio_safety_error(detail: str) -> ValidationError:
 
 
 def _private_audio_inventory_file(
-    directory_fd: int,
+    directory: platform_compat.DirHandle,
     path: Path,
     label: str,
     maximum_size: int,
 ) -> Path:
-    """Validate one exact owner-only file beneath an already-open dirfd."""
+    """Validate one exact owner-only file beneath an already-pinned directory."""
 
     try:
-        named = os.stat(path.name, dir_fd=directory_fd, follow_symlinks=False)
+        named = directory.stat(path.name, follow=False)
     except FileNotFoundError as exc:
         raise _audio_safety_error(f"{label} is missing at {path}") from exc
     except OSError as exc:
@@ -533,7 +533,7 @@ def _private_audio_inventory_file(
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | \
         getattr(os, "O_CLOEXEC", 0)
     try:
-        descriptor = os.open(path.name, flags | getattr(os, "O_BINARY", 0), dir_fd=directory_fd)
+        descriptor = directory.open(path.name, flags | getattr(os, "O_BINARY", 0))
     except OSError as exc:
         raise _audio_safety_error(
             f"{label} could not be opened safely at {path} ({exc})"
@@ -541,9 +541,7 @@ def _private_audio_inventory_file(
     try:
         opened = os.fstat(descriptor)
         try:
-            named_after = os.stat(
-                path.name, dir_fd=directory_fd, follow_symlinks=False
-            )
+            named_after = directory.stat(path.name, follow=False)
         except OSError as exc:
             raise _audio_safety_error(
                 f"{label} changed while it was being checked at {path}"
@@ -618,22 +616,18 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
             f"the private source-cache path is not canonical at {selected_root}"
         )
 
-    directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | \
-        getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
     try:
-        root_fd = os.open(root, directory_flags)
+        root_handle = platform_compat.open_dir_handle(root)
     except OSError as exc:
         raise _audio_safety_error(
             f"the private source cache could not be opened safely ({exc})"
         ) from exc
-    derived_fd: int | None = None
+    derived_handle: platform_compat.DirHandle | None = None
     try:
-        opened_root = os.fstat(root_fd)
+        opened_root = root_handle.fstat()
         if (
             not stat.S_ISDIR(opened_root.st_mode)
-            or not platform_compat.is_owned_by_current_user(
-                opened_root, fd=root_fd
-            )
+            or not root_handle.is_owned_by_current_user(opened_root)
             or stat.S_IMODE(opened_root.st_mode) != 0o700
             or (opened_root.st_dev, opened_root.st_ino)
             != (named_root.st_dev, named_root.st_ino)
@@ -644,9 +638,7 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
 
         derived = root / AUDIO_SOURCE_FINGERPRINTS_RELATIVE.parent
         try:
-            named_derived = os.stat(
-                derived.name, dir_fd=root_fd, follow_symlinks=False
-            )
+            named_derived = root_handle.stat(derived.name, follow=False)
         except FileNotFoundError as exc:
             raise _audio_safety_error(
                 f"the private derived-cache directory is missing at {derived}"
@@ -668,17 +660,15 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
                 f"mode-0700 non-link directory at {derived}"
             )
         try:
-            derived_fd = os.open(derived.name, directory_flags, dir_fd=root_fd)
+            derived_handle = root_handle.open_dir(derived.name)
         except OSError as exc:
             raise _audio_safety_error(
                 f"the private derived-cache directory could not be opened safely ({exc})"
             ) from exc
-        opened_derived = os.fstat(derived_fd)
+        opened_derived = derived_handle.fstat()
         if (
             not stat.S_ISDIR(opened_derived.st_mode)
-            or not platform_compat.is_owned_by_current_user(
-                opened_derived, fd=derived_fd
-            )
+            or not derived_handle.is_owned_by_current_user(opened_derived)
             or stat.S_IMODE(opened_derived.st_mode) != 0o700
             or (opened_derived.st_dev, opened_derived.st_ino)
             != (named_derived.st_dev, named_derived.st_ino)
@@ -690,22 +680,20 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
             )
 
         fingerprints = _private_audio_inventory_file(
-            derived_fd,
+            derived_handle,
             root / AUDIO_SOURCE_FINGERPRINTS_RELATIVE,
             "the source-audio fingerprint inventory",
             MAX_AUDIO_SOURCE_FINGERPRINTS_BYTES,
         )
         containment = _private_audio_inventory_file(
-            derived_fd,
+            derived_handle,
             root / AUDIO_SOURCE_CONTAINMENT_RELATIVE,
             "the source-audio containment inventory",
             MAX_AUDIO_SOURCE_CONTAINMENT_BYTES,
         )
 
         named_root_after = root.lstat()
-        named_derived_after = os.stat(
-            derived.name, dir_fd=root_fd, follow_symlinks=False
-        )
+        named_derived_after = root_handle.stat(derived.name, follow=False)
         if (
             (named_root_after.st_dev, named_root_after.st_ino)
             != (opened_root.st_dev, opened_root.st_ino)
@@ -717,9 +705,9 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
             )
         return _AudioSafetyInputs(root, fingerprints, containment)
     finally:
-        if derived_fd is not None:
-            os.close(derived_fd)
-        os.close(root_fd)
+        if derived_handle is not None:
+            derived_handle.close()
+        root_handle.close()
 
 
 class Nfl2k5BuildService:

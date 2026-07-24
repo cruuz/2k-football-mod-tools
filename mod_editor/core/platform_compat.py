@@ -1894,6 +1894,746 @@ class PrivateStage:
     link_count: int
 
 
+# ---------------------------------------------------------------------------
+# Portable directory-transaction handles.
+#
+# A seventh platform difference, and the sharpest anti-race one: the private-
+# cache transactions never address their working directory by *path*.  They open
+# the parent directory once as a descriptor
+# (``os.open(dir, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)``) and then
+# perform every step -- ``stat``, ``open``, ``mkdir``, ``link``, ``rename``,
+# ``unlink``, ``rmdir`` -- *relative to that descriptor* with ``dir_fd=``.  That
+# pins the operations to a specific directory **inode**: an attacker who swaps or
+# relinks the parent *path* between a check and the use that follows it (a classic
+# TOCTOU race) still cannot redirect the operation, because the kernel resolves it
+# against the pinned inode, not the mutated name.  It is a real, kernel-enforced
+# anti-race, anti-symlink guarantee.
+#
+# Windows has no directory descriptors at all.  ``os.open`` on a directory raises
+# ``PermissionError`` there, and ``dir_fd=`` is unsupported on every ``os``
+# function (``os.supports_dir_fd`` is empty), so the shipped ``dir_fd`` code
+# cannot even run -- this is the dominant remaining Windows-port failure bucket.
+#
+# :func:`open_dir_handle` returns a :class:`DirHandle` that concentrates the
+# difference so no call site has to know it:
+#
+#   * POSIX: the handle wraps a real directory descriptor opened exactly as the
+#     call sites did by hand, and every at-operation is the identical ``dir_fd=``
+#     call.  The kernel-enforced inode pin is unchanged and Linux/macOS behaviour
+#     is byte-for-byte what it was.
+#   * Windows: there is no descriptor to hold, so the handle pins the directory by
+#     the ``realpath`` captured at open time together with its ``(st_dev, st_ino)``
+#     identity, and on *every* at-operation (a) re-verifies that the pinned path
+#     still resolves to that same inode -- refusing with :class:`DirectoryTransactionRefused`
+#     if it was swapped, relinked or replaced by a symlink -- (b) refuses a
+#     symlinked child (the ``O_NOFOLLOW`` equivalent, since Windows has no such
+#     flag), and (c) performs the step with a path-based, no-clobber atomic
+#     (``os.replace`` / ``os.link`` / ``os.mkdir``).  This is a genuine anti-race
+#     guarantee but a **weaker** one than the descriptor pin: a determined local
+#     attacker who can already write inside the per-user private tree could still
+#     win the sub-millisecond window between the re-verification and the operation.
+#     Which mechanism is in force is reported by :func:`directory_transaction_guarantee`
+#     and :attr:`DirHandle.mechanism`, so callers and tests assert the platform
+#     difference rather than trust it -- exactly as :func:`describe_ownership` and
+#     :func:`privacy_guarantee` already do for their guarantees.
+#
+# Where an at-operation's safety genuinely cannot be provided with the stdlib on
+# Windows -- notably the anonymous ``O_TMPFILE`` stage, which has no named,
+# pinnable equivalent -- the handle offers no method for it at all rather than a
+# silently weaker one, so a caller that needs it must fail closed instead of
+# degrading.  In the same spirit :attr:`DirHandle.dir_fd` raises
+# :class:`DirectoryTransactionUnavailable` rather than hand back a directory
+# descriptor that does not exist, and a directory publish that can only be
+# addressed through a descriptor still raises :class:`NoReplacePublishUnavailable`
+# (see :func:`publish_no_replace`).  Never a silent weaker path that pretends to
+# be as safe.
+# ---------------------------------------------------------------------------
+
+# Names for the two directory-transaction mechanisms.  Public because the
+# guarantee differs between them and every caller or test is entitled to assert
+# which one ran rather than assume.
+DIRHANDLE_POSIX_DIR_FD = "posix-dir-fd"
+DIRHANDLE_WINDOWS_REALPATH_PIN = "windows-realpath-pin"
+
+
+class DirectoryTransactionUnavailable(RuntimeError):
+    """A dir_fd-relative capability does not exist on this platform.
+
+    Raised only when the running platform genuinely cannot provide the primitive
+    with the standard library -- concretely, asking a Windows realpath-pinned
+    handle for the raw directory descriptor it does not have (:attr:`DirHandle.dir_fd`),
+    or for the absolute path of a borrowed descriptor that was adopted without one.
+    It is never raised to signal a merely *weaker* guarantee (that is reported by
+    :func:`directory_transaction_guarantee`), and it is never a silent skip: the
+    caller turns it into its own fail-closed error, exactly as it must when a
+    transaction cannot be expressed safely here.
+    """
+
+
+class DirectoryTransactionRefused(OSError):
+    """A realpath-pinned at-operation refused because the directory changed.
+
+    Raised only on the Windows realpath-pin path, when the per-operation
+    re-verification catches the very race the descriptor pin makes impossible on
+    POSIX: the pinned directory now resolves to a different inode (it was swapped,
+    relinked, deleted or replaced by a symlink), or the child named for the
+    operation is itself a symlink the ``O_NOFOLLOW`` equivalent must not follow.
+
+    It subclasses :class:`OSError` and carries a meaningful ``errno`` -- ``ESTALE``
+    for a changed parent, ``ELOOP`` for a symlinked child, ``ENOTDIR`` for a child
+    that is not the directory it must be -- precisely so it flows into the same
+    ``except OSError`` blocks the shipped transactions already wrap their
+    ``dir_fd=`` calls in, turning into each store's own "directory changed during
+    X" refusal.  Tests can still assert the type and ``errno`` to prove the
+    Windows pin, not a generic fault, did the refusing.
+    """
+
+
+@dataclass(frozen=True)
+class DirectoryTransactionGuarantee:
+    """Exactly what a :class:`DirHandle`'s inode pin means on the running OS.
+
+    Read as a contract, not a description.  ``pinned_by_descriptor`` is the
+    load-bearing field: when it is ``True`` (POSIX) the directory is pinned by an
+    open descriptor and the kernel resolves every at-operation against that inode,
+    so a swap of the parent *path* cannot redirect it -- ``kernel_enforced_against_swap``
+    is ``True`` and there is no residual race.  When it is ``False`` (Windows) the
+    directory is pinned by its ``realpath`` and ``(st_dev, st_ino)`` identity,
+    re-verified before each operation (``reverifies_each_operation``); that refuses
+    an observed swap or a symlinked child but leaves a sub-millisecond
+    check-to-use window a determined local attacker inside the same per-user tree
+    could still win (``residual_local_race`` is ``True``).  ``summary`` states the
+    difference in words for a log line or a support report.
+    """
+
+    mechanism: str
+    pinned_by_descriptor: bool
+    reverifies_each_operation: bool
+    refuses_symlinked_child: bool
+    kernel_enforced_against_swap: bool
+    residual_local_race: bool
+    summary: str
+
+
+def _directory_transaction_guarantee_for(windows: bool) -> DirectoryTransactionGuarantee:
+    """Build the guarantee for a specific platform branch (see :func:`directory_transaction_guarantee`)."""
+
+    if windows:
+        return DirectoryTransactionGuarantee(
+            mechanism=DIRHANDLE_WINDOWS_REALPATH_PIN,
+            pinned_by_descriptor=False,
+            reverifies_each_operation=True,
+            refuses_symlinked_child=True,
+            kernel_enforced_against_swap=False,
+            residual_local_race=True,
+            summary=(
+                "Windows has no directory descriptors, so the directory is pinned "
+                "by its realpath and (st_dev, st_ino) identity, re-verified before "
+                "every at-operation and paired with a symlink refusal on each "
+                "child. That refuses an observed swap, relink or symlinked child, "
+                "but is weaker than the POSIX descriptor pin: a local attacker "
+                "already able to write inside the per-user private tree could win "
+                "the check-to-use window. Confidentiality of that tree still comes "
+                "from the per-user profile-root ACL (see privacy_guarantee)."
+            ),
+        )
+    return DirectoryTransactionGuarantee(
+        mechanism=DIRHANDLE_POSIX_DIR_FD,
+        pinned_by_descriptor=True,
+        reverifies_each_operation=False,
+        refuses_symlinked_child=True,
+        kernel_enforced_against_swap=True,
+        residual_local_race=False,
+        summary=(
+            "POSIX pins the directory by an open O_DIRECTORY|O_NOFOLLOW descriptor; "
+            "the kernel resolves every dir_fd-relative at-operation against that "
+            "inode, so swapping or relinking the parent path cannot redirect it. "
+            "The pin is kernel-enforced with no residual race."
+        ),
+    )
+
+
+def directory_transaction_guarantee() -> DirectoryTransactionGuarantee:
+    """State what a :class:`DirHandle` guarantees on this OS.
+
+    Computed per call (from :data:`IS_WINDOWS`) rather than frozen at import so a
+    test can flip the platform flag and assert the *other* contract without
+    re-importing the module -- exactly as :func:`privacy_guarantee` does.
+    """
+
+    return _directory_transaction_guarantee_for(IS_WINDOWS)
+
+
+def _directory_open_flags(*, nofollow: bool) -> int:
+    """The flags a directory descriptor is opened with, as the call sites had them.
+
+    ``O_RDONLY | O_DIRECTORY | O_CLOEXEC`` plus ``O_NOFOLLOW`` when asked.  On a
+    platform missing any of these (``O_DIRECTORY``/``O_NOFOLLOW`` on Windows) the
+    ``getattr`` yields ``0``, exactly as every shipped ``_DIRECTORY_OPEN_FLAGS``
+    definition does, so this is a faithful single home for that idiom.
+    """
+
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0)
+    if nofollow:
+        flags |= getattr(os, "O_NOFOLLOW", 0)
+    return flags
+
+
+def _reject_non_component(name: str) -> str:
+    """Return ``name`` if it is a single path component, else refuse.
+
+    A Windows at-operation joins the child name onto the pinned realpath, so a
+    name carrying a separator or a ``..`` would escape the pinned directory --
+    the very redirection the descriptor pin makes impossible on POSIX.  Both
+    Windows separators are rejected regardless of the host that runs this (the
+    simulation runs on Linux), so the guard is faithful under test.
+    """
+
+    text = os.fspath(name)
+    if (
+        not text
+        or text in (os.curdir, os.pardir)
+        or "/" in text
+        or "\\" in text
+        or (os.sep and os.sep in text)
+        or (os.altsep and os.altsep in text)
+    ):
+        raise DirectoryTransactionRefused(
+            errno.EINVAL,
+            "a realpath-pinned at-operation needs a single path component",
+            text,
+        )
+    return text
+
+
+class DirHandle:
+    """A directory pinned for a sequence of race-free at-operations.
+
+    Obtain one from :func:`open_dir_handle` (or :meth:`open_dir` for a child) and
+    address every step through it -- :meth:`stat`, :meth:`open`, :meth:`mkdir`,
+    :meth:`link`, :meth:`rename`, :meth:`unlink`, :meth:`rmdir`, plus
+    :meth:`publish_no_replace`, :meth:`fsync` and the ownership helpers -- instead
+    of building a path and hoping it still means what it meant a moment ago.
+
+    On POSIX the handle holds a real directory descriptor and every method is the
+    identical ``dir_fd=``-relative call the shipped transactions made by hand, so
+    Linux and macOS behaviour is byte-for-byte unchanged.  On Windows, where no
+    such descriptor exists, it pins the directory by realpath and inode identity
+    and re-verifies that pin (and refuses a symlinked child) before each step; see
+    the module section header and :func:`directory_transaction_guarantee` for the
+    exact, and deliberately weaker, guarantee that applies there.  :attr:`mechanism`
+    names which one is in force.
+    """
+
+    __slots__ = ("_fd", "_realpath", "_identity", "_windows", "_owns_fd")
+
+    def __init__(
+        self,
+        *,
+        fd: int | None,
+        realpath: str | None,
+        identity: tuple[int, int] | None,
+        windows: bool,
+        owns_fd: bool,
+    ) -> None:
+        self._fd = fd
+        self._realpath = realpath
+        self._identity = identity
+        self._windows = windows
+        self._owns_fd = owns_fd
+
+    # -- construction ------------------------------------------------------
+    @classmethod
+    def _borrow_posix_fd(cls, fd: int) -> "DirHandle":
+        """Wrap an already-open, borrowed POSIX directory descriptor.
+
+        Used by this module's own publish helpers to route their ``dir_fd=`` at-
+        operations through the same abstraction the consumers will, without taking
+        ownership: :meth:`close` will *not* close a borrowed descriptor, and the
+        realpath/identity are unused because the POSIX branch never consults them.
+        POSIX-only by construction -- there is no borrowed handle on Windows,
+        because there is no descriptor to borrow.
+        """
+
+        return cls(
+            fd=fd, realpath=None, identity=None, windows=False, owns_fd=False
+        )
+
+    # -- introspection -----------------------------------------------------
+    @property
+    def mechanism(self) -> str:
+        """:data:`DIRHANDLE_POSIX_DIR_FD` or :data:`DIRHANDLE_WINDOWS_REALPATH_PIN`."""
+
+        return (
+            DIRHANDLE_WINDOWS_REALPATH_PIN
+            if self._windows
+            else DIRHANDLE_POSIX_DIR_FD
+        )
+
+    @property
+    def guarantee(self) -> DirectoryTransactionGuarantee:
+        """The guarantee *this handle* enforces, fixed at the platform it was opened on."""
+
+        return _directory_transaction_guarantee_for(self._windows)
+
+    @property
+    def realpath(self) -> str | None:
+        """The canonical directory this handle is pinned to, or ``None`` if borrowed."""
+
+        return self._realpath
+
+    @property
+    def dir_fd(self) -> int:
+        """The raw POSIX directory descriptor, for helpers not yet routed through the handle.
+
+        POSIX-only escape hatch.  On Windows there is no descriptor, so this fails
+        closed with :class:`DirectoryTransactionUnavailable` rather than hand back
+        a value that cannot exist -- a caller that needs a ``dir_fd`` must be
+        migrated onto the handle's own at-operations instead.
+        """
+
+        if self._windows or self._fd is None:
+            raise DirectoryTransactionUnavailable(
+                "this directory handle has no POSIX descriptor (Windows realpath "
+                "pin, or an already-closed handle); route the operation through "
+                "the handle's own at-methods instead"
+            )
+        return self._fd
+
+    def fspath(self, name: str) -> str:
+        """The absolute path of a child ``name`` under the pinned directory.
+
+        Used where an operation genuinely needs a path -- passing a name to a
+        path-based helper such as :func:`is_owned_by_current_user`.  Refuses a
+        borrowed handle (which has no path) with :class:`DirectoryTransactionUnavailable`,
+        and, like every Windows child reference, refuses a name that is not a
+        single component.
+        """
+
+        if self._realpath is None:
+            raise DirectoryTransactionUnavailable(
+                "a borrowed directory handle has no path to resolve a child against"
+            )
+        return os.path.join(self._realpath, _reject_non_component(name))
+
+    # -- Windows pin re-verification --------------------------------------
+    def _reverify(self) -> None:
+        """Refuse if the pinned directory is no longer the inode we opened (Windows).
+
+        A no-op on POSIX: the descriptor *is* the pin, so nothing is re-checked
+        and the at-operation stays byte-identical.  On Windows this is what stands
+        in for the descriptor -- ``lstat`` the pinned realpath and require it to be
+        the same directory inode, refusing a swap, a relink, a deletion or a
+        symlink planted where the directory was.
+        """
+
+        if not self._windows:
+            return
+        try:
+            current = os.lstat(self._realpath)
+        except OSError as exc:
+            raise DirectoryTransactionRefused(
+                errno.ESTALE,
+                f"the pinned directory is gone or unreadable: {exc}",
+                self._realpath,
+            ) from exc
+        if (
+            stat.S_ISLNK(current.st_mode)
+            or not stat.S_ISDIR(current.st_mode)
+            or (current.st_dev, current.st_ino) != self._identity
+        ):
+            raise DirectoryTransactionRefused(
+                errno.ESTALE,
+                "the pinned directory was swapped, relinked or replaced",
+                self._realpath,
+            )
+
+    def _child(self, name: str) -> str:
+        """Re-verify the pin, then return the validated child path (Windows only)."""
+
+        self._reverify()
+        return os.path.join(self._realpath, _reject_non_component(name))
+
+    def _refuse_symlinked_child(self, child: str, verb: str) -> None:
+        """Refuse a child that is a symlink -- the Windows ``O_NOFOLLOW`` equivalent.
+
+        The residual race the module header documents lives in the gap between
+        this ``lstat`` and the operation that follows; it is genuine but bounded to
+        the per-user private tree, and it is the reason the Windows guarantee is
+        reported as weaker rather than equal.
+        """
+
+        try:
+            info = os.lstat(child)
+        except FileNotFoundError:
+            return
+        if stat.S_ISLNK(info.st_mode):
+            raise DirectoryTransactionRefused(
+                errno.ELOOP,
+                f"refusing to {verb} a symlinked child",
+                child,
+            )
+
+    # -- at-operations -----------------------------------------------------
+    def stat(self, name: str, *, follow: bool = False) -> os.stat_result:
+        """``stat`` a child relative to the pinned directory (``lstat`` when ``follow`` is false).
+
+        POSIX: the identical ``os.stat(name, dir_fd=fd, follow_symlinks=follow)``.
+        Windows: re-verify the pin, then ``os.stat`` the joined child path.  A
+        symlinked child is *not* refused here -- with ``follow=False`` this returns
+        the link's own ``stat`` exactly as the POSIX call does, so the caller's own
+        ``S_ISLNK``/``S_ISREG`` check (which every consumer already performs) still
+        makes the decision.
+        """
+
+        if not self._windows:
+            return os.stat(name, dir_fd=self._fd, follow_symlinks=follow)
+        return os.stat(self._child(name), follow_symlinks=follow)
+
+    def open(self, name: str, flags: int, mode: int = 0o777) -> int:
+        """Open a child relative to the pinned directory; return the file descriptor.
+
+        POSIX: the identical ``os.open(name, flags, mode, dir_fd=fd)`` -- ``flags``
+        already carry the caller's ``O_NOFOLLOW``/``O_BINARY``/``O_EXCL`` as
+        before.  Windows: re-verify the pin, refuse a symlinked child (the
+        ``O_NOFOLLOW`` equivalent, since ``O_NOFOLLOW`` does not exist there), then
+        open the joined child path.  Windows *can* open a file by path -- only a
+        directory descriptor is impossible -- so the returned descriptor is a
+        normal file descriptor the caller reads, ``fstat``s and closes as today.
+        """
+
+        if not self._windows:
+            return os.open(name, flags, mode, dir_fd=self._fd)
+        child = self._child(name)
+        self._refuse_symlinked_child(child, "open")
+        return os.open(child, flags, mode)
+
+    def open_dir(self, name: str, *, nofollow: bool = True) -> "DirHandle":
+        """Open a child *directory* as its own pinned :class:`DirHandle`.
+
+        The portable form of ``os.open(child, O_DIRECTORY..., dir_fd=fd)``.  POSIX
+        opens a real child descriptor relative to this one (the nested-descriptor
+        pattern the containment and build stores use) and returns an owning handle
+        the caller must :meth:`close`.  Windows re-verifies this handle's pin,
+        refuses a symlinked or non-directory child, and returns a realpath-pinned
+        child handle -- never opening a directory descriptor, which the platform
+        forbids.
+        """
+
+        if not self._windows:
+            flags = _directory_open_flags(nofollow=nofollow)
+            child_fd = os.open(name, flags, dir_fd=self._fd)
+            try:
+                info = os.fstat(child_fd)
+            except OSError:
+                os.close(child_fd)
+                raise
+            child_realpath = (
+                os.path.join(self._realpath, os.fspath(name))
+                if self._realpath is not None
+                else None
+            )
+            return DirHandle(
+                fd=child_fd,
+                realpath=child_realpath,
+                identity=(info.st_dev, info.st_ino),
+                windows=False,
+                owns_fd=True,
+            )
+        child = self._child(name)
+        named = os.lstat(child)
+        if nofollow and stat.S_ISLNK(named.st_mode):
+            raise DirectoryTransactionRefused(
+                errno.ELOOP, "refusing to pin a symlinked child directory", child
+            )
+        realpath = os.path.realpath(child)
+        pin = os.lstat(realpath)
+        if stat.S_ISLNK(pin.st_mode) or not stat.S_ISDIR(pin.st_mode):
+            raise DirectoryTransactionRefused(
+                errno.ENOTDIR,
+                "the child to pin is not a real directory",
+                realpath,
+            )
+        return DirHandle(
+            fd=None,
+            realpath=realpath,
+            identity=(pin.st_dev, pin.st_ino),
+            windows=True,
+            owns_fd=False,
+        )
+
+    def mkdir(self, name: str, mode: int = 0o777) -> None:
+        """Create a child directory relative to the pinned directory.
+
+        POSIX: the identical ``os.mkdir(name, mode, dir_fd=fd)``.  Windows:
+        re-verify the pin, then ``os.mkdir`` the joined child path -- which, like
+        POSIX, fails with :class:`FileExistsError` if the name is already taken, so
+        a reserve-then-swap publish keeps its no-clobber guarantee.
+        """
+
+        if not self._windows:
+            os.mkdir(name, mode, dir_fd=self._fd)
+            return
+        os.mkdir(self._child(name), mode)
+
+    def unlink(self, name: str) -> None:
+        """Remove a child name relative to the pinned directory.
+
+        POSIX: the identical ``os.unlink(name, dir_fd=fd)``.  Windows: re-verify
+        the pin, then ``os.unlink`` the joined child path.  ``unlink`` removes the
+        name itself and never follows it, so no symlink refusal is needed here --
+        it matches the POSIX semantics exactly.
+        """
+
+        if not self._windows:
+            os.unlink(name, dir_fd=self._fd)
+            return
+        os.unlink(self._child(name))
+
+    def rmdir(self, name: str) -> None:
+        """Remove a child directory relative to the pinned directory.
+
+        POSIX: the identical ``os.rmdir(name, dir_fd=fd)``.  Windows: re-verify the
+        pin, then ``os.rmdir`` the joined child path.
+        """
+
+        if not self._windows:
+            os.rmdir(name, dir_fd=self._fd)
+            return
+        os.rmdir(self._child(name))
+
+    def rename(self, src: str, dst: str) -> None:
+        """Rename one child onto another within the pinned directory.
+
+        POSIX: the identical ``os.rename(src, dst, src_dir_fd=fd, dst_dir_fd=fd)``,
+        which replaces an existing ``dst`` -- the reserve-then-swap publisher
+        relies on that.  Windows: re-verify the pin, then ``os.replace`` the joined
+        child paths, which is the platform's replace-existing rename.  (Windows
+        ``replace`` refuses a *directory* target that already contains entries;
+        the no-clobber directory publish therefore routes through
+        :meth:`publish_no_replace`, which uses the platform-correct primitive, not
+        through this method.)
+        """
+
+        if not self._windows:
+            os.rename(src, dst, src_dir_fd=self._fd, dst_dir_fd=self._fd)
+            return
+        self._reverify()
+        os.replace(
+            os.path.join(self._realpath, _reject_non_component(src)),
+            os.path.join(self._realpath, _reject_non_component(dst)),
+        )
+
+    def link(self, src: str, dst: str) -> None:
+        """Hard-link one child to a new child name within the pinned directory.
+
+        POSIX: the identical ``os.link(src, dst, src_dir_fd=fd, dst_dir_fd=fd,
+        follow_symlinks=False)`` where the platform exposes that flag (Linux), and
+        the plain ``dir_fd`` link where it does not (macOS ``linkat`` no-follow is
+        unexposed) -- the staged source is a regular file this process just
+        created, never a symlink, so the follow default is exactly as safe.  Either
+        way it fails with :class:`FileExistsError` if ``dst`` exists, the atomic
+        no-clobber publish.  Windows: re-verify the pin, refuse a symlinked source,
+        then ``os.link`` the joined child paths (which also fails if ``dst``
+        exists).
+        """
+
+        if not self._windows:
+            if _LINK_SUPPORTS_FOLLOW_SYMLINKS:
+                os.link(
+                    src,
+                    dst,
+                    src_dir_fd=self._fd,
+                    dst_dir_fd=self._fd,
+                    follow_symlinks=False,
+                )
+            else:
+                os.link(src, dst, src_dir_fd=self._fd, dst_dir_fd=self._fd)
+            return
+        self._reverify()
+        source = os.path.join(self._realpath, _reject_non_component(src))
+        self._refuse_symlinked_child(source, "hard-link")
+        os.link(source, os.path.join(self._realpath, _reject_non_component(dst)))
+
+    # -- higher-level operations routed through platform_compat ------------
+    def publish_no_replace(
+        self,
+        staging: str,
+        destination: str,
+        *,
+        is_directory: bool = False,
+    ) -> NoReplacePublication:
+        """Atomically publish ``staging`` to ``destination``, never overwriting it.
+
+        POSIX: the identical ``publish_no_replace(staging, destination,
+        dir_fd=fd, is_directory=...)`` -- ``renameat2(RENAME_NOREPLACE)`` where the
+        kernel has it, else the link/reserve fallback, all addressed through the
+        pinned descriptor.  Windows: re-verify the pin, then publish by *path*
+        (``publish_no_replace`` with the joined names and no ``dir_fd``), which
+        uses that platform's native no-clobber ``os.rename``.  This is why routing
+        a Windows publish through the handle *succeeds* with the weaker realpath
+        pin where the raw ``dir_fd`` publish had to fail closed: the safety now
+        comes from the re-verified pin, and the atomicity from the path-based
+        rename, instead of from a descriptor that cannot exist.
+        """
+
+        if not self._windows:
+            return publish_no_replace(
+                staging,
+                destination,
+                dir_fd=self._fd,
+                is_directory=is_directory,
+            )
+        self._reverify()
+        return publish_no_replace(
+            os.path.join(self._realpath, _reject_non_component(staging)),
+            os.path.join(self._realpath, _reject_non_component(destination)),
+            dir_fd=None,
+            is_directory=is_directory,
+        )
+
+    def fsync(self) -> bool:
+        """Commit the pinned directory's entries, reporting whether that happened.
+
+        POSIX: :func:`fsync_directory_fd` on the held descriptor -- the same single
+        ``fsync`` the transactions issued -- returning ``True``.  Windows: ``False``
+        without touching the filesystem, because the platform has no directory-flush
+        primitive at all (mirroring :func:`fsync_directory`); the ``False`` keeps
+        the missing guarantee visible instead of letting a skipped flush read as a
+        completed one.
+        """
+
+        if self._windows:
+            return False
+        return fsync_directory_fd(self._fd)
+
+    def describe_ownership(
+        self, info: os.stat_result | None = None
+    ) -> OwnershipCheck:
+        """Ownership of the pinned directory itself, via the platform's own model.
+
+        Routes to :func:`describe_ownership` with the held descriptor on POSIX
+        (race-free) and with the pinned realpath on Windows, so the historical
+        ``is_owned_by_current_user(dir_info, fd=dir_fd)`` call sites keep working
+        on both.  ``info`` is the directory's ``stat`` (only POSIX consults it, for
+        the uid comparison); when omitted it is taken from :meth:`fstat`.
+        """
+
+        resolved = info if info is not None else self.fstat()
+        if self._windows:
+            return describe_ownership(resolved, path=self._realpath)
+        return describe_ownership(resolved, fd=self._fd)
+
+    def is_owned_by_current_user(
+        self, info: os.stat_result | None = None
+    ) -> bool:
+        """Boolean shorthand for :meth:`describe_ownership`."""
+
+        return self.describe_ownership(info).owned
+
+    def fstat(self) -> os.stat_result:
+        """``stat`` the pinned directory itself.
+
+        POSIX: ``os.fstat(fd)`` on the held descriptor, the identical call the
+        transactions used to prove the directory they opened is still the one they
+        verified.  Windows: re-verify the pin, then ``lstat`` the pinned realpath
+        (which has no symlinked final component, so it is the directory's own
+        ``stat``).
+        """
+
+        if not self._windows:
+            return os.fstat(self._fd)
+        self._reverify()
+        return os.lstat(self._realpath)
+
+    # -- lifecycle ---------------------------------------------------------
+    def close(self) -> None:
+        """Close the held descriptor if this handle owns one; idempotent.
+
+        A borrowed handle (:meth:`_borrow_posix_fd`) and a Windows handle own no
+        descriptor, so this is a no-op for them -- it never closes a descriptor the
+        handle did not open.
+        """
+
+        if self._owns_fd and self._fd is not None:
+            os.close(self._fd)
+        self._fd = None
+
+    def __enter__(self) -> "DirHandle":
+        return self
+
+    def __exit__(self, *exc_info: object) -> None:
+        self.close()
+
+    def __repr__(self) -> str:
+        return (
+            f"DirHandle(mechanism={self.mechanism!r}, "
+            f"realpath={self._realpath!r})"
+        )
+
+
+def open_dir_handle(
+    path: str | os.PathLike[str], *, nofollow: bool = True
+) -> DirHandle:
+    """Pin a directory for a sequence of race-free at-operations.
+
+    POSIX: open the directory ``O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC``
+    -- byte-for-byte the descriptor the shipped transactions opened by hand -- and
+    return an owning :class:`DirHandle` the caller must :meth:`~DirHandle.close`
+    (or use as a context manager).
+
+    Windows: the directory cannot be opened as a descriptor, so pin it by realpath
+    and inode identity instead.  ``nofollow`` is honoured against the *named* final
+    component (the ``O_NOFOLLOW`` equivalent): a symlinked directory is refused
+    with :class:`DirectoryTransactionRefused` rather than silently followed.  No
+    directory descriptor is ever opened, so this runs where the raw ``dir_fd`` code
+    raised ``PermissionError``.
+
+    The mechanism in force is :attr:`DirHandle.mechanism`; the guarantee it carries
+    is :func:`directory_transaction_guarantee`.
+    """
+
+    if IS_WINDOWS:
+        original = os.fspath(path)
+        named = os.lstat(original)
+        if nofollow and stat.S_ISLNK(named.st_mode):
+            raise DirectoryTransactionRefused(
+                errno.ELOOP,
+                "refusing to pin a symlinked directory",
+                original,
+            )
+        realpath = os.path.realpath(original)
+        pin = os.lstat(realpath)
+        if stat.S_ISLNK(pin.st_mode) or not stat.S_ISDIR(pin.st_mode):
+            raise DirectoryTransactionRefused(
+                errno.ENOTDIR,
+                "the path to pin is not a real directory",
+                realpath,
+            )
+        return DirHandle(
+            fd=None,
+            realpath=realpath,
+            identity=(pin.st_dev, pin.st_ino),
+            windows=True,
+            owns_fd=False,
+        )
+    flags = _directory_open_flags(nofollow=nofollow)
+    fd = os.open(path, flags)
+    try:
+        info = os.fstat(fd)
+        realpath = os.path.realpath(path)
+    except OSError:
+        os.close(fd)
+        raise
+    return DirHandle(
+        fd=fd,
+        realpath=realpath,
+        identity=(info.st_dev, info.st_ino),
+        windows=False,
+        owns_fd=True,
+    )
+
+
 def _linux_renameat2():
     """Return a typed ``renameat2`` callable on Linux, else ``None``.
 
@@ -1984,17 +2724,15 @@ def _publish_file_via_link(
     # POSIX, incl. macOS: os.link is atomic and fails with FileExistsError if the
     # destination exists -- an atomic no-replace on one filesystem -- then the
     # staging name is removed so the published inode has a single link, exactly
-    # the state renameat2 would have left.
+    # the state renameat2 would have left.  The dir_fd-relative form routes
+    # through a borrowed DirHandle so this module's own publish uses the same
+    # abstraction the consumers will; the borrowed handle issues the identical
+    # dir_fd= link+unlink on POSIX, so Linux/macOS behaviour is byte-for-byte
+    # unchanged.
     if dir_fd is not None:
-        nofollow = {"follow_symlinks": False} if _LINK_SUPPORTS_FOLLOW_SYMLINKS else {}
-        os.link(
-            staging,
-            destination,
-            src_dir_fd=dir_fd,
-            dst_dir_fd=dir_fd,
-            **nofollow,
-        )
-        os.unlink(staging, dir_fd=dir_fd)
+        handle = DirHandle._borrow_posix_fd(dir_fd)
+        handle.link(staging, destination)
+        handle.unlink(staging)
     else:
         os.link(staging, destination)
         os.unlink(staging)
@@ -2034,13 +2772,17 @@ def _publish_directory_via_reserve(
     # placeholder we just created in a single atomic directory rename.  The only
     # entry ever overwritten is our own freshly created empty placeholder; a
     # pre-existing destination is refused before any rename happens.
-    if dir_fd is not None:
-        os.mkdir(destination, POSIX_PRIVATE_DIRECTORY_MODE, dir_fd=dir_fd)
+    # The dir_fd-relative mkdir/rename/rmdir route through a borrowed DirHandle
+    # (byte-identical dir_fd= calls on POSIX), unifying this module's own publish
+    # with the abstraction the consumers use.
+    handle = DirHandle._borrow_posix_fd(dir_fd) if dir_fd is not None else None
+    if handle is not None:
+        handle.mkdir(destination, POSIX_PRIVATE_DIRECTORY_MODE)
     else:
         os.mkdir(destination, POSIX_PRIVATE_DIRECTORY_MODE)
     try:
-        if dir_fd is not None:
-            os.rename(staging, destination, src_dir_fd=dir_fd, dst_dir_fd=dir_fd)
+        if handle is not None:
+            handle.rename(staging, destination)
         else:
             os.rename(staging, destination)
     except BaseException:
@@ -2048,8 +2790,8 @@ def _publish_directory_via_reserve(
         # our own empty directory is removed; if a racer populated it (making the
         # swap fail) the rmdir fails too and the original error propagates.
         try:
-            if dir_fd is not None:
-                os.rmdir(destination, dir_fd=dir_fd)
+            if handle is not None:
+                handle.rmdir(destination)
             else:
                 os.rmdir(destination)
         except OSError:
@@ -2236,6 +2978,8 @@ def publish_private_stage(
 
 
 __all__ = [
+    "DIRHANDLE_POSIX_DIR_FD",
+    "DIRHANDLE_WINDOWS_REALPATH_PIN",
     "IS_LINUX",
     "IS_MACOS",
     "IS_WINDOWS",
@@ -2256,6 +3000,10 @@ __all__ = [
     "WINDOWS_DIRECTORY_MODE",
     "WINDOWS_READ_ONLY_FILE_MODE",
     "WINDOWS_WRITABLE_FILE_MODE",
+    "DirHandle",
+    "DirectoryTransactionGuarantee",
+    "DirectoryTransactionRefused",
+    "DirectoryTransactionUnavailable",
     "DurabilityError",
     "NoReplacePublication",
     "NoReplacePublishUnavailable",
@@ -2270,6 +3018,7 @@ __all__ = [
     "copy_file_range",
     "create_private_directory",
     "describe_ownership",
+    "directory_transaction_guarantee",
     "exclusive_nonblocking_lock",
     "fchmod",
     "fchmod_readonly",
@@ -2285,6 +3034,7 @@ __all__ = [
     "is_private_file_mode",
     "is_within_user_private_root",
     "no_replace_publish_mechanism",
+    "open_dir_handle",
     "open_private_stage",
     "ownership_mechanism",
     "pread",

@@ -45,9 +45,11 @@ from mod_editor.core.nfl2k5_audio_catalog import (
     Nfl2k5StreamingAudioRange,
 )
 from mod_editor.core.platform_compat import (
+    DIRHANDLE_POSIX_DIR_FD,
+    DirHandle,
     NoReplacePublishUnavailable,
     fsync_path,
-    publish_no_replace,
+    open_dir_handle,
 )
 
 from .session import BatchReplaceResult, StudioSession
@@ -274,8 +276,15 @@ def _read_regular_file(path: Path, label: str, *, maximum: int) -> bytes:
     return payload
 
 
-def _open_directory_descriptor(path: Path, label: str) -> int:
-    """Open and identity-pin a real directory for relative filesystem calls."""
+def _open_directory_handle(path: Path, label: str) -> DirHandle:
+    """Open and identity-pin a real directory for relative filesystem calls.
+
+    Returns a :class:`~mod_editor.core.platform_compat.DirHandle` -- a POSIX
+    directory descriptor where one exists (byte-for-byte the pin this used to
+    open by hand) and a realpath+inode pin on Windows, which has no directory
+    descriptor.  Either way the identity is re-checked against the pre-open
+    ``lstat`` so a swap between the check and the open is refused.
+    """
 
     try:
         before = path.lstat()
@@ -286,29 +295,39 @@ def _open_directory_descriptor(path: Path, label: str) -> int:
         f"{label} must be a real directory, not a link: {path}",
     )
     try:
-        descriptor = os.open(
-            path,
-            os.O_RDONLY
-            | getattr(os, "O_DIRECTORY", 0)
-            | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
-        )
+        handle = open_dir_handle(path)
     except OSError as exc:
         raise AudioReplacementPackError(
             f"{label} could not be opened safely: {path}"
         ) from exc
-    opened = os.fstat(descriptor)
+    opened = handle.fstat()
     if not (
         stat.S_ISDIR(opened.st_mode)
         and (opened.st_dev, opened.st_ino) == (before.st_dev, before.st_ino)
     ):
-        os.close(descriptor)
+        handle.close()
         raise AudioReplacementPackError(f"{label} changed while it was opened: {path}")
-    return descriptor
+    return handle
+
+
+def _pinned_staging_root(handle: DirHandle) -> Path:
+    """A filesystem path that resolves to the pinned parent for staged writes.
+
+    POSIX keeps the byte-identical ``/proc/self/fd/<fd>`` anchor, which follows
+    the directory *inode* the handle holds open, so the path-based staging
+    writes below cannot be redirected by a swap of the parent path.  Windows has
+    no such fd-path, so it falls back to the handle's re-verified ``realpath`` --
+    the same realpath pin the handle's own at-operations use there.
+    """
+
+    if handle.mechanism == DIRHANDLE_POSIX_DIR_FD:
+        return Path("/proc/self/fd") / str(handle.dir_fd)
+    assert handle.realpath is not None
+    return Path(handle.realpath)
 
 
 def _rename_noreplace(
-    parent_descriptor: int, source_name: str, destination_name: str
+    parent: int | DirHandle, source_name: str, destination_name: str
 ) -> None:
     """Atomically publish one relative name without replacing an existing entry."""
 
@@ -324,13 +343,16 @@ def _rename_noreplace(
     # macOS and any POSIX kernel without it reserve the destination name with
     # os.mkdir (atomic; refuses an existing name) then os.rename the staged
     # folder onto that placeholder.  A destination that already exists raises
-    # FileExistsError.  Windows cannot open the directory descriptor this stages
-    # through, so it fails closed there rather than clobbering.
+    # FileExistsError.  Windows, which has no directory descriptor, publishes by
+    # the handle's re-verified realpath (its native no-clobber os.rename) rather
+    # than failing closed.  A raw descriptor (the POSIX transaction, and what the
+    # directory-descriptor race test drives this through) is borrowed into a
+    # DirHandle so every branch runs the identical at-operation.
+    handle = parent if isinstance(parent, DirHandle) else DirHandle._borrow_posix_fd(parent)
     try:
-        publish_no_replace(
+        handle.publish_no_replace(
             source_name,
             destination_name,
-            dir_fd=parent_descriptor,
             is_directory=True,
         )
     except FileExistsError as exc:
@@ -1295,16 +1317,24 @@ class AudioReplacementPackService:
             )
         manifest_payload = _canonical_json(document)
 
-        parent_descriptor = _open_directory_descriptor(
+        parent_handle = _open_directory_handle(
             requested.parent, "Audio-template destination folder"
         )
         stage_name = f".{requested.name}.audio-pack-{uuid4().hex}"
         try:
-            os.mkdir(stage_name, mode=0o700, dir_fd=parent_descriptor)
+            parent_handle.mkdir(stage_name, 0o700)
         except BaseException:
-            os.close(parent_descriptor)
+            parent_handle.close()
             raise
-        pinned_parent = Path("/proc/self/fd") / str(parent_descriptor)
+        # Raw descriptor on POSIX so the atomic-publish helper stays byte-identical
+        # (and the directory-descriptor race test can drive it through that fd);
+        # the handle itself on Windows, which has no descriptor to hand out.
+        parent_ref = (
+            parent_handle.dir_fd
+            if parent_handle.mechanism == DIRHANDLE_POSIX_DIR_FD
+            else parent_handle
+        )
+        pinned_parent = _pinned_staging_root(parent_handle)
         stage = pinned_parent / stage_name
         try:
             (stage / REPLACEMENTS_DIRECTORY).mkdir(mode=0o700)
@@ -1326,7 +1356,7 @@ class AudioReplacementPackService:
             progress("Publishing retail-free audio template", len(assets), len(assets) + 1)
             if normalized == "folder":
                 _rename_noreplace(
-                    parent_descriptor, stage_name, requested.name
+                    parent_ref, stage_name, requested.name
                 )
             else:
                 archive_name = f"{stage_name}.zip"
@@ -1359,13 +1389,7 @@ class AudioReplacementPackService:
                             "Metadata template unexpectedly contains a WAV",
                         )
                     try:
-                        os.link(
-                            archive_name,
-                            requested.name,
-                            src_dir_fd=parent_descriptor,
-                            dst_dir_fd=parent_descriptor,
-                            follow_symlinks=False,
-                        )
+                        parent_handle.link(archive_name, requested.name)
                     except FileExistsError as exc:
                         raise AudioReplacementPackError(
                             f"A file already exists there: {requested}"
@@ -1402,7 +1426,7 @@ class AudioReplacementPackService:
         finally:
             if stage.exists():
                 shutil.rmtree(stage, ignore_errors=True)
-            os.close(parent_descriptor)
+            parent_handle.close()
 
     @contextmanager
     def _validated_edited(

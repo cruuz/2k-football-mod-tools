@@ -199,6 +199,28 @@ def _regular_directory(path: Path, label: str) -> Path:
     return path.resolve(strict=True)
 
 
+def _open_pinned_child_file(
+    directory: platform_compat.DirHandle,
+    name: str,
+    flags: int,
+    mode: int = 0o777,
+) -> int:
+    """Open a file inside the descriptor-pinned private directory.
+
+    On POSIX the file is opened with this module's own ``os.open(name, ...,
+    dir_fd=fd)`` -- byte-for-byte the ``dir_fd``-relative call that pins the
+    verified parent inode (so a swapped parent path cannot redirect the open) and
+    that the atomic-publish tests patch to drive a parent-swap race.  Windows has
+    no directory descriptor, so the open is routed through the handle's own
+    realpath-pinned, symlink-refusing :meth:`~platform_compat.DirHandle.open`
+    instead; there is no ``dir_fd`` to hand ``os.open`` there.
+    """
+
+    if directory.mechanism == platform_compat.DIRHANDLE_POSIX_DIR_FD:
+        return os.open(name, flags, mode, dir_fd=directory.dir_fd)
+    return directory.open(name, flags, mode)
+
+
 class Nfl2k5AudioSourceContainmentStore:
     """Strict private-cache loader and no-clobber atomic publisher."""
 
@@ -322,32 +344,22 @@ class Nfl2k5AudioSourceContainmentStore:
         )
         return root
 
-    @staticmethod
-    def _directory_flags() -> int:
-        return (
-            os.O_RDONLY
-            | getattr(os, "O_DIRECTORY", 0)
-            | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0)
-        )
-
     def _verify_open_parent(
         self,
         root: Path,
-        root_fd: int,
-        parent_fd: int,
+        root_handle: platform_compat.DirHandle,
+        parent_handle: platform_compat.DirHandle,
         stage: str,
     ) -> None:
         """Prove both open directory handles still own their canonical names."""
 
         try:
-            root_opened = os.fstat(root_fd)
+            root_opened = root_handle.fstat()
             root_named = root.lstat()
-            parent_opened = os.fstat(parent_fd)
-            parent_named = os.stat(
+            parent_opened = parent_handle.fstat()
+            parent_named = root_handle.stat(
                 _PRIVATE_PARENT_NAME,
-                dir_fd=root_fd,
-                follow_symlinks=False,
+                follow=False,
             )
         except OSError as exc:
             raise AudioSourceContainmentError(
@@ -363,9 +375,7 @@ class Nfl2k5AudioSourceContainmentStore:
             # Ownership is asked through platform_compat rather than compared as
             # a raw uid: Windows reports st_uid == 0 for every file, so an inline
             # comparison would degrade into a check that always passes there.
-            and platform_compat.is_owned_by_current_user(
-                parent_opened, fd=parent_fd
-            )
+            and parent_handle.is_owned_by_current_user(parent_opened)
             and (
                 parent_opened.st_dev,
                 parent_opened.st_ino,
@@ -384,7 +394,7 @@ class Nfl2k5AudioSourceContainmentStore:
         root: Path,
         *,
         create: bool,
-    ) -> tuple[int, int]:
+    ) -> tuple[platform_compat.DirHandle, platform_compat.DirHandle]:
         """Open the source root and its private child without following links."""
 
         _require(
@@ -394,16 +404,15 @@ class Nfl2k5AudioSourceContainmentStore:
             == root / _PRIVATE_PARENT_NAME,
             "Private containment-cache path contract is invalid",
         )
-        flags = self._directory_flags()
         try:
-            root_fd = os.open(root, flags)
+            root_handle = platform_compat.open_dir_handle(root)
         except OSError as exc:
             raise AudioSourceContainmentError(
                 f"Could not open NFL 2K5 source cache safely: {exc}"
             ) from exc
-        parent_fd: int | None = None
+        parent_handle: platform_compat.DirHandle | None = None
         try:
-            root_opened = os.fstat(root_fd)
+            root_opened = root_handle.fstat()
             root_named = root.lstat()
             _require(
                 stat.S_ISDIR(root_opened.st_mode)
@@ -414,54 +423,65 @@ class Nfl2k5AudioSourceContainmentStore:
             )
             if create:
                 try:
-                    os.mkdir(_PRIVATE_PARENT_NAME, 0o700, dir_fd=root_fd)
+                    root_handle.mkdir(_PRIVATE_PARENT_NAME, 0o700)
                 except FileExistsError:
                     pass
             try:
-                parent_fd = os.open(
-                    _PRIVATE_PARENT_NAME,
-                    flags,
-                    dir_fd=root_fd,
-                )
+                parent_handle = root_handle.open_dir(_PRIVATE_PARENT_NAME)
             except OSError as exc:
                 raise AudioSourceContainmentError(
                     "Private containment-cache directory must be a non-link "
                     f"directory: {exc}"
                 ) from exc
-            opened = os.fstat(parent_fd)
-            named = os.stat(
+            opened = parent_handle.fstat()
+            named = root_handle.stat(
                 _PRIVATE_PARENT_NAME,
-                dir_fd=root_fd,
-                follow_symlinks=False,
+                follow=False,
             )
             _require(
                 stat.S_ISDIR(opened.st_mode)
                 and stat.S_ISDIR(named.st_mode)
-                and platform_compat.is_owned_by_current_user(
-                    opened, fd=parent_fd
-                )
+                and parent_handle.is_owned_by_current_user(opened)
                 and (opened.st_dev, opened.st_ino)
                 == (named.st_dev, named.st_ino),
                 "Private containment-cache directory is not source-confined",
             )
             if create:
-                platform_compat.fchmod(parent_fd, 0o700, path=root / _PRIVATE_PARENT_NAME)
+                # POSIX hardens the pinned directory inode to exactly 0o700 through
+                # the descriptor -- byte-for-byte the historical fchmod the mode
+                # assertion in _verify_open_parent depends on.  A Windows handle
+                # holds no descriptor and the platform has no POSIX directory mode
+                # to set: its confidentiality is the per-user profile-root ACL
+                # (platform_compat.privacy_guarantee), so the cosmetic chmod is
+                # correctly a no-op there, exactly as platform_compat.fchmod itself
+                # degrades os.chmod(dir, 0o700) to a no-op on that platform.
+                if (
+                    parent_handle.mechanism
+                    == platform_compat.DIRHANDLE_POSIX_DIR_FD
+                ):
+                    platform_compat.fchmod(
+                        parent_handle.dir_fd,
+                        0o700,
+                        path=root / _PRIVATE_PARENT_NAME,
+                    )
             self._verify_open_parent(
                 root,
-                root_fd,
-                parent_fd,
+                root_handle,
+                parent_handle,
                 "private-cache open",
             )
-            return root_fd, parent_fd
+            return root_handle, parent_handle
         except BaseException:
-            if parent_fd is not None:
-                os.close(parent_fd)
-            os.close(root_fd)
+            if parent_handle is not None:
+                parent_handle.close()
+            root_handle.close()
             raise
 
     @staticmethod
-    def _create_staging_file(directory_fd: int) -> tuple[int, str]:
-        """Create a private temp file relative to the already-verified dirfd."""
+    def _create_staging_file(
+        directory: platform_compat.DirHandle,
+    ) -> tuple[int, str]:
+        """Create a private temp file inside the already-verified directory."""
 
         flags = (
             os.O_RDWR
@@ -473,11 +493,11 @@ class Nfl2k5AudioSourceContainmentStore:
         for _attempt in range(_STAGING_CREATE_ATTEMPTS):
             basename = f"{_STAGING_PREFIX}{os.urandom(16).hex()}{_STAGING_SUFFIX}"
             try:
-                descriptor = os.open(
+                descriptor = _open_pinned_child_file(
+                    directory,
                     basename,
                     flags | getattr(os, "O_BINARY", 0),
                     0o600,
-                    dir_fd=directory_fd,
                 )
             except FileExistsError:
                 continue
@@ -514,7 +534,7 @@ class Nfl2k5AudioSourceContainmentStore:
             path == root / PRIVATE_RELATIVE_PATH,
             "Private containment inventory path escapes its source cache",
         )
-        root_fd, directory_fd = self._open_private_parent(root, create=False)
+        root_handle, directory = self._open_private_parent(root, create=False)
         flags = (
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
@@ -522,11 +542,7 @@ class Nfl2k5AudioSourceContainmentStore:
         )
         try:
             try:
-                named = os.stat(
-                    path.name,
-                    dir_fd=directory_fd,
-                    follow_symlinks=False,
-                )
+                named = directory.stat(path.name, follow=False)
             except FileNotFoundError as exc:
                 raise AudioSourceContainmentError(
                     f"Private containment inventory is missing: {path}"
@@ -543,10 +559,10 @@ class Nfl2k5AudioSourceContainmentStore:
                 "Private containment inventory is outside its serialized-byte cap",
             )
             try:
-                descriptor = os.open(
+                descriptor = _open_pinned_child_file(
+                    directory,
                     path.name,
                     flags | getattr(os, "O_BINARY", 0),
-                    dir_fd=directory_fd,
                 )
             except OSError as exc:
                 raise AudioSourceContainmentError(
@@ -578,11 +594,7 @@ class Nfl2k5AudioSourceContainmentStore:
                 )
                 payload = b"".join(chunks)
                 after = os.fstat(descriptor)
-                named_after = os.stat(
-                    path.name,
-                    dir_fd=directory_fd,
-                    follow_symlinks=False,
-                )
+                named_after = directory.stat(path.name, follow=False)
                 _require(
                     (
                         after.st_dev,
@@ -612,15 +624,15 @@ class Nfl2k5AudioSourceContainmentStore:
                 )
                 self._verify_open_parent(
                     root,
-                    root_fd,
-                    directory_fd,
+                    root_handle,
+                    directory,
                     "private inventory read",
                 )
             finally:
                 os.close(descriptor)
         finally:
-            os.close(directory_fd)
-            os.close(root_fd)
+            directory.close()
+            root_handle.close()
         return self._parse(payload, policy, owners)
 
     def _parse(
@@ -658,14 +670,23 @@ class Nfl2k5AudioSourceContainmentStore:
             path == root / PRIVATE_RELATIVE_PATH,
             "Private containment-cache directory escapes its source cache",
         )
-        root_fd, directory_fd = self._open_private_parent(root, create=True)
+        root_handle, directory = self._open_private_parent(root, create=True)
+        # The publish/cleanup helpers take a raw dir_fd on POSIX -- byte-identical,
+        # and the shape the atomic-publish tests patch and drive through
+        # os.open(dir_fd=...) -- or the handle itself on Windows, which has no
+        # descriptor to hand them.
+        dir_ref: int | platform_compat.DirHandle = (
+            directory.dir_fd
+            if directory.mechanism == platform_compat.DIRHANDLE_POSIX_DIR_FD
+            else directory
+        )
         descriptor: int | None = None
         temporary_basename: str | None = None
         staged_identity: tuple[int, int] | None = None
         published_identity: tuple[int, int] | None = None
         try:
             descriptor, temporary_basename = self._create_staging_file(
-                directory_fd
+                directory
             )
             initial = os.fstat(descriptor)
             staged_identity = (initial.st_dev, initial.st_ino)
@@ -678,11 +699,7 @@ class Nfl2k5AudioSourceContainmentStore:
                 written += count
             os.fsync(descriptor)
             opened = os.fstat(descriptor)
-            named = os.stat(
-                temporary_basename,
-                dir_fd=directory_fd,
-                follow_symlinks=False,
-            )
+            named = directory.stat(temporary_basename, follow=False)
             _require(
                 stat.S_ISREG(opened.st_mode)
                 and platform_compat.is_owned_by_current_user(
@@ -710,24 +727,24 @@ class Nfl2k5AudioSourceContainmentStore:
             )
             self._verify_open_parent(
                 root,
-                root_fd,
-                directory_fd,
+                root_handle,
+                directory,
                 "containment staging",
             )
             publication_guard("before_publication")
             self._verify_open_parent(
                 root,
-                root_fd,
-                directory_fd,
+                root_handle,
+                directory,
                 "pre-publication authorization",
             )
             private_cache._rename_noreplace_at(
-                directory_fd,
+                dir_ref,
                 temporary_basename,
                 path.name,
             )
             published_identity = staged_identity
-            final = os.stat(path.name, dir_fd=directory_fd, follow_symlinks=False)
+            final = directory.stat(path.name, follow=False)
             _require(
                 stat.S_ISREG(final.st_mode)
                 and platform_compat.is_owned_by_current_user(final, path=path)
@@ -739,8 +756,8 @@ class Nfl2k5AudioSourceContainmentStore:
             )
             self._verify_open_parent(
                 root,
-                root_fd,
-                directory_fd,
+                root_handle,
+                directory,
                 "containment publication",
             )
             # Flush the directory descriptor this transaction pinned, rather
@@ -748,7 +765,7 @@ class Nfl2k5AudioSourceContainmentStore:
             # POSIX issues the same single fsync as before; Windows has no
             # directory-flush primitive at all and the helper reports that
             # instead of letting a skipped flush look like a completed one.
-            platform_compat.fsync_directory_fd(directory_fd)
+            directory.fsync()
             os.lseek(descriptor, 0, os.SEEK_SET)
             confirmed = bytearray()
             while len(confirmed) <= len(payload):
@@ -760,11 +777,7 @@ class Nfl2k5AudioSourceContainmentStore:
                     break
                 confirmed.extend(block)
             after = os.fstat(descriptor)
-            named_after = os.stat(
-                path.name,
-                dir_fd=directory_fd,
-                follow_symlinks=False,
-            )
+            named_after = directory.stat(path.name, follow=False)
             _require(
                 bytes(confirmed) == payload
                 and stat.S_ISREG(after.st_mode)
@@ -792,38 +805,38 @@ class Nfl2k5AudioSourceContainmentStore:
                 "Private containment inventory changed during publication",
             )
             os.fsync(descriptor)
-            platform_compat.fsync_directory_fd(directory_fd)
+            directory.fsync()
             publication_guard("after_publication")
             self._verify_open_parent(
                 root,
-                root_fd,
-                directory_fd,
+                root_handle,
+                directory,
                 "post-publication authorization",
             )
         except BaseException:
             if published_identity is not None:
                 if private_cache._unlink_owned_name_at(
-                    directory_fd,
+                    dir_ref,
                     path.name,
                     published_identity,
                 ):
-                    platform_compat.fsync_directory_fd(directory_fd)
+                    directory.fsync()
             raise
         finally:
             if descriptor is not None:
                 os.close(descriptor)
             if temporary_basename is not None and staged_identity is not None:
                 if private_cache._unlink_owned_name_at(
-                    directory_fd,
+                    dir_ref,
                     temporary_basename,
                     staged_identity,
                 ):
                     try:
-                        platform_compat.fsync_directory_fd(directory_fd)
+                        directory.fsync()
                     except OSError:
                         pass
-            os.close(directory_fd)
-            os.close(root_fd)
+            directory.close()
+            root_handle.close()
 
 
 class Nfl2k5AudioSourceContainmentScanner:
