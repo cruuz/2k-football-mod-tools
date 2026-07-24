@@ -80,12 +80,23 @@ This is a **beta**. What that means here:
   - **Xenia Canary** for All-Pro Football 2K8.
 - Your own legally dumped game disc (an `.iso`/XISO, or its extracted folder).
 
-**Platform support.** The automated CI matrix runs the test suite on **Linux,
-Windows, and macOS**. The desktop app itself has been smoke-tested on **Linux**;
-on Windows and macOS the test suite passes in CI but the GUI has not yet been
-manually driven, so treat those two as usable-but-unverified for hands-on
-editing. Double-click launchers are bundled for all three platforms (see
-*Install*).
+**Platform support.** **Linux is the supported platform**: the full test suite
+passes there and the desktop app has been smoke-tested end to end.
+
+**Windows and macOS are a preview.** CI does run the suite on all three
+operating systems, but it does not yet pass on Windows or macOS — the
+cross-platform port is in progress and the GUI has not been manually driven on
+either. Two specific limits if you try them:
+
+- Some of the suite is expected to fail on any CI runner regardless of OS,
+  because this repository deliberately ships no game data and no generated
+  reports.
+- The bundled `extract-xiso` extractor is a Linux binary, so on Windows the
+  **ISO** path will not work — point the editor at an **already-extracted game
+  folder** instead.
+
+Double-click launchers are bundled for all three platforms (see *Install*), but
+treat anything other than Linux as experimental for now.
 
 ---
 

@@ -46,10 +46,14 @@ Extract the archive and double-click **`APF-2K8-Mod-Studio.command`** (the first
 time, right-click it and choose **Open** to clear Gatekeeper). It resolves its
 own folder and runs the same dependency check.
 
-**Platform support.** The automated CI matrix runs the test suite on Linux,
-Windows, and macOS. The desktop app has been smoke-tested on Linux; on Windows
-and macOS the test suite passes in CI but the GUI has not yet been manually
-driven.
+**Platform support.** **Linux is the supported platform** — the full test suite
+passes there and the app has been smoke-tested end to end. **Windows and macOS
+are a preview:** CI runs the suite on all three, but it does not yet pass on
+Windows or macOS, and the GUI has not been manually driven on either.
+
+On Windows specifically, the bundled `extract-xiso` extractor is a Linux binary,
+so the **ISO** path will not work — load an **already-extracted game folder**
+instead.
 
 Audio export works without a desktop player. For the Audio tab's **Play/Stop**
 button, install any one of `ffplay` (from `ffmpeg`), `paplay`, or `aplay`. On

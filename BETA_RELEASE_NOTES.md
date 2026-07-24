@@ -71,8 +71,11 @@ pixels/audio, private paths, symlinks, or undeclared files) and a
   per-cue loop/gain/pan/mixer editing, playbook route drawing/import, franchise
   rookie-draft AI variety, save editing, and uniform pixel→body-region UV
   decoding.
-- **Windows / macOS** are untested (the code is cross-platform Python + PyQt5,
-  but only Linux launchers/installers are provided).
+- **Windows / macOS are a preview.** Launchers are now bundled for all three
+  platforms and CI runs the suite on all three, but it does not yet pass on
+  Windows or macOS and neither GUI has been manually driven. Linux is the
+  supported platform. On Windows the bundled `extract-xiso` extractor is a Linux
+  binary, so load an already-extracted game folder rather than an ISO.
 
 ---
 
