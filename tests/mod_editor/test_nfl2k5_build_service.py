@@ -23,6 +23,9 @@ from mod_editor.core.nfl2k5_build_service import (
     CommandResult,
     Nfl2k5BuildError,
     Nfl2k5BuildService,
+    SubprocessBuildCommandRunner,
+    adopt_process_group,
+    use_suspended_launch,
 )
 from mod_editor.core.nfl2k5_source_cache import (
     INVENTORY_SIZE,
@@ -712,6 +715,139 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
             self.assertNotEqual(backend_project, session.written)
             self.assertEqual(backend_project.parent, session.written.parent)
             self.assertFalse(backend_project.exists())
+
+
+class FakeJobGroup:
+    """A stand-in for the Win32 job object, answering a scripted count."""
+
+    def __init__(self, counts: list[int | None]) -> None:
+        self._counts = list(counts)
+        self.terminate_calls = 0
+        self.closed = False
+
+    def terminate(self) -> bool:
+        self.terminate_calls += 1
+        return True
+
+    def active_process_count(self) -> int | None:
+        return self._counts.pop(0) if len(self._counts) > 1 else self._counts[0]
+
+    def close(self) -> None:
+        self.closed = True
+
+
+class FakeChild:
+    """A stand-in for ``Popen`` exposing only what the teardown path touches."""
+
+    def __init__(self, alive: bool, dies_when_killed: bool = True) -> None:
+        self.alive = alive
+        self.dies_when_killed = dies_when_killed
+        self.kill_calls = 0
+        self.communicate_calls = 0
+        self.pid = -1
+
+    def poll(self) -> int | None:
+        return None if self.alive else 0
+
+    def kill(self) -> None:
+        self.kill_calls += 1
+        if self.dies_when_killed:
+            self.alive = False
+
+    def communicate(self, timeout: float | None = None) -> tuple[str, str]:
+        self.communicate_calls += 1
+        return "", ""
+
+
+class WindowsBackendTeardownTests(unittest.TestCase):
+    """The Windows teardown, exercised on any host, without a Windows kernel.
+
+    ``os.killpg`` and ``signal.SIGKILL`` do not exist on Windows, so the POSIX
+    teardown raised ``AttributeError`` on its very first call, stopped nothing,
+    and left a runaway backend writing into the staging directory the caller was
+    about to remove.  Its Job Object replacement has to keep three outcomes
+    distinct: a group that drained, a genuine observed survivor, and an
+    accounting query that could not be read at all -- which is not evidence of a
+    survivor and must never be reported as one.
+    """
+
+    def _windows_teardown(self, process: object, group: object) -> None:
+        with (
+            patch.object(platform_compat, "IS_WINDOWS", True),
+            patch(
+                "mod_editor.core.nfl2k5_build_service.PROCESS_STOP_GRACE_SECONDS",
+                0.01,
+            ),
+            patch("mod_editor.core.nfl2k5_build_service.PROCESS_POLL_SECONDS", 0.0),
+            # The POSIX group calls do not exist on Windows; a single one left
+            # on that path is the defect this replaces, so fail loudly on it.
+            patch.object(
+                os,
+                "killpg",
+                create=True,
+                side_effect=AssertionError("POSIX killpg ran on the Windows branch"),
+            ),
+        ):
+            SubprocessBuildCommandRunner._stop_process_group(process, group)
+
+    def test_drained_job_is_not_reported_as_a_survivor(self) -> None:
+        process = FakeChild(alive=True)
+        group = FakeJobGroup([0])
+
+        self._windows_teardown(process, group)
+
+        self.assertEqual(group.terminate_calls, 1)
+        self.assertTrue(group.closed)
+
+    def test_observed_survivor_is_reported_and_never_silently_ignored(self) -> None:
+        process = FakeChild(alive=True)
+        group = FakeJobGroup([2])
+
+        with self.assertRaisesRegex(Nfl2k5BuildError, "background process"):
+            self._windows_teardown(process, group)
+
+        # Terminated once, then re-terminated when the group had not drained.
+        self.assertEqual(group.terminate_calls, 2)
+        self.assertTrue(group.closed)
+
+    def test_unreadable_accounting_alone_is_not_a_survivor(self) -> None:
+        process = FakeChild(alive=False)
+        group = FakeJobGroup([None])
+
+        self._windows_teardown(process, group)
+
+        self.assertTrue(group.closed)
+
+    def test_unreadable_accounting_with_a_live_child_is_a_survivor(self) -> None:
+        process = FakeChild(alive=True, dies_when_killed=False)
+        group = FakeJobGroup([None])
+
+        with self.assertRaisesRegex(Nfl2k5BuildError, "background process"):
+            self._windows_teardown(process, group)
+
+        self.assertTrue(group.closed)
+
+    def test_without_a_job_the_direct_child_still_decides_the_outcome(self) -> None:
+        stopped = FakeChild(alive=True)
+        self._windows_teardown(stopped, None)
+        self.assertEqual(stopped.kill_calls, 1)
+
+        unstoppable = FakeChild(alive=True, dies_when_killed=False)
+        with self.assertRaisesRegex(Nfl2k5BuildError, "background process"):
+            self._windows_teardown(unstoppable, None)
+        self.assertEqual(unstoppable.kill_calls, 1)
+
+    def test_posix_launch_and_teardown_keep_their_exact_behaviour(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest("this asserts the POSIX branch, which Windows never takes")
+        # No CREATE_SUSPENDED and no job object off Windows: the launch keeps
+        # ``creationflags=0`` and the teardown stays the pure killpg path.
+        self.assertFalse(use_suspended_launch())
+        self.assertIsNone(adopt_process_group(FakeChild(alive=True)))
+
+        process = FakeChild(alive=False)
+        SubprocessBuildCommandRunner._stop_process_group(process)
+        self.assertEqual(process.communicate_calls, 0)
 
 
 if __name__ == "__main__":

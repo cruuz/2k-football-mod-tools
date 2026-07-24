@@ -66,9 +66,8 @@ class ApfEditorExportTests(unittest.TestCase):
                     backend.assert_not_called()
 
     def test_headless_cli_uses_fixed_contract_and_rejects_raw_or_invalid_selector(self) -> None:
-        result = ApfJerseyExportResult(
-            Path("/new/export"), Path("/new/export/provenance.json"), 6, 11
-        )
+        provenance = Path("/new/export/provenance.json")
+        result = ApfJerseyExportResult(Path("/new/export"), provenance, 6, 11)
         stdout = io.StringIO()
         with mock.patch(
             "mod_editor.__main__.export_apf_jersey", return_value=result
@@ -95,7 +94,12 @@ class ApfEditorExportTests(unittest.TestCase):
         self.assertIn("MOD_EDITOR_APF_JERSEY_EXPORT_CREATED", report)
         self.assertIn("archive_written=false", report)
         self.assertIn("bank_labels=0,1", report)
-        self.assertIn("provenance=/new/export/provenance.json", report)
+        # The CLI interpolates ``result.provenance`` -- a Path -- so the line it
+        # prints carries the host OS's own spelling of that path
+        # ("/new/export/provenance.json" on POSIX, "\new\export\provenance.json"
+        # on Windows).  Build the expected text from the same Path the fixture
+        # handed the CLI: still the exact provenance file, spelled portably.
+        self.assertIn(f"provenance={provenance}", report)
 
         for extra in (("--entry", "875"), ("--offset", "1234")):
             with self.subTest(raw_argument=extra[0]), mock.patch(

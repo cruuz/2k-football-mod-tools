@@ -206,13 +206,19 @@ class FakeHost:
         progress("Text reverted", 1, 1)
         return None
 
+    # write_bytes mirrors the product writer (StudioFacade._publish_new_export
+    # opens the export with O_BINARY and "wb"). write_text would translate "\n"
+    # into "\r\n" on Windows, so the double would publish bytes the shipped
+    # exporter never produces.
     def export_text(self, asset_id: str, destination: Path, progress) -> Path:
-        destination.write_text(self.text_value(asset_id) + "\n", encoding="utf-8")
+        destination.write_bytes((self.text_value(asset_id) + "\n").encode("utf-8"))
         progress("Text exported", 1, 1)
         return destination
 
     def export_number(self, asset_id: str, destination: Path, progress) -> Path:
-        destination.write_text(str(self.number_value(asset_id)) + "\n", encoding="utf-8")
+        destination.write_bytes(
+            (str(self.number_value(asset_id)) + "\n").encode("utf-8")
+        )
         progress("Jersey number exported", 1, 1)
         return destination
 
@@ -376,7 +382,9 @@ class TextRosterPanelViewModelTests(unittest.TestCase):
                 "text.113.player.first", destination, lambda *_args: None
             )
             self.assertEqual(result, destination)
-            self.assertEqual(destination.read_text(encoding="utf-8"), "Al\n")
+            # read_bytes, not read_text: a text-mode read on Windows strips the
+            # "\r" back out and would hide a CRLF-contaminated export.
+            self.assertEqual(destination.read_bytes(), "Al\n".encode("utf-8"))
 
     def test_number_edit_export_and_revert_path_uses_staged_value(self) -> None:
         asset_id = "number.5.primary_players.0"

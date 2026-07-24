@@ -342,13 +342,24 @@ def write_artifact_dir(path: Path, result: dict) -> Path:
             "verification artifact path is not a directory",
         )
         directory_identity = (directory.st_dev, directory.st_ino)
+        # ``O_BINARY`` is what makes the byte-for-byte post-write check below
+        # mean the same thing on every OS.  A descriptor opened without it is a
+        # *text* descriptor on Windows, where the CRT rewrites each ``\n`` this
+        # canonical JSON payload contains as ``\r\n`` on the way to disk while
+        # still reporting the untranslated count back from ``os.write``.  The
+        # receipt on disk would then be longer than the payload the verifier
+        # serialized -- the exact "verification receipt changed during creation"
+        # failure -- and a reader would get bytes we never produced.  The
+        # constant does not exist on POSIX, so ``getattr`` contributes 0 there
+        # and the flags are unchanged.
         descriptor = os.open(
             report_path,
             os.O_WRONLY
             | os.O_CREAT
             | os.O_EXCL
             | getattr(os, "O_CLOEXEC", 0)
-            | getattr(os, "O_NOFOLLOW", 0),
+            | getattr(os, "O_NOFOLLOW", 0)
+            | getattr(os, "O_BINARY", 0),
             0o644,
         )
         opened = os.fstat(descriptor)

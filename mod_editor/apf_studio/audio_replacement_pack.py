@@ -2306,8 +2306,9 @@ def _materialized_audio_replacement_pack(
                     raise AudioReplacementPackError(
                         "The audio replacement ZIP expands beyond the 64 GiB safety limit"
                     )
-            filesystem = os.statvfs(temporary)
-            available = filesystem.f_bavail * filesystem.f_frsize
+            # os.statvfs is POSIX-only; the shim reports the same
+            # available-to-this-user figure on every OS.
+            available = platform_compat.available_bytes(temporary)
             reserve = 128 * 1024 * 1024
             if expanded_total + reserve > available:
                 raise AudioReplacementPackError(

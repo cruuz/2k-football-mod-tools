@@ -146,9 +146,8 @@ class GuiControlStateTests(unittest.TestCase):
         app._start_job = lambda label, function, success: started.append(
             (label, function, success)
         )
-        result = ApfJerseyExportResult(
-            Path("/new/export"), Path("/new/export/provenance.json"), 23, 11
-        )
+        provenance = Path("/new/export/provenance.json")
+        result = ApfJerseyExportResult(Path("/new/export"), provenance, 23, 11)
         with (
             mock.patch(
                 "mod_editor.gui.tkinter_app.filedialog.askopenfilename",
@@ -183,7 +182,13 @@ class GuiControlStateTests(unittest.TestCase):
             ) as showinfo:
                 success(result)
             report = showinfo.call_args.args[1]
-            self.assertIn("/new/export/provenance.json", report)
+            # The dialog interpolates ``result.provenance`` -- a Path -- so the
+            # text carries the host OS's own spelling of that path
+            # ("/new/export/provenance.json" on POSIX,
+            # "\new\export\provenance.json" on Windows).  Compare against the
+            # same Path the fixture handed the callback: still the exact
+            # provenance file, spelled portably.
+            self.assertIn(str(provenance), report)
             self.assertIn("no archive bytes were written", report)
             self.assertIn("bank 0 and bank 1", report)
 

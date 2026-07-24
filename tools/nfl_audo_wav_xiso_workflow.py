@@ -109,7 +109,8 @@ def open_small_regular(path: Path, maximum: int) -> InputFile:
     resolved = path.resolve(strict=True)
     descriptor = os.open(
         resolved,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) |
+        getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)
@@ -118,7 +119,8 @@ def open_small_regular(path: Path, maximum: int) -> InputFile:
                 "WAV pathname changed while opening")
         require(44 <= opened.st_size <= maximum, "WAV input size is outside the bounded range")
         payload = common.read_exact(descriptor, 0, opened.st_size)
-        require(not os.pread(descriptor, 1, opened.st_size), "WAV input grew while reading")
+        require(not common.pread(descriptor, 1, opened.st_size),
+                "WAV input grew while reading")
         current = resolved.stat(follow_symlinks=False)
         require((current.st_dev, current.st_ino, current.st_size) ==
                 (opened.st_dev, opened.st_ino, opened.st_size),
@@ -327,7 +329,7 @@ def difference_runs(values: list[int]) -> list[tuple[int, int]]:
 def write_all(descriptor: int, offset: int, data: bytes) -> None:
     position = 0
     while position < len(data):
-        written = os.pwrite(descriptor, data[position:], offset + position)
+        written = common.pwrite(descriptor, data[position:], offset + position)
         require(written > 0, "short AUDO payload write")
         position += written
 
@@ -358,7 +360,8 @@ def run(source_path: Path, wav_path: Path, output_path: Path, manifest_path: Pat
 
         source_fd = os.open(
             source,
-            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) |
+            getattr(os, "O_BINARY", 0),
         )
         source_info = os.fstat(source_fd)
         require(stat.S_ISREG(source_info.st_mode) and

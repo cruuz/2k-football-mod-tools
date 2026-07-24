@@ -467,8 +467,15 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 self.assertEqual(
                     argv[argv.index("--output-volume") + 1], str(out_volume)
                 )
+                # The panel hands the writer ``str(Path(source.index_0a))``, so
+                # the argv carries the host OS's own spelling of that same
+                # volume ("/nonexistent/APF/0A" on POSIX,
+                # "\nonexistent\APF\0A" on Windows).  Compare against the same
+                # construction rather than the POSIX literal: still pins the
+                # exact read-only source the writer is pointed at, portably.
                 self.assertEqual(
-                    argv[argv.index("--index") + 1], page.facade.source.index_0a
+                    argv[argv.index("--index") + 1],
+                    str(Path(page.facade.source.index_0a)),
                 )
                 self.assertIn("--manifest", argv)
         finally:

@@ -103,12 +103,12 @@ class Nfl2k5MenuBackAudioProvider:
         "<retail.xiso.iso> --input-wav <menu-back.wav> --output-xiso "
         "<new.xiso.iso> --manifest <manifest.json>"
     )
-    backend_module_sha256 = "e271c73aeccb76bd480ab9f955bba434cae6391d28ceff3f1a5c7fde46eee450"
+    backend_module_sha256 = "c3621004576b64a5a0f93cd8c54321791c3cca4c36e5e5086fea0450e273577e"
     verifier_module = "tools/nfl_audo_wav_xiso_verify.py"
-    verifier_module_sha256 = "34e4be8c3226e84609765cf94c293ff6318c22577b1455e9d8fea97851231064"
+    verifier_module_sha256 = "2b6d159334a00fa18fc0276eb1f400bd49069a68e6e478be2c7a9b50e1371d00"
     writer_dependency_module = "tools/nfl_uniform_color_xiso_direct_patch.py"
     writer_dependency_module_sha256 = (
-        "d5ed0cfc9ee54dc5c8ca29a5a0fa27053aebf24fd57d46807a40931d64c0dcb5"
+        "863957f3cbc9d4dd5c6ed09705ddb3dc60c07dce7a9d54d10278d1845895b8c3"
     )
     verifier_dependency_module = "tools/nfl_team_identity_xiso_verify.py"
     verifier_dependency_module_sha256 = (

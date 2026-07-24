@@ -89,6 +89,7 @@ from pathlib import Path
 import shutil
 import stat
 import sys
+import tempfile
 from types import ModuleType
 
 
@@ -110,6 +111,10 @@ _OWNER_SECURITY_INFORMATION = 0x00000001
 _DACL_SECURITY_INFORMATION = 0x00000004
 _TOKEN_QUERY = 0x0008
 _TOKEN_USER_CLASS = 1
+# TOKEN_INFORMATION_CLASS.TokenOwner: the SID Windows stamps on objects this
+# token creates.  Equal to the user SID for an ordinary token; BUILTIN\\Administrators
+# for an elevated one.
+_TOKEN_OWNER_CLASS = 4
 _ERROR_SUCCESS = 0
 
 # <winnt.h> ACE AceType values.  Only the "allowed" variants grant access; a
@@ -520,8 +525,13 @@ def _windows_string_sid(api: _WindowsSecurityApi, sid: ctypes.c_void_p) -> str:
     return rendered
 
 
-def _windows_current_user_sid() -> str:
-    """The user SID of the process token, i.e. "who am I" on Windows."""
+def _windows_token_sid(information_class: int, label: str) -> str:
+    """One SID out of the current process token (TokenUser or TokenOwner).
+
+    ``TOKEN_USER`` and ``TOKEN_OWNER`` both begin with the ``PSID`` we want -- the
+    former as the first member of a ``SID_AND_ATTRIBUTES``, the latter on its own
+    -- so a single reader serves both classes.
+    """
 
     api = _windows_security_api()
     token = ctypes.c_void_p()
@@ -536,25 +546,46 @@ def _windows_current_user_sid() -> str:
         # First call is the documented size probe and is expected to fail with
         # ERROR_INSUFFICIENT_BUFFER; only the reported size matters.
         api.advapi32.GetTokenInformation(
-            token, _TOKEN_USER_CLASS, None, 0, ctypes.byref(size)
+            token, information_class, None, 0, ctypes.byref(size)
         )
         if size.value == 0:
             raise OwnershipCheckError(
-                "Win32 reported an empty process-token user record"
+                f"Win32 reported an empty process-token {label} record"
             )
         buffer = ctypes.create_string_buffer(size.value)
         if not api.advapi32.GetTokenInformation(
-            token, _TOKEN_USER_CLASS, buffer, size.value, ctypes.byref(size)
+            token, information_class, buffer, size.value, ctypes.byref(size)
         ):
             raise OwnershipCheckError(
-                "Win32 refused to read the current process-token user"
+                f"Win32 refused to read the current process-token {label}"
             )
-        # TOKEN_USER is a single SID_AND_ATTRIBUTES whose first member is the
-        # PSID, so the pointer we want is the first pointer in the buffer.
         sid = ctypes.cast(buffer, ctypes.POINTER(ctypes.c_void_p)).contents
         return _windows_string_sid(api, sid)
     finally:
         api.kernel32.CloseHandle(token)
+
+
+def _windows_current_user_sid() -> str:
+    """The user SID of the process token, i.e. "who am I" on Windows."""
+
+    return _windows_token_sid(_TOKEN_USER_CLASS, "user")
+
+
+def _windows_default_owner_sid() -> str | None:
+    """The token's ``TokenOwner``: the SID Windows stamps on objects we create.
+
+    For an ordinary token this is the user SID.  For an *elevated* token it is
+    ``BUILTIN\\Administrators`` -- Windows' own answer to "who owns what this
+    process creates" -- which is why a file this process just made can come back
+    owned by a SID that is not the user SID.  Returns ``None`` if the token
+    cannot be read, so the caller falls back to the user SID alone rather than
+    treating an unanswerable question as a match.
+    """
+
+    try:
+        return _windows_token_sid(_TOKEN_OWNER_CLASS, "owner")
+    except OwnershipCheckError:
+        return None
 
 
 def _windows_owner_sid(
@@ -991,6 +1022,27 @@ _WIN_GENERIC_READ = 0x80000000
 # check-to-use window.
 _WIN_EXEC_PIN_SHARE_MODE = _WIN_FILE_SHARE_READ
 
+# CREATE_NEW is the Win32 spelling of ``O_CREAT | O_EXCL``: it fails with
+# ERROR_FILE_EXISTS rather than opening or truncating an existing name, so a
+# staging file created with it is exclusively ours exactly as ``mkstemp``'s is.
+_WIN_CREATE_NEW = 1
+_WIN_FILE_ATTRIBUTE_NORMAL = 0x00000080
+_WIN_ERROR_FILE_EXISTS = 80
+_WIN_ERROR_ALREADY_EXISTS = 183
+# A private staging file is the one place we deliberately GRANT FILE_SHARE_DELETE
+# (the pinned directory and exec pins withhold it).  Windows refuses to rename a
+# file while any handle without that share bit is open, and the CRT's own
+# open()/mkstemp() never sets it -- which is why the publish step failed with
+# ERROR_SHARING_VIOLATION.  The descriptor is the integrity proof here: the
+# publisher writes, fsyncs, stats and finally re-reads the published bytes
+# *through the same descriptor*, so closing it early to placate Windows would
+# drop the guarantee rather than degrade it.  Sharing delete keeps the exact
+# POSIX shape -- one descriptor held across the rename -- and grants no other
+# process anything it could not already do with the file's DACL.
+_WIN_STAGE_SHARE_MODE = (
+    _WIN_FILE_SHARE_READ | _WIN_FILE_SHARE_WRITE | _WIN_FILE_SHARE_DELETE
+)
+
 
 def _win_invalid_handle() -> int:
     """``INVALID_HANDLE_VALUE`` as the int a ``c_void_p`` restype returns for it."""
@@ -1344,10 +1396,19 @@ def describe_ownership(
     diagnosable.
 
     Known, documented difference: an owner SID is not an exact synonym for a uid.
-    A file created by a process running elevated is owned by the local
-    Administrators group rather than by the user, so this returns ``False`` for
-    it -- a false refusal, never a false acceptance.  It errs in the safe
-    direction, which is the only direction a security check may err.
+    Windows stamps a new object's owner from the creating token's ``TokenOwner``,
+    which for an *elevated* token is ``BUILTIN\\Administrators`` rather than the
+    user SID -- so a file this very process just created can come back owned by a
+    SID that is not its user SID.  Comparing against the user SID alone therefore
+    does not "err safe": it refuses the process's own files and makes every
+    private-cache operation impossible for an administrator, while proving
+    nothing.  So the token's own ``TokenOwner`` is accepted as well.  That is the
+    platform's real ownership model, not a relaxation of ours -- but it is a
+    genuinely wider identity when the token is elevated (any administrator on the
+    machine matches, though any administrator can already take ownership of
+    anything), so which SID matched is spelled out in :attr:`OwnershipCheck.detail`
+    rather than hidden.  Only those two SIDs are accepted; any other owner is
+    still refused.
     """
 
     getuid = getattr(os, "getuid", None)
@@ -1376,10 +1437,24 @@ def describe_ownership(
             mechanism=OWNERSHIP_WINDOWS_OWNER_SID,
             detail=f"owner SID unavailable: {exc}",
         )
+    # The token's default owner, which is what Windows actually stamps on the
+    # objects this process creates (see the note above).  None when the token
+    # cannot be read: an unanswerable question never counts as a match.
+    default_owner_sid = _windows_default_owner_sid()
+    if owner_sid == current_sid:
+        matched = "current user SID"
+    elif default_owner_sid is not None and owner_sid == default_owner_sid:
+        matched = "token default-owner SID"
+    else:
+        matched = None
     return OwnershipCheck(
-        owned=owner_sid == current_sid,
+        owned=matched is not None,
         mechanism=OWNERSHIP_WINDOWS_OWNER_SID,
-        detail=f"owner SID={owner_sid} current user SID={current_sid}",
+        detail=(
+            f"owner SID={owner_sid} current user SID={current_sid} "
+            f"token default-owner SID={default_owner_sid} "
+            f"matched={matched or 'none'}"
+        ),
     )
 
 
@@ -2024,6 +2099,20 @@ def fchmod(fd: int, mode: int, path: str | None = None) -> None:
         os.chmod(path, mode)
 
 
+def available_bytes(path: str | os.PathLike[str]) -> int:
+    """Free bytes usable by this user on the filesystem holding ``path``.
+
+    ``os.statvfs`` is POSIX-only, so the capacity pre-checks route through here.
+    :func:`shutil.disk_usage` computes ``f_bavail * f_frsize`` on POSIX -- the
+    same conservative "available to an unprivileged user" figure the statvfs call
+    sites used, so the Linux number is unchanged -- and calls
+    ``GetDiskFreeSpaceExW`` on Windows, which likewise reports the space
+    available to the *calling user* (quota-aware), not the raw volume free space.
+    """
+
+    return shutil.disk_usage(os.fspath(path)).free
+
+
 # ---------------------------------------------------------------------------
 # Private paths: create, harden, and re-verify "only this user may read this".
 #
@@ -2306,12 +2395,26 @@ def is_canonical_absolute_path(
     # Refuse a symlink among the ancestors path shares, name for name, with its
     # own realpath (the user-controlled tail); stop at the leading divergence,
     # which is the system alias / short-name expansion the equality tolerates.
+    #
+    # "Leading divergence" is a divergence in SHAPE, not just in spelling: a
+    # macOS ``/var -> /private/var`` alias makes the realpath one component
+    # LONGER, so from the tail the two sides stay name-equal right through the
+    # aliased component itself (``var`` == ``var``) and a naive walk would go on
+    # to lstat ``/var``, find the system symlink, and refuse every canonical
+    # macOS temporary or cache path.  Requiring the indices to stay aligned
+    # (``i == j``) confines the walk to the region where the two spellings
+    # describe the same shape -- the user-controlled tail -- and stops it at the
+    # component-count change that only a system alias produces.  A Windows 8.3
+    # expansion (``RUNNER~1`` -> ``runneradmin``) keeps the count identical, so
+    # its ancestors are still walked, and on Linux, where the two forms of a
+    # canonical path are equal, the walk is byte-for-byte the one that ran
+    # before.
     p_parts = Path(text).parts
     r_parts = Path(real_path).parts
     i, j = len(p_parts) - 1, len(r_parts) - 1
     while (
         i >= 0
-        and j >= 0
+        and i == j
         and os.path.normcase(p_parts[i]) == os.path.normcase(r_parts[j])
     ):
         prefix = str(Path(*p_parts[: i + 1]))
@@ -3188,6 +3291,11 @@ PUBLISH_WINDOWS_RENAME = "windows-rename-noreplace"
 STAGE_LINUX_O_TMPFILE = "linux-o-tmpfile-anonymous"
 STAGE_POSIX_NAMED_TEMP = "posix-exclusive-named-temp"
 
+# Names for the two mechanisms :func:`create_private_staging_file` uses.  Public
+# for the same reason: a caller or test is entitled to assert which one ran.
+STAGING_FILE_POSIX_MKSTEMP = "posix-mkstemp"
+STAGING_FILE_WINDOWS_SHARE_DELETE = "windows-create-new-share-delete"
+
 
 class NoReplacePublishUnavailable(RuntimeError):
     """No atomic no-clobber publish mechanism exists for this request here.
@@ -3685,6 +3793,35 @@ class DirHandle:
         child = self._child(name)
         self._refuse_symlinked_child(child, "open")
         return os.open(child, flags, mode)
+
+    def open_staging_child(
+        self, name: str, flags: int, mode: int = 0o600
+    ) -> int:
+        """:meth:`open` a child that will be PUBLISHED while this fd stays open.
+
+        Identical to :meth:`open` on POSIX -- the same ``os.open(..., dir_fd=fd)``
+        call, byte for byte.  It exists because Windows refuses to rename a file
+        while a handle lacking ``FILE_SHARE_DELETE`` is open on it, and the CRT
+        never sets that bit: a staging file opened through :meth:`open` cannot
+        later be published without first closing the descriptor that proves what
+        was written.  This variant creates the child with
+        ``CreateFileW(CREATE_NEW, ... | FILE_SHARE_DELETE)`` instead, so the
+        held-descriptor proof survives the publish.  ``flags`` must request
+        exclusive creation (``O_CREAT | O_EXCL``); anything else is a caller bug,
+        because CREATE_NEW is the only Win32 disposition with those semantics.
+        """
+
+        if not self._windows:
+            return self.open(name, flags, mode)
+        required = os.O_CREAT | os.O_EXCL
+        if flags & required != required:
+            raise ValueError(
+                "open_staging_child creates an exclusive new file; its flags "
+                "must include O_CREAT | O_EXCL"
+            )
+        child = self._child(name)
+        self._refuse_symlinked_child(child, "open")
+        return _win_create_share_delete_child(child)
 
     def open_dir(self, name: str, *, nofollow: bool = True) -> "DirHandle":
         """Open a child *directory* as its own pinned :class:`DirHandle`.
@@ -4477,6 +4614,121 @@ def publish_private_stage(
     )
 
 
+def private_staging_file_mechanism() -> str:
+    """Name the mechanism :func:`create_private_staging_file` uses here.
+
+    Side-effect free, so a caller or test can assert the platform difference
+    instead of assuming it.
+    """
+
+    return (
+        STAGING_FILE_WINDOWS_SHARE_DELETE
+        if IS_WINDOWS
+        else STAGING_FILE_POSIX_MKSTEMP
+    )
+
+
+def _win_create_share_delete_child(path: str) -> int:
+    """``CreateFileW(CREATE_NEW, FILE_SHARE_DELETE)`` one file, as a CRT fd.
+
+    ``mkstemp``/``os.open`` would do everything this does except grant
+    ``FILE_SHARE_DELETE``, and without that bit Windows fails the eventual
+    publish with ERROR_SHARING_VIOLATION while the caller still holds the
+    descriptor it wrote and verified through.  The handle is handed to the CRT
+    with :func:`msvcrt.open_osfhandle`, so the returned descriptor is an ordinary
+    fd: ``os.write``/``os.read``/``os.lseek``/``os.fstat``/``os.fsync`` all work
+    on it and closing the fd closes the handle exactly once.
+
+    Exclusivity is unchanged from ``O_CREAT | O_EXCL``: ``CREATE_NEW`` fails
+    rather than open or truncate an existing name, and that failure is raised as
+    :class:`FileExistsError` so an existing retry loop behaves identically.
+    """
+
+    msvcrt = _require_msvcrt()
+    api = _windows_kernel_api()
+    _win_reset_last_error()
+    raw = api.kernel32.CreateFileW(
+        path,
+        _WIN_GENERIC_READ | _WIN_GENERIC_WRITE,
+        _WIN_STAGE_SHARE_MODE,
+        None,
+        _WIN_CREATE_NEW,
+        _WIN_FILE_ATTRIBUTE_NORMAL,
+        None,
+    )
+    handle = raw if raw is not None else 0
+    if handle == 0 or handle == _win_invalid_handle():
+        err = _win_last_error()
+        if err in (_WIN_ERROR_FILE_EXISTS, _WIN_ERROR_ALREADY_EXISTS):
+            raise FileExistsError(errno.EEXIST, "File exists", path)
+        raise OSError(
+            0,
+            f"CreateFileW could not create the private staging file "
+            f"{path!r} (WinError {err})",
+        )
+    try:
+        return msvcrt.open_osfhandle(handle, os.O_RDWR | getattr(os, "O_BINARY", 0))
+    except OSError:
+        _win_close_handle(api, handle)
+        raise
+
+
+def _win_create_share_delete_staging_file(
+    directory: str | os.PathLike[str],
+    *,
+    prefix: str,
+    suffix: str,
+) -> tuple[int, str]:
+    """The ``mkstemp``-shaped wrapper around :func:`_win_create_share_delete_child`."""
+
+    parent = os.fspath(directory)
+    for _attempt in range(64):
+        candidate = os.path.join(parent, f"{prefix}{os.urandom(8).hex()}{suffix}")
+        try:
+            return _win_create_share_delete_child(candidate), candidate
+        except FileExistsError:
+            continue
+    raise OSError(
+        errno.EEXIST,
+        "could not create a unique private staging file",
+        parent,
+    )
+
+
+def create_private_staging_file(
+    directory: str | os.PathLike[str],
+    *,
+    prefix: str,
+    suffix: str = ".tmp",
+) -> tuple[int, str]:
+    """Create a private staging file that can still be published while open.
+
+    Returns ``(descriptor, path)`` exactly as :func:`tempfile.mkstemp` does, and
+    on POSIX it *is* ``tempfile.mkstemp`` -- byte-for-byte the call the private-
+    cache publishers already made, so Linux and macOS behaviour is unchanged.
+
+    The difference is Windows, and it is not cosmetic.  These publishers hold the
+    staging descriptor across the publish on purpose: they write through it,
+    ``fsync`` it, assert its identity, rename it into place, and then re-read the
+    published bytes back *through that same descriptor* -- the descriptor is what
+    proves the bytes that landed are the bytes that were verified.  Windows
+    refuses to rename a file that has an open handle lacking
+    ``FILE_SHARE_DELETE``, and the CRT never sets that bit, so on Windows the
+    file is created with :func:`CreateFileW` instead, with ``CREATE_NEW`` (the
+    ``O_CREAT | O_EXCL`` equivalent) and a share mode that permits the rename.
+    Nothing is relaxed: the alternative would have been to close the descriptor
+    before publishing and re-open the destination by name afterwards, which
+    silently swaps a held-descriptor proof for a name lookup.  The caller owns the
+    descriptor and must unlink ``path`` if it abandons the publish.
+    """
+
+    if IS_WINDOWS:
+        return _win_create_share_delete_staging_file(
+            directory, prefix=prefix, suffix=suffix
+        )
+    return tempfile.mkstemp(prefix=prefix, suffix=suffix, dir=directory)
+
+
 __all__ = [
     "DIRHANDLE_POSIX_DIR_FD",
     "DIRHANDLE_WINDOWS_REALPATH_PIN",
@@ -4501,6 +4753,8 @@ __all__ = [
     "SEALED_EXEC_WINDOWS_SHARE_PIN",
     "STAGE_LINUX_O_TMPFILE",
     "STAGE_POSIX_NAMED_TEMP",
+    "STAGING_FILE_POSIX_MKSTEMP",
+    "STAGING_FILE_WINDOWS_SHARE_DELETE",
     "WINDOWS_DIRECTORY_MODE",
     "WINDOWS_READ_ONLY_FILE_MODE",
     "WINDOWS_WRITABLE_FILE_MODE",
@@ -4521,8 +4775,10 @@ __all__ = [
     "SealedExecHandle",
     "WindowsDaclVerdict",
     "add_seals",
+    "available_bytes",
     "copy_file_range",
     "create_private_directory",
+    "create_private_staging_file",
     "describe_ownership",
     "directory_transaction_guarantee",
     "exclusive_nonblocking_lock",
@@ -4548,6 +4804,7 @@ __all__ = [
     "privacy_guarantee",
     "private_directory_mode",
     "private_file_mode",
+    "private_staging_file_mechanism",
     "publish_no_replace",
     "publish_private_stage",
     "pwrite",

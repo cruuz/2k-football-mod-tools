@@ -536,7 +536,10 @@ def write_artifact_dir(path: Path, report: dict[str, object]) -> Path:
             | os.O_CREAT
             | os.O_EXCL
             | getattr(os, "O_CLOEXEC", 0)
-            | getattr(os, "O_NOFOLLOW", 0),
+            | getattr(os, "O_NOFOLLOW", 0)
+            # Windows opens descriptors in text mode by default, which rewrites
+            # every "\n" this receipt emits into "\r\n"; O_BINARY is 0 on POSIX.
+            | getattr(os, "O_BINARY", 0),
             0o644,
         )
         payload = (json.dumps(report, indent=2, sort_keys=True) + "\n").encode("utf-8")
@@ -644,7 +647,11 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         report = verify(args.source_volume, args.output_volume, args.manifest, args.png)
         args.report.parent.mkdir(parents=True, exist_ok=True)
-        args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        # write_bytes, not write_text: a text-mode write turns "\n" into "\r\n"
+        # on Windows and this report is compared and shipped byte for byte.
+        args.report.write_bytes(
+            (json.dumps(report, indent=2) + "\n").encode("utf-8")
+        )
         print(
             "APF_DIGITAL_FONT_VERIFY_PASS outer=1310 inner=246 parts=751 "
             f"blocks={report['target']['changed_dxt5a_block_count']} runtime=false"

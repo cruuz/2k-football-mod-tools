@@ -217,10 +217,17 @@ class PreadTests(unittest.TestCase):
             (5000, 10),  # entirely past EOF -> empty
             (0, 5000),  # the whole file
         ]
-        fd = os.open(self.path, os.O_RDONLY)
+        # self.data is an oracle independent of os.pread, so the fallback is
+        # still checked against real expected bytes on Windows, where os.pread
+        # does not exist.  Where it does exist it is asserted too, exactly as
+        # before.
+        native_pread = getattr(os, "pread", None)
+        fd = os.open(self.path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
         try:
             for offset, count in cases:
-                expected = os.pread(fd, count, offset)
+                expected = self.data[offset : offset + count]
+                if native_pread is not None:
+                    self.assertEqual(native_pread(fd, count, offset), expected)
                 self.assertEqual(_pread_via_seek(fd, count, offset), expected)
                 self.assertEqual(pread(fd, count, offset), expected)
         finally:
@@ -401,12 +408,21 @@ class SealReadonlyTests(unittest.TestCase):
         pristine = b"the-exact-staged-bytes" * 30
         with tempfile.TemporaryDirectory() as name:
             path = Path(name) / "closure.bin"
-            descriptor = os.open(path, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0o600)
+            descriptor = os.open(
+                path,
+                os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0),
+                0o600,
+            )
             try:
                 os.write(descriptor, pristine)
                 # Something corrupts one byte after it was staged but before the
                 # seal is taken; the returned digest must no longer match.
-                os.pwrite(descriptor, b"\x00", 5)
+                # Written with seek+write rather than os.pwrite, which Windows
+                # does not have: this corruption is test scaffolding, not the
+                # behaviour under assertion.
+                os.lseek(descriptor, 5, os.SEEK_SET)
+                os.write(descriptor, b"\x00")
+                os.lseek(descriptor, 0, os.SEEK_END)
                 with hidden_fcntl():
                     result = seal_readonly(descriptor, os.fspath(path))
             finally:
@@ -551,6 +567,12 @@ class SimulatedWindowsModeTests(unittest.TestCase):
         self.addCleanup(self._dir.cleanup)
 
     def test_the_windows_branch_reports_the_acl_mechanism_and_its_modes(self) -> None:
+        # The host's own mechanism, recorded first: posix-mode-bits on
+        # Linux/macOS and already windows-user-profile-acl on a real Windows
+        # runner.  Asserting restoration against THAT is what proves the
+        # simulation is scoped, rather than asserting a mechanism the host
+        # cannot have (the same shape SimulatedWindowsOwnershipTests uses).
+        host_mechanism = privacy_guarantee().mechanism
         with simulated_windows_filesystem():
             guarantee = privacy_guarantee()
             self.assertEqual(guarantee.mechanism, PRIVACY_WINDOWS_USER_PROFILE_ACL)
@@ -560,8 +582,10 @@ class SimulatedWindowsModeTests(unittest.TestCase):
             self.assertEqual(private_file_mode(), 0o666)
             self.assertEqual(sealed_file_mode(), 0o444)
             self.assertIn("no POSIX mode bits", guarantee.summary)
-        # The POSIX branch is restored untouched.
-        self.assertEqual(privacy_guarantee().mechanism, PRIVACY_POSIX_MODE_BITS)
+        # The host's own branch is restored untouched.
+        self.assertEqual(privacy_guarantee().mechanism, host_mechanism)
+        if not platform_compat.IS_WINDOWS:
+            self.assertEqual(host_mechanism, PRIVACY_POSIX_MODE_BITS)
 
     def test_a_private_directory_reports_0o777_and_is_still_accepted(self) -> None:
         # This is the 511-vs-448 failure. The directory really is mode-less on
@@ -616,9 +640,16 @@ class SimulatedWindowsModeTests(unittest.TestCase):
 
     def test_a_cache_root_outside_the_user_profile_is_refused(self) -> None:
         # Placement is the whole Windows guarantee, so it is enforced there.
+        # The refused root must be outside the profile on EVERY host: on a real
+        # Windows runner the temporary directory lives under
+        # %LOCALAPPDATA%\Temp, i.e. inside the profile, so self.root would be
+        # legitimately accepted and prove nothing.  A path at the filesystem
+        # root never is; it need not exist, because placement is a resolved-path
+        # containment question.
+        outside = Path(os.path.abspath(os.sep)) / "not-a-user-profile-root"
         with simulated_windows_filesystem():
             with self.assertRaisesRegex(PrivatePathError, "private profile root"):
-                verify_private_root_placement(self.root, "test cache root")
+                verify_private_root_placement(outside, "test cache root")
 
     def test_a_sealed_file_no_longer_wedges_tree_removal(self) -> None:
         # The PermissionError [Errno 13] that took out every temporary directory

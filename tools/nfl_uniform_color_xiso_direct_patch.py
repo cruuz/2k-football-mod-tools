@@ -100,6 +100,81 @@ def require(condition: bool, message: str) -> None:
         raise PatchError(message)
 
 
+def pread(descriptor: int, count: int, offset: int) -> bytes:
+    """Positional read that never disturbs the descriptor's shared offset.
+
+    ``os.pread`` is a POSIX-only single syscall: Windows CPython does not
+    define it at all, so every positional read below raised ``AttributeError``
+    there.  This module is executed as a pinned, self-contained import closure
+    (hashed bytes, ``-I -S``, staged tree), so it may not import the editor's
+    platform layer; the fallback is therefore inline and uses nothing but
+    :mod:`os`.  Where ``os.pread`` exists it still runs, unchanged -- POSIX
+    executes exactly the same syscall it always did.
+
+    The fallback remembers the descriptor's current offset, seeks, reads, and
+    restores that offset in ``finally``, so a caller that also uses sequential
+    reads on the same descriptor sees the position it left behind.  It returns
+    fewer than ``count`` bytes only at end-of-file, exactly like ``os.pread``
+    on a regular file, so every fail-closed short-read/EOF check in this module
+    keeps its behaviour and its message.
+
+    Non-atomicity caveat: unlike the syscall, seek/read/restore can interleave
+    with a concurrent seek on a *shared* descriptor.  Every descriptor here is
+    opened and driven by this single synchronous owner, which is what makes the
+    fallback equivalent; it is not a general-purpose positional primitive.
+    """
+
+    positional = getattr(os, "pread", None)
+    if positional is not None:
+        return positional(descriptor, count, offset)
+    if count <= 0:
+        return b""
+    saved = os.lseek(descriptor, 0, os.SEEK_CUR)
+    try:
+        os.lseek(descriptor, offset, os.SEEK_SET)
+        chunks: list[bytes] = []
+        remaining = count
+        while remaining > 0:
+            chunk = os.read(descriptor, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+    finally:
+        os.lseek(descriptor, saved, os.SEEK_SET)
+
+
+def pwrite(descriptor: int, data: bytes, offset: int) -> int:
+    """Positional write with the same offset discipline as :func:`pread`.
+
+    ``os.pwrite`` is absent on Windows for the same reason ``os.pread`` is.
+    The inline fallback saves the descriptor's offset, seeks, writes every
+    supplied byte at ``offset``, and restores the saved offset in ``finally``.
+    It returns the number of bytes written, so the short-write guards below
+    fail closed identically on both paths.
+    """
+
+    positional = getattr(os, "pwrite", None)
+    if positional is not None:
+        return positional(descriptor, data, offset)
+    if not data:
+        return 0
+    saved = os.lseek(descriptor, 0, os.SEEK_CUR)
+    try:
+        os.lseek(descriptor, offset, os.SEEK_SET)
+        view = memoryview(data)
+        written = 0
+        while written < len(view):
+            count = os.write(descriptor, view[written:])
+            if count == 0:
+                break
+            written += count
+        return written
+    finally:
+        os.lseek(descriptor, saved, os.SEEK_SET)
+
+
 def fd_identity(descriptor: int) -> tuple[int, int]:
     info = os.fstat(descriptor)
     return info.st_dev, info.st_ino
@@ -119,7 +194,8 @@ def reserve_file(path: Path, mode: int = 0o644) -> OwnedFile:
         descriptor = os.open(
             path,
             os.O_CREAT | os.O_EXCL | os.O_RDWR |
-            getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) |
+            getattr(os, "O_BINARY", 0),
             mode,
         )
     except FileExistsError as exc:
@@ -147,7 +223,7 @@ def sha256_fd(descriptor: int, offset: int = 0, length: int | None = None) -> st
     remaining = length
     while remaining is None or remaining > 0:
         request = HASH_CHUNK if remaining is None else min(HASH_CHUNK, remaining)
-        chunk = os.pread(descriptor, request, position)
+        chunk = pread(descriptor, request, position)
         if not chunk:
             break
         digest.update(chunk)
@@ -164,7 +240,7 @@ def read_exact(descriptor: int, offset: int, length: int) -> bytes:
     position = offset
     remaining = length
     while remaining:
-        chunk = os.pread(descriptor, remaining, position)
+        chunk = pread(descriptor, remaining, position)
         require(chunk, f"short read at 0x{position:x}")
         chunks.append(chunk)
         position += len(chunk)
@@ -268,11 +344,11 @@ def copy_fd_exact(source: int, output: int, size: int) -> str:
         position += copied
 
     while position < size:
-        chunk = os.pread(source, min(COPY_CHUNK, size - position), position)
+        chunk = pread(source, min(COPY_CHUNK, size - position), position)
         require(chunk, "short source read while copying XISO")
         written = 0
         while written < len(chunk):
-            amount = os.pwrite(output, chunk[written:], position + written)
+            amount = pwrite(output, chunk[written:], position + written)
             require(amount > 0, "short destination write while copying XISO")
             written += amount
         position += len(chunk)
@@ -292,8 +368,8 @@ def compare_and_hash(
     position = 0
     while position < size:
         request = min(HASH_CHUNK, size - position)
-        source_bytes = os.pread(source, request, position)
-        output_bytes = os.pread(output, request, position)
+        source_bytes = pread(source, request, position)
+        output_bytes = pread(output, request, position)
         require(len(source_bytes) == request and len(output_bytes) == request,
                 "short read during final XISO comparison")
         source_hash.update(source_bytes)
@@ -317,7 +393,7 @@ def write_owned_json(owned: OwnedFile, value: dict[str, object]) -> None:
     payload = (json.dumps(value, indent=2, sort_keys=True) + "\n").encode("utf-8")
     offset = 0
     while offset < len(payload):
-        written = os.pwrite(owned.descriptor, payload[offset:], offset)
+        written = pwrite(owned.descriptor, payload[offset:], offset)
         require(written > 0, "short manifest write")
         offset += written
     os.ftruncate(owned.descriptor, len(payload))
@@ -345,7 +421,8 @@ def run(source_path: Path, output_path: Path, manifest_path: Path) -> dict[str, 
 
     source_fd = os.open(
         source,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) |
+        getattr(os, "O_BINARY", 0),
     )
     output_owned: OwnedFile | None = None
     manifest_owned: OwnedFile | None = None
@@ -418,7 +495,7 @@ def run(source_path: Path, output_path: Path, manifest_path: Path) -> dict[str, 
         copy_method = copy_fd_exact(source_fd, output_owned.descriptor, source_info.st_size)
         require(owned_path_matches(output_owned), "output pathname changed during copy")
         for absolute in patch_offsets:
-            require(os.pwrite(output_owned.descriptor, MAGENTA_PAIR, absolute) == 8,
+            require(pwrite(output_owned.descriptor, MAGENTA_PAIR, absolute) == 8,
                     f"short patch write at 0x{absolute:x}")
             require(read_exact(output_owned.descriptor, absolute, 8) == MAGENTA_PAIR,
                     f"patch readback mismatch at 0x{absolute:x}")

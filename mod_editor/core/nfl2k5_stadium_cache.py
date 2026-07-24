@@ -26,7 +26,15 @@ import subprocess
 import sys
 from typing import Callable, Protocol, Sequence
 
+from . import platform_compat
 from .errors import ValidationError
+from .nfl2k5_build_service import (
+    WINDOWS_CREATE_SUSPENDED,
+    WindowsProcessGroup,
+    adopt_process_group,
+    stop_windows_process_group,
+    use_suspended_launch,
+)
 from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
 from .platform_compat import (
     PrivatePathError,
@@ -239,6 +247,7 @@ class SubprocessStadiumCacheWorkerRunner:
         progress: ProgressSink,
     ) -> WorkerCommandResult:
         fixed = tuple(os.fspath(value) for value in argv)
+        suspended = use_suspended_launch()
         try:
             process = subprocess.Popen(
                 fixed,
@@ -249,7 +258,14 @@ class SubprocessStadiumCacheWorkerRunner:
                 stderr=subprocess.STDOUT,
                 text=True,
                 shell=False,
+                # POSIX only; silently ignored on Windows, where the job object
+                # adopted below supplies the same reach.
                 start_new_session=True,
+                # Windows only (``0`` -- the default -- everywhere else, so the
+                # POSIX launch is byte-for-byte the one it always was): freeze
+                # the child so it is sealed into the job before it can spawn a
+                # descendant; ``adopt_process_group`` resumes it.
+                creationflags=WINDOWS_CREATE_SUSPENDED if suspended else 0,
                 bufsize=1,
             )
         except OSError as exc:
@@ -257,6 +273,7 @@ class SubprocessStadiumCacheWorkerRunner:
                 "Stadium Studio could not start its private asset generator. "
                 f"The shipped worker may be missing or unreadable ({exc})."
             ) from exc
+        group = adopt_process_group(process, was_suspended=suspended)
         lines: list[str] = []
         try:
             assert process.stdout is not None
@@ -278,19 +295,57 @@ class SubprocessStadiumCacheWorkerRunner:
                     progress(stage, completed, total)
             returncode = process.wait()
         except BaseException:
-            if process.poll() is None:
-                try:
-                    os.killpg(process.pid, signal.SIGTERM)
-                    process.wait(timeout=3)
-                except (ProcessLookupError, subprocess.TimeoutExpired):
-                    if process.poll() is None:
-                        try:
-                            os.killpg(process.pid, signal.SIGKILL)
-                        except ProcessLookupError:
-                            pass
-                        process.wait()
+            # The worker owns only paths below the private cache's staging
+            # directory.  Stop its whole process group before control returns
+            # to the coordinator, which may remove or resume that directory.
+            self._stop_process_group(process, group)
             raise
+        # The worker has exited.  POSIX leaves the group alone on this path and
+        # always has; Windows has one extra thing to do -- release the job
+        # handle it would otherwise leak.
+        if group is not None:
+            group.close()
         return WorkerCommandResult(returncode, tuple(lines))
+
+    @staticmethod
+    def _stop_process_group(
+        process: subprocess.Popen[str],
+        group: WindowsProcessGroup | None = None,
+    ) -> None:
+        """Stop the worker and every descendant it started, on both models.
+
+        POSIX signals the session-owned process group exactly as it always has.
+        Windows has neither ``os.killpg`` nor ``signal.SIGKILL`` -- reaching for
+        either raised ``AttributeError`` out of this teardown, so it stopped
+        nothing and a runaway worker kept writing into the private cache -- and
+        instead terminates and drains the job object the worker was adopted
+        into; see the note above
+        :class:`~mod_editor.core.nfl2k5_build_service.WindowsProcessGroup`.
+        """
+
+        if platform_compat.IS_WINDOWS:
+            # Deliberately ahead of the "direct child already exited" shortcut
+            # below: on Windows the job can still hold descendants the exited
+            # worker started, and those are what would keep writing into the
+            # private cache the coordinator is about to publish or clean up.
+            if not stop_windows_process_group(process, group):
+                raise StadiumCacheError(
+                    "Stadium Studio could not stop its private asset generator; "
+                    "a background process may still be writing into the private "
+                    "cache. Sign out or restart Windows before trying again."
+                )
+            return
+        if process.poll() is None:
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+                process.wait(timeout=3)
+            except (ProcessLookupError, subprocess.TimeoutExpired):
+                if process.poll() is None:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    process.wait()
 
 
 class Nfl2k5StadiumCacheCoordinator:

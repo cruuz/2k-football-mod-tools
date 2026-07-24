@@ -252,10 +252,13 @@ class ApfAudioEncodingTests(unittest.TestCase):
         if platform_compat.IS_WINDOWS:
             # Wine is how a *Unix* host runs a Windows .exe; it does not exist
             # on Windows, so the loader itself cannot run here.  The contract
-            # this test exists for is still asserted from the argv the adapter
+            # this test is named for is still asserted from the argv the adapter
             # builds: the user's .exe stays a plain argv[1] to the loader --
-            # never a shell string -- and both private paths are handed over in
-            # Windows form under the Z: drive Wine maps to the Unix root.
+            # never a shell string -- and the two private paths stay two
+            # separate argv entries rather than one packed command line.  What
+            # is *not* asserted here is the Z: drive mapping of those paths:
+            # that is a POSIX-host concept and lives in the companion test
+            # below, which is skipped on Windows for the reason stated there.
             with (
                 patch(
                     "mod_editor.apf_studio.audio_encoding.subprocess.Popen",
@@ -266,14 +269,44 @@ class ApfAudioEncodingTests(unittest.TestCase):
                 adapter.encode(self.source, self.target)
             command = popen.call_args.args[0]
             self.assertEqual(tuple(command[:2]), (str(wine), str(encoder_exe)))
-            self.assertTrue(
-                all(argument.startswith("Z:\\") for argument in command[2:]),
-                command,
-            )
+            self.assertEqual(len(command), 4, command)
             return
         result = adapter.encode(self.source, self.target)
         self.assertEqual(result.xma1_riff, self.source.read_bytes())
         self.assertEqual(result.receipt["mode"], "wine")
+
+    @unittest.skipIf(
+        platform_compat.IS_WINDOWS,
+        # Wine's Z: drive is the drive letter Wine points at the *Unix* root, so
+        # the drive-mapped argv asserted below only means anything on a POSIX
+        # host: a Windows host has no Unix root to map and no Wine loader to run
+        # (the adapter's POSIX-only "Z:" + path spelling would produce
+        # Z:C:\Users\... there, which is a path on neither OS).  Skipping is
+        # honest about that rather than pinning a spelling nothing consumes;
+        # the plain-argv/no-shell contract this mapping rides on stays asserted
+        # on Windows by test_wine_mode_uses_user_exe_as_a_plain_argument above.
+        "Wine's Z: drive maps the Unix root; wine mode cannot apply on a "
+        "Windows host",
+    )
+    def test_wine_mode_hands_the_private_paths_over_drive_mapped(self) -> None:
+        encoder_exe = self.root / "xmaencode.exe"
+        encoder_exe.write_bytes(b"MZ synthetic user tool")
+        wine = self._script("wine-loader", "raise SystemExit(0)\n")
+        adapter = ExternalXma1Encoder(encoder_exe, wine_executable=wine)
+        with (
+            patch(
+                "mod_editor.apf_studio.audio_encoding.subprocess.Popen",
+                side_effect=OSError(2, "no such file or directory"),
+            ) as popen,
+            self.assertRaisesRegex(AudioEncodingError, "Could not start"),
+        ):
+            adapter.encode(self.source, self.target)
+        command = popen.call_args.args[0]
+        self.assertEqual(tuple(command[:2]), (str(wine), str(encoder_exe)))
+        self.assertTrue(
+            all(argument.startswith("Z:\\") for argument in command[2:]),
+            command,
+        )
 
     def test_successful_encoder_parent_cannot_leave_background_child(self) -> None:
         pid_file = self.root / "background-child.pid"

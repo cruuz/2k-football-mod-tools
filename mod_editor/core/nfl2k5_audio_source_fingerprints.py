@@ -25,7 +25,6 @@ import os
 from pathlib import Path
 import re
 import stat
-import tempfile
 import warnings
 from types import MappingProxyType
 from typing import Any, Callable, Iterable, Mapping
@@ -872,10 +871,14 @@ class Nfl2k5AudioSourceFingerprintStore:
                 == (parent_named.st_dev, parent_named.st_ino),
                 "Private derived-cache directory changed before publication",
             )
-            descriptor, temporary_name = tempfile.mkstemp(
+            # mkstemp on POSIX; on Windows a CREATE_NEW handle that shares
+            # delete, because this descriptor is held ACROSS the publish below
+            # (it re-reads the published bytes back through it) and Windows
+            # refuses to rename a file whose open handle withholds that bit.
+            descriptor, temporary_name = platform_compat.create_private_staging_file(
+                resolved_parent,
                 prefix=".audio-source-pcm-fingerprints-v1.",
                 suffix=".tmp",
-                dir=resolved_parent,
             )
             temporary_basename = Path(temporary_name).name
             initial = os.fstat(descriptor)

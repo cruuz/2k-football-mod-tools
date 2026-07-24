@@ -204,6 +204,8 @@ def _open_pinned_child_file(
     name: str,
     flags: int,
     mode: int = 0o777,
+    *,
+    for_publication: bool = False,
 ) -> int:
     """Open a file inside the descriptor-pinned private directory.
 
@@ -214,10 +216,18 @@ def _open_pinned_child_file(
     no directory descriptor, so the open is routed through the handle's own
     realpath-pinned, symlink-refusing :meth:`~platform_compat.DirHandle.open`
     instead; there is no ``dir_fd`` to hand ``os.open`` there.
+
+    ``for_publication`` marks the staging open whose descriptor is held ACROSS
+    the later rename.  It changes nothing on POSIX; on Windows it takes the
+    share-delete creation path, because a CRT handle blocks the rename of its own
+    file and closing the descriptor first would trade the held-descriptor proof
+    for a name lookup.
     """
 
     if directory.mechanism == platform_compat.DIRHANDLE_POSIX_DIR_FD:
         return os.open(name, flags, mode, dir_fd=directory.dir_fd)
+    if for_publication:
+        return directory.open_staging_child(name, flags, mode)
     return directory.open(name, flags, mode)
 
 
@@ -498,6 +508,7 @@ class Nfl2k5AudioSourceContainmentStore:
                     basename,
                     flags | getattr(os, "O_BINARY", 0),
                     0o600,
+                    for_publication=True,
                 )
             except FileExistsError:
                 continue
