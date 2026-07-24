@@ -335,7 +335,10 @@ def _regular_private_file(path: Path, label: str) -> os.stat_result:
         stat.S_ISREG(info.st_mode)
         and not stat.S_ISLNK(info.st_mode)
         and info.st_nlink == 1
-        and info.st_uid == os.getuid()
+        # Ownership is asked through platform_compat rather than compared as a
+        # raw uid: Windows reports st_uid == 0 for every file, so an inline
+        # comparison would degrade into a check that always passes there.
+        and platform_compat.is_owned_by_current_user(info, path=path)
         and info.st_mode & 0o077 == 0,
         f"{label} must be an owner-only, non-linked regular file",
     )
@@ -348,7 +351,7 @@ def _private_derived_directory(root: Path, path: Path) -> Path:
     resolved = _regular_private_directory(path, "Private derived-cache directory")
     info = path.lstat()
     _require(
-        info.st_uid == os.getuid()
+        platform_compat.is_owned_by_current_user(info, path=path)
         and info.st_mode & 0o077 == 0
         and path.absolute() == resolved
         and resolved == root / PRIVATE_RELATIVE_PATH.parent,
@@ -818,16 +821,17 @@ class Nfl2k5AudioSourceFingerprintStore:
             parent_named = parent.lstat()
             _require(
                 stat.S_ISDIR(parent_opened.st_mode)
+                and platform_compat.is_owned_by_current_user(
+                    parent_opened, fd=directory_fd
+                )
                 and (
                     parent_opened.st_dev,
                     parent_opened.st_ino,
-                    parent_opened.st_uid,
                     parent_opened.st_mode & 0o077,
                 )
                 == (
                     parent_named.st_dev,
                     parent_named.st_ino,
-                    os.getuid(),
                     0,
                 ),
                 "Private derived-cache directory changed before publication",
@@ -859,7 +863,9 @@ class Nfl2k5AudioSourceFingerprintStore:
             )
             _require(
                 stat.S_ISREG(opened.st_mode)
-                and opened.st_uid == os.getuid()
+                and platform_compat.is_owned_by_current_user(
+                    opened, fd=descriptor
+                )
                 and opened.st_mode & 0o077 == 0
                 and opened.st_nlink == 1
                 and (
@@ -895,7 +901,7 @@ class Nfl2k5AudioSourceFingerprintStore:
             )
             _require(
                 stat.S_ISREG(final.st_mode)
-                and final.st_uid == os.getuid()
+                and platform_compat.is_owned_by_current_user(final, path=path)
                 and final.st_mode & 0o077 == 0
                 and final.st_nlink == 1
                 and (final.st_dev, final.st_ino, final.st_size)
@@ -927,7 +933,9 @@ class Nfl2k5AudioSourceFingerprintStore:
             _require(
                 bytes(confirmed) == payload
                 and stat.S_ISREG(after.st_mode)
-                and after.st_uid == os.getuid()
+                and platform_compat.is_owned_by_current_user(
+                    after, fd=descriptor
+                )
                 and after.st_mode & 0o077 == 0
                 and after.st_nlink == 1
                 and (
@@ -1003,7 +1011,9 @@ class Nfl2k5AudioSourceFingerprintStore:
             _require(
                 stat.S_ISREG(opened.st_mode)
                 and opened.st_nlink == 1
-                and opened.st_uid == os.getuid()
+                and platform_compat.is_owned_by_current_user(
+                    opened, fd=descriptor
+                )
                 and opened.st_mode & 0o077 == 0
                 and (opened.st_dev, opened.st_ino, opened.st_size)
                 == (info.st_dev, info.st_ino, info.st_size),

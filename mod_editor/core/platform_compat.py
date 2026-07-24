@@ -774,6 +774,133 @@ def _pread_via_seek(fd: int, count: int, offset: int) -> bytes:
         os.lseek(fd, saved, os.SEEK_SET)
 
 
+def pwrite(fd: int, data: bytes, offset: int) -> int:
+    """Positional write that never moves the descriptor offset.
+
+    Uses :func:`os.pwrite` where available (POSIX) and falls back to a
+    seek/write/restore sequence on Windows, writing the same bytes at the same
+    ``offset`` and leaving the descriptor position where it found it.  Returns
+    the number of bytes written.
+    """
+
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
+    return _pwrite_via_seek(fd, data, offset)
+
+
+def _pwrite_via_seek(fd: int, data: bytes, offset: int) -> int:
+    """Windows fallback for :func:`os.pwrite`; matches its bytes and offset."""
+
+    if not data:
+        return 0
+    saved = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        view = memoryview(data)
+        written = 0
+        while written < len(view):
+            count = os.write(fd, view[written:])
+            if count == 0:
+                break
+            written += count
+        return written
+    finally:
+        os.lseek(fd, saved, os.SEEK_SET)
+
+
+def copy_file_range(
+    src: int,
+    dst: int,
+    count: int,
+    *,
+    offset_src: int | None = None,
+    offset_dst: int | None = None,
+) -> int:
+    """Copy up to ``count`` bytes from ``src`` to ``dst``: a portable drop-in.
+
+    Semantics and return value match :func:`os.copy_file_range` exactly -- the
+    number of bytes actually copied is returned, which may be short and is ``0``
+    at end of source, so a caller's ``while copied < size`` loop behaves the same
+    whichever platform runs it.  Position handling matches per descriptor too: an
+    ``offset_*`` of ``None`` reads from / writes at that descriptor's current
+    position and advances it, while a supplied offset leaves that position
+    untouched.
+
+    On Linux this *is* :func:`os.copy_file_range` -- when both offsets are
+    ``None`` it is invoked in the identical three-argument form the historical
+    call sites used -- so the in-kernel copy (and any reflink or server-side
+    acceleration the kernel can apply) runs byte for byte, and every ``OSError``
+    it may raise, including the ``EXDEV`` / ``EINVAL`` / ``ENOSYS`` a caller
+    catches to fall back to a plain copy, propagates unchanged.
+
+    macOS and Windows have no ``os.copy_file_range`` at all -- it is a Linux-only
+    syscall, not merely a slow path -- so the same byte range is copied in user
+    space through :func:`pread` / :func:`pwrite`, which are themselves
+    Windows-safe.  It is not a weaker copy: the identical bytes are transferred
+    and the identical count returned; only the venue (user space versus kernel)
+    differs.  That is the fail-closed "degrade to the strongest available
+    equivalent" rule applied to a performance primitive -- nothing is skipped.
+    """
+
+    kernel_copy = getattr(os, "copy_file_range", None)
+    if kernel_copy is not None:
+        if offset_src is None and offset_dst is None:
+            return kernel_copy(src, dst, count)
+        return kernel_copy(
+            src, dst, count, offset_src=offset_src, offset_dst=offset_dst
+        )
+    return _copy_file_range_via_rw(
+        src, dst, count, offset_src=offset_src, offset_dst=offset_dst
+    )
+
+
+def _copy_file_range_via_rw(
+    src: int,
+    dst: int,
+    count: int,
+    *,
+    offset_src: int | None,
+    offset_dst: int | None,
+) -> int:
+    """User-space stand-in for :func:`os.copy_file_range` where it is absent.
+
+    Reads one chunk of at most ``count`` bytes from ``src`` and writes exactly
+    those bytes to ``dst``, returning the number copied (``0`` at end of source)
+    so the caller's loop terminates identically to the kernel call.  Each
+    descriptor's position is handled the way :func:`os.copy_file_range` documents:
+    ``None`` reads/writes at -- and advances -- the current offset (via
+    :func:`os.read` / :func:`os.write`); a supplied offset uses :func:`pread` /
+    :func:`pwrite`, which do not move it.  Short writes are looped until the whole
+    chunk that was read is on disk, so the bytes copied are always exactly the
+    bytes read.
+    """
+
+    if count <= 0:
+        return 0
+    if offset_src is None:
+        data = os.read(src, count)
+    else:
+        data = pread(src, count, offset_src)
+    if not data:
+        return 0
+    view = memoryview(data)
+    written = 0
+    while view:
+        if offset_dst is None:
+            amount = os.write(dst, view)
+        else:
+            amount = pwrite(dst, view, offset_dst + written)
+        if amount <= 0:
+            raise OSError(
+                errno.EIO,
+                "short write while emulating os.copy_file_range",
+            )
+        view = view[amount:]
+        written += amount
+    return written
+
+
 def supports_directory_fsync() -> bool:
     """Whether a directory's own metadata can be flushed on this platform.
 
@@ -1512,6 +1639,7 @@ __all__ = [
     "SealIntegrityError",
     "SealResult",
     "add_seals",
+    "copy_file_range",
     "create_private_directory",
     "describe_ownership",
     "exclusive_nonblocking_lock",
@@ -1530,6 +1658,7 @@ __all__ = [
     "privacy_guarantee",
     "private_directory_mode",
     "private_file_mode",
+    "pwrite",
     "read_seals",
     "release_lock",
     "remove_private_tree",

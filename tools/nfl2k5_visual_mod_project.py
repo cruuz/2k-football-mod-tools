@@ -3306,7 +3306,7 @@ def verify_union(source_fd: int, output_fd: int, size: int,
 def write_all(descriptor: int, offset: int, payload: bytes) -> None:
     position = 0
     while position < len(payload):
-        amount = os.pwrite(descriptor, payload[position:], offset + position)
+        amount = platform_compat.pwrite(descriptor, payload[position:], offset + position)
         require(amount > 0, "short XISO patch write")
         position += amount
 

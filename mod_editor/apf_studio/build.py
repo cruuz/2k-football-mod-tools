@@ -263,7 +263,9 @@ def _copy_regular(
             while copied < opened.st_size:
                 count = min(16 * 1024 * 1024, opened.st_size - copied)
                 try:
-                    written = os.copy_file_range(source_fd, destination_fd, count)
+                    written = platform_compat.copy_file_range(
+                        source_fd, destination_fd, count
+                    )
                 except OSError as exc:
                     if exc.errno not in {errno.EXDEV, errno.EINVAL, errno.ENOSYS}:
                         raise
@@ -908,7 +910,7 @@ class ApfBuildService:
                     progress("Applying compiled APF edits", completed, len(ordered))
                     cursor = 0
                     while cursor < span.size:
-                        written = os.pwrite(
+                        written = platform_compat.pwrite(
                             descriptor,
                             span.data[cursor:],
                             span.offset + cursor,

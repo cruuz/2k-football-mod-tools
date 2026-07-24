@@ -14,6 +14,12 @@ import stat
 import struct
 import sys
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from mod_editor.core import platform_compat  # noqa: E402
+
 from nfl_tset_png_import_dynamic_validate import validate_dynamic_import
 import nfl_uniform_color_xiso_direct_patch as common
 
@@ -142,7 +148,7 @@ def verify_previews(directory: Path, identity: tuple[int, int],
 def pwrite_all(descriptor: int, offset: int, value: bytes) -> None:
     position = 0
     while position < len(value):
-        written = os.pwrite(descriptor, value[position:], offset + position)
+        written = platform_compat.pwrite(descriptor, value[position:], offset + position)
         common.require(written > 0, f"short span write at 0x{offset + position:x}")
         position += written
 

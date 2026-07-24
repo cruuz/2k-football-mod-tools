@@ -473,7 +473,7 @@ def _open_regular_readonly(path: Path, label: str) -> tuple[Path, int, tuple[int
 def pwrite_all(descriptor: int, offset: int, payload: bytes) -> None:
     cursor = 0
     while cursor < len(payload):
-        written = os.pwrite(descriptor, payload[cursor:], offset + cursor)
+        written = platform_compat.pwrite(descriptor, payload[cursor:], offset + cursor)
         require(written > 0, f"short XISO write at 0x{offset + cursor:x}")
         cursor += written
 

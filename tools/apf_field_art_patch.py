@@ -1185,7 +1185,7 @@ def _pwrite_all(descriptor: int, data: bytes, offset: int) -> None:
     view = memoryview(data)
     written = 0
     while written < len(view):
-        count = os.pwrite(descriptor, view[written:], offset + written)
+        count = platform_compat.pwrite(descriptor, view[written:], offset + written)
         if count <= 0:
             raise PatchError("short descriptor write")
         written += count
