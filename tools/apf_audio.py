@@ -110,6 +110,15 @@ _WINDOWS_JOB_BASIC_ACCOUNTING = 1
 _WINDOWS_ACTIVE_PROCESSES_OFFSET = 40
 _WINDOWS_ACCOUNTING_BYTES = 64
 
+# CreateProcess's CREATE_SUSPENDED.  A child started with it is frozen before it
+# runs a single instruction, so it can be sealed into the job object *before* it
+# is able to spawn a descendant -- closing the race a job assigned only after
+# launch leaves open.  It is resumed through ntdll's ``NtResumeProcess`` once the
+# assignment is done; see :func:`_adopt_process_group`.  ``STATUS_SUCCESS`` is
+# that call's "every thread resumed" NTSTATUS.
+_WINDOWS_CREATE_SUSPENDED = 0x00000004
+_WINDOWS_STATUS_SUCCESS = 0
+
 
 class _WindowsProcessGroup:
     """A Job Object standing in for the POSIX session a decoder cannot have.
@@ -148,11 +157,21 @@ class _WindowsProcessGroup:
         except (OSError, TypeError, ValueError):
             return False
 
-    def active(self) -> bool:
-        """The Win32 answer to ``os.killpg(pg, 0)``, failing closed on error."""
+    def active_process_count(self) -> int | None:
+        """How many processes the job still holds, or ``None`` if unreadable.
+
+        The Win32 counterpart to ``os.killpg(pg, 0)`` -- but returned as a
+        *count*, not a bool, so the stop path can tell three states apart that a
+        boolean would collapse: ``0`` (the group has stopped), a positive number
+        (a genuine, observed survivor), and ``None`` -- the accounting query
+        itself failed.  A failed query is *not* evidence of a survivor; reporting
+        it as one is exactly the false "could not be stopped safely" this returns
+        ``None`` to prevent.  Callers decide what an unreadable count means from
+        evidence they can trust, such as whether the direct child is still alive.
+        """
 
         if self._handle is None:
-            return False
+            return 0
         buffer = ctypes.create_string_buffer(_WINDOWS_ACCOUNTING_BYTES)
         try:
             queried = self._kernel32.QueryInformationJobObject(
@@ -163,21 +182,29 @@ class _WindowsProcessGroup:
                 None,
             )
         except OSError:
-            return True
+            return None
         if not queried:
-            return True
+            return None
         (active_processes,) = struct.unpack_from(
             "<I", buffer.raw, _WINDOWS_ACTIVE_PROCESSES_OFFSET
         )
-        return active_processes > 0
+        return active_processes
 
-    def terminate(self) -> None:
+    def terminate(self) -> bool:
+        """``TerminateJobObject`` the whole group; report whether it was accepted.
+
+        A ``True`` result means the kernel took the request to end every process
+        in the job at once.  It does not promise they have already left the
+        accounting count -- forced termination is not instantaneous -- which is
+        why the caller confirms the group actually drained afterwards.
+        """
+
         if self._handle is None:
-            return
+            return False
         try:
-            self._kernel32.TerminateJobObject(self._handle, 1)
+            return bool(self._kernel32.TerminateJobObject(self._handle, 1))
         except OSError:
-            pass
+            return False
 
     def close(self) -> None:
         handle, self._handle = self._handle, None
@@ -226,31 +253,142 @@ def _windows_job_api() -> "ctypes.CDLL | None":
     return kernel32
 
 
+def _windows_ntdll_resume() -> "ctypes.CDLL | None":
+    """ntdll's ``NtResumeProcess`` with argtypes applied, or ``None``.
+
+    ``NtResumeProcess`` restarts every thread of a process from its handle
+    alone, which is the one thing a CREATE_SUSPENDED child needs and the one
+    thing ``subprocess`` cannot hand back: it closes the primary-thread handle
+    ``CreateProcess`` returned before the constructor even finishes.  The call is
+    absent from the Win32 headers but has been a stable ntdll export for two
+    decades; if it is ever missing we simply do not create children suspended.
+    """
+
+    windll = getattr(ctypes, "windll", None)
+    if windll is None:
+        return None
+    try:
+        ntdll = windll.ntdll
+        ntdll.NtResumeProcess.argtypes = [ctypes.c_void_p]
+        ntdll.NtResumeProcess.restype = ctypes.c_long
+    except (AttributeError, OSError):
+        return None
+    return ntdll
+
+
+def _use_suspended_launch() -> bool:
+    """Whether a child can be created suspended and confined before it runs.
+
+    True only when *both* primitives the sequence needs are present: the job API
+    (something to assign the frozen child to) and ``NtResumeProcess`` (a way to
+    start it again).  Missing either, creating the child suspended would risk one
+    that can never run, so the caller launches normally and assigns the job the
+    instant the child starts instead -- the pre-existing, slightly racier path.
+    """
+
+    if not _IS_WINDOWS:
+        return False
+    return _windows_job_api() is not None and _windows_ntdll_resume() is not None
+
+
+def _resume_suspended_process(
+    process: subprocess.Popen[bytes] | subprocess.Popen[str],
+) -> bool:
+    """Resume a child created with CREATE_SUSPENDED; report whether it took.
+
+    Resumes through the process handle ``subprocess`` retains, so it needs no
+    thread handle of its own.  A ``False`` result means the child is stuck
+    frozen and unusable, and the caller must not leave it that way.
+    """
+
+    ntdll = _windows_ntdll_resume()
+    handle = getattr(process, "_handle", None)
+    if ntdll is None or handle is None:
+        return False
+    try:
+        status = ntdll.NtResumeProcess(int(handle))
+    except (OSError, TypeError, ValueError):
+        return False
+    return status == _WINDOWS_STATUS_SUCCESS
+
+
 def _adopt_process_group(
     process: subprocess.Popen[bytes] | subprocess.Popen[str],
+    *,
+    was_suspended: bool = False,
 ) -> "_WindowsProcessGroup | None":
     """Give *process* a group with POSIX-session reach where one is needed.
 
     POSIX already has it from ``start_new_session=True``; Windows needs the job
-    created and assigned right after the child starts.
+    created and the child assigned to it.  When the child was created suspended
+    (``was_suspended``), it is sealed into the job *before* it can run -- so no
+    descendant it later spawns can escape a job that would otherwise have been
+    assigned a beat too late -- and then, unconditionally, resumed: a suspended
+    child must be started again whether or not confinement succeeded, or it
+    hangs forever.  A child that cannot be resumed is unusable, so it is killed
+    and reported as unconfined rather than left frozen.
     """
 
     if not _IS_WINDOWS:
         return None
     group = _WindowsProcessGroup.create()
-    if group is None:
+    assigned = group is not None and group.adopt(process)
+    if was_suspended and not _resume_suspended_process(process):
+        if group is not None:
+            group.close()
+        try:
+            process.kill()
+        except OSError:
+            pass
         return None
-    if not group.adopt(process):
-        group.close()
+    if group is None or not assigned:
+        if group is not None:
+            group.close()
         return None
     return group
+
+
+def _drain_windows_job(group: "_WindowsProcessGroup") -> int | None:
+    """Wait, bounded, for an already-terminated job to empty; return its count.
+
+    Polls ``ActiveProcesses`` until it reads zero or the grace window closes.
+    If the window closes with survivors still counted, ``TerminateJobObject`` is
+    issued once more -- catching a descendant that was mid-spawn when the first
+    sweep passed over the group -- and the group is given one more bounded window
+    to drain.  Returns the final count, or ``None`` when the count could not be
+    read at all (never mistaken by the caller for a survivor).
+    """
+
+    def settle() -> int | None:
+        deadline = time.monotonic() + PROCESS_STOP_GRACE_SECONDS
+        while True:
+            count = group.active_process_count()
+            if count == 0:
+                return 0
+            if time.monotonic() >= deadline:
+                return count
+            time.sleep(PROCESS_POLL_SECONDS)
+
+    count = settle()
+    if count is not None and count > 0:
+        group.terminate()
+        count = settle()
+    return count
 
 
 def _stop_windows_process_group(
     process: subprocess.Popen[bytes] | subprocess.Popen[str],
     group: "_WindowsProcessGroup | None",
 ) -> None:
-    """Stop the decoder and its descendants through the job object."""
+    """Stop the decoder and its descendants through the job object.
+
+    The fail-closed raise fires only on *positive evidence* of a survivor: the
+    job's own active-process count, read after ``TerminateJobObject`` and given a
+    bounded window to fall to zero, or -- when that count cannot be read at all
+    -- the direct child still being alive.  A group that genuinely stopped, or
+    one whose accounting merely could not be queried while the child it led is
+    already gone, is never misreported as a survivor.
+    """
 
     if group is None:
         # No job: only the direct child is reachable.  Stop it, then raise on
@@ -275,10 +413,15 @@ def _stop_windows_process_group(
             process.communicate(timeout=PROCESS_STOP_GRACE_SECONDS)
         except (subprocess.TimeoutExpired, OSError):
             pass
-        deadline = time.monotonic() + PROCESS_STOP_GRACE_SECONDS
-        while group.active() and time.monotonic() < deadline:
-            time.sleep(PROCESS_POLL_SECONDS)
-        if group.active():
+        count = _drain_windows_job(group)
+        # Positive evidence of a survivor is either the job still counting one
+        # after it was terminated and drained, or -- when the count is
+        # unreadable -- the direct child still being alive.  Everything else
+        # (a drained group; an unreadable count with the child already gone) is
+        # not a survivor: TerminateJobObject was issued regardless, so refusing
+        # to invent one is what keeps a stopped group from being misreported.
+        survived = count > 0 if count is not None else process.poll() is None
+        if survived:
             raise AudioError(
                 "The audio decoder process group could not be stopped safely"
             )
@@ -376,6 +519,7 @@ def run_cancellable_subprocess(
     communication_complete = False
     started = time.monotonic()
     try:
+        suspended = _use_suspended_launch()
         try:
             process = subprocess.Popen(
                 command,
@@ -388,10 +532,15 @@ def run_cancellable_subprocess(
                 # POSIX only; ignored on Windows, where the job object assigned
                 # on the next line provides the same reach.
                 start_new_session=True,
+                # Windows only (``0`` -- the default -- everywhere else, so POSIX
+                # launch is byte-for-byte unchanged): freeze the child so it is
+                # sealed into the job before it can spawn anything;
+                # ``_adopt_process_group`` resumes it.
+                creationflags=_WINDOWS_CREATE_SUSPENDED if suspended else 0,
             )
         except OSError as exc:
             raise AudioError(f"Could not start the audio decoder: {exc}") from exc
-        group = _adopt_process_group(process)
+        group = _adopt_process_group(process, was_suspended=suspended)
 
         pending_input = input_data
         while True:

@@ -154,7 +154,10 @@ class ReservePlanContractTests(unittest.TestCase):
     def test_save_load_is_atomic_private_and_never_overwrites(self) -> None:
         plan = ReserveRosterPlan.empty().assign(0, 0, 1_344)
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            # Resolve the temp root so save_reserve_plan's canonical return
+            # compares equal to ours under a symlinked (macOS /private/var) or
+            # short-name (Windows) temp location.
+            root = Path(directory).resolve()
             destination = root / "league.apf2k8roster"
             self.assertEqual(save_reserve_plan(plan, destination), destination)
             self.assertEqual(load_reserve_plan(destination), plan)

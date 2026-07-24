@@ -127,7 +127,10 @@ class SyntheticFailedRunner:
 class StadiumCacheCoordinatorTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
-        self.root = Path(self.temporary.name) / "private-source-cache"
+        # Resolve the temp root so paths the coordinator canonicalises compare
+        # equal to ours under a symlinked (macOS /private/var) or short-name
+        # (Windows) temp location.
+        self.root = Path(self.temporary.name).resolve() / "private-source-cache"
         self.root.mkdir()
         self.pack0 = self.root / "extracted" / "game" / "0"
         self.pack0.parent.mkdir(parents=True)
@@ -352,7 +355,10 @@ class StadiumWorkerAggregationTests(unittest.TestCase):
 
     def test_synthetic_scene_records_make_product_compatible_manifests(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            output = Path(temporary) / "private-staging"
+            # Resolve the temp root so the worker's canonical manifest paths
+            # compare equal to ours under a symlinked (macOS /private/var) or
+            # short-name (Windows) temp location.
+            output = Path(temporary).resolve() / "private-staging"
             models = output / "models"
             textures_root = output / "textures"
             models.mkdir(parents=True)

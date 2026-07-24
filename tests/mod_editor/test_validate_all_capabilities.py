@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import errno
 import hashlib
 import os
@@ -55,6 +56,25 @@ from tools.validate_all_mod_editor_capabilities import (
 
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+@contextlib.contextmanager
+def _resolved_tempdir():
+    """A TemporaryDirectory whose yielded path is fully resolved.
+
+    The report publisher refuses any output path with a symlink ancestor
+    (``_require_no_symlink_ancestors``), and macOS keeps the system temp dir under
+    ``/var`` -> ``/private/var`` while Windows exposes it as an 8.3 short name.
+    Staging a report under the raw temp dir therefore trips on the platform's own
+    ancestor symlink / short name before the behaviour under test is reached.
+    Resolving the root removes only that incidental difference -- a test's own
+    planted symlinks live below the root and are untouched, so every security
+    assertion still runs, and on Linux (no such ancestor) the path is
+    byte-identical to what ``tempfile.TemporaryDirectory`` already yielded.
+    """
+
+    with tempfile.TemporaryDirectory() as name:
+        yield str(Path(name).resolve())
 
 
 def _requires_posix_report_publication(test: unittest.TestCase) -> None:
@@ -261,7 +281,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
                     pass
 
     def test_changed_pinned_file_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             path = Path(temporary) / "validator.sh"
             path.write_text("first\n", encoding="utf-8")
             snapshot, _payload = read_pinned_file(path)
@@ -270,7 +290,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
                 verify_snapshot(snapshot)
 
     def test_aliases_and_empty_validator_are_handled_fail_closed(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             owner = root / "owner.sh"
             linked = root / "validator.sh"
@@ -291,7 +311,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
             self.assertEqual(snapshot.sha256, hashlib.sha256(b"").hexdigest())
 
     def test_manifest_is_deterministic_and_detects_addition(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             first = root / "a"
             second = root / "b"
@@ -358,7 +378,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
                 self.assertEqual(provenance.resolved_leaf.path, provenance.executable.path)
 
     def test_executable_symlink_chain_retarget_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             alternatives = root / "alternatives"
             targets = root / "targets"
@@ -414,7 +434,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_report_publication_is_private_atomic_and_exclusive(self) -> None:
         _requires_posix_report_publication(self)
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
             publish_report(path, b"{}\n")
@@ -457,7 +477,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_failed_report_write_leaves_no_final_or_staging_file(self) -> None:
         _requires_posix_report_publication(self)
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
             with mock.patch(
@@ -527,7 +547,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_post_link_report_failure_preserves_complete_final(self) -> None:
         self._require_injectable_directory_fsync()
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
             real_fsync = os.fsync
@@ -554,7 +574,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_anonymous_publisher_never_calls_path_unlink(self) -> None:
         _requires_posix_report_publication(self)
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             path = Path(temporary) / "receipt.json"
             with mock.patch(
                 "tools.validate_all_mod_editor_capabilities.os.unlink",
@@ -563,9 +583,15 @@ class AllCapabilityValidationTests(unittest.TestCase):
                 publish_report(path, b"{}\n")
             self.assertEqual(path.read_bytes(), b"{}\n")
 
+    @unittest.skipUnless(
+        hasattr(os, "O_TMPFILE"),
+        "anonymous O_TMPFILE staging (and its no-named-fallback refusal) is "
+        "Linux-only; macOS stages a private O_EXCL temp instead and Windows has "
+        "no directory descriptor at all",
+    )
     def test_unsupported_anonymous_staging_fails_without_named_fallback(self) -> None:
         _requires_posix_report_publication(self)
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
             real_open = os.open
@@ -592,7 +618,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_destination_raced_before_link_is_preserved(self) -> None:
         _requires_posix_report_publication(self)
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
             real_link = os.link
@@ -624,7 +650,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_interrupt_before_link_discards_anonymous_stage(self) -> None:
         _requires_posix_report_publication(self)
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
             with mock.patch(
@@ -645,7 +671,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
         for failure in failures:
             with self.subTest(
                 failure=type(failure).__name__
-            ), tempfile.TemporaryDirectory() as temporary:
+            ), _resolved_tempdir() as temporary:
                 root = Path(temporary)
                 path = root / "receipt.json"
                 real_link = os.link
@@ -672,7 +698,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_final_revalidation_after_parent_fsync_preserves_replacement(self) -> None:
         self._require_injectable_directory_fsync()
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
             committed = root / "committed.json"
@@ -714,7 +740,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_ancestor_replacement_after_link_is_detected_without_rollback(self) -> None:
         _requires_posix_report_publication(self)
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             parent = root / "parent"
             moved = root / "moved"
@@ -741,7 +767,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_open_report_parent_is_revalidated_against_pathname(self) -> None:
         _requires_posix_report_publication(self)
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             parent = root / "parent"
             moved = root / "moved"
@@ -764,7 +790,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_parent_chain_acquisition_closes_every_fd_on_baseexception(self) -> None:
         _requires_posix_report_publication(self)
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             path = Path(temporary) / "receipt.json"
             real_open = os.open
             opened: list[int] = []
@@ -790,7 +816,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
 
     def test_parent_component_swap_between_stat_and_open_is_rejected(self) -> None:
         _requires_posix_report_publication(self)
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             parent = root / "parent"
             moved = root / "moved"
@@ -853,7 +879,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
         self.assertTrue(any("close-202" in note for note in raised.exception.__notes__))
 
     def test_report_ancestor_symlink_is_refused(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
+        with _resolved_tempdir() as temporary:
             root = Path(temporary)
             real = root / "real"
             (real / "child").mkdir(parents=True)

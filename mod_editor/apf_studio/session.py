@@ -88,6 +88,16 @@ class SessionError(ValueError):
     """A replacement or project action a modder can correct."""
 
 
+# Every descriptor this module opens carries replacement or user-asset *bytes*.
+# On Windows ``os.open`` defaults to the CRT's text mode, which rewrites CRLF and
+# stops reading at a 0x1A byte -- silent corruption of exactly those payloads (a
+# PNG begins ``89 50 4E 47 0D 0A 1A 0A``, so a text-mode read both collapses its
+# CRLF and truncates at its 0x1A).  ``O_BINARY`` does not exist on POSIX, where
+# there is no translation to disable, so this resolves to 0 and the POSIX flags
+# are unchanged.
+_O_BINARY = getattr(os, "O_BINARY", 0)
+
+
 _AUDIO_REPLACEMENT_KINDS = frozenset(
     {AUDO_EXACT_SLOT_KIND, AUSB_EXACT_SLOT_KIND}
 )
@@ -2534,7 +2544,8 @@ class ApfSession:
             path,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
         )
         try:
             opened = os.fstat(descriptor)
@@ -2611,7 +2622,10 @@ class ApfSession:
             raise SessionError("Replacement must be a regular, non-symlink PNG")
         descriptor = os.open(
             path,
-            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            os.O_RDONLY
+            | getattr(os, "O_NOFOLLOW", 0)
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
         )
         try:
             opened = os.fstat(descriptor)

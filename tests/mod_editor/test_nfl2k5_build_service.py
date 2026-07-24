@@ -311,13 +311,13 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                         FakeBackendRunner._argument(
                             call, "--audio-exact-inventory"
                         ),
-                        fingerprints,
+                        fingerprints.resolve(),
                     )
                     self.assertEqual(
                         FakeBackendRunner._argument(
                             call, "--audio-containment-inventory"
                         ),
-                        containment,
+                        containment.resolve(),
                     )
 
     def test_external_project_is_one_private_snapshot_for_both_backend_passes(self) -> None:
@@ -482,13 +482,13 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                 )
                 self.assertEqual(
                     FakeBackendRunner._argument(call, "--audio-exact-inventory"),
-                    fingerprints,
+                    fingerprints.resolve(),
                 )
                 self.assertEqual(
                     FakeBackendRunner._argument(
                         call, "--audio-containment-inventory"
                     ),
-                    containment,
+                    containment.resolve(),
                 )
 
     def test_audio_inventory_rejects_unsafe_modes_links_and_sizes(self) -> None:

@@ -530,7 +530,13 @@ class StudioAudioOperationFenceTests(unittest.TestCase):
             tasks[1].run()  # type: ignore[attr-defined]
             self.application.processEvents()
             self.assertFalse(self.window._blocking)
-            self.assertEqual(self.window._active_source_path, source.resolve())
+            # The fake facade hands the window the raw source path; the window
+            # stores it verbatim. Compare resolved on both sides so the "active
+            # source is this file" invariant holds where the temp dir sits under
+            # a symlink (macOS /private/var) or a short name (Windows).
+            self.assertEqual(
+                self.window._active_source_path.resolve(), source.resolve()
+            )
             self.assertEqual(self.deferred_crib_refresh_states, [False])
             self.assertEqual(self.deferred_audio_reset_states, [False])
 
@@ -632,7 +638,12 @@ class StudioAudioOperationFenceTests(unittest.TestCase):
             self.assertEqual(self.deferred_crib_refresh_states, [False])
             self.assertEqual(len(errors), 1)
             self.assertIn("does not match", errors[0])
-            self.assertEqual(self.window._active_source_path, source.resolve())
+            # Resolve both sides: the window stores the facade's raw source path,
+            # which denotes the same file as source under a symlinked (macOS) or
+            # short-name (Windows) temp root.
+            self.assertEqual(
+                self.window._active_source_path.resolve(), source.resolve()
+            )
 
     def test_undo_refreshes_crib_only_after_worker_releases_shell(self) -> None:
         tasks = self._install_captured_shell_pool()

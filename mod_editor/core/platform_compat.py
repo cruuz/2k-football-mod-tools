@@ -291,6 +291,47 @@ def _require_msvcrt() -> ModuleType:
     return msvcrt
 
 
+# The Linux-only ``memfd`` write-seal constants from <linux/fcntl.h>.  macOS *has*
+# :mod:`fcntl` but not these (they are a Linux kernel feature) and Windows has no
+# ``fcntl`` at all.  Named once so the advertised gate (:func:`supports_sealed_memfd`)
+# and the fail-closed enforcement (:func:`_require_seal_fcntl`) can never drift.
+_MEMFD_SEAL_ATTRS = (
+    "F_ADD_SEALS",
+    "F_GET_SEALS",
+    "F_SEAL_GROW",
+    "F_SEAL_SEAL",
+    "F_SEAL_SHRINK",
+    "F_SEAL_WRITE",
+)
+
+
+def _require_seal_fcntl() -> ModuleType:
+    """Return :mod:`fcntl` only when it carries the ``memfd`` write-seal constants.
+
+    The seal primitives (:func:`write_seal_mask`, :func:`read_seals`,
+    :func:`add_seals`) read ``fcntl.F_SEAL_*`` / ``F_GET_SEALS`` / ``F_ADD_SEALS``,
+    which exist only on Linux.  ``fcntl`` itself imports fine on macOS but lacks
+    them, so touching one raises an opaque ``AttributeError: module 'fcntl' has no
+    attribute 'F_GET_SEALS'`` instead of this module's fail-closed contract.
+    Routing every such access through here means the absent constant is never
+    touched: the seal path is unreachable unless the support
+    :func:`supports_sealed_memfd` advertises is genuinely present, and where it is
+    not this raises the same typed :class:`RuntimeError` the missing-``fcntl`` path
+    (Windows) already raises -- never a silent skip.  On Linux the constants are
+    present, so this returns the identical ``fcntl`` the primitives used before and
+    their behaviour is byte-for-byte unchanged.
+    """
+
+    fcntl = _require_fcntl()
+    if not all(hasattr(fcntl, name) for name in _MEMFD_SEAL_ATTRS):
+        raise RuntimeError(
+            "This operation requires the Linux memfd write-seal constants "
+            "(F_ADD_SEALS / F_GET_SEALS / F_SEAL_*), which this platform's fcntl "
+            "does not provide; kernel write seals are unavailable here"
+        )
+    return fcntl
+
+
 @dataclass(frozen=True)
 class _WindowsSecurityApi:
     """The two Win32 DLLs used for owner-SID lookups, with argtypes applied.
@@ -616,17 +657,7 @@ def supports_sealed_memfd() -> bool:
     fcntl = _optional_fcntl()
     if fcntl is None:
         return False
-    return all(
-        hasattr(fcntl, name)
-        for name in (
-            "F_ADD_SEALS",
-            "F_GET_SEALS",
-            "F_SEAL_GROW",
-            "F_SEAL_SEAL",
-            "F_SEAL_SHRINK",
-            "F_SEAL_WRITE",
-        )
-    )
+    return all(hasattr(fcntl, name) for name in _MEMFD_SEAL_ATTRS)
 
 
 def write_seal_mask() -> int:
@@ -639,7 +670,7 @@ def write_seal_mask() -> int:
     to remove.  Fails closed where seals do not exist.
     """
 
-    fcntl = _require_fcntl()
+    fcntl = _require_seal_fcntl()
     return (
         fcntl.F_SEAL_GROW
         | fcntl.F_SEAL_SEAL
@@ -651,7 +682,7 @@ def write_seal_mask() -> int:
 def read_seals(fd: int) -> int:
     """Report the seals currently set on ``fd`` (Linux ``F_GET_SEALS``)."""
 
-    fcntl = _require_fcntl()
+    fcntl = _require_seal_fcntl()
     return fcntl.fcntl(fd, fcntl.F_GET_SEALS)
 
 
@@ -664,7 +695,7 @@ def add_seals(fd: int, seals: int) -> None:
     to close.
     """
 
-    fcntl = _require_fcntl()
+    fcntl = _require_seal_fcntl()
     try:
         fcntl.fcntl(fd, fcntl.F_ADD_SEALS, seals)
     except OSError as exc:
@@ -1228,6 +1259,55 @@ def sealed_file_mode() -> int:
     """The mode a sealed, read-only file must read back as on this platform."""
 
     return privacy_guarantee().sealed_file_mode
+
+
+def is_private_directory_mode(info: os.stat_result) -> bool:
+    """Whether a directory's mode satisfies this platform's owner-only privacy.
+
+    This is the portable replacement for the ``info.st_mode & 0o077 == 0`` guard
+    the private-cache directory checks used to assert inline -- "no group or other
+    access at all".  It answers the same question with each platform's real
+    mechanism, and never as a silent skip:
+
+    * POSIX: byte-for-byte ``info.st_mode & 0o077 == 0``.  Group and other must
+      carry no access bit; the kernel enforces it, and this is exactly the
+      confidentiality the ``0o700`` cache directories rely on.
+    * Windows: a directory has no mode there -- it always reports ``0o777`` -- so
+      that number is not a privacy signal and asserting it would only dress a
+      missing guarantee up as a passing check.  Confidentiality is instead the
+      ACL inherited from the per-user profile root, asserted once at the cache
+      root by :func:`verify_private_root_placement` and named by
+      :func:`privacy_guarantee`.  This returns ``True`` so the meaningless number
+      is not asserted -- the same honest branch :func:`verify_private_directory`
+      already takes -- while the non-link / real-directory checks the caller makes
+      alongside it, and the root ACL, remain the guarantee in force.
+    """
+
+    if privacy_guarantee().posix_mode_privacy:
+        return info.st_mode & 0o077 == 0
+    return True
+
+
+def is_private_file_mode(info: os.stat_result) -> bool:
+    """Whether a private (writable) file's mode satisfies this platform's privacy.
+
+    The portable replacement for the ``info.st_mode & 0o077 == 0`` guard the
+    private-inventory / staging-file checks used to assert inline:
+
+    * POSIX: byte-for-byte ``info.st_mode & 0o077 == 0`` -- the ``0o600`` staging
+      and inventory files, with no group or other access.
+    * Windows: owner-write is the only permission bit that platform honours, so
+      the same private file reads back exactly ``0o666`` (:func:`private_file_mode`).
+      That honest value is asserted -- proving the file is a normal, writable
+      private file rather than one left read-only (which on Windows cannot even be
+      deleted) -- while its confidentiality comes from the cache root's ACL,
+      exactly as :func:`verify_private_file` does.  Never a silent skip: the mode
+      is still checked, against the number that platform actually produces.
+    """
+
+    if privacy_guarantee().posix_mode_privacy:
+        return info.st_mode & 0o077 == 0
+    return stat.S_IMODE(info.st_mode) == private_file_mode()
 
 
 def user_private_root() -> Path:
@@ -2201,6 +2281,8 @@ __all__ = [
     "harden_private_file",
     "is_canonical_absolute_path",
     "is_owned_by_current_user",
+    "is_private_directory_mode",
+    "is_private_file_mode",
     "is_within_user_private_root",
     "no_replace_publish_mechanism",
     "open_private_stage",

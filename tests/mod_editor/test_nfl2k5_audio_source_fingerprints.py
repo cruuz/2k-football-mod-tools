@@ -190,7 +190,10 @@ class FingerprintFixture:
 class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
-        self.fixture = FingerprintFixture(Path(self.temporary.name))
+        # Resolve the temp root so paths the store canonicalises compare equal to
+        # ours under a symlinked (macOS /private/var) or short-name (Windows) temp
+        # location.
+        self.fixture = FingerprintFixture(Path(self.temporary.name).resolve())
 
     def tearDown(self) -> None:
         self.temporary.cleanup()

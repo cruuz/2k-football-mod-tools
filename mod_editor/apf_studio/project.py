@@ -63,6 +63,15 @@ AUDIO_ANNOTATIONS_MEMBER = "audio-annotations.json"
 # the on-disk archive limit. Expanded-size checks use the explicit bound above.
 MAX_PROJECT_BYTES = MAX_PROJECT_ARCHIVE_BYTES
 PROJECT_IO_CHUNK_BYTES = 1024 * 1024
+# Every descriptor this module opens carries project or replacement *bytes*.  On
+# Windows ``os.open`` defaults to the CRT's text mode, which rewrites CRLF and
+# stops reading at a 0x1A byte -- silent corruption of exactly those payloads
+# (a PNG replacement begins ``89 50 4E 47 0D 0A 1A 0A``, so a text-mode read
+# both collapses its CRLF and truncates at its 0x1A, making a byte-identical
+# file re-read differently and spuriously fail the tamper check).  ``O_BINARY``
+# does not exist on POSIX, where there is no translation to disable, so this
+# resolves to 0 and the POSIX flags are unchanged.
+_O_BINARY = getattr(os, "O_BINARY", 0)
 RETAIL_HASHES = frozenset(
     {
         "c45aab61de93773dfe25adbae5749ad5adb3f3369a6c0106b2159ad603b6fe53",
@@ -265,7 +274,8 @@ class WorkspaceStateStore:
             self.state_path,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
         )
         try:
             opened = os.fstat(descriptor)
@@ -538,7 +548,11 @@ class WorkspaceStateStore:
         )
         descriptor = os.open(
             temporary,
-            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+            os.O_WRONLY
+            | os.O_CREAT
+            | os.O_EXCL
+            | getattr(os, "O_NOFOLLOW", 0)
+            | _O_BINARY,
             0o600,
         )
         try:
@@ -629,7 +643,8 @@ def project_target_identity(path: Path) -> ProjectTargetIdentity:
             requested,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
         )
     except FileNotFoundError as exc:
         raise ProjectError(
@@ -784,7 +799,8 @@ def _open_replacement_source(
             path,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
         )
     except OSError as exc:
         raise ProjectError(f"Replacement changed after import: {asset_id}") from exc

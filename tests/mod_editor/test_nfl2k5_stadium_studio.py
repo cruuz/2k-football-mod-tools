@@ -61,7 +61,10 @@ class FakeTextureDelegate:
 class StadiumStudioTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
-        self.root = Path(self.temporary.name)
+        # Resolve the temp root so paths the studio canonicalises compare equal to
+        # ours under a symlinked (macOS /private/var) or short-name (Windows) temp
+        # location.
+        self.root = Path(self.temporary.name).resolve()
         self.models = self.root / "models"
         self.textures = self.root / "scne_textures"
         self.models.mkdir()

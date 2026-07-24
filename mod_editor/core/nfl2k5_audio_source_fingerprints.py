@@ -336,7 +336,7 @@ def _regular_private_file(path: Path, label: str) -> os.stat_result:
         # raw uid: Windows reports st_uid == 0 for every file, so an inline
         # comparison would degrade into a check that always passes there.
         and platform_compat.is_owned_by_current_user(info, path=path)
-        and info.st_mode & 0o077 == 0,
+        and platform_compat.is_private_file_mode(info),
         f"{label} must be an owner-only, non-linked regular file",
     )
     return info
@@ -349,7 +349,7 @@ def _private_derived_directory(root: Path, path: Path) -> Path:
     info = path.lstat()
     _require(
         platform_compat.is_owned_by_current_user(info, path=path)
-        and info.st_mode & 0o077 == 0
+        and platform_compat.is_private_directory_mode(info)
         and platform_compat.is_canonical_absolute_path(path, resolved)
         and resolved == root / PRIVATE_RELATIVE_PATH.parent,
         "Private derived-cache directory must be owner-only and stay inside "
@@ -781,7 +781,7 @@ class Nfl2k5AudioSourceFingerprintStore:
         publication_guard: PublicationGuard | None = None,
     ) -> None:
         parent = path.parent
-        parent.mkdir(mode=0o700, parents=False, exist_ok=True)
+        platform_compat.create_private_directory(parent, exist_ok=True)
         resolved_parent = _regular_private_directory(
             parent, "Private derived-cache directory"
         )
@@ -790,7 +790,7 @@ class Nfl2k5AudioSourceFingerprintStore:
             and resolved_parent == root / PRIVATE_RELATIVE_PATH.parent,
             "Private source-audio inventory path escapes its source cache",
         )
-        os.chmod(resolved_parent, 0o700)
+        platform_compat.harden_private_directory(resolved_parent)
         _private_derived_directory(root, parent)
 
         directory_fd = os.open(
@@ -813,16 +813,9 @@ class Nfl2k5AudioSourceFingerprintStore:
                 and platform_compat.is_owned_by_current_user(
                     parent_opened, fd=directory_fd
                 )
-                and (
-                    parent_opened.st_dev,
-                    parent_opened.st_ino,
-                    parent_opened.st_mode & 0o077,
-                )
-                == (
-                    parent_named.st_dev,
-                    parent_named.st_ino,
-                    0,
-                ),
+                and platform_compat.is_private_directory_mode(parent_opened)
+                and (parent_opened.st_dev, parent_opened.st_ino)
+                == (parent_named.st_dev, parent_named.st_ino),
                 "Private derived-cache directory changed before publication",
             )
             descriptor, temporary_name = tempfile.mkstemp(
@@ -855,7 +848,7 @@ class Nfl2k5AudioSourceFingerprintStore:
                 and platform_compat.is_owned_by_current_user(
                     opened, fd=descriptor
                 )
-                and opened.st_mode & 0o077 == 0
+                and platform_compat.is_private_file_mode(opened)
                 and opened.st_nlink == 1
                 and (
                     opened.st_dev,
@@ -891,7 +884,7 @@ class Nfl2k5AudioSourceFingerprintStore:
             _require(
                 stat.S_ISREG(final.st_mode)
                 and platform_compat.is_owned_by_current_user(final, path=path)
-                and final.st_mode & 0o077 == 0
+                and platform_compat.is_private_file_mode(final)
                 and final.st_nlink == 1
                 and (final.st_dev, final.st_ino, final.st_size)
                 == (staged_identity[0], staged_identity[1], len(payload)),
@@ -925,7 +918,7 @@ class Nfl2k5AudioSourceFingerprintStore:
                 and platform_compat.is_owned_by_current_user(
                     after, fd=descriptor
                 )
-                and after.st_mode & 0o077 == 0
+                and platform_compat.is_private_file_mode(after)
                 and after.st_nlink == 1
                 and (
                     named_after.st_dev,
@@ -1003,7 +996,7 @@ class Nfl2k5AudioSourceFingerprintStore:
                 and platform_compat.is_owned_by_current_user(
                     opened, fd=descriptor
                 )
-                and opened.st_mode & 0o077 == 0
+                and platform_compat.is_private_file_mode(opened)
                 and (opened.st_dev, opened.st_ino, opened.st_size)
                 == (info.st_dev, info.st_ino, info.st_size),
                 "Private source-audio inventory changed before it was opened",

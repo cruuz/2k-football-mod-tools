@@ -43,7 +43,12 @@ class ApfEditorExportTests(unittest.TestCase):
                     output, output / "provenance.json", 6, 11
                 ),
             )
-            backend.assert_called_once_with(source, 6, output)
+            # _new_output_directory canonicalises the destination (resolve),
+            # so the backend receives output.resolve(): equal to output on Linux
+            # but /private/var-expanded on macOS and long-name-expanded on
+            # Windows. Assert the resolved form so the call contract holds on
+            # every OS while still pinning source, index and the exact directory.
+            backend.assert_called_once_with(source, 6, output.resolve())
             self.assertFalse(output.exists())
 
             existing = root / "existing"

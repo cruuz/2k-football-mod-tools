@@ -202,7 +202,15 @@ class ApfRecoveryArchiveTests(unittest.TestCase):
             other.write_bytes(b"other-source")
             self.assertFalse(store.clear_recovery_for_source(other, SOURCE_SHA256))
             self.assertIsNotNone(store.recovery_candidate(require_source=False))
-            self.assertTrue(store.clear_recovery_for_source(source, SOURCE_SHA256))
+            # register_recovery canonicalised the source (candidate.source_path
+            # == source.resolve(), asserted above) and every real caller clears
+            # with the resolved _active_source_path, so ask to clear with the same
+            # canonical form. On Linux source == source.resolve(); under a
+            # symlinked (macOS /private/var) or short-name (Windows) temp root the
+            # raw spelling differs from the stored canonical one.
+            self.assertTrue(
+                store.clear_recovery_for_source(source.resolve(), SOURCE_SHA256)
+            )
             self.assertFalse(store.recovery_path.exists())
             self.assertIsNone(store.recovery_candidate(require_source=False))
             # Clearing recovery preserves the useful recent-source history.

@@ -668,7 +668,11 @@ class AudioPanelBackendTests(unittest.TestCase):
         self.assertNotEqual(staged, supplied)
         self.assertTrue(staged.is_file())
         self.assertEqual(staged.read_bytes(), supplied.read_bytes())
-        self.assertEqual(metadata.wav_path, staged)
+        # metadata.wav_path is canonicalised by the backend while prepare_audio
+        # returns the path as staged; resolve both so "the metadata points at the
+        # staged file" holds under a symlinked (macOS) or short-name (Windows)
+        # temp root.
+        self.assertEqual(metadata.wav_path.resolve(), staged.resolve())
         self.assertTrue(
             any(stage == "Replacement staged" for stage, _done, _total in self.progress)
         )

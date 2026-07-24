@@ -308,7 +308,10 @@ class PerUserPathTests(unittest.TestCase):
 
     def test_paths_are_scoped_to_the_user(self) -> None:
         with tempfile.TemporaryDirectory(prefix="apf-installer-paths-") as temporary_name:
-            home = Path(temporary_name) / "home"
+            # Resolve the temp root so resolve_install_paths' canonical outputs
+            # compare equal to ours under a symlinked (macOS /private/var) or
+            # short-name (Windows) temp location.
+            home = Path(temporary_name).resolve() / "home"
             home.mkdir()
             paths = installer.resolve_install_paths(
                 {

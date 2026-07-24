@@ -272,7 +272,10 @@ class _StadiumProjectSession(_Session):
 class StudioFacadeTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="studio-facade-test-")
-        self.root = Path(self.temporary.name)
+        # Resolve the temp root so paths the facade canonicalises compare equal
+        # to ours where the OS temp dir sits under a symlink (macOS /private/var)
+        # or a short name (Windows).
+        self.root = Path(self.temporary.name).resolve()
         source = SimpleNamespace(selected_path=str(self.root / "NFL2K5.iso"))
         self.cache = SimpleNamespace(source=source, resource_count=86882)
         self.catalog = _Catalog()

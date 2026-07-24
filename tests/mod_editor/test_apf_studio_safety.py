@@ -764,7 +764,10 @@ class BuildBoundaryTests(unittest.TestCase):
 
     def test_clean_build_publishes_one_complete_atomic_game_directory(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            # Resolve the temp root so the build receipt's canonical output path
+            # compares equal to ours under a symlinked (macOS /private/var) or
+            # short-name (Windows) temp location.
+            root = Path(directory).resolve()
             game = root / "game"
             game.mkdir()
             tree = self._tiny_game(game)
@@ -947,7 +950,10 @@ class CatalogAndLauncherSafetyTests(unittest.TestCase):
 
     def test_xenia_settings_ignore_stale_temporary_file(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            # Resolve the temp root so the canonical xenia_path persisted in the
+            # settings compares equal to ours under a symlinked (macOS
+            # /private/var) or short-name (Windows) temp location.
+            root = Path(directory).resolve()
             executable = root / "xenia"
             executable.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
             executable.chmod(0o755)
@@ -960,7 +966,12 @@ class CatalogAndLauncherSafetyTests(unittest.TestCase):
 
     def test_xenia_launch_does_not_follow_log_symlink(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            # Resolve the temp root so the run/log directory the test derives from
+            # hashing str(game) matches the one the launcher derives from the
+            # canonicalised game path: otherwise, under a symlinked (macOS
+            # /private/var) or short-name (Windows) temp location, the launcher
+            # never reaches the planted log symlink and the rejection is untested.
+            root = Path(directory).resolve()
             executable = root / "xenia"
             executable.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
             executable.chmod(0o755)
