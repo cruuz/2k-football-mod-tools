@@ -327,10 +327,10 @@ class Nfl2k5AudioSourceContainmentTests(unittest.TestCase):
             destination_name: str,
         ) -> None:
             nonlocal mutated
-            source_fd = os.open(source_name, os.O_RDONLY, dir_fd=directory_fd)
+            source_fd = os.open(source_name, os.O_RDONLY | getattr(os, "O_BINARY", 0), dir_fd=directory_fd)
             destination_fd = os.open(
                 destination_name,
-                os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
                 0o600,
                 dir_fd=directory_fd,
             )
@@ -425,7 +425,7 @@ class Nfl2k5AudioSourceContainmentTests(unittest.TestCase):
             os.unlink(destination_name, dir_fd=directory_fd)
             descriptor = os.open(
                 destination_name,
-                os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
                 0o600,
                 dir_fd=directory_fd,
             )

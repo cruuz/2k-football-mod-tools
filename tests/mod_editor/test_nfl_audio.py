@@ -128,7 +128,7 @@ class FakeAudioRunner:
         # them it stages the snapshot as a verified read-only file (no seals to
         # read). Recording seals there would call the Linux-only F_GET_SEALS.
         if supports_sealed_memfd():
-            descriptor = os.open(archive_path, os.O_RDONLY)
+            descriptor = os.open(archive_path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:
                 self.archive_seals[stage] = read_seals(descriptor)
             finally:
@@ -666,7 +666,7 @@ class NflAudioRecipeTests(unittest.TestCase):
                         os.fspath(archive_path),
                         rf"^/proc/{os.getpid()}/fd/[0-9]+$",
                     )
-                    descriptor = os.open(archive_path, os.O_RDONLY)
+                    descriptor = os.open(archive_path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
                     try:
                         self.assertEqual(
                             read_seals(descriptor) & required_seals,
@@ -675,7 +675,7 @@ class NflAudioRecipeTests(unittest.TestCase):
                     finally:
                         os.close(descriptor)
                     with self.assertRaises(OSError):
-                        os.open(archive_path, os.O_WRONLY)
+                        os.open(archive_path, os.O_WRONLY | getattr(os, "O_BINARY", 0))
                     with zipfile.ZipFile(archive_path) as archive:
                         self.assertEqual(archive.namelist(), list(expected))
                         for name, expected_hash in expected.items():

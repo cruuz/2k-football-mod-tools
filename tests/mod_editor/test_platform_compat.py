@@ -234,7 +234,7 @@ class PreadTests(unittest.TestCase):
             os.close(fd)
 
     def test_fallback_preserves_the_descriptor_offset(self) -> None:
-        fd = os.open(self.path, os.O_RDONLY)
+        fd = os.open(self.path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
         try:
             os.lseek(fd, 123, os.SEEK_SET)
             _pread_via_seek(fd, 200, 40)
@@ -252,7 +252,7 @@ class FchmodReadonlyTests(unittest.TestCase):
             path = Path(name) / "file.bin"
             path.write_bytes(b"payload")
             os.chmod(path, 0o644)
-            fd = os.open(path, os.O_RDONLY)
+            fd = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:
                 fchmod_readonly(fd, os.fspath(path))
             finally:
@@ -260,7 +260,7 @@ class FchmodReadonlyTests(unittest.TestCase):
             self.assertEqual(path.stat().st_mode & 0o777, sealed_file_mode())
             self.assertFalse(path.stat().st_mode & 0o200)
             with self.assertRaises(PermissionError):
-                os.open(path, os.O_WRONLY)
+                os.open(path, os.O_WRONLY | getattr(os, "O_BINARY", 0))
             os.chmod(path, 0o644)
 
     def test_the_posix_sealed_mode_is_still_exactly_0o400_here(self) -> None:
@@ -278,7 +278,7 @@ class FchmodReadonlyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as name:
             path = Path(name) / "ignored.bin"
             path.write_bytes(b"payload")
-            fd = os.open(path, os.O_RDONLY)
+            fd = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             real_chmod = os.chmod
             real_fchmod = getattr(os, "fchmod", None)
             os.chmod = lambda *args, **kwargs: None  # noqa: ARG005
@@ -301,8 +301,8 @@ class ReflinkTests(unittest.TestCase):
         destination = Path(directory) / "destination.bin"
         source.write_bytes(payload)
         destination.write_bytes(b"")
-        source_fd = os.open(source, os.O_RDONLY)
-        destination_fd = os.open(destination, os.O_RDWR)
+        source_fd = os.open(source, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+        destination_fd = os.open(destination, os.O_RDWR | getattr(os, "O_BINARY", 0))
         return source_fd, destination_fd, payload
 
     def test_returns_bool_and_clones_content_when_it_succeeds(self) -> None:
@@ -337,8 +337,8 @@ class ExclusiveLockTests(unittest.TestCase):
     def test_lock_excludes_a_second_holder_then_releases(self) -> None:
         with tempfile.TemporaryDirectory() as name:
             lock_path = Path(name) / "single-instance.lock"
-            first = os.open(lock_path, os.O_RDWR | os.O_CREAT, 0o600)
-            second = os.open(lock_path, os.O_RDWR | os.O_CREAT, 0o600)
+            first = os.open(lock_path, (os.O_RDWR | os.O_CREAT) | getattr(os, "O_BINARY", 0), 0o600)
+            second = os.open(lock_path, (os.O_RDWR | os.O_CREAT) | getattr(os, "O_BINARY", 0), 0o600)
             try:
                 exclusive_nonblocking_lock(first)
                 with self.assertRaises(BlockingIOError):
@@ -386,7 +386,7 @@ class SealReadonlyTests(unittest.TestCase):
         payload = b"portable-closure" * 40
         with tempfile.TemporaryDirectory() as name:
             path = Path(name) / "closure.bin"
-            descriptor = os.open(path, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0o600)
+            descriptor = os.open(path, (os.O_RDWR | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0), 0o600)
             try:
                 os.write(descriptor, payload)
                 with hidden_fcntl():
@@ -495,7 +495,7 @@ class PrivatePathTests(unittest.TestCase):
 
     def test_private_file_is_verified_against_this_platforms_mode(self) -> None:
         path = self.root / "staged.bin"
-        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        descriptor = os.open(path, (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0), 0o600)
         os.close(descriptor)
         harden_private_file(path)
         verify_private_file(path, "staged file")
@@ -515,7 +515,7 @@ class PrivatePathTests(unittest.TestCase):
     def test_sealed_file_verification_requires_no_owner_write_bit(self) -> None:
         path = self.root / "sealed.bin"
         path.write_bytes(b"sealed")
-        descriptor = os.open(path, os.O_RDONLY)
+        descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
         try:
             fchmod_readonly(descriptor, os.fspath(path))
         finally:
@@ -602,7 +602,7 @@ class SimulatedWindowsModeTests(unittest.TestCase):
         # This is the 438-vs-384 failure, asserted honestly for Windows.
         with simulated_windows_filesystem():
             path = self.root / "staged.bin"
-            descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            descriptor = os.open(path, (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0), 0o600)
             os.close(descriptor)
             harden_private_file(path)
             self.assertEqual(path.stat().st_mode & 0o777, 0o666)
@@ -615,7 +615,7 @@ class SimulatedWindowsModeTests(unittest.TestCase):
         with simulated_windows_filesystem():
             path = self.root / "sealed.bin"
             path.write_bytes(b"payload")
-            descriptor = os.open(path, os.O_RDONLY)
+            descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:
                 fchmod_readonly(descriptor, os.fspath(path))
             finally:
@@ -717,7 +717,7 @@ class WindowsSimulationTests(unittest.TestCase):
             self.skipTest("Windows has msvcrt and does not exercise this path")
         with tempfile.TemporaryDirectory() as name:
             lock_path = Path(name) / "x.lock"
-            fd = os.open(lock_path, os.O_RDWR | os.O_CREAT, 0o600)
+            fd = os.open(lock_path, (os.O_RDWR | os.O_CREAT) | getattr(os, "O_BINARY", 0), 0o600)
             try:
                 with hidden_fcntl():
                     with self.assertRaises(RuntimeError):

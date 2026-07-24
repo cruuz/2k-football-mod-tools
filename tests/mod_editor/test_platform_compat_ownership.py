@@ -257,7 +257,7 @@ class SimulatedWindowsOwnershipTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as name:
             target = Path(name) / "mine"
             target.write_bytes(b"x")
-            fd = os.open(target, os.O_RDONLY)
+            fd = os.open(target, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:
                 with_fd = self._record_win32_calls(fd=fd, path=target)
                 without_fd = self._record_win32_calls(fd=None, path=target)

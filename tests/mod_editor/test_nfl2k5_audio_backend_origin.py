@@ -130,7 +130,7 @@ class AudioBackendOriginTests(unittest.TestCase):
                     "vc_53450030/1", 1, 512, 0
                 ),
             }
-            descriptor = os.open(source, os.O_RDONLY)
+            descriptor = os.open(source, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:
                 built = unified.build_ausb_audio_imports(
                     project.value["edits"][0],

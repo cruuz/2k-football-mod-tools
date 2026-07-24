@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import stat
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -36,45 +37,81 @@ from mod_editor.core.nfl2k5_source_cache import (
 )
 
 
-def _mark_sparse_on_windows(stream) -> None:
-    """Ask NTFS to make this file sparse before it is extended.
+# Below this, a physically allocated file is cheap enough not to matter; above
+# it, allocating for real is the difference between an instant fixture and one
+# that cannot finish inside the CI per-file timeout.
+_SPARSE_REQUIRED_ABOVE = 1 << 30
+
+
+def _mark_sparse_on_windows(stream, path: Path, size: int) -> None:
+    """Ask NTFS to make this file sparse, and confirm it agreed.
 
     ``truncate`` leaves a hole on ext4/APFS, but on NTFS it physically
-    zero-fills unless the file has been flagged sparse first -- so the
-    5.87 GiB source-size fixtures below would each write six gigabytes of
-    zeroes, which is how this file reached the CI per-file timeout on the
-    Windows runner.  ``FSCTL_SET_SPARSE`` is the documented way to ask for the
-    hole.  Best effort: if the control code is unavailable or refused, the
-    truncate still produces a correct (merely slow) file, so a failure here
-    must never fail the test.
+    zero-fills unless the file has been flagged sparse first.  The fixtures here
+    are ``SOURCE_SIZE`` = 5.87 GiB each and there are eighteen of them, so
+    without the hole this file cannot finish: that is exactly how it hit the CI
+    per-file timeout on the Windows runner and was killed with no output.
+
+    ``FSCTL_SET_SPARSE`` is the documented request.  It is checked rather than
+    assumed -- a volume that is not NTFS would accept the call and still
+    allocate -- and if the flag did not take on a file large enough to matter,
+    the test is skipped with the reason instead of hanging for seven minutes and
+    reporting nothing.  A skip that names its cause is information; a timeout is
+    not.
     """
 
     if not platform_compat.IS_WINDOWS:
         return
+    granted = False
     try:
         import ctypes
         import msvcrt
 
         fsctl_set_sparse = 0x000900C4
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.DeviceIoControl.argtypes = [
+            ctypes.c_void_p,   # hDevice
+            ctypes.c_ulong,    # dwIoControlCode
+            ctypes.c_void_p,   # lpInBuffer
+            ctypes.c_ulong,    # nInBufferSize
+            ctypes.c_void_p,   # lpOutBuffer
+            ctypes.c_ulong,    # nOutBufferSize
+            ctypes.POINTER(ctypes.c_ulong),
+            ctypes.c_void_p,   # lpOverlapped
+        ]
+        kernel32.DeviceIoControl.restype = ctypes.c_int
         handle = msvcrt.get_osfhandle(stream.fileno())
         returned = ctypes.c_ulong(0)
-        ctypes.windll.kernel32.DeviceIoControl(
-            ctypes.c_void_p(handle),
-            ctypes.c_ulong(fsctl_set_sparse),
-            None,
-            0,
-            None,
-            0,
-            ctypes.byref(returned),
-            None,
+        granted = bool(
+            kernel32.DeviceIoControl(
+                ctypes.c_void_p(handle),
+                ctypes.c_ulong(fsctl_set_sparse),
+                None,
+                0,
+                None,
+                0,
+                ctypes.byref(returned),
+                None,
+            )
         )
-    except Exception:  # pragma: no cover - fixture speed only, never fatal
-        pass
+        if granted:
+            stream.flush()
+            attributes = getattr(os.stat(path), "st_file_attributes", 0)
+            sparse_flag = getattr(stat, "FILE_ATTRIBUTE_SPARSE_FILE", 0x200)
+            granted = bool(attributes & sparse_flag)
+    except Exception:  # pragma: no cover - diagnosed by the skip below
+        granted = False
+    if not granted and size > _SPARSE_REQUIRED_ABOVE:
+        raise unittest.SkipTest(
+            f"this volume would physically allocate the {size / (1 << 30):.2f} GiB "
+            f"fixture at {path} (FSCTL_SET_SPARSE did not take), which cannot "
+            "finish inside the per-file timeout"
+        )
 
 
 def _sparse(path: Path, size: int, prefix: bytes = b"") -> None:
     with path.open("wb") as stream:
-        _mark_sparse_on_windows(stream)
+        _mark_sparse_on_windows(stream, path, size)
         if prefix:
             stream.write(prefix)
         stream.truncate(size)

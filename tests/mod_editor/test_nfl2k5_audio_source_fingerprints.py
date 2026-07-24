@@ -338,7 +338,7 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
             destination_name: str,
         ) -> None:
             real_publish(directory_fd, source_name, destination_name)
-            descriptor = os.open(destination_name, os.O_RDWR, dir_fd=directory_fd)
+            descriptor = os.open(destination_name, os.O_RDWR | getattr(os, "O_BINARY", 0), dir_fd=directory_fd)
             try:
                 size = os.fstat(descriptor).st_size
                 os.lseek(descriptor, size // 2, os.SEEK_SET)
@@ -424,7 +424,7 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
             os.unlink(destination_name, dir_fd=directory_fd)
             descriptor = os.open(
                 destination_name,
-                os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
                 0o600,
                 dir_fd=directory_fd,
             )

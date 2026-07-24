@@ -156,7 +156,7 @@ def _mutate_regular_file_preserving_size_and_mtime(
     before = os.stat(name, dir_fd=parent_descriptor, follow_symlinks=False)
     descriptor = os.open(
         name,
-        os.O_RDWR | getattr(os, "O_NOFOLLOW", 0),
+        (os.O_RDWR | getattr(os, "O_NOFOLLOW", 0)) | getattr(os, "O_BINARY", 0),
         dir_fd=parent_descriptor,
     )
     try:
@@ -379,7 +379,7 @@ class AudioReplacementTemplateTests(unittest.TestCase):
             )
             descriptor = os.open(
                 destination_name,
-                os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
                 0o600,
                 dir_fd=parent_descriptor,
             )

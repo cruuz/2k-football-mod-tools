@@ -202,7 +202,7 @@ class SimulationFidelityTests(PlatformBranchedTestCase):
         # those too it would prove nothing about the read-only case.
         with tempfile.TemporaryDirectory() as name:
             path = Path(name) / "writable.bin"
-            descriptor = os.open(path, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0o600)
+            descriptor = os.open(path, (os.O_RDWR | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0), 0o600)
             try:
                 os.write(descriptor, b"payload")
                 with simulated_windows():
@@ -363,7 +363,7 @@ class FsyncFdTests(PlatformBranchedTestCase):
 
     @contextlib.contextmanager
     def _read_only_descriptor(self) -> Iterator[int]:
-        descriptor = os.open(self.staged, os.O_RDONLY)
+        descriptor = os.open(self.staged, os.O_RDONLY | getattr(os, "O_BINARY", 0))
         try:
             yield descriptor
         finally:
@@ -391,7 +391,7 @@ class FsyncFdTests(PlatformBranchedTestCase):
         # EBADF is tolerated only on the platform that cannot flush a read-only
         # handle.  Here it still means "this descriptor is closed" and must
         # surface, path or no path.
-        descriptor = os.open(self.staged, os.O_RDONLY)
+        descriptor = os.open(self.staged, os.O_RDONLY | getattr(os, "O_BINARY", 0))
         os.close(descriptor)
         with self.assertRaises(OSError) as caught:
             fsync_fd(descriptor, path=self.staged)
@@ -431,7 +431,7 @@ class FsyncFdTests(PlatformBranchedTestCase):
     def test_windows_flushes_a_writable_descriptor_directly(self) -> None:
         self.require_windows_simulation()
         seen: list[int] = []
-        descriptor = os.open(self.root / "writable.bin", os.O_RDWR | os.O_CREAT, 0o600)
+        descriptor = os.open(self.root / "writable.bin", (os.O_RDWR | os.O_CREAT) | getattr(os, "O_BINARY", 0), 0o600)
         try:
             os.write(descriptor, b"payload")
             with simulated_windows():
@@ -486,7 +486,7 @@ class FsyncDirectoryTests(PlatformBranchedTestCase):
         with simulated_windows():
             self.assertFalse(supports_directory_fsync())
             with self.assertRaises(PermissionError):
-                os.open(self.root, os.O_RDONLY)
+                os.open(self.root, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             self.assertFalse(fsync_directory(self.root))
 
     def test_windows_never_touches_the_filesystem(self) -> None:
@@ -527,7 +527,7 @@ class FsyncDirectoryFdTests(PlatformBranchedTestCase):
         self.addCleanup(self._directory.cleanup)
         self.root = Path(self._directory.name)
         self.descriptor = os.open(
-            self.root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+            self.root, (os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)) | getattr(os, "O_BINARY", 0)
         )
         self.addCleanup(os.close, self.descriptor)
 
@@ -551,7 +551,7 @@ class FsyncDirectoryFdTests(PlatformBranchedTestCase):
 
     def test_posix_propagates_a_real_flush_failure(self) -> None:
         self.require_posix_durability()
-        closed = os.open(self.root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+        closed = os.open(self.root, (os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)) | getattr(os, "O_BINARY", 0))
         os.close(closed)
         with self.assertRaises(OSError) as caught:
             fsync_directory_fd(closed)

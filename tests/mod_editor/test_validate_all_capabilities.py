@@ -629,7 +629,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
                 parent_fd = kwargs["dst_dir_fd"]
                 competitor = os.open(
                     destination,
-                    os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                    (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
                     0o600,
                     dir_fd=parent_fd,
                 )
@@ -719,7 +719,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
                 )
                 replacement = os.open(
                     path.name,
-                    os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                    (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
                     0o600,
                     dir_fd=descriptor,
                 )

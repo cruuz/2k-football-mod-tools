@@ -1124,7 +1124,7 @@ class AudioReplacementPackTests(unittest.TestCase):
             os.mkdir(destination_name, mode=0o700, dir_fd=parent_descriptor)
             marker = os.open(
                 f"{destination_name}/foreign.txt",
-                os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
                 0o600,
                 dir_fd=parent_descriptor,
             )

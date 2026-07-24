@@ -6,6 +6,7 @@ from types import SimpleNamespace
 import tempfile
 import unittest
 
+from mod_editor.core import platform_compat
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.model import SourceRecord
 from mod_editor.core.nfl2k5_audio_origin_preparation import (
@@ -124,7 +125,14 @@ class AudioOriginPreparationTests(unittest.TestCase):
         self._publish(self.containment)
         self.assertTrue(self.coordinator.is_ready(self.cache))
 
-        exact.chmod(0o644)
+        # A mode the running platform can actually produce AND that differs from
+        # the private mode it reports.  0o644 is that on POSIX; on Windows, where
+        # chmod honours only the read-only attribute, 0o644 still reads back as
+        # the private 0o666 and would prove nothing -- 0o444 (read-only) is the
+        # state that platform can really express.
+        wrong_mode = 0o444 if platform_compat.IS_WINDOWS else 0o644
+        self.assertNotEqual(wrong_mode, platform_compat.private_file_mode())
+        exact.chmod(wrong_mode)
         self.assertFalse(self.coordinator.is_ready(self.cache))
         exact.chmod(0o600)
         hardlink = exact.with_name("hardlink.json")
