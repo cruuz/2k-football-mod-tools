@@ -20,6 +20,19 @@ accident.
 
 Every POSIX assertion runs unsimulated on the real host, so the Linux and macOS
 paths are covered for real and are shown to be unchanged.
+
+Two of those mechanics are themselves platform-bound, and this file says so out
+loud rather than failing:
+
+* the simulation judges a descriptor by reading its real access mode from
+  ``/proc/self/fdinfo``, which only Linux provides, so every simulated-Windows
+  test skips elsewhere with that as its named reason -- a simulation that cannot
+  run must never be reported as a Windows branch that passed; and
+* the ``test_posix_*`` tests assert what POSIX *enforces* (``O_RDONLY`` flushes,
+  a directory descriptor, ``ELOOP`` on ``O_NOFOLLOW``).  None of those exist on
+  Windows, where the same helpers deliberately behave differently, so they skip
+  there by name.  The Windows expectation is not dropped: it is asserted by the
+  ``test_windows_*`` sibling of each one.
 """
 
 from __future__ import annotations
@@ -135,10 +148,43 @@ def simulated_windows() -> Iterator[None]:
             sys.modules["fcntl"] = saved_fcntl
 
 
-class SimulationFidelityTests(unittest.TestCase):
+# ``/proc/self/fdinfo`` is how :func:`_descriptor_is_read_only` learns a
+# descriptor's true access mode, and only Linux has it.  Probed once here so the
+# skip reason is stated in one place.
+_SIMULATION_AVAILABLE = Path("/proc/self/fdinfo").is_dir()
+_SIMULATION_UNAVAILABLE = (
+    "the Windows simulation judges each descriptor by reading its real access "
+    "mode from /proc/self/fdinfo, which only Linux provides; a simulation that "
+    "cannot run must not be reported as a Windows branch that passed"
+)
+_POSIX_ONLY = (
+    "this asserts a guarantee only POSIX makes (an O_RDONLY flush, a directory "
+    "descriptor, or O_NOFOLLOW/ELOOP); the Windows behaviour of the same helper "
+    "is asserted by the test_windows_* sibling below"
+)
+
+
+class PlatformBranchedTestCase(unittest.TestCase):
+    """Shared, named guards so every skip in this file states its reason."""
+
+    def require_windows_simulation(self) -> None:
+        """Skip where the in-process Windows simulation cannot run at all."""
+
+        if not _SIMULATION_AVAILABLE:
+            self.skipTest(_SIMULATION_UNAVAILABLE)
+
+    def require_posix_durability(self) -> None:
+        """Skip where the POSIX guarantee under test simply does not exist."""
+
+        if platform_compat.IS_WINDOWS:
+            self.skipTest(_POSIX_ONLY)
+
+
+class SimulationFidelityTests(PlatformBranchedTestCase):
     """The simulation must reproduce the real CI failure before it proves a fix."""
 
     def test_simulation_reproduces_the_reported_bad_file_descriptor(self) -> None:
+        self.require_windows_simulation()
         # This is the shipped idiom that produced 14 x "OSError: [Errno 9] Bad
         # file descriptor" on the windows-latest runner.
         with tempfile.TemporaryDirectory() as name:
@@ -151,6 +197,7 @@ class SimulationFidelityTests(unittest.TestCase):
             self.assertEqual(caught.exception.errno, errno.EBADF)
 
     def test_simulation_leaves_writable_descriptors_flushable(self) -> None:
+        self.require_windows_simulation()
         # Windows flushes a writable handle happily; if the simulation refused
         # those too it would prove nothing about the read-only case.
         with tempfile.TemporaryDirectory() as name:
@@ -164,6 +211,7 @@ class SimulationFidelityTests(unittest.TestCase):
                 os.close(descriptor)
 
     def test_simulation_restores_the_process_afterwards(self) -> None:
+        self.require_windows_simulation()
         with simulated_windows():
             self.assertTrue(platform_compat.IS_WINDOWS)
             self.assertFalse(hasattr(os, "getuid"))
@@ -171,18 +219,21 @@ class SimulationFidelityTests(unittest.TestCase):
         self.assertEqual(hasattr(os, "getuid"), os.name == "posix")
 
 
-class FlushOpenFlagTests(unittest.TestCase):
+class FlushOpenFlagTests(PlatformBranchedTestCase):
     def test_posix_keeps_the_read_only_access_mode(self) -> None:
+        self.require_posix_durability()
         flags = _flush_open_flags(follow_symlinks=True)
         self.assertEqual(flags & _ACCESS_MODE_MASK, os.O_RDONLY)
 
     def test_posix_adds_nofollow_only_when_asked(self) -> None:
+        self.require_posix_durability()
         nofollow = getattr(os, "O_NOFOLLOW", 0)
         self.assertTrue(nofollow, "this POSIX host should provide O_NOFOLLOW")
         self.assertFalse(_flush_open_flags(follow_symlinks=True) & nofollow)
         self.assertTrue(_flush_open_flags(follow_symlinks=False) & nofollow)
 
     def test_windows_upgrades_only_the_access_mode(self) -> None:
+        self.require_windows_simulation()
         # Read-write is the minimum access FlushFileBuffers accepts.  It is the
         # only thing that changes: no create, no truncate, no append.
         with simulated_windows():
@@ -192,7 +243,7 @@ class FlushOpenFlagTests(unittest.TestCase):
             self.assertFalse(flags & forbidden)
 
 
-class FsyncPathTests(unittest.TestCase):
+class FsyncPathTests(PlatformBranchedTestCase):
     def setUp(self) -> None:
         self._directory = tempfile.TemporaryDirectory()
         self.addCleanup(self._directory.cleanup)
@@ -200,8 +251,19 @@ class FsyncPathTests(unittest.TestCase):
         self.archive = self.root / "bundle.zip"
         self.archive.write_bytes(b"a staged archive" * 64)
         os.chmod(self.archive, 0o600)
+        # What that request actually produced *on this platform*: 0o600 where
+        # POSIX mode bits are enforced, 0o666 on Windows, which honours only the
+        # owner-write bit.  Recorded so "the flush changed nothing" can be
+        # asserted as a real before/after comparison rather than as a literal
+        # that would be wrong on one of the two platforms.
+        self.archive_mode_before = self.archive.stat().st_mode & 0o777
+        self.assertEqual(
+            self.archive_mode_before,
+            0o666 if platform_compat.IS_WINDOWS else 0o600,
+        )
 
     def test_posix_opens_read_only_exactly_as_before(self) -> None:
+        self.require_posix_durability()
         observed: list[int] = []
         real_open = os.open
 
@@ -219,6 +281,7 @@ class FsyncPathTests(unittest.TestCase):
         self.assertEqual(observed[0] & _ACCESS_MODE_MASK, os.O_RDONLY)
 
     def test_posix_refuses_a_symlink_when_asked(self) -> None:
+        self.require_posix_durability()
         link = self.root / "link.zip"
         link.symlink_to(self.archive)
         with self.assertRaises(OSError) as caught:
@@ -232,6 +295,7 @@ class FsyncPathTests(unittest.TestCase):
             fsync_path(self.root / "absent.zip")
 
     def test_windows_flushes_where_the_old_idiom_raised_ebadf(self) -> None:
+        self.require_windows_simulation()
         with simulated_windows():
             # The idiom this replaced, under the same simulation, fails.
             with self.archive.open("rb") as handle:
@@ -243,9 +307,12 @@ class FsyncPathTests(unittest.TestCase):
             fsync_path(self.archive, follow_symlinks=False)
         # The flush must not have altered a single byte or the mode.
         self.assertEqual(self.archive.read_bytes(), b"a staged archive" * 64)
-        self.assertEqual(self.archive.stat().st_mode & 0o777, 0o600)
+        self.assertEqual(
+            self.archive.stat().st_mode & 0o777, self.archive_mode_before
+        )
 
     def test_windows_refuses_read_only_files_loudly(self) -> None:
+        self.require_windows_simulation()
         # A read-only file genuinely cannot be flushed on Windows, and clearing
         # the attribute behind the caller's back would un-harden a file it
         # deliberately sealed.  Fail closed and say exactly why.
@@ -270,6 +337,7 @@ class FsyncPathTests(unittest.TestCase):
         self.assertIn("read-only", str(caught.exception))
 
     def test_posix_does_not_convert_permission_errors(self) -> None:
+        self.require_posix_durability()
         # The Windows-only translation above must never fire on POSIX; a
         # permission problem here stays a PermissionError, as it always was.
         real_open = os.open
@@ -285,7 +353,7 @@ class FsyncPathTests(unittest.TestCase):
             os.open = real_open  # type: ignore[assignment]
 
 
-class FsyncFdTests(unittest.TestCase):
+class FsyncFdTests(PlatformBranchedTestCase):
     def setUp(self) -> None:
         self._directory = tempfile.TemporaryDirectory()
         self.addCleanup(self._directory.cleanup)
@@ -302,6 +370,7 @@ class FsyncFdTests(unittest.TestCase):
             os.close(descriptor)
 
     def test_posix_issues_exactly_one_fsync_on_the_given_descriptor(self) -> None:
+        self.require_posix_durability()
         seen: list[int] = []
         real_fsync = os.fsync
 
@@ -318,6 +387,7 @@ class FsyncFdTests(unittest.TestCase):
             os.fsync = real_fsync  # type: ignore[assignment]
 
     def test_posix_never_swallows_a_genuinely_bad_descriptor(self) -> None:
+        self.require_posix_durability()
         # EBADF is tolerated only on the platform that cannot flush a read-only
         # handle.  Here it still means "this descriptor is closed" and must
         # surface, path or no path.
@@ -328,6 +398,7 @@ class FsyncFdTests(unittest.TestCase):
         self.assertEqual(caught.exception.errno, errno.EBADF)
 
     def test_windows_reopens_the_same_inode_and_flushes_it(self) -> None:
+        self.require_windows_simulation()
         with self._read_only_descriptor() as descriptor:
             with simulated_windows():
                 # Bare os.fsync is what the shipped build service called.
@@ -338,6 +409,7 @@ class FsyncFdTests(unittest.TestCase):
         self.assertEqual(self.staged.read_bytes(), b"verified image")
 
     def test_windows_still_refuses_a_swapped_file(self) -> None:
+        self.require_windows_simulation()
         # The build service holds this descriptor open precisely to pin the
         # inode it verified.  Reopening by name must not quietly flush whatever
         # now answers to that name.
@@ -350,12 +422,14 @@ class FsyncFdTests(unittest.TestCase):
         self.assertIn("no longer names", str(caught.exception))
 
     def test_windows_without_a_path_fails_closed(self) -> None:
+        self.require_windows_simulation()
         with self._read_only_descriptor() as descriptor:
             with simulated_windows():
                 with self.assertRaises(DurabilityError):
                     fsync_fd(descriptor)
 
     def test_windows_flushes_a_writable_descriptor_directly(self) -> None:
+        self.require_windows_simulation()
         seen: list[int] = []
         descriptor = os.open(self.root / "writable.bin", os.O_RDWR | os.O_CREAT, 0o600)
         try:
@@ -377,13 +451,14 @@ class FsyncFdTests(unittest.TestCase):
         self.assertEqual(seen, [], "a writable handle needs no reopen anywhere")
 
 
-class FsyncDirectoryTests(unittest.TestCase):
+class FsyncDirectoryTests(PlatformBranchedTestCase):
     def setUp(self) -> None:
         self._directory = tempfile.TemporaryDirectory()
         self.addCleanup(self._directory.cleanup)
         self.root = Path(self._directory.name)
 
     def test_posix_really_flushes_and_reports_that_it_did(self) -> None:
+        self.require_posix_durability()
         (self.root / "published.bin").write_bytes(b"x")
         seen: list[int] = []
         real_fsync = os.fsync
@@ -400,9 +475,11 @@ class FsyncDirectoryTests(unittest.TestCase):
         self.assertEqual(len(seen), 1)
 
     def test_posix_advertises_the_capability(self) -> None:
+        self.require_posix_durability()
         self.assertTrue(supports_directory_fsync())
 
     def test_windows_reports_the_gap_instead_of_pretending(self) -> None:
+        self.require_windows_simulation()
         # Windows exposes no directory-flush primitive at any level the CRT
         # reaches: os.open on a directory fails outright.  Reporting False is
         # what makes the missing guarantee visible instead of silent.
@@ -413,6 +490,7 @@ class FsyncDirectoryTests(unittest.TestCase):
             self.assertFalse(fsync_directory(self.root))
 
     def test_windows_never_touches_the_filesystem(self) -> None:
+        self.require_windows_simulation()
         real_open = os.open
         attempts: list[object] = []
 
@@ -429,10 +507,22 @@ class FsyncDirectoryTests(unittest.TestCase):
         self.assertEqual(attempts, [])
 
 
-class FsyncDirectoryFdTests(unittest.TestCase):
+class FsyncDirectoryFdTests(PlatformBranchedTestCase):
     """The audio-source stores pin one directory fd for a whole transaction."""
 
     def setUp(self) -> None:
+        # Every test in this class needs a *directory descriptor*, and Windows
+        # cannot produce one at all: the CRT refuses os.open on a directory, so
+        # the caller these tests model (a publish transaction that pins its
+        # parent) has nothing to pass in.  That the helper reports the gap
+        # instead of pretending is asserted on this host by
+        # test_windows_reports_the_gap_without_touching_the_descriptor, and by
+        # platform_compat.supports_directory_fsync() being False there.
+        if platform_compat.IS_WINDOWS:
+            self.skipTest(
+                "Windows cannot open a directory descriptor at all, so there is "
+                "nothing for these fd-pinned transaction tests to hold"
+            )
         self._directory = tempfile.TemporaryDirectory()
         self.addCleanup(self._directory.cleanup)
         self.root = Path(self._directory.name)
@@ -442,6 +532,7 @@ class FsyncDirectoryFdTests(unittest.TestCase):
         self.addCleanup(os.close, self.descriptor)
 
     def test_posix_flushes_the_caller_s_own_descriptor(self) -> None:
+        self.require_posix_durability()
         # Re-opening by name would discard the pin those transactions rely on,
         # so the helper must flush this exact descriptor and say it did.
         seen: list[int] = []
@@ -459,6 +550,7 @@ class FsyncDirectoryFdTests(unittest.TestCase):
         self.assertEqual(seen, [self.descriptor])
 
     def test_posix_propagates_a_real_flush_failure(self) -> None:
+        self.require_posix_durability()
         closed = os.open(self.root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
         os.close(closed)
         with self.assertRaises(OSError) as caught:
@@ -466,6 +558,7 @@ class FsyncDirectoryFdTests(unittest.TestCase):
         self.assertEqual(caught.exception.errno, errno.EBADF)
 
     def test_windows_reports_the_gap_without_touching_the_descriptor(self) -> None:
+        self.require_windows_simulation()
         # Under Windows semantics a bare os.fsync on this read-only directory
         # descriptor is the EBADF the CI log reported; the helper must not make
         # that call at all, and must report that nothing was committed.

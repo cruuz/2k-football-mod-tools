@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import contextlib
 from dataclasses import replace
-import fcntl
 import hashlib
 import io
 import json
@@ -21,6 +20,16 @@ import wave
 import zipfile
 
 from mod_editor.__main__ import main as editor_main
+# Kernel write-seals are read through platform_compat, never through a
+# module-scope ``import fcntl``: that import does not exist on Windows and made
+# this whole file unimportable there, which is the exact portability bug
+# platform_compat was added to remove.  read_seals()/write_seal_mask() are the
+# same two fcntl calls on POSIX -- byte for byte -- and fail closed elsewhere.
+from mod_editor.core.platform_compat import (
+    read_seals,
+    supports_sealed_memfd,
+    write_seal_mask,
+)
 from mod_editor.core.errors import OutputRefusedError
 from mod_editor.core.capabilities import Capability, Classification
 from mod_editor.core.model import GameId, SourceRecord
@@ -117,7 +126,7 @@ class FakeAudioRunner:
             }
         descriptor = os.open(archive_path, os.O_RDONLY)
         try:
-            self.archive_seals[stage] = fcntl.fcntl(descriptor, fcntl.F_GET_SEALS)
+            self.archive_seals[stage] = read_seals(descriptor)
         finally:
             os.close(descriptor)
         if stage == ProviderStage.BUILD:
@@ -444,6 +453,12 @@ class NflAudioRecipeTests(unittest.TestCase):
             self.assertFalse(os.path.lexists(interrupted))
 
     def test_typed_provider_uses_fixed_writer_and_independent_verifier_argv(self) -> None:
+        if not supports_sealed_memfd():
+            self.skipTest(
+                "this asserts the kernel write-seals on the provider's staged "
+                "zipapp; memfd seals are a Linux primitive with no equivalent "
+                "on macOS or Windows"
+            )
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             request, wav = make_provider_request(root)
@@ -480,12 +495,7 @@ class NflAudioRecipeTests(unittest.TestCase):
                 self.assertNotIn("--chunk", argv)
                 self.assertNotIn(os.fspath(ROOT), argv[4])
             self.assertEqual([cwd for _, cwd, _ in runner.calls], [Path("/"), Path("/")])
-            required_seals = (
-                fcntl.F_SEAL_GROW
-                | fcntl.F_SEAL_SEAL
-                | fcntl.F_SEAL_SHRINK
-                | fcntl.F_SEAL_WRITE
-            )
+            required_seals = write_seal_mask()
             self.assertTrue(
                 all(value & required_seals == required_seals
                     for value in runner.archive_seals.values())
@@ -607,13 +617,13 @@ class NflAudioRecipeTests(unittest.TestCase):
                         alias.unlink()
 
     def test_sealed_writer_and_verifier_closures_are_complete_and_importable(self) -> None:
+        if not supports_sealed_memfd():
+            self.skipTest(
+                "kernel memfd write-seals are a Linux primitive; this provider "
+                "seals its zipapp with them and has no equivalent elsewhere"
+            )
         provider = Nfl2k5MenuBackAudioProvider(workspace=ROOT)
-        required_seals = (
-            fcntl.F_SEAL_GROW
-            | fcntl.F_SEAL_SEAL
-            | fcntl.F_SEAL_SHRINK
-            | fcntl.F_SEAL_WRITE
-        )
+        required_seals = write_seal_mask()
         cases = (
             (
                 "writer",
@@ -646,8 +656,7 @@ class NflAudioRecipeTests(unittest.TestCase):
                     descriptor = os.open(archive_path, os.O_RDONLY)
                     try:
                         self.assertEqual(
-                            fcntl.fcntl(descriptor, fcntl.F_GET_SEALS)
-                            & required_seals,
+                            read_seals(descriptor) & required_seals,
                             required_seals,
                         )
                     finally:

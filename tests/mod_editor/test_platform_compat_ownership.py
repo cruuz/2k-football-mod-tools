@@ -99,14 +99,20 @@ def simulated_windows(*, owner_sid: str | None = MY_SID):
     platform constants, and -- unless ``owner_sid`` is ``None`` -- substitutes
     the two ctypes-backed SID lookups, which cannot run on a POSIX host.  Every
     mutation is undone on exit so the rest of the file tests the real platform.
+
+    On a host that already has no ``os.getuid`` -- a real Windows runner -- the
+    deletion is simply a no-op and the block still runs, so these tests exercise
+    the same branch there instead of dying in the fixture.
     """
 
-    saved_getuid = os.getuid
+    missing = object()
+    saved_getuid = getattr(os, "getuid", missing)
     saved_windows = platform_compat.IS_WINDOWS
     saved_linux = platform_compat.IS_LINUX
     saved_owner = platform_compat._windows_owner_sid
     saved_current = platform_compat._windows_current_user_sid
-    del os.getuid
+    if saved_getuid is not missing:
+        del os.getuid
     platform_compat.IS_WINDOWS = True
     platform_compat.IS_LINUX = False
     if owner_sid is not None:
@@ -117,7 +123,8 @@ def simulated_windows(*, owner_sid: str | None = MY_SID):
     try:
         yield
     finally:
-        os.getuid = saved_getuid
+        if saved_getuid is not missing:
+            os.getuid = saved_getuid
         platform_compat.IS_WINDOWS = saved_windows
         platform_compat.IS_LINUX = saved_linux
         platform_compat._windows_owner_sid = saved_owner
@@ -131,7 +138,23 @@ def stat_with_uid(uid: int) -> os.stat_result:
 
 
 class PosixOwnershipTests(unittest.TestCase):
-    """The POSIX branch must be byte-identical to the historical check."""
+    """The POSIX branch must be byte-identical to the historical check.
+
+    Every test here asserts the uid comparison itself, which is meaningful only
+    where ``os.getuid`` exists.  Windows has no uid at all -- that is the whole
+    reason :func:`describe_ownership` exists -- so these skip there by name
+    rather than assert a mechanism that platform cannot run.  Nothing is lost:
+    the Windows model is asserted, just as strictly, by
+    :class:`SimulatedWindowsOwnershipTests` below, which also runs on this host.
+    """
+
+    def setUp(self) -> None:
+        if not supports_posix_uid_ownership():
+            self.skipTest(
+                "this asserts the POSIX uid comparison, and this platform has "
+                "no os.getuid; the owner-SID model it uses instead is asserted "
+                "by SimulatedWindowsOwnershipTests"
+            )
 
     def test_mechanism_is_the_uid_comparison_on_this_host(self) -> None:
         self.assertTrue(supports_posix_uid_ownership())
@@ -175,11 +198,22 @@ class SimulatedWindowsOwnershipTests(unittest.TestCase):
     """The Windows branch: owner SID, and never a vacuous pass."""
 
     def test_mechanism_switches_to_the_owner_sid_model(self) -> None:
+        # The host's own mechanism, recorded first: posix-uid on Linux/macOS and
+        # already windows-owner-sid on a real Windows runner.  Asserting the
+        # literal "posix-uid" after the block would be asserting the host is
+        # POSIX, which is a different (and on Windows, false) claim.
+        host_mechanism = ownership_mechanism()
+        self.assertEqual(
+            host_mechanism,
+            OWNERSHIP_WINDOWS_OWNER_SID
+            if platform_compat.IS_WINDOWS
+            else OWNERSHIP_POSIX_UID,
+        )
         with simulated_windows():
             self.assertFalse(supports_posix_uid_ownership())
             self.assertEqual(ownership_mechanism(), OWNERSHIP_WINDOWS_OWNER_SID)
-        # ...and switches straight back; nothing leaks into the POSIX branch.
-        self.assertEqual(ownership_mechanism(), OWNERSHIP_POSIX_UID)
+        # ...and switches straight back; nothing leaks out of the simulation.
+        self.assertEqual(ownership_mechanism(), host_mechanism)
 
     def test_windows_st_uid_zero_is_never_trusted(self) -> None:
         # This is the whole point.  Windows reports st_uid == 0 for every file,
@@ -398,7 +432,11 @@ class Blocker(importlib.abc.MetaPathFinder):
 
 sys.meta_path.insert(0, Blocker())
 sys.modules.pop("fcntl", None)
-del os.getuid
+# Windows has neither; deleting them here reproduces that on a POSIX host, and
+# is a no-op on a real Windows runner rather than an AttributeError in the
+# fixture.
+os.__dict__.pop("getuid", None)
+assert not hasattr(os, "getuid")
 sys.path.insert(0, os.path.join(os.getcwd(), "tools"))
 
 import nfl_uniform_color_xiso_direct_verify as verifier

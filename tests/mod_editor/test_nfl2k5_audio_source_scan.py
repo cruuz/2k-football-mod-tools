@@ -14,6 +14,7 @@ import unittest
 from unittest.mock import patch
 import zlib
 
+from mod_editor.core import platform_compat
 from mod_editor.core import nfl2k5_audio_source_fingerprints as fingerprint_module
 from mod_editor.core.model import GameId, SourceRecord
 from mod_editor.core.nfl2k5_audio_source_fingerprints import (
@@ -498,6 +499,14 @@ class Nfl2k5AudioSourceScannerTests(unittest.TestCase):
         self.assertFalse(self.fixture.fingerprint_path.exists())
 
     def test_source_path_swap_during_scan_fails_before_publication(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest(
+                "reproduces an attacker by os.replace()-ing the scan source "
+                "while the scanner still holds it open; Windows refuses to "
+                "replace a path with an open handle, so this race cannot be "
+                "reproduced there (the POSIX guarantee is asserted on "
+                "Linux/macOS)"
+            )
         replacement = self.fixture.source.with_suffix(".replacement")
         replacement.write_bytes(self.fixture.source.read_bytes())
         swapped = False

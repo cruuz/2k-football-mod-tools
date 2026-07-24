@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import ctypes
 import hashlib
 import os
 from pathlib import Path
 import struct
+import sys
 import time
 import tempfile
 import unittest
@@ -23,6 +25,7 @@ from mod_editor.apf_studio.facade import ApfStudioFacade
 from mod_editor.apf_studio.inspectors import ExportIdentity
 from mod_editor.apf_studio.models import ApfSource, Modification
 from mod_editor.apf_studio.session import ApfSession, SessionError
+from mod_editor.core import platform_compat
 import apf_audo_exact_slot as audo_writer
 import apf_ausb_exact_slot as ausb_writer
 
@@ -33,15 +36,72 @@ def _packets(fill: int) -> bytes:
     return bytes(packet)
 
 
-def _wait_pid_gone(pid: int, timeout_seconds: float = 2.0) -> bool:
-    deadline = time.monotonic() + timeout_seconds
-    while time.monotonic() < deadline:
+def _pid_alive(pid: int) -> bool:
+    """Is *pid* still running?  A read-only probe on both process models.
+
+    POSIX signal 0 checks for existence and delivers nothing.  Windows has no
+    equivalent signal: ``os.kill`` there is ``TerminateProcess``, so the POSIX
+    spelling ``os.kill(pid, 0)`` would *end* the very process we are trying to
+    observe.  Opening the process for SYNCHRONIZE and waiting on it with a zero
+    timeout is the read-only equivalent -- a handle that cannot be opened, or
+    one that is already signalled, means the process has exited.
+    """
+
+    if not platform_compat.IS_WINDOWS:
         try:
             os.kill(pid, 0)
         except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        return True
+    synchronize = 0x00100000
+    wait_object_0 = 0x00000000
+    kernel32 = ctypes.windll.kernel32
+    kernel32.OpenProcess.argtypes = [ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong]
+    kernel32.OpenProcess.restype = ctypes.c_void_p
+    kernel32.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
+    kernel32.WaitForSingleObject.restype = ctypes.c_ulong
+    kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
+    kernel32.CloseHandle.restype = ctypes.c_int
+    handle = kernel32.OpenProcess(synchronize, False, pid)
+    if not handle:
+        return False
+    try:
+        return kernel32.WaitForSingleObject(handle, 0) != wait_object_0
+    finally:
+        kernel32.CloseHandle(handle)
+
+
+def _wait_pid_gone(pid: int, timeout_seconds: float = 2.0) -> bool:
+    deadline = time.monotonic() + timeout_seconds
+    while time.monotonic() < deadline:
+        if not _pid_alive(pid):
             return True
         time.sleep(0.02)
-    return False
+    return not _pid_alive(pid)
+
+
+def _fixture_invocation(script: Path) -> tuple[Path, tuple[str, ...]]:
+    """The (executable, leading argv) that runs one fabricated fixture program.
+
+    The encoder fixture below is a Python program written into a temporary
+    directory.  POSIX makes such a file an executable in its own right -- the
+    ``#!`` line names the interpreter and the executable bit lets ``exec`` use
+    it -- while Windows has neither mechanism and fails the launch with
+    WinError 193, "%1 is not a valid Win32 application".  Naming the
+    interpreter explicitly behaves identically on both platforms and keeps the
+    launch shell-free, unlike a ``.bat``/``.cmd`` wrapper.  Python drops its
+    own argv[0], so ``sys.argv`` inside the fixture is the same list either
+    way.
+    """
+
+    if platform_compat.IS_WINDOWS:
+        # ``.resolve()`` because the adapter refuses a tool path that is a
+        # link, and a packaged interpreter is reached through one on some
+        # installs.  It is a no-op for a plain python.exe.
+        return Path(sys.executable).resolve(), (str(script),)
+    return script, ()
 
 
 class ApfAudioPcmProductBackendTests(unittest.TestCase):
@@ -393,9 +453,10 @@ class ApfAudioPcmProductBackendTests(unittest.TestCase):
             encoding="utf-8",
         )
         encoder_script.chmod(0o700)
+        executable, prefix = _fixture_invocation(encoder_script)
         encoder = ExternalXma1Encoder(
-            encoder_script,
-            arguments=("{input}", "{output}", str(pid_file)),
+            executable,
+            arguments=(*prefix, "{input}", "{output}", str(pid_file)),
         )
         try:
             with patch(

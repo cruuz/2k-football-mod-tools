@@ -13,6 +13,7 @@ as unclassified user input and makes no claim about that input's provenance.
 
 from __future__ import annotations
 
+import ctypes
 from dataclasses import dataclass
 import hashlib
 import os
@@ -43,6 +44,13 @@ MAX_TIMEOUT_SECONDS = 30 * 60
 PROCESS_POLL_SECONDS = 0.05
 PROCESS_STOP_GRACE_SECONDS = 2.0
 COPY_BLOCK_BYTES = 1024 * 1024
+
+# Every descriptor this module opens carries audio or diagnostic *bytes*.  On
+# Windows ``os.open`` defaults to the CRT's text mode, which rewrites CRLF and
+# stops reading at a 0x1A byte -- silent corruption of exactly those payloads.
+# ``O_BINARY`` does not exist on POSIX, where there is no translation to
+# disable, so this resolves to 0 and the POSIX flags are unchanged.
+_O_BINARY = getattr(os, "O_BINARY", 0)
 
 Progress = Callable[[str, int, int], None]
 CancelRequested = Callable[[], bool]
@@ -336,7 +344,8 @@ def _open_pcm_data(source: Path, target: Pcm16Target) -> _PcmDataLocation:
             source,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
         )
     except OSError as exc:
         raise AudioEncodingError(f"Could not open the PCM replacement: {exc}") from exc
@@ -463,7 +472,8 @@ def _write_canonical_pcm(
             os.O_WRONLY
             | os.O_CREAT
             | os.O_EXCL
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
             0o600,
         )
         try:
@@ -520,10 +530,22 @@ def _validate_tool_path(
         raise AudioEncodingError(f"{label} must be a regular file, not a link")
     if not 0 < info.st_size <= MAX_EXECUTABLE_BYTES:
         raise AudioEncodingError(f"{label} is empty or unreasonably large")
-    if require_executable and not os.access(path, os.X_OK):
-        raise AudioEncodingError(
-            f"{label} is not executable; enable its executable permission first"
-        )
+    # POSIX gates on the executable permission bit, which is a real, settable
+    # property of the file and therefore worth reporting before we launch
+    # anything.  Windows has no such bit: ``os.access(path, os.X_OK)`` there is
+    # implemented as "does this file exist", so it always answers True and this
+    # pre-flight cannot be the gate.  Windows decides executability from the
+    # file's *content* at CreateProcess time and reports a non-image with
+    # WinError 193 ("%1 is not a valid Win32 application"), which :meth:`encode`
+    # turns into the same fail-closed AudioEncodingError.  We deliberately do
+    # not invent a Windows substitute here -- guessing from the file extension
+    # would reject a perfectly launchable tool that simply is not named
+    # ``*.exe``.
+    if require_executable and not platform_compat.IS_WINDOWS:
+        if not os.access(path, os.X_OK):
+            raise AudioEncodingError(
+                f"{label} is not executable; enable its executable permission first"
+            )
     return _FileIdentity(
         path=path,
         device=info.st_dev,
@@ -583,7 +605,8 @@ def _read_private_output(path: Path, maximum: int) -> bytes:
         path,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0)
+        | _O_BINARY,
     )
     try:
         opened = os.fstat(descriptor)
@@ -607,15 +630,246 @@ def _read_private_output(path: Path, maximum: int) -> bytes:
         os.close(descriptor)
 
 
-def _stop_process(process: subprocess.Popen[bytes]) -> None:
+# --------------------------------------------------------------------------
+# Confining the encoder: one process *group*, on two different process models.
+#
+# The guarantee is the same on every platform -- when :meth:`encode` returns or
+# raises, nothing the user's encoder started is still running -- but the kernel
+# primitive that delivers it is not.
+#
+# POSIX launches the encoder with ``start_new_session=True``, making it a
+# session (and therefore process-group) leader whose PID doubles as the group
+# id.  ``os.killpg`` then reaches every descendant even after the direct child
+# has exited, and ``os.killpg(pg, 0)`` answers "is any of it still alive?".
+#
+# Windows has neither call: ``os.killpg`` does not exist there, ``os.kill`` is
+# ``TerminateProcess`` and reaches exactly one process, and ``taskkill /T``
+# walks parent PIDs, so it loses a child the moment its launcher exits -- which
+# is precisely the case this code exists to catch.  The Win32 primitive with
+# the same reach as a process group is a Job Object: a process assigned to one
+# carries that job to everything it creates, ``TerminateJobObject`` stops all
+# of them in a single call, and the job's ``ActiveProcesses`` counter answers
+# the question ``killpg(pg, 0)`` answers on POSIX.  There is no group-wide
+# graceful signal on Windows, so the job path is the analogue of the SIGKILL
+# escalation, not of the SIGTERM that precedes it.
+#
+# ``tools/apf_audio.py`` carries the same two-model helper for the *decoder*
+# side.  It is duplicated rather than shared because ``tools/`` modules are
+# runnable standalone and must not grow a dependency on this package.
+# --------------------------------------------------------------------------
+
+# JOBOBJECTINFOCLASS.JobObjectBasicAccountingInformation, and the byte offset
+# of ``ActiveProcesses`` within JOBOBJECT_BASIC_ACCOUNTING_INFORMATION: four
+# 8-byte LARGE_INTEGERs, then the DWORDs TotalPageFaultCount and
+# TotalProcesses.  The struct is 48 bytes; the buffer is oversized on purpose.
+_WINDOWS_JOB_BASIC_ACCOUNTING = 1
+_WINDOWS_ACTIVE_PROCESSES_OFFSET = 40
+_WINDOWS_ACCOUNTING_BYTES = 64
+
+
+class _WindowsProcessGroup:
+    """A Job Object standing in for the POSIX session the encoder cannot have.
+
+    Every entry point fails soft (returns ``None``/``False``) rather than
+    raising, because this type is used from ``finally`` blocks where raising
+    would replace the error the caller is already reporting.  A group that
+    could not be established is reported as such so the caller can fall back to
+    the direct child and still say honestly whether it stopped.
+    """
+
+    def __init__(self, kernel32: "ctypes.CDLL", handle: int) -> None:
+        self._kernel32 = kernel32
+        self._handle: int | None = handle
+
+    @classmethod
+    def create(cls) -> "_WindowsProcessGroup | None":
+        kernel32 = _windows_job_api()
+        if kernel32 is None:
+            return None
+        try:
+            handle = kernel32.CreateJobObjectW(None, None)
+        except OSError:
+            return None
+        if not handle:
+            return None
+        return cls(kernel32, handle)
+
+    def adopt(self, process: subprocess.Popen[bytes]) -> bool:
+        """Put *process* -- and so everything it later starts -- in the job."""
+
+        handle = getattr(process, "_handle", None)
+        if self._handle is None or handle is None:
+            return False
+        try:
+            return bool(
+                self._kernel32.AssignProcessToJobObject(self._handle, int(handle))
+            )
+        except (OSError, TypeError, ValueError):
+            return False
+
+    def active(self) -> bool:
+        """The Win32 answer to ``os.killpg(pg, 0)``: is anything still running?
+
+        Fails closed: if the count cannot be read we report "still active"
+        rather than claim a group we did not observe is gone.
+        """
+
+        if self._handle is None:
+            return False
+        buffer = ctypes.create_string_buffer(_WINDOWS_ACCOUNTING_BYTES)
+        try:
+            queried = self._kernel32.QueryInformationJobObject(
+                self._handle,
+                _WINDOWS_JOB_BASIC_ACCOUNTING,
+                buffer,
+                _WINDOWS_ACCOUNTING_BYTES,
+                None,
+            )
+        except OSError:
+            return True
+        if not queried:
+            return True
+        (active_processes,) = struct.unpack_from(
+            "<I", buffer.raw, _WINDOWS_ACTIVE_PROCESSES_OFFSET
+        )
+        return active_processes > 0
+
+    def terminate(self) -> None:
+        if self._handle is None:
+            return
+        try:
+            self._kernel32.TerminateJobObject(self._handle, 1)
+        except OSError:
+            pass
+
+    def close(self) -> None:
+        handle, self._handle = self._handle, None
+        if handle is None:
+            return
+        try:
+            self._kernel32.CloseHandle(handle)
+        except OSError:
+            pass
+
+
+def _windows_job_api() -> "ctypes.CDLL | None":
+    """Load kernel32's job entry points with argtypes applied, or ``None``.
+
+    Leaving ``argtypes`` unset would let ctypes truncate 64-bit ``HANDLE``
+    values to a C ``int``, which is the class of bug that silently terminates
+    the wrong thing -- or nothing.
+    """
+
+    windll = getattr(ctypes, "windll", None)
+    if windll is None:
+        return None
+    handle = ctypes.c_void_p
+    boolean = ctypes.c_int
+    try:
+        kernel32 = windll.kernel32
+        kernel32.CreateJobObjectW.argtypes = [handle, ctypes.c_wchar_p]
+        kernel32.CreateJobObjectW.restype = handle
+        kernel32.AssignProcessToJobObject.argtypes = [handle, handle]
+        kernel32.AssignProcessToJobObject.restype = boolean
+        kernel32.TerminateJobObject.argtypes = [handle, ctypes.c_uint]
+        kernel32.TerminateJobObject.restype = boolean
+        kernel32.QueryInformationJobObject.argtypes = [
+            handle,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_ulong,
+            ctypes.POINTER(ctypes.c_ulong),
+        ]
+        kernel32.QueryInformationJobObject.restype = boolean
+        kernel32.CloseHandle.argtypes = [handle]
+        kernel32.CloseHandle.restype = boolean
+    except (AttributeError, OSError):
+        # A kernel32 without these exports is not a Windows we can confine a
+        # process on; degrade to the direct child rather than failing encode.
+        return None
+    return kernel32
+
+
+def _adopt_process_group(
+    process: subprocess.Popen[bytes],
+) -> _WindowsProcessGroup | None:
+    """Give *process* a group with POSIX-session reach, where one is needed.
+
+    POSIX already has it: ``start_new_session=True`` did the work at launch.
+    Windows needs the job created and assigned immediately after the child
+    starts, which is what this call does.
+    """
+
+    if not platform_compat.IS_WINDOWS:
+        return None
+    group = _WindowsProcessGroup.create()
+    if group is None:
+        return None
+    if not group.adopt(process):
+        group.close()
+        return None
+    return group
+
+
+def _stop_windows_process(
+    process: subprocess.Popen[bytes],
+    group: _WindowsProcessGroup | None,
+) -> None:
+    """Stop the encoder and its descendants through the job object."""
+
+    if group is None:
+        # No job: only the direct child is reachable.  Stop it and report the
+        # same fail-closed error the POSIX path raises, but only on the same
+        # evidence -- an observed survivor, never merely an unobservable group.
+        try:
+            process.kill()
+        except OSError:
+            pass
+        try:
+            process.wait(timeout=PROCESS_STOP_GRACE_SECONDS)
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+        if process.poll() is None:
+            raise AudioEncodingError(
+                "The XMA1 encoder left a background process that could not be "
+                "stopped; its output was discarded and no project edit was staged"
+            )
+        return
+    try:
+        group.terminate()
+        try:
+            process.wait(timeout=PROCESS_STOP_GRACE_SECONDS)
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+        deadline = time.monotonic() + PROCESS_STOP_GRACE_SECONDS
+        while group.active() and time.monotonic() < deadline:
+            time.sleep(PROCESS_POLL_SECONDS)
+        if group.active():
+            raise AudioEncodingError(
+                "The XMA1 encoder left a background process that could not be "
+                "stopped; its output was discarded and no project edit was staged"
+            )
+    finally:
+        group.close()
+
+
+def _stop_process(
+    process: subprocess.Popen[bytes],
+    group: _WindowsProcessGroup | None = None,
+) -> None:
     """Terminate the complete session-owned process group on every exit path.
 
     The direct encoder (or Wine loader) is started as a new session leader, so
     its PID is also the process-group ID.  A successful launcher may otherwise
     exit while a worker or deliberately backgrounded child keeps running.  We
     therefore signal and drain the group even when the direct child has already
-    returned zero.
+    returned zero.  On Windows the same reach comes from *group*, the job
+    object the launcher was adopted into; see the note above ``_stop_process``.
     """
+
+    if platform_compat.IS_WINDOWS:
+        _stop_windows_process(process, group)
+        return
 
     process_group = process.pid
 
@@ -684,7 +938,8 @@ def _clean_stderr(path: Path) -> str:
             path,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
         )
         try:
             opened = os.fstat(descriptor)
@@ -796,7 +1051,18 @@ class ExternalXma1Encoder:
         """Validate the configured tools now, without running either one."""
 
         if self.wine_executable is None:
-            if isinstance(self.executable, Path) and self.executable.suffix.casefold() == ".exe":
+            # Wine is how a *Unix* host runs a Windows encoder, so demanding it
+            # for a ``.exe`` is correct on Linux and macOS and nonsense on
+            # Windows, where a ``.exe`` is simply the native direct mode -- and
+            # where every plausible encoder, including this interpreter, ends in
+            # ``.exe``.  The encoder contract is unchanged: direct mode still
+            # runs ``executable`` itself, Wine mode still passes the ``.exe`` as
+            # argv[1] to the loader.
+            if (
+                not platform_compat.IS_WINDOWS
+                and isinstance(self.executable, Path)
+                and self.executable.suffix.casefold() == ".exe"
+            ):
                 raise AudioEncodingError(
                     "A Windows .exe needs a separate Wine executable path"
                 )
@@ -931,6 +1197,7 @@ class ExternalXma1Encoder:
             )
             report("Running user-supplied XMA1 encoder", 0, 0)
             process: subprocess.Popen[bytes] | None = None
+            group: _WindowsProcessGroup | None = None
             started = time.monotonic()
             try:
                 with stderr_path.open("xb") as stderr_stream:
@@ -942,8 +1209,11 @@ class ExternalXma1Encoder:
                         stderr=stderr_stream,
                         shell=False,
                         close_fds=True,
+                        # POSIX only; ignored on Windows, where the job object
+                        # assigned on the next line provides the same reach.
                         start_new_session=True,
                     )
+                    group = _adopt_process_group(process)
                     while process.poll() is None:
                         _not_cancelled(cancel_requested)
                         elapsed = time.monotonic() - started
@@ -979,7 +1249,9 @@ class ExternalXma1Encoder:
                 ) from exc
             finally:
                 if process is not None:
-                    _stop_process(process)
+                    _stop_process(process, group)
+                elif group is not None:
+                    group.close()
             assert process is not None
             _require_unchanged_tool(encoder_identity, "XMA1 encoder")
             if wine_identity is not None:

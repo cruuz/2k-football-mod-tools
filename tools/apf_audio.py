@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import ctypes
 from dataclasses import dataclass
 import hashlib
 import json
@@ -70,8 +71,230 @@ def check_cancel_requested(cancel_requested: CancelRequested | None) -> None:
         raise AudioCancelled("Audio decoding was cancelled; no PCM output was published")
 
 
-def _stop_process_group(process: subprocess.Popen[bytes] | subprocess.Popen[str]) -> None:
+# --------------------------------------------------------------------------
+# Confining a decoder: one process *group*, on two different process models.
+#
+# The guarantee is the same everywhere -- when a decode is cancelled or times
+# out, nothing it started is still running -- but the kernel primitive is not.
+#
+# POSIX launches the decoder with ``start_new_session=True``, so it leads its
+# own session and process group, ``os.killpg`` reaches every descendant even
+# after the direct child exits, and ``os.killpg(pg, 0)`` reports whether any
+# of it survives.
+#
+# Windows has none of that: ``os.killpg`` does not exist, ``os.kill`` is
+# ``TerminateProcess`` and reaches one process, and ``taskkill /T`` walks
+# parent PIDs, so it loses a helper the instant its launcher exits -- exactly
+# the case this code exists to catch.  The Win32 primitive with a process
+# group's reach is a Job Object: a process assigned to one carries the job to
+# everything it creates, ``TerminateJobObject`` stops all of them at once, and
+# the job's ``ActiveProcesses`` counter answers what ``killpg(pg, 0)`` answers.
+# Windows has no group-wide *graceful* signal, so the job path is the analogue
+# of the SIGKILL escalation, not of the SIGTERM that precedes it.
+#
+# ``mod_editor/apf_studio/audio_encoding.py`` carries the same helper for the
+# *encoder* side.  The two are separate because this module is runnable
+# standalone from ``tools/`` and must not depend on the editor package.
+# --------------------------------------------------------------------------
+
+# Spelled locally, not imported from mod_editor.core.platform_compat: this
+# module is runnable standalone from ``tools/``, where the editor package is
+# not importable.  The definition is deliberately the same one.
+_IS_WINDOWS = sys.platform.startswith("win")
+
+# JOBOBJECTINFOCLASS.JobObjectBasicAccountingInformation, and the byte offset
+# of ``ActiveProcesses`` inside JOBOBJECT_BASIC_ACCOUNTING_INFORMATION: four
+# 8-byte LARGE_INTEGERs, then the DWORDs TotalPageFaultCount and
+# TotalProcesses.  The real struct is 48 bytes; the buffer is oversized.
+_WINDOWS_JOB_BASIC_ACCOUNTING = 1
+_WINDOWS_ACTIVE_PROCESSES_OFFSET = 40
+_WINDOWS_ACCOUNTING_BYTES = 64
+
+
+class _WindowsProcessGroup:
+    """A Job Object standing in for the POSIX session a decoder cannot have.
+
+    Every entry point fails soft rather than raising: this type is used from
+    cleanup paths where raising would replace the error already in flight.
+    """
+
+    def __init__(self, kernel32: "ctypes.CDLL", handle: int) -> None:
+        self._kernel32 = kernel32
+        self._handle: int | None = handle
+
+    @classmethod
+    def create(cls) -> "_WindowsProcessGroup | None":
+        kernel32 = _windows_job_api()
+        if kernel32 is None:
+            return None
+        try:
+            handle = kernel32.CreateJobObjectW(None, None)
+        except OSError:
+            return None
+        if not handle:
+            return None
+        return cls(kernel32, handle)
+
+    def adopt(
+        self, process: subprocess.Popen[bytes] | subprocess.Popen[str]
+    ) -> bool:
+        handle = getattr(process, "_handle", None)
+        if self._handle is None or handle is None:
+            return False
+        try:
+            return bool(
+                self._kernel32.AssignProcessToJobObject(self._handle, int(handle))
+            )
+        except (OSError, TypeError, ValueError):
+            return False
+
+    def active(self) -> bool:
+        """The Win32 answer to ``os.killpg(pg, 0)``, failing closed on error."""
+
+        if self._handle is None:
+            return False
+        buffer = ctypes.create_string_buffer(_WINDOWS_ACCOUNTING_BYTES)
+        try:
+            queried = self._kernel32.QueryInformationJobObject(
+                self._handle,
+                _WINDOWS_JOB_BASIC_ACCOUNTING,
+                buffer,
+                _WINDOWS_ACCOUNTING_BYTES,
+                None,
+            )
+        except OSError:
+            return True
+        if not queried:
+            return True
+        (active_processes,) = struct.unpack_from(
+            "<I", buffer.raw, _WINDOWS_ACTIVE_PROCESSES_OFFSET
+        )
+        return active_processes > 0
+
+    def terminate(self) -> None:
+        if self._handle is None:
+            return
+        try:
+            self._kernel32.TerminateJobObject(self._handle, 1)
+        except OSError:
+            pass
+
+    def close(self) -> None:
+        handle, self._handle = self._handle, None
+        if handle is None:
+            return
+        try:
+            self._kernel32.CloseHandle(handle)
+        except OSError:
+            pass
+
+
+def _windows_job_api() -> "ctypes.CDLL | None":
+    """kernel32's job entry points with argtypes applied, or ``None``.
+
+    Leaving ``argtypes`` unset would let ctypes truncate 64-bit ``HANDLE``
+    values to a C ``int`` and terminate the wrong thing, or nothing.
+    """
+
+    windll = getattr(ctypes, "windll", None)
+    if windll is None:
+        return None
+    handle = ctypes.c_void_p
+    boolean = ctypes.c_int
+    try:
+        kernel32 = windll.kernel32
+        kernel32.CreateJobObjectW.argtypes = [handle, ctypes.c_wchar_p]
+        kernel32.CreateJobObjectW.restype = handle
+        kernel32.AssignProcessToJobObject.argtypes = [handle, handle]
+        kernel32.AssignProcessToJobObject.restype = boolean
+        kernel32.TerminateJobObject.argtypes = [handle, ctypes.c_uint]
+        kernel32.TerminateJobObject.restype = boolean
+        kernel32.QueryInformationJobObject.argtypes = [
+            handle,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_ulong,
+            ctypes.POINTER(ctypes.c_ulong),
+        ]
+        kernel32.QueryInformationJobObject.restype = boolean
+        kernel32.CloseHandle.argtypes = [handle]
+        kernel32.CloseHandle.restype = boolean
+    except (AttributeError, OSError):
+        # A kernel32 without these exports is not a Windows we can confine a
+        # process on; degrade to the direct child rather than failing encode.
+        return None
+    return kernel32
+
+
+def _adopt_process_group(
+    process: subprocess.Popen[bytes] | subprocess.Popen[str],
+) -> "_WindowsProcessGroup | None":
+    """Give *process* a group with POSIX-session reach where one is needed.
+
+    POSIX already has it from ``start_new_session=True``; Windows needs the job
+    created and assigned right after the child starts.
+    """
+
+    if not _IS_WINDOWS:
+        return None
+    group = _WindowsProcessGroup.create()
+    if group is None:
+        return None
+    if not group.adopt(process):
+        group.close()
+        return None
+    return group
+
+
+def _stop_windows_process_group(
+    process: subprocess.Popen[bytes] | subprocess.Popen[str],
+    group: "_WindowsProcessGroup | None",
+) -> None:
+    """Stop the decoder and its descendants through the job object."""
+
+    if group is None:
+        # No job: only the direct child is reachable.  Stop it, then raise on
+        # the same evidence the POSIX path uses -- an observed survivor, never
+        # merely a group we could not observe.
+        try:
+            process.kill()
+        except OSError:
+            pass
+        try:
+            process.communicate(timeout=PROCESS_STOP_GRACE_SECONDS)
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+        if process.poll() is None:
+            raise AudioError(
+                "The audio decoder process group could not be stopped safely"
+            )
+        return
+    try:
+        group.terminate()
+        try:
+            process.communicate(timeout=PROCESS_STOP_GRACE_SECONDS)
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+        deadline = time.monotonic() + PROCESS_STOP_GRACE_SECONDS
+        while group.active() and time.monotonic() < deadline:
+            time.sleep(PROCESS_POLL_SECONDS)
+        if group.active():
+            raise AudioError(
+                "The audio decoder process group could not be stopped safely"
+            )
+    finally:
+        group.close()
+
+
+def _stop_process_group(
+    process: subprocess.Popen[bytes] | subprocess.Popen[str],
+    group: "_WindowsProcessGroup | None" = None,
+) -> None:
     """Terminate and drain the complete process group owned by one decoder."""
+
+    if _IS_WINDOWS:
+        _stop_windows_process_group(process, group)
+        return
 
     process_group = process.pid
 
@@ -138,15 +361,18 @@ def run_cancellable_subprocess(
 ) -> subprocess.CompletedProcess[bytes] | subprocess.CompletedProcess[str]:
     """Run one decoder/probe without letting cancellation strand child processes.
 
-    The executable is a new session leader.  Cancellation and timeout paths
-    signal that complete process group, escalate from TERM to KILL, and drain
-    its pipes before returning control to the caller.
+    On POSIX the executable is a new session leader.  Cancellation and timeout
+    paths signal that complete process group, escalate from TERM to KILL, and
+    drain its pipes before returning control to the caller.  Windows has no
+    such session, so the child is adopted into a job object with the same
+    reach; see the note above :func:`_stop_process_group`.
     """
 
     check_cancel_requested(cancel_requested)
     if timeout_seconds is not None and timeout_seconds <= 0:
         raise AudioError("Audio decoder timeout must be greater than zero")
     process: subprocess.Popen[bytes] | subprocess.Popen[str] | None = None
+    group: "_WindowsProcessGroup | None" = None
     communication_complete = False
     started = time.monotonic()
     try:
@@ -159,10 +385,13 @@ def run_cancellable_subprocess(
                 text=text,
                 shell=False,
                 close_fds=True,
+                # POSIX only; ignored on Windows, where the job object assigned
+                # on the next line provides the same reach.
                 start_new_session=True,
             )
         except OSError as exc:
             raise AudioError(f"Could not start the audio decoder: {exc}") from exc
+        group = _adopt_process_group(process)
 
         pending_input = input_data
         while True:
@@ -192,8 +421,14 @@ def run_cancellable_subprocess(
                 pending_input = None
     except BaseException:
         if process is not None and not communication_complete:
-            _stop_process_group(process)
+            _stop_process_group(process, group)
         raise
+    finally:
+        # No-op on POSIX (group is None) and idempotent with the close
+        # _stop_process_group already performed; this is the success path's
+        # release of the Windows job handle.
+        if group is not None:
+            group.close()
 
 
 def _publish_complete_file(source: Path, destination: Path) -> None:

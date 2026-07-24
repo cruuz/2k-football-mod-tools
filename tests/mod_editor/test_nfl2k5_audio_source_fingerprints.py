@@ -13,6 +13,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+from mod_editor.core import platform_compat
 from mod_editor.core import nfl2k5_audio_source_fingerprints as fingerprint_module
 from mod_editor.core.model import GameId, SourceRecord
 from mod_editor.core.nfl2k5_audio_source_fingerprints import (
@@ -211,7 +212,13 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
             first.path.parent,
             self.fixture.root / "derived",
         )
-        self.assertEqual(stat_mode(first.path), 0o600)
+        # POSIX enforces the historical 0o600 on the private fingerprint file;
+        # Windows has no group/other bits, reports 0o666 for the same file and
+        # gets its confidentiality from the per-user profile root's ACL.
+        self.assertEqual(stat_mode(first.path), platform_compat.private_file_mode())
+        self.assertEqual(
+            stat_mode(first.path), 0o666 if platform_compat.IS_WINDOWS else 0o600
+        )
         self.assertEqual(
             (events[0].completed_items, events[0].total_items), (0, 4)
         )
@@ -316,6 +323,10 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
         self.assertFalse(self.fixture.store.inventory_path(self.fixture.cache).exists())
 
     def test_publication_rechecks_the_owned_inode_after_rename(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest(
+                "requires POSIX directory-descriptor semantics -- the atomic publish pins its parent directory as an open descriptor and this test drives it through dir_fd= (os.open/os.unlink/os.stat) or reproduces an attacker by renaming/replacing a path the writer still holds open; Windows has no dir_fd, cannot open a directory descriptor, and refuses to rename or replace a path with an open handle, so this scenario cannot exist there"
+            )
         real_publish = fingerprint_module._rename_noreplace_at
 
         def publish_then_change(
@@ -394,6 +405,10 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
         self.assertEqual(tuple(path.parent.glob("*.tmp")), ())
 
     def test_publication_failure_never_unlinks_a_replacement_inode(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest(
+                "requires POSIX directory-descriptor semantics -- the atomic publish pins its parent directory as an open descriptor and this test drives it through dir_fd= (os.open/os.unlink/os.stat) or reproduces an attacker by renaming/replacing a path the writer still holds open; Windows has no dir_fd, cannot open a directory descriptor, and refuses to rename or replace a path with an open handle, so this scenario cannot exist there"
+            )
         real_publish = fingerprint_module._rename_noreplace_at
         foreign = b"foreign replacement sentinel"
 

@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
+from mod_editor.core import platform_compat
 from mod_editor.core.errors import OutputRefusedError, ValidationError
 from mod_editor.core.model import SourceRecord
 from mod_editor.core.nfl2k5_build_service import (
@@ -343,7 +344,14 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                     raise AssertionError("backend received the caller-owned project path")
                 if staged.parent == self.fixture.project.parent:
                     raise AssertionError("backend project was not in private build staging")
-                if (staged.stat().st_mode & 0o777) != 0o600:
+                # Owner-only is 0o600 on POSIX and is asserted unchanged there.
+                # Windows implements no group/other bits, so the same private
+                # staging copy reports 0o666 and its confidentiality comes from
+                # the per-user profile root's inherited ACL instead.
+                expected_mode = 0o666 if platform_compat.IS_WINDOWS else 0o600
+                if expected_mode != platform_compat.private_file_mode():
+                    raise AssertionError("private-file mode contract drifted")
+                if (staged.stat().st_mode & 0o777) != expected_mode:
                     raise AssertionError("staged project is not owner-only")
 
         with tempfile.TemporaryDirectory(prefix="2k5-build-service-test-") as temporary:

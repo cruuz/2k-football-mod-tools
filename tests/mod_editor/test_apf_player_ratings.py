@@ -7,6 +7,7 @@ import stat
 import tempfile
 import unittest
 
+from mod_editor.core import platform_compat
 from mod_editor.apf_studio.backend import ensure_tools_importable
 from mod_editor.apf_studio import player_ratings
 from mod_editor.apf_studio.player_ratings import (
@@ -134,7 +135,13 @@ class PlayerRatingSchemaTests(unittest.TestCase):
                 model, destination, source_sha256="a" * 64
             )
             self.assertEqual(result, destination)
-            self.assertEqual(stat.S_IMODE(destination.stat().st_mode), 0o600)
+            # POSIX privacy is the mode bits and stays exactly 0o600 here.
+            # Windows implements none of them, so the same private sheet reports
+            # 0o666 and its confidentiality comes from the per-user profile
+            # root's inherited ACL instead (platform_compat.privacy_guarantee).
+            expected_mode = 0o666 if platform_compat.IS_WINDOWS else 0o600
+            self.assertEqual(platform_compat.private_file_mode(), expected_mode)
+            self.assertEqual(stat.S_IMODE(destination.stat().st_mode), expected_mode)
             with destination.open(newline="", encoding="utf-8") as source:
                 rows = list(csv.DictReader(source))
             self.assertEqual(len(rows), 2_254)

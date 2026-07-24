@@ -12,6 +12,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from mod_editor.core import platform_compat
 from mod_editor.core import nfl2k5_audio_source_fingerprints as private_cache
 from mod_editor.core.nfl2k5_audio_catalog import Nfl2k5StreamingAudioRange
 from mod_editor.core.nfl2k5_audio_containment_fingerprints import (
@@ -142,7 +143,15 @@ class Nfl2k5AudioSourceContainmentTests(unittest.TestCase):
         self.assertNotIn(self.fixture.bank_payload[:144], payload)
         self.assertNotIn(str(self.fixture.source).encode(), payload)
         info = result.inventory_path.stat()
-        self.assertEqual(stat.S_IMODE(info.st_mode), 0o600)
+        # The private inventory is created 0o600 and POSIX enforces exactly
+        # that.  Windows implements no group/other bits, so the same file
+        # reports 0o666 there and confidentiality comes from the per-user
+        # profile root's inherited ACL (platform_compat.privacy_guarantee).
+        self.assertEqual(stat.S_IMODE(info.st_mode), platform_compat.private_file_mode())
+        self.assertEqual(
+            stat.S_IMODE(info.st_mode),
+            0o666 if platform_compat.IS_WINDOWS else 0o600,
+        )
         self.assertEqual(info.st_nlink, 1)
         self.assertEqual(events[-1].stage, "Private PCM containment inventory ready")
 
@@ -306,6 +315,10 @@ class Nfl2k5AudioSourceContainmentTests(unittest.TestCase):
         self.assertEqual(tuple(path.parent.glob("*.tmp")), ())
 
     def test_concurrent_winner_gets_post_source_guard_and_is_preserved(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest(
+                "requires POSIX directory-descriptor semantics -- the atomic publish pins its parent directory as an open descriptor and this test drives it through dir_fd= (os.open/os.unlink/os.stat) or reproduces an attacker by renaming/replacing a path the writer still holds open; Windows has no dir_fd, cannot open a directory descriptor, and refuses to rename or replace a path with an open handle, so this scenario cannot exist there"
+            )
         mutated = False
 
         def install_winner_then_mutate(
@@ -360,7 +373,12 @@ class Nfl2k5AudioSourceContainmentTests(unittest.TestCase):
         path = scanner.store.inventory_path(self.fixture.cache)
         self.assertTrue(mutated)
         self.assertTrue(path.is_file())
-        self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+        # Private-file mode: 0o600 enforced on POSIX, 0o666 honestly reported on
+        # Windows, which has no group/other bits to remove.
+        self.assertEqual(
+            stat.S_IMODE(path.stat().st_mode),
+            0o666 if platform_compat.IS_WINDOWS else 0o600,
+        )
         self.assertEqual(tuple(path.parent.glob("*.tmp")), ())
 
     def test_prepublication_authorization_failure_publishes_nothing(self) -> None:
@@ -391,6 +409,10 @@ class Nfl2k5AudioSourceContainmentTests(unittest.TestCase):
         self.assertEqual(tuple(completed.inventory_path.parent.glob("*.tmp")), ())
 
     def test_publication_failure_never_unlinks_a_foreign_replacement(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest(
+                "requires POSIX directory-descriptor semantics -- the atomic publish pins its parent directory as an open descriptor and this test drives it through dir_fd= (os.open/os.unlink/os.stat) or reproduces an attacker by renaming/replacing a path the writer still holds open; Windows has no dir_fd, cannot open a directory descriptor, and refuses to rename or replace a path with an open handle, so this scenario cannot exist there"
+            )
         real_publish = private_cache._rename_noreplace_at
         foreign = b"foreign containment sentinel"
 
@@ -463,9 +485,20 @@ class Nfl2k5AudioSourceContainmentTests(unittest.TestCase):
                 self.fixture.source.resolve(), self.fixture.cache
             )
         self.assertEqual(tuple(outside.iterdir()), ())
-        self.assertEqual(stat.S_IMODE(outside.stat().st_mode), 0o755)
+        # The refused scan must not have re-permissioned the outside directory.
+        # POSIX still reports the 0o755 the fixture set; Windows carries no
+        # directory mode at all and reports 0o777 for every directory, which is
+        # the value platform_compat publishes as its directory contract.
+        self.assertEqual(
+            stat.S_IMODE(outside.stat().st_mode),
+            0o777 if platform_compat.IS_WINDOWS else 0o755,
+        )
 
     def test_parent_swap_during_staging_cannot_redirect_or_leak_temp(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest(
+                "requires POSIX directory-descriptor semantics -- the atomic publish pins its parent directory as an open descriptor and this test drives it through dir_fd= (os.open/os.unlink/os.stat) or reproduces an attacker by renaming/replacing a path the writer still holds open; Windows has no dir_fd, cannot open a directory descriptor, and refuses to rename or replace a path with an open handle, so this scenario cannot exist there"
+            )
         scanner = self.scanner()
         completed = scanner.ensure(
             self.fixture.source.resolve(), self.fixture.cache
@@ -517,6 +550,10 @@ class Nfl2k5AudioSourceContainmentTests(unittest.TestCase):
                 parked.rename(parent)
 
     def test_parent_swap_during_load_cannot_redirect_inventory_read(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest(
+                "requires POSIX directory-descriptor semantics -- the atomic publish pins its parent directory as an open descriptor and this test drives it through dir_fd= (os.open/os.unlink/os.stat) or reproduces an attacker by renaming/replacing a path the writer still holds open; Windows has no dir_fd, cannot open a directory descriptor, and refuses to rename or replace a path with an open handle, so this scenario cannot exist there"
+            )
         scanner = self.scanner()
         completed = scanner.ensure(
             self.fixture.source.resolve(), self.fixture.cache

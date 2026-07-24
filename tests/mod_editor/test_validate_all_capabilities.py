@@ -12,6 +12,8 @@ import time
 import unittest
 from unittest import mock
 
+from mod_editor.core import platform_compat
+from tests.mod_editor.test_platform_compat import simulated_windows_filesystem
 from tools.validate_all_mod_editor_capabilities import (
     AUXILIARY_COMMAND_NAMES,
     EXPECTED_CAPABILITIES,
@@ -53,6 +55,29 @@ from tools.validate_all_mod_editor_capabilities import (
 
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def _requires_posix_report_publication(test: unittest.TestCase) -> None:
+    """Skip a test that drives the aggregate-report directory-descriptor publisher.
+
+    :func:`publish_report`/:func:`_open_checked_report_parent` pin the report's
+    parent directory with ``os.open(<dir>)`` and stage the file through that
+    descriptor -- ``dir_fd``-relative ``os.stat``/``os.link``/``os.rename`` and,
+    for the anonymous stage, ``O_TMPFILE``.  Windows cannot open a directory
+    descriptor at all (``os.open`` raises ``PermissionError``) and has no
+    ``dir_fd``, so this whole transaction is unreachable there.  The tests that
+    exercise it therefore skip on Windows with that as their named reason,
+    exactly as the sibling directory-fsync tests already do; every POSIX
+    assertion still runs unchanged on Linux and macOS.
+    """
+
+    if platform_compat.IS_WINDOWS:
+        test.skipTest(
+            "the aggregate-report publisher pins its parent with os.open(<dir>) "
+            "and stages through dir_fd (O_TMPFILE + os.link/os.rename); Windows "
+            "has no directory descriptor or dir_fd, so this transaction cannot "
+            "run there"
+        )
 
 
 class AllCapabilityValidationTests(unittest.TestCase):
@@ -359,6 +384,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
         self.assertNotIn("\npython3 tools/validate_all_mod_editor_capabilities.py", wrapper)
 
     def test_report_publication_is_private_atomic_and_exclusive(self) -> None:
+        _requires_posix_report_publication(self)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
@@ -384,6 +410,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
         self.assertIn("success marker", REPORT_RESIDUAL_LIMITATION)
 
     def test_normal_absolute_report_parent_is_accepted(self) -> None:
+        _requires_posix_report_publication(self)
         path = Path("/tmp") / (
             f"mod-editor-aggregate-report-parent-{os.getpid()}-{id(self)}.json"
         )
@@ -400,6 +427,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
                 validate_report_output(path)
 
     def test_failed_report_write_leaves_no_final_or_staging_file(self) -> None:
+        _requires_posix_report_publication(self)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
@@ -412,7 +440,64 @@ class AllCapabilityValidationTests(unittest.TestCase):
             self.assertFalse(path.exists())
             self.assertEqual(list(root.iterdir()), [])
 
+    def _require_injectable_directory_fsync(self) -> None:
+        """Refuse to fake a directory-fsync failure on an OS that has no such flush.
+
+        The two tests below inject a failure into the publisher's *directory*
+        flush and assert it propagates.  That flush reaches the kernel through
+        :func:`platform_compat.fsync_directory_fd`, and only POSIX actually
+        performs it: there the helper issues the single ``os.fsync(dir_fd)``
+        these tests patch, so the injection lands and the assertion is real.
+
+        Windows has no directory-flush primitive at all -- ``FlushFileBuffers``
+        takes a file handle and ``os.open`` refuses a directory outright -- so
+        the helper returns ``False`` without ever calling ``os.fsync``.  Patching
+        ``os.fsync`` there intercepts nothing, no failure can be injected, and
+        the test would be "proving" a durability boundary the OS never offered.
+
+        So on that platform assert the guarantee that genuinely holds -- the
+        skipped flush is *reported*, never silently swallowed -- and then skip
+        the POSIX-only injection with that as the named reason.  The Windows
+        branch is exercised on every host by
+        :meth:`test_windows_reports_the_directory_flush_as_not_performed`.
+        """
+
+        if platform_compat.supports_directory_fsync():
+            return
+        self.assertTrue(platform_compat.IS_WINDOWS)
+        # -1 is never dereferenced: the helper returns before touching the fd.
+        self.assertFalse(platform_compat.fsync_directory_fd(-1))
+        self.skipTest(
+            "Windows has no directory-flush primitive, so fsync_directory_fd "
+            "returns False without ever calling os.fsync and a directory-fsync "
+            "failure cannot be injected"
+        )
+
+    def test_windows_reports_the_directory_flush_as_not_performed(self) -> None:
+        # The Windows half of the two directory-fsync failure tests, run here so
+        # the branch is asserted rather than merely described.  Under forced
+        # Windows semantics the publisher's commit step must report the flush as
+        # not performed *and* must not reach os.fsync at all -- which is exactly
+        # why a patched os.fsync cannot inject a failure there.
+        before = platform_compat.supports_directory_fsync()
+        self.assertEqual(before, not platform_compat.IS_WINDOWS)
+        with simulated_windows_filesystem():
+            self.assertFalse(platform_compat.supports_directory_fsync())
+            with mock.patch(
+                "mod_editor.core.platform_compat.os.fsync",
+                side_effect=AssertionError(
+                    "Windows must not attempt a directory fsync"
+                ),
+            ):
+                # -1 is never dereferenced: the helper returns before touching
+                # the fd, which is precisely why nothing can be injected.
+                self.assertFalse(platform_compat.fsync_directory_fd(-1))
+        # ...and the simulation leaks nothing: this host is back to its own
+        # contract, which on POSIX is the real flush the two tests below patch.
+        self.assertEqual(platform_compat.supports_directory_fsync(), before)
+
     def test_post_link_report_failure_preserves_complete_final(self) -> None:
+        self._require_injectable_directory_fsync()
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
@@ -439,6 +524,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
             self.assertEqual(list(root.iterdir()), [path])
 
     def test_anonymous_publisher_never_calls_path_unlink(self) -> None:
+        _requires_posix_report_publication(self)
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "receipt.json"
             with mock.patch(
@@ -449,6 +535,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), b"{}\n")
 
     def test_unsupported_anonymous_staging_fails_without_named_fallback(self) -> None:
+        _requires_posix_report_publication(self)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
@@ -475,6 +562,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
             self.assertEqual(list(root.iterdir()), [])
 
     def test_destination_raced_before_link_is_preserved(self) -> None:
+        _requires_posix_report_publication(self)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
@@ -506,6 +594,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
             self.assertEqual(list(root.iterdir()), [path])
 
     def test_interrupt_before_link_discards_anonymous_stage(self) -> None:
+        _requires_posix_report_publication(self)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
@@ -518,6 +607,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
             self.assertEqual(list(root.iterdir()), [])
 
     def test_error_or_interrupt_after_real_link_preserves_complete_final(self) -> None:
+        _requires_posix_report_publication(self)
         failures: tuple[BaseException, ...] = (
             OSError("simulated post-commit syscall error"),
             KeyboardInterrupt(),
@@ -552,6 +642,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
                 self.assertEqual(list(root.iterdir()), [path])
 
     def test_final_revalidation_after_parent_fsync_preserves_replacement(self) -> None:
+        self._require_injectable_directory_fsync()
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             path = root / "receipt.json"
@@ -593,6 +684,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
             self.assertEqual({item.name for item in root.iterdir()}, {path.name, committed.name})
 
     def test_ancestor_replacement_after_link_is_detected_without_rollback(self) -> None:
+        _requires_posix_report_publication(self)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             parent = root / "parent"
@@ -619,6 +711,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
             self.assertEqual(list(parent.iterdir()), [])
 
     def test_open_report_parent_is_revalidated_against_pathname(self) -> None:
+        _requires_posix_report_publication(self)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             parent = root / "parent"
@@ -641,6 +734,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
                 )
 
     def test_parent_chain_acquisition_closes_every_fd_on_baseexception(self) -> None:
+        _requires_posix_report_publication(self)
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "receipt.json"
             real_open = os.open
@@ -666,6 +760,7 @@ class AllCapabilityValidationTests(unittest.TestCase):
                     os.fstat(descriptor)
 
     def test_parent_component_swap_between_stat_and_open_is_rejected(self) -> None:
+        _requires_posix_report_publication(self)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             parent = root / "parent"

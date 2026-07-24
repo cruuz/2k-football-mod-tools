@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import gc
 import json
 from pathlib import Path
 import struct
@@ -30,6 +31,15 @@ class UniversalAssetIndexTests(unittest.TestCase):
         self._write_archive_and_inventory()
 
     def tearDown(self) -> None:
+        # The index opens the SQLite database through short-lived read-only
+        # connections; sqlite3.Connection participates in reference cycles, so a
+        # connection's file handle is released by cyclic GC rather than the
+        # instant its ``with`` block exits.  POSIX happily deletes a file that
+        # still has an open handle, but Windows refuses (WinError 32), which
+        # wedged this TemporaryDirectory cleanup on the Windows runner.  Forcing
+        # a collection first closes any lingering handle deterministically on
+        # every platform; on POSIX it is a harmless no-op for behaviour.
+        gc.collect()
         self.temporary.cleanup()
 
     def _write_archive_and_inventory(self) -> None:

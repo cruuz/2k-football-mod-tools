@@ -22,6 +22,7 @@ from PyQt5.QtGui import QCloseEvent  # noqa: E402
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 from PIL import Image  # noqa: E402
 
+from mod_editor.core import platform_compat  # noqa: E402
 from mod_editor.apf_studio.facade import (  # noqa: E402
     ApfStudioFacade,
     FacadeError,
@@ -94,7 +95,13 @@ class ApfWorkspaceStateStoreTests(unittest.TestCase):
             self.assertEqual(document["schema"], WORKSPACE_STATE_SCHEMA)
             self.assertNotIn(b"synthetic-retail", document_bytes)
             self.assertNotIn(b"authored-edit", document_bytes)
-            self.assertEqual(store.state_path.stat().st_mode & 0o777, 0o600)
+            # The store creates its state document as 0o600.  POSIX enforces
+            # that number and it is asserted unchanged; Windows implements no
+            # group/other bits, so the same document reports 0o666 there and its
+            # privacy comes from the per-user state root's inherited ACL.
+            expected_mode = 0o666 if platform_compat.IS_WINDOWS else 0o600
+            self.assertEqual(platform_compat.private_file_mode(), expected_mode)
+            self.assertEqual(store.state_path.stat().st_mode & 0o777, expected_mode)
             self.assertEqual(list(store.root.glob(".*.tmp")), [])
 
     def test_exact_state_override_requires_an_absolute_private_root(self) -> None:
