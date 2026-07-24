@@ -183,7 +183,7 @@ class ProviderIntegrityTests(unittest.TestCase):
         )
         self.assertEqual(
             [len(provider.module_pins) for provider in providers],
-            [61, 10, 8, 9, 8, 9],
+            [61, 9, 8, 9, 8, 9],
         )
         for provider in providers:
             entries = [provider.backend_module]

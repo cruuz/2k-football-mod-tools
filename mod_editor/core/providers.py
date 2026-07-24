@@ -1002,7 +1002,6 @@ class Nfl2k5ScorebugProvider:
     backend_module_sha256 = "c169bea6f09954e61ccc706d116b406f01740b91b28546c8539b9736f4f7d2f5"
     module_pins: Mapping[str, str] = {
         backend_module: backend_module_sha256,
-        "mod_editor/core/platform_compat.py": "11fe959bbbb8706aeac563b478d04b9519a7d19455dc0f1adcfc7b731f01ff71",
         "tools/nfl_outer.py": "fe6f2d422b71a55b873b41bda5996f4a0205d0bf8297b3476d61a419936aaabb",
         "tools/nfl_scene_probe.py": "0cab4e10367c950aada642853995b6a954e82b7e37c88c0539abd2a90a78dc2e",
         "tools/nfl_scorebug_png_import.py": "2d2c714b44df0f793056a61cf2ac450f4aeb2cf8c758171c8f2632b9b6828a20",

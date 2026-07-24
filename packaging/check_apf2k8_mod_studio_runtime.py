@@ -1013,20 +1013,23 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 62
-        and len(registry.for_game(core_model.GameId.APF2K8)) == 31,
+        len(registry.capabilities) == 65
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 34,
         "shared/APF capability registry counts changed",
     )
     cards = catalog.build_capability_cards()
-    require(len(cards) == 31 and len({item.capability_id for item in cards}) == 31,
-            "APF capability surface is not exactly 31 unique rows")
+    require(len(cards) == 34 and len({item.capability_id for item in cards}) == 34,
+            "APF capability surface is not exactly 34 unique rows")
     require(len(models.APF_CATEGORY_ORDER) == 14,
             "APF complete sidebar category count changed")
     editable = {item.capability_id for item in cards if item.status is models.ApfStatus.EDITABLE}
     expected_editable = {
         "apf2k8.audio.ausb_xma_export",
         "apf2k8.audio.xma_export",
+        "apf2k8.field_art.base_texture",
         "apf2k8.logos_cards.draft_logo",
+        "apf2k8.logos_cards.team_logo",
+        "apf2k8.logos_cards.team_logo_cache",
         "apf2k8.menus.layouts",
         "apf2k8.players.roster",
         "apf2k8.scorebug_presentation.digital_font",
@@ -1928,8 +1931,8 @@ def _check_private_source(
                 f"expected 96 editable uniform assets, found {uniform_count}")
         require(uniform_inventory_count == 408,
                 f"expected 408 uniform inventory records, found {uniform_inventory_count}")
-        require(capability_count == 31,
-                f"expected 31 capabilities, found {capability_count}")
+        require(capability_count == 34,
+                f"expected 34 capabilities, found {capability_count}")
         require(
             len({item.asset_id for item in product_catalog.assets}) == universal_count
             and len({item.asset_id for item in product_catalog.uniform_assets}) == uniform_count,

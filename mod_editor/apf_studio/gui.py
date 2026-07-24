@@ -344,6 +344,207 @@ def _link_reference(source: Path, destination: Path) -> None:
     )
 
 
+def _declared_sibling_packs(index_path: Path) -> tuple[str, ...]:
+    """The pack names an APF 0A volume declares, other than the index itself.
+
+    Shared by :class:`ApfTeamLogoPanel` and the facade's copied-volume build so
+    the intermediate the cache writer re-parses is staged beside every sibling
+    pack the index declares.  Read-only: the user's game is never opened for
+    writing.
+    """
+
+    root = Path(__file__).resolve().parents[2]
+    for candidate in (str(root), str(root / "tools")):
+        if candidate not in sys.path:
+            sys.path.insert(0, candidate)
+    import apf_outer  # noqa: E402 - tools/ placed on sys.path above
+
+    archive = apf_outer.parse_archive(index_path)
+    return tuple(
+        pack.name for pack in archive.packs if pack.name != index_path.name
+    )
+
+
+def build_team_logo_copied_volume(
+    index_path: Path,
+    staged_png: Path,
+    out_volume: Path,
+    package_manifest: Path,
+    cache_manifest: Path,
+    progress: Callable[[str, int, int], None],
+    *,
+    cache_catalog_index: int,
+    siblings: tuple[str, ...] | None = None,
+) -> dict[str, object]:
+    """Run the two offline-proved team-logo writers over a copy of one 0A.
+
+    One action, two proved writers.  The package write
+    (``tools/apf_logo_patch.py``) lands in an intermediate copy; the cache write
+    (``tools/apf_logocache_patch.py``) then reads that copy and produces the
+    volume the author keeps, so the single delivered 0A carries both the
+    ``uniform_logo_01`` package edit and the matching ``uniform_logocache``
+    entry.  Either writer failing raises, and both writers remove their own
+    partial outputs, so a failed build leaves nothing behind but the workspace
+    this cleans up.  The retail source is never opened for writing.
+
+    This is the exact builder :class:`ApfTeamLogoPanel` dispatches and that
+    ``tests/mod_editor/test_apf_team_logo_gui.py`` pins; the facade's
+    ``build_team_logo`` reuses it so the GUI-panel route and the facade route
+    can never diverge.  ``siblings`` is resolved when not supplied; the panel
+    passes it explicitly so its declared-sibling resolver stays the seam its
+    tests patch.
+    """
+
+    import subprocess
+
+    tools = Path(__file__).resolve().parents[2] / "tools"
+
+    def run(writer: Path, arguments: list[str], stage: str) -> None:
+        progress(stage, 0, 0)
+        completed = subprocess.run(
+            [sys.executable, str(writer), *arguments],
+            cwd=str(tools.parent),
+            capture_output=True,
+            text=True,
+        )
+        if completed.returncode != 0:
+            raise RuntimeError(
+                completed.stderr.strip()
+                or completed.stdout.strip()
+                or f"The {writer.stem} writer failed."
+            )
+
+    if siblings is None:
+        siblings = _declared_sibling_packs(index_path)
+    out_volume.parent.mkdir(parents=True, exist_ok=True)
+    workspace = Path(
+        tempfile.mkdtemp(
+            prefix=".apf-team-logo-build-", dir=str(out_volume.parent)
+        )
+    )
+    retained: Path | None = None
+    try:
+        # The cache writer re-parses its --index volume, and an APF index only
+        # parses under its own pack name beside every sibling pack it declares.
+        # Stage the intermediate that way and reference the siblings by link, so
+        # no pack is copied and the retail source is still never opened for
+        # writing.
+        staged_volume = workspace / index_path.name
+        for pack in siblings:
+            _link_reference(index_path.parent / pack, workspace / pack)
+        staged_manifest = workspace / "team_logo_package.json"
+        run(
+            tools / "apf_logo_patch.py",
+            [
+                "--index",
+                str(index_path),
+                "--png",
+                str(staged_png),
+                "--output-volume",
+                str(staged_volume),
+                "--manifest",
+                str(staged_manifest),
+            ],
+            "Copying volume and writing the crest package through the proved writer",
+        )
+        run(
+            tools / "apf_logocache_patch.py",
+            [
+                "--index",
+                str(staged_volume),
+                "--catalog-index",
+                str(cache_catalog_index),
+                "--png",
+                str(staged_png),
+                "--output-volume",
+                str(out_volume),
+                "--manifest",
+                str(cache_manifest),
+            ],
+            "Writing the same crest into the prebuilt logo cache",
+        )
+        try:
+            retained = _copy_new(staged_manifest, package_manifest)
+        except OSError:
+            # The volume and its cache manifest are already written and
+            # verified; only the package-stage evidence copy failed.
+            retained = None
+    finally:
+        shutil.rmtree(workspace, ignore_errors=True)
+    return {
+        "volume": out_volume,
+        "cache_manifest": cache_manifest,
+        "package_manifest": retained,
+    }
+
+
+def build_field_art_copied_volume(
+    index_path: Path,
+    staged_png: Path,
+    entry_index: int,
+    file_index: int,
+    out_volume: Path,
+    manifest: Path,
+    progress: Callable[[str, int, int], None],
+    *,
+    writer_path: Path | None = None,
+    slot_name: str = "field-art texture",
+) -> Path:
+    """Run the offline-proved field-art writer over a copy of one 0A.
+
+    ``tools/apf_field_art_patch.py`` copies the whole volume, rewrites only the
+    selected base mip level, byte-preserves the descriptor pad, the packed mip
+    tail, and every sibling inner part, and pairs the write with an independent
+    verifier; the retail source is never opened for writing.
+
+    This is the exact builder :class:`ApfFieldArtPanel` dispatches and that
+    ``tests/mod_editor/test_apf_field_art_gui.py`` pins; the facade's
+    ``build_field_art`` reuses it so the two routes can never diverge.
+    """
+
+    import subprocess
+
+    if writer_path is None:
+        writer_path = (
+            Path(__file__).resolve().parents[2]
+            / "tools"
+            / "apf_field_art_patch.py"
+        )
+    progress(
+        f"Copying volume and writing {slot_name} through the proved writer",
+        0,
+        0,
+    )
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(writer_path),
+            "--index",
+            str(index_path),
+            "--png",
+            str(staged_png),
+            "--entry-index",
+            str(entry_index),
+            "--file-index",
+            str(file_index),
+            "--output-volume",
+            str(out_volume),
+            "--manifest",
+            str(manifest),
+        ],
+        cwd=str(writer_path.parents[1]),
+        capture_output=True,
+        text=True,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(
+            completed.stderr.strip()
+            or completed.stdout.strip()
+            or "The field-art writer failed."
+        )
+    return manifest
+
+
 class _TaskSignals(QObject):
     progress = pyqtSignal(str, int, int)
     succeeded = pyqtSignal(object)
@@ -2390,92 +2591,20 @@ class ApfTeamLogoPanel(QFrame):
         staged = self._staged_png
 
         def operation(progress: Callable[[str, int, int], None]) -> dict[str, object]:
-            import subprocess
-
-            tools = Path(__file__).resolve().parents[2] / "tools"
-
-            def run(writer: Path, arguments: list[str], stage: str) -> None:
-                progress(stage, 0, 0)
-                completed = subprocess.run(
-                    [sys.executable, str(writer), *arguments],
-                    cwd=str(tools.parent),
-                    capture_output=True,
-                    text=True,
-                )
-                if completed.returncode != 0:
-                    raise RuntimeError(
-                        completed.stderr.strip()
-                        or completed.stdout.strip()
-                        or f"The {writer.stem} writer failed."
-                    )
-
-            # One Team Logo action, two proved writers.  The package write lands
-            # in an intermediate copy; the cache write then reads that copy and
-            # produces the volume the author keeps, so the delivered 0A carries
-            # both edits.  Either writer failing raises, and both writers remove
-            # their own partial outputs, so a failed build leaves nothing behind
-            # but the workspace this cleans up.
+            # One Team Logo action, two proved writers, through the shared
+            # copied-volume builder the facade reuses.  Sibling resolution stays
+            # a panel seam so this path keeps its declared-sibling behaviour.
             siblings = self._declared_sibling_packs(index_path)
-            out_volume.parent.mkdir(parents=True, exist_ok=True)
-            workspace = Path(
-                tempfile.mkdtemp(
-                    prefix=".apf-team-logo-build-", dir=str(out_volume.parent)
-                )
+            return build_team_logo_copied_volume(
+                index_path,
+                staged,
+                out_volume,
+                package_manifest,
+                cache_manifest,
+                progress,
+                cache_catalog_index=self._CACHE_CATALOG_INDEX,
+                siblings=siblings,
             )
-            retained: Path | None = None
-            try:
-                # The cache writer re-parses its --index volume, and an APF index
-                # only parses under its own pack name beside every sibling pack it
-                # declares.  Stage the intermediate that way and reference the
-                # siblings by link, so no pack is copied and the retail source is
-                # still never opened for writing.
-                staged_volume = workspace / index_path.name
-                for pack in siblings:
-                    _link_reference(index_path.parent / pack, workspace / pack)
-                staged_manifest = workspace / "team_logo_package.json"
-                run(
-                    tools / "apf_logo_patch.py",
-                    [
-                        "--index",
-                        str(index_path),
-                        "--png",
-                        str(staged),
-                        "--output-volume",
-                        str(staged_volume),
-                        "--manifest",
-                        str(staged_manifest),
-                    ],
-                    "Copying volume and writing the crest package through the proved writer",
-                )
-                run(
-                    tools / "apf_logocache_patch.py",
-                    [
-                        "--index",
-                        str(staged_volume),
-                        "--catalog-index",
-                        str(self._CACHE_CATALOG_INDEX),
-                        "--png",
-                        str(staged),
-                        "--output-volume",
-                        str(out_volume),
-                        "--manifest",
-                        str(cache_manifest),
-                    ],
-                    "Writing the same crest into the prebuilt logo cache",
-                )
-                try:
-                    retained = _copy_new(staged_manifest, package_manifest)
-                except OSError:
-                    # The volume and its cache manifest are already written and
-                    # verified; only the package-stage evidence copy failed.
-                    retained = None
-            finally:
-                shutil.rmtree(workspace, ignore_errors=True)
-            return {
-                "volume": out_volume,
-                "cache_manifest": cache_manifest,
-                "package_manifest": retained,
-            }
 
         self.run_task(
             "Building copied 0A (team logo)",
@@ -3170,42 +3299,19 @@ class ApfFieldArtPanel(QFrame):
             return
 
         def operation(progress: Callable[[str, int, int], None]) -> Path:
-            import subprocess
-
-            writer_path = self._writer_path()
-            progress(
-                f"Copying volume and writing {target.name} through the proved writer",
-                0,
-                0,
+            # Route through the shared copied-volume builder the facade reuses,
+            # keeping the writer-path seam this panel owns.
+            return build_field_art_copied_volume(
+                index_path,
+                staged,
+                target.entry_index,
+                target.file_index,
+                out_volume,
+                manifest,
+                progress,
+                writer_path=self._writer_path(),
+                slot_name=target.name,
             )
-            completed = subprocess.run(
-                [
-                    sys.executable,
-                    str(writer_path),
-                    "--index",
-                    str(index_path),
-                    "--png",
-                    str(staged),
-                    "--entry-index",
-                    str(target.entry_index),
-                    "--file-index",
-                    str(target.file_index),
-                    "--output-volume",
-                    str(out_volume),
-                    "--manifest",
-                    str(manifest),
-                ],
-                cwd=str(writer_path.parents[1]),
-                capture_output=True,
-                text=True,
-            )
-            if completed.returncode != 0:
-                raise RuntimeError(
-                    completed.stderr.strip()
-                    or completed.stdout.strip()
-                    or "The field-art writer failed."
-                )
-            return manifest
 
         self.run_task(
             f"Building copied 0A ({target.name})",
