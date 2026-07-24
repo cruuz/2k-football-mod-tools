@@ -386,15 +386,31 @@ class Nfl2k5AudioSourceContainmentStore:
             # a raw uid: Windows reports st_uid == 0 for every file, so an inline
             # comparison would degrade into a check that always passes there.
             and parent_handle.is_owned_by_current_user(parent_opened)
+            # The mode is asked of platform_compat for the same reason: it is
+            # exactly the historical 0o700 on POSIX -- the kernel-enforced
+            # confidentiality this cache relies on, byte for byte -- and the
+            # 0o777 Windows reports for every directory, which is what a private
+            # directory honestly reads back as there.
             and (
                 parent_opened.st_dev,
                 parent_opened.st_ino,
-                parent_opened.st_mode & 0o777,
+                stat.S_IMODE(parent_opened.st_mode),
             )
             == (
                 parent_named.st_dev,
                 parent_named.st_ino,
-                0o700,
+                platform_compat.private_directory_mode(),
+            )
+            # ...and because that Windows number confers no privacy at all, the
+            # owner-only question is put to the mechanism that does enforce it
+            # there: the directory's DACL, queried through the realpath this
+            # handle is pinned to, so a current-user-owned directory carrying an
+            # Everyone/Users ACE is refused rather than passed by its mode.  On
+            # POSIX this is the historical "no group or other access" test,
+            # already implied by the exact-0o700 equality above, so Linux and
+            # macOS execute the same decision they always did.
+            and platform_compat.is_private_directory_mode(
+                parent_opened, path=parent_handle.realpath
             ),
             f"Private containment-cache directory changed during {stage}",
         )
@@ -562,7 +578,12 @@ class Nfl2k5AudioSourceContainmentStore:
                 stat.S_ISREG(named.st_mode)
                 and platform_compat.is_owned_by_current_user(named, path=path)
                 and named.st_nlink == 1
-                and named.st_mode & 0o777 == 0o600,
+                # The private-file mode this platform actually produces: the
+                # historical 0o600 on POSIX, and the 0o666 Windows reports for a
+                # normal writable file (confidentiality there comes from the
+                # cache root's ACL, verified on the pinned parent directory).
+                and stat.S_IMODE(named.st_mode)
+                == platform_compat.private_file_mode(),
                 "Private containment inventory must be a mode-0600, non-linked file",
             )
             _require(
@@ -587,7 +608,8 @@ class Nfl2k5AudioSourceContainmentStore:
                         opened, fd=descriptor
                     )
                     and opened.st_nlink == 1
-                    and opened.st_mode & 0o777 == 0o600
+                    and stat.S_IMODE(opened.st_mode)
+                    == platform_compat.private_file_mode()
                     and (opened.st_dev, opened.st_ino, opened.st_size)
                     == (named.st_dev, named.st_ino, named.st_size),
                     "Private containment inventory changed before it was opened",
@@ -717,7 +739,13 @@ class Nfl2k5AudioSourceContainmentStore:
                     opened, fd=descriptor
                 )
                 and opened.st_nlink == 1
-                and opened.st_mode & 0o777 == 0o600
+                # 0o600 on POSIX; on Windows open_staging_child deliberately
+                # creates a normal writable file, which reads back 0o666 -- the
+                # honest number platform_compat publishes as the private-file
+                # mode for that platform.  Demanding 0o600 here is what made
+                # this writer abort on every Windows publish.
+                and stat.S_IMODE(opened.st_mode)
+                == platform_compat.private_file_mode()
                 and (
                     opened.st_dev,
                     opened.st_ino,
@@ -760,7 +788,8 @@ class Nfl2k5AudioSourceContainmentStore:
                 stat.S_ISREG(final.st_mode)
                 and platform_compat.is_owned_by_current_user(final, path=path)
                 and final.st_nlink == 1
-                and final.st_mode & 0o777 == 0o600
+                and stat.S_IMODE(final.st_mode)
+                == platform_compat.private_file_mode()
                 and (final.st_dev, final.st_ino, final.st_size)
                 == (staged_identity[0], staged_identity[1], len(payload)),
                 "Private containment inventory changed during publication",
@@ -796,7 +825,8 @@ class Nfl2k5AudioSourceContainmentStore:
                     after, fd=descriptor
                 )
                 and after.st_nlink == 1
-                and after.st_mode & 0o777 == 0o600
+                and stat.S_IMODE(after.st_mode)
+                == platform_compat.private_file_mode()
                 and (
                     named_after.st_dev,
                     named_after.st_ino,

@@ -1028,7 +1028,19 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
         or not platform_compat.is_owned_by_current_user(
             named_root, path=selected_root
         )
+        # The mode is the number this platform genuinely produces for a private
+        # directory -- 0o700 on POSIX, 0o777 on Windows -- so the equality below
+        # is an honest shape check on both.  On Windows it is only that: every
+        # directory reads 0o777 and the number confers no privacy, so the
+        # owner-only guarantee is asked of the DACL instead (a current-user-owned
+        # directory with an Everyone/Users ACE is refused).  On POSIX
+        # is_private_directory_mode is the historical "no group or other access"
+        # test, already implied by the exact-mode equality, so the decision Linux
+        # and macOS reach is unchanged.
         or stat.S_IMODE(named_root.st_mode) != platform_compat.private_directory_mode()
+        or not platform_compat.is_private_directory_mode(
+            named_root, path=selected_root
+        )
     ):
         raise _audio_safety_error(
             "the private source cache must be an owner-only, mode-0700 "
@@ -1057,7 +1069,13 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
         if (
             not stat.S_ISDIR(opened_root.st_mode)
             or not root_handle.is_owned_by_current_user(opened_root)
+            # Mode for shape on both platforms; DACL for the owner-only
+            # guarantee on Windows, read through the realpath this handle is
+            # pinned to (POSIX keeps the mode-bit answer it always gave).
             or stat.S_IMODE(opened_root.st_mode) != platform_compat.private_directory_mode()
+            or not platform_compat.is_private_directory_mode(
+                opened_root, path=root_handle.realpath
+            )
             or (opened_root.st_dev, opened_root.st_ino)
             != (named_root.st_dev, named_root.st_ino)
         ):
@@ -1082,7 +1100,13 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
             or not platform_compat.is_owned_by_current_user(
                 named_derived, path=derived
             )
+            # Mode for shape on both platforms; DACL for the owner-only
+            # guarantee on Windows (POSIX keeps the mode-bit answer it always
+            # gave, already implied by the exact-mode equality above).
             or stat.S_IMODE(named_derived.st_mode) != platform_compat.private_directory_mode()
+            or not platform_compat.is_private_directory_mode(
+                named_derived, path=derived
+            )
         ):
             raise _audio_safety_error(
                 "the private derived-cache directory must be an owner-only, "
@@ -1098,7 +1122,13 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
         if (
             not stat.S_ISDIR(opened_derived.st_mode)
             or not derived_handle.is_owned_by_current_user(opened_derived)
+            # Mode for shape on both platforms; DACL for the owner-only
+            # guarantee on Windows, read through the realpath this handle is
+            # pinned to (POSIX keeps the mode-bit answer it always gave).
             or stat.S_IMODE(opened_derived.st_mode) != platform_compat.private_directory_mode()
+            or not platform_compat.is_private_directory_mode(
+                opened_derived, path=derived_handle.realpath
+            )
             or (opened_derived.st_dev, opened_derived.st_ino)
             != (named_derived.st_dev, named_derived.st_ino)
             or derived.resolve(strict=True) != derived

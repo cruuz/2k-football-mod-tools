@@ -349,7 +349,16 @@ def _private_derived_directory(root: Path, path: Path) -> Path:
     info = path.lstat()
     _require(
         platform_compat.is_owned_by_current_user(info, path=path)
-        and platform_compat.is_private_directory_mode(info)
+        # The owner-only question needs a locator, not just a stat: on POSIX the
+        # answer is in the mode bits this stat already carries ("no group or
+        # other access", byte-for-byte the historical inline test), but on
+        # Windows a directory has no meaningful mode and the answer is its DACL,
+        # which cannot be read from an os.stat_result.  Passing the path lets
+        # platform_compat query that DACL, so a current-user-owned directory
+        # with an Everyone/Users ACE is refused instead of silently accepted --
+        # without a locator the Windows branch could only fail closed and no
+        # private cache would ever load there.
+        and platform_compat.is_private_directory_mode(info, path=path)
         and platform_compat.is_canonical_absolute_path(path, resolved)
         and resolved == root / PRIVATE_RELATIVE_PATH.parent,
         "Private derived-cache directory must be owner-only and stay inside "
@@ -866,7 +875,15 @@ class Nfl2k5AudioSourceFingerprintStore:
             _require(
                 stat.S_ISDIR(parent_opened.st_mode)
                 and directory.is_owned_by_current_user(parent_opened)
-                and platform_compat.is_private_directory_mode(parent_opened)
+                # Owner-only is asked of this platform's real mechanism, and it
+                # needs a locator to ask with: the mode bits carried by the stat
+                # on POSIX (unchanged), and on Windows the DACL of the directory
+                # this handle is pinned to, read through that realpath.  Handed
+                # no locator the Windows branch has nothing to query and always
+                # refuses, which is why the pinned realpath is passed here.
+                and platform_compat.is_private_directory_mode(
+                    parent_opened, path=directory.realpath
+                )
                 and (parent_opened.st_dev, parent_opened.st_ino)
                 == (parent_named.st_dev, parent_named.st_ino),
                 "Private derived-cache directory changed before publication",

@@ -139,6 +139,15 @@ _WIN_GENERIC_ALL_ACCESS = 0x10000000
 _WIN_GENERIC_EXECUTE_ACCESS = 0x20000000
 _WIN_GENERIC_WRITE_ACCESS = 0x40000000
 _WIN_GENERIC_READ_ACCESS = 0x80000000
+# WRITE_DAC and WRITE_OWNER from <winnt.h>.  Neither reads a byte on its own,
+# which is exactly why omitting them was a hole: WRITE_DAC is the right to
+# REWRITE the DACL, so a foreign SID holding it can grant itself full read
+# access and then read the cache, and WRITE_OWNER lets it take ownership and do
+# the same.  A DACL that hands either to a foreign account is not owner-only, so
+# they belong in the visibility mask alongside the direct read rights.
+_WIN_WRITE_DAC = 0x00040000
+_WIN_WRITE_OWNER = 0x00080000
+
 _ACCESS_MASK_CONFERS_VISIBILITY = (
     _WIN_FILE_READ_DATA
     | _WIN_FILE_WRITE_DATA
@@ -146,6 +155,8 @@ _ACCESS_MASK_CONFERS_VISIBILITY = (
     | _WIN_FILE_READ_EA
     | _WIN_FILE_EXECUTE
     | _WIN_FILE_READ_ATTRIBUTES
+    | _WIN_WRITE_DAC
+    | _WIN_WRITE_OWNER
     | _WIN_GENERIC_ALL_ACCESS
     | _WIN_GENERIC_EXECUTE_ACCESS
     | _WIN_GENERIC_WRITE_ACCESS
@@ -932,8 +943,19 @@ def _windows_directory_dacl_aces(
                     ace_pointer, ctypes.POINTER(_ACCESS_ALLOWED_ACE)
                 ).contents
                 aces.append((ace_type, None, int(allowed.Mask)))
-            # DENIED (and every other) ACE type only ever restricts access, so it
-            # cannot widen who may read the cache and is not collected.
+            elif ace_type != _ACCESS_DENIED_ACE_TYPE:
+                # Everything that is not a plain DENIED ACE is treated as an
+                # unparseable ALLOWED grant.  Assuming "every other ACE type only
+                # restricts access" was false: the callback variants
+                # (ACCESS_ALLOWED_CALLBACK_ACE, type 0x09, and its object form
+                # 0x0B) DO grant rights, and skipping them silently let a foreign
+                # grant through unread.  Recording them with an unparseable SID
+                # makes the classifier fail closed on a DACL it cannot fully
+                # decode, which is the only safe reading of one.
+                allowed = ctypes.cast(
+                    ace_pointer, ctypes.POINTER(_ACCESS_ALLOWED_ACE)
+                ).contents
+                aces.append((ace_type, None, int(allowed.Mask)))
         return aces
     finally:
         api.kernel32.LocalFree(descriptor)
@@ -1013,10 +1035,12 @@ def windows_directory_privacy(
         )
     permissive: list[str] = []
     for ace_type, sid, mask in aces:
-        if ace_type not in (
-            _ACCESS_ALLOWED_ACE_TYPE,
-            _ACCESS_ALLOWED_OBJECT_ACE_TYPE,
-        ):
+        # Every ACE the collector kept is an allowed grant, or one whose type it
+        # could not decode and recorded as an unparseable grant; plain DENIED
+        # ACEs are dropped there and never reach this loop.  Re-filtering by an
+        # allow-list of types here would re-open the hole the collector just
+        # closed, by skipping exactly the callback ACEs it deliberately kept.
+        if ace_type == _ACCESS_DENIED_ACE_TYPE:
             continue
         if not (mask & _ACCESS_MASK_CONFERS_VISIBILITY):
             continue
@@ -1071,6 +1095,12 @@ _WIN_DIR_PIN_SHARE_MODE = _WIN_FILE_SHARE_READ | _WIN_FILE_SHARE_WRITE
 
 # GENERIC_READ, for the sealed-module exec pin (:func:`reverify_sealed_before_exec`).
 _WIN_GENERIC_READ = 0x80000000
+# READ_CONTROL from <winnt.h>: the standard right to read an object's SECURITY
+# DESCRIPTOR (owner + DACL) and nothing else -- no data access whatsoever.
+# GetSecurityInfo requires it on the handle it is given, so a directory handle
+# opened with access 0 cannot answer the ownership question the pinned
+# transactions ask of it.
+_WIN_READ_CONTROL = 0x00020000
 # The exec pin shares READ only -- withholding FILE_SHARE_WRITE and
 # FILE_SHARE_DELETE -- so while the pin handle lives no same-user process can
 # rewrite, truncate, rename-over or delete the sealed module the subprocess is
@@ -1229,13 +1259,21 @@ def _win_open_directory_handle(
     """CreateFileW a directory handle; raise :class:`OSError` if the OS refuses.
 
     ``for_flush`` requests ``GENERIC_WRITE`` (which ``FlushFileBuffers`` needs);
-    otherwise access ``0`` is enough for ``GetFileInformationByHandle`` and lets a
-    second, identity-only handle coexist with the pinned one.  ``nofollow`` adds
-    ``FILE_FLAG_OPEN_REPARSE_POINT`` so a symlinked directory opens as the reparse
-    point itself and can be refused rather than silently followed.
+    otherwise ``READ_CONTROL`` alone, which is what
+    :func:`GetFileInformationByHandle` needs (it needs no access at all) *plus*
+    what ``GetSecurityInfo`` requires to read the object's owner and DACL.
+    Requesting access ``0`` here was a real defect, not a tightening: the pinned
+    handle is the very thing :meth:`DirHandle.describe_ownership` interrogates,
+    and without ``READ_CONTROL`` that query fails for every private-cache
+    transaction, which then fails closed and aborts.  ``READ_CONTROL`` conveys no
+    data access -- it permits reading the security descriptor and nothing else --
+    so a second, identity-only handle still coexists with the pinned one.
+    ``nofollow`` adds ``FILE_FLAG_OPEN_REPARSE_POINT`` so a symlinked directory
+    opens as the reparse point itself and can be refused rather than silently
+    followed.
     """
 
-    access = _WIN_GENERIC_WRITE if for_flush else 0
+    access = _WIN_GENERIC_WRITE if for_flush else _WIN_READ_CONTROL
     flags = _WIN_FILE_FLAG_BACKUP_SEMANTICS
     if nofollow:
         flags |= _WIN_FILE_FLAG_OPEN_REPARSE_POINT
@@ -1369,7 +1407,11 @@ def _win_reverify_identity(
         )
 
 
-def _windows_flush_directory(path: str | os.PathLike[str]) -> bool:
+def _windows_flush_directory(
+    path: str | os.PathLike[str],
+    *,
+    expected: tuple[int, int] | None = None,
+) -> bool:
     """Flush a directory's metadata via ``FlushFileBuffers`` on a write handle.
 
     Returns ``True`` when the directory was genuinely flushed and ``False`` when
@@ -1377,6 +1419,16 @@ def _windows_flush_directory(path: str | os.PathLike[str]) -> bool:
     write handle (a directory whose ACL denies this account ``FILE_WRITE_DATA``).
     The ``False`` is the observable signal the caller acts on; it never pretends a
     flush that did not happen.
+
+    ``expected`` is the ``(volume serial, file index)`` identity the caller has
+    pinned.  When given, the freshly opened write handle is compared against it
+    and the flush is refused on a mismatch.  Without that comparison a caller
+    that had just re-verified its pin could still flush a *different* directory:
+    this function resolves the name again, so an ancestor swap in between made
+    ``True`` mean "some directory was committed", not "the pinned directory was
+    committed".  ``nofollow`` is likewise requested so a directory symlink is
+    opened as the reparse point and fails the identity comparison rather than
+    being followed.
     """
 
     try:
@@ -1385,11 +1437,18 @@ def _windows_flush_directory(path: str | os.PathLike[str]) -> bool:
         return False
     try:
         handle = _win_open_directory_handle(
-            api, path, for_flush=True, nofollow=False
+            api, path, for_flush=True, nofollow=expected is not None
         )
     except OSError:
         return False
     try:
+        if expected is not None:
+            try:
+                serial, index, _attributes = _win_file_identity(api, handle)
+            except OSError:
+                return False
+            if (serial, index) != expected:
+                return False
         return bool(api.kernel32.FlushFileBuffers(handle))
     except OSError:
         return False
@@ -1964,6 +2023,19 @@ def fsync_path(
     try:
         if link_identity is not None:
             opened = os.fstat(descriptor)
+            # Identity equality alone does not prove no traversal happened: a
+            # racer can rename the target aside and drop a link with the original
+            # name pointing at it, so os.open follows a NEW link and still lands
+            # on the SAME inode.  The opened object's own attributes settle it,
+            # and they also catch the non-symlink reparse tags (junctions, mount
+            # points) that S_ISLNK never reports.
+            attributes = getattr(opened, "st_file_attributes", 0)
+            reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+            if attributes and reparse_flag and attributes & reparse_flag:
+                raise DurabilityError(
+                    f"{os.fspath(path)!r} resolved to a reparse point, which "
+                    "follow_symlinks=False refuses"
+                )
             if not (link_identity[1] and opened.st_ino):
                 raise DurabilityError(
                     f"Cannot prove {os.fspath(path)!r} was not a reparse point: "
@@ -2462,31 +2534,45 @@ def is_canonical_absolute_path(
     # own realpath (the user-controlled tail); stop at the leading divergence,
     # which is the system alias / short-name expansion the equality tolerates.
     #
-    # "Leading divergence" is a divergence in SHAPE, not just in spelling: a
-    # macOS ``/var -> /private/var`` alias makes the realpath one component
+    # A macOS ``/var -> /private/var`` alias makes the realpath one component
     # LONGER, so from the tail the two sides stay name-equal right through the
-    # aliased component itself (``var`` == ``var``) and a naive walk would go on
-    # to lstat ``/var``, find the system symlink, and refuse every canonical
-    # macOS temporary or cache path.  Requiring the indices to stay aligned
-    # (``i == j``) confines the walk to the region where the two spellings
-    # describe the same shape -- the user-controlled tail -- and stops it at the
-    # component-count change that only a system alias produces.  A Windows 8.3
-    # expansion (``RUNNER~1`` -> ``runneradmin``) keeps the count identical, so
-    # its ancestors are still walked, and on Linux, where the two forms of a
-    # canonical path are equal, the walk is byte-for-byte the one that ran
-    # before.
+    # aliased component itself (``var`` == ``var``) and the walk goes on to
+    # lstat ``/var``, find the system symlink, and refuse every canonical macOS
+    # temporary or cache path.  A shape difference is NOT a reliable signature
+    # of a system alias, though: ``/Users/me/cache -> /Users/me/private/cache``
+    # changes the component count too, and that one is a user-controlled
+    # redirection this function exists to refuse.  So the tolerance is scoped by
+    # LOCATION, not by shape: a symlinked ancestor is refused wherever the user
+    # can create one -- inside the user's own home tree -- and tolerated only
+    # ABOVE it, where creating one already requires the privilege this check
+    # could not defend against anyway (macOS ships ``/var`` root-owned).  On
+    # Linux and Windows the two forms of a canonical path share their shape, so
+    # every ancestor is walked and refused exactly as before; only the macOS
+    # system-alias head is newly tolerated.
+    try:
+        home = os.path.normcase(os.path.realpath(os.path.expanduser("~")))
+    except (OSError, RuntimeError):
+        home = None
     p_parts = Path(text).parts
     r_parts = Path(real_path).parts
     i, j = len(p_parts) - 1, len(r_parts) - 1
     while (
         i >= 0
-        and i == j
+        and j >= 0
         and os.path.normcase(p_parts[i]) == os.path.normcase(r_parts[j])
     ):
         prefix = str(Path(*p_parts[: i + 1]))
         try:
             if stat.S_ISLNK(os.lstat(prefix).st_mode):
-                return False
+                # Above the user's own tree this is a system alias
+                # (macOS /var); inside it, it is a redirection the caller
+                # controls and must not be able to hide behind.
+                if home is None:
+                    return False
+                normalised = os.path.normcase(prefix)
+                if normalised == home or normalised.startswith(home + os.sep):
+                    return False
+                return True
         except FileNotFoundError:
             pass
         except OSError:
@@ -3584,7 +3670,11 @@ def _directory_transaction_guarantee_for(windows: bool) -> DirectoryTransactionG
                 "directory itself, so pinned_by_descriptor is True. Each at-op "
                 "additionally re-verifies the current path resolves to the held "
                 "handle's (dwVolumeSerialNumber, file-index) identity and refuses "
-                "a symlinked child. What it CANNOT do is resolve the child name "
+                "a symlinked child. That identity is the 64-bit file index from "
+                "GetFileInformationByHandle, which Microsoft documents as NOT "
+                "guaranteed unique on ReFS (which identifies files by 128 bits), "
+                "so on a ReFS volume the re-verification is a strong check rather "
+                "than a proof of non-replacement. What it CANNOT do is resolve the child name "
                 "against the handle (Windows has no openat), so the child lookup "
                 "stays path-based: kernel_enforced_against_swap is False and a "
                 "sub-millisecond child-NAME check-to-use window remains "
@@ -3841,16 +3931,25 @@ class DirHandle:
         """``stat`` a child relative to the pinned directory (``lstat`` when ``follow`` is false).
 
         POSIX: the identical ``os.stat(name, dir_fd=fd, follow_symlinks=follow)``.
-        Windows: re-verify the pin, then ``os.stat`` the joined child path.  A
-        symlinked child is *not* refused here -- with ``follow=False`` this returns
-        the link's own ``stat`` exactly as the POSIX call does, so the caller's own
-        ``S_ISLNK``/``S_ISREG`` check (which every consumer already performs) still
-        makes the decision.
+        Windows: re-verify the pin, then ``os.stat`` the joined child path.
+
+        With ``follow=False`` a symlinked child is deliberately NOT refused: the
+        call returns the link's own ``stat`` exactly as the POSIX one does, so
+        the caller's ``S_ISLNK``/``S_ISREG`` check (which every consumer already
+        performs) still makes the decision.  With ``follow=True`` it IS refused
+        on Windows, because that form resolves the link and would hand back the
+        target's ``stat`` while
+        :attr:`DirectoryTransactionGuarantee.refuses_symlinked_child` claims the
+        transaction refuses symlinked children -- the field has to be true of
+        every method, not only of the mutating ones.
         """
 
         if not self._windows:
             return os.stat(name, dir_fd=self._fd, follow_symlinks=follow)
-        return os.stat(self._child(name), follow_symlinks=follow)
+        child = self._child(name)
+        if follow:
+            self._refuse_symlinked_child(child, "stat")
+        return os.stat(child, follow_symlinks=follow)
 
     def open(self, name: str, flags: int, mode: int = 0o777) -> int:
         """Open a child relative to the pinned directory; return the file descriptor.
@@ -4114,7 +4213,13 @@ class DirHandle:
 
         if self._windows:
             self._reverify()
-            return _windows_flush_directory(self._realpath)
+            # Pass the pinned identity: the flush helper resolves the name
+            # again, so without it a namespace swap in the documented
+            # check-to-use interval would flush a different directory and still
+            # report True.
+            return _windows_flush_directory(
+                self._realpath, expected=self._identity
+            )
         return fsync_directory_fd(self._fd)
 
     def describe_ownership(
@@ -4482,7 +4587,39 @@ def _publish_directory_via_reserve(
         handle.mkdir(destination, POSIX_PRIVATE_DIRECTORY_MODE)
     else:
         os.mkdir(destination, POSIX_PRIVATE_DIRECTORY_MODE)
+    # Identity of the placeholder we just reserved.  os.rename REPLACES an empty
+    # destination directory, so without this a racer could rmdir our placeholder,
+    # create its own directory at the same name, and have it silently overwritten
+    # by the swap -- the "no pre-existing destination is overwritten" promise
+    # would then be false.  Re-checking immediately before the swap does not make
+    # the two steps atomic (nothing available here can), but it refuses the
+    # observed replacement instead of overwriting it.
     try:
+        reserved = (
+            handle.stat(destination, follow=False)
+            if handle is not None
+            else os.lstat(destination)
+        )
+        reserved_identity: tuple[int, int] | None = (
+            reserved.st_dev,
+            reserved.st_ino,
+        )
+    except OSError:
+        reserved_identity = None
+    try:
+        if reserved_identity is not None:
+            current = (
+                handle.stat(destination, follow=False)
+                if handle is not None
+                else os.lstat(destination)
+            )
+            if (current.st_dev, current.st_ino) != reserved_identity:
+                raise FileExistsError(
+                    errno.EEXIST,
+                    "the reserved destination was replaced by another process "
+                    "before the staged folder could be swapped in",
+                    destination,
+                )
         if handle is not None:
             handle.rename(staging, destination)
         else:
@@ -4507,7 +4644,10 @@ def _publish_directory_via_reserve(
             "os.mkdir reserves the name atomically (fails if it exists), then "
             "os.rename swaps the staged folder onto the placeholder; a concurrent "
             "reader may observe the empty placeholder, so this is NOT a single "
-            "atomic no-clobber step (no pre-existing destination is overwritten)"
+            "atomic no-clobber step. No pre-existing destination is overwritten: "
+            "the placeholder's identity is re-checked immediately before the swap "
+            "and a replacement is refused, though that re-check narrows rather "
+            "than eliminates the window between the two steps"
         ),
     )
 
@@ -4743,8 +4883,20 @@ def _win_create_share_delete_child(path: str) -> int:
             f"{path!r} (WinError {err})",
         )
     try:
-        return msvcrt.open_osfhandle(handle, os.O_RDWR | getattr(os, "O_BINARY", 0))
-    except OSError:
+        # O_NOINHERIT: the CRT descriptor is inheritable by default, and every
+        # caller here asks for O_CLOEXEC on POSIX -- a staging descriptor must
+        # not leak into a child process on either platform.
+        return msvcrt.open_osfhandle(
+            handle,
+            os.O_RDWR
+            | getattr(os, "O_BINARY", 0)
+            | getattr(os, "O_NOINHERIT", 0),
+        )
+    except BaseException:
+        # BaseException, not OSError: open_osfhandle emits an audit event, so an
+        # installed audit hook can raise anything at all here.  If ownership of
+        # the handle was not transferred to the CRT, this frame still owns it and
+        # must close it or leak it.
         _win_close_handle(api, handle)
         raise
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import ast
-from contextlib import contextmanager
+from contextlib import AbstractContextManager, contextmanager
 from dataclasses import dataclass
 import hashlib
 import io
@@ -18,6 +18,7 @@ import tempfile
 from typing import Callable, Iterator
 import zipfile
 
+from . import platform_compat
 from .capabilities import Capability, Classification
 from .errors import OutputRefusedError
 from .platform_compat import (
@@ -66,30 +67,85 @@ def _is_reparse_point(info: os.stat_result) -> bool:
     return getattr(info, "st_reparse_tag", 0) != 0
 
 
+# Names for the exec-pin mechanism this provider ends up with.  The two below are
+# the paths platform_compat has no say in: the Linux ``memfd`` staging (kernel
+# write-seals plus a ``/proc/self/fd`` name for a descriptor this process holds)
+# and the untouched non-memfd POSIX fallback for a kernel with no ``memfd`` at all.
+# Every other case reports the mechanism string platform_compat itself returned
+# (``SEALED_EXEC_WINDOWS_SHARE_PIN`` / ``SEALED_EXEC_REVERIFIED_PATH`` / ...), so
+# the name in an event or a test assertion is always the one actually enforced.
+_EXEC_PIN_LINUX_MEMFD = "linux-memfd-write-seals-procfs-fd"
+_EXEC_PIN_REHASHED_PATH = "rehashed-path-residual-window"
+
+
+@dataclass(frozen=True)
+class _PinnedExec:
+    """A staged closure pinned for exactly as long as its pin is held open.
+
+    ``path`` is the value to place on the child's ``argv``; it is valid only
+    inside the ``pin_for_exec`` context that produced it.  ``inode_pinned`` is the
+    load-bearing honesty field -- ``True`` means the bytes re-verified at pin time
+    are provably the bytes the child gets (a descriptor this process holds named
+    through ``/proc``, or a Windows deny-write/deny-delete share pin that forbids
+    replacing the name while the pin lives), ``False`` means the re-hash ran
+    immediately before the launch but the child still opens a *name* another
+    same-user process could swap in between.  ``mechanism`` names which case is in
+    force so an event, a caller or a test can assert the real guarantee instead of
+    assuming the strongest one.
+    """
+
+    path: Path
+    inode_pinned: bool
+    mechanism: str
+
+
 @dataclass(frozen=True)
 class _StagedModule:
     """A staged closure ready to hand to the writer/verifier subprocess.
 
-    ``path`` is the value placed on the child's ``argv``.
-    ``reverify_before_exec`` MUST be called in the parent immediately before the
-    subprocess is launched:
+    ``path`` is where the closure is staged.  ``pin_for_exec`` is the pre-exec
+    gate: the caller MUST enter it before building ``argv``, put the
+    :class:`_PinnedExec` it yields on the child's ``argv``, and stay inside it
+    until :meth:`CommandRunner.run` has created the subprocess, because the pin is
+    released on exit.  What that pin enforces differs by platform, and it says
+    which:
 
-    * Non-memfd (macOS/Windows) path -- where :func:`seal_readonly` returns
-      ``sealed=False`` -- it re-opens the exact staged file, proves it is still
-      the same inode (no symlink/junction/rename swap) and re-hashes it against
-      the digest captured at seal time, failing closed on any change.  That
-      closes the check-to-use window between hashing the read-only snapshot and
-      the child opening it: an owner or same-user process that cleared the
-      read-only attribute and replaced the bytes in between is caught.
+    * Linux memfd path -- ``sealed=True`` -- the bytes are kernel-write-sealed
+      (immutable even to this process) and the child receives them through
+      ``/proc/self/fd``, an fd this process holds that no name lookup can swap.
+      The pin is the memfd itself, already held for the whole staging context, so
+      entering the context does nothing new: ``inode_pinned=True``.
 
-    * Linux memfd path -- ``sealed=True`` -- it is a deliberate no-op.  The bytes
-      are kernel-write-sealed (immutable even to this process) and the child
-      receives them through ``/proc/self/fd``, an fd this process holds that no
-      name lookup can swap, so there is nothing left to re-check.
+    * Windows -- :func:`platform_compat.reverify_sealed_before_exec` re-opens the
+      staged file, re-hashes it against the seal-time digest, fails closed on any
+      change, and *keeps* a ``CreateFileW`` handle whose share mode withholds
+      ``FILE_SHARE_WRITE`` and ``FILE_SHARE_DELETE``.  While that handle lives no
+      same-user process can rewrite, truncate, rename-over or delete the module,
+      so the check-to-use window between the hash and the child's open is closed:
+      ``inode_pinned=True``.
+
+    * macOS -- the same helper re-hashes and holds a descriptor, but macOS has
+      neither a cross-process fd path nor a mandatory share lock, so the child
+      re-opens by *name* and a same-user rename/unlink swap between the re-hash
+      and that open remains possible.  The window is narrowed to the launch
+      itself, not closed, and that is reported rather than hidden:
+      ``inode_pinned=False``, mechanism ``SEALED_EXEC_REVERIFIED_PATH``.
+
+    ``reverify_before_exec`` is the older, weaker check kept for callers (and
+    tests) that only want the re-hash: on the non-memfd path it re-opens the exact
+    staged file, proves it is still the same inode (no symlink/junction/rename
+    swap), re-hashes it against the seal-time digest and fails closed on any
+    change -- but it then *closes* its descriptor, so on its own it proves only
+    that the bytes were intact at that instant and leaves the check-to-use window
+    open.  It is a no-op on the kernel-sealed memfd path.  ``pin_for_exec``, not
+    this, is what the build and verify stages run.
     """
 
     path: Path
     reverify_before_exec: Callable[[], None]
+    pin_for_exec: Callable[
+        [ProviderStage, ProviderEventCallback], AbstractContextManager[_PinnedExec]
+    ]
 
 
 class Nfl2k5MenuBackAudioProvider:
@@ -248,24 +304,27 @@ class Nfl2k5MenuBackAudioProvider:
         recipe = load_nfl_menu_back_audio_recipe(request.backend_project)
         source = self._source_xiso(request)
         with self._sealed_zipapp(self._writer_members(), "writer") as module:
-            argv = (
-                sys.executable,
-                *self._python_flags,
-                os.fspath(module.path),
-                "--source-xiso",
-                os.fspath(source),
-                "--input-wav",
-                os.fspath(recipe.wav_path),
-                "--output-xiso",
-                os.fspath(self._absolute(request.output_xiso)),
-                "--manifest",
-                os.fspath(self._absolute(request.manifest)),
-            )
-            # Re-verify the sealed snapshot against its digest immediately before
-            # the child opens it, so a swap after the seal is caught (no-op on
-            # the kernel-sealed Linux memfd path).
-            module.reverify_before_exec()
-            result = self._run(argv, ProviderStage.BUILD, emit)
+            # Re-verify the sealed snapshot against its digest AND hold the pin
+            # across the launch: the context stays open until runner.run has
+            # created the child, so where the platform can pin an inode the bytes
+            # verified here are the bytes executed.  Where it cannot, the pin
+            # reports that instead of claiming it (no-op on the kernel-sealed
+            # Linux memfd path, which is already executing from a held fd).
+            with module.pin_for_exec(ProviderStage.BUILD, emit) as pinned:
+                argv = (
+                    sys.executable,
+                    *self._python_flags,
+                    os.fspath(pinned.path),
+                    "--source-xiso",
+                    os.fspath(source),
+                    "--input-wav",
+                    os.fspath(recipe.wav_path),
+                    "--output-xiso",
+                    os.fspath(self._absolute(request.output_xiso)),
+                    "--manifest",
+                    os.fspath(self._absolute(request.manifest)),
+                )
+                result = self._run(argv, ProviderStage.BUILD, emit)
         try:
             report = json.loads(result.stdout)
         except json.JSONDecodeError as exc:
@@ -290,26 +349,26 @@ class Nfl2k5MenuBackAudioProvider:
         recipe = load_nfl_menu_back_audio_recipe(request.backend_project)
         source = self._source_xiso(request)
         with self._sealed_zipapp(self._verifier_members(), "verifier") as module:
-            argv = (
-                sys.executable,
-                *self._python_flags,
-                os.fspath(module.path),
-                "--source-xiso",
-                os.fspath(source),
-                "--output-xiso",
-                os.fspath(self._absolute(request.output_xiso)),
-                "--input-wav",
-                os.fspath(recipe.wav_path),
-                "--manifest",
-                os.fspath(self._absolute(request.manifest)),
-                "--artifact-dir",
-                os.fspath(self._absolute(request.artifact_dir)),
-            )
-            # Re-verify the sealed snapshot against its digest immediately before
-            # the child opens it, so a swap after the seal is caught (no-op on
-            # the kernel-sealed Linux memfd path).
-            module.reverify_before_exec()
-            result = self._run(argv, ProviderStage.VERIFY, emit)
+            # Same pre-exec pin as the writer: the independent verifier is exactly
+            # the module an attacker would want to substitute after it was checked,
+            # so its pin is held open until the child has been created too.
+            with module.pin_for_exec(ProviderStage.VERIFY, emit) as pinned:
+                argv = (
+                    sys.executable,
+                    *self._python_flags,
+                    os.fspath(pinned.path),
+                    "--source-xiso",
+                    os.fspath(source),
+                    "--output-xiso",
+                    os.fspath(self._absolute(request.output_xiso)),
+                    "--input-wav",
+                    os.fspath(recipe.wav_path),
+                    "--manifest",
+                    os.fspath(self._absolute(request.manifest)),
+                    "--artifact-dir",
+                    os.fspath(self._absolute(request.artifact_dir)),
+                )
+                result = self._run(argv, ProviderStage.VERIFY, emit)
         if "NFL2K5_AUDO_WAV_XISO_VERIFY_PASS" not in result.stdout:
             raise ProviderError("Independent NFL audio verifier omitted its success marker")
         return result
@@ -543,7 +602,10 @@ class Nfl2k5MenuBackAudioProvider:
         the executable is handed to the subprocess through ``/proc/self/fd`` --
         never a lookup-able pathname an attacker could swap.  The staged module's
         ``reverify_before_exec`` is therefore a no-op: there is no swappable name
-        and no writable descriptor to guard against.
+        and no writable descriptor to guard against.  ``pin_for_exec`` is a no-op
+        for the same reason -- the descriptor is already held open for this whole
+        context, which *is* the pin, so entering it performs no syscall and yields
+        the identical ``/proc`` path this path has always executed.
         """
 
         descriptor = os.memfd_create(
@@ -584,7 +646,20 @@ class Nfl2k5MenuBackAudioProvider:
                 # name lookup can swap the executable: nothing to re-check.
                 return
 
-            yield _StagedModule(proc_path, _reverify_sealed_memfd)
+            @contextmanager
+            def _pin_sealed_memfd_for_exec(
+                _stage: ProviderStage, _emit: ProviderEventCallback
+            ) -> Iterator[_PinnedExec]:
+                # The pin already exists: `descriptor` stays open for the whole
+                # enclosing context and `proc_path` names precisely its inode, so
+                # this holds nothing further and emits nothing.  Byte for byte the
+                # instructions this path has always run.
+                _reverify_sealed_memfd()
+                yield _PinnedExec(proc_path, True, _EXEC_PIN_LINUX_MEMFD)
+
+            yield _StagedModule(
+                proc_path, _reverify_sealed_memfd, _pin_sealed_memfd_for_exec
+            )
         finally:
             os.close(descriptor)
 
@@ -599,15 +674,39 @@ class Nfl2k5MenuBackAudioProvider:
         removed when the context exits.
 
         Read-only is not a seal: an owner (or another same-user process) can
-        clear the attribute and rewrite the bytes.  So the staged module's
-        ``reverify_before_exec`` re-opens the exact file and re-hashes it against
-        the digest captured here, and the caller invokes it immediately before
-        launching the subprocess -- closing the window between staging the
-        snapshot and the child opening it.  The residual gap between that
-        re-hash and the child's open is unavoidable without a held-descriptor
-        exec primitive (the platform's job, and what the Linux memfd path uses);
-        it is bounded to a single ``os.open`` and the file lives in a private,
-        per-user staging directory this process just created.
+        clear the attribute and rewrite the bytes.  So the file is re-verified
+        immediately before the child is launched, through the staged module's
+        ``pin_for_exec`` -- and, unlike a bare re-hash, that context *keeps the
+        verified object open* across ``runner.run``, which is what decides whether
+        the check-to-use window is actually closed:
+
+        * Windows: :func:`platform_compat.reverify_sealed_before_exec` holds a
+          ``CreateFileW`` handle sharing READ only, so while the child is starting
+          no same-user process can rewrite, truncate, rename-over or delete the
+          module.  The window between the re-hash and the child's open IS closed
+          here, and the mechanism reported is
+          :data:`~mod_editor.core.platform_compat.SEALED_EXEC_WINDOWS_SHARE_PIN`.
+
+        * macOS: the same helper re-hashes through a descriptor it then holds, but
+          macOS offers neither a cross-process fd path (no ``/proc``) nor a
+          mandatory share lock, so the child opens the *name*.  A same-user
+          rename/unlink swap in that instant would still be executed: the window
+          is narrowed to the launch, NOT closed.  That is reported honestly --
+          ``inode_pinned=False``, mechanism
+          :data:`~mod_editor.core.platform_compat.SEALED_EXEC_REVERIFIED_PATH`,
+          and a WARNING event on the stage -- rather than claimed away.  Closing
+          it needs a macOS exec-from-held-descriptor primitive, which is
+          platform_compat's job, not this provider's.
+
+        * Any other kernel without ``memfd`` seals (an exotic Linux): unchanged
+          from what it has always done -- the re-hash below runs and the staged
+          pathname is executed, with the same residual, named the same way
+          (``inode_pinned=False``).  Linux's real path is the sealed memfd above.
+
+        ``reverify_before_exec`` remains available for callers that want only the
+        re-hash; it drops its descriptor immediately, so it does not by itself
+        close anything.  The file lives in a private, per-user staging directory
+        this process just created and is removed when the context exits.
         """
 
         workdir = Path(tempfile.mkdtemp(prefix=f"nfl2k5-audio-{label}-"))
@@ -702,7 +801,69 @@ class Nfl2k5MenuBackAudioProvider:
                 finally:
                     os.close(fd)
 
-            yield _StagedModule(module_path, _reverify_sealed_file)
+            @contextmanager
+            def _pin_sealed_file_for_exec(
+                stage: ProviderStage, emit: ProviderEventCallback
+            ) -> Iterator[_PinnedExec]:
+                if not (platform_compat.IS_WINDOWS or platform_compat.IS_MACOS):
+                    # No memfd seals and not one of the ported platforms: run the
+                    # exact instructions this branch has always run -- re-hash the
+                    # staged snapshot, then execute the staged pathname -- and
+                    # report the residual that leaves rather than a pin we do not
+                    # hold.
+                    _reverify_sealed_file()
+                    yield _PinnedExec(module_path, False, _EXEC_PIN_REHASHED_PATH)
+                    return
+                # Windows/macOS: re-verify through platform_compat and KEEP what
+                # it hands back open across runner.run, so the verified object --
+                # not merely a verified snapshot of it -- is what the child gets.
+                try:
+                    handle = platform_compat.reverify_sealed_before_exec(
+                        module_path, expected_sha, expected_size=expected_size
+                    )
+                except SealIntegrityError as exc:
+                    raise ProviderError(
+                        "NFL audio sealed closure was swapped or rewritten before "
+                        "execution"
+                    ) from exc
+                except (platform_compat.DirectoryTransactionUnavailable, OSError) as exc:
+                    # The platform could not give us the pin it promises (no
+                    # kernel32, an unreadable staging file).  Refuse to launch
+                    # rather than execute an unpinned module.
+                    raise ProviderError(
+                        "NFL audio sealed closure could not be pinned for execution"
+                    ) from exc
+                try:
+                    if handle.sha256 != expected_sha:
+                        raise ProviderError(
+                            "NFL audio sealed closure bytes changed before execution"
+                        )
+                    if handle.inode_pinned:
+                        emit(ProviderEvent(
+                            stage,
+                            "INFO",
+                            "Sealed NFL audio closure held pinned across launch "
+                            f"({handle.mechanism}): it cannot be replaced while "
+                            "the child starts",
+                        ))
+                    else:
+                        emit(ProviderEvent(
+                            stage,
+                            "WARNING",
+                            "Sealed NFL audio closure re-verified but NOT pinned "
+                            f"across launch ({handle.mechanism}): this platform "
+                            "cannot stop a same-user rename swap between the "
+                            "check and the child opening the module",
+                        ))
+                    yield _PinnedExec(
+                        Path(handle.exec_path), handle.inode_pinned, handle.mechanism
+                    )
+                finally:
+                    handle.close()
+
+            yield _StagedModule(
+                module_path, _reverify_sealed_file, _pin_sealed_file_for_exec
+            )
         finally:
             try:
                 module_path.chmod(stat.S_IWRITE | stat.S_IREAD)
