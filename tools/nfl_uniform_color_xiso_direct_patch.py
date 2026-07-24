@@ -20,12 +20,6 @@ import stat
 import struct
 import sys
 
-_REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
-
-from mod_editor.core import platform_compat  # noqa: E402
-
 
 SCHEMA = "nfl2k5_uniform_color_xiso_direct_patch/v1"
 SECTOR_SIZE = 2048
@@ -153,7 +147,7 @@ def sha256_fd(descriptor: int, offset: int = 0, length: int | None = None) -> st
     remaining = length
     while remaining is None or remaining > 0:
         request = HASH_CHUNK if remaining is None else min(HASH_CHUNK, remaining)
-        chunk = platform_compat.pread(descriptor, request, position)
+        chunk = os.pread(descriptor, request, position)
         if not chunk:
             break
         digest.update(chunk)
@@ -170,7 +164,7 @@ def read_exact(descriptor: int, offset: int, length: int) -> bytes:
     position = offset
     remaining = length
     while remaining:
-        chunk = platform_compat.pread(descriptor, remaining, position)
+        chunk = os.pread(descriptor, remaining, position)
         require(chunk, f"short read at 0x{position:x}")
         chunks.append(chunk)
         position += len(chunk)
@@ -274,7 +268,7 @@ def copy_fd_exact(source: int, output: int, size: int) -> str:
         position += copied
 
     while position < size:
-        chunk = platform_compat.pread(source, min(COPY_CHUNK, size - position), position)
+        chunk = os.pread(source, min(COPY_CHUNK, size - position), position)
         require(chunk, "short source read while copying XISO")
         written = 0
         while written < len(chunk):
@@ -298,8 +292,8 @@ def compare_and_hash(
     position = 0
     while position < size:
         request = min(HASH_CHUNK, size - position)
-        source_bytes = platform_compat.pread(source, request, position)
-        output_bytes = platform_compat.pread(output, request, position)
+        source_bytes = os.pread(source, request, position)
+        output_bytes = os.pread(output, request, position)
         require(len(source_bytes) == request and len(output_bytes) == request,
                 "short read during final XISO comparison")
         source_hash.update(source_bytes)

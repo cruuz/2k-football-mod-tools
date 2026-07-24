@@ -24,12 +24,6 @@ import struct
 import sys
 from typing import Any
 
-_REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
-
-from mod_editor.core import platform_compat  # noqa: E402
-
 import nfl_uniform_color_xiso_direct_patch as common
 
 
@@ -124,7 +118,7 @@ def open_small_regular(path: Path, maximum: int) -> InputFile:
                 "WAV pathname changed while opening")
         require(44 <= opened.st_size <= maximum, "WAV input size is outside the bounded range")
         payload = common.read_exact(descriptor, 0, opened.st_size)
-        require(not platform_compat.pread(descriptor, 1, opened.st_size), "WAV input grew while reading")
+        require(not os.pread(descriptor, 1, opened.st_size), "WAV input grew while reading")
         current = resolved.stat(follow_symlinks=False)
         require((current.st_dev, current.st_ino, current.st_size) ==
                 (opened.st_dev, opened.st_ino, opened.st_size),
