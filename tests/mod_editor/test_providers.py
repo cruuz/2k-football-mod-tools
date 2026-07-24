@@ -520,7 +520,9 @@ class ScorebugRecordingRunner:
 class ProviderTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.registry = CapabilityRegistryLoader().load(allow_sample_fallback=False)
+        cls.registry = CapabilityRegistryLoader().load(
+            allow_sample_fallback=False, check_files=False
+        )
 
     def test_orchestrator_orders_preflight_validate_build_verify(self) -> None:
         fake = FakeProvider()

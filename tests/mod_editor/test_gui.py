@@ -63,7 +63,9 @@ class _Root:
 
 
 def _app_with_selected(capability_id: str) -> ModEditorApp:
-    registry = CapabilityRegistryLoader().load(allow_sample_fallback=False)
+    registry = CapabilityRegistryLoader().load(
+        allow_sample_fallback=False, check_files=False
+    )
     controller = ModEditorController(registry)
     game = GameId.APF2K8 if capability_id.startswith("apf2k8.") else GameId.NFL2K5
     controller.create_project("GUI state test", game)

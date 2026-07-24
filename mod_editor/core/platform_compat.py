@@ -1269,6 +1269,58 @@ def is_within_user_private_root(path: str | os.PathLike[str]) -> bool:
     return resolved == root or root in resolved.parents
 
 
+def is_canonical_absolute_path(
+    path: str | os.PathLike[str],
+    expected_resolved: str | os.PathLike[str],
+) -> bool:
+    """Whether ``path`` is absolute and canonically identical to ``expected_resolved``.
+
+    This is the portable replacement for the ``p.absolute() == p.resolve()``
+    idiom the audio-source guards used to assert "the caller passed an
+    already-canonical, absolute directory, not a relative path, a ``..``-laden
+    one, or one redirected through a symlink".  That idiom is correct on Linux but
+    *spuriously rejects* legitimate canonical paths on the other two platforms,
+    because it compares an **un**-resolved form against a **resolved** one:
+    :meth:`~pathlib.Path.absolute` never expands symlinks or short names, while
+    :meth:`~pathlib.Path.resolve` does.
+
+    * macOS keeps per-user temporary and cache directories under ``/var``, which
+      is a symlink to ``/private/var``.  ``resolve()`` expands it and
+      ``absolute()`` does not, so the two forms of a perfectly canonical cache
+      path differ and the equality check fails.
+    * Windows exposes 8.3 short names (``RUNNER~1``) that ``resolve()`` expands to
+      their long form (``runneradmin``) while ``absolute()`` leaves untouched,
+      with the same spurious result.
+
+    The security intent is preserved, not weakened.  Every call site has already
+    produced ``expected_resolved`` from ``path`` via ``resolve(strict=True)``
+    behind an ``lstat`` guard that rejects a symlinked *final* component (a
+    symlinked cache root is refused there, before this helper is reached), so the
+    two properties left to assert are exactly the ones that hold identically on
+    every OS: ``path`` is absolute (never relative), and its own fully
+    canonical form is the very directory that was validated (never one that
+    resolves somewhere else).  Both sides are canonicalised the *same* way --
+    fully resolving symlinks and short names via :func:`os.path.realpath`, then
+    :func:`os.path.normcase` -- before comparison, so a legitimate path passes on
+    Linux, macOS and Windows while a relative or redirected path still fails.  On
+    POSIX :func:`os.path.normcase` is the identity, so Linux behaviour is
+    byte-for-byte unchanged.
+
+    ``realpath`` is used rather than ``Path.resolve(strict=True)`` so a not-yet-
+    existing but canonically-placed target (an inventory file whose private
+    directory exists but whose name has not been published) is still comparable
+    instead of raising; the strict existence and non-symlink guarantees are the
+    caller's separate ``lstat``/``resolve(strict=True)`` gates, which this helper
+    does not replace.
+    """
+
+    if not Path(path).is_absolute():
+        return False
+    resolved_path = os.path.normcase(os.path.realpath(path))
+    resolved_expected = os.path.normcase(os.path.realpath(expected_resolved))
+    return resolved_path == resolved_expected
+
+
 def create_private_directory(
     path: str | os.PathLike[str],
     *,
@@ -1617,6 +1669,492 @@ def seal_readonly(fd: int, path: str | None) -> SealResult:
     )
 
 
+# ---------------------------------------------------------------------------
+# Atomic, no-clobber publication.
+#
+# The private source-audio inventory, the replacement-template ZIP and folder,
+# the aggregate validation report and the build output all end the same way: a
+# fully staged, verified file or folder is made to appear at its final name in a
+# single step that MUST refuse to overwrite anything already there.  On Linux
+# that step is a Linux-only kernel primitive -- ``renameat2(RENAME_NOREPLACE)``
+# for a staged name, or ``O_TMPFILE`` + ``linkat(AT_EMPTY_PATH)`` (spelled
+# ``os.link`` through ``/proc/self/fd``) for an anonymous stage.  Both are absent
+# on macOS and Windows, where the shipped publishers failed closed with a
+# "cannot publish ... atomically" error.
+#
+# These helpers concentrate that OS-primitive layer so every publisher keeps its
+# own fail-closed checks unchanged and only *how the name appears* differs:
+#
+#   * Linux keeps ``renameat2(RENAME_NOREPLACE)`` and the ``O_TMPFILE`` stage
+#     byte for byte -- the identical ctypes call, the identical
+#     ``os.link('/proc/self/fd/N', ...)`` publish -- so the suite proves nothing
+#     about Linux behaviour changed.
+#   * macOS / any POSIX kernel or filesystem without ``renameat2`` publishes a
+#     FILE with ``os.link(staging, destination)``: that call is atomic and raises
+#     ``FileExistsError`` when the destination already exists, which *is* an
+#     atomic no-replace on one filesystem, after which the staging name is
+#     unlinked so the published inode carries the single link ``renameat2`` would
+#     have left.  It publishes a FOLDER by reserving the destination name with
+#     ``os.mkdir`` -- atomic, and ``FileExistsError`` if the name already exists,
+#     which is the no-clobber guarantee -- and then ``os.rename``-ing the staged
+#     folder onto that freshly created, still-empty placeholder, which POSIX does
+#     as a single atomic directory swap.  The anonymous stage becomes a private
+#     ``O_EXCL`` temp file created in the destination's own directory (same
+#     filesystem), so the later ``os.link`` publish is a same-filesystem link.
+#   * Windows has neither primitive and cannot open a directory descriptor, but
+#     its own ``os.rename`` already refuses to overwrite an existing destination
+#     (unlike POSIX, where it would clobber a file), so a path-based file or
+#     folder is published with a single ``os.rename`` -- atomic and no-clobber.
+#     A publish that can only be addressed through a directory descriptor is
+#     genuinely impossible on Windows and fails closed with
+#     :class:`NoReplacePublishUnavailable`, never by silently degrading to a
+#     path-based publish that would drop the ``dir_fd`` anti-swap guarantee.
+#
+# Which mechanism ran is returned in :class:`NoReplacePublication`, exactly so a
+# caller or a test can assert the guarantee that is actually in force on the
+# running platform.  No branch below ever overwrites an existing destination.
+# ---------------------------------------------------------------------------
+
+# ``AT_FDCWD`` and ``RENAME_NOREPLACE`` from <fcntl.h>/<linux/fs.h>: used only by
+# the Linux ctypes primitive, declared here so it reads like the kernel headers.
+_PUBLISH_AT_FDCWD = -100
+_RENAME_NOREPLACE = 1
+
+# renameat2 refusals that mean "this kernel/filesystem does not implement
+# RENAME_NOREPLACE" -- not a real fault -- so the portable primitive is used
+# instead.  Every other errno (EEXIST, EXDEV, EACCES, ...) is meaningful and is
+# translated or re-raised, never swallowed.
+_RENAMEAT2_UNSUPPORTED_ERRNOS = frozenset(
+    value
+    for value in (
+        getattr(errno, "ENOSYS", None),
+        getattr(errno, "EINVAL", None),
+        getattr(errno, "EOPNOTSUPP", None),
+        getattr(errno, "ENOTTY", None),
+    )
+    if value is not None
+)
+
+# Whether ``os.link`` accepts a non-default ``follow_symlinks`` here.  It does on
+# Linux; on macOS the ``linkat`` no-follow path is not exposed, and passing
+# ``follow_symlinks=False`` there raises ``NotImplementedError``.  The staging
+# name a publish links is always a regular file this process just created under a
+# pinned directory descriptor -- never a symlink -- so on a platform without the
+# flag the default (follow) link is exactly as safe; the flag is passed only for
+# the extra belt-and-suspenders refusal where the platform supports it.
+_LINK_SUPPORTS_FOLLOW_SYMLINKS = os.link in getattr(
+    os, "supports_follow_symlinks", frozenset()
+)
+
+# Names for the publication mechanisms.  Public because the guarantee differs
+# between them and every caller or test is entitled to assert which one ran.
+PUBLISH_LINUX_RENAMEAT2 = "linux-renameat2-noreplace"
+PUBLISH_LINUX_O_TMPFILE_LINKAT = "linux-o-tmpfile-linkat"
+PUBLISH_POSIX_LINK = "posix-link-then-unlink"
+PUBLISH_POSIX_MKDIR_RESERVE = "posix-mkdir-reserve-then-rename"
+PUBLISH_WINDOWS_RENAME = "windows-rename-noreplace"
+
+# Names for the two private-staging mechanisms :func:`open_private_stage` uses.
+STAGE_LINUX_O_TMPFILE = "linux-o-tmpfile-anonymous"
+STAGE_POSIX_NAMED_TEMP = "posix-exclusive-named-temp"
+
+
+class NoReplacePublishUnavailable(RuntimeError):
+    """No atomic no-clobber publish mechanism exists for this request here.
+
+    Raised only when the running platform genuinely cannot honour the guarantee
+    with the standard library -- concretely, a Windows publish that can only be
+    addressed through a directory descriptor, because Windows cannot open one.
+    It is never raised merely to signal a *weaker* guarantee (that is reported in
+    :class:`NoReplacePublication`), and it is never a silent skip: the caller
+    turns it into its own fail-closed "cannot publish" error, exactly as it did
+    before a portable path existed.
+    """
+
+
+@dataclass(frozen=True)
+class NoReplacePublication:
+    """Outcome of a no-clobber publish, with the mechanism that produced it.
+
+    ``mechanism`` is one of the ``PUBLISH_*`` constants and says how the name was
+    made to appear.  ``kind`` is ``"file"`` or ``"directory"``.
+    ``atomic_no_clobber`` is ``True`` on every mechanism here -- the refusal to
+    overwrite an existing destination is always enforced atomically (by
+    ``renameat2``'s flag, by ``os.link``/``os.mkdir`` failing with
+    ``FileExistsError``, or by Windows ``os.rename``'s native refusal).
+    ``detail`` records any per-mechanism nuance -- notably that the POSIX folder
+    mechanism reserves the name atomically and then swaps content with a second
+    atomic ``os.rename``, so a concurrent reader may briefly observe an empty
+    directory even though no pre-existing destination is ever overwritten -- and
+    is for diagnostics and logs; never branch on it.
+    """
+
+    mechanism: str
+    kind: str
+    atomic_no_clobber: bool
+    detail: str
+
+
+@dataclass(frozen=True)
+class PrivateStage:
+    """A private staging descriptor opened for a later no-clobber publish.
+
+    ``descriptor`` is an open, writable ``0o600`` file on the same filesystem as
+    its eventual destination.  ``staging_name`` is ``None`` when the stage is an
+    anonymous Linux ``O_TMPFILE`` (nothing to unlink, and ``link_count`` is
+    ``0``) and otherwise the relative name of an ``O_EXCL`` temp file the caller
+    must unlink if it abandons the publish (``link_count`` is ``1``).
+    ``mechanism`` is :data:`STAGE_LINUX_O_TMPFILE` or
+    :data:`STAGE_POSIX_NAMED_TEMP`.
+    """
+
+    descriptor: int
+    staging_name: str | None
+    mechanism: str
+    link_count: int
+
+
+def _linux_renameat2():
+    """Return a typed ``renameat2`` callable on Linux, else ``None``.
+
+    Isolated (and monkeypatchable) so tests can simulate a kernel without
+    ``renameat2`` -- i.e. macOS -- while running on Linux.  The lookup and the
+    ``argtypes``/``restype`` wiring match the per-publisher ctypes blocks this
+    consolidates, so the syscall issued on Linux is byte-for-byte the historical
+    one.
+    """
+
+    if not IS_LINUX:
+        return None
+    try:
+        libc = ctypes.CDLL(None, use_errno=True)
+    except OSError:
+        return None
+    renameat2 = getattr(libc, "renameat2", None)
+    if renameat2 is None:
+        return None
+    renameat2.argtypes = [
+        ctypes.c_int,
+        ctypes.c_char_p,
+        ctypes.c_int,
+        ctypes.c_char_p,
+        ctypes.c_uint,
+    ]
+    renameat2.restype = ctypes.c_int
+    return renameat2
+
+
+def _renameat2_noreplace(
+    renameat2,
+    staging: str,
+    destination: str,
+    dir_fd: int | None,
+) -> bool:
+    """Run ``renameat2(RENAME_NOREPLACE)``; return whether it published.
+
+    ``True`` -- the atomic no-replace rename succeeded.  ``False`` -- the kernel
+    or filesystem does not implement ``RENAME_NOREPLACE`` and the caller must use
+    the portable primitive.  ``FileExistsError`` -- the destination already
+    existed (the no-clobber refusal).  Any other errno is re-raised as
+    :class:`OSError`, unchanged from the shipped publishers.
+    """
+
+    fd = _PUBLISH_AT_FDCWD if dir_fd is None else dir_fd
+    ctypes.set_errno(0)
+    result = renameat2(
+        fd,
+        os.fsencode(staging),
+        fd,
+        os.fsencode(destination),
+        _RENAME_NOREPLACE,
+    )
+    if result == 0:
+        return True
+    value = ctypes.get_errno()
+    if value == errno.EEXIST:
+        raise FileExistsError(value, os.strerror(value), os.fspath(destination))
+    if value in _RENAMEAT2_UNSUPPORTED_ERRNOS:
+        return False
+    raise OSError(value, os.strerror(value), os.fspath(destination))
+
+
+def _publish_file_via_link(
+    staging: str,
+    destination: str,
+    dir_fd: int | None,
+) -> NoReplacePublication:
+    """Publish one staged FILE with the strongest non-``renameat2`` primitive."""
+
+    if IS_WINDOWS:
+        if dir_fd is not None:
+            raise NoReplacePublishUnavailable(
+                "Windows cannot publish a file through a directory descriptor: "
+                "it has no dir_fd, so this transaction cannot run there"
+            )
+        # Windows os.rename refuses to overwrite an existing destination, so it
+        # is itself an atomic no-replace publish; it also consumes the staging
+        # name, matching renameat2's post-state exactly.
+        os.rename(staging, destination)
+        return NoReplacePublication(
+            mechanism=PUBLISH_WINDOWS_RENAME,
+            kind="file",
+            atomic_no_clobber=True,
+            detail="os.rename (Windows: fails if destination exists)",
+        )
+    # POSIX, incl. macOS: os.link is atomic and fails with FileExistsError if the
+    # destination exists -- an atomic no-replace on one filesystem -- then the
+    # staging name is removed so the published inode has a single link, exactly
+    # the state renameat2 would have left.
+    if dir_fd is not None:
+        nofollow = {"follow_symlinks": False} if _LINK_SUPPORTS_FOLLOW_SYMLINKS else {}
+        os.link(
+            staging,
+            destination,
+            src_dir_fd=dir_fd,
+            dst_dir_fd=dir_fd,
+            **nofollow,
+        )
+        os.unlink(staging, dir_fd=dir_fd)
+    else:
+        os.link(staging, destination)
+        os.unlink(staging)
+    return NoReplacePublication(
+        mechanism=PUBLISH_POSIX_LINK,
+        kind="file",
+        atomic_no_clobber=True,
+        detail="os.link then unlink staging (link fails if destination exists)",
+    )
+
+
+def _publish_directory_via_reserve(
+    staging: str,
+    destination: str,
+    dir_fd: int | None,
+) -> NoReplacePublication:
+    """Publish one staged FOLDER with the strongest non-``renameat2`` primitive."""
+
+    if IS_WINDOWS:
+        if dir_fd is not None:
+            raise NoReplacePublishUnavailable(
+                "Windows cannot publish a folder through a directory descriptor: "
+                "it has no dir_fd, so this transaction cannot run there"
+            )
+        os.rename(staging, destination)
+        return NoReplacePublication(
+            mechanism=PUBLISH_WINDOWS_RENAME,
+            kind="directory",
+            atomic_no_clobber=True,
+            detail="os.rename (Windows: fails if destination exists)",
+        )
+    # POSIX, incl. macOS.  A plain os.rename of a directory would *replace* an
+    # existing empty destination there, so it is not a no-replace on its own.
+    # Reserve the destination name with os.mkdir instead: that is atomic and
+    # raises FileExistsError if anything is already there -- the no-clobber
+    # guarantee -- after which os.rename swaps the staged folder onto the
+    # placeholder we just created in a single atomic directory rename.  The only
+    # entry ever overwritten is our own freshly created empty placeholder; a
+    # pre-existing destination is refused before any rename happens.
+    if dir_fd is not None:
+        os.mkdir(destination, POSIX_PRIVATE_DIRECTORY_MODE, dir_fd=dir_fd)
+    else:
+        os.mkdir(destination, POSIX_PRIVATE_DIRECTORY_MODE)
+    try:
+        if dir_fd is not None:
+            os.rename(staging, destination, src_dir_fd=dir_fd, dst_dir_fd=dir_fd)
+        else:
+            os.rename(staging, destination)
+    except BaseException:
+        # Roll back the placeholder so an abandoned publish leaves no stub.  Only
+        # our own empty directory is removed; if a racer populated it (making the
+        # swap fail) the rmdir fails too and the original error propagates.
+        try:
+            if dir_fd is not None:
+                os.rmdir(destination, dir_fd=dir_fd)
+            else:
+                os.rmdir(destination)
+        except OSError:
+            pass
+        raise
+    return NoReplacePublication(
+        mechanism=PUBLISH_POSIX_MKDIR_RESERVE,
+        kind="directory",
+        atomic_no_clobber=True,
+        detail=(
+            "os.mkdir reserves the name atomically (fails if it exists), then "
+            "os.rename swaps the staged folder onto the placeholder"
+        ),
+    )
+
+
+def publish_no_replace(
+    staging: str | os.PathLike[str],
+    destination: str | os.PathLike[str],
+    *,
+    dir_fd: int | None = None,
+    is_directory: bool = False,
+) -> NoReplacePublication:
+    """Publish ``staging`` to ``destination`` atomically, never overwriting it.
+
+    ``staging`` is consumed exactly as ``renameat2`` would consume it: on success
+    ``destination`` names the staged inode (a file with a single link, or the
+    staged directory) and the staging name is gone.  When ``dir_fd`` is given,
+    ``staging`` and ``destination`` are names resolved relative to that directory
+    descriptor -- the ``dir_fd``-relative model the private-cache publishers use
+    to pin the directory they verified; when it is ``None`` they are paths.
+
+    Raises :class:`FileExistsError` if ``destination`` already exists -- the
+    no-clobber refusal, on every platform.  Raises
+    :class:`NoReplacePublishUnavailable` only where the platform truly offers no
+    mechanism (a Windows ``dir_fd`` publish), never as a silent clobbering
+    fallback.  See the module section header for the per-OS mechanism; the one
+    that ran is returned so a caller or test can assert it.
+    """
+
+    staging_name = os.fspath(staging)
+    destination_name = os.fspath(destination)
+    renameat2 = _linux_renameat2()
+    if renameat2 is not None:
+        if _renameat2_noreplace(renameat2, staging_name, destination_name, dir_fd):
+            return NoReplacePublication(
+                mechanism=PUBLISH_LINUX_RENAMEAT2,
+                kind="directory" if is_directory else "file",
+                atomic_no_clobber=True,
+                detail="renameat2(RENAME_NOREPLACE)",
+            )
+    if is_directory:
+        return _publish_directory_via_reserve(
+            staging_name, destination_name, dir_fd
+        )
+    return _publish_file_via_link(staging_name, destination_name, dir_fd)
+
+
+def no_replace_publish_mechanism(*, is_directory: bool, dir_fd: bool) -> str:
+    """Name the mechanism :func:`publish_no_replace` will use here, side-effect free.
+
+    ``dir_fd`` is whether the caller will address the publish through a directory
+    descriptor.  Lets a caller or test assert the platform-appropriate guarantee
+    before publishing; the value equals the ``mechanism`` the call returns.
+    """
+
+    if _linux_renameat2() is not None:
+        return PUBLISH_LINUX_RENAMEAT2
+    if IS_WINDOWS:
+        if dir_fd:
+            raise NoReplacePublishUnavailable(
+                "Windows cannot publish through a directory descriptor"
+            )
+        return PUBLISH_WINDOWS_RENAME
+    return PUBLISH_POSIX_MKDIR_RESERVE if is_directory else PUBLISH_POSIX_LINK
+
+
+def open_private_stage(
+    dir_fd: int,
+    *,
+    prefix: str,
+    mode: int = POSIX_PRIVATE_FILE_MODE,
+) -> PrivateStage:
+    """Open a private, same-directory staging descriptor for a later publish.
+
+    On Linux this is the anonymous ``O_TMPFILE`` the aggregate-report publisher
+    used -- byte for byte -- so it has no name and no link, and is published by
+    linking it out of ``/proc/self/fd`` (see :func:`publish_private_stage`).
+
+    Where ``O_TMPFILE`` is absent (macOS, Windows) it is instead a private temp
+    file created ``O_CREAT | O_EXCL`` under ``dir_fd`` -- the "stage in a private
+    directory on the same filesystem then os.link" degradation -- with a
+    ``0o600`` mode and one link.  It is on the same filesystem as its
+    destination by construction, so the eventual publish is a same-filesystem
+    link (POSIX) or rename (Windows).
+
+    The caller owns the returned descriptor and, when ``staging_name`` is not
+    ``None``, must unlink that name if it abandons the publish.
+    """
+
+    anonymous_flag = getattr(os, "O_TMPFILE", 0)
+    if anonymous_flag:
+        descriptor = os.open(
+            ".",
+            os.O_RDWR | anonymous_flag | getattr(os, "O_CLOEXEC", 0),
+            mode,
+            dir_fd=dir_fd,
+        )
+        return PrivateStage(
+            descriptor=descriptor,
+            staging_name=None,
+            mechanism=STAGE_LINUX_O_TMPFILE,
+            link_count=0,
+        )
+    flags = (
+        os.O_RDWR
+        | os.O_CREAT
+        | os.O_EXCL
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_BINARY", 0)
+    )
+    last_error: OSError | None = None
+    for _attempt in range(64):
+        candidate = f"{prefix}{os.urandom(8).hex()}.tmp"
+        try:
+            descriptor = os.open(candidate, flags, mode, dir_fd=dir_fd)
+        except FileExistsError as exc:
+            last_error = exc
+            continue
+        return PrivateStage(
+            descriptor=descriptor,
+            staging_name=candidate,
+            mechanism=STAGE_POSIX_NAMED_TEMP,
+            link_count=1,
+        )
+    if last_error is not None:
+        raise last_error
+    raise OSError(
+        errno.EEXIST,
+        "could not create a unique private staging file",
+        prefix,
+    )
+
+
+def publish_private_stage(
+    stage: PrivateStage,
+    destination: str,
+    *,
+    dir_fd: int,
+) -> NoReplacePublication:
+    """Publish an :func:`open_private_stage` descriptor to ``destination``.
+
+    For an anonymous Linux stage this is the historical ``os.link`` out of
+    ``/proc/self/fd`` -- an atomic ``linkat`` that fails with
+    :class:`FileExistsError` if the destination exists.  For a named stage it is
+    the portable file publish (:func:`publish_no_replace`), which links the temp
+    to the destination and unlinks the temp.  Either way ``destination`` ends
+    with a single link to the staged bytes and no existing name is overwritten.
+    """
+
+    if stage.staging_name is None:
+        try:
+            os.link(
+                f"/proc/self/fd/{stage.descriptor}",
+                destination,
+                dst_dir_fd=dir_fd,
+                follow_symlinks=True,
+            )
+        except FileExistsError:
+            raise
+        return NoReplacePublication(
+            mechanism=PUBLISH_LINUX_O_TMPFILE_LINKAT,
+            kind="file",
+            atomic_no_clobber=True,
+            detail="os.link('/proc/self/fd/N', ...) (fails if destination exists)",
+        )
+    return publish_no_replace(
+        stage.staging_name,
+        destination,
+        dir_fd=dir_fd,
+        is_directory=False,
+    )
+
+
 __all__ = [
     "IS_LINUX",
     "IS_MACOS",
@@ -1628,14 +2166,24 @@ __all__ = [
     "POSIX_SEALED_FILE_MODE",
     "PRIVACY_POSIX_MODE_BITS",
     "PRIVACY_WINDOWS_USER_PROFILE_ACL",
+    "PUBLISH_LINUX_O_TMPFILE_LINKAT",
+    "PUBLISH_LINUX_RENAMEAT2",
+    "PUBLISH_POSIX_LINK",
+    "PUBLISH_POSIX_MKDIR_RESERVE",
+    "PUBLISH_WINDOWS_RENAME",
+    "STAGE_LINUX_O_TMPFILE",
+    "STAGE_POSIX_NAMED_TEMP",
     "WINDOWS_DIRECTORY_MODE",
     "WINDOWS_READ_ONLY_FILE_MODE",
     "WINDOWS_WRITABLE_FILE_MODE",
     "DurabilityError",
+    "NoReplacePublication",
+    "NoReplacePublishUnavailable",
     "OwnershipCheck",
     "OwnershipCheckError",
     "PrivacyGuarantee",
     "PrivatePathError",
+    "PrivateStage",
     "SealIntegrityError",
     "SealResult",
     "add_seals",
@@ -1651,13 +2199,18 @@ __all__ = [
     "fsync_path",
     "harden_private_directory",
     "harden_private_file",
+    "is_canonical_absolute_path",
     "is_owned_by_current_user",
     "is_within_user_private_root",
+    "no_replace_publish_mechanism",
+    "open_private_stage",
     "ownership_mechanism",
     "pread",
     "privacy_guarantee",
     "private_directory_mode",
     "private_file_mode",
+    "publish_no_replace",
+    "publish_private_stage",
     "pwrite",
     "read_seals",
     "release_lock",

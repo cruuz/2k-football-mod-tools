@@ -1363,43 +1363,46 @@ def _verify_published_report(
 def publish_report(path: Path, payload: bytes) -> None:
     parent = _open_checked_report_parent(path)
     parent_descriptor = parent.descriptor
-    descriptor: int | None = None
+    stage: platform_compat.PrivateStage | None = None
     try:
         if _target_exists(parent_descriptor, path.name):
             raise ValidationRunError(f"report output already exists: {path}")
         _verify_report_parent(path, parent)
-        anonymous_flag = getattr(os, "O_TMPFILE", 0)
-        if not anonymous_flag:
-            raise ValidationRunError("anonymous O_TMPFILE publication is unavailable")
+        # Only the OS-primitive layer differs per platform.  Linux stages an
+        # anonymous O_TMPFILE and publishes it with os.link out of /proc/self/fd
+        # -- byte-for-byte the historical path, including the deliberate refusal
+        # to degrade to a named fallback when O_TMPFILE itself is unsupported on
+        # the private cache filesystem.  macOS (no O_TMPFILE) stages a private
+        # O_EXCL temp in the same directory and publishes it with os.link +
+        # unlink.  Windows has no directory descriptor, so this whole transaction
+        # is unreachable there and the sibling tests skip it.
         try:
-            descriptor = os.open(
-                ".",
-                os.O_RDWR | anonymous_flag | getattr(os, "O_CLOEXEC", 0),
-                0o600,
-                dir_fd=parent_descriptor,
+            stage = platform_compat.open_private_stage(
+                parent_descriptor, prefix=".validation-report."
             )
         except OSError as exc:
             detail = errno.errorcode.get(exc.errno, str(exc.errno))
+            staging_kind = (
+                "anonymous O_TMPFILE" if getattr(os, "O_TMPFILE", 0) else "private named"
+            )
             raise ValidationRunError(
-                f"could not allocate anonymous O_TMPFILE staging storage: {detail}"
+                f"could not allocate {staging_kind} report staging storage: {detail}"
             ) from exc
+        descriptor = stage.descriptor
         os.fchmod(descriptor, 0o600)
-        _verify_report_stage(descriptor, b"", expected_link_count=0)
+        _verify_report_stage(descriptor, b"", expected_link_count=stage.link_count)
         _write_all(descriptor, payload)
         os.fsync(descriptor)
-        _verify_report_stage(descriptor, payload, expected_link_count=0)
+        _verify_report_stage(descriptor, payload, expected_link_count=stage.link_count)
         _verify_report_parent(path, parent)
         try:
-            os.link(
-                f"/proc/self/fd/{descriptor}",
-                path.name,
-                dst_dir_fd=parent_descriptor,
-                follow_symlinks=True,
+            platform_compat.publish_private_stage(
+                stage, path.name, dir_fd=parent_descriptor
             )
         except FileExistsError as exc:
             raise ValidationRunError(f"report output already exists: {path}") from exc
         except OSError as exc:
-            raise ValidationRunError("could not link anonymous report staging storage") from exc
+            raise ValidationRunError("could not link report staging storage") from exc
         _verify_published_report(parent_descriptor, path.name, descriptor, payload)
         _verify_report_parent(path, parent)
         # Commit through the directory descriptor this publication pinned, never
@@ -1411,9 +1414,21 @@ def publish_report(path: Path, payload: bytes) -> None:
         _verify_published_report(parent_descriptor, path.name, descriptor, payload)
         _verify_report_parent(path, parent)
     finally:
+        staging_descriptor = stage.descriptor if stage is not None else None
+        # A named staging temp (the non-O_TMPFILE path) that outlived an aborted
+        # publish must be removed so the report directory is left exactly as
+        # found.  A successful publish already unlinked it; an anonymous
+        # O_TMPFILE stage has no name to remove -- so this never path-unlinks on
+        # Linux, which the sibling test asserts.
+        if stage is not None and stage.staging_name is not None:
+            if _target_exists(parent_descriptor, stage.staging_name):
+                try:
+                    os.unlink(stage.staging_name, dir_fd=parent_descriptor)
+                except OSError:
+                    pass
         _close_descriptors_once(
             (
-                ("report staging", descriptor),
+                ("report staging", staging_descriptor),
             ) + _report_parent_close_entries(parent),
             sys.exception(),
         )

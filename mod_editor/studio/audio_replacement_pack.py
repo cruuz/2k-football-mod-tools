@@ -18,7 +18,6 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 import csv
-import ctypes
 from dataclasses import dataclass, field
 import errno
 import hashlib
@@ -45,7 +44,11 @@ from mod_editor.core.nfl2k5_audio_catalog import (
     Nfl2k5AudioService,
     Nfl2k5StreamingAudioRange,
 )
-from mod_editor.core.platform_compat import fsync_path
+from mod_editor.core.platform_compat import (
+    NoReplacePublishUnavailable,
+    fsync_path,
+    publish_no_replace,
+)
 
 from .session import BatchReplaceResult, StudioSession
 
@@ -72,7 +75,6 @@ MAX_ARCHIVE_MEMBERS = EXPECTED_COMPLETE_STANDALONE_COUNT + 4
 MAX_PREFLIGHT_CHANGED_ROWS = 32
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _SAFE_STEM_RE = re.compile(r"[^A-Za-z0-9._-]+")
-_RENAME_NOREPLACE = 1
 
 PackProgress = Callable[[str, int, int], None]
 EditableAudioAsset = Nfl2k5AudioAsset | Nfl2k5StreamingAudioRange
@@ -317,43 +319,28 @@ def _rename_noreplace(
         and "/" not in destination_name,
         "Audio-template publication names are invalid",
     )
-    library = ctypes.CDLL(None, use_errno=True)
+    # Only the OS-primitive layer differs per platform, and it lives in
+    # platform_compat.  Linux keeps renameat2(RENAME_NOREPLACE) byte-for-byte;
+    # macOS and any POSIX kernel without it reserve the destination name with
+    # os.mkdir (atomic; refuses an existing name) then os.rename the staged
+    # folder onto that placeholder.  A destination that already exists raises
+    # FileExistsError.  Windows cannot open the directory descriptor this stages
+    # through, so it fails closed there rather than clobbering.
     try:
-        renameat2 = library.renameat2
-    except AttributeError as exc:
-        raise AudioReplacementPackError(
-            "This Linux system does not provide atomic no-overwrite folder publication."
-        ) from exc
-    renameat2.argtypes = (
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_uint,
-    )
-    renameat2.restype = ctypes.c_int
-    ctypes.set_errno(0)
-    result = renameat2(
-        parent_descriptor,
-        os.fsencode(source_name),
-        parent_descriptor,
-        os.fsencode(destination_name),
-        _RENAME_NOREPLACE,
-    )
-    if result == 0:
-        return
-    error = ctypes.get_errno()
-    if error == errno.EEXIST:
-        raise FileExistsError(error, os.strerror(error), destination_name)
-    if error in {
-        errno.ENOSYS,
-        errno.EINVAL,
-        getattr(errno, "EOPNOTSUPP", errno.EINVAL),
-    }:
-        raise AudioReplacementPackError(
-            "This Linux filesystem cannot atomically publish a no-overwrite folder."
+        publish_no_replace(
+            source_name,
+            destination_name,
+            dir_fd=parent_descriptor,
+            is_directory=True,
         )
-    raise OSError(error, os.strerror(error), destination_name)
+    except FileExistsError as exc:
+        raise FileExistsError(
+            errno.EEXIST, os.strerror(errno.EEXIST), destination_name
+        ) from exc
+    except NoReplacePublishUnavailable as exc:
+        raise AudioReplacementPackError(
+            "This system does not provide atomic no-overwrite folder publication."
+        ) from exc
 
 
 def _write_new(path: Path, payload: bytes) -> None:

@@ -96,6 +96,41 @@ class CoreTests(unittest.TestCase):
         self.assertFalse(registry.used_sample_fallback)
         self.assertFalse(loader.call_args.kwargs["check_files"])
 
+    def test_strict_load_validates_evidence_files_when_dev_artifacts_present(self) -> None:
+        # The registry's evidence[] and runtime.evidence[] paths point at
+        # docs/research/*.md and reports/<generated>/*.json that .gitignore
+        # deliberately excludes from the repository, so a clean checkout (every
+        # CI runner, any fresh clone) does not contain them -- which is exactly
+        # why the dedicated registry CI job runs with --skip-file-checks. Where
+        # those dev artifacts *are* present (the maintainer host), the strict
+        # check_files=True load must still succeed and prove every evidence path
+        # resolves to a real file; otherwise this is skipped with a named reason,
+        # exactly like the sibling toolchain skips, so no gitignored artifact is
+        # ever required on a clean checkout.
+        root = Path(__file__).resolve().parents[2]
+        provenance = CapabilityRegistryLoader().load(
+            allow_sample_fallback=False, check_files=False
+        )
+        evidence_files = [
+            root / relative
+            for capability in provenance.capabilities
+            for relative in (
+                *capability.raw["evidence"],
+                *capability.raw["runtime"]["evidence"],
+            )
+        ]
+        if not all(path.is_file() for path in evidence_files):
+            self.skipTest(
+                "gitignored development evidence artifacts (docs/research, "
+                "reports/<generated>) are absent on this checkout; evidence-file "
+                "presence is validated only where those artifacts exist"
+            )
+        strict = CapabilityRegistryLoader().load(
+            allow_sample_fallback=False, check_files=True
+        )
+        self.assertFalse(strict.used_sample_fallback)
+        self.assertGreaterEqual(len(strict.capabilities), 38)
+
     def test_missing_registry_has_explicit_sample_or_refusal(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             loader = CapabilityRegistryLoader(Path(temporary) / "missing.json")
@@ -232,7 +267,9 @@ class CoreTests(unittest.TestCase):
             )
 
     def test_canonical_registry_drives_badges_and_action_gates(self) -> None:
-        registry = CapabilityRegistryLoader().load(allow_sample_fallback=False)
+        registry = CapabilityRegistryLoader().load(
+            allow_sample_fallback=False, check_files=False
+        )
         self.assertFalse(registry.used_sample_fallback)
         self.assertGreaterEqual(len(registry.capabilities), 38)
         self.assertTrue(registry.for_game(GameId.NFL2K5))
@@ -290,7 +327,9 @@ class CoreTests(unittest.TestCase):
             self.assertTrue(capability.accepted_extensions)
 
     def test_requested_advanced_surfaces_are_present_and_not_accidentally_writable(self) -> None:
-        registry = CapabilityRegistryLoader().load(allow_sample_fallback=False)
+        registry = CapabilityRegistryLoader().load(
+            allow_sample_fallback=False, check_files=False
+        )
         requested = {
             "catching_drops",
             "cpu_ai_draft",

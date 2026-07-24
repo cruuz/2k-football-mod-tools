@@ -1025,7 +1025,7 @@ def load_audio_origin_context(
     supplied_root = source_cache_root.expanduser()
     root = supplied_root.resolve(strict=True)
     require(
-        supplied_root.is_absolute() and supplied_root.absolute() == root,
+        platform_compat.is_canonical_absolute_path(supplied_root, root),
         "Audio source-cache root must be its canonical absolute path",
     )
     expected_pack0 = root / SOURCE_CACHE_PACK_FOLDER / "0"
@@ -1066,7 +1066,9 @@ def load_audio_origin_context(
     exact_store = Nfl2k5AudioSourceFingerprintStore()
     exact_expected = exact_store.inventory_path(cache)
     require(
-        exact_inventory_path.expanduser().absolute() == exact_expected,
+        platform_compat.is_canonical_absolute_path(
+            exact_inventory_path.expanduser(), exact_expected
+        ),
         "Exact audio inventory path is not the canonical file in this source cache",
     )
     exact_inventory = exact_store.load_existing(
@@ -1094,8 +1096,9 @@ def load_audio_origin_context(
     )
     containment_expected = containment_store.inventory_path(cache)
     require(
-        containment_inventory_path.expanduser().absolute()
-        == containment_expected,
+        platform_compat.is_canonical_absolute_path(
+            containment_inventory_path.expanduser(), containment_expected
+        ),
         "Containment audio inventory path is not the canonical file in this "
         "source cache",
     )

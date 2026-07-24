@@ -15,7 +15,6 @@ boundary.
 
 from __future__ import annotations
 
-import ctypes
 from contextlib import contextmanager
 from dataclasses import dataclass, field, replace
 import errno
@@ -63,7 +62,6 @@ MAX_PAYLOAD_FILES = MAX_PACK_ENTRIES
 MAX_ARCHIVE_MEMBERS = MAX_PACK_ENTRIES + 3
 MAX_EXPANDED_PACK_BYTES = 64 * 1024 * 1024 * 1024
 TEMPLATE_PAYLOADS_INCLUDED = False
-_RENAME_NOREPLACE = 1
 _DIRECTORY_OPEN_FLAGS = (
     os.O_RDONLY
     | getattr(os, "O_DIRECTORY", 0)
@@ -1155,42 +1153,34 @@ def _publish_name_noreplace(
     destination_name: str,
     *,
     object_label: str,
+    is_directory: bool,
 ) -> None:
-    """Atomically publish one complete name without replacing a race winner."""
+    """Atomically publish one complete name without replacing a race winner.
 
-    libc = ctypes.CDLL(None, use_errno=True)
-    renameat2 = getattr(libc, "renameat2", None)
-    if renameat2 is None:
+    Only the OS-primitive layer differs per platform, and it lives in
+    :mod:`platform_compat`.  Linux keeps ``renameat2(RENAME_NOREPLACE)``
+    byte-for-byte.  macOS and any POSIX kernel without it publish a file with
+    ``os.link`` + unlink and a folder by reserving the name with ``os.mkdir``
+    then ``os.rename`` -- both refuse an existing destination
+    (``FileExistsError``).  Windows cannot open the directory descriptor this
+    stages through, so it fails closed there with the historical message rather
+    than a silent, clobbering path-based publish.
+    """
+
+    try:
+        platform_compat.publish_no_replace(
+            staging_name,
+            destination_name,
+            dir_fd=parent_descriptor,
+            is_directory=is_directory,
+        )
+    except FileExistsError as exc:
+        raise FileExistsError(destination_name) from exc
+    except platform_compat.NoReplacePublishUnavailable as exc:
         raise AudioReplacementPackError(
             f"This system cannot publish a replacement-template {object_label} "
             "atomically"
-        )
-    renameat2.argtypes = [
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_uint,
-    ]
-    renameat2.restype = ctypes.c_int
-    result = renameat2(
-        parent_descriptor,
-        os.fsencode(staging_name),
-        parent_descriptor,
-        os.fsencode(destination_name),
-        _RENAME_NOREPLACE,
-    )
-    if result == 0:
-        return
-    value = ctypes.get_errno()
-    if value == errno.EEXIST:
-        raise FileExistsError(destination_name)
-    if value in {errno.ENOSYS, errno.EINVAL, errno.EOPNOTSUPP}:
-        raise AudioReplacementPackError(
-            "The selected filesystem cannot publish a replacement-template "
-            f"{object_label} atomically. Choose a normal local Linux folder."
-        )
-    raise OSError(value, os.strerror(value), destination_name)
+        ) from exc
 
 
 def _publish_directory_noreplace(
@@ -1205,6 +1195,7 @@ def _publish_directory_noreplace(
         staging_name,
         destination_name,
         object_label="folder",
+        is_directory=True,
     )
 
 
@@ -1220,6 +1211,7 @@ def _publish_file_noreplace(
         staging_name,
         destination_name,
         object_label="ZIP",
+        is_directory=False,
     )
 
 

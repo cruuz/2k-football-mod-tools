@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import ctypes
 from dataclasses import dataclass
 import errno
 import hashlib
@@ -52,8 +51,6 @@ from .uniform_targets import compile_uniform_patch
 
 Progress = Callable[[str, int, int], None]
 BUILD_SCHEMA = "apf2k8_mod_studio_build/v1"
-AT_FDCWD = -100
-RENAME_NOREPLACE = 1
 BUILD_SPACE_MARGIN = 512 * 1024 * 1024
 EXPECTED_TREE: dict[str, tuple[int, str]] = {
     "0A": (
@@ -312,36 +309,28 @@ def _copy_regular(
 
 
 def _publish_directory_noreplace(staging: Path, destination: Path) -> None:
-    libc = ctypes.CDLL(None, use_errno=True)
-    renameat2 = getattr(libc, "renameat2", None)
-    if renameat2 is None:
+    """Publish the staged build folder to its final name, never overwriting one.
+
+    This is the path-based (``AT_FDCWD``) folder publisher.  The OS-primitive
+    layer lives in :mod:`platform_compat`: Linux keeps
+    ``renameat2(RENAME_NOREPLACE)`` byte-for-byte; macOS and any POSIX kernel
+    without it reserve the destination with ``os.mkdir`` (atomic; refuses an
+    existing name) and ``os.rename`` the staged folder onto that placeholder;
+    Windows uses its own ``os.rename``, which natively refuses to overwrite an
+    existing destination.  A destination that already exists raises
+    :class:`FileExistsError`, exactly as before.
+    """
+
+    try:
+        platform_compat.publish_no_replace(
+            staging, destination, dir_fd=None, is_directory=True
+        )
+    except FileExistsError as exc:
+        raise FileExistsError(destination) from exc
+    except platform_compat.NoReplacePublishUnavailable as exc:
         raise BuildError(
             "This system does not provide atomic no-replace folder publishing"
-        )
-    renameat2.argtypes = [
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_uint,
-    ]
-    renameat2.restype = ctypes.c_int
-    result = renameat2(
-        AT_FDCWD,
-        os.fsencode(staging),
-        AT_FDCWD,
-        os.fsencode(destination),
-        RENAME_NOREPLACE,
-    )
-    if result != 0:
-        value = ctypes.get_errno()
-        if value == errno.EEXIST:
-            raise FileExistsError(destination)
-        if value in {errno.ENOSYS, errno.EINVAL, errno.EOPNOTSUPP}:
-            raise BuildError(
-                "The output filesystem cannot publish a build atomically"
-            )
-        raise OSError(value, os.strerror(value), destination)
+        ) from exc
 
 
 class ApfBuildService:

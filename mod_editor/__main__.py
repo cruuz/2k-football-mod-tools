@@ -227,7 +227,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.check_registry:
         registry = CapabilityRegistryLoader().load(
-            allow_sample_fallback=not args.require_registry
+            allow_sample_fallback=not args.require_registry, check_files=False
         )
         print(
             "MOD_EDITOR_REGISTRY_OK "

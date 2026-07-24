@@ -19,8 +19,6 @@ publication, strict loading, and lookup.
 from __future__ import annotations
 
 from dataclasses import dataclass
-import ctypes
-import errno
 import hashlib
 import json
 import os
@@ -46,7 +44,6 @@ EXPECTED_STANDALONE_COUNT = 850
 EXPECTED_STREAMING_SLOT_COUNT = 53_570
 EXPECTED_STREAMING_OWNER_COUNT = 53_571
 MAX_INVENTORY_BYTES = 64 * 1024 * 1024
-_RENAME_NOREPLACE = 1
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _STANDALONE_ID_RE = re.compile(
@@ -353,7 +350,7 @@ def _private_derived_directory(root: Path, path: Path) -> Path:
     _require(
         platform_compat.is_owned_by_current_user(info, path=path)
         and info.st_mode & 0o077 == 0
-        and path.absolute() == resolved
+        and platform_compat.is_canonical_absolute_path(path, resolved)
         and resolved == root / PRIVATE_RELATIVE_PATH.parent,
         "Private derived-cache directory must be owner-only and stay inside "
         "its source cache",
@@ -366,41 +363,33 @@ def _rename_noreplace_at(
     source_name: str,
     destination_name: str,
 ) -> None:
-    """Atomically publish one complete file without replacing a race winner."""
+    """Atomically publish one complete file without replacing a race winner.
 
-    libc = ctypes.CDLL(None, use_errno=True)
-    renameat2 = getattr(libc, "renameat2", None)
-    if renameat2 is None:
-        raise AudioSourceFingerprintError(
-            "This Linux system cannot publish the private source-audio "
-            "inventory atomically"
+    The OS-primitive layer lives in :mod:`platform_compat`: Linux keeps
+    ``renameat2(RENAME_NOREPLACE)`` byte-for-byte; macOS and any POSIX kernel or
+    filesystem without it publish the staged inode with ``os.link`` (atomic, and
+    ``FileExistsError`` if the destination exists) then unlink the staging name,
+    leaving the same single-link inode ``renameat2`` would have.  A destination
+    that already exists is the concurrent-publication signal on every platform.
+    Windows cannot open the directory descriptor this stages through, so it fails
+    closed there with the historical message rather than a silent, clobbering
+    path-based publish.
+    """
+
+    try:
+        platform_compat.publish_no_replace(
+            source_name,
+            destination_name,
+            dir_fd=directory_fd,
+            is_directory=False,
         )
-    renameat2.argtypes = [
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_uint,
-    ]
-    renameat2.restype = ctypes.c_int
-    result = renameat2(
-        directory_fd,
-        os.fsencode(source_name),
-        directory_fd,
-        os.fsencode(destination_name),
-        _RENAME_NOREPLACE,
-    )
-    if result == 0:
-        return
-    value = ctypes.get_errno()
-    if value == errno.EEXIST:
-        raise _ConcurrentPublication(destination_name)
-    if value in {errno.ENOSYS, errno.EINVAL, errno.EOPNOTSUPP}:
+    except FileExistsError as exc:
+        raise _ConcurrentPublication(destination_name) from exc
+    except platform_compat.NoReplacePublishUnavailable as exc:
         raise AudioSourceFingerprintError(
-            "The private cache filesystem cannot publish the source-audio "
-            "inventory atomically"
-        )
-    raise OSError(value, os.strerror(value), destination_name)
+            "This system cannot publish the private source-audio inventory "
+            "atomically"
+        ) from exc
 
 
 def _unlink_owned_name_at(
@@ -611,7 +600,7 @@ class Nfl2k5AudioSourceFingerprintStore:
         )
         root = _regular_private_directory(cache.root, "NFL 2K5 source cache")
         _require(
-            cache.root.absolute() == root,
+            platform_compat.is_canonical_absolute_path(cache.root, root),
             "NFL 2K5 source-cache path must be absolute and canonical",
         )
         _require(
@@ -797,7 +786,7 @@ class Nfl2k5AudioSourceFingerprintStore:
             parent, "Private derived-cache directory"
         )
         _require(
-            parent.absolute() == resolved_parent
+            platform_compat.is_canonical_absolute_path(parent, resolved_parent)
             and resolved_parent == root / PRIVATE_RELATIVE_PATH.parent,
             "Private source-audio inventory path escapes its source cache",
         )

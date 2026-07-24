@@ -316,7 +316,7 @@ class Nfl2k5AudioSourceContainmentStore:
         )
         root = _regular_directory(cache.root, "NFL 2K5 source cache")
         _require(
-            cache.root.absolute() == root
+            platform_compat.is_canonical_absolute_path(cache.root, root)
             and root.name == self.expected_source_sha256,
             "NFL 2K5 source-cache path is not canonical and source-bound",
         )

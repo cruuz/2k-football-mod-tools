@@ -613,7 +613,7 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
         raise _audio_safety_error(
             f"the private source cache could not be resolved safely ({exc})"
         ) from exc
-    if selected_root.absolute() != root:
+    if not platform_compat.is_canonical_absolute_path(selected_root, root):
         raise _audio_safety_error(
             f"the private source-cache path is not canonical at {selected_root}"
         )
