@@ -26,6 +26,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import warnings
 from typing import Callable, Protocol, Sequence
 
 from . import platform_compat
@@ -404,17 +405,22 @@ def _last_message(result: CommandResult) -> str:
     return message
 
 
-def _fsync_directory(path: Path) -> None:
-    """Commit the directory entry a publish just created, where that exists.
+def _fsync_directory(path: Path) -> bool:
+    """Commit the directory entry a publish just created, and report whether it held.
 
-    Delegates to :func:`platform_compat.fsync_directory`, which performs the
-    POSIX ``O_RDONLY | O_DIRECTORY`` flush this used to open by hand and reports
-    ``False`` on Windows, the one platform with no directory-flush primitive at
-    all.  The published file itself is always flushed separately, so the Windows
-    gap costs the directory entry's ordering guarantee, not the payload's.
+    Delegates to :func:`platform_compat.fsync_directory`, which performs the POSIX
+    ``O_RDONLY | O_DIRECTORY`` flush this used to open by hand and returns ``True``,
+    and on Windows now attempts ``FlushFileBuffers`` on a directory write handle --
+    returning ``True`` when it genuinely committed and ``False`` only when the
+    account cannot obtain that handle.  The bool is now *returned* rather than
+    discarded, so the commit path can surface a non-durable Windows publish instead
+    of continuing as if committed; the rollback path legitimately ignores it (it is
+    undoing a publish, not making one durable).  The published file itself is always
+    flushed separately, so a Windows ``False`` costs the directory entry's
+    crash-durability, not the payload's.
     """
 
-    fsync_directory(path)
+    return fsync_directory(path)
 
 
 def _link_then_unlink(source: Path, destination: Path) -> None:
@@ -812,7 +818,18 @@ class Nfl2k5BuildService:
                     raise Nfl2k5BuildError(
                         "The output pathname changed during publication."
                     )
-                _fsync_directory(output.parent)
+                if not _fsync_directory(output.parent):
+                    # POSIX always commits; a False is Windows telling us it could
+                    # not flush the directory entry.  Surface the missing
+                    # crash-durability rather than returning as if fully committed.
+                    warnings.warn(
+                        "nfl2k5_build_service: the published XISO's directory entry "
+                        "could not be flushed to stable storage on this platform; a "
+                        "crash before the OS flushes it on its own could lose the "
+                        "published filename",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
                 committed = True
             finally:
                 os.close(descriptor)

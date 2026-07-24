@@ -15,7 +15,7 @@ boundary.
 
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass, field, replace
 import errno
 import hashlib
@@ -24,6 +24,7 @@ import os
 from pathlib import Path, PurePosixPath
 import stat
 import tempfile
+import warnings
 from typing import Iterable, Iterator, Mapping
 from uuid import uuid4
 import zipfile
@@ -873,21 +874,24 @@ def _as_handle(
 
 
 def _scandir_handle(handle: platform_compat.DirHandle):
-    """Enumerate the pinned directory -- POSIX descriptor or Windows realpath.
+    """Enumerate the pinned directory, bound to the pin on every platform.
 
     POSIX keeps the byte-identical ``os.scandir(<dir_fd>)`` that pins the
     enumeration to the directory inode the handle holds open, so a swap of the
     parent path cannot redirect it.  Windows has no directory descriptor, so it
-    scandirs the handle's realpath; the surrounding ``_directory_unchanged`` /
-    ``_path_still_names_directory`` checks -- which re-verify the pin through
-    ``handle.fstat()`` -- bracket the enumeration exactly as they did the
-    descriptor form.  Only ``DirEntry.name`` is consumed at every call site, so
-    the two forms are interchangeable.
+    routes through :meth:`DirHandle.scandir`, which re-verifies the held Win32
+    handle's identity against the pinned realpath *before* enumerating -- a
+    swapped, relinked or replaced parent is refused with
+    :class:`DirectoryTransactionRefused` instead of silently walked, which the
+    bare ``os.scandir(realpath)`` this replaces did not do.  That method returns a
+    materialised list (its transient scandir handle is already closed), so it is
+    wrapped in a null context to keep the ``with ... as iterator`` call sites --
+    which consume only ``DirEntry.name`` -- identical on both platforms.
     """
 
     if handle.mechanism == platform_compat.DIRHANDLE_POSIX_DIR_FD:
         return os.scandir(handle.dir_fd)
-    return os.scandir(handle.realpath)
+    return nullcontext(handle.scandir())
 
 
 def _open_pinned_directory(
@@ -1146,6 +1150,32 @@ def _zip_directory_info(name: str) -> zipfile.ZipInfo:
     info.external_attr = (stat.S_IFDIR | 0o700) << 16
     info.flag_bits = 0x800
     return info
+
+
+def _commit_directory(directory_handle: platform_compat.DirHandle) -> bool:
+    """Flush a just-published directory and surface a non-durable Windows result.
+
+    Returns whether the flush committed.  POSIX always commits -- the same single
+    ``fsync`` on the pinned descriptor as before, so Linux/macOS is byte-identical.
+    On Windows the core now flushes via ``FlushFileBuffers`` on a directory write
+    handle and returns ``True`` when it works; a ``False`` means the account could
+    not obtain that handle, so the published name is not crash-durable.  That
+    ``False`` is surfaced with :func:`warnings.warn` rather than discarded, so a
+    caller or test sees the weaker guarantee instead of the publisher continuing as
+    if the entry were committed.  Pre-publish staging flushes and best-effort
+    cleanup flushes deliberately do not route through here.
+    """
+
+    durable = directory_handle.fsync()
+    if not durable:
+        warnings.warn(
+            "apf_studio.audio_replacement_pack: the published template's directory "
+            "entry could not be flushed to stable storage on this platform; a crash "
+            "before the OS flushes it on its own could lose the published name",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+    return durable
 
 
 def _clear_owned_template_directory(
@@ -1449,10 +1479,10 @@ def create_audio_replacement_template(
                 )
             # Commit the publish through the directory this transaction pinned,
             # never by re-opening it by name.  POSIX issues the same single fsync
-            # as before; Windows has no directory-flush primitive and the handle
-            # reports that rather than letting a skipped flush read as a
-            # completed one.
-            parent_handle.fsync()
+            # as before; on Windows the flush is best-effort and _commit_directory
+            # surfaces (rather than discards) a non-durable result instead of the
+            # publisher continuing as if the name were committed.
+            _commit_directory(parent_handle)
             if not _path_still_names_directory(target.parent, parent_identity):
                 raise AudioReplacementPackError(
                     "The replacement-template parent changed during publication"
@@ -1546,7 +1576,10 @@ def create_audio_replacement_template(
             raise AudioReplacementPackError(
                 "The replacement-template staging folder changed during publication"
             )
-        parent_handle.fsync()
+        # Commit the folder publish through the pinned directory.  POSIX issues the
+        # same single fsync; on Windows the flush is best-effort and
+        # _commit_directory surfaces a non-durable result rather than discarding it.
+        _commit_directory(parent_handle)
         if not _path_still_names_directory(target.parent, parent_identity):
             raise AudioReplacementPackError(
                 "The replacement-template parent changed during publication"

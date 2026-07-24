@@ -26,6 +26,7 @@ from pathlib import Path
 import re
 import stat
 import tempfile
+import warnings
 from types import MappingProxyType
 from typing import Any, Callable, Iterable, Mapping
 
@@ -439,6 +440,32 @@ def _unlink_owned_name_at(
     except OSError:
         return False
     return True
+
+
+def _commit_directory(directory: platform_compat.DirHandle) -> bool:
+    """Flush a just-published directory and surface a non-durable Windows result.
+
+    Returns whether the flush committed.  POSIX always commits -- the same single
+    ``fsync`` on the pinned descriptor as before, so Linux/macOS is byte-identical.
+    On Windows the core now flushes via ``FlushFileBuffers`` on a directory write
+    handle and returns ``True`` when it works; a ``False`` means the account could
+    not obtain that handle, so the published filename is not crash-durable.  That
+    ``False`` is surfaced with :func:`warnings.warn` rather than discarded, so a
+    caller or test sees the weaker guarantee instead of the code continuing as if
+    the directory entry were committed.  Rollback and cleanup flushes stay
+    best-effort and deliberately do not route through here.
+    """
+
+    durable = directory.fsync()
+    if not durable:
+        warnings.warn(
+            "nfl2k5_audio_source_fingerprints: the published inventory's directory "
+            "entry could not be flushed to stable storage on this platform; a crash "
+            "before the OS flushes it on its own could lose the published filename",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+    return durable
 
 
 class Nfl2k5AudioSourceFingerprintStore:
@@ -911,10 +938,10 @@ class Nfl2k5AudioSourceFingerprintStore:
             )
             # Flush the directory descriptor this transaction pinned, rather
             # than re-opening the directory by name and throwing that pin away.
-            # POSIX issues the same single fsync as before; Windows has no
-            # directory-flush primitive at all and the helper reports that
-            # instead of letting a skipped flush look like a completed one.
-            directory.fsync()
+            # POSIX issues the same single fsync as before; on Windows the flush
+            # is best-effort and _commit_directory surfaces (not discards) a
+            # non-durable result instead of continuing as if committed.
+            _commit_directory(directory)
             os.lseek(descriptor, 0, os.SEEK_SET)
             confirmed = bytearray()
             while len(confirmed) <= len(payload):
@@ -954,7 +981,7 @@ class Nfl2k5AudioSourceFingerprintStore:
                 "Private source-audio inventory changed during publication",
             )
             os.fsync(descriptor)
-            directory.fsync()
+            _commit_directory(directory)
             if publication_guard is not None:
                 publication_guard("after_publication")
         except BaseException:

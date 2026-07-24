@@ -30,6 +30,7 @@ from mod_editor.core.nfl2k5_audio_catalog import (
     Nfl2k5StreamingAudioBank,
     Nfl2k5StreamingAudioRange,
 )
+from mod_editor.core import platform_compat
 from mod_editor.core.platform_compat import fsync_path
 
 
@@ -479,7 +480,53 @@ def _write_playlist(
     return len(playable)
 
 
-def _exclusive_publish(source: Path, destination: Path) -> Path:
+def _regular_file_identity(path: Path) -> tuple[int, int]:
+    """``(st_dev, st_ino)`` of a finished bundle, refusing a symlink or non-regular file.
+
+    Captured on Windows so the publisher can pin the exact archive it wrote:
+    ``os.lstat`` does not follow a final reparse point, so this is the identity of
+    the name itself, and a symlink or a non-regular file is refused outright.
+    """
+
+    info = os.lstat(path)
+    if stat.S_ISLNK(info.st_mode) or not stat.S_ISREG(info.st_mode):
+        raise AudioBundleError(
+            "The finished audio bundle is not a regular file; refusing to publish"
+        )
+    return (info.st_dev, info.st_ino)
+
+
+def _exclusive_publish(
+    source: Path, destination: Path, *, expected_identity: tuple[int, int] | None
+) -> Path:
+    """Hard-link the finished bundle to its destination, never overwriting.
+
+    ``expected_identity`` is the ``(st_dev, st_ino)`` of the archive the caller
+    wrote and flushed.  On Windows -- which has no ``O_NOFOLLOW``, so
+    :func:`fsync_path` flushed the file we wrote but ``os.link`` re-resolves the
+    name by path -- the source is re-checked without following a reparse point
+    immediately before the link: a symlink, a non-regular file, or a *different*
+    inode swapped in after the flush is refused rather than published, so a swap
+    cannot redirect the published bytes.  The sub-operation window between this
+    check and ``os.link`` is the same documented Windows realpath-pin residual.
+
+    POSIX passes ``None`` and the publish is byte-identical: the ``O_NOFOLLOW``
+    open inside :func:`fsync_path` already refused a symlink and the archive lives
+    in a ``0o700`` private temporary directory only this user can write, so no
+    identity compare is added to the Linux path.
+    """
+
+    if expected_identity is not None:
+        current = os.lstat(source)
+        if (
+            stat.S_ISLNK(current.st_mode)
+            or not stat.S_ISREG(current.st_mode)
+            or (current.st_dev, current.st_ino) != expected_identity
+        ):
+            raise AudioBundleError(
+                "The finished audio bundle changed identity before publication; "
+                "refusing to publish a swapped target"
+            )
     try:
         os.link(source, destination)
     except FileExistsError as exc:
@@ -614,9 +661,22 @@ def export_audio_bundle(
                 },
             )
         os.chmod(archive_path, 0o644)
+        # The finished archive's identity, captured before the flush+publish so the
+        # publisher can prove os.link targets exactly the inode we wrote and not a
+        # reparse point swapped in afterwards.  Windows only: it has no O_NOFOLLOW,
+        # so an identity compare is the refusal (see _exclusive_publish); POSIX
+        # keeps its byte-identical publish, protected by fsync_path's O_NOFOLLOW
+        # open and the 0o700 private temporary directory.
+        written_identity = (
+            _regular_file_identity(archive_path)
+            if platform_compat.IS_WINDOWS
+            else None
+        )
         # Get the finished ZIP onto stable storage before it is published.  The
         # helper keeps the POSIX ``O_RDONLY | O_NOFOLLOW`` open this replaced and
         # switches only Windows to a writable handle, which is the sole access
         # mode ``FlushFileBuffers`` accepts there.
         fsync_path(archive_path, follow_symlinks=False)
-        return _exclusive_publish(archive_path, target)
+        return _exclusive_publish(
+            archive_path, target, expected_identity=written_identity
+        )

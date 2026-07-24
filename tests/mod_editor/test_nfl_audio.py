@@ -658,7 +658,10 @@ class NflAudioRecipeTests(unittest.TestCase):
         )
         for label, members, expected in cases:
             with self.subTest(label=label):
-                with provider._sealed_zipapp(members, label) as archive_path:
+                with provider._sealed_zipapp(members, label) as module:
+                    archive_path = module.path
+                    # The memfd path's re-verify is a no-op but must stay callable.
+                    module.reverify_before_exec()
                     self.assertRegex(
                         os.fspath(archive_path),
                         rf"^/proc/{os.getpid()}/fd/[0-9]+$",

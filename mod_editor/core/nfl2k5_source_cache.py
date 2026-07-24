@@ -94,13 +94,35 @@ def _emit(progress: IndexProgress | None, stage: str, completed: int, total: int
         progress(stage, completed, total)
 
 
+def _is_reparse_point(info: os.stat_result) -> bool:
+    """Whether an ``lstat`` result denotes a Windows reparse point (junction).
+
+    A directory *junction* -- and every other reparse point except a symlink --
+    is NOT reported by ``lstat``/``S_ISLNK`` as a link, so a junction planted in
+    place of a private cache path slips past a symlink-only guard and can
+    redirect game-derived bytes into a shared or attacker-controlled tree.  On
+    Windows ``os.lstat`` sets ``st_reparse_tag`` to a non-zero tag for any
+    reparse point (mount-point junction, symlink, ...); on POSIX the attribute is
+    absent, so this is ``False`` and the symlink-only behaviour is byte-for-byte
+    unchanged there.  Mirrors the ``FILE_ATTRIBUTE_REPARSE_POINT`` refusal the
+    Windows ``DirHandle`` already applies in ``platform_compat`` (which is the
+    intended shared home for this predicate once it exposes one).
+    """
+
+    return getattr(info, "st_reparse_tag", 0) != 0
+
+
 def _regular_non_symlink(path: Path, label: str) -> os.stat_result:
     try:
         info = path.lstat()
     except FileNotFoundError as exc:
         raise ValidationError(f"{label} is missing: {path}") from exc
-    if not stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode):
-        raise ValidationError(f"{label} must be a regular file: {path}")
+    if (
+        not stat.S_ISREG(info.st_mode)
+        or stat.S_ISLNK(info.st_mode)
+        or _is_reparse_point(info)
+    ):
+        raise ValidationError(f"{label} must be a regular, non-link file: {path}")
     return info
 
 
@@ -110,6 +132,38 @@ class Nfl2k5SourceCache:
     def __init__(self, cache_root: Path | None = None) -> None:
         self.cache_root = (cache_root or default_cache_root()).expanduser()
         self.inspector = SourceInspector()
+
+    def _ensure_private_cache_root(self) -> None:
+        """Create (or accept) the private cache root through the DACL-applying
+        creator, then verify its *real* confidentiality -- never a bare ``mkdir``.
+
+        POSIX: :func:`platform_compat.create_private_directory` is ``mkdir`` mode
+        ``0o700``.  The per-XISO subdirectories carry the historical owner-only
+        guarantee, so the placement re-check below is a deliberate no-op here and
+        Linux behaviour is unchanged apart from the root now being created
+        owner-only rather than umask-default.
+
+        Windows: the same call applies a current-user/administrators-only ACL to
+        a freshly created root (Python 3.13+ translates ``mode=0o700`` into that
+        DACL), and :func:`platform_compat.verify_private_root_placement` then
+        QUERIES the directory's actual DACL and fails closed if any
+        Everyone/Users/other-account ACE grants access, or the ACL cannot be
+        read.  That DACL query -- not mere realpath containment under
+        ``%LOCALAPPDATA%`` -- is what closes the two Windows escapes: a
+        pre-existing world-readable ``%LOCALAPPDATA%``/``%TEMP%`` cache dir with
+        an inherited Users/Everyone ACE, and a hostile ``LOCALAPPDATA`` that
+        points the profile root *at the cache root itself* so ``candidate ==
+        trusted-root`` would otherwise pass unconditionally.  Because the
+        guarantee is the DACL of this exact directory, the candidate can never be
+        trusted merely for being its own configured root.
+        """
+
+        platform_compat.create_private_directory(
+            self.cache_root, parents=True, exist_ok=True
+        )
+        platform_compat.verify_private_root_placement(
+            self.cache_root, "The private NFL 2K5 source cache root"
+        )
 
     def index(self, source_xiso: Path,
               progress: IndexProgress | None = None) -> SourceCache:
@@ -136,13 +190,7 @@ class Nfl2k5SourceCache:
                 "This file did not match that dump; it was not modified."
             )
 
-        self.cache_root.mkdir(parents=True, exist_ok=True)
-        # On Windows the cache root's ACL *is* its privacy, so assert the tree
-        # was created somewhere that grants one.  A no-op on POSIX, where the
-        # 0o700 modes below carry the guarantee wherever the root lives.
-        platform_compat.verify_private_root_placement(
-            self.cache_root, "The private NFL 2K5 source cache root"
-        )
+        self._ensure_private_cache_root()
         final = self.cache_root / SOURCE_SHA256
         cached = self._load_existing(final, source)
         if cached is not None:
@@ -239,8 +287,26 @@ class Nfl2k5SourceCache:
             raise ValidationError(str(exc)) from exc
 
     def _load_existing(self, root: Path, source: SourceRecord) -> SourceCache | None:
+        # A pre-existing cache root is attacker-reachable: refuse to read one
+        # that is a symlink or a Windows junction/reparse point (which S_ISLNK
+        # would miss) before trusting anything inside it.  A missing root is
+        # simply "no cache yet".
+        try:
+            root_info = os.lstat(root)
+        except OSError:
+            return None
+        if (
+            not stat.S_ISDIR(root_info.st_mode)
+            or stat.S_ISLNK(root_info.st_mode)
+            or _is_reparse_point(root_info)
+        ):
+            return None
         marker_path = root / "cache.json"
-        if not marker_path.is_file() or marker_path.is_symlink():
+        if (
+            not marker_path.is_file()
+            or marker_path.is_symlink()
+            or _is_reparse_point(os.lstat(marker_path))
+        ):
             return None
         try:
             marker = json.loads(marker_path.read_text(encoding="utf-8"))
@@ -268,6 +334,7 @@ class Nfl2k5SourceCache:
         if (
             not inventory.is_file()
             or inventory.is_symlink()
+            or _is_reparse_point(os.lstat(inventory))
             or inventory.stat().st_size != INVENTORY_SIZE
             or pack0.stat().st_size != PACK0_SIZE
         ):

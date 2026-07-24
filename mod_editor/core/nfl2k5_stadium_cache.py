@@ -113,12 +113,33 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _is_reparse_point(info: os.stat_result) -> bool:
+    """Whether an ``lstat`` result denotes a Windows reparse point (junction).
+
+    A directory *junction* -- and every other reparse point except a symlink --
+    is NOT reported by ``lstat``/``S_ISLNK`` as a link, so a junction planted in
+    place of a private cache directory slips past a symlink-only guard and
+    redirects derived bytes and lock files into a shared or attacker-controlled
+    tree.  On Windows ``os.lstat`` sets ``st_reparse_tag`` to a non-zero tag for
+    any reparse point; on POSIX the attribute is absent, so this is ``False`` and
+    the symlink-only behaviour is byte-for-byte unchanged.  Mirrors the
+    ``FILE_ATTRIBUTE_REPARSE_POINT`` refusal the Windows ``DirHandle`` already
+    applies in ``platform_compat`` (the intended shared home for this predicate).
+    """
+
+    return getattr(info, "st_reparse_tag", 0) != 0
+
+
 def _regular_file(path: Path, label: str) -> Path:
     try:
         info = path.lstat()
     except FileNotFoundError as exc:
         raise StadiumCacheError(f"{label} is missing: {path}") from exc
-    if not stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode):
+    if (
+        not stat.S_ISREG(info.st_mode)
+        or stat.S_ISLNK(info.st_mode)
+        or _is_reparse_point(info)
+    ):
         raise StadiumCacheError(f"{label} must be a regular, non-link file: {path}")
     return path.resolve(strict=True)
 
@@ -150,7 +171,11 @@ def _confined_directory(root: Path, relative: object, label: str) -> Path:
         info = candidate.lstat()
     except FileNotFoundError as exc:
         raise StadiumCacheError(f"{label} directory is missing: {candidate}") from exc
-    if not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode):
+    if (
+        not stat.S_ISDIR(info.st_mode)
+        or stat.S_ISLNK(info.st_mode)
+        or _is_reparse_point(info)
+    ):
         raise StadiumCacheError(f"{label} must be a private, non-link directory")
     path = candidate.resolve(strict=True)
     try:
@@ -306,8 +331,17 @@ class Nfl2k5StadiumCacheCoordinator:
         root, pack0, inventory = self._validate_source_cache(cache)
         parent = root / PRIVATE_PARENT
         create_private_directory(parent, parents=True, exist_ok=True)
-        if parent.is_symlink():
-            raise StadiumCacheError("Private derived-cache directory cannot be a symlink")
+        # A symlink OR a Windows junction/reparse point here would redirect the
+        # whole private derived cache -- and its single-writer lock -- into an
+        # attacker tree; S_ISLNK alone misses a junction, so refuse any reparse
+        # point too.  os.lstat carries st_reparse_tag on Windows and nothing on
+        # POSIX, keeping the Linux path byte-identical.
+        parent_info = os.lstat(parent)
+        if stat.S_ISLNK(parent_info.st_mode) or _is_reparse_point(parent_info):
+            raise StadiumCacheError(
+                "Private derived-cache directory cannot be a symlink or reparse "
+                "point (junction)"
+            )
         harden_private_directory(parent)
         self._require_private_directory(parent, "The private derived-cache directory")
         lock_path = parent / LOCK_NAME
@@ -346,7 +380,11 @@ class Nfl2k5StadiumCacheCoordinator:
             staging = parent / STAGING_NAME
             if staging.exists():
                 info = staging.lstat()
-                if not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode):
+                if (
+                    not stat.S_ISDIR(info.st_mode)
+                    or stat.S_ISLNK(info.st_mode)
+                    or _is_reparse_point(info)
+                ):
                     raise StadiumCacheError(
                         "The resumable Stadium Studio staging path is not a private directory"
                     )
@@ -447,7 +485,11 @@ class Nfl2k5StadiumCacheCoordinator:
             root_info = cache.root.lstat()
         except FileNotFoundError as exc:
             raise StadiumCacheError("The private NFL 2K5 source cache is missing") from exc
-        if not stat.S_ISDIR(root_info.st_mode) or stat.S_ISLNK(root_info.st_mode):
+        if (
+            not stat.S_ISDIR(root_info.st_mode)
+            or stat.S_ISLNK(root_info.st_mode)
+            or _is_reparse_point(root_info)
+        ):
             raise StadiumCacheError("The private NFL 2K5 source cache is not a safe directory")
         root = cache.root.resolve(strict=True)
         pack0 = _regular_file(cache.pack0, "private archive pack 0")
@@ -467,7 +509,11 @@ class Nfl2k5StadiumCacheCoordinator:
             info = root.lstat()
         except FileNotFoundError as exc:
             raise StadiumCacheError("Private Stadium Studio cache is missing") from exc
-        if not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode):
+        if (
+            not stat.S_ISDIR(info.st_mode)
+            or stat.S_ISLNK(info.st_mode)
+            or _is_reparse_point(info)
+        ):
             raise StadiumCacheError("Private Stadium Studio cache is not a safe directory")
         root = root.resolve(strict=True)
         marker_path = root / "result.json"

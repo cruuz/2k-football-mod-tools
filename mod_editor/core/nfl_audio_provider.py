@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 from contextlib import contextmanager
+from dataclasses import dataclass
 import hashlib
 import io
 import json
@@ -14,7 +15,7 @@ import shutil
 import stat
 import sys
 import tempfile
-from typing import Iterator
+from typing import Callable, Iterator
 import zipfile
 
 from .capabilities import Capability, Classification
@@ -46,6 +47,49 @@ from .providers import (
     SourceHasher,
     SubprocessCommandRunner,
 )
+
+
+def _is_reparse_point(info: os.stat_result) -> bool:
+    """Whether an ``lstat`` result denotes a Windows reparse point (junction).
+
+    A directory *junction* -- and every other reparse point except a symlink --
+    is NOT reported by ``lstat``/``S_ISLNK`` as a link, so a junction planted as
+    a validated directory (the provider workspace, an allowlisted parent, or the
+    private sealed-closure staging directory) slips past a symlink-only guard.
+    On Windows ``os.lstat`` sets ``st_reparse_tag`` to a non-zero tag for any
+    reparse point; on POSIX the attribute is absent, so this is ``False`` and the
+    symlink-only behaviour is byte-for-byte unchanged.  Mirrors the
+    ``FILE_ATTRIBUTE_REPARSE_POINT`` refusal the Windows ``DirHandle`` applies in
+    ``platform_compat`` (the intended shared home for this predicate).
+    """
+
+    return getattr(info, "st_reparse_tag", 0) != 0
+
+
+@dataclass(frozen=True)
+class _StagedModule:
+    """A staged closure ready to hand to the writer/verifier subprocess.
+
+    ``path`` is the value placed on the child's ``argv``.
+    ``reverify_before_exec`` MUST be called in the parent immediately before the
+    subprocess is launched:
+
+    * Non-memfd (macOS/Windows) path -- where :func:`seal_readonly` returns
+      ``sealed=False`` -- it re-opens the exact staged file, proves it is still
+      the same inode (no symlink/junction/rename swap) and re-hashes it against
+      the digest captured at seal time, failing closed on any change.  That
+      closes the check-to-use window between hashing the read-only snapshot and
+      the child opening it: an owner or same-user process that cleared the
+      read-only attribute and replaced the bytes in between is caught.
+
+    * Linux memfd path -- ``sealed=True`` -- it is a deliberate no-op.  The bytes
+      are kernel-write-sealed (immutable even to this process) and the child
+      receives them through ``/proc/self/fd``, an fd this process holds that no
+      name lookup can swap, so there is nothing left to re-check.
+    """
+
+    path: Path
+    reverify_before_exec: Callable[[], None]
 
 
 class Nfl2k5MenuBackAudioProvider:
@@ -207,7 +251,7 @@ class Nfl2k5MenuBackAudioProvider:
             argv = (
                 sys.executable,
                 *self._python_flags,
-                os.fspath(module),
+                os.fspath(module.path),
                 "--source-xiso",
                 os.fspath(source),
                 "--input-wav",
@@ -217,6 +261,10 @@ class Nfl2k5MenuBackAudioProvider:
                 "--manifest",
                 os.fspath(self._absolute(request.manifest)),
             )
+            # Re-verify the sealed snapshot against its digest immediately before
+            # the child opens it, so a swap after the seal is caught (no-op on
+            # the kernel-sealed Linux memfd path).
+            module.reverify_before_exec()
             result = self._run(argv, ProviderStage.BUILD, emit)
         try:
             report = json.loads(result.stdout)
@@ -245,7 +293,7 @@ class Nfl2k5MenuBackAudioProvider:
             argv = (
                 sys.executable,
                 *self._python_flags,
-                os.fspath(module),
+                os.fspath(module.path),
                 "--source-xiso",
                 os.fspath(source),
                 "--output-xiso",
@@ -257,6 +305,10 @@ class Nfl2k5MenuBackAudioProvider:
                 "--artifact-dir",
                 os.fspath(self._absolute(request.artifact_dir)),
             )
+            # Re-verify the sealed snapshot against its digest immediately before
+            # the child opens it, so a swap after the seal is caught (no-op on
+            # the kernel-sealed Linux memfd path).
+            module.reverify_before_exec()
             result = self._run(argv, ProviderStage.VERIFY, emit)
         if "NFL2K5_AUDO_WAV_XISO_VERIFY_PASS" not in result.stdout:
             raise ProviderError("Independent NFL audio verifier omitted its success marker")
@@ -330,7 +382,11 @@ class Nfl2k5MenuBackAudioProvider:
             workspace_info = workspace.lstat()
         except FileNotFoundError as exc:
             raise ProviderError("NFL audio provider workspace is missing") from exc
-        if not stat.S_ISDIR(workspace_info.st_mode) or stat.S_ISLNK(workspace_info.st_mode):
+        if (
+            not stat.S_ISDIR(workspace_info.st_mode)
+            or stat.S_ISLNK(workspace_info.st_mode)
+            or _is_reparse_point(workspace_info)
+        ):
             raise ProviderError("NFL audio provider workspace must be a non-symlink directory")
         workspace = workspace.resolve(strict=True)
         path = workspace / relative_path
@@ -340,7 +396,11 @@ class Nfl2k5MenuBackAudioProvider:
                 parent_info = parent.lstat()
             except FileNotFoundError as exc:
                 raise ProviderError(f"Allowlisted {label} parent is missing") from exc
-            if not stat.S_ISDIR(parent_info.st_mode) or stat.S_ISLNK(parent_info.st_mode):
+            if (
+                not stat.S_ISDIR(parent_info.st_mode)
+                or stat.S_ISLNK(parent_info.st_mode)
+                or _is_reparse_point(parent_info)
+            ):
                 raise ProviderError(f"Allowlisted {label} parent must be a non-symlink directory")
             parent = parent.parent
         if path == workspace or workspace not in path.parents:
@@ -352,6 +412,7 @@ class Nfl2k5MenuBackAudioProvider:
         if (
             not stat.S_ISREG(supplied.st_mode)
             or stat.S_ISLNK(supplied.st_mode)
+            or _is_reparse_point(supplied)
             or supplied.st_nlink != 1
             or not 0 < supplied.st_size <= self._max_pinned_module_bytes
         ):
@@ -457,7 +518,7 @@ class Nfl2k5MenuBackAudioProvider:
         self,
         members: tuple[tuple[str, str, str, str, frozenset[str]], ...],
         label: str,
-    ) -> Iterator[Path]:
+    ) -> Iterator[_StagedModule]:
         payloads = self._load_closure(members)
         archive = io.BytesIO()
         with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_STORED) as stream:
@@ -475,12 +536,14 @@ class Nfl2k5MenuBackAudioProvider:
                 yield module
 
     @contextmanager
-    def _sealed_memfd_module(self, raw: bytes, label: str) -> Iterator[Path]:
+    def _sealed_memfd_module(self, raw: bytes, label: str) -> Iterator[_StagedModule]:
         """Linux path: an anonymous, kernel-write-sealed ``memfd`` closure.
 
         The staged bytes cannot be modified afterwards even by this process, and
         the executable is handed to the subprocess through ``/proc/self/fd`` --
-        never a lookup-able pathname an attacker could swap.
+        never a lookup-able pathname an attacker could swap.  The staged module's
+        ``reverify_before_exec`` is therefore a no-op: there is no swappable name
+        and no writable descriptor to guard against.
         """
 
         descriptor = os.memfd_create(
@@ -514,12 +577,19 @@ class Nfl2k5MenuBackAudioProvider:
                 raise ProviderError("NFL audio sealed closure is unavailable through procfs") from exc
             if not stat.S_ISREG(visible.st_mode) or visible.st_size != len(raw):
                 raise ProviderError("NFL audio sealed closure procfs identity differs")
-            yield proc_path
+
+            def _reverify_sealed_memfd() -> None:
+                # Kernel write-seals make these bytes immutable even to us, and
+                # the child opens them through the /proc/self/fd we hold, so no
+                # name lookup can swap the executable: nothing to re-check.
+                return
+
+            yield _StagedModule(proc_path, _reverify_sealed_memfd)
         finally:
             os.close(descriptor)
 
     @contextmanager
-    def _read_only_file_module(self, raw: bytes, label: str) -> Iterator[Path]:
+    def _read_only_file_module(self, raw: bytes, label: str) -> Iterator[_StagedModule]:
         """Non-Linux path: a private, read-only, hash-verified file closure.
 
         Without ``memfd`` write-seals there is no kernel guarantee of
@@ -527,6 +597,17 @@ class Nfl2k5MenuBackAudioProvider:
         read-only inside a fresh private directory and re-verifying that its
         bytes still hash to the closure we intended to stage.  The file is
         removed when the context exits.
+
+        Read-only is not a seal: an owner (or another same-user process) can
+        clear the attribute and rewrite the bytes.  So the staged module's
+        ``reverify_before_exec`` re-opens the exact file and re-hashes it against
+        the digest captured here, and the caller invokes it immediately before
+        launching the subprocess -- closing the window between staging the
+        snapshot and the child opening it.  The residual gap between that
+        re-hash and the child's open is unavoidable without a held-descriptor
+        exec primitive (the platform's job, and what the Linux memfd path uses);
+        it is bounded to a single ``os.open`` and the file lives in a private,
+        per-user staging directory this process just created.
         """
 
         workdir = Path(tempfile.mkdtemp(prefix=f"nfl2k5-audio-{label}-"))
@@ -566,10 +647,62 @@ class Nfl2k5MenuBackAudioProvider:
             if (
                 not stat.S_ISREG(visible.st_mode)
                 or stat.S_ISLNK(visible.st_mode)
+                or _is_reparse_point(visible)
                 or visible.st_size != len(raw)
             ):
                 raise ProviderError("NFL audio sealed closure identity differs")
-            yield module_path
+
+            expected_sha = hashlib.sha256(raw).hexdigest()
+            expected_size = len(raw)
+
+            def _reverify_sealed_file() -> None:
+                # Re-open the exact staged file (no symlink/junction follow),
+                # prove it is still the same inode we sealed and re-hash it
+                # against the digest captured above.  A cleared read-only bit +
+                # byte replacement, a rename swap, or a junction/symlink planted
+                # over the name are all caught here, immediately before the
+                # child opens the path.
+                fd = os.open(
+                    module_path,
+                    os.O_RDONLY
+                    | getattr(os, "O_NOFOLLOW", 0)
+                    | getattr(os, "O_CLOEXEC", 0)
+                    | getattr(os, "O_BINARY", 0),
+                )
+                try:
+                    reopened = os.fstat(fd)
+                    named = os.lstat(module_path)
+                    if (
+                        not stat.S_ISREG(reopened.st_mode)
+                        or stat.S_ISLNK(named.st_mode)
+                        or _is_reparse_point(named)
+                        or (named.st_dev, named.st_ino)
+                        != (reopened.st_dev, reopened.st_ino)
+                        or reopened.st_size != expected_size
+                    ):
+                        raise ProviderError(
+                            "NFL audio sealed closure was swapped before execution"
+                        )
+                    digest = hashlib.sha256()
+                    remaining = expected_size
+                    while remaining:
+                        chunk = pread(
+                            fd, min(1 << 20, remaining), expected_size - remaining
+                        )
+                        if not chunk:
+                            raise ProviderError(
+                                "NFL audio sealed closure shortened before execution"
+                            )
+                        digest.update(chunk)
+                        remaining -= len(chunk)
+                    if digest.hexdigest() != expected_sha:
+                        raise ProviderError(
+                            "NFL audio sealed closure bytes changed before execution"
+                        )
+                finally:
+                    os.close(fd)
+
+            yield _StagedModule(module_path, _reverify_sealed_file)
         finally:
             try:
                 module_path.chmod(stat.S_IWRITE | stat.S_IREAD)
@@ -618,7 +751,11 @@ class Nfl2k5MenuBackAudioProvider:
                 raise OutputRefusedError(
                     f"Fixed NFL audio output parent is missing: {requested.parent}"
                 ) from exc
-            if not stat.S_ISDIR(parent.st_mode) or stat.S_ISLNK(parent.st_mode):
+            if (
+                not stat.S_ISDIR(parent.st_mode)
+                or stat.S_ISLNK(parent.st_mode)
+                or _is_reparse_point(parent)
+            ):
                 raise OutputRefusedError(
                     "Fixed NFL audio output parent must be a non-symlink directory"
                 )

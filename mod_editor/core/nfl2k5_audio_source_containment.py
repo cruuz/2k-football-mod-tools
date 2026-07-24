@@ -762,10 +762,10 @@ class Nfl2k5AudioSourceContainmentStore:
             )
             # Flush the directory descriptor this transaction pinned, rather
             # than re-opening the directory by name and throwing that pin away.
-            # POSIX issues the same single fsync as before; Windows has no
-            # directory-flush primitive at all and the helper reports that
-            # instead of letting a skipped flush look like a completed one.
-            directory.fsync()
+            # POSIX issues the same single fsync as before; on Windows the flush
+            # is best-effort and _commit_directory (shared with the fingerprint
+            # store) surfaces a non-durable result instead of discarding it.
+            private_cache._commit_directory(directory)
             os.lseek(descriptor, 0, os.SEEK_SET)
             confirmed = bytearray()
             while len(confirmed) <= len(payload):
@@ -805,7 +805,7 @@ class Nfl2k5AudioSourceContainmentStore:
                 "Private containment inventory changed during publication",
             )
             os.fsync(descriptor)
-            directory.fsync()
+            private_cache._commit_directory(directory)
             publication_guard("after_publication")
             self._verify_open_parent(
                 root,
