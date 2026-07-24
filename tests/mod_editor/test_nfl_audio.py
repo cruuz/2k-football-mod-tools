@@ -124,11 +124,17 @@ class FakeAudioRunner:
             self.archives[stage] = {
                 name: archive.read(name) for name in sorted(archive.namelist())
             }
-        descriptor = os.open(archive_path, os.O_RDONLY)
-        try:
-            self.archive_seals[stage] = read_seals(descriptor)
-        finally:
-            os.close(descriptor)
+        # The provider only applies memfd write-seals on Linux; on a host without
+        # them it stages the snapshot as a verified read-only file (no seals to
+        # read). Recording seals there would call the Linux-only F_GET_SEALS.
+        if supports_sealed_memfd():
+            descriptor = os.open(archive_path, os.O_RDONLY)
+            try:
+                self.archive_seals[stage] = read_seals(descriptor)
+            finally:
+                os.close(descriptor)
+        else:
+            self.archive_seals[stage] = 0
         if stage == ProviderStage.BUILD:
             stdout = json.dumps({
                 "changed_bytes": 3000,
@@ -495,11 +501,15 @@ class NflAudioRecipeTests(unittest.TestCase):
                 self.assertNotIn("--chunk", argv)
                 self.assertNotIn(os.fspath(ROOT), argv[4])
             self.assertEqual([cwd for _, cwd, _ in runner.calls], [Path("/"), Path("/")])
-            required_seals = write_seal_mask()
-            self.assertTrue(
-                all(value & required_seals == required_seals
-                    for value in runner.archive_seals.values())
-            )
+            # The write-seal assertion only applies where the provider actually
+            # seals (Linux memfd); elsewhere it stages a verified read-only file,
+            # already asserted by the rest of this test.
+            if supports_sealed_memfd():
+                required_seals = write_seal_mask()
+                self.assertTrue(
+                    all(value & required_seals == required_seals
+                        for value in runner.archive_seals.values())
+                )
             self.assertEqual(
                 set(runner.archives[ProviderStage.BUILD]),
                 {"__main__.py", "nfl_uniform_color_xiso_direct_patch.py"},
