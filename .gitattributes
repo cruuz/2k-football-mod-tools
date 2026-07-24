@@ -1,0 +1,15 @@
+# Force LF on every text file so the project's byte-exact integrity checks pass
+# on a Windows checkout too. Several checks compare a file's raw bytes against a
+# canonically re-serialized LF form -- e.g. validate_registry.py reads
+# registry.v1.json with read_bytes() and requires it to equal
+# json.dumps(..., indent=2, sort_keys=True) + "\n". Without this, Git's autocrlf
+# hands Windows a CRLF checkout, the raw bytes no longer match the LF canonical
+# form, and ~20 registry/source-hash assertions fail across many test files even
+# though nothing about the content changed.
+* text=auto eol=lf
+
+# Windows batch launchers must stay CRLF to run reliably under cmd.exe.
+*.bat text eol=crlf
+
+# Binary assets: never apply end-of-line conversion.
+*.png binary
