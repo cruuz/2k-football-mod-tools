@@ -96,6 +96,9 @@ class Ps2SaveService:
         "PSU save (*.psu);;Memory card image (*.ps2);;All files (*)"
     )
     SAVE_FILTER = "PSU save (*.psu)"
+    #: Offered instead when the save came from a card, so the edit can go
+    #: straight back into a copy of it.
+    SAVE_FILTER_CARD = "Memory card image (*.ps2);;PSU save (*.psu)"
 
     def __init__(self) -> None:
         self._source: Path | None = None
@@ -229,12 +232,24 @@ class Ps2SaveService:
 
     # -- writing -------------------------------------------------------
 
+    @property
+    def opened_from_card(self) -> bool:
+        """True when the open save came out of a .ps2 memory-card image."""
+        return bool(self._source and self._source.suffix.lower() == ".ps2")
+
     def write(self, output: Path) -> WriteResult:
-        """Reseal, write a .psu, then verify it against the original.
+        """Reseal, write the save, then verify it against the original.
+
+        A ``.psu`` destination produces a standalone save file; a ``.ps2``
+        destination produces a copy of the memory card this save came from
+        with the edit written into it, which is why writing to a card is only
+        offered when the save was opened from one.
 
         Verification is not optional: the editor reports what an independent
         check found, so a write is never presented as successful on the
-        writer's own say-so.
+        writer's own say-so. For a card that check also re-reads the whole
+        image, confirms every page's ECC, and confirms the other saves on the
+        card are byte-identical.
         """
         save = self._require_open()
         if self._original is None:  # pragma: no cover - guarded by _require_open
@@ -243,18 +258,44 @@ class Ps2SaveService:
             raise ValidationError("There are no changes to save yet.")
 
         output = Path(output)
+        declared = list(self._edits.values())
+        to_card = output.suffix.lower() == ".ps2"
+        if to_card and not self.opened_from_card:
+            raise ValidationError(
+                "Writing a memory-card image needs a save that was opened from "
+                "one. Open a .ps2 card first, or save as .psu instead."
+            )
+
         save.reseal()
         try:
-            save_lib.write_psu(save, output)
+            if to_card:
+                save_lib.write_into_memcard(
+                    self._source, save, output, save.directory
+                )
+            else:
+                save_lib.write_psu(save, output)
+        except save_lib.SaveError as exc:
+            raise ValidationError(str(exc)) from exc
         except OSError as exc:
             raise ValidationError(f"Could not write {output}: {exc}") from exc
 
-        declared = list(self._edits.values())
         try:
-            report = verify_lib.verify(self._original, save, declared)
+            if to_card:
+                card = verify_lib.verify_memcard_write(
+                    self._source, output, save.directory, declared
+                )
+                report = card["save"]
+                extra = (
+                    f" Card checked: {card['ecc']['pages_checked']:,} pages of ECC, "
+                    f"{len(card['other_saves_untouched'])} other save(s) untouched."
+                )
+            else:
+                report = verify_lib.verify(self._original, save, declared)
+                extra = ""
         except verify_lib.VerifyError as exc:
             return WriteResult(output, False, 0, len(declared),
                                f"Saved, but verification failed: {exc}")
+
         changed = int(report.get("changed_bytes") or 0)
         return WriteResult(
             output,
@@ -262,5 +303,5 @@ class Ps2SaveService:
             changed,
             len(declared),
             f"Saved and verified — {len(declared)} change(s), "
-            f"{changed} bytes, roster tables intact.",
+            f"{changed} bytes, roster tables intact.{extra}",
         )

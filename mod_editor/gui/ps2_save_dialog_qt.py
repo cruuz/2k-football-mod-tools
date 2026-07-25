@@ -12,7 +12,9 @@ every name edit is *fixed allocation*: a replacement must fit the characters
 the original occupies, so the dialog refuses a longer name before the writer
 is ever called, and the writer refuses it again.
 
-The source save is never modified -- output is always a new ``.psu``.
+The source save is never modified. Output is a new ``.psu``, or -- when the
+save was opened from a memory card -- a copy of that card with the edit
+written into it.
 """
 
 from __future__ import annotations
@@ -31,8 +33,8 @@ SAVE_STATUSES = (STATUS_ALL, STATUS_EDITED, STATUS_UNCHANGED)
 
 BOUNDARY_NOTE = (
     "FIXED-ALLOCATION EDITING  •  A replacement name must fit the characters "
-    "the original used. Your source save is never changed: edits are written "
-    "to a new .psu and then checked by an independent verifier."
+    "the original used. Your source save is never changed: edits go to a new "
+    "file, then an independent verifier checks them."
 )
 
 _INVALID_COLOUR = "#ff7b84"
@@ -179,6 +181,13 @@ def suggested_psu_name(directory: str) -> str:
 
     stem = directory.strip() or "nfl2k5-ps2-save"
     return f"{stem}-edited.psu"
+
+
+def suggested_card_name(directory: str) -> str:
+    """Default filename when writing back into a memory-card image."""
+
+    stem = directory.strip() or "nfl2k5-ps2-save"
+    return f"{stem}-edited.ps2"
 
 
 @runtime_checkable
@@ -729,18 +738,28 @@ class Ps2SaveEditorDialog(QDialog):
         if not self.host.is_open:
             return
         summary = self.host.summary()
-        suggested = suggested_psu_name(str(getattr(summary, "directory", "")))
-        selected, _filter = QFileDialog.getSaveFileName(
-            self,
-            "Write the edited save as a .psu",
-            str(Path.home() / suggested),
-            "PS2 save file (*.psu)",
-        )
+        directory = str(getattr(summary, "directory", ""))
+        # A save opened from a memory card can go straight back into a copy of
+        # that card, which skips the import step entirely.
+        from_card = bool(getattr(self.host, "opened_from_card", False))
+        if from_card:
+            caption = "Write the edited save to a .ps2 card or a .psu"
+            suggested = suggested_card_name(directory)
+            selected, _filter = QFileDialog.getSaveFileName(
+                self, caption, str(Path.home() / suggested),
+                "Memory card image (*.ps2);;PS2 save file (*.psu)",
+            )
+        else:
+            caption = "Write the edited save as a .psu"
+            suggested = suggested_psu_name(directory)
+            selected, _filter = QFileDialog.getSaveFileName(
+                self, caption, str(Path.home() / suggested), "PS2 save file (*.psu)",
+            )
         if not selected:
             return
         destination = Path(selected)
-        if destination.suffix.lower() != ".psu":
-            destination = destination.with_suffix(".psu")
+        if destination.suffix.lower() not in (".psu", ".ps2"):
+            destination = destination.with_suffix(".ps2" if from_card else ".psu")
         self._busy = True
         self._refresh_controls()
         try:
@@ -796,5 +815,6 @@ __all__ = [
     "filter_player_rows",
     "name_capacity",
     "ps2_save_action_state",
+    "suggested_card_name",
     "suggested_psu_name",
 ]

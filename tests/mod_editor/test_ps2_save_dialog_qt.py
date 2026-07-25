@@ -33,6 +33,7 @@ from mod_editor.gui.ps2_save_dialog_qt import (
 )
 
 import nfl2k5_ps2_save as save_lib
+import nfl2k5_ps2_save_verify as verify_lib
 
 
 def _row(index: int = 0, first: str = "Duane", last: str = "Starks",
@@ -227,6 +228,67 @@ class DialogContractTests(unittest.TestCase):
 
         self.assertTrue(PYQT5_AVAILABLE)
         self.assertTrue(issubclass(Ps2SaveEditorDialog, QDialog))
+
+
+class MemcardEccTests(unittest.TestCase):
+    """The writer and the verifier must agree on ECC without sharing code."""
+
+    VECTORS = (
+        (bytes(128), "777f7f"),
+        (bytes([1]) + bytes(127), "70007f"),
+        (bytes([0, 1]) + bytes(126), "70017e"),
+        (bytes([0x80]) + bytes(127), "07007f"),
+    )
+
+    def test_writer_ecc_matches_known_vectors(self) -> None:
+        for chunk, expected in self.VECTORS:
+            self.assertEqual(save_lib.chunk_ecc(chunk).hex(), expected)
+
+    def test_verifier_computes_the_same_ecc_independently(self) -> None:
+        # Different implementations, same answer -- that is the point of the
+        # verifier owning its own copy.
+        for chunk, _expected in self.VECTORS:
+            self.assertEqual(
+                save_lib.chunk_ecc(chunk), verify_lib._chunk_ecc(chunk)
+            )
+
+    def test_line_parity_depends_on_position(self) -> None:
+        # The easiest thing to get wrong: a set bit at index 0 and at index 1
+        # must not produce the same ECC.
+        self.assertNotEqual(
+            save_lib.chunk_ecc(bytes([1]) + bytes(127)),
+            save_lib.chunk_ecc(bytes([0, 1]) + bytes(126)),
+        )
+
+    def test_page_spare_is_four_chunks_then_four_unused_bytes(self) -> None:
+        spare = save_lib.page_spare(bytes([0x80]) + bytes(511))
+        self.assertEqual(len(spare), save_lib.MEMCARD_PAGE - save_lib.MEMCARD_PAGE_DATA)
+        self.assertEqual(spare[:3].hex(), "07007f")
+        self.assertEqual(spare[12:], bytes(4))
+
+
+class MemcardWriteRefusalTests(unittest.TestCase):
+    """Fail-closed rules that protect a user's card."""
+
+    def setUp(self) -> None:
+        self._temp = tempfile.TemporaryDirectory(prefix="ps2-card-")
+        self.root = Path(self._temp.name)
+        self.save = save_lib._synthetic_save()
+
+    def tearDown(self) -> None:
+        self._temp.cleanup()
+
+    def test_writing_over_the_source_card_is_refused(self) -> None:
+        card = self.root / "card.ps2"
+        card.write_bytes(b"\x00" * save_lib.MEMCARD_PAGE)
+        with self.assertRaisesRegex(save_lib.SaveError, "Refusing to write over"):
+            save_lib.write_into_memcard(card, self.save, card)
+
+    def test_a_non_memcard_image_is_refused(self) -> None:
+        card = self.root / "notacard.ps2"
+        card.write_bytes(b"\x00" * (save_lib.MEMCARD_PAGE * 4))
+        with self.assertRaises(save_lib.SaveError):
+            save_lib.write_into_memcard(card, self.save, self.root / "out.ps2")
 
 
 if __name__ == "__main__":
