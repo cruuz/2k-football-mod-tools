@@ -1844,11 +1844,27 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             # A layout that stopped letting that row share width would blow this
             # on every platform, which a pixel budget tuned on one cannot catch.
             self.assertLessEqual(detail_min, widest_child + DETAIL_CHROME_ALLOWANCE)
-            self.assertGreaterEqual(detail_min, AUDIO_DETAIL_MIN_WIDTH)
+            # The declared floor lives on minimumWidth(); minimumSizeHint() is
+            # the layout-derived hint and is not obliged to respect it (macOS
+            # reports 305 against the 320 floor).  Assert the floor where it
+            # actually is.
+            self.assertEqual(
+                panel.detail_card.minimumWidth(), AUDIO_DETAIL_MIN_WIDTH
+            )
             # The tuned target, enforced where the content is within the size it
             # was tuned against.
             if widest_child + DETAIL_CHROME_ALLOWANCE <= 380:
                 self.assertLessEqual(detail_min, 380)
+            # Height is the property this test is named for: dense detail must
+            # SCROLL, so the card's minimum height must stay well under the
+            # height of the content inside its scroll area rather than growing
+            # with it.  That holds on any metrics; the tuned 420 is asserted
+            # where the content is within the size it was tuned against.
+            detail_height = panel.detail_card.minimumSizeHint().height()
+            content_height = scroll.widget().minimumSizeHint().height()
+            self.assertLess(detail_height, content_height)
+            if content_height >= 420:
+                self.assertLessEqual(detail_height, 420)
 
             scroll.setFixedSize(320, 180)
             panel.show()
@@ -1958,8 +1974,16 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             # size that target was tuned against.
             if widest_row <= REFERENCE_CONTENT_CEILING:
                 self.assertLessEqual(panel_min, AUDIO_TOOLBAR_TARGET_WIDTH)
+            # Resize to the target, or to the panel's own minimum where that is
+            # larger: Qt clamps a resize below the minimum, so on a platform
+            # with wider text (the Windows runner renders Helvetica 12pt at
+            # avgchar 17 against this host's 9) asking for 930 silently yields
+            # 1385 and every width computed from the constant is then wrong.
+            target_width = max(
+                AUDIO_TOOLBAR_TARGET_WIDTH, panel.minimumSizeHint().width()
+            )
             panel.resize(
-                AUDIO_TOOLBAR_TARGET_WIDTH,
+                target_width,
                 max(950, panel.minimumSizeHint().height()),
             )
             panel.layout().setGeometry(
@@ -1969,7 +1993,10 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             panel.shortlist_actions_layout.activate()
             application.processEvents()
 
-            expected_inner_width = AUDIO_TOOLBAR_TARGET_WIDTH - 48
+            # Derived from the width the panel actually took, not the constant,
+            # for the same reason.  48 is the measured chrome, which is constant
+            # across text metrics (see PANEL_CHROME_ALLOWANCE above).
+            expected_inner_width = panel.width() - 48
             self.assertEqual(
                 panel.filters_layout.geometry().width(), expected_inner_width
             )
