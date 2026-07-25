@@ -4637,6 +4637,79 @@
       "surface": "uniforms",
       "title": "NFL 2K5 Detroit away runtime proof",
       "validation_command": "bash tools/validate_nfl_actual_jersey_binding_away_loader_safe_xemu_runtime.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_ps2_save.py --input <save.psu|save-dir|card.ps2> --set-player-name <index:field=value> --output <edited.psu>",
+        "module": "tools/nfl2k5_ps2_save.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/product/NFL2K5_PS2_SAVE_PIPELINE.md",
+        "reports/gameplay_tuning/nfl2k5_ps2_fixture_availability.json"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "The writer is bounded to fixed-allocation name slots and paired with a deterministic verifier; PS2 save integrity is a recomputable CRC-32, so no signing wall applies."
+      },
+      "id": "nfl2k5ps2.saves.roster_name_writer",
+      "input_constraints": [
+        "Fixed-allocation only: a replacement name must fit the bytes the original occupies; the writer refuses anything longer.",
+        "The source save is never modified; edits are written to a new .psu.",
+        "Names are UTF-16LE within the existing ROST arena; table counts, offsets and arena size never change."
+      ],
+      "portme": [
+        "Capture a PCSX2 reload witness (the VIP ticker string is the cheapest visible one) to move this from offline-proved to runtime-proved.",
+        "Extend beyond names to ratings and franchise fields only as each is mapped from one-variable save pairs."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the writer, verifier and schema; the user's saves and edited output stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline-proved: the independent verifier confirms only declared byte ranges changed, EXTRA matches the payload CRC-32, and the ROST arena is unmoved. In-game reload on PCSX2 or hardware is not claimed here.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "primary player record index",
+            "name": "player",
+            "required": true
+          },
+          {
+            "allowed": "first or last",
+            "name": "field",
+            "required": true
+          },
+          {
+            "allowed": "UTF-16LE string fitting the original slot",
+            "name": "value",
+            "required": true
+          }
+        ],
+        "notes": "Only primary player name slots are exposed. Ratings, contracts, franchise state and every other save field stay read-only until each is independently mapped and verified."
+      },
+      "source_container": {
+        "format": "PS2 memory-card save directory (.psu / card image) holding a VC ROST container",
+        "hash_pins": [
+          "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+          "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe"
+        ],
+        "resource": "BASLUS-20919 roster/franchise saves; 2,479 primary + 68 secondary player records",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) PS2 memory-card save"
+      },
+      "summary": "Read a user's PS2 memory-card save, apply fixed-allocation roster name edits inside the ROST arena, reseal the CRC-32 integrity field, and write a .psu importable by PCSX2, mymc and PS2 Save Builder. PS2 saves carry a recomputable CRC-32 rather than the Xbox platform signature, so this writer needs no signing key.",
+      "surface": "saves",
+      "title": "NFL 2K5 (PS2) memory-card save writer",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_save.sh"
     }
   ],
   "classification_definitions": {
@@ -4657,6 +4730,16 @@
         "executable_sha256": "981a57143b0a665b2220f72366e1368c5374b91c77a22d93945439d51a2cd28f"
       },
       "title": "All-Pro Football 2K8 (USA)"
+    },
+    {
+      "id": "nfl2k5_ps2",
+      "platform": "PlayStation 2",
+      "public_input": "User supplies a legally obtained USA PS2 ISO (SLUS-20919) whose SHA-256 matches the supported retail image; the tool never bundles game files, BIOS, saves, or emulator binaries.",
+      "retail_identity": {
+        "content_sha256": "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+        "executable_sha256": "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa"
+      },
+      "title": "ESPN NFL 2K5 (USA, PlayStation 2)"
     },
     {
       "id": "nfl2k5_xbox",

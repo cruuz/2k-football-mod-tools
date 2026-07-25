@@ -39,6 +39,20 @@ KNOWN_FINGERPRINTS: tuple[KnownFingerprint, ...] = (
         "Known extracted USA retail default.xbe.",
     ),
     KnownFingerprint(
+        "nfl2k5-usa-retail-ps2-iso",
+        GameId.NFL2K5_PS2,
+        "ps2-iso",
+        "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe",
+        "Known USA retail PS2 ISO (SLUS-20919, NTSC-U v1.01, redump-verified).",
+    ),
+    KnownFingerprint(
+        "nfl2k5-usa-ps2-boot-elf",
+        GameId.NFL2K5_PS2,
+        "ps2-elf",
+        "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+        "Known extracted USA retail PS2 boot ELF SLUS_209.19.",
+    ),
+    KnownFingerprint(
         "apf2k8-usa-default-xex",
         GameId.APF2K8,
         "xex2",

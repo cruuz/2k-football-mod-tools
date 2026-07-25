@@ -6,7 +6,8 @@
     "game": {
       "enum": [
         "nfl2k5",
-        "apf2k8"
+        "apf2k8",
+        "nfl2k5_ps2"
       ]
     },
     "log": {

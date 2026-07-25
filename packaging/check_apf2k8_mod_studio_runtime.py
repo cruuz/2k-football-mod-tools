@@ -1030,7 +1030,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 65
+        len(registry.capabilities) == 66
         and len(registry.for_game(core_model.GameId.APF2K8)) == 34,
         "shared/APF capability registry counts changed",
     )
