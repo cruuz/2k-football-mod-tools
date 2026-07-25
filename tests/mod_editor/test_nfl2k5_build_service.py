@@ -770,6 +770,19 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
 
     def test_audio_inventory_rejects_unsafe_source_cache_root(self) -> None:
         for case in ("public_mode", "symlink"):
+            if platform_compat.IS_WINDOWS and case == "public_mode":
+                # Same reason as the mode cases in the test above: chmod cannot
+                # make a directory public on Windows -- it always reports 0o777
+                # and the mode confers no privacy -- so the unsafe state this
+                # case is about cannot be produced, and the guard correctly does
+                # not fire.  The DACL is what carries privacy there, and this
+                # case does not touch it.
+                with self.subTest(case=case):
+                    self.skipTest(
+                        "public_mode makes the cache root public with chmod, "
+                        "which confers no privacy on Windows; the DACL does"
+                    )
+                continue
             with self.subTest(case=case), tempfile.TemporaryDirectory(
                 prefix="2k5-build-service-test-"
             ) as temporary:
