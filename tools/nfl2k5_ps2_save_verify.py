@@ -54,6 +54,18 @@ _MODE_DIRECTORY = 0x20
 _ROST_MAGIC = b"ROST"
 _WRAPPER_SIZE = 0x20
 _FRANCHISE_PREFIX = 0x2E0
+_PAGE = 528
+_PAGE_DATA = 512
+_ECC_CHUNK = 128
+_ECC_SPARE_USED = 12
+_ERASED_SPARE = b"\xff" * _ECC_SPARE_USED
+
+# Page-ECC constants, restated here rather than imported: a verifier that
+# borrowed the writer's ECC could only ever agree with it.
+_ECC_BASIS = (0x07, 0x16, 0x25, 0x34, 0x43, 0x52, 0x61, 0x70)
+_ECC_COLUMN_SEED = 0x77
+_ECC_LINE_SEED = 0x7F
+_ECC_LINE_MASK = 0x7F
 
 # (name, count_offset, pointer_offset, stride) for the ten ROST tables.
 _TABLE_GEOMETRY = (
@@ -234,6 +246,175 @@ def decode_memcard(path: Path, directory: str | None = None) -> DecodedSave:
         names = ", ".join(save.directory for save in found)
         raise VerifyError(f"{path}: pick one with --directory ({names})")
     return found[0]
+
+
+def _memcard_directories(path: Path) -> list[str]:
+    """Names of every save directory on a card, in on-card order."""
+    raw = Path(path).read_bytes()
+
+    def page(index: int) -> bytes:
+        base = index * _PAGE
+        return raw[base : base + _PAGE_DATA]
+
+    superblock = page(0)
+    if not superblock.startswith(b"Sony PS2 Memory Card Format"):
+        raise VerifyError(f"{path}: missing memory-card superblock magic")
+    pages_per_cluster = struct.unpack_from("<H", superblock, 0x2A)[0]
+    alloc_offset, _end, rootdir = struct.unpack_from("<III", superblock, 0x34)
+    indirect_list = struct.unpack_from("<32I", superblock, 0x50)
+
+    def cluster(index: int) -> bytes:
+        first = index * pages_per_cluster
+        return b"".join(page(first + i) for i in range(pages_per_cluster))
+
+    fat: list[int] = []
+    for indirect in indirect_list:
+        if indirect in (0, 0xFFFFFFFF):
+            continue
+        for (entry,) in struct.iter_unpack("<I", cluster(indirect)):
+            if entry != 0xFFFFFFFF:
+                fat.extend(v for (v,) in struct.iter_unpack("<I", cluster(entry)))
+
+    def chain(start: int):
+        current, guard = start, 0
+        while True:
+            yield current
+            if current >= len(fat):
+                return
+            nxt = fat[current]
+            if nxt == 0xFFFFFFFF or (nxt & 0x7FFFFFFF) == 0x7FFFFFFF:
+                return
+            current = nxt & 0x7FFFFFFF
+            guard += 1
+            if guard > len(fat):
+                raise VerifyError(f"{path}: FAT chain does not terminate")
+
+    def records(start: int, count: int):
+        seen = 0
+        for index in chain(start):
+            data = cluster(alloc_offset + index)
+            for base in range(0, len(data), _PSU_ENTRY):
+                if seen >= count:
+                    return
+                entry = data[base : base + _PSU_ENTRY]
+                mode, length = struct.unpack_from("<II", entry, 0)
+                name = entry[0x40:0x60].split(b"\x00")[0].decode("latin1")
+                yield mode, length, name
+                seen += 1
+
+    root_count = next(records(rootdir, 1))[1]
+    names: list[str] = []
+    for mode, _length, name in records(rootdir, root_count):
+        if name in (".", "..") or not mode & 0x8000 or not mode & _MODE_DIRECTORY:
+            continue
+        names.append(name)
+    return names
+
+
+def _chunk_ecc(chunk: bytes) -> bytes:
+    """Independently compute the three ECC bytes for one 128-byte chunk."""
+    column = _ECC_COLUMN_SEED
+    line_a = line_b = _ECC_LINE_SEED
+    for index, value in enumerate(chunk):
+        mask = 0
+        for bit in range(8):
+            if value >> bit & 1:
+                mask ^= _ECC_BASIS[bit]
+        column ^= mask
+        parity = value
+        parity ^= parity >> 4
+        parity ^= parity >> 2
+        parity ^= parity >> 1
+        if parity & 1:
+            line_a ^= (~index) & _ECC_LINE_MASK
+            line_b ^= index
+    return bytes((column & 0xFF, line_a & _ECC_LINE_MASK, line_b & _ECC_LINE_MASK))
+
+
+def audit_memcard_ecc(path: Path) -> dict:
+    """Check every written page of a card image against recomputed ECC.
+
+    Erased pages carry ``FF`` spare bytes rather than a computed value and are
+    counted separately instead of being reported as damage.
+    """
+    raw = Path(path).read_bytes()
+    if len(raw) % _PAGE:
+        raise VerifyError(f"{path}: not a {_PAGE}-byte-page memory-card image")
+    checked = erased = 0
+    bad: list[int] = []
+    for page in range(len(raw) // _PAGE):
+        base = page * _PAGE
+        data = raw[base : base + _PAGE_DATA]
+        spare = raw[base + _PAGE_DATA : base + _PAGE][:_ECC_SPARE_USED]
+        if spare == _ERASED_SPARE:
+            erased += 1
+            continue
+        expected = b"".join(
+            _chunk_ecc(data[start : start + _ECC_CHUNK])
+            for start in range(0, _PAGE_DATA, _ECC_CHUNK)
+        )
+        checked += 1
+        if expected != spare:
+            bad.append(page)
+    return {
+        "pages_checked": checked,
+        "pages_erased": erased,
+        "pages_bad": len(bad),
+        "first_bad_pages": bad[:8],
+    }
+
+
+def verify_memcard_write(
+    original_card: Path, written_card: Path, directory: str,
+    declared: list[dict] | None = None,
+) -> dict:
+    """Verify a save edited directly into a memory-card image.
+
+    Beyond the usual save checks this proves the card itself is sound: every
+    written page carries correct ECC, and every *other* save on the card is
+    byte-identical, so an in-place write cannot quietly damage a neighbour.
+    """
+    report: dict[str, object] = {"schema": "nfl2k5_ps2_memcard_verify/v1"}
+
+    ecc = audit_memcard_ecc(written_card)
+    _require(
+        ecc["pages_bad"] == 0,
+        f"{ecc['pages_bad']} page(s) on the written card have wrong ECC "
+        f"(first: {ecc['first_bad_pages']})",
+    )
+    report["ecc"] = ecc
+
+    before_all = {save.directory: save for save in decode_memcard_all(original_card)}
+    after_all = {save.directory: save for save in decode_memcard_all(written_card)}
+    _require(
+        set(before_all) == set(after_all),
+        "the set of saves on the card changed: "
+        f"{sorted(set(before_all) ^ set(after_all))}",
+    )
+    _require(directory in after_all, f"{written_card} has no save named {directory}")
+
+    untouched = []
+    for name in sorted(before_all):
+        if name == directory:
+            continue
+        _require(
+            before_all[name].files == after_all[name].files,
+            f"save {name} changed, but only {directory} may be written",
+        )
+        untouched.append(name)
+    report["other_saves_untouched"] = untouched
+
+    report["save"] = verify(before_all[directory], after_all[directory], declared)
+    report["result"] = "PASS"
+    return report
+
+
+def decode_memcard_all(path: Path) -> list[DecodedSave]:
+    """Every 2K5 save on a card, decoded independently."""
+    saves: list[DecodedSave] = []
+    for name in _memcard_directories(path):
+        saves.append(decode_memcard(path, name))
+    return saves
 
 
 def decode_save(path: Path, directory: str | None = None) -> DecodedSave:
@@ -436,7 +617,17 @@ def selftest() -> int:
     else:  # pragma: no cover
         raise AssertionError("a changed sidecar must fail verification")
 
-    print("NFL2K5_PS2_SAVE_VERIFY_SELFTEST_PASS decoder=independent "
+    # Page ECC, recomputed here rather than imported from the writer. These
+    # vectors are non-degenerate on purpose: an all-zero or all-one chunk
+    # cancels to the seed and would pass a broken implementation, while a
+    # single set bit at index 0 versus index 1 pins the position-dependent
+    # line parity.
+    assert _chunk_ecc(bytes(_ECC_CHUNK)) == bytes.fromhex("777f7f")
+    assert _chunk_ecc(bytes([1]) + bytes(127)) == bytes.fromhex("70007f")
+    assert _chunk_ecc(bytes([0, 1]) + bytes(126)) == bytes.fromhex("70017e")
+    assert _chunk_ecc(bytes([0x80]) + bytes(127)) == bytes.fromhex("07007f")
+
+    print("NFL2K5_PS2_SAVE_VERIFY_SELFTEST_PASS decoder=independent ecc=independent "
           "accepts=sealed-declared rejects=stale-crc,undeclared-edit,sidecar")
     return 0
 

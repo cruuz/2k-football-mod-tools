@@ -120,6 +120,11 @@ the bytes that were supposed to change actually changed:
 
 Then import edited.psu with mymc / PS2 Save Builder, or load it in PCSX2.
 
+Or skip the import entirely and write into a copy of your memory card:
+
+    python3 tools/nfl2k5_ps2_save.py --input <card.ps2> --directory <save> \
+        --set-player-name '0:last=Smith' --output edited-card.ps2
+
 Notes
 -----
 
@@ -127,7 +132,8 @@ Notes
 * Names must fit the space the old name used; the tool refuses to grow the
   file rather than risk corrupting it.
 * Reading works from .psu, an extracted save folder, or a .ps2 card image.
-  Writing produces .psu.
+  Writing produces a .psu, or a copy of a card image with correct page ECC.
+  Your source card is opened read-only and never written to.
 * This is a preview build of the command-line tools. The graphical editor
   does not expose PS2 saves yet.
 * The file-side checks all pass, but an edited save has not yet been

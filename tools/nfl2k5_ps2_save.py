@@ -29,10 +29,10 @@ the original occupies, so the arena's size, pointers and table layout never
 move.  That keeps the writer bounded and lets an independent verifier prove
 only the intended bytes changed (see ``nfl2k5_ps2_save_verify.py``).
 
-Interchange format is ``.psu`` (EMS/SharkPort), which mymc, PS2 Save Builder
-and PCSX2 all import, and which real hardware accepts through the usual
-USB/Action-Replay routes.  Saves can also be read straight out of a ``.ps2``
-memory-card image.
+Saves are read from a ``.psu``, an extracted save folder, or a ``.ps2``
+memory-card image, and written either as a ``.psu`` (EMS/SharkPort, which
+mymc, PS2 Save Builder and PCSX2 all import) or straight into a *copy* of a
+memory-card image, page ECC included, so no import step is needed at all.
 
 Usage::
 
@@ -778,7 +778,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--set-player-name", action="append", default=[],
                         metavar="INDEX:FIELD=VALUE",
                         help="fixed-allocation name edit, e.g. 42:last=Smith")
-    parser.add_argument("--output", type=Path, help="write the edited save as .psu")
+    parser.add_argument("--output", type=Path,
+                        help="where to write the result: a .psu, or a .ps2 memory-card "
+                             "image (a copy of --into-card with the save written in)")
+    parser.add_argument("--into-card", type=Path,
+                        help="memory-card image to base a .ps2 --output on; it is "
+                             "opened read-only and never modified")
     parser.add_argument("--selftest", action="store_true",
                         help="verify the writer against synthetic data; no game data needed")
     args = parser.parse_args(argv)
@@ -807,20 +812,35 @@ def main(argv: list[str] | None = None) -> int:
             parser.error(f"malformed --set-player-name {directive!r}; use INDEX:FIELD=VALUE")
         changes.append(set_player_name(save, index, field_name, value))
 
+    def emit(destination: Path) -> dict:
+        """Write to a .psu, or into a copy of a memory card."""
+        if destination.suffix.lower() == ".ps2":
+            card = args.into_card or (
+                args.input if Path(args.input).suffix.lower() == ".ps2" else None
+            )
+            if card is None:
+                parser.error(
+                    "a .ps2 --output needs --into-card (the card to base it on), "
+                    "or an --input that is itself a card image"
+                )
+            return write_into_memcard(Path(card), save, destination, args.directory)
+        write_psu(save, destination)
+        return {
+            "schema": "nfl2k5_ps2_save_write/v1",
+            "output": str(destination),
+            "directory": save.directory,
+        }
+
     if changes:
         save.reseal()
         if not args.output:
             parser.error("--output is required when applying edits")
-        write_psu(save, args.output)
-        print(json.dumps({
-            "schema": "nfl2k5_ps2_save_write/v1",
-            "output": str(args.output),
-            "directory": save.directory,
-            "changes": changes,
-            "crc32": save.computed_crc(),
-        }, indent=2))
+        report = emit(args.output)
+        report["changes"] = changes
+        report["crc32"] = save.computed_crc()
+        print(json.dumps(report, indent=2))
     elif args.output:
-        write_psu(save, args.output)
+        print(json.dumps(emit(args.output), indent=2))
     return 0
 
 
