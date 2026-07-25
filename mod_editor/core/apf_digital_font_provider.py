@@ -274,15 +274,24 @@ class Apf2k8DigitalFontProvider:
         replace a staged module -- exactly the writer/verifier substitution the
         staged copy exists to prevent.
 
-        On the ported platforms that window is now held shut across the launch.
-        :meth:`_pinned_closure` re-verifies every staged module through
+        On the ported platforms that window is narrowed across the launch, and on
+        neither of them is it closed.  :meth:`_pinned_closure` re-verifies every
+        staged module through
         :func:`platform_compat.reverify_sealed_before_exec` and keeps what that
         returns open until the subprocess has been created:
 
         * Windows -- a deny-write/deny-delete share pin per module, so while the
-          child starts no same-user process can rewrite, truncate, rename-over or
-          delete any of them.  The check-to-use window is closed.
-        * macOS -- no such lock exists: the modules are re-hashed immediately
+          child starts no same-user process can rewrite, truncate or delete the
+          BYTES any of those pins hold.  A pin does not hold the NAME the child
+          opens: ``SetFileInformationByHandle(FileRenameInfoEx)`` with
+          ``POSIX_SEMANTICS | REPLACE_IF_EXISTS`` rebinds a name whose file has
+          open handles -- the existing handles keep the old file, every later
+          open resolves to the replacement -- and the child opens each module by
+          name.  So the check-to-use window is narrowed, NOT closed, and Windows
+          reports that the same way macOS does (a WARNING event, ``inode_pinned``
+          ``False``).  An earlier revision of this docstring claimed the window
+          was closed here; an independent audit showed it was not.
+        * macOS -- no lock of any kind exists: the modules are re-hashed immediately
           before the launch and their descriptors held, but the child re-opens by
           name, so a same-user rename swap in that instant would still be
           executed.  The window is narrowed, NOT closed, and that is reported (a
@@ -364,11 +373,20 @@ class Apf2k8DigitalFontProvider:
         after its check; all of them are re-verified and held.  What "held" buys
         differs by platform and is reported, never assumed:
         :attr:`platform_compat.SealedExecHandle.inode_pinned` is ``True`` only
-        where replacement is genuinely impossible for the pin's lifetime (the
-        Windows deny-write/deny-delete share pin), and where it is ``False`` the
-        remaining name-swap window is emitted as a WARNING on this stage.  Any
-        mismatch, or any failure to obtain the pin the platform promises, refuses
-        the launch instead of running an unverified closure.
+        where opening the ``exec_path`` it hands back is guaranteed to yield the
+        bytes just verified -- today only the Linux ``/proc/<pid>/fd`` inode pin,
+        which this closure cannot execute from because the child has to open the
+        staged pathname for its sibling imports to resolve.  On both platforms
+        this method runs on the pin therefore leaves a name-swap window open:
+        the Windows share pin holds the BYTES it opened but not the NAME (a
+        ``POSIX_SEMANTICS`` ``FileRenameInfoEx`` rebinds a name whose file has
+        open handles, and later opens get the replacement), and macOS holds only
+        a descriptor no other process can name.  Those modules are counted and
+        the residual is emitted as a WARNING on this stage; the INFO branch is
+        reached only if platform_compat ever hands back a pin on the very name
+        the child opens.  Any mismatch, or any failure to obtain the pin the
+        platform promises, refuses the launch instead of running an unverified
+        closure.
         """
 
         with ExitStack() as pins:

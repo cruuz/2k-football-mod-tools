@@ -392,6 +392,16 @@ def _rename_noreplace_at(
     descriptor exists there) and still fails closed with the historical message;
     routed through a Windows handle the same publish succeeds via the re-verified
     realpath, never a silent clobbering path publish.
+
+    Treating a pre-existing destination as "another writer won" is only sound if
+    the publish really refuses to clobber, so the reported
+    ``atomic_no_clobber`` is checked rather than assumed.  Every FILE mechanism
+    platform_compat has -- ``renameat2``, ``os.link``, the Windows ``os.rename``
+    -- reports it ``True``; the two-step fallback that reports ``False`` exists
+    only for DIRECTORY publishes, which this helper never asks for.  The check
+    is therefore an enforced dependency and not a reachable degradation today:
+    if that ever changed, this refuses instead of turning a silent overwrite
+    into a fake concurrent-publication signal.
     """
 
     handle = (
@@ -400,7 +410,7 @@ def _rename_noreplace_at(
         else platform_compat.DirHandle._borrow_posix_fd(directory)
     )
     try:
-        handle.publish_no_replace(
+        published = handle.publish_no_replace(
             source_name,
             destination_name,
             is_directory=False,
@@ -412,6 +422,14 @@ def _rename_noreplace_at(
             "This system cannot publish the private source-audio inventory "
             "atomically"
         ) from exc
+    if not published.atomic_no_clobber:
+        raise AudioSourceFingerprintError(
+            "This system published the private source-audio inventory without "
+            f"an atomic no-clobber guarantee (mechanism {published.mechanism}): "
+            f"'{destination_name}' may have replaced another writer's inventory "
+            "instead of losing the race to it. Delete that file from the "
+            "private cache before using it."
+        )
 
 
 def _unlink_owned_name_at(
@@ -974,6 +992,10 @@ class Nfl2k5AudioSourceFingerprintStore:
                 confirmed.extend(block)
             after = os.fstat(descriptor)
             named_after = directory.stat(path.name, follow=False)
+            # ``named_after`` is a DirHandle PATH stat and ``after`` an fd stat
+            # of the same file: a genuine cross-family comparison, so the change
+            # time is compared only where the two calls agree on it (see
+            # platform_compat.supports_change_time_identity).
             _require(
                 bytes(confirmed) == payload
                 and stat.S_ISREG(after.st_mode)
@@ -1077,13 +1099,28 @@ class Nfl2k5AudioSourceFingerprintStore:
             payload = b"".join(chunks)
             after = os.fstat(descriptor)
             named = path.lstat()
+            # Two comparisons of different shape, deliberately split apart.
+            # ``after`` against ``opened`` is fd against fd, so it keeps the
+            # change time on every platform.  ``named`` is an lstat held against
+            # that same fd stat, the one boundary Windows cannot carry a change
+            # time across, so that field is dropped there and kept on POSIX
+            # (see platform_compat.supports_change_time_identity).
             _require(
                 (
                     after.st_dev,
                     after.st_ino,
                     after.st_size,
                     after.st_mtime_ns,
-                    *platform_compat.change_time_identity(after),
+                    after.st_ctime_ns,
+                )
+                == (
+                    opened.st_dev,
+                    opened.st_ino,
+                    opened.st_size,
+                    opened.st_mtime_ns,
+                    opened.st_ctime_ns,
+                )
+                and (
                     named.st_dev,
                     named.st_ino,
                     named.st_size,
@@ -1091,11 +1128,6 @@ class Nfl2k5AudioSourceFingerprintStore:
                     *platform_compat.change_time_identity(named),
                 )
                 == (
-                    opened.st_dev,
-                    opened.st_ino,
-                    opened.st_size,
-                    opened.st_mtime_ns,
-                    *platform_compat.change_time_identity(opened),
                     opened.st_dev,
                     opened.st_ino,
                     opened.st_size,

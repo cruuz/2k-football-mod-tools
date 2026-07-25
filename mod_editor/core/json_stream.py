@@ -77,6 +77,14 @@ def read_bounded_regular_file(
         raise error_type(f"{label} could not be opened safely: {requested}") from exc
     try:
         opened = os.fstat(descriptor)
+        # Three identity comparisons happen below and they are not all the same
+        # shape.  ``supplied`` and ``current`` are PATH stats of the name;
+        # ``opened`` and ``after`` are FD stats of the descriptor.  Windows
+        # reaches st_ctime through a different Win32 information class for each
+        # family, so the two disagree for a file nothing touched: the
+        # path-against-fd comparisons drop that field there (via
+        # change_time_identity) and the fd-against-fd comparison keeps it on
+        # every platform.  Hence two spellings of the ``opened`` fingerprint.
         supplied_identity = (
             supplied.st_dev,
             supplied.st_ino,
@@ -85,7 +93,7 @@ def read_bounded_regular_file(
             *platform_compat.change_time_identity(supplied),
             supplied.st_nlink,
         )
-        opened_identity = (
+        opened_cross_identity = (
             opened.st_dev,
             opened.st_ino,
             opened.st_size,
@@ -93,9 +101,17 @@ def read_bounded_regular_file(
             *platform_compat.change_time_identity(opened),
             opened.st_nlink,
         )
+        opened_identity = (
+            opened.st_dev,
+            opened.st_ino,
+            opened.st_size,
+            opened.st_mtime_ns,
+            opened.st_ctime_ns,
+            opened.st_nlink,
+        )
         if (
             not stat.S_ISREG(opened.st_mode)
-            or opened_identity != supplied_identity
+            or opened_cross_identity != supplied_identity
             or not 0 < opened.st_size <= maximum
         ):
             raise error_type(f"{label} changed before it could be opened: {requested}")
@@ -114,14 +130,16 @@ def read_bounded_regular_file(
         current = requested.lstat()
     except FileNotFoundError as exc:
         raise error_type(f"{label} changed while it was read: {requested}") from exc
+    # fd against fd: the change time stays in, on every platform.
     after_identity = (
         after.st_dev,
         after.st_ino,
         after.st_size,
         after.st_mtime_ns,
-        *platform_compat.change_time_identity(after),
+        after.st_ctime_ns,
         after.st_nlink,
     )
+    # path against fd: the change time is dropped where the two cannot agree.
     current_identity = (
         current.st_dev,
         current.st_ino,
@@ -135,7 +153,7 @@ def read_bounded_regular_file(
     if (
         len(payload) != opened.st_size
         or after_identity != opened_identity
-        or current_identity != opened_identity
+        or current_identity != opened_cross_identity
         or not stat.S_ISREG(current.st_mode)
         or stat.S_ISLNK(current.st_mode)
     ):

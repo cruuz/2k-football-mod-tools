@@ -175,7 +175,14 @@ _ACCESS_MASK_CONFERS_VISIBILITY = (
 # into /private, so every canonical temporary or cache path on that OS crosses
 # one.  A tolerated alias must still resolve exactly where the OS says it does;
 # a symlink that merely shares one of these names anywhere else is refused.
-# Creating a genuine one requires privilege this check cannot defend against.
+#
+# What this does NOT establish: that a tolerated name is genuinely the OS's own.
+# The table checks the name and its target, not the mount or its owner, so a
+# bind mount, an alternate mount namespace or a chroot could present a different
+# /var -- and any ancestor could in principle be swapped AFTER it was inspected,
+# since this predicate answers about the moment it ran and not for all time.
+# Both are outside what a path predicate can enforce; callers needing a stronger
+# answer hold a pinned DirHandle rather than re-resolving a name.
 _SYSTEM_PATH_ALIASES = {
     "/var": "/private/var",
     "/tmp": "/private/tmp",
@@ -1115,11 +1122,15 @@ _WIN_GENERIC_READ = 0x80000000
 _WIN_READ_CONTROL = 0x00020000
 # The exec pin shares READ only -- withholding FILE_SHARE_WRITE and
 # FILE_SHARE_DELETE -- so while the pin handle lives no same-user process can
-# rewrite, truncate, rename-over or delete the sealed module the subprocess is
-# about to open, yet the subprocess (which only needs read) can still open it.
-# That share-mode refusal is the Windows analogue of handing the child a
-# descriptor the caller already holds: it pins the exact bytes across the
-# check-to-use window.
+# rewrite, truncate or delete THOSE BYTES, yet the subprocess (which only needs
+# read) can still open it.  It is NOT the Windows analogue of handing the child
+# a descriptor: it pins the file, not the NAME.  A same-user process can still
+# rebind the pathname with SetFileInformationByHandle(FileRenameInfoEx,
+# POSIX_SEMANTICS | REPLACE_IF_EXISTS), which succeeds even against open
+# handles -- those handles keep the old file while every later open resolves to
+# the replacement -- and the child opens by name.  So this narrows the
+# check-to-use window rather than closing it, which is why the Windows branch
+# reports SealedExecHandle.inode_pinned=False.
 _WIN_EXEC_PIN_SHARE_MODE = _WIN_FILE_SHARE_READ
 
 # CREATE_NEW is the Win32 spelling of ``O_CREAT | O_EXCL``: it fails with
@@ -1632,19 +1643,31 @@ def supports_change_time_identity() -> bool:
 
     What survives the drop, and what does not, stated plainly:
 
-    * Identity is unaffected.  ``st_dev``/``st_ino`` remain in every tuple and
-      are what actually answer "is this the same file"; a swapped, relinked or
-      renamed-over file still fails the comparison.
-    * Content change is unaffected.  ``st_size`` and ``st_mtime_ns`` remain in
-      every tuple, so a rewritten or truncated file is still caught.
+    * Identity is unaffected.  Every tuple that reaches this helper carries
+      ``st_dev``/``st_ino``, which are what actually answer "is this the same
+      file", so a swapped, relinked or renamed-over file still fails the
+      comparison.  That is an invariant of the call sites, not of this function:
+      it holds because the helper is used ONLY where a path stat is compared
+      against an fd stat, and every such guard in this codebase pins identity.
+      A same-family comparison (path/path or fd/fd) has no divergence to work
+      around and keeps its raw ``st_ctime_ns`` on every platform -- do not
+      route one through here.
+    * Content change is unaffected where ``st_size``/``st_mtime_ns`` are present,
+      which is the usual case, so a rewritten or truncated file is still caught.
+      ``st_mtime_ns`` is settable, so this detects accident and ordinary races,
+      not an adversary who restores the timestamp after a same-size rewrite.
     * What is genuinely lost on Windows is the *metadata-only* change signal --
       a permission, attribute or ownership edit that leaves the bytes, the size
       and the modification time untouched.  On POSIX ``st_ctime_ns`` catches
-      that; on Windows nothing in the guard does, and Windows offers no
-      equivalent field that is stable across a path stat and an fd stat, so
-      there is no substitute to put in its place.  The check is therefore
-      strictly weaker on Windows than on POSIX.  That is stated, not papered
-      over: callers that need a metadata-change guarantee do not have one here.
+      that.  Windows DOES maintain an equivalent (``ChangeTime`` in
+      ``FILE_BASIC_INFO``, distinct from ``LastWriteTime``), but Python does not
+      surface it: ``os.stat`` there reports the creation time in ``st_ctime``,
+      deprecated since 3.12 in favour of ``st_birthtime``.  Reading ``ChangeTime``
+      would mean a Win32 call on both sides of every comparison, which nothing in
+      this codebase does today.  So the signal is not unavailable on the
+      platform, it is unavailable to this guard -- and until that call is made
+      the check is strictly weaker on Windows.  Callers needing a
+      metadata-change guarantee do not have one here.
     """
 
     return not IS_WINDOWS
@@ -2589,8 +2612,15 @@ def is_canonical_absolute_path(
     canonically-placed target comparable instead of raising: a leaf that does not
     exist is not a symlink, so it passes the ``lstat`` check.  Legitimate paths
     still pass on Linux, macOS and Windows; a relative, ``..``-laden or
-    symlink-rooted path is refused.  On POSIX :func:`os.path.normcase` is the
-    identity, so Linux behaviour for a canonical path is byte-for-byte unchanged.
+    symlink-rooted path is refused.
+
+    Linux is NOT byte-identical to the pre-port behaviour here, and the change is
+    deliberate: the original matching-tail walk stopped at the first name
+    divergence and therefore never inspected a symlinked ancestor whose name
+    differed from its target's, which an independent audit demonstrated.  Every
+    lexical ancestor is now inspected, so some paths Linux used to accept are
+    refused.  That is the behaviour this function always documented; the walk
+    simply did not deliver it.
     """
 
     text = os.fspath(path)
@@ -2638,12 +2668,19 @@ def is_canonical_absolute_path(
     for index in range(len(p_parts), 0, -1):
         prefix = str(Path(*p_parts[:index]))
         try:
-            if not stat.S_ISLNK(os.lstat(prefix).st_mode):
-                continue
+            linked = stat.S_ISLNK(os.lstat(prefix).st_mode)
         except FileNotFoundError:
             continue
         except OSError:
             return False
+        if not linked:
+            # A Windows JUNCTION is a reparse point that S_ISLNK does not
+            # report, and it redirects a directory exactly as a symlink does,
+            # so the scan has to ask the reparse question too or it walks
+            # straight through one.
+            if IS_WINDOWS and is_reparse_point(prefix):
+                return False
+            continue
         normalised = os.path.normcase(prefix)
         expected = system_aliases.get(normalised) if system_aliases else None
         if expected is None:
@@ -3191,9 +3228,10 @@ def _win_open_exec_pin(path: str) -> int:
     The pin the Windows branch of :func:`reverify_sealed_before_exec` holds: a
     ``CreateFileW(GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING,
     FILE_FLAG_OPEN_REPARSE_POINT)`` handle.  Sharing READ only withholds write and
-    delete, so while it lives no same-user process can rewrite, truncate,
-    rename-over or delete the file -- pinning the exact bytes the subprocess will
-    read.  ``FILE_FLAG_OPEN_REPARSE_POINT`` opens a symlink/junction as the reparse
+    delete, so while it lives no same-user process can rewrite, truncate or
+    delete the file -- pinning the exact bytes.  It does NOT pin the pathname:
+    a POSIX-semantics rename can still rebind the name the subprocess opens (see
+    the section header above), so this is a narrowing, not a closure.  ``FILE_FLAG_OPEN_REPARSE_POINT`` opens a symlink/junction as the reparse
     point itself, which is then refused rather than silently followed.
     Monkeypatchable so a shim can drive the Windows branch on a POSIX host.
     """
@@ -3406,10 +3444,11 @@ def reverify_sealed_before_exec(
     the subprocess :attr:`SealedExecHandle.exec_path`, keep the handle open until
     the subprocess has finished (a blocking ``subprocess.run`` does this), then
     close it.  Where :attr:`SealedExecHandle.inode_pinned` is ``True`` the child
-    opens the exact verified inode (Linux ``/proc`` fd path) or is forbidden from
-    seeing replaced bytes (Windows share lock); where it is ``False`` (macOS) the
-    re-hash still ran immediately before exec but the child re-opens by name, a
-    residual the field names rather than hides.  This helper is for the non-memfd
+    opens the exact verified inode -- only the Linux ``/proc`` fd path, which
+    names a descriptor rather than a directory entry.  Where it is ``False``
+    (macOS *and* Windows) the re-hash still ran immediately before exec but the
+    child re-opens by NAME, and a same-user process can rebind that name, a
+    residual the field states rather than hides.  This helper is for the non-memfd
     fallback only -- the Linux memfd path already executes from a sealed
     ``/proc/self/fd`` descriptor and needs no re-hash.
     """
@@ -3466,6 +3505,8 @@ def reverify_sealed_before_exec(
 #     its own ``os.rename`` already refuses to overwrite an existing destination
 #     (unlike POSIX, where it would clobber a file), so a path-based file or
 #     folder is published with a single ``os.rename`` -- atomic and no-clobber.
+#     (The POSIX ``mkdir``-reserve fallback below is the one mechanism that is
+#     neither; it says so through ``atomic_no_clobber=False``.)
 #     A publish that can only be addressed through a directory descriptor is
 #     genuinely impossible on Windows and fails closed with
 #     :class:`NoReplacePublishUnavailable`, never by silently degrading to a
@@ -3579,9 +3620,16 @@ class NoReplacePublication:
     without ``renameat2``, or a macOS volume without ``RENAME_EXCL``): that path
     reserves the name with ``os.mkdir`` and then ``os.rename``\\ s the staged
     folder onto the placeholder in two steps, so a concurrent reader can observe
-    the empty placeholder -- it never overwrites a pre-existing destination, but
-    it is not a *single* atomic no-clobber step, and this field says so honestly
-    rather than overstating it.  ``detail`` records the per-mechanism nuance for
+    the empty placeholder.  It is not a *single* atomic no-clobber step, and --
+    this is the part an earlier revision of this docstring got wrong -- it is
+    not unconditionally no-overwrite either: ``os.rename`` replaces an empty
+    destination directory, so a same-user racer that removes the reserved
+    placeholder and installs its own in the remaining window IS overwritten.
+    The placeholder identity is re-checked immediately before the swap and every
+    observed replacement is refused, but that check cannot be made atomic with
+    the rename.  ``False`` here therefore means "do not rely on no-clobber":
+    a caller whose correctness depends on it must branch on this field and
+    refuse, rather than treat a successful return as proof.  ``detail`` records the per-mechanism nuance for
     diagnostics and logs; never branch on it.
     """
 
@@ -4140,7 +4188,9 @@ class DirHandle:
         POSIX: the identical ``os.mkdir(name, mode, dir_fd=fd)``.  Windows:
         re-verify the pin, then ``os.mkdir`` the joined child path -- which, like
         POSIX, fails with :class:`FileExistsError` if the name is already taken, so
-        a reserve-then-swap publish keeps its no-clobber guarantee.
+        a reserve-then-swap publish keeps what no-clobber guarantee it has (see
+        :class:`NoReplacePublication`: the reserve-then-swap fallback reports
+        ``atomic_no_clobber=False`` and is not unconditionally no-overwrite).
         """
 
         if not self._windows:
@@ -4260,7 +4310,12 @@ class DirHandle:
         *,
         is_directory: bool = False,
     ) -> NoReplacePublication:
-        """Atomically publish ``staging`` to ``destination``, never overwriting it.
+        """Publish ``staging`` to ``destination`` without overwriting an existing name.
+
+        Atomic and unconditionally no-clobber for every mechanism EXCEPT the
+        POSIX ``mkdir``-reserve directory fallback, which is two steps and
+        reports ``atomic_no_clobber=False``; see :class:`NoReplacePublication`
+        for what that concedes.
 
         POSIX: the identical ``publish_no_replace(staging, destination,
         dir_fd=fd, is_directory=...)`` -- ``renameat2(RENAME_NOREPLACE)`` where the
@@ -4987,13 +5042,10 @@ def _win_create_share_delete_child(path: str) -> int:
     try:
         # O_NOINHERIT: the CRT descriptor is inheritable by default, and every
         # caller here asks for O_CLOEXEC on POSIX -- a staging descriptor must
-        # not leak into a child process on either platform.
-        return msvcrt.open_osfhandle(
-            handle,
-            os.O_RDWR
-            | getattr(os, "O_BINARY", 0)
-            | getattr(os, "O_NOINHERIT", 0),
-        )
+        # not leak into a child process on either platform.  Nothing else may be
+        # passed: _open_osfhandle rejects _O_BINARY and an access mode with
+        # EBADF, taking the access mode from the handle and defaulting to binary.
+        return msvcrt.open_osfhandle(handle, getattr(os, "O_NOINHERIT", 0))
     except BaseException:
         # BaseException, not OSError: open_osfhandle emits an audit event, so an
         # installed audit hook can raise anything at all here.  If ownership of
@@ -5028,10 +5080,19 @@ def open_no_follow(
     the call fails with ``ELOOP``, exactly as ``O_NOFOLLOW`` does.  POSIX takes
     the identical ``os.open`` it always took.
 
-    ``flags`` is the POSIX flag set the caller would have given :func:`os.open`.
-    ``O_TRUNC`` is deliberately NOT honoured by the open: a caller that wants to
-    empty the file does it through the returned descriptor, after the object has
-    been proven, so nothing is destroyed before the refusal can fire.
+    Scope, precisely: this refuses a link at the FINAL component, which is what
+    ``O_NOFOLLOW`` refuses and no more.  Ancestor directories are still resolved
+    normally by both platforms; a caller that also needs its ancestors proven
+    uses :func:`is_canonical_absolute_path` or a pinned :class:`DirHandle`.
+
+    ``flags`` is the POSIX flag set the caller would have given :func:`os.open`,
+    and on POSIX it is passed through verbatim -- including ``O_TRUNC``, which
+    that branch therefore DOES honour.  The Windows branch maps only the access
+    mode and the ``O_CREAT``/``O_EXCL`` disposition; ``O_TRUNC``, ``O_APPEND``
+    and any other flag are not translated there.  A caller that wants behaviour
+    identical on both platforms must therefore leave ``O_TRUNC`` out and empty
+    the file through the returned descriptor -- which is also the safer order,
+    since nothing is destroyed before the refusal can fire.
     """
 
     if not IS_WINDOWS:
@@ -5043,10 +5104,17 @@ def open_no_follow(
     except (RuntimeError, DirectoryTransactionUnavailable):
         # Neither primitive can be missing on a real Windows host: msvcrt is a
         # stdlib built-in there and ctypes.windll always exists.  Reaching this
-        # means IS_WINDOWS was flipped on a POSIX host to exercise the Windows
-        # branch, so the honest answer is that host's own open -- which really
-        # does carry O_NOFOLLOW and really is non-following.  This is not a
-        # silent weakening of Windows: on Windows the branch is unreachable.
+        # means IS_WINDOWS was monkeypatched True on a POSIX host to exercise
+        # the Windows branch, so the honest answer is that host's own open,
+        # which really does carry O_NOFOLLOW and really is non-following.
+        #
+        # sys.platform is consulted rather than IS_WINDOWS precisely because
+        # IS_WINDOWS is the mutable thing the simulation flips: on a real
+        # Windows interpreter this re-raises instead of degrading, so a missing
+        # primitive there fails closed and can never silently become a
+        # following open.
+        if sys.platform.startswith("win"):
+            raise
         return os.open(path, flags | getattr(os, "O_NOFOLLOW", 0), mode)
     write = bool(flags & (os.O_WRONLY | os.O_RDWR))
     access = _WIN_GENERIC_READ
@@ -5090,10 +5158,13 @@ def open_no_follow(
             "refusing to follow a reparse point",
             os.fspath(path),
         )
-    crt_flags = (os.O_RDWR if write else os.O_RDONLY) | getattr(os, "O_BINARY", 0)
-    crt_flags |= getattr(os, "O_NOINHERIT", 0)
+    # _open_osfhandle accepts only a small flag set -- _O_APPEND, _O_RDONLY,
+    # _O_TEXT/_O_WTEXT/_O_U8TEXT/_O_U16TEXT and _O_NOINHERIT.  Passing _O_BINARY
+    # or an access mode is not merely ignored, it fails the call with EBADF; the
+    # access mode already comes from the HANDLE, and binary is the default when
+    # no text flag is given.  Only O_NOINHERIT is meaningful to pass here.
     try:
-        return msvcrt.open_osfhandle(handle, crt_flags)
+        return msvcrt.open_osfhandle(handle, getattr(os, "O_NOINHERIT", 0))
     except BaseException:
         _win_close_handle(api, handle)
         raise

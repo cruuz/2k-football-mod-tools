@@ -382,7 +382,16 @@ def _staged_template_files(
 def _rename_noreplace(
     parent: int | DirHandle, source_name: str, destination_name: str
 ) -> None:
-    """Atomically publish one relative name without replacing an existing entry."""
+    """Publish one relative name, or refuse if the publish cannot be no-clobber.
+
+    An exported template folder is a name in a directory the modder chose, so
+    "this never replaces something that is already there" is a guarantee this
+    export makes and not a nicety: it is the only thing standing between an
+    export and someone else's folder.  A publish that reports
+    ``atomic_no_clobber=False`` cannot support that promise (see
+    :class:`~mod_editor.core.platform_compat.NoReplacePublication`), so it is
+    refused here rather than returned as a success.
+    """
 
     _require(
         source_name not in {"", ".", ".."}
@@ -393,9 +402,11 @@ def _rename_noreplace(
     )
     # Only the OS-primitive layer differs per platform, and it lives in
     # platform_compat.  Linux keeps renameat2(RENAME_NOREPLACE) byte-for-byte;
-    # macOS and any POSIX kernel without it reserve the destination name with
-    # os.mkdir (atomic; refuses an existing name) then os.rename the staged
-    # folder onto that placeholder.  A destination that already exists raises
+    # macOS uses renameatx_np(RENAME_EXCL), the atomic exclusive directory rename;
+    # a POSIX kernel or volume with neither reserves the destination name with
+    # os.mkdir (atomic; refuses an existing name) then os.rename the staged folder
+    # onto that placeholder -- two steps, and platform_compat reports that as
+    # atomic_no_clobber=False.  A destination that already exists raises
     # FileExistsError.  Windows, which has no directory descriptor, publishes by
     # the handle's re-verified realpath (its native no-clobber os.rename) rather
     # than failing closed.  A raw descriptor (the POSIX transaction, and what the
@@ -403,7 +414,7 @@ def _rename_noreplace(
     # DirHandle so every branch runs the identical at-operation.
     handle = parent if isinstance(parent, DirHandle) else DirHandle._borrow_posix_fd(parent)
     try:
-        handle.publish_no_replace(
+        published = handle.publish_no_replace(
             source_name,
             destination_name,
             is_directory=True,
@@ -416,6 +427,24 @@ def _rename_noreplace(
         raise AudioReplacementPackError(
             "This system does not provide atomic no-overwrite folder publication."
         ) from exc
+    if not published.atomic_no_clobber:
+        # The two-step mkdir-reserve fallback got the folder onto disk, but a
+        # same-user racer that replaced the reserved placeholder in the window
+        # between the two steps would have been overwritten by the swap, so this
+        # export cannot claim it replaced nothing.  Fail closed: the caller is
+        # told a folder is now there and is not handed a success result.  The
+        # staged folder is NOT rolled back -- undoing it would mean deleting or
+        # renaming a name whose ownership is exactly what could not be
+        # established, which is the same unsafe operation in reverse.
+        raise AudioReplacementPackError(
+            "This system published the audio template folder without an atomic "
+            f"no-overwrite guarantee (mechanism {published.mechanism}): "
+            f"'{destination_name}' now exists but Mod Studio cannot prove the "
+            "publish did not replace a folder another process created at the "
+            "same instant. Inspect that folder and remove it, then export to a "
+            "destination on a filesystem that supports atomic no-replace folder "
+            "publication."
+        )
 
 
 def _write_new(path: Path, payload: bytes) -> None:
@@ -1422,7 +1451,13 @@ class AudioReplacementPackService:
         with_authoring_map: bool = False,
         asset_ids: Sequence[str] | None = None,
     ) -> AudioReplacementPackExportResult:
-        """Publish a folder or deterministic ZIP containing metadata only."""
+        """Publish a folder or deterministic ZIP containing metadata only.
+
+        Neither container ever replaces a name that already exists: the ZIP is
+        published with ``os.link`` (atomic; ``FileExistsError`` if the name is
+        taken) and the folder through :func:`_rename_noreplace`, which refuses a
+        platform mechanism that cannot promise no-clobber instead of using it.
+        """
 
         _require(
             type(complete_standalone) is bool,

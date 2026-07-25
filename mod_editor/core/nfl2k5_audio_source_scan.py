@@ -237,7 +237,42 @@ def _check_cancelled(cancelled: CancellationCheck | None, stage: str) -> None:
         )
 
 
-def _stat_signature(info: os.stat_result) -> tuple[int, ...]:
+def _stat_signature(
+    info: os.stat_result,
+) -> tuple[int, int, int, int, int, int, int, int]:
+    """The full signature, for comparing two stats of the *same* family.
+
+    Both sides must be ``os.fstat``s (or both path stats).  Same-family stats
+    agree on the change time on every platform, so it is compared everywhere and
+    a metadata-only edit is still caught on Windows.  Use
+    :func:`_cross_stat_signature` where a path stat is held against an fd stat.
+    """
+
+    return (
+        info.st_dev,
+        info.st_ino,
+        info.st_mode,
+        info.st_nlink,
+        info.st_uid,
+        info.st_size,
+        info.st_mtime_ns,
+        info.st_ctime_ns,
+    )
+
+
+def _cross_stat_signature(info: os.stat_result) -> tuple[int, ...]:
+    """:func:`_stat_signature` minus the field the two stat families disagree on.
+
+    Only for a path-stat-against-fd-stat comparison.  Windows reads ``st_ctime``
+    through a different Win32 information class for each family, so the two
+    disagree for a file nothing touched; the field is dropped there (see
+    :func:`platform_compat.supports_change_time_identity`) and kept on POSIX.
+    ``st_dev``/``st_ino`` still answer "is this the same file", and
+    ``st_mode``/``st_nlink``/``st_uid``/``st_size``/``st_mtime_ns`` are still
+    compared on every platform; what is lost on Windows here, and only here, is
+    the metadata-only-change signal that st_ctime alone would carry.
+    """
+
     return (
         info.st_dev,
         info.st_ino,
@@ -307,8 +342,9 @@ def _read_authenticated_file(
         raise AudioSourceScanError(f"Could not open {stage}: {exc}") from exc
     try:
         opened = os.fstat(descriptor)
+        # ``named_before`` is an lstat and ``opened`` an fd stat: cross-family.
         _require(
-            _stat_signature(opened) == _stat_signature(named_before),
+            _cross_stat_signature(opened) == _cross_stat_signature(named_before),
             f"{stage} changed before authentication",
         )
         digest = hashlib.sha256()
@@ -327,9 +363,13 @@ def _read_authenticated_file(
             _emit(progress, stage, completed, expected_size, "bytes")
         after = os.fstat(descriptor)
         named_after = path.lstat()
+        # ``after`` against ``opened`` is fd against fd, so it keeps the change
+        # time on every platform; ``named_after`` is an lstat held against that
+        # same fd stat, which Windows cannot compare the change time across.
         _require(
             _stat_signature(after) == _stat_signature(opened)
-            and _stat_signature(named_after) == _stat_signature(opened),
+            and _cross_stat_signature(named_after)
+            == _cross_stat_signature(opened),
             f"{stage} changed during authentication",
         )
         _require(digest.hexdigest() == expected_sha256, f"{stage} hash is not pinned")
@@ -753,7 +793,8 @@ class Nfl2k5AudioSourceScanner:
         except OSError as exc:
             raise AudioSourceScanError(f"Could not open source XISO read-only: {exc}") from exc
         opened = os.fstat(descriptor)
-        if _stat_signature(opened) != _stat_signature(named):
+        # ``named`` is an lstat and ``opened`` an fd stat: cross-family.
+        if _cross_stat_signature(opened) != _cross_stat_signature(named):
             os.close(descriptor)
             raise AudioSourceScanError("Source XISO changed before its read-only scan")
         return _OpenedSource(selected, descriptor, opened)
@@ -765,9 +806,14 @@ class Nfl2k5AudioSourceScanner:
             named = source.path.lstat()
         except FileNotFoundError as exc:
             raise AudioSourceScanError(f"Source XISO disappeared during {stage}") from exc
+        # ``source.initial_stat`` is the fd stat taken in _open_source, so the
+        # ``current`` re-check is fd against fd and keeps the change time on
+        # every platform; ``named`` is an lstat held against that same fd stat,
+        # which Windows cannot compare the change time across.
         _require(
             _stat_signature(current) == _stat_signature(source.initial_stat)
-            and _stat_signature(named) == _stat_signature(source.initial_stat),
+            and _cross_stat_signature(named)
+            == _cross_stat_signature(source.initial_stat),
             f"Source XISO identity/content metadata changed during {stage}",
         )
 

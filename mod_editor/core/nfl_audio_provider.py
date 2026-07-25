@@ -682,15 +682,24 @@ class Nfl2k5MenuBackAudioProvider:
         clear the attribute and rewrite the bytes.  So the file is re-verified
         immediately before the child is launched, through the staged module's
         ``pin_for_exec`` -- and, unlike a bare re-hash, that context *keeps the
-        verified object open* across ``runner.run``, which is what decides whether
-        the check-to-use window is actually closed:
+        verified object open* across ``runner.run``.  What that holds shut
+        differs by platform, and on none of the platforms this fallback runs on
+        does it close the check-to-use window:
 
-        * Windows: :func:`platform_compat.reverify_sealed_before_exec` holds a
-          ``CreateFileW`` handle sharing READ only, so while the child is starting
-          no same-user process can rewrite, truncate, rename-over or delete the
-          module.  The window between the re-hash and the child's open IS closed
-          here, and the mechanism reported is
-          :data:`~mod_editor.core.platform_compat.SEALED_EXEC_WINDOWS_SHARE_PIN`.
+        * Windows: :func:`platform_compat.reverify_sealed_before_exec` re-hashes
+          the staged file and keeps a ``CreateFileW`` handle sharing READ only,
+          so while the child is starting no same-user process can rewrite,
+          truncate or delete those BYTES.  It does not hold the NAME the child
+          opens: ``SetFileInformationByHandle(FileRenameInfoEx)`` with
+          ``POSIX_SEMANTICS | REPLACE_IF_EXISTS`` rebinds a name whose file has
+          open handles -- the existing handles keep the old file, every later
+          open resolves to the replacement -- and the child opens by name.  So
+          the window is narrowed, NOT closed, and Windows reports it exactly as
+          macOS does: ``inode_pinned=False``, mechanism
+          :data:`~mod_editor.core.platform_compat.SEALED_EXEC_WINDOWS_SHARE_PIN`,
+          and a WARNING event on the stage.  An earlier revision of this
+          docstring claimed the window was closed here; an independent audit
+          showed it was not.
 
         * macOS: the same helper re-hashes through a descriptor it then holds, but
           macOS offers neither a cross-process fd path (no ``/proc``) nor a

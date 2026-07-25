@@ -452,14 +452,14 @@ class Nfl2k5UnifiedVisualProvider:
     backend_module_sha256 = "59ff42f3fe609c79cee4da5c68f0d50b4e595fe403ac992c078f5d2f8120ac91"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
-        "mod_editor/core/json_stream.py": "8de367f7e519141e4d8c21be9a424e704cafa09a2981e646c87a0e7e026290f2",
+        "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/model.py": "f568e0804091134f2e1e8eb478fda9415fa1df65047adca2a5ce561fb8461c9d",
         "mod_editor/core/nfl2k5_audio_catalog.py": "7b938b1fa47f9c86d05868015ba0cd2d764df08b8040ca0f8c7499b49fae4005",
         "mod_editor/core/nfl2k5_audio_containment_fingerprints.py": "da564ae30a18e9bfc7a3006b2422bceef0d0078d3cb9a919671ade23eda5f146",
         "mod_editor/core/nfl2k5_audio_origin_authorization.py": "664e43a7d2bb7dfcccf328b622b5fe7be3f5510d03919c56fa85149d7d3ffb8d",
-        "mod_editor/core/nfl2k5_audio_source_containment.py": "ff5585f4a483874510b87d5f95980763c5912180d2ba423871ddba5ac060ab53",
-        "mod_editor/core/nfl2k5_audio_source_fingerprints.py": "bfa9bcc911e219b448e9c264f2fbc17d4e50bc48dab17ed2169cb1404b15a156",
-        "mod_editor/core/nfl2k5_audio_source_scan.py": "f0fe0d7d5100e7293496cade15ba2abdc05bac9293c87df10049ee8e25ac06c1",
+        "mod_editor/core/nfl2k5_audio_source_containment.py": "3bb3e6d0aec36420e38fc05d183ac4884b72395a147d8de8aefe2ee64c68d20e",
+        "mod_editor/core/nfl2k5_audio_source_fingerprints.py": "b8f1806fde4d5f48c0529718ebd83bb46a02959afa1b134ac62cf8270514d48c",
+        "mod_editor/core/nfl2k5_audio_source_scan.py": "ebc8d41d6bff0dad4c65710b16079b51fee1b094020cdcf7a8f23e68c0d0c28b",
         "mod_editor/core/nfl2k5_audo_fixed_slots.py": "bd92ac9d727b7516c8e99ee13a30e56153088d49259db606b86b8bbcb2db974f",
         "mod_editor/core/nfl2k5_ausb_build_adapter.py": "138eccfa097da8005dca74d43c0a10808558c4a4f1702c31e8f009cc49a7ecc7",
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "49c4391884b2e3ed5a3928ab7b85316c2194213cae2892cae769ea807a2e1259",
@@ -468,11 +468,11 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_source_cache.py": "b7a83e4e040854244a2ced7ecb8636fcd7c09df5f3e8a7a1978b59ca189341ed",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py": "d1d8fdc9e9e87d4514008941faeb37b1fe9861f3fe118f98647f3961187e75af",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
-        "mod_editor/core/platform_compat.py": "002831e123721c0a016cc3587a2437b55e92c07da6eeeff8bb265d202eeec53c",
+        "mod_editor/core/platform_compat.py": "2b5defcf254f4174b0527be513fc5e5895ec62c0f68d5857a35d1e41fa54765a",
         "mod_editor/core/sources.py": "26a726d27100ed6a9ef9a7a758bf3dfa86443d3c6581341d5c3c0fd67d9829d8",
         "tools/apf_inner.py": "75a74b34524b3861785b916e3470862bccfe278825a63aa2dccb924849ae9606",
         "tools/apf_outer.py": "eb89734ed3ad0205ff7d8732b2f7f93368eff861ccbc5e1473d4e21f25e8a62e",
-        "tools/nfl2k5_jersey_png_workflow.py": "f34ec2647e6b7f59f1fce1e4b10258edf1266bf49346022562a5057e720374ea",
+        "tools/nfl2k5_jersey_png_workflow.py": "2ac3544de6692d57e3054bdffb2365565464bcc3eeba41d0ed8921d8722d0a17",
         backend_module: backend_module_sha256,
         "tools/nfl_audo_wav_xiso_workflow.py": "c3621004576b64a5a0f93cd8c54321791c3cca4c36e5e5086fea0450e273577e",
         "tools/nfl_create_team_field_art_inventory.py": "190a195bb0cec51438986f27530327cc658587dde4a6a7fd7274eceb9d28f926",
@@ -1443,7 +1443,7 @@ class Apf2k8JerseyColorProvider:
     verifier_module = "tools/apf_jersey_family_verify.py"
     verifier_module_sha256 = "588f8ba9a556092d3307535867b3760ca06b062847991f8bcfd95a49623cd249"
     module_pins: Mapping[str, str] = {
-        "mod_editor/core/platform_compat.py": "002831e123721c0a016cc3587a2437b55e92c07da6eeeff8bb265d202eeec53c",
+        "mod_editor/core/platform_compat.py": "2b5defcf254f4174b0527be513fc5e5895ec62c0f68d5857a35d1e41fa54765a",
         "tools/apf_inner.py": "75a74b34524b3861785b916e3470862bccfe278825a63aa2dccb924849ae9606",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
@@ -1967,7 +1967,7 @@ class Apf2k8PantsColorProvider(Apf2k8JerseyColorProvider):
     verifier_module = "tools/apf_pants_family_verify.py"
     verifier_module_sha256 = "8647749896c53f6333181391dbbec50fbd837e2f442c89257fff6b6a17dcac3e"
     module_pins: Mapping[str, str] = {
-        "mod_editor/core/platform_compat.py": "002831e123721c0a016cc3587a2437b55e92c07da6eeeff8bb265d202eeec53c",
+        "mod_editor/core/platform_compat.py": "2b5defcf254f4174b0527be513fc5e5895ec62c0f68d5857a35d1e41fa54765a",
         "tools/apf_inner.py": "75a74b34524b3861785b916e3470862bccfe278825a63aa2dccb924849ae9606",
         "tools/apf_outer.py": "eb89734ed3ad0205ff7d8732b2f7f93368eff861ccbc5e1473d4e21f25e8a62e",
         "tools/apf_pants_color_transport.py": "32184edfa32b721e89e97cbb9da4c6e46959cf22782f2aa44202297f318a4927",
@@ -1997,7 +1997,7 @@ class Apf2k8HelmetColorProvider(Apf2k8JerseyColorProvider):
     verifier_module = "tools/apf_helmet_family_verify.py"
     verifier_module_sha256 = "7240193adb4fc02e0971abb93e1390ddf93e7f54b114b95d7be86ed9bad50d48"
     module_pins: Mapping[str, str] = {
-        "mod_editor/core/platform_compat.py": "002831e123721c0a016cc3587a2437b55e92c07da6eeeff8bb265d202eeec53c",
+        "mod_editor/core/platform_compat.py": "2b5defcf254f4174b0527be513fc5e5895ec62c0f68d5857a35d1e41fa54765a",
         "tools/apf_helmet_color_transport.py": "9dcc1ae59dd8fcaa41c64b18c299e05c7e6dd5b8ec8318b93293f42cad454cb9",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
@@ -2028,7 +2028,7 @@ class Apf2k8ShoulderColorProvider(Apf2k8JerseyColorProvider):
     verifier_module = "tools/apf_shoulder_family_verify.py"
     verifier_module_sha256 = "e84f0f4714cf55bb52be040ab17faeda9854dea80e91ca55052064ce637183bf"
     module_pins: Mapping[str, str] = {
-        "mod_editor/core/platform_compat.py": "002831e123721c0a016cc3587a2437b55e92c07da6eeeff8bb265d202eeec53c",
+        "mod_editor/core/platform_compat.py": "2b5defcf254f4174b0527be513fc5e5895ec62c0f68d5857a35d1e41fa54765a",
         "tools/apf_inner.py": "75a74b34524b3861785b916e3470862bccfe278825a63aa2dccb924849ae9606",
         "tools/apf_outer.py": "eb89734ed3ad0205ff7d8732b2f7f93368eff861ccbc5e1473d4e21f25e8a62e",
         "tools/apf_shoulder_color_transport.py": "3b0a1611576648af0d131d1986d7a098a92748b35fddd25d9241b1526ecd00d6",

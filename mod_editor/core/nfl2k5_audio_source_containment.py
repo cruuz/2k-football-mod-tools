@@ -628,13 +628,29 @@ class Nfl2k5AudioSourceContainmentStore:
                 payload = b"".join(chunks)
                 after = os.fstat(descriptor)
                 named_after = directory.stat(path.name, follow=False)
+                # Two comparisons of different shape, deliberately split apart.
+                # ``after`` against ``opened`` is fd against fd, so it keeps the
+                # change time on every platform.  ``named_after`` is a DirHandle
+                # PATH stat held against that same fd stat, the one boundary
+                # Windows cannot carry a change time across, so that field is
+                # dropped there and kept on POSIX (see
+                # platform_compat.supports_change_time_identity).
                 _require(
                     (
                         after.st_dev,
                         after.st_ino,
                         after.st_size,
                         after.st_mtime_ns,
-                        *platform_compat.change_time_identity(after),
+                        after.st_ctime_ns,
+                    )
+                    == (
+                        opened.st_dev,
+                        opened.st_ino,
+                        opened.st_size,
+                        opened.st_mtime_ns,
+                        opened.st_ctime_ns,
+                    )
+                    and (
                         named_after.st_dev,
                         named_after.st_ino,
                         named_after.st_size,
@@ -642,11 +658,6 @@ class Nfl2k5AudioSourceContainmentStore:
                         *platform_compat.change_time_identity(named_after),
                     )
                     == (
-                        opened.st_dev,
-                        opened.st_ino,
-                        opened.st_size,
-                        opened.st_mtime_ns,
-                        *platform_compat.change_time_identity(opened),
                         opened.st_dev,
                         opened.st_ino,
                         opened.st_size,
@@ -777,6 +788,14 @@ class Nfl2k5AudioSourceContainmentStore:
                 directory,
                 "pre-publication authorization",
             )
+            # This publish must be a true no-clobber one: the caller reads a
+            # pre-existing destination (_ConcurrentPublication) as "another
+            # writer won, adopt its inventory", which is only sound if the
+            # publish cannot overwrite that writer instead.  The shared helper
+            # owns that decision -- it checks the reported atomic_no_clobber and
+            # refuses a mechanism that cannot promise it -- so the guarantee is
+            # enforced here rather than assumed, without a second copy of the
+            # branch.
             private_cache._rename_noreplace_at(
                 dir_ref,
                 temporary_basename,
@@ -818,6 +837,10 @@ class Nfl2k5AudioSourceContainmentStore:
                 confirmed.extend(block)
             after = os.fstat(descriptor)
             named_after = directory.stat(path.name, follow=False)
+            # ``named_after`` is a DirHandle PATH stat and ``after`` an fd stat
+            # of the same file: a genuine cross-family comparison, so the change
+            # time is compared only where the two calls agree on it (see
+            # platform_compat.supports_change_time_identity).
             _require(
                 bytes(confirmed) == payload
                 and stat.S_ISREG(after.st_mode)

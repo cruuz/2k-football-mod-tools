@@ -30,30 +30,6 @@ import apf_roster
 import apf_texture_patch as transport
 
 
-def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
-    """``(info.st_ctime_ns,)`` on POSIX; ``()`` on Windows.
-
-    Inlined rather than imported from
-    :mod:`mod_editor.core.platform_compat` because this module is executed as a
-    self-contained, tools-only closure and may not import the editor package;
-    the contract is byte-for-byte that helper's.
-
-    On Windows a path stat and an fd stat of the *same, untouched* file do not
-    agree on ``st_ctime``, so putting it in an identity tuple refuses a file
-    nothing touched.  ``st_dev``/``st_ino`` stay the identity and
-    ``st_size``/``st_mtime_ns`` stay the change detectors, so a swapped or
-    rewritten file is still caught.  What is genuinely lost on Windows is the
-    metadata-only-change signal -- a permission or attribute edit that leaves
-    the bytes, the size and the modification time untouched -- and Windows
-    offers no equivalent field that is stable across the two calls, so this
-    check is weaker there than on POSIX.  Stated, not hidden.
-    """
-
-    if sys.platform.startswith("win"):
-        return ()
-    return (info.st_ctime_ns,)
-
-
 ROOT = Path(__file__).resolve().parents[1]
 FORMAT_SPEC = ROOT / "reports/specs/apf2k8_roster_jersey_selector_writeback.v1.json"
 FORMAT_SPEC_SIZE = 33_352
@@ -265,8 +241,20 @@ def _sha256_fd_range(descriptor: int, offset: int, size: int) -> str:
     return digest.hexdigest()
 
 
-def _stat_times(metadata: os.stat_result) -> tuple[int, ...]:
-    return metadata.st_mtime_ns, *change_time_identity(metadata)
+def _stat_times(metadata: os.stat_result) -> tuple[int, int]:
+    """The content-metadata times of one descriptor.
+
+    Every producer and every consumer of this tuple passes an ``os.fstat``
+    (:func:`_bind_source_volume`, :func:`_assert_bound_source`,
+    :func:`_assert_bound_output`, :func:`_commit_bound_output`,
+    :func:`_write_bound_copied_volume`), so every comparison is fd against fd.
+    Two fd stats agree on st_ctime_ns on every platform, Windows included, so
+    the change time stays in and a metadata-only edit is still caught.  NOTE:
+    this tuple carries no st_dev/st_ino -- the callers check identity separately
+    against ``reservation.identity``/``source.identity`` in the same predicate.
+    """
+
+    return metadata.st_mtime_ns, metadata.st_ctime_ns
 
 
 def _assert_bound_source(source: BoundSourceVolume) -> None:

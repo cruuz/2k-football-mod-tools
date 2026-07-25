@@ -256,13 +256,14 @@ class AudioReplacementDirectoryIdentity:
     device: int
     inode: int
     modified_ns: int
-    # The change-time component of this fingerprint -- a one-tuple where the
-    # platform can compare a change time across calls, and empty where it
-    # cannot (see platform_compat.change_time_identity).  A tuple rather than a
-    # bare int precisely so this dataclass's own ``==`` drops the component on
-    # the platform that cannot compare it, instead of refusing an untouched
-    # directory.
-    changed_ns: tuple[int, ...]
+    # Every instance of this class is built from a DirHandle.fstat() (see
+    # _open_pinned_directory and _open_directory_at) and every comparison of one
+    # -- ``root_identity != plan.root_identity`` and
+    # ``payload_identity != plan.payload_directory_identity`` -- puts two of
+    # those against each other.  Two fd stats agree on st_ctime_ns on every
+    # platform, Windows included, so this stays a plain int and the dataclass's
+    # own ``==`` compares it everywhere.
+    changed_ns: int
     link_count: int
 
 
@@ -272,16 +273,16 @@ class AudioReplacementFileIdentity:
     inode: int
     size: int
     modified_ns: int
-    # Empty where the platform cannot compare a change time across calls: this
-    # identity is captured from a DirHandle path stat and then re-checked
-    # against an os.fstat of the descriptor opened from it, and those two calls
-    # do not agree on st_ctime on Windows (see
-    # platform_compat.change_time_identity).  A tuple rather than a bare int
-    # precisely so this dataclass's own ``==`` -- which is what
-    # ``_read_private_file_at`` compares across that path/fd pair -- drops the
-    # component on the platform that cannot compare it, instead of refusing an
-    # untouched file.
-    changed_ns: tuple[int, ...]
+    # A plain int on every platform, and compared as one by this dataclass's
+    # ``==`` and by :func:`_file_stat_identity`.  Instances are built from both
+    # families -- a DirHandle path stat in the pack readers, an os.fstat in the
+    # ZIP writer -- and the handful of comparisons that genuinely cross the two
+    # go through :func:`_file_cross_stat_identity` instead, which drops this one
+    # field where a path stat and an fd stat disagree on it.  The type is not
+    # widened for everyone to serve those few sites: doing that would also
+    # silently drop the field from the same-family comparisons, which never
+    # needed to lose it.
+    changed_ns: int
     content_sha256: str | None = None
 
 
@@ -815,7 +816,7 @@ def _directory_identity(info: os.stat_result) -> AudioReplacementDirectoryIdenti
         info.st_dev,
         info.st_ino,
         info.st_mtime_ns,
-        platform_compat.change_time_identity(info),
+        info.st_ctime_ns,
         info.st_nlink,
     )
 
@@ -829,20 +830,57 @@ def _file_identity(
         inode=info.st_ino,
         size=info.st_size,
         modified_ns=info.st_mtime_ns,
-        changed_ns=platform_compat.change_time_identity(info),
+        changed_ns=info.st_ctime_ns,
         content_sha256=content_sha256,
     )
 
 
 def _file_stat_identity(
     identity: AudioReplacementFileIdentity,
-) -> tuple[int, ...]:
+) -> tuple[int, int, int, int, int]:
+    """The full stat fingerprint, for comparing two identities of one family.
+
+    Both identities must come from the same kind of stat -- two path stats or
+    two ``os.fstat``s.  Same-family stats agree on the change time on every
+    platform, so it is compared everywhere and a metadata-only edit is caught on
+    Windows too.  Use :func:`_file_cross_stat_identity` for the comparisons that
+    put a path stat on one side and an fd stat on the other.
+    """
+
     return (
         identity.device,
         identity.inode,
         identity.size,
         identity.modified_ns,
-        *identity.changed_ns,
+        identity.changed_ns,
+    )
+
+
+def _file_cross_stat_identity(
+    identity: AudioReplacementFileIdentity,
+) -> tuple[int, ...]:
+    """:func:`_file_stat_identity` minus the field the two stat families disagree on.
+
+    Only for a path-stat-against-fd-stat comparison.  Windows reads
+    ``st_ctime`` through a different Win32 information class for each family, so
+    the two disagree for a file nothing touched; the field is therefore dropped
+    there (see :func:`platform_compat.supports_change_time_identity`) and kept on
+    POSIX.  ``st_dev``/``st_ino`` still answer "is this the same file" and
+    ``st_size``/``st_mtime_ns`` still catch a rewrite on every platform; what is
+    lost on Windows at these sites is the metadata-only-change signal, for which
+    that platform offers nothing stable across the boundary.
+    """
+
+    return (
+        identity.device,
+        identity.inode,
+        identity.size,
+        identity.modified_ns,
+        *(
+            (identity.changed_ns,)
+            if platform_compat.supports_change_time_identity()
+            else ()
+        ),
     )
 
 
@@ -1024,7 +1062,15 @@ def _file_name_has_content_identity_at(
     *,
     tolerate_rename_ctime: bool,
 ) -> bool:
-    """Verify one pinned regular file's metadata and exact SHA-256 content."""
+    """Verify one pinned regular file's metadata and exact SHA-256 content.
+
+    ``identity`` is always the ``os.fstat`` snapshot that
+    :func:`_create_audio_replacement_zip_at` returned -- both wrappers are
+    called only with its ``staging_identity`` -- so the check against this
+    function's own ``os.fstat`` is same-family and keeps the change time on
+    every platform; only the ``named_after`` path stat further down crosses the
+    two families.
+    """
 
     expected_digest = identity.content_sha256
     if (
@@ -1075,10 +1121,14 @@ def _file_name_has_content_identity_at(
         after = os.fstat(descriptor)
         named_after = parent_handle.stat(name, follow=False)
         if (
+            # ``after`` and ``candidate`` are both fd stats of this descriptor,
+            # so the change time is compared on every platform...
             _file_stat_identity(_file_identity(after))
             != _file_stat_identity(candidate)
-            or _file_stat_identity(_file_identity(named_after))
-            != _file_stat_identity(candidate)
+            # ...while ``named_after`` is a path stat being held against that
+            # same fd stat, the one boundary Windows cannot carry it across.
+            or _file_cross_stat_identity(_file_identity(named_after))
+            != _file_cross_stat_identity(candidate)
             or named_after.st_nlink != 1
             or not stat.S_ISREG(named_after.st_mode)
             or stat.S_ISLNK(named_after.st_mode)
@@ -1636,7 +1686,19 @@ def _read_regular_bounded_at(
     label: str,
     expected_identity: AudioReplacementFileIdentity | None = None,
 ) -> bytes:
-    """Read one pinned-directory-relative private file through one stable descriptor."""
+    """Read one pinned-directory-relative private file through one stable descriptor.
+
+    ``expected_identity``, when given, must be a *path*-stat identity, and both
+    callers that pass one satisfy that: the xma1 enumeration pass passes
+    ``_file_identity(info)`` taken straight off ``DirHandle.stat``, and
+    ``read_audio_replacement_payload`` passes ``supplied.file_identity``, which
+    for an xma1 plan is also built from a ``DirHandle.stat`` -- and that function
+    refuses any plan whose ``input_kind`` is not ``"xma1"``, so the fd-derived
+    pcm16 identity can never arrive here.  That invariant is what lets the check
+    below compare the change time on every platform.  The later re-checks
+    against this function's own ``os.fstat``s do cross the two stat families and
+    say so where they are made.
+    """
 
     try:
         before = directory_handle.stat(name, follow=False)
@@ -1649,6 +1711,7 @@ def _read_regular_bounded_at(
         or before.st_nlink != 1
         or not 0 < before.st_size <= maximum
         or (
+            # Two path stats: full fingerprint, change time included, everywhere.
             expected_identity is not None
             and _file_stat_identity(identity)
             != _file_stat_identity(expected_identity)
@@ -1665,8 +1728,12 @@ def _read_regular_bounded_at(
     )
     try:
         opened = os.fstat(descriptor)
+        # ``identity`` is a path stat and ``opened`` an fd stat: the one boundary
+        # Windows cannot carry a change time across, so compare the fields
+        # explicitly through _file_cross_stat_identity rather than by ``==``.
         if (
-            _file_identity(opened) != identity
+            _file_cross_stat_identity(_file_identity(opened))
+            != _file_cross_stat_identity(identity)
             or opened.st_nlink != 1
             or not stat.S_ISREG(opened.st_mode)
         ):
@@ -1687,8 +1754,10 @@ def _read_regular_bounded_at(
                     f"The {label} grew beyond its size limit while it was read"
                 )
         after = os.fstat(descriptor)
+        # Path stat against fd stat again; see the note above.
         if (
-            _file_identity(after) != identity
+            _file_cross_stat_identity(_file_identity(after))
+            != _file_cross_stat_identity(identity)
             or after.st_nlink != 1
             or total != identity.size
         ):
@@ -1717,7 +1786,15 @@ def _stream_regular_bounded_at(
     expected_identity: AudioReplacementFileIdentity | None = None,
     destination: Path | None = None,
 ) -> AudioReplacementFileIdentity:
-    """Hash or privately copy one pinned file without loading it into memory."""
+    """Hash or privately copy one pinned file without loading it into memory.
+
+    Unlike :func:`_read_regular_bounded_at`, ``expected_identity`` here can come
+    from either stat family: the enumeration pass supplies a ``DirHandle.stat``
+    identity, while ``materialize_audio_replacement_pcm`` supplies this
+    function's own return value, which is built from an ``os.fstat``.  The
+    ``expected_identity`` check below therefore has to treat itself as a
+    cross-family comparison.
+    """
 
     try:
         before = directory_handle.stat(name, follow=False)
@@ -1730,9 +1807,12 @@ def _stream_regular_bounded_at(
         or before.st_nlink != 1
         or not 0 < before.st_size <= maximum
         or (
+            # ``identity`` is a path stat; ``expected_identity`` may be an fd
+            # stat (see the docstring), so drop the field the two families
+            # disagree on rather than assume they can be compared on it.
             expected_identity is not None
-            and _file_stat_identity(identity)
-            != _file_stat_identity(expected_identity)
+            and _file_cross_stat_identity(identity)
+            != _file_cross_stat_identity(expected_identity)
         )
     ):
         raise AudioReplacementPackError(
@@ -1748,7 +1828,11 @@ def _stream_regular_bounded_at(
     published_destination = False
     try:
         opened = os.fstat(source_descriptor)
-        if _file_identity(opened) != identity:
+        # ``identity`` is a path stat and ``opened`` an fd stat: cross-family.
+        if (
+            _file_cross_stat_identity(_file_identity(opened))
+            != _file_cross_stat_identity(identity)
+        ):
             raise AudioReplacementPackError(f"The {label} changed while it was opened")
         if destination is not None:
             destination_descriptor = os.open(
@@ -1787,7 +1871,9 @@ def _stream_regular_bounded_at(
         after = os.fstat(source_descriptor)
         content_sha256 = digest.hexdigest()
         if (
-            _file_identity(after) != identity
+            # Path stat against fd stat again; see the note above.
+            _file_cross_stat_identity(_file_identity(after))
+            != _file_cross_stat_identity(identity)
             or after.st_nlink != 1
             or total != identity.size
             or (
@@ -1811,19 +1897,27 @@ def _stream_regular_bounded_at(
 
 
 def _directory_unchanged(before: os.stat_result, after: os.stat_result) -> bool:
+    """Compare two ``DirHandle.fstat()`` snapshots of one pinned directory.
+
+    Every call site passes the ``fstat`` taken when the handle was opened and a
+    fresh ``handle.fstat()``, so both sides are fd stats and the change time is
+    compared on every platform -- a metadata-only edit to the directory is
+    caught on Windows as well as POSIX.
+    """
+
     return (
         before.st_dev,
         before.st_ino,
         before.st_mode,
         before.st_mtime_ns,
-        *platform_compat.change_time_identity(before),
+        before.st_ctime_ns,
         before.st_nlink,
     ) == (
         after.st_dev,
         after.st_ino,
         after.st_mode,
         after.st_mtime_ns,
-        *platform_compat.change_time_identity(after),
+        after.st_ctime_ns,
         after.st_nlink,
     )
 
@@ -1884,6 +1978,13 @@ def _path_still_names_file(
     path: Path,
     identity: AudioReplacementFileIdentity,
 ) -> bool:
+    """Whether ``path`` still names the file ``identity`` was taken from.
+
+    ``identity`` is the ``os.fstat`` snapshot of the pack ZIP's descriptor and
+    ``info`` below is a path stat, so this is a genuine cross-family comparison
+    and goes through :func:`_file_cross_stat_identity`.
+    """
+
     try:
         info = path.stat(follow_symlinks=False)
     except OSError:
@@ -1892,8 +1993,8 @@ def _path_still_names_file(
         stat.S_ISREG(info.st_mode)
         and not stat.S_ISLNK(info.st_mode)
         and info.st_nlink == 1
-        and _file_stat_identity(_file_identity(info))
-        == _file_stat_identity(identity)
+        and _file_cross_stat_identity(_file_identity(info))
+        == _file_cross_stat_identity(identity)
     )
 
 

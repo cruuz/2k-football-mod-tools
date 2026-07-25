@@ -17,7 +17,6 @@ import stat
 import threading
 from typing import Callable, Iterable, Sequence
 
-from mod_editor.core import platform_compat
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.gameplay_inspection import (
     DEFAULT_FRANCHISE_REPORT,
@@ -228,19 +227,23 @@ def _read_product_snapshot(
         if os.read(descriptor, 1):
             raise ValidationError(f"{label} product snapshot grew while reading")
         after = os.fstat(descriptor)
+        # ``opened`` and ``after`` are both os.fstat of this one descriptor.
+        # Two fd stats agree on st_ctime_ns on every platform, Windows
+        # included, so it stays in the fingerprint here and the
+        # metadata-only-change signal is not lost on any platform.
         if (
             after.st_dev,
             after.st_ino,
             after.st_size,
             after.st_mtime_ns,
-            *platform_compat.change_time_identity(after),
+            after.st_ctime_ns,
             after.st_nlink,
         ) != (
             opened.st_dev,
             opened.st_ino,
             opened.st_size,
             opened.st_mtime_ns,
-            *platform_compat.change_time_identity(opened),
+            opened.st_ctime_ns,
             opened.st_nlink,
         ):
             raise ValidationError(f"{label} product snapshot changed while reading")

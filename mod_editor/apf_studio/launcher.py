@@ -242,7 +242,14 @@ class XeniaLauncher:
                 os.O_WRONLY | os.O_CREAT,
                 0o600,
             )
-            os.ftruncate(log_descriptor, 0)
+            try:
+                os.ftruncate(log_descriptor, 0)
+            except BaseException:
+                # The descriptor is owned by this frame until fdopen below takes
+                # it; anything raised between the open and that handover has to
+                # close it here or it leaks for the process's lifetime.
+                os.close(log_descriptor)
+                raise
             with os.fdopen(log_descriptor, "wb") as log:
                 process = subprocess.Popen(
                     command,

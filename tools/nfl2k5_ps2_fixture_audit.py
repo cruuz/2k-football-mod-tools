@@ -16,32 +16,7 @@ import os
 from pathlib import Path
 import re
 import stat
-import sys
 from typing import Any, Iterable
-
-
-def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
-    """``(info.st_ctime_ns,)`` on POSIX; ``()`` on Windows.
-
-    Inlined rather than imported from
-    :mod:`mod_editor.core.platform_compat` because this module is executed as a
-    self-contained, tools-only closure and may not import the editor package;
-    the contract is byte-for-byte that helper's.
-
-    On Windows a path stat and an fd stat of the *same, untouched* file do not
-    agree on ``st_ctime``, so putting it in an identity tuple refuses a file
-    nothing touched.  ``st_dev``/``st_ino`` stay the identity and
-    ``st_size``/``st_mtime_ns`` stay the change detectors, so a swapped or
-    rewritten file is still caught.  What is genuinely lost on Windows is the
-    metadata-only-change signal -- a permission or attribute edit that leaves
-    the bytes, the size and the modification time untouched -- and Windows
-    offers no equivalent field that is stable across the two calls, so this
-    check is weaker there than on POSIX.  Stated, not hidden.
-    """
-
-    if sys.platform.startswith("win"):
-        return ()
-    return (info.st_ctime_ns,)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -147,11 +122,13 @@ def hash_regular_file(
             remaining -= len(chunk)
         require(not os.read(descriptor, 1), f"file grew while hashing: {path}")
         after = os.fstat(descriptor)
+        # ``opened`` and ``after`` are both os.fstat of this one descriptor: two
+        # fd stats, which agree on st_ctime_ns on every platform, so it stays in.
         require(
             (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns,
-             *change_time_identity(after))
+             after.st_ctime_ns)
             == (opened.st_dev, opened.st_ino, opened.st_size, opened.st_mtime_ns,
-                *change_time_identity(opened)),
+                opened.st_ctime_ns),
             f"file changed while hashing: {path}",
         )
         return opened.st_size, {
@@ -249,11 +226,13 @@ def inspect_suspect_disc(path: Path) -> dict[str, Any]:
             f"disc suspect is not a non-symlink regular file: {path}")
     classification = classify_disc_header(path)
     after = path.lstat()
+    # ``before`` and ``after`` are both path.lstat() of one pathname: two path
+    # stats, which agree on st_ctime_ns on every platform, so it stays in.
     require(
         (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns,
-         *change_time_identity(after))
+         after.st_ctime_ns)
         == (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns,
-            *change_time_identity(before)),
+            before.st_ctime_ns),
         f"disc suspect changed during header inspection: {path}",
     )
     return {

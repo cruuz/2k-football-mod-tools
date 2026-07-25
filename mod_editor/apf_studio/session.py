@@ -2551,6 +2551,11 @@ class ApfSession:
         )
         try:
             opened = os.fstat(descriptor)
+            # ``supplied`` is an lstat and ``opened`` an os.fstat of the same
+            # file: the one comparison here that crosses the two stat families,
+            # which Windows cannot carry st_ctime across, so that field is
+            # dropped there (platform_compat.change_time_identity) and kept on
+            # POSIX.  The fd/fd re-check further down keeps it everywhere.
             if (
                 (
                     opened.st_dev,
@@ -2590,19 +2595,22 @@ class ApfSession:
                         f"The {label} grew larger than this slot allows"
                     )
             after = os.fstat(descriptor)
+            # Both sides are os.fstat of this one descriptor, so the change time
+            # is comparable on every platform and stays in the fingerprint --
+            # this check keeps its metadata-only-change signal on Windows too.
             if (
                 after.st_dev,
                 after.st_ino,
                 after.st_size,
                 after.st_mtime_ns,
-                *platform_compat.change_time_identity(after),
+                after.st_ctime_ns,
                 after.st_nlink,
             ) != (
                 opened.st_dev,
                 opened.st_ino,
                 opened.st_size,
                 opened.st_mtime_ns,
-                *platform_compat.change_time_identity(opened),
+                opened.st_ctime_ns,
                 opened.st_nlink,
             ) or total != opened.st_size:
                 raise SessionError(f"The {label} changed while it was read")

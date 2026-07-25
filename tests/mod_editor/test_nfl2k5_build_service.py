@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -581,6 +582,11 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
             "containment_too_large",
         )
         for case in cases:
+            # Announce each case as it STARTS, flushed.  verbosity=2 narrowed
+            # the Windows hang to this test but only prints a subTest once it
+            # has finished, so a case that never returns is still anonymous.
+            # This makes the next timeout name it exactly.
+            print(f"  [case] {case}", file=sys.stderr, flush=True)
             with self.subTest(case=case), tempfile.TemporaryDirectory(
                 prefix="2k5-build-service-test-"
             ) as temporary:

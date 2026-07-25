@@ -19,30 +19,6 @@ import apf_xenos_bc1_mip_layout as bc1_mips
 import nfl_dxt1
 
 
-def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
-    """``(info.st_ctime_ns,)`` on POSIX; ``()`` on Windows.
-
-    Inlined rather than imported from
-    :mod:`mod_editor.core.platform_compat` because this module is executed as a
-    self-contained, tools-only closure and may not import the editor package;
-    the contract is byte-for-byte that helper's.
-
-    On Windows a path stat and an fd stat of the *same, untouched* file do not
-    agree on ``st_ctime``, so putting it in an identity tuple refuses a file
-    nothing touched.  ``st_dev``/``st_ino`` stay the identity and
-    ``st_size``/``st_mtime_ns`` stay the change detectors, so a swapped or
-    rewritten file is still caught.  What is genuinely lost on Windows is the
-    metadata-only-change signal -- a permission or attribute edit that leaves
-    the bytes, the size and the modification time untouched -- and Windows
-    offers no equivalent field that is stable across the two calls, so this
-    check is weaker there than on POSIX.  Stated, not hidden.
-    """
-
-    if sys.platform.startswith("win"):
-        return ()
-    return (info.st_ctime_ns,)
-
-
 SCHEMA = "apf_pants_family_layout/v1"
 EXPECTED_VOLUME_SIZE = 1_140_850_688
 EXPECTED_VOLUME_SHA256 = "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
@@ -320,10 +296,14 @@ def analyze(index_path: Path) -> dict[str, object]:
             pants.append(row)
     after = index_path.stat()
     after_hash = sha256_file(index_path)
+    # ``before`` and ``after`` are both index_path.stat() -- two PATH stats of
+    # one pathname, which agree on st_ctime_ns on every platform.  No path/fd
+    # boundary is crossed, so the change time stays compared.  NOTE: this tuple
+    # carries no st_dev/st_ino; identity comes from the SHA-256 above.
     if (
         after_hash != source_hash
-        or (after.st_size, after.st_mtime_ns, *change_time_identity(after))
-        != (before.st_size, before.st_mtime_ns, *change_time_identity(before))
+        or (after.st_size, after.st_mtime_ns, after.st_ctime_ns)
+        != (before.st_size, before.st_mtime_ns, before.st_ctime_ns)
     ):
         raise FamilyLayoutError("source volume changed during read-only audit")
     assert reference_descriptor is not None and reference_layout is not None

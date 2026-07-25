@@ -117,9 +117,12 @@ class _FileIdentity:
     size: int
     mode: int
     mtime_ns: int
-    # The change-time component of this fingerprint, empty where the platform
-    # cannot compare it across calls (see platform_compat.change_time_identity).
-    change_time: tuple[int, ...]
+    # Captured by lstat and re-checked by lstat of the same pathname
+    # (:func:`_validate_tool_path` and :func:`_require_unchanged_tool`), so both
+    # sides of the comparison are path stats.  Two path stats agree on
+    # st_ctime_ns on every platform Windows included, so the field is kept as a
+    # plain int and compared everywhere.
+    ctime_ns: int
 
 
 @dataclass(frozen=True)
@@ -127,7 +130,10 @@ class _PcmDataLocation:
     descriptor: int
     data_offset: int
     data_size: int
-    source_identity: tuple[int, ...]
+    # Always the full six-field fingerprint: this is captured from an fstat and
+    # re-checked against an fstat of the same descriptor, never against a path
+    # stat, so no component is dropped on any platform.
+    source_identity: tuple[int, int, int, int, int, int]
 
 
 def _noop(_stage: str, _completed: int, _total: int) -> None:
@@ -297,7 +303,40 @@ def export_pcm16_template(
         raise
 
 
-def _source_identity(info: os.stat_result) -> tuple[int, ...]:
+def _source_identity(info: os.stat_result) -> tuple[int, int, int, int, int, int]:
+    """The full fingerprint, for comparing two stats of the *same* family.
+
+    Both sides must come from ``os.fstat`` (or both from a path stat).  The
+    change time is included unconditionally, because two stats of the same
+    family agree on it on every platform -- so a metadata-only edit is still
+    caught here on Windows.  For a path-stat-against-fd-stat comparison use
+    :func:`_cross_stat_identity` instead.
+    """
+
+    return (
+        info.st_dev,
+        info.st_ino,
+        info.st_size,
+        info.st_mtime_ns,
+        info.st_ctime_ns,
+        info.st_nlink,
+    )
+
+
+def _cross_stat_identity(info: os.stat_result) -> tuple[int, ...]:
+    """:func:`_source_identity` minus the field a path stat and an fd stat disagree on.
+
+    Only for the comparisons that put a path stat on one side and an ``os.fstat``
+    on the other.  Windows reaches ``st_ctime`` through a different Win32
+    information class for each, so the two disagree for a file nothing touched
+    and the field cannot be compared across that boundary; it is dropped there
+    (see :func:`platform_compat.supports_change_time_identity`) and kept on
+    POSIX.  Everything else -- ``st_dev``/``st_ino`` identity, ``st_size``,
+    ``st_mtime_ns`` and ``st_nlink`` -- is compared on every platform, so a
+    swapped, relinked or rewritten file is still caught; what is lost on Windows
+    at these sites, and only these, is the metadata-only-change signal.
+    """
+
     return (
         info.st_dev,
         info.st_ino,
@@ -353,7 +392,10 @@ def _open_pcm_data(source: Path, target: Pcm16Target) -> _PcmDataLocation:
         raise AudioEncodingError(f"Could not open the PCM replacement: {exc}") from exc
     try:
         opened = os.fstat(descriptor)
-        if _source_identity(opened) != _source_identity(supplied):
+        # ``supplied`` is a path stat and ``opened`` an fd stat, so this one
+        # comparison crosses the boundary Windows cannot carry a change time
+        # across.
+        if _cross_stat_identity(opened) != _cross_stat_identity(supplied):
             raise AudioEncodingError("The PCM replacement changed while it was opened")
         header = _read_at(descriptor, 12, 0, "PCM replacement")
         if header[:4] != b"RIFF" or header[8:12] != b"WAVE":
@@ -555,7 +597,7 @@ def _validate_tool_path(
         size=info.st_size,
         mode=info.st_mode,
         mtime_ns=info.st_mtime_ns,
-        change_time=platform_compat.change_time_identity(info),
+        ctime_ns=info.st_ctime_ns,
     )
 
 
@@ -564,6 +606,9 @@ def _require_unchanged_tool(identity: _FileIdentity, label: str) -> None:
         info = identity.path.lstat()
     except OSError as exc:
         raise AudioEncodingError(f"{label} disappeared during encoding: {exc}") from exc
+    # ``identity`` was captured by lstat and ``info`` is an lstat of the same
+    # pathname: two path stats, which agree on st_ctime_ns everywhere, so the
+    # metadata-only-change signal is kept on every platform.
     if (
         not stat.S_ISREG(info.st_mode)
         or stat.S_ISLNK(info.st_mode)
@@ -573,7 +618,7 @@ def _require_unchanged_tool(identity: _FileIdentity, label: str) -> None:
             info.st_size,
             info.st_mode,
             info.st_mtime_ns,
-            *platform_compat.change_time_identity(info),
+            info.st_ctime_ns,
         )
         != (
             identity.device,
@@ -581,7 +626,7 @@ def _require_unchanged_tool(identity: _FileIdentity, label: str) -> None:
             identity.size,
             identity.mode,
             identity.mtime_ns,
-            *identity.change_time,
+            identity.ctime_ns,
         )
     ):
         raise AudioEncodingError(f"{label} changed during encoding; output was discarded")
@@ -612,7 +657,8 @@ def _read_private_output(path: Path, maximum: int) -> bytes:
     )
     try:
         opened = os.fstat(descriptor)
-        if _source_identity(opened) != _source_identity(info):
+        # Path stat against fd stat; see :func:`_cross_stat_identity`.
+        if _cross_stat_identity(opened) != _cross_stat_identity(info):
             raise AudioEncodingError("The XMA1 encoder output changed while opening")
         chunks: list[bytes] = []
         total = 0
@@ -1081,7 +1127,8 @@ def _clean_stderr(path: Path) -> str:
         )
         try:
             opened = os.fstat(descriptor)
-            if _source_identity(opened) != _source_identity(info):
+            # Path stat against fd stat; see :func:`_cross_stat_identity`.
+            if _cross_stat_identity(opened) != _cross_stat_identity(info):
                 raise AudioEncodingError(
                     "The XMA1 encoder diagnostic output changed while opening"
                 )

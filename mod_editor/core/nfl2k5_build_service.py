@@ -635,7 +635,21 @@ def _read_regular_snapshot(
     except OSError as exc:
         raise ValidationError(f"{label} could not be opened safely: {resolved}") from exc
     try:
+        # ``named`` and ``named_after`` are PATH stats; ``opened`` and
+        # ``opened_after`` are FD stats of the descriptor.  Windows reaches
+        # st_ctime through a different Win32 information class for each family,
+        # so the two disagree for a file nothing touched.  The path/path
+        # comparison therefore keeps the change time on every platform, while
+        # the two path/fd comparisons drop it where it cannot be compared --
+        # hence two spellings of the ``named`` fingerprint.
         expected = (
+            named.st_dev,
+            named.st_ino,
+            named.st_size,
+            named.st_mtime_ns,
+            named.st_ctime_ns,
+        )
+        expected_cross = (
             named.st_dev,
             named.st_ino,
             named.st_size,
@@ -651,7 +665,7 @@ def _read_regular_snapshot(
                 opened.st_size,
                 opened.st_mtime_ns,
                 *platform_compat.change_time_identity(opened),
-            ) != expected
+            ) != expected_cross
         ):
             raise ValidationError(f"{label} changed while it was being opened")
         chunks: list[bytes] = []
@@ -677,13 +691,13 @@ def _read_regular_snapshot(
                 opened_after.st_size,
                 opened_after.st_mtime_ns,
                 *platform_compat.change_time_identity(opened_after),
-            ) != expected
+            ) != expected_cross
             or (
                 named_after.st_dev,
                 named_after.st_ino,
                 named_after.st_size,
                 named_after.st_mtime_ns,
-                *platform_compat.change_time_identity(named_after),
+                named_after.st_ctime_ns,
             ) != expected
         ):
             raise ValidationError(f"{label} changed while it was being read")
@@ -975,7 +989,18 @@ def _private_audio_inventory_file(
             raise _audio_safety_error(
                 f"{label} changed while it was being checked at {path}"
             ) from exc
+        # ``named`` and ``named_after`` are DirHandle PATH stats; ``opened`` is
+        # an FD stat.  The path/path comparison keeps the change time on every
+        # platform; the path/fd one drops it where Windows cannot compare the
+        # two calls (platform_compat.supports_change_time_identity).
         expected = (
+            named.st_dev,
+            named.st_ino,
+            named.st_size,
+            named.st_mtime_ns,
+            named.st_ctime_ns,
+        )
+        expected_cross = (
             named.st_dev,
             named.st_ino,
             named.st_size,
@@ -995,13 +1020,13 @@ def _private_audio_inventory_file(
                 opened.st_size,
                 opened.st_mtime_ns,
                 *platform_compat.change_time_identity(opened),
-            ) != expected
+            ) != expected_cross
             or (
                 named_after.st_dev,
                 named_after.st_ino,
                 named_after.st_size,
                 named_after.st_mtime_ns,
-                *platform_compat.change_time_identity(named_after),
+                named_after.st_ctime_ns,
             ) != expected
         ):
             raise _audio_safety_error(

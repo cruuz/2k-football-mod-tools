@@ -785,7 +785,36 @@ class _ValidatedPayloadSource:
     size: int
 
 
-def _replacement_identity(info: os.stat_result) -> tuple[int, ...]:
+def _replacement_identity(info: os.stat_result) -> tuple[int, int, int, int, int]:
+    """The full fingerprint, for comparing two stats of the *same* family.
+
+    Both sides must be ``os.fstat``s (or both path stats).  Same-family stats
+    agree on the change time on every platform, so it is compared everywhere and
+    a metadata-only edit is still caught on Windows.  Use
+    :func:`_replacement_cross_stat_identity` where a path stat is held against an
+    fd stat.
+    """
+
+    return (
+        info.st_dev,
+        info.st_ino,
+        info.st_size,
+        info.st_mtime_ns,
+        info.st_ctime_ns,
+    )
+
+
+def _replacement_cross_stat_identity(info: os.stat_result) -> tuple[int, ...]:
+    """:func:`_replacement_identity` minus the field the two stat families disagree on.
+
+    Only for a path-stat-against-fd-stat comparison, where Windows reports two
+    different ``st_ctime`` values for one untouched file.  ``st_dev``/``st_ino``
+    still answer "is this the same file" and ``st_size``/``st_mtime_ns`` still
+    catch a rewrite there; the metadata-only-change signal is what is lost on
+    Windows at this one comparison (see
+    :func:`platform_compat.supports_change_time_identity`).
+    """
+
     return (
         info.st_dev,
         info.st_ino,
@@ -821,9 +850,12 @@ def _open_replacement_source(
         raise ProjectError(f"Replacement changed after import: {asset_id}") from exc
     try:
         opened = os.fstat(descriptor)
+        # ``before`` is a path lstat and ``opened`` an fd stat: the one
+        # cross-family comparison in this file's replacement path.
         if (
             not stat.S_ISREG(opened.st_mode)
-            or _replacement_identity(opened) != _replacement_identity(before)
+            or _replacement_cross_stat_identity(opened)
+            != _replacement_cross_stat_identity(before)
         ):
             raise ProjectError(f"Replacement changed after import: {asset_id}")
         if expected_size is None:
@@ -853,6 +885,8 @@ def _read_replacement_for_validation(path: Path, asset_id: str) -> bytes:
         if os.read(descriptor, 1):
             raise ProjectError(f"Replacement changed after import: {asset_id}")
         after = os.fstat(descriptor)
+        # Two fd stats of the same descriptor: the change time is comparable on
+        # every platform, so it stays in the fingerprint here.
         if _replacement_identity(after) != _replacement_identity(opened):
             raise ProjectError(f"Replacement changed after import: {asset_id}")
         return b"".join(chunks)
@@ -938,6 +972,8 @@ def _write_payload_member(
                     f"Replacement changed after import: {payload.asset_id}"
                 )
         after = os.fstat(descriptor)
+        # Two fd stats of the same descriptor: the change time is comparable on
+        # every platform, so it stays in the fingerprint here.
         if (
             _replacement_identity(after) != _replacement_identity(opened)
             or digest.hexdigest() != payload.sha256

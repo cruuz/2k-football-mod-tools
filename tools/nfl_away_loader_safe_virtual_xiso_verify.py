@@ -36,15 +36,22 @@ def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
     self-contained, tools-only closure and may not import the editor package;
     the contract is byte-for-byte that helper's.
 
-    On Windows a path stat and an fd stat of the *same, untouched* file do not
-    agree on ``st_ctime``, so putting it in an identity tuple refuses a file
-    nothing touched.  ``st_dev``/``st_ino`` stay the identity and
-    ``st_size``/``st_mtime_ns`` stay the change detectors, so a swapped or
-    rewritten file is still caught.  What is genuinely lost on Windows is the
-    metadata-only-change signal -- a permission or attribute edit that leaves
-    the bytes, the size and the modification time untouched -- and Windows
-    offers no equivalent field that is stable across the two calls, so this
-    check is weaker there than on POSIX.  Stated, not hidden.
+    **For cross-family comparisons only** -- a path stat on one side, an
+    ``os.fstat`` on the other.  Windows reaches ``st_ctime`` through a different
+    Win32 information class for each family, so the two disagree for the *same,
+    untouched* file and putting the field in such a tuple refuses a file nothing
+    touched.  Two stats of the *same* family agree on it on every platform, and
+    a same-family check must therefore compare ``st_ctime_ns`` directly rather
+    than route it through here; this module happens to have no same-family
+    comparison, so every call below is a legitimate one.
+
+    What is compared on every platform in this module's :func:`file_identity`:
+    ``st_dev``/``st_ino`` (identity), ``st_mode``, ``st_nlink``, ``st_size`` and
+    ``st_mtime_ns`` -- so a swapped, relinked, re-permissioned or rewritten file
+    is still caught.  What is genuinely lost on Windows is the narrower
+    metadata-only-change signal that ``st_ctime`` alone carries, and Windows
+    offers no equivalent field stable across the two families, so this check is
+    weaker there than on POSIX.  Stated, not hidden.
     """
 
     if sys.platform.startswith("win"):
@@ -161,6 +168,16 @@ FileIdentity = tuple[int, ...]
 
 
 def file_identity(info: os.stat_result) -> FileIdentity:
+    """A fingerprint safe to compare across the path-stat/fd-stat boundary.
+
+    Every comparison in this module puts an ``os.fstat`` against a path stat --
+    ``open_input``, ``require_stable``, the ``PinnedCopySession`` root and stage
+    checks, and ``validate_retained_previews`` all re-check a descriptor against
+    the name it was opened from.  There is no same-family comparison here, so
+    the change time is routed through :func:`change_time_identity` at every
+    site; see that function for exactly what Windows loses.
+    """
+
     return (
         info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
         info.st_size, info.st_mtime_ns, *change_time_identity(info),

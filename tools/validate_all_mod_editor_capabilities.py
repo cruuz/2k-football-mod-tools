@@ -546,6 +546,10 @@ def _capture_lookup_node(path: Path) -> PathLookupSnapshot:
     target_before = os.readlink(path) if stat.S_ISLNK(before.st_mode) else None
     after = path.lstat()
     target_after = os.readlink(path) if stat.S_ISLNK(after.st_mode) else None
+    # ``before`` and ``after`` are both path.lstat() of one pathname: two path
+    # stats, which agree on st_ctime_ns on every platform, Windows included, so
+    # the change time stays in this fingerprint and a metadata-only edit to the
+    # lookup path is still caught everywhere.
     identity_before = (
         before.st_dev,
         before.st_ino,
@@ -553,7 +557,7 @@ def _capture_lookup_node(path: Path) -> PathLookupSnapshot:
         before.st_mode,
         before.st_size,
         before.st_mtime_ns,
-        *platform_compat.change_time_identity(before),
+        before.st_ctime_ns,
         target_before,
     )
     identity_after = (
@@ -563,7 +567,7 @@ def _capture_lookup_node(path: Path) -> PathLookupSnapshot:
         after.st_mode,
         after.st_size,
         after.st_mtime_ns,
-        *platform_compat.change_time_identity(after),
+        after.st_ctime_ns,
         target_after,
     )
     if identity_after != identity_before:
@@ -1314,6 +1318,9 @@ def _verify_report_stage(
     if os.pread(descriptor, 1, len(payload)):
         raise ValidationRunError("report staging descriptor grew while reading")
     after = os.fstat(descriptor)
+    # ``before`` and ``after`` are both os.fstat of this one descriptor: two fd
+    # stats, which agree on st_ctime_ns on every platform, Windows included, so
+    # the change time stays in this fingerprint.
     identity_before = (
         before.st_dev,
         before.st_ino,
@@ -1321,7 +1328,7 @@ def _verify_report_stage(
         before.st_mode,
         before.st_size,
         before.st_mtime_ns,
-        *platform_compat.change_time_identity(before),
+        before.st_ctime_ns,
     )
     identity_after = (
         after.st_dev,
@@ -1330,7 +1337,7 @@ def _verify_report_stage(
         after.st_mode,
         after.st_size,
         after.st_mtime_ns,
-        *platform_compat.change_time_identity(after),
+        after.st_ctime_ns,
     )
     if identity_after != identity_before or digest.hexdigest() != expected_sha256:
         raise ValidationRunError("report staging descriptor changed while reading")

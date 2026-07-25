@@ -140,6 +140,20 @@ def required_executable_seals() -> int:
 
 
 def file_identity(info: os.stat_result) -> FileIdentity:
+    """A fingerprint safe to compare across the path-stat/fd-stat boundary.
+
+    Every comparison in this module is ``os.fstat`` against ``path.lstat`` --
+    ``open_pinned`` and ``require_stable`` both re-check a descriptor against
+    the name it was opened from -- so none of them can carry ``st_ctime`` on
+    Windows, where a path stat and an fd stat of one untouched file disagree on
+    it.  The field is therefore dropped there by
+    :func:`platform_compat.change_time_identity` and kept on POSIX.
+    ``st_dev``/``st_ino`` (identity), ``st_mode``, ``st_nlink``, ``st_size`` and
+    ``st_mtime_ns`` are compared on every platform; what Windows loses is the
+    narrower metadata-only-change signal, for which it offers no field stable
+    across the two stat families.
+    """
+
     return (
         info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
         info.st_size, info.st_mtime_ns,

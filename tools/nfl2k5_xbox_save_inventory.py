@@ -20,35 +20,10 @@ from pathlib import Path
 import re
 import stat
 import struct
-import sys
 from typing import Any, BinaryIO
 
 from fatx_dirent_rename import Dirent, FatXVolume, PARTITIONS
 from xbe_info import Xbe
-
-
-def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
-    """``(info.st_ctime_ns,)`` on POSIX; ``()`` on Windows.
-
-    Inlined rather than imported from
-    :mod:`mod_editor.core.platform_compat` because this module is executed as a
-    self-contained, tools-only closure and may not import the editor package;
-    the contract is byte-for-byte that helper's.
-
-    On Windows a path stat and an fd stat of the *same, untouched* file do not
-    agree on ``st_ctime``, so putting it in an identity tuple refuses a file
-    nothing touched.  ``st_dev``/``st_ino`` stay the identity and
-    ``st_size``/``st_mtime_ns`` stay the change detectors, so a swapped or
-    rewritten file is still caught.  What is genuinely lost on Windows is the
-    metadata-only-change signal -- a permission or attribute edit that leaves
-    the bytes, the size and the modification time untouched -- and Windows
-    offers no equivalent field that is stable across the two calls, so this
-    check is weaker there than on POSIX.  Stated, not hidden.
-    """
-
-    if sys.platform.startswith("win"):
-        return ()
-    return (info.st_ctime_ns,)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -221,13 +196,15 @@ def read_pinned_regular(path: Path, expected_size: int, expected_hash: str,
         payload = b"".join(chunks)
         require(sha256(payload) == expected_hash, f"{label} SHA-256 differs")
         after = os.fstat(descriptor)
+        # ``opened`` and ``after`` are both os.fstat of this one descriptor: two
+        # fd stats, which agree on st_ctime_ns on every platform, so it stays in.
         require(
             (
                 after.st_dev,
                 after.st_ino,
                 after.st_size,
                 after.st_mtime_ns,
-                *change_time_identity(after),
+                after.st_ctime_ns,
                 after.st_nlink,
             )
             == (
@@ -235,7 +212,7 @@ def read_pinned_regular(path: Path, expected_size: int, expected_hash: str,
                 opened.st_ino,
                 opened.st_size,
                 opened.st_mtime_ns,
-                *change_time_identity(opened),
+                opened.st_ctime_ns,
                 opened.st_nlink,
             ),
             f"{label} changed during read",
@@ -288,6 +265,13 @@ def open_image_read_only(path: Path, expected_hash: str) -> tuple[int, os.stat_r
 
 
 def require_descriptor_unchanged(descriptor: int, opened: os.stat_result) -> None:
+    """Re-check the pinned image descriptor against its open-time fstat.
+
+    ``opened`` is the ``os.fstat`` :func:`open_image_read_only` took, so both
+    sides are fd stats.  Two fd stats agree on st_ctime_ns on every platform,
+    Windows included, so the change time stays in this fingerprint.
+    """
+
     after = os.fstat(descriptor)
     require(
         (
@@ -295,7 +279,7 @@ def require_descriptor_unchanged(descriptor: int, opened: os.stat_result) -> Non
             after.st_ino,
             after.st_size,
             after.st_mtime_ns,
-            *change_time_identity(after),
+            after.st_ctime_ns,
             after.st_nlink,
         )
         == (
@@ -303,7 +287,7 @@ def require_descriptor_unchanged(descriptor: int, opened: os.stat_result) -> Non
             opened.st_ino,
             opened.st_size,
             opened.st_mtime_ns,
-            *change_time_identity(opened),
+            opened.st_ctime_ns,
             opened.st_nlink,
         ),
         "raw HDD image changed during analysis",

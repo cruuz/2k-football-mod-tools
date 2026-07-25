@@ -21,30 +21,6 @@ import nfl_tset_png_import_xiso_generic_patch as pinning
 import nfl_uniform_color_xiso_direct_patch as common
 
 
-def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
-    """``(info.st_ctime_ns,)`` on POSIX; ``()`` on Windows.
-
-    Inlined rather than imported from
-    :mod:`mod_editor.core.platform_compat` because this module is executed as a
-    self-contained, tools-only closure and may not import the editor package;
-    the contract is byte-for-byte that helper's.
-
-    On Windows a path stat and an fd stat of the *same, untouched* file do not
-    agree on ``st_ctime``, so putting it in an identity tuple refuses a file
-    nothing touched.  ``st_dev``/``st_ino`` stay the identity and
-    ``st_size``/``st_mtime_ns`` stay the change detectors, so a swapped or
-    rewritten file is still caught.  What is genuinely lost on Windows is the
-    metadata-only-change signal -- a permission or attribute edit that leaves
-    the bytes, the size and the modification time untouched -- and Windows
-    offers no equivalent field that is stable across the two calls, so this
-    check is weaker there than on POSIX.  Stated, not hidden.
-    """
-
-    if sys.platform.startswith("win"):
-        return ()
-    return (info.st_ctime_ns,)
-
-
 SCHEMA = "nfl2k5_uniform_jersey_png_workflow/v3"
 
 
@@ -348,10 +324,14 @@ def run(
         final_output_info = verify_output_span(
             output, output_identity, target, replacement_payload
         )
+        # Both stats come from verify_output_span()'s os.fstat of the output
+        # descriptor: fd against fd, so st_ctime_ns is comparable on every
+        # platform and stays in.  NOTE: this tuple carries no st_dev/st_ino;
+        # verify_output_span checks fd_identity/path_identity itself.
         common.require((final_output_info.st_size, final_output_info.st_mtime_ns,
-                        *change_time_identity(final_output_info)) ==
+                        final_output_info.st_ctime_ns) ==
                        (output_info.st_size, output_info.st_mtime_ns,
-                        *change_time_identity(output_info)),
+                        output_info.st_ctime_ns),
                        "final output XISO metadata changed")
         for item in final_files[1:-1]:
             common.require(ownership.owned_matches(item) and

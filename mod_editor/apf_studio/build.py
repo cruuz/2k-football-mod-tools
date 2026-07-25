@@ -313,16 +313,23 @@ def _publish_directory_noreplace(staging: Path, destination: Path) -> None:
 
     This is the path-based (``AT_FDCWD``) folder publisher.  The OS-primitive
     layer lives in :mod:`platform_compat`: Linux keeps
-    ``renameat2(RENAME_NOREPLACE)`` byte-for-byte; macOS and any POSIX kernel
-    without it reserve the destination with ``os.mkdir`` (atomic; refuses an
-    existing name) and ``os.rename`` the staged folder onto that placeholder;
-    Windows uses its own ``os.rename``, which natively refuses to overwrite an
-    existing destination.  A destination that already exists raises
-    :class:`FileExistsError`, exactly as before.
+    ``renameat2(RENAME_NOREPLACE)`` byte-for-byte; macOS uses
+    ``renameatx_np(RENAME_EXCL)``, its atomic exclusive directory rename; a POSIX
+    kernel or volume with neither reserves the destination with ``os.mkdir``
+    (atomic; refuses an existing name) and ``os.rename``\\ s the staged folder
+    onto that placeholder; Windows uses its own ``os.rename``, which natively
+    refuses to overwrite an existing destination.  A destination that already
+    exists raises :class:`FileExistsError`, exactly as before.
+
+    Only the ``os.mkdir``-reserve fallback is not a single atomic no-clobber
+    step, and it is the one mechanism this function refuses to accept: a build
+    output must never be able to land on top of a directory another process
+    created, so a publish reporting ``atomic_no_clobber=False`` raises
+    :class:`BuildError` instead of returning, and no receipt is produced.
     """
 
     try:
-        platform_compat.publish_no_replace(
+        published = platform_compat.publish_no_replace(
             staging, destination, dir_fd=None, is_directory=True
         )
     except FileExistsError as exc:
@@ -331,6 +338,27 @@ def _publish_directory_noreplace(staging: Path, destination: Path) -> None:
         raise BuildError(
             "This system does not provide atomic no-replace folder publishing"
         ) from exc
+    if not published.atomic_no_clobber:
+        # platform_compat had to fall back to reserve-then-rename, which is two
+        # steps: a same-user racer that replaced the reserved placeholder between
+        # them would have had its directory overwritten by the swap.  The staged
+        # folder is at `destination` by the time we can see that -- there is no
+        # mechanism here that could have asked first -- so the only fail-closed
+        # move left is to refuse the build rather than hand back a receipt whose
+        # "published_atomically" is not true.  It is deliberately NOT rolled
+        # back: deleting or renaming `destination` now would act on a name whose
+        # ownership is precisely what could not be established.
+        raise BuildError(
+            "This system published the build folder without an atomic "
+            f"no-replace guarantee (mechanism {published.mechanism}): "
+            f"{destination} now exists but Mod Studio cannot prove the publish "
+            "did not replace a folder another process created at the same "
+            "instant. That folder is not a completed build and its manifest's "
+            "published_atomically flag was written before the publish, so do "
+            "not trust it: inspect the folder and remove it, then build to a "
+            "destination on a filesystem that supports atomic no-replace folder "
+            "publishing."
+        )
 
 
 class ApfBuildService:
@@ -781,6 +809,18 @@ class ApfBuildService:
                     "launch_file": "default.xex",
                     "0a_size": output_0a.stat().st_size,
                     "0a_sha256": output_sha,
+                    # Written into the staging folder before the publish, so it
+                    # is a claim about something that has not happened yet.  It
+                    # is true of every build this service completes, because
+                    # _publish_directory_noreplace accepts only a single atomic
+                    # no-clobber mechanism and raises BuildError on any other --
+                    # so no BuildReceipt is ever returned for a folder published
+                    # some weaker way.  The one case where this line can be read
+                    # off a folder it is not true of is that BuildError itself:
+                    # the fallback publish has already put the staged folder in
+                    # place by the time its mechanism is visible, and it is not
+                    # rolled back, so the error names that folder and says to
+                    # remove it rather than trust the manifest inside it.
                     "published_atomically": True,
                 },
                 "edit_count": len(edits),
