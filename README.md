@@ -191,9 +191,33 @@ The full internal research log is preserved in
 
 ---
 
+## Contributing
+
+Contributions are welcome — PS2 support arrived that way. Read
+[`CONTRIBUTING.md`](CONTRIBUTING.md) first: this project classifies every
+capability by how strongly it has been *proved*, and a writer only ships with an
+independent verifier. Understanding that ladder before you write code will save
+you a review round.
+
+Bug reports and detailed feature requests are just as valuable. A request that
+names the exact in-game symptom is often the research lead that makes a feature
+possible at all.
+
+Security issues, and any case where the tools claim a guarantee they do not
+actually enforce, go to [`SECURITY.md`](SECURITY.md) — privately, please.
+
+---
+
 ## License
 
 Released under the **MIT License** — see [`LICENSE`](LICENSE).
+
+[`NOTICE.md`](NOTICE.md) covers what that licence does *not* grant: it applies to
+these tools and their source only, and gives you no rights to any game, game
+data or trademark. Bring your own legally obtained copy. It also carries the
+retail-free statement and the attribution for the bundled `extract-xiso`.
+
+Release history is in [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
 

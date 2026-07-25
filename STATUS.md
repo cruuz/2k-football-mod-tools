@@ -164,7 +164,25 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-**`beta-2` — 2026-07-25** ·
+### `beta-3` — 2026-07-25 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-3>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC29-20260725.tar.gz` | 9,434,164 | `3966d12eeeb73a8f0acd2bb68fca7fda2a683c1865b1d18a58b1dda80f1a251b` |
+| `apf2k8-mod-studio-0.1.0-alpha.34-20260725.tar.gz` | 1,108,507 | `feb49eefa5233d4c0459dc8f1783bb1aa3bbe93608c61c34a0191da1585b544d` |
+
+No editor code changed between beta 2 and beta 3, which is why both products
+still identify as `v1.0-RC29` and `0.1.0-alpha.34`. Both archives nevertheless
+changed, because both now ship `LICENSE` and `NOTICE.md` — MIT requires its own
+text to accompany every copy, and neither archive had contained one. The APF
+archive additionally carries the corrected `APF2K8-README.md`. The APF asset
+filename now carries a date, matching the 2K5 convention, so one filename can
+never again cover more than one set of bytes.
+
+### `beta-2` — 2026-07-25 · SUPERSEDED by beta-3
+
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-2>
 
 | Asset | Bytes | SHA-256 |
@@ -172,20 +190,21 @@ what was sealed.
 | `2K5-Mod-Studio-v1.0-RC29-20260725.tar.gz` | 9,432,505 | `4c293e609ce15df55a2b7dd870ad13eefe419e9db2a88ae8bb4b82e01c2230e4` |
 | `apf2k8-mod-studio-0.1.0-alpha.34.tar.gz` | 1,105,799 | `f047682430f4cc5be868b586b875fbf602c62799130cbd5623b128a6219676f1` |
 
-Each asset is deterministic: staging from its allowlist with
-`packaging/stage_release.py` and rebuilding with `packaging/build_archive.py` at
-epoch `2026-07-25T00:00:00Z` reproduces these bytes exactly. Both archives, and
-the two they supersede below, were rebuilt and compared byte-for-byte rather
-than asserted.
-
-The APF asset was re-issued twice on release day; the 2K5 asset was published
-once and has never changed. Superseded APF uploads, recorded so an early
-download can be identified rather than left ambiguous:
+Its 2K5 asset was published once and never changed. Its APF asset was replaced
+twice under a single filename — the reason beta 3 dates that filename. The two
+superseded APF uploads, recorded so an early download can still be identified:
 
 | Superseded APF upload | Bytes | SHA-256 | Why it was replaced |
 | --- | --- | --- | --- |
 | first | 981,711 | `51b5d258d242887deba105b2043702554bae1abf50363abd2eb98badbe2e779a` | shipped only the Linux extractor, so a Windows user could not hand the app an ISO |
 | second | 1,103,838 | `67a1d777c5f587e28776a75c2ca6ae59d7290a965a04f8f7bf430c0a635e58af` | added `extract-xiso.exe`, but its bundled `APF2K8-README.md` still told Windows users the ISO path would not work and still reported the suite as failing on Windows and macOS |
+
+Every asset above is deterministic: staging from its allowlist with
+`packaging/stage_release.py` and rebuilding with `packaging/build_archive.py` at
+epoch `2026-07-25T00:00:00Z` reproduces those exact bytes. Each was rebuilt and
+compared byte-for-byte rather than asserted, including a rebuild of the two live
+beta-2 assets before any of the beta-3 changes were made, to prove the pipeline
+matched reality before it was used to change anything.
 
 ## RC29 project-backed Audio cue labels — sealed
 

@@ -4,6 +4,13 @@
 # A trailing slash permits a directory subtree, while the checker still applies
 # its safe-text, size, symlink, hardlink, forbidden-directory, and suffix gates.
 
+# The MIT licence requires its own text to travel with every copy of the
+# software, so it ships inside the archive rather than only living in the
+# repository. NOTICE.md carries the game-IP scope, the retail-free statement,
+# and the attribution for the bundled third-party extractor.
+LICENSE
+NOTICE.md
+
 # Cross-platform double-click launchers. Linux uses
 # tools/launch_2k5_mod_studio.sh via the desktop entry.
 2K5-Mod-Studio.bat

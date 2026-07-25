@@ -1,0 +1,19 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security or a guarantee that overstates itself
+    url: https://github.com/cruuz/2k-football-mod-tools/security/advisories/new
+    about: >-
+      Report privately. This includes any case where the tools claim a guarantee
+      they do not actually enforce on your platform — that is treated as a
+      security bug here, not a documentation nit.
+  - name: Installing, or which file to point it at
+    url: https://github.com/cruuz/2k-football-mod-tools/releases
+    about: >-
+      Per-platform install instructions, the SHA-256 of each archive, and the
+      known limits are all in the newest release notes. Everything is still
+      marked pre-release, so take the topmost entry.
+  - name: How to contribute
+    url: https://github.com/cruuz/2k-football-mod-tools/blob/main/CONTRIBUTING.md
+    about: >-
+      How capabilities are classified, why a writer needs an independent
+      verifier, and the surprises worth knowing before you open a pull request.

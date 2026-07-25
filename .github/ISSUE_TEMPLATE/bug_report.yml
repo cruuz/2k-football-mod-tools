@@ -1,0 +1,86 @@
+name: Bug report
+description: Something in one of the editors behaves wrongly
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do not attach or link game files, ISOs or extracted game data.
+        Hashes, offsets, screenshots of the editor UI and log text are all fine.
+
+  - type: dropdown
+    id: editor
+    attributes:
+      label: Which editor?
+      options:
+        - 2K5 Mod Studio (ESPN NFL 2K5, original Xbox)
+        - APF 2K8 Mod Studio (All-Pro Football 2K8, Xbox 360)
+        - Both / not sure
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The release tag you downloaded, plus the version shown in the app.
+      placeholder: "beta-3 · 2K5 Mod Studio v1.0-RC29"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Linux
+        - Windows
+        - macOS
+    validations:
+      required: true
+
+  - type: dropdown
+    id: source
+    attributes:
+      label: What did you point it at?
+      options:
+        - An .iso / XISO
+        - An already-extracted game folder
+        - Neither — it failed before that
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what happened, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: |
+        The more exact the better. Which capability or tab, which asset, which
+        button. A case that reproduces every time is worth far more than a
+        general description.
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Error text or terminal output
+      description: Paste any traceback or message. Automatically formatted as code.
+      render: text
+
+  - type: checkboxes
+    id: integrity
+    attributes:
+      label: Before submitting
+      options:
+        - label: I verified my download against its `.sha256` sidecar
+        - label: I confirm this report contains no game data, and no links to any
+          required: true

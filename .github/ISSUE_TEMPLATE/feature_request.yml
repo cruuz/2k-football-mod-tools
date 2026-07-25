@@ -1,0 +1,70 @@
+name: Feature request
+description: Ask for something the editors cannot do yet
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Detailed requests are genuinely valuable here. Most of what these tools
+        can edit had to be reverse engineered first, so a request that names the
+        exact in-game symptom often *is* the research lead that makes the feature
+        possible.
+
+        Please do not attach or link game files, ISOs or extracted game data.
+
+  - type: dropdown
+    id: game
+    attributes:
+      label: Which game?
+      options:
+        - ESPN NFL 2K5 (original Xbox)
+        - All-Pro Football 2K8 (Xbox 360)
+        - Both
+    validations:
+      required: true
+
+  - type: textarea
+    id: want
+    attributes:
+      label: What would you like to edit or change?
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: What does it look like in-game today?
+      description: |
+        The concrete symptom, as specifically as you can. Which teams,
+        formations, players, menus, down and distance. If something behaves
+        differently between two modes — practice versus a game, one playbook
+        versus another — say so; those differences are unusually useful, because
+        they isolate where the behaviour lives.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: A case that reproduces every time
+      description: |
+        Optional, but the single most useful thing you can provide. One case that
+        happens reliably beats a broad description, because it gives a decode
+        attempt something to be right or wrong about.
+
+  - type: textarea
+    id: known
+    attributes:
+      label: Anything you already know about the format
+      description: |
+        Prior modding work, forum threads, tools that touched this data, or
+        anything you have noticed yourself. Links to write-ups are welcome; game
+        files are not.
+
+  - type: checkboxes
+    id: legal
+    attributes:
+      label: Before submitting
+      options:
+        - label: I confirm this request contains no game data, and no links to any
+          required: true
