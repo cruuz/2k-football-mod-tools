@@ -298,6 +298,23 @@ class BundledExtractorTests(unittest.TestCase):
         assert spec.loader is not None
         spec.loader.exec_module(module)
 
+        # tools/vendor/ is gitignored in its entirety, so NEITHER binary is in
+        # a clean checkout -- they are release-build inputs bundled into the
+        # tarball locally, which is why ci.yml's release-gates job skips loudly
+        # when they are absent rather than failing. This test follows the same
+        # convention: it asserts the pins wherever the binaries actually exist
+        # (a maintainer's tree, a release build) and skips where they cannot.
+        missing = [
+            relative
+            for relative in (module.REVIEWED_BINARY, module.REVIEWED_WINDOWS_BINARY)
+            if not (root / relative).is_file()
+        ]
+        if missing:
+            self.skipTest(
+                "vendored extract-xiso binaries are gitignored release-build "
+                f"inputs and are absent from this checkout: {', '.join(missing)}"
+            )
+
         for relative, size, digest, magic in (
             (
                 module.REVIEWED_BINARY,
