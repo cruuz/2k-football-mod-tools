@@ -352,7 +352,12 @@ class Apf2k8DigitalFontProvider:
                     (sys.executable, os.fspath(staged), *arguments), stage, emit
                 )
             # Ported platforms only: hold the whole staged closure pinned until the
-            # child exists, so the module that was checked is the module that runs.
+            # child exists.  That makes the checked module the module that runs
+            # only where the handle names the exec path (Linux /proc); this
+            # closure always executes a staged PATHNAME so its sibling imports
+            # resolve, so on macOS and Windows a same-user rename can still
+            # rebind that name -- counted and warned about below, not claimed
+            # away.
             with self._pinned_closure(staged_pins, relative, stage, emit) as exec_path:
                 return self._run(
                     (sys.executable, os.fspath(exec_path), *arguments), stage, emit

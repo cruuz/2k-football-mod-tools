@@ -23,8 +23,13 @@ a meaningful ``st_uid`` -- Python reports ``0`` there for every file -- so
 porting that comparison naively would silently turn a real security check into
 one that always passes.  :func:`describe_ownership` answers the same question
 with each platform's own ownership model instead: on POSIX the uid comparison,
-unchanged; on Windows a comparison of the file's *owner SID* against the calling
-process token's user SID, which is the exact Win32 analogue of uid equality.
+unchanged; on Windows a comparison of the file's *owner SID* against the
+identities the calling process token actually holds -- its user SID, its
+``TokenOwner`` (what Windows stamps on objects an elevated token creates, often
+``BUILTIN\Administrators``), and any group the token is a member of.  That is
+wider than uid equality, deliberately: comparing against the user SID alone
+refuses the process's own files whenever it runs elevated.  Which of the three
+matched is spelled out in :attr:`OwnershipCheck.detail`.
 Which mechanism actually ran is reported in :attr:`OwnershipCheck.mechanism`, so
 callers and tests can assert the platform difference instead of trusting it.
 
@@ -66,8 +71,9 @@ never a silent skip.  Concretely, where kernel write-seals exist (Linux
 they do not, it is honest that the read-only fallback is *reversible by the owner*
 (``sealed=False``, ``reverify_before_use=True``) and returns the bytes' hash so
 the caller re-verifies immediately before use -- :func:`reverify_sealed_before_exec`
-re-hashes the exact file and hands back a held descriptor right before a
-subprocess opens it, so a swap after the seal is caught rather than executed;
+re-hashes the exact file right before a subprocess opens it, so a swap made
+before that re-hash is caught rather than executed (a swap made after it is
+caught only on Linux, which alone can hand the child a descriptor-bound path);
 :func:`exclusive_nonblocking_lock`
 still fails immediately (never blocks) and still refuses when the lock is held;
 :func:`try_reflink` reports ``False`` so the caller uses its verified plain
@@ -1547,8 +1553,13 @@ def describe_ownership(
     genuinely wider identity when the token is elevated (any administrator on the
     machine matches, though any administrator can already take ownership of
     anything), so which SID matched is spelled out in :attr:`OwnershipCheck.detail`
-    rather than hidden.  Only those two SIDs are accepted; any other owner is
-    still refused.
+    rather than hidden.  A third case is accepted for the same reason: an owner
+    SID the token holds by GROUP membership (``CheckTokenMembership``), which is
+    how an elevated process's own files commonly come back owned by
+    ``BUILTIN\Administrators`` -- neither its user SID nor, on some policies, its
+    ``TokenOwner``.  Those three are the whole set; an owner the token does not
+    hold at all is still refused, and a membership question that cannot be
+    answered is never treated as a match.
     """
 
     getuid = getattr(os, "getuid", None)
@@ -3080,10 +3091,14 @@ def seal_readonly(fd: int, path: str | None) -> SealResult:
     returned in :attr:`SealResult.sha256`, and the caller MUST re-hash the file
     against it *immediately before every use* -- notably right before handing the
     path to a subprocess -- via :func:`reverify_sealed_before_exec`, which re-opens
-    the exact file, re-hashes it, and hands back a held descriptor (and, where the
-    platform allows, an exec path bound to that descriptor's inode) so a swap
-    between the hash and the exec is caught.  That re-verification, not the
-    reversible read-only bit, is what makes the non-memfd degradation safe.
+    the exact file, re-hashes it, and hands back a held descriptor.  Where the
+    platform can also give the child a path bound to that descriptor's inode
+    (Linux ``/proc/<pid>/fd/N``) a swap between the hash and the exec is caught
+    too; where it cannot -- macOS and Windows, which both hand the child a NAME
+    -- that residual remains and is reported through
+    :attr:`SealedExecHandle.inode_pinned`.  The re-verification, not the
+    reversible read-only bit, is what makes the non-memfd degradation as safe as
+    it is.
 
     :attr:`SealResult.read_only` is a verified fact, not an assumption:
     :func:`fchmod_readonly` reads the mode back and refuses a platform that
@@ -3125,14 +3140,18 @@ def seal_readonly(fd: int, path: str | None) -> SealResult:
 # reversible read-only file on disk: between :func:`seal_readonly`'s hash and the
 # subprocess opening that path, the owner -- or another same-user process -- can
 # clear the attribute and REPLACE the bytes, and the swapped bytes run.  These
-# helpers close that check-to-use window: re-open the exact file, re-hash it,
-# compare to the sealed digest, fail closed on any mismatch, and hold a descriptor
-# (or a share-locked handle) open so the caller executes the very bytes it just
-# verified -- via a path bound to that descriptor's inode where the platform
-# exposes one (Linux /proc/<pid>/fd/N), or a deny-write/deny-delete share lock
-# that forbids replacement for the handle's lifetime (Windows).  macOS has neither
-# a cross-process fd path nor a mandatory share lock, so its residual is named
-# honestly rather than hidden.
+# helpers NARROW that check-to-use window, and close it only on Linux: re-open
+# the exact file, re-hash it, compare to the sealed digest, fail closed on any
+# mismatch, and hold a descriptor (or a share-locked handle) open.  Only Linux
+# can then hand the child a path bound to that descriptor's inode
+# (/proc/<pid>/fd/N), which is what actually makes the executed bytes the
+# verified bytes.  Windows holds a deny-write/deny-delete share lock, which
+# forbids rewriting the BYTES it opened but not rebinding the NAME the child
+# opens (a POSIX_SEMANTICS FileRenameInfoEx replaces a name whose file has open
+# handles; later opens get the replacement).  macOS has neither a cross-process
+# fd path nor a mandatory share lock.  So on both of those the residual remains,
+# is reported through SealedExecHandle.inode_pinned=False, and is warned about
+# at runtime rather than hidden.
 # ---------------------------------------------------------------------------
 
 # Names for the exec-pin mechanisms.  Public because the guarantee differs between
@@ -3365,9 +3384,12 @@ def _reverify_sealed_before_exec_windows(
 ) -> SealedExecHandle:
     """Windows half of :func:`reverify_sealed_before_exec`.
 
-    Holds a deny-write/deny-delete share pin, re-hashes the pinned file through
-    an ordinary read descriptor (the pin guarantees it is the same inode), and
-    fails closed on any mismatch.
+    Holds a deny-write/deny-delete share pin and re-hashes the file through an
+    ordinary read descriptor opened by name, failing closed on any mismatch.
+    The pin does NOT establish that the two handles name the same inode -- no
+    identity comparison is made between them -- it establishes that the bytes it
+    holds cannot be rewritten, truncated or deleted while it lives; a rename of
+    the name in between would be caught by the digest, not by the pin.
 
     ``inode_pinned`` is ``False`` here, and that is not pessimism.  The share pin
     genuinely protects the INODE: while this handle lives nothing can rewrite,
@@ -4309,14 +4331,16 @@ class DirHandle:
         destination: str,
         *,
         is_directory: bool = False,
-        require_atomic: bool = False,
+        require_atomic: bool = True,
     ) -> NoReplacePublication:
         """Publish ``staging`` to ``destination`` without overwriting an existing name.
 
-        Atomic and unconditionally no-clobber for every mechanism EXCEPT the
-        POSIX ``mkdir``-reserve directory fallback, which is two steps and
-        reports ``atomic_no_clobber=False``; see :class:`NoReplacePublication`
-        for what that concedes.
+        Atomic and unconditionally no-clobber, because the one mechanism that is
+        neither -- the two-step POSIX ``mkdir``-reserve directory fallback -- is
+        refused by default (``require_atomic``) rather than silently used.  A
+        caller that opts into it with ``require_atomic=False`` accepts what
+        :class:`NoReplacePublication` documents: it can overwrite a directory a
+        concurrent process placed at the destination.
 
         POSIX: the identical ``publish_no_replace(staging, destination,
         dir_fd=fd, is_directory=...)`` -- ``renameat2(RENAME_NOREPLACE)`` where the
@@ -4827,15 +4851,21 @@ def publish_no_replace(
     *,
     dir_fd: int | None = None,
     is_directory: bool = False,
-    require_atomic: bool = False,
+    require_atomic: bool = True,
 ) -> NoReplacePublication:
     """Publish ``staging`` to ``destination`` atomically, never overwriting it.
 
-    ``require_atomic`` is for callers whose correctness depends on no-clobber:
-    it refuses up front rather than falling back to the two-step
-    ``mkdir``-reserve directory publish, which can overwrite a concurrently
-    created destination.  Checking :attr:`NoReplacePublication.atomic_no_clobber`
-    afterwards cannot substitute for it -- by then the swap has happened.
+    ``require_atomic`` defaults to ``True``, and that default is what makes the
+    sentence above true.  The two-step ``mkdir``-reserve directory fallback CAN
+    overwrite a destination a concurrent process created between its steps, so
+    it is refused up front unless a caller explicitly opts in with
+    ``require_atomic=False``.  Checking
+    :attr:`NoReplacePublication.atomic_no_clobber` after the call cannot
+    substitute for that -- by then the swap has already happened.  The cost of
+    the safe default is that a directory publish fails closed on a filesystem
+    offering neither ``renameat2(RENAME_NOREPLACE)`` nor
+    ``renamex_np(RENAME_EXCL)``; Windows and modern Linux/macOS all provide one,
+    and failing closed is the correct direction for a guarantee to fail.
 
     ``staging`` is consumed exactly as ``renameat2`` would consume it: on success
     ``destination`` names the staged inode (a file with a single link, or the
@@ -5120,18 +5150,43 @@ def open_no_follow(
     normally by both platforms; a caller that also needs its ancestors proven
     uses :func:`is_canonical_absolute_path` or a pinned :class:`DirHandle`.
 
-    ``flags`` is the POSIX flag set the caller would have given :func:`os.open`,
-    and on POSIX it is passed through verbatim -- including ``O_TRUNC``, which
-    that branch therefore DOES honour.  The Windows branch maps only the access
-    mode and the ``O_CREAT``/``O_EXCL`` disposition; ``O_TRUNC``, ``O_APPEND``
-    and any other flag are not translated there.  A caller that wants behaviour
-    identical on both platforms must therefore leave ``O_TRUNC`` out and empty
-    the file through the returned descriptor -- which is also the safer order,
-    since nothing is destroyed before the refusal can fire.
+    ``flags`` is the POSIX flag set the caller would have given :func:`os.open`.
+    On POSIX it is passed through verbatim.  The Windows branch translates only
+    the access mode and ``O_CREAT``, and REFUSES ``O_TRUNC``, ``O_EXCL`` and
+    ``O_APPEND`` with :class:`ValueError` rather than accepting flags it cannot
+    honour: ``O_TRUNC`` would empty the object before the identity check that
+    decides whether it is the right one, ``O_EXCL`` would collide with the name
+    step one creates, and ``O_APPEND`` is not translated at all.  Empty or
+    extend the file through the returned descriptor instead, once it is proven.
     """
 
     if not IS_WINDOWS:
         return os.open(path, flags | getattr(os, "O_NOFOLLOW", 0), mode)
+
+    # Refuse what the Windows path does not implement rather than advertise it.
+    # The two-step proof-then-open cannot honour these:
+    #   O_TRUNC  -- would empty the object BEFORE the identity check that decides
+    #               whether it is the right one, so a raced foreign file could be
+    #               truncated on the way to being refused;
+    #   O_EXCL   -- step one already creates the name with CREATE_NEW, so step
+    #               two's O_EXCL would fail EEXIST against our own file and leave
+    #               it behind;
+    #   O_APPEND -- never translated to a Win32 disposition here at all.
+    # Callers that want truncation do it through the returned descriptor, after
+    # the object is proven; that is also the safer order.
+    unsupported = {
+        "O_TRUNC": getattr(os, "O_TRUNC", 0),
+        "O_EXCL": getattr(os, "O_EXCL", 0),
+        "O_APPEND": getattr(os, "O_APPEND", 0),
+    }
+    offending = sorted(name for name, bit in unsupported.items() if bit and flags & bit)
+    if offending:
+        raise ValueError(
+            "open_no_follow cannot honour "
+            + ", ".join(offending)
+            + " on Windows; empty or extend the file through the returned "
+            "descriptor instead, after its identity has been proven"
+        )
 
     try:
         api = _windows_kernel_api()
@@ -5151,13 +5206,16 @@ def open_no_follow(
             raise
         return os.open(path, flags | getattr(os, "O_NOFOLLOW", 0), mode)
 
+    # Mirror the caller's access exactly: asking for GENERIC_READ on a
+    # write-only request would fail against a legitimately write-only ACL.
     write = bool(flags & (os.O_WRONLY | os.O_RDWR))
-    access = _WIN_GENERIC_READ
+    read = not (flags & os.O_WRONLY)
+    access = 0
+    if read:
+        access |= _WIN_GENERIC_READ
     if write:
         access |= _WIN_GENERIC_WRITE
-    if flags & os.O_CREAT and flags & os.O_EXCL:
-        disposition = _WIN_CREATE_NEW
-    elif flags & os.O_CREAT:
+    if flags & os.O_CREAT:
         disposition = _WIN_OPEN_ALWAYS
     else:
         disposition = _WIN_OPEN_EXISTING

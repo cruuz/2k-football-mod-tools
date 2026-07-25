@@ -830,7 +830,12 @@ class Nfl2k5MenuBackAudioProvider:
                     return
                 # Windows/macOS: re-verify through platform_compat and KEEP what
                 # it hands back open across runner.run, so the verified object --
-                # not merely a verified snapshot of it -- is what the child gets.
+                # not merely a verified snapshot of it -- is what the child gets
+                # ON LINUX, whose /proc fd path names the descriptor itself.
+                # macOS and Windows hand the child a NAME, so there the pin
+                # narrows the window rather than closing it; inode_pinned says
+                # which case applies and the WARNING below fires when it is the
+                # weaker one.
                 try:
                     handle = platform_compat.reverify_sealed_before_exec(
                         module_path, expected_sha, expected_size=expected_size
