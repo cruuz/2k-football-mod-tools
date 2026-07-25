@@ -1,5 +1,11 @@
 # Beta Release Notes
 
+> **Superseded.** This file describes **Beta 1** and is kept as a record. Beta 1
+> was Linux-first, so its platform notes below no longer describe the current
+> tools. The current release is
+> [**Beta 2**](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-2),
+> which runs on Windows, macOS and Linux; its notes live on that release page.
+
 **Release:** Beta 1
 **Date:** 2026-07-22
 **Tools included:**

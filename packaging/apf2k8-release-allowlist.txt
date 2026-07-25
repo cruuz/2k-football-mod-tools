@@ -120,5 +120,6 @@ tools/validate_apf_logo_patch.sh
 tools/validate_apf_roster_identity_patch.py
 tools/launch_apf2k8_mod_studio.sh
 tools/vendor/extract-xiso/LICENSE.TXT
+tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md
 tools/vendor/extract-xiso/build/extract-xiso
 tools/vendor/extract-xiso/build/extract-xiso.exe

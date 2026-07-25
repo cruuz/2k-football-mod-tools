@@ -1,6 +1,7 @@
 # 2K Football Mod Tools
 
-> **Beta.** Two retail-free Linux mod editors for classic 2K football games:
+> **Beta.** Two retail-free mod editors — Windows, macOS and Linux — for classic
+> 2K football games:
 > **ESPN NFL 2K5** (original Xbox) and **All-Pro Football 2K8** (Xbox 360).
 > Bring your own legally dumped game disc — the editors ship **no game data**.
 

@@ -1,4 +1,4 @@
-# APF 2K8 Mod Studio for Linux
+# APF 2K8 Mod Studio
 
 This folder is a retail-free application. It contains no *All-Pro Football
 2K8* ISO, extracted game files, textures, audio, screenshots, or rollback
@@ -46,14 +46,25 @@ Extract the archive and double-click **`APF-2K8-Mod-Studio.command`** (the first
 time, right-click it and choose **Open** to clear Gatekeeper). It resolves its
 own folder and runs the same dependency check.
 
-**Platform support.** **Linux is the supported platform** — the full test suite
-passes there and the app has been smoke-tested end to end. **Windows and macOS
-are a preview:** CI runs the suite on all three, but it does not yet pass on
-Windows or macOS, and the GUI has not been manually driven on either.
+**Platform support.** **Linux, Windows and macOS all pass the same suite.** CI
+runs it on all three, on Python 3.11 and 3.12, and every job reports an
+identical result — the six jobs agree file for file and test for test. Part of
+that suite is expected to fail on any CI runner regardless of OS, because this
+repository deliberately ships no game data and no generated reports.
 
-On Windows specifically, the bundled `extract-xiso` extractor is a Linux binary,
-so the **ISO** path will not work — load an **already-extracted game folder**
-instead.
+**Linux remains the most exercised platform**: the desktop app has been
+smoke-tested end to end there, and the GUI has not been manually driven on
+Windows or macOS, so treat those as well-tested code with a less-tested window
+on top.
+
+The bundled `extract-xiso` extractor ships as **both** a Linux binary and a
+Windows `.exe`, built from the same vendored 2.7.1 source, so handing the app an
+**ISO** works on either. **macOS has no bundled build** — point it at an
+**already-extracted game folder** there, or build extract-xiso yourself
+(`brew install extract-xiso`, or `cmake` on the vendored source) and pass it as
+`SourceManager(extract_xiso=...)`. `tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md`
+records the exact build commands, toolchain and hashes for both bundled
+binaries, so you can reproduce the bytes rather than trust them.
 
 Audio export works without a desktop player. For the Audio tab's **Play/Stop**
 button, install any one of `ffplay` (from `ffmpeg`), `paplay`, or `aplay`. On
@@ -421,7 +432,7 @@ Editable status through real player-name, team-display-name, and per-attribute
 rating and position handlers in the Alpha.28 source. Abbreviations, zero-capacity or
 mixed-owner names, jersey numbers, and roster structure remain locked.
 
-Every published Linux archive is built from the exact retail-free allowlist,
+Every published archive is built from the exact retail-free allowlist,
 then checked through the full regression, source-free/private-source runtime
 gates, independent extraction, deterministic rebuild, and isolated-display
 visual QA. The adjacent `.sha256` sidecar is authoritative for the archive you
