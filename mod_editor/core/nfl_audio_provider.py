@@ -85,9 +85,9 @@ class _PinnedExec:
     ``path`` is the value to place on the child's ``argv``; it is valid only
     inside the ``pin_for_exec`` context that produced it.  ``inode_pinned`` is the
     load-bearing honesty field -- ``True`` means the bytes re-verified at pin time
-    are provably the bytes the child gets (a descriptor this process holds named
-    through ``/proc``, or a Windows deny-write/deny-delete share pin that forbids
-    replacing the name while the pin lives), ``False`` means the re-hash ran
+    are provably the bytes the child gets (a descriptor this process holds, named
+    through ``/proc``, which no directory entry can redirect), ``False`` means
+    the re-hash ran
     immediately before the launch but the child still opens a *name* another
     same-user process could swap in between.  ``mechanism`` names which case is in
     force so an event, a caller or a test can assert the real guarantee instead of
@@ -119,10 +119,15 @@ class _StagedModule:
     * Windows -- :func:`platform_compat.reverify_sealed_before_exec` re-opens the
       staged file, re-hashes it against the seal-time digest, fails closed on any
       change, and *keeps* a ``CreateFileW`` handle whose share mode withholds
-      ``FILE_SHARE_WRITE`` and ``FILE_SHARE_DELETE``.  While that handle lives no
-      same-user process can rewrite, truncate, rename-over or delete the module,
-      so the check-to-use window between the hash and the child's open is closed:
-      ``inode_pinned=True``.
+      ``FILE_SHARE_WRITE`` and ``FILE_SHARE_DELETE``.  While that handle lives
+      nothing can rewrite, truncate or delete those BYTES.  It does not lock the
+      NAME: ``SetFileInformationByHandle(FileRenameInfoEx)`` with
+      ``POSIX_SEMANTICS | REPLACE_IF_EXISTS`` rebinds a name whose file has open
+      handles -- the handles keep the old file, later opens get the replacement
+      -- and the child opens by name.  So the window is narrowed, not closed,
+      and Windows reports ``inode_pinned=False`` with the same WARNING macOS
+      emits.  An earlier revision of this docstring claimed the window was
+      closed here; an independent audit showed it was not.
 
     * macOS -- the same helper re-hashes and holds a descriptor, but macOS has
       neither a cross-process fd path nor a mandatory share lock, so the child

@@ -20,6 +20,7 @@ from typing import Any, Iterable, Mapping
 from uuid import uuid4
 import zipfile
 
+from mod_editor.core import platform_compat
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.json_stream import read_bounded_regular_file
 from mod_editor.core.nfl2k5_audio_origin_authorization import (
@@ -270,9 +271,12 @@ def project_target_identity(path: Path) -> ProjectTargetIdentity:
                 "The active project file changed while Mod Studio checked it. "
                 "Use Save Project As or reopen it."
             ) from exc
+        # ``opened`` is an fd stat and ``after`` a path stat of the same file, so
+        # the change time is compared only where the two calls agree on it (see
+        # platform_compat.supports_change_time_identity).
         opened_key = (
             opened.st_dev, opened.st_ino, opened.st_size,
-            opened.st_mtime_ns, opened.st_ctime_ns,
+            opened.st_mtime_ns, *platform_compat.change_time_identity(opened),
         )
         if (
             not stat.S_ISREG(opened.st_mode)
@@ -282,7 +286,7 @@ def project_target_identity(path: Path) -> ProjectTargetIdentity:
             or after.st_nlink != 1
             or opened_key != (
                 after.st_dev, after.st_ino, after.st_size,
-                after.st_mtime_ns, after.st_ctime_ns,
+                after.st_mtime_ns, *platform_compat.change_time_identity(after),
             )
             or (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino)
         ):
@@ -290,7 +294,14 @@ def project_target_identity(path: Path) -> ProjectTargetIdentity:
                 "The active project changed while Mod Studio checked it. Use "
                 "Save Project As or reopen it."
             )
-        return ProjectTargetIdentity(resolved, *opened_key)
+        # The recorded fingerprint keeps every field, including the raw change
+        # time: both sides of the later ProjectTargetIdentity comparison come
+        # from this same fd stat, so that field stays a usable signal on every
+        # platform and is not dropped here.
+        return ProjectTargetIdentity(
+            resolved, opened.st_dev, opened.st_ino, opened.st_size,
+            opened.st_mtime_ns, opened.st_ctime_ns,
+        )
     finally:
         os.close(descriptor)
 

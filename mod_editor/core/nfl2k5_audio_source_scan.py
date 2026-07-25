@@ -246,7 +246,7 @@ def _stat_signature(info: os.stat_result) -> tuple[int, ...]:
         info.st_uid,
         info.st_size,
         info.st_mtime_ns,
-        info.st_ctime_ns,
+        *platform_compat.change_time_identity(info),
     )
 
 

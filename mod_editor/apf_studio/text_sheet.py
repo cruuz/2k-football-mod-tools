@@ -14,6 +14,8 @@ from io import StringIO, TextIOWrapper
 import os
 from pathlib import Path
 import stat
+
+from mod_editor.core import platform_compat
 from typing import Protocol
 
 
@@ -221,14 +223,14 @@ def _read_private_sheet(source: Path) -> str:
             after.st_ino,
             after.st_size,
             after.st_mtime_ns,
-            after.st_ctime_ns,
+            *platform_compat.change_time_identity(after),
             after.st_nlink,
         ) != (
             opened.st_dev,
             opened.st_ino,
             opened.st_size,
             opened.st_mtime_ns,
-            opened.st_ctime_ns,
+            *platform_compat.change_time_identity(opened),
             opened.st_nlink,
         ):
             raise TextSheetError("The text sheet changed while it was read")

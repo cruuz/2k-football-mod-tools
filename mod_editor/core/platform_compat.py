@@ -170,6 +170,18 @@ _ACCESS_MASK_CONFERS_VISIBILITY = (
 # owner.  Every *other* SID that is granted a visibility bit -- Everyone
 # (S-1-1-0), Users (S-1-5-32-545), Authenticated Users (S-1-5-11), a different
 # user account, ... -- is a foreign grant and refused.
+# The only symlinked ancestors tolerated by :func:`is_canonical_absolute_path`,
+# enumerated rather than inferred: macOS ships /var, /tmp and /etc as symlinks
+# into /private, so every canonical temporary or cache path on that OS crosses
+# one.  A tolerated alias must still resolve exactly where the OS says it does;
+# a symlink that merely shares one of these names anywhere else is refused.
+# Creating a genuine one requires privilege this check cannot defend against.
+_SYSTEM_PATH_ALIASES = {
+    "/var": "/private/var",
+    "/tmp": "/private/tmp",
+    "/etc": "/private/etc",
+}
+
 _WELL_KNOWN_PRIVACY_SAFE_SIDS = frozenset(
     {
         "S-1-5-18",      # LocalSystem
@@ -1599,6 +1611,65 @@ def is_owned_by_current_user(
     return describe_ownership(info, fd=fd, path=path).owned
 
 
+def supports_change_time_identity() -> bool:
+    """Whether ``st_ctime_ns`` is a stable cross-call identity component here.
+
+    ``True`` on POSIX (Linux and macOS), where every ``stat`` family call reads
+    the same inode field: ``os.stat``, ``os.lstat``, ``os.fstat`` and a
+    ``dir_fd``-relative stat of one file all report an identical ``st_ctime_ns``,
+    so the guards may compare a *path* stat against an *fd* stat of the same file
+    and treat a difference as proof the file changed.
+
+    ``False`` on Windows, and this is the load-bearing platform difference.
+    There a path stat and an fd stat of the *same, untouched* file do not agree
+    on ``st_ctime``: the two calls reach the field through different Win32
+    information classes, so the number differs while ``st_dev``, ``st_ino``,
+    ``st_size`` and ``st_mtime_ns`` all still match.  A guard that puts
+    ``st_ctime_ns`` in an identity tuple therefore reports "this file changed"
+    for a file nothing touched -- a spurious, fail-closed refusal of the user's
+    own untouched data, not a detection.  The field cannot serve as identity on
+    that platform, so it is dropped there rather than compared.
+
+    What survives the drop, and what does not, stated plainly:
+
+    * Identity is unaffected.  ``st_dev``/``st_ino`` remain in every tuple and
+      are what actually answer "is this the same file"; a swapped, relinked or
+      renamed-over file still fails the comparison.
+    * Content change is unaffected.  ``st_size`` and ``st_mtime_ns`` remain in
+      every tuple, so a rewritten or truncated file is still caught.
+    * What is genuinely lost on Windows is the *metadata-only* change signal --
+      a permission, attribute or ownership edit that leaves the bytes, the size
+      and the modification time untouched.  On POSIX ``st_ctime_ns`` catches
+      that; on Windows nothing in the guard does, and Windows offers no
+      equivalent field that is stable across a path stat and an fd stat, so
+      there is no substitute to put in its place.  The check is therefore
+      strictly weaker on Windows than on POSIX.  That is stated, not papered
+      over: callers that need a metadata-change guarantee do not have one here.
+    """
+
+    return not IS_WINDOWS
+
+
+def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
+    """``(info.st_ctime_ns,)`` where that field is stable, else ``()``.
+
+    The one spelling every identity tuple in this codebase uses for its change
+    time, so a tuple stays byte-identical on POSIX -- the returned one-tuple
+    splices back exactly the ``info.st_ctime_ns`` element it replaced, in the
+    same position -- while on Windows every tuple loses that one element and
+    nothing else.  Both sides of a comparison must be built through this helper,
+    or the tuples will differ in length on Windows and the guard will refuse
+    everything.
+
+    See :func:`supports_change_time_identity` for why the field is unusable on
+    Windows and for the metadata-only-change signal that is lost there.
+    """
+
+    if not supports_change_time_identity():
+        return ()
+    return (info.st_ctime_ns,)
+
+
 def supports_reflink() -> bool:
     """Whether a copy-on-write reflink clone can even be *attempted* here.
 
@@ -2012,7 +2083,18 @@ def fsync_path(
             )
         link_identity = (link_info.st_dev, link_info.st_ino)
     try:
-        descriptor = os.open(path, flags)
+        # open_no_follow is a real non-following open on both platforms: POSIX
+        # O_NOFOLLOW, and on Windows CreateFileW(FILE_FLAG_OPEN_REPARSE_POINT)
+        # plus an attribute check on the opened handle.  The previous
+        # lstat-then-os.open-then-fstat sequence could not deliver that: a link
+        # planted in the window was followed, and the fstat then described the
+        # target rather than the traversal, so follow_symlinks=False was not
+        # actually enforced there.
+        descriptor = (
+            open_no_follow(path, flags)
+            if not follow_symlinks
+            else os.open(path, flags)
+        )
     except PermissionError as exc:
         if not IS_WINDOWS:
             raise
@@ -2534,51 +2616,43 @@ def is_canonical_absolute_path(
     # own realpath (the user-controlled tail); stop at the leading divergence,
     # which is the system alias / short-name expansion the equality tolerates.
     #
-    # A macOS ``/var -> /private/var`` alias makes the realpath one component
-    # LONGER, so from the tail the two sides stay name-equal right through the
-    # aliased component itself (``var`` == ``var``) and the walk goes on to
-    # lstat ``/var``, find the system symlink, and refuse every canonical macOS
-    # temporary or cache path.  A shape difference is NOT a reliable signature
-    # of a system alias, though: ``/Users/me/cache -> /Users/me/private/cache``
-    # changes the component count too, and that one is a user-controlled
-    # redirection this function exists to refuse.  So the tolerance is scoped by
-    # LOCATION, not by shape: a symlinked ancestor is refused wherever the user
-    # can create one -- inside the user's own home tree -- and tolerated only
-    # ABOVE it, where creating one already requires the privilege this check
-    # could not defend against anyway (macOS ships ``/var`` root-owned).  On
-    # Linux and Windows the two forms of a canonical path share their shape, so
-    # every ancestor is walked and refused exactly as before; only the macOS
-    # system-alias head is newly tolerated.
-    try:
-        home = os.path.normcase(os.path.realpath(os.path.expanduser("~")))
-    except (OSError, RuntimeError):
-        home = None
+    # Every lexical ancestor is inspected -- not a tail walk that stops at the
+    # first name divergence.  That walk had two holes an independent audit
+    # demonstrated: ``/home/me/cache -> /home/me/private`` diverges at
+    # ``cache`` vs ``private`` and the loop exited BEFORE ever lstat-ing
+    # ``cache``, and a symlink merely outside ``$HOME`` was tolerated outright,
+    # so ``/srv/a/cache -> /srv/b/cache`` passed.  Neither is acceptable: the
+    # question is not where a symlink sits relative to a home directory, it is
+    # whether a symlink is on the path at all.
+    #
+    # The single exception is the handful of aliases the OS itself ships and
+    # owns, which are enumerated rather than inferred: macOS resolves /var,
+    # /tmp and /etc into /private, so EVERY canonical macOS temporary or cache
+    # path crosses one and refusing them would refuse the platform.  An
+    # enumerated alias is tolerated only when it still resolves where that OS
+    # says it should; anything else -- including a symlink of the same NAME
+    # somewhere else -- is refused.  Creating a real /var requires the
+    # privilege this check could not defend against in any case.
+    system_aliases = _SYSTEM_PATH_ALIASES if IS_MACOS else ()
     p_parts = Path(text).parts
-    r_parts = Path(real_path).parts
-    i, j = len(p_parts) - 1, len(r_parts) - 1
-    while (
-        i >= 0
-        and j >= 0
-        and os.path.normcase(p_parts[i]) == os.path.normcase(r_parts[j])
-    ):
-        prefix = str(Path(*p_parts[: i + 1]))
+    for index in range(len(p_parts), 0, -1):
+        prefix = str(Path(*p_parts[:index]))
         try:
-            if stat.S_ISLNK(os.lstat(prefix).st_mode):
-                # Above the user's own tree this is a system alias
-                # (macOS /var); inside it, it is a redirection the caller
-                # controls and must not be able to hide behind.
-                if home is None:
-                    return False
-                normalised = os.path.normcase(prefix)
-                if normalised == home or normalised.startswith(home + os.sep):
-                    return False
-                return True
+            if not stat.S_ISLNK(os.lstat(prefix).st_mode):
+                continue
         except FileNotFoundError:
-            pass
+            continue
         except OSError:
             return False
-        i -= 1
-        j -= 1
+        normalised = os.path.normcase(prefix)
+        expected = system_aliases.get(normalised) if system_aliases else None
+        if expected is None:
+            return False
+        try:
+            if os.path.normcase(os.path.realpath(prefix)) != expected:
+                return False
+        except OSError:
+            return False
     return True
 
 
@@ -3038,13 +3112,16 @@ class SealedExecHandle:
     caller hands the subprocess; ``sha256`` is the digest it was re-verified
     against (equal to the sealed digest, or the call would have failed closed).
     ``inode_pinned`` is the load-bearing field: ``True`` means opening
-    ``exec_path`` is guaranteed to yield the exact bytes verified here -- Linux
-    ``/proc/<pid>/fd/N`` naming the held descriptor's inode, or a Windows
-    deny-write/deny-delete share lock forbidding replacement while this handle
-    lives -- so a post-hash swap cannot be executed.  ``False`` (macOS) means the
-    re-hash still ran immediately before exec but a sub-millisecond swap of the
-    *name* by another same-user process remains possible; ``mechanism`` names
-    which case applies.
+    ``exec_path`` is guaranteed to yield the exact bytes verified here -- only
+    Linux ``/proc/<pid>/fd/N``, which names the held descriptor's inode rather
+    than any directory entry, so a post-hash swap cannot be executed at all.
+    ``False`` (macOS *and* Windows) means the re-hash still ran immediately
+    before exec, but the child opens a NAME and a same-user process can still
+    rebind that name -- on Windows through ``FileRenameInfoEx`` with
+    ``POSIX_SEMANTICS``, which replaces a name whose file has open handles.  A
+    Windows share pin does forbid rewriting the bytes it holds, which is why the
+    pin is still taken and reported through ``mechanism``; it simply is not the
+    same guarantee as executing from a descriptor.
 
     The caller MUST keep this handle open until the subprocess has finished with
     the module (a blocking ``subprocess.run`` keeps it open for the child's whole
@@ -3250,11 +3327,22 @@ def _reverify_sealed_before_exec_windows(
 ) -> SealedExecHandle:
     """Windows half of :func:`reverify_sealed_before_exec`.
 
-    Holds a deny-write/deny-delete share pin (so the bytes cannot be replaced while
-    the handle lives), re-hashes the pinned file through an ordinary read
-    descriptor (the pin guarantees it is the same inode), and fails closed on any
-    mismatch.  ``inode_pinned`` is ``True``: the share lock is the Windows analogue
-    of executing from a held descriptor.
+    Holds a deny-write/deny-delete share pin, re-hashes the pinned file through
+    an ordinary read descriptor (the pin guarantees it is the same inode), and
+    fails closed on any mismatch.
+
+    ``inode_pinned`` is ``False`` here, and that is not pessimism.  The share pin
+    genuinely protects the INODE: while this handle lives nothing can rewrite,
+    truncate or delete those bytes.  What it does not protect is the NAME the
+    child will open.  Windows ``SetFileInformationByHandle(FileRenameInfoEx)``
+    with ``POSIX_SEMANTICS | REPLACE_IF_EXISTS`` can rebind a name over a file
+    that has open handles: the existing handles stay attached to the old file
+    while every subsequent open resolves to the replacement.  Since the child
+    receives a PATH and opens it itself, a same-user process can still make it
+    open different bytes -- so claiming an exec pin equivalent to a held
+    descriptor would overstate what Windows enforces.  The re-hash immediately
+    before launch still runs and still fails closed, exactly as on macOS, and
+    :data:`SEALED_EXEC_WINDOWS_SHARE_PIN` names which mechanism produced this.
     """
 
     pin = _win_open_exec_pin(target)
@@ -3291,7 +3379,9 @@ def _reverify_sealed_before_exec_windows(
         owns_fd=False,
         exec_path=target,
         sha256=digest,
-        inode_pinned=True,
+        # The share pin holds the inode, not the pathname the child opens; see
+        # the note above on POSIX-semantics rename.
+        inode_pinned=False,
         mechanism=SEALED_EXEC_WINDOWS_SHARE_PIN,
     )
 
@@ -4642,12 +4732,16 @@ def _publish_directory_via_reserve(
         atomic_no_clobber=False,
         detail=(
             "os.mkdir reserves the name atomically (fails if it exists), then "
-            "os.rename swaps the staged folder onto the placeholder; a concurrent "
-            "reader may observe the empty placeholder, so this is NOT a single "
-            "atomic no-clobber step. No pre-existing destination is overwritten: "
-            "the placeholder's identity is re-checked immediately before the swap "
-            "and a replacement is refused, though that re-check narrows rather "
-            "than eliminates the window between the two steps"
+            "os.rename swaps the staged folder onto the placeholder. This is NOT "
+            "a single atomic no-clobber step and it is NOT unconditionally "
+            "no-overwrite: os.rename replaces an empty destination directory, so "
+            "a same-user racer that removes the placeholder and installs its own "
+            "empty directory in the remaining window CAN be overwritten. The "
+            "placeholder identity is re-checked immediately before the swap, "
+            "which refuses every replacement it observes, but the check cannot "
+            "be atomic with the rename and a racer that wins after it still "
+            "succeeds. Callers that require a true no-clobber publish must "
+            "branch on atomic_no_clobber, which is False here, and refuse"
         ),
     )
 
@@ -4669,7 +4763,15 @@ def publish_no_replace(
     to pin the directory they verified; when it is ``None`` they are paths.
 
     Raises :class:`FileExistsError` if ``destination`` already exists -- the
-    no-clobber refusal, on every platform.  Raises
+    no-clobber refusal, on every platform.  One qualification, and it is the
+    reason :attr:`NoReplacePublication.atomic_no_clobber` exists: the
+    :data:`PUBLISH_POSIX_MKDIR_RESERVE` directory fallback (a Linux filesystem
+    without ``renameat2``, or a macOS volume without ``RENAME_EXCL``) publishes
+    in two steps, and a same-user racer that replaces the reserved placeholder
+    between them can have its directory overwritten by the swap. That mechanism
+    reports ``atomic_no_clobber=False``; a caller whose correctness depends on
+    no-clobber must branch on that field rather than on this function returning
+    successfully.  Raises
     :class:`NoReplacePublishUnavailable` only where the platform truly offers no
     mechanism (a Windows ``dir_fd`` publish), never as a silent clobbering
     fallback.  See the module section header for the per-OS mechanism; the one
@@ -4901,6 +5003,102 @@ def _win_create_share_delete_child(path: str) -> int:
         raise
 
 
+_WIN_OPEN_ALWAYS = 4
+
+
+def open_no_follow(
+    path: str | os.PathLike[str],
+    flags: int,
+    mode: int = POSIX_PRIVATE_FILE_MODE,
+) -> int:
+    """Open ``path`` without ever traversing a symlink or reparse point.
+
+    ``O_NOFOLLOW`` carries the entire no-follow guarantee on POSIX, and it is
+    ``0`` on Windows -- so an ``os.open`` there silently follows a planted link,
+    and any check made *after* that open describes the target rather than the
+    traversal that reached it.  ``lstat``-then-open does not fix it either: the
+    link can be planted in the window between the two, and the post-open
+    ``fstat`` still reports the innocent target it was redirected to.
+
+    So on Windows the open itself is made non-following.
+    ``CreateFileW(..., FILE_FLAG_OPEN_REPARSE_POINT)`` opens a reparse point *as
+    itself* rather than resolving it, and the resulting handle's own
+    ``dwFileAttributes`` then says whether one was hit -- atomically, about the
+    object actually opened, with no window.  If it was, the handle is closed and
+    the call fails with ``ELOOP``, exactly as ``O_NOFOLLOW`` does.  POSIX takes
+    the identical ``os.open`` it always took.
+
+    ``flags`` is the POSIX flag set the caller would have given :func:`os.open`.
+    ``O_TRUNC`` is deliberately NOT honoured by the open: a caller that wants to
+    empty the file does it through the returned descriptor, after the object has
+    been proven, so nothing is destroyed before the refusal can fire.
+    """
+
+    if not IS_WINDOWS:
+        return os.open(path, flags | getattr(os, "O_NOFOLLOW", 0), mode)
+
+    try:
+        msvcrt = _require_msvcrt()
+        api = _windows_kernel_api()
+    except (RuntimeError, DirectoryTransactionUnavailable):
+        # Neither primitive can be missing on a real Windows host: msvcrt is a
+        # stdlib built-in there and ctypes.windll always exists.  Reaching this
+        # means IS_WINDOWS was flipped on a POSIX host to exercise the Windows
+        # branch, so the honest answer is that host's own open -- which really
+        # does carry O_NOFOLLOW and really is non-following.  This is not a
+        # silent weakening of Windows: on Windows the branch is unreachable.
+        return os.open(path, flags | getattr(os, "O_NOFOLLOW", 0), mode)
+    write = bool(flags & (os.O_WRONLY | os.O_RDWR))
+    access = _WIN_GENERIC_READ
+    if write:
+        access |= _WIN_GENERIC_WRITE
+    if flags & os.O_CREAT and flags & os.O_EXCL:
+        disposition = _WIN_CREATE_NEW
+    elif flags & os.O_CREAT:
+        disposition = _WIN_OPEN_ALWAYS
+    else:
+        disposition = _WIN_OPEN_EXISTING
+    _win_reset_last_error()
+    raw = api.kernel32.CreateFileW(
+        os.fspath(path),
+        access,
+        _WIN_FILE_SHARE_READ | _WIN_FILE_SHARE_WRITE,
+        None,
+        disposition,
+        _WIN_FILE_ATTRIBUTE_NORMAL | _WIN_FILE_FLAG_OPEN_REPARSE_POINT,
+        None,
+    )
+    handle = raw if raw is not None else 0
+    if handle == 0 or handle == _win_invalid_handle():
+        err = _win_last_error()
+        if err in (_WIN_ERROR_FILE_EXISTS, _WIN_ERROR_ALREADY_EXISTS):
+            raise FileExistsError(errno.EEXIST, "File exists", os.fspath(path))
+        raise OSError(
+            0,
+            f"CreateFileW could not open {os.fspath(path)!r} without following "
+            f"a reparse point (WinError {err})",
+        )
+    try:
+        _serial, _index, attributes = _win_file_identity(api, handle)
+    except OSError:
+        _win_close_handle(api, handle)
+        raise
+    if attributes & _WIN_FILE_ATTRIBUTE_REPARSE_POINT:
+        _win_close_handle(api, handle)
+        raise OSError(
+            errno.ELOOP,
+            "refusing to follow a reparse point",
+            os.fspath(path),
+        )
+    crt_flags = (os.O_RDWR if write else os.O_RDONLY) | getattr(os, "O_BINARY", 0)
+    crt_flags |= getattr(os, "O_NOINHERIT", 0)
+    try:
+        return msvcrt.open_osfhandle(handle, crt_flags)
+    except BaseException:
+        _win_close_handle(api, handle)
+        raise
+
+
 def _win_create_share_delete_staging_file(
     directory: str | os.PathLike[str],
     *,
@@ -5004,6 +5202,7 @@ __all__ = [
     "WindowsDaclVerdict",
     "add_seals",
     "available_bytes",
+    "change_time_identity",
     "copy_file_range",
     "create_private_directory",
     "create_private_staging_file",
@@ -5025,6 +5224,7 @@ __all__ = [
     "is_reparse_point",
     "is_within_user_private_root",
     "no_replace_publish_mechanism",
+    "open_no_follow",
     "open_dir_handle",
     "open_private_stage",
     "ownership_mechanism",
@@ -5042,6 +5242,7 @@ __all__ = [
     "reverify_sealed_before_exec",
     "seal_readonly",
     "sealed_file_mode",
+    "supports_change_time_identity",
     "supports_directory_fsync",
     "supports_posix_uid_ownership",
     "supports_reflink",

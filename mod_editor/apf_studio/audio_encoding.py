@@ -117,7 +117,9 @@ class _FileIdentity:
     size: int
     mode: int
     mtime_ns: int
-    ctime_ns: int
+    # The change-time component of this fingerprint, empty where the platform
+    # cannot compare it across calls (see platform_compat.change_time_identity).
+    change_time: tuple[int, ...]
 
 
 @dataclass(frozen=True)
@@ -125,7 +127,7 @@ class _PcmDataLocation:
     descriptor: int
     data_offset: int
     data_size: int
-    source_identity: tuple[int, int, int, int, int, int]
+    source_identity: tuple[int, ...]
 
 
 def _noop(_stage: str, _completed: int, _total: int) -> None:
@@ -295,13 +297,13 @@ def export_pcm16_template(
         raise
 
 
-def _source_identity(info: os.stat_result) -> tuple[int, int, int, int, int, int]:
+def _source_identity(info: os.stat_result) -> tuple[int, ...]:
     return (
         info.st_dev,
         info.st_ino,
         info.st_size,
         info.st_mtime_ns,
-        info.st_ctime_ns,
+        *platform_compat.change_time_identity(info),
         info.st_nlink,
     )
 
@@ -553,7 +555,7 @@ def _validate_tool_path(
         size=info.st_size,
         mode=info.st_mode,
         mtime_ns=info.st_mtime_ns,
-        ctime_ns=info.st_ctime_ns,
+        change_time=platform_compat.change_time_identity(info),
     )
 
 
@@ -571,7 +573,7 @@ def _require_unchanged_tool(identity: _FileIdentity, label: str) -> None:
             info.st_size,
             info.st_mode,
             info.st_mtime_ns,
-            info.st_ctime_ns,
+            *platform_compat.change_time_identity(info),
         )
         != (
             identity.device,
@@ -579,7 +581,7 @@ def _require_unchanged_tool(identity: _FileIdentity, label: str) -> None:
             identity.size,
             identity.mode,
             identity.mtime_ns,
-            identity.ctime_ns,
+            *identity.change_time,
         )
     ):
         raise AudioEncodingError(f"{label} changed during encoding; output was discarded")

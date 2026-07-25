@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import zlib
@@ -27,6 +28,30 @@ import apf_outer
 import apf_texture_patch as archive_patch
 import apf_uniform_mip_patch as uniform_patch
 import apf_xenos_mip_layout as xenos_mips
+
+
+def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
+    """``(info.st_ctime_ns,)`` on POSIX; ``()`` on Windows.
+
+    Inlined rather than imported from
+    :mod:`mod_editor.core.platform_compat` because this module is executed as a
+    self-contained, tools-only closure and may not import the editor package;
+    the contract is byte-for-byte that helper's.
+
+    On Windows a path stat and an fd stat of the *same, untouched* file do not
+    agree on ``st_ctime``, so putting it in an identity tuple refuses a file
+    nothing touched.  ``st_dev``/``st_ino`` stay the identity and
+    ``st_size``/``st_mtime_ns`` stay the change detectors, so a swapped or
+    rewritten file is still caught.  What is genuinely lost on Windows is the
+    metadata-only-change signal -- a permission or attribute edit that leaves
+    the bytes, the size and the modification time untouched -- and Windows
+    offers no equivalent field that is stable across the two calls, so this
+    check is weaker there than on POSIX.  Stated, not hidden.
+    """
+
+    if sys.platform.startswith("win"):
+        return ()
+    return (info.st_ctime_ns,)
 
 
 SCHEMA = "apf_jersey_family_layout/v1"
@@ -440,7 +465,7 @@ def analyze(index_path: Path) -> tuple[dict[str, object], str]:
         source_sha_after != source_sha_before
         or after_stat.st_size != before_stat.st_size
         or after_stat.st_mtime_ns != before_stat.st_mtime_ns
-        or after_stat.st_ctime_ns != before_stat.st_ctime_ns
+        or change_time_identity(after_stat) != change_time_identity(before_stat)
     ):
         raise FamilyLayoutError("source volume changed during read-only analysis")
     assert reference_descriptor is not None and reference_layout is not None

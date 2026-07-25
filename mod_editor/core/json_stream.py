@@ -19,6 +19,7 @@ import re
 import stat
 from typing import Iterator
 
+from . import platform_compat
 from .errors import ValidationError
 
 
@@ -81,7 +82,7 @@ def read_bounded_regular_file(
             supplied.st_ino,
             supplied.st_size,
             supplied.st_mtime_ns,
-            supplied.st_ctime_ns,
+            *platform_compat.change_time_identity(supplied),
             supplied.st_nlink,
         )
         opened_identity = (
@@ -89,7 +90,7 @@ def read_bounded_regular_file(
             opened.st_ino,
             opened.st_size,
             opened.st_mtime_ns,
-            opened.st_ctime_ns,
+            *platform_compat.change_time_identity(opened),
             opened.st_nlink,
         )
         if (
@@ -118,7 +119,7 @@ def read_bounded_regular_file(
         after.st_ino,
         after.st_size,
         after.st_mtime_ns,
-        after.st_ctime_ns,
+        *platform_compat.change_time_identity(after),
         after.st_nlink,
     )
     current_identity = (
@@ -126,7 +127,7 @@ def read_bounded_regular_file(
         current.st_ino,
         current.st_size,
         current.st_mtime_ns,
-        current.st_ctime_ns,
+        *platform_compat.change_time_identity(current),
         current.st_nlink,
     )
     if len(payload) > maximum:

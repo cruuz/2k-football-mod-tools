@@ -553,7 +553,7 @@ def _capture_lookup_node(path: Path) -> PathLookupSnapshot:
         before.st_mode,
         before.st_size,
         before.st_mtime_ns,
-        before.st_ctime_ns,
+        *platform_compat.change_time_identity(before),
         target_before,
     )
     identity_after = (
@@ -563,7 +563,7 @@ def _capture_lookup_node(path: Path) -> PathLookupSnapshot:
         after.st_mode,
         after.st_size,
         after.st_mtime_ns,
-        after.st_ctime_ns,
+        *platform_compat.change_time_identity(after),
         target_after,
     )
     if identity_after != identity_before:
@@ -1321,7 +1321,7 @@ def _verify_report_stage(
         before.st_mode,
         before.st_size,
         before.st_mtime_ns,
-        before.st_ctime_ns,
+        *platform_compat.change_time_identity(before),
     )
     identity_after = (
         after.st_dev,
@@ -1330,7 +1330,7 @@ def _verify_report_stage(
         after.st_mode,
         after.st_size,
         after.st_mtime_ns,
-        after.st_ctime_ns,
+        *platform_compat.change_time_identity(after),
     )
     if identity_after != identity_before or digest.hexdigest() != expected_sha256:
         raise ValidationRunError("report staging descriptor changed while reading")

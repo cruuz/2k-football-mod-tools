@@ -30,6 +30,30 @@ import apf_roster
 import apf_texture_patch as transport
 
 
+def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
+    """``(info.st_ctime_ns,)`` on POSIX; ``()`` on Windows.
+
+    Inlined rather than imported from
+    :mod:`mod_editor.core.platform_compat` because this module is executed as a
+    self-contained, tools-only closure and may not import the editor package;
+    the contract is byte-for-byte that helper's.
+
+    On Windows a path stat and an fd stat of the *same, untouched* file do not
+    agree on ``st_ctime``, so putting it in an identity tuple refuses a file
+    nothing touched.  ``st_dev``/``st_ino`` stay the identity and
+    ``st_size``/``st_mtime_ns`` stay the change detectors, so a swapped or
+    rewritten file is still caught.  What is genuinely lost on Windows is the
+    metadata-only-change signal -- a permission or attribute edit that leaves
+    the bytes, the size and the modification time untouched -- and Windows
+    offers no equivalent field that is stable across the two calls, so this
+    check is weaker there than on POSIX.  Stated, not hidden.
+    """
+
+    if sys.platform.startswith("win"):
+        return ()
+    return (info.st_ctime_ns,)
+
+
 ROOT = Path(__file__).resolve().parents[1]
 FORMAT_SPEC = ROOT / "reports/specs/apf2k8_roster_jersey_selector_writeback.v1.json"
 FORMAT_SPEC_SIZE = 33_352
@@ -146,7 +170,7 @@ class BoundSourceVolume:
     descriptor: int
     identity: tuple[int, int]
     size: int
-    times: tuple[int, int]
+    times: tuple[int, ...]
     metadata: os.stat_result
     sha256: str
 
@@ -241,8 +265,8 @@ def _sha256_fd_range(descriptor: int, offset: int, size: int) -> str:
     return digest.hexdigest()
 
 
-def _stat_times(metadata: os.stat_result) -> tuple[int, int]:
-    return metadata.st_mtime_ns, metadata.st_ctime_ns
+def _stat_times(metadata: os.stat_result) -> tuple[int, ...]:
+    return metadata.st_mtime_ns, *change_time_identity(metadata)
 
 
 def _assert_bound_source(source: BoundSourceVolume) -> None:
@@ -312,7 +336,7 @@ def _assert_bound_output(
     reservation: BoundOutputReservation,
     *,
     expected_size: int | None = None,
-    expected_times: tuple[int, int] | None = None,
+    expected_times: tuple[int, ...] | None = None,
 ) -> os.stat_result:
     current = os.fstat(reservation.descriptor)
     if (
@@ -445,7 +469,7 @@ def _close_bound_output(reservation: BoundOutputReservation, *, keep: bool) -> N
 
 def _commit_bound_output(
     reservation: BoundOutputReservation, data: bytes
-) -> tuple[int, int]:
+) -> tuple[int, ...]:
     os.ftruncate(reservation.descriptor, 0)
     _pwrite_all(reservation.descriptor, data, 0)
     os.ftruncate(reservation.descriptor, len(data))
@@ -460,7 +484,7 @@ def _write_bound_copied_volume(
     source: BoundSourceVolume,
     output: BoundOutputReservation,
     replacement: bytes,
-) -> tuple[dict[str, object], tuple[int, int]]:
+) -> tuple[dict[str, object], tuple[int, ...]]:
     if source.identity == output.identity:
         raise PatchError("source and copied output alias the same inode")
     if source.size != SOURCE_VOLUME_SIZE or source.sha256 != SOURCE_VOLUME_SHA256:

@@ -28,6 +28,30 @@ from nfl_tset_loader_alias_audit import alias_decode, token_requirements
 from nfl_txtr import HEADER, decompress_vc_lz
 
 
+def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
+    """``(info.st_ctime_ns,)`` on POSIX; ``()`` on Windows.
+
+    Inlined rather than imported from
+    :mod:`mod_editor.core.platform_compat` because this module is executed as a
+    self-contained, tools-only closure and may not import the editor package;
+    the contract is byte-for-byte that helper's.
+
+    On Windows a path stat and an fd stat of the *same, untouched* file do not
+    agree on ``st_ctime``, so putting it in an identity tuple refuses a file
+    nothing touched.  ``st_dev``/``st_ino`` stay the identity and
+    ``st_size``/``st_mtime_ns`` stay the change detectors, so a swapped or
+    rewritten file is still caught.  What is genuinely lost on Windows is the
+    metadata-only-change signal -- a permission or attribute edit that leaves
+    the bytes, the size and the modification time untouched -- and Windows
+    offers no equivalent field that is stable across the two calls, so this
+    check is weaker there than on POSIX.  Stated, not hidden.
+    """
+
+    if sys.platform.startswith("win"):
+        return ()
+    return (info.st_ctime_ns,)
+
+
 SCHEMA = "nfl2k5_away_loader_safe_virtual_xiso_verify/v1"
 IMAGE_SIZE = 6_300_499_968
 SOURCE_SHA256 = "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
@@ -133,13 +157,13 @@ def hash_fd(descriptor: int, size: int) -> str:
     return digest.hexdigest()
 
 
-FileIdentity = tuple[int, int, int, int, int, int, int]
+FileIdentity = tuple[int, ...]
 
 
 def file_identity(info: os.stat_result) -> FileIdentity:
     return (
         info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
-        info.st_size, info.st_mtime_ns, info.st_ctime_ns,
+        info.st_size, info.st_mtime_ns, *change_time_identity(info),
     )
 
 

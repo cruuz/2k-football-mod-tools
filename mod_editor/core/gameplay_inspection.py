@@ -15,6 +15,7 @@ from pathlib import Path
 import stat
 from typing import Any
 
+from . import platform_compat
 from .errors import ValidationError
 
 
@@ -123,14 +124,14 @@ def _read_pinned_report(
             after.st_ino,
             after.st_size,
             after.st_mtime_ns,
-            after.st_ctime_ns,
+            *platform_compat.change_time_identity(after),
             after.st_nlink,
         ) != (
             opened.st_dev,
             opened.st_ino,
             opened.st_size,
             opened.st_mtime_ns,
-            opened.st_ctime_ns,
+            *platform_compat.change_time_identity(opened),
             opened.st_nlink,
         ):
             raise ValidationError(f"{label} report changed while reading")

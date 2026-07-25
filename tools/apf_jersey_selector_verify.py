@@ -30,6 +30,30 @@ from typing import Any
 import zlib
 
 
+def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
+    """``(info.st_ctime_ns,)`` on POSIX; ``()`` on Windows.
+
+    Inlined rather than imported from
+    :mod:`mod_editor.core.platform_compat` because this module is executed as a
+    self-contained, tools-only closure and may not import the editor package;
+    the contract is byte-for-byte that helper's.
+
+    On Windows a path stat and an fd stat of the *same, untouched* file do not
+    agree on ``st_ctime``, so putting it in an identity tuple refuses a file
+    nothing touched.  ``st_dev``/``st_ino`` stay the identity and
+    ``st_size``/``st_mtime_ns`` stay the change detectors, so a swapped or
+    rewritten file is still caught.  What is genuinely lost on Windows is the
+    metadata-only-change signal -- a permission or attribute edit that leaves
+    the bytes, the size and the modification time untouched -- and Windows
+    offers no equivalent field that is stable across the two calls, so this
+    check is weaker there than on POSIX.  Stated, not hidden.
+    """
+
+    if sys.platform.startswith("win"):
+        return ()
+    return (info.st_ctime_ns,)
+
+
 ROOT = Path(__file__).resolve().parents[1]
 FORMAT_SPEC = ROOT / "reports/specs/apf2k8_roster_jersey_selector_writeback.v1.json"
 FORMAT_SPEC_SIZE = 33_352
@@ -174,7 +198,7 @@ class BoundFile:
             require(self.identity == (supplied.st_dev, supplied.st_ino),
                     f"{label} pathname changed while opening")
             self.size = current.st_size
-            self.times = (current.st_mtime_ns, current.st_ctime_ns)
+            self.times = (current.st_mtime_ns, *change_time_identity(current))
             self.path = self.supplied_path.resolve(strict=True)
             require(self.path == self.supplied_path,
                     f"{label} path contains a symlink component")
@@ -230,7 +254,7 @@ class BoundFile:
         require(stat.S_ISREG(current.st_mode)
                 and (current.st_dev, current.st_ino) == self.identity
                 and current.st_size == self.size
-                and (current.st_mtime_ns, current.st_ctime_ns) == self.times,
+                and (current.st_mtime_ns, *change_time_identity(current)) == self.times,
                 f"{self.label} descriptor changed during verification")
         try:
             direct = self.supplied_path.lstat()
@@ -299,7 +323,7 @@ class ReportReservation:
             require(info.st_size == self.payload_size,
                     "report size changed after write")
         if self.payload_times is not None:
-            require((info.st_mtime_ns, info.st_ctime_ns) == self.payload_times,
+            require((info.st_mtime_ns, *change_time_identity(info)) == self.payload_times,
                     "report content metadata changed after write")
         parent_info = os.fstat(self.parent_fd)
         path_info = os.stat(self.path.name, dir_fd=self.parent_fd, follow_symlinks=False)
@@ -325,7 +349,7 @@ class ReportReservation:
         info = self._assert_owned()
         require(info.st_size == len(payload), "report size changed during write")
         self.payload_size = len(payload)
-        self.payload_times = (info.st_mtime_ns, info.st_ctime_ns)
+        self.payload_times = (info.st_mtime_ns, *change_time_identity(info))
         self.payload_sha256 = sha256_bytes(payload)
 
     def finalize(self) -> None:

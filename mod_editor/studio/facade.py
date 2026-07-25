@@ -17,6 +17,7 @@ import stat
 import threading
 from typing import Callable, Iterable, Sequence
 
+from mod_editor.core import platform_compat
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.gameplay_inspection import (
     DEFAULT_FRANCHISE_REPORT,
@@ -232,14 +233,14 @@ def _read_product_snapshot(
             after.st_ino,
             after.st_size,
             after.st_mtime_ns,
-            after.st_ctime_ns,
+            *platform_compat.change_time_identity(after),
             after.st_nlink,
         ) != (
             opened.st_dev,
             opened.st_ino,
             opened.st_size,
             opened.st_mtime_ns,
-            opened.st_ctime_ns,
+            *platform_compat.change_time_identity(opened),
             opened.st_nlink,
         ):
             raise ValidationError(f"{label} product snapshot changed while reading")

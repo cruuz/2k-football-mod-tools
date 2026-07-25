@@ -256,7 +256,13 @@ class AudioReplacementDirectoryIdentity:
     device: int
     inode: int
     modified_ns: int
-    changed_ns: int
+    # The change-time component of this fingerprint -- a one-tuple where the
+    # platform can compare a change time across calls, and empty where it
+    # cannot (see platform_compat.change_time_identity).  A tuple rather than a
+    # bare int precisely so this dataclass's own ``==`` drops the component on
+    # the platform that cannot compare it, instead of refusing an untouched
+    # directory.
+    changed_ns: tuple[int, ...]
     link_count: int
 
 
@@ -266,7 +272,16 @@ class AudioReplacementFileIdentity:
     inode: int
     size: int
     modified_ns: int
-    changed_ns: int
+    # Empty where the platform cannot compare a change time across calls: this
+    # identity is captured from a DirHandle path stat and then re-checked
+    # against an os.fstat of the descriptor opened from it, and those two calls
+    # do not agree on st_ctime on Windows (see
+    # platform_compat.change_time_identity).  A tuple rather than a bare int
+    # precisely so this dataclass's own ``==`` -- which is what
+    # ``_read_private_file_at`` compares across that path/fd pair -- drops the
+    # component on the platform that cannot compare it, instead of refusing an
+    # untouched file.
+    changed_ns: tuple[int, ...]
     content_sha256: str | None = None
 
 
@@ -800,7 +815,7 @@ def _directory_identity(info: os.stat_result) -> AudioReplacementDirectoryIdenti
         info.st_dev,
         info.st_ino,
         info.st_mtime_ns,
-        info.st_ctime_ns,
+        platform_compat.change_time_identity(info),
         info.st_nlink,
     )
 
@@ -814,20 +829,20 @@ def _file_identity(
         inode=info.st_ino,
         size=info.st_size,
         modified_ns=info.st_mtime_ns,
-        changed_ns=info.st_ctime_ns,
+        changed_ns=platform_compat.change_time_identity(info),
         content_sha256=content_sha256,
     )
 
 
 def _file_stat_identity(
     identity: AudioReplacementFileIdentity,
-) -> tuple[int, int, int, int, int]:
+) -> tuple[int, ...]:
     return (
         identity.device,
         identity.inode,
         identity.size,
         identity.modified_ns,
-        identity.changed_ns,
+        *identity.changed_ns,
     )
 
 
@@ -1801,14 +1816,14 @@ def _directory_unchanged(before: os.stat_result, after: os.stat_result) -> bool:
         before.st_ino,
         before.st_mode,
         before.st_mtime_ns,
-        before.st_ctime_ns,
+        *platform_compat.change_time_identity(before),
         before.st_nlink,
     ) == (
         after.st_dev,
         after.st_ino,
         after.st_mode,
         after.st_mtime_ns,
-        after.st_ctime_ns,
+        *platform_compat.change_time_identity(after),
         after.st_nlink,
     )
 

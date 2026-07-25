@@ -16,7 +16,32 @@ import os
 from pathlib import Path
 import re
 import stat
+import sys
 from typing import Any, Iterable
+
+
+def change_time_identity(info: os.stat_result) -> tuple[int, ...]:
+    """``(info.st_ctime_ns,)`` on POSIX; ``()`` on Windows.
+
+    Inlined rather than imported from
+    :mod:`mod_editor.core.platform_compat` because this module is executed as a
+    self-contained, tools-only closure and may not import the editor package;
+    the contract is byte-for-byte that helper's.
+
+    On Windows a path stat and an fd stat of the *same, untouched* file do not
+    agree on ``st_ctime``, so putting it in an identity tuple refuses a file
+    nothing touched.  ``st_dev``/``st_ino`` stay the identity and
+    ``st_size``/``st_mtime_ns`` stay the change detectors, so a swapped or
+    rewritten file is still caught.  What is genuinely lost on Windows is the
+    metadata-only-change signal -- a permission or attribute edit that leaves
+    the bytes, the size and the modification time untouched -- and Windows
+    offers no equivalent field that is stable across the two calls, so this
+    check is weaker there than on POSIX.  Stated, not hidden.
+    """
+
+    if sys.platform.startswith("win"):
+        return ()
+    return (info.st_ctime_ns,)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -124,9 +149,9 @@ def hash_regular_file(
         after = os.fstat(descriptor)
         require(
             (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns,
-             after.st_ctime_ns)
+             *change_time_identity(after))
             == (opened.st_dev, opened.st_ino, opened.st_size, opened.st_mtime_ns,
-                opened.st_ctime_ns),
+                *change_time_identity(opened)),
             f"file changed while hashing: {path}",
         )
         return opened.st_size, {
@@ -226,9 +251,9 @@ def inspect_suspect_disc(path: Path) -> dict[str, Any]:
     after = path.lstat()
     require(
         (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns,
-         after.st_ctime_ns)
+         *change_time_identity(after))
         == (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns,
-            before.st_ctime_ns),
+            *change_time_identity(before)),
         f"disc suspect changed during header inspection: {path}",
     )
     return {

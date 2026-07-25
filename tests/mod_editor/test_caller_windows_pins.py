@@ -287,7 +287,10 @@ class Finding5StagingPinTests(unittest.TestCase):
                     handle.close()
             written = directory / "EDIT-AUDIO.md"
             self.assertEqual(written.read_bytes(), b"payload")
-            self.assertEqual(written.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(
+                written.stat().st_mode & 0o777,
+                platform_compat.private_file_mode(),
+            )
 
     def test_write_new_at_refuses_a_swapped_parent(self) -> None:
         with tempfile.TemporaryDirectory() as name:

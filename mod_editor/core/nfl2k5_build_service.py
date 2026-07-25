@@ -640,7 +640,7 @@ def _read_regular_snapshot(
             named.st_ino,
             named.st_size,
             named.st_mtime_ns,
-            named.st_ctime_ns,
+            *platform_compat.change_time_identity(named),
         )
         opened = os.fstat(descriptor)
         if (
@@ -650,7 +650,7 @@ def _read_regular_snapshot(
                 opened.st_ino,
                 opened.st_size,
                 opened.st_mtime_ns,
-                opened.st_ctime_ns,
+                *platform_compat.change_time_identity(opened),
             ) != expected
         ):
             raise ValidationError(f"{label} changed while it was being opened")
@@ -676,14 +676,14 @@ def _read_regular_snapshot(
                 opened_after.st_ino,
                 opened_after.st_size,
                 opened_after.st_mtime_ns,
-                opened_after.st_ctime_ns,
+                *platform_compat.change_time_identity(opened_after),
             ) != expected
             or (
                 named_after.st_dev,
                 named_after.st_ino,
                 named_after.st_size,
                 named_after.st_mtime_ns,
-                named_after.st_ctime_ns,
+                *platform_compat.change_time_identity(named_after),
             ) != expected
         ):
             raise ValidationError(f"{label} changed while it was being read")
@@ -980,7 +980,7 @@ def _private_audio_inventory_file(
             named.st_ino,
             named.st_size,
             named.st_mtime_ns,
-            named.st_ctime_ns,
+            *platform_compat.change_time_identity(named),
         )
         if (
             not stat.S_ISREG(opened.st_mode)
@@ -994,14 +994,14 @@ def _private_audio_inventory_file(
                 opened.st_ino,
                 opened.st_size,
                 opened.st_mtime_ns,
-                opened.st_ctime_ns,
+                *platform_compat.change_time_identity(opened),
             ) != expected
             or (
                 named_after.st_dev,
                 named_after.st_ino,
                 named_after.st_size,
                 named_after.st_mtime_ns,
-                named_after.st_ctime_ns,
+                *platform_compat.change_time_identity(named_after),
             ) != expected
         ):
             raise _audio_safety_error(

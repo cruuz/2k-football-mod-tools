@@ -925,4 +925,10 @@ class WindowsBackendTeardownTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    # verbosity=2 prints each test's name as it STARTS.  This file has twice
+    # been killed by the CI per-file timeout on the Windows runner, and a killed
+    # unittest run has printed nothing at all -- the report is emitted at the
+    # end, which never arrives -- so the log could not say which test hung.
+    # Naming them as they start costs nothing and makes the next timeout
+    # self-diagnosing.
+    unittest.main(verbosity=2)

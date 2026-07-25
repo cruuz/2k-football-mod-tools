@@ -18,6 +18,8 @@ from uuid import uuid4
 
 from PIL import Image
 
+from mod_editor.core import platform_compat
+
 from .asset_io import ApfAssetIO, AssetIoError, AudioPreviewCancelled
 from .audio_annotations import (
     AudioAnnotationError,
@@ -2555,7 +2557,7 @@ class ApfSession:
                     opened.st_ino,
                     opened.st_size,
                     opened.st_mtime_ns,
-                    opened.st_ctime_ns,
+                    *platform_compat.change_time_identity(opened),
                     opened.st_nlink,
                 )
                 != (
@@ -2563,7 +2565,7 @@ class ApfSession:
                     supplied.st_ino,
                     supplied.st_size,
                     supplied.st_mtime_ns,
-                    supplied.st_ctime_ns,
+                    *platform_compat.change_time_identity(supplied),
                     supplied.st_nlink,
                 )
                 or opened.st_nlink != 1
@@ -2593,14 +2595,14 @@ class ApfSession:
                 after.st_ino,
                 after.st_size,
                 after.st_mtime_ns,
-                after.st_ctime_ns,
+                *platform_compat.change_time_identity(after),
                 after.st_nlink,
             ) != (
                 opened.st_dev,
                 opened.st_ino,
                 opened.st_size,
                 opened.st_mtime_ns,
-                opened.st_ctime_ns,
+                *platform_compat.change_time_identity(opened),
                 opened.st_nlink,
             ) or total != opened.st_size:
                 raise SessionError(f"The {label} changed while it was read")

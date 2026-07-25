@@ -124,7 +124,7 @@ VIRTUAL_PATCHES = tuple(
     for target in TARGETS.values()
 )
 
-FileIdentity = tuple[int, int, int, int, int, int, int]
+FileIdentity = tuple[int, ...]
 
 
 def required_executable_seals() -> int:
@@ -142,7 +142,8 @@ def required_executable_seals() -> int:
 def file_identity(info: os.stat_result) -> FileIdentity:
     return (
         info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
-        info.st_size, info.st_mtime_ns, info.st_ctime_ns,
+        info.st_size, info.st_mtime_ns,
+        *platform_compat.change_time_identity(info),
     )
 
 

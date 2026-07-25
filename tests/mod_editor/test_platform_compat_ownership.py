@@ -240,11 +240,22 @@ class SimulatedWindowsOwnershipTests(unittest.TestCase):
                 describe_ownership(stat_with_uid(0))
 
     def test_a_failed_win32_lookup_fails_closed(self) -> None:
-        # owner_sid=None leaves the real ctypes path in place, which cannot
-        # resolve on a POSIX host (no ctypes.windll).  An unanswerable ownership
-        # question must be reported as NOT owned, with the reason attached.
+        # An unanswerable ownership question must be reported as NOT owned, with
+        # the reason attached.  Relying on "the real ctypes path cannot resolve
+        # here" only produced an unanswerable lookup on a POSIX host; on a real
+        # Windows runner it resolved perfectly well and the test was asserting
+        # something else entirely.  The failure is therefore injected directly,
+        # so the branch under test is the same one on every platform.
+        def refuse(*, fd=None, path=None, win_handle=None):  # noqa: ANN001, ARG001
+            raise OwnershipCheckError("Win32 refused the owner lookup")
+
         with simulated_windows(owner_sid=None):
-            check = describe_ownership(stat_with_uid(0), path=__file__)
+            saved = platform_compat._windows_owner_sid
+            platform_compat._windows_owner_sid = refuse
+            try:
+                check = describe_ownership(stat_with_uid(0), path=__file__)
+            finally:
+                platform_compat._windows_owner_sid = saved
             self.assertFalse(check.owned)
             self.assertEqual(check.mechanism, OWNERSHIP_WINDOWS_OWNER_SID)
             self.assertIn("unavailable", check.detail)

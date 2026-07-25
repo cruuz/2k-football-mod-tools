@@ -19,6 +19,7 @@ import re
 import stat
 from typing import Mapping, Protocol
 
+from mod_editor.core import platform_compat
 from .player_ratings import PlayerRatingSchema, load_player_rating_schema
 
 
@@ -222,14 +223,14 @@ def _read_private_sheet(source: Path) -> tuple[str, str]:
             after.st_ino,
             after.st_size,
             after.st_mtime_ns,
-            after.st_ctime_ns,
+            *platform_compat.change_time_identity(after),
             after.st_nlink,
         ) != (
             opened.st_dev,
             opened.st_ino,
             opened.st_size,
             opened.st_mtime_ns,
-            opened.st_ctime_ns,
+            *platform_compat.change_time_identity(opened),
             opened.st_nlink,
         ):
             raise PlayerRatingSheetError("The ratings sheet changed while it was read")

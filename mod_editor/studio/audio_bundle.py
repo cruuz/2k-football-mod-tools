@@ -391,7 +391,7 @@ def _stream_payload_into_zip(
             opened.st_ino,
             opened.st_size,
             opened.st_mtime_ns,
-            opened.st_ctime_ns,
+            *platform_compat.change_time_identity(opened),
             opened.st_nlink,
         )
         if (
@@ -399,7 +399,7 @@ def _stream_payload_into_zip(
             after.st_ino,
             after.st_size,
             after.st_mtime_ns,
-            after.st_ctime_ns,
+            *platform_compat.change_time_identity(after),
             after.st_nlink,
         ) != identity or written != opened.st_size:
             raise AudioBundleError("An audio bundle payload changed while reading")

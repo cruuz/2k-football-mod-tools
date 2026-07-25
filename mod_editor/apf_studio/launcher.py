@@ -229,50 +229,19 @@ class XeniaLauncher:
                 str(game),
             ]
         try:
-            # O_NOFOLLOW carries the whole no-follow guarantee here, and it is 0
-            # on Windows -- so the open would follow a planted symlink and
-            # O_TRUNC would destroy whatever it pointed at.  The truncation is
-            # therefore split off the open: refuse a link by name first, open
-            # WITHOUT O_TRUNC, prove the opened object is the same non-reparse
-            # file that was named, and only then empty it through the
-            # descriptor.  Nothing is destroyed before the identity is proven,
-            # and on POSIX the O_NOFOLLOW refusal still fires exactly as before.
-            try:
-                named = os.lstat(log_path)
-            except FileNotFoundError:
-                named = None
-            if named is not None and (
-                stat.S_ISLNK(named.st_mode)
-                or platform_compat.is_reparse_point(log_path)
-            ):
-                raise OSError(
-                    errno.ELOOP,
-                    "the Xenia log path is a symlink or reparse point",
-                    os.fspath(log_path),
-                )
-            log_descriptor = os.open(
+            # A real non-following open on both platforms.  The previous
+            # attempt here -- lstat, then os.open, then inspect the fstat --
+            # did NOT close the hole on Windows: with the log absent at lstat
+            # time an attacker could plant a symlink before the open, and the
+            # fstat would then describe the innocent target it was redirected
+            # to.  open_no_follow refuses the reparse point on the opened handle
+            # itself, and the truncation stays split off the open so nothing is
+            # destroyed before that refusal can fire.
+            log_descriptor = platform_compat.open_no_follow(
                 log_path,
-                os.O_WRONLY
-                | os.O_CREAT
-                | getattr(os, "O_NOFOLLOW", 0)
-                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
+                os.O_WRONLY | os.O_CREAT,
                 0o600,
             )
-            opened = os.fstat(log_descriptor)
-            attributes = getattr(opened, "st_file_attributes", 0)
-            reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
-            replaced = (
-                named is not None
-                and opened.st_ino
-                and (opened.st_dev, opened.st_ino) != (named.st_dev, named.st_ino)
-            )
-            if (attributes and reparse_flag and attributes & reparse_flag) or replaced:
-                os.close(log_descriptor)
-                raise OSError(
-                    errno.ELOOP,
-                    "the Xenia log path was replaced while it was being opened",
-                    os.fspath(log_path),
-                )
             os.ftruncate(log_descriptor, 0)
             with os.fdopen(log_descriptor, "wb") as log:
                 process = subprocess.Popen(

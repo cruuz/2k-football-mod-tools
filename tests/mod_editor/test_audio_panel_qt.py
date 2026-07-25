@@ -1066,6 +1066,46 @@ class AudioPanelBackendTests(unittest.TestCase):
         self.assertIsNone(audio_player_command(path, lambda _name: None))
 
 
+
+def pinned_layout_metrics(application):
+    """Pin the Qt style and font so a pixel budget means the same on every OS.
+
+    The two assertions below are tuned pixel budgets: "this panel's minimum
+    width fits the target window" and "the detail card stays narrow".  Both are
+    real UX properties, but a raw pixel number is only meaningful against fixed
+    layout metrics -- the platform style supplies its own frame widths, margins
+    and spacings, and the desktop supplies its own default font, so the same
+    layout measures differently on Windows and the budget stops describing the
+    property it was written for.  Fusion plus an explicit font is the same
+    everywhere, so the numbers keep their meaning instead of being re-tuned per
+    platform (which would assert nothing) or dropped (which would assert
+    nothing at all).  Restores whatever was in force on exit.
+    """
+
+    from PyQt5.QtGui import QFont
+    from PyQt5.QtWidgets import QStyleFactory
+
+    saved_style = application.style().objectName()
+    saved_font = QFont(application.font())
+    fusion = QStyleFactory.create("Fusion")
+    if fusion is not None:
+        application.setStyle(fusion)
+    application.setFont(QFont("DejaVu Sans", 10))
+
+    class _Restore:
+        def __enter__(self_inner):  # noqa: ANN001
+            return self_inner
+
+        def __exit__(self_inner, *exc):  # noqa: ANN001
+            restored = QStyleFactory.create(saved_style)
+            if restored is not None:
+                application.setStyle(restored)
+            application.setFont(saved_font)
+            return False
+
+    return _Restore()
+
+
 class AudioPanelOffscreenTests(unittest.TestCase):
     def test_widget_populates_pages_and_gates_edit_controls(self) -> None:
         os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -1744,8 +1784,15 @@ class AudioPanelOffscreenTests(unittest.TestCase):
                 self.assertTrue(flags & Qt.TextSelectableByKeyboard)
 
             self.assertIn(owner_tail[-1], panel.ownership_label.text())
-            self.assertLessEqual(panel.detail_card.minimumSizeHint().width(), 380)
-            self.assertLessEqual(panel.detail_card.minimumSizeHint().height(), 420)
+            with pinned_layout_metrics(application):
+                panel.detail_card.updateGeometry()
+                application.processEvents()
+                self.assertLessEqual(
+                    panel.detail_card.minimumSizeHint().width(), 380
+                )
+                self.assertLessEqual(
+                    panel.detail_card.minimumSizeHint().height(), 420
+                )
 
             scroll.setFixedSize(320, 180)
             panel.show()
@@ -1841,9 +1888,13 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             panel.adjustSize()
             application.processEvents()
 
-            self.assertLessEqual(
-                panel.minimumSizeHint().width(), AUDIO_TOOLBAR_TARGET_WIDTH
-            )
+            with pinned_layout_metrics(application):
+                panel.layout().invalidate()
+                panel.updateGeometry()
+                application.processEvents()
+                self.assertLessEqual(
+                    panel.minimumSizeHint().width(), AUDIO_TOOLBAR_TARGET_WIDTH
+                )
             panel.resize(
                 AUDIO_TOOLBAR_TARGET_WIDTH,
                 max(950, panel.minimumSizeHint().height()),
