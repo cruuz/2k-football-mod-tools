@@ -329,8 +329,14 @@ class SealResult:
 class OwnershipCheck:
     """Outcome of :func:`describe_ownership`, with the mechanism that produced it.
 
-    ``owned`` is the security answer: ``True`` only when the object really does
-    belong to the account running this process.  ``mechanism`` is
+    ``owned`` is the security answer: ``True`` only when the object's owner is an
+    identity the calling process's own token holds.  On POSIX that is uid
+    equality.  On Windows it is the owner SID matching the token's user SID, its
+    ``TokenOwner``, or a group the token is a member of -- which is wider than
+    "this account and no other", and deliberately so: see
+    :func:`describe_ownership` for why comparing the user SID alone refuses the
+    process's own files whenever it runs elevated, and for which of the three
+    matched in any given answer.  ``mechanism`` is
     :data:`OWNERSHIP_POSIX_UID` or :data:`OWNERSHIP_WINDOWS_OWNER_SID` and exists
     so a caller -- or a test -- can assert *how* the answer was reached, because
     the two mechanisms guarantee subtly different things and the difference must
@@ -1520,8 +1526,10 @@ def describe_ownership(
     On Windows ``info.st_uid`` is a meaningless ``0`` for every file, so trusting
     it would convert a real guard against another user's planted cache into a
     check that always passes.  The Win32 equivalent is used instead -- the
-    object's owner SID compared against the process token's user SID -- which is
-    the same guarantee expressed in the platform's own ownership model.  That
+    object's owner SID compared against the identities the process token actually
+    holds (its user SID, its ``TokenOwner``, or a group it belongs to) -- the
+    same question expressed in the platform's own ownership model, though a
+    wider identity than uid equality when the token is elevated.  That
     needs something to interrogate, so at least one of ``win_handle`` (preferred:
     the very handle already held pinned, queried through ``GetSecurityInfo`` with
     no name resolution), ``fd`` (a CRT descriptor, likewise race-free) or ``path``
@@ -1626,8 +1634,11 @@ def is_owned_by_current_user(
     """Whether ``info``'s object belongs to the account running this process.
 
     The boolean shorthand for :func:`describe_ownership`; see it for the full
-    contract, including why ``fd`` or ``path`` is mandatory on Windows and why a
-    failed Win32 lookup is reported as *not owned*.
+    contract, including why ``fd`` or ``path`` is mandatory on Windows, why a
+    failed Win32 lookup is reported as *not owned*, and why "belongs to" is
+    wider on Windows than uid equality (an owner SID the token holds by group
+    membership counts, which is how an elevated process's own files come back
+    owned by ``BUILTIN\Administrators``).
     """
 
     return describe_ownership(info, fd=fd, path=path).owned
@@ -3536,7 +3547,10 @@ def reverify_sealed_before_exec(
 #
 # Which mechanism ran is returned in :class:`NoReplacePublication`, exactly so a
 # caller or a test can assert the guarantee that is actually in force on the
-# running platform.  No branch below ever overwrites an existing destination.
+# running platform.  Every branch below refuses an existing destination, with
+# one exception a caller must opt into: the two-step mkdir-reserve directory
+# fallback, which is refused by default (``require_atomic``) precisely because a
+# racer that replaces its placeholder between the steps CAN be overwritten.
 # ---------------------------------------------------------------------------
 
 # ``AT_FDCWD`` and ``RENAME_NOREPLACE`` from <fcntl.h>/<linux/fs.h>: used only by
@@ -3615,7 +3629,11 @@ STAGING_FILE_WINDOWS_SHARE_DELETE = "windows-create-new-share-delete"
 class NoReplacePublishUnavailable(RuntimeError):
     """No atomic no-clobber publish mechanism exists for this request here.
 
-    Raised only when the running platform genuinely cannot honour the guarantee
+    Also raised when a caller demanded a single atomic no-clobber publish
+    (``require_atomic``, the default for directories) and only the two-step
+    reserve-then-swap fallback was available -- a refusal in place of a weaker
+    mechanism, which is exactly what that caller asked for.  Otherwise raised
+    only when the running platform genuinely cannot honour the guarantee
     with the standard library -- concretely, a Windows publish that can only be
     addressed through a directory descriptor, because Windows cannot open one.
     It is never raised merely to signal a *weaker* guarantee (that is reported in
@@ -4913,8 +4931,12 @@ def no_replace_publish_mechanism(*, is_directory: bool, dir_fd: bool) -> str:
 
     ``dir_fd`` is whether the caller will address the publish through a directory
     descriptor.  Lets a caller or test assert the platform-appropriate guarantee
-    before publishing; the value equals the ``mechanism`` the call returns.  One
-    documented caveat: on macOS this predicts :data:`PUBLISH_MACOS_RENAMEX_EXCL`
+    before publishing; the value equals the ``mechanism`` the call returns, with
+    two caveats.  First, :data:`PUBLISH_POSIX_MKDIR_RESERVE` is what a directory
+    publish *would* use, but the default ``require_atomic=True`` refuses that
+    mechanism rather than running it -- so a prediction of it means "this call
+    will raise :class:`NoReplacePublishUnavailable` unless you opt in", not
+    "this mechanism will run".  Second: on macOS this predicts :data:`PUBLISH_MACOS_RENAMEX_EXCL`
     for a directory whenever ``renameatx_np`` is present, but a specific volume
     that rejects ``RENAME_EXCL`` at runtime falls back to
     :data:`PUBLISH_POSIX_MKDIR_RESERVE` -- a prediction this side-effect-free call
