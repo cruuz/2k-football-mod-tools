@@ -5080,6 +5080,14 @@ def open_no_follow(
     the call fails with ``ELOOP``, exactly as ``O_NOFOLLOW`` does.  POSIX takes
     the identical ``os.open`` it always took.
 
+    On Windows the proven object is then bound to an ordinary CRT descriptor by
+    comparing identities rather than by handing the Win32 handle to the CRT:
+    ``_open_osfhandle`` rejects a handle opened this way with ``EBADF``, and a
+    descriptor the caller cannot use would be no guarantee at all.  A racer who
+    swaps the name between the two steps yields a different (volume, file index)
+    and is refused; one who relinks it back to the very object just proven has
+    changed nothing the caller cares about.
+
     Scope, precisely: this refuses a link at the FINAL component, which is what
     ``O_NOFOLLOW`` refuses and no more.  Ancestor directories are still resolved
     normally by both platforms; a caller that also needs its ancestors proven
@@ -5099,23 +5107,19 @@ def open_no_follow(
         return os.open(path, flags | getattr(os, "O_NOFOLLOW", 0), mode)
 
     try:
-        msvcrt = _require_msvcrt()
         api = _windows_kernel_api()
-    except (RuntimeError, DirectoryTransactionUnavailable):
-        # Neither primitive can be missing on a real Windows host: msvcrt is a
-        # stdlib built-in there and ctypes.windll always exists.  Reaching this
+    except DirectoryTransactionUnavailable:
+        # ctypes.windll always exists on a real Windows host, so reaching this
         # means IS_WINDOWS was monkeypatched True on a POSIX host to exercise
-        # the Windows branch, so the honest answer is that host's own open,
-        # which really does carry O_NOFOLLOW and really is non-following.
-        #
+        # the Windows branch; that host's own open really does carry O_NOFOLLOW.
         # sys.platform is consulted rather than IS_WINDOWS precisely because
         # IS_WINDOWS is the mutable thing the simulation flips: on a real
         # Windows interpreter this re-raises instead of degrading, so a missing
-        # primitive there fails closed and can never silently become a
-        # following open.
+        # primitive there fails closed and can never become a following open.
         if sys.platform.startswith("win"):
             raise
         return os.open(path, flags | getattr(os, "O_NOFOLLOW", 0), mode)
+
     write = bool(flags & (os.O_WRONLY | os.O_RDWR))
     access = _WIN_GENERIC_READ
     if write:
@@ -5126,6 +5130,11 @@ def open_no_follow(
         disposition = _WIN_OPEN_ALWAYS
     else:
         disposition = _WIN_OPEN_EXISTING
+
+    # Step 1: prove the name does not resolve through a reparse point, using an
+    # open that genuinely does not follow one.  FILE_FLAG_OPEN_REPARSE_POINT
+    # opens a link AS the link, so the handle's own attributes answer the
+    # question about the object actually reached -- no lstat/open window.
     _win_reset_last_error()
     raw = api.kernel32.CreateFileW(
         os.fspath(path),
@@ -5147,27 +5156,39 @@ def open_no_follow(
             f"a reparse point (WinError {err})",
         )
     try:
-        _serial, _index, attributes = _win_file_identity(api, handle)
-    except OSError:
+        serial, index, attributes = _win_file_identity(api, handle)
+        if attributes & _WIN_FILE_ATTRIBUTE_REPARSE_POINT:
+            raise OSError(
+                errno.ELOOP,
+                "refusing to follow a reparse point",
+                os.fspath(path),
+            )
+    finally:
         _win_close_handle(api, handle)
-        raise
-    if attributes & _WIN_FILE_ATTRIBUTE_REPARSE_POINT:
-        _win_close_handle(api, handle)
-        raise OSError(
-            errno.ELOOP,
-            "refusing to follow a reparse point",
-            os.fspath(path),
-        )
-    # _open_osfhandle accepts only a small flag set -- _O_APPEND, _O_RDONLY,
-    # _O_TEXT/_O_WTEXT/_O_U8TEXT/_O_U16TEXT and _O_NOINHERIT.  Passing _O_BINARY
-    # or an access mode is not merely ignored, it fails the call with EBADF; the
-    # access mode already comes from the HANDLE, and binary is the default when
-    # no text flag is given.  Only O_NOINHERIT is meaningful to pass here.
+
+    # Step 2: take the ordinary CRT descriptor the caller needs, then BIND it to
+    # the object step 1 proved by comparing identities.  The Win32 handle is not
+    # handed to the CRT: _open_osfhandle refuses handles opened this way with
+    # EBADF, and a descriptor the caller cannot use is no guarantee at all.
+    #
+    # The remaining window is narrow and closed by the comparison, not ignored:
+    # a racer who swaps the name between the two steps produces a DIFFERENT
+    # (volume, file index) and is refused here.  A racer who relinks the name
+    # back to the very object step 1 proved changes nothing -- the descriptor
+    # names those proven bytes, which is exactly what the caller asked for.
+    descriptor = os.open(path, flags & ~getattr(os, "O_NOFOLLOW", 0), mode)
     try:
-        return msvcrt.open_osfhandle(handle, getattr(os, "O_NOINHERIT", 0))
+        opened = os.fstat(descriptor)
+        if (opened.st_dev, opened.st_ino) != (serial, index):
+            raise OSError(
+                errno.ELOOP,
+                "the path was replaced between its no-follow check and its open",
+                os.fspath(path),
+            )
     except BaseException:
-        _win_close_handle(api, handle)
+        os.close(descriptor)
         raise
+    return descriptor
 
 
 def _win_create_share_delete_staging_file(

@@ -590,6 +590,11 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
             with self.subTest(case=case), tempfile.TemporaryDirectory(
                 prefix="2k5-build-service-test-"
             ) as temporary:
+                # Phase markers: the CI per-file timeout on Windows kills this
+                # file mid-case, and "which case" was not enough to say whether
+                # the fixture, the product call or the temp-directory teardown
+                # is what does not return.
+                print("    [phase] fixture", file=sys.stderr, flush=True)
                 fixture = SyntheticFixture(Path(temporary))
                 fixture.set_project_kind("menu_back_audio")
                 if case == "derived_symlink":
@@ -635,6 +640,7 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                         containment.chmod(0o600)
                 runner = FakeBackendRunner()
 
+                print("    [phase] build", file=sys.stderr, flush=True)
                 with self.assertRaisesRegex(
                     ValidationError,
                     r"Audio edits need complete private source-audio safety data.*"
@@ -647,6 +653,7 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                 self.assertFalse(runner.calls)
                 self.assertFalse(fixture.output.exists())
                 self.assertFalse(fixture.stage_paths())
+                print("    [phase] teardown", file=sys.stderr, flush=True)
 
     def test_audio_inventory_rejects_unsafe_source_cache_root(self) -> None:
         for case in ("public_mode", "symlink"):
