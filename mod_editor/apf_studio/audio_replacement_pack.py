@@ -1285,6 +1285,9 @@ def _publish_name_noreplace(
             staging_name,
             destination_name,
             is_directory=is_directory,
+            # A directory publish here must not overwrite; refuse the weak
+            # reserve-then-swap fallback up front rather than after its swap.
+            require_atomic=is_directory,
         )
     except FileExistsError as exc:
         raise FileExistsError(destination_name) from exc

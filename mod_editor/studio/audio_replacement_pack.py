@@ -414,10 +414,14 @@ def _rename_noreplace(
     # DirHandle so every branch runs the identical at-operation.
     handle = parent if isinstance(parent, DirHandle) else DirHandle._borrow_posix_fd(parent)
     try:
+        # require_atomic: refuse the two-step reserve-then-swap fallback before
+        # it can overwrite a concurrently created destination, rather than
+        # inspecting atomic_no_clobber after the swap has already happened.
         published = handle.publish_no_replace(
             source_name,
             destination_name,
             is_directory=True,
+            require_atomic=True,
         )
     except FileExistsError as exc:
         raise FileExistsError(

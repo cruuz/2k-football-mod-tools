@@ -329,8 +329,16 @@ def _publish_directory_noreplace(staging: Path, destination: Path) -> None:
     """
 
     try:
+        # require_atomic: this publish must not overwrite anything, so the
+        # weak reserve-then-swap fallback is refused BEFORE it runs.  Checking
+        # the returned atomic_no_clobber afterwards would be too late -- the
+        # swap has already happened by then.
         published = platform_compat.publish_no_replace(
-            staging, destination, dir_fd=None, is_directory=True
+            staging,
+            destination,
+            dir_fd=None,
+            is_directory=True,
+            require_atomic=True,
         )
     except FileExistsError as exc:
         raise FileExistsError(destination) from exc

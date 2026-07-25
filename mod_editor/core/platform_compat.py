@@ -4309,6 +4309,7 @@ class DirHandle:
         destination: str,
         *,
         is_directory: bool = False,
+        require_atomic: bool = False,
     ) -> NoReplacePublication:
         """Publish ``staging`` to ``destination`` without overwriting an existing name.
 
@@ -4335,6 +4336,7 @@ class DirHandle:
                 destination,
                 dir_fd=self._fd,
                 is_directory=is_directory,
+            require_atomic=require_atomic,
             )
         self._reverify()
         return publish_no_replace(
@@ -4342,6 +4344,7 @@ class DirHandle:
             os.path.join(self._realpath, _reject_non_component(destination)),
             dir_fd=None,
             is_directory=is_directory,
+            require_atomic=require_atomic,
         )
 
     def fsync(self) -> bool:
@@ -4679,6 +4682,8 @@ def _publish_directory_via_reserve(
     staging: str,
     destination: str,
     dir_fd: int | None,
+    *,
+    require_atomic: bool = False,
 ) -> NoReplacePublication:
     """Publish one staged FOLDER with the strongest non-``renameat2`` primitive."""
 
@@ -4727,6 +4732,21 @@ def _publish_directory_via_reserve(
     # The dir_fd-relative mkdir/rename/rmdir route through a borrowed DirHandle
     # (byte-identical dir_fd= calls on POSIX), unifying this module's own publish
     # with the abstraction the consumers use.
+    if require_atomic:
+        # Every atomic mechanism has now been tried and none was available, so
+        # what remains is the two-step reserve-then-swap.  Refuse HERE, before
+        # it runs: reporting atomic_no_clobber=False on the way out is too late
+        # to help a caller that cannot tolerate an overwrite, because the swap
+        # has already happened by the time it reads the field.  The Windows and
+        # macOS RENAME_EXCL branches above are genuine atomic no-clobber
+        # publishes and are never refused by this gate.
+        raise NoReplacePublishUnavailable(
+            "no single atomic no-clobber directory publish is available here "
+            "(this filesystem offers neither renameat2(RENAME_NOREPLACE) nor "
+            "renamex_np(RENAME_EXCL)); the mkdir-reserve fallback is two steps "
+            "and can overwrite a directory a concurrent process placed at the "
+            "destination, so it was refused rather than run"
+        )
     handle = DirHandle._borrow_posix_fd(dir_fd) if dir_fd is not None else None
     if handle is not None:
         handle.mkdir(destination, POSIX_PRIVATE_DIRECTORY_MODE)
@@ -4807,8 +4827,15 @@ def publish_no_replace(
     *,
     dir_fd: int | None = None,
     is_directory: bool = False,
+    require_atomic: bool = False,
 ) -> NoReplacePublication:
     """Publish ``staging`` to ``destination`` atomically, never overwriting it.
+
+    ``require_atomic`` is for callers whose correctness depends on no-clobber:
+    it refuses up front rather than falling back to the two-step
+    ``mkdir``-reserve directory publish, which can overwrite a concurrently
+    created destination.  Checking :attr:`NoReplacePublication.atomic_no_clobber`
+    afterwards cannot substitute for it -- by then the swap has happened.
 
     ``staging`` is consumed exactly as ``renameat2`` would consume it: on success
     ``destination`` names the staged inode (a file with a single link, or the
@@ -4846,7 +4873,7 @@ def publish_no_replace(
             )
     if is_directory:
         return _publish_directory_via_reserve(
-            staging_name, destination_name, dir_fd
+            staging_name, destination_name, dir_fd, require_atomic=require_atomic
         )
     return _publish_file_via_link(staging_name, destination_name, dir_fd)
 
