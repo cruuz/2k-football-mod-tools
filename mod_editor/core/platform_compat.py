@@ -2446,8 +2446,12 @@ def privacy_guarantee() -> PrivacyGuarantee:
             summary=(
                 "Windows has no POSIX mode bits: a private directory reports "
                 "0o777 and a private file 0o666, and neither number confers any "
-                "privacy. Confidentiality comes from the per-user profile root "
-                "(%LOCALAPPDATA%), whose inherited ACL excludes other accounts. "
+                "privacy. Confidentiality is EXPECTED to come from the per-user "
+                "profile root (%LOCALAPPDATA%), whose inherited ACL normally "
+                "excludes other accounts -- profile_root_acl states that MODEL "
+                "and verifies no particular root, so a redirected or shared "
+                "LOCALAPPDATA is not caught here. verify_private_root_placement "
+                "is the check that actually reads the DACL. "
                 "Sealed files additionally carry the read-only attribute and "
                 "report 0o444."
             ),
@@ -3636,8 +3640,10 @@ class NoReplacePublishUnavailable(RuntimeError):
     only when the running platform genuinely cannot honour the guarantee
     with the standard library -- concretely, a Windows publish that can only be
     addressed through a directory descriptor, because Windows cannot open one.
-    It is never raised merely to signal a *weaker* guarantee (that is reported in
-    :class:`NoReplacePublication`), and it is never a silent skip: the caller
+    It IS also raised for a weaker mechanism when the caller asked for exactly
+    that -- ``require_atomic``, the default for directories -- and otherwise a
+    weaker guarantee is reported in :class:`NoReplacePublication` rather than
+    raised.  Either way it is never a silent skip: the caller
     turns it into its own fail-closed "cannot publish" error, exactly as it did
     before a portable path existed.
     """
@@ -3735,9 +3741,13 @@ class PrivateStage:
 #     ``(dwVolumeSerialNumber, file-index)`` identity and on *every* at-operation
 #     (a) re-verifies the current path still resolves to that held-handle identity
 #     -- refusing with :class:`DirectoryTransactionRefused` on a grandparent swap,
-#     relink or replacement -- (b) refuses a symlinked child (the ``O_NOFOLLOW``
-#     equivalent, since Windows has no such flag), and (c) performs the step with
-#     a path-based, no-clobber atomic (``os.replace`` / ``os.link`` / ``os.mkdir``).
+#     relink or replacement -- (b) refuses a symlinked child (the nearest thing
+#     to O_NOFOLLOW available there: a separate lstat, so a child swapped between
+#     it and the open is followed -- see residual_local_race), and (c) performs
+#     the step with
+#     a path-based atomic step (``os.replace`` / ``os.link`` / ``os.mkdir``).
+#     Only ``os.link`` and ``os.mkdir`` are no-clobber; ``os.replace`` is used
+#     where the step is deliberately a replacement, and it does replace.
 #     What the held handle does NOT provide is an ``openat`` for the CHILD name:
 #     the child lookup stays path-based (re-verified but not kernel-resolved
 #     against the inode), so ``kernel_enforced_against_swap`` is False and a
@@ -3806,12 +3816,17 @@ class DirectoryTransactionRefused(OSError):
 class DirectoryTransactionGuarantee:
     """Exactly what a :class:`DirHandle`'s inode pin means on the running OS.
 
-    Read as a contract, not a description.  ``pinned_by_descriptor`` is the
-    load-bearing field: when it is ``True`` (POSIX) the directory is pinned by an
-    open descriptor and the kernel resolves every at-operation against that inode,
-    so a swap of the parent *path* cannot redirect it -- ``kernel_enforced_against_swap``
-    is ``True`` and there is no residual race.  When it is ``False`` (Windows) the
-    directory is pinned by its ``realpath`` and ``(st_dev, st_ino)`` identity,
+    Read as a contract, not a description, and read the fields TOGETHER --
+    ``pinned_by_descriptor`` alone is not the answer, and an earlier revision of
+    this docstring wrongly implied it was.  It says only that the DIRECTORY
+    ITSELF is held open, which is ``True`` on Windows as well as POSIX.  Whether
+    a residual race remains is answered by ``kernel_enforced_against_swap``:
+    ``True`` on POSIX, where the kernel resolves every at-operation against the
+    pinned inode so a swap of the parent *path* cannot redirect it and there is
+    no residual race; ``False`` on Windows, where the CHILD name is still
+    resolved by path and ``residual_local_race`` is ``True`` beside it.  On
+    Windows the directory is additionally pinned by its ``realpath`` and
+    ``(volume, file index)`` identity,
     re-verified before each operation (``reverifies_each_operation``); that refuses
     an observed swap or a symlinked child but leaves a sub-millisecond
     check-to-use window a determined local attacker inside the same per-user tree
@@ -3932,7 +3947,14 @@ def _reject_non_component(name: str) -> str:
 
 
 class DirHandle:
-    """A directory pinned for a sequence of race-free at-operations.
+    """A directory pinned for a sequence of at-operations.
+
+    "Race-free" is exact on POSIX, where the kernel resolves every operation
+    against the held descriptor's inode.  On Windows the directory itself is
+    pinned by a held handle, but each CHILD name is still resolved by path, so
+    those operations are NOT race-free there -- see
+    :func:`directory_transaction_guarantee`, whose ``kernel_enforced_against_swap``
+    and ``residual_local_race`` fields say which case is in force.
 
     Obtain one from :func:`open_dir_handle` (or :meth:`open_dir` for a child) and
     address every step through it -- :meth:`stat`, :meth:`open`, :meth:`mkdir`,
@@ -4081,7 +4103,10 @@ class DirHandle:
         return os.path.join(self._realpath, _reject_non_component(name))
 
     def _refuse_symlinked_child(self, child: str, verb: str) -> None:
-        """Refuse a child that is a symlink or junction -- the Windows ``O_NOFOLLOW`` equivalent.
+        """Refuse a child that is a symlink or junction -- Windows' nearest ``O_NOFOLLOW``.
+ It is a SEPARATE lstat, not an atomic flag on the open, so a child
+        replaced between this check and the open that follows IS followed --
+        the residual reported by ``residual_local_race``.
 
         On Windows a directory **junction** is a reparse point that ``lstat`` does
         not report as a symlink, so a symlink-only refusal let a junction planted
@@ -4135,7 +4160,9 @@ class DirHandle:
         POSIX: the identical ``os.open(name, flags, mode, dir_fd=fd)`` -- ``flags``
         already carry the caller's ``O_NOFOLLOW``/``O_BINARY``/``O_EXCL`` as
         before.  Windows: re-verify the pin, refuse a symlinked child (the
-        ``O_NOFOLLOW`` equivalent, since ``O_NOFOLLOW`` does not exist there), then
+        nearest thing Windows has to ``O_NOFOLLOW``, which does not exist there
+        -- a separate ``lstat``, so a child swapped between it and the open below
+        is followed; that residual is what ``residual_local_race`` reports), then
         open the joined child path.  Windows *can* open a file by path -- only a
         directory descriptor is impossible -- so the returned descriptor is a
         normal file descriptor the caller reads, ``fstat``s and closes as today.
@@ -4495,7 +4522,10 @@ class DirHandle:
 def open_dir_handle(
     path: str | os.PathLike[str], *, nofollow: bool = True
 ) -> DirHandle:
-    """Pin a directory for a sequence of race-free at-operations.
+    """Pin a directory for a sequence of at-operations.
+
+    Race-free on POSIX; on Windows the child-name lookup keeps a documented
+    residual race (see :func:`directory_transaction_guarantee`).
 
     POSIX: open the directory ``O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC``
     -- byte-for-byte the descriptor the shipped transactions opened by hand -- and
@@ -4504,7 +4534,8 @@ def open_dir_handle(
 
     Windows: the directory cannot be opened as a descriptor, so pin it by realpath
     and inode identity instead.  ``nofollow`` is honoured against the *named* final
-    component (the ``O_NOFOLLOW`` equivalent): a symlinked directory is refused
+    component (Windows' nearest ``O_NOFOLLOW``; for a CHILD name it is a separate
+    lstat with the residual ``residual_local_race`` reports): a symlinked directory is refused
     with :class:`DirectoryTransactionRefused` rather than silently followed.  No
     directory descriptor is ever opened, so this runs where the raw ``dir_fd`` code
     raised ``PermissionError``.
@@ -5142,7 +5173,12 @@ def open_no_follow(
     flags: int,
     mode: int = POSIX_PRIVATE_FILE_MODE,
 ) -> int:
-    """Open ``path`` without ever traversing a symlink or reparse point.
+    """Open ``path``, refusing a symlink or reparse point at the final component.
+
+    The refusal is exact and window-free.  The returned descriptor, on Windows,
+    is not proven to name the object that was checked -- see the residual noted
+    below -- so this is "refuses to traverse a link it can see", not "the
+    descriptor cannot possibly be a link".
 
     ``O_NOFOLLOW`` carries the entire no-follow guarantee on POSIX, and it is
     ``0`` on Windows -- so an ``os.open`` there silently follows a planted link,

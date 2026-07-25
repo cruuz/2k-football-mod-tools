@@ -439,6 +439,10 @@ def _unlink_owned_name_at(
 ) -> bool:
     """Best-effort cleanup that never removes a replacement inode.
 
+    On Windows the identity comparison behind that promise is re-verified per
+    operation rather than kernel-resolved; see
+    :func:`platform_compat.directory_transaction_guarantee`.
+
     ``directory`` is a raw POSIX directory descriptor -- wrapped in a borrowed
     :class:`~mod_editor.core.platform_compat.DirHandle` so the ``dir_fd``-relative
     ``stat``/``unlink`` stay byte-for-byte identical -- or a Windows handle that

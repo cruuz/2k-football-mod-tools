@@ -371,7 +371,9 @@ def _staged_template_files(
 
     Byte-identical ``set(_folder_files(...))`` on POSIX (``stage_handle is None``);
     the pinned, re-verified :func:`_folder_files_at` enumeration on Windows, so a
-    swapped parent is refused rather than a bare ``realpath`` being walked.
+    swapped parent is refused rather than a bare ``realpath`` being walked
+    (on Windows by re-verified identity, not kernel resolution -- see
+    :func:`platform_compat.directory_transaction_guarantee`).
     """
 
     if stage_handle is None:

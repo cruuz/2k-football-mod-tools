@@ -234,9 +234,16 @@ class XeniaLauncher:
             # did NOT close the hole on Windows: with the log absent at lstat
             # time an attacker could plant a symlink before the open, and the
             # fstat would then describe the innocent target it was redirected
-            # to.  open_no_follow refuses the reparse point on the opened handle
-            # itself, and the truncation stays split off the open so nothing is
-            # destroyed before that refusal can fire.
+            # to.  open_no_follow refuses the reparse point on the handle it
+            # opened to check, and the truncation stays split off the open so
+            # nothing is destroyed before that refusal can fire.
+            #
+            # Residual, stated rather than implied: on Windows the descriptor
+            # that comes back is not proven to name the object that was checked
+            # (see open_no_follow), so a same-user process replacing the name in
+            # that gap has ITS file truncated instead.  This log lives under
+            # this app's own per-user data root, where such a process could
+            # already overwrite the log directly.
             log_descriptor = platform_compat.open_no_follow(
                 log_path,
                 os.O_WRONLY | os.O_CREAT,
