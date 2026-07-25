@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import pathlib
 from pathlib import Path
 import tempfile
 import unittest
@@ -259,6 +260,64 @@ class RetailFreeProjectTests(unittest.TestCase):
                     expected_source_sha256="d" * 64,
                     destination_dir=root / "loaded",
                 )
+
+
+class BundledExtractorTests(unittest.TestCase):
+    """The vendored extractor that lets a user hand the app a .iso directly."""
+
+    def test_the_bundled_extractor_follows_the_running_platform(self) -> None:
+        from mod_editor.core import platform_compat
+        from mod_editor.apf_studio.source import bundled_extract_xiso
+
+        saved = platform_compat.IS_WINDOWS
+        try:
+            platform_compat.IS_WINDOWS = False
+            self.assertEqual(bundled_extract_xiso().name, "extract-xiso")
+            platform_compat.IS_WINDOWS = True
+            self.assertEqual(bundled_extract_xiso().name, "extract-xiso.exe")
+        finally:
+            platform_compat.IS_WINDOWS = saved
+        # The default a SourceManager picks is the one for THIS host, so the
+        # app never reaches for a binary the running OS cannot execute.
+        expected = "extract-xiso.exe" if platform_compat.IS_WINDOWS else "extract-xiso"
+        self.assertEqual(SourceManager().extract_xiso.name, expected)
+
+    def test_both_bundled_extractors_are_the_pinned_reviewed_builds(self) -> None:
+        # Both binaries ship in the APF release and are pinned by the release
+        # gate; a bundled executable nobody rebuilds at review time is only
+        # trustworthy if its bytes are fixed. Assert the shipped files still
+        # match those pins, and that each is the image format its platform can
+        # actually run.
+        import importlib.util
+
+        root = pathlib.Path(__file__).resolve().parents[2]
+        spec = importlib.util.spec_from_file_location(
+            "_apf2k8_release_pins", root / "packaging/check_apf2k8_mod_studio_release.py"
+        )
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+
+        for relative, size, digest, magic in (
+            (
+                module.REVIEWED_BINARY,
+                module.REVIEWED_BINARY_SIZE,
+                module.REVIEWED_BINARY_SHA256,
+                b"\x7fELF",
+            ),
+            (
+                module.REVIEWED_WINDOWS_BINARY,
+                module.REVIEWED_WINDOWS_BINARY_SIZE,
+                module.REVIEWED_WINDOWS_BINARY_SHA256,
+                b"MZ",
+            ),
+        ):
+            with self.subTest(binary=relative):
+                path = root / relative
+                payload = path.read_bytes()
+                self.assertEqual(len(payload), size)
+                self.assertEqual(hashlib.sha256(payload).hexdigest(), digest)
+                self.assertTrue(payload.startswith(magic))
 
 
 if __name__ == "__main__":

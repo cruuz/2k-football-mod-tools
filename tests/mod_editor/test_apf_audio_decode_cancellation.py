@@ -156,12 +156,15 @@ class DecoderCancellationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory_name:
             marker = Path(directory_name) / "helper.pid"
             program = (
-                "import pathlib, signal, subprocess, sys, time; "
+                "import os, pathlib, signal, subprocess, sys, time; "
                 "child=subprocess.Popen([sys.executable, '-c', "
                 "'import signal,time; signal.signal(signal.SIGTERM, signal.SIG_IGN); "
                 "time.sleep(60)'], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, "
                 "stderr=subprocess.DEVNULL); "
-                f"pathlib.Path({str(marker)!r}).write_text(str(child.pid)); "
+                f"_m = pathlib.Path({str(marker)!r}); "
+                f"_s = _m.with_suffix('.partial'); "
+                "_s.write_text(str(child.pid)); "
+                "os.replace(_s, _m); "
                 "time.sleep(60)"
             )
             started = time.monotonic()
@@ -263,7 +266,15 @@ class DecoderCancellationTests(unittest.TestCase):
                 "output.write_bytes(b'partial pcm')\n"
                 "child = subprocess.Popen([sys.executable, '-c', "
                 "'import time; time.sleep(60)'])\n"
-                "marker.write_text(f'{os.getpid()} {child.pid}', encoding='ascii')\n"
+                # Publish the marker atomically: cancel_requested below is
+                # marker.exists, so a plain write_text makes the file appear the
+                # instant it is created -- cancellation can then fire, kill this
+                # process, and leave the reader with an empty file. Writing a
+                # temporary and renaming it into place means the name only ever
+                # exists with both PIDs already in it.
+                "staging = marker.with_suffix('.partial')\n"
+                "staging.write_text(f'{os.getpid()} {child.pid}', encoding='ascii')\n"
+                "os.replace(staging, marker)\n"
                 "time.sleep(60)\n",
             )
             destination = directory / "preview.wav"
