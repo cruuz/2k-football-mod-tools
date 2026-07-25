@@ -277,6 +277,213 @@ def read_memcard(path: Path, directory: str | None = None) -> list[Ps2Save]:
     return saves
 
 
+def _memcard_layout(raw: bytes):
+    """Return (pages_per_cluster, alloc_offset, rootdir, fat) for a card image."""
+
+    def page(index: int) -> bytes:
+        base = index * MEMCARD_PAGE
+        return raw[base : base + MEMCARD_PAGE_DATA]
+
+    superblock = page(0)
+    if not superblock.startswith(b"Sony PS2 Memory Card Format"):
+        raise SaveError("missing memory-card superblock magic")
+    pages_per_cluster = struct.unpack_from("<H", superblock, 0x2A)[0]
+    alloc_offset, _alloc_end, rootdir = struct.unpack_from("<III", superblock, 0x34)
+    ifc_list = struct.unpack_from("<32I", superblock, 0x50)
+
+    def cluster(index: int) -> bytes:
+        first = index * pages_per_cluster
+        return b"".join(page(first + i) for i in range(pages_per_cluster))
+
+    fat: list[int] = []
+    for indirect in ifc_list:
+        if indirect in (0, 0xFFFFFFFF):
+            continue
+        for (entry,) in struct.iter_unpack("<I", cluster(indirect)):
+            if entry != 0xFFFFFFFF:
+                fat.extend(v for (v,) in struct.iter_unpack("<I", cluster(entry)))
+    return pages_per_cluster, alloc_offset, rootdir, fat
+
+
+def write_into_memcard(
+    card: Path, save: Ps2Save, output: Path, directory: str | None = None
+) -> dict:
+    """Write an edited save back into a copy of a memory-card image.
+
+    Because every edit is fixed-allocation, no file changes length, so the FAT
+    chains and directory entries stay exactly as they were: only the data
+    pages holding the payload and ``EXTRA`` are rewritten, and each rewritten
+    page has its ECC recomputed.  Anything that would change a file's size is
+    refused rather than risk relinking the card.
+
+    The source card is opened read-only and never modified; the result is
+    written to ``output``.
+    """
+    card, output = Path(card), Path(output)
+    if output.resolve() == card.resolve():
+        raise SaveError(
+            "Refusing to write over the source memory card. Choose a new file."
+        )
+    raw = bytearray(card.read_bytes())
+    if len(raw) % MEMCARD_PAGE:
+        raise SaveError(f"{card}: not a 528-byte-page memory-card image")
+    pages_per_cluster, alloc_offset, rootdir, fat = _memcard_layout(bytes(raw))
+
+    def chain(start: int):
+        current, guard = start, 0
+        while True:
+            yield current
+            if current >= len(fat):
+                return
+            nxt = fat[current]
+            if nxt == 0xFFFFFFFF or (nxt & 0x7FFFFFFF) == 0x7FFFFFFF:
+                return
+            current = nxt & 0x7FFFFFFF
+            guard += 1
+            if guard > len(fat):
+                raise SaveError("FAT chain does not terminate")
+
+    def cluster_page(index: int) -> int:
+        return (alloc_offset + index) * pages_per_cluster
+
+    def records(start: int, count: int):
+        seen = 0
+        for index in chain(start):
+            base_page = cluster_page(index)
+            data = b"".join(
+                raw[(base_page + i) * MEMCARD_PAGE : (base_page + i) * MEMCARD_PAGE + MEMCARD_PAGE_DATA]
+                for i in range(pages_per_cluster)
+            )
+            for offset in range(0, len(data), PSU_ENTRY):
+                if seen >= count:
+                    return
+                entry = data[offset : offset + PSU_ENTRY]
+                mode, length = struct.unpack_from("<II", entry, 0)
+                first = struct.unpack_from("<I", entry, 0x10)[0]
+                name = entry[0x40:0x60].split(b"\x00")[0].decode("latin1")
+                yield mode, length, first, name
+                seen += 1
+
+    target = directory or save.directory
+    root_count = next(records(rootdir, 1))[1]
+    slot = next(
+        (
+            (first, length)
+            for mode, length, first, name in records(rootdir, root_count)
+            if name == target and mode & 0x8000 and mode & 0x20
+        ),
+        None,
+    )
+    if slot is None:
+        raise SaveError(f"{card} has no save directory named {target}.")
+
+    touched_pages: set[int] = set()
+    written: list[str] = []
+    for mode, length, first, name in records(slot[0], slot[1]):
+        if name in (".", "..") or mode & 0x20 or not mode & 0x8000:
+            continue
+        payload = save.files.get(name)
+        if payload is None:
+            continue
+        if len(payload) != length:
+            raise SaveError(
+                f"{name} is {len(payload)} bytes on the card but {length} in the "
+                "edited save; fixed-allocation writes may not change a file's size."
+            )
+        remaining = payload
+        for index in chain(first):
+            if not remaining:
+                break
+            base_page = cluster_page(index)
+            for i in range(pages_per_cluster):
+                if not remaining:
+                    break
+                page_index = base_page + i
+                take, remaining = remaining[:MEMCARD_PAGE_DATA], remaining[MEMCARD_PAGE_DATA:]
+                start = page_index * MEMCARD_PAGE
+                block = bytearray(raw[start : start + MEMCARD_PAGE_DATA])
+                block[: len(take)] = take
+                raw[start : start + MEMCARD_PAGE_DATA] = block
+                touched_pages.add(page_index)
+        written.append(name)
+
+    for page_index in sorted(touched_pages):
+        start = page_index * MEMCARD_PAGE
+        data = bytes(raw[start : start + MEMCARD_PAGE_DATA])
+        raw[start + MEMCARD_PAGE_DATA : start + MEMCARD_PAGE] = page_spare(data)
+
+    output.write_bytes(bytes(raw))
+    return {
+        "schema": "nfl2k5_ps2_memcard_write/v1",
+        "card": str(card),
+        "output": str(output),
+        "directory": target,
+        "files_written": sorted(written),
+        "pages_rewritten": len(touched_pages),
+    }
+
+
+# --------------------------------------------------------------------------
+# Memory-card page ECC
+# --------------------------------------------------------------------------
+#
+# Every 512-byte page carries 16 spare bytes: three ECC bytes for each of its
+# four 128-byte chunks, then four unused bytes.  Writing a card without
+# recomputing these leaves pages the console considers damaged, so a card
+# writer needs them.
+#
+# The code is linear over GF(2): the column parity of a byte is the XOR of a
+# fixed mask per set bit, which is why the table below is generated from eight
+# basis masks rather than written out.  Both the masks and the whole routine
+# were checked against every chunk of a real card -- see ``--selftest``.
+# The algorithm is the long-documented public-domain one used by PS2
+# memory-card tools.
+
+_ECC_BASIS = (0x07, 0x16, 0x25, 0x34, 0x43, 0x52, 0x61, 0x70)
+_ECC_COLUMN_SEED = 0x77
+_ECC_LINE_SEED = 0x7F
+_ECC_LINE_MASK = 0x7F
+ECC_CHUNK = 128
+ECC_PER_CHUNK = 3
+
+
+def _column_mask(value: int) -> int:
+    mask = 0
+    for bit in range(8):
+        if value >> bit & 1:
+            mask ^= _ECC_BASIS[bit]
+    return mask
+
+
+def _byte_parity(value: int) -> int:
+    value ^= value >> 4
+    value ^= value >> 2
+    value ^= value >> 1
+    return value & 1
+
+
+def chunk_ecc(chunk: bytes) -> bytes:
+    """Return the three ECC bytes for one 128-byte chunk."""
+    column = _ECC_COLUMN_SEED
+    line_a = line_b = _ECC_LINE_SEED
+    for index, value in enumerate(chunk):
+        column ^= _column_mask(value)
+        if _byte_parity(value):
+            line_a ^= (~index) & _ECC_LINE_MASK
+            line_b ^= index
+    return bytes((column & 0xFF, line_a & _ECC_LINE_MASK, line_b & _ECC_LINE_MASK))
+
+
+def page_spare(page_data: bytes) -> bytes:
+    """Build the 16-byte spare area for one 512-byte page."""
+    if len(page_data) != MEMCARD_PAGE_DATA:
+        raise SaveError(f"a page must be {MEMCARD_PAGE_DATA} bytes, not {len(page_data)}")
+    spare = bytearray()
+    for start in range(0, MEMCARD_PAGE_DATA, ECC_CHUNK):
+        spare += chunk_ecc(page_data[start : start + ECC_CHUNK])
+    return bytes(spare.ljust(MEMCARD_PAGE - MEMCARD_PAGE_DATA, b"\x00"))
+
+
 def load_save(path: Path, directory: str | None = None) -> Ps2Save:
     """Load one save from a .psu, an extracted directory, or a card image."""
     if path.is_dir():
@@ -536,8 +743,25 @@ def selftest(tmp: Path | None = None) -> int:
         assert again.files == save.files, "psu round-trip changed file bytes"
         assert again.crc_is_valid()
 
+    # Memory-card page ECC. These vectors are deliberately non-degenerate:
+    # an all-zero, all-one or symmetric chunk cancels to the seed and would
+    # pass even a broken implementation. A single set bit at index 0 versus
+    # index 1 pins the position-dependent line parity, which is the part that
+    # is easiest to get wrong.
+    assert chunk_ecc(bytes(128)) == bytes.fromhex("777f7f"), "empty-chunk seed"
+    assert chunk_ecc(bytes([1]) + bytes(127)) == bytes.fromhex("70007f")
+    assert chunk_ecc(bytes([0, 1]) + bytes(126)) == bytes.fromhex("70017e")
+    assert chunk_ecc(bytes([0x80]) + bytes(127)) == bytes.fromhex("07007f")
+    assert chunk_ecc(
+        b"Sony PS2 Memory Card Format 1.2.0.0".ljust(128, b"\x00")
+    ) == bytes.fromhex("227474")
+    spare = page_spare(bytes([0x80]) + bytes(511))
+    assert len(spare) == MEMCARD_PAGE - MEMCARD_PAGE_DATA
+    assert spare[:3] == bytes.fromhex("07007f"), "page spare must lead with chunk 0"
+    assert spare[12:] == bytes(4), "the last four spare bytes are unused"
+
     print("NFL2K5_PS2_SAVE_SELFTEST_PASS "
-          f"players=2 psu_roundtrip=ok crc32=0x{save.computed_crc():08x}")
+          f"players=2 psu_roundtrip=ok ecc=ok crc32=0x{save.computed_crc():08x}")
     return 0
 
 
