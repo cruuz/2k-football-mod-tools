@@ -365,13 +365,20 @@ class PrivacyGuarantee:
     *enforced* confidentiality -- ``0o700``/``0o600`` really do lock other
     accounts out, and the ``verify_private_*`` helpers re-check them.  When it is
     ``False`` (Windows) the same three values are only what ``stat`` will report;
-    they carry no privacy at all, and confidentiality comes instead from
-    ``profile_root_acl`` -- the inherited ACL of the per-user profile directory
-    the private cache is created under.
+    they carry no privacy at all, and confidentiality is expected to come
+    instead from the inherited ACL of the per-user profile directory the private
+    cache is created under.  ``profile_root_acl`` NAMES that model; it is
+    returned ``True`` on Windows unconditionally and reads no ACL, so it is not
+    evidence that any particular root restricts access.
+    :func:`verify_private_root_placement` is the call that reads the DACL and
+    refuses a root that does not, and it is the one to rely on.
 
     ``sealed_read_only`` is the one guarantee both platforms genuinely share: a
-    sealed file has no owner-write bit, so it cannot be modified in place without
-    an explicit, deliberate permission change.  ``summary`` exists so a log line
+    sealed file has no owner-write bit, so no NEW writable open of it succeeds
+    without an explicit, deliberate permission change.  It is not immutability:
+    a descriptor opened writable BEFORE the seal keeps working on either
+    platform, because neither re-checks permissions on an open descriptor.  The
+    recorded digest, not the mode, is what proves the bytes.  ``summary`` exists so a log line
     or a support report can state the difference in words.
     """
 
@@ -2570,7 +2577,10 @@ def is_private_file_mode(info: os.stat_result) -> bool:
 
 
 def user_private_root() -> Path:
-    """The per-user tree this OS keeps private without any mode bits.
+    """The per-user tree this OS is expected to keep private without mode bits.
+
+    Names a location; verifies nothing.  See
+    :func:`verify_private_root_placement` for the check that reads the DACL.
 
     On Windows this is ``%LOCALAPPDATA%`` -- the per-user, non-roaming
     application-data directory, whose ACL is EXPECTED to grant only the owning

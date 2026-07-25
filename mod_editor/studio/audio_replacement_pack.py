@@ -1233,7 +1233,10 @@ def _publish_zip_template_at(
     created ``O_EXCL`` through the handle -- never written to a bare ``realpath`` --
     flushed on that same descriptor, re-read for the zero-retail-WAV check, and
     published with the handle's own no-clobber ``os.link``, so a swap of the parent
-    is refused rather than silently followed.  The temporary archive is removed
+    is refused rather than silently followed -- kernel-enforced on POSIX, and on
+    Windows by the handle's re-verified identity pin, which leaves the
+    check-to-use residual
+    :func:`platform_compat.directory_transaction_guarantee` reports.  The temporary archive is removed
     through the handle on the way out whether or not the link succeeded.
     """
 

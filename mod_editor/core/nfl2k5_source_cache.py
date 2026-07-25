@@ -66,7 +66,11 @@ def default_cache_root() -> Path:
     POSIX keeps the historical ``~/.cache/2k5-mod-studio``; its confidentiality
     comes from the ``0o700`` mode bits on the directories inside it.
 
-    Windows has no mode bits to rely on, so the location *is* the guarantee: the
+    Windows has no mode bits to rely on, so the location is where the guarantee
+    is expected to come from -- and it is verified rather than assumed, by
+    ``platform_compat.verify_private_root_placement``, which reads the root's
+    DACL and refuses one that does not restrict access.  The location alone
+    would not be enough: the
     cache goes under ``%LOCALAPPDATA%`` (``platform_compat.user_private_root``),
     the per-user application-data root whose ACL is expected to exclude other
     accounts and to be inherited by everything created beneath it -- an
