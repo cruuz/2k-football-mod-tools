@@ -170,7 +170,9 @@ def local_import_closure(
 class ProviderIntegrityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.registry = CapabilityRegistryLoader().load(allow_sample_fallback=False)
+        cls.registry = CapabilityRegistryLoader().load(
+            allow_sample_fallback=False, check_files=False
+        )
 
     def test_all_external_writer_and_verifier_import_closures_are_exactly_pinned(self) -> None:
         providers = (
@@ -183,7 +185,7 @@ class ProviderIntegrityTests(unittest.TestCase):
         )
         self.assertEqual(
             [len(provider.module_pins) for provider in providers],
-            [60, 9, 7, 8, 7, 8],
+            [61, 9, 8, 9, 8, 9],
         )
         for provider in providers:
             entries = [provider.backend_module]

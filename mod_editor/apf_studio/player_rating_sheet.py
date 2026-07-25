@@ -196,7 +196,7 @@ def _read_private_sheet(source: Path) -> tuple[str, str]:
         raise PlayerRatingSheetError("The ratings sheet is empty or unexpectedly large")
     descriptor = os.open(
         source,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)
@@ -217,6 +217,10 @@ def _read_private_sheet(source: Path) -> tuple[str, str]:
         if os.read(descriptor, 1):
             raise PlayerRatingSheetError("The ratings sheet grew while it was read")
         after = os.fstat(descriptor)
+        # ``opened`` and ``after`` are both os.fstat of this one descriptor.
+        # Two fd stats agree on st_ctime_ns on every platform, Windows
+        # included, so it stays in the fingerprint here and the
+        # metadata-only-change signal is not lost on any platform.
         if (
             after.st_dev,
             after.st_ino,

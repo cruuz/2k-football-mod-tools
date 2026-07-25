@@ -97,7 +97,7 @@ def _read_pinned_report(
         path,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)
@@ -118,6 +118,10 @@ def _read_pinned_report(
         if os.read(descriptor, 1):
             raise ValidationError(f"{label} report grew while reading")
         after = os.fstat(descriptor)
+        # ``opened`` and ``after`` are both os.fstat of this one descriptor.
+        # Two fd stats agree on st_ctime_ns on every platform, Windows
+        # included, so it stays in the fingerprint here and the
+        # metadata-only-change signal is not lost on any platform.
         if (
             after.st_dev,
             after.st_ino,

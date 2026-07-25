@@ -196,6 +196,8 @@ def read_pinned_regular(path: Path, expected_size: int, expected_hash: str,
         payload = b"".join(chunks)
         require(sha256(payload) == expected_hash, f"{label} SHA-256 differs")
         after = os.fstat(descriptor)
+        # ``opened`` and ``after`` are both os.fstat of this one descriptor: two
+        # fd stats, which agree on st_ctime_ns on every platform, so it stays in.
         require(
             (
                 after.st_dev,
@@ -263,6 +265,13 @@ def open_image_read_only(path: Path, expected_hash: str) -> tuple[int, os.stat_r
 
 
 def require_descriptor_unchanged(descriptor: int, opened: os.stat_result) -> None:
+    """Re-check the pinned image descriptor against its open-time fstat.
+
+    ``opened`` is the ``os.fstat`` :func:`open_image_read_only` took, so both
+    sides are fd stats.  Two fd stats agree on st_ctime_ns on every platform,
+    Windows included, so the change time stays in this fingerprint.
+    """
+
     after = os.fstat(descriptor)
     require(
         (

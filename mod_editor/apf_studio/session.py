@@ -18,6 +18,8 @@ from uuid import uuid4
 
 from PIL import Image
 
+from mod_editor.core import platform_compat
+
 from .asset_io import ApfAssetIO, AssetIoError, AudioPreviewCancelled
 from .audio_annotations import (
     AudioAnnotationError,
@@ -86,6 +88,16 @@ import apf_roster_identity_patch  # type: ignore  # noqa: E402
 
 class SessionError(ValueError):
     """A replacement or project action a modder can correct."""
+
+
+# Every descriptor this module opens carries replacement or user-asset *bytes*.
+# On Windows ``os.open`` defaults to the CRT's text mode, which rewrites CRLF and
+# stops reading at a 0x1A byte -- silent corruption of exactly those payloads (a
+# PNG begins ``89 50 4E 47 0D 0A 1A 0A``, so a text-mode read both collapses its
+# CRLF and truncates at its 0x1A).  ``O_BINARY`` does not exist on POSIX, where
+# there is no translation to disable, so this resolves to 0 and the POSIX flags
+# are unchanged.
+_O_BINARY = getattr(os, "O_BINARY", 0)
 
 
 _AUDIO_REPLACEMENT_KINDS = frozenset(
@@ -2534,17 +2546,23 @@ class ApfSession:
             path,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
         )
         try:
             opened = os.fstat(descriptor)
+            # ``supplied`` is an lstat and ``opened`` an os.fstat of the same
+            # file: the one comparison here that crosses the two stat families,
+            # which Windows cannot carry st_ctime across, so that field is
+            # dropped there (platform_compat.change_time_identity) and kept on
+            # POSIX.  The fd/fd re-check further down keeps it everywhere.
             if (
                 (
                     opened.st_dev,
                     opened.st_ino,
                     opened.st_size,
                     opened.st_mtime_ns,
-                    opened.st_ctime_ns,
+                    *platform_compat.change_time_identity(opened),
                     opened.st_nlink,
                 )
                 != (
@@ -2552,7 +2570,7 @@ class ApfSession:
                     supplied.st_ino,
                     supplied.st_size,
                     supplied.st_mtime_ns,
-                    supplied.st_ctime_ns,
+                    *platform_compat.change_time_identity(supplied),
                     supplied.st_nlink,
                 )
                 or opened.st_nlink != 1
@@ -2577,6 +2595,9 @@ class ApfSession:
                         f"The {label} grew larger than this slot allows"
                     )
             after = os.fstat(descriptor)
+            # Both sides are os.fstat of this one descriptor, so the change time
+            # is comparable on every platform and stays in the fingerprint --
+            # this check keeps its metadata-only-change signal on Windows too.
             if (
                 after.st_dev,
                 after.st_ino,
@@ -2611,7 +2632,10 @@ class ApfSession:
             raise SessionError("Replacement must be a regular, non-symlink PNG")
         descriptor = os.open(
             path,
-            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            os.O_RDONLY
+            | getattr(os, "O_NOFOLLOW", 0)
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
         )
         try:
             opened = os.fstat(descriptor)

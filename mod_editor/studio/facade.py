@@ -157,7 +157,7 @@ def _publish_new_export(payload: bytes, destination: Path) -> Path:
     try:
         descriptor = os.open(
             requested,
-            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
             0o600,
         )
     except FileExistsError as exc:
@@ -210,7 +210,7 @@ def _read_product_snapshot(
         path,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)
@@ -227,6 +227,10 @@ def _read_product_snapshot(
         if os.read(descriptor, 1):
             raise ValidationError(f"{label} product snapshot grew while reading")
         after = os.fstat(descriptor)
+        # ``opened`` and ``after`` are both os.fstat of this one descriptor.
+        # Two fd stats agree on st_ctime_ns on every platform, Windows
+        # included, so it stays in the fingerprint here and the
+        # metadata-only-change signal is not lost on any platform.
         if (
             after.st_dev,
             after.st_ino,

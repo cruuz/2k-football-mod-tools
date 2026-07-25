@@ -86,19 +86,19 @@ EXPECTED_PRIVATE_STADIUM_TEXTURES = 23_838
 # widening Nfl2k5UnifiedVisualProvider.module_pins would misstate ownership.
 RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
-        "1f694d75ae7bd4d427ffa2a43060f2cad0c812495b99a7415b018ec6d0c3f1cb",
+        "c781fa99206309f03e2a0a80d579c3105a5d2d413c2588ec2c702405a10c957f",
     "mod_editor/gui/studio_qt.py":
-        "b3c2ba478b78026a3c5f74eec71ef675706d8cc644eb6bde5465fd1ffd59f282",
+        "5bca8438e5d450a34ae639592d37b60c5c3c4a66ba63a97fc3b5ceac53e79410",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
-        "dccca3f40586ca4ada486f025f37d5bab3dbf1dbfe2c611f285c0c25ce950847",
+        "4aaff7706ba68b7c306f5ee8e35f4f85a016e2c0b3786f084cebbe1bd2330d39",
     "mod_editor/studio/facade.py":
-        "06ad7b55e47531b905d075dc247bef34924fa9f24b4d5a4b71326e5cd9307ccd",
+        "ec145c99e3cf45f33550553a8ae97c314094ed4a1ba76751facfb6b3cc2f466c",
     "mod_editor/studio/project_archive.py":
-        "fb329802a94581d5ceac227c0050d7eeea8ee8986041c9a7925e41624cc4d601",
+        "d229759d46dfb5c04e97d4839a560a3aa78721c6184c6c47bee76b5ec888b7d8",
     "mod_editor/studio/session.py":
-        "3e01896fdee8b94a0c90f40df7705c30d611ef83ba70681cdccc3fe0f7f86f9a",
+        "72a3991a478223c834cd8acb43a0a5faf923796c2d3affb27cab4b97afea5d78",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
@@ -1635,7 +1635,7 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 62,
+    require(len(registry.capabilities) == 65,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 11,
             "product sidebar category count changed")
@@ -1979,7 +1979,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=62 sections=11 nfl2k5_capabilities=31 "
+        "registry=65 sections=11 nfl2k5_capabilities=31 "
         "reports=11 reviewed_metadata=14 sets=634 visuals=32038 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

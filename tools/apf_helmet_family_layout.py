@@ -7,6 +7,7 @@ import argparse
 import csv
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import zlib
@@ -255,6 +256,11 @@ def analyze(index_path: Path) -> dict[str, object]:
                 reference_descriptor, reference_layout = descriptor, layout
     after = index_path.stat()
     after_hash = sha256_file(index_path)
+    # ``before`` and ``after`` are both index_path.stat() -- two PATH stats of
+    # one pathname, which agree on st_ctime_ns on every platform, Windows
+    # included.  No path/fd boundary is crossed here, so the change time stays
+    # in the comparison.  NOTE: this tuple carries no st_dev/st_ino; the file's
+    # identity is established instead by the full-file SHA-256 above.
     if (after_hash != EXPECTED_VOLUME_SHA256 or
             (after.st_size, after.st_mtime_ns, after.st_ctime_ns) !=
             (before.st_size, before.st_mtime_ns, before.st_ctime_ns)):

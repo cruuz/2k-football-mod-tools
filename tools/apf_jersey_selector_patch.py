@@ -146,7 +146,7 @@ class BoundSourceVolume:
     descriptor: int
     identity: tuple[int, int]
     size: int
-    times: tuple[int, int]
+    times: tuple[int, ...]
     metadata: os.stat_result
     sha256: str
 
@@ -242,6 +242,18 @@ def _sha256_fd_range(descriptor: int, offset: int, size: int) -> str:
 
 
 def _stat_times(metadata: os.stat_result) -> tuple[int, int]:
+    """The content-metadata times of one descriptor.
+
+    Every producer and every consumer of this tuple passes an ``os.fstat``
+    (:func:`_bind_source_volume`, :func:`_assert_bound_source`,
+    :func:`_assert_bound_output`, :func:`_commit_bound_output`,
+    :func:`_write_bound_copied_volume`), so every comparison is fd against fd.
+    Two fd stats agree on st_ctime_ns on every platform, Windows included, so
+    the change time stays in and a metadata-only edit is still caught.  NOTE:
+    this tuple carries no st_dev/st_ino -- the callers check identity separately
+    against ``reservation.identity``/``source.identity`` in the same predicate.
+    """
+
     return metadata.st_mtime_ns, metadata.st_ctime_ns
 
 
@@ -312,7 +324,7 @@ def _assert_bound_output(
     reservation: BoundOutputReservation,
     *,
     expected_size: int | None = None,
-    expected_times: tuple[int, int] | None = None,
+    expected_times: tuple[int, ...] | None = None,
 ) -> os.stat_result:
     current = os.fstat(reservation.descriptor)
     if (
@@ -445,7 +457,7 @@ def _close_bound_output(reservation: BoundOutputReservation, *, keep: bool) -> N
 
 def _commit_bound_output(
     reservation: BoundOutputReservation, data: bytes
-) -> tuple[int, int]:
+) -> tuple[int, ...]:
     os.ftruncate(reservation.descriptor, 0)
     _pwrite_all(reservation.descriptor, data, 0)
     os.ftruncate(reservation.descriptor, len(data))
@@ -460,7 +472,7 @@ def _write_bound_copied_volume(
     source: BoundSourceVolume,
     output: BoundOutputReservation,
     replacement: bytes,
-) -> tuple[dict[str, object], tuple[int, int]]:
+) -> tuple[dict[str, object], tuple[int, ...]]:
     if source.identity == output.identity:
         raise PatchError("source and copied output alias the same inode")
     if source.size != SOURCE_VOLUME_SIZE or source.sha256 != SOURCE_VOLUME_SHA256:

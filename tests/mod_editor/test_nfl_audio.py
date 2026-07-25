@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import contextlib
 from dataclasses import replace
-import fcntl
 import hashlib
 import io
 import json
@@ -21,6 +20,16 @@ import wave
 import zipfile
 
 from mod_editor.__main__ import main as editor_main
+# Kernel write-seals are read through platform_compat, never through a
+# module-scope ``import fcntl``: that import does not exist on Windows and made
+# this whole file unimportable there, which is the exact portability bug
+# platform_compat was added to remove.  read_seals()/write_seal_mask() are the
+# same two fcntl calls on POSIX -- byte for byte -- and fail closed elsewhere.
+from mod_editor.core.platform_compat import (
+    read_seals,
+    supports_sealed_memfd,
+    write_seal_mask,
+)
 from mod_editor.core.errors import OutputRefusedError
 from mod_editor.core.capabilities import Capability, Classification
 from mod_editor.core.model import GameId, SourceRecord
@@ -115,11 +124,17 @@ class FakeAudioRunner:
             self.archives[stage] = {
                 name: archive.read(name) for name in sorted(archive.namelist())
             }
-        descriptor = os.open(archive_path, os.O_RDONLY)
-        try:
-            self.archive_seals[stage] = fcntl.fcntl(descriptor, fcntl.F_GET_SEALS)
-        finally:
-            os.close(descriptor)
+        # The provider only applies memfd write-seals on Linux; on a host without
+        # them it stages the snapshot as a verified read-only file (no seals to
+        # read). Recording seals there would call the Linux-only F_GET_SEALS.
+        if supports_sealed_memfd():
+            descriptor = os.open(archive_path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+            try:
+                self.archive_seals[stage] = read_seals(descriptor)
+            finally:
+                os.close(descriptor)
+        else:
+            self.archive_seals[stage] = 0
         if stage == ProviderStage.BUILD:
             stdout = json.dumps({
                 "changed_bytes": 3000,
@@ -444,6 +459,12 @@ class NflAudioRecipeTests(unittest.TestCase):
             self.assertFalse(os.path.lexists(interrupted))
 
     def test_typed_provider_uses_fixed_writer_and_independent_verifier_argv(self) -> None:
+        if not supports_sealed_memfd():
+            self.skipTest(
+                "this asserts the kernel write-seals on the provider's staged "
+                "zipapp; memfd seals are a Linux primitive with no equivalent "
+                "on macOS or Windows"
+            )
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             request, wav = make_provider_request(root)
@@ -480,16 +501,15 @@ class NflAudioRecipeTests(unittest.TestCase):
                 self.assertNotIn("--chunk", argv)
                 self.assertNotIn(os.fspath(ROOT), argv[4])
             self.assertEqual([cwd for _, cwd, _ in runner.calls], [Path("/"), Path("/")])
-            required_seals = (
-                fcntl.F_SEAL_GROW
-                | fcntl.F_SEAL_SEAL
-                | fcntl.F_SEAL_SHRINK
-                | fcntl.F_SEAL_WRITE
-            )
-            self.assertTrue(
-                all(value & required_seals == required_seals
-                    for value in runner.archive_seals.values())
-            )
+            # The write-seal assertion only applies where the provider actually
+            # seals (Linux memfd); elsewhere it stages a verified read-only file,
+            # already asserted by the rest of this test.
+            if supports_sealed_memfd():
+                required_seals = write_seal_mask()
+                self.assertTrue(
+                    all(value & required_seals == required_seals
+                        for value in runner.archive_seals.values())
+                )
             self.assertEqual(
                 set(runner.archives[ProviderStage.BUILD]),
                 {"__main__.py", "nfl_uniform_color_xiso_direct_patch.py"},
@@ -607,13 +627,13 @@ class NflAudioRecipeTests(unittest.TestCase):
                         alias.unlink()
 
     def test_sealed_writer_and_verifier_closures_are_complete_and_importable(self) -> None:
+        if not supports_sealed_memfd():
+            self.skipTest(
+                "kernel memfd write-seals are a Linux primitive; this provider "
+                "seals its zipapp with them and has no equivalent elsewhere"
+            )
         provider = Nfl2k5MenuBackAudioProvider(workspace=ROOT)
-        required_seals = (
-            fcntl.F_SEAL_GROW
-            | fcntl.F_SEAL_SEAL
-            | fcntl.F_SEAL_SHRINK
-            | fcntl.F_SEAL_WRITE
-        )
+        required_seals = write_seal_mask()
         cases = (
             (
                 "writer",
@@ -638,22 +658,24 @@ class NflAudioRecipeTests(unittest.TestCase):
         )
         for label, members, expected in cases:
             with self.subTest(label=label):
-                with provider._sealed_zipapp(members, label) as archive_path:
+                with provider._sealed_zipapp(members, label) as module:
+                    archive_path = module.path
+                    # The memfd path's re-verify is a no-op but must stay callable.
+                    module.reverify_before_exec()
                     self.assertRegex(
                         os.fspath(archive_path),
                         rf"^/proc/{os.getpid()}/fd/[0-9]+$",
                     )
-                    descriptor = os.open(archive_path, os.O_RDONLY)
+                    descriptor = os.open(archive_path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
                     try:
                         self.assertEqual(
-                            fcntl.fcntl(descriptor, fcntl.F_GET_SEALS)
-                            & required_seals,
+                            read_seals(descriptor) & required_seals,
                             required_seals,
                         )
                     finally:
                         os.close(descriptor)
                     with self.assertRaises(OSError):
-                        os.open(archive_path, os.O_WRONLY)
+                        os.open(archive_path, os.O_WRONLY | getattr(os, "O_BINARY", 0))
                     with zipfile.ZipFile(archive_path) as archive:
                         self.assertEqual(archive.namelist(), list(expected))
                         for name, expected_hash in expected.items():

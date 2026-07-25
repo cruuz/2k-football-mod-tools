@@ -32,7 +32,9 @@ class StudioQtViewModelTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.uniforms = load_nfl2k5_uniform_catalog()
         cls.product = build_nfl2k5_product_catalog(
-            CapabilityRegistryLoader().load(allow_sample_fallback=False)
+            CapabilityRegistryLoader().load(
+                allow_sample_fallback=False, check_files=False
+            )
         )
 
     def test_sidebar_includes_scope_expansion_in_exact_category_order(self) -> None:

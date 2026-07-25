@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import ctypes
 from dataclasses import dataclass
 import errno
-import fcntl
 import hashlib
 import json
 import os
@@ -14,6 +12,9 @@ import shutil
 import stat
 import tempfile
 from typing import Callable, Iterable, Mapping
+
+from mod_editor.core import platform_compat
+from mod_editor.core.platform_compat import try_reflink
 
 from .backend import ensure_tools_importable
 from .models import (
@@ -50,9 +51,6 @@ from .uniform_targets import compile_uniform_patch
 
 Progress = Callable[[str, int, int], None]
 BUILD_SCHEMA = "apf2k8_mod_studio_build/v1"
-FICLONE = 0x40049409
-AT_FDCWD = -100
-RENAME_NOREPLACE = 1
 BUILD_SPACE_MARGIN = 512 * 1024 * 1024
 EXPECTED_TREE: dict[str, tuple[int, str]] = {
     "0A": (
@@ -227,7 +225,7 @@ def _copy_regular(
     destination.parent.mkdir(parents=True, exist_ok=True)
     source_fd = os.open(
         source,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         destination_fd = os.open(
@@ -236,7 +234,7 @@ def _copy_regular(
             | os.O_CREAT
             | os.O_EXCL
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             stat.S_IMODE(supplied.st_mode),
         )
     except BaseException:
@@ -251,21 +249,10 @@ def _copy_regular(
             supplied.st_size,
         ):
             raise BuildError(f"Source identity changed while opening {source.name}")
-        cloned = False
-        try:
-            fcntl.ioctl(destination_fd, FICLONE, source_fd)
-            cloned = True
+        cloned = try_reflink(destination_fd, source_fd)
+        if cloned:
             copied = opened.st_size
             progress("Copying a safe, separate game folder", completed_before + copied, total)
-        except OSError as exc:
-            if exc.errno not in {
-                errno.EOPNOTSUPP,
-                errno.ENOTTY,
-                errno.EXDEV,
-                errno.EINVAL,
-                errno.ENOSYS,
-            }:
-                raise
         if not cloned:
             os.ftruncate(destination_fd, 0)
             os.lseek(source_fd, 0, os.SEEK_SET)
@@ -273,7 +260,9 @@ def _copy_regular(
             while copied < opened.st_size:
                 count = min(16 * 1024 * 1024, opened.st_size - copied)
                 try:
-                    written = os.copy_file_range(source_fd, destination_fd, count)
+                    written = platform_compat.copy_file_range(
+                        source_fd, destination_fd, count
+                    )
                 except OSError as exc:
                     if exc.errno not in {errno.EXDEV, errno.EINVAL, errno.ENOSYS}:
                         raise
@@ -296,7 +285,7 @@ def _copy_regular(
                     completed_before + copied,
                     total,
                 )
-        os.fchmod(destination_fd, stat.S_IMODE(supplied.st_mode))
+        platform_compat.fchmod(destination_fd, stat.S_IMODE(supplied.st_mode), path=destination)
         os.fsync(destination_fd)
         after_source = os.fstat(source_fd)
         after_destination = os.fstat(destination_fd)
@@ -320,36 +309,64 @@ def _copy_regular(
 
 
 def _publish_directory_noreplace(staging: Path, destination: Path) -> None:
-    libc = ctypes.CDLL(None, use_errno=True)
-    renameat2 = getattr(libc, "renameat2", None)
-    if renameat2 is None:
+    """Publish the staged build folder to its final name, never overwriting one.
+
+    This is the path-based (``AT_FDCWD``) folder publisher.  The OS-primitive
+    layer lives in :mod:`platform_compat`: Linux keeps
+    ``renameat2(RENAME_NOREPLACE)`` byte-for-byte; macOS uses
+    ``renameatx_np(RENAME_EXCL)``, its atomic exclusive directory rename; a POSIX
+    kernel or volume with neither reserves the destination with ``os.mkdir``
+    (atomic; refuses an existing name) and ``os.rename``\\ s the staged folder
+    onto that placeholder; Windows uses its own ``os.rename``, which natively
+    refuses to overwrite an existing destination.  A destination that already
+    exists raises :class:`FileExistsError`, exactly as before.
+
+    Only the ``os.mkdir``-reserve fallback is not a single atomic no-clobber
+    step, and it is the one mechanism this function refuses to accept: a build
+    output must never be able to land on top of a directory another process
+    created, so a publish reporting ``atomic_no_clobber=False`` raises
+    :class:`BuildError` instead of returning, and no receipt is produced.
+    """
+
+    try:
+        # require_atomic: this publish must not overwrite anything, so the
+        # weak reserve-then-swap fallback is refused BEFORE it runs.  Checking
+        # the returned atomic_no_clobber afterwards would be too late -- the
+        # swap has already happened by then.
+        published = platform_compat.publish_no_replace(
+            staging,
+            destination,
+            dir_fd=None,
+            is_directory=True,
+            require_atomic=True,
+        )
+    except FileExistsError as exc:
+        raise FileExistsError(destination) from exc
+    except platform_compat.NoReplacePublishUnavailable as exc:
         raise BuildError(
             "This system does not provide atomic no-replace folder publishing"
+        ) from exc
+    if not published.atomic_no_clobber:
+        # platform_compat had to fall back to reserve-then-rename, which is two
+        # steps: a same-user racer that replaced the reserved placeholder between
+        # them would have had its directory overwritten by the swap.  The staged
+        # folder is at `destination` by the time we can see that -- there is no
+        # mechanism here that could have asked first -- so the only fail-closed
+        # move left is to refuse the build rather than hand back a receipt whose
+        # "published_atomically" is not true.  It is deliberately NOT rolled
+        # back: deleting or renaming `destination` now would act on a name whose
+        # ownership is precisely what could not be established.
+        raise BuildError(
+            "This system published the build folder without an atomic "
+            f"no-replace guarantee (mechanism {published.mechanism}): "
+            f"{destination} now exists but Mod Studio cannot prove the publish "
+            "did not replace a folder another process created at the same "
+            "instant. That folder is not a completed build and its manifest's "
+            "published_atomically flag was written before the publish, so do "
+            "not trust it: inspect the folder and remove it, then build to a "
+            "destination on a filesystem that supports atomic no-replace folder "
+            "publishing."
         )
-    renameat2.argtypes = [
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_uint,
-    ]
-    renameat2.restype = ctypes.c_int
-    result = renameat2(
-        AT_FDCWD,
-        os.fsencode(staging),
-        AT_FDCWD,
-        os.fsencode(destination),
-        RENAME_NOREPLACE,
-    )
-    if result != 0:
-        value = ctypes.get_errno()
-        if value == errno.EEXIST:
-            raise FileExistsError(destination)
-        if value in {errno.ENOSYS, errno.EINVAL, errno.EOPNOTSUPP}:
-            raise BuildError(
-                "The output filesystem cannot publish a build atomically"
-            )
-        raise OSError(value, os.strerror(value), destination)
 
 
 class ApfBuildService:
@@ -800,6 +817,18 @@ class ApfBuildService:
                     "launch_file": "default.xex",
                     "0a_size": output_0a.stat().st_size,
                     "0a_sha256": output_sha,
+                    # Written into the staging folder before the publish, so it
+                    # is a claim about something that has not happened yet.  It
+                    # is true of every build this service completes, because
+                    # _publish_directory_noreplace accepts only a single atomic
+                    # no-clobber mechanism and raises BuildError on any other --
+                    # so no BuildReceipt is ever returned for a folder published
+                    # some weaker way.  The one case where this line can be read
+                    # off a folder it is not true of is that BuildError itself:
+                    # the fallback publish has already put the staged folder in
+                    # place by the time its mechanism is visible, and it is not
+                    # rolled back, so the error names that folder and says to
+                    # remove it rather than trust the manifest inside it.
                     "published_atomically": True,
                 },
                 "edit_count": len(edits),
@@ -904,7 +933,7 @@ class ApfBuildService:
                 output_pack,
                 os.O_RDWR
                 | getattr(os, "O_NOFOLLOW", 0)
-                | getattr(os, "O_CLOEXEC", 0),
+                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             )
             try:
                 pack_size = os.fstat(descriptor).st_size
@@ -918,7 +947,7 @@ class ApfBuildService:
                     progress("Applying compiled APF edits", completed, len(ordered))
                     cursor = 0
                     while cursor < span.size:
-                        written = os.pwrite(
+                        written = platform_compat.pwrite(
                             descriptor,
                             span.data[cursor:],
                             span.offset + cursor,
@@ -1408,7 +1437,7 @@ class ApfBuildService:
                     source_pack,
                     os.O_RDONLY
                     | getattr(os, "O_NOFOLLOW", 0)
-                    | getattr(os, "O_CLOEXEC", 0),
+                    | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
                 )
             except OSError as exc:
                 raise BuildError(
@@ -1427,7 +1456,7 @@ class ApfBuildService:
                 cursor = 0
                 while cursor < span.length:
                     count = min(8 * 1024 * 1024, span.length - cursor)
-                    data = os.pread(
+                    data = platform_compat.pread(
                         descriptor,
                         count,
                         span.pack_offset + cursor,
@@ -1965,7 +1994,7 @@ class ApfBuildService:
                     os.O_WRONLY
                     | os.O_CREAT
                     | os.O_EXCL
-                    | getattr(os, "O_CLOEXEC", 0),
+                    | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
                     0o600,
                 )
                 try:
@@ -2094,14 +2123,14 @@ class ApfBuildService:
             source_pack,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         )
         try:
             output_fd = os.open(
                 output_pack,
                 os.O_RDONLY
                 | getattr(os, "O_NOFOLLOW", 0)
-                | getattr(os, "O_CLOEXEC", 0),
+                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             )
         except BaseException:
             os.close(source_fd)
@@ -2129,7 +2158,7 @@ class ApfBuildService:
                     source_size,
                     pack_name,
                 )
-                source_data = os.pread(source_fd, span.size, span.offset)
+                source_data = platform_compat.pread(source_fd, span.size, span.offset)
                 if len(source_data) != span.size:
                     raise BuildError(
                         f"Could not re-read source span for {span.label}"
@@ -2139,7 +2168,7 @@ class ApfBuildService:
                     and _hash_bytes(source_data) != span.source_span_sha256
                 ):
                     raise BuildError(f"Source span changed for {span.label}")
-                actual = os.pread(output_fd, span.size, span.offset)
+                actual = platform_compat.pread(output_fd, span.size, span.offset)
                 if len(actual) != span.size or actual != span.data:
                     raise BuildError(
                         f"Output {span.label} differs from the compiled edit"
@@ -2175,8 +2204,8 @@ class ApfBuildService:
         cursor = 0
         while cursor < size:
             count = min(8 * 1024 * 1024, size - cursor)
-            before = os.pread(source_fd, count, offset + cursor)
-            after = os.pread(output_fd, count, offset + cursor)
+            before = platform_compat.pread(source_fd, count, offset + cursor)
+            after = platform_compat.pread(output_fd, count, offset + cursor)
             if len(before) != count or before != after:
                 raise BuildError(
                     f"Output {pack_name} changed outside the compiled APF edit spans"

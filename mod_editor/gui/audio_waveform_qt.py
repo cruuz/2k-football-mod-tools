@@ -138,7 +138,7 @@ def read_pcm16_waveform(
 
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
-        descriptor = os.open(supplied, flags)
+        descriptor = os.open(supplied, flags | getattr(os, "O_BINARY", 0))
     except OSError as exc:
         raise WaveformError("The private WAV preview could not be opened safely") from exc
 

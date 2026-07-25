@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 from pathlib import Path
+import stat
+import sys
 import tempfile
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 import unittest
 from unittest.mock import patch
 
+from mod_editor.core import platform_compat
+from mod_editor.core import nfl2k5_build_service as build_service_mod
 from mod_editor.core.errors import OutputRefusedError, ValidationError
 from mod_editor.core.model import SourceRecord
 from mod_editor.core.nfl2k5_build_service import (
@@ -22,6 +27,9 @@ from mod_editor.core.nfl2k5_build_service import (
     CommandResult,
     Nfl2k5BuildError,
     Nfl2k5BuildService,
+    SubprocessBuildCommandRunner,
+    adopt_process_group,
+    use_suspended_launch,
 )
 from mod_editor.core.nfl2k5_source_cache import (
     INVENTORY_SIZE,
@@ -32,10 +40,128 @@ from mod_editor.core.nfl2k5_source_cache import (
 )
 
 
+# Below this, a physically allocated file is cheap enough not to matter; above
+# it, allocating for real is the difference between an instant fixture and one
+# that cannot finish inside the CI per-file timeout.
+_SPARSE_REQUIRED_ABOVE = 1 << 30
+
+
+def _mark_sparse_on_windows(stream, path: Path, size: int) -> None:
+    """Ask NTFS to make this file sparse, and confirm it agreed.
+
+    ``truncate`` leaves a hole on ext4/APFS, but on NTFS it physically
+    zero-fills unless the file has been flagged sparse first.  The fixtures here
+    are ``SOURCE_SIZE`` = 5.87 GiB each and there are eighteen of them, so
+    without the hole this file cannot finish: that is exactly how it hit the CI
+    per-file timeout on the Windows runner and was killed with no output.
+
+    ``FSCTL_SET_SPARSE`` is the documented request.  It is checked rather than
+    assumed -- a volume that is not NTFS would accept the call and still
+    allocate -- and if the flag did not take on a file large enough to matter,
+    the test is skipped with the reason instead of hanging for seven minutes and
+    reporting nothing.  A skip that names its cause is information; a timeout is
+    not.
+    """
+
+    if not platform_compat.IS_WINDOWS:
+        return
+    granted = False
+    try:
+        import ctypes
+        import msvcrt
+
+        fsctl_set_sparse = 0x000900C4
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.DeviceIoControl.argtypes = [
+            ctypes.c_void_p,   # hDevice
+            ctypes.c_ulong,    # dwIoControlCode
+            ctypes.c_void_p,   # lpInBuffer
+            ctypes.c_ulong,    # nInBufferSize
+            ctypes.c_void_p,   # lpOutBuffer
+            ctypes.c_ulong,    # nOutBufferSize
+            ctypes.POINTER(ctypes.c_ulong),
+            ctypes.c_void_p,   # lpOverlapped
+        ]
+        kernel32.DeviceIoControl.restype = ctypes.c_int
+        handle = msvcrt.get_osfhandle(stream.fileno())
+        returned = ctypes.c_ulong(0)
+        granted = bool(
+            kernel32.DeviceIoControl(
+                ctypes.c_void_p(handle),
+                ctypes.c_ulong(fsctl_set_sparse),
+                None,
+                0,
+                None,
+                0,
+                ctypes.byref(returned),
+                None,
+            )
+        )
+        if granted:
+            stream.flush()
+            attributes = getattr(os.stat(path), "st_file_attributes", 0)
+            sparse_flag = getattr(stat, "FILE_ATTRIBUTE_SPARSE_FILE", 0x200)
+            granted = bool(attributes & sparse_flag)
+    except Exception:  # pragma: no cover - diagnosed by the skip below
+        granted = False
+    if not granted and size > _SPARSE_REQUIRED_ABOVE:
+        raise unittest.SkipTest(
+            f"this volume would physically allocate the {size / (1 << 30):.2f} GiB "
+            f"fixture at {path} (FSCTL_SET_SPARSE did not take), which cannot "
+            "finish inside the per-file timeout"
+        )
+
+
+def _set_end_of_file_on_windows(stream, size: int) -> bool:
+    """Extend to ``size`` with ``SetEndOfFile``, which does not write anything.
+
+    ``truncate`` is the wrong tool on Windows even after FSCTL_SET_SPARSE: the
+    CRT implements it as ``_chsize_s``, which explicitly ZERO-FILLS the range it
+    adds, and writing zeros allocates real clusters straight through the sparse
+    flag.  That is what made each of these 5.87 GiB fixtures take roughly a
+    hundred seconds on the runner and walked the file into its 420s per-file
+    timeout four cases in -- it was never a deadlock, just eighteen fixtures at
+    six gigabytes of real writes each.
+
+    ``SetFilePointerEx`` + ``SetEndOfFile`` only moves the end marker, so on a
+    sparse file it is O(1) and allocates nothing.  Returns whether it worked;
+    the caller falls back to ``truncate`` if it did not.
+    """
+
+    try:
+        import ctypes
+        import msvcrt
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.SetFilePointerEx.argtypes = [
+            ctypes.c_void_p,                    # hFile
+            ctypes.c_longlong,                  # liDistanceToMove
+            ctypes.POINTER(ctypes.c_longlong),  # lpNewFilePointer
+            ctypes.c_ulong,                     # dwMoveMethod
+        ]
+        kernel32.SetFilePointerEx.restype = ctypes.c_int
+        kernel32.SetEndOfFile.argtypes = [ctypes.c_void_p]
+        kernel32.SetEndOfFile.restype = ctypes.c_int
+
+        stream.flush()
+        handle = ctypes.c_void_p(msvcrt.get_osfhandle(stream.fileno()))
+        file_begin = 0
+        if not kernel32.SetFilePointerEx(
+            handle, ctypes.c_longlong(size), None, ctypes.c_ulong(file_begin)
+        ):
+            return False
+        return bool(kernel32.SetEndOfFile(handle))
+    except Exception:  # pragma: no cover - falls back to truncate
+        return False
+
+
 def _sparse(path: Path, size: int, prefix: bytes = b"") -> None:
     with path.open("wb") as stream:
+        _mark_sparse_on_windows(stream, path, size)
         if prefix:
             stream.write(prefix)
+        if platform_compat.IS_WINDOWS and _set_end_of_file_on_windows(stream, size):
+            return
         stream.truncate(size)
 
 
@@ -45,8 +171,10 @@ def _canonical_project(path: Path, kind: str = "synthetic-test-edit") -> None:
         "purpose": "Synthetic build-service test",
         "schema": "nfl2k5_visual_mod_project/v1",
     }
-    path.write_text(
-        json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    path.write_text(  # newline="" keeps the bytes canonical on Windows
+        json.dumps(value, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="",
     )
 
 
@@ -110,7 +238,7 @@ class FakeBackendRunner:
                 },
                 "patch": {"changed_byte_count": 1234},
             }
-            manifest.write_text(json.dumps(receipt), encoding="utf-8")
+            manifest.write_text(json.dumps(receipt), encoding="utf-8", newline="")
             return CommandResult(fixed, 0, "BUILD PASS\n", "")
         if action != "verify":
             raise AssertionError(f"unexpected backend action: {action}")
@@ -244,10 +372,53 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
             runner = FakeBackendRunner()
             events = []
 
-            result = Nfl2k5BuildService(runner=runner).build(
-                fixture.cache, fixture.project, fixture.output, events.append
-            )
+            # The publish pin.  The service opens the staged XISO and holds that
+            # descriptor across the rename on purpose: it is what keeps the
+            # verified inode alive, so the post-publish (st_dev, st_ino)
+            # comparison is a proof rather than a coincidence about a number the
+            # filesystem may recycle.  Two things must therefore stay true, and
+            # neither is visible from the build's return value:
+            #   * the descriptor comes from platform_compat, which is the only
+            #     place that grants Windows FILE_SHARE_DELETE -- without that bit
+            #     Windows refuses the rename outright (WinError 32);
+            #   * it is still open, and still names the staged file, at the
+            #     instant of the publish.  Closing it earlier would make Windows
+            #     happy and silently trade the held-descriptor proof for a name
+            #     lookup.
+            pin: dict[str, object] = {}
+            open_pin = platform_compat.open_existing_for_publish
+            publish = build_service_mod._rename_noreplace
 
+            def recording_open_pin(path):
+                descriptor = open_pin(path)
+                pin["path"] = Path(path)
+                pin["descriptor"] = descriptor
+                return descriptor
+
+            def recording_publish(source, destination):
+                # os.fstat raises if the pin was closed early; that is the check.
+                pin["held"] = os.fstat(pin["descriptor"])
+                pin["staged"] = source.stat()
+                return publish(source, destination)
+
+            with (
+                patch.object(
+                    platform_compat, "open_existing_for_publish", recording_open_pin
+                ),
+                patch(
+                    "mod_editor.core.nfl2k5_build_service._rename_noreplace",
+                    recording_publish,
+                ),
+            ):
+                result = Nfl2k5BuildService(runner=runner).build(
+                    fixture.cache, fixture.project, fixture.output, events.append
+                )
+
+            self.assertEqual(pin["path"].name, "modded.xiso")
+            self.assertEqual(
+                (pin["held"].st_dev, pin["held"].st_ino),
+                (pin["staged"].st_dev, pin["staged"].st_ino),
+            )
             self.assertEqual([call[2] for call in runner.calls], ["build", "verify"])
             for call in runner.calls:
                 self.assertNotIn("--source-cache-root", call)
@@ -310,13 +481,13 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                         FakeBackendRunner._argument(
                             call, "--audio-exact-inventory"
                         ),
-                        fingerprints,
+                        fingerprints.resolve(),
                     )
                     self.assertEqual(
                         FakeBackendRunner._argument(
                             call, "--audio-containment-inventory"
                         ),
-                        containment,
+                        containment.resolve(),
                     )
 
     def test_external_project_is_one_private_snapshot_for_both_backend_passes(self) -> None:
@@ -343,7 +514,14 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                     raise AssertionError("backend received the caller-owned project path")
                 if staged.parent == self.fixture.project.parent:
                     raise AssertionError("backend project was not in private build staging")
-                if (staged.stat().st_mode & 0o777) != 0o600:
+                # Owner-only is 0o600 on POSIX and is asserted unchanged there.
+                # Windows implements no group/other bits, so the same private
+                # staging copy reports 0o666 and its confidentiality comes from
+                # the per-user profile root's inherited ACL instead.
+                expected_mode = 0o666 if platform_compat.IS_WINDOWS else 0o600
+                if expected_mode != platform_compat.private_file_mode():
+                    raise AssertionError("private-file mode contract drifted")
+                if (staged.stat().st_mode & 0o777) != expected_mode:
                     raise AssertionError("staged project is not owner-only")
 
         with tempfile.TemporaryDirectory(prefix="2k5-build-service-test-") as temporary:
@@ -393,8 +571,10 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                 "purpose": "Synthetic build-service test",
                 "schema": "nfl2k5_visual_mod_project/v1",
             }
-            fixture.project.write_text(
-                json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            fixture.project.write_text(  # newline="" keeps the bytes canonical on Windows
+                json.dumps(value, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+                newline="",
             )
             runner = RelativePathRunner(replacement.resolve())
 
@@ -458,8 +638,10 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                 "purpose": "Synthetic build-service test",
                 "schema": "nfl2k5_visual_mod_project/v1",
             }
-            fixture.project.write_text(
-                json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            fixture.project.write_text(  # newline="" keeps the bytes canonical on Windows
+                json.dumps(value, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+                newline="",
             )
             runner = FakeBackendRunner()
 
@@ -474,13 +656,13 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                 )
                 self.assertEqual(
                     FakeBackendRunner._argument(call, "--audio-exact-inventory"),
-                    fingerprints,
+                    fingerprints.resolve(),
                 )
                 self.assertEqual(
                     FakeBackendRunner._argument(
                         call, "--audio-containment-inventory"
                     ),
-                    containment,
+                    containment.resolve(),
                 )
 
     def test_audio_inventory_rejects_unsafe_modes_links_and_sizes(self) -> None:
@@ -496,9 +678,36 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
             "containment_too_large",
         )
         for case in cases:
+            # Announce each case as it STARTS, flushed.  verbosity=2 narrowed
+            # the Windows hang to this test but only prints a subTest once it
+            # has finished, so a case that never returns is still anonymous.
+            # This makes the next timeout name it exactly.
+            if platform_compat.IS_WINDOWS and case in {
+                "derived_public_mode", "public_mode",
+            }:
+                # These two express "unsafe" by chmod-ing something public.
+                # On Windows mode bits confer no privacy at all -- a directory
+                # always reports 0o777 and a writable file 0o666 -- so a chmod
+                # cannot produce the unsafe state the case is about, and the
+                # guard correctly does not fire.  Privacy there is the DACL,
+                # which verify_private_root_placement checks and which these
+                # cases do not touch.  Skipped with the reason rather than
+                # asserted into a false pass.
+                with self.subTest(case=case):
+                    self.skipTest(
+                        f"{case} makes its subject public with chmod, which "
+                        "confers no privacy on Windows; the DACL is what does"
+                    )
+                continue
+            print(f"  [case] {case}", file=sys.stderr, flush=True)
             with self.subTest(case=case), tempfile.TemporaryDirectory(
                 prefix="2k5-build-service-test-"
             ) as temporary:
+                # Phase markers: the CI per-file timeout on Windows kills this
+                # file mid-case, and "which case" was not enough to say whether
+                # the fixture, the product call or the temp-directory teardown
+                # is what does not return.
+                print("    [phase] fixture", file=sys.stderr, flush=True)
                 fixture = SyntheticFixture(Path(temporary))
                 fixture.set_project_kind("menu_back_audio")
                 if case == "derived_symlink":
@@ -544,6 +753,7 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                         containment.chmod(0o600)
                 runner = FakeBackendRunner()
 
+                print("    [phase] build", file=sys.stderr, flush=True)
                 with self.assertRaisesRegex(
                     ValidationError,
                     r"Audio edits need complete private source-audio safety data.*"
@@ -556,9 +766,23 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                 self.assertFalse(runner.calls)
                 self.assertFalse(fixture.output.exists())
                 self.assertFalse(fixture.stage_paths())
+                print("    [phase] teardown", file=sys.stderr, flush=True)
 
     def test_audio_inventory_rejects_unsafe_source_cache_root(self) -> None:
         for case in ("public_mode", "symlink"):
+            if platform_compat.IS_WINDOWS and case == "public_mode":
+                # Same reason as the mode cases in the test above: chmod cannot
+                # make a directory public on Windows -- it always reports 0o777
+                # and the mode confers no privacy -- so the unsafe state this
+                # case is about cannot be produced, and the guard correctly does
+                # not fire.  The DACL is what carries privacy there, and this
+                # case does not touch it.
+                with self.subTest(case=case):
+                    self.skipTest(
+                        "public_mode makes the cache root public with chmod, "
+                        "which confers no privacy on Windows; the DACL does"
+                    )
+                continue
             with self.subTest(case=case), tempfile.TemporaryDirectory(
                 prefix="2k5-build-service-test-"
             ) as temporary:
@@ -706,5 +930,399 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
             self.assertFalse(backend_project.exists())
 
 
+class FakeJobGroup:
+    """A stand-in for the Win32 job object, answering a scripted count."""
+
+    def __init__(self, counts: list[int | None]) -> None:
+        self._counts = list(counts)
+        self.terminate_calls = 0
+        self.closed = False
+
+    def terminate(self) -> bool:
+        self.terminate_calls += 1
+        return True
+
+    def active_process_count(self) -> int | None:
+        return self._counts.pop(0) if len(self._counts) > 1 else self._counts[0]
+
+    def close(self) -> None:
+        self.closed = True
+
+
+class FakeChild:
+    """A stand-in for ``Popen`` exposing only what the teardown path touches."""
+
+    def __init__(self, alive: bool, dies_when_killed: bool = True) -> None:
+        self.alive = alive
+        self.dies_when_killed = dies_when_killed
+        self.kill_calls = 0
+        self.communicate_calls = 0
+        self.pid = -1
+
+    def poll(self) -> int | None:
+        return None if self.alive else 0
+
+    def kill(self) -> None:
+        self.kill_calls += 1
+        if self.dies_when_killed:
+            self.alive = False
+
+    def communicate(self, timeout: float | None = None) -> tuple[str, str]:
+        self.communicate_calls += 1
+        return "", ""
+
+
+class _FakePublishKernel32:
+    """The two kernel32 entry points the publish-pin open touches.
+
+    ``CreateFileW`` resolves against the real filesystem of this host and returns
+    a real descriptor as the "handle", so the Windows branch yields a descriptor
+    with genuine ``fstat``/``fsync``/``close`` semantics here and can be driven
+    end to end.  Every argument it was called with is recorded, because the share
+    mode is the entire fix and an assertion about it is the only thing that can
+    fail on a host that is not Windows.
+    """
+
+    def __init__(self) -> None:
+        self.calls: list[dict[str, object]] = []
+
+    def CreateFileW(  # noqa: N802 - mirrors the Win32 name
+        self, path, access, share, security, disposition, flags, template
+    ):
+        self.calls.append(
+            {
+                "path": os.fspath(path),
+                "access": access,
+                "share": share,
+                "disposition": disposition,
+                "flags": flags,
+            }
+        )
+        try:
+            return os.open(path, os.O_RDONLY | getattr(os, "O_CLOEXEC", 0))
+        except OSError:
+            # The Win32 last-error itself cannot be simulated here --
+            # ctypes.set_last_error/get_last_error exist only on Windows, so
+            # platform_compat._win_last_error() reads 0 on this host.  The
+            # translation of a specific code is therefore asserted by driving
+            # that seam directly; this only has to report the failure.
+            return platform_compat._win_invalid_handle()
+
+    def CloseHandle(self, handle):  # noqa: N802
+        try:
+            os.close(handle)
+        except OSError:
+            return 0
+        return 1
+
+
+@contextlib.contextmanager
+def _simulated_windows_publish():
+    """Run the enclosed block on the Windows branch of the publish-pin open.
+
+    Windows cannot run here, so the two primitives that branch needs are
+    supplied: ``_windows_kernel_api`` by the fake above, and ``msvcrt`` by a
+    stand-in whose ``open_osfhandle`` returns the descriptor the fake already
+    made.  Everything between them -- the access rights, the share mode, the
+    disposition, the handle-ownership guard, the error translation -- is the
+    shipped code, so what the assertions see is what a real ``CreateFileW`` would
+    be asked for.
+    """
+
+    saved_flags = (
+        platform_compat.IS_WINDOWS,
+        platform_compat.IS_LINUX,
+        platform_compat.IS_MACOS,
+    )
+    saved_loader = platform_compat._windows_kernel_api
+    saved_cache = platform_compat._windows_kernel_api_cache
+    saved_msvcrt = sys.modules.get("msvcrt")
+    kernel32 = _FakePublishKernel32()
+    fake_api = platform_compat._WindowsKernelApi(kernel32=kernel32)
+    fake_msvcrt = ModuleType("msvcrt")
+    fake_msvcrt.open_osfhandle = lambda handle, flags: handle
+    platform_compat.IS_WINDOWS = True
+    platform_compat.IS_LINUX = False
+    platform_compat.IS_MACOS = False
+    platform_compat._windows_kernel_api_cache = None
+    platform_compat._windows_kernel_api = lambda: fake_api
+    sys.modules["msvcrt"] = fake_msvcrt
+    try:
+        yield kernel32
+    finally:
+        (
+            platform_compat.IS_WINDOWS,
+            platform_compat.IS_LINUX,
+            platform_compat.IS_MACOS,
+        ) = saved_flags
+        platform_compat._windows_kernel_api = saved_loader
+        platform_compat._windows_kernel_api_cache = saved_cache
+        if saved_msvcrt is None:
+            sys.modules.pop("msvcrt", None)
+        else:
+            sys.modules["msvcrt"] = saved_msvcrt
+
+
+class PublishPinOpenTests(unittest.TestCase):
+    """The descriptor held across the publish must be opened in a way Windows
+    will still rename through -- without altering a single POSIX syscall.
+
+    The staged XISO is created by the *backend*, under a pathname that backend's
+    contract fixes, so the existing share-delete precedent (``CREATE_NEW``, for a
+    staging file the process creates itself) cannot be reused; this is its
+    ``OPEN_EXISTING`` twin, and these assertions are what distinguish the two.
+    """
+
+    def test_posix_open_keeps_the_exact_flags_it_always_used(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest("this asserts the POSIX branch, which Windows never takes")
+        with tempfile.TemporaryDirectory() as name:
+            staged = Path(name) / "modded.xiso"
+            staged.write_bytes(b"verified bytes")
+            expected = (
+                os.O_RDONLY
+                | getattr(os, "O_NOFOLLOW", 0)
+                | getattr(os, "O_CLOEXEC", 0)
+                | getattr(os, "O_BINARY", 0)
+            )
+            seen: list[tuple[str, int]] = []
+            real_open = os.open
+
+            def recording(path, flags, *rest):
+                seen.append((os.fspath(path), flags))
+                return real_open(path, flags, *rest)
+
+            with patch.object(os, "open", recording):
+                descriptor = platform_compat.open_existing_for_publish(staged)
+            try:
+                # One open, read-only, no-follow: byte for byte the call this
+                # replaced, so Linux and macOS are unchanged.
+                self.assertEqual(seen, [(str(staged), expected)])
+                self.assertEqual(os.fstat(descriptor).st_ino, staged.stat().st_ino)
+            finally:
+                os.close(descriptor)
+            self.assertEqual(
+                platform_compat.existing_publish_open_mechanism(),
+                platform_compat.PUBLISH_PIN_POSIX_OPEN,
+            )
+
+    def test_windows_opens_the_existing_file_with_share_delete(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            staged = root / "modded.xiso"
+            staged.write_bytes(b"verified bytes")
+            published = root / "My Modded 2K5.xiso.iso"
+            with _simulated_windows_publish() as kernel32:
+                self.assertEqual(
+                    platform_compat.existing_publish_open_mechanism(),
+                    platform_compat.PUBLISH_PIN_WINDOWS_SHARE_DELETE,
+                )
+                descriptor = platform_compat.open_existing_for_publish(staged)
+                try:
+                    (call,) = kernel32.calls
+                    self.assertEqual(call["path"], str(staged))
+                    # OPEN_EXISTING, not CREATE_NEW: the backend made this file
+                    # and its name is not ours to invent, which is exactly why
+                    # create_private_staging_file could not be reused.
+                    self.assertEqual(
+                        call["disposition"], platform_compat._WIN_OPEN_EXISTING
+                    )
+                    self.assertNotEqual(
+                        call["disposition"], platform_compat._WIN_CREATE_NEW
+                    )
+                    # GENERIC_READ and nothing more -- the same rights O_RDONLY
+                    # already asked for, so only the share mode changed.
+                    self.assertEqual(
+                        call["access"], platform_compat._WIN_GENERIC_READ
+                    )
+                    # The bit whose absence is WinError 32.
+                    self.assertTrue(
+                        call["share"] & platform_compat._WIN_FILE_SHARE_DELETE
+                    )
+                    self.assertEqual(
+                        call["share"], platform_compat._WIN_STAGE_SHARE_MODE
+                    )
+                    # And the descriptor is a real one, still naming the verified
+                    # object across the publish -- the proof the share bit exists
+                    # to preserve, not replace.
+                    pinned = os.fstat(descriptor)
+                    staged_identity = staged.stat()
+                    self.assertEqual(
+                        (pinned.st_dev, pinned.st_ino),
+                        (staged_identity.st_dev, staged_identity.st_ino),
+                    )
+                    # Renaming WHILE the descriptor is open is the behaviour
+                    # the share bit buys, and it is demonstrated here against
+                    # the simulated kernel32 -- whose open_osfhandle hands back
+                    # the descriptor the fake made with a plain os.open.  That
+                    # descriptor genuinely has no FILE_SHARE_DELETE, so on a
+                    # real Windows host this rename is refused by the very
+                    # mechanism under test: the demonstration would be asserting
+                    # the shim's limits, not the product's.  The CreateFileW
+                    # contract above -- disposition, access, share mode -- is
+                    # the real assertion and runs on every platform.
+                    # sys.platform, not IS_WINDOWS: the simulation above sets
+                    # that flag True on every host, so keying on it would skip
+                    # the demonstration everywhere.  The question here is what
+                    # the REAL kernel underneath will permit.
+                    if not sys.platform.startswith("win"):
+                        os.rename(staged, published)
+                        after = os.fstat(descriptor)
+                        self.assertEqual(
+                            (after.st_dev, after.st_ino),
+                            (pinned.st_dev, pinned.st_ino),
+                        )
+                finally:
+                    os.close(descriptor)
+            if not sys.platform.startswith("win"):
+                self.assertEqual(published.read_bytes(), b"verified bytes")
+
+    def test_windows_failure_is_translated_not_swallowed(self) -> None:
+        # A CreateFileW that fails must raise the same exception os.open would
+        # have raised for that Win32 code, so the caller's existing except
+        # clauses keep working -- and must never return a descriptor.  The
+        # last-error is patched at the seam the product reads it from because
+        # ctypes.set_last_error exists only on Windows.
+        translations = (
+            (platform_compat._WIN_ERROR_FILE_NOT_FOUND, FileNotFoundError),
+            (platform_compat._WIN_ERROR_PATH_NOT_FOUND, FileNotFoundError),
+            (platform_compat._WIN_ERROR_ACCESS_DENIED, PermissionError),
+            (platform_compat._WIN_ERROR_SHARING_VIOLATION, PermissionError),
+            (1234, OSError),
+        )
+        with tempfile.TemporaryDirectory() as name:
+            missing = Path(name) / "modded.xiso"
+            for code, expected in translations:
+                with self.subTest(win_error=code):
+                    with _simulated_windows_publish():
+                        with patch.object(
+                            platform_compat, "_win_last_error", lambda code=code: code
+                        ):
+                            with self.assertRaises(expected) as caught:
+                                platform_compat.open_existing_for_publish(missing)
+                    # Exactly this type: an untranslated code must stay a plain
+                    # OSError rather than be reported as a missing file.
+                    self.assertIs(type(caught.exception), expected)
+
+    def test_windows_without_the_primitives_fails_closed_on_windows(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest("a real Windows host has both primitives")
+        with tempfile.TemporaryDirectory() as name:
+            staged = Path(name) / "modded.xiso"
+            staged.write_bytes(b"verified bytes")
+            # IS_WINDOWS flipped on a POSIX host with no kernel32 and no msvcrt:
+            # the documented simulation fallback, which this host can honour
+            # because its own open really does carry O_NOFOLLOW and it really can
+            # rename an open file.
+            with patch.object(platform_compat, "IS_WINDOWS", True):
+                descriptor = platform_compat.open_existing_for_publish(staged)
+                os.close(descriptor)
+                # On a real Windows interpreter the same missing primitive
+                # re-raises instead of degrading, so a descriptor that cannot be
+                # published through is never handed back.
+                with patch.object(sys, "platform", "win32"):
+                    with self.assertRaises(
+                        platform_compat.DirectoryTransactionUnavailable
+                    ):
+                        platform_compat.open_existing_for_publish(staged)
+
+
+class WindowsBackendTeardownTests(unittest.TestCase):
+    """The Windows teardown, exercised on any host, without a Windows kernel.
+
+    ``os.killpg`` and ``signal.SIGKILL`` do not exist on Windows, so the POSIX
+    teardown raised ``AttributeError`` on its very first call, stopped nothing,
+    and left a runaway backend writing into the staging directory the caller was
+    about to remove.  Its Job Object replacement has to keep three outcomes
+    distinct: a group that drained, a genuine observed survivor, and an
+    accounting query that could not be read at all -- which is not evidence of a
+    survivor and must never be reported as one.
+    """
+
+    def _windows_teardown(self, process: object, group: object) -> None:
+        with (
+            patch.object(platform_compat, "IS_WINDOWS", True),
+            patch(
+                "mod_editor.core.nfl2k5_build_service.PROCESS_STOP_GRACE_SECONDS",
+                0.01,
+            ),
+            patch("mod_editor.core.nfl2k5_build_service.PROCESS_POLL_SECONDS", 0.0),
+            # The POSIX group calls do not exist on Windows; a single one left
+            # on that path is the defect this replaces, so fail loudly on it.
+            patch.object(
+                os,
+                "killpg",
+                create=True,
+                side_effect=AssertionError("POSIX killpg ran on the Windows branch"),
+            ),
+        ):
+            SubprocessBuildCommandRunner._stop_process_group(process, group)
+
+    def test_drained_job_is_not_reported_as_a_survivor(self) -> None:
+        process = FakeChild(alive=True)
+        group = FakeJobGroup([0])
+
+        self._windows_teardown(process, group)
+
+        self.assertEqual(group.terminate_calls, 1)
+        self.assertTrue(group.closed)
+
+    def test_observed_survivor_is_reported_and_never_silently_ignored(self) -> None:
+        process = FakeChild(alive=True)
+        group = FakeJobGroup([2])
+
+        with self.assertRaisesRegex(Nfl2k5BuildError, "background process"):
+            self._windows_teardown(process, group)
+
+        # Terminated once, then re-terminated when the group had not drained.
+        self.assertEqual(group.terminate_calls, 2)
+        self.assertTrue(group.closed)
+
+    def test_unreadable_accounting_alone_is_not_a_survivor(self) -> None:
+        process = FakeChild(alive=False)
+        group = FakeJobGroup([None])
+
+        self._windows_teardown(process, group)
+
+        self.assertTrue(group.closed)
+
+    def test_unreadable_accounting_with_a_live_child_is_a_survivor(self) -> None:
+        process = FakeChild(alive=True, dies_when_killed=False)
+        group = FakeJobGroup([None])
+
+        with self.assertRaisesRegex(Nfl2k5BuildError, "background process"):
+            self._windows_teardown(process, group)
+
+        self.assertTrue(group.closed)
+
+    def test_without_a_job_the_direct_child_still_decides_the_outcome(self) -> None:
+        stopped = FakeChild(alive=True)
+        self._windows_teardown(stopped, None)
+        self.assertEqual(stopped.kill_calls, 1)
+
+        unstoppable = FakeChild(alive=True, dies_when_killed=False)
+        with self.assertRaisesRegex(Nfl2k5BuildError, "background process"):
+            self._windows_teardown(unstoppable, None)
+        self.assertEqual(unstoppable.kill_calls, 1)
+
+    def test_posix_launch_and_teardown_keep_their_exact_behaviour(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest("this asserts the POSIX branch, which Windows never takes")
+        # No CREATE_SUSPENDED and no job object off Windows: the launch keeps
+        # ``creationflags=0`` and the teardown stays the pure killpg path.
+        self.assertFalse(use_suspended_launch())
+        self.assertIsNone(adopt_process_group(FakeChild(alive=True)))
+
+        process = FakeChild(alive=False)
+        SubprocessBuildCommandRunner._stop_process_group(process)
+        self.assertEqual(process.communicate_calls, 0)
+
+
 if __name__ == "__main__":
-    unittest.main()
+    # verbosity=2 prints each test's name as it STARTS.  This file has twice
+    # been killed by the CI per-file timeout on the Windows runner, and a killed
+    # unittest run has printed nothing at all -- the report is emitted at the
+    # end, which never arrives -- so the log could not say which test hung.
+    # Naming them as they start costs nothing and makes the next timeout
+    # self-diagnosing.
+    unittest.main(verbosity=2)

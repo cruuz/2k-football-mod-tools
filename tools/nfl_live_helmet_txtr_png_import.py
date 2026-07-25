@@ -83,7 +83,7 @@ def open_read_regular(path: Path, maximum: int, label: str) \
     resolved = path.resolve(strict=True)
     descriptor = os.open(
         resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-        getattr(os, "O_CLOEXEC", 0))
+        getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
     try:
         opened = os.fstat(descriptor)
         identity = (opened.st_dev, opened.st_ino)
@@ -395,7 +395,7 @@ def build_import(index_path: Path, compatibility_path: Path,
 def create_file(path: Path, payload: bytes) -> tuple[int, int]:
     descriptor = os.open(
         path, os.O_CREAT | os.O_EXCL | os.O_WRONLY |
-        getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0), 0o644)
+        getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0), 0o644)
     identity = (os.fstat(descriptor).st_dev, os.fstat(descriptor).st_ino)
     success = False
     try:

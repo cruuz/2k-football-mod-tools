@@ -70,7 +70,7 @@ def _copy_file(source: Path, output: Path, progress: CopyProgress | None) -> Cop
     output_digest = hashlib.sha256()
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
     try:
-        descriptor = os.open(output, flags, stat.S_IMODE(source.stat().st_mode))
+        descriptor = os.open(output, flags | getattr(os, "O_BINARY", 0), stat.S_IMODE(source.stat().st_mode))
         with source.open("rb") as reader, os.fdopen(descriptor, "wb") as writer:
             while True:
                 block = reader.read(4 * 1024 * 1024)

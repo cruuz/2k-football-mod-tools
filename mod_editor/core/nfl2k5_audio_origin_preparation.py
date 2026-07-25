@@ -22,6 +22,7 @@ import stat
 import time
 from typing import Callable
 
+from . import platform_compat
 from .errors import ValidationError
 from .nfl2k5_audio_source_containment import (
     MAX_PRIVATE_DOCUMENT_BYTES,
@@ -171,9 +172,13 @@ class Nfl2k5AudioOriginPreparation:
         return bool(
             stat.S_ISREG(info.st_mode)
             and not stat.S_ISLNK(info.st_mode)
-            and info.st_uid == os.getuid()
+            and platform_compat.is_owned_by_current_user(info, path=path)
             and info.st_nlink == 1
-            and stat.S_IMODE(info.st_mode) == 0o600
+            # Byte-for-byte the 0o600 equality check on POSIX; on Windows the
+            # same private file reads back as 0o666, the only value that
+            # platform can produce, and its confidentiality comes from the cache
+            # root's ACL (see platform_compat.private_file_mode).
+            and stat.S_IMODE(info.st_mode) == platform_compat.private_file_mode()
             and 0 < info.st_size <= maximum
         )
 

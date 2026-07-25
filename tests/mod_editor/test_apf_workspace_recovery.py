@@ -22,6 +22,7 @@ from PyQt5.QtGui import QCloseEvent  # noqa: E402
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 from PIL import Image  # noqa: E402
 
+from mod_editor.core import platform_compat  # noqa: E402
 from mod_editor.apf_studio.facade import (  # noqa: E402
     ApfStudioFacade,
     FacadeError,
@@ -94,7 +95,13 @@ class ApfWorkspaceStateStoreTests(unittest.TestCase):
             self.assertEqual(document["schema"], WORKSPACE_STATE_SCHEMA)
             self.assertNotIn(b"synthetic-retail", document_bytes)
             self.assertNotIn(b"authored-edit", document_bytes)
-            self.assertEqual(store.state_path.stat().st_mode & 0o777, 0o600)
+            # The store creates its state document as 0o600.  POSIX enforces
+            # that number and it is asserted unchanged; Windows implements no
+            # group/other bits, so the same document reports 0o666 there and its
+            # privacy comes from the per-user state root's inherited ACL.
+            expected_mode = 0o666 if platform_compat.IS_WINDOWS else 0o600
+            self.assertEqual(platform_compat.private_file_mode(), expected_mode)
+            self.assertEqual(store.state_path.stat().st_mode & 0o777, expected_mode)
             self.assertEqual(list(store.root.glob(".*.tmp")), [])
 
     def test_exact_state_override_requires_an_absolute_private_root(self) -> None:
@@ -195,7 +202,15 @@ class ApfRecoveryArchiveTests(unittest.TestCase):
             other.write_bytes(b"other-source")
             self.assertFalse(store.clear_recovery_for_source(other, SOURCE_SHA256))
             self.assertIsNotNone(store.recovery_candidate(require_source=False))
-            self.assertTrue(store.clear_recovery_for_source(source, SOURCE_SHA256))
+            # register_recovery canonicalised the source (candidate.source_path
+            # == source.resolve(), asserted above) and every real caller clears
+            # with the resolved _active_source_path, so ask to clear with the same
+            # canonical form. On Linux source == source.resolve(); under a
+            # symlinked (macOS /private/var) or short-name (Windows) temp root the
+            # raw spelling differs from the stored canonical one.
+            self.assertTrue(
+                store.clear_recovery_for_source(source.resolve(), SOURCE_SHA256)
+            )
             self.assertFalse(store.recovery_path.exists())
             self.assertIsNone(store.recovery_candidate(require_source=False))
             # Clearing recovery preserves the useful recent-source history.

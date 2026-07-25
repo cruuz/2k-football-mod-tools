@@ -5,24 +5,41 @@ from __future__ import annotations
 from dataclasses import replace
 import os
 from pathlib import Path
+import tempfile
 import unittest
+from unittest import mock
 
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PyQt5 import sip  # noqa: E402
+from PyQt5.QtGui import QImage  # noqa: E402
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
+from mod_editor.apf_studio import gui  # noqa: E402
 from mod_editor.apf_studio.catalog import ApfCatalog  # noqa: E402
 from mod_editor.apf_studio.field_art import (  # noqa: E402
     FieldArtKind,
 )
-from mod_editor.apf_studio.gui import FieldArtStudioPage  # noqa: E402
+from mod_editor.apf_studio.gui import (  # noqa: E402
+    FIELD_ART_COVERED_TARGETS,
+    FieldArtStudioPage,
+)
 from mod_editor.apf_studio.models import (  # noqa: E402
     ApfAsset,
     ApfCategory,
     ApfStatus,
 )
+
+
+def _write_png(path: Path, width: int, height: int) -> Path:
+    """Write a real RGBA PNG so the panel's exact-size guard sees true pixels."""
+
+    image = QImage(width, height, QImage.Format_RGBA8888)
+    image.fill(0xFF203040)
+    if not image.save(str(path), "PNG"):
+        raise AssertionError(f"could not write test PNG at {path}")
+    return path
 
 
 def _asset(
@@ -115,10 +132,18 @@ def _synthetic_catalog() -> ApfCatalog:
     )
 
 
+class _Source:
+    """Only the read-only 0A path the writer dispatch needs."""
+
+    def __init__(self, index_0a: str = "/nonexistent/APF/0A") -> None:
+        self.index_0a = index_0a
+
+
 class _Facade:
     def __init__(self, catalog: ApfCatalog, *, ready: bool = True):
         self.catalog = catalog
         self.source_ready = ready
+        self.source = _Source() if ready else None
         self.modified_asset_ids: frozenset[str] = frozenset()
 
     def require_catalog(self) -> ApfCatalog:
@@ -136,6 +161,36 @@ def _do_not_run_tasks(*_args: object, **_kwargs: object) -> None:
     return None
 
 
+class _RecordingRunner:
+    """Capture the operations the page would run instead of threading them."""
+
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, object, object, bool]] = []
+
+    def __call__(
+        self,
+        label: str,
+        operation: object,
+        on_success: object = None,
+        blocking: bool = True,
+    ) -> bool:
+        self.calls.append((label, operation, on_success, blocking))
+        return True
+
+    def operation_for(self, prefix: str) -> object:
+        for label, operation, _on_success, _blocking in reversed(self.calls):
+            if label.startswith(prefix):
+                return operation
+        raise AssertionError(f"no task was started with label prefix {prefix!r}")
+
+
+class _CompletedProcess:
+    def __init__(self, returncode: int, stderr: str = "", stdout: str = "") -> None:
+        self.returncode = returncode
+        self.stderr = stderr
+        self.stdout = stdout
+
+
 class ApfFieldArtGuiTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -148,11 +203,15 @@ class ApfFieldArtGuiTests(unittest.TestCase):
         cls.application = None
 
     def _page(
-        self, catalog: ApfCatalog | None = None, *, ready: bool = True
+        self,
+        catalog: ApfCatalog | None = None,
+        *,
+        ready: bool = True,
+        runner: object | None = None,
     ) -> FieldArtStudioPage:
         page = FieldArtStudioPage(
             _Facade(catalog or _synthetic_catalog(), ready=ready),  # type: ignore[arg-type]
-            _do_not_run_tasks,  # type: ignore[arg-type]
+            runner or _do_not_run_tasks,  # type: ignore[arg-type]
         )
         page.set_context()
         self.application.processEvents()
@@ -214,7 +273,30 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             self.assertEqual(page.browser.replace_button.text(), "Replace locked")
             self.assertEqual(page.browser.revert_button.text(), "Revert locked")
             self.assertIn("runtime field material", page.browser.detail_notes.text())
-            self.assertIn("no bounded Field Art writer", page.browser.replace_button.toolTip())
+            self.assertIn(
+                "browse and export-only", page.browser.replace_button.toolTip()
+            )
+            self.assertIn("no bounded writer", page.browser.replace_button.toolTip())
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_deferred_families_stay_locked_in_the_inventory(self) -> None:
+        page = self._page()
+        try:
+            for kind in (
+                FieldArtKind.FIELD_RADIANCE,
+                FieldArtKind.DIVOT_WEATHER_TEXTURE,
+                FieldArtKind.PRACTICE_SCENE,
+                FieldArtKind.PENALTY_ANIMATION,
+            ):
+                index = page.group_filter.findData(kind.value)
+                self.assertGreater(index, 0)
+                page.group_filter.setCurrentIndex(index)
+                self.application.processEvents()
+                self.assertFalse(page.browser.replace_button.isEnabled())
+                self.assertFalse(page.browser.revert_button.isEnabled())
+                self.assertEqual(page.browser.replace_button.text(), "Replace locked")
         finally:
             page.deleteLater()
             self.application.processEvents()
@@ -241,6 +323,221 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             self.assertEqual(page.browser.table.rowCount(), 0)
             self.assertFalse(page.browser.replace_button.isEnabled())
             self.assertFalse(page.browser.revert_button.isEnabled())
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_editor_offers_exactly_the_offline_proved_slots(self) -> None:
+        page = self._page()
+        try:
+            offered = tuple(
+                target.name for target in FIELD_ART_COVERED_TARGETS
+            )
+            self.assertEqual(
+                offered,
+                (
+                    "endzone_l0",
+                    "endzone_l1",
+                    "pc_field_goal",
+                    "Field_Pass_text",
+                    "Stride_number_field",
+                    "divots",
+                ),
+            )
+            self.assertEqual(page.editor.slot.count(), len(offered))
+            # The deferred codecs and the non-texture rows are never offered.
+            for deferred in (
+                "field_radiance",
+                "divot_GrassRain",
+                "divot_GrassSnow",
+                "divot_GrassDry",
+                "divotb1",
+                "tc2_footballField",
+                "penalty_onthe_field",
+            ):
+                self.assertNotIn(deferred, offered)
+            # Each offered slot is pinned to one exact archive identity.
+            self.assertEqual(
+                tuple(target.key for target in FIELD_ART_COVERED_TARGETS),
+                ((6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)),
+            )
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_editor_replace_is_unlocked_but_build_waits_for_a_staged_png(self) -> None:
+        page = self._page()
+        try:
+            self.assertTrue(page.editor.replace_button.isEnabled())
+            self.assertTrue(page.editor.export_button.isEnabled())
+            self.assertEqual(page.editor.replace_button.text(), "Replace PNG…")
+            self.assertFalse(page.editor.build_button.isEnabled())
+            self.assertFalse(page.editor.revert_button.isEnabled())
+            self.assertIn("not proved without a Xenia capture", page.editor.description.text())
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_editor_is_read_only_safe_until_a_game_is_loaded(self) -> None:
+        page = self._page(ready=False)
+        try:
+            self.assertFalse(page.editor.replace_button.isEnabled())
+            self.assertFalse(page.editor.export_button.isEnabled())
+            self.assertFalse(page.editor.build_button.isEnabled())
+            self.assertFalse(page.editor.revert_button.isEnabled())
+            self.assertEqual(page.editor.status.text(), "○ Not loaded")
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_editor_stages_an_exact_size_png_and_revert_clears_it(self) -> None:
+        page = self._page()
+        try:
+            target_index = next(
+                index
+                for index, target in enumerate(FIELD_ART_COVERED_TARGETS)
+                if target.name == "divots"
+            )
+            page.editor.slot.setCurrentIndex(target_index)
+            self.application.processEvents()
+            target = page.editor.current_target()
+            self.assertEqual((target.width, target.height), (64, 64))
+
+            with tempfile.TemporaryDirectory() as directory:
+                staged = Path(directory) / "divots.png"
+                _write_png(staged, target.width, target.height)
+                page.editor._stage_path(staged)
+                self.application.processEvents()
+
+                self.assertEqual(page.editor.staged_path(target), staged)
+                self.assertTrue(page.editor.build_button.isEnabled())
+                self.assertTrue(page.editor.revert_button.isEnabled())
+                self.assertEqual(page.editor.status.text(), "● Staged")
+
+                page.editor._revert()
+                self.application.processEvents()
+                self.assertIsNone(page.editor.staged_path(target))
+                self.assertFalse(page.editor.build_button.isEnabled())
+                self.assertFalse(page.editor.revert_button.isEnabled())
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_editor_build_dispatches_the_proved_writer_for_the_selected_slot(
+        self,
+    ) -> None:
+        runner = _RecordingRunner()
+        page = self._page(runner=runner)
+        try:
+            target_index = next(
+                index
+                for index, target in enumerate(FIELD_ART_COVERED_TARGETS)
+                if target.name == "pc_field_goal"
+            )
+            page.editor.slot.setCurrentIndex(target_index)
+            self.application.processEvents()
+            target = page.editor.current_target()
+
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                staged = _write_png(root / "edit.png", target.width, target.height)
+                page.editor._stage_path(staged)
+                out_volume = root / "out" / "0A"
+
+                with mock.patch.object(
+                    gui.QFileDialog,
+                    "getSaveFileName",
+                    return_value=(str(out_volume), ""),
+                ), mock.patch.object(
+                    gui.QMessageBox, "question", return_value=gui.QMessageBox.Yes
+                ):
+                    page.editor._build_copied_volume()
+
+                operation = runner.operation_for("Building copied 0A")
+                with mock.patch("subprocess.run") as run:
+                    run.return_value = _CompletedProcess(0)
+                    operation(lambda *_args: None)
+
+                run.assert_called_once()
+                argv = run.call_args.args[0]
+                self.assertTrue(argv[1].endswith("apf_field_art_patch.py"))
+                self.assertEqual(argv[argv.index("--entry-index") + 1], "659")
+                self.assertEqual(argv[argv.index("--file-index") + 1], "18")
+                self.assertEqual(argv[argv.index("--png") + 1], str(staged))
+                self.assertEqual(
+                    argv[argv.index("--output-volume") + 1], str(out_volume)
+                )
+                # The panel hands the writer ``str(Path(source.index_0a))``, so
+                # the argv carries the host OS's own spelling of that same
+                # volume ("/nonexistent/APF/0A" on POSIX,
+                # "\nonexistent\APF\0A" on Windows).  Compare against the same
+                # construction rather than the POSIX literal: still pins the
+                # exact read-only source the writer is pointed at, portably.
+                self.assertEqual(
+                    argv[argv.index("--index") + 1],
+                    str(Path(page.facade.source.index_0a)),
+                )
+                self.assertIn("--manifest", argv)
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_editor_build_fails_closed_when_the_writer_refuses(self) -> None:
+        runner = _RecordingRunner()
+        page = self._page(runner=runner)
+        try:
+            target = page.editor.current_target()
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                staged = _write_png(root / "edit.png", target.width, target.height)
+                page.editor._stage_path(staged)
+
+                with mock.patch.object(
+                    gui.QFileDialog,
+                    "getSaveFileName",
+                    return_value=(str(root / "out" / "0A"), ""),
+                ), mock.patch.object(
+                    gui.QMessageBox, "question", return_value=gui.QMessageBox.Yes
+                ):
+                    page.editor._build_copied_volume()
+
+                operation = runner.operation_for("Building copied 0A")
+                with mock.patch("subprocess.run") as run:
+                    run.return_value = _CompletedProcess(
+                        1, stderr="error: base hash is not the pinned retail data"
+                    )
+                    with self.assertRaises(RuntimeError) as raised:
+                        operation(lambda *_args: None)
+                self.assertIn("pinned retail data", str(raised.exception))
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_editor_refuses_a_png_that_is_not_the_exact_base_size(self) -> None:
+        page = self._page()
+        try:
+            target_index = next(
+                index
+                for index, target in enumerate(FIELD_ART_COVERED_TARGETS)
+                if target.name == "divots"
+            )
+            page.editor.slot.setCurrentIndex(target_index)
+            self.application.processEvents()
+            target = page.editor.current_target()
+
+            with tempfile.TemporaryDirectory() as directory:
+                wrong = Path(directory) / "wrong.png"
+                _write_png(wrong, target.width // 2, target.height)
+                with mock.patch.object(
+                    gui.QMessageBox, "information", return_value=None
+                ) as reported:
+                    page.editor._stage_path(wrong)
+                self.application.processEvents()
+
+                reported.assert_called_once()
+                self.assertIn("Wrong PNG size", reported.call_args.args[1])
+                self.assertIsNone(page.editor.staged_path(target))
+                self.assertFalse(page.editor.build_button.isEnabled())
         finally:
             page.deleteLater()
             self.application.processEvents()

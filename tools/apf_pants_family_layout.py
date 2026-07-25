@@ -7,6 +7,7 @@ import argparse
 import csv
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import zlib
@@ -295,6 +296,10 @@ def analyze(index_path: Path) -> dict[str, object]:
             pants.append(row)
     after = index_path.stat()
     after_hash = sha256_file(index_path)
+    # ``before`` and ``after`` are both index_path.stat() -- two PATH stats of
+    # one pathname, which agree on st_ctime_ns on every platform.  No path/fd
+    # boundary is crossed, so the change time stays compared.  NOTE: this tuple
+    # carries no st_dev/st_ino; identity comes from the SHA-256 above.
     if (
         after_hash != source_hash
         or (after.st_size, after.st_mtime_ns, after.st_ctime_ns)

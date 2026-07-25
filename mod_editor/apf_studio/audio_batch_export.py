@@ -32,6 +32,8 @@ from typing import Callable, Iterable, Protocol
 import unicodedata
 import zipfile
 
+from mod_editor.core.platform_compat import fsync_path
+
 from .inspectors import (
     AUDIO_ROLE_LABELS,
     AudioSnapshot,
@@ -544,7 +546,7 @@ def _add_regular_payload(
         source,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)
@@ -1001,8 +1003,11 @@ class ApfExternalAudioBankBundleExporter:
                         _zip_info(PurePosixPath("manifest.json")), manifest_bytes
                     )
 
-            with temporary_archive.open("rb") as output:
-                os.fsync(output.fileno())
+            # The bundle must be on the platter before it is hard-linked into
+            # its published name.  ``fsync_path`` keeps the POSIX ``O_RDONLY``
+            # flush and opens read-write only on Windows, where
+            # ``FlushFileBuffers`` refuses a read-only handle with ``EBADF``.
+            fsync_path(temporary_archive)
             archive_sha256 = _sha256_file(temporary_archive)
             manifest_sha256 = hashlib.sha256(manifest_bytes).hexdigest()
             os.link(temporary_archive, destination)
@@ -1351,8 +1356,11 @@ class ApfAudioBatchExporter:
                         _zip_info(PurePosixPath("manifest.json")), manifest_bytes
                     )
 
-            with temporary_archive.open("rb") as output:
-                os.fsync(output.fileno())
+            # Durability before publication: the archive reaches the platter
+            # first, then the hard link names it.  ``fsync_path`` preserves that
+            # order on every platform (Windows needs a writable handle for
+            # ``FlushFileBuffers``; POSIX keeps its ``O_RDONLY`` flush).
+            fsync_path(temporary_archive)
             archive_sha256 = _sha256_file(temporary_archive)
             manifest_sha256 = hashlib.sha256(manifest_bytes).hexdigest()
             # A hard link publishes the complete same-directory archive without

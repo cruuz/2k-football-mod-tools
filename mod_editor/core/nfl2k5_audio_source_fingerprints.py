@@ -19,15 +19,13 @@ publication, strict loading, and lookup.
 from __future__ import annotations
 
 from dataclasses import dataclass
-import ctypes
-import errno
 import hashlib
 import json
 import os
 from pathlib import Path
 import re
 import stat
-import tempfile
+import warnings
 from types import MappingProxyType
 from typing import Any, Callable, Iterable, Mapping
 
@@ -37,6 +35,7 @@ from .nfl2k5_ausb_fixed_slots import (
     streaming_slot_write_plan,
 )
 from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
+from . import platform_compat
 
 
 SCHEMA = "2k5_mod_studio_audio_source_pcm_fingerprints/v1"
@@ -45,7 +44,6 @@ EXPECTED_STANDALONE_COUNT = 850
 EXPECTED_STREAMING_SLOT_COUNT = 53_570
 EXPECTED_STREAMING_OWNER_COUNT = 53_571
 MAX_INVENTORY_BYTES = 64 * 1024 * 1024
-_RENAME_NOREPLACE = 1
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _STANDALONE_ID_RE = re.compile(
@@ -334,8 +332,11 @@ def _regular_private_file(path: Path, label: str) -> os.stat_result:
         stat.S_ISREG(info.st_mode)
         and not stat.S_ISLNK(info.st_mode)
         and info.st_nlink == 1
-        and info.st_uid == os.getuid()
-        and info.st_mode & 0o077 == 0,
+        # Ownership is asked through platform_compat rather than compared as a
+        # raw uid: Windows reports st_uid == 0 for every file, so an inline
+        # comparison would degrade into a check that always passes there.
+        and platform_compat.is_owned_by_current_user(info, path=path)
+        and platform_compat.is_private_file_mode(info),
         f"{label} must be an owner-only, non-linked regular file",
     )
     return info
@@ -347,9 +348,18 @@ def _private_derived_directory(root: Path, path: Path) -> Path:
     resolved = _regular_private_directory(path, "Private derived-cache directory")
     info = path.lstat()
     _require(
-        info.st_uid == os.getuid()
-        and info.st_mode & 0o077 == 0
-        and path.absolute() == resolved
+        platform_compat.is_owned_by_current_user(info, path=path)
+        # The owner-only question needs a locator, not just a stat: on POSIX the
+        # answer is in the mode bits this stat already carries ("no group or
+        # other access", byte-for-byte the historical inline test), but on
+        # Windows a directory has no meaningful mode and the answer is its DACL,
+        # which cannot be read from an os.stat_result.  Passing the path lets
+        # platform_compat query that DACL, so a current-user-owned directory
+        # with an Everyone/Users ACE is refused instead of silently accepted --
+        # without a locator the Windows branch could only fail closed and no
+        # private cache would ever load there.
+        and platform_compat.is_private_directory_mode(info, path=path)
+        and platform_compat.is_canonical_absolute_path(path, resolved)
         and resolved == root / PRIVATE_RELATIVE_PATH.parent,
         "Private derived-cache directory must be owner-only and stay inside "
         "its source cache",
@@ -358,56 +368,101 @@ def _private_derived_directory(root: Path, path: Path) -> Path:
 
 
 def _rename_noreplace_at(
-    directory_fd: int,
+    directory: int | platform_compat.DirHandle,
     source_name: str,
     destination_name: str,
 ) -> None:
-    """Atomically publish one complete file without replacing a race winner."""
+    """Atomically publish one complete file without replacing a race winner.
 
-    libc = ctypes.CDLL(None, use_errno=True)
-    renameat2 = getattr(libc, "renameat2", None)
-    if renameat2 is None:
-        raise AudioSourceFingerprintError(
-            "This Linux system cannot publish the private source-audio "
-            "inventory atomically"
-        )
-    renameat2.argtypes = [
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_int,
-        ctypes.c_char_p,
-        ctypes.c_uint,
-    ]
-    renameat2.restype = ctypes.c_int
-    result = renameat2(
-        directory_fd,
-        os.fsencode(source_name),
-        directory_fd,
-        os.fsencode(destination_name),
-        _RENAME_NOREPLACE,
+    ``directory`` is the pinned private-cache directory.  A raw POSIX directory
+    descriptor is accepted and wrapped in a borrowed
+    :class:`~mod_editor.core.platform_compat.DirHandle`, so the ``dir_fd``-relative
+    publish stays byte-for-byte what it was on Linux and macOS -- and so the
+    atomic-publish tests that patch this helper and drive a raw ``dir_fd`` keep
+    working.  A Windows :class:`~mod_editor.core.platform_compat.DirHandle`, which
+    has no descriptor, re-verifies its realpath pin and publishes by path instead.
+
+    The OS-primitive layer lives in :mod:`platform_compat`: Linux keeps
+    ``renameat2(RENAME_NOREPLACE)`` byte-for-byte; macOS and any POSIX kernel or
+    filesystem without it publish the staged inode with ``os.link`` (atomic, and
+    ``FileExistsError`` if the destination exists) then unlink the staging name,
+    leaving the same single-link inode ``renameat2`` would have.  A destination
+    that already exists is the concurrent-publication signal on every platform.
+    A bare ``dir_fd`` cannot be published through on Windows (no directory
+    descriptor exists there) and still fails closed with the historical message;
+    routed through a Windows handle the same publish succeeds via the re-verified
+    realpath, never a silent clobbering path publish.
+
+    Treating a pre-existing destination as "another writer won" is only sound if
+    the publish really refuses to clobber, so the reported
+    ``atomic_no_clobber`` is checked rather than assumed.  Every FILE mechanism
+    platform_compat has -- ``renameat2``, ``os.link``, the Windows ``os.rename``
+    -- reports it ``True``; the two-step fallback that reports ``False`` exists
+    only for DIRECTORY publishes, which this helper never asks for.  The check
+    is therefore an enforced dependency and not a reachable degradation today:
+    if that ever changed, this refuses instead of turning a silent overwrite
+    into a fake concurrent-publication signal.
+    """
+
+    handle = (
+        directory
+        if isinstance(directory, platform_compat.DirHandle)
+        else platform_compat.DirHandle._borrow_posix_fd(directory)
     )
-    if result == 0:
-        return
-    value = ctypes.get_errno()
-    if value == errno.EEXIST:
-        raise _ConcurrentPublication(destination_name)
-    if value in {errno.ENOSYS, errno.EINVAL, errno.EOPNOTSUPP}:
-        raise AudioSourceFingerprintError(
-            "The private cache filesystem cannot publish the source-audio "
-            "inventory atomically"
+    try:
+        published = handle.publish_no_replace(
+            source_name,
+            destination_name,
+            is_directory=False,
         )
-    raise OSError(value, os.strerror(value), destination_name)
+    except FileExistsError as exc:
+        raise _ConcurrentPublication(destination_name) from exc
+    except platform_compat.NoReplacePublishUnavailable as exc:
+        raise AudioSourceFingerprintError(
+            "This system cannot publish the private source-audio inventory "
+            "atomically"
+        ) from exc
+    if not published.atomic_no_clobber:
+        raise AudioSourceFingerprintError(
+            "This system published the private source-audio inventory without "
+            f"an atomic no-clobber guarantee (mechanism {published.mechanism}): "
+            f"'{destination_name}' may have replaced another writer's inventory "
+            "instead of losing the race to it. Delete that file from the "
+            "private cache before using it."
+        )
 
 
 def _unlink_owned_name_at(
-    directory_fd: int,
+    directory: int | platform_compat.DirHandle,
     name: str,
     identity: tuple[int, int],
 ) -> bool:
-    """Best-effort cleanup that never removes a replacement inode."""
+    """Best-effort cleanup that will not knowingly remove a replacement inode.
 
+    Precisely: the name is ``stat``-ed, refused unless it is a regular file whose
+    identity matches, and only then unlinked.  Those are two separate resolutions
+    of the child name, so a replacement swapped in between them IS removed -- the
+    check narrows the window, it does not eliminate it, and no POSIX primitive
+    here can (there is no "unlink this inode").  On Windows the identity
+    comparison is additionally re-verified per operation rather than
+    kernel-resolved; see
+    :func:`platform_compat.directory_transaction_guarantee`.
+
+    ``directory`` is a raw POSIX directory descriptor -- wrapped in a borrowed
+    :class:`~mod_editor.core.platform_compat.DirHandle` so the ``dir_fd``-relative
+    ``stat``/``unlink`` stay byte-for-byte identical -- or a Windows handle that
+    re-verifies its realpath pin before each step.  Either way a vanished, changed
+    or swapped directory surfaces as :class:`OSError` (a Windows pin refusal
+    subclasses it) and is treated as "nothing owned to remove", exactly as before.
+    """
+
+    handle = (
+        directory
+        if isinstance(directory, platform_compat.DirHandle)
+        else platform_compat.DirHandle._borrow_posix_fd(directory)
+    )
     try:
-        current = os.stat(name, dir_fd=directory_fd, follow_symlinks=False)
+        current = handle.stat(name, follow=False)
     except OSError:
         return False
     if (
@@ -416,10 +471,36 @@ def _unlink_owned_name_at(
     ):
         return False
     try:
-        os.unlink(name, dir_fd=directory_fd)
+        handle.unlink(name)
     except OSError:
         return False
     return True
+
+
+def _commit_directory(directory: platform_compat.DirHandle) -> bool:
+    """Flush a just-published directory and surface a non-durable Windows result.
+
+    Returns whether the flush committed.  POSIX always commits -- the same single
+    ``fsync`` on the pinned descriptor as before, so Linux/macOS is byte-identical.
+    On Windows the core now flushes via ``FlushFileBuffers`` on a directory write
+    handle and returns ``True`` when it works; a ``False`` means the account could
+    not obtain that handle, so the published filename is not crash-durable.  That
+    ``False`` is surfaced with :func:`warnings.warn` rather than discarded, so a
+    caller or test sees the weaker guarantee instead of the code continuing as if
+    the directory entry were committed.  Rollback and cleanup flushes stay
+    best-effort and deliberately do not route through here.
+    """
+
+    durable = directory.fsync()
+    if not durable:
+        warnings.warn(
+            "nfl2k5_audio_source_fingerprints: the published inventory's directory "
+            "entry could not be flushed to stable storage on this platform; a crash "
+            "before the OS flushes it on its own could lose the published filename",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+    return durable
 
 
 class Nfl2k5AudioSourceFingerprintStore:
@@ -607,7 +688,7 @@ class Nfl2k5AudioSourceFingerprintStore:
         )
         root = _regular_private_directory(cache.root, "NFL 2K5 source cache")
         _require(
-            cache.root.absolute() == root,
+            platform_compat.is_canonical_absolute_path(cache.root, root),
             "NFL 2K5 source-cache path must be absolute and canonical",
         )
         _require(
@@ -788,24 +869,27 @@ class Nfl2k5AudioSourceFingerprintStore:
         publication_guard: PublicationGuard | None = None,
     ) -> None:
         parent = path.parent
-        parent.mkdir(mode=0o700, parents=False, exist_ok=True)
+        platform_compat.create_private_directory(parent, exist_ok=True)
         resolved_parent = _regular_private_directory(
             parent, "Private derived-cache directory"
         )
         _require(
-            parent.absolute() == resolved_parent
+            platform_compat.is_canonical_absolute_path(parent, resolved_parent)
             and resolved_parent == root / PRIVATE_RELATIVE_PATH.parent,
             "Private source-audio inventory path escapes its source cache",
         )
-        os.chmod(resolved_parent, 0o700)
+        platform_compat.harden_private_directory(resolved_parent)
         _private_derived_directory(root, parent)
 
-        directory_fd = os.open(
-            resolved_parent,
-            os.O_RDONLY
-            | getattr(os, "O_DIRECTORY", 0)
-            | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+        directory = platform_compat.open_dir_handle(resolved_parent)
+        # The publish/cleanup helpers take a raw dir_fd on POSIX -- byte-identical,
+        # and the shape the atomic-publish tests patch and drive through
+        # os.open(dir_fd=...) -- or the handle itself on Windows, which has no
+        # descriptor to hand them.
+        dir_ref: int | platform_compat.DirHandle = (
+            directory.dir_fd
+            if directory.mechanism == platform_compat.DIRHANDLE_POSIX_DIR_FD
+            else directory
         )
         descriptor: int | None = None
         temporary_name: str | None = None
@@ -813,33 +897,37 @@ class Nfl2k5AudioSourceFingerprintStore:
         staged_identity: tuple[int, int] | None = None
         published_identity: tuple[int, int] | None = None
         try:
-            parent_opened = os.fstat(directory_fd)
+            parent_opened = directory.fstat()
             parent_named = parent.lstat()
             _require(
                 stat.S_ISDIR(parent_opened.st_mode)
-                and (
-                    parent_opened.st_dev,
-                    parent_opened.st_ino,
-                    parent_opened.st_uid,
-                    parent_opened.st_mode & 0o077,
+                and directory.is_owned_by_current_user(parent_opened)
+                # Owner-only is asked of this platform's real mechanism, and it
+                # needs a locator to ask with: the mode bits carried by the stat
+                # on POSIX (unchanged), and on Windows the DACL of the directory
+                # this handle is pinned to, read through that realpath.  Handed
+                # no locator the Windows branch has nothing to query and always
+                # refuses, which is why the pinned realpath is passed here.
+                and platform_compat.is_private_directory_mode(
+                    parent_opened, path=directory.realpath
                 )
-                == (
-                    parent_named.st_dev,
-                    parent_named.st_ino,
-                    os.getuid(),
-                    0,
-                ),
+                and (parent_opened.st_dev, parent_opened.st_ino)
+                == (parent_named.st_dev, parent_named.st_ino),
                 "Private derived-cache directory changed before publication",
             )
-            descriptor, temporary_name = tempfile.mkstemp(
+            # mkstemp on POSIX; on Windows a CREATE_NEW handle that shares
+            # delete, because this descriptor is held ACROSS the publish below
+            # (it re-reads the published bytes back through it) and Windows
+            # refuses to rename a file whose open handle withholds that bit.
+            descriptor, temporary_name = platform_compat.create_private_staging_file(
+                resolved_parent,
                 prefix=".audio-source-pcm-fingerprints-v1.",
                 suffix=".tmp",
-                dir=resolved_parent,
             )
             temporary_basename = Path(temporary_name).name
             initial = os.fstat(descriptor)
             staged_identity = (initial.st_dev, initial.st_ino)
-            os.fchmod(descriptor, 0o600)
+            platform_compat.fchmod(descriptor, 0o600, path=temporary_name)
             view = memoryview(payload)
             written = 0
             while written < len(view):
@@ -851,15 +939,13 @@ class Nfl2k5AudioSourceFingerprintStore:
                 written += count
             os.fsync(descriptor)
             opened = os.fstat(descriptor)
-            named = os.stat(
-                temporary_basename,
-                dir_fd=directory_fd,
-                follow_symlinks=False,
-            )
+            named = directory.stat(temporary_basename, follow=False)
             _require(
                 stat.S_ISREG(opened.st_mode)
-                and opened.st_uid == os.getuid()
-                and opened.st_mode & 0o077 == 0
+                and platform_compat.is_owned_by_current_user(
+                    opened, fd=descriptor
+                )
+                and platform_compat.is_private_file_mode(opened)
                 and opened.st_nlink == 1
                 and (
                     opened.st_dev,
@@ -882,26 +968,27 @@ class Nfl2k5AudioSourceFingerprintStore:
             if publication_guard is not None:
                 publication_guard("before_publication")
             _rename_noreplace_at(
-                directory_fd,
+                dir_ref,
                 temporary_basename,
                 path.name,
             )
             published_identity = staged_identity
-            final = os.stat(
-                path.name,
-                dir_fd=directory_fd,
-                follow_symlinks=False,
-            )
+            final = directory.stat(path.name, follow=False)
             _require(
                 stat.S_ISREG(final.st_mode)
-                and final.st_uid == os.getuid()
-                and final.st_mode & 0o077 == 0
+                and platform_compat.is_owned_by_current_user(final, path=path)
+                and platform_compat.is_private_file_mode(final)
                 and final.st_nlink == 1
                 and (final.st_dev, final.st_ino, final.st_size)
                 == (staged_identity[0], staged_identity[1], len(payload)),
                 "Private source-audio inventory changed during publication",
             )
-            os.fsync(directory_fd)
+            # Flush the directory descriptor this transaction pinned, rather
+            # than re-opening the directory by name and throwing that pin away.
+            # POSIX issues the same single fsync as before; on Windows the flush
+            # is best-effort and _commit_directory surfaces (not discards) a
+            # non-durable result instead of continuing as if committed.
+            _commit_directory(directory)
             os.lseek(descriptor, 0, os.SEEK_SET)
             confirmed = bytearray()
             while len(confirmed) <= len(payload):
@@ -913,23 +1000,25 @@ class Nfl2k5AudioSourceFingerprintStore:
                     break
                 confirmed.extend(block)
             after = os.fstat(descriptor)
-            named_after = os.stat(
-                path.name,
-                dir_fd=directory_fd,
-                follow_symlinks=False,
-            )
+            named_after = directory.stat(path.name, follow=False)
+            # ``named_after`` is a DirHandle PATH stat and ``after`` an fd stat
+            # of the same file: a genuine cross-family comparison, so the change
+            # time is compared only where the two calls agree on it (see
+            # platform_compat.supports_change_time_identity).
             _require(
                 bytes(confirmed) == payload
                 and stat.S_ISREG(after.st_mode)
-                and after.st_uid == os.getuid()
-                and after.st_mode & 0o077 == 0
+                and platform_compat.is_owned_by_current_user(
+                    after, fd=descriptor
+                )
+                and platform_compat.is_private_file_mode(after)
                 and after.st_nlink == 1
                 and (
                     named_after.st_dev,
                     named_after.st_ino,
                     named_after.st_size,
                     named_after.st_mtime_ns,
-                    named_after.st_ctime_ns,
+                    *platform_compat.change_time_identity(named_after),
                     named_after.st_nlink,
                 )
                 == (
@@ -937,38 +1026,38 @@ class Nfl2k5AudioSourceFingerprintStore:
                     after.st_ino,
                     after.st_size,
                     after.st_mtime_ns,
-                    after.st_ctime_ns,
+                    *platform_compat.change_time_identity(after),
                     after.st_nlink,
                 ),
                 "Private source-audio inventory changed during publication",
             )
             os.fsync(descriptor)
-            os.fsync(directory_fd)
+            _commit_directory(directory)
             if publication_guard is not None:
                 publication_guard("after_publication")
         except BaseException:
             if published_identity is not None:
                 if _unlink_owned_name_at(
-                    directory_fd,
+                    dir_ref,
                     path.name,
                     published_identity,
                 ):
-                    os.fsync(directory_fd)
+                    directory.fsync()
             raise
         finally:
             if descriptor is not None:
                 os.close(descriptor)
             if temporary_basename is not None and staged_identity is not None:
                 if _unlink_owned_name_at(
-                    directory_fd,
+                    dir_ref,
                     temporary_basename,
                     staged_identity,
                 ):
                     try:
-                        os.fsync(directory_fd)
+                        directory.fsync()
                     except OSError:
                         pass
-            os.close(directory_fd)
+            directory.close()
 
     def _load(
         self,
@@ -987,7 +1076,7 @@ class Nfl2k5AudioSourceFingerprintStore:
         flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) \
             | getattr(os, "O_CLOEXEC", 0)
         try:
-            descriptor = os.open(path, flags)
+            descriptor = os.open(path, flags | getattr(os, "O_BINARY", 0))
         except OSError as exc:
             raise AudioSourceFingerprintError(
                 f"Could not open the private source-audio inventory: {exc}"
@@ -997,8 +1086,10 @@ class Nfl2k5AudioSourceFingerprintStore:
             _require(
                 stat.S_ISREG(opened.st_mode)
                 and opened.st_nlink == 1
-                and opened.st_uid == os.getuid()
-                and opened.st_mode & 0o077 == 0
+                and platform_compat.is_owned_by_current_user(
+                    opened, fd=descriptor
+                )
+                and platform_compat.is_private_file_mode(opened)
                 and (opened.st_dev, opened.st_ino, opened.st_size)
                 == (info.st_dev, info.st_ino, info.st_size),
                 "Private source-audio inventory changed before it was opened",
@@ -1017,6 +1108,12 @@ class Nfl2k5AudioSourceFingerprintStore:
             payload = b"".join(chunks)
             after = os.fstat(descriptor)
             named = path.lstat()
+            # Two comparisons of different shape, deliberately split apart.
+            # ``after`` against ``opened`` is fd against fd, so it keeps the
+            # change time on every platform.  ``named`` is an lstat held against
+            # that same fd stat, the one boundary Windows cannot carry a change
+            # time across, so that field is dropped there and kept on POSIX
+            # (see platform_compat.supports_change_time_identity).
             _require(
                 (
                     after.st_dev,
@@ -1024,11 +1121,6 @@ class Nfl2k5AudioSourceFingerprintStore:
                     after.st_size,
                     after.st_mtime_ns,
                     after.st_ctime_ns,
-                    named.st_dev,
-                    named.st_ino,
-                    named.st_size,
-                    named.st_mtime_ns,
-                    named.st_ctime_ns,
                 )
                 == (
                     opened.st_dev,
@@ -1036,11 +1128,20 @@ class Nfl2k5AudioSourceFingerprintStore:
                     opened.st_size,
                     opened.st_mtime_ns,
                     opened.st_ctime_ns,
+                )
+                and (
+                    named.st_dev,
+                    named.st_ino,
+                    named.st_size,
+                    named.st_mtime_ns,
+                    *platform_compat.change_time_identity(named),
+                )
+                == (
                     opened.st_dev,
                     opened.st_ino,
                     opened.st_size,
                     opened.st_mtime_ns,
-                    opened.st_ctime_ns,
+                    *platform_compat.change_time_identity(opened),
                 ),
                 "Private source-audio inventory changed while it was being read",
             )

@@ -520,7 +520,9 @@ class ScorebugRecordingRunner:
 class ProviderTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.registry = CapabilityRegistryLoader().load(allow_sample_fallback=False)
+        cls.registry = CapabilityRegistryLoader().load(
+            allow_sample_fallback=False, check_files=False
+        )
 
     def test_orchestrator_orders_preflight_validate_build_verify(self) -> None:
         fake = FakeProvider()
@@ -856,6 +858,11 @@ class ProviderTests(unittest.TestCase):
         )
         orchestrator = ProviderOrchestrator(self.registry, (provider,))
         with tempfile.TemporaryDirectory() as temporary:
+            # Canonicalise the temp dir so the exact-argv assertions below are not
+            # defeated by a symlinked (macOS /private/var) or short-name (Windows)
+            # temp location: the providers realpath their inputs, so every path in
+            # the recorded argv is already canonical.
+            temporary = str(Path(temporary).resolve())
             job = apf_request(Path(temporary))
             result = orchestrator.build_and_verify(job)
         self.assertTrue(result.independently_verified)
@@ -977,6 +984,9 @@ class ProviderTests(unittest.TestCase):
         )
         orchestrator = ProviderOrchestrator(self.registry, (provider,))
         with tempfile.TemporaryDirectory() as temporary:
+            # Canonicalise the temp dir (see the jersey test) so the exact-argv
+            # comparison holds under macOS /private/var and Windows short names.
+            temporary = str(Path(temporary).resolve())
             job = apf_pants_request(Path(temporary))
             result = orchestrator.build_and_verify(job)
         self.assertTrue(result.independently_verified)
@@ -1079,6 +1089,9 @@ class ProviderTests(unittest.TestCase):
         )
         orchestrator = ProviderOrchestrator(registry, (provider,))
         with tempfile.TemporaryDirectory() as temporary:
+            # Canonicalise the temp dir (see the jersey test) so the exact-argv
+            # comparison holds under macOS /private/var and Windows short names.
+            temporary = str(Path(temporary).resolve())
             job = apf_helmet_request(Path(temporary))
             result = orchestrator.build_and_verify(job)
         self.assertTrue(result.independently_verified)
@@ -1179,6 +1192,9 @@ class ProviderTests(unittest.TestCase):
         )
         orchestrator = ProviderOrchestrator(self.registry, (provider,))
         with tempfile.TemporaryDirectory() as temporary:
+            # Canonicalise the temp dir (see the jersey test) so the exact-argv
+            # comparison holds under macOS /private/var and Windows short names.
+            temporary = str(Path(temporary).resolve())
             job = apf_shoulder_request(Path(temporary))
             result = orchestrator.build_and_verify(job)
         self.assertTrue(result.independently_verified)
@@ -1274,7 +1290,10 @@ class ProviderTests(unittest.TestCase):
         capability_id = "nfl2k5.audio.ausb_fixed_range_wav"
         capability = self.registry.get(capability_id)
         with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
+            # Canonicalise the temp dir so the forwarded private-input paths, which
+            # the provider realpaths, compare equal under macOS /private/var and
+            # Windows short names.
+            root = Path(temporary).resolve()
             job = replace(request(root), capability_id=capability_id)
             wav = root / "replacement.wav"
             wav.write_bytes(b"synthetic user WAV; preflight does not decode it")

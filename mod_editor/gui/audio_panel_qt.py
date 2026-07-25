@@ -508,7 +508,7 @@ def _copy_atomic(source: Path, destination: Path, *, replace: bool) -> Path:
     temporary = destination.with_name(f".{destination.name}.{os.getpid()}.tmp")
     source_fd = os.open(
         source,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     output_fd: int | None = None
     try:
@@ -522,7 +522,7 @@ def _copy_atomic(source: Path, destination: Path, *, replace: bool) -> Path:
         output_fd = os.open(
             temporary,
             os.O_WRONLY | os.O_CREAT | os.O_EXCL
-            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             0o600,
         )
         remaining = opened.st_size
@@ -575,7 +575,7 @@ def _replace_atomic_bytes(destination: Path, payload: bytes) -> Path:
         descriptor = os.open(
             temporary,
             os.O_WRONLY | os.O_CREAT | os.O_EXCL
-            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             0o600,
         )
         view = memoryview(payload)
@@ -1468,6 +1468,27 @@ if PYQT5_AVAILABLE:
             replacement_pack_layout = QVBoxLayout(replacement_pack)
             replacement_pack_layout.setContentsMargins(14, 11, 14, 11)
             replacement_pack_layout.setSpacing(8)
+            replacement_pack_header = QHBoxLayout()
+            replacement_pack_header.setSpacing(8)
+            replacement_pack_title = QLabel("Replacement templates")
+            replacement_pack_title.setObjectName("audioPackPathHeading")
+            self.replacement_pack_help_toggle = QPushButton(
+                "What's in a template?"
+            )
+            self.replacement_pack_help_toggle.setObjectName("audioHelpToggle")
+            self.replacement_pack_help_toggle.setCheckable(True)
+            self.replacement_pack_help_toggle.setChecked(False)
+            self.replacement_pack_help_toggle.setAccessibleName(
+                "Show or hide replacement template details"
+            )
+            self.replacement_pack_help_toggle.setToolTip(
+                "Explain what an exported audio replacement template contains "
+                "and how the v1–v4 pack formats differ."
+            )
+            replacement_pack_header.addWidget(replacement_pack_title)
+            replacement_pack_header.addStretch(1)
+            replacement_pack_header.addWidget(self.replacement_pack_help_toggle)
+            replacement_pack_layout.addLayout(replacement_pack_header)
             self.replacement_pack_note = QLabel(
                 "The current default creates a v4 metadata-only template for all 850 "
                 "standalone sounds. It includes a spreadsheet-safe, read-only "
@@ -1479,6 +1500,12 @@ if PYQT5_AVAILABLE:
             )
             self.replacement_pack_note.setWordWrap(True)
             self.replacement_pack_note.setObjectName("audioMuted")
+            # Long-form documentation: collapsed by default so the pack controls
+            # read as controls.  The full text stays available on demand.
+            self.replacement_pack_note.setVisible(False)
+            self.replacement_pack_help_toggle.toggled.connect(
+                self._set_replacement_pack_help_visible
+            )
             replacement_pack_layout.addWidget(self.replacement_pack_note)
             replacement_pack_contents = QHBoxLayout()
             replacement_pack_contents.setSpacing(9)
@@ -1912,6 +1939,20 @@ if PYQT5_AVAILABLE:
             progress_row.addWidget(self.progress_bar)
             root.addLayout(progress_row)
 
+        def _set_replacement_pack_help_visible(self, shown: bool) -> None:
+            """Show or hide the collapsible replacement-template explainer.
+
+            The explanatory paragraph is long-form documentation, not a control,
+            so it stays collapsed by default to keep the toolbar readable.  The
+            label itself (and its full text) is always present; only its
+            visibility changes.
+            """
+
+            self.replacement_pack_note.setVisible(shown)
+            self.replacement_pack_help_toggle.setText(
+                "Hide template details" if shown else "What's in a template?"
+            )
+
         def _apply_style(self) -> None:
             self.setStyleSheet(
                 """
@@ -2037,6 +2078,22 @@ if PYQT5_AVAILABLE:
                     color: #68778b;
                     background: #192330;
                     border-color: #2a394c;
+                }
+                QPushButton#audioHelpToggle {
+                    color: #8ea3bd;
+                    background: transparent;
+                    border: 1px solid #31506a;
+                    padding: 4px 10px;
+                    font-weight: 600;
+                }
+                QPushButton#audioHelpToggle:hover {
+                    color: #cfe0f5;
+                    background: #1b2634;
+                    border-color: #4f9cf9;
+                }
+                QPushButton#audioHelpToggle:checked {
+                    color: #cfe0f5;
+                    background: #1b2634;
                 }
                 QProgressBar {
                     background: #172130;

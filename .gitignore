@@ -57,6 +57,22 @@ __pycache__/
 .venv/
 venv/
 
+# --- CI / test tooling caches ----------------------------------------------
+# The CI workflow (.github/workflows/ci.yml) runs the suite as standalone
+# scripts (bytecode goes to __pycache__/, ignored above) and stages the
+# release gates under the runner's temp dir, never inside the workspace, so a
+# CI run leaves the tree clean.  These cover the incidental caches a coverage,
+# type-check, or local test run can still drop.
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
 # --- OS / editor cruft ----------------------------------------------------
 .DS_Store
 Thumbs.db

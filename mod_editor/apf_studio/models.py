@@ -172,6 +172,31 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         "gameplay.findings_inspector",
         _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT),
     ),
+    "apf2k8.field_art.base_texture": CapabilityActionBinding(
+        "apf2k8.field_art.base_texture",
+        "field_art.base_texture_png_editor",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.EXPORT,
+            ApfProductAction.REPLACE,
+            ApfProductAction.REVERT,
+        ),
+        replace_method="replace_field_art",
+        revert_method="revert_field_art",
+        product_note=(
+            "The Field Art editor writes exactly the six offline-proved base "
+            "textures (endzone_l0/l1, pc_field_goal, Field_Pass_text, "
+            "Stride_number_field, divots) into a copied 0A through "
+            "tools/apf_field_art_patch.py -- one texture per build. Each build "
+            "regenerates only the selected base mip level; the descriptor pad, "
+            "the packed mip tail, and every sibling inner part are verified "
+            "unchanged against the whole volume, and the read-only source is "
+            "never opened for writing. The deferred field_radiance and "
+            "divot_Grass* codecs and the SCNE/CurveAnim rows have no bounded "
+            "writer and stay export-only. In-game appearance is not proved "
+            "without a Xenia capture."
+        ),
+    ),
     "apf2k8.gameplay_tuning_sliders.roster_view": CapabilityActionBinding(
         "apf2k8.gameplay_tuning_sliders.roster_view",
         "gameplay.findings_inspector",
@@ -188,6 +213,56 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         ),
         replace_method="replace_draft_logo",
         revert_method="revert",
+    ),
+    "apf2k8.logos_cards.team_logo": CapabilityActionBinding(
+        "apf2k8.logos_cards.team_logo",
+        "logos_cards.team_logo_png_editor",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.EXPORT,
+            ApfProductAction.REPLACE,
+            ApfProductAction.REVERT,
+        ),
+        replace_method="replace_team_logo",
+        revert_method="revert_team_logo",
+        product_note=(
+            "The Team Logo editor stages one exact 512x512 RGBA crest, and one "
+            "build writes it into both places the disc stores it: the "
+            "uniform_logo_01 package (logo_l0) through tools/apf_logo_patch.py "
+            "and the matching entry of the prebuilt uniform_logocache aggregate "
+            "through tools/apf_logocache_patch.py, chained over one intermediate "
+            "copy. Each writer byte-diffs the whole copied volume so only its "
+            "own fixed extents change, each is paired with an independent "
+            "verifier, and the read-only source is never opened for writing. "
+            "Colors are stored at 4 bits per channel and the build reports the "
+            "exact decode-back error. Which runtime surface reads which copy -- "
+            "helmet crest, team-select grid, or scorebug -- is not proved "
+            "without a Xenia capture."
+        ),
+    ),
+    "apf2k8.logos_cards.team_logo_cache": CapabilityActionBinding(
+        "apf2k8.logos_cards.team_logo_cache",
+        "logos_cards.team_logo_png_editor",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.EXPORT,
+            ApfProductAction.REPLACE,
+            ApfProductAction.REVERT,
+        ),
+        replace_method="replace_team_logo",
+        revert_method="revert_team_logo",
+        product_note=(
+            "This runtime logo cache is a coupled companion of the team-logo "
+            "package: the single Team Logo build writes it from the same staged "
+            "512x512 crest through tools/apf_logocache_patch.py (catalog index "
+            "1), rewriting the matching entry of the prebuilt uniform_logocache "
+            "aggregate and verifying every other byte unchanged. There is no "
+            "cache-only editor -- staging or reverting the Team Logo crest "
+            "stages or reverts this cache write with it -- so it shares the "
+            "team-logo replace/revert route. The writer re-checks its pinned "
+            "retail directory and payload and fails closed. In-game consumption "
+            "is not proved without a Xenia capture."
+        ),
     ),
     "apf2k8.menus.layouts": CapabilityActionBinding(
         "apf2k8.menus.layouts",

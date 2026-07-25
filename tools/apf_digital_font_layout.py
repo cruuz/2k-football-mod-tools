@@ -222,7 +222,11 @@ def main(argv: list[str] | None = None) -> int:
     try:
         report = audit(args.index.expanduser())
         args.report.parent.mkdir(parents=True, exist_ok=True)
-        args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        # write_bytes, not write_text: a text-mode write turns "\n" into "\r\n"
+        # on Windows and this report is compared and shipped byte for byte.
+        args.report.write_bytes(
+            (json.dumps(report, indent=2) + "\n").encode("utf-8")
+        )
         print(
             "APF_DIGITAL_FONT_LAYOUT_PASS outer=1310 inner=246 "
             "format=DXT5A allocation=8192 aliases=0 runtime=false"

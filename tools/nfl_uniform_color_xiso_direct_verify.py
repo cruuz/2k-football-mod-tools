@@ -4,13 +4,19 @@
 This verifier deliberately does not import the writer.  It parses the retail
 XDVDFS tree itself, pins every retail extent, scans both 6.30 GB images, and
 asks the pinned XboxDev extract-xiso build to list both trees.
+
+Kernel write-seals are reached through :mod:`mod_editor.core.platform_compat`
+rather than a module-scope ``import fcntl``.  That import does not exist on
+Windows, so it made this module -- which five sibling verifiers import purely
+for its XDVDFS parser -- impossible to even load there.  The seal contract
+itself is unchanged: sealing is still required before the pinned extract-xiso
+copy is executed, and it still fails closed where seals are unavailable.
 """
 
 from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
-import fcntl
 import hashlib
 import json
 import os
@@ -20,6 +26,12 @@ import stat
 import struct
 import subprocess
 import sys
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from mod_editor.core import platform_compat  # noqa: E402
 
 
 SECTOR = 2048
@@ -112,17 +124,40 @@ VIRTUAL_PATCHES = tuple(
     for target in TARGETS.values()
 )
 
-FileIdentity = tuple[int, int, int, int, int, int, int]
-REQUIRED_EXECUTABLE_SEALS = (
-    fcntl.F_SEAL_WRITE | fcntl.F_SEAL_GROW |
-    fcntl.F_SEAL_SHRINK | fcntl.F_SEAL_SEAL
-)
+FileIdentity = tuple[int, ...]
+
+
+def required_executable_seals() -> int:
+    """The write-seal set the pinned extract-xiso copy must carry.
+
+    Resolved on demand instead of at import time: the seal names live in
+    :mod:`fcntl`, and evaluating them at module scope is what stopped this file
+    importing at all on a platform without that module.  The value is identical
+    to the constant it replaces (``WRITE | GROW | SHRINK | SEAL``).
+    """
+
+    return platform_compat.write_seal_mask()
 
 
 def file_identity(info: os.stat_result) -> FileIdentity:
+    """A fingerprint safe to compare across the path-stat/fd-stat boundary.
+
+    Every comparison in this module is ``os.fstat`` against ``path.lstat`` --
+    ``open_pinned`` and ``require_stable`` both re-check a descriptor against
+    the name it was opened from -- so none of them can carry ``st_ctime`` on
+    Windows, where a path stat and an fd stat of one untouched file disagree on
+    it.  The field is therefore dropped there by
+    :func:`platform_compat.change_time_identity` and kept on POSIX.
+    ``st_dev``/``st_ino`` (identity), ``st_mode``, ``st_nlink``, ``st_size`` and
+    ``st_mtime_ns`` are compared on every platform; what Windows loses is the
+    narrower metadata-only-change signal, for which it offers no field stable
+    across the two stat families.
+    """
+
     return (
         info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
-        info.st_size, info.st_mtime_ns, info.st_ctime_ns,
+        info.st_size, info.st_mtime_ns,
+        *platform_compat.change_time_identity(info),
     )
 
 
@@ -238,12 +273,20 @@ def hash_extent(fd: int, offset: int, size: int) -> str:
 def require_sealed_executable(descriptor: int, expected_size: int,
                               expected_sha256: str) -> None:
     info = os.fstat(descriptor)
-    seals = fcntl.fcntl(descriptor, fcntl.F_GET_SEALS)
     require(stat.S_ISREG(info.st_mode) and info.st_size == expected_size and
             stat.S_IMODE(info.st_mode) == 0o500,
             "sealed executable mode/type/size differs")
-    require(seals & REQUIRED_EXECUTABLE_SEALS == REQUIRED_EXECUTABLE_SEALS,
-            "sealed executable is not immutable")
+    # The kernel write-seal read-back is Linux-only (memfd F_*_SEALS). On a host
+    # without it the immutability guarantee is provided instead by the SHA-256
+    # extent check below plus the read-only (0o500) mode already asserted; asking
+    # for the seal constants there would raise the opaque "requires the Linux
+    # memfd write-seal constants" error. So verify the seals only where they can
+    # exist, and never weaken the hash check, which runs on every platform.
+    if platform_compat.supports_sealed_memfd():
+        required = required_executable_seals()
+        seals = platform_compat.read_seals(descriptor)
+        require(seals & required == required,
+                "sealed executable is not immutable")
     require(hash_extent(descriptor, 0, expected_size) == expected_sha256,
             "sealed executable SHA-256 differs")
 
@@ -251,10 +294,12 @@ def require_sealed_executable(descriptor: int, expected_size: int,
 def sealed_executable_copy(source_fd: int, expected_size: int,
                            expected_sha256: str) -> int:
     """Copy exact executable bytes to a write-sealed anonymous Linux inode."""
+    # Same capability question as before -- memfd plus the F_*_SEALS commands --
+    # asked through the one module allowed to know about fcntl, so a platform
+    # that has neither is refused here instead of at import time.
     require(hasattr(os, "memfd_create") and
             hasattr(os, "MFD_ALLOW_SEALING") and
-            hasattr(fcntl, "F_ADD_SEALS") and
-            hasattr(fcntl, "F_GET_SEALS"),
+            platform_compat.supports_sealed_memfd(),
             "sealed memfd execution is unavailable")
     descriptor = -1
     try:
@@ -281,8 +326,7 @@ def sealed_executable_copy(source_fd: int, expected_size: int,
                 "executable changed while making sealed copy")
         os.fchmod(descriptor, 0o500)
         os.fsync(descriptor)
-        fcntl.fcntl(descriptor, fcntl.F_ADD_SEALS,
-                    REQUIRED_EXECUTABLE_SEALS)
+        platform_compat.add_seals(descriptor, required_executable_seals())
         require_sealed_executable(
             descriptor, expected_size, expected_sha256
         )

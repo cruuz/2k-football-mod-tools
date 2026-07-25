@@ -13,6 +13,7 @@ as unclassified user input and makes no claim about that input's provenance.
 
 from __future__ import annotations
 
+import ctypes
 from dataclasses import dataclass
 import hashlib
 import os
@@ -25,6 +26,8 @@ import subprocess
 import tempfile
 import time
 from typing import Callable, Mapping
+
+from mod_editor.core import platform_compat
 
 
 PCM16_TEMPLATE_SCHEMA = "apf2k8_audio_pcm16_template/v1"
@@ -41,6 +44,13 @@ MAX_TIMEOUT_SECONDS = 30 * 60
 PROCESS_POLL_SECONDS = 0.05
 PROCESS_STOP_GRACE_SECONDS = 2.0
 COPY_BLOCK_BYTES = 1024 * 1024
+
+# Every descriptor this module opens carries audio or diagnostic *bytes*.  On
+# Windows ``os.open`` defaults to the CRT's text mode, which rewrites CRLF and
+# stops reading at a 0x1A byte -- silent corruption of exactly those payloads.
+# ``O_BINARY`` does not exist on POSIX, where there is no translation to
+# disable, so this resolves to 0 and the POSIX flags are unchanged.
+_O_BINARY = getattr(os, "O_BINARY", 0)
 
 Progress = Callable[[str, int, int], None]
 CancelRequested = Callable[[], bool]
@@ -107,6 +117,11 @@ class _FileIdentity:
     size: int
     mode: int
     mtime_ns: int
+    # Captured by lstat and re-checked by lstat of the same pathname
+    # (:func:`_validate_tool_path` and :func:`_require_unchanged_tool`), so both
+    # sides of the comparison are path stats.  Two path stats agree on
+    # st_ctime_ns on every platform Windows included, so the field is kept as a
+    # plain int and compared everywhere.
     ctime_ns: int
 
 
@@ -115,6 +130,9 @@ class _PcmDataLocation:
     descriptor: int
     data_offset: int
     data_size: int
+    # Always the full six-field fingerprint: this is captured from an fstat and
+    # re-checked against an fstat of the same descriptor, never against a path
+    # stat, so no component is dropped on any platform.
     source_identity: tuple[int, int, int, int, int, int]
 
 
@@ -286,6 +304,15 @@ def export_pcm16_template(
 
 
 def _source_identity(info: os.stat_result) -> tuple[int, int, int, int, int, int]:
+    """The full fingerprint, for comparing two stats of the *same* family.
+
+    Both sides must come from ``os.fstat`` (or both from a path stat).  The
+    change time is included unconditionally, because two stats of the same
+    family agree on it on every platform -- so a metadata-only edit is still
+    caught here on Windows.  For a path-stat-against-fd-stat comparison use
+    :func:`_cross_stat_identity` instead.
+    """
+
     return (
         info.st_dev,
         info.st_ino,
@@ -296,9 +323,33 @@ def _source_identity(info: os.stat_result) -> tuple[int, int, int, int, int, int
     )
 
 
+def _cross_stat_identity(info: os.stat_result) -> tuple[int, ...]:
+    """:func:`_source_identity` minus the field a path stat and an fd stat disagree on.
+
+    Only for the comparisons that put a path stat on one side and an ``os.fstat``
+    on the other.  Windows reaches ``st_ctime`` through a different Win32
+    information class for each, so the two disagree for a file nothing touched
+    and the field cannot be compared across that boundary; it is dropped there
+    (see :func:`platform_compat.supports_change_time_identity`) and kept on
+    POSIX.  Everything else -- ``st_dev``/``st_ino`` identity, ``st_size``,
+    ``st_mtime_ns`` and ``st_nlink`` -- is compared on every platform, so a
+    swapped, relinked or rewritten file is still caught; what is lost on Windows
+    at these sites, and only these, is the metadata-only-change signal.
+    """
+
+    return (
+        info.st_dev,
+        info.st_ino,
+        info.st_size,
+        info.st_mtime_ns,
+        *platform_compat.change_time_identity(info),
+        info.st_nlink,
+    )
+
+
 def _read_at(descriptor: int, count: int, offset: int, label: str) -> bytes:
     try:
-        data = os.pread(descriptor, count, offset)
+        data = platform_compat.pread(descriptor, count, offset)
     except OSError as exc:
         raise AudioEncodingError(f"Could not read {label}: {exc}") from exc
     if len(data) != count:
@@ -334,13 +385,17 @@ def _open_pcm_data(source: Path, target: Pcm16Target) -> _PcmDataLocation:
             source,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
         )
     except OSError as exc:
         raise AudioEncodingError(f"Could not open the PCM replacement: {exc}") from exc
     try:
         opened = os.fstat(descriptor)
-        if _source_identity(opened) != _source_identity(supplied):
+        # ``supplied`` is a path stat and ``opened`` an fd stat, so this one
+        # comparison crosses the boundary Windows cannot carry a change time
+        # across.
+        if _cross_stat_identity(opened) != _cross_stat_identity(supplied):
             raise AudioEncodingError("The PCM replacement changed while it was opened")
         header = _read_at(descriptor, 12, 0, "PCM replacement")
         if header[:4] != b"RIFF" or header[8:12] != b"WAVE":
@@ -461,7 +516,8 @@ def _write_canonical_pcm(
             os.O_WRONLY
             | os.O_CREAT
             | os.O_EXCL
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
             0o600,
         )
         try:
@@ -518,10 +574,22 @@ def _validate_tool_path(
         raise AudioEncodingError(f"{label} must be a regular file, not a link")
     if not 0 < info.st_size <= MAX_EXECUTABLE_BYTES:
         raise AudioEncodingError(f"{label} is empty or unreasonably large")
-    if require_executable and not os.access(path, os.X_OK):
-        raise AudioEncodingError(
-            f"{label} is not executable; enable its executable permission first"
-        )
+    # POSIX gates on the executable permission bit, which is a real, settable
+    # property of the file and therefore worth reporting before we launch
+    # anything.  Windows has no such bit: ``os.access(path, os.X_OK)`` there is
+    # implemented as "does this file exist", so it always answers True and this
+    # pre-flight cannot be the gate.  Windows decides executability from the
+    # file's *content* at CreateProcess time and reports a non-image with
+    # WinError 193 ("%1 is not a valid Win32 application"), which :meth:`encode`
+    # turns into the same fail-closed AudioEncodingError.  We deliberately do
+    # not invent a Windows substitute here -- guessing from the file extension
+    # would reject a perfectly launchable tool that simply is not named
+    # ``*.exe``.
+    if require_executable and not platform_compat.IS_WINDOWS:
+        if not os.access(path, os.X_OK):
+            raise AudioEncodingError(
+                f"{label} is not executable; enable its executable permission first"
+            )
     return _FileIdentity(
         path=path,
         device=info.st_dev,
@@ -538,6 +606,9 @@ def _require_unchanged_tool(identity: _FileIdentity, label: str) -> None:
         info = identity.path.lstat()
     except OSError as exc:
         raise AudioEncodingError(f"{label} disappeared during encoding: {exc}") from exc
+    # ``identity`` was captured by lstat and ``info`` is an lstat of the same
+    # pathname: two path stats, which agree on st_ctime_ns everywhere, so the
+    # metadata-only-change signal is kept on every platform.
     if (
         not stat.S_ISREG(info.st_mode)
         or stat.S_ISLNK(info.st_mode)
@@ -581,11 +652,13 @@ def _read_private_output(path: Path, maximum: int) -> bytes:
         path,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0)
+        | _O_BINARY,
     )
     try:
         opened = os.fstat(descriptor)
-        if _source_identity(opened) != _source_identity(info):
+        # Path stat against fd stat; see :func:`_cross_stat_identity`.
+        if _cross_stat_identity(opened) != _cross_stat_identity(info):
             raise AudioEncodingError("The XMA1 encoder output changed while opening")
         chunks: list[bytes] = []
         total = 0
@@ -605,15 +678,382 @@ def _read_private_output(path: Path, maximum: int) -> bytes:
         os.close(descriptor)
 
 
-def _stop_process(process: subprocess.Popen[bytes]) -> None:
+# --------------------------------------------------------------------------
+# Confining the encoder: one process *group*, on two different process models.
+#
+# The guarantee is the same on every platform -- when :meth:`encode` returns or
+# raises, nothing the user's encoder started is still running -- but the kernel
+# primitive that delivers it is not.
+#
+# POSIX launches the encoder with ``start_new_session=True``, making it a
+# session (and therefore process-group) leader whose PID doubles as the group
+# id.  ``os.killpg`` then reaches every descendant even after the direct child
+# has exited, and ``os.killpg(pg, 0)`` answers "is any of it still alive?".
+#
+# Windows has neither call: ``os.killpg`` does not exist there, ``os.kill`` is
+# ``TerminateProcess`` and reaches exactly one process, and ``taskkill /T``
+# walks parent PIDs, so it loses a child the moment its launcher exits -- which
+# is precisely the case this code exists to catch.  The Win32 primitive with
+# the same reach as a process group is a Job Object: a process assigned to one
+# carries that job to everything it creates, ``TerminateJobObject`` stops all
+# of them in a single call, and the job's ``ActiveProcesses`` counter answers
+# the question ``killpg(pg, 0)`` answers on POSIX.  There is no group-wide
+# graceful signal on Windows, so the job path is the analogue of the SIGKILL
+# escalation, not of the SIGTERM that precedes it.
+#
+# ``tools/apf_audio.py`` carries the same two-model helper for the *decoder*
+# side.  It is duplicated rather than shared because ``tools/`` modules are
+# runnable standalone and must not grow a dependency on this package.
+# --------------------------------------------------------------------------
+
+# JOBOBJECTINFOCLASS.JobObjectBasicAccountingInformation, and the byte offset
+# of ``ActiveProcesses`` within JOBOBJECT_BASIC_ACCOUNTING_INFORMATION: four
+# 8-byte LARGE_INTEGERs, then the DWORDs TotalPageFaultCount and
+# TotalProcesses.  The struct is 48 bytes; the buffer is oversized on purpose.
+_WINDOWS_JOB_BASIC_ACCOUNTING = 1
+_WINDOWS_ACTIVE_PROCESSES_OFFSET = 40
+_WINDOWS_ACCOUNTING_BYTES = 64
+
+# CreateProcess's CREATE_SUSPENDED.  A child started with it is frozen before it
+# runs a single instruction, so it can be sealed into the job object *before* it
+# is able to spawn a descendant -- closing the race a job assigned only after
+# launch leaves open.  It is resumed through ntdll's ``NtResumeProcess`` once the
+# assignment is done; see :func:`_adopt_process_group`.  ``STATUS_SUCCESS`` is
+# that call's "every thread resumed" NTSTATUS.
+_WINDOWS_CREATE_SUSPENDED = 0x00000004
+_WINDOWS_STATUS_SUCCESS = 0
+
+
+class _WindowsProcessGroup:
+    """A Job Object standing in for the POSIX session the encoder cannot have.
+
+    Every entry point fails soft (returns ``None``/``False``) rather than
+    raising, because this type is used from ``finally`` blocks where raising
+    would replace the error the caller is already reporting.  A group that
+    could not be established is reported as such so the caller can fall back to
+    the direct child and still say honestly whether it stopped.
+    """
+
+    def __init__(self, kernel32: "ctypes.CDLL", handle: int) -> None:
+        self._kernel32 = kernel32
+        self._handle: int | None = handle
+
+    @classmethod
+    def create(cls) -> "_WindowsProcessGroup | None":
+        kernel32 = _windows_job_api()
+        if kernel32 is None:
+            return None
+        try:
+            handle = kernel32.CreateJobObjectW(None, None)
+        except OSError:
+            return None
+        if not handle:
+            return None
+        return cls(kernel32, handle)
+
+    def adopt(self, process: subprocess.Popen[bytes]) -> bool:
+        """Put *process* -- and so everything it later starts -- in the job."""
+
+        handle = getattr(process, "_handle", None)
+        if self._handle is None or handle is None:
+            return False
+        try:
+            return bool(
+                self._kernel32.AssignProcessToJobObject(self._handle, int(handle))
+            )
+        except (OSError, TypeError, ValueError):
+            return False
+
+    def active_process_count(self) -> int | None:
+        """How many processes the job still holds, or ``None`` if unreadable.
+
+        The Win32 counterpart to ``os.killpg(pg, 0)`` -- but returned as a
+        *count*, not a bool, so the stop path can tell three states apart that a
+        boolean would collapse: ``0`` (the group has stopped), a positive number
+        (a genuine, observed survivor), and ``None`` -- the accounting query
+        itself failed.  A failed query is *not* evidence of a survivor; reporting
+        it as one is exactly the false "left a background process" this returns
+        ``None`` to prevent.  Callers decide what an unreadable count means from
+        evidence they can trust, such as whether the direct child is still alive.
+        """
+
+        if self._handle is None:
+            return 0
+        buffer = ctypes.create_string_buffer(_WINDOWS_ACCOUNTING_BYTES)
+        try:
+            queried = self._kernel32.QueryInformationJobObject(
+                self._handle,
+                _WINDOWS_JOB_BASIC_ACCOUNTING,
+                buffer,
+                _WINDOWS_ACCOUNTING_BYTES,
+                None,
+            )
+        except OSError:
+            return None
+        if not queried:
+            return None
+        (active_processes,) = struct.unpack_from(
+            "<I", buffer.raw, _WINDOWS_ACTIVE_PROCESSES_OFFSET
+        )
+        return active_processes
+
+    def terminate(self) -> bool:
+        """``TerminateJobObject`` the whole group; report whether it was accepted.
+
+        A ``True`` result means the kernel took the request to end every process
+        in the job at once.  It does not promise they have already left the
+        accounting count -- forced termination is not instantaneous -- which is
+        why the caller confirms the group actually drained afterwards.
+        """
+
+        if self._handle is None:
+            return False
+        try:
+            return bool(self._kernel32.TerminateJobObject(self._handle, 1))
+        except OSError:
+            return False
+
+    def close(self) -> None:
+        handle, self._handle = self._handle, None
+        if handle is None:
+            return
+        try:
+            self._kernel32.CloseHandle(handle)
+        except OSError:
+            pass
+
+
+def _windows_job_api() -> "ctypes.CDLL | None":
+    """Load kernel32's job entry points with argtypes applied, or ``None``.
+
+    Leaving ``argtypes`` unset would let ctypes truncate 64-bit ``HANDLE``
+    values to a C ``int``, which is the class of bug that silently terminates
+    the wrong thing -- or nothing.
+    """
+
+    windll = getattr(ctypes, "windll", None)
+    if windll is None:
+        return None
+    handle = ctypes.c_void_p
+    boolean = ctypes.c_int
+    try:
+        kernel32 = windll.kernel32
+        kernel32.CreateJobObjectW.argtypes = [handle, ctypes.c_wchar_p]
+        kernel32.CreateJobObjectW.restype = handle
+        kernel32.AssignProcessToJobObject.argtypes = [handle, handle]
+        kernel32.AssignProcessToJobObject.restype = boolean
+        kernel32.TerminateJobObject.argtypes = [handle, ctypes.c_uint]
+        kernel32.TerminateJobObject.restype = boolean
+        kernel32.QueryInformationJobObject.argtypes = [
+            handle,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_ulong,
+            ctypes.POINTER(ctypes.c_ulong),
+        ]
+        kernel32.QueryInformationJobObject.restype = boolean
+        kernel32.CloseHandle.argtypes = [handle]
+        kernel32.CloseHandle.restype = boolean
+    except (AttributeError, OSError):
+        # A kernel32 without these exports is not a Windows we can confine a
+        # process on; degrade to the direct child rather than failing encode.
+        return None
+    return kernel32
+
+
+def _windows_ntdll_resume() -> "ctypes.CDLL | None":
+    """ntdll's ``NtResumeProcess`` with argtypes applied, or ``None``.
+
+    ``NtResumeProcess`` restarts every thread of a process from its handle
+    alone, which is the one thing a CREATE_SUSPENDED child needs and the one
+    thing ``subprocess`` cannot hand back: it closes the primary-thread handle
+    ``CreateProcess`` returned before the constructor even finishes.  The call is
+    absent from the Win32 headers but has been a stable ntdll export for two
+    decades; if it is ever missing we simply do not create children suspended.
+    """
+
+    windll = getattr(ctypes, "windll", None)
+    if windll is None:
+        return None
+    try:
+        ntdll = windll.ntdll
+        ntdll.NtResumeProcess.argtypes = [ctypes.c_void_p]
+        ntdll.NtResumeProcess.restype = ctypes.c_long
+    except (AttributeError, OSError):
+        return None
+    return ntdll
+
+
+def _use_suspended_launch() -> bool:
+    """Whether a child can be created suspended and confined before it runs.
+
+    True only when *both* primitives the sequence needs are present: the job API
+    (something to assign the frozen child to) and ``NtResumeProcess`` (a way to
+    start it again).  Missing either, creating the child suspended would risk one
+    that can never run, so the caller launches normally and assigns the job the
+    instant the child starts instead -- the pre-existing, slightly racier path.
+    """
+
+    if not platform_compat.IS_WINDOWS:
+        return False
+    return _windows_job_api() is not None and _windows_ntdll_resume() is not None
+
+
+def _resume_suspended_process(process: subprocess.Popen[bytes]) -> bool:
+    """Resume a child created with CREATE_SUSPENDED; report whether it took.
+
+    Resumes through the process handle ``subprocess`` retains, so it needs no
+    thread handle of its own.  A ``False`` result means the child is stuck
+    frozen and unusable, and the caller must not leave it that way.
+    """
+
+    ntdll = _windows_ntdll_resume()
+    handle = getattr(process, "_handle", None)
+    if ntdll is None or handle is None:
+        return False
+    try:
+        status = ntdll.NtResumeProcess(int(handle))
+    except (OSError, TypeError, ValueError):
+        return False
+    return status == _WINDOWS_STATUS_SUCCESS
+
+
+def _adopt_process_group(
+    process: subprocess.Popen[bytes],
+    *,
+    was_suspended: bool = False,
+) -> _WindowsProcessGroup | None:
+    """Give *process* a group with POSIX-session reach, where one is needed.
+
+    POSIX already has it: ``start_new_session=True`` did the work at launch.
+    Windows needs the job created and the child assigned to it.  When the child
+    was created suspended (``was_suspended``), it is sealed into the job *before*
+    it can run -- so no descendant it later spawns can escape a job that would
+    otherwise have been assigned a beat too late -- and then, unconditionally,
+    resumed: a suspended child must be started again whether or not confinement
+    succeeded, or it hangs forever.  A child that cannot be resumed is unusable,
+    so it is killed and reported as unconfined rather than left frozen.
+    """
+
+    if not platform_compat.IS_WINDOWS:
+        return None
+    group = _WindowsProcessGroup.create()
+    assigned = group is not None and group.adopt(process)
+    if was_suspended and not _resume_suspended_process(process):
+        if group is not None:
+            group.close()
+        try:
+            process.kill()
+        except OSError:
+            pass
+        return None
+    if group is None or not assigned:
+        if group is not None:
+            group.close()
+        return None
+    return group
+
+
+def _drain_windows_job(group: "_WindowsProcessGroup") -> int | None:
+    """Wait, bounded, for an already-terminated job to empty; return its count.
+
+    Polls ``ActiveProcesses`` until it reads zero or the grace window closes.
+    If the window closes with survivors still counted, ``TerminateJobObject`` is
+    issued once more -- catching a descendant that was mid-spawn when the first
+    sweep passed over the group -- and the group is given one more bounded window
+    to drain.  Returns the final count, or ``None`` when the count could not be
+    read at all (never mistaken by the caller for a survivor).
+    """
+
+    def settle() -> int | None:
+        deadline = time.monotonic() + PROCESS_STOP_GRACE_SECONDS
+        while True:
+            count = group.active_process_count()
+            if count == 0:
+                return 0
+            if time.monotonic() >= deadline:
+                return count
+            time.sleep(PROCESS_POLL_SECONDS)
+
+    count = settle()
+    if count is not None and count > 0:
+        group.terminate()
+        count = settle()
+    return count
+
+
+def _stop_windows_process(
+    process: subprocess.Popen[bytes],
+    group: _WindowsProcessGroup | None,
+) -> None:
+    """Stop the encoder and its descendants through the job object.
+
+    The fail-closed raise fires only on *positive evidence* of a survivor: the
+    job's own active-process count, read after ``TerminateJobObject`` and given a
+    bounded window to fall to zero, or -- when that count cannot be read at all
+    -- the direct child still being alive.  A group that genuinely stopped, or
+    one whose accounting merely could not be queried while the child it led is
+    already gone, is never misreported as a survivor.
+    """
+
+    if group is None:
+        # No job: only the direct child is reachable.  Stop it and report the
+        # same fail-closed error the POSIX path raises, but only on the same
+        # evidence -- an observed survivor, never merely an unobservable group.
+        try:
+            process.kill()
+        except OSError:
+            pass
+        try:
+            process.wait(timeout=PROCESS_STOP_GRACE_SECONDS)
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+        if process.poll() is None:
+            raise AudioEncodingError(
+                "The XMA1 encoder left a background process that could not be "
+                "stopped; its output was discarded and no project edit was staged"
+            )
+        return
+    try:
+        group.terminate()
+        try:
+            process.wait(timeout=PROCESS_STOP_GRACE_SECONDS)
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+        count = _drain_windows_job(group)
+        # Positive evidence of a survivor is either the job still counting one
+        # after it was terminated and drained, or -- when the count is
+        # unreadable -- the direct child still being alive.  Everything else
+        # (a drained group; an unreadable count with the child already gone) is
+        # not a survivor: TerminateJobObject was issued regardless, so refusing
+        # to invent one is what keeps a stopped group from being misreported.
+        survived = count > 0 if count is not None else process.poll() is None
+        if survived:
+            raise AudioEncodingError(
+                "The XMA1 encoder left a background process that could not be "
+                "stopped; its output was discarded and no project edit was staged"
+            )
+    finally:
+        group.close()
+
+
+def _stop_process(
+    process: subprocess.Popen[bytes],
+    group: _WindowsProcessGroup | None = None,
+) -> None:
     """Terminate the complete session-owned process group on every exit path.
 
     The direct encoder (or Wine loader) is started as a new session leader, so
     its PID is also the process-group ID.  A successful launcher may otherwise
     exit while a worker or deliberately backgrounded child keeps running.  We
     therefore signal and drain the group even when the direct child has already
-    returned zero.
+    returned zero.  On Windows the same reach comes from *group*, the job
+    object the launcher was adopted into; see the note above ``_stop_process``.
     """
+
+    if platform_compat.IS_WINDOWS:
+        _stop_windows_process(process, group)
+        return
 
     process_group = process.pid
 
@@ -682,16 +1122,18 @@ def _clean_stderr(path: Path) -> str:
             path,
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0)
+            | _O_BINARY,
         )
         try:
             opened = os.fstat(descriptor)
-            if _source_identity(opened) != _source_identity(info):
+            # Path stat against fd stat; see :func:`_cross_stat_identity`.
+            if _cross_stat_identity(opened) != _cross_stat_identity(info):
                 raise AudioEncodingError(
                     "The XMA1 encoder diagnostic output changed while opening"
                 )
             wanted = min(2000, opened.st_size)
-            data = os.pread(descriptor, wanted, opened.st_size - wanted)
+            data = platform_compat.pread(descriptor, wanted, opened.st_size - wanted)
             if len(data) != wanted:
                 raise AudioEncodingError(
                     "The XMA1 encoder diagnostic output changed while reading"
@@ -794,7 +1236,18 @@ class ExternalXma1Encoder:
         """Validate the configured tools now, without running either one."""
 
         if self.wine_executable is None:
-            if isinstance(self.executable, Path) and self.executable.suffix.casefold() == ".exe":
+            # Wine is how a *Unix* host runs a Windows encoder, so demanding it
+            # for a ``.exe`` is correct on Linux and macOS and nonsense on
+            # Windows, where a ``.exe`` is simply the native direct mode -- and
+            # where every plausible encoder, including this interpreter, ends in
+            # ``.exe``.  The encoder contract is unchanged: direct mode still
+            # runs ``executable`` itself, Wine mode still passes the ``.exe`` as
+            # argv[1] to the loader.
+            if (
+                not platform_compat.IS_WINDOWS
+                and isinstance(self.executable, Path)
+                and self.executable.suffix.casefold() == ".exe"
+            ):
                 raise AudioEncodingError(
                     "A Windows .exe needs a separate Wine executable path"
                 )
@@ -929,7 +1382,9 @@ class ExternalXma1Encoder:
             )
             report("Running user-supplied XMA1 encoder", 0, 0)
             process: subprocess.Popen[bytes] | None = None
+            group: _WindowsProcessGroup | None = None
             started = time.monotonic()
+            suspended = _use_suspended_launch()
             try:
                 with stderr_path.open("xb") as stderr_stream:
                     process = subprocess.Popen(
@@ -940,8 +1395,16 @@ class ExternalXma1Encoder:
                         stderr=stderr_stream,
                         shell=False,
                         close_fds=True,
+                        # POSIX only; ignored on Windows, where the job object
+                        # assigned on the next line provides the same reach.
                         start_new_session=True,
+                        # Windows only (``0`` -- the default -- everywhere else,
+                        # so POSIX launch is byte-for-byte unchanged): freeze the
+                        # child so it is sealed into the job before it can spawn
+                        # anything; ``_adopt_process_group`` resumes it.
+                        creationflags=_WINDOWS_CREATE_SUSPENDED if suspended else 0,
                     )
+                    group = _adopt_process_group(process, was_suspended=suspended)
                     while process.poll() is None:
                         _not_cancelled(cancel_requested)
                         elapsed = time.monotonic() - started
@@ -977,7 +1440,9 @@ class ExternalXma1Encoder:
                 ) from exc
             finally:
                 if process is not None:
-                    _stop_process(process)
+                    _stop_process(process, group)
+                elif group is not None:
+                    group.close()
             assert process is not None
             _require_unchanged_tool(encoder_identity, "XMA1 encoder")
             if wine_identity is not None:

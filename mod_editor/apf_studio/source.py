@@ -61,7 +61,14 @@ def sha256_file(
         raise SourceError(f"{path.name} must be a regular, non-symlink file")
     descriptor = os.open(
         path,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+        # Windows CRT text mode collapses CRLF and treats 0x1A as a soft EOF, so
+        # a binary source (every XISO/PNG) would hash short/wrong there and the
+        # "changed after it was loaded" check would fire spuriously. O_BINARY is
+        # 0 on POSIX, so Linux/macOS are byte-identical.
+        | getattr(os, "O_BINARY", 0),
     )
     digest = hashlib.sha256()
     completed = 0

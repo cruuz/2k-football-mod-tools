@@ -29,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from mod_editor.core import platform_compat  # noqa: E402
 from mod_editor.core.model import SourceRecord  # noqa: E402
 from mod_editor.core.errors import ModEditorError  # noqa: E402
 from mod_editor.core.nfl2k5_audio_catalog import (  # noqa: E402
@@ -577,7 +578,7 @@ def read_regular_bounded(path: Path, maximum: int, label: str) \
     resolved = path.resolve(strict=True)
     descriptor = os.open(
         resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-        getattr(os, "O_CLOEXEC", 0))
+        getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
     try:
         opened = os.fstat(descriptor)
         identity = (opened.st_dev, opened.st_ino)
@@ -587,7 +588,7 @@ def read_regular_bounded(path: Path, maximum: int, label: str) \
                 0 < opened.st_size <= maximum,
                 f"{label} pathname/type/size changed")
         payload = common.read_exact(descriptor, 0, opened.st_size)
-        require(not os.pread(descriptor, 1, opened.st_size), f"{label} grew while reading")
+        require(not platform_compat.pread(descriptor, 1, opened.st_size), f"{label} grew while reading")
         current = resolved.stat(follow_symlinks=False)
         require((current.st_dev, current.st_ino, current.st_size) ==
                 (opened.st_dev, opened.st_ino, opened.st_size),
@@ -965,7 +966,7 @@ def resolve_asset(project: ProjectFile, text: str,
 def verify_input_pin(pin: InputPin) -> None:
     descriptor = os.open(
         pin.path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-        getattr(os, "O_CLOEXEC", 0))
+        getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
     try:
         current = os.fstat(descriptor)
         require(stat.S_ISREG(current.st_mode) and
@@ -1024,7 +1025,7 @@ def load_audio_origin_context(
     supplied_root = source_cache_root.expanduser()
     root = supplied_root.resolve(strict=True)
     require(
-        supplied_root.is_absolute() and supplied_root.absolute() == root,
+        platform_compat.is_canonical_absolute_path(supplied_root, root),
         "Audio source-cache root must be its canonical absolute path",
     )
     expected_pack0 = root / SOURCE_CACHE_PACK_FOLDER / "0"
@@ -1065,7 +1066,9 @@ def load_audio_origin_context(
     exact_store = Nfl2k5AudioSourceFingerprintStore()
     exact_expected = exact_store.inventory_path(cache)
     require(
-        exact_inventory_path.expanduser().absolute() == exact_expected,
+        platform_compat.is_canonical_absolute_path(
+            exact_inventory_path.expanduser(), exact_expected
+        ),
         "Exact audio inventory path is not the canonical file in this source cache",
     )
     exact_inventory = exact_store.load_existing(
@@ -1093,8 +1096,9 @@ def load_audio_origin_context(
     )
     containment_expected = containment_store.inventory_path(cache)
     require(
-        containment_inventory_path.expanduser().absolute()
-        == containment_expected,
+        platform_compat.is_canonical_absolute_path(
+            containment_inventory_path.expanduser(), containment_expected
+        ),
         "Containment audio inventory path is not the canonical file in this "
         "source cache",
     )
@@ -2125,7 +2129,7 @@ def _safe_text_pack_sha256(pack: Any) -> str:
     )
     descriptor = os.open(
         path,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)
@@ -2777,7 +2781,7 @@ def validate_source(source_path: Path) \
             "source XISO must be a non-symlink regular file")
     source = source_path.resolve(strict=True)
     descriptor = os.open(source, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-                         getattr(os, "O_CLOEXEC", 0))
+                         getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
     try:
         info = os.fstat(descriptor)
         identity = common.fd_identity(descriptor)
@@ -3245,8 +3249,8 @@ def stream_pair(source_fd: int, output_fd: int, start: int, length: int,
     remaining = length
     while remaining:
         amount = min(HASH_BLOCK, remaining)
-        before = os.pread(source_fd, amount, position)
-        after = os.pread(output_fd, amount, position)
+        before = platform_compat.pread(source_fd, amount, position)
+        after = platform_compat.pread(output_fd, amount, position)
         require(len(before) == amount and len(after) == amount,
                 "short read during union-span verification")
         if require_equal:
@@ -3305,7 +3309,7 @@ def verify_union(source_fd: int, output_fd: int, size: int,
 def write_all(descriptor: int, offset: int, payload: bytes) -> None:
     position = 0
     while position < len(payload):
-        amount = os.pwrite(descriptor, payload[position:], offset + position)
+        amount = platform_compat.pwrite(descriptor, payload[position:], offset + position)
         require(amount > 0, "short XISO patch write")
         position += amount
 
@@ -3785,7 +3789,7 @@ def verify(project_path: Path, source_path: Path, output_path: Path,
                 "output XISO must be a non-symlink regular file")
         output = output_path.resolve(strict=True)
         output_fd = os.open(output, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-                            getattr(os, "O_CLOEXEC", 0))
+                            getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
         output_info = os.fstat(output_fd)
         output_identity = common.fd_identity(output_fd)
         require(stat.S_ISREG(output_info.st_mode) and

@@ -8,6 +8,7 @@ import stat
 import tempfile
 import unittest
 
+from mod_editor.core import platform_compat
 from mod_editor.apf_studio.roster_workspace import (
     MASTER_ROSTER_SLOTS,
     PROJECT_RESERVE_SLOTS,
@@ -153,11 +154,21 @@ class ReservePlanContractTests(unittest.TestCase):
     def test_save_load_is_atomic_private_and_never_overwrites(self) -> None:
         plan = ReserveRosterPlan.empty().assign(0, 0, 1_344)
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            # Resolve the temp root so save_reserve_plan's canonical return
+            # compares equal to ours under a symlinked (macOS /private/var) or
+            # short-name (Windows) temp location.
+            root = Path(directory).resolve()
             destination = root / "league.apf2k8roster"
             self.assertEqual(save_reserve_plan(plan, destination), destination)
             self.assertEqual(load_reserve_plan(destination), plan)
-            self.assertEqual(stat.S_IMODE(destination.stat().st_mode), 0o600)
+            # "Private" means the mode bits on POSIX -- 0o600, unchanged -- and
+            # the per-user profile root's inherited ACL on Windows, where the
+            # same file honestly reports 0o666 because that OS implements no
+            # group/other bits to remove.  Assert each platform's real contract
+            # instead of one number that would be a lie on the other.
+            expected_mode = 0o666 if platform_compat.IS_WINDOWS else 0o600
+            self.assertEqual(platform_compat.private_file_mode(), expected_mode)
+            self.assertEqual(stat.S_IMODE(destination.stat().st_mode), expected_mode)
             before = destination.read_bytes()
             with self.assertRaises(FileExistsError):
                 save_reserve_plan(ReserveRosterPlan.empty(), destination)

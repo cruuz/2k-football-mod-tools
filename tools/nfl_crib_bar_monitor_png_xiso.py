@@ -20,6 +20,12 @@ import struct
 import sys
 from typing import Any
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from mod_editor.core import platform_compat  # noqa: E402
+
 import nfl_crib_team_photo_png_import as photo
 from nfl_scene_probe import ResourceRecord, decode_resource
 from nfl_scne_inventory import parse_scene
@@ -452,7 +458,7 @@ def _open_regular_readonly(path: Path, label: str) -> tuple[Path, int, tuple[int
     resolved = path.resolve(strict=True)
     descriptor = os.open(
         resolved,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     identity = common.fd_identity(descriptor)
     try:
@@ -467,7 +473,7 @@ def _open_regular_readonly(path: Path, label: str) -> tuple[Path, int, tuple[int
 def pwrite_all(descriptor: int, offset: int, payload: bytes) -> None:
     cursor = 0
     while cursor < len(payload):
-        written = os.pwrite(descriptor, payload[cursor:], offset + cursor)
+        written = platform_compat.pwrite(descriptor, payload[cursor:], offset + cursor)
         require(written > 0, f"short XISO write at 0x{offset + cursor:x}")
         cursor += written
 
@@ -501,14 +507,10 @@ def publish_owned(staging: common.OwnedFile, final: Path) -> tuple[Path, tuple[i
         raise BarMonitorError(f"final output appeared during build: {final}") from exc
     require(common.path_identity(final) == staging.identity,
             "published pathname does not reference the verified staging inode")
-    parent_fd = os.open(
-        final.parent,
-        os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_CLOEXEC", 0),
-    )
-    try:
-        os.fsync(parent_fd)
-    finally:
-        os.close(parent_fd)
+    # Commit the hard link's directory entry where the platform offers that.
+    # Windows has no directory-flush primitive, so the helper reports ``False``
+    # instead of pretending the entry reached the platter.
+    platform_compat.fsync_directory(final.parent)
     return final, staging.identity
 
 
@@ -530,8 +532,8 @@ def compare_images(source_fd: int, output_fd: int, size: int,
     target_end = absolute + len(replacement)
     while position < size:
         request = min(COMPARE_CHUNK, size - position)
-        before = os.pread(source_fd, request, position)
-        after = os.pread(output_fd, request, position)
+        before = platform_compat.pread(source_fd, request, position)
+        after = platform_compat.pread(output_fd, request, position)
         require(len(before) == request and len(after) == request,
                 "short read during full copied-XISO comparison")
         source_hash.update(before)

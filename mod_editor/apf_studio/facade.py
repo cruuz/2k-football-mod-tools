@@ -111,6 +111,14 @@ class FacadeError(RuntimeError):
 
 
 class ApfStudioFacade:
+    # tools/apf_logo_patch.py is the authority for the crest dimensions; mirrored
+    # here only for the early stage-size guard.  Both writers re-validate and fail
+    # closed on any mismatch.
+    _TEAM_LOGO_PNG_SIZE = (512, 512)
+    # uniform_logo_01 is catalog index 1 inside uniform_logocache; the cache
+    # writer re-checks its pinned retail directory and payload and fails closed.
+    _TEAM_LOGO_CACHE_CATALOG_INDEX = 1
+
     def __init__(
         self,
         *,
@@ -137,6 +145,13 @@ class ApfStudioFacade:
         # session swap participates in this same boundary so an autosave can
         # never be published from one source and labeled as another.
         self._session_lock = RLock()
+        # The team-logo and field-art editors build a single-edit copied 0A
+        # through their own offline-proved writers instead of the shared session
+        # build (mirroring their dedicated GUI panels), so their staged PNGs live
+        # here rather than in the session, are reset with every loaded source,
+        # and are never counted as shared project modifications.
+        self._staged_team_logo_png: Path | None = None
+        self._staged_field_art: dict[tuple[int, int], Path] = {}
 
     @property
     def source_ready(self) -> bool:
@@ -211,6 +226,8 @@ class ApfStudioFacade:
             self.last_project_identity = None
             self._playable_audio_rows = None
             self._reserve_roster_plan = ReserveRosterPlan.empty()
+            self._staged_team_logo_png = None
+            self._staged_field_art = {}
             return catalog
 
     def require_catalog(self) -> ApfCatalog:
@@ -500,6 +517,201 @@ class ApfStudioFacade:
             result = self.require_session().replace_draft_logo(supplied_png)
             self.last_build = None
             return result
+
+    # -- Team logo (shared crest): package + runtime logo cache -------------
+    #
+    # Unlike the session-staged editors above, the team-logo and field-art
+    # editors build a single-edit copied 0A directly through their offline-proved
+    # writers, so they never touch the shared session/build and never mark
+    # unrelated project state modified.  replace_* stages an exact PNG, revert_*
+    # discards it, and build_* runs the same proven, test-pinned copied-volume
+    # builders the dedicated GUI panels use (imported lazily so the module-load
+    # cycle -- gui imports this facade -- stays broken).  The retail source is
+    # never opened for writing.
+
+    def replace_team_logo(
+        self, supplied_png: Path, progress: Progress = _noop
+    ) -> Path:
+        """Stage one exact 512x512 RGBA crest for the Team Logo build.
+
+        :meth:`build_team_logo` writes it into both the ``uniform_logo_01``
+        package and the matching entry of the prebuilt ``uniform_logocache``
+        aggregate, so this same staged crest drives both the ``team_logo`` and
+        the coupled ``team_logo_cache`` capabilities.
+        """
+
+        with self._session_lock:
+            self.require_session()
+            progress("Checking team-logo PNG", 0, 1)
+            staged = self._validate_editor_png(
+                supplied_png, self._TEAM_LOGO_PNG_SIZE, "team-logo crest"
+            )
+            self._staged_team_logo_png = staged
+            progress("Team-logo PNG staged", 1, 1)
+            return staged
+
+    def revert_team_logo(self, progress: Progress = _noop) -> bool:
+        """Discard any staged team-logo crest; the source game is untouched."""
+
+        with self._session_lock:
+            had = self._staged_team_logo_png is not None
+            self._staged_team_logo_png = None
+            return had
+
+    def build_team_logo(
+        self, output_volume: Path, progress: Progress = _noop
+    ) -> dict[str, object]:
+        """Copy the loaded 0A and write the staged crest into both the
+        ``uniform_logo_01`` package and the prebuilt logo cache through the two
+        offline-proved writers, delivering one 0A that carries both edits."""
+
+        with self._session_lock:
+            source = self.source
+            staged = self._staged_team_logo_png
+            if source is None:
+                raise FacadeError("Load your APF 2K8 game first")
+            if staged is None:
+                raise FacadeError(
+                    "Stage a 512x512 RGBA team-logo PNG with replace_team_logo "
+                    "first"
+                )
+            out_volume = Path(output_volume)
+            package_manifest = (
+                out_volume.parent / f"{out_volume.name}.team_logo_package.json"
+            )
+            cache_manifest = (
+                out_volume.parent / f"{out_volume.name}.team_logo_cache.json"
+            )
+            self._require_absent(out_volume, package_manifest, cache_manifest)
+            from . import gui  # reuse the panel-proven, test-pinned builder
+
+            return gui.build_team_logo_copied_volume(
+                Path(source.index_0a),
+                staged,
+                out_volume,
+                package_manifest,
+                cache_manifest,
+                progress,
+                cache_catalog_index=self._TEAM_LOGO_CACHE_CATALOG_INDEX,
+            )
+
+    # -- Field art: the six offline-proved base textures --------------------
+
+    def replace_field_art(
+        self,
+        target_key: tuple[int, int],
+        supplied_png: Path,
+        progress: Progress = _noop,
+    ) -> Path:
+        """Stage one exact-size PNG for one offline-proved field-art slot."""
+
+        with self._session_lock:
+            self.require_session()
+            target = self._field_art_target(target_key)
+            progress(f"Checking {target.name} PNG", 0, 1)
+            staged = self._validate_editor_png(
+                supplied_png, (target.width, target.height), target.name
+            )
+            self._staged_field_art[target.key] = staged
+            progress(f"{target.name} PNG staged", 1, 1)
+            return staged
+
+    def revert_field_art(
+        self,
+        target_key: tuple[int, int] | None = None,
+        progress: Progress = _noop,
+    ) -> bool:
+        """Discard the staged PNG for one field-art slot, or all of them."""
+
+        with self._session_lock:
+            if target_key is None:
+                had = bool(self._staged_field_art)
+                self._staged_field_art = {}
+                return had
+            key = self._field_art_target(target_key).key
+            return self._staged_field_art.pop(key, None) is not None
+
+    def build_field_art(
+        self,
+        target_key: tuple[int, int],
+        output_volume: Path,
+        progress: Progress = _noop,
+    ) -> Path:
+        """Copy the loaded 0A and write one staged field-art texture through the
+        offline-proved writer, delivering one single-edit 0A."""
+
+        with self._session_lock:
+            source = self.source
+            if source is None:
+                raise FacadeError("Load your APF 2K8 game first")
+            target = self._field_art_target(target_key)
+            staged = self._staged_field_art.get(target.key)
+            if staged is None:
+                raise FacadeError(
+                    f"Stage an exact {target.width}x{target.height} {target.name} "
+                    "PNG with replace_field_art first"
+                )
+            out_volume = Path(output_volume)
+            manifest = (
+                out_volume.parent / f"{out_volume.name}.field_art_patch.json"
+            )
+            self._require_absent(out_volume, manifest)
+            from . import gui  # reuse the panel-proven, test-pinned builder
+
+            return gui.build_field_art_copied_volume(
+                Path(source.index_0a),
+                staged,
+                target.entry_index,
+                target.file_index,
+                out_volume,
+                manifest,
+                progress,
+                slot_name=target.name,
+            )
+
+    @staticmethod
+    def _field_art_target(target_key: tuple[int, int]):
+        """Resolve one of the six offered offline-proved field-art slots."""
+
+        from . import gui
+
+        key = tuple(target_key)
+        for target in gui.FIELD_ART_COVERED_TARGETS:
+            if target.key == key:
+                return target
+        raise FacadeError(
+            "That field-art slot is not one of the offline-proved writable base "
+            "textures"
+        )
+
+    @staticmethod
+    def _require_absent(*paths: Path) -> None:
+        for path in paths:
+            if path.exists():
+                raise FacadeError(
+                    "The offline-proved writers never overwrite existing files; "
+                    f"choose a new location ({path} already exists)"
+                )
+
+    @staticmethod
+    def _validate_editor_png(
+        supplied_png: Path, size: tuple[int, int], label: str
+    ) -> Path:
+        path = Path(supplied_png)
+        try:
+            from PIL import Image
+
+            with Image.open(path) as image:
+                width, height = image.size
+        except (OSError, ValueError) as exc:
+            raise FacadeError(f"Could not read the {label} PNG: {exc}") from exc
+        if (width, height) != tuple(size):
+            raise FacadeError(
+                f"The {label} PNG must be exactly {size[0]}x{size[1]}; that PNG "
+                f"is {width}x{height}. The offline-proved writer will also refuse "
+                "any other size."
+            )
+        return path
 
     def localization_text_allocations(self) -> tuple[object, ...]:
         return self.require_session().localization_text_allocations()

@@ -37,9 +37,15 @@ import sys
 import tempfile
 from typing import Iterable, Iterator, Mapping
 
-import apf_audio
-import apf_inner
-import apf_outer
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from mod_editor.core.platform_compat import fsync_path  # noqa: E402
+
+import apf_audio  # noqa: E402
+import apf_inner  # noqa: E402
+import apf_outer  # noqa: E402
 
 
 SCHEMA = "apf2k8_audo_exact_slot_import/v1"
@@ -1194,8 +1200,11 @@ def decode_stored_payload_to_wav(
         wav_size = temporary.stat().st_size
         wav_sha256 = _sha256(temporary.read_bytes())
         apf_audio.check_cancel_requested(cancel_requested)
-        with temporary.open("rb") as stream:
-            os.fsync(stream.fileno())
+        # The decoded WAV must be durable before the hard link publishes it.
+        # ``fsync_path`` keeps the POSIX read-only flush and opens read-write
+        # only on Windows, where ``FlushFileBuffers`` rejects a read-only handle
+        # with ``EBADF``.
+        fsync_path(temporary)
         try:
             apf_audio.check_cancel_requested(cancel_requested)
             os.link(temporary, destination)

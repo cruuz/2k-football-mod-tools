@@ -37,6 +37,7 @@ try:
     from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
     from .nfl2k5_stadium_cache import StadiumCacheResult
     from .nfl2k5_stadium_studio import StadiumTexture
+    from . import platform_compat
 except ImportError:
     # The sealed unified provider loads this reviewed file directly from its
     # pinned execution bundle.  Its narrow span compiler needs no product
@@ -78,6 +79,55 @@ except ImportError:
         raise ValidationError(
             "Private Stadium manifests are unavailable in unified-provider mode"
         )
+
+    from types import SimpleNamespace
+
+    def _positional_read(fd: int, count: int, offset: int) -> bytes:
+        # Byte-identical stand-in for platform_compat.pread used only by the
+        # flat sealed-provider closure, which has no package context to import
+        # the sibling from.  That closure runs on the POSIX build host, so the
+        # positional-read primitive is present and used directly; the seek
+        # fallback exists purely so this never regresses another platform.
+        primitive = getattr(os, "pread", None)
+        if primitive is not None:
+            return primitive(fd, count, offset)
+        if count <= 0:
+            return b""
+        restore = os.lseek(fd, 0, os.SEEK_CUR)
+        try:
+            os.lseek(fd, offset, os.SEEK_SET)
+            return os.read(fd, count)
+        finally:
+            os.lseek(fd, restore, os.SEEK_SET)
+
+    def _positional_write(fd: int, data: bytes, offset: int) -> int:
+        # Byte-identical stand-in for platform_compat.pwrite used only by the
+        # flat sealed-provider closure, which has no package context to import
+        # the sibling from.  That closure runs on the POSIX build host, so the
+        # positional-write primitive is present and used directly; the seek
+        # fallback exists purely so this never regresses another platform.
+        primitive = getattr(os, "pwrite", None)
+        if primitive is not None:
+            return primitive(fd, data, offset)
+        if not data:
+            return 0
+        restore = os.lseek(fd, 0, os.SEEK_CUR)
+        try:
+            os.lseek(fd, offset, os.SEEK_SET)
+            view = memoryview(data)
+            written = 0
+            while written < len(view):
+                count = os.write(fd, view[written:])
+                if count == 0:
+                    break
+                written += count
+            return written
+        finally:
+            os.lseek(fd, restore, os.SEEK_SET)
+
+    platform_compat = SimpleNamespace(
+        pread=_positional_read, pwrite=_positional_write
+    )
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -437,7 +487,7 @@ def _sha256_fd(fd: int, offset: int = 0, length: int | None = None) -> str:
     remaining = length
     while remaining is None or remaining:
         request = COPY_BLOCK if remaining is None else min(COPY_BLOCK, remaining)
-        block = os.pread(fd, request, position)
+        block = platform_compat.pread(fd, request, position)
         if not block:
             break
         digest.update(block)
@@ -1502,7 +1552,7 @@ class Nfl2k5StadiumTextureWriter:
 
         source_fd = os.open(
             source,
-            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         )
         output_owned: xiso.OwnedFile | None = None
         manifest_owned: xiso.OwnedFile | None = None
@@ -1546,7 +1596,7 @@ class Nfl2k5StadiumTextureWriter:
             copy_method = xiso.copy_fd_exact(source_fd, output_owned.descriptor, source_info.st_size)
             _require(xiso.owned_path_matches(output_owned),
                      "Output XISO pathname changed during copy")
-            written = os.pwrite(
+            written = platform_compat.pwrite(
                 output_owned.descriptor, compiled.rebuilt_span, ABSOLUTE_XISO_SPAN
             )
             _require(written == CHUNK_SPAN_SIZE, "Short stadium SCNE XISO write")
@@ -1839,7 +1889,7 @@ def _write_owned(owned: xiso.OwnedFile, payload: bytes) -> None:
     _require(xiso.owned_path_matches(owned), "Owned manifest pathname changed before write")
     position = 0
     while position < len(payload):
-        written = os.pwrite(owned.descriptor, payload[position:], position)
+        written = platform_compat.pwrite(owned.descriptor, payload[position:], position)
         _require(written > 0, "Short build-manifest write")
         position += written
     os.ftruncate(owned.descriptor, len(payload))

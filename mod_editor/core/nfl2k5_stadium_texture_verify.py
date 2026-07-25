@@ -217,7 +217,13 @@ def verify_stadium_texture_xiso(
     descriptors = [
         os.open(
             path,
-            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
+            # Both descriptors carry raw XISO *bytes* that are hashed here.  The
+            # Windows CRT opens without ``O_BINARY`` in text mode, which collapses
+            # CRLF and treats 0x1A as a soft EOF, so every digest below would be
+            # computed over rewritten/short data.  ``O_BINARY`` is absent on POSIX
+            # and resolves to 0, leaving the Linux/macOS flags unchanged.
+            | getattr(os, "O_BINARY", 0),
         )
         for path in (source, output)
     ]

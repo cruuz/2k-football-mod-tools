@@ -28,6 +28,7 @@ from .nfl2k5_stadium_texture_writer import (
     SHARED_OWNERSHIP_NOTE,
     TARGET_TEXTURE_ID,
 )
+from .platform_compat import fsync_directory
 
 
 EDIT_SCHEMA = "2k5_mod_studio_private_stadium_texture_edit/v1"
@@ -35,6 +36,17 @@ POINTER_SCHEMA = "2k5_mod_studio_private_stadium_texture_pointer/v1"
 TARGET_DIRECTORY = "o3280-c0005-scene2648-texture0002"
 GENERATION_RE = re.compile(r"^[0-9a-f]{32}$")
 COPY_BLOCK = 1024 * 1024
+
+# Every descriptor this module opens carries authored PNG or canonical-JSON
+# *bytes* that are hashed and later re-verified against that hash.  On Windows
+# ``os.open`` defaults to the CRT's text mode, which rewrites ``\n`` to ``\r\n``
+# on write and stops reading at a 0x1A byte -- silent corruption of exactly those
+# payloads (a PNG begins ``89 50 4E 47 0D 0A 1A 0A``, so a text-mode write
+# expands its ``0A`` bytes and the re-read digest can never match the recorded
+# ``replacement_png_sha256``).  ``O_BINARY`` does not exist on POSIX, where there
+# is no translation to disable, so this resolves to 0 and the POSIX flags -- and
+# therefore the bytes written on Linux/macOS -- are unchanged.
+_O_BINARY = getattr(os, "O_BINARY", 0)
 
 
 class StadiumTextureDelegateError(ValidationError):
@@ -84,7 +96,7 @@ def _write_exclusive(path: Path, payload: bytes) -> None:
     descriptor = os.open(
         path,
         os.O_WRONLY | os.O_CREAT | os.O_EXCL
-        | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | _O_BINARY,
         0o600,
     )
     try:
@@ -227,14 +239,11 @@ class Nfl2k5Cement01TextureDelegate:
                 temporary_pointer = self.target_root / f".current.{generation_name}.tmp"
                 _write_exclusive(temporary_pointer, pointer_payload)
                 os.replace(temporary_pointer, self.pointer)
-                directory_fd = os.open(
-                    self.target_root,
-                    os.O_RDONLY | getattr(os, "O_DIRECTORY", 0),
-                )
-                try:
-                    os.fsync(directory_fd)
-                finally:
-                    os.close(directory_fd)
+                # Commit the pointer rename's directory entry where the platform
+                # provides that.  POSIX runs the same ``O_DIRECTORY`` flush this
+                # opened by hand; Windows has no directory-flush primitive and
+                # the helper reports that rather than pretending it committed.
+                fsync_directory(self.target_root)
                 published = True
                 self._compiled = {compiled.replacement_png_sha256: compiled}
                 result = self._load_current()

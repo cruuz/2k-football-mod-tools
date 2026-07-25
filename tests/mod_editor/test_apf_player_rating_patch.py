@@ -11,6 +11,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from mod_editor.core import platform_compat
 from mod_editor.apf_studio.backend import ensure_tools_importable
 from mod_editor.apf_studio.build import ApfBuildService, BuildError
 from mod_editor.apf_studio.models import ApfSource, Modification
@@ -97,7 +98,7 @@ class PlayerRatingTargetContractTests(unittest.TestCase):
                 b'{"schema":"apf2k8_player_rating_replacement/v1","value":100}\n'
             )
 
-    def test_private_entry_publish_is_atomic_nonoverwriting_and_0600(self) -> None:
+    def test_private_entry_publish_is_atomic_nonoverwriting_and_private(self) -> None:
         result = writer.PlayerRatingPatchResult(1126, b"private-fixture", {})
         with tempfile.TemporaryDirectory() as directory:
             destination = Path(directory) / "rost-entry.bin"
@@ -105,7 +106,13 @@ class PlayerRatingTargetContractTests(unittest.TestCase):
                 writer.write_private_outer_entry(result, destination), destination
             )
             self.assertEqual(destination.read_bytes(), result.entry_bytes)
-            self.assertEqual(stat.S_IMODE(destination.stat().st_mode), 0o600)
+            # The writer asks platform_compat for 0o600.  POSIX enforces exactly
+            # that, unchanged; Windows has no group/other bits to remove, so the
+            # same private entry reports 0o666 there and privacy comes from the
+            # per-user profile root's inherited ACL.  Both are asserted.
+            expected_mode = 0o666 if platform_compat.IS_WINDOWS else 0o600
+            self.assertEqual(platform_compat.private_file_mode(), expected_mode)
+            self.assertEqual(stat.S_IMODE(destination.stat().st_mode), expected_mode)
             with self.assertRaises(FileExistsError):
                 writer.write_private_outer_entry(result, destination)
             self.assertEqual(destination.read_bytes(), result.entry_bytes)
@@ -232,9 +239,16 @@ class PrivateBuildPipelineTests(unittest.TestCase):
                     hashlib.sha256(modification.replacement_path.read_bytes()).hexdigest(),
                     modification.replacement_sha256,
                 )
+                # Same private-file contract as above: 0o600 enforced on POSIX,
+                # 0o666 honestly reported on Windows where mode bits confer
+                # nothing and the profile root's ACL is the guarantee.
                 self.assertEqual(
                     stat.S_IMODE(modification.replacement_path.stat().st_mode),
-                    0o600,
+                    0o666 if platform_compat.IS_WINDOWS else 0o600,
+                )
+                self.assertEqual(
+                    stat.S_IMODE(modification.replacement_path.stat().st_mode),
+                    platform_compat.private_file_mode(),
                 )
             return returned
 

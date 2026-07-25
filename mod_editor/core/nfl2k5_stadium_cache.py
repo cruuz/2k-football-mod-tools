@@ -16,7 +16,6 @@ its result marker and both product manifests are independently checked.
 from __future__ import annotations
 
 from dataclasses import dataclass
-import fcntl
 import hashlib
 import json
 import os
@@ -27,8 +26,28 @@ import subprocess
 import sys
 from typing import Callable, Protocol, Sequence
 
+from . import platform_compat
 from .errors import ValidationError
+from .nfl2k5_build_service import (
+    WINDOWS_CREATE_SUSPENDED,
+    WindowsProcessGroup,
+    adopt_process_group,
+    stop_windows_process_group,
+    use_suspended_launch,
+)
 from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
+from .platform_compat import (
+    PrivatePathError,
+    create_private_directory,
+    exclusive_nonblocking_lock,
+    fsync_directory,
+    harden_private_directory,
+    harden_private_file,
+    privacy_guarantee,
+    release_lock,
+    verify_private_directory,
+    verify_private_file,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -102,12 +121,33 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _is_reparse_point(info: os.stat_result) -> bool:
+    """Whether an ``lstat`` result denotes a Windows reparse point (junction).
+
+    A directory *junction* -- and every other reparse point except a symlink --
+    is NOT reported by ``lstat``/``S_ISLNK`` as a link, so a junction planted in
+    place of a private cache directory slips past a symlink-only guard and
+    redirects derived bytes and lock files into a shared or attacker-controlled
+    tree.  On Windows ``os.lstat`` sets ``st_reparse_tag`` to a non-zero tag for
+    any reparse point; on POSIX the attribute is absent, so this is ``False`` and
+    the symlink-only behaviour is byte-for-byte unchanged.  Mirrors the
+    ``FILE_ATTRIBUTE_REPARSE_POINT`` refusal the Windows ``DirHandle`` already
+    applies in ``platform_compat`` (the intended shared home for this predicate).
+    """
+
+    return getattr(info, "st_reparse_tag", 0) != 0
+
+
 def _regular_file(path: Path, label: str) -> Path:
     try:
         info = path.lstat()
     except FileNotFoundError as exc:
         raise StadiumCacheError(f"{label} is missing: {path}") from exc
-    if not stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode):
+    if (
+        not stat.S_ISREG(info.st_mode)
+        or stat.S_ISLNK(info.st_mode)
+        or _is_reparse_point(info)
+    ):
         raise StadiumCacheError(f"{label} must be a regular, non-link file: {path}")
     return path.resolve(strict=True)
 
@@ -139,7 +179,11 @@ def _confined_directory(root: Path, relative: object, label: str) -> Path:
         info = candidate.lstat()
     except FileNotFoundError as exc:
         raise StadiumCacheError(f"{label} directory is missing: {candidate}") from exc
-    if not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode):
+    if (
+        not stat.S_ISDIR(info.st_mode)
+        or stat.S_ISLNK(info.st_mode)
+        or _is_reparse_point(info)
+    ):
         raise StadiumCacheError(f"{label} must be a private, non-link directory")
     path = candidate.resolve(strict=True)
     try:
@@ -203,6 +247,7 @@ class SubprocessStadiumCacheWorkerRunner:
         progress: ProgressSink,
     ) -> WorkerCommandResult:
         fixed = tuple(os.fspath(value) for value in argv)
+        suspended = use_suspended_launch()
         try:
             process = subprocess.Popen(
                 fixed,
@@ -213,7 +258,14 @@ class SubprocessStadiumCacheWorkerRunner:
                 stderr=subprocess.STDOUT,
                 text=True,
                 shell=False,
+                # POSIX only; silently ignored on Windows, where the job object
+                # adopted below supplies the same reach.
                 start_new_session=True,
+                # Windows only (``0`` -- the default -- everywhere else, so the
+                # POSIX launch is byte-for-byte the one it always was): freeze
+                # the child so it is sealed into the job before it can spawn a
+                # descendant; ``adopt_process_group`` resumes it.
+                creationflags=WINDOWS_CREATE_SUSPENDED if suspended else 0,
                 bufsize=1,
             )
         except OSError as exc:
@@ -221,6 +273,7 @@ class SubprocessStadiumCacheWorkerRunner:
                 "Stadium Studio could not start its private asset generator. "
                 f"The shipped worker may be missing or unreadable ({exc})."
             ) from exc
+        group = adopt_process_group(process, was_suspended=suspended)
         lines: list[str] = []
         try:
             assert process.stdout is not None
@@ -242,19 +295,57 @@ class SubprocessStadiumCacheWorkerRunner:
                     progress(stage, completed, total)
             returncode = process.wait()
         except BaseException:
-            if process.poll() is None:
-                try:
-                    os.killpg(process.pid, signal.SIGTERM)
-                    process.wait(timeout=3)
-                except (ProcessLookupError, subprocess.TimeoutExpired):
-                    if process.poll() is None:
-                        try:
-                            os.killpg(process.pid, signal.SIGKILL)
-                        except ProcessLookupError:
-                            pass
-                        process.wait()
+            # The worker owns only paths below the private cache's staging
+            # directory.  Stop its whole process group before control returns
+            # to the coordinator, which may remove or resume that directory.
+            self._stop_process_group(process, group)
             raise
+        # The worker has exited.  POSIX leaves the group alone on this path and
+        # always has; Windows has one extra thing to do -- release the job
+        # handle it would otherwise leak.
+        if group is not None:
+            group.close()
         return WorkerCommandResult(returncode, tuple(lines))
+
+    @staticmethod
+    def _stop_process_group(
+        process: subprocess.Popen[str],
+        group: WindowsProcessGroup | None = None,
+    ) -> None:
+        """Stop the worker and every descendant it started, on both models.
+
+        POSIX signals the session-owned process group exactly as it always has.
+        Windows has neither ``os.killpg`` nor ``signal.SIGKILL`` -- reaching for
+        either raised ``AttributeError`` out of this teardown, so it stopped
+        nothing and a runaway worker kept writing into the private cache -- and
+        instead terminates and drains the job object the worker was adopted
+        into; see the note above
+        :class:`~mod_editor.core.nfl2k5_build_service.WindowsProcessGroup`.
+        """
+
+        if platform_compat.IS_WINDOWS:
+            # Deliberately ahead of the "direct child already exited" shortcut
+            # below: on Windows the job can still hold descendants the exited
+            # worker started, and those are what would keep writing into the
+            # private cache the coordinator is about to publish or clean up.
+            if not stop_windows_process_group(process, group):
+                raise StadiumCacheError(
+                    "Stadium Studio could not stop its private asset generator; "
+                    "a background process may still be writing into the private "
+                    "cache. Sign out or restart Windows before trying again."
+                )
+            return
+        if process.poll() is None:
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+                process.wait(timeout=3)
+            except (ProcessLookupError, subprocess.TimeoutExpired):
+                if process.poll() is None:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    process.wait()
 
 
 class Nfl2k5StadiumCacheCoordinator:
@@ -294,19 +385,44 @@ class Nfl2k5StadiumCacheCoordinator:
         sink = progress or (lambda _stage, _completed, _total: None)
         root, pack0, inventory = self._validate_source_cache(cache)
         parent = root / PRIVATE_PARENT
-        parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-        if parent.is_symlink():
-            raise StadiumCacheError("Private derived-cache directory cannot be a symlink")
-        os.chmod(parent, 0o700)
+        create_private_directory(parent, parents=True, exist_ok=True)
+        # A symlink OR a Windows junction/reparse point here would redirect the
+        # whole private derived cache -- and its single-writer lock -- into an
+        # attacker tree; S_ISLNK alone misses a junction, so refuse any reparse
+        # point too.  os.lstat carries st_reparse_tag on Windows and nothing on
+        # POSIX, keeping the Linux path byte-identical.
+        parent_info = os.lstat(parent)
+        if stat.S_ISLNK(parent_info.st_mode) or _is_reparse_point(parent_info):
+            raise StadiumCacheError(
+                "Private derived-cache directory cannot be a symlink or reparse "
+                "point (junction)"
+            )
+        harden_private_directory(parent)
+        self._require_private_directory(parent, "The private derived-cache directory")
         lock_path = parent / LOCK_NAME
         lock_fd = os.open(
             lock_path,
-            os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0),
+            os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
             0o600,
         )
         try:
+            # The creation mode above is subject to umask on POSIX and decides
+            # only the read-only attribute on Windows, so the lock file is
+            # hardened and then re-verified against whatever this platform can
+            # actually promise.  Done before the lock is taken so a failure
+            # cannot leave an unlocked descriptor to release.
+            harden_private_file(lock_path)
+            self._require_private_file(
+                lock_path,
+                "The Stadium Studio single-writer lock file",
+                fd=lock_fd,
+            )
+        except BaseException:
+            os.close(lock_fd)
+            raise
+        try:
             try:
-                fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                exclusive_nonblocking_lock(lock_fd)
             except BlockingIOError as exc:
                 raise StadiumCacheError(
                     "Stadium Studio assets are already being prepared by another "
@@ -319,13 +435,20 @@ class Nfl2k5StadiumCacheCoordinator:
             staging = parent / STAGING_NAME
             if staging.exists():
                 info = staging.lstat()
-                if not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode):
+                if (
+                    not stat.S_ISDIR(info.st_mode)
+                    or stat.S_ISLNK(info.st_mode)
+                    or _is_reparse_point(info)
+                ):
                     raise StadiumCacheError(
                         "The resumable Stadium Studio staging path is not a private directory"
                     )
             else:
-                staging.mkdir(mode=0o700)
-            os.chmod(staging, 0o700)
+                create_private_directory(staging)
+            harden_private_directory(staging)
+            self._require_private_directory(
+                staging, "The resumable Stadium Studio staging directory"
+            )
             worker = _regular_file(self.worker, "Stadium Studio worker")
             sink("Preparing private Stadium Studio assets", 0, EXPECTED_STADIUM_SCENES)
             argv = (
@@ -353,19 +476,54 @@ class Nfl2k5StadiumCacheCoordinator:
                     "Another process published Stadium Studio assets unexpectedly"
                 )
             os.replace(staging, final)
-            directory_fd = os.open(parent, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
-            try:
-                os.fsync(directory_fd)
-            finally:
-                os.close(directory_fd)
+            # Commit the rename's directory entry where the platform can; on
+            # Windows there is no directory-flush primitive and the helper says
+            # so rather than pretending the entry was committed.
+            fsync_directory(parent)
             sink("Stadium Studio private assets ready", 1, 1)
             # Re-resolve every path after the directory rename.
             return self._validate_result(final, cache.source.sha256)
         finally:
             try:
-                fcntl.flock(lock_fd, fcntl.LOCK_UN)
+                release_lock(lock_fd)
             finally:
                 os.close(lock_fd)
+
+    @staticmethod
+    def _require_private_directory(path: Path, label: str) -> None:
+        """Re-verify one private cache directory, in this platform's terms.
+
+        On POSIX that is the unchanged owner-only ``0o700`` assertion.  On
+        Windows, where a directory carries no mode at all, it is the strongest
+        check that platform supports -- a real, non-reparse-point directory
+        inheriting the private cache root's ACL.  The difference is stated by
+        :func:`~mod_editor.core.platform_compat.privacy_guarantee`, never
+        silently skipped, and a failure is fatal here: this directory is about
+        to hold bytes derived from the user's own game image.
+        """
+
+        try:
+            verify_private_directory(path, label)
+        except PrivatePathError as exc:
+            raise StadiumCacheError(
+                f"{exc} ({privacy_guarantee().mechanism} privacy is in force here)"
+            ) from exc
+
+    @staticmethod
+    def _require_private_file(path: Path, label: str, *, fd: int | None = None) -> None:
+        """Re-verify one private cache file, in this platform's terms.
+
+        ``0o600`` on POSIX; on Windows the same file necessarily reads back
+        ``0o666`` -- writable, no privacy from the mode -- and that honest
+        expectation is what gets asserted there instead of the POSIX number.
+        """
+
+        try:
+            verify_private_file(path, label, fd=fd)
+        except PrivatePathError as exc:
+            raise StadiumCacheError(
+                f"{exc} ({privacy_guarantee().mechanism} privacy is in force here)"
+            ) from exc
 
     @staticmethod
     def _validate_source_cache(cache: SourceCache) -> tuple[Path, Path, Path]:
@@ -382,7 +540,11 @@ class Nfl2k5StadiumCacheCoordinator:
             root_info = cache.root.lstat()
         except FileNotFoundError as exc:
             raise StadiumCacheError("The private NFL 2K5 source cache is missing") from exc
-        if not stat.S_ISDIR(root_info.st_mode) or stat.S_ISLNK(root_info.st_mode):
+        if (
+            not stat.S_ISDIR(root_info.st_mode)
+            or stat.S_ISLNK(root_info.st_mode)
+            or _is_reparse_point(root_info)
+        ):
             raise StadiumCacheError("The private NFL 2K5 source cache is not a safe directory")
         root = cache.root.resolve(strict=True)
         pack0 = _regular_file(cache.pack0, "private archive pack 0")
@@ -402,7 +564,11 @@ class Nfl2k5StadiumCacheCoordinator:
             info = root.lstat()
         except FileNotFoundError as exc:
             raise StadiumCacheError("Private Stadium Studio cache is missing") from exc
-        if not stat.S_ISDIR(info.st_mode) or stat.S_ISLNK(info.st_mode):
+        if (
+            not stat.S_ISDIR(info.st_mode)
+            or stat.S_ISLNK(info.st_mode)
+            or _is_reparse_point(info)
+        ):
             raise StadiumCacheError("Private Stadium Studio cache is not a safe directory")
         root = root.resolve(strict=True)
         marker_path = root / "result.json"

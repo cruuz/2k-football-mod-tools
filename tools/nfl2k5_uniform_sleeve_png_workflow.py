@@ -324,6 +324,10 @@ def run(
         final_output_info = verify_output_span(
             output, output_identity, target, replacement_payload
         )
+        # Both stats come from verify_output_span()'s os.fstat of the output
+        # descriptor: fd against fd, so st_ctime_ns is comparable on every
+        # platform and stays in.  NOTE: this tuple carries no st_dev/st_ino;
+        # verify_output_span checks fd_identity/path_identity itself.
         common.require((final_output_info.st_size, final_output_info.st_mtime_ns,
                         final_output_info.st_ctime_ns) ==
                        (output_info.st_size, output_info.st_mtime_ns,

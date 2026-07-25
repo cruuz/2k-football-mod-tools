@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import zlib
@@ -436,6 +437,10 @@ def analyze(index_path: Path) -> tuple[dict[str, object], str]:
 
     after_stat = index_path.stat()
     source_sha_after = _sha256_file(index_path)
+    # ``before_stat`` and ``after_stat`` are both index_path.stat() -- two PATH
+    # stats of one pathname, which agree on st_ctime_ns on every platform.  No
+    # path/fd boundary is crossed, so the change time stays compared.  NOTE:
+    # these fields carry no st_dev/st_ino; identity comes from the SHA-256.
     if (
         source_sha_after != source_sha_before
         or after_stat.st_size != before_stat.st_size

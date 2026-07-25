@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import ExitStack, contextmanager
 import hashlib
 import json
 import os
@@ -9,8 +10,10 @@ from pathlib import Path
 import stat
 import sys
 import tempfile
-from typing import Mapping
+from typing import Iterator, Mapping
 
+from . import platform_compat
+from .platform_compat import SealIntegrityError
 from .apf_digital_font import (
     APF_DIGITAL_FONT_DIMENSIONS,
     APF_DIGITAL_FONT_RECIPE_SCHEMA,
@@ -55,12 +58,12 @@ class Apf2k8DigitalFontProvider:
     module_pins: Mapping[str, str] = {
         "tools/apf_inner.py": "75a74b34524b3861785b916e3470862bccfe278825a63aa2dccb924849ae9606",
         "tools/apf_outer.py": "eb89734ed3ad0205ff7d8732b2f7f93368eff861ccbc5e1473d4e21f25e8a62e",
-        "tools/apf_texture_patch.py": "6a4ae4ab13ce8478c4adef6bf464e6ab6c83a692b12a65cab24906fe0da588c1",
+        "tools/apf_texture_patch.py": "246243be4eb6821fe70f6fa7ac7ab134cf023da299b2a452964d87e136aab19b",
         "tools/apf_xenos_dxt5a.py": "c95e556e55de81b8576da2e3bd3311018137cb449167c74121be3d5010ff5443",
-        "tools/apf_digital_font_layout.py": "c4b8b724f125d9a29970f06a5edc4dd92c4cf074eb7ce8f6f879be2b32ebd7b1",
+        "tools/apf_digital_font_layout.py": "a5de052f5579259ee47a6ce94c26163ad4558fa3d5fcb324997125f0728f4c10",
         "tools/apf_digital_font_transport.py": "a4b08c3ad31d195aa1b3e312a54690b42faba83de93369b732669264d959d481",
         backend_module: "e72f91b746f44f1729b5e36d39a1cd0944ffab0194ab7e2cb36d5f3c1185ccd7",
-        verifier_module: "7ba6cd2172d9ae4f9a1a2d4cd9d485e0d644ba7a31baecbcca7da1fe1cd3b531",
+        verifier_module: "7846a5ecc91763296bea5e2b2f722de3c1b2137b769ceaa9406a64999042baf8",
         recipe_schema_file: "265edf051e513cdb9174b6c2d0109e892ca2e64e281ee07711c1665bfbc9cb93",
         format_spec_file: "0a53dbcfa291a7a3f4d1714f78d23ccaeef0e82cb1547171fdc7b86a07f6b678",
     }
@@ -260,13 +263,57 @@ class Apf2k8DigitalFontProvider:
         stage: ProviderStage,
         emit: ProviderEventCallback,
     ) -> ProviderCommandResult:
-        """Run an exact private copy of the complete external Python closure."""
+        """Run an exact private copy of the complete external Python closure.
+
+        Every allowlisted module is re-read from the workspace, hash-checked
+        against its pin and written into a fresh private directory, so the child
+        imports the copy and never the repository tree that could be rewritten
+        under it.  Staging alone does not decide *what the child executes*: the
+        child is handed a pathname and opens it itself, so between the last write
+        here and that open a same-user process can clear the read-only bit and
+        replace a staged module -- exactly the writer/verifier substitution the
+        staged copy exists to prevent.
+
+        On the ported platforms that window is narrowed across the launch, and on
+        neither of them is it closed.  :meth:`_pinned_closure` re-verifies every
+        staged module through
+        :func:`platform_compat.reverify_sealed_before_exec` and keeps what that
+        returns open until the subprocess has been created:
+
+        * Windows -- a deny-write/deny-delete share pin per module, so while the
+          child starts no same-user process can rewrite, truncate or delete the
+          BYTES any of those pins hold.  A pin does not hold the NAME the child
+          opens: ``SetFileInformationByHandle(FileRenameInfoEx)`` with
+          ``POSIX_SEMANTICS | REPLACE_IF_EXISTS`` rebinds a name whose file has
+          open handles -- the existing handles keep the old file, every later
+          open resolves to the replacement -- and the child opens each module by
+          name.  So the check-to-use window is narrowed, NOT closed, and Windows
+          reports that the same way macOS does (a WARNING event, ``inode_pinned``
+          ``False``).  An earlier revision of this docstring claimed the window
+          was closed here; an independent audit showed it was not.
+        * macOS -- no lock of any kind exists: the modules are re-hashed immediately
+          before the launch and their descriptors held, but the child re-opens by
+          name, so a same-user rename swap in that instant would still be
+          executed.  The window is narrowed, NOT closed, and that is reported (a
+          WARNING event, ``inode_pinned`` ``False``) rather than claimed away.
+        * Any other platform (Linux) -- unchanged: the staged copy is executed by
+          pathname, exactly the instructions it runs today, with the residual that
+          has always applied.
+
+        The argv path is always the staged pathname: the closure's sibling modules
+        are imported from the entry point's own directory, so an exec path that
+        named the same inode from somewhere else (a POSIX ``/proc`` fd path) would
+        break those imports.  Because the child therefore opens every module by
+        name, only a pin that holds the *name* counts as closing the window; one
+        that pins an inode elsewhere is reported as the residual it really leaves.
+        """
 
         if relative not in self.module_pins or not relative.startswith("tools/"):
             raise ProviderError("APF digital_font execution module is not allowlisted")
         with tempfile.TemporaryDirectory(prefix="mod-editor-apf-font-provider-") as raw:
             bundle = Path(raw)
             staged_modules: dict[str, Path] = {}
+            staged_pins: dict[str, tuple[Path, str, int]] = {}
             for module_relative, expected in self.module_pins.items():
                 module_path = Path(module_relative)
                 if module_path.parts[0] != "tools" or module_path.suffix != ".py":
@@ -280,7 +327,7 @@ class Apf2k8DigitalFontProvider:
                     | os.O_CREAT
                     | os.O_EXCL
                     | getattr(os, "O_NOFOLLOW", 0)
-                    | getattr(os, "O_CLOEXEC", 0),
+                    | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
                     0o400,
                 )
                 try:
@@ -296,12 +343,129 @@ class Apf2k8DigitalFontProvider:
                 finally:
                     os.close(descriptor)
                 staged_modules[module_relative] = target
+                staged_pins[module_relative] = (target, expected, len(payload))
             staged = staged_modules.get(relative)
             if staged is None:
                 raise ProviderError("APF digital_font staged execution module is missing")
-            return self._run(
-                (sys.executable, os.fspath(staged), *arguments), stage, emit
+            if not (platform_compat.IS_WINDOWS or platform_compat.IS_MACOS):
+                return self._run(
+                    (sys.executable, os.fspath(staged), *arguments), stage, emit
+                )
+            # Ported platforms only: hold the whole staged closure pinned until the
+            # child exists.  That makes the checked module the module that runs
+            # only where the handle names the exec path (Linux /proc); this
+            # closure always executes a staged PATHNAME so its sibling imports
+            # resolve, so on macOS and Windows a same-user rename can still
+            # rebind that name -- counted and warned about below, not claimed
+            # away.
+            with self._pinned_closure(staged_pins, relative, stage, emit) as exec_path:
+                return self._run(
+                    (sys.executable, os.fspath(exec_path), *arguments), stage, emit
+                )
+
+    @contextmanager
+    def _pinned_closure(
+        self,
+        staged: Mapping[str, tuple[Path, str, int]],
+        entry: str,
+        stage: ProviderStage,
+        emit: ProviderEventCallback,
+    ) -> Iterator[Path]:
+        """Hold every staged module re-verified and pinned across the launch.
+
+        The child imports the entry point's siblings out of the same directory, so
+        pinning only the entry point would leave every helper module swappable
+        after its check; all of them are re-verified and held.  What "held" buys
+        differs by platform and is reported, never assumed:
+        :attr:`platform_compat.SealedExecHandle.inode_pinned` is ``True`` only
+        where opening the ``exec_path`` it hands back is guaranteed to yield the
+        bytes just verified -- today only the Linux ``/proc/<pid>/fd`` inode pin,
+        which this closure cannot execute from because the child has to open the
+        staged pathname for its sibling imports to resolve.  On both platforms
+        this method runs on the pin therefore leaves a name-swap window open:
+        the Windows share pin holds the BYTES it opened but not the NAME (a
+        ``POSIX_SEMANTICS`` ``FileRenameInfoEx`` rebinds a name whose file has
+        open handles, and later opens get the replacement), and macOS holds only
+        a descriptor no other process can name.  Those modules are counted and
+        the residual is emitted as a WARNING on this stage; the INFO branch is
+        reached only if platform_compat ever hands back a pin on the very name
+        the child opens.  Any mismatch, or any failure to obtain the pin the
+        platform promises, refuses the launch instead of running an unverified
+        closure.
+        """
+
+        with ExitStack() as pins:
+            handles: dict[str, platform_compat.SealedExecHandle] = {}
+            for module_relative in sorted(staged):
+                path, expected, size = staged[module_relative]
+                try:
+                    handle = platform_compat.reverify_sealed_before_exec(
+                        path, expected, expected_size=size
+                    )
+                except SealIntegrityError as exc:
+                    raise ProviderError(
+                        "APF digital_font staged closure module was replaced "
+                        f"before execution: {module_relative}"
+                    ) from exc
+                except (
+                    platform_compat.DirectoryTransactionUnavailable,
+                    OSError,
+                ) as exc:
+                    raise ProviderError(
+                        "APF digital_font staged closure module could not be "
+                        f"pinned for execution: {module_relative}"
+                    ) from exc
+                pins.enter_context(handle)
+                if handle.sha256 != expected:
+                    raise ProviderError(
+                        "APF digital_font staged closure module hash changed "
+                        f"before execution: {module_relative}"
+                    )
+                handles[module_relative] = handle
+            # The child opens every module of this closure BY NAME -- the entry
+            # point from argv, its siblings from that same directory through
+            # ``import`` -- so the guarantee is only as strong as the pin's hold on
+            # the *names*.  A handle that pins an inode under some other name (a
+            # POSIX ``/proc`` fd path) cannot be executed here without breaking
+            # those imports, so it does not count as covering the name and is
+            # reported as the residual it leaves rather than as a pin.
+            name_pinned = {
+                module_relative: (
+                    handle.inode_pinned
+                    and Path(handle.exec_path) == staged[module_relative][0]
+                )
+                for module_relative, handle in handles.items()
+            }
+            entry_handle = handles[entry]
+            mechanism = (
+                entry_handle.mechanism
+                if name_pinned[entry]
+                else platform_compat.SEALED_EXEC_REVERIFIED_PATH
             )
+            unpinned = sorted(
+                module_relative
+                for module_relative, is_name_pinned in name_pinned.items()
+                if not is_name_pinned
+            )
+            if unpinned:
+                emit(ProviderEvent(
+                    stage,
+                    "WARNING",
+                    "Staged APF digital_font closure re-verified but NOT pinned "
+                    f"across launch ({mechanism}): this platform cannot stop a "
+                    f"same-user rename swap of {len(unpinned)} of its "
+                    f"{len(handles)} modules between the check and the child "
+                    "opening them",
+                ))
+            else:
+                emit(ProviderEvent(
+                    stage,
+                    "INFO",
+                    "Staged APF digital_font closure held pinned across launch "
+                    f"({mechanism}): none of its {len(handles)} modules can be "
+                    "replaced while the child starts",
+                ))
+            yield staged[entry][0]
 
     def _validate_capability(
         self, request: ProviderRequest, capability: Capability
@@ -394,7 +558,7 @@ class Apf2k8DigitalFontProvider:
                 path,
                 os.O_RDONLY
                 | getattr(os, "O_NOFOLLOW", 0)
-                | getattr(os, "O_CLOEXEC", 0),
+                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             )
         except OSError as exc:
             raise ProviderError(

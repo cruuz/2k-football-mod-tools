@@ -46,7 +46,7 @@ class ModEditorController:
         log_listener: LogListener | None = None,
         provider_orchestrator: ProviderOrchestrator | None = None,
     ):
-        self.registry = registry or CapabilityRegistryLoader().load()
+        self.registry = registry or CapabilityRegistryLoader().load(check_files=False)
         self.inspector = inspector or SourceInspector()
         self.project: ModProject | None = None
         self.log_listener = log_listener

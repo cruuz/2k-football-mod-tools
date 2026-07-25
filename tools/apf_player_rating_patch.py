@@ -32,6 +32,7 @@ import apf_outer
 import apf_roster
 import apf_texture_patch
 
+from mod_editor.core import platform_compat
 from mod_editor.apf_studio.player_ratings import (
     PlayerRatingField,
     PlayerRatingsError,
@@ -577,7 +578,7 @@ def write_private_outer_entry(
     temporary = Path(temporary_name)
     published = False
     try:
-        os.fchmod(descriptor, 0o600)
+        platform_compat.fchmod(descriptor, 0o600, path=temporary)
         view = memoryview(result.entry_bytes)
         while view:
             written = os.write(descriptor, view)
@@ -589,11 +590,10 @@ def write_private_outer_entry(
         descriptor = -1
         os.link(temporary, destination)
         published = True
-        directory_fd = os.open(destination.parent, os.O_RDONLY)
-        try:
-            os.fsync(directory_fd)
-        finally:
-            os.close(directory_fd)
+        # Commit the published directory entry where the platform can.  The
+        # entry's bytes were flushed above, so on Windows -- which exposes no
+        # directory-flush primitive -- only the entry's ordering is lost.
+        platform_compat.fsync_directory(destination.parent)
         if destination.read_bytes() != result.entry_bytes:
             raise PlayerRatingPatchError(
                 "Published private APF rating entry failed verification"
@@ -601,11 +601,8 @@ def write_private_outer_entry(
     except BaseException:
         if published:
             destination.unlink(missing_ok=True)
-            directory_fd = os.open(destination.parent, os.O_RDONLY)
-            try:
-                os.fsync(directory_fd)
-            finally:
-                os.close(directory_fd)
+            # Commit the rollback unlink for the same reason, on the same terms.
+            platform_compat.fsync_directory(destination.parent)
         raise
     finally:
         if descriptor >= 0:

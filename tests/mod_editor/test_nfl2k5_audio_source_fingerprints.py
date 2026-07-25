@@ -13,6 +13,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+from mod_editor.core import platform_compat
 from mod_editor.core import nfl2k5_audio_source_fingerprints as fingerprint_module
 from mod_editor.core.model import GameId, SourceRecord
 from mod_editor.core.nfl2k5_audio_source_fingerprints import (
@@ -189,7 +190,10 @@ class FingerprintFixture:
 class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
-        self.fixture = FingerprintFixture(Path(self.temporary.name))
+        # Resolve the temp root so paths the store canonicalises compare equal to
+        # ours under a symlinked (macOS /private/var) or short-name (Windows) temp
+        # location.
+        self.fixture = FingerprintFixture(Path(self.temporary.name).resolve())
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
@@ -211,7 +215,13 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
             first.path.parent,
             self.fixture.root / "derived",
         )
-        self.assertEqual(stat_mode(first.path), 0o600)
+        # POSIX enforces the historical 0o600 on the private fingerprint file;
+        # Windows has no group/other bits, reports 0o666 for the same file and
+        # gets its confidentiality from the per-user profile root's ACL.
+        self.assertEqual(stat_mode(first.path), platform_compat.private_file_mode())
+        self.assertEqual(
+            stat_mode(first.path), 0o666 if platform_compat.IS_WINDOWS else 0o600
+        )
         self.assertEqual(
             (events[0].completed_items, events[0].total_items), (0, 4)
         )
@@ -316,6 +326,10 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
         self.assertFalse(self.fixture.store.inventory_path(self.fixture.cache).exists())
 
     def test_publication_rechecks_the_owned_inode_after_rename(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest(
+                "requires POSIX directory-descriptor semantics -- the atomic publish pins its parent directory as an open descriptor and this test drives it through dir_fd= (os.open/os.unlink/os.stat) or reproduces an attacker by renaming/replacing a path the writer still holds open; Windows has no dir_fd, cannot open a directory descriptor, and refuses to rename or replace a path with an open handle, so this scenario cannot exist there"
+            )
         real_publish = fingerprint_module._rename_noreplace_at
 
         def publish_then_change(
@@ -324,7 +338,7 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
             destination_name: str,
         ) -> None:
             real_publish(directory_fd, source_name, destination_name)
-            descriptor = os.open(destination_name, os.O_RDWR, dir_fd=directory_fd)
+            descriptor = os.open(destination_name, os.O_RDWR | getattr(os, "O_BINARY", 0), dir_fd=directory_fd)
             try:
                 size = os.fstat(descriptor).st_size
                 os.lseek(descriptor, size // 2, os.SEEK_SET)
@@ -394,6 +408,10 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
         self.assertEqual(tuple(path.parent.glob("*.tmp")), ())
 
     def test_publication_failure_never_unlinks_a_replacement_inode(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest(
+                "requires POSIX directory-descriptor semantics -- the atomic publish pins its parent directory as an open descriptor and this test drives it through dir_fd= (os.open/os.unlink/os.stat) or reproduces an attacker by renaming/replacing a path the writer still holds open; Windows has no dir_fd, cannot open a directory descriptor, and refuses to rename or replace a path with an open handle, so this scenario cannot exist there"
+            )
         real_publish = fingerprint_module._rename_noreplace_at
         foreign = b"foreign replacement sentinel"
 
@@ -406,7 +424,7 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
             os.unlink(destination_name, dir_fd=directory_fd)
             descriptor = os.open(
                 destination_name,
-                os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
                 0o600,
                 dir_fd=directory_fd,
             )

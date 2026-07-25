@@ -2123,7 +2123,11 @@ class ApfAudioGuiTests(unittest.TestCase):
             Path("/private/preview.wav"), resolved.get
         )
         self.assertEqual(executable, "/usr/bin/ffplay")
-        self.assertEqual(arguments[-1], "/private/preview.wav")
+        # The player command stringifies the path, so the final argument reads
+        # back with the running OS's separator (backslashes on Windows). Compare
+        # as Path so "the preview path is the last argument" holds on every OS
+        # while the shell-free contract below is still asserted exactly.
+        self.assertEqual(Path(arguments[-1]), Path("/private/preview.wav"))
         self.assertNotIn("sh", executable)
 
     def test_stale_audio_preview_success_after_selection_change_never_starts(

@@ -4,7 +4,24 @@ This folder is a retail-free application. It contains no *All-Pro Football
 2K8* ISO, extracted game files, textures, audio, screenshots, or rollback
 bytes. You select your own legally dumped USA copy after the app opens.
 
-## Install for your Linux user
+## Install
+
+APF 2K8 Mod Studio needs **Python 3, PyQt5, and Pillow**.
+
+- **Linux** (Mint/Ubuntu) — install the operating-system packages:
+  ```bash
+  sudo apt install python3 python3-pyqt5 python3-pil
+  ```
+- **Windows / macOS** (the `apt` line above is Linux-only) — install Python 3
+  from https://www.python.org/downloads/, then:
+  ```bash
+  pip install PyQt5 Pillow
+  ```
+
+That command installs libraries only; the Mod Studio installer itself never
+requests administrator access.
+
+### Linux (per-user install)
 
 Open a terminal in this extracted folder and run:
 
@@ -16,14 +33,27 @@ Do **not** use `sudo`. The installer puts the program and shortcut only in your
 user account. After it finishes, open **APF 2K8 Mod Studio** from the
 application menu. You can also run `~/.local/bin/apf2k8-mod-studio`.
 
-The system dependencies on Linux Mint/Ubuntu are:
+### Windows
 
-```bash
-sudo apt install python3 python3-pyqt5 python3-pil
-```
+Extract the archive and double-click **`APF-2K8-Mod-Studio.bat`**. It runs from
+its own folder (paths containing spaces are fine), checks that Python 3, PyQt5,
+and Pillow are importable, and shows a message and pauses if anything is
+missing.
 
-That command installs operating-system packages; the Mod Studio installer
-itself never requests administrator access.
+### macOS
+
+Extract the archive and double-click **`APF-2K8-Mod-Studio.command`** (the first
+time, right-click it and choose **Open** to clear Gatekeeper). It resolves its
+own folder and runs the same dependency check.
+
+**Platform support.** **Linux is the supported platform** — the full test suite
+passes there and the app has been smoke-tested end to end. **Windows and macOS
+are a preview:** CI runs the suite on all three, but it does not yet pass on
+Windows or macOS, and the GUI has not been manually driven on either.
+
+On Windows specifically, the bundled `extract-xiso` extractor is a Linux binary,
+so the **ISO** path will not work — load an **already-extracted game folder**
+instead.
 
 Audio export works without a desktop player. For the Audio tab's **Play/Stop**
 button, install any one of `ffplay` (from `ffmpeg`), `paplay`, or `aplay`. On
@@ -399,13 +429,13 @@ received. See [STATUS](docs/mod_editor/APF2K8_STATUS.md) for versioned receipts.
 
 ## Run without installing
 
-Keep this entire folder together and run:
+Keep this entire folder together and run the launcher for your platform:
 
-```bash
-./APF-2K8-Mod-Studio.sh
-```
+- **Linux** — `./APF-2K8-Mod-Studio.sh`
+- **Windows** — double-click `APF-2K8-Mod-Studio.bat`
+- **macOS** — double-click `APF-2K8-Mod-Studio.command`
 
-The portable launcher resolves everything relative to this folder. Moving or
+Each portable launcher resolves everything relative to this folder. Moving or
 renaming the folder is fine; moving only the launcher is not.
 
 Advanced users can validate the packaged capability metadata with:

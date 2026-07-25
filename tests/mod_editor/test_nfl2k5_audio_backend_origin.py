@@ -130,7 +130,7 @@ class AudioBackendOriginTests(unittest.TestCase):
                     "vc_53450030/1", 1, 512, 0
                 ),
             }
-            descriptor = os.open(source, os.O_RDONLY)
+            descriptor = os.open(source, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             try:
                 built = unified.build_ausb_audio_imports(
                     project.value["edits"][0],
@@ -162,7 +162,12 @@ class AudioBackendOriginTests(unittest.TestCase):
 
     def test_private_load_uses_canonical_paths_and_both_strict_store_apis(self) -> None:
         with tempfile.TemporaryDirectory(prefix="audio-backend-load-") as temporary:
-            root = Path(temporary) / unified.AUDIO_SOURCE_SHA256
+            # load_audio_origin_context resolve(strict=True)s the source-cache root
+            # and requires it to be its own canonical absolute path, then matches
+            # the gate pins against it. Build from a resolved root so the pins are
+            # canonical too, under a symlinked (macOS /private/var) or short-name
+            # (Windows) temp location -- the contract this test's name asserts.
+            root = Path(temporary).resolve() / unified.AUDIO_SOURCE_SHA256
             root.mkdir()
             pack0 = root / unified.SOURCE_CACHE_PACK_FOLDER / "0"
             inventory = root / unified.SOURCE_CACHE_INVENTORY_RELATIVE

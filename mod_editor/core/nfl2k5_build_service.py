@@ -23,11 +23,15 @@ from pathlib import Path
 import shutil
 import signal
 import stat
+import struct
 import subprocess
 import sys
 import tempfile
+import time
+import warnings
 from typing import Callable, Protocol, Sequence
 
+from . import platform_compat
 from .errors import ModEditorError, OutputRefusedError, ValidationError
 from .nfl2k5_source_cache import (
     INVENTORY_SIZE,
@@ -36,6 +40,7 @@ from .nfl2k5_source_cache import (
     SOURCE_SIZE,
     SourceCache,
 )
+from .platform_compat import fsync_directory, fsync_fd
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -125,6 +130,377 @@ class CanonicalProjectWriter(Protocol):
     def write_canonical_project(self, destination: Path) -> Path | None: ...
 
 
+# --------------------------------------------------------------------------
+# Confining the backend: one process *group*, on two different process models.
+#
+# The guarantee is the same on every platform -- when the runner returns or
+# raises, nothing the backend started is still running, so private staging can
+# be removed without a stray writer underneath it -- but the kernel primitive
+# that delivers it is not.
+#
+# POSIX launches the backend with ``start_new_session=True``, making it a
+# session (and therefore process-group) leader whose PID doubles as the group
+# id.  ``os.killpg`` then reaches every descendant even after the direct child
+# has exited, and ``os.killpg(pg, 0)`` answers "is any of it still alive?".
+#
+# Windows has neither call: ``start_new_session`` is silently ignored there,
+# ``os.killpg`` does not exist at all (calling it raises ``AttributeError``,
+# which is what left the teardown below unable to stop anything), ``os.kill``
+# is ``TerminateProcess`` and reaches exactly one process, and ``taskkill /T``
+# walks parent PIDs, so it loses a child the moment its launcher exits -- which
+# is precisely the case this code exists to catch.  The Win32 primitive with
+# the same reach as a process group is a Job Object: a process assigned to one
+# carries that job to everything it creates, ``TerminateJobObject`` stops all
+# of them in a single call, and the job's ``ActiveProcesses`` counter answers
+# the question ``killpg(pg, 0)`` answers on POSIX.  There is no group-wide
+# graceful signal on Windows, so the job path is the analogue of the SIGKILL
+# escalation, not of the SIGTERM that precedes it.
+#
+# ``mod_editor/apf_studio/audio_encoding.py`` and ``tools/apf_audio.py`` carry
+# the same two-model helper for the APF audio encoder and decoder.  Those two
+# are duplicates of each other because ``tools/`` modules are runnable
+# standalone; this third copy exists because ``mod_editor.core`` must not
+# depend on ``mod_editor.apf_studio``.  It is the *core* copy, shared
+# core-to-core with :mod:`mod_editor.core.nfl2k5_stadium_cache`, whose worker
+# teardown had the identical POSIX-only defect.
+# --------------------------------------------------------------------------
+
+PROCESS_POLL_SECONDS = 0.05
+# The POSIX teardown below has always given the backend three seconds to die
+# between TERM and KILL; the Windows path reuses that same budget so neither
+# platform waits longer than the other for a stop it already requested.
+PROCESS_STOP_GRACE_SECONDS = 3.0
+
+# JOBOBJECTINFOCLASS.JobObjectBasicAccountingInformation, and the byte offset
+# of ``ActiveProcesses`` within JOBOBJECT_BASIC_ACCOUNTING_INFORMATION: four
+# 8-byte LARGE_INTEGERs, then the DWORDs TotalPageFaultCount and
+# TotalProcesses.  The struct is 48 bytes; the buffer is oversized on purpose.
+_WINDOWS_JOB_BASIC_ACCOUNTING = 1
+_WINDOWS_ACTIVE_PROCESSES_OFFSET = 40
+_WINDOWS_ACCOUNTING_BYTES = 64
+
+# CreateProcess's CREATE_SUSPENDED.  A child started with it is frozen before it
+# runs a single instruction, so it can be sealed into the job object *before* it
+# is able to spawn a descendant -- closing the race a job assigned only after
+# launch leaves open.  It is resumed through ntdll's ``NtResumeProcess`` once the
+# assignment is done; see :func:`adopt_process_group`.  ``STATUS_SUCCESS`` is
+# that call's "every thread resumed" NTSTATUS.
+WINDOWS_CREATE_SUSPENDED = 0x00000004
+_WINDOWS_STATUS_SUCCESS = 0
+
+
+class WindowsProcessGroup:
+    """A Job Object standing in for the POSIX session the backend cannot have.
+
+    Every entry point fails soft (returns ``None``/``False``) rather than
+    raising, because this type is used from teardown paths where raising would
+    replace the error the caller is already reporting.  A group that could not
+    be established is reported as such so the caller can fall back to the direct
+    child and still say honestly whether it stopped.
+    """
+
+    def __init__(self, kernel32: "ctypes.CDLL", handle: int) -> None:
+        self._kernel32 = kernel32
+        self._handle: int | None = handle
+
+    @classmethod
+    def create(cls) -> "WindowsProcessGroup | None":
+        kernel32 = _windows_job_api()
+        if kernel32 is None:
+            return None
+        try:
+            handle = kernel32.CreateJobObjectW(None, None)
+        except OSError:
+            return None
+        if not handle:
+            return None
+        return cls(kernel32, handle)
+
+    def adopt(self, process: "subprocess.Popen[str] | subprocess.Popen[bytes]") -> bool:
+        """Put *process* -- and so everything it later starts -- in the job."""
+
+        handle = getattr(process, "_handle", None)
+        if self._handle is None or handle is None:
+            return False
+        try:
+            return bool(
+                self._kernel32.AssignProcessToJobObject(self._handle, int(handle))
+            )
+        except (OSError, TypeError, ValueError):
+            return False
+
+    def active_process_count(self) -> int | None:
+        """How many processes the job still holds, or ``None`` if unreadable.
+
+        The Win32 counterpart to ``os.killpg(pg, 0)`` -- but returned as a
+        *count*, not a bool, so the stop path can tell three states apart that a
+        boolean would collapse: ``0`` (the group has stopped), a positive number
+        (a genuine, observed survivor), and ``None`` -- the accounting query
+        itself failed.  A failed query is *not* evidence of a survivor; reporting
+        it as one is exactly the false "left a background process" this returns
+        ``None`` to prevent.  Callers decide what an unreadable count means from
+        evidence they can trust, such as whether the direct child is still alive.
+        """
+
+        if self._handle is None:
+            return 0
+        buffer = ctypes.create_string_buffer(_WINDOWS_ACCOUNTING_BYTES)
+        try:
+            queried = self._kernel32.QueryInformationJobObject(
+                self._handle,
+                _WINDOWS_JOB_BASIC_ACCOUNTING,
+                buffer,
+                _WINDOWS_ACCOUNTING_BYTES,
+                None,
+            )
+        except OSError:
+            return None
+        if not queried:
+            return None
+        (active_processes,) = struct.unpack_from(
+            "<I", buffer.raw, _WINDOWS_ACTIVE_PROCESSES_OFFSET
+        )
+        return active_processes
+
+    def terminate(self) -> bool:
+        """``TerminateJobObject`` the whole group; report whether it was accepted.
+
+        A ``True`` result means the kernel took the request to end every process
+        in the job at once.  It does not promise they have already left the
+        accounting count -- forced termination is not instantaneous -- which is
+        why the caller confirms the group actually drained afterwards.
+        """
+
+        if self._handle is None:
+            return False
+        try:
+            return bool(self._kernel32.TerminateJobObject(self._handle, 1))
+        except OSError:
+            return False
+
+    def close(self) -> None:
+        """Release the job handle.  Idempotent, so double-close is harmless."""
+
+        handle, self._handle = self._handle, None
+        if handle is None:
+            return
+        try:
+            self._kernel32.CloseHandle(handle)
+        except OSError:
+            pass
+
+
+def _windows_job_api() -> "ctypes.CDLL | None":
+    """Load kernel32's job entry points with argtypes applied, or ``None``.
+
+    Leaving ``argtypes`` unset would let ctypes truncate 64-bit ``HANDLE``
+    values to a C ``int``, which is the class of bug that silently terminates
+    the wrong thing -- or nothing.
+    """
+
+    windll = getattr(ctypes, "windll", None)
+    if windll is None:
+        return None
+    handle = ctypes.c_void_p
+    boolean = ctypes.c_int
+    try:
+        kernel32 = windll.kernel32
+        kernel32.CreateJobObjectW.argtypes = [handle, ctypes.c_wchar_p]
+        kernel32.CreateJobObjectW.restype = handle
+        kernel32.AssignProcessToJobObject.argtypes = [handle, handle]
+        kernel32.AssignProcessToJobObject.restype = boolean
+        kernel32.TerminateJobObject.argtypes = [handle, ctypes.c_uint]
+        kernel32.TerminateJobObject.restype = boolean
+        kernel32.QueryInformationJobObject.argtypes = [
+            handle,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_ulong,
+            ctypes.POINTER(ctypes.c_ulong),
+        ]
+        kernel32.QueryInformationJobObject.restype = boolean
+        kernel32.CloseHandle.argtypes = [handle]
+        kernel32.CloseHandle.restype = boolean
+    except (AttributeError, OSError):
+        # A kernel32 without these exports is not a Windows we can confine a
+        # process on; degrade to the direct child rather than failing the build.
+        return None
+    return kernel32
+
+
+def _windows_ntdll_resume() -> "ctypes.CDLL | None":
+    """ntdll's ``NtResumeProcess`` with argtypes applied, or ``None``.
+
+    ``NtResumeProcess`` restarts every thread of a process from its handle
+    alone, which is the one thing a CREATE_SUSPENDED child needs and the one
+    thing ``subprocess`` cannot hand back: it closes the primary-thread handle
+    ``CreateProcess`` returned before the constructor even finishes.  The call is
+    absent from the Win32 headers but has been a stable ntdll export for two
+    decades; if it is ever missing we simply do not create children suspended.
+    """
+
+    windll = getattr(ctypes, "windll", None)
+    if windll is None:
+        return None
+    try:
+        ntdll = windll.ntdll
+        ntdll.NtResumeProcess.argtypes = [ctypes.c_void_p]
+        ntdll.NtResumeProcess.restype = ctypes.c_long
+    except (AttributeError, OSError):
+        return None
+    return ntdll
+
+
+def use_suspended_launch() -> bool:
+    """Whether a child can be created suspended and confined before it runs.
+
+    True only when *both* primitives the sequence needs are present: the job API
+    (something to assign the frozen child to) and ``NtResumeProcess`` (a way to
+    start it again).  Missing either, creating the child suspended would risk one
+    that can never run, so the caller launches normally and assigns the job the
+    instant the child starts instead -- the slightly racier fallback path.
+    Always ``False`` off Windows, so the POSIX launch keeps ``creationflags=0``.
+    """
+
+    if not platform_compat.IS_WINDOWS:
+        return False
+    return _windows_job_api() is not None and _windows_ntdll_resume() is not None
+
+
+def _resume_suspended_process(
+    process: "subprocess.Popen[str] | subprocess.Popen[bytes]",
+) -> bool:
+    """Resume a child created with CREATE_SUSPENDED; report whether it took.
+
+    Resumes through the process handle ``subprocess`` retains, so it needs no
+    thread handle of its own.  A ``False`` result means the child is stuck
+    frozen and unusable, and the caller must not leave it that way.
+    """
+
+    ntdll = _windows_ntdll_resume()
+    handle = getattr(process, "_handle", None)
+    if ntdll is None or handle is None:
+        return False
+    try:
+        status = ntdll.NtResumeProcess(int(handle))
+    except (OSError, TypeError, ValueError):
+        return False
+    return status == _WINDOWS_STATUS_SUCCESS
+
+
+def adopt_process_group(
+    process: "subprocess.Popen[str] | subprocess.Popen[bytes]",
+    *,
+    was_suspended: bool = False,
+) -> WindowsProcessGroup | None:
+    """Give *process* a group with POSIX-session reach, where one is needed.
+
+    POSIX already has it: ``start_new_session=True`` did the work at launch, so
+    this returns ``None`` there and nothing about the POSIX path changes.
+    Windows needs the job created and the child assigned to it.  When the child
+    was created suspended (``was_suspended``), it is sealed into the job *before*
+    it can run -- so no descendant it later spawns can escape a job that would
+    otherwise have been assigned a beat too late -- and then, unconditionally,
+    resumed: a suspended child must be started again whether or not confinement
+    succeeded, or it hangs forever.  A child that cannot be resumed is unusable,
+    so it is killed and reported as unconfined rather than left frozen.
+    """
+
+    if not platform_compat.IS_WINDOWS:
+        return None
+    group = WindowsProcessGroup.create()
+    assigned = group is not None and group.adopt(process)
+    if was_suspended and not _resume_suspended_process(process):
+        if group is not None:
+            group.close()
+        try:
+            process.kill()
+        except OSError:
+            pass
+        return None
+    if group is None or not assigned:
+        if group is not None:
+            group.close()
+        return None
+    return group
+
+
+def _drain_windows_job(group: WindowsProcessGroup) -> int | None:
+    """Wait, bounded, for an already-terminated job to empty; return its count.
+
+    Polls ``ActiveProcesses`` until it reads zero or the grace window closes.
+    If the window closes with survivors still counted, ``TerminateJobObject`` is
+    issued once more -- catching a descendant that was mid-spawn when the first
+    sweep passed over the group -- and the group is given one more bounded window
+    to drain.  Returns the final count, or ``None`` when the count could not be
+    read at all (never mistaken by the caller for a survivor).
+    """
+
+    def settle() -> int | None:
+        deadline = time.monotonic() + PROCESS_STOP_GRACE_SECONDS
+        while True:
+            count = group.active_process_count()
+            if count == 0:
+                return 0
+            if time.monotonic() >= deadline:
+                return count
+            time.sleep(PROCESS_POLL_SECONDS)
+
+    count = settle()
+    if count is not None and count > 0:
+        group.terminate()
+        count = settle()
+    return count
+
+
+def stop_windows_process_group(
+    process: "subprocess.Popen[str] | subprocess.Popen[bytes]",
+    group: WindowsProcessGroup | None,
+) -> bool:
+    """Stop a child and its descendants through the job object; report success.
+
+    Returns ``True`` when the group is confirmed stopped and ``False`` only on
+    *positive evidence* of a survivor: the job's own active-process count, read
+    after ``TerminateJobObject`` and given a bounded window to fall to zero, or
+    -- when that count cannot be read at all -- the direct child still being
+    alive.  A group that genuinely stopped, or one whose accounting merely could
+    not be queried while the child it led is already gone, is never misreported
+    as a survivor.  The bool is returned rather than raised so each caller can
+    surface its own product error; the job handle is always released here.
+    """
+
+    if group is None:
+        # No job: only the direct child is reachable.  Stop it and report on the
+        # same evidence the POSIX path uses -- an observed survivor, never merely
+        # a group that could not be observed.
+        try:
+            process.kill()
+        except OSError:
+            pass
+        try:
+            process.communicate(timeout=PROCESS_STOP_GRACE_SECONDS)
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+        return process.poll() is not None
+    try:
+        group.terminate()
+        try:
+            process.communicate(timeout=PROCESS_STOP_GRACE_SECONDS)
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+        count = _drain_windows_job(group)
+        # Positive evidence of a survivor is either the job still counting one
+        # after it was terminated and drained, or -- when the count is
+        # unreadable -- the direct child still being alive.  Everything else
+        # (a drained group; an unreadable count with the child already gone) is
+        # not a survivor: TerminateJobObject was issued regardless, so refusing
+        # to invent one is what keeps a stopped group from being misreported.
+        survived = count > 0 if count is not None else process.poll() is None
+        return not survived
+    finally:
+        group.close()
+
+
 class SubprocessBuildCommandRunner:
     """Run the fixed backend argv without a shell or ambient injection hooks."""
 
@@ -138,6 +514,7 @@ class SubprocessBuildCommandRunner:
 
     def run(self, argv: Sequence[str], cwd: Path) -> CommandResult:
         fixed = tuple(os.fspath(value) for value in argv)
+        suspended = use_suspended_launch()
         try:
             process = subprocess.Popen(
                 fixed,
@@ -148,24 +525,52 @@ class SubprocessBuildCommandRunner:
                 stderr=subprocess.PIPE,
                 text=True,
                 shell=False,
+                # POSIX only; silently ignored on Windows, where the job object
+                # adopted below supplies the same reach.
                 start_new_session=True,
+                # Windows only (``0`` -- the default -- everywhere else, so the
+                # POSIX launch is byte-for-byte the one it always was): freeze
+                # the child so it is sealed into the job before it can spawn a
+                # descendant; ``adopt_process_group`` resumes it.
+                creationflags=WINDOWS_CREATE_SUSPENDED if suspended else 0,
             )
         except OSError as exc:
             raise Nfl2k5BuildError(
                 "2K5 Mod Studio could not start its ISO builder. "
                 f"Check that Python is installed and try again ({exc})."
             ) from exc
+        group = adopt_process_group(process, was_suspended=suspended)
         try:
             stdout, stderr = process.communicate()
         except BaseException:
             # The backend owns only paths below our staging directory.  Stop its
             # whole process group before that directory is removed.
-            self._stop_process_group(process)
+            self._stop_process_group(process, group)
             raise
+        # The backend has exited and its pipes are drained.  POSIX leaves the
+        # group alone on this path and always has; Windows has one extra thing
+        # to do -- release the job handle it would otherwise leak.
+        if group is not None:
+            group.close()
         return CommandResult(fixed, process.returncode, stdout, stderr)
 
     @staticmethod
-    def _stop_process_group(process: subprocess.Popen[str]) -> None:
+    def _stop_process_group(
+        process: subprocess.Popen[str],
+        group: WindowsProcessGroup | None = None,
+    ) -> None:
+        if platform_compat.IS_WINDOWS:
+            # Deliberately ahead of the "direct child already exited" shortcut
+            # below: on Windows the job can still hold descendants the exited
+            # launcher started, and those are what would keep writing into the
+            # staging directory we are about to remove.
+            if not stop_windows_process_group(process, group):
+                raise Nfl2k5BuildError(
+                    "The ISO builder left a background process that could not be "
+                    "stopped. Sign out or restart Windows before building again; "
+                    "no output was published."
+                )
+            return
         if process.poll() is not None:
             return
         try:
@@ -226,16 +631,30 @@ def _read_regular_snapshot(
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | \
         getattr(os, "O_CLOEXEC", 0)
     try:
-        descriptor = os.open(resolved, flags)
+        descriptor = os.open(resolved, flags | getattr(os, "O_BINARY", 0))
     except OSError as exc:
         raise ValidationError(f"{label} could not be opened safely: {resolved}") from exc
     try:
+        # ``named`` and ``named_after`` are PATH stats; ``opened`` and
+        # ``opened_after`` are FD stats of the descriptor.  Windows reaches
+        # st_ctime through a different Win32 information class for each family,
+        # so the two disagree for a file nothing touched.  The path/path
+        # comparison therefore keeps the change time on every platform, while
+        # the two path/fd comparisons drop it where it cannot be compared --
+        # hence two spellings of the ``named`` fingerprint.
         expected = (
             named.st_dev,
             named.st_ino,
             named.st_size,
             named.st_mtime_ns,
             named.st_ctime_ns,
+        )
+        expected_cross = (
+            named.st_dev,
+            named.st_ino,
+            named.st_size,
+            named.st_mtime_ns,
+            *platform_compat.change_time_identity(named),
         )
         opened = os.fstat(descriptor)
         if (
@@ -245,8 +664,8 @@ def _read_regular_snapshot(
                 opened.st_ino,
                 opened.st_size,
                 opened.st_mtime_ns,
-                opened.st_ctime_ns,
-            ) != expected
+                *platform_compat.change_time_identity(opened),
+            ) != expected_cross
         ):
             raise ValidationError(f"{label} changed while it was being opened")
         chunks: list[bytes] = []
@@ -271,8 +690,8 @@ def _read_regular_snapshot(
                 opened_after.st_ino,
                 opened_after.st_size,
                 opened_after.st_mtime_ns,
-                opened_after.st_ctime_ns,
-            ) != expected
+                *platform_compat.change_time_identity(opened_after),
+            ) != expected_cross
             or (
                 named_after.st_dev,
                 named_after.st_ino,
@@ -294,7 +713,7 @@ def _write_private_snapshot(path: Path, payload: bytes) -> Path:
         getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
     descriptor: int | None = None
     try:
-        descriptor = os.open(path, flags, 0o600)
+        descriptor = os.open(path, flags | getattr(os, "O_BINARY", 0), 0o600)
         cursor = 0
         while cursor < len(payload):
             written = os.write(descriptor, payload[cursor:])
@@ -305,7 +724,7 @@ def _write_private_snapshot(path: Path, payload: bytes) -> Path:
         opened = os.fstat(descriptor)
         if (
             not stat.S_ISREG(opened.st_mode)
-            or stat.S_IMODE(opened.st_mode) != 0o600
+            or stat.S_IMODE(opened.st_mode) != platform_compat.private_file_mode()
             or opened.st_nlink != 1
             or opened.st_size != len(payload)
         ):
@@ -402,14 +821,22 @@ def _last_message(result: CommandResult) -> str:
     return message
 
 
-def _fsync_directory(path: Path) -> None:
-    descriptor = os.open(
-        path, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) |
-        getattr(os, "O_CLOEXEC", 0))
-    try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+def _fsync_directory(path: Path) -> bool:
+    """Commit the directory entry a publish just created, and report whether it held.
+
+    Delegates to :func:`platform_compat.fsync_directory`, which performs the POSIX
+    ``O_RDONLY | O_DIRECTORY`` flush this used to open by hand and returns ``True``,
+    and on Windows now attempts ``FlushFileBuffers`` on a directory write handle --
+    returning ``True`` when it genuinely committed and ``False`` only when the
+    account cannot obtain that handle.  The bool is now *returned* rather than
+    discarded, so the commit path can surface a non-durable Windows publish instead
+    of continuing as if committed; the rollback path legitimately ignores it (it is
+    undoing a publish, not making one durable).  The published file itself is always
+    flushed separately, so a Windows ``False`` costs the directory entry's
+    crash-durability, not the payload's.
+    """
+
+    return fsync_directory(path)
 
 
 def _link_then_unlink(source: Path, destination: Path) -> None:
@@ -433,10 +860,31 @@ def _link_then_unlink(source: Path, destination: Path) -> None:
 def _rename_noreplace(source: Path, destination: Path) -> None:
     """Atomically move *source* while refusing to replace *destination*.
 
-    2K5 Mod Studio targets Linux, where renameat2(RENAME_NOREPLACE) supplies
-    the exact transaction needed here.  A hard-link transaction is retained as
-    a fallback for older kernels/libcs.
+    Linux supplies renameat2(RENAME_NOREPLACE), the exact transaction needed
+    here; a hard-link transaction is retained as a fallback for older
+    kernels/libcs.  Off Linux the same guarantee comes from
+    :func:`platform_compat.publish_no_replace` -- macOS ``renamex_np(RENAME_EXCL)``
+    or POSIX link+unlink, and on Windows ``os.rename``, which natively refuses an
+    existing destination.  Routing there is not a convenience: ``ctypes.CDLL(None)``
+    raises ``TypeError`` on Windows, so the libc probe below cannot even be
+    attempted, and its ``_link_then_unlink`` fallback would call ``os.link``,
+    which Windows also lacks.
     """
+
+    if not platform_compat.IS_LINUX:
+        try:
+            platform_compat.publish_no_replace(source, destination)
+        except FileExistsError:
+            raise OutputRefusedError(
+                "The output was created by another process and was not "
+                f"overwritten: {destination}"
+            ) from None
+        except OSError as exc:
+            raise Nfl2k5BuildError(
+                "The verified ISO could not be moved into the selected output "
+                f"folder: {exc}"
+            ) from exc
+        return
 
     libc = ctypes.CDLL(None, use_errno=True)
     renameat2 = getattr(libc, "renameat2", None)
@@ -493,15 +941,15 @@ def _audio_safety_error(detail: str) -> ValidationError:
 
 
 def _private_audio_inventory_file(
-    directory_fd: int,
+    directory: platform_compat.DirHandle,
     path: Path,
     label: str,
     maximum_size: int,
 ) -> Path:
-    """Validate one exact owner-only file beneath an already-open dirfd."""
+    """Validate one exact owner-only file beneath an already-pinned directory."""
 
     try:
-        named = os.stat(path.name, dir_fd=directory_fd, follow_symlinks=False)
+        named = directory.stat(path.name, follow=False)
     except FileNotFoundError as exc:
         raise _audio_safety_error(f"{label} is missing at {path}") from exc
     except OSError as exc:
@@ -511,9 +959,9 @@ def _private_audio_inventory_file(
     if (
         not stat.S_ISREG(named.st_mode)
         or stat.S_ISLNK(named.st_mode)
-        or named.st_uid != os.getuid()
+        or not platform_compat.is_owned_by_current_user(named, path=path)
         or named.st_nlink != 1
-        or stat.S_IMODE(named.st_mode) != 0o600
+        or stat.S_IMODE(named.st_mode) != platform_compat.private_file_mode()
     ):
         raise _audio_safety_error(
             f"{label} must be a mode-0600, owner-only, non-linked regular file "
@@ -528,7 +976,7 @@ def _private_audio_inventory_file(
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | \
         getattr(os, "O_CLOEXEC", 0)
     try:
-        descriptor = os.open(path.name, flags, dir_fd=directory_fd)
+        descriptor = directory.open(path.name, flags | getattr(os, "O_BINARY", 0))
     except OSError as exc:
         raise _audio_safety_error(
             f"{label} could not be opened safely at {path} ({exc})"
@@ -536,13 +984,15 @@ def _private_audio_inventory_file(
     try:
         opened = os.fstat(descriptor)
         try:
-            named_after = os.stat(
-                path.name, dir_fd=directory_fd, follow_symlinks=False
-            )
+            named_after = directory.stat(path.name, follow=False)
         except OSError as exc:
             raise _audio_safety_error(
                 f"{label} changed while it was being checked at {path}"
             ) from exc
+        # ``named`` and ``named_after`` are DirHandle PATH stats; ``opened`` is
+        # an FD stat.  The path/path comparison keeps the change time on every
+        # platform; the path/fd one drops it where Windows cannot compare the
+        # two calls (platform_compat.supports_change_time_identity).
         expected = (
             named.st_dev,
             named.st_ino,
@@ -550,18 +1000,27 @@ def _private_audio_inventory_file(
             named.st_mtime_ns,
             named.st_ctime_ns,
         )
+        expected_cross = (
+            named.st_dev,
+            named.st_ino,
+            named.st_size,
+            named.st_mtime_ns,
+            *platform_compat.change_time_identity(named),
+        )
         if (
             not stat.S_ISREG(opened.st_mode)
-            or opened.st_uid != os.getuid()
+            or not platform_compat.is_owned_by_current_user(
+                opened, fd=descriptor
+            )
             or opened.st_nlink != 1
-            or stat.S_IMODE(opened.st_mode) != 0o600
+            or stat.S_IMODE(opened.st_mode) != platform_compat.private_file_mode()
             or (
                 opened.st_dev,
                 opened.st_ino,
                 opened.st_size,
                 opened.st_mtime_ns,
-                opened.st_ctime_ns,
-            ) != expected
+                *platform_compat.change_time_identity(opened),
+            ) != expected_cross
             or (
                 named_after.st_dev,
                 named_after.st_ino,
@@ -591,8 +1050,22 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
     if (
         not stat.S_ISDIR(named_root.st_mode)
         or stat.S_ISLNK(named_root.st_mode)
-        or named_root.st_uid != os.getuid()
-        or stat.S_IMODE(named_root.st_mode) != 0o700
+        or not platform_compat.is_owned_by_current_user(
+            named_root, path=selected_root
+        )
+        # The mode is the number this platform genuinely produces for a private
+        # directory -- 0o700 on POSIX, 0o777 on Windows -- so the equality below
+        # is an honest shape check on both.  On Windows it is only that: every
+        # directory reads 0o777 and the number confers no privacy, so the
+        # owner-only guarantee is asked of the DACL instead (a current-user-owned
+        # directory with an Everyone/Users ACE is refused).  On POSIX
+        # is_private_directory_mode is the historical "no group or other access"
+        # test, already implied by the exact-mode equality, so the decision Linux
+        # and macOS reach is unchanged.
+        or stat.S_IMODE(named_root.st_mode) != platform_compat.private_directory_mode()
+        or not platform_compat.is_private_directory_mode(
+            named_root, path=selected_root
+        )
     ):
         raise _audio_safety_error(
             "the private source cache must be an owner-only, mode-0700 "
@@ -604,26 +1077,30 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
         raise _audio_safety_error(
             f"the private source cache could not be resolved safely ({exc})"
         ) from exc
-    if selected_root.absolute() != root:
+    if not platform_compat.is_canonical_absolute_path(selected_root, root):
         raise _audio_safety_error(
             f"the private source-cache path is not canonical at {selected_root}"
         )
 
-    directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | \
-        getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
     try:
-        root_fd = os.open(root, directory_flags)
+        root_handle = platform_compat.open_dir_handle(root)
     except OSError as exc:
         raise _audio_safety_error(
             f"the private source cache could not be opened safely ({exc})"
         ) from exc
-    derived_fd: int | None = None
+    derived_handle: platform_compat.DirHandle | None = None
     try:
-        opened_root = os.fstat(root_fd)
+        opened_root = root_handle.fstat()
         if (
             not stat.S_ISDIR(opened_root.st_mode)
-            or opened_root.st_uid != os.getuid()
-            or stat.S_IMODE(opened_root.st_mode) != 0o700
+            or not root_handle.is_owned_by_current_user(opened_root)
+            # Mode for shape on both platforms; DACL for the owner-only
+            # guarantee on Windows, read through the realpath this handle is
+            # pinned to (POSIX keeps the mode-bit answer it always gave).
+            or stat.S_IMODE(opened_root.st_mode) != platform_compat.private_directory_mode()
+            or not platform_compat.is_private_directory_mode(
+                opened_root, path=root_handle.realpath
+            )
             or (opened_root.st_dev, opened_root.st_ino)
             != (named_root.st_dev, named_root.st_ino)
         ):
@@ -633,9 +1110,7 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
 
         derived = root / AUDIO_SOURCE_FINGERPRINTS_RELATIVE.parent
         try:
-            named_derived = os.stat(
-                derived.name, dir_fd=root_fd, follow_symlinks=False
-            )
+            named_derived = root_handle.stat(derived.name, follow=False)
         except FileNotFoundError as exc:
             raise _audio_safety_error(
                 f"the private derived-cache directory is missing at {derived}"
@@ -647,24 +1122,38 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
         if (
             not stat.S_ISDIR(named_derived.st_mode)
             or stat.S_ISLNK(named_derived.st_mode)
-            or named_derived.st_uid != os.getuid()
-            or stat.S_IMODE(named_derived.st_mode) != 0o700
+            or not platform_compat.is_owned_by_current_user(
+                named_derived, path=derived
+            )
+            # Mode for shape on both platforms; DACL for the owner-only
+            # guarantee on Windows (POSIX keeps the mode-bit answer it always
+            # gave, already implied by the exact-mode equality above).
+            or stat.S_IMODE(named_derived.st_mode) != platform_compat.private_directory_mode()
+            or not platform_compat.is_private_directory_mode(
+                named_derived, path=derived
+            )
         ):
             raise _audio_safety_error(
                 "the private derived-cache directory must be an owner-only, "
                 f"mode-0700 non-link directory at {derived}"
             )
         try:
-            derived_fd = os.open(derived.name, directory_flags, dir_fd=root_fd)
+            derived_handle = root_handle.open_dir(derived.name)
         except OSError as exc:
             raise _audio_safety_error(
                 f"the private derived-cache directory could not be opened safely ({exc})"
             ) from exc
-        opened_derived = os.fstat(derived_fd)
+        opened_derived = derived_handle.fstat()
         if (
             not stat.S_ISDIR(opened_derived.st_mode)
-            or opened_derived.st_uid != os.getuid()
-            or stat.S_IMODE(opened_derived.st_mode) != 0o700
+            or not derived_handle.is_owned_by_current_user(opened_derived)
+            # Mode for shape on both platforms; DACL for the owner-only
+            # guarantee on Windows, read through the realpath this handle is
+            # pinned to (POSIX keeps the mode-bit answer it always gave).
+            or stat.S_IMODE(opened_derived.st_mode) != platform_compat.private_directory_mode()
+            or not platform_compat.is_private_directory_mode(
+                opened_derived, path=derived_handle.realpath
+            )
             or (opened_derived.st_dev, opened_derived.st_ino)
             != (named_derived.st_dev, named_derived.st_ino)
             or derived.resolve(strict=True) != derived
@@ -675,22 +1164,20 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
             )
 
         fingerprints = _private_audio_inventory_file(
-            derived_fd,
+            derived_handle,
             root / AUDIO_SOURCE_FINGERPRINTS_RELATIVE,
             "the source-audio fingerprint inventory",
             MAX_AUDIO_SOURCE_FINGERPRINTS_BYTES,
         )
         containment = _private_audio_inventory_file(
-            derived_fd,
+            derived_handle,
             root / AUDIO_SOURCE_CONTAINMENT_RELATIVE,
             "the source-audio containment inventory",
             MAX_AUDIO_SOURCE_CONTAINMENT_BYTES,
         )
 
         named_root_after = root.lstat()
-        named_derived_after = os.stat(
-            derived.name, dir_fd=root_fd, follow_symlinks=False
-        )
+        named_derived_after = root_handle.stat(derived.name, follow=False)
         if (
             (named_root_after.st_dev, named_root_after.st_ino)
             != (opened_root.st_dev, opened_root.st_ino)
@@ -702,9 +1189,9 @@ def _private_audio_inputs(cache: SourceCache) -> _AudioSafetyInputs:
             )
         return _AudioSafetyInputs(root, fingerprints, containment)
     finally:
-        if derived_fd is not None:
-            os.close(derived_fd)
-        os.close(root_fd)
+        if derived_handle is not None:
+            derived_handle.close()
+        root_handle.close()
 
 
 class Nfl2k5BuildService:
@@ -779,9 +1266,17 @@ class Nfl2k5BuildService:
 
             result, staged_identity = self._read_verified_result(
                 manifest, staged_xiso, source, output)
-            descriptor = os.open(
-                staged_xiso, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-                getattr(os, "O_CLOEXEC", 0))
+            # O_RDONLY | O_NOFOLLOW | O_CLOEXEC | O_BINARY on POSIX, unchanged.
+            # This descriptor is held across the publish on purpose -- it pins
+            # the exact inode the manifest was verified against, which is the
+            # only reason the post-publish (st_dev, st_ino) comparison below
+            # proves anything -- and Windows refuses to rename a file that has
+            # an open handle without FILE_SHARE_DELETE, which the CRT's open()
+            # never grants.  The helper grants it there and nothing else; the
+            # descriptor's lifetime and access rights are identical on every
+            # platform.  Closing it early instead would trade the held-descriptor
+            # proof for a name lookup.
+            descriptor = platform_compat.open_existing_for_publish(staged_xiso)
             publish_attempted = False
             committed = False
             try:
@@ -790,7 +1285,13 @@ class Nfl2k5BuildService:
                     raise Nfl2k5BuildError(
                         "The staged XISO changed after verification; no output was published."
                     )
-                os.fsync(descriptor)
+                # Flush the exact inode just pinned above.  On POSIX this is the
+                # same ``os.fsync(descriptor)`` it always was; on Windows, where
+                # a read-only handle cannot be flushed, the helper reopens by
+                # path and re-checks ``(st_dev, st_ino)`` against this very
+                # descriptor, so the "verified inode" guarantee is preserved
+                # rather than traded away for portability.
+                fsync_fd(descriptor, path=staged_xiso)
                 _emit(
                     progress, BuildStage.PUBLISHING, 3, 4,
                     "Publishing the verified XISO",
@@ -803,7 +1304,18 @@ class Nfl2k5BuildService:
                     raise Nfl2k5BuildError(
                         "The output pathname changed during publication."
                     )
-                _fsync_directory(output.parent)
+                if not _fsync_directory(output.parent):
+                    # POSIX always commits; a False is Windows telling us it could
+                    # not flush the directory entry.  Surface the missing
+                    # crash-durability rather than returning as if fully committed.
+                    warnings.warn(
+                        "nfl2k5_build_service: the published XISO's directory entry "
+                        "could not be flushed to stable storage on this platform; a "
+                        "crash before the OS flushes it on its own could lose the "
+                        "published filename",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
                 committed = True
             finally:
                 os.close(descriptor)

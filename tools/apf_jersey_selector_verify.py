@@ -174,6 +174,11 @@ class BoundFile:
             require(self.identity == (supplied.st_dev, supplied.st_ino),
                     f"{label} pathname changed while opening")
             self.size = current.st_size
+            # ``current`` is an os.fstat, and assert_stable() re-checks these
+            # times against another os.fstat of the same descriptor: fd
+            # against fd, so st_ctime_ns is comparable on every platform and
+            # stays in.  NOTE: no st_dev/st_ino here -- identity is checked
+            # separately against self.identity in the same predicate.
             self.times = (current.st_mtime_ns, current.st_ctime_ns)
             self.path = self.supplied_path.resolve(strict=True)
             require(self.path == self.supplied_path,
@@ -325,6 +330,9 @@ class ReportReservation:
         info = self._assert_owned()
         require(info.st_size == len(payload), "report size changed during write")
         self.payload_size = len(payload)
+        # ``info`` came from _assert_owned()'s os.fstat, and every re-check of
+        # payload_times is against another os.fstat of the same descriptor:
+        # fd against fd, so st_ctime_ns stays comparable on every platform.
         self.payload_times = (info.st_mtime_ns, info.st_ctime_ns)
         self.payload_sha256 = sha256_bytes(payload)
 

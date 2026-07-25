@@ -111,7 +111,7 @@ def export_text_sheet(
     descriptor: int | None = None
     active_count = 0
     try:
-        descriptor = os.open(destination, flags, 0o600)
+        descriptor = os.open(destination, flags | getattr(os, "O_BINARY", 0), 0o600)
         with TextIOWrapper(
             os.fdopen(descriptor, "wb", closefd=True),
             encoding="utf-8",
@@ -195,7 +195,7 @@ def _read_private_sheet(source: Path) -> str:
         raise TextSheetError("The text sheet is unexpectedly large")
     descriptor = os.open(
         source,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)
@@ -216,6 +216,10 @@ def _read_private_sheet(source: Path) -> str:
         if os.read(descriptor, 1):
             raise TextSheetError("The text sheet grew while it was read")
         after = os.fstat(descriptor)
+        # ``opened`` and ``after`` are both os.fstat of this one descriptor.
+        # Two fd stats agree on st_ctime_ns on every platform, Windows
+        # included, so it stays in the fingerprint here and the
+        # metadata-only-change signal is not lost on any platform.
         if (
             after.st_dev,
             after.st_ino,

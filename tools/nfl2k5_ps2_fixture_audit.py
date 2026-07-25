@@ -122,6 +122,8 @@ def hash_regular_file(
             remaining -= len(chunk)
         require(not os.read(descriptor, 1), f"file grew while hashing: {path}")
         after = os.fstat(descriptor)
+        # ``opened`` and ``after`` are both os.fstat of this one descriptor: two
+        # fd stats, which agree on st_ctime_ns on every platform, so it stays in.
         require(
             (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns,
              after.st_ctime_ns)
@@ -224,6 +226,8 @@ def inspect_suspect_disc(path: Path) -> dict[str, Any]:
             f"disc suspect is not a non-symlink regular file: {path}")
     classification = classify_disc_header(path)
     after = path.lstat()
+    # ``before`` and ``after`` are both path.lstat() of one pathname: two path
+    # stats, which agree on st_ctime_ns on every platform, so it stays in.
     require(
         (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns,
          after.st_ctime_ns)

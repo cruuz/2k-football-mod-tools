@@ -117,6 +117,13 @@ ProgressSink = Callable[[str, int, int], None]
 EMBEDDED_AUDIO_TASK_CONTRACT = "global_action_guarded_until_drain"
 EMBEDDED_OPERATION_TASK_CONTRACT = "audio_crib_mutually_exclusive_until_drain"
 
+# Every workspace page is hosted in a scroll area so a tall page (Audio is the
+# tallest at ~949 px of content) scrolls inside a short window instead of forcing
+# the whole main window taller than a 1080p — or 768p — display can show.  The
+# host keeps only a small vertical floor so the window can shrink well below any
+# single page's natural minimum height.
+PAGE_SCROLL_MIN_HEIGHT = 220
+
 
 def _window_icon() -> QIcon | None:
     """Return the bundled application icon, or None if it is unavailable."""
@@ -1006,7 +1013,11 @@ class StudioMainWindow(QMainWindow):
         icon = _window_icon()
         if icon is not None:
             self.setWindowIcon(icon)
-        self.setMinimumSize(1180, 760)
+        # Width keeps the sidebar + a full workspace panel visible; the height
+        # floor is deliberately low so the window fits a 1366x768 laptop after
+        # the OS chrome.  Pages scroll (see _page_scroll_host), so a short window
+        # never clips the header or the bottom build/launch action bar.
+        self.setMinimumSize(1180, 640)
         self.resize(1480, 920)
         self.setObjectName("studioWindow")
         self._build_ui()
@@ -1427,6 +1438,30 @@ class StudioMainWindow(QMainWindow):
             return
         self._request_source_switch(candidate.source_path, recovery=candidate)
 
+    def _page_scroll_host(self, page: QWidget) -> QWidget:
+        """Wrap a workspace page so it scrolls instead of stretching the window.
+
+        The returned widget is what gets added to the ``pages`` stack; callers
+        keep their own reference to ``page`` for behaviour wiring.  A page that
+        is already a resizable ``QScrollArea`` is returned unwrapped (only its
+        vertical floor is relaxed) so we never nest one scroll area inside
+        another.
+        """
+
+        if isinstance(page, QScrollArea):
+            page.setWidgetResizable(True)
+            page.setMinimumHeight(PAGE_SCROLL_MIN_HEIGHT)
+            return page
+        host = QScrollArea()
+        host.setObjectName("pageScrollHost")
+        host.setWidgetResizable(True)
+        host.setFrameShape(QFrame.NoFrame)
+        host.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        host.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        host.setMinimumHeight(PAGE_SCROLL_MIN_HEIGHT)
+        host.setWidget(page)
+        return host
+
     def _build_ui(self) -> None:
         root = QWidget()
         self.setCentralWidget(root)
@@ -1507,7 +1542,7 @@ class StudioMainWindow(QMainWindow):
         self.pages = QStackedWidget()
         self.pages.setObjectName("pages")
         self.welcome_page = self._build_welcome_page()
-        self.pages.addWidget(self.welcome_page)
+        self.pages.addWidget(self._page_scroll_host(self.welcome_page))
         text_specialist_host = _EmbeddedOperationGuardedHost(
             self.facade,
             requester="text",
@@ -1623,7 +1658,7 @@ class StudioMainWindow(QMainWindow):
             else:
                 page = self._build_capability_page(section)
             self._category_pages[category] = page
-            self.pages.addWidget(page)
+            self.pages.addWidget(self._page_scroll_host(page))
         workspace_layout.addWidget(self.pages, 1)
         workspace_layout.addWidget(self._build_footer())
         root_layout.addWidget(workspace, 1)
@@ -4740,6 +4775,19 @@ class StudioMainWindow(QMainWindow):
                 background: #0c1220;
                 color: #edf3fc;
             }
+            /*
+             * The blanket QWidget rule above paints an opaque dark background on
+             * every QLabel, which shows as a dark rectangle whenever a label sits
+             * on a lighter card or frame.  Reset labels to transparent so they
+             * inherit whatever surface they are placed on.  Labels that
+             * intentionally carry their own background (brandMark, safetyCard,
+             * sourcePill, countPill, editCount, findingsBanner, findingsNote and
+             * the _StatusPill class) declare it through a higher-specificity ID
+             * selector or their own stylesheet, so this reset never reaches them.
+             */
+            QLabel {
+                background: transparent;
+            }
             QWidget {
                 font-family: Noto Sans, DejaVu Sans;
                 font-size: 13px;
@@ -5111,6 +5159,22 @@ class StudioMainWindow(QMainWindow):
             }
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
                 height: 0;
+            }
+            QScrollBar:horizontal {
+                background: #101827;
+                height: 10px;
+                margin: 2px;
+            }
+            QScrollBar::handle:horizontal {
+                background: #35465f;
+                min-width: 30px;
+                border-radius: 4px;
+            }
+            QScrollBar::handle:horizontal:hover {
+                background: #465c79;
+            }
+            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+                width: 0;
             }
             QToolTip {
                 background: #192438;

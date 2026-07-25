@@ -608,6 +608,71 @@
     },
     {
       "backend": {
+        "command": "python3 tools/apf_field_art_patch.py --index <0A> --png <exact-rgba.png> --entry-index <outer> --file-index <inner> --output-volume <new-0A> --manifest <patch.json>",
+        "module": "tools/apf_field_art_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "reports/assets/apf_field_art_roundtrip.json"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Each shipped field-art TXTR family has a fail-closed, copy-only base-level writer pinned by a frozen per-slot contract (outer/inner index, Xenos descriptor, base/mip lengths, part layout, and retail entry + base SHA-256), paired with an independent full-volume byte-diff verifier (apf_field_art_verify.py) that confirms on a real copied 1.1 GB volume that only the target entry changed. COVERED (offline byte-exact proven): endzone_l0/endzone_l1 (DXT1 2048x512), pc_field_goal (DXT1 256x256), Field_Pass_text and Stride_number_field (BC3 128x128), and divots (8_8_8_8 64x64). Only the base mip is regenerated; the packed mip tail is byte-preserved (stale relative to an edit) until a Xenos packed-mip regenerator lands. DEFERRED families raise a typed refusal rather than a guess: field_radiance (DXT5A) and the weather textures divot_GrassRain/divot_GrassSnow/divot_GrassDry (5_6_5). Source-derived preview, Revert, and a copied-0A build are exposed; no in-game/runtime visibility is claimed without a Xenia capture."
+      },
+      "id": "apf2k8.field_art.base_texture",
+      "input_constraints": [
+        "Input must be an exact-dimension RGBA PNG matching the selected slot: 2048x512 for endzone_l0/endzone_l1, 256x256 for pc_field_goal, 128x128 for the Field_Pass_text and Stride_number_field practice overlays, and 64x64 for divots.",
+        "Only the shipped slots are writable, keyed by (outer entry, inner file): endzone_l0 (6,0), endzone_l1 (6,1), pc_field_goal (659,18), Field_Pass_text (659,23), Stride_number_field (659,252), divots (53,0); each is pinned by a frozen contract and the writer refuses any slot or PNG that disagrees with its pin.",
+        "The DXT1/BC3 targets are lossy-encoded, so inspect the reported decode-back error before release; the uncompressed 8_8_8_8 divots slot is lossless. Only the base mip level is regenerated and the packed mip tail is byte-preserved, not regenerated.",
+        "The source 0A is read-only, output paths must be new and non-aliasing, and the rebuilt IFF must fit the original fixed outer allocation; every sibling inner part, the descriptor pad, the packed mip tail, the IFF name footer, and every unrelated archive entry are byte-preserved. The DEFERRED families field_radiance (DXT5A) and divot_GrassRain/divot_GrassSnow/divot_GrassDry (5_6_5) are refused with a typed PORTME error."
+      ],
+      "portme": [
+        "Validate the changed copied volume in Xenia and on user-owned hardware before describing any in-game/runtime effect as proved.",
+        "Land a Xenos packed-mip regenerator so the packed mip tail is regenerated from the new base rather than byte-preserved (currently stale relative to an edit).",
+        "Add the DXT5A single-channel codec for field_radiance and the 5_6_5 const-channel swizzle path for the divot_Grass* weather textures, then lift them out of the typed refusal set."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute tooling, selectors, and user-authored PNGs only; each user rebuilds a copied 0A from their own retail game.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "No APF field-art replacement is runtime-proved; the offline writer and its full-volume verifier prove the exact target-entry bytes changed for the covered slots inside the copied volume, but no Xenia or hardware capture shows the endzone, field-goal net, practice overlays, or divots on the field in game.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "shipped field-art slots only, (outer,inner): endzone_l0 (6,0), endzone_l1 (6,1), pc_field_goal (659,18), Field_Pass_text (659,23), Stride_number_field (659,252), divots (53,0)",
+            "name": "target",
+            "required": true
+          }
+        ],
+        "notes": "field_radiance (DXT5A) and the divot_GrassRain/divot_GrassSnow/divot_GrassDry weather textures (5_6_5) are intentionally out of scope and refused with a typed error; only the base mip is written and the packed mip tail is byte-preserved."
+      },
+      "source_container": {
+        "format": "APF field-art TXTR entries inside copied 0A volume (endzone / pc_field_goal / practice overlays / divots)",
+        "hash_pins": [
+          "d8fb70d2bdb180306f49aa2b268d287b35eb33289c69959a74fd6c7dcac9af26",
+          "7077a50912167a6c9ad06014277b9e838bb45e6d9d9dc10d5e0da5ec9f398177",
+          "c0600767a720266b704bc6bb6ece23d43a410f8235080f99d6b434aa0f41155b"
+        ],
+        "resource": "outer 6 endzone_l0/endzone_l1 (DXT1 2048x512), outer 659 pc_field_goal (DXT1 256x256) + Field_Pass_text/Stride_number_field (BC3 128x128), outer 53 divots (8_8_8_8 64x64); base level regenerated, packed mip tail byte-preserved",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A"
+      },
+      "summary": "Replace one proven APF field-art base texture (endzone, pc_field_goal, the practice overlays, or divots) with an exact-dimension RGBA PNG in a new copied 0A while byte-preserving the packed mip tail, every sibling part, and every unrelated archive entry.",
+      "surface": "stadiums_fields",
+      "title": "APF bounded field-art base-texture PNG writer",
+      "validation_command": "python3 tools/apf_field_art_verify.py"
+    },
+    {
+      "backend": {
         "command": null,
         "module": null,
         "operation": "none"
@@ -810,6 +875,137 @@
       "surface": "logos_cards",
       "title": "APF bounded draft-logo PNG writer",
       "validation_command": "bash tools/validate_apf_texture_patch.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/apf_logo_patch.py --index <0A> --png <512x512-logo_l0.png> --png-l1 <512x512-logo_l1.png> --output-volume <new-0A> --manifest <patch.json>",
+        "module": "tools/apf_logo_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "reports/assets/apf_logo_roundtrip.json",
+        "tests/apf_logo_patch_test.py",
+        "tests/mod_editor/test_apf_logo_patch.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "The exact uniform_logo_01 team-logo TXTR, the shared texture that is the helmet crest, has a fail-closed copy-only writer that rewrites the logo_l0 base level and, when a second PNG is supplied, co-writes the sibling logo_l1 base level with the same retail Xenos 4_4_4_4 encoder (each a 512x512 RGBA PNG); each written layer's 0x2C000 packed mip tail is byte-preserved, and when the logo_l1 PNG is omitted the whole logo_l1 layer is byte-preserved. It is paired with an independent full-volume byte-diff verifier that confirms only the intended entry changed; source-derived preview, Revert, and a copied-0A build are exposed. Runtime visibility on the helmet is not claimed without a Xenia capture, and this writer does not cover the scorebug/logocache path (see apf2k8.logos_cards.team_logo_cache)."
+      },
+      "id": "apf2k8.logos_cards.team_logo",
+      "input_constraints": [
+        "Input must be an exact 512x512 RGBA PNG for uniform_logo_01.iff outer 36, inner 1 logo_l0 (the shared team-logo/helmet-crest base level); an optional second 512x512 RGBA PNG co-writes inner 0 logo_l1, the byte-identical sibling layer.",
+        "The targets are tiled Xenos 4_4_4_4 textures (16-bit RGBA, one nibble per channel); PNG channels are quantized to 4 bits, so inspect the reported decode-back error before release. No other logo descriptor is authorized.",
+        "The source 0A is read-only, output paths must be new and non-aliasing, and the rebuilt H7A/IFF must fit the original fixed outer allocation.",
+        "Each written layer's 0x2C000 packed mip tail is byte-preserved (not regenerated); when the optional logo_l1 PNG is omitted the entire sibling logo_l1 layer is byte-preserved. Every unrelated archive part and every byte outside the fixed replacement allocation must remain identical."
+      ],
+      "portme": [
+        "Validate the changed copied volume in Xenia and on user-owned hardware before describing any in-game/runtime effect as proved.",
+        "Resolve the uniform_logocache.iff runtime lifecycle before claiming scorebug visibility; the scorebug logo is not independently editable from the crest, and whether the runtime samples the package or the cache is the package-vs-cache-vs-both Xenia differential.",
+        "Implement 4_4_4_4 packed-MIP regeneration; the 0x2C000 mip tail is currently byte-preserved, not regenerated from the new base."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute tooling, selectors, and user-authored PNGs only; each user rebuilds a copied 0A from their own retail game.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "No APF team-logo replacement is runtime-proved; the offline writer and its full-volume verifier prove the exact logo_l0 (and, when supplied, logo_l1) bytes changed, but no Xenia or hardware capture shows the helmet crest or the scorebug in game.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "uniform_logo_01.iff outer 36 / inner 1 logo_l0 base (optional sibling inner 0 logo_l1 base)",
+            "name": "target",
+            "required": true
+          }
+        ],
+        "notes": "The team logo is a single shared texture that also feeds the helmet crest; matching a logo name elsewhere does not authorize replacement, and per-team logo slots are not yet proved."
+      },
+      "source_container": {
+        "format": "APF uniform_logo_01.iff TXTR inside copied 0A volume",
+        "hash_pins": [
+          "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+          "5683eb73e670d9ece595f707f15d9302522a5243b7fb872f70e3cd31a5632287"
+        ],
+        "resource": "outer 36 uniform_logo_01.iff, inner 1 logo_l0 and sibling inner 0 logo_l1, 512x512 tiled Xenos 4_4_4_4 base levels each with a packed mip tail",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A"
+      },
+      "summary": "Replace the exact APF team-logo crest (uniform_logo_01 logo_l0, the shared helmet-crest base level, with optional co-write of the sibling logo_l1 base) with 512x512 RGBA PNG(s) in a new copied 0A while byte-preserving each written layer's packed mip tail and every unrelated archive part.",
+      "surface": "logos_cards",
+      "title": "APF bounded team-logo PNG writer",
+      "validation_command": "bash tools/validate_apf_logo_patch.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/apf_logocache_patch.py --index <0A> --catalog-index <0..117> --png <512x512-logo_l0.png> --png-l1 <512x512-logo_l1.png> --output-volume <new-0A> --manifest <patch.json>",
+        "module": "tools/apf_logocache_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "reports/assets/apf_logocache_roundtrip.json"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "The prebuilt, runtime-resident uniform_logocache aggregate (outer 171 uniform_logocache.iff directory + outer 213 uniform_logocache.cdf payload) holds the same team-logo textures as the packages, so writing one catalog index here puts the edit wherever the runtime samples the cache. A fail-closed copy-only writer rewrites the logo_l0 base level (and, when a second PNG is supplied, logo_l1) of one catalog index inside a copied volume, byte-preserves every DRAM part, every packed mip tail, and every other catalog entry, updates only the affected auxiliary records, recompresses each edited VRAM part with that part's original H7A shift, and fails closed if the repacked payload would exceed its fixed 0x9E0800 allocation; an independent verifier (apf_logocache_verify.py) reproves the change with its own F0985030/H7A parse, and source-derived preview, Revert, and a copied-0A build are exposed. Whether the team-select grid, scorebug, or helmet crest samples this cache or a freshly package-loaded texture is unproved pending a Xenia capture; no in-game visibility is claimed."
+      },
+      "id": "apf2k8.logos_cards.team_logo_cache",
+      "input_constraints": [
+        "Input must be an exact 512x512 RGBA PNG for catalog index N's N_logo_l0 base level inside uniform_logocache (0 <= N <= 117); an optional second 512x512 RGBA PNG co-writes N_logo_l1. No other slot is authorized.",
+        "The cache is a directory + payload pair: outer 171 uniform_logocache.iff (40,960 B, magic F0985030) and outer 213 uniform_logocache.cdf (10,356,736 B = 0x9E0800), 118 catalog indices x {logo_l0, logo_l1} Xenos 4_4_4_4 512x512 with packed mip tails; PNG channels are quantized to 4 bits, so inspect the reported decode-back error before release.",
+        "The source 0A is read-only, output paths must be new and non-aliasing, and the recompressed payload must fit the fixed 0x9E0800 outer allocation or the writer fails closed.",
+        "Every DRAM part, every packed mip tail, and every other catalog entry are byte-preserved; only the affected auxiliary records and the edited VRAM base level(s) change, and every byte outside the two fixed extents (outer 171 and outer 213) remains identical."
+      ],
+      "portme": [
+        "Validate the changed copied volume in Xenia and on user-owned hardware before describing any in-game/runtime effect as proved.",
+        "Run the package-only / cache-only / both Xenia differential to identify, per surface (frontend team-select grid, in-game scorebug, on-field helmet crest), whether the live source is the uniform_logo package or this cache aggregate.",
+        "Implement 4_4_4_4 packed-MIP regeneration; the 0x2C000 mip tail is byte-preserved/stale here, not regenerated from the new base.",
+        "The greedy H7A encoder does not reproduce retail compressed bytes; edited VRAM parts are proved by round-trip (decompress == intended) plus fixed-allocation fail-closed, not by matching retail's compressor output."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute tooling, selectors, and user-authored PNGs only; each user rebuilds a copied 0A from their own retail game.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "No APF logocache replacement is runtime-proved; the offline writer and its independent verifier prove the exact cache bytes changed inside the copied volume, but no Xenia or hardware capture shows the team-select grid, scorebug, or helmet crest in game.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "uniform_logocache catalog index 0..117; per index N_logo_l0 base (optional N_logo_l1 base)",
+            "name": "target",
+            "required": true
+          }
+        ],
+        "notes": "The team logo is a single shared texture that also feeds the helmet crest and is sampled by the scorebug; whether a given runtime surface reads this cache aggregate or a freshly package-loaded texture is not statically recoverable and is unproved pending Xenia."
+      },
+      "source_container": {
+        "format": "APF uniform_logocache.iff directory + uniform_logocache.cdf payload inside copied 0A volume",
+        "hash_pins": [
+          "3ddd89aabd6ba3b39ef9b1571ef8a9f1d3009baefd43aaa61c066a45d0ef09e5",
+          "572111c49e32dc341a1111ac7f420b3fa4396fff8fe0db3c965fbfccd98d7982"
+        ],
+        "resource": "outer 171 uniform_logocache.iff directory (F0985030, 40,960 B) + outer 213 uniform_logocache.cdf payload (10,356,736 B = 0x9E0800), 118 catalog indices x {logo_l0, logo_l1} Xenos 4_4_4_4 512x512 with packed mip tails",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A"
+      },
+      "summary": "Replace one team's logo base level(s) (N_logo_l0, optional N_logo_l1) inside the APF uniform_logocache runtime aggregate in a new copied 0A while byte-preserving every DRAM part, packed mip tail, and every other catalog entry.",
+      "surface": "logos_cards",
+      "title": "APF bounded team-logo logocache PNG writer",
+      "validation_command": "python3 tools/apf_logocache_verify.py"
     },
     {
       "backend": {

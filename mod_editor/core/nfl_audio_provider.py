@@ -3,21 +3,30 @@
 from __future__ import annotations
 
 import ast
-from contextlib import contextmanager
-import fcntl
+from contextlib import AbstractContextManager, contextmanager
+from dataclasses import dataclass
 import hashlib
 import io
 import json
 import os
 from pathlib import Path
 import re
+import shutil
 import stat
 import sys
-from typing import Iterator
+import tempfile
+from typing import Callable, Iterator
 import zipfile
 
+from . import platform_compat
 from .capabilities import Capability, Classification
 from .errors import OutputRefusedError
+from .platform_compat import (
+    SealIntegrityError,
+    pread,
+    seal_readonly,
+    supports_sealed_memfd,
+)
 from .model import GameId
 from .nfl_audio import (
     NFL_MENU_BACK_AUDIO_FRAME_COUNT,
@@ -41,6 +50,109 @@ from .providers import (
 )
 
 
+def _is_reparse_point(info: os.stat_result) -> bool:
+    """Whether an ``lstat`` result denotes a Windows reparse point (junction).
+
+    A directory *junction* -- and every other reparse point except a symlink --
+    is NOT reported by ``lstat``/``S_ISLNK`` as a link, so a junction planted as
+    a validated directory (the provider workspace, an allowlisted parent, or the
+    private sealed-closure staging directory) slips past a symlink-only guard.
+    On Windows ``os.lstat`` sets ``st_reparse_tag`` to a non-zero tag for any
+    reparse point; on POSIX the attribute is absent, so this is ``False`` and the
+    symlink-only behaviour is byte-for-byte unchanged.  Mirrors the
+    ``FILE_ATTRIBUTE_REPARSE_POINT`` refusal the Windows ``DirHandle`` applies in
+    ``platform_compat`` (the intended shared home for this predicate).
+    """
+
+    return getattr(info, "st_reparse_tag", 0) != 0
+
+
+# Names for the exec-pin mechanism this provider ends up with.  The two below are
+# the paths platform_compat has no say in: the Linux ``memfd`` staging (kernel
+# write-seals plus a ``/proc/self/fd`` name for a descriptor this process holds)
+# and the untouched non-memfd POSIX fallback for a kernel with no ``memfd`` at all.
+# Every other case reports the mechanism string platform_compat itself returned
+# (``SEALED_EXEC_WINDOWS_SHARE_PIN`` / ``SEALED_EXEC_REVERIFIED_PATH`` / ...), so
+# the name in an event or a test assertion is always the one actually enforced.
+_EXEC_PIN_LINUX_MEMFD = "linux-memfd-write-seals-procfs-fd"
+_EXEC_PIN_REHASHED_PATH = "rehashed-path-residual-window"
+
+
+@dataclass(frozen=True)
+class _PinnedExec:
+    """A staged closure pinned for exactly as long as its pin is held open.
+
+    ``path`` is the value to place on the child's ``argv``; it is valid only
+    inside the ``pin_for_exec`` context that produced it.  ``inode_pinned`` is the
+    load-bearing honesty field -- ``True`` means the bytes re-verified at pin time
+    are provably the bytes the child gets (a descriptor this process holds, named
+    through ``/proc``, which no directory entry can redirect), ``False`` means
+    the re-hash ran
+    immediately before the launch but the child still opens a *name* another
+    same-user process could swap in between.  ``mechanism`` names which case is in
+    force so an event, a caller or a test can assert the real guarantee instead of
+    assuming the strongest one.
+    """
+
+    path: Path
+    inode_pinned: bool
+    mechanism: str
+
+
+@dataclass(frozen=True)
+class _StagedModule:
+    """A staged closure ready to hand to the writer/verifier subprocess.
+
+    ``path`` is where the closure is staged.  ``pin_for_exec`` is the pre-exec
+    gate: the caller MUST enter it before building ``argv``, put the
+    :class:`_PinnedExec` it yields on the child's ``argv``, and stay inside it
+    until :meth:`CommandRunner.run` has created the subprocess, because the pin is
+    released on exit.  What that pin enforces differs by platform, and it says
+    which:
+
+    * Linux memfd path -- ``sealed=True`` -- the bytes are kernel-write-sealed
+      (immutable even to this process) and the child receives them through
+      ``/proc/self/fd``, an fd this process holds that no name lookup can swap.
+      The pin is the memfd itself, already held for the whole staging context, so
+      entering the context does nothing new: ``inode_pinned=True``.
+
+    * Windows -- :func:`platform_compat.reverify_sealed_before_exec` re-opens the
+      staged file, re-hashes it against the seal-time digest, fails closed on any
+      change, and *keeps* a ``CreateFileW`` handle whose share mode withholds
+      ``FILE_SHARE_WRITE`` and ``FILE_SHARE_DELETE``.  While that handle lives
+      nothing can rewrite, truncate or delete those BYTES.  It does not lock the
+      NAME: ``SetFileInformationByHandle(FileRenameInfoEx)`` with
+      ``POSIX_SEMANTICS | REPLACE_IF_EXISTS`` rebinds a name whose file has open
+      handles -- the handles keep the old file, later opens get the replacement
+      -- and the child opens by name.  So the window is narrowed, not closed,
+      and Windows reports ``inode_pinned=False`` with the same WARNING macOS
+      emits.  An earlier revision of this docstring claimed the window was
+      closed here; an independent audit showed it was not.
+
+    * macOS -- the same helper re-hashes and holds a descriptor, but macOS has
+      neither a cross-process fd path nor a mandatory share lock, so the child
+      re-opens by *name* and a same-user rename/unlink swap between the re-hash
+      and that open remains possible.  The window is narrowed to the launch
+      itself, not closed, and that is reported rather than hidden:
+      ``inode_pinned=False``, mechanism ``SEALED_EXEC_REVERIFIED_PATH``.
+
+    ``reverify_before_exec`` is the older, weaker check kept for callers (and
+    tests) that only want the re-hash: on the non-memfd path it re-opens the exact
+    staged file, proves it is still the same inode (no symlink/junction/rename
+    swap), re-hashes it against the seal-time digest and fails closed on any
+    change -- but it then *closes* its descriptor, so on its own it proves only
+    that the bytes were intact at that instant and leaves the check-to-use window
+    open.  It is a no-op on the kernel-sealed memfd path.  ``pin_for_exec``, not
+    this, is what the build and verify stages run.
+    """
+
+    path: Path
+    reverify_before_exec: Callable[[], None]
+    pin_for_exec: Callable[
+        [ProviderStage, ProviderEventCallback], AbstractContextManager[_PinnedExec]
+    ]
+
+
 class Nfl2k5MenuBackAudioProvider:
     """Fixed recipe -> copied XISO -> independent full-image verifier."""
 
@@ -52,12 +164,12 @@ class Nfl2k5MenuBackAudioProvider:
         "<retail.xiso.iso> --input-wav <menu-back.wav> --output-xiso "
         "<new.xiso.iso> --manifest <manifest.json>"
     )
-    backend_module_sha256 = "e271c73aeccb76bd480ab9f955bba434cae6391d28ceff3f1a5c7fde46eee450"
+    backend_module_sha256 = "c3621004576b64a5a0f93cd8c54321791c3cca4c36e5e5086fea0450e273577e"
     verifier_module = "tools/nfl_audo_wav_xiso_verify.py"
-    verifier_module_sha256 = "34e4be8c3226e84609765cf94c293ff6318c22577b1455e9d8fea97851231064"
+    verifier_module_sha256 = "2b6d159334a00fa18fc0276eb1f400bd49069a68e6e478be2c7a9b50e1371d00"
     writer_dependency_module = "tools/nfl_uniform_color_xiso_direct_patch.py"
     writer_dependency_module_sha256 = (
-        "d5ed0cfc9ee54dc5c8ca29a5a0fa27053aebf24fd57d46807a40931d64c0dcb5"
+        "863957f3cbc9d4dd5c6ed09705ddb3dc60c07dce7a9d54d10278d1845895b8c3"
     )
     verifier_dependency_module = "tools/nfl_team_identity_xiso_verify.py"
     verifier_dependency_module_sha256 = (
@@ -197,20 +309,27 @@ class Nfl2k5MenuBackAudioProvider:
         recipe = load_nfl_menu_back_audio_recipe(request.backend_project)
         source = self._source_xiso(request)
         with self._sealed_zipapp(self._writer_members(), "writer") as module:
-            argv = (
-                sys.executable,
-                *self._python_flags,
-                os.fspath(module),
-                "--source-xiso",
-                os.fspath(source),
-                "--input-wav",
-                os.fspath(recipe.wav_path),
-                "--output-xiso",
-                os.fspath(self._absolute(request.output_xiso)),
-                "--manifest",
-                os.fspath(self._absolute(request.manifest)),
-            )
-            result = self._run(argv, ProviderStage.BUILD, emit)
+            # Re-verify the sealed snapshot against its digest AND hold the pin
+            # across the launch: the context stays open until runner.run has
+            # created the child, so where the platform can pin an inode the bytes
+            # verified here are the bytes executed.  Where it cannot, the pin
+            # reports that instead of claiming it (no-op on the kernel-sealed
+            # Linux memfd path, which is already executing from a held fd).
+            with module.pin_for_exec(ProviderStage.BUILD, emit) as pinned:
+                argv = (
+                    sys.executable,
+                    *self._python_flags,
+                    os.fspath(pinned.path),
+                    "--source-xiso",
+                    os.fspath(source),
+                    "--input-wav",
+                    os.fspath(recipe.wav_path),
+                    "--output-xiso",
+                    os.fspath(self._absolute(request.output_xiso)),
+                    "--manifest",
+                    os.fspath(self._absolute(request.manifest)),
+                )
+                result = self._run(argv, ProviderStage.BUILD, emit)
         try:
             report = json.loads(result.stdout)
         except json.JSONDecodeError as exc:
@@ -235,22 +354,26 @@ class Nfl2k5MenuBackAudioProvider:
         recipe = load_nfl_menu_back_audio_recipe(request.backend_project)
         source = self._source_xiso(request)
         with self._sealed_zipapp(self._verifier_members(), "verifier") as module:
-            argv = (
-                sys.executable,
-                *self._python_flags,
-                os.fspath(module),
-                "--source-xiso",
-                os.fspath(source),
-                "--output-xiso",
-                os.fspath(self._absolute(request.output_xiso)),
-                "--input-wav",
-                os.fspath(recipe.wav_path),
-                "--manifest",
-                os.fspath(self._absolute(request.manifest)),
-                "--artifact-dir",
-                os.fspath(self._absolute(request.artifact_dir)),
-            )
-            result = self._run(argv, ProviderStage.VERIFY, emit)
+            # Same pre-exec pin as the writer: the independent verifier is exactly
+            # the module an attacker would want to substitute after it was checked,
+            # so its pin is held open until the child has been created too.
+            with module.pin_for_exec(ProviderStage.VERIFY, emit) as pinned:
+                argv = (
+                    sys.executable,
+                    *self._python_flags,
+                    os.fspath(pinned.path),
+                    "--source-xiso",
+                    os.fspath(source),
+                    "--output-xiso",
+                    os.fspath(self._absolute(request.output_xiso)),
+                    "--input-wav",
+                    os.fspath(recipe.wav_path),
+                    "--manifest",
+                    os.fspath(self._absolute(request.manifest)),
+                    "--artifact-dir",
+                    os.fspath(self._absolute(request.artifact_dir)),
+                )
+                result = self._run(argv, ProviderStage.VERIFY, emit)
         if "NFL2K5_AUDO_WAV_XISO_VERIFY_PASS" not in result.stdout:
             raise ProviderError("Independent NFL audio verifier omitted its success marker")
         return result
@@ -323,7 +446,11 @@ class Nfl2k5MenuBackAudioProvider:
             workspace_info = workspace.lstat()
         except FileNotFoundError as exc:
             raise ProviderError("NFL audio provider workspace is missing") from exc
-        if not stat.S_ISDIR(workspace_info.st_mode) or stat.S_ISLNK(workspace_info.st_mode):
+        if (
+            not stat.S_ISDIR(workspace_info.st_mode)
+            or stat.S_ISLNK(workspace_info.st_mode)
+            or _is_reparse_point(workspace_info)
+        ):
             raise ProviderError("NFL audio provider workspace must be a non-symlink directory")
         workspace = workspace.resolve(strict=True)
         path = workspace / relative_path
@@ -333,7 +460,11 @@ class Nfl2k5MenuBackAudioProvider:
                 parent_info = parent.lstat()
             except FileNotFoundError as exc:
                 raise ProviderError(f"Allowlisted {label} parent is missing") from exc
-            if not stat.S_ISDIR(parent_info.st_mode) or stat.S_ISLNK(parent_info.st_mode):
+            if (
+                not stat.S_ISDIR(parent_info.st_mode)
+                or stat.S_ISLNK(parent_info.st_mode)
+                or _is_reparse_point(parent_info)
+            ):
                 raise ProviderError(f"Allowlisted {label} parent must be a non-symlink directory")
             parent = parent.parent
         if path == workspace or workspace not in path.parents:
@@ -345,6 +476,7 @@ class Nfl2k5MenuBackAudioProvider:
         if (
             not stat.S_ISREG(supplied.st_mode)
             or stat.S_ISLNK(supplied.st_mode)
+            or _is_reparse_point(supplied)
             or supplied.st_nlink != 1
             or not 0 < supplied.st_size <= self._max_pinned_module_bytes
         ):
@@ -353,7 +485,7 @@ class Nfl2k5MenuBackAudioProvider:
             )
         descriptor = os.open(
             path,
-            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         )
         try:
             opened = os.fstat(descriptor)
@@ -450,7 +582,7 @@ class Nfl2k5MenuBackAudioProvider:
         self,
         members: tuple[tuple[str, str, str, str, frozenset[str]], ...],
         label: str,
-    ) -> Iterator[Path]:
+    ) -> Iterator[_StagedModule]:
         payloads = self._load_closure(members)
         archive = io.BytesIO()
         with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_STORED) as stream:
@@ -460,16 +592,27 @@ class Nfl2k5MenuBackAudioProvider:
                 info.external_attr = (stat.S_IFREG | 0o444) << 16
                 stream.writestr(info, payloads[name])
         raw = archive.getvalue()
-        required = (
-            "memfd_create",
-            "MFD_ALLOW_SEALING",
-            "MFD_CLOEXEC",
-        )
-        if any(not hasattr(os, name) for name in required) or any(
-            not hasattr(fcntl, name)
-            for name in ("F_ADD_SEALS", "F_GET_SEALS", "F_SEAL_GROW", "F_SEAL_SEAL", "F_SEAL_SHRINK", "F_SEAL_WRITE")
-        ):
-            raise ProviderError("NFL audio execution requires sealed anonymous Linux files")
+        if supports_sealed_memfd():
+            with self._sealed_memfd_module(raw, label) as module:
+                yield module
+        else:
+            with self._read_only_file_module(raw, label) as module:
+                yield module
+
+    @contextmanager
+    def _sealed_memfd_module(self, raw: bytes, label: str) -> Iterator[_StagedModule]:
+        """Linux path: an anonymous, kernel-write-sealed ``memfd`` closure.
+
+        The staged bytes cannot be modified afterwards even by this process, and
+        the executable is handed to the subprocess through ``/proc/self/fd`` --
+        never a lookup-able pathname an attacker could swap.  The staged module's
+        ``reverify_before_exec`` is therefore a no-op: there is no swappable name
+        and no writable descriptor to guard against.  ``pin_for_exec`` is a no-op
+        for the same reason -- the descriptor is already held open for this whole
+        context, which *is* the pin, so entering it performs no syscall and yields
+        the identical ``/proc`` path this path has always executed.
+        """
+
         descriptor = os.memfd_create(
             f"nfl2k5-audio-{label}", os.MFD_CLOEXEC | os.MFD_ALLOW_SEALING
         )
@@ -480,18 +623,14 @@ class Nfl2k5MenuBackAudioProvider:
                 if written <= 0:
                     raise ProviderError("NFL audio staged closure write was incomplete")
                 cursor += written
-            os.fchmod(descriptor, 0o400)
-            seals = (
-                fcntl.F_SEAL_GROW
-                | fcntl.F_SEAL_SEAL
-                | fcntl.F_SEAL_SHRINK
-                | fcntl.F_SEAL_WRITE
-            )
-            fcntl.fcntl(descriptor, fcntl.F_ADD_SEALS, seals)
-            if fcntl.fcntl(descriptor, fcntl.F_GET_SEALS) & seals != seals:
-                raise ProviderError("NFL audio staged closure did not acquire every write seal")
+            try:
+                seal_readonly(descriptor, None)
+            except SealIntegrityError as exc:
+                raise ProviderError(
+                    "NFL audio staged closure did not acquire every write seal"
+                ) from exc
             opened = os.fstat(descriptor)
-            staged = os.pread(descriptor, opened.st_size, 0)
+            staged = pread(descriptor, opened.st_size, 0)
             if (
                 opened.st_size != len(raw)
                 or len(staged) != opened.st_size
@@ -505,9 +644,251 @@ class Nfl2k5MenuBackAudioProvider:
                 raise ProviderError("NFL audio sealed closure is unavailable through procfs") from exc
             if not stat.S_ISREG(visible.st_mode) or visible.st_size != len(raw):
                 raise ProviderError("NFL audio sealed closure procfs identity differs")
-            yield proc_path
+
+            def _reverify_sealed_memfd() -> None:
+                # Kernel write-seals make these bytes immutable even to us, and
+                # the child opens them through the /proc/self/fd we hold, so no
+                # name lookup can swap the executable: nothing to re-check.
+                return
+
+            @contextmanager
+            def _pin_sealed_memfd_for_exec(
+                _stage: ProviderStage, _emit: ProviderEventCallback
+            ) -> Iterator[_PinnedExec]:
+                # The pin already exists: `descriptor` stays open for the whole
+                # enclosing context and `proc_path` names precisely its inode, so
+                # this holds nothing further and emits nothing.  Byte for byte the
+                # instructions this path has always run.
+                _reverify_sealed_memfd()
+                yield _PinnedExec(proc_path, True, _EXEC_PIN_LINUX_MEMFD)
+
+            yield _StagedModule(
+                proc_path, _reverify_sealed_memfd, _pin_sealed_memfd_for_exec
+            )
         finally:
             os.close(descriptor)
+
+    @contextmanager
+    def _read_only_file_module(self, raw: bytes, label: str) -> Iterator[_StagedModule]:
+        """Non-Linux path: a private, read-only, hash-verified file closure.
+
+        Without ``memfd`` write-seals there is no kernel guarantee of
+        immutability, so integrity is proved instead by making the file
+        read-only inside a fresh private directory and re-verifying that its
+        bytes still hash to the closure we intended to stage.  The file is
+        removed when the context exits.
+
+        Read-only is not a seal: an owner (or another same-user process) can
+        clear the attribute and rewrite the bytes.  So the file is re-verified
+        immediately before the child is launched, through the staged module's
+        ``pin_for_exec`` -- and, unlike a bare re-hash, that context *keeps the
+        verified object open* across ``runner.run``.  What that holds shut
+        differs by platform, and on none of the platforms this fallback runs on
+        does it close the check-to-use window:
+
+        * Windows: :func:`platform_compat.reverify_sealed_before_exec` re-hashes
+          the staged file and keeps a ``CreateFileW`` handle sharing READ only,
+          so while the child is starting no same-user process can rewrite,
+          truncate or delete those BYTES.  It does not hold the NAME the child
+          opens: ``SetFileInformationByHandle(FileRenameInfoEx)`` with
+          ``POSIX_SEMANTICS | REPLACE_IF_EXISTS`` rebinds a name whose file has
+          open handles -- the existing handles keep the old file, every later
+          open resolves to the replacement -- and the child opens by name.  So
+          the window is narrowed, NOT closed, and Windows reports it exactly as
+          macOS does: ``inode_pinned=False``, mechanism
+          :data:`~mod_editor.core.platform_compat.SEALED_EXEC_WINDOWS_SHARE_PIN`,
+          and a WARNING event on the stage.  An earlier revision of this
+          docstring claimed the window was closed here; an independent audit
+          showed it was not.
+
+        * macOS: the same helper re-hashes through a descriptor it then holds, but
+          macOS offers neither a cross-process fd path (no ``/proc``) nor a
+          mandatory share lock, so the child opens the *name*.  A same-user
+          rename/unlink swap in that instant would still be executed: the window
+          is narrowed to the launch, NOT closed.  That is reported honestly --
+          ``inode_pinned=False``, mechanism
+          :data:`~mod_editor.core.platform_compat.SEALED_EXEC_REVERIFIED_PATH`,
+          and a WARNING event on the stage -- rather than claimed away.  Closing
+          it needs a macOS exec-from-held-descriptor primitive, which is
+          platform_compat's job, not this provider's.
+
+        * Any other kernel without ``memfd`` seals (an exotic Linux): unchanged
+          from what it has always done -- the re-hash below runs and the staged
+          pathname is executed, with the same residual, named the same way
+          (``inode_pinned=False``).  Linux's real path is the sealed memfd above.
+
+        ``reverify_before_exec`` remains available for callers that want only the
+        re-hash; it drops its descriptor immediately, so it does not by itself
+        close anything.  The file lives in a private, per-user staging directory
+        this process just created and is removed when the context exits.
+        """
+
+        workdir = Path(tempfile.mkdtemp(prefix=f"nfl2k5-audio-{label}-"))
+        module_path = workdir / "sealed-closure.zip"
+        try:
+            descriptor = os.open(
+                module_path,
+                os.O_RDWR
+                | os.O_CREAT
+                | os.O_EXCL
+                | getattr(os, "O_NOFOLLOW", 0)
+                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
+                0o600,
+            )
+            try:
+                cursor = 0
+                while cursor < len(raw):
+                    written = os.write(descriptor, raw[cursor:])
+                    if written <= 0:
+                        raise ProviderError("NFL audio staged closure write was incomplete")
+                    cursor += written
+                seal = seal_readonly(descriptor, os.fspath(module_path))
+                opened = os.fstat(descriptor)
+                staged = pread(descriptor, opened.st_size, 0)
+                if (
+                    seal.sealed
+                    or not seal.read_only
+                    or opened.st_size != len(raw)
+                    or len(staged) != opened.st_size
+                    or seal.sha256 != hashlib.sha256(raw).hexdigest()
+                    or hashlib.sha256(staged).digest() != hashlib.sha256(raw).digest()
+                ):
+                    raise ProviderError("NFL audio sealed closure bytes changed")
+            finally:
+                os.close(descriptor)
+            visible = module_path.lstat()
+            if (
+                not stat.S_ISREG(visible.st_mode)
+                or stat.S_ISLNK(visible.st_mode)
+                or _is_reparse_point(visible)
+                or visible.st_size != len(raw)
+            ):
+                raise ProviderError("NFL audio sealed closure identity differs")
+
+            expected_sha = hashlib.sha256(raw).hexdigest()
+            expected_size = len(raw)
+
+            def _reverify_sealed_file() -> None:
+                # Re-open the exact staged file (no symlink/junction follow),
+                # prove it is still the same inode we sealed and re-hash it
+                # against the digest captured above.  A cleared read-only bit +
+                # byte replacement, a rename swap, or a junction/symlink planted
+                # over the name are all caught here, immediately before the
+                # child opens the path.
+                fd = os.open(
+                    module_path,
+                    os.O_RDONLY
+                    | getattr(os, "O_NOFOLLOW", 0)
+                    | getattr(os, "O_CLOEXEC", 0)
+                    | getattr(os, "O_BINARY", 0),
+                )
+                try:
+                    reopened = os.fstat(fd)
+                    named = os.lstat(module_path)
+                    if (
+                        not stat.S_ISREG(reopened.st_mode)
+                        or stat.S_ISLNK(named.st_mode)
+                        or _is_reparse_point(named)
+                        or (named.st_dev, named.st_ino)
+                        != (reopened.st_dev, reopened.st_ino)
+                        or reopened.st_size != expected_size
+                    ):
+                        raise ProviderError(
+                            "NFL audio sealed closure was swapped before execution"
+                        )
+                    digest = hashlib.sha256()
+                    remaining = expected_size
+                    while remaining:
+                        chunk = pread(
+                            fd, min(1 << 20, remaining), expected_size - remaining
+                        )
+                        if not chunk:
+                            raise ProviderError(
+                                "NFL audio sealed closure shortened before execution"
+                            )
+                        digest.update(chunk)
+                        remaining -= len(chunk)
+                    if digest.hexdigest() != expected_sha:
+                        raise ProviderError(
+                            "NFL audio sealed closure bytes changed before execution"
+                        )
+                finally:
+                    os.close(fd)
+
+            @contextmanager
+            def _pin_sealed_file_for_exec(
+                stage: ProviderStage, emit: ProviderEventCallback
+            ) -> Iterator[_PinnedExec]:
+                if not (platform_compat.IS_WINDOWS or platform_compat.IS_MACOS):
+                    # No memfd seals and not one of the ported platforms: run the
+                    # exact instructions this branch has always run -- re-hash the
+                    # staged snapshot, then execute the staged pathname -- and
+                    # report the residual that leaves rather than a pin we do not
+                    # hold.
+                    _reverify_sealed_file()
+                    yield _PinnedExec(module_path, False, _EXEC_PIN_REHASHED_PATH)
+                    return
+                # Windows/macOS: re-verify through platform_compat and KEEP what
+                # it hands back open across runner.run, so the verified object --
+                # not merely a verified snapshot of it -- is what the child gets
+                # ON LINUX, whose /proc fd path names the descriptor itself.
+                # macOS and Windows hand the child a NAME, so there the pin
+                # narrows the window rather than closing it; inode_pinned says
+                # which case applies and the WARNING below fires when it is the
+                # weaker one.
+                try:
+                    handle = platform_compat.reverify_sealed_before_exec(
+                        module_path, expected_sha, expected_size=expected_size
+                    )
+                except SealIntegrityError as exc:
+                    raise ProviderError(
+                        "NFL audio sealed closure was swapped or rewritten before "
+                        "execution"
+                    ) from exc
+                except (platform_compat.DirectoryTransactionUnavailable, OSError) as exc:
+                    # The platform could not give us the pin it promises (no
+                    # kernel32, an unreadable staging file).  Refuse to launch
+                    # rather than execute an unpinned module.
+                    raise ProviderError(
+                        "NFL audio sealed closure could not be pinned for execution"
+                    ) from exc
+                try:
+                    if handle.sha256 != expected_sha:
+                        raise ProviderError(
+                            "NFL audio sealed closure bytes changed before execution"
+                        )
+                    if handle.inode_pinned:
+                        emit(ProviderEvent(
+                            stage,
+                            "INFO",
+                            "Sealed NFL audio closure held pinned across launch "
+                            f"({handle.mechanism}): it cannot be replaced while "
+                            "the child starts",
+                        ))
+                    else:
+                        emit(ProviderEvent(
+                            stage,
+                            "WARNING",
+                            "Sealed NFL audio closure re-verified but NOT pinned "
+                            f"across launch ({handle.mechanism}): this platform "
+                            "cannot stop a same-user rename swap between the "
+                            "check and the child opening the module",
+                        ))
+                    yield _PinnedExec(
+                        Path(handle.exec_path), handle.inode_pinned, handle.mechanism
+                    )
+                finally:
+                    handle.close()
+
+            yield _StagedModule(
+                module_path, _reverify_sealed_file, _pin_sealed_file_for_exec
+            )
+        finally:
+            try:
+                module_path.chmod(stat.S_IWRITE | stat.S_IREAD)
+            except OSError:
+                pass
+            shutil.rmtree(workdir, ignore_errors=True)
 
     @staticmethod
     def _absolute(path: Path) -> Path:
@@ -550,7 +931,11 @@ class Nfl2k5MenuBackAudioProvider:
                 raise OutputRefusedError(
                     f"Fixed NFL audio output parent is missing: {requested.parent}"
                 ) from exc
-            if not stat.S_ISDIR(parent.st_mode) or stat.S_ISLNK(parent.st_mode):
+            if (
+                not stat.S_ISDIR(parent.st_mode)
+                or stat.S_ISLNK(parent.st_mode)
+                or _is_reparse_point(parent)
+            ):
                 raise OutputRefusedError(
                     "Fixed NFL audio output parent must be a non-symlink directory"
                 )

@@ -28,6 +28,12 @@ import struct
 import sys
 from typing import Iterable
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from mod_editor.core import platform_compat  # noqa: E402
+
 try:
     from PIL import Image, __version__ as PILLOW_VERSION
 except ImportError as exc:  # pragma: no cover - exercised by the CLI error path.
@@ -771,7 +777,7 @@ def _reserve_new(path: Path) -> OutputReservation:
     try:
         descriptor = os.open(
             path,
-            os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC,
+            os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | getattr(os, "O_BINARY", 0),
             0o644,
         )
     except FileExistsError as exc:
@@ -841,7 +847,7 @@ def _pread_exact(descriptor: int, size: int, offset: int) -> bytes:
     remaining = size
     cursor = offset
     while remaining:
-        chunk = os.pread(descriptor, min(1024 * 1024, remaining), cursor)
+        chunk = platform_compat.pread(descriptor, min(1024 * 1024, remaining), cursor)
         if not chunk:
             raise PatchError("unexpected end of file during descriptor read")
         chunks.append(chunk)
@@ -856,7 +862,7 @@ def _pwrite_all(descriptor: int, data: bytes, offset: int) -> None:
     view = memoryview(data)
     written = 0
     while written < len(view):
-        count = os.pwrite(descriptor, view[written:], offset + written)
+        count = platform_compat.pwrite(descriptor, view[written:], offset + written)
         if count <= 0:
             raise PatchError("short descriptor write")
         written += count
@@ -870,7 +876,7 @@ def _sha256_fd_range(descriptor: int, offset: int, size: int) -> str:
     remaining = size
     cursor = offset
     while remaining:
-        chunk = os.pread(descriptor, min(1024 * 1024, remaining), cursor)
+        chunk = platform_compat.pread(descriptor, min(1024 * 1024, remaining), cursor)
         if not chunk:
             raise PatchError("unexpected end of file during descriptor hash")
         digest.update(chunk)
@@ -889,7 +895,9 @@ def _copy_fd_metadata(
     source_metadata: os.stat_result,
 ) -> None:
     """Copy mode, available extended attributes, and timestamps by fd."""
-    os.fchmod(output_descriptor, stat.S_IMODE(source_metadata.st_mode))
+    platform_compat.fchmod(
+        output_descriptor, stat.S_IMODE(source_metadata.st_mode), path=None
+    )
     if all(hasattr(os, name) for name in ("listxattr", "getxattr", "setxattr")):
         try:
             names = os.listxattr(source_descriptor)
@@ -918,7 +926,7 @@ def _write_copied_volume(
     if source_volume.resolve() == output_volume.resolve():
         raise PatchError("refusing to patch the source APF volume")
     output_volume.parent.mkdir(parents=True, exist_ok=True)
-    source_descriptor = os.open(source_volume, os.O_RDONLY | os.O_CLOEXEC)
+    source_descriptor = os.open(source_volume, os.O_RDONLY | os.O_CLOEXEC | getattr(os, "O_BINARY", 0))
     output_descriptor: int | None = None
     output_identity: tuple[int, int] | None = None
     try:
@@ -931,7 +939,7 @@ def _write_copied_volume(
         try:
             output_descriptor = os.open(
                 output_volume,
-                os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC,
+                os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | getattr(os, "O_BINARY", 0),
                 stat.S_IMODE(source_metadata.st_mode),
             )
         except FileExistsError as exc:
@@ -942,7 +950,7 @@ def _write_copied_volume(
 
         cursor = 0
         while cursor < source_size:
-            chunk = os.pread(
+            chunk = platform_compat.pread(
                 source_descriptor, min(8 * 1024 * 1024, source_size - cursor), cursor
             )
             if not chunk:

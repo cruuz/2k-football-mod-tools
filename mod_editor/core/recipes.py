@@ -154,7 +154,7 @@ def _read_png(
         | getattr(os, "O_CLOEXEC", 0)
     )
     try:
-        descriptor = os.open(resolved, flags)
+        descriptor = os.open(resolved, flags | getattr(os, "O_BINARY", 0))
     except OSError as exc:
         raise RecipeError(f"Cannot open {label} read-only: {exc}") from exc
     try:
@@ -285,7 +285,7 @@ def _create_recipe(path: Path, document: object) -> Path:
     identity: tuple[int, int] | None = None
     try:
         try:
-            descriptor = os.open(path, flags, 0o644)
+            descriptor = os.open(path, flags | getattr(os, "O_BINARY", 0), 0o644)
         except FileExistsError as exc:
             raise OutputRefusedError(f"Recipe output already exists: {path}") from exc
         opened = os.fstat(descriptor)

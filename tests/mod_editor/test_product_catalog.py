@@ -19,7 +19,9 @@ from mod_editor.core.product_catalog import (
 class ProductCatalogTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.registry = CapabilityRegistryLoader().load(allow_sample_fallback=False)
+        cls.registry = CapabilityRegistryLoader().load(
+            allow_sample_fallback=False, check_files=False
+        )
 
     def test_complete_sidebar_is_present_in_mandated_order(self) -> None:
         catalog = build_nfl2k5_product_catalog(self.registry)

@@ -23,6 +23,8 @@ import stat
 import tempfile
 from typing import Iterable, Mapping, Sequence
 
+from mod_editor.core import platform_compat
+
 
 SCHEMA = "apf2k8_roster_reserve_plan/v1"
 GAME = "apf2k8_xbox360"
@@ -550,7 +552,7 @@ def save_reserve_plan(plan: ReserveRosterPlan, destination: Path) -> Path:
     temporary = Path(temporary_name)
     published = False
     try:
-        os.fchmod(descriptor, 0o600)
+        platform_compat.fchmod(descriptor, 0o600, path=temporary)
         view = memoryview(data)
         while view:
             written = os.write(descriptor, view)
@@ -562,11 +564,10 @@ def save_reserve_plan(plan: ReserveRosterPlan, destination: Path) -> Path:
         descriptor = -1
         os.link(temporary, destination)
         published = True
-        directory_fd = os.open(destination.parent, os.O_RDONLY)
-        try:
-            os.fsync(directory_fd)
-        finally:
-            os.close(directory_fd)
+        # Commit the new directory entry where the platform offers that; the
+        # plan file's own bytes were flushed above, so on Windows -- which has
+        # no directory-flush primitive -- only the entry's ordering is lost.
+        platform_compat.fsync_directory(destination.parent)
         if destination.read_bytes() != data:
             raise RosterWorkspaceError("Published reserve plan failed verification")
     except BaseException:
@@ -594,7 +595,7 @@ def load_reserve_plan(source: Path) -> ReserveRosterPlan:
         source,
         os.O_RDONLY
         | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         opened = os.fstat(descriptor)

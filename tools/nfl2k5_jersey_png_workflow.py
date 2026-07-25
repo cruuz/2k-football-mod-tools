@@ -67,7 +67,7 @@ def pin_large_file(
     resolved = path.resolve(strict=True)
     descriptor = os.open(
         resolved,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         info = os.fstat(descriptor)
@@ -177,7 +177,7 @@ def verify_output_span(output: Path, identity: tuple[int, int],
                        replacement_span: bytes) -> os.stat_result:
     descriptor = os.open(
         output,
-        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         info = os.fstat(descriptor)
@@ -472,6 +472,10 @@ def run(
                        owned_matches(final_previews_owned),
                        "final output pathname changed before commit")
         final_output_info = verify_output_span(output, output_identity, replacement_payload)
+        # Both stats come from verify_output_span()'s os.fstat of the output
+        # descriptor: fd against fd, so st_ctime_ns is comparable on every
+        # platform and stays in.  NOTE: this tuple carries no st_dev/st_ino;
+        # verify_output_span checks fd_identity/path_identity itself.
         common.require((final_output_info.st_size, final_output_info.st_mtime_ns,
                         final_output_info.st_ctime_ns) ==
                        (output_info.st_size, output_info.st_mtime_ns,

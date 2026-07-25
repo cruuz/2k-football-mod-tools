@@ -12,6 +12,7 @@ import unittest
 from unittest.mock import Mock, patch
 import zipfile
 
+from mod_editor.core import platform_compat
 from mod_editor.apf_studio.audio_replacement_pack import (
     AudioReplacementApplyProgress,
     AudioReplacementApplyReceipt,
@@ -56,6 +57,30 @@ from mod_editor.apf_studio import audio_replacement_pack
 
 
 SOURCE_SHA256 = "1" * 64
+
+
+def _skip_without_directory_descriptor_transactions(test: unittest.TestCase) -> None:
+    """Skip a test that can only be expressed with POSIX directory descriptors.
+
+    The pack writer publishes atomically by pinning a directory as an open
+    descriptor and addressing every step through it -- ``os.open(<dir>)`` then
+    ``os.stat``/``os.rename``/``os.unlink`` with ``dir_fd=`` -- and the race
+    tests below reproduce an attacker by mutating a path *while the writer still
+    holds it open* (renaming it, symlinking over it, replacing its parent).
+    Windows has neither of those: it cannot open a directory descriptor at all
+    (``os.open`` raises ``PermissionError``), it has no ``dir_fd``, and it
+    refuses to rename or replace a path with an open handle.  So the *scenario*
+    these tests set up cannot exist on Windows; the POSIX guarantee they assert
+    is exercised for real on Linux and macOS, where it runs unchanged.  This is
+    an honest, named skip -- not a silent pass, and not a weakened assertion.
+    """
+
+    if platform_compat.IS_WINDOWS:
+        test.skipTest(
+            "requires POSIX directory-descriptor semantics (os.open(<dir>) / "
+            "dir_fd= / mutating a path the writer holds open); unavailable on "
+            "Windows"
+        )
 
 
 def _audo_row(outer: int = 4, inner: int = 1) -> InspectorRow:
@@ -131,11 +156,17 @@ def _mutate_regular_file_preserving_size_and_mtime(
     before = os.stat(name, dir_fd=parent_descriptor, follow_symlinks=False)
     descriptor = os.open(
         name,
-        os.O_RDWR | getattr(os, "O_NOFOLLOW", 0),
+        (os.O_RDWR | getattr(os, "O_NOFOLLOW", 0)) | getattr(os, "O_BINARY", 0),
         dir_fd=parent_descriptor,
     )
     try:
-        original = os.pread(descriptor, 1, 0)
+        # platform_compat.pread, not os.pread: the latter does not exist on
+        # Windows.  On POSIX it *is* os.pread, unchanged; elsewhere it is the
+        # seek/read stand-in, so this fixture reads the same byte either way.
+        # (The rest of this helper -- and the pack publisher it mutates -- is
+        # dir_fd-relative, which Windows does not support at all, so this file
+        # remains POSIX-only for that separate, product-level reason.)
+        original = platform_compat.pread(descriptor, 1, 0)
         if len(original) != 1:
             raise AssertionError("ZIP fixture unexpectedly has no first byte")
         os.pwrite(descriptor, bytes((original[0] ^ 0xFF,)), 0)
@@ -240,6 +271,7 @@ class AudioReplacementTemplateTests(unittest.TestCase):
             self.assertNotIn(b"Retail Secret", archive.read(MANIFEST_FILENAME))
 
     def test_zip_prepublication_rejects_same_inode_hidden_content_mutation(self) -> None:
+        _skip_without_directory_descriptor_transactions(self)
         destination = self.root / "prepublication-mutated.zip"
         original_create = audio_replacement_pack._create_audio_replacement_zip_at
 
@@ -283,6 +315,7 @@ class AudioReplacementTemplateTests(unittest.TestCase):
     def test_zip_postpublication_rejects_hidden_content_mutation_and_cleans_owned_inode(
         self,
     ) -> None:
+        _skip_without_directory_descriptor_transactions(self)
         destination = self.root / "postpublication-mutated.zip"
         original_publish = audio_replacement_pack._publish_file_noreplace
 
@@ -322,6 +355,7 @@ class AudioReplacementTemplateTests(unittest.TestCase):
         self.assertEqual(tuple(self.root.glob(".apf-audio-*.tmp")), ())
 
     def test_zip_failed_publication_cleanup_preserves_foreign_race_winner(self) -> None:
+        _skip_without_directory_descriptor_transactions(self)
         destination = self.root / "foreign-race-winner.zip"
         moved_writer_inode = self.root / "writer-owned-moved.zip"
         foreign_bytes = b"foreign race winner must survive"
@@ -345,7 +379,7 @@ class AudioReplacementTemplateTests(unittest.TestCase):
             )
             descriptor = os.open(
                 destination_name,
-                os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
                 0o600,
                 dir_fd=parent_descriptor,
             )
@@ -376,6 +410,7 @@ class AudioReplacementTemplateTests(unittest.TestCase):
         self.assertTrue(moved_writer_inode.is_file())
 
     def test_zip_content_check_rebinds_destination_name_after_hash(self) -> None:
+        _skip_without_directory_descriptor_transactions(self)
         destination = self.root / "hash-time-name-race.zip"
         moved_writer_inode = self.root / "hash-time-writer-owned-moved.zip"
         foreign_bytes = b"foreign replacement during the content hash"
@@ -494,6 +529,7 @@ class AudioReplacementTemplateTests(unittest.TestCase):
                 self.fail("corrupt ZIP opened")
 
     def test_import_pins_pack_root_before_enumeration(self) -> None:
+        _skip_without_directory_descriptor_transactions(self)
         selected = self._template("root-race")
         alternate = self._template("alternate-root")
         for root, data in ((selected, b"selected"), (alternate, b"alternate")):
@@ -529,6 +565,7 @@ class AudioReplacementTemplateTests(unittest.TestCase):
         self.assertTrue(substituted)
 
     def test_output_parent_swap_cannot_publish_recreated_staging_name(self) -> None:
+        _skip_without_directory_descriptor_transactions(self)
         parent = self.root / "output-parent"
         parent.mkdir()
         destination = parent / "safe-pack"

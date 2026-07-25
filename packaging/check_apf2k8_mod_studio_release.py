@@ -182,9 +182,16 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
 }
 
 ALLOWED_TEXT_SUFFIXES = frozenset(
-    {".css", ".desktop", ".html", ".ini", ".json", ".md", ".py", ".sh", ".svg", ".toml", ".txt"}
+    {
+        ".bat", ".command", ".css", ".desktop", ".html", ".ini", ".json",
+        ".md", ".py", ".sh", ".svg", ".toml", ".txt",
+    }
 )
 ALLOWED_SUFFIXLESS_TEXT = frozenset({"copying", "license", "notice"})
+# Double-click launchers that must carry the owner-executable bit or they will
+# silently fail to start (a macOS .command, a Unix .sh). A Windows .bat is not
+# executed through a Unix mode bit, so it is deliberately excluded here.
+EXECUTABLE_LAUNCHER_SUFFIXES = frozenset({".command", ".sh"})
 FORBIDDEN_MEDIA_SUFFIXES = frozenset(
     {
         ".0a",
@@ -619,6 +626,8 @@ def audit_release(root: Path, allowlist_path: Path) -> dict[str, object]:
                 raise ReleaseCheckError(f"game/container/media suffix is forbidden: {relative}")
             if suffix not in ALLOWED_TEXT_SUFFIXES and path.name.casefold() not in ALLOWED_SUFFIXLESS_TEXT:
                 raise ReleaseCheckError(f"unapproved release file type: {relative}")
+            if suffix in EXECUTABLE_LAUNCHER_SUFFIXES and not info.st_mode & stat.S_IXUSR:
+                raise ReleaseCheckError(f"launcher script is not executable: {relative}")
             digest, text = _validate_text(path, relative, info)
             _validate_structured_text(path, relative, text)
             _validate_install_surface(relative, text, info)
