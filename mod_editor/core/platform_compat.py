@@ -5135,7 +5135,11 @@ def open_no_follow(
 
     try:
         api = _windows_kernel_api()
-    except DirectoryTransactionUnavailable:
+        # Acquired with the api, not at the identity step below, so a host that
+        # has the ctypes shim but no msvcrt takes the documented simulation
+        # fallback instead of failing halfway through a half-done open.
+        msvcrt = _require_msvcrt()
+    except (DirectoryTransactionUnavailable, RuntimeError):
         # ctypes.windll always exists on a real Windows host, so reaching this
         # means IS_WINDOWS was monkeypatched True on a POSIX host to exercise
         # the Windows branch; that host's own open really does carry O_NOFOLLOW.
@@ -5205,8 +5209,18 @@ def open_no_follow(
     # names those proven bytes, which is exactly what the caller asked for.
     descriptor = os.open(path, flags & ~getattr(os, "O_NOFOLLOW", 0), mode)
     try:
-        opened = os.fstat(descriptor)
-        if (opened.st_dev, opened.st_ino) != (serial, index):
+        # Compare Win32 identity against Win32 identity, via the descriptor's
+        # own handle.  os.fstat is NOT usable for this: CPython changed how it
+        # fills st_dev/st_ino on Windows in 3.12 (FILE_ID_INFO's 64-bit volume
+        # serial and 128-bit file ID, rather than BY_HANDLE_FILE_INFORMATION's
+        # 32-bit serial and 64-bit index), so comparing the two representations
+        # mismatches for a perfectly ordinary file on 3.12 while matching on
+        # 3.11.  Asking GetFileInformationByHandle on both sides is the same
+        # question on every version.
+        opened_identity = _win_file_identity(
+            api, msvcrt.get_osfhandle(descriptor)
+        )[:2]
+        if opened_identity != (serial, index):
             raise OSError(
                 errno.ELOOP,
                 "the path was replaced between its no-follow check and its open",
