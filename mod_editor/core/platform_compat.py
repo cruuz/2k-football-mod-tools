@@ -26,7 +26,7 @@ with each platform's own ownership model instead: on POSIX the uid comparison,
 unchanged; on Windows a comparison of the file's *owner SID* against the
 identities the calling process token actually holds -- its user SID, its
 ``TokenOwner`` (what Windows stamps on objects an elevated token creates, often
-``BUILTIN\Administrators``), and any group the token is a member of.  That is
+``BUILTIN\\Administrators``), and any group the token is a member of.  That is
 wider than uid equality, deliberately: comparing against the user SID alone
 refuses the process's own files whenever it runs elevated.  Which of the three
 matched is spelled out in :attr:`OwnershipCheck.detail`.
@@ -541,7 +541,7 @@ def _windows_security_api() -> _WindowsSecurityApi:
     # The reverse conversion plus the membership test, used to answer "is the
     # SID that owns this object an identity my own token holds?" -- the question
     # an elevated process must ask, because Windows stamps its new files
-    # BUILTIN\Administrators rather than with the user SID.
+    # BUILTIN\\Administrators rather than with the user SID.
     advapi32.ConvertStringSidToSidW.argtypes = [
         ctypes.c_wchar_p,
         ctypes.POINTER(ctypes.c_void_p),
@@ -1593,7 +1593,7 @@ def describe_ownership(
     rather than hidden.  A third case is accepted for the same reason: an owner
     SID the token holds by GROUP membership (``CheckTokenMembership``), which is
     how an elevated process's own files commonly come back owned by
-    ``BUILTIN\Administrators`` -- neither its user SID nor, on some policies, its
+    ``BUILTIN\\Administrators`` -- neither its user SID nor, on some policies, its
     ``TokenOwner``.  Those three are the whole set; an owner the token does not
     hold at all is still refused, and a membership question that cannot be
     answered is never treated as a match.
@@ -1635,7 +1635,7 @@ def describe_ownership(
         matched = "token default-owner SID"
     elif _windows_token_holds_sid(owner_sid):
         # An elevated process's new files are commonly stamped
-        # BUILTIN\Administrators, which is neither TokenUser nor TokenOwner but
+        # BUILTIN\\Administrators, which is neither TokenUser nor TokenOwner but
         # IS an identity this token holds.  Asking CheckTokenMembership is the
         # platform's own answer to "is this mine?"; refusing here would refuse
         # the process's own files and make the private cache unusable for an
@@ -1667,7 +1667,7 @@ def is_owned_by_current_user(
     failed Win32 lookup is reported as *not owned*, and why "belongs to" is
     wider on Windows than uid equality (an owner SID the token holds by group
     membership counts, which is how an elevated process's own files come back
-    owned by ``BUILTIN\Administrators``).
+    owned by ``BUILTIN\\Administrators``).
     """
 
     return describe_ownership(info, fd=fd, path=path).owned
