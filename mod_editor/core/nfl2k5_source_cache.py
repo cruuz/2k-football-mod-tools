@@ -68,8 +68,11 @@ def default_cache_root() -> Path:
 
     Windows has no mode bits to rely on, so the location *is* the guarantee: the
     cache goes under ``%LOCALAPPDATA%`` (``platform_compat.user_private_root``),
-    the per-user application-data root whose ACL excludes other accounts and is
-    inherited by everything created beneath it.  ``~/.cache`` on Windows would be
+    the per-user application-data root whose ACL is expected to exclude other
+    accounts and to be inherited by everything created beneath it -- an
+    expectation that ``platform_compat.verify_private_root_placement`` actually
+    verifies by reading the DACL, rather than one this choice of location
+    assumes on its own.  ``~/.cache`` on Windows would be
     an ordinary folder under the profile with no such intent, and on a machine
     with a roaming profile it would also sync the user's game-derived cache to a
     file server.  Both platforms therefore satisfy

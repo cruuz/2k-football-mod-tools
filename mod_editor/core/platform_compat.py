@@ -354,7 +354,14 @@ class PrivacyGuarantee:
     """Exactly what "private to the current user" means on the running OS.
 
     Read this as a contract, not a description.  ``posix_mode_privacy`` is the
-    load-bearing field: when it is ``True`` the three ``*_mode`` values are
+    load-bearing field.  ``profile_root_acl`` is NOT: it states the platform's
+    privacy MODEL (on Windows, that confidentiality is expected to come from the
+    profile root's inherited ACL) and verifies no particular root -- this call
+    reads no ACL at all, and ``LOCALAPPDATA`` is taken from the environment, so
+    a redirected or shared one is not caught here.  The check that actually
+    reads the DACL is :func:`verify_private_root_placement`, and it is what a
+    caller must rely on.  When ``posix_mode_privacy`` is ``True`` the three
+    ``*_mode`` values are
     *enforced* confidentiality -- ``0o700``/``0o600`` really do lock other
     accounts out, and the ``verify_private_*`` helpers re-check them.  When it is
     ``False`` (Windows) the same three values are only what ``stat`` will report;
@@ -2091,10 +2098,13 @@ def fsync_path(
     ``O_RDWR`` instead, because ``FlushFileBuffers`` requires a writable handle;
     the flush itself, and therefore the durability guarantee, is unchanged.
 
-    ``follow_symlinks=False`` refuses to flush through a symlink on every
-    platform.  On POSIX it adds ``O_NOFOLLOW``.  Windows has no ``O_NOFOLLOW`` and
-    ``os.open`` follows a reparse point there, so the refusal is enforced by
-    identity instead: the name is ``lstat``-ed first and refused with
+    ``follow_symlinks=False`` refuses to flush through a symlink it can see.
+    On POSIX that is ``O_NOFOLLOW`` and is absolute.  Windows has no such flag,
+    so :func:`open_no_follow` decides the question on a handle opened with
+    ``FILE_FLAG_OPEN_REPARSE_POINT`` -- exact for the object it checked, but the
+    descriptor that follows is not proven to be that object (see
+    :func:`open_no_follow`), so a name replaced in that gap is flushed instead.
+    Additionally the name is ``lstat``-ed first and refused with
     :class:`DurabilityError` if it is a symlink, and after the file is opened the
     opened object's ``(st_dev, st_ino)`` is compared against that pre-open
     ``lstat`` -- a link swapped in during the window, which ``os.open`` would
@@ -2128,9 +2138,11 @@ def fsync_path(
             )
         link_identity = (link_info.st_dev, link_info.st_ino)
     try:
-        # open_no_follow is a real non-following open on both platforms: POSIX
-        # O_NOFOLLOW, and on Windows CreateFileW(FILE_FLAG_OPEN_REPARSE_POINT)
-        # plus an attribute check on the opened handle.  The previous
+        # open_no_follow decides the reparse question on the object it actually
+        # opened: POSIX O_NOFOLLOW (absolute), and on Windows
+        # CreateFileW(FILE_FLAG_OPEN_REPARSE_POINT) plus an attribute check on
+        # that handle -- exact, though the descriptor it returns there is not
+        # proven to be the same object.  The previous
         # lstat-then-os.open-then-fstat sequence could not deliver that: a link
         # planted in the window was followed, and the fstat then described the
         # target rather than the traversal, so follow_symlinks=False was not
@@ -2300,9 +2312,14 @@ def fchmod_readonly(fd: int, path: str | None) -> None:
     platform comes from the ACL of the per-user profile root the private cache
     lives under (see :func:`privacy_guarantee`), not from this call.
 
-    What this call guarantees identically on both platforms is *immutability in
-    place*: the owner-write bit is gone.  That is re-read from the file
-    afterwards and a platform that ignored the request raises
+    What this call guarantees identically on both platforms is narrower than
+    immutability: the owner-write bit is gone, so no NEW writable open of the
+    path succeeds.  It does not revoke write access from a descriptor that is
+    already open -- neither POSIX nor Windows re-checks permissions on an
+    existing descriptor -- so a writer that had one before the seal can still
+    write through it.  That is why the digest, not the mode, is what proves the
+    bytes.  The bit is re-read from the file afterwards and a platform that
+    ignored the request raises
     :class:`SealIntegrityError` rather than letting an unenforced chmod pass for
     a seal.
     """
@@ -2556,10 +2573,14 @@ def user_private_root() -> Path:
     """The per-user tree this OS keeps private without any mode bits.
 
     On Windows this is ``%LOCALAPPDATA%`` -- the per-user, non-roaming
-    application-data directory, whose ACL grants only the owning account (and
-    administrators) access, and which every child inherits.  That inheritance is
-    the Windows equivalent of a ``0o700`` cache root, so private caches are
-    created beneath it.
+    application-data directory, whose ACL is EXPECTED to grant only the owning
+    account (and administrators) access and to be inherited by every child.
+    That inheritance is the Windows equivalent of a ``0o700`` cache root, so
+    private caches are created beneath it.  This function only names the
+    location: it reads the variable from the environment and verifies no ACL,
+    so a redirected or shared ``LOCALAPPDATA`` is not detected here.
+    :func:`verify_private_root_placement` is the check that queries the DACL and
+    refuses a root that does not restrict access.
 
     On POSIX it is the home directory; privacy there comes from the mode bits on
     the cache directory itself, so this is only used to keep caches out of shared
@@ -2949,8 +2970,10 @@ def verify_sealed_file(
     """Re-verify a sealed file: no owner-write bit, on any platform.
 
     The owner-write bit is the single permission every supported OS really
-    implements, so its absence is asserted everywhere and is the guarantee that
-    a sealed cache file cannot be rewritten in place.
+    implements, so its absence is asserted everywhere.  It means no new writable
+    open of the name succeeds; it does NOT close a descriptor opened writable
+    before the seal, which keeps working on either platform.  The recorded
+    digest is what proves the bytes.
 
     The exact mode is asserted too, against :func:`sealed_file_mode`: ``0o400``
     on POSIX (owner-read only) and ``0o444`` on Windows (the read-only
@@ -3800,7 +3823,8 @@ class DirectoryTransactionRefused(OSError):
     re-verification catches the very race the descriptor pin makes impossible on
     POSIX: the pinned directory now resolves to a different inode (it was swapped,
     relinked, deleted or replaced by a symlink), or the child named for the
-    operation is itself a symlink the ``O_NOFOLLOW`` equivalent must not follow.
+    operation is itself a symlink the child check must not follow (Windows'
+    nearest ``O_NOFOLLOW``: a separate lstat, with the residual that implies).
 
     It subclasses :class:`OSError` and carries a meaningful ``errno`` -- ``ESTALE``
     for a changed parent, ``ELOOP`` for a symlinked child, ``ENOTDIR`` for a child
@@ -4933,9 +4957,10 @@ def publish_no_replace(
     reports ``atomic_no_clobber=False``; a caller whose correctness depends on
     no-clobber must branch on that field rather than on this function returning
     successfully.  Raises
-    :class:`NoReplacePublishUnavailable` only where the platform truly offers no
-    mechanism (a Windows ``dir_fd`` publish), never as a silent clobbering
-    fallback.  See the module section header for the per-OS mechanism; the one
+    :class:`NoReplacePublishUnavailable` where the platform truly offers no
+    mechanism (a Windows ``dir_fd`` publish) AND where ``require_atomic`` -- the
+    default for directories -- rejects an available but weaker one.  Never as a
+    silent clobbering fallback.  See the module section header for the per-OS mechanism; the one
     that ran is returned so a caller or test can assert it.
     """
 
@@ -5313,34 +5338,15 @@ def open_no_follow(
     finally:
         _win_close_handle(api, handle)
 
-    # Step 2: take the ordinary CRT descriptor the caller needs, then BIND it to
-    # the object step 1 proved by comparing identities.  The Win32 handle is not
-    # handed to the CRT: _open_osfhandle refuses handles opened this way with
-    # EBADF, and a descriptor the caller cannot use is no guarantee at all.
-    #
-    # The remaining window is narrow and closed by the comparison, not ignored:
-    # a racer who swaps the name between the two steps produces a DIFFERENT
-    # (volume, file index) and is refused here.  A racer who relinks the name
-    # back to the very object step 1 proved changes nothing -- the descriptor
-    # names those proven bytes, which is exactly what the caller asked for.
-    # The descriptor the caller needs comes from an ordinary os.open.  The Win32
-    # handle is NOT handed to the CRT: _open_osfhandle rejects a handle opened
-    # this way with EBADF, and a descriptor the caller cannot use would be no
-    # guarantee at all.
-    #
-    # Residual, stated rather than implied: the reparse-point refusal above is
-    # decided on the object the no-follow handle actually opened, with no window
-    # -- that is the guarantee this function exists to provide, and it holds.
-    # What is NOT established is that the descriptor below names that same
-    # object: a same-user process that replaces the name between the two steps
-    # gets its replacement opened instead.  Binding them was attempted by
-    # comparing GetFileInformationByHandle identities and did not survive
-    # contact with the platform (CPython changed st_dev/st_ino on Windows in
-    # 3.12, and the descriptor's own handle would not answer the query), so the
-    # honest thing is to name the residual here rather than ship a comparison
-    # that silently fails open or fails closed on ordinary files.  Callers that
-    # cannot tolerate it hold a pinned DirHandle, which re-verifies per
-    # operation.
+    # Step 2: the ordinary CRT descriptor the caller needs.  It is NOT bound to
+    # the object step 1 proved: _open_osfhandle rejects the proving handle with
+    # EBADF, and binding by identity comparison was tried twice and failed on
+    # the platform (CPython changed st_dev/st_ino on Windows in 3.12, and the
+    # descriptor's own handle would not answer GetFileInformationByHandle), so
+    # what is shipped is the honest residual rather than a comparison that
+    # refuses ordinary files.  A same-user process replacing the name between
+    # the two steps therefore gets ITS object opened -- including, potentially,
+    # another reparse point.  Callers needing more hold a pinned DirHandle.
     return os.open(path, flags & ~getattr(os, "O_NOFOLLOW", 0), mode)
 
 

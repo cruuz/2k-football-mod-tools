@@ -437,10 +437,15 @@ def _unlink_owned_name_at(
     name: str,
     identity: tuple[int, int],
 ) -> bool:
-    """Best-effort cleanup that never removes a replacement inode.
+    """Best-effort cleanup that will not knowingly remove a replacement inode.
 
-    On Windows the identity comparison behind that promise is re-verified per
-    operation rather than kernel-resolved; see
+    Precisely: the name is ``stat``-ed, refused unless it is a regular file whose
+    identity matches, and only then unlinked.  Those are two separate resolutions
+    of the child name, so a replacement swapped in between them IS removed -- the
+    check narrows the window, it does not eliminate it, and no POSIX primitive
+    here can (there is no "unlink this inode").  On Windows the identity
+    comparison is additionally re-verified per operation rather than
+    kernel-resolved; see
     :func:`platform_compat.directory_transaction_guarantee`.
 
     ``directory`` is a raw POSIX directory descriptor -- wrapped in a borrowed

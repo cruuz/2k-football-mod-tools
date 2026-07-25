@@ -355,7 +355,10 @@ def _staged_write(
 
     Byte-identical :func:`_write_new` on POSIX (``stage_handle is None``); the pinned
     :func:`_write_new_at` on Windows, so a swapped parent or a symlinked child is
-    refused instead of a bare path write being silently redirected.
+    refused -- as far as a re-verified realpath pin can, which is not the
+    kernel-enforced refusal POSIX gets; see
+    :func:`platform_compat.directory_transaction_guarantee` for the residual --
+    instead of a bare path write being silently redirected.
     """
 
     if stage_handle is None:
@@ -479,7 +482,9 @@ def _write_new_at(directory: DirHandle, name: str, payload: bytes) -> None:
     Every step is a re-verified :class:`DirHandle` at-operation on the pinned
     staging directory, so on Windows -- where the parent is pinned by realpath and
     inode identity rather than a descriptor -- a swap of the parent is refused and a
-    symlinked child is rejected (the handle's ``O_NOFOLLOW`` equivalent) instead of
+    symlinked child is rejected (the nearest thing the handle has to
+    ``O_NOFOLLOW``: a separate lstat, with the check-to-use residual that
+    implies) instead of
     a bare path write being silently redirected.  The flags, ``0o600`` mode, the
     fdopen/write/flush/fsync and the unlink-on-failure mirror :func:`_write_new`
     exactly (``O_NOFOLLOW`` is the handle's own symlinked-child refusal, so it is not
@@ -1311,7 +1316,8 @@ def _folder_files_at(root: DirHandle) -> set[str]:
     ``S_ISREG``/``S_ISLNK``/``st_nlink == 1`` gates :func:`_regular_file` applies --
     but every ``scandir``, ``stat`` and directory descent is a re-verified
     :class:`DirHandle` at-operation, so a swapped parent is refused rather than
-    walked.  The staged template tree is exactly one level of files plus the single
+    walked (on Windows by re-verified identity, not kernel resolution -- see
+    :func:`platform_compat.directory_transaction_guarantee`).  The staged template tree is exactly one level of files plus the single
     empty ``replacements`` directory this writer just created, so a re-verified
     scandir of ``root`` and of its one child directory covers it; anything
     unexpected -- a symlink, or a directory nested deeper than can occur here --
