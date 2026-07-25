@@ -36,15 +36,37 @@ import subprocess
 import sys
 import zipfile
 
-# Pinned so the installer is reproducible. Both are verified by hash before use;
-# a changed upstream artifact fails the build rather than silently shipping.
+# Every byte that enters the installer from outside this repository is pinned to
+# an exact SHA-256 and verified before use. Version pins alone are not enough: a
+# version can be re-uploaded, a mirror can serve something else, and a resolver
+# can pull a transitive dependency nobody chose. Any mismatch, any unpinned file,
+# or any pinned file that fails to appear stops the build. That is what lets the
+# published installer claim to be reproducible rather than merely repeatable.
 PYTHON_EMBED_URL = (
     "https://www.python.org/ftp/python/3.12.10/python-3.12.10-embed-amd64.zip"
 )
 PYTHON_EMBED_SHA256 = (
     "4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3"
 )
-WHEELS = ("PyQt5==5.15.11", "Pillow==11.3.0")
+
+# PyQt5 pulls PyQt5-Qt5 and PyQt5-sip transitively, so those are named here too
+# rather than left to whatever the resolver picks on the day.
+WHEELS = (
+    "PyQt5==5.15.11",
+    "PyQt5-Qt5==5.15.2",
+    "PyQt5-sip==12.18.0",
+    "Pillow==11.3.0",
+)
+WHEEL_SHA256 = {
+    "PyQt5-5.15.11-cp38-abi3-win_amd64.whl":
+        "bdde598a3bb95022131a5c9ea62e0a96bd6fb28932cc1619fd7ba211531b7517",
+    "PyQt5_Qt5-5.15.2-py3-none-win_amd64.whl":
+        "750b78e4dba6bdf1607febedc08738e318ea09e9b10aea9ff0d73073f11f6962",
+    "pyqt5_sip-12.18.0-cp312-cp312-win_amd64.whl":
+        "9b689e02e400abd1ce0a30cd6eae8eceabcf1bbba0395cb5c86e64ba74351d68",
+    "pillow-11.3.0-cp312-cp312-win_amd64.whl":
+        "a6444696fce635783440b7f7a9fc24b3ad10a9ea3f0ab66c5905be1c19ccf17d",
+}
 
 PRODUCTS = {
     "2k5": {
@@ -112,9 +134,28 @@ def build_runtime(work: pathlib.Path, downloads: pathlib.Path) -> pathlib.Path:
         ],
         check=True,
     )
-    for wheel in sorted(downloads.glob("*.whl")):
-        with zipfile.ZipFile(wheel) as archive:
+    # Fail closed on the exact set: nothing unpinned goes in, nothing pinned is
+    # allowed to be missing, and every file must hash to what was reviewed.
+    present = {path.name: path for path in downloads.glob("*.whl")}
+    unpinned = sorted(set(present) - set(WHEEL_SHA256))
+    if unpinned:
+        raise SystemExit(
+            "refusing to build: the resolver produced wheels that are not pinned: "
+            + ", ".join(unpinned)
+        )
+    missing = sorted(set(WHEEL_SHA256) - set(present))
+    if missing:
+        raise SystemExit("refusing to build: pinned wheels never arrived: " + ", ".join(missing))
+    for name in sorted(WHEEL_SHA256):
+        actual = sha256_file(present[name])
+        if actual != WHEEL_SHA256[name]:
+            raise SystemExit(
+                f"refusing to build: {name} hash mismatch\n"
+                f"  expected {WHEEL_SHA256[name]}\n  actual   {actual}"
+            )
+        with zipfile.ZipFile(present[name]) as archive:
             archive.extractall(site_packages)
+    print(f"      verified {len(WHEEL_SHA256)} pinned wheels + the interpreter")
 
     # The embeddable build ignores site-packages and the working directory unless
     # its ._pth says otherwise. Paths here are relative to python.exe.

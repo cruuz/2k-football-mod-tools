@@ -164,7 +164,35 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-3` — 2026-07-25 · CURRENT
+### `beta-4` — 2026-07-25 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-4>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC29-20260725.tar.gz` | 9,434,164 | `3966d12eeeb73a8f0acd2bb68fca7fda2a683c1865b1d18a58b1dda80f1a251b` |
+| `apf2k8-mod-studio-0.1.0-alpha.34-20260725.tar.gz` | 1,108,507 | `feb49eefa5233d4c0459dc8f1783bb1aa3bbe93608c61c34a0191da1585b544d` |
+| `2K5-Mod-Studio-1.0-RC29-Setup.exe` | 55,878,130 | `c52464be5a0dc9660d704a7148fd9aad7d7c7c35bfb8d0e64716f6eed4c2fa80` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.34-Setup.exe` | 52,345,481 | `9b920484f348aab416bd15ccaf583382839ce91c03e7464b7bc5caa67a4efdf3` |
+
+The two tarballs are byte-identical to their beta-3 uploads; no editor code
+changed. The new assets are Windows wizard installers built by
+`packaging/windows/build_windows_installer.py`, each carrying a private CPython
+beside the unmodified application tree.
+
+Their reproducibility rests on a different mechanism from the tarballs and is
+worth stating separately. The tarballs are deterministic because every input is
+in this repository. The installers additionally pull an interpreter and four
+wheels from the network, so each of those five artifacts is pinned to an exact
+SHA-256 and verified before use; an unpinned wheel appearing, a pinned wheel
+failing to appear, or any hash mismatch stops the build. With those pinned,
+NSIS output is itself deterministic — both installers were built twice and
+compared byte for byte.
+
+The installers are **not code-signed**. Windows shows a SmartScreen prompt on
+first run, and the wizard's second page says so before writing anything.
+
+### `beta-3` — 2026-07-25 · superseded by beta-4
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-3>
 

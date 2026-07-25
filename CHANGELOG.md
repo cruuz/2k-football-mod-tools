@@ -11,6 +11,66 @@ versions (`v1.0-RC29`, `0.1.0-alpha.34`) and only change when their code does.
 
 ---
 
+## beta-4 — 2026-07-25
+
+**Windows installers.** No editor code changed, so both products still identify
+as `v1.0-RC29` and `0.1.0-alpha.34`, and the tarballs are byte-identical to
+beta 3. This release adds a way to install without a command prompt.
+
+### Added
+- **`2K5-Mod-Studio-…-Setup.exe` and `APF-2K8-Mod-Studio-…-Setup.exe`** — wizard
+  installers that need nothing preinstalled. No Python, no pip, no 7-Zip, no
+  PATH changes, no command prompt. They install per-user under `%LOCALAPPDATA%`,
+  so they never ask for administrator rights or touch Program Files, and they
+  add Start Menu and desktop shortcuts plus a normal entry in Apps & features.
+- **A warning page as the second step of the wizard**, before anything is
+  written to disk, with Next disabled until it is acknowledged. It explains the
+  SmartScreen prompt an unsigned program triggers, that the visible button is the
+  wrong one, that the path is *More info → Run anyway*, and how to verify the
+  download by SHA-256 rather than trusting the project. Someone who meets that
+  prompt with no warning reasonably concludes the download is malware.
+- `packaging/windows/build_windows_installer.py` builds them, and
+  `packaging/windows/UNSIGNED-NOTICE.txt` is the text shown in that page.
+
+### How they are built, and why not PyInstaller
+The application verifies its own integrity at runtime: `_read_pinned_payload`
+reads each pinned module from `workspace/<path>` and hashes the bytes, and the
+workspace comes from `Path(__file__).resolve().parents[2]`. A frozen build has
+neither real `.py` files nor a meaningful `__file__`, so freezing would silently
+delete the guarantee that makes the tool safe to point at a game.
+
+Instead each installer carries a **private CPython** (python.org's embeddable
+build) beside the application, with `..\app` on `sys.path` via its `._pth`. The
+application ships byte-identical to the tarball — same files, same pins — and
+runs with no `PYTHONPATH` and no dependence on the working directory.
+
+### Reproducible, and fail-closed about it
+Every byte entering the installer from outside this repository is pinned to an
+exact SHA-256 and verified before use: the interpreter and all four wheels
+(PyQt5, PyQt5-Qt5, PyQt5-sip, Pillow). A hash mismatch, an unpinned wheel the
+resolver pulled in, or a pinned wheel that fails to appear all stop the build
+rather than shipping. Version pins alone would not be enough — a version can be
+re-uploaded and a resolver can choose a transitive dependency nobody reviewed.
+
+Both installers rebuild **byte-identical**, verified by building each twice and
+comparing, so the published SHA-256 means something.
+
+### Verified
+Built and exercised end to end under wine, not merely compiled: silent install
+lands the expected tree, the private interpreter imports `mod_editor`, PyQt5 and
+Pillow, `pythonw.exe` with the shortcut's exact arguments runs without exiting,
+and the uninstaller removes everything it created. The warning page was captured
+rendering with Next correctly disabled. The refusal path was tested by feeding
+the build a wrong hash and confirming it stops.
+
+### Known limit
+The installers are **not code-signed**, so Windows shows a SmartScreen prompt the
+first time. A certificate costs a few hundred dollars a year, which this project
+does not have. The wizard, the release notes and the download instructions all
+say so up front rather than letting it come as a surprise.
+
+---
+
 ## beta-3 — 2026-07-25
 
 **Documentation, licensing and packaging. No editor code changed**, so both
