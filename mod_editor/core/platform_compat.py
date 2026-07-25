@@ -1166,16 +1166,31 @@ _WIN_CREATE_NEW = 1
 _WIN_FILE_ATTRIBUTE_NORMAL = 0x00000080
 _WIN_ERROR_FILE_EXISTS = 80
 _WIN_ERROR_ALREADY_EXISTS = 183
-# A private staging file is the one place we deliberately GRANT FILE_SHARE_DELETE
-# (the pinned directory and exec pins withhold it).  Windows refuses to rename a
-# file while any handle without that share bit is open, and the CRT's own
-# open()/mkstemp() never sets it -- which is why the publish step failed with
-# ERROR_SHARING_VIOLATION.  The descriptor is the integrity proof here: the
-# publisher writes, fsyncs, stats and finally re-reads the published bytes
-# *through the same descriptor*, so closing it early to placate Windows would
-# drop the guarantee rather than degrade it.  Sharing delete keeps the exact
+# The Win32 failures an OPEN_EXISTING of a file we expect to be there can return
+# and that a caller distinguishes.  Translated to the same exception types
+# ``os.open`` would have raised for them, so a caller's ``except`` clauses do not
+# have to learn a second vocabulary when the Windows branch is taken.
+_WIN_ERROR_FILE_NOT_FOUND = 2
+_WIN_ERROR_PATH_NOT_FOUND = 3
+_WIN_ERROR_ACCESS_DENIED = 5
+_WIN_ERROR_SHARING_VIOLATION = 32
+# A file staged for publication is the one place we deliberately GRANT
+# FILE_SHARE_DELETE (the pinned directory and exec pins withhold it).  Windows
+# refuses to rename a file while any handle without that share bit is open, and
+# the CRT's own open()/mkstemp() never sets it -- which is why the publish step
+# failed with ERROR_SHARING_VIOLATION.  The descriptor is the integrity proof
+# here: the publisher writes or verifies through it, fsyncs it, stats it, and
+# holds it across the rename so the inode it proved cannot be swapped or
+# recycled underneath the publish.  Closing it early to placate Windows would
+# drop that guarantee rather than degrade it.  Sharing delete keeps the exact
 # POSIX shape -- one descriptor held across the rename -- and grants no other
 # process anything it could not already do with the file's DACL.
+#
+# Two entry points share this mode, differing only in Win32 disposition:
+# :func:`_win_create_share_delete_child` (CREATE_NEW) for a staging file THIS
+# process creates, and :func:`_win_open_share_delete_existing` (OPEN_EXISTING)
+# for one a backend subprocess created that we open afterwards to verify and
+# publish.  The share mode is the same because the reason is the same.
 _WIN_STAGE_SHARE_MODE = (
     _WIN_FILE_SHARE_READ | _WIN_FILE_SHARE_WRITE | _WIN_FILE_SHARE_DELETE
 )
@@ -3662,6 +3677,12 @@ STAGE_POSIX_NAMED_TEMP = "posix-exclusive-named-temp"
 STAGING_FILE_POSIX_MKSTEMP = "posix-mkstemp"
 STAGING_FILE_WINDOWS_SHARE_DELETE = "windows-create-new-share-delete"
 
+# Names for the two mechanisms :func:`open_existing_for_publish` uses -- the
+# read-side twin of the pair above, for a staged file this process did not
+# create.
+PUBLISH_PIN_POSIX_OPEN = "posix-o-rdonly-nofollow"
+PUBLISH_PIN_WINDOWS_SHARE_DELETE = "windows-open-existing-share-delete"
+
 
 class NoReplacePublishUnavailable(RuntimeError):
     """No atomic no-clobber publish mechanism exists for this request here.
@@ -5200,6 +5221,74 @@ def _win_create_share_delete_child(path: str) -> int:
         raise
 
 
+def _win_open_share_delete_existing(path: str) -> int:
+    """``CreateFileW(OPEN_EXISTING, FILE_SHARE_DELETE)`` one file, as a CRT fd.
+
+    The read-side twin of :func:`_win_create_share_delete_child`, for the file a
+    caller did NOT create.  Everything about the two is the same -- the share
+    mode, the ``msvcrt.open_osfhandle`` handoff, the handle-ownership guard --
+    except the disposition: ``CREATE_NEW`` is unusable when a backend subprocess
+    already made the file and the pathname is fixed by that backend's contract,
+    so the only remaining way to obtain a descriptor that Windows will let the
+    caller rename *through* is to open the existing name with the same share
+    mode.
+
+    Access is ``GENERIC_READ`` and nothing more, exactly matching the
+    ``O_RDONLY`` this replaces on Windows: the CRT's own ``_wopen(O_RDONLY)``
+    already asks for ``GENERIC_READ``, so the descriptor's rights are
+    byte-for-byte what they were and only the share mode changes.  That keeps
+    :func:`fsync_fd` on the same branch it already took here (Windows cannot
+    ``FlushFileBuffers`` a read-only handle, so it reopens by path, re-checks
+    identity against this descriptor, flushes and closes -- all before any
+    rename).
+
+    ``FILE_FLAG_OPEN_REPARSE_POINT`` is deliberately NOT requested, even though
+    :func:`_win_open_exec_pin` uses it: ``_open_osfhandle`` rejects a handle
+    opened with it (see :func:`open_no_follow`, which is why that function needs
+    two opens), and a Win32 handle this caller cannot hand to the CRT is no use
+    as a descriptor.  So this neither adds nor removes no-follow enforcement --
+    ``O_NOFOLLOW`` is already ``0`` on Windows -- and the caller's own
+    ``(st_dev, st_ino)`` check against the identity it verified remains what
+    catches a swapped name, exactly as before.
+    """
+
+    msvcrt = _require_msvcrt()
+    api = _windows_kernel_api()
+    _win_reset_last_error()
+    raw = api.kernel32.CreateFileW(
+        path,
+        _WIN_GENERIC_READ,
+        _WIN_STAGE_SHARE_MODE,
+        None,
+        _WIN_OPEN_EXISTING,
+        _WIN_FILE_ATTRIBUTE_NORMAL,
+        None,
+    )
+    handle = raw if raw is not None else 0
+    if handle == 0 or handle == _win_invalid_handle():
+        err = _win_last_error()
+        if err in (_WIN_ERROR_FILE_NOT_FOUND, _WIN_ERROR_PATH_NOT_FOUND):
+            raise FileNotFoundError(
+                errno.ENOENT, "No such file or directory", path
+            )
+        if err in (_WIN_ERROR_ACCESS_DENIED, _WIN_ERROR_SHARING_VIOLATION):
+            raise PermissionError(errno.EACCES, "Permission denied", path)
+        raise OSError(
+            0,
+            f"CreateFileW could not open the staged file {path!r} with a share "
+            f"mode that permits its publication (WinError {err})",
+        )
+    try:
+        # Only O_NOINHERIT, for the same reasons spelled out in
+        # _win_create_share_delete_child: _open_osfhandle takes the access mode
+        # from the handle and rejects being told one, and a descriptor pinning a
+        # file about to be published must not leak into a child process.
+        return msvcrt.open_osfhandle(handle, getattr(os, "O_NOINHERIT", 0))
+    except BaseException:
+        _win_close_handle(api, handle)
+        raise
+
+
 _WIN_OPEN_ALWAYS = 4
 
 
@@ -5416,6 +5505,80 @@ def create_private_staging_file(
     return tempfile.mkstemp(prefix=prefix, suffix=suffix, dir=directory)
 
 
+def existing_publish_open_mechanism() -> str:
+    """Name the mechanism :func:`open_existing_for_publish` uses here.
+
+    Side-effect free, so a caller or test can assert the platform difference
+    instead of assuming it.
+    """
+
+    return (
+        PUBLISH_PIN_WINDOWS_SHARE_DELETE
+        if IS_WINDOWS
+        else PUBLISH_PIN_POSIX_OPEN
+    )
+
+
+def open_existing_for_publish(path: str | os.PathLike[str]) -> int:
+    """Open an existing file read-only, holdably across its own publication.
+
+    The counterpart to :func:`create_private_staging_file` for the case that
+    function cannot serve: a file produced by a *backend subprocess* under a
+    pathname that backend's contract fixes.  ``CREATE_NEW`` is not available
+    there -- the file already exists and the name is not ours to invent -- so
+    neither that helper nor :meth:`DirHandle.open_staging_child` (both of which
+    require ``O_CREAT | O_EXCL``) can be reused.
+
+    On POSIX this *is* the ``os.open(path, O_RDONLY | O_NOFOLLOW | O_CLOEXEC |
+    O_BINARY)`` the call sites already made -- the same flags in the same order,
+    so Linux and macOS behaviour is unchanged to the syscall.
+
+    The difference is Windows, and it is the same difference, for the same
+    reason, as :func:`create_private_staging_file`'s.  A caller opens this
+    descriptor to prove the staged file's identity, flushes through it, and then
+    holds it across the rename that publishes the file -- the held descriptor is
+    what keeps the verified object alive so the post-publish identity comparison
+    is a proof rather than a coincidence about a number the filesystem is free to
+    recycle.  Windows refuses to rename a file that has an open handle lacking
+    ``FILE_SHARE_DELETE``, and the CRT's ``open()`` never sets that bit, so the
+    publish fails with ERROR_SHARING_VIOLATION (WinError 32).  The fix is the
+    share mode, not the descriptor's lifetime: closing it before the rename and
+    re-checking the destination by name afterwards would silently swap a
+    held-descriptor proof for a name lookup, which is a weakening.  So on Windows
+    the same file is opened with :func:`CreateFileW` at ``OPEN_EXISTING``, with
+    ``GENERIC_READ`` (exactly the access ``O_RDONLY`` already asked for) and a
+    share mode that permits the rename.  The caller owns the descriptor.
+    """
+
+    # Computed here, not hoisted, so the POSIX call is visibly the identical
+    # expression the call sites used before this helper existed.
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_BINARY", 0)
+    )
+    if not IS_WINDOWS:
+        return os.open(path, flags)
+
+    try:
+        _windows_kernel_api()
+        _require_msvcrt()
+    except (DirectoryTransactionUnavailable, RuntimeError):
+        # Reached only when IS_WINDOWS was monkeypatched True on a POSIX host to
+        # exercise this branch: ctypes.windll and msvcrt both exist on every real
+        # Windows interpreter.  sys.platform, not IS_WINDOWS, decides -- so on a
+        # real Windows host a missing primitive re-raises and fails closed rather
+        # than quietly returning a descriptor that cannot be published through.
+        # On the simulating POSIX host the plain open below is not a degradation:
+        # that host really does honour O_NOFOLLOW and really can rename an open
+        # file.
+        if sys.platform.startswith("win"):
+            raise
+        return os.open(path, flags)
+    return _win_open_share_delete_existing(os.fspath(path))
+
+
 __all__ = [
     "DIRHANDLE_POSIX_DIR_FD",
     "DIRHANDLE_WINDOWS_REALPATH_PIN",
@@ -5432,6 +5595,8 @@ __all__ = [
     "PUBLISH_LINUX_O_TMPFILE_LINKAT",
     "PUBLISH_LINUX_RENAMEAT2",
     "PUBLISH_MACOS_RENAMEX_EXCL",
+    "PUBLISH_PIN_POSIX_OPEN",
+    "PUBLISH_PIN_WINDOWS_SHARE_DELETE",
     "PUBLISH_POSIX_LINK",
     "PUBLISH_POSIX_MKDIR_RESERVE",
     "PUBLISH_WINDOWS_RENAME",
@@ -5470,6 +5635,7 @@ __all__ = [
     "describe_ownership",
     "directory_transaction_guarantee",
     "exclusive_nonblocking_lock",
+    "existing_publish_open_mechanism",
     "fchmod",
     "fchmod_readonly",
     "fsync_directory",
@@ -5487,6 +5653,7 @@ __all__ = [
     "no_replace_publish_mechanism",
     "open_no_follow",
     "open_dir_handle",
+    "open_existing_for_publish",
     "open_private_stage",
     "ownership_mechanism",
     "pread",

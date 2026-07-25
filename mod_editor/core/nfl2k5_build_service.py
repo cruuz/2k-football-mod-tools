@@ -1266,9 +1266,17 @@ class Nfl2k5BuildService:
 
             result, staged_identity = self._read_verified_result(
                 manifest, staged_xiso, source, output)
-            descriptor = os.open(
-                staged_xiso, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) |
-                getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
+            # O_RDONLY | O_NOFOLLOW | O_CLOEXEC | O_BINARY on POSIX, unchanged.
+            # This descriptor is held across the publish on purpose -- it pins
+            # the exact inode the manifest was verified against, which is the
+            # only reason the post-publish (st_dev, st_ino) comparison below
+            # proves anything -- and Windows refuses to rename a file that has
+            # an open handle without FILE_SHARE_DELETE, which the CRT's open()
+            # never grants.  The helper grants it there and nothing else; the
+            # descriptor's lifetime and access rights are identical on every
+            # platform.  Closing it early instead would trade the held-descriptor
+            # proof for a name lookup.
+            descriptor = platform_compat.open_existing_for_publish(staged_xiso)
             publish_attempted = False
             committed = False
             try:

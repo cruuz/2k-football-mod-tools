@@ -2,17 +2,19 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 from pathlib import Path
 import stat
 import sys
 import tempfile
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 import unittest
 from unittest.mock import patch
 
 from mod_editor.core import platform_compat
+from mod_editor.core import nfl2k5_build_service as build_service_mod
 from mod_editor.core.errors import OutputRefusedError, ValidationError
 from mod_editor.core.model import SourceRecord
 from mod_editor.core.nfl2k5_build_service import (
@@ -370,10 +372,53 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
             runner = FakeBackendRunner()
             events = []
 
-            result = Nfl2k5BuildService(runner=runner).build(
-                fixture.cache, fixture.project, fixture.output, events.append
-            )
+            # The publish pin.  The service opens the staged XISO and holds that
+            # descriptor across the rename on purpose: it is what keeps the
+            # verified inode alive, so the post-publish (st_dev, st_ino)
+            # comparison is a proof rather than a coincidence about a number the
+            # filesystem may recycle.  Two things must therefore stay true, and
+            # neither is visible from the build's return value:
+            #   * the descriptor comes from platform_compat, which is the only
+            #     place that grants Windows FILE_SHARE_DELETE -- without that bit
+            #     Windows refuses the rename outright (WinError 32);
+            #   * it is still open, and still names the staged file, at the
+            #     instant of the publish.  Closing it earlier would make Windows
+            #     happy and silently trade the held-descriptor proof for a name
+            #     lookup.
+            pin: dict[str, object] = {}
+            open_pin = platform_compat.open_existing_for_publish
+            publish = build_service_mod._rename_noreplace
 
+            def recording_open_pin(path):
+                descriptor = open_pin(path)
+                pin["path"] = Path(path)
+                pin["descriptor"] = descriptor
+                return descriptor
+
+            def recording_publish(source, destination):
+                # os.fstat raises if the pin was closed early; that is the check.
+                pin["held"] = os.fstat(pin["descriptor"])
+                pin["staged"] = source.stat()
+                return publish(source, destination)
+
+            with (
+                patch.object(
+                    platform_compat, "open_existing_for_publish", recording_open_pin
+                ),
+                patch(
+                    "mod_editor.core.nfl2k5_build_service._rename_noreplace",
+                    recording_publish,
+                ),
+            ):
+                result = Nfl2k5BuildService(runner=runner).build(
+                    fixture.cache, fixture.project, fixture.output, events.append
+                )
+
+            self.assertEqual(pin["path"].name, "modded.xiso")
+            self.assertEqual(
+                (pin["held"].st_dev, pin["held"].st_ino),
+                (pin["staged"].st_dev, pin["staged"].st_ino),
+            )
             self.assertEqual([call[2] for call in runner.calls], ["build", "verify"])
             for call in runner.calls:
                 self.assertNotIn("--source-cache-root", call)
@@ -895,6 +940,245 @@ class FakeChild:
     def communicate(self, timeout: float | None = None) -> tuple[str, str]:
         self.communicate_calls += 1
         return "", ""
+
+
+class _FakePublishKernel32:
+    """The two kernel32 entry points the publish-pin open touches.
+
+    ``CreateFileW`` resolves against the real filesystem of this host and returns
+    a real descriptor as the "handle", so the Windows branch yields a descriptor
+    with genuine ``fstat``/``fsync``/``close`` semantics here and can be driven
+    end to end.  Every argument it was called with is recorded, because the share
+    mode is the entire fix and an assertion about it is the only thing that can
+    fail on a host that is not Windows.
+    """
+
+    def __init__(self) -> None:
+        self.calls: list[dict[str, object]] = []
+
+    def CreateFileW(  # noqa: N802 - mirrors the Win32 name
+        self, path, access, share, security, disposition, flags, template
+    ):
+        self.calls.append(
+            {
+                "path": os.fspath(path),
+                "access": access,
+                "share": share,
+                "disposition": disposition,
+                "flags": flags,
+            }
+        )
+        try:
+            return os.open(path, os.O_RDONLY | getattr(os, "O_CLOEXEC", 0))
+        except OSError:
+            # The Win32 last-error itself cannot be simulated here --
+            # ctypes.set_last_error/get_last_error exist only on Windows, so
+            # platform_compat._win_last_error() reads 0 on this host.  The
+            # translation of a specific code is therefore asserted by driving
+            # that seam directly; this only has to report the failure.
+            return platform_compat._win_invalid_handle()
+
+    def CloseHandle(self, handle):  # noqa: N802
+        try:
+            os.close(handle)
+        except OSError:
+            return 0
+        return 1
+
+
+@contextlib.contextmanager
+def _simulated_windows_publish():
+    """Run the enclosed block on the Windows branch of the publish-pin open.
+
+    Windows cannot run here, so the two primitives that branch needs are
+    supplied: ``_windows_kernel_api`` by the fake above, and ``msvcrt`` by a
+    stand-in whose ``open_osfhandle`` returns the descriptor the fake already
+    made.  Everything between them -- the access rights, the share mode, the
+    disposition, the handle-ownership guard, the error translation -- is the
+    shipped code, so what the assertions see is what a real ``CreateFileW`` would
+    be asked for.
+    """
+
+    saved_flags = (
+        platform_compat.IS_WINDOWS,
+        platform_compat.IS_LINUX,
+        platform_compat.IS_MACOS,
+    )
+    saved_loader = platform_compat._windows_kernel_api
+    saved_cache = platform_compat._windows_kernel_api_cache
+    saved_msvcrt = sys.modules.get("msvcrt")
+    kernel32 = _FakePublishKernel32()
+    fake_api = platform_compat._WindowsKernelApi(kernel32=kernel32)
+    fake_msvcrt = ModuleType("msvcrt")
+    fake_msvcrt.open_osfhandle = lambda handle, flags: handle
+    platform_compat.IS_WINDOWS = True
+    platform_compat.IS_LINUX = False
+    platform_compat.IS_MACOS = False
+    platform_compat._windows_kernel_api_cache = None
+    platform_compat._windows_kernel_api = lambda: fake_api
+    sys.modules["msvcrt"] = fake_msvcrt
+    try:
+        yield kernel32
+    finally:
+        (
+            platform_compat.IS_WINDOWS,
+            platform_compat.IS_LINUX,
+            platform_compat.IS_MACOS,
+        ) = saved_flags
+        platform_compat._windows_kernel_api = saved_loader
+        platform_compat._windows_kernel_api_cache = saved_cache
+        if saved_msvcrt is None:
+            sys.modules.pop("msvcrt", None)
+        else:
+            sys.modules["msvcrt"] = saved_msvcrt
+
+
+class PublishPinOpenTests(unittest.TestCase):
+    """The descriptor held across the publish must be opened in a way Windows
+    will still rename through -- without altering a single POSIX syscall.
+
+    The staged XISO is created by the *backend*, under a pathname that backend's
+    contract fixes, so the existing share-delete precedent (``CREATE_NEW``, for a
+    staging file the process creates itself) cannot be reused; this is its
+    ``OPEN_EXISTING`` twin, and these assertions are what distinguish the two.
+    """
+
+    def test_posix_open_keeps_the_exact_flags_it_always_used(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest("this asserts the POSIX branch, which Windows never takes")
+        with tempfile.TemporaryDirectory() as name:
+            staged = Path(name) / "modded.xiso"
+            staged.write_bytes(b"verified bytes")
+            expected = (
+                os.O_RDONLY
+                | getattr(os, "O_NOFOLLOW", 0)
+                | getattr(os, "O_CLOEXEC", 0)
+                | getattr(os, "O_BINARY", 0)
+            )
+            seen: list[tuple[str, int]] = []
+            real_open = os.open
+
+            def recording(path, flags, *rest):
+                seen.append((os.fspath(path), flags))
+                return real_open(path, flags, *rest)
+
+            with patch.object(os, "open", recording):
+                descriptor = platform_compat.open_existing_for_publish(staged)
+            try:
+                # One open, read-only, no-follow: byte for byte the call this
+                # replaced, so Linux and macOS are unchanged.
+                self.assertEqual(seen, [(str(staged), expected)])
+                self.assertEqual(os.fstat(descriptor).st_ino, staged.stat().st_ino)
+            finally:
+                os.close(descriptor)
+            self.assertEqual(
+                platform_compat.existing_publish_open_mechanism(),
+                platform_compat.PUBLISH_PIN_POSIX_OPEN,
+            )
+
+    def test_windows_opens_the_existing_file_with_share_delete(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            staged = root / "modded.xiso"
+            staged.write_bytes(b"verified bytes")
+            published = root / "My Modded 2K5.xiso.iso"
+            with _simulated_windows_publish() as kernel32:
+                self.assertEqual(
+                    platform_compat.existing_publish_open_mechanism(),
+                    platform_compat.PUBLISH_PIN_WINDOWS_SHARE_DELETE,
+                )
+                descriptor = platform_compat.open_existing_for_publish(staged)
+                try:
+                    (call,) = kernel32.calls
+                    self.assertEqual(call["path"], str(staged))
+                    # OPEN_EXISTING, not CREATE_NEW: the backend made this file
+                    # and its name is not ours to invent, which is exactly why
+                    # create_private_staging_file could not be reused.
+                    self.assertEqual(
+                        call["disposition"], platform_compat._WIN_OPEN_EXISTING
+                    )
+                    self.assertNotEqual(
+                        call["disposition"], platform_compat._WIN_CREATE_NEW
+                    )
+                    # GENERIC_READ and nothing more -- the same rights O_RDONLY
+                    # already asked for, so only the share mode changed.
+                    self.assertEqual(
+                        call["access"], platform_compat._WIN_GENERIC_READ
+                    )
+                    # The bit whose absence is WinError 32.
+                    self.assertTrue(
+                        call["share"] & platform_compat._WIN_FILE_SHARE_DELETE
+                    )
+                    self.assertEqual(
+                        call["share"], platform_compat._WIN_STAGE_SHARE_MODE
+                    )
+                    # And the descriptor is a real one, still naming the verified
+                    # object across the publish -- the proof the share bit exists
+                    # to preserve, not replace.
+                    pinned = os.fstat(descriptor)
+                    staged_identity = staged.stat()
+                    self.assertEqual(
+                        (pinned.st_dev, pinned.st_ino),
+                        (staged_identity.st_dev, staged_identity.st_ino),
+                    )
+                    os.rename(staged, published)
+                    after = os.fstat(descriptor)
+                    self.assertEqual(
+                        (after.st_dev, after.st_ino),
+                        (pinned.st_dev, pinned.st_ino),
+                    )
+                finally:
+                    os.close(descriptor)
+            self.assertEqual(published.read_bytes(), b"verified bytes")
+
+    def test_windows_failure_is_translated_not_swallowed(self) -> None:
+        # A CreateFileW that fails must raise the same exception os.open would
+        # have raised for that Win32 code, so the caller's existing except
+        # clauses keep working -- and must never return a descriptor.  The
+        # last-error is patched at the seam the product reads it from because
+        # ctypes.set_last_error exists only on Windows.
+        translations = (
+            (platform_compat._WIN_ERROR_FILE_NOT_FOUND, FileNotFoundError),
+            (platform_compat._WIN_ERROR_PATH_NOT_FOUND, FileNotFoundError),
+            (platform_compat._WIN_ERROR_ACCESS_DENIED, PermissionError),
+            (platform_compat._WIN_ERROR_SHARING_VIOLATION, PermissionError),
+            (1234, OSError),
+        )
+        with tempfile.TemporaryDirectory() as name:
+            missing = Path(name) / "modded.xiso"
+            for code, expected in translations:
+                with self.subTest(win_error=code):
+                    with _simulated_windows_publish():
+                        with patch.object(
+                            platform_compat, "_win_last_error", lambda code=code: code
+                        ):
+                            with self.assertRaises(expected) as caught:
+                                platform_compat.open_existing_for_publish(missing)
+                    # Exactly this type: an untranslated code must stay a plain
+                    # OSError rather than be reported as a missing file.
+                    self.assertIs(type(caught.exception), expected)
+
+    def test_windows_without_the_primitives_fails_closed_on_windows(self) -> None:
+        if platform_compat.IS_WINDOWS:
+            self.skipTest("a real Windows host has both primitives")
+        with tempfile.TemporaryDirectory() as name:
+            staged = Path(name) / "modded.xiso"
+            staged.write_bytes(b"verified bytes")
+            # IS_WINDOWS flipped on a POSIX host with no kernel32 and no msvcrt:
+            # the documented simulation fallback, which this host can honour
+            # because its own open really does carry O_NOFOLLOW and it really can
+            # rename an open file.
+            with patch.object(platform_compat, "IS_WINDOWS", True):
+                descriptor = platform_compat.open_existing_for_publish(staged)
+                os.close(descriptor)
+                # On a real Windows interpreter the same missing primitive
+                # re-raises instead of degrading, so a descriptor that cannot be
+                # published through is never handed back.
+                with patch.object(sys, "platform", "win32"):
+                    with self.assertRaises(
+                        platform_compat.DirectoryTransactionUnavailable
+                    ):
+                        platform_compat.open_existing_for_publish(staged)
 
 
 class WindowsBackendTeardownTests(unittest.TestCase):
