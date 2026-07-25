@@ -5137,13 +5137,13 @@ def open_no_follow(
     the call fails with ``ELOOP``, exactly as ``O_NOFOLLOW`` does.  POSIX takes
     the identical ``os.open`` it always took.
 
-    On Windows the proven object is then bound to an ordinary CRT descriptor by
-    comparing identities rather than by handing the Win32 handle to the CRT:
-    ``_open_osfhandle`` rejects a handle opened this way with ``EBADF``, and a
-    descriptor the caller cannot use would be no guarantee at all.  A racer who
-    swaps the name between the two steps yields a different (volume, file index)
-    and is refused; one who relinks it back to the very object just proven has
-    changed nothing the caller cares about.
+    On Windows the descriptor itself then comes from an ordinary :func:`os.open`
+    -- ``_open_osfhandle`` rejects the proving handle with ``EBADF``, so it
+    cannot be reused.  The reparse refusal is therefore window-free and exact,
+    but the descriptor is not proven to name the object that was checked: a
+    same-user process that replaces the name between the two steps gets its
+    replacement opened.  That residual is stated here rather than implied, and a
+    caller that cannot tolerate it holds a pinned :class:`DirHandle` instead.
 
     Scope, precisely: this refuses a link at the FINAL component, which is what
     ``O_NOFOLLOW`` refuses and no more.  Ancestor directories are still resolved
@@ -5265,29 +5265,25 @@ def open_no_follow(
     # (volume, file index) and is refused here.  A racer who relinks the name
     # back to the very object step 1 proved changes nothing -- the descriptor
     # names those proven bytes, which is exactly what the caller asked for.
-    descriptor = os.open(path, flags & ~getattr(os, "O_NOFOLLOW", 0), mode)
-    try:
-        # Compare Win32 identity against Win32 identity, via the descriptor's
-        # own handle.  os.fstat is NOT usable for this: CPython changed how it
-        # fills st_dev/st_ino on Windows in 3.12 (FILE_ID_INFO's 64-bit volume
-        # serial and 128-bit file ID, rather than BY_HANDLE_FILE_INFORMATION's
-        # 32-bit serial and 64-bit index), so comparing the two representations
-        # mismatches for a perfectly ordinary file on 3.12 while matching on
-        # 3.11.  Asking GetFileInformationByHandle on both sides is the same
-        # question on every version.
-        opened_identity = _win_file_identity(
-            api, msvcrt.get_osfhandle(descriptor)
-        )[:2]
-        if opened_identity != (serial, index):
-            raise OSError(
-                errno.ELOOP,
-                "the path was replaced between its no-follow check and its open",
-                os.fspath(path),
-            )
-    except BaseException:
-        os.close(descriptor)
-        raise
-    return descriptor
+    # The descriptor the caller needs comes from an ordinary os.open.  The Win32
+    # handle is NOT handed to the CRT: _open_osfhandle rejects a handle opened
+    # this way with EBADF, and a descriptor the caller cannot use would be no
+    # guarantee at all.
+    #
+    # Residual, stated rather than implied: the reparse-point refusal above is
+    # decided on the object the no-follow handle actually opened, with no window
+    # -- that is the guarantee this function exists to provide, and it holds.
+    # What is NOT established is that the descriptor below names that same
+    # object: a same-user process that replaces the name between the two steps
+    # gets its replacement opened instead.  Binding them was attempted by
+    # comparing GetFileInformationByHandle identities and did not survive
+    # contact with the platform (CPython changed st_dev/st_ino on Windows in
+    # 3.12, and the descriptor's own handle would not answer the query), so the
+    # honest thing is to name the residual here rather than ship a comparison
+    # that silently fails open or fails closed on ordinary files.  Callers that
+    # cannot tolerate it hold a pinned DirHandle, which re-verifies per
+    # operation.
+    return os.open(path, flags & ~getattr(os, "O_NOFOLLOW", 0), mode)
 
 
 def _win_create_share_delete_staging_file(
