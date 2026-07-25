@@ -1,0 +1,69 @@
+WINDOWS WILL WARN YOU ABOUT THIS PROGRAM. THAT IS EXPECTED.
+
+Read this before you continue, so the warning does not take you by surprise.
+
+
+WHAT YOU WILL SEE
+
+The first time you start this program, Windows may show a blue box that says:
+
+    "Windows protected your PC"
+    "Microsoft Defender SmartScreen prevented an unrecognised app from
+     starting. Running this app might put your PC at risk."
+
+There is only a "Don't run" button visible. The button you need is hidden.
+
+
+WHAT TO CLICK
+
+    1. Click the words "More info" in the blue box.
+    2. A "Run anyway" button appears underneath.
+    3. Click "Run anyway".
+
+You should only have to do this once.
+
+You may also have seen this same warning when you started this installer. It
+comes from the same cause, and it is not a sign that anything is wrong.
+
+
+WHY IT HAPPENS
+
+Windows shows that warning for any program that has not been signed with a
+paid code-signing certificate. Those certificates cost a few hundred dollars a
+year. This is a free hobby project for modding two football games from 2004 and
+2007, so it does not have one.
+
+The warning means "Windows has not seen this program before". It does not mean
+Windows found anything harmful in it.
+
+
+HOW TO CHECK THAT YOUR DOWNLOAD IS GENUINE, RATHER THAN TRUSTING US
+
+You do not have to take our word for any of the above. Every release publishes
+the exact SHA-256 fingerprint of each file. To check the installer you just
+launched, open PowerShell and run:
+
+    Get-FileHash -Algorithm SHA256 "<path to the installer you downloaded>"
+
+Compare the result against the value on the release page. If it matches
+character for character, the file is exactly what was published and has not
+been altered by anyone in between. If it does NOT match, stop and delete it.
+
+The full source code is public, and the release archives can be rebuilt from it
+byte for byte, so anyone can verify what these tools actually do:
+
+    https://github.com/cruuz/2k-football-mod-tools
+
+
+WHAT THIS PROGRAM DOES AND DOES NOT DO
+
+  - It installs only into your own user folder. It never asks for
+    administrator rights, and it does not touch Windows itself.
+  - It contains no game data of any kind. You supply your own legally
+    obtained disc or disc image.
+  - It never writes to your original disc image. Edits are always written to
+    a copy, and every change is verified byte for byte afterwards.
+  - It does not connect to the internet, and it collects nothing about you.
+
+Uninstalling removes everything it installed. You will find it in the normal
+Windows "Apps & features" list.
