@@ -86,13 +86,18 @@ pixels/audio, private paths, symlinks, or undeclared files) and a
 
 ---
 
-## PlayStation 2 saves (new)
+## PlayStation 2 saves (preview — separate download)
 
-The editors can now write **ESPN NFL 2K5 (PlayStation 2, `SLUS-20919`) memory-card
-saves**: read a save from a `.psu`, an extracted save folder, or a `.ps2` card
-image; apply fixed-allocation roster name edits inside its `ROST` arena; reseal
-the CRC-32 integrity field; and write a `.psu` that PCSX2, mymc, PS2 Save Builder
-and real hardware accept.
+**This is not part of the two archives above.** PS2 save support ships as its
+own command-line package, `NFL2K5-PS2-Save-Toolkit`, on the Releases page. The
+`v1.0-RC29` and `v0.1.0-alpha.34` archives listed earlier predate it and do not
+contain it. The graphical editors do not expose PS2 saves yet.
+
+The toolkit reads an **ESPN NFL 2K5 (PlayStation 2, `SLUS-20919`) memory-card
+save** from a `.psu`, an extracted save folder, or a `.ps2` card image; applies
+fixed-allocation roster name edits inside its `ROST` arena; reseals the CRC-32
+integrity field; and writes a `.psu` that PCSX2, mymc and PS2 Save Builder
+import. It needs only Python 3 — no PyQt5, no Pillow.
 
 Unlike the Xbox release — whose saves carry a platform-keyed signature and stay
 read-only here — PS2 save integrity is a recomputable CRC-32, so an offline

@@ -94,6 +94,8 @@ tools/launch_2k5_mod_studio.sh
 tools/apf_inner.py
 tools/apf_outer.py
 tools/nfl2k5_jersey_png_workflow.py
+tools/nfl2k5_ps2_save.py
+tools/nfl2k5_ps2_save_verify.py
 tools/nfl2k5_visual_mod_project.py
 tools/nfl_create_team_field_art_inventory.py
 tools/nfl_create_team_field_art_png_import.py
@@ -137,6 +139,7 @@ tools/nfl_txtr.py
 tools/nfl_uniform_color_xiso_direct_patch.py
 tools/nfl_uniform_inventory.py
 tools/string_table_inventory.py
+tools/validate_nfl2k5_ps2_save.sh
 tools/xbe_info.py
 reports/assets/nfl2k5_jersey_tset_compatibility.json
 reports/assets/nfl2k5_sleeve_tset_compatibility.json
