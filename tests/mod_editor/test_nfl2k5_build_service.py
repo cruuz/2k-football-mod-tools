@@ -169,8 +169,10 @@ def _canonical_project(path: Path, kind: str = "synthetic-test-edit") -> None:
         "purpose": "Synthetic build-service test",
         "schema": "nfl2k5_visual_mod_project/v1",
     }
-    path.write_text(
-        json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    path.write_text(  # newline="" keeps the bytes canonical on Windows
+        json.dumps(value, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="",
     )
 
 
@@ -234,7 +236,7 @@ class FakeBackendRunner:
                 },
                 "patch": {"changed_byte_count": 1234},
             }
-            manifest.write_text(json.dumps(receipt), encoding="utf-8")
+            manifest.write_text(json.dumps(receipt), encoding="utf-8", newline="")
             return CommandResult(fixed, 0, "BUILD PASS\n", "")
         if action != "verify":
             raise AssertionError(f"unexpected backend action: {action}")
@@ -524,8 +526,10 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                 "purpose": "Synthetic build-service test",
                 "schema": "nfl2k5_visual_mod_project/v1",
             }
-            fixture.project.write_text(
-                json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            fixture.project.write_text(  # newline="" keeps the bytes canonical on Windows
+                json.dumps(value, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+                newline="",
             )
             runner = RelativePathRunner(replacement.resolve())
 
@@ -589,8 +593,10 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
                 "purpose": "Synthetic build-service test",
                 "schema": "nfl2k5_visual_mod_project/v1",
             }
-            fixture.project.write_text(
-                json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            fixture.project.write_text(  # newline="" keeps the bytes canonical on Windows
+                json.dumps(value, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+                newline="",
             )
             runner = FakeBackendRunner()
 
