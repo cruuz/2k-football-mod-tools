@@ -43,6 +43,7 @@ PAYLOAD = (
     "tools/nfl2k5_ps2_save.py",
     "tools/nfl2k5_ps2_save_verify.py",
     "tools/validate_nfl2k5_ps2_save.sh",
+    "tools/validate_nfl2k5_ps2_save.bat",
     "tools/nfl_outer.py",
     "tools/nfl_roster.py",
     "tools/nfl_scene_probe.py",
@@ -75,7 +76,24 @@ Command-line tools for reading, editing and writing ESPN NFL 2K5
 (PlayStation 2, SLUS-20919) memory-card saves.
 
 Requires only Python 3 (3.9 or newer). No other dependencies.
+Works on Windows, Linux and macOS.
 This package contains NO game data -- bring your own save.
+
+Windows
+-------
+
+Extract the .zip, open a Command Prompt in the extracted folder, and use
+"python" (or "py -3") in place of "python3" in the commands below. Windows
+paths work as-is, quoted if they contain spaces:
+
+    python tools\\nfl2k5_ps2_save.py --input "C:\\PCSX2\\memcards\\Mcd001.ps2" --inspect
+
+To check the tools are working, run:
+
+    tools\\validate_nfl2k5_ps2_save.bat
+
+If a memory-card image holds more than one 2K5 save, the tool lists them and
+asks you to pick one with --directory.
 
 Quick start
 -----------
@@ -154,6 +172,32 @@ def _gate(relative: str, data: bytes) -> None:
         ) from exc
 
 
+def _write_sha256(archive_path: Path) -> Path:
+    digest = hashlib.sha256(archive_path.read_bytes()).hexdigest()
+    sha_path = archive_path.with_name(archive_path.name + ".sha256")
+    sha_path.write_text(f"{digest}  {archive_path.name}\n", encoding="utf-8")
+    return sha_path
+
+
+def _write_zip(path: Path, members: list[tuple[str, bytes]]) -> None:
+    """Write the same payload as a .zip for Windows.
+
+    Windows ships bsdtar and can open the .tar.gz from a terminal, but a .zip
+    opens by double-click in Explorer, which is the difference between "it
+    works" and "anyone can use it".  Timestamps are fixed so the archive is
+    reproducible like its tar sibling.
+    """
+    import zipfile
+
+    fixed = (2026, 1, 1, 0, 0, 0)
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for name, data in members:
+            info = zipfile.ZipInfo(name, date_time=fixed)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = (0o755 if name.endswith((".sh", ".bat")) else 0o644) << 16
+            archive.writestr(info, data)
+
+
 def build(output_dir: Path, version: str) -> tuple[Path, Path]:
     stem = f"{TOOLKIT_NAME}-{version}"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -189,10 +233,11 @@ def build(output_dir: Path, version: str) -> tuple[Path, Path]:
         with gzip.GzipFile(fileobj=handle, mode="wb", mtime=0) as gz:
             gz.write(raw.getvalue())
 
-    digest = hashlib.sha256(archive_path.read_bytes()).hexdigest()
-    sha_path = output_dir / f"{stem}.tar.gz.sha256"
-    sha_path.write_text(f"{digest}  {archive_path.name}\n", encoding="utf-8")
-    return archive_path, sha_path
+    zip_path = output_dir / f"{stem}.zip"
+    _write_zip(zip_path, members)
+    _write_sha256(zip_path)
+
+    return archive_path, _write_sha256(archive_path)
 
 
 def main(argv: list[str] | None = None) -> int:

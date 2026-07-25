@@ -139,6 +139,7 @@ tools/nfl_txtr.py
 tools/nfl_uniform_color_xiso_direct_patch.py
 tools/nfl_uniform_inventory.py
 tools/string_table_inventory.py
+tools/validate_nfl2k5_ps2_save.bat
 tools/validate_nfl2k5_ps2_save.sh
 tools/xbe_info.py
 reports/assets/nfl2k5_jersey_tset_compatibility.json
