@@ -682,6 +682,23 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
             # the Windows hang to this test but only prints a subTest once it
             # has finished, so a case that never returns is still anonymous.
             # This makes the next timeout name it exactly.
+            if platform_compat.IS_WINDOWS and case in {
+                "derived_public_mode", "public_mode",
+            }:
+                # These two express "unsafe" by chmod-ing something public.
+                # On Windows mode bits confer no privacy at all -- a directory
+                # always reports 0o777 and a writable file 0o666 -- so a chmod
+                # cannot produce the unsafe state the case is about, and the
+                # guard correctly does not fire.  Privacy there is the DACL,
+                # which verify_private_root_placement checks and which these
+                # cases do not touch.  Skipped with the reason rather than
+                # asserted into a false pass.
+                with self.subTest(case=case):
+                    self.skipTest(
+                        f"{case} makes its subject public with chmod, which "
+                        "confers no privacy on Windows; the DACL is what does"
+                    )
+                continue
             print(f"  [case] {case}", file=sys.stderr, flush=True)
             with self.subTest(case=case), tempfile.TemporaryDirectory(
                 prefix="2k5-build-service-test-"
@@ -1121,15 +1138,31 @@ class PublishPinOpenTests(unittest.TestCase):
                         (pinned.st_dev, pinned.st_ino),
                         (staged_identity.st_dev, staged_identity.st_ino),
                     )
-                    os.rename(staged, published)
-                    after = os.fstat(descriptor)
-                    self.assertEqual(
-                        (after.st_dev, after.st_ino),
-                        (pinned.st_dev, pinned.st_ino),
-                    )
+                    # Renaming WHILE the descriptor is open is the behaviour
+                    # the share bit buys, and it is demonstrated here against
+                    # the simulated kernel32 -- whose open_osfhandle hands back
+                    # the descriptor the fake made with a plain os.open.  That
+                    # descriptor genuinely has no FILE_SHARE_DELETE, so on a
+                    # real Windows host this rename is refused by the very
+                    # mechanism under test: the demonstration would be asserting
+                    # the shim's limits, not the product's.  The CreateFileW
+                    # contract above -- disposition, access, share mode -- is
+                    # the real assertion and runs on every platform.
+                    # sys.platform, not IS_WINDOWS: the simulation above sets
+                    # that flag True on every host, so keying on it would skip
+                    # the demonstration everywhere.  The question here is what
+                    # the REAL kernel underneath will permit.
+                    if not sys.platform.startswith("win"):
+                        os.rename(staged, published)
+                        after = os.fstat(descriptor)
+                        self.assertEqual(
+                            (after.st_dev, after.st_ino),
+                            (pinned.st_dev, pinned.st_ino),
+                        )
                 finally:
                     os.close(descriptor)
-            self.assertEqual(published.read_bytes(), b"verified bytes")
+            if not sys.platform.startswith("win"):
+                self.assertEqual(published.read_bytes(), b"verified bytes")
 
     def test_windows_failure_is_translated_not_swallowed(self) -> None:
         # A CreateFileW that fails must raise the same exception os.open would
