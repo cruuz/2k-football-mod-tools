@@ -34,6 +34,15 @@ EXTRACTOR = ROOT / "tools/vendor/extract-xiso/build/extract-xiso"
 EXTRACTOR_LICENSE = ROOT / "tools/vendor/extract-xiso/LICENSE.TXT"
 EXTRACTOR_SIZE = 56_584
 EXTRACTOR_SHA256 = "96e6286d371e47e24474a3b7c89ef5c204ddca9c93c95d5ebcb7bcf1d6eb530f"
+# The Windows extractor, built from the same vendored extract-xiso 2.7.1 source
+# so a Windows user can hand the app a .iso directly.  Pinned exactly like the
+# ELF above: a bundled binary nobody can rebuild from this tree at review time
+# is only trustworthy if its bytes are fixed here.
+EXTRACTOR_WINDOWS = ROOT / "tools/vendor/extract-xiso/build/extract-xiso.exe"
+EXTRACTOR_WINDOWS_SIZE = 293_273
+EXTRACTOR_WINDOWS_SHA256 = (
+    "e9567fe31b168b226531ed532714b3e1cc9070cdfac0c102fb881e2825aee68d"
+)
 EXTRACTOR_LICENSE_SIZE = 3_115
 EXTRACTOR_LICENSE_SHA256 = "719d9e9a12c470a20d9f1988a03108fd99bb0b07a5340c6bbf3caf524b7adf01"
 INSTALLER = ROOT / "packaging/apf2k8_mod_studio_installer.py"
@@ -179,6 +188,14 @@ def _check_clean_stage() -> None:
 
 
 def _check_extractor() -> None:
+    windows_binary = _require_regular(
+        EXTRACTOR_WINDOWS, "reviewed extract-xiso Windows binary"
+    )
+    require(
+        windows_binary.st_size == EXTRACTOR_WINDOWS_SIZE
+        and _sha256(EXTRACTOR_WINDOWS) == EXTRACTOR_WINDOWS_SHA256,
+        "the reviewed extract-xiso Windows binary is not the pinned build",
+    )
     binary = _require_regular(EXTRACTOR, "reviewed extract-xiso binary")
     license_info = _require_regular(EXTRACTOR_LICENSE, "extract-xiso license")
     require(binary.st_size == EXTRACTOR_SIZE and _sha256(EXTRACTOR) == EXTRACTOR_SHA256,

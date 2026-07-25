@@ -12,6 +12,8 @@ import subprocess
 import tempfile
 from typing import Callable
 
+from mod_editor.core import platform_compat
+
 from .backend import PRODUCT_ROOT
 from .models import ApfSource
 
@@ -100,6 +102,29 @@ def sha256_file(
     return digest.hexdigest()
 
 
+def bundled_extract_xiso() -> Path:
+    """The vendored extractor for the running OS.
+
+    Both binaries are built from the same vendored extract-xiso 2.7.1 source and
+    ship side by side: the ELF for Linux, and ``extract-xiso.exe`` -- a PE32+
+    x86-64 console build -- for Windows.  Picking by platform is what lets a
+    Windows user hand the app a ``.iso`` directly instead of having to extract it
+    themselves or supply their own build of the extractor.
+
+    macOS is deliberately not covered.  Neither bundled binary can run there and
+    shipping one would mean vendoring a third architecture we cannot test, so a
+    macOS user still points the app at an already-extracted game folder or sets
+    ``extract_xiso`` to their own build.  The path is returned regardless; the
+    caller reports a missing or non-executable extractor rather than this
+    function guessing.
+    """
+
+    build = PRODUCT_ROOT / "tools" / "vendor" / "extract-xiso" / "build"
+    if platform_compat.IS_WINDOWS:
+        return build / "extract-xiso.exe"
+    return build / "extract-xiso"
+
+
 @dataclass
 class SourceManager:
     cache_root: Path | None = None
@@ -109,9 +134,7 @@ class SourceManager:
         if self.cache_root is None:
             self.cache_root = Path.home() / ".cache" / "apf2k8-mod-studio"
         if self.extract_xiso is None:
-            self.extract_xiso = (
-                PRODUCT_ROOT / "tools" / "vendor" / "extract-xiso" / "build" / "extract-xiso"
-            )
+            self.extract_xiso = bundled_extract_xiso()
 
     def resolve(
         self,

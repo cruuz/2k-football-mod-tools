@@ -80,23 +80,27 @@ This is a **beta**. What that means here:
   - **Xenia Canary** for All-Pro Football 2K8.
 - Your own legally dumped game disc (an `.iso`/XISO, or its extracted folder).
 
-**Platform support.** **Linux is the supported platform**: the full test suite
-passes there and the desktop app has been smoke-tested end to end.
+**Platform support.** **Linux, Windows and macOS all pass the same suite.** CI
+runs it on all three, on Python 3.11 and 3.12, and every job reports an
+identical result — the six jobs agree file for file and test for test.
 
-**Windows and macOS are a preview.** CI does run the suite on all three
-operating systems, but it does not yet pass on Windows or macOS — the
-cross-platform port is in progress and the GUI has not been manually driven on
-either. Two specific limits if you try them:
+**Linux remains the most exercised platform**: the desktop app has been
+smoke-tested end to end there, and the GUI has not been manually driven on
+Windows or macOS, so treat those as well-tested code with a less-tested
+window on top. Two specific limits:
 
 - Some of the suite is expected to fail on any CI runner regardless of OS,
   because this repository deliberately ships no game data and no generated
   reports.
-- The bundled `extract-xiso` extractor is a Linux binary, so on Windows the
-  **ISO** path will not work — point the editor at an **already-extracted game
-  folder** instead.
+- The bundled `extract-xiso` extractor ships as **both** a Linux binary and a
+  Windows `.exe`, built from the same vendored 2.7.1 source, so handing the
+  editor a `.iso` works on either. **macOS** has no bundled build — point the
+  editor at an **already-extracted game folder** there, or build extract-xiso
+  yourself and pass it to `SourceManager(extract_xiso=...)`. See
+  `tools/vendor/extract-xiso/BUILDING-THE-BUNDLED-BINARIES.md` for the exact
+  build commands and hashes.
 
-Double-click launchers are bundled for all three platforms (see *Install*), but
-treat anything other than Linux as experimental for now.
+Double-click launchers are bundled for all three platforms (see *Install*).
 
 ---
 

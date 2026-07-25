@@ -44,7 +44,20 @@ REVIEWED_LICENSE_SIZE = 3_115
 REVIEWED_LICENSE_SHA256 = (
     "719d9e9a12c470a20d9f1988a03108fd99bb0b07a5340c6bbf3caf524b7adf01"
 )
-REVIEWED_PATHS = frozenset({REVIEWED_BINARY, REVIEWED_LICENSE})
+# The Windows extractor, built from the same vendored extract-xiso 2.7.1 source
+# as the ELF above so a Windows user can hand the app a .iso directly.  It is
+# reviewed exactly like its sibling -- pinned to an exact size and hash, and
+# required to still be a PE image -- which is what earns it an exception from
+# the forbidden-suffix rule.  ".exe" stays forbidden for every other path: this
+# is one named file, not a relaxed category.
+REVIEWED_WINDOWS_BINARY = "tools/vendor/extract-xiso/build/extract-xiso.exe"
+REVIEWED_WINDOWS_BINARY_SIZE = 293_273
+REVIEWED_WINDOWS_BINARY_SHA256 = (
+    "e9567fe31b168b226531ed532714b3e1cc9070cdfac0c102fb881e2825aee68d"
+)
+REVIEWED_PATHS = frozenset(
+    {REVIEWED_BINARY, REVIEWED_WINDOWS_BINARY, REVIEWED_LICENSE}
+)
 
 INSTALL_SURFACE = frozenset(
     {
@@ -412,6 +425,19 @@ def _hash_regular(path: Path, expected_size: int, maximum: int) -> tuple[str, by
     return digest.hexdigest(), b"".join(chunks)
 
 
+def _validate_reviewed_windows_binary(path: Path, info: os.stat_result) -> str:
+    if info.st_size != REVIEWED_WINDOWS_BINARY_SIZE:
+        raise ReleaseCheckError("reviewed extract-xiso Windows binary size changed")
+    digest, payload = _hash_regular(path, info.st_size, REVIEWED_WINDOWS_BINARY_SIZE)
+    if digest != REVIEWED_WINDOWS_BINARY_SHA256:
+        raise ReleaseCheckError("reviewed extract-xiso Windows binary hash changed")
+    if not payload.startswith(b"MZ"):
+        raise ReleaseCheckError(
+            "reviewed extract-xiso Windows binary is no longer a PE image"
+        )
+    return digest
+
+
 def _validate_reviewed_binary(path: Path, info: os.stat_result) -> str:
     if info.st_size != REVIEWED_BINARY_SIZE:
         raise ReleaseCheckError("reviewed extract-xiso binary size changed")
@@ -620,6 +646,8 @@ def audit_release(root: Path, allowlist_path: Path) -> dict[str, object]:
             raise ReleaseCheckError(f"file is absent from the APF release allowlist: {relative}")
         if relative == REVIEWED_BINARY:
             digest = _validate_reviewed_binary(path, info)
+        elif relative == REVIEWED_WINDOWS_BINARY:
+            digest = _validate_reviewed_windows_binary(path, info)
         else:
             suffix = path.suffix.casefold()
             if suffix in FORBIDDEN_MEDIA_SUFFIXES:
