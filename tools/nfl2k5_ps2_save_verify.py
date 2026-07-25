@@ -575,15 +575,18 @@ def selftest() -> int:
     change = writer.set_player_name(edited_save, 0, "first", "Delta")
     edited_save.reseal()
     report = verify(original, written(edited_save), [change])
-    assert report["result"] == "PASS", report
+    if not (report["result"] == "PASS"):
+        raise VerifyError(report)
     # Differing bytes are bounded by the declared slot; they need not fill it
     # (UTF-16LE high bytes and shared letters often match the original).
-    assert 0 < report["changed_bytes"] <= change["length"], report
+    if not (0 < report["changed_bytes"] <= change["length"]):
+        raise VerifyError(report)
 
     # The independent decoder must agree with the writer about the arena; if
     # it ever does not, that disagreement is the whole point of this module.
     tables = decode_roster_tables(original.payload)
-    assert tables["primary_players"][0] == 2, tables
+    if not (tables["primary_players"][0] == 2):
+        raise VerifyError(tables)
 
     # A save whose EXTRA was not resealed must be rejected.
     forged = writer._synthetic_save()
@@ -622,10 +625,16 @@ def selftest() -> int:
     # cancels to the seed and would pass a broken implementation, while a
     # single set bit at index 0 versus index 1 pins the position-dependent
     # line parity.
-    assert _chunk_ecc(bytes(_ECC_CHUNK)) == bytes.fromhex("777f7f")
-    assert _chunk_ecc(bytes([1]) + bytes(127)) == bytes.fromhex("70007f")
-    assert _chunk_ecc(bytes([0, 1]) + bytes(126)) == bytes.fromhex("70017e")
-    assert _chunk_ecc(bytes([0x80]) + bytes(127)) == bytes.fromhex("07007f")
+    ecc_vectors = (
+        (bytes(_ECC_CHUNK), "777f7f", "an empty chunk must return the seed"),
+        (bytes([1]) + bytes(127), "70007f", "a set bit at index 0"),
+        (bytes([0, 1]) + bytes(126), "70017e", "a set bit at index 1"),
+        (bytes([0x80]) + bytes(127), "07007f", "a high bit at index 0"),
+    )
+    for chunk, expected, why in ecc_vectors:
+        got = _chunk_ecc(chunk).hex()
+        if got != expected:
+            raise VerifyError(f"page ECC wrong for {why}: {got} != {expected}")
 
     print("NFL2K5_PS2_SAVE_VERIFY_SELFTEST_PASS decoder=independent ecc=independent "
           "accepts=sealed-declared rejects=stale-crc,undeclared-edit,sidecar")

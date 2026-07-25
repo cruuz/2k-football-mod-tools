@@ -713,19 +713,26 @@ def selftest(tmp: Path | None = None) -> int:
     import tempfile
 
     save = _synthetic_save()
-    assert save.crc_is_valid(), "freshly sealed save must verify"
-    assert save.type_code == "ROS", save.type_code
+    if not (save.crc_is_valid()):
+        raise SaveError("freshly sealed save must verify")
+    if not (save.type_code == "ROS"):
+        raise SaveError(save.type_code)
 
     slots = player_name_slots(save)
-    assert [slot["value"] for slot in slots] == ["Alpha", "Bravo"], slots
+    if [slot["value"] for slot in slots] != ["Alpha", "Bravo"]:
+        raise SaveError(f"unexpected name slots: {slots}")
 
     # Fixed-allocation rule: same length is fine, longer is refused.
     change = set_player_name(save, 0, "first", "Delta")
-    assert change["previous"] == "Alpha"
-    assert not save.crc_is_valid(), "payload changed, so the old CRC must fail"
+    if not (change["previous"] == "Alpha"):
+        raise SaveError('self-test check failed: change["previous"] == "Alpha"')
+    if not (not save.crc_is_valid()):
+        raise SaveError("payload changed, so the old CRC must fail")
     save.reseal()
-    assert save.crc_is_valid(), "reseal must restore integrity"
-    assert [slot["value"] for slot in player_name_slots(save)] == ["Delta", "Bravo"]
+    if not (save.crc_is_valid()):
+        raise SaveError("reseal must restore integrity")
+    if [slot["value"] for slot in player_name_slots(save)] != ["Delta", "Bravo"]:
+        raise SaveError("the edited name did not read back")
 
     try:
         set_player_name(save, 1, "first", "WayTooLongForTheSlot")
@@ -739,26 +746,42 @@ def selftest(tmp: Path | None = None) -> int:
         out = Path(work) / "roundtrip.psu"
         write_psu(save, out)
         again = read_psu(out)
-        assert again.directory == save.directory
-        assert again.files == save.files, "psu round-trip changed file bytes"
-        assert again.crc_is_valid()
+        if not (again.directory == save.directory):
+            raise SaveError('self-test check failed: again.directory == save.directory')
+        if not (again.files == save.files):
+            raise SaveError("psu round-trip changed file bytes")
+        if not (again.crc_is_valid()):
+            raise SaveError('self-test check failed: again.crc_is_valid()')
 
     # Memory-card page ECC. These vectors are deliberately non-degenerate:
     # an all-zero, all-one or symmetric chunk cancels to the seed and would
     # pass even a broken implementation. A single set bit at index 0 versus
     # index 1 pins the position-dependent line parity, which is the part that
     # is easiest to get wrong.
-    assert chunk_ecc(bytes(128)) == bytes.fromhex("777f7f"), "empty-chunk seed"
-    assert chunk_ecc(bytes([1]) + bytes(127)) == bytes.fromhex("70007f")
-    assert chunk_ecc(bytes([0, 1]) + bytes(126)) == bytes.fromhex("70017e")
-    assert chunk_ecc(bytes([0x80]) + bytes(127)) == bytes.fromhex("07007f")
-    assert chunk_ecc(
-        b"Sony PS2 Memory Card Format 1.2.0.0".ljust(128, b"\x00")
-    ) == bytes.fromhex("227474")
+    if not (chunk_ecc(bytes(128)) == bytes.fromhex("777f7f")):
+        raise SaveError("empty-chunk seed")
+    ecc_vectors = (
+        (bytes(128), "777f7f", "an empty chunk must return the seed"),
+        (bytes([1]) + bytes(127), "70007f", "a set bit at index 0"),
+        (bytes([0, 1]) + bytes(126), "70017e", "a set bit at index 1"),
+        (bytes([0x80]) + bytes(127), "07007f", "a high bit at index 0"),
+        (
+            b"Sony PS2 Memory Card Format 1.2.0.0".ljust(128, b"\x00"),
+            "227474",
+            "realistic mixed data",
+        ),
+    )
+    for chunk, expected, why in ecc_vectors:
+        got = chunk_ecc(chunk).hex()
+        if got != expected:
+            raise SaveError(f"page ECC wrong for {why}: {got} != {expected}")
     spare = page_spare(bytes([0x80]) + bytes(511))
-    assert len(spare) == MEMCARD_PAGE - MEMCARD_PAGE_DATA
-    assert spare[:3] == bytes.fromhex("07007f"), "page spare must lead with chunk 0"
-    assert spare[12:] == bytes(4), "the last four spare bytes are unused"
+    if not (len(spare) == MEMCARD_PAGE - MEMCARD_PAGE_DATA):
+        raise SaveError('self-test check failed: len(spare) == MEMCARD_PAGE - MEMCARD_PAGE_DATA')
+    if not (spare[:3] == bytes.fromhex("07007f")):
+        raise SaveError("page spare must lead with chunk 0")
+    if not (spare[12:] == bytes(4)):
+        raise SaveError("the last four spare bytes are unused")
 
     print("NFL2K5_PS2_SAVE_SELFTEST_PASS "
           f"players=2 psu_roundtrip=ok ecc=ok crc32=0x{save.computed_crc():08x}")
