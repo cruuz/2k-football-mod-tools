@@ -65,6 +65,7 @@ mod_editor/core/platform_compat.py
 mod_editor/core/presentation_inspection.py
 mod_editor/core/product_catalog.py
 mod_editor/core/providers.py
+mod_editor/core/ps2_save_service.py
 mod_editor/core/recipes.py
 mod_editor/core/sources.py
 mod_editor/core/uniform_sharing.py
@@ -75,6 +76,7 @@ mod_editor/gui/crib_panel_qt.py
 mod_editor/gui/gameplay_panel_qt.py
 mod_editor/gui/menus_panel_qt.py
 mod_editor/gui/playbooks_panel_qt.py
+mod_editor/gui/ps2_save_dialog_qt.py
 mod_editor/gui/stadium_viewer.py
 mod_editor/gui/studio_qt.py
 mod_editor/gui/text_rosters_panel.py

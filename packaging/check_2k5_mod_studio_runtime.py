@@ -88,7 +88,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "c781fa99206309f03e2a0a80d579c3105a5d2d413c2588ec2c702405a10c957f",
     "mod_editor/gui/studio_qt.py":
-        "5bca8438e5d450a34ae639592d37b60c5c3c4a66ba63a97fc3b5ceac53e79410",
+        "b23c3263d3afbd8b1ea2154606b37b1ca91302484ad44722879d65ed35d377bd",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1586,9 +1586,11 @@ def main() -> int:
         "mod_editor.gui.gameplay_panel_qt",
         "mod_editor.gui.menus_panel_qt",
         "mod_editor.gui.playbooks_panel_qt",
+        "mod_editor.gui.ps2_save_dialog_qt",
         "mod_editor.gui.stadium_viewer",
         "mod_editor.gui.text_rosters_panel",
         "mod_editor.gui.studio_qt",
+        "mod_editor.core.ps2_save_service",
     )
     for relative, expected_sha256 in RC29_AUDIO_ANNOTATION_RUNTIME_PINS.items():
         supplied = ROOT / relative
@@ -1614,6 +1616,8 @@ def main() -> int:
         "nfl_live_numbers_nameplate_targets",
         "nfl_team_select_card_targets",
         "nfl_roster",
+        "nfl2k5_ps2_save",
+        "nfl2k5_ps2_save_verify",
         "nfl_scorebug_png_import",
         "nfl_audo_wav_xiso_workflow",
         "nfl_crib_bar_monitor_png_xiso",
