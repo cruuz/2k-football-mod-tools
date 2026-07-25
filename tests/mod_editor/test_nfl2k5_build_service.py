@@ -110,11 +110,56 @@ def _mark_sparse_on_windows(stream, path: Path, size: int) -> None:
         )
 
 
+def _set_end_of_file_on_windows(stream, size: int) -> bool:
+    """Extend to ``size`` with ``SetEndOfFile``, which does not write anything.
+
+    ``truncate`` is the wrong tool on Windows even after FSCTL_SET_SPARSE: the
+    CRT implements it as ``_chsize_s``, which explicitly ZERO-FILLS the range it
+    adds, and writing zeros allocates real clusters straight through the sparse
+    flag.  That is what made each of these 5.87 GiB fixtures take roughly a
+    hundred seconds on the runner and walked the file into its 420s per-file
+    timeout four cases in -- it was never a deadlock, just eighteen fixtures at
+    six gigabytes of real writes each.
+
+    ``SetFilePointerEx`` + ``SetEndOfFile`` only moves the end marker, so on a
+    sparse file it is O(1) and allocates nothing.  Returns whether it worked;
+    the caller falls back to ``truncate`` if it did not.
+    """
+
+    try:
+        import ctypes
+        import msvcrt
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.SetFilePointerEx.argtypes = [
+            ctypes.c_void_p,                    # hFile
+            ctypes.c_longlong,                  # liDistanceToMove
+            ctypes.POINTER(ctypes.c_longlong),  # lpNewFilePointer
+            ctypes.c_ulong,                     # dwMoveMethod
+        ]
+        kernel32.SetFilePointerEx.restype = ctypes.c_int
+        kernel32.SetEndOfFile.argtypes = [ctypes.c_void_p]
+        kernel32.SetEndOfFile.restype = ctypes.c_int
+
+        stream.flush()
+        handle = ctypes.c_void_p(msvcrt.get_osfhandle(stream.fileno()))
+        file_begin = 0
+        if not kernel32.SetFilePointerEx(
+            handle, ctypes.c_longlong(size), None, ctypes.c_ulong(file_begin)
+        ):
+            return False
+        return bool(kernel32.SetEndOfFile(handle))
+    except Exception:  # pragma: no cover - falls back to truncate
+        return False
+
+
 def _sparse(path: Path, size: int, prefix: bytes = b"") -> None:
     with path.open("wb") as stream:
         _mark_sparse_on_windows(stream, path, size)
         if prefix:
             stream.write(prefix)
+        if platform_compat.IS_WINDOWS and _set_end_of_file_on_windows(stream, size):
+            return
         stream.truncate(size)
 
 
