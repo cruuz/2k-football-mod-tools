@@ -290,7 +290,14 @@ class Ps2SaveService:
                     f"{len(card['other_saves_untouched'])} other save(s) untouched."
                 )
             else:
-                report = verify_lib.verify(self._original, save, declared)
+                # Re-read what actually landed on disk. Verifying the
+                # in-memory save would only prove the editor agrees with
+                # itself, and would miss a serialization bug or a short write.
+                report = verify_lib.verify(
+                    verify_lib.decode_save(self._source),
+                    verify_lib.decode_psu(output),
+                    declared,
+                )
                 extra = ""
         except verify_lib.VerifyError as exc:
             return WriteResult(output, False, 0, len(declared),

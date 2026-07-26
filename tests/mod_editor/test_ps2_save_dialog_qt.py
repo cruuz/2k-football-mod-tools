@@ -8,6 +8,7 @@ memory card are required.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -284,11 +285,56 @@ class MemcardWriteRefusalTests(unittest.TestCase):
         with self.assertRaisesRegex(save_lib.SaveError, "Refusing to write over"):
             save_lib.write_into_memcard(card, self.save, card)
 
+    def test_a_hard_link_to_the_source_card_is_refused(self) -> None:
+        # A hard link has a different path but the same inode, so comparing
+        # resolved paths is not enough -- writing to it writes the source.
+        card = self.root / "card.ps2"
+        card.write_bytes(b"\x00" * save_lib.MEMCARD_PAGE)
+        link = self.root / "hard.ps2"
+        try:
+            os.link(card, link)
+        except (OSError, NotImplementedError):  # pragma: no cover
+            self.skipTest("this filesystem does not support hard links")
+        with self.assertRaisesRegex(save_lib.SaveError, "Refusing to write over"):
+            save_lib.write_into_memcard(card, self.save, link)
+
     def test_a_non_memcard_image_is_refused(self) -> None:
         card = self.root / "notacard.ps2"
         card.write_bytes(b"\x00" * (save_lib.MEMCARD_PAGE * 4))
         with self.assertRaises(save_lib.SaveError):
             save_lib.write_into_memcard(card, self.save, self.root / "out.ps2")
+
+
+class ServiceVerifiesTheFileTests(unittest.TestCase):
+    """A write must be checked against disk, not against the editor's memory."""
+
+    def setUp(self) -> None:
+        self._temp = tempfile.TemporaryDirectory(prefix="ps2-verify-")
+        self.root = Path(self._temp.name)
+        save_lib.write_psu(save_lib._synthetic_save(), self.root / "source.psu")
+        self.service = Ps2SaveService()
+        self.service.open(self.root / "source.psu")
+        self.service.set_name(0, "first", "Delta")
+
+    def tearDown(self) -> None:
+        self._temp.cleanup()
+
+    def test_an_honest_write_verifies(self) -> None:
+        self.assertTrue(self.service.write(self.root / "good.psu").verified)
+
+    def test_a_write_that_lands_wrong_on_disk_is_caught(self) -> None:
+        # Verifying the in-memory save would only prove the editor agrees
+        # with itself; this proves the file itself is re-read.
+        import mod_editor.core.ps2_save_service as service_module
+
+        real = service_module.save_lib.write_psu
+        service_module.save_lib.write_psu = lambda save, path: path.write_bytes(b"\x00" * 16)
+        try:
+            result = self.service.write(self.root / "bad.psu")
+        finally:
+            service_module.save_lib.write_psu = real
+        self.assertFalse(result.verified)
+        self.assertIn("verification failed", result.detail)
 
 
 if __name__ == "__main__":
