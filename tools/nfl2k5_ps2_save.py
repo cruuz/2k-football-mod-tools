@@ -277,6 +277,26 @@ def read_memcard(path: Path, directory: str | None = None) -> list[Ps2Save]:
     return saves
 
 
+def _same_file(left: Path, right: Path) -> bool:
+    """True when two paths name the same file on disk.
+
+    Comparing resolved paths is not enough: a hard link has a different path
+    but the same inode, so writing to it writes the source card.  When both
+    paths exist the identity comparison is the stat pair; otherwise fall back
+    to the resolved path, which still catches ``.``, ``..`` and symlinks.
+    """
+    try:
+        if left.exists() and right.exists():
+            a, b = left.stat(), right.stat()
+            return (a.st_dev, a.st_ino) == (b.st_dev, b.st_ino)
+    except OSError:
+        pass
+    try:
+        return left.resolve() == right.resolve()
+    except OSError:
+        return False
+
+
 def _memcard_layout(raw: bytes):
     """Return (pages_per_cluster, alloc_offset, rootdir, fat) for a card image."""
 
@@ -320,7 +340,7 @@ def write_into_memcard(
     written to ``output``.
     """
     card, output = Path(card), Path(output)
-    if output.resolve() == card.resolve():
+    if _same_file(card, output):
         raise SaveError(
             "Refusing to write over the source memory card. Choose a new file."
         )
@@ -390,6 +410,10 @@ def write_into_memcard(
                 f"{name} is {len(payload)} bytes on the card but {length} in the "
                 "edited save; fixed-allocation writes may not change a file's size."
             )
+        # Stage this file's pages before committing any of them, so a card
+        # whose FAT chain is too short to hold the file is refused outright
+        # instead of being left with a half-written save.
+        staged: list[tuple[int, bytes]] = []
         remaining = payload
         for index in chain(first):
             if not remaining:
@@ -403,8 +427,18 @@ def write_into_memcard(
                 start = page_index * MEMCARD_PAGE
                 block = bytearray(raw[start : start + MEMCARD_PAGE_DATA])
                 block[: len(take)] = take
-                raw[start : start + MEMCARD_PAGE_DATA] = block
-                touched_pages.add(page_index)
+                staged.append((page_index, bytes(block)))
+        if remaining:
+            raise SaveError(
+                f"{name}: the card's FAT chain holds "
+                f"{len(payload) - len(remaining)} of {len(payload)} bytes, so "
+                "this card cannot store the file it claims to. Refusing to "
+                "write a partial save."
+            )
+        for page_index, block in staged:
+            start = page_index * MEMCARD_PAGE
+            raw[start : start + MEMCARD_PAGE_DATA] = block
+            touched_pages.add(page_index)
         written.append(name)
 
     for page_index in sorted(touched_pages):
