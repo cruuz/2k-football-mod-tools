@@ -46,6 +46,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import stat
 from pathlib import Path
 import struct
 import sys
@@ -277,6 +279,108 @@ def read_memcard(path: Path, directory: str | None = None) -> list[Ps2Save]:
     return saves
 
 
+# --------------------------------------------------------------------------
+# Output reservation
+# --------------------------------------------------------------------------
+#
+# Every write goes to a pathname this process exclusively created.  ``O_EXCL``
+# makes the create atomic, which closes three holes at once: it cannot land on
+# an input (an input already exists, so the create fails), it cannot silently
+# clobber an unrelated file, and there is no window between checking and
+# writing for the path to change underneath us.
+#
+# This mirrors ``_reserve_new``/``_commit_reserved`` in
+# ``tools/apf_texture_patch.py``; the write loop is spelled out with ``os.write``
+# rather than reusing that module's helpers because these tools deliberately
+# carry no ``mod_editor`` import.
+
+
+@dataclass(frozen=True)
+class OutputReservation:
+    """An exclusively created path and the identity of its owned inode."""
+
+    descriptor: int
+    identity: tuple[int, int]
+
+
+def _path_is_owned_inode(path: Path, identity: tuple[int, int]) -> bool:
+    """True only when the directory entry itself is still the owned inode."""
+    try:
+        metadata = os.stat(path, follow_symlinks=False)
+    except OSError:
+        return False
+    return stat.S_ISREG(metadata.st_mode) and (
+        metadata.st_dev,
+        metadata.st_ino,
+    ) == identity
+
+
+def _reserve_new(path: Path) -> OutputReservation:
+    """Atomically reserve a new output pathname and capture its inode."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        descriptor = os.open(
+            path,
+            os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0),
+            0o644,
+        )
+    except FileExistsError as exc:
+        raise SaveError(
+            f"Refusing to overwrite an existing file: {path}. "
+            "Choose a name that does not exist yet."
+        ) from exc
+    metadata = os.fstat(descriptor)
+    return OutputReservation(descriptor, (metadata.st_dev, metadata.st_ino))
+
+
+def _commit_reserved(path: Path, reservation: OutputReservation, data: bytes) -> None:
+    """Write and flush the owned descriptor, then require it still owns path."""
+    os.ftruncate(reservation.descriptor, 0)
+    os.lseek(reservation.descriptor, 0, os.SEEK_SET)
+    view = memoryview(data)
+    written = 0
+    while written < len(view):
+        count = os.write(reservation.descriptor, view[written:])
+        if count <= 0:
+            raise SaveError(f"short write to {path}")
+        written += count
+    os.fsync(reservation.descriptor)
+    if not _path_is_owned_inode(path, reservation.identity):
+        raise SaveError(f"the reserved output pathname changed while writing: {path}")
+
+
+def _abort_reserved(path: Path, reservation: OutputReservation) -> None:
+    """Discard a failed reservation, unlinking only the path we still own."""
+    try:
+        if _path_is_owned_inode(path, reservation.identity):
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+    finally:
+        try:
+            os.close(reservation.descriptor)
+        except OSError:
+            pass
+
+
+def _write_reserved(path: Path, data: bytes, forbid: tuple[Path, ...] = ()) -> None:
+    """Refuse any alias of an input, then write path as a freshly owned file."""
+    for source in forbid:
+        if source is not None and _same_file(Path(source), path):
+            raise SaveError(
+                "Refusing to write over an input file. Choose a new file."
+            )
+    reservation = _reserve_new(path)
+    try:
+        _commit_reserved(path, reservation, data)
+    except BaseException:
+        _abort_reserved(path, reservation)
+        raise
+    else:
+        os.close(reservation.descriptor)
+
+
 def _same_file(left: Path, right: Path) -> bool:
     """True when two paths name the same file on disk.
 
@@ -326,7 +430,12 @@ def _memcard_layout(raw: bytes):
 
 
 def write_into_memcard(
-    card: Path, save: Ps2Save, output: Path, directory: str | None = None
+    card: Path,
+    save: Ps2Save,
+    output: Path,
+    directory: str | None = None,
+    *,
+    forbid: tuple[Path, ...] = (),
 ) -> dict:
     """Write an edited save back into a copy of a memory-card image.
 
@@ -446,7 +555,7 @@ def write_into_memcard(
         data = bytes(raw[start : start + MEMCARD_PAGE_DATA])
         raw[start + MEMCARD_PAGE_DATA : start + MEMCARD_PAGE] = page_spare(data)
 
-    output.write_bytes(bytes(raw))
+    _write_reserved(output, bytes(raw), (card,) + tuple(forbid))
     return {
         "schema": "nfl2k5_ps2_memcard_write/v1",
         "card": str(card),
@@ -548,8 +657,13 @@ def _psu_entry(name: str, length: int, mode: int, template: bytes | None) -> byt
     return bytes(entry)
 
 
-def write_psu(save: Ps2Save, path: Path) -> None:
-    """Serialize a save as .psu (dir entry, '.', '..', then padded files)."""
+def write_psu(save: Ps2Save, path: Path, *, forbid: tuple[Path, ...] = ()) -> None:
+    """Serialize a save as .psu (dir entry, '.', '..', then padded files).
+
+    The destination is exclusively created, so this can neither overwrite an
+    existing file nor land on one of its own inputs.  ``forbid`` names the
+    inputs so the refusal can say which one it was.
+    """
     names = [name for name in save.files if name == save.payload_name]
     names += [name for name in save.files if name != save.payload_name]
 
@@ -563,7 +677,7 @@ def write_psu(save: Ps2Save, path: Path) -> None:
         out += payload
         pad = (-len(payload)) % PSU_PAD
         out += bytes(pad)
-    path.write_bytes(bytes(out))
+    _write_reserved(path, bytes(out), forbid)
 
 
 # --------------------------------------------------------------------------
@@ -869,6 +983,13 @@ def main(argv: list[str] | None = None) -> int:
             parser.error(f"malformed --set-player-name {directive!r}; use INDEX:FIELD=VALUE")
         changes.append(set_player_name(save, index, field_name, value))
 
+    # Every path this invocation read from. The output may alias none of them,
+    # whichever lane it takes -- --into-card winning the base-card choice must
+    # not stop --input from being protected.
+    inputs = tuple(
+        Path(p) for p in (args.input, args.into_card) if p is not None
+    )
+
     def emit(destination: Path) -> dict:
         """Write to a .psu, or into a copy of a memory card."""
         if destination.suffix.lower() == ".ps2":
@@ -880,8 +1001,10 @@ def main(argv: list[str] | None = None) -> int:
                     "a .ps2 --output needs --into-card (the card to base it on), "
                     "or an --input that is itself a card image"
                 )
-            return write_into_memcard(Path(card), save, destination, args.directory)
-        write_psu(save, destination)
+            return write_into_memcard(
+                Path(card), save, destination, args.directory, forbid=inputs
+            )
+        write_psu(save, destination, forbid=inputs)
         return {
             "schema": "nfl2k5_ps2_save_write/v1",
             "output": str(destination),
