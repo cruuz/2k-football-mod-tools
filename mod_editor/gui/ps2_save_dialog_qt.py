@@ -735,6 +735,14 @@ class Ps2SaveEditorDialog(QDialog):
     # -- writing -------------------------------------------------------
 
     def _write_psu(self) -> None:
+        """Choose a destination and write the edited save to it.
+
+        Both pickers pass ``DontConfirmOverwrite`` deliberately.  The writer
+        creates its output exclusively and refuses an existing file, so Qt's
+        own "replace this file?" prompt would be asking a question the write
+        cannot honour -- the user would confirm and then be refused.  Suppress
+        the prompt and let the writer's own refusal be the single answer.
+        """
         if not self.host.is_open:
             return
         summary = self.host.summary()
@@ -748,12 +756,14 @@ class Ps2SaveEditorDialog(QDialog):
             selected, _filter = QFileDialog.getSaveFileName(
                 self, caption, str(Path.home() / suggested),
                 "Memory card image (*.ps2);;PS2 save file (*.psu)",
+                options=QFileDialog.DontConfirmOverwrite,
             )
         else:
             caption = "Write the edited save as a .psu"
             suggested = suggested_psu_name(directory)
             selected, _filter = QFileDialog.getSaveFileName(
                 self, caption, str(Path.home() / suggested), "PS2 save file (*.psu)",
+                options=QFileDialog.DontConfirmOverwrite,
             )
         if not selected:
             return
