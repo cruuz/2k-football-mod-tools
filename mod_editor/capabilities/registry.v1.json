@@ -4659,7 +4659,7 @@
       "id": "nfl2k5ps2.saves.roster_name_writer",
       "input_constraints": [
         "Fixed-allocation only: a replacement name must fit the bytes the original occupies; the writer refuses anything longer.",
-        "The source save is never modified; edits are written to a new .psu.",
+        "No input is ever modified. Every output is created exclusively, so a write cannot overwrite an existing file and cannot land on the save or card it read from.",
         "Names are UTF-16LE within the existing ROST arena; table counts, offsets and arena size never change."
       ],
       "portme": [

@@ -119,5 +119,66 @@ class Ps2SaveVerifierTests(unittest.TestCase):
             verify_lib.verify(original, edited, [declared])
 
 
+class OutputReservationTests(unittest.TestCase):
+    """No write may land on an input or on an existing file, on either lane."""
+
+    def setUp(self) -> None:
+        import tempfile
+
+        self._temp = tempfile.TemporaryDirectory(prefix="ps2-output-")
+        self.root = Path(self._temp.name)
+        self.save = save_lib._synthetic_save()
+        self.source = self.root / "source.psu"
+        save_lib.write_psu(self.save, self.source)
+
+    def tearDown(self) -> None:
+        self._temp.cleanup()
+
+    def test_writing_onto_an_existing_file_is_refused(self) -> None:
+        victim = self.root / "victim.bin"
+        victim.write_bytes(b"PRECIOUS USER DATA")
+        with self.assertRaisesRegex(save_lib.SaveError, "Refusing to overwrite"):
+            save_lib.write_psu(self.save, victim)
+        self.assertEqual(victim.read_bytes(), b"PRECIOUS USER DATA")
+
+    def test_writing_onto_a_declared_input_is_refused(self) -> None:
+        before = self.source.read_bytes()
+        with self.assertRaisesRegex(save_lib.SaveError, "input file"):
+            save_lib.write_psu(self.save, self.source, forbid=(self.source,))
+        self.assertEqual(self.source.read_bytes(), before)
+
+    def test_a_second_input_is_protected_even_when_it_is_not_the_base(self) -> None:
+        # --into-card wins the base-card choice, so --input must still be
+        # named as forbidden or it goes unprotected.
+        other = self.root / "other.psu"
+        save_lib.write_psu(self.save, other)
+        before = other.read_bytes()
+        with self.assertRaisesRegex(save_lib.SaveError, "input file"):
+            save_lib.write_psu(self.save, other, forbid=(self.source, other))
+        self.assertEqual(other.read_bytes(), before)
+
+    def test_a_fresh_destination_still_writes(self) -> None:
+        fresh = self.root / "fresh.psu"
+        save_lib.write_psu(self.save, fresh, forbid=(self.source,))
+        self.assertEqual(save_lib.read_psu(fresh).files, self.save.files)
+
+    def test_a_failed_write_leaves_no_stray_output(self) -> None:
+        # A reservation that fails mid-write must unlink the path it created,
+        # rather than leaving a zero-length or half-written file behind.
+        target = self.root / "aborted.psu"
+        real_commit = save_lib._commit_reserved
+
+        def explode(path, reservation, data):
+            raise save_lib.SaveError("simulated disk failure")
+
+        save_lib._commit_reserved = explode
+        try:
+            with self.assertRaisesRegex(save_lib.SaveError, "simulated disk failure"):
+                save_lib.write_psu(self.save, target)
+        finally:
+            save_lib._commit_reserved = real_commit
+        self.assertFalse(target.exists(), "a failed write left a stray file")
+
+
 if __name__ == "__main__":
     unittest.main()
