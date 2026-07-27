@@ -200,9 +200,10 @@ for a byte-identical result. What does **not** reproduce is a build from
 scratch: extraction and `pip` stamp fresh mtimes on all 2,674 runtime files, and
 NSIS records mtimes in the archive, so the compressed stream differs. A rebuild
 therefore reproduces the same *contents*, and its SHA-256 will not match the
-published installer. Verify an installer against the hash in this table rather
-than against a local rebuild. (The `beta-4` note below claimed byte-for-byte
-installer reproducibility without this qualification; that claim was too strong.)
+published installer. Verify an installer against the hash in this table, or
+against its adjacent published `.sha256` sidecar, rather than against a local
+rebuild. (The `beta-4` note below claimed byte-for-byte installer
+reproducibility without this qualification; that claim was too strong.)
 
 **Fixed for the next release, after these assets were published.**
 `packaging/windows/build_windows_installer.py` now flattens every mtime in the
