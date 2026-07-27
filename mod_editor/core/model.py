@@ -20,12 +20,14 @@ _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 class GameId(str, Enum):
     NFL2K5 = "nfl2k5"
     APF2K8 = "apf2k8"
+    NFL2K5_PS2 = "nfl2k5_ps2"
 
     @property
     def display_name(self) -> str:
         return {
             GameId.NFL2K5: "ESPN NFL 2K5 (Original Xbox)",
             GameId.APF2K8: "All-Pro Football 2K8 (Xbox 360)",
+            GameId.NFL2K5_PS2: "ESPN NFL 2K5 (PlayStation 2)",
         }[self]
 
 

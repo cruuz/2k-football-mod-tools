@@ -114,6 +114,7 @@ _SAMPLE_REGISTRY: dict[str, Any] = {
     "games": [
         {"id": "nfl2k5_xbox", "title": "ESPN NFL 2K5"},
         {"id": "apf2k8_xbox360", "title": "All-Pro Football 2K8"},
+        {"id": "nfl2k5_ps2", "title": "ESPN NFL 2K5 (PS2)"},
     ],
     "capabilities": [
         {
@@ -239,7 +240,7 @@ class CapabilityRegistryLoader:
             except ValueError as exc:
                 raise RegistryError(f"Unsupported registry game id: {row['id']!r}") from exc
             seen.add(row["id"])
-        required = {"nfl2k5_xbox", "apf2k8_xbox360"}
+        required = {"nfl2k5_xbox", "apf2k8_xbox360", "nfl2k5_ps2"}
         if seen != required:
             raise RegistryError(f"Registry game ids must be exactly {sorted(required)}")
 
@@ -338,6 +339,7 @@ class CapabilityRegistryLoader:
         mapping = {
             "nfl2k5_xbox": GameId.NFL2K5,
             "apf2k8_xbox360": GameId.APF2K8,
+            "nfl2k5_ps2": GameId.NFL2K5_PS2,
         }
         try:
             return mapping[registry_id]

@@ -1635,7 +1635,7 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 65,
+    require(len(registry.capabilities) == 66,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 11,
             "product sidebar category count changed")

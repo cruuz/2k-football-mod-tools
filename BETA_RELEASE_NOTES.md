@@ -75,13 +75,42 @@ pixels/audio, private paths, symlinks, or undeclared files) and a
   [`docs/product/NFL2K5_COMPLETION_STATUS_AND_WALLS.md`](docs/product/NFL2K5_COMPLETION_STATUS_AND_WALLS.md)):
   3D model import (Crib/stadium geometry), whole streaming-bank audio repack and
   per-cue loop/gain/pan/mixer editing, playbook route drawing/import, franchise
-  rookie-draft AI variety, save editing, and uniform pixel→body-region UV
-  decoding.
+  rookie-draft AI variety, Xbox save editing (its saves are signed with a
+  platform key; PS2 saves are writable — see below), and uniform
+  pixel→body-region UV decoding.
 - **Windows / macOS are a preview.** Launchers are now bundled for all three
   platforms and CI runs the suite on all three, but it does not yet pass on
   Windows or macOS and neither GUI has been manually driven. Linux is the
   supported platform. On Windows the bundled `extract-xiso` extractor is a Linux
   binary, so load an already-extracted game folder rather than an ISO.
+
+---
+
+## PlayStation 2 saves (preview — separate download)
+
+**This is not part of the two archives above.** PS2 save support ships as its
+own command-line package, `NFL2K5-PS2-Save-Toolkit`, on the Releases page. The
+`v1.0-RC29` and `v0.1.0-alpha.34` archives listed earlier predate it and do not
+contain it. The graphical editors do not expose PS2 saves yet.
+
+The toolkit reads an **ESPN NFL 2K5 (PlayStation 2, `SLUS-20919`) memory-card
+save** from a `.psu`, an extracted save folder, or a `.ps2` card image; applies
+fixed-allocation roster name edits inside its `ROST` arena; reseals the CRC-32
+integrity field; and writes a `.psu` that PCSX2, mymc and PS2 Save Builder
+import. It needs only Python 3 — no PyQt5, no Pillow.
+
+Unlike the Xbox release — whose saves carry a platform-keyed signature and stay
+read-only here — PS2 save integrity is a recomputable CRC-32, so an offline
+writer is safe. Every edit is bounded to the bytes the original occupies and is
+checked by an independent verifier (`tools/nfl2k5_ps2_save_verify.py`) that
+confirms only the declared ranges changed, the checksum matches, and the roster
+arena never moved. The capability is registered `offline-writer-proved`; an
+in-game reload witness is the next step.
+
+See [`docs/product/NFL2K5_PS2_SAVE_PIPELINE.md`](docs/product/NFL2K5_PS2_SAVE_PIPELINE.md)
+for the approach, the already-proven Madden/NCAA PS2 save pipeline it builds on,
+and the custom progression engine that generates historically accurate content
+for any season from 2008 through 2026.
 
 ---
 

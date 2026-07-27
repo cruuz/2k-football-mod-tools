@@ -17,7 +17,10 @@ DEFAULT_SCHEMA = Path(__file__).with_name("registry.schema.json")
 
 SCHEMA_ID = "vc_mod_capability_registry/v1"
 SCHEMA_DOCUMENT_ID = "urn:vc-mod-capability-registry:v1"
-GAMES = ("apf2k8_xbox360", "nfl2k5_xbox")
+GAMES = ("apf2k8_xbox360", "nfl2k5_ps2", "nfl2k5_xbox")
+# The two long-established games; nfl2k5_ps2 joins a surface's coverage rule
+# only when that surface actually ships a PS2 capability row.
+_LEGACY_GAMES = ("apf2k8_xbox360", "nfl2k5_xbox")
 SURFACES = (
     "audio",
     "catching_drops",
@@ -40,9 +43,10 @@ SURFACES = (
     "stadiums_fields",
     "uniforms",
 )
-SURFACE_GAMES = {
-    "crib_assets": ("nfl2k5_xbox",),
-}
+SURFACE_GAMES = {surface: _LEGACY_GAMES for surface in SURFACES}
+SURFACE_GAMES["crib_assets"] = ("nfl2k5_xbox",)
+# PS2 staged surfaces (each must carry at least one nfl2k5_ps2 row):
+SURFACE_GAMES["saves"] = GAMES
 CLASSIFICATIONS = (
     "extract-only",
     "offline-writer-proved",
@@ -146,7 +150,7 @@ def validate_data(data: Any, *, check_files: bool = True) -> dict[str, Any]:
     _require(all(isinstance(value, str) and value for value in definitions.values()), "classification_definitions: empty definition")
 
     games = root["games"]
-    _require(isinstance(games, list) and len(games) == 2, "games: expected exactly two entries")
+    _require(isinstance(games, list) and len(games) == 3, "games: expected exactly three entries")
     _require([game.get("id") for game in games] == list(GAMES), "games: IDs/order must be canonical")
     for index, game in enumerate(games):
         where = f"games[{index}]"
