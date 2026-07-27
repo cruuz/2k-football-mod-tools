@@ -329,11 +329,16 @@ def parse_xdvdfs(descriptor: int, image_size: int) -> tuple[dict[str, XdvdfsEntr
 def copy_fd_exact(source: int, output: int, size: int) -> str:
     """Copy the complete source using copy_file_range, with a safe fallback."""
     position = 0
-    method = "copy_file_range"
-    while position < size:
+    # copy_file_range is Linux-only; Windows and macOS do not have it at all.
+    # Its absence is an AttributeError, not one of the OSError errnos handled
+    # below, so the method has to be chosen *before* the loop -- caught inside
+    # it, the documented fallback would never run and the copy would abort.
+    accelerated = getattr(os, "copy_file_range", None)
+    method = "copy_file_range" if accelerated is not None else "pread_pwrite"
+    while accelerated is not None and position < size:
         request = min(COPY_CHUNK, size - position)
         try:
-            copied = os.copy_file_range(source, output, request, position, position)
+            copied = accelerated(source, output, request, position, position)
         except OSError as exc:
             if exc.errno not in {errno.EXDEV, errno.EINVAL, errno.ENOSYS,
                                  errno.EOPNOTSUPP}:
