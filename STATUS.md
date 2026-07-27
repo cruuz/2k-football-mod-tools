@@ -2,7 +2,11 @@
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The
-> source code and UI identify as the **`0.1.0-alpha.35`** release. The previous
+> source code and UI identify as the **`0.1.0-alpha.35`** release, whose
+> published asset is `apf2k8-mod-studio-0.1.0-alpha.35-20260727.tar.gz`
+> (`1,110,239` bytes, SHA-256
+> `dc9e149a107f8111601483382c080eff72ae81e4f0d386c802c7614fc9d2c596`).
+> The previous
 > sealed package is `0.1.0-alpha.34`; its `815,213`-byte archive checksum is
 > `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`
 > and is authenticated by the adjacent mode-`0444` `.sha256` sidecar.
@@ -164,7 +168,46 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-4` — 2026-07-25 · CURRENT
+### `beta-5` — 2026-07-27 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-5>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC30-20260727.tar.gz` | 9,434,991 | `01d5d6a991ffc5c9978fbdd0700859cf3c00ad74afea490eda0472e0dcfe4183` |
+| `apf2k8-mod-studio-0.1.0-alpha.35-20260727.tar.gz` | 1,110,239 | `dc9e149a107f8111601483382c080eff72ae81e4f0d386c802c7614fc9d2c596` |
+| `2K5-Mod-Studio-1.0-RC30-Setup.exe` | 55,879,269 | `a6829e23c03ae7f69d3d6ba437260ef20ef4a6badb6d861f04ffe9afd9f64118` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.35-Setup.exe` | 52,344,282 | `07b257330e961cc7078ae238238692fba5c5af4e918260fd18406193a5dccb77` |
+
+Every asset changed, because editor code changed: four APF writers passed
+`os.O_CLOEXEC` to `os.open` as a bare attribute, which CPython on Windows does
+not define, so field art, team logos, the logo cache, the generic texture writer
+and uniform mips all raised `AttributeError` before doing any work. A user
+reported it against the endzone flow. `CHANGELOG.md` has the detail.
+
+Before these bytes were built, both **beta-4** tarballs were rebuilt from the
+`beta-4` tag and reproduced byte-for-byte, so the pipeline was proved to match
+the published reality before it was used to change anything. Both beta-5
+tarballs were then built twice independently and compared byte for byte.
+
+**The installers are content-reproducible, not byte-reproducible, and the
+distinction is worth stating exactly.** Each of the five external inputs — the
+CPython embeddable interpreter and four wheels — is pinned to an exact SHA-256
+and verified before use, and the staged runtime tree is reproducible: two
+independent builds produced 2,674 files with an identical content hash. NSIS
+itself is deterministic, verified here by compiling one fixed staged tree twice
+for a byte-identical result. What does **not** reproduce is a build from
+scratch: extraction and `pip` stamp fresh mtimes on all 2,674 runtime files, and
+NSIS records mtimes in the archive, so the compressed stream differs. A rebuild
+therefore reproduces the same *contents*, and its SHA-256 will not match the
+published installer. Verify an installer against the hash in this table rather
+than against a local rebuild. (The `beta-4` note below claimed byte-for-byte
+installer reproducibility without this qualification; that claim was too strong.)
+
+The installers are **not code-signed**. Windows shows a SmartScreen prompt on
+first run, and the wizard's second page says so before writing anything.
+
+### `beta-4` — 2026-07-25 · superseded by beta-5
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-4>
 
@@ -188,6 +231,13 @@ SHA-256 and verified before use; an unpinned wheel appearing, a pinned wheel
 failing to appear, or any hash mismatch stops the build. With those pinned,
 NSIS output is itself deterministic — both installers were built twice and
 compared byte for byte.
+
+> **Correction, recorded 2026-07-27 rather than quietly edited.** That last
+> sentence is true of NSIS given one fixed staged tree, but it reads as a claim
+> that a from-scratch rebuild reproduces the published installer bytes, and it
+> does not: `pip` and extraction stamp fresh mtimes on every runtime file and
+> NSIS stores them. See the beta-5 note above for the exact scope. The pinned
+> inputs and the reproducible staged *content* are unaffected.
 
 The installers are **not code-signed**. Windows shows a SmartScreen prompt on
 first run, and the wizard's second page says so before writing anything.
