@@ -7,9 +7,46 @@ Release-level history. Per-product detail lives in
 
 Product versions and release tags are deliberately separate. A tag like
 `beta-3` names a *published set of archives*; the editors inside carry their own
-versions (`v1.0-RC29`, `0.1.0-alpha.34`) and only change when their code does.
+versions (`v1.0-RC30`, `0.1.0-alpha.35`) and only change when their code does.
 
 ---
+
+## beta-5 — 2026-07-27
+
+**Windows bug fix.** Editor code changed, so both products move: `v1.0-RC30` and
+`0.1.0-alpha.35`. If you are on Windows and beta-4 could not export a texture,
+this is the release that fixes it.
+
+### Fixed
+- **Every APF texture writer now runs on Windows.** Field art / endzones, team
+  logos, the logo cache, the generic texture writer and uniform mips all failed
+  immediately with `AttributeError: module 'os' has no attribute 'O_CLOEXEC'`.
+  That flag does not exist in CPython on Windows, and four writers passed it to
+  `os.open` as a bare attribute rather than `getattr(os, "O_CLOEXEC", 0)` — the
+  form 284 other sites in the tree already used. A user reported it against the
+  ordinary "export and replace field endzone" flow; thank you.
+- **The 2K5 direct uniform-colour writer falls back correctly off Linux.**
+  `copy_fd_exact` called `os.copy_file_range` inside `except OSError`, but on
+  Windows and macOS the syscall's absence raises `AttributeError`, so the
+  documented fallback never ran. The syscall is resolved before the loop now.
+
+### Unchanged on purpose
+- **No capability was added, removed or re-graded.** Both registries and every
+  ladder position are exactly what beta-4 shipped, and no guarantee is weaker:
+  PEP 446 makes every descriptor CPython creates non-inheritable on all
+  platforms, so close-on-exec never depended on the flag that was missing.
+- Nothing was at risk on the affected machines. The failure landed in the output
+  reservation — after the read-only preflight, before any output existed — so no
+  file was written at all.
+
+### Added
+- `tests/mod_editor/test_shipped_tools_posix_only.py`, a guard that needs **no
+  retail data**. Every test over these writers is gated on extracted retail data
+  no CI runner has, which is how six green-parity CI jobs never executed one
+  `os.open` inside a writer. The new file scans both release allowlists for bare
+  POSIX-only `os.open` flags, and deletes those names from `os` to drive every
+  shipped writer's real reservation path. Targets come from the allowlists, so a
+  writer added later is covered without editing the test.
 
 ## beta-4 — 2026-07-25
 

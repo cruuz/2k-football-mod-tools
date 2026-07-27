@@ -304,7 +304,14 @@ class SimulatedWindowsWriterTests(unittest.TestCase):
         ]
         if not targets:
             self.skipTest("no shipped tool defines copy_fd_exact")
+        # Deliberately every byte value, so the payload contains 0x1A. On
+        # Windows a descriptor opened without O_BINARY is a *text* stream: the
+        # CRT translates newlines and treats 0x1A as end-of-file, so the copy
+        # would stop early and the tool would fail its own short-read check.
+        # These opens therefore mirror the product's own (both of its os.open
+        # calls set getattr(os, "O_BINARY", 0)) -- do not drop the flag here.
         payload = bytes(range(256)) * 32
+        binary = getattr(os, "O_BINARY", 0)
         with simulated_non_posix():
             for path in targets:
                 module = importlib.import_module(path.stem)
@@ -312,8 +319,8 @@ class SimulatedWindowsWriterTests(unittest.TestCase):
                     source = Path(directory) / "source.bin"
                     source.write_bytes(payload)
                     output = Path(directory) / "output.bin"
-                    source_fd = os.open(source, os.O_RDONLY)
-                    output_fd = os.open(output, os.O_RDWR | os.O_CREAT, 0o644)
+                    source_fd = os.open(source, os.O_RDONLY | binary)
+                    output_fd = os.open(output, os.O_RDWR | os.O_CREAT | binary, 0o644)
                     try:
                         method = module.copy_fd_exact(
                             source_fd, output_fd, len(payload)

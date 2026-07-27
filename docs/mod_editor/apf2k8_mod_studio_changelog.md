@@ -1,5 +1,35 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.35 — the texture writers run on Windows 2026-07-27
+
+- Fixed the crash that made **every APF texture writer unusable on Windows**.
+  Field art, team logos, the logo cache, the generic texture writer and uniform
+  mips all failed before doing any work with
+  `AttributeError: module 'os' has no attribute 'O_CLOEXEC'`. That flag does not
+  exist in CPython on Windows, and four writers passed it to `os.open` as a bare
+  attribute instead of `getattr(os, "O_CLOEXEC", 0)` — the form 284 other sites
+  in the tree already used. Reported by a user against the ordinary "export and
+  replace field endzone" flow.
+- **No capability changed and no guarantee was weakened.** The registry stays at
+  65 capabilities with every ladder position untouched. The flag falling back to
+  `0` on Windows costs nothing: PEP 446 makes every descriptor CPython creates
+  non-inheritable on every platform, so close-on-exec is the interpreter's
+  guarantee, not this flag's. Descriptor ownership, inode-identity checks and
+  fail-closed refusals are byte-for-byte what alpha.34 proved.
+- Nothing was ever at risk on the affected machines. The failure landed in the
+  output reservation, after the read-only preflight and before any output
+  existed, so no file was written at all — the refusal dialog's "the original
+  game was not modified" understated it.
+- Added `tests/mod_editor/test_shipped_tools_posix_only.py`, which needs **no
+  retail data**. Every existing test over these writers is gated on extracted
+  retail data no CI runner has, which is exactly how a Windows job could report
+  parity with Linux and macOS while never executing one `os.open` inside a
+  writer. The new file scans both release allowlists for bare POSIX-only
+  `os.open` flags and, with those names deleted from `os`, drives every shipped
+  writer's real reservation path — asserting the fail-closed refusal still
+  refuses for the right reason. Targets come from the allowlists, so a writer
+  added later is covered without editing the test.
+
 ## 0.1.0-alpha.34 — project-backed Audio cue labels 2026-07-20
 
 - Added the product contract

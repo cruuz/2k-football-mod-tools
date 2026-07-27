@@ -5,6 +5,21 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC30 Off-Linux Direct Uniform-Colour Copy — 2026-07-27
+
+- Fixed `tools/nfl_uniform_color_xiso_direct_patch.py`, whose whole-XISO copy
+  called the Linux-only `os.copy_file_range` inside `except OSError`. On Windows
+  and macOS the syscall does not exist, and its absence raises `AttributeError`,
+  which that clause never caught — so the portable `pread`/`pwrite` fallback the
+  function documents could not run and the copy aborted instead. The syscall is
+  now resolved before the loop, and the fallback is chosen rather than crashed
+  into. On Linux the accelerated path is unchanged.
+- No capability, pin, writer contract or editable count changed. This is the 2K5
+  half of the same portability sweep that produced APF `0.1.0-alpha.35`; the
+  shared guard is `tests/mod_editor/test_shipped_tools_posix_only.py`, which
+  drives every shipped writer with the POSIX-only names deleted from `os` and
+  needs no retail data to do it.
+
 ## v1.0 RC29 Project-backed Audio Cue Labels — 2026-07-20
 
 - Added custom titles and multiline notes for every playable standalone cue

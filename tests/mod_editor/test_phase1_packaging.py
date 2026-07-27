@@ -18,7 +18,7 @@ SPEC.loader.exec_module(release_gate)
 
 
 class ModStudioPackagingTests(unittest.TestCase):
-    def test_rc29_source_version_and_visible_product_label_are_pinned(self) -> None:
+    def test_source_version_and_visible_product_label_are_pinned(self) -> None:
         package_source = (ROOT / "mod_editor/__init__.py").read_text(
             encoding="utf-8"
         )
@@ -29,7 +29,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc29"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc30"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
@@ -49,17 +49,17 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC29 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC30 — Getting Started"
         ))
         self.assertIn(
-            "## v1.0 RC29 Project-backed Audio Cue Labels", changelog
+            "## v1.0 RC30 Off-Linux Direct Uniform-Colour Copy", changelog
         )
         self.assertIn(
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
         )
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC29 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC30 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
