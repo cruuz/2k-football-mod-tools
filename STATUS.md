@@ -176,8 +176,8 @@ what was sealed.
 | --- | --- | --- |
 | `2K5-Mod-Studio-v1.0-RC31-20260727.tar.gz` | 9,459,810 | `c0809e38418f4e1a54706a30a2ad0a6c73fe5f42c46e4e2540fd3c398db160ce` |
 | `apf2k8-mod-studio-0.1.0-alpha.36-20260727.tar.gz` | 1,113,374 | `2872293000b7d7e972393313cfeb6ac2c4f26df9ba3d9e1cf5fc376a732b7ca0` |
-| `2K5-Mod-Studio-1.0-RC31-Setup.exe` | 55,896,204 | `85e50378fc1be692...` |
-| `APF-2K8-Mod-Studio-0.1.0-alpha.36-Setup.exe` | 52,351,547 | `7714ff418a6f832b...` |
+| `2K5-Mod-Studio-1.0-RC31-Setup.exe` | 55,896,204 | `85e50378fc1be69224205ced4639819523966cd5e2d2c1701f7a451528502bbc` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.36-Setup.exe` | 52,351,547 | `7714ff418a6f832b185529ffcb4adf77db70f8f533d53d7dc9d473befaa5a247` |
 
 The 2K5 editor now accepts any legal dump of the disc rather than only the
 project's own rip; see `CHANGELOG.md`. **This is the first release whose
