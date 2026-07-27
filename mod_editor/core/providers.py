@@ -1448,7 +1448,7 @@ class Apf2k8JerseyColorProvider:
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
         "tools/apf_outer.py": "eb89734ed3ad0205ff7d8732b2f7f93368eff861ccbc5e1473d4e21f25e8a62e",
-        "tools/apf_texture_patch.py": "501b7e904e26322382d0b7e5ae138ec5545e9e3d971ccde035ada99c40e08058",
+        "tools/apf_texture_patch.py": "ccd93112884b5f90904383240565897b8407b6465ee0b9694632834bec242184",
         "tools/apf_uniform_mip_patch.py": "04496c3f2623b75928ba0bb0b18a832ea9e01189249921a971b20bbf4d622969",
         "tools/apf_xenos_mip_layout.py": "0c63011c265b58c535e7ba8bffe6c0527161ebf8bb503f1f39eb5766b88b1890",
     }
@@ -1973,7 +1973,7 @@ class Apf2k8PantsColorProvider(Apf2k8JerseyColorProvider):
         "tools/apf_pants_color_transport.py": "32184edfa32b721e89e97cbb9da4c6e46959cf22782f2aa44202297f318a4927",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
-        "tools/apf_texture_patch.py": "501b7e904e26322382d0b7e5ae138ec5545e9e3d971ccde035ada99c40e08058",
+        "tools/apf_texture_patch.py": "ccd93112884b5f90904383240565897b8407b6465ee0b9694632834bec242184",
         "tools/apf_xenos_bc1_mip_layout.py": "fad5904b179b6901562e78326cbf6deb1a9726216b4b91addae9aed852bd8650",
         "tools/nfl_dxt1.py": "bce75aca68acbfaa5112927e228672d4d77c58fc27cd3ce047751d8875dcb9a2",
     }
@@ -2003,7 +2003,7 @@ class Apf2k8HelmetColorProvider(Apf2k8JerseyColorProvider):
         verifier_module: verifier_module_sha256,
         "tools/apf_inner.py": "75a74b34524b3861785b916e3470862bccfe278825a63aa2dccb924849ae9606",
         "tools/apf_outer.py": "eb89734ed3ad0205ff7d8732b2f7f93368eff861ccbc5e1473d4e21f25e8a62e",
-        "tools/apf_texture_patch.py": "501b7e904e26322382d0b7e5ae138ec5545e9e3d971ccde035ada99c40e08058",
+        "tools/apf_texture_patch.py": "ccd93112884b5f90904383240565897b8407b6465ee0b9694632834bec242184",
         "tools/apf_xenos_dxn_mip_layout.py": "fa508109f9684a36a61f0186381ac2caaf1c8f370a490c89a8d8cac254ba8001",
     }
     recipe_schema_file = "mod_editor/apf_helmet_recipe.schema.json"
@@ -2034,7 +2034,7 @@ class Apf2k8ShoulderColorProvider(Apf2k8JerseyColorProvider):
         "tools/apf_shoulder_color_transport.py": "3b0a1611576648af0d131d1986d7a098a92748b35fddd25d9241b1526ecd00d6",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
-        "tools/apf_texture_patch.py": "501b7e904e26322382d0b7e5ae138ec5545e9e3d971ccde035ada99c40e08058",
+        "tools/apf_texture_patch.py": "ccd93112884b5f90904383240565897b8407b6465ee0b9694632834bec242184",
         "tools/apf_uniform_mip_patch.py": "04496c3f2623b75928ba0bb0b18a832ea9e01189249921a971b20bbf4d622969",
         "tools/apf_xenos_mip_layout.py": "0c63011c265b58c535e7ba8bffe6c0527161ebf8bb503f1f39eb5766b88b1890",
     }

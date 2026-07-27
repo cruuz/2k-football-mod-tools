@@ -802,14 +802,28 @@ def _close_reserved(reservation: OutputReservation) -> None:
 
 
 def _abort_reserved(path: Path, reservation: OutputReservation) -> None:
-    """Close a failed reservation, deleting only its still-owned path."""
+    """Close a failed reservation, deleting only its still-owned path.
+
+    The order is deliberate and platform-dependent. On POSIX the unlink runs
+    while the descriptor is still open: the fd keeps the inode alive, so no
+    window exists in which the name could be swapped between the identity check
+    and the unlink itself. Windows refuses to unlink a file any descriptor still
+    holds open, and the resulting PermissionError is an OSError that
+    ``_unlink_owned_path`` reports as "not removed" -- which is how a failed
+    build there used to leave a stray partial output behind, so the next attempt
+    hit "refusing to overwrite existing output" with nothing obviously wrong.
+    Hence a second attempt after the close rather than a plain reorder: POSIX
+    keeps its window-free guarantee, and Windows still gets cleaned up. The
+    identity check guards both attempts, so neither can remove a file this
+    reservation does not own.
+    """
+    removed = _unlink_owned_path(path, reservation.identity)
     try:
+        os.close(reservation.descriptor)
+    except OSError:
+        pass
+    if not removed:
         _unlink_owned_path(path, reservation.identity)
-    finally:
-        try:
-            os.close(reservation.descriptor)
-        except OSError:
-            pass
 
 
 def _fd_identity(descriptor: int) -> tuple[int, int]:

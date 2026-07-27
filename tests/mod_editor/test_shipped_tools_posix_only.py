@@ -276,6 +276,85 @@ class SimulatedWindowsWriterTests(unittest.TestCase):
                 exercised.append(path.name)
         self.assertEqual(sorted(exercised), sorted(p.name for p in targets))
 
+    def test_aborting_a_reservation_removes_the_stray_output(self) -> None:
+        """A failed write must leave nothing behind -- on Windows too.
+
+        This is not hypothetical. Every ``_abort_reserved`` in the tree used to
+        unlink *before* closing the descriptor, which is right on POSIX and
+        impossible on Windows: the OS refuses to unlink a file any descriptor
+        still holds open, the resulting PermissionError was swallowed, and the
+        partial output survived. The next build then hit "refusing to overwrite
+        existing output" for no reason the user could see. Found because a
+        contributor's stricter test caught it on the Windows runners; asserted
+        here so it cannot come back on any shipped writer.
+
+        Note this test cannot fail on Linux for the original reason -- POSIX
+        unlinks an open file happily. It is the Windows CI run that gives it
+        teeth, which is exactly why it discovers its targets automatically.
+        """
+        targets = [
+            path
+            for path in _shipped_python_tools()
+            if _defines(path, "_reserve_new") and _defines(path, "_abort_reserved")
+        ]
+        self.assertGreaterEqual(
+            len(targets), 3, "expected several shipped writers to abort reservations"
+        )
+        with simulated_non_posix():
+            for path in targets:
+                module = importlib.import_module(path.stem)
+                with tempfile.TemporaryDirectory() as directory:
+                    target = Path(directory) / "manifest.json"
+                    reservation = module._reserve_new(target)
+                    self.assertTrue(target.exists(), f"{path.name} reserved nothing")
+                    module._abort_reserved(target, reservation)
+                    self.assertFalse(
+                        target.exists(),
+                        f"{path.name}._abort_reserved left a stray file",
+                    )
+                    # The descriptor must be closed too, or the next build on
+                    # Windows inherits the same problem one step later.
+                    with self.assertRaises(OSError):
+                        os.fstat(reservation.descriptor)
+
+    def test_abort_never_removes_a_file_it_does_not_own(self) -> None:
+        """Cleanup must delete only the exact inode the reservation owns.
+
+        The obvious way to write this -- reserve a path, unlink it, drop a
+        different file at the same name -- cannot run on Windows: unlinking a
+        file whose descriptor is still open is precisely what the OS forbids,
+        which is the whole subject of the sibling test above. So the mismatch is
+        staged the other way round, by pointing the abort at a bystander file
+        the reservation never owned. That exercises the identity guard itself,
+        which is the actual guarantee, and it runs identically on every
+        platform.
+        """
+        targets = [
+            path
+            for path in _shipped_python_tools()
+            if _defines(path, "_reserve_new") and _defines(path, "_abort_reserved")
+        ]
+        self.assertGreaterEqual(len(targets), 3)
+        with simulated_non_posix():
+            for path in targets:
+                module = importlib.import_module(path.stem)
+                with tempfile.TemporaryDirectory() as directory:
+                    reserved = Path(directory) / "manifest.json"
+                    bystander = Path(directory) / "someone-elses.json"
+                    bystander.write_bytes(b"not ours")
+                    reservation = module._reserve_new(reserved)
+                    # Abort aimed at a path this reservation never owned.
+                    module._abort_reserved(bystander, reservation)
+                    self.assertTrue(
+                        bystander.exists(),
+                        f"{path.name} deleted a file it did not own",
+                    )
+                    self.assertEqual(bystander.read_bytes(), b"not ours")
+                    # It must still have released its descriptor, or the
+                    # temporary directory cannot be removed on Windows.
+                    with self.assertRaises(OSError):
+                        os.fstat(reservation.descriptor)
+
     def test_reservation_still_refuses_an_existing_path(self) -> None:
         """The fail-closed guarantee must survive the portable flag form."""
         targets = [
