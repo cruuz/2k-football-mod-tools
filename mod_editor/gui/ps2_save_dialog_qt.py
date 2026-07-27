@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Protocol, runtime_checkable
+from typing import Callable, Iterable, Protocol, runtime_checkable
 
 from mod_editor.core.errors import ValidationError
 
@@ -215,14 +215,25 @@ class Ps2SaveEditorHost(Protocol):
 
     def revert(self) -> object: ...
 
-    def write(self, output: Path) -> object: ...
+    def write(
+        self, output: Path, progress: Callable[[str], None] | None = None
+    ) -> object: ...
 
 
 # --------------------------------------------------------------------------
 # Widgets
 # --------------------------------------------------------------------------
 
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QTimer  # noqa: E402
+from PyQt5.QtCore import (  # noqa: E402
+    QAbstractTableModel,
+    QModelIndex,
+    QObject,
+    QRunnable,
+    Qt,
+    QThreadPool,
+    QTimer,
+    pyqtSignal,
+)
 from PyQt5.QtGui import QColor, QFont  # noqa: E402
 from PyQt5.QtWidgets import (  # noqa: E402
     QAbstractItemView,
@@ -236,6 +247,7 @@ from PyQt5.QtWidgets import (  # noqa: E402
     QLabel,
     QLineEdit,
     QMessageBox,
+    QProgressBar,
     QPushButton,
     QSplitter,
     QTableView,
@@ -244,6 +256,45 @@ from PyQt5.QtWidgets import (  # noqa: E402
 )
 
 PYQT5_AVAILABLE = True
+
+
+class _WriteSignals(QObject):
+    """Cross-thread channel for one background write."""
+
+    result = pyqtSignal(object)
+    error = pyqtSignal(str)
+    stage = pyqtSignal(str)
+    finished = pyqtSignal()
+
+
+class _WriteTask(QRunnable):
+    """Run one save write off the Qt thread.
+
+    Writing to a memory card rewrites an 8 MB image and then verifies every
+    page's ECC, which takes seconds.  Doing that inside the click handler held
+    the event loop long enough for the window to be marked unresponsive, so it
+    runs here and reports back by signal instead.
+
+    ``signals`` is constructed on the Qt thread, so its affinity is the Qt
+    thread and every emission from :meth:`run` is delivered as a queued call --
+    slots touch widgets on the thread that owns them.
+    """
+
+    def __init__(self, operation: Callable[[Callable[[str], None]], object]) -> None:
+        super().__init__()
+        self.operation = operation
+        self.signals = _WriteSignals()
+        self.setAutoDelete(False)
+
+    def run(self) -> None:
+        try:
+            result = self.operation(self.signals.stage.emit)
+        except BaseException as exc:
+            self.signals.error.emit(str(exc).strip() or exc.__class__.__name__)
+        else:
+            self.signals.result.emit(result)
+        finally:
+            self.signals.finished.emit()
 
 
 class PlayerNameTableModel(QAbstractTableModel):
@@ -324,6 +375,16 @@ class Ps2SaveEditorDialog(QDialog):
         self.selected: PlayerNameRow | None = None
         self._all_rows: tuple[PlayerNameRow, ...] = ()
         self._busy = False
+        # One write at a time, and _busy already refuses a second; the pool
+        # exists to keep the write off the Qt thread, not to run writes in
+        # parallel.  The task is held so it outlives run() and is not
+        # collected while its queued signals are still in flight.
+        self._pool = QThreadPool(self)
+        self._pool.setMaxThreadCount(1)
+        self._write_task: _WriteTask | None = None
+        self._pending_output: Path | None = None
+        self._write_outcome: object | None = None
+        self._write_error: str | None = None
         self._search_timer = QTimer(self)
         self._search_timer.setSingleShot(True)
         self._search_timer.setInterval(220)
@@ -489,11 +550,24 @@ class Ps2SaveEditorDialog(QDialog):
         splitter.setStretchFactor(1, 2)
         root.addWidget(splitter, 1)
 
+        footer = QHBoxLayout()
+        footer.setSpacing(12)
         self.status_label = QLabel("Open a PS2 save to begin.")
         self.status_label.setObjectName("statusLabel")
         self.status_label.setTextFormat(Qt.PlainText)
         self.status_label.setWordWrap(True)
-        root.addWidget(self.status_label)
+        footer.addWidget(self.status_label, 1)
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setObjectName("ps2ProgressBar")
+        # Indeterminate: the writer reports the stage it is in, not a page
+        # count, so a percentage would be invented rather than measured.
+        self.progress_bar.setRange(0, 0)
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setFixedWidth(180)
+        self.progress_bar.setAccessibleName("Write in progress")
+        self.progress_bar.hide()
+        footer.addWidget(self.progress_bar, 0)
+        root.addLayout(footer)
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.Close)
         self.write_button = self.button_box.addButton(
@@ -545,7 +619,7 @@ class Ps2SaveEditorDialog(QDialog):
         self.last_edit.textChanged.connect(lambda _text: self._update_capacity())
         self.apply_button.clicked.connect(self._apply_name)
         self.revert_button.clicked.connect(self._discard_changes)
-        self.write_button.clicked.connect(self._write_psu)
+        self.write_button.clicked.connect(self._write_save)
         self.button_box.rejected.connect(self.reject)
 
     # -- opening -------------------------------------------------------
@@ -700,6 +774,14 @@ class Ps2SaveEditorDialog(QDialog):
         self.table.setEnabled(not self._busy)
         self.search.setEnabled(not self._busy)
         self.status_filter.setEnabled(not self._busy)
+        # The write reads the open save on a background thread, so while it
+        # runs nothing on this thread may touch the save or the host: opening a
+        # different file has to be refused, and the name boxes go quiet too
+        # rather than invite an edit that Apply is already refusing.
+        self.open_file_button.setEnabled(not self._busy)
+        self.open_folder_button.setEnabled(not self._busy)
+        self.first_edit.setEnabled(not self._busy)
+        self.last_edit.setEnabled(not self._busy)
 
     def _apply_name(self) -> None:
         row = self.selected
@@ -734,8 +816,13 @@ class Ps2SaveEditorDialog(QDialog):
 
     # -- writing -------------------------------------------------------
 
-    def _write_psu(self) -> None:
-        """Choose a destination and write the edited save to it.
+    def _write_save(self) -> None:
+        """Choose a destination and start writing the edited save to it.
+
+        The picker runs here; the write itself is handed to a pool thread and
+        this returns immediately, so the dialog stays responsive for the
+        seconds a card write takes.  :meth:`_write_finished` reports the
+        outcome once it lands.
 
         Both pickers pass ``DontConfirmOverwrite`` deliberately.  The writer
         creates its output exclusively and refuses an existing file, so Qt's
@@ -743,7 +830,7 @@ class Ps2SaveEditorDialog(QDialog):
         cannot honour -- the user would confirm and then be refused.  Suppress
         the prompt and let the writer's own refusal be the single answer.
         """
-        if not self.host.is_open:
+        if not self.host.is_open or self._busy:
             return
         summary = self.host.summary()
         directory = str(getattr(summary, "directory", ""))
@@ -771,18 +858,53 @@ class Ps2SaveEditorDialog(QDialog):
         if destination.suffix.lower() not in (".psu", ".ps2"):
             destination = destination.with_suffix(".ps2" if from_card else ".psu")
         self._busy = True
+        self._pending_output = destination
+        self._write_outcome = None
+        self._write_error = None
+        self.status_label.setStyleSheet("")
+        self._status("Writing…")
+        self.progress_bar.show()
         self._refresh_controls()
-        try:
-            result = self.host.write(destination)
-        except Exception as exc:
-            self._warn("That save could not be written", exc)
-            return
-        finally:
-            self._busy = False
-            self._refresh_controls()
 
-        detail = str(getattr(result, "detail", ""))
-        if getattr(result, "verified", False):
+        task = _WriteTask(lambda stage: self.host.write(destination, stage))
+        self._write_task = task
+        task.signals.stage.connect(self._status)
+        task.signals.result.connect(self._write_succeeded)
+        task.signals.error.connect(self._write_failed)
+        task.signals.finished.connect(self._write_finished)
+        self._pool.start(task)
+
+    def _write_succeeded(self, result: object) -> None:
+        """Record the outcome; :meth:`_write_finished` is what reports it."""
+        self._write_outcome = result
+
+    def _write_failed(self, message: str) -> None:
+        self._write_error = message or "The write failed."
+
+    def _write_finished(self) -> None:
+        """Clear the busy state first, then report what the write did.
+
+        Order matters: a modal raised before the dialog settles would sit in
+        front of a still-spinning progress bar and disabled controls, and the
+        user would be answering it while the window claims to be working.
+        """
+        outcome, error = self._write_outcome, self._write_error
+        destination = self._pending_output
+        self._write_task = None
+        self._write_outcome = None
+        self._write_error = None
+        self._pending_output = None
+        self._busy = False
+        self.progress_bar.hide()
+        self._refresh_controls()
+
+        if error is not None:
+            self.status_label.setStyleSheet(f"color: {_INVALID_COLOUR};")
+            self._status(error)
+            QMessageBox.warning(self, "That save could not be written", error)
+            return
+        detail = str(getattr(outcome, "detail", ""))
+        if getattr(outcome, "verified", False):
             self.status_label.setStyleSheet(f"color: {_PASS_COLOUR};")
             self._status(detail)
             QMessageBox.information(self, "PS2 save written", f"{detail}\n\n{destination}")
@@ -796,6 +918,20 @@ class Ps2SaveEditorDialog(QDialog):
             )
 
     # -- shared --------------------------------------------------------
+
+    def done(self, result: int) -> None:
+        """Refuse to close while a write is in flight.
+
+        The write runs on a pool thread and signals back into this dialog, so
+        closing it mid-write would leave a live task reporting to a destroyed
+        window.  ``done`` is the single choke point every close goes through --
+        ``accept``, ``reject``, and Qt5's ``closeEvent``, which calls ``reject``
+        and then ignores the close because the dialog is still visible.
+        """
+        if self._busy:
+            self._status("A write is in progress. It will finish in a moment.")
+            return
+        super().done(result)
 
     def _status(self, message: str) -> None:
         self.status_label.setText(message)

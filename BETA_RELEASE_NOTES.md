@@ -92,8 +92,9 @@ pixels/audio, private paths, symlinks, or undeclared files) and a
 memory-card saves**, via **File → PS2 Save Editor…**. Open a save from a
 `.psu`, an extracted save folder, or a `.ps2` card image; rename players with
 live feedback on how many characters each slot holds; then write a new `.psu`
-that PCSX2, mymc and PS2 Save Builder import. Your original save is never
-modified.
+that PCSX2, mymc and PS2 Save Builder import. A save opened from a card can go
+straight back into a copy of that card instead, page ECC recomputed, which
+skips the import step entirely. Your original save is never modified.
 
 The same capability is also available on the command line, and ships
 separately as `NFL2K5-PS2-Save-Toolkit` on the Releases page for anyone who

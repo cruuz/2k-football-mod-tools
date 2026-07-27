@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
 import sys
 
 from .errors import ValidationError
@@ -237,7 +238,9 @@ class Ps2SaveService:
         """True when the open save came out of a .ps2 memory-card image."""
         return bool(self._source and self._source.suffix.lower() == ".ps2")
 
-    def write(self, output: Path) -> WriteResult:
+    def write(
+        self, output: Path, progress: Callable[[str], None] | None = None
+    ) -> WriteResult:
         """Reseal, write the save, then verify it against the original.
 
         A ``.psu`` destination produces a standalone save file; a ``.ps2``
@@ -250,7 +253,12 @@ class Ps2SaveService:
         writer's own say-so. For a card that check also re-reads the whole
         image, confirms every page's ECC, and confirms the other saves on the
         card are byte-identical.
+
+        ``progress`` is called with the name of each stage as it starts. A card
+        write takes seconds, and the caller may be a GUI that has to say which
+        of the two long steps is running.
         """
+        announce = progress if progress is not None else (lambda _stage: None)
         save = self._require_open()
         if self._original is None:  # pragma: no cover - guarded by _require_open
             raise ValidationError("No baseline is available to verify against.")
@@ -269,10 +277,12 @@ class Ps2SaveService:
         save.reseal()
         try:
             if to_card:
+                announce("Writing the memory-card image…")
                 save_lib.write_into_memcard(
                     self._source, save, output, save.directory
                 )
             else:
+                announce("Writing the save file…")
                 save_lib.write_psu(save, output)
         except save_lib.SaveError as exc:
             raise ValidationError(str(exc)) from exc
@@ -281,6 +291,7 @@ class Ps2SaveService:
 
         try:
             if to_card:
+                announce("Verifying the card: every page's ECC and the other saves…")
                 card = verify_lib.verify_memcard_write(
                     self._source, output, save.directory, declared
                 )
@@ -290,6 +301,7 @@ class Ps2SaveService:
                     f"{len(card['other_saves_untouched'])} other save(s) untouched."
                 )
             else:
+                announce("Verifying the file that was written…")
                 # Re-read what actually landed on disk. Verifying the
                 # in-memory save would only prove the editor agrees with
                 # itself, and would miss a serialization bug or a short write.

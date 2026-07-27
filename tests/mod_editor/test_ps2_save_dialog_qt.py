@@ -12,6 +12,9 @@ import os
 from pathlib import Path
 import sys
 import tempfile
+import threading
+import time
+from types import SimpleNamespace
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -335,6 +338,246 @@ class ServiceVerifiesTheFileTests(unittest.TestCase):
             service_module.save_lib.write_psu = real
         self.assertFalse(result.verified)
         self.assertIn("verification failed", result.detail)
+
+    def test_the_write_announces_each_stage_it_reaches(self) -> None:
+        # The GUI has nothing else to show during a multi-second card write.
+        stages: list[str] = []
+        self.service.write(self.root / "announced.psu", stages.append)
+        self.assertEqual(len(stages), 2, stages)
+        self.assertIn("Writing", stages[0])
+        self.assertIn("Verifying", stages[1])
+
+    def test_progress_is_optional(self) -> None:
+        # The command-line path passes nothing and must not be made to care.
+        self.assertTrue(self.service.write(self.root / "quiet.psu").verified)
+
+
+class _BlockingHost:
+    """A host whose write parks until the test releases it.
+
+    Blocking on an event rather than on real work makes the concurrency
+    deterministic: the test can inspect the dialog at a moment when the write
+    is provably still running.
+    """
+
+    is_open = True
+    dirty = True
+    edit_count = 1
+    opened_from_card = False
+
+    def __init__(self) -> None:
+        self.released = threading.Event()
+        self.entered = threading.Event()
+        self.write_thread: str | None = None
+
+    def open(self, path: Path, directory: str | None = None) -> object:
+        return None
+
+    def summary(self) -> object:
+        return SimpleNamespace(directory="BASLUS-209192K5Roster")
+
+    def players(self) -> list:
+        return []
+
+    def validate_name(self, index: int, field: str, value: str) -> str | None:
+        return None
+
+    def set_name(self, index: int, field: str, value: str) -> None:
+        return None
+
+    def revert(self) -> object:
+        return None
+
+    def write(self, output: Path, progress=None) -> object:
+        self.write_thread = threading.current_thread().name
+        if progress is not None:
+            progress("Writing the memory-card image…")
+        self.entered.set()
+        if not self.released.wait(20):  # pragma: no cover - test would hang
+            raise AssertionError("the test never released the write")
+        return SimpleNamespace(verified=True, detail="Wrote 1 change.", output=output)
+
+
+def _qt_application():
+    """A shared offscreen QApplication, or None if Qt cannot start one."""
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    try:
+        from PyQt5.QtWidgets import QApplication
+    except Exception:  # pragma: no cover - PyQt5 is a hard dependency here
+        return None
+    return QApplication.instance() or QApplication([])
+
+
+class WriteIsAsynchronousTests(unittest.TestCase):
+    """A card write must not hold the Qt thread.
+
+    Writing an 8 MB card and verifying every page's ECC takes seconds. Run in
+    the click handler it stopped the event loop for the whole duration and the
+    window was marked unresponsive, so the write belongs on a pool thread.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.app = _qt_application()
+        if cls.app is None:  # pragma: no cover - environment guard
+            raise unittest.SkipTest("no QApplication is available")
+
+    def setUp(self) -> None:
+        import mod_editor.gui.ps2_save_dialog_qt as dialog_module
+
+        self.dialog_module = dialog_module
+        self._temp = tempfile.TemporaryDirectory(prefix="ps2-async-")
+        self.output = Path(self._temp.name) / "written.psu"
+        self.host = _BlockingHost()
+        self.dialog = dialog_module.Ps2SaveEditorDialog(host=self.host)
+        self._real_picker = dialog_module.QFileDialog.getSaveFileName
+        self._real_info = dialog_module.QMessageBox.information
+        self._real_warning = dialog_module.QMessageBox.warning
+        dialog_module.QFileDialog.getSaveFileName = staticmethod(
+            lambda *args, **kwargs: (str(self.output), "PS2 save file (*.psu)")
+        )
+        dialog_module.QMessageBox.information = staticmethod(
+            lambda *args, **kwargs: None
+        )
+
+    def tearDown(self) -> None:
+        self.host.released.set()
+        self._settle()
+        self.dialog_module.QFileDialog.getSaveFileName = self._real_picker
+        self.dialog_module.QMessageBox.information = self._real_info
+        self.dialog_module.QMessageBox.warning = self._real_warning
+        self.dialog.deleteLater()
+        self._temp.cleanup()
+
+    def _settle(self, timeout: float = 20.0) -> None:
+        """Pump the event loop until the write reports itself finished."""
+        deadline = time.monotonic() + timeout
+        while self.dialog._busy and time.monotonic() < deadline:
+            self.app.processEvents()
+            time.sleep(0.01)
+        self.app.processEvents()
+
+    def test_the_click_handler_returns_while_the_write_is_still_running(self) -> None:
+        self.dialog._write_save()
+        self.assertTrue(self.host.entered.wait(10), "the write never started")
+        self.assertTrue(self.dialog._busy, "the handler waited for the write")
+        self.assertTrue(self.dialog.progress_bar.isVisibleTo(self.dialog))
+
+    def test_nothing_that_touches_the_save_stays_live_during_a_write(self) -> None:
+        # The worker owns the host for the duration; the Qt thread must not be
+        # able to open another save or stage another edit underneath it.
+        self.dialog._write_save()
+        self.assertTrue(self.host.entered.wait(10))
+        for name in (
+            "open_file_button", "open_folder_button", "first_edit",
+            "last_edit", "table", "search", "apply_button", "write_button",
+        ):
+            self.assertFalse(
+                getattr(self.dialog, name).isEnabled(), f"{name} stayed live"
+            )
+
+    def test_the_write_runs_on_a_worker_thread(self) -> None:
+        self.dialog._write_save()
+        self.assertTrue(self.host.entered.wait(10))
+        self.assertIsNotNone(self.host.write_thread)
+        self.assertNotEqual(self.host.write_thread, threading.main_thread().name)
+
+    def test_the_stage_message_reaches_the_status_line(self) -> None:
+        self.dialog._write_save()
+        self.assertTrue(self.host.entered.wait(10))
+        deadline = time.monotonic() + 5
+        while "memory-card" not in self.dialog.status_label.text():
+            if time.monotonic() > deadline:  # pragma: no cover - timing guard
+                break
+            self.app.processEvents()
+            time.sleep(0.01)
+        self.assertIn("memory-card", self.dialog.status_label.text())
+
+    def test_closing_is_refused_while_a_write_is_in_flight(self) -> None:
+        rejections = []
+        self.dialog.rejected.connect(lambda: rejections.append(True))
+        self.dialog._write_save()
+        self.assertTrue(self.host.entered.wait(10))
+        self.dialog.reject()
+        self.app.processEvents()
+        self.assertEqual(rejections, [], "the dialog closed during a write")
+        self.assertTrue(self.dialog._busy)
+
+    def test_a_second_write_cannot_be_started_while_one_runs(self) -> None:
+        self.dialog._write_save()
+        self.assertTrue(self.host.entered.wait(10))
+        self.host.entered.clear()
+        self.dialog._write_save()
+        self.assertFalse(
+            self.host.entered.wait(0.3), "a second write started concurrently"
+        )
+
+    def test_the_dialog_settles_once_the_write_returns(self) -> None:
+        self.dialog._write_save()
+        self.assertTrue(self.host.entered.wait(10))
+        self.host.released.set()
+        self._settle()
+        self.assertFalse(self.dialog._busy)
+        self.assertFalse(self.dialog.progress_bar.isVisibleTo(self.dialog))
+        self.assertIsNone(self.dialog._write_task)
+        self.assertIn("Wrote 1 change.", self.dialog.status_label.text())
+
+    def test_the_dialog_has_settled_before_the_report_is_shown(self) -> None:
+        # A modal raised while the progress bar still spins would ask the user
+        # to answer a window that claims to be working.
+        # Recorded as a list, not a dict: a second report would otherwise
+        # overwrite the first and hide a premature one.
+        seen = []
+        self.dialog_module.QMessageBox.information = staticmethod(
+            lambda *args, **kwargs: seen.append(
+                {
+                    "busy": self.dialog._busy,
+                    "spinning": self.dialog.progress_bar.isVisibleTo(self.dialog),
+                }
+            )
+        )
+        self.dialog._write_save()
+        self.assertTrue(self.host.entered.wait(10))
+        self.host.released.set()
+        self._settle()
+        self.assertEqual(seen, [{"busy": False, "spinning": False}])
+
+    def test_a_failed_write_is_reported_and_the_dialog_recovers(self) -> None:
+        boom = _BlockingHost()
+
+        def explode(output, progress=None):
+            raise RuntimeError("the card is write protected")
+
+        boom.write = explode
+        dialog = self.dialog_module.Ps2SaveEditorDialog(host=boom)
+        warnings = []
+        self.dialog_module.QMessageBox.warning = staticmethod(
+            lambda *args, **kwargs: warnings.append(args[2])
+        )
+        try:
+            dialog._write_save()
+            deadline = time.monotonic() + 10
+            while dialog._busy and time.monotonic() < deadline:
+                self.app.processEvents()
+                time.sleep(0.01)
+            self.app.processEvents()
+        finally:
+            dialog.deleteLater()
+        self.assertFalse(dialog._busy, "a failed write left the dialog busy")
+        self.assertFalse(dialog.progress_bar.isVisibleTo(dialog))
+        self.assertEqual(warnings, ["the card is write protected"])
+        self.assertIn("write protected", dialog.status_label.text())
+
+    def test_closing_is_allowed_again_once_the_write_finishes(self) -> None:
+        rejections = []
+        self.dialog.rejected.connect(lambda: rejections.append(True))
+        self.dialog._write_save()
+        self.assertTrue(self.host.entered.wait(10))
+        self.host.released.set()
+        self._settle()
+        self.dialog.reject()
+        self.app.processEvents()
+        self.assertEqual(rejections, [True])
 
 
 if __name__ == "__main__":
