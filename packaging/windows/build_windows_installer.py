@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import pathlib
 import shutil
 import subprocess
@@ -197,6 +198,35 @@ def build_icon(repo: pathlib.Path, svg_rel: str, out: pathlib.Path) -> pathlib.P
     return out if out.exists() else None
 
 
+# NSIS records each file's mtime in the archive, and `pip` and zip extraction
+# stamp the current time on everything they create. Two builds of identical
+# *content* therefore produced installers with different bytes -- reproducible
+# in contents but not in hash, which makes a published SHA-256 unverifiable by
+# rebuild. Flattening every mtime in the staged tree to one fixed instant is
+# what closes that gap; it is the same trick `build_archive.py` uses for the
+# tarballs. The value is arbitrary but must never drift: 2026-07-27T00:00:00Z,
+# the date this became reproducible.
+SOURCE_DATE_EPOCH = 1785110400
+
+
+def normalise_mtimes(root: pathlib.Path) -> int:
+    """Flatten every mtime under *root* so NSIS output depends only on content.
+
+    Directories are stamped after their children: on POSIX, writing a child
+    updates the parent's mtime, so doing it in the other order would undo the
+    parent's stamp. Symlinks are skipped rather than followed -- the staged tree
+    has none, and following one would stamp something outside the build.
+    """
+    stamped = 0
+    for path in sorted(root.rglob("*"), key=lambda p: len(p.parts), reverse=True):
+        if path.is_symlink():
+            continue
+        os.utime(path, (SOURCE_DATE_EPOCH, SOURCE_DATE_EPOCH))
+        stamped += 1
+    os.utime(root, (SOURCE_DATE_EPOCH, SOURCE_DATE_EPOCH))
+    return stamped + 1
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--stage", required=True, help="staged release tree (stage_release.py output)")
@@ -235,6 +265,8 @@ def main() -> int:
     shutil.copy2(notice_src, work / "UNSIGNED-NOTICE.txt")
 
     print("[4/4] NSIS script")
+    normalised = normalise_mtimes(work)
+    print(f"      normalised {normalised} mtimes to {SOURCE_DATE_EPOCH}")
     nsi = work / "installer.nsi"
     nsi.write_text(
         render_nsis(product, args.version, work, icon, out), encoding="utf-8"

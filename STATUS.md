@@ -204,6 +204,16 @@ published installer. Verify an installer against the hash in this table rather
 than against a local rebuild. (The `beta-4` note below claimed byte-for-byte
 installer reproducibility without this qualification; that claim was too strong.)
 
+**Fixed for the next release, after these assets were published.**
+`packaging/windows/build_windows_installer.py` now flattens every mtime in the
+staged tree to a fixed `SOURCE_DATE_EPOCH` before NSIS runs — the same technique
+`build_archive.py` already used for the tarballs. Two from-scratch builds now
+produce a byte-identical installer, verified. The beta-5 installers above were
+built before that change and are **not** re-cut: replacing a published asset
+under its own filename is the mistake beta-2 made and beta-3 fixed by dating
+filenames. From the next release, installers can be verified by rebuild like the
+tarballs can.
+
 The installers are **not code-signed**. Windows shows a SmartScreen prompt on
 first run, and the wizard's second page says so before writing anything.
 
