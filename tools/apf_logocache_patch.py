@@ -795,7 +795,7 @@ def _write_copied_volume_extents(
             raise PatchError("refusing overlapping replacement extents")
 
     output_volume.parent.mkdir(parents=True, exist_ok=True)
-    source_descriptor = os.open(source_volume, os.O_RDONLY | os.O_CLOEXEC | getattr(os, "O_BINARY", 0))
+    source_descriptor = os.open(source_volume, os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
     output_descriptor: int | None = None
     output_identity: tuple[int, int] | None = None
     try:
@@ -811,7 +811,7 @@ def _write_copied_volume_extents(
         try:
             output_descriptor = os.open(
                 output_volume,
-                os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | getattr(os, "O_BINARY", 0),
+                os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
                 stat.S_IMODE(source_metadata.st_mode),
             )
         except FileExistsError as exc:

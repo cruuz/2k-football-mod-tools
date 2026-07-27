@@ -1,7 +1,7 @@
 # APF 2K8 Mod Studio — Status
 
-The source code and UI identify as the retail-free **`0.1.0-alpha.34`**.
-The current sealed package is `0.1.0-alpha.34`: its mode-`0444`,
+The source code and UI identify as the retail-free **`0.1.0-alpha.35`**.
+`0.1.0-alpha.34` remains preserved unchanged; its mode-`0444`,
 815,213-byte archive has SHA-256
 `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`,
 authenticated by the adjacent mode-`0444` `.sha256` sidecar.
@@ -526,7 +526,36 @@ absolute app-menu command, atomic staged updates, and authenticated cleanup
 that preserves every user-data directory. The release/runtime gates exercise
 that lifecycle headlessly in an isolated home before a package can ship.
 
-Last updated: 2026-07-20
+Last updated: 2026-07-27
+
+## 0.1.0-alpha.35 candidate boundary — Windows texture writers
+
+- Source/UI identity is `0.1.0-alpha.35`. No capability was added, removed, or
+  re-graded: the registry stays at 65 capabilities and every ladder position is
+  unchanged. This boundary exists because four shipped writers could not run at
+  all on Windows.
+- Fixed: `tools/apf_field_art_patch.py`, `tools/apf_logo_patch.py`,
+  `tools/apf_logocache_patch.py` and `tools/apf_texture_patch.py` passed
+  `os.O_CLOEXEC` to `os.open` as a bare attribute. CPython on Windows does not
+  define that name, so each raised `AttributeError: module 'os' has no attribute
+  'O_CLOEXEC'` before doing any work. `tools/apf_uniform_mip_patch.py` inherited
+  the fault through `archive_patch._reserve_new`. Field art, team logos, the
+  logo cache, the generic texture writer and uniform mips were therefore all
+  unusable on Windows; a user reported it against the endzone flow.
+- The flag is now `getattr(os, "O_CLOEXEC", 0)`, matching the 284 sites that
+  already used that form. **No guarantee is weakened by the fallback to `0`:**
+  PEP 446 makes every descriptor CPython creates non-inheritable on all
+  platforms, so close-on-exec is enforced by the interpreter rather than by this
+  flag. The descriptor-ownership, inode-identity and fail-closed refusal
+  contracts are byte-for-byte the ones alpha.34 proved.
+- Guarded against recurrence by
+  `tests/mod_editor/test_shipped_tools_posix_only.py`, which needs **no retail
+  data** — the reason the previous suite reported Windows/macOS/Linux parity and
+  still shipped this. It scans every file in both release allowlists for bare
+  POSIX-only `os.open` flags, and it deletes those names from `os` to drive each
+  shipped writer's real reservation path, asserting the fail-closed refusal still
+  refuses for the right reason. Both discover their targets from the allowlists,
+  so a writer added later is covered without editing the test.
 
 ## 0.1.0-alpha.34 candidate boundary — release prep in progress
 

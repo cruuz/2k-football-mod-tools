@@ -1,8 +1,8 @@
-# 2K5 Mod Studio — v1.0 RC29 Release Status
+# 2K5 Mod Studio — v1.0 RC30 Release Status
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The
-> source code and UI identify as the **`0.1.0-alpha.34`** release. The current
+> source code and UI identify as the **`0.1.0-alpha.35`** release. The previous
 > sealed package is `0.1.0-alpha.34`; its `815,213`-byte archive checksum is
 > `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`
 > and is authenticated by the adjacent mode-`0444` `.sha256` sidecar.
@@ -255,9 +255,13 @@ restore memory, files, histories, and the prior manifest, leave no partial
 destination, and remain retryable. Rejected facade candidates are removed only
 through an exact UUID-root/self-manifest guard.
 
-The source version is **`1.0.0rc29`**. The authoritative cross-title product
-suite passes **1142/1142** and the final RC29 release-focused selection passes
-**162/162**. Independent hostile review is GO with no unresolved P0/P1 defect.
+The source version is **`1.0.0rc30`**. The authoritative cross-title product
+suite passes **1372/1372** across 127 files, on Linux, macOS and Windows. RC30
+changes exactly one 2K5 file: `tools/nfl_uniform_color_xiso_direct_patch.py`
+now resolves the Linux-only `os.copy_file_range` before its copy loop, so the
+fallback its docstring promises actually runs off Linux instead of raising
+`AttributeError`. No capability, pin or guarantee changed. Independent hostile
+review is GO with no unresolved P0/P1 defect.
 The exact allowlisted stage contains **146 files**, **13 directories excluding
 root**, and **102,748,400 file bytes**. Both stage and clean extraction pass the
 retail-free gate before/after the **48-product-module/22-tool-module** runtime
