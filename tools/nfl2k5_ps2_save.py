@@ -349,19 +349,38 @@ def _commit_reserved(path: Path, reservation: OutputReservation, data: bytes) ->
         raise SaveError(f"the reserved output pathname changed while writing: {path}")
 
 
-def _abort_reserved(path: Path, reservation: OutputReservation) -> None:
-    """Discard a failed reservation, unlinking only the path we still own."""
+def _unlink_owned_path(path: Path, identity: tuple[int, int]) -> bool:
+    """Remove *path* only while it is still the exact inode we reserved."""
+    if not _path_is_owned_inode(path, identity):
+        return False
     try:
-        if _path_is_owned_inode(path, reservation.identity):
-            try:
-                os.unlink(path)
-            except OSError:
-                pass
-    finally:
-        try:
-            os.close(reservation.descriptor)
-        except OSError:
-            pass
+        os.unlink(path)
+    except OSError:
+        return False
+    return True
+
+
+def _abort_reserved(path: Path, reservation: OutputReservation) -> None:
+    """Discard a failed reservation, unlinking only the path we still own.
+
+    The order is deliberate and platform-dependent. On POSIX the unlink runs
+    while the descriptor is still open: the fd keeps the inode alive, so no
+    window exists in which the name could be swapped between the identity check
+    and the unlink itself. Windows refuses to unlink a file any descriptor still
+    holds open, and that PermissionError is what left a stray partial output
+    behind -- the failure ``test_a_failed_write_leaves_no_stray_output`` caught
+    on the Windows runners. Hence a second attempt after the close rather than a
+    plain reorder: POSIX keeps its window-free guarantee and Windows still gets
+    cleaned up. The identity check guards both attempts, so neither can remove a
+    file this reservation does not own.
+    """
+    removed = _unlink_owned_path(path, reservation.identity)
+    try:
+        os.close(reservation.descriptor)
+    except OSError:
+        pass
+    if not removed:
+        _unlink_owned_path(path, reservation.identity)
 
 
 def _write_reserved(path: Path, data: bytes, forbid: tuple[Path, ...] = ()) -> None:

@@ -276,6 +276,69 @@ class SimulatedWindowsWriterTests(unittest.TestCase):
                 exercised.append(path.name)
         self.assertEqual(sorted(exercised), sorted(p.name for p in targets))
 
+    def test_aborting_a_reservation_removes_the_stray_output(self) -> None:
+        """A failed write must leave nothing behind -- on Windows too.
+
+        This is not hypothetical. Every ``_abort_reserved`` in the tree used to
+        unlink *before* closing the descriptor, which is right on POSIX and
+        impossible on Windows: the OS refuses to unlink a file any descriptor
+        still holds open, the resulting PermissionError was swallowed, and the
+        partial output survived. The next build then hit "refusing to overwrite
+        existing output" for no reason the user could see. Found because a
+        contributor's stricter test caught it on the Windows runners; asserted
+        here so it cannot come back on any shipped writer.
+
+        Note this test cannot fail on Linux for the original reason -- POSIX
+        unlinks an open file happily. It is the Windows CI run that gives it
+        teeth, which is exactly why it discovers its targets automatically.
+        """
+        targets = [
+            path
+            for path in _shipped_python_tools()
+            if _defines(path, "_reserve_new") and _defines(path, "_abort_reserved")
+        ]
+        self.assertGreaterEqual(
+            len(targets), 3, "expected several shipped writers to abort reservations"
+        )
+        with simulated_non_posix():
+            for path in targets:
+                module = importlib.import_module(path.stem)
+                with tempfile.TemporaryDirectory() as directory:
+                    target = Path(directory) / "manifest.json"
+                    reservation = module._reserve_new(target)
+                    self.assertTrue(target.exists(), f"{path.name} reserved nothing")
+                    module._abort_reserved(target, reservation)
+                    self.assertFalse(
+                        target.exists(),
+                        f"{path.name}._abort_reserved left a stray file",
+                    )
+                    # The descriptor must be closed too, or the next build on
+                    # Windows inherits the same problem one step later.
+                    with self.assertRaises(OSError):
+                        os.fstat(reservation.descriptor)
+
+    def test_abort_never_removes_a_file_it_does_not_own(self) -> None:
+        """Cleanup must not delete a replacement that took the same name."""
+        targets = [
+            path
+            for path in _shipped_python_tools()
+            if _defines(path, "_reserve_new") and _defines(path, "_abort_reserved")
+        ]
+        with simulated_non_posix():
+            for path in targets:
+                module = importlib.import_module(path.stem)
+                with tempfile.TemporaryDirectory() as directory:
+                    target = Path(directory) / "manifest.json"
+                    reservation = module._reserve_new(target)
+                    # Someone else replaces the pathname with a different file.
+                    target.unlink()
+                    target.write_bytes(b"not ours")
+                    module._abort_reserved(target, reservation)
+                    self.assertTrue(
+                        target.exists(), f"{path.name} deleted a file it did not own"
+                    )
+                    self.assertEqual(target.read_bytes(), b"not ours")
+
     def test_reservation_still_refuses_an_existing_path(self) -> None:
         """The fail-closed guarantee must survive the portable flag form."""
         targets = [
