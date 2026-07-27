@@ -527,10 +527,14 @@ class Nfl2k5StadiumCacheCoordinator:
 
     @staticmethod
     def _validate_source_cache(cache: SourceCache) -> tuple[Path, Path, Path]:
+        # Identity, not container equality. The sha256 term used to require the
+        # user's whole image to equal the project's own dump, which refused
+        # every other legal rip of the same disc; the fingerprint already says
+        # this cache came from recognized USA retail NFL 2K5, and every artefact
+        # inside the cache is pinned individually.
         if (
             not cache.source.recognized
             or cache.source.fingerprint_id != "nfl2k5-usa-retail-xiso"
-            or cache.source.sha256 != SOURCE_SHA256
             or cache.source.kind != "xiso"
         ):
             raise StadiumCacheError(

@@ -25,6 +25,15 @@ SCHEMA = "nfl2k5_uniform_color_xiso_direct_patch/v1"
 SECTOR_SIZE = 2048
 XDVDFS_MAGIC = b"MICROSOFT*XBOX*MEDIA"
 XDVDFS_HEADER_OFFSET = 0x10000
+# Byte at which the game partition can begin, most common first. 0 is an
+# extracted .xiso; the others are raw reads that keep the video partition in
+# front. See locate_xdvdfs_base for why this is probed rather than assumed.
+XDVDFS_BASE_OFFSETS: tuple[int, ...] = (
+    0x00000000,   # extracted .xiso -- the game partition is the whole file
+    0x18300000,   # XGD1 raw dump (405,798,912)
+    0x0FD90000,   # XGD2 raw dump (265,289,728)
+    0x02080000,   # XGD3 raw dump (34,078,720)
+)
 EXPECTED_XISO_SIZE = 6_300_499_968
 EXPECTED_XISO_SHA256 = (
     "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
@@ -56,10 +65,19 @@ class XdvdfsEntry:
     sector: int
     size: int
     attributes: int
+    base_offset: int = 0
 
     @property
     def byte_offset(self) -> int:
-        return self.sector * SECTOR_SIZE
+        """Absolute byte offset in the image file, not in the game partition.
+
+        XDVDFS sector numbers are relative to the start of the game partition.
+        In the extracted ``.xiso`` layout that partition begins at byte 0 and
+        the two are the same number, which is why this used to ignore the base.
+        A raw disc dump keeps the video partition in front of it, so the same
+        sector lives ``base_offset`` bytes further into the file.
+        """
+        return self.base_offset + self.sector * SECTOR_SIZE
 
 
 @dataclass(frozen=True)
@@ -248,13 +266,52 @@ def read_exact(descriptor: int, offset: int, length: int) -> bytes:
     return b"".join(chunks)
 
 
-def parse_xdvdfs(descriptor: int, image_size: int) -> tuple[dict[str, XdvdfsEntry], dict[str, int]]:
-    header = read_exact(descriptor, XDVDFS_HEADER_OFFSET, 0x800)
+def locate_xdvdfs_base(descriptor: int, image_size: int) -> int:
+    """Find the byte where this image's game partition starts.
+
+    A dump of an Xbox disc is not one canonical file. Which byte the game
+    partition begins at depends on how the disc was read, and every one of
+    these is a legitimate dump of the same game:
+
+    * ``0`` -- an extracted ``.xiso``; the game partition *is* the file.
+    * ``0x18300000`` -- a raw XGD1 read that keeps the video partition.
+    * ``0x0FD90000`` / ``0x02080000`` -- the XGD2 and XGD3 equivalents.
+
+    Assuming ``0`` is what made the editor reject other people's dumps with a
+    magic-mismatch, so the base is discovered rather than assumed. Only offsets
+    carrying the magic at both ends of the header sector are accepted, which is
+    a 40-byte agreement at a 2,048-aligned position -- not something arbitrary
+    data supplies by accident.
+    """
+    for base in XDVDFS_BASE_OFFSETS:
+        start = base + XDVDFS_HEADER_OFFSET
+        if start + 0x800 > image_size:
+            continue
+        try:
+            header = read_exact(descriptor, start, 0x800)
+        except PatchError:
+            continue
+        if header[:20] == XDVDFS_MAGIC and header[-20:] == XDVDFS_MAGIC:
+            return base
+    raise PatchError(
+        "No Xbox XDVDFS filesystem was found in this image. Looked at every "
+        "known game-partition offset ("
+        + ", ".join(f"0x{value:X}" for value in XDVDFS_BASE_OFFSETS)
+        + "). This does not look like an Xbox disc image."
+    )
+
+
+def parse_xdvdfs(
+    descriptor: int, image_size: int, base_offset: int | None = None
+) -> tuple[dict[str, XdvdfsEntry], dict[str, int]]:
+    if base_offset is None:
+        base_offset = locate_xdvdfs_base(descriptor, image_size)
+    header = read_exact(descriptor, base_offset + XDVDFS_HEADER_OFFSET, 0x800)
     require(header[:20] == XDVDFS_MAGIC, "retail XDVDFS header magic mismatch")
     require(header[-20:] == XDVDFS_MAGIC, "retail XDVDFS tail magic mismatch")
     root_sector, root_size = struct.unpack_from("<II", header, 20)
     require(root_sector > 0 and root_size >= 14, "invalid XDVDFS root directory")
-    require(root_sector * SECTOR_SIZE + root_size <= image_size,
+    require(base_offset + root_sector * SECTOR_SIZE + root_size <= image_size,
             "XDVDFS root directory exceeds image")
 
     entries: dict[str, XdvdfsEntry] = {}
@@ -266,7 +323,7 @@ def parse_xdvdfs(descriptor: int, image_size: int) -> tuple[dict[str, XdvdfsEntr
         key = (sector, size)
         require(key not in visited_directories, "cyclic XDVDFS directory extent")
         visited_directories.add(key)
-        base = sector * SECTOR_SIZE
+        base = base_offset + sector * SECTOR_SIZE
         require(size >= 14 and base + size <= image_size,
                 f"directory extent outside image: {prefix or '/'}")
         directory = read_exact(descriptor, base, size)
@@ -303,9 +360,9 @@ def parse_xdvdfs(descriptor: int, image_size: int) -> tuple[dict[str, XdvdfsEntr
             path = f"{prefix}/{name}" if prefix else name
             normalized = path.casefold()
             require(normalized not in entries, f"duplicate XDVDFS path: {path}")
-            extent_end = start_sector * SECTOR_SIZE + file_size
+            extent_end = base_offset + start_sector * SECTOR_SIZE + file_size
             require(extent_end <= image_size, f"XDVDFS extent outside image: {path}")
-            entry = XdvdfsEntry(path, start_sector, file_size, attributes)
+            entry = XdvdfsEntry(path, start_sector, file_size, attributes, base_offset)
             entries[normalized] = entry
             if attributes & 0x10:
                 require(file_size >= 14, f"empty/invalid XDVDFS directory: {path}")

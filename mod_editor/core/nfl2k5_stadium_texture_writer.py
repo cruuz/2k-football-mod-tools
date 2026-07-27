@@ -1728,7 +1728,6 @@ class Nfl2k5StadiumTextureWriter:
         if (
             not source.recognized
             or source.fingerprint_id != "nfl2k5-usa-retail-xiso"
-            or source.sha256 != SOURCE_SHA256
             or source.kind != "xiso"
         ):
             raise StadiumTextureWriterError(

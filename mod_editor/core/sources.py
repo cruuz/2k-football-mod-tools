@@ -4,11 +4,25 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import os
 from pathlib import Path
+import sys
 from typing import Callable, Iterable
 
 from .errors import ValidationError
 from .model import GameId, SourceRecord
+
+
+def _xdvdfs_module():
+    """The XDVDFS reader, imported the way the rest of core imports tools/."""
+    tools = str(Path(__file__).resolve().parents[2] / "tools")
+    if tools not in sys.path:
+        sys.path.insert(0, tools)
+    try:
+        import nfl_uniform_color_xiso_direct_patch as module
+    except ImportError:  # pragma: no cover - lean checkouts without tools/
+        return None
+    return module
 
 
 HashProgress = Callable[[int, int], None]
@@ -69,6 +83,91 @@ KNOWN_FINGERPRINTS: tuple[KnownFingerprint, ...] = (
 )
 
 
+@dataclass(frozen=True)
+class ContainedFingerprint:
+    """Identify a disc image by a file INSIDE it rather than by the container.
+
+    A dump of an Xbox disc is not one canonical file. Where the game partition
+    starts, whether trailing padding is kept, and how the ripper closed the
+    image all change the whole-file SHA-256 without changing one byte of the
+    game. Pinning the container therefore rejected other people's perfectly
+    legal dumps -- the defect this exists to fix.
+
+    What does not vary is the executable. ``default.xbe`` is the game, and its
+    hash answers "is this the USA retail revision?" far better than the size of
+    the file someone wrapped it in. Nothing here is weaker: the writers still
+    verify the exact extents they touch, and the source cache still refuses
+    unless the extracted archive packs hash to their pinned values.
+    """
+
+    fingerprint_id: str
+    game: GameId
+    kind: str
+    contained_path: str
+    sha256: str
+    size: int
+    note: str
+
+
+CONTAINED_FINGERPRINTS: tuple[ContainedFingerprint, ...] = (
+    ContainedFingerprint(
+        "nfl2k5-usa-retail-xiso",
+        GameId.NFL2K5,
+        "xiso",
+        "default.xbe",
+        "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+        11_948_032,
+        "USA retail NFL 2K5 identified by its default.xbe, not by the container.",
+    ),
+)
+
+
+def contained_identity(path: Path) -> ContainedFingerprint | None:
+    """Recognize a disc image by hashing the executable inside it.
+
+    Returns None for anything that is not an Xbox disc image or whose
+    executable is not one we have pinned; callers treat that as unrecognized
+    exactly as before.
+    """
+    xiso = _xdvdfs_module()
+    if xiso is None:
+        return None
+    try:
+        descriptor = os.open(
+            path,
+            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+            | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
+        )
+    except OSError:
+        return None
+    try:
+        size = os.fstat(descriptor).st_size
+        try:
+            base = xiso.locate_xdvdfs_base(descriptor, size)
+            entries, _ = xiso.parse_xdvdfs(descriptor, size, base)
+        except Exception:  # noqa: BLE001 - simply not a disc image we can read
+            return None
+        for row in CONTAINED_FINGERPRINTS:
+            entry = entries.get(row.contained_path.casefold())
+            if entry is None or entry.size != row.size:
+                continue
+            digest = hashlib.sha256()
+            remaining = entry.size
+            offset = entry.byte_offset
+            while remaining:
+                chunk = xiso.read_exact(descriptor, offset, min(4 << 20, remaining))
+                if not chunk:
+                    return None
+                digest.update(chunk)
+                offset += len(chunk)
+                remaining -= len(chunk)
+            if digest.hexdigest() == row.sha256:
+                return row
+        return None
+    finally:
+        os.close(descriptor)
+
+
 def sha256_file(path: Path, progress: HashProgress | None = None) -> tuple[str, int]:
     """Hash a regular file through a read-only handle."""
 
@@ -116,6 +215,26 @@ class SourceInspector:
                 recognized=True,
                 fingerprint_id=match.fingerprint_id,
                 detected_game=match.game.value,
+                note=note,
+            )
+        # The container hash missed. Before refusing, ask the only question that
+        # actually matters: is the RIGHT GAME inside this file? Dumps of one disc
+        # legitimately differ in where the game partition starts and how much
+        # padding is kept, so a container miss is not evidence of a wrong game.
+        contained = contained_identity(inspected)
+        if contained is not None:
+            note = contained.note
+            if expected_game is not None and contained.game != expected_game:
+                note = f"GAME MISMATCH: expected {expected_game.value}; {note}"
+            return SourceRecord(
+                selected_path=str(selected),
+                inspected_path=str(inspected),
+                kind=contained.kind,
+                sha256=digest,
+                size=size,
+                recognized=True,
+                fingerprint_id=contained.fingerprint_id,
+                detected_game=contained.game.value,
                 note=note,
             )
         return SourceRecord(

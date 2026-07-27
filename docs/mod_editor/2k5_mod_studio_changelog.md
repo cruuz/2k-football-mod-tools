@@ -5,6 +5,31 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC31 Any Legal Dump Of The Disc — 2026-07-27
+
+- **Your own dump of ESPN NFL 2K5 is now accepted, however you made it.** The
+  editor used to require a file whose size and SHA-256 exactly matched the
+  project's own rip, and it looked for the disc filesystem at the one offset an
+  extracted `.xiso` puts it at. Both are properties of a *container*, not of a
+  game, so people holding perfectly legal copies were told their file "is not
+  the supported NFL 2K5 Xbox XISO" or was not the USA version. Two real reports
+  drove this: a full raw disc read of 7,825,162,240 bytes, and a repack of the
+  same game 224 sectors longer than ours.
+- The filesystem is now *located* rather than assumed. A game partition at byte
+  0 (extracted `.xiso`) and at the XGD1/XGD2/XGD3 raw-read offsets are all read
+  identically, and trailing padding no longer matters.
+- Identity now comes from `default.xbe` inside the image. That is the game; the
+  wrapper around it is not.
+- **Nothing was relaxed about the bytes you edit.** The archive packs pulled out
+  of your image are still verified against their pinned SHA-256s, the derived
+  game index against its own, and every writer still checks the exact extents it
+  touches before and after. Those cover the bytes that matter, which a
+  whole-file hash never did. Eleven separate checks moved from "equals our copy"
+  to "is the right game"; the guarantees they were standing in for are all still
+  enforced.
+- Loading is also much faster: recognition hashes an 11.9 MB executable instead
+  of 6.3 GB.
+
 ## v1.0 RC30 Off-Linux Direct Uniform-Colour Copy — 2026-07-27
 
 - Fixed `tools/nfl_uniform_color_xiso_direct_patch.py`, whose whole-XISO copy

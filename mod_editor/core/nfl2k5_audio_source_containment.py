@@ -951,18 +951,11 @@ class Nfl2k5AudioSourceContainmentScanner:
         scan_progress = self._scan_progress(progress)
         source = scanner._open_source(source_xiso, cache)
         try:
-            digest = _sha256_fd(
-                source.descriptor,
-                offset=0,
-                length=pins.source_size,
-                stage="Authenticating source XISO for PCM containment",
-                progress=scan_progress,
-                cancelled=cancelled,
-            )
-            _require(
-                digest == pins.source_sha256,
-                "Source XISO SHA-256 is not the supported retail dump",
-            )
+            # No whole-image hash here; see the note in nfl2k5_audio_source_scan.
+            # The container legitimately varies between dumps of one disc, and
+            # everything this path reads is authenticated extent by extent --
+            # pack-0 straight out of the XISO, then each cached artefact against
+            # its own pin. Hashing the wrapper proved nothing those do not.
             scanner._verify_source_identity(
                 source, "initial containment source authentication"
             )

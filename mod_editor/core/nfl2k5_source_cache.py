@@ -175,26 +175,34 @@ class Nfl2k5SourceCache:
     def index(self, source_xiso: Path,
               progress: IndexProgress | None = None) -> SourceCache:
         selected = source_xiso.expanduser().resolve(strict=True)
-        info = _regular_non_symlink(selected, "NFL 2K5 XISO")
-        if info.st_size != SOURCE_SIZE:
-            raise ValidationError(
-                "That file is not the supported NFL 2K5 Xbox XISO "
-                f"({info.st_size:,} bytes found; {SOURCE_SIZE:,} expected)."
-            )
+        _regular_non_symlink(selected, "NFL 2K5 XISO")
 
         def hash_progress(completed: int, total: int) -> None:
             _emit(progress, "Checking your XISO", completed, total)
 
+        # Deliberately no whole-file size or SHA-256 gate here any more. Dumps of
+        # one disc legitimately differ -- where the game partition starts, how
+        # much padding survives, how the ripper closed the image -- and pinning
+        # the container turned every one of those into "this is not the USA
+        # version" for people holding a perfectly legal copy. Identity now comes
+        # from the executable inside the image, and the guarantee that actually
+        # protects the writers is unchanged and enforced below: every archive
+        # pack extracted from this image must hash to its pinned value, and the
+        # generated inventory must hash to its pinned value, or nothing is
+        # published. Those checks are strictly stronger than a container hash,
+        # because they cover the bytes the writers really touch.
         source = self.inspector.inspect(selected, GameId.NFL2K5, hash_progress)
         if (
             not source.recognized
             or source.fingerprint_id != "nfl2k5-usa-retail-xiso"
-            or source.sha256 != SOURCE_SHA256
             or source.kind != "xiso"
         ):
             raise ValidationError(
-                "2K5 Mod Studio currently supports the USA retail Xbox XISO. "
-                "This file did not match that dump; it was not modified."
+                "This file does not contain the USA retail NFL 2K5 Xbox game. "
+                "2K5 Mod Studio reads the game's default.xbe out of the image to "
+                "identify it, so any layout of a USA retail dump is accepted -- an "
+                "extracted .xiso or a raw disc read, padded or trimmed. Nothing "
+                "here was modified."
             )
 
         self._ensure_private_cache_root()
@@ -214,7 +222,7 @@ class Nfl2k5SourceCache:
             self._require_private_directory(
                 temporary, "The private NFL 2K5 indexing staging directory"
             )
-            self._extract_packs(selected, temporary, progress)
+            self._extract_packs(selected, temporary, progress, source.size)
             inventory = self._build_inventory(temporary, progress)
             pack0 = temporary / PACK_FOLDER / "0"
             if pack0.stat().st_size != PACK0_SIZE or _digest(pack0) != PACK0_SHA256:
@@ -364,7 +372,8 @@ class Nfl2k5SourceCache:
         )
 
     def _extract_packs(self, source: Path, root: Path,
-                       progress: IndexProgress | None) -> None:
+                       progress: IndexProgress | None,
+                       expected_size: int) -> None:
         pack_folder = root / PACK_FOLDER
         pack_folder.mkdir(parents=True)
         descriptor = os.open(
@@ -372,7 +381,12 @@ class Nfl2k5SourceCache:
             getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0))
         try:
             opened = os.fstat(descriptor)
-            if not stat.S_ISREG(opened.st_mode) or opened.st_size != SOURCE_SIZE:
+            # Only that this is still a regular file of the size we inspected.
+            # Comparing against SOURCE_SIZE would reject every dump whose
+            # container differs from the project's own copy, which is the whole
+            # defect being fixed; what the packs must be is enforced by hash
+            # after extraction, and the re-stat below catches a swap mid-read.
+            if not stat.S_ISREG(opened.st_mode) or opened.st_size != expected_size:
                 raise ValidationError("The XISO changed before indexing")
             entries, _ = xiso.parse_xdvdfs(descriptor, opened.st_size)
             packs = sorted(

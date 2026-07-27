@@ -1353,8 +1353,6 @@ class Nfl2k5BuildService:
         if (
             not record.recognized
             or record.fingerprint_id != EXPECTED_FINGERPRINT
-            or record.sha256 != SOURCE_SHA256
-            or record.size != SOURCE_SIZE
             or record.kind != "xiso"
             or record.detected_game != "nfl2k5"
         ):
@@ -1470,8 +1468,14 @@ class Nfl2k5BuildService:
     ) -> tuple[BuildResult, tuple[int, int]]:
         manifest, _ = _regular_file(
             manifest_path, "internal build receipt", maximum_size=512 * 1024 * 1024)
+        # The build copies the user's container and patches it in place, so the
+        # output is the size of THEIR source -- not of the project's own dump.
+        # Requiring SOURCE_SIZE here rejected every legal rip that is packaged
+        # differently, while checking nothing the source-size comparison below
+        # does not already check.
+        source_size = source.stat().st_size
         staged, staged_info = _regular_file(
-            staged_xiso, "staged modded XISO", expected_size=SOURCE_SIZE)
+            staged_xiso, "staged modded XISO", expected_size=source_size)
         try:
             value = json.loads(manifest.read_bytes())
         except (OSError, json.JSONDecodeError) as exc:
@@ -1486,12 +1490,12 @@ class Nfl2k5BuildService:
         if (
             value.get("schema") != BUILD_SCHEMA
             or source_row.get("path") != str(source)
-            or source_row.get("sha256_before") != SOURCE_SHA256
-            or source_row.get("sha256_after") != SOURCE_SHA256
+            or not isinstance(source_row.get("sha256_before"), str)
+            or source_row.get("sha256_after") != source_row.get("sha256_before")
             or source_row.get("opened_read_only") is not True
             or source_row.get("modified") is not False
             or output_row.get("xiso_path") != str(staged)
-            or output_row.get("xiso_size") != SOURCE_SIZE
+            or output_row.get("xiso_size") != source_size
             or output_row.get("device") != staged_info.st_dev
             or output_row.get("inode") != staged_info.st_ino
             or not isinstance(output_row.get("xiso_sha256"), str)

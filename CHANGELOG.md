@@ -7,9 +7,44 @@ Release-level history. Per-product detail lives in
 
 Product versions and release tags are deliberately separate. A tag like
 `beta-3` names a *published set of archives*; the editors inside carry their own
-versions (`v1.0-RC30`, `0.1.0-alpha.35`) and only change when their code does.
+versions (`v1.0-RC31`, `0.1.0-alpha.36`) and only change when their code does.
 
 ---
+
+## beta-6 — 2026-07-27
+
+**If the editor refused your copy of NFL 2K5, this is the release that fixes
+it.** Both products move: `v1.0-RC31` and `0.1.0-alpha.36`.
+
+### Fixed
+- **2K5 accepts any legal dump of the disc.** The editor required a file whose
+  size and SHA-256 matched the project's own rip, and read the disc filesystem
+  at the one offset an extracted `.xiso` puts it at. Those are properties of a
+  container, not of a game, so people with perfectly legal copies were told
+  their file "is not the supported NFL 2K5 Xbox XISO". Two real reports drove
+  this: a full raw disc read of 7,825,162,240 bytes, and a repack of the same
+  game 224 sectors longer. The filesystem is now located rather than assumed —
+  byte 0 or any XGD1/XGD2/XGD3 raw-read offset — and identity comes from
+  `default.xbe` inside the image. Eleven checks moved from "equals our copy" to
+  "is the right game". Loading is much faster too, since recognition hashes an
+  11.9 MB executable instead of 6.3 GB.
+- **A failed build cleans up after itself on Windows.** Writers unlinked the
+  partial output while its descriptor was still open — fine on Linux, refused by
+  Windows — and swallowed the error, so the next build hit "refusing to
+  overwrite existing output" with nothing visibly wrong. Affected four writers
+  across both editors.
+
+### Added
+- **ESPN NFL 2K5 PlayStation 2 memory-card save editing** (#3, by
+  @patrickfcarey), as a command-line lane with an independent verifier. Filed
+  `offline-writer-proved` with in-game reload explicitly not claimed. Adds
+  `nfl2k5_ps2` as a third game; the registry goes to 66 capabilities.
+
+### Unchanged on purpose
+- **Nothing was relaxed about the bytes you edit.** Archive packs pulled from
+  your image are still verified against their pinned SHA-256s, the derived game
+  index against its own, and every writer still checks the exact extents it
+  touches. Those cover the bytes that matter, which a whole-file hash never did.
 
 ## beta-5 — 2026-07-27
 

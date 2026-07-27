@@ -1,5 +1,17 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.36 — failed builds clean up after themselves on Windows 2026-07-27
+
+- Fixed cleanup after a failed write. Every writer unlinked the partial output
+  while its descriptor was still open, which is correct on Linux and impossible
+  on Windows, where the OS refuses to unlink a file anything still holds open.
+  The error was swallowed, so a failed build left a stray file behind and the
+  *next* build then refused to overwrite it, for no reason the user could see.
+- Found by an outside contributor's test, not ours: every test that reaches this
+  path needs retail data no CI runner has. `apf_field_art_patch`,
+  `apf_logo_patch` and `apf_texture_patch` were all affected.
+- No capability, pin or guarantee changed.
+
 ## 0.1.0-alpha.35 — the texture writers run on Windows 2026-07-27
 
 - Fixed the crash that made **every APF texture writer unusable on Windows**.

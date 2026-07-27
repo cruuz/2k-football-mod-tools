@@ -86,7 +86,7 @@ INSTALL_EXECUTABLES = frozenset(
 # private paths are embedded in the release checker.
 REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
     "mod_editor/apf_studio/__init__.py": (
-        '__version__ = "0.1.0-alpha.35"',
+        '__version__ = "0.1.0-alpha.36"',
     ),
     "mod_editor/apf_studio/audio_annotations.py": (
         'AUDIO_ANNOTATIONS_SCHEMA = "apf2k8_audio_annotations/v1"',
@@ -134,7 +134,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "confirmation_token",
     ),
     "APF2K8-README.md": (
-        "0.1.0-alpha.35",
+        "0.1.0-alpha.36",
         "Your cue label & notes",
         "Labeled only",
         "47,775 playable cues",
@@ -143,7 +143,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "nothing is staged",
     ),
     "docs/mod_editor/apf2k8_mod_studio_getting_started.md": (
-        "0.1.0-alpha.35",
+        "0.1.0-alpha.36",
         "Your cue label & notes",
         "Labeled only",
         "audio-annotations.json",
@@ -152,14 +152,14 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "Modified audio after Apply",
     ),
     "docs/mod_editor/apf2k8_mod_studio_changelog.md": (
-        "0.1.0-alpha.35",
+        "0.1.0-alpha.36",
         "project_metadata_only_stable_logical_cue_id",
         "audio-annotations.json",
         "selected_exact_slot_xma1_or_pcm16_wav",
         "fully_validated_read_only_preview_then_explicit_apply",
     ),
     "docs/mod_editor/APF2K8_STATUS.md": (
-        "0.1.0-alpha.35 candidate boundary",
+        "0.1.0-alpha.36 candidate boundary",
         "project_metadata_only_stable_logical_cue_id",
         "47,775 playable cues",
         "selected_exact_slot_xma1_or_pcm16_wav",
