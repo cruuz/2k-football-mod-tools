@@ -765,6 +765,33 @@ _WORKSPACE_CAPABILITIES = {
 }
 
 
+def _suggested_png_name(identifier: str) -> str:
+    """A save-dialog default that is a legal filename on every platform.
+
+    Windows rejects <>:"/\\|?* outright, so an asset id containing any of them
+    produced "The file name is not valid." the moment Export PNG opened. The
+    All Textures ids are ``p8:<package>:<texture>`` and hit it immediately, but
+    the rule is general: an identifier is not a filename, and only the id kinds
+    that happened to be dot-separated were safe before.
+
+    Trailing dots and spaces are also stripped, and the reserved DOS device
+    names are prefixed, because Windows refuses those too.
+    """
+    cleaned = "".join(
+        "-" if character in '<>:"/\\|?*' or ord(character) < 32 else character
+        for character in identifier
+    ).replace(".", "-").strip(" .")
+    cleaned = cleaned or "asset"
+    reserved = {
+        "CON", "PRN", "AUX", "NUL",
+        *(f"COM{digit}" for digit in range(1, 10)),
+        *(f"LPT{digit}" for digit in range(1, 10)),
+    }
+    if cleaned.upper() in reserved:
+        cleaned = f"_{cleaned}"
+    return f"{cleaned}.png"
+
+
 def specialized_panel_for_category(category: ProductCategory) -> str | None:
     """Identify categories mounted as dedicated panels instead of capability cards."""
 
@@ -2865,12 +2892,24 @@ class StudioMainWindow(QMainWindow):
             if not preview.set_png(Path(value)):
                 self._set_status("Preview unavailable — the asset was not changed.")
 
+        def failed(message: str) -> None:
+            # Without this the panel sat on "Preparing ..." forever: the task
+            # raised, show_errors=False swallowed it, and nothing replaced the
+            # loading text. A preview that cannot be produced has to say so, or
+            # the only symptom is a spinner that never resolves -- which is
+            # exactly how the missing All Textures decoder presented.
+            if generation != self._preview_generation:
+                return
+            preview.set_empty(f"Preview unavailable — {message}")
+            self._set_status(f"Could not prepare {asset.label}: {message}")
+
         self._start_task(
             lambda progress: self.facade.preview_asset(asset, progress),
             success,
             label=f"Preparing {asset.label}",
             blocking=False,
             show_errors=False,
+            on_error=failed,
         )
 
     def _selected_visual(
@@ -2886,7 +2925,7 @@ class StudioMainWindow(QMainWindow):
         if selected is None:
             return
         _state, asset = selected
-        suggested = asset.asset_id.replace(".", "-") + ".png"
+        suggested = _suggested_png_name(asset.asset_id)
         filename, _ = QFileDialog.getSaveFileName(
             self, "Export PNG", str(Path.home() / suggested), "PNG image (*.png)"
         )

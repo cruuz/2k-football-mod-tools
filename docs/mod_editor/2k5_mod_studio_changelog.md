@@ -5,6 +5,22 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC43 All Textures Previews And Exports Actually Work — 2026-07-28
+
+- **Export PNG failed with "The file name is not valid."** The suggested
+  filename was the asset id, `p8:386:endzone_north_left.png`, and `:` is
+  reserved on Windows. The old code only replaced `.`, which happened to be
+  enough for every id that existed before. Suggested names are now sanitised
+  for every character Windows rejects, plus trailing dots and spaces and the
+  reserved device names, for **all** asset kinds rather than just this one.
+- **The preview sat on "Preparing…" forever.** Every preview and export goes
+  through a per-kind decoder dispatch that had no `p8_texture` branch, so it
+  raised, the error was swallowed, and the loading text was never replaced.
+  The decoder is implemented: it parses the retail descriptor and decodes the
+  texture exactly as the writer does.
+- **A preview that cannot be produced now says so** instead of spinning. That
+  silent failure is the only reason this shipped looking like it worked.
+
 ## v1.0 RC42 All Textures Is A Workspace Now, And Its Edits Reach The Disc — 2026-07-28
 
 - **All Textures shipped as a sidebar entry with nothing behind it.** It is a

@@ -37,9 +37,11 @@ import nfl_live_face_texture_targets as face_targets  # noqa: E402
 from nfl_outer import parse_archive, read_entry_range  # noqa: E402
 import nfl_player_portrait_png_import as portrait_import  # noqa: E402
 import nfl_player_portrait_targets as portrait_targets  # noqa: E402
+import nfl_all_texture_xiso_workflow as p8_workflow  # noqa: E402
 import nfl_scorebug_png_import as scorebug_import  # noqa: E402
 import nfl_tset_png_import as png_codec  # noqa: E402
-from nfl_txtr import decode_dxt1, encode_rgba_png, texture_to_rgba  # noqa: E402
+from nfl_txtr import (decode_dxt1, encode_rgba_png, parse_texture,  # noqa: E402
+                      texture_to_rgba)
 
 
 ORIGINAL_SCHEMA = "2k5_mod_studio_extended_visual_original_png/v1"
@@ -254,6 +256,8 @@ class Nfl2k5ExtendedVisualIO:
             return self._decode_field_art(asset)
         if asset.kind == "scorebug_texture":
             return self._decode_scorebug(asset)
+        if asset.kind == "p8_texture":
+            return self._decode_p8_texture(asset)
         raise ValidationError(f"Export is not implemented for asset kind {asset.kind!r}")
 
     def _decode_portrait(
@@ -305,6 +309,37 @@ class Nfl2k5ExtendedVisualIO:
         )
         base = field_import.decode_levels(decoded, target)[0]
         return _canonical_png(base.width, base.height, base.rgba), base.rgba
+
+    def _decode_p8_texture(
+        self, asset: ExtendedVisualAsset
+    ) -> tuple[bytes, bytes]:
+        """Decode one standalone TXTR so the browser can preview and export it.
+
+        Missing this branch is why All Textures listed 3,024 targets and then
+        showed nothing when one was selected: the list comes from the catalog,
+        but every preview and export goes through here, and an unknown kind
+        raised straight out of the dispatch above.
+        """
+        if asset.texture is None:
+            raise ValidationError("The standalone P8 texture selector is missing")
+        try:
+            outer_index = int(asset.asset_id.split(":")[1])
+        except (IndexError, ValueError) as exc:
+            raise ValidationError(
+                f"{asset.asset_id} is not a standalone P8 texture selector"
+            ) from exc
+        try:
+            target = p8_workflow.resolve_target(
+                self.archive, outer_index, asset.texture
+            )
+        except p8_workflow.TextureWorkflowError as exc:
+            raise ValidationError(str(exc)) from exc
+        # parse_texture and texture_to_rgba read the decoded payload through
+        # the chunk's system/video sizes and never its offset, so the resolved
+        # chunk is used as-is.
+        info = parse_texture(target.decoded, target.chunk)
+        rgba = texture_to_rgba(target.decoded, target.chunk, info)
+        return _canonical_png(target.width, target.height, rgba), rgba
 
     def _decode_scorebug(
         self, asset: ExtendedVisualAsset
