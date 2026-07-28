@@ -29,7 +29,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc35"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc36"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
@@ -49,17 +49,17 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC35 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC36 — Getting Started"
         ))
         self.assertIn(
-            "## v1.0 RC35 Saving Works On Any Legal Dump", changelog
+            "## v1.0 RC36 Exporting A Team Kit Folder Works On Windows", changelog
         )
         self.assertIn(
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
         )
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC35 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC36 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:

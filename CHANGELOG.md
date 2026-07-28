@@ -7,9 +7,37 @@ Release-level history. Per-product detail lives in
 
 Product versions and release tags are deliberately separate. A tag like
 `beta-3` names a *published set of archives*; the editors inside carry their own
-versions (`v1.0-RC35`, `0.1.0-alpha.39`) and only change when their code does.
+versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
+
+## beta-11 — 2026-07-28
+
+**Exporting a Team Kit as a folder now works on Windows.** `v1.0-RC36`.
+
+It failed for everyone there, and the error blamed the drive:
+
+```
+[WinError 5] Access is denied: 'G:\.ARZ-style-0-...-Team-Kit.team-kit-...'
+  -> 'G:\ARZ-style-0-...-Team-Kit'
+```
+
+The export built the folder under a temporary name, then published it by
+reserving the destination with `mkdir` and renaming the finished tree onto that
+reservation. On Linux that works, because renaming a directory replaces an
+existing empty one. **Windows cannot rename a directory onto an existing
+directory at all**, so the publish always failed.
+
+It now goes through the platform layer that already handled this correctly
+everywhere else in the codebase -- one call site had hand-rolled its own. The
+no-clobber guarantee is unchanged: an existing destination is refused, never
+overwritten.
+
+**Also fixed alongside it:** the ZIP export published with a hard link, which
+needs NTFS on Windows. An external drive holding disc images is often exFAT,
+where that fails outright. It uses a rename there now.
+
+Nothing about discs, indexing or building changed in this release.
 
 ## beta-10 — 2026-07-27
 

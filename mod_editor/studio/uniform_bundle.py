@@ -34,6 +34,7 @@ from mod_editor.core.nfl2k5_uniform_catalog import (
     UniformAsset,
     UniformSet,
 )
+from mod_editor.core import platform_compat
 from mod_editor.core.platform_compat import fsync_path
 
 from .session import BatchReplaceResult, StudioSession
@@ -589,19 +590,27 @@ class TeamKitBundleService:
             )
 
             if normalized == "folder":
-                # Reserve the destination with mkdir(O_EXCL semantics), prove it
-                # is still our empty directory, then atomically replace only that
-                # reservation with the fully prepared tree.
-                requested.mkdir(mode=0o700)
-                reservation = requested.lstat()
-                _require(stat.S_ISDIR(reservation.st_mode), "Could not reserve export folder")
+                # Published through platform_compat, NOT by reserving the name
+                # with mkdir and renaming onto it. That reserve-then-replace
+                # sequence is POSIX-only: os.rename replaces an existing empty
+                # directory there, but Windows MoveFileEx cannot replace a
+                # directory at all, so it failed with
+                # "[WinError 5] Access is denied" on every folder export. The
+                # helper already knows the right primitive per platform --
+                # renameat2(RENAME_NOREPLACE) on Linux, renamex_np(RENAME_EXCL)
+                # on macOS, a plain os.rename on Windows where that IS the
+                # no-clobber publish -- and raises FileExistsError rather than
+                # ever overwriting. require_atomic=False keeps the two-step
+                # reserve available on the exotic POSIX filesystems that offer
+                # nothing better, which is exactly what this code did before.
                 try:
-                    _require(not any(requested.iterdir()), "Export folder reservation changed")
-                    os.replace(stage, requested)
-                except BaseException:
-                    if requested.exists() and not any(requested.iterdir()):
-                        requested.rmdir()
-                    raise
+                    platform_compat.publish_no_replace(
+                        stage, requested, is_directory=True, require_atomic=False
+                    )
+                except FileExistsError as exc:
+                    raise TeamKitBundleError(
+                        f"A file or folder already exists there: {requested}"
+                    ) from exc
                 published = True
             else:
                 archive_path = stage.with_suffix(".zip")
@@ -618,7 +627,12 @@ class TeamKitBundleService:
                     # opens read-write there and ``O_RDONLY`` everywhere else.
                     fsync_path(archive_path)
                     try:
-                        os.link(archive_path, requested, follow_symlinks=False)
+                        # Also via platform_compat: a hard link is the right
+                        # no-clobber publish on POSIX but needs NTFS on Windows,
+                        # and an external drive holding disc images is often
+                        # exFAT, where os.link fails outright. The helper uses
+                        # os.rename there, which is itself no-clobber.
+                        platform_compat.publish_no_replace(archive_path, requested)
                     except FileExistsError as exc:
                         raise TeamKitBundleError(
                             f"A file already exists there: {requested}"

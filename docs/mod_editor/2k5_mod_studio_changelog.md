@@ -5,6 +5,31 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC36 Exporting A Team Kit Folder Works On Windows — 2026-07-28
+
+- **Export Team Kit as a folder failed on Windows for everyone**, with
+  `[WinError 5] Access is denied` naming a temporary path, which reads like a
+  drive or permissions problem rather than a bug in the app.
+- The export built the folder under a temporary name and published it by
+  reserving the destination with `mkdir` and then renaming the finished tree
+  onto that reservation. That is a POSIX idiom: `rename(2)` there replaces an
+  existing *empty* directory. **Windows `MoveFileEx` cannot replace a directory
+  at all** -- documented, not a quirk -- so the second step always failed.
+- It now publishes through `platform_compat.publish_no_replace`, which already
+  existed and already knew the correct primitive per platform:
+  `renameat2(RENAME_NOREPLACE)` on Linux, `renamex_np(RENAME_EXCL)` on macOS, and
+  a plain `os.rename` on Windows, where refusing to overwrite is precisely what
+  that call does for a directory. The no-clobber guarantee is unchanged: an
+  existing destination is still refused rather than overwritten.
+- **Also fixed, found in the same place:** the ZIP export published with a hard
+  link. That is the right no-clobber publish on POSIX, but on Windows it needs
+  NTFS, and an external drive holding disc images is frequently exFAT, where
+  `os.link` fails outright. The same helper uses `os.rename` there.
+- Guarded by a test that asserts the rule rather than the symptom: no shipped
+  module may reserve a directory with `mkdir` and then rename onto it. It runs on
+  any platform, which is the point -- the failure cannot be reproduced on Linux,
+  where replacing a directory simply works.
+
 ## v1.0 RC35 Saving Works On Any Legal Dump — 2026-07-27
 
 - **RC34 let you load and edit your disc; it could not save.** Building refused
