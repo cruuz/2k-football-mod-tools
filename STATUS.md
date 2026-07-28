@@ -168,7 +168,28 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-8` — 2026-07-27 · CURRENT
+### `beta-9` — 2026-07-27 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-9>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC34-20260727.tar.gz` | 9,471,005 | `646ebd0d04eb715df6daa37daa6582ee6bd4f1697369d25057607646f6b24aeb` |
+| `apf2k8-mod-studio-0.1.0-alpha.39-20260727.tar.gz` | 1,118,430 | `89416520a43dab0a94b2f3fcad465ac54a4bf5c539b9f0dbd32e6397db792b37` |
+| `2K5-Mod-Studio-1.0-RC34-Setup.exe` | 55,900,424 | `c59e6306275f6793468fcdd86dde5d91604f1fda7d7b0d635813862d6ae33126` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.39-Setup.exe` | 52,351,553 | `5a2b14f212d99e1a3beb280c37b7cec7e874a5f1aedf3386acb30aeb1f6d4bf8` |
+
+Developed against a reporter's own two disc images rather than this project's
+copy, which is what exposed the two causes our extract-xiso-normalised image
+could not contain: a raw read carries two filesystems, and a pressed disc marks
+files `0x80` where a rebuild marks them `0x20`. Container equality is also gone
+from the build, audio and stadium lanes, so an image that loads can now finish a
+build. See `CHANGELOG.md`.
+
+Verified from the published tarball against both of his images: recognised,
+fully indexed (16 packs, index byte-identical to its pin), build-gate accepted.
+
+### `beta-8` — 2026-07-27 · superseded by beta-9
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-8>
 
