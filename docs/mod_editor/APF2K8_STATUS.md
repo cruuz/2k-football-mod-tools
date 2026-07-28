@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio — Status
 
-The source code and UI identify as the retail-free **`0.1.0-alpha.40`**.
+The source code and UI identify as the retail-free **`0.1.0-alpha.41`**.
 `0.1.0-alpha.34` remains preserved unchanged; its mode-`0444`,
 815,213-byte archive has SHA-256
 `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`,
@@ -527,6 +527,13 @@ that preserves every user-data directory. The release/runtime gates exercise
 that lifecycle headlessly in an isolated home before a package can ship.
 
 Last updated: 2026-07-28
+
+## 0.1.0-alpha.41 candidate boundary — shared registry grew a textures surface
+
+- Source/UI identity is `0.1.0-alpha.41`. No APF capability changed.
+- The shared capability registry gained `nfl2k5.textures.all_p8` and a
+  `textures` surface scoped to NFL 2K5, so the APF runtime gate's shared row
+  count moved from 66 to 67. APF's own 34 capabilities are untouched.
 
 ## 0.1.0-alpha.40 candidate boundary — the game partition is found, not guessed
 

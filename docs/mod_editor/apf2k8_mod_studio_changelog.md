@@ -1,5 +1,11 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.41 — shared registry row count 2026-07-28
+
+- No APF behaviour changed. The shared capability registry gained NFL 2K5's
+  general texture lane, so the APF runtime gate's shared row count moved from
+  66 to 67. APF's own 34 capabilities are unchanged.
+
 ## 0.1.0-alpha.40 — the game partition is found, not guessed 2026-07-28
 
 - **A legally dumped disc could be refused with "does not appear to be a valid

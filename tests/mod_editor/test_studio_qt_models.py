@@ -45,7 +45,7 @@ class StudioQtViewModelTests(unittest.TestCase):
                 for category in PRODUCT_CATEGORY_ORDER
             ),
         )
-        self.assertEqual(len(sidebar_category_titles(self.product)), 11)
+        self.assertEqual(len(sidebar_category_titles(self.product)), 12)
         self.assertEqual(
             category_display_title(self.product, ProductCategory.TEAM_IDENTITY),
             "Text & Team Identity",

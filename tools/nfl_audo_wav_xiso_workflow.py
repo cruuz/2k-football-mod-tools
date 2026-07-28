@@ -378,26 +378,29 @@ def run(source_path: Path, wav_path: Path, output_path: Path, manifest_path: Pat
                 (source_info.st_dev, source_info.st_ino) ==
                 (source_lstat.st_dev, source_lstat.st_ino),
                 "source XISO pathname changed while opening")
-        require(source_info.st_size == common.EXPECTED_XISO_SIZE,
-                "retail XISO size differs")
+        # Identity is per-extent, never the whole container. The image size,
+        # the sector a file landed on, and therefore its absolute byte offset
+        # are all artifacts of how the disc was dumped or repacked --
+        # extract-xiso relocates every file. Gating on any of them refused
+        # legal dumps before the real check could run, which is exactly the
+        # defect the load path was fixed for. The real check is right below:
+        # pack-0's exact size and SHA-256, and default.xbe's.
+        source_size = source_info.st_size
         source_identity = common.fd_identity(source_fd)
         source_hash_before = common.sha256_fd(source_fd)
-        require(source_hash_before == common.EXPECTED_XISO_SHA256,
-                "retail XISO SHA-256 differs")
-        entries, directory = common.parse_xdvdfs(source_fd, source_info.st_size)
+        entries, directory = common.parse_xdvdfs(source_fd, source_size)
         files = [entry for entry in entries.values() if not (entry.attributes & 0x10)]
         require(len(files) == 19, "retail XDVDFS file count differs")
         pack = entries.get(PACK_PATH.casefold())
-        require(pack is not None and pack.sector == PACK_SECTOR and pack.size == PACK_SIZE,
+        require(pack is not None and pack.size == PACK_SIZE,
                 "retail pack-0 extent differs")
         assert pack is not None
         require(common.sha256_fd(source_fd, pack.byte_offset, pack.size) == PACK_SHA256,
                 "retail pack-0 SHA-256 differs")
         wrapper_absolute = pack.byte_offset + OUTER_PACK_OFFSET + CHUNK_OFFSET
         payload_absolute = wrapper_absolute + HEADER_SIZE + SYSTEM_SIZE
-        require(wrapper_absolute == ABSOLUTE_WRAPPER_OFFSET and
-                payload_absolute == ABSOLUTE_PAYLOAD_OFFSET,
-                "AUDO absolute-offset arithmetic differs")
+        require(wrapper_absolute + WRAPPER_SIZE <= pack.byte_offset + pack.size,
+                "AUDO chunk does not lie inside pack-0")
         retail_span = common.read_exact(source_fd, wrapper_absolute, WRAPPER_SIZE)
         validate_retail_wrapper(retail_span)
         retail_payload = retail_span[HEADER_SIZE + SYSTEM_SIZE:
@@ -492,7 +495,9 @@ def run(source_path: Path, wav_path: Path, output_path: Path, manifest_path: Pat
                 "outer_index": OUTER_INDEX,
                 "chunk_index": CHUNK_INDEX,
                 "pack_path": PACK_PATH,
-                "pack_sector": PACK_SECTOR,
+                # Recorded from THIS image, not pinned: the sector a file
+                # occupies depends on how the disc was dumped or repacked.
+                "pack_sector": pack.sector,
                 "pack_size": PACK_SIZE,
                 "source_pack_sha256": PACK_SHA256,
                 "patched_pack_sha256": patched_pack_hash,

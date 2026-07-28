@@ -2772,10 +2772,10 @@
       ],
       "game": "nfl2k5_xbox",
       "gui": {
-        "default_enabled": false,
+        "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "A narrow fixed-size Unif packed-color proof exists, but exact visual region semantics are not runtime-proved."
+        "reason": "Word 0 is the facemask/faceshield tint and word 1 is HI_turtleneck, both proved by executable trace; a controlled runtime capture is still open."
       },
       "id": "nfl2k5.colors.unif_words",
       "input_constraints": [
@@ -4487,6 +4487,81 @@
     },
     {
       "backend": {
+        "command": "python3 tools/nfl_all_texture_xiso_workflow.py --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --plan <plan.json> --index <extracted vc_53450030/0>",
+        "module": "tools/nfl_all_texture_xiso_workflow.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/nfl2k5_all_texture_replacement.md",
+        "reports/assets/nfl2k5_all_txtr_inventory_v2.json"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "36,761 P8 textures have exact retail layouts and a plan-driven copied-XISO writer proved on three differently packed dumps."
+      },
+      "id": "nfl2k5.textures.all_p8",
+      "input_constraints": [
+        "The PNG must match the retail texture's exact width and height.",
+        "Only compressed, swizzled P8 textures whose index chain starts at the video buffer and whose palette follows that chain are editable: 36,761 of 57,208. A1R5G5B5, A8R8G8B8, DXT1 and VC_P8_LINEAR are refused.",
+        "Replacements are recompressed into the original byte span, so an image that cannot be made to fit is refused rather than moving anything on the disc.",
+        "Targets are addressed by outer package index and texture name. Which package belongs to which stadium or team is not established, so a preview is the way to identify one.",
+        "Stock midfield logos are not in this corpus: center_logo exists only in the create-team packages."
+      ],
+      "portme": [
+        "Capture a changed texture in an emulator; transport is proved, on-screen visibility is not.",
+        "Extend past P8 once a fixed-span rebuild exists for the other Xbox formats.",
+        "Recover the team and stadium package filenames so targets can be named rather than indexed."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute user-authored PNGs and plans; users patch a copy of their own retail image.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Byte-exact transport is proved on three differently packed dumps of the same game; modified visibility is untested.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "0..4322",
+            "name": "outer_index",
+            "required": true
+          },
+          {
+            "allowed": "any P8 texture name inside that package",
+            "name": "texture",
+            "required": true
+          },
+          {
+            "allowed": "a PNG matching the retail dimensions",
+            "name": "png",
+            "required": true
+          }
+        ],
+        "notes": "Every target is one named TXTR inside one outer package; a package that spans more than one pack segment is refused."
+      },
+      "source_container": {
+        "format": "raw or VC-LZ P8 TXTR packages inside XISO",
+        "hash_pins": [
+          "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
+        ],
+        "resource": "126 ct{logo}{weather}.iff packages with nine textures each",
+        "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
+      },
+      "summary": "Replace any of 36,761 P8 textures -- goalpost pads, team end-zone art, divots, field marks, shared equipment -- in a copied NFL 2K5 XISO from a PNG.",
+      "surface": "textures",
+      "title": "NFL 2K5 all P8 textures",
+      "validation_command": "bash tools/validate_nfl_all_texture_lane.sh"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl2k5_visual_mod_project.py build --project <project.json> --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --artifact-dir <artifact-dir>",
         "module": "tools/nfl2k5_visual_mod_project.py",
         "operation": "write"
@@ -4775,6 +4850,7 @@
     "scorebug_presentation",
     "scripts_config",
     "stadiums_fields",
+    "textures",
     "uniforms"
   ]
 }

@@ -77,28 +77,33 @@ def verify(source_path: Path, output_path: Path, png_path: Path,
         require(source_identity != output_identity,
                 "output XISO aliases the source inode")
         source_entries, source_directory, _pack = writer.validate_xiso_source(source_fd)
-        require(os.fstat(output_fd).st_size == common.EXPECTED_XISO_SIZE,
+        # Sizes and offsets come from THIS pair of images, never from a value
+        # measured on the developer's dump: a legally repacked disc puts the
+        # same bytes somewhere else. The span still has to reconstruct exactly.
+        source_size = os.fstat(source_fd).st_size
+        require(os.fstat(output_fd).st_size == source_size,
                 "output XISO size changed")
+        span_absolute = _pack.byte_offset + writer.SPAN_PACK_OFFSET
         output_entries, output_directory = common.parse_xdvdfs(
-            output_fd, common.EXPECTED_XISO_SIZE
+            output_fd, source_size
         )
         require(output_entries == source_entries and
                 output_directory == source_directory,
                 "output XISO filesystem tree/layout differs from source")
 
         png, png_payload, rgba = writer.read_png(png_path)
-        source_span = common.read_exact(source_fd, writer.SPAN_ABSOLUTE, writer.SPAN_SIZE)
+        source_span = common.read_exact(source_fd, span_absolute, writer.SPAN_SIZE)
         expected_span, expected_preview, compile_report = writer.compile_replacement(
             source_span, rgba
         )
-        actual_span = common.read_exact(output_fd, writer.SPAN_ABSOLUTE, writer.SPAN_SIZE)
+        actual_span = common.read_exact(output_fd, span_absolute, writer.SPAN_SIZE)
         require(actual_span == expected_span,
                 "output XISO bar_monitor span differs from fresh PNG reconstruction")
         source_sha, output_sha, changed, changed_runs = writer.compare_images(
-            source_fd, output_fd, common.EXPECTED_XISO_SIZE,
-            writer.SPAN_ABSOLUTE, expected_span,
+            source_fd, output_fd, source_size,
+            span_absolute, expected_span,
         )
-        require(source_sha == common.EXPECTED_XISO_SHA256,
+        require(source_sha == common.sha256_fd(source_fd),
                 "source XISO changed during independent verification")
         xbe = output_entries["default.xbe"]
         require(common.sha256_fd(output_fd, xbe.byte_offset, xbe.size) ==

@@ -652,12 +652,16 @@ def run(source_path: Path, output_path: Path, manifest_path: Path) -> dict[str, 
     try:
         source_info = os.fstat(source_fd)
         require(stat.S_ISREG(source_info.st_mode), "source descriptor is not regular")
-        require(source_info.st_size == EXPECTED_XISO_SIZE, "retail XISO size mismatch")
+        # Identity is per-extent, never the whole container. Image size, sector
+        # numbers and absolute offsets describe how a disc was dumped, not which
+        # game it is; extract-xiso relocates every file. The exact per-extent
+        # size + SHA-256 checks below are the real identity, and gating on the
+        # container refused legal dumps before they could run.
+        source_size = source_info.st_size
         source_identity = fd_identity(source_fd)
         require(path_identity(source) == source_identity, "source pathname changed")
         source_sha_before = sha256_fd(source_fd)
-        require(source_sha_before == EXPECTED_XISO_SHA256, "retail XISO SHA-256 mismatch")
-        entries, directory = parse_xdvdfs(source_fd, source_info.st_size)
+        entries, directory = parse_xdvdfs(source_fd, source_size)
 
         files = [entry for entry in entries.values() if not (entry.attributes & 0x10)]
         require(len(files) == 19, f"expected 19 XDVDFS files, found {len(files)}")
@@ -673,14 +677,10 @@ def run(source_path: Path, output_path: Path, manifest_path: Path) -> dict[str, 
         for target in TARGETS:
             entry = entries.get(target.path.casefold())
             require(entry is not None, f"missing XDVDFS target: {target.path}")
-            require(entry.sector == target.expected_sector,
-                    f"target start sector mismatch: {target.path}")
             require(entry.size == target.expected_size, f"target size mismatch: {target.path}")
             require(sha256_fd(source_fd, entry.byte_offset, entry.size) == target.expected_sha256,
                     f"target SHA-256 mismatch: {target.path}")
             absolute = entry.byte_offset + target.pack_offset
-            require(absolute == target.expected_absolute_patch_offset,
-                    f"target absolute patch offset mismatch: {target.path}")
             require(target.pack_offset + len(target.expected_bytes) <= entry.size,
                     f"patch outside target extent: {target.path}")
             require(read_exact(source_fd, absolute, 8) == target.expected_bytes,

@@ -5,6 +5,34 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC38 All Textures, And The Writers Stop Demanding One Exact Disc — 2026-07-28
+
+- **New workspace: All Textures.** 36,761 of the disc's 57,208 textures can now
+  be replaced from a PNG. That covers the things modders kept asking for and
+  finding absent: the real teams' end-zone art, goalpost pads, `divots`, the
+  `mark1`..`mark3` overlays, and the shared equipment textures `shoes_taped`,
+  `wristband_qb` and the three `elbowpad_*` variants.
+- Replacements are recompressed into the **exact byte span** the original
+  occupied, so nothing on the disc moves and an image that cannot be made to
+  fit is refused rather than shifting resources around.
+- Only compressed, swizzled P8 textures whose index chain starts at the video
+  buffer and whose palette follows it are editable. A1R5G5B5, A8R8G8B8, DXT1
+  and VC_P8_LINEAR are refused, and the capability says so.
+- **Four writers stopped demanding one exact disc image.** The audio lane, the
+  generic texture import, the Crib bar-monitor patcher and the uniform colour
+  patcher each gated on the whole container's size and SHA-256 -- so a legally
+  dumped disc that differed from the developer's copy could not be used at all.
+  Identity is now per-extent (`default.xbe` plus each touched pack), the same
+  correction the load path already had. Pinned sector numbers and absolute
+  offsets went with them; both are artifacts of how a disc was packed.
+- **The facemask colour is on by default.** It was exposed but disabled.
+- Proved on three legitimately different images of the same game: the project's
+  canonical `.xiso`, a reporter's repack, and a reporter's pressed-disc read.
+  The same two edits produced identical change counts at three different
+  absolute offsets.
+- Still not runtime-proved: no emulator was started, so on-screen visibility of
+  a replaced texture is untested. Transport and byte-exactness are proved.
+
 ## v1.0 RC37 The Facemask Colour Is Named — 2026-07-28
 
 - **The two `Unif` packed colour words now say what they own.** They were

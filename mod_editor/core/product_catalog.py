@@ -45,6 +45,7 @@ class ProductCategory(str, Enum):
     AUDIO = "audio"
     SLIDERS_GAMEPLAY = "sliders_gameplay"
     PLAYBOOKS_PLAYS = "playbooks_plays"
+    TEXTURES = "textures"
 
     @property
     def title(self) -> str:
@@ -70,6 +71,7 @@ PRODUCT_CATEGORY_ORDER: tuple[ProductCategory, ...] = (
     ProductCategory.AUDIO,
     ProductCategory.SLIDERS_GAMEPLAY,
     ProductCategory.PLAYBOOKS_PLAYS,
+    ProductCategory.TEXTURES,
 )
 
 PRODUCT_STATUS_ORDER: tuple[ProductStatus, ...] = (
@@ -91,6 +93,7 @@ _CATEGORY_TITLES: dict[ProductCategory, str] = {
     ProductCategory.AUDIO: "Audio",
     ProductCategory.SLIDERS_GAMEPLAY: "Sliders & Gameplay",
     ProductCategory.PLAYBOOKS_PLAYS: "Playbooks & Plays",
+    ProductCategory.TEXTURES: "All Textures",
 }
 
 # Exact-ID overrides resolve surfaces which intentionally span more than one
@@ -121,6 +124,7 @@ _SURFACE_CATEGORIES: dict[str, ProductCategory] = {
     "scorebug_presentation": ProductCategory.SCOREBUG_PRESENTATION,
     "scripts_config": ProductCategory.PLAYBOOKS_PLAYS,
     "stadiums_fields": ProductCategory.STADIUMS,
+    "textures": ProductCategory.TEXTURES,
     "uniforms": ProductCategory.UNIFORMS_EQUIPMENT,
 }
 

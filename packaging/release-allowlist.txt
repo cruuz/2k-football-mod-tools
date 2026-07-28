@@ -1,26 +1,31 @@
-# 2K5 Mod Studio release-stage allowlist.
 #
-# Each non-comment line is a required path relative to the staged release root.
+# 2K5 Mod Studio release-stage allowlist.
 # A trailing slash permits a directory subtree, while the checker still applies
-# its safe-text, size, symlink, hardlink, forbidden-directory, and suffix gates.
-
-# The MIT licence requires its own text to travel with every copy of the
-# software, so it ships inside the archive rather than only living in the
-# repository. NOTICE.md carries the game-IP scope, the retail-free statement,
-# and the attribution for the bundled third-party extractor.
-LICENSE
-NOTICE.md
-
 # Cross-platform double-click launchers. Linux uses
+# Each non-comment line is a required path relative to the staged release root.
+# The MIT licence requires its own text to travel with every copy of the
+# and the attribution for the bundled third-party extractor.
+# its safe-text, size, symlink, hardlink, forbidden-directory, and suffix gates.
+# repository. NOTICE.md carries the game-IP scope, the retail-free statement,
+# software, so it ships inside the archive rather than only living in the
 # tools/launch_2k5_mod_studio.sh via the desktop entry.
 2K5-Mod-Studio.bat
 2K5-Mod-Studio.command
-
+LICENSE
+NOTICE.md
+docs/mod_editor/2k5_mod_studio_changelog.md
+docs/mod_editor/2k5_mod_studio_getting_started.md
+docs/product/ADDITIONAL_AUDIO_FINDINGS.md
+docs/product/CATCH_STRENGTH_FINDINGS.md
+docs/product/DRAFT_AI_FINDINGS.md
+docs/product/NFL2K5_AUSB_XBOX_IMA_DECODE_RESULT.md
+docs/product/PLAY_EDITOR_FINDINGS.md
+docs/product/UNIVERSAL_TEXT_AND_25TH_FINDINGS.md
 mod_editor/__init__.py
 mod_editor/__main__.py
-mod_editor/capabilities/validate_registry.py
 mod_editor/capabilities/registry.schema.json
 mod_editor/capabilities/registry.v1.json
+mod_editor/capabilities/validate_registry.py
 mod_editor/core/__init__.py
 mod_editor/core/apf_digital_font.py
 mod_editor/core/apf_digital_font_provider.py
@@ -68,6 +73,9 @@ mod_editor/core/providers.py
 mod_editor/core/recipes.py
 mod_editor/core/sources.py
 mod_editor/core/uniform_sharing.py
+mod_editor/data/nfl2k5_crib_catalog.v1.json
+mod_editor/data/nfl2k5_gameplay_inspection.v1.json
+mod_editor/data/nfl2k5_main_menu_inspection.v1.json
 mod_editor/gui/__init__.py
 mod_editor/gui/audio_panel_qt.py
 mod_editor/gui/audio_waveform_qt.py
@@ -87,16 +95,32 @@ mod_editor/studio/project_archive.py
 mod_editor/studio/session.py
 mod_editor/studio/uniform_bundle.py
 mod_editor/studio/workspace_state.py
-mod_editor/data/nfl2k5_crib_catalog.v1.json
-mod_editor/data/nfl2k5_gameplay_inspection.v1.json
-mod_editor/data/nfl2k5_main_menu_inspection.v1.json
-tools/launch_2k5_mod_studio.sh
+packaging/2k5-mod-studio.desktop
+packaging/2k5-mod-studio.svg
+packaging/README.md
+packaging/check_2k5_mod_studio_release.py
+packaging/check_2k5_mod_studio_runtime.py
+packaging/release-allowlist.txt
+reports/assets/nfl2k5_audo_import_capacity.json
+reports/assets/nfl2k5_create_team_field_art_inventory.json
+reports/assets/nfl2k5_jersey_tset_compatibility.json
+reports/assets/nfl2k5_live_face_texture_compatibility.json
+reports/assets/nfl2k5_live_helmet_txtr_compatibility.json
+reports/assets/nfl2k5_live_numbers_nameplate_compatibility.json
+reports/assets/nfl2k5_pants_tset_compatibility.json
+reports/assets/nfl2k5_player_portrait_compatibility.json
+reports/assets/nfl2k5_sleeve_tset_compatibility.json
+reports/assets/nfl2k5_team_select_card_inventory.json
+reports/assets/scorebug_presentation_audit.json
 tools/apf_inner.py
 tools/apf_outer.py
+tools/launch_2k5_mod_studio.sh
 tools/nfl2k5_jersey_png_workflow.py
 tools/nfl2k5_ps2_save.py
 tools/nfl2k5_ps2_save_verify.py
 tools/nfl2k5_visual_mod_project.py
+tools/nfl_all_texture_xiso_workflow.py
+tools/nfl_audo_wav_xiso_workflow.py
 tools/nfl_create_team_field_art_inventory.py
 tools/nfl_create_team_field_art_png_import.py
 tools/nfl_crib_bar_monitor_png_xiso.py
@@ -112,17 +136,16 @@ tools/nfl_live_helmet_txtr_targets.py
 tools/nfl_live_numbers_nameplate_png_import.py
 tools/nfl_live_numbers_nameplate_targets.py
 tools/nfl_outer.py
-tools/nfl_audo_wav_xiso_workflow.py
 tools/nfl_pants_tset_png_import.py
 tools/nfl_pants_tset_targets.py
 tools/nfl_player_portrait_png_import.py
 tools/nfl_player_portrait_targets.py
 tools/nfl_resource_scan.py
 tools/nfl_roster.py
+tools/nfl_scene_probe.py
 tools/nfl_scne_embedded_texture_png.py
 tools/nfl_scne_gltf.py
 tools/nfl_scne_inventory.py
-tools/nfl_scene_probe.py
 tools/nfl_scorebug_png_import.py
 tools/nfl_sleeve_tset_png_import.py
 tools/nfl_sleeve_tset_targets.py
@@ -141,29 +164,5 @@ tools/nfl_uniform_inventory.py
 tools/string_table_inventory.py
 tools/validate_nfl2k5_ps2_save.bat
 tools/validate_nfl2k5_ps2_save.sh
+tools/validate_nfl_all_texture_lane.sh
 tools/xbe_info.py
-reports/assets/nfl2k5_jersey_tset_compatibility.json
-reports/assets/nfl2k5_sleeve_tset_compatibility.json
-reports/assets/nfl2k5_pants_tset_compatibility.json
-reports/assets/nfl2k5_live_helmet_txtr_compatibility.json
-reports/assets/nfl2k5_live_numbers_nameplate_compatibility.json
-reports/assets/nfl2k5_team_select_card_inventory.json
-reports/assets/nfl2k5_player_portrait_compatibility.json
-reports/assets/nfl2k5_live_face_texture_compatibility.json
-reports/assets/nfl2k5_create_team_field_art_inventory.json
-reports/assets/scorebug_presentation_audit.json
-reports/assets/nfl2k5_audo_import_capacity.json
-docs/mod_editor/2k5_mod_studio_getting_started.md
-docs/mod_editor/2k5_mod_studio_changelog.md
-docs/product/ADDITIONAL_AUDIO_FINDINGS.md
-docs/product/NFL2K5_AUSB_XBOX_IMA_DECODE_RESULT.md
-docs/product/CATCH_STRENGTH_FINDINGS.md
-docs/product/DRAFT_AI_FINDINGS.md
-docs/product/PLAY_EDITOR_FINDINGS.md
-docs/product/UNIVERSAL_TEXT_AND_25TH_FINDINGS.md
-packaging/2k5-mod-studio.desktop
-packaging/2k5-mod-studio.svg
-packaging/check_2k5_mod_studio_release.py
-packaging/check_2k5_mod_studio_runtime.py
-packaging/release-allowlist.txt
-packaging/README.md

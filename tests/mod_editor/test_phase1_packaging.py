@@ -49,17 +49,17 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC37 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC38 — Getting Started"
         ))
         self.assertIn(
-            "## v1.0 RC37 The Facemask Colour Is Named", changelog
+            "## v1.0 RC38 All Textures, And The Writers Stop Demanding One Exact Disc", changelog
         )
         self.assertIn(
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
         )
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC37 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC38 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
@@ -435,7 +435,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn('"mod_editor.studio.uniform_bundle"', runtime_probe)
         self.assertIn("_exercise_team_kit", runtime_probe)
         self.assertIn("_exercise_workspace_recovery", runtime_probe)
-        self.assertIn("registry=65 sections=11 nfl2k5_capabilities=31", runtime_probe)
+        self.assertIn("registry=66 sections=12 nfl2k5_capabilities=32", runtime_probe)
         self.assertIn("stadium_textures_editable=23838", runtime_probe)
         self.assertIn("audio=850 audio_editable=850 audio_export_only=0", runtime_probe)
         self.assertIn("audio_streaming_ranges=53571", runtime_probe)

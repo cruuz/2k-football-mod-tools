@@ -41,10 +41,14 @@ SURFACES = (
     "scorebug_presentation",
     "scripts_config",
     "stadiums_fields",
+    "textures",
     "uniforms",
 )
 SURFACE_GAMES = {surface: _LEGACY_GAMES for surface in SURFACES}
 SURFACE_GAMES["crib_assets"] = ("nfl2k5_xbox",)
+# The general P8 texture lane is NFL 2K5 only: APF 2K8 keeps its own
+# field-art and uniform writers and has no equivalent corpus mapped.
+SURFACE_GAMES["textures"] = ("nfl2k5_xbox",)
 # PS2 staged surfaces (each must carry at least one nfl2k5_ps2 row):
 SURFACE_GAMES["saves"] = GAMES
 CLASSIFICATIONS = (
