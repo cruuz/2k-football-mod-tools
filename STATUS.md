@@ -168,7 +168,24 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-7` — 2026-07-27 · CURRENT
+### `beta-8` — 2026-07-27 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-8>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC33-20260727.tar.gz` | 9,467,197 | `67c073f7fdca3cf3be9861bf49dd32f29dd66151b2adfe1aa7a59044295c4143` |
+| `apf2k8-mod-studio-0.1.0-alpha.38-20260727.tar.gz` | 1,117,824 | `decba035e9536d201ebf50852aab5d104e41a1fbd3d2898597c747f028156839` |
+| `2K5-Mod-Studio-1.0-RC33-Setup.exe` | 55,894,637 | `98f3b6da5b0ba7b7020f0be2c6de18af100612630014f07e58beed241638f81e` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.38-Setup.exe` | 52,347,030 | `a44bae57aa64d7959d31ba8fb29c0ec0e51c3b2c87c74160c8b7a9a924475d30` |
+
+The index the editor builds from a user's disc was written in text mode, so
+Windows rewrote every line ending and the result could never match its pinned
+size or hash. Unconditional: every Windows user, every image. Fixed repo-wide --
+38 text writes across 29 shipped files now pin the line ending, held at zero by
+a test. See `CHANGELOG.md`.
+
+### `beta-7` — 2026-07-27 · superseded by beta-8
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-7>
 
