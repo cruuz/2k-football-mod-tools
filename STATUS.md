@@ -168,7 +168,31 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-15` — 2026-07-28 · CURRENT
+### `beta-16` — 2026-07-28 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-16>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC41-20260728.tar.gz` | 9,488,302 | `b59a0d0220be7b6cb5e08379bd4c447fa2420565f29ce8202196f3ed354cf497` |
+| `apf2k8-mod-studio-0.1.0-alpha.44-20260728.tar.gz` | 1,132,787 | `3b6cc0ea56aa97b9b3ebdaacef234761703e5a93d26dc704628943e7f36cedd7` |
+| `2K5-Mod-Studio-1.0-RC41-Setup.exe` | 55,916,430 | `9f472c6d7ef8891f7f26a35d811c6eadc3af2b2822cad92c77a2bd1958b40fce` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.44-Setup.exe` | 52,363,061 | `9f0332669d7fac5107fddeb06e4d0c0a3dc053396a9de919b875c5199f185c11` |
+
+Fixes a regression beta-15 introduced: QTabWidget carried no stylesheet rules,
+so the new Uniforms & Equipment tab strip rendered in the platform light style
+with unreadable labels and put the uniform browser behind it. The strip is
+styled and Uniform Sets is pinned as the landing tab.
+
+Capability cards are labels with no controls, so an "Editable" pill on one
+reads as a broken button. Seven of nineteen NFL 2K5 writers have an in-app
+workspace; each card now names that workspace or states it is command-line only
+and prints the command.
+
+Still ahead: the All Textures workspace and stadium model import. Stadium
+geometry export to glTF works today; whole-model import does not exist.
+
+### `beta-15` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-15>
 
