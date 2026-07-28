@@ -13,8 +13,8 @@ those bytes and compare rather than trust them.
 Usage: build_archive.py <staged-dir> <top-level-name> <output.tar.gz> <epoch>
 
   e.g.  python3 packaging/build_archive.py stage/apf \\
-            apf2k8-mod-studio-0.1.0-alpha.37 \\
-            apf2k8-mod-studio-0.1.0-alpha.37.tar.gz $(date -u -d 2026-07-25 +%s)
+            apf2k8-mod-studio-0.1.0-alpha.38 \\
+            apf2k8-mod-studio-0.1.0-alpha.38.tar.gz $(date -u -d 2026-07-25 +%s)
 """
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ def build(staged: pathlib.Path, top: str, out: pathlib.Path, epoch: int) -> str:
             gz.write(payload)
     digest = hashlib.sha256(out.read_bytes()).hexdigest()
     sidecar = out.with_name(out.name + ".sha256")
-    sidecar.write_text(f"{digest}  {out.name}\n", encoding="utf-8")
+    sidecar.write_text(f"{digest}  {out.name}\n", encoding="utf-8", newline="\n")
     print(f"{out.name}  {out.stat().st_size} bytes  sha256={digest}")
     return digest
 

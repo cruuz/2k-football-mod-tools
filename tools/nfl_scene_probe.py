@@ -1011,7 +1011,7 @@ def main() -> int:
     text = json.dumps(report, indent=2) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(text, encoding="utf-8")
+        args.output.write_text(text, encoding="utf-8", newline="\n")
         print(
             f"wrote {len(results)} probe record(s) to {args.output}; "
             f"statuses={report['summary']['status_counts']}"

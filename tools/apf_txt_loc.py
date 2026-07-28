@@ -382,7 +382,7 @@ def main() -> int:
         "tables": [public_table(table) for table in tables],
     }
     args.json.parent.mkdir(parents=True, exist_ok=True)
-    args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     write_tsv(args.tsv, tables)
     print(
         "APF_TXT_LOCALIZATION_COMPLETE "

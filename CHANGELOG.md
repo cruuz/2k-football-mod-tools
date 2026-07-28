@@ -7,9 +7,26 @@ Release-level history. Per-product detail lives in
 
 Product versions and release tags are deliberately separate. A tag like
 `beta-3` names a *published set of archives*; the editors inside carry their own
-versions (`v1.0-RC32`, `0.1.0-alpha.37`) and only change when their code does.
+versions (`v1.0-RC33`, `0.1.0-alpha.38`) and only change when their code does.
 
 ---
+
+## beta-8 — 2026-07-27
+
+**No Windows user could ever finish loading a game. This fixes that.**
+`v1.0-RC33` and `0.1.0-alpha.38`.
+
+### Fixed
+- **"The generated game index did not match NFL 2K5".** The index was written in
+  text mode, and on Windows text mode rewrites every `\n` as `\r\n`. With
+  2,289,506 newlines, Windows produced 58,035,920 bytes against a pinned
+  55,746,414 — same disc, same packs, different file. This was unconditional:
+  every Windows user, every disc image, every time, and the wording blamed their
+  game when their game was fine. Linux and macOS never see it, because text mode
+  is a no-op there.
+- Fixed as a class: **38 text writes across 29 shipped files** now pin the line
+  ending. A test holds the shipped surface at zero unguarded text writes, so no
+  future generated file can differ between platforms.
 
 ## beta-7 — 2026-07-27
 

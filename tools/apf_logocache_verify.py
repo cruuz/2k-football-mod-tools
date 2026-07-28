@@ -432,7 +432,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     if args.manifest is not None:
         args.manifest.parent.mkdir(parents=True, exist_ok=True)
-        args.manifest.write_text(json.dumps(result.manifest, indent=2) + "\n", encoding="utf-8")
+        args.manifest.write_text(json.dumps(result.manifest, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(
         "APF_LOGOCACHE_VERIFY_PASS "
         f"changed={','.join(result.changed_entries)} "

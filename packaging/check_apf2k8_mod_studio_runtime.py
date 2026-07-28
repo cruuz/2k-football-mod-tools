@@ -24,7 +24,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.37"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.38"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -381,7 +381,7 @@ def _check_install_contract() -> None:
         )
         for sentinel in preserved:
             sentinel.parent.mkdir(parents=True, exist_ok=True)
-            sentinel.write_text("user data, not installer-owned\n", encoding="utf-8")
+            sentinel.write_text("user data, not installer-owned\n", encoding="utf-8", newline="\n")
         removed = installer.uninstall(environment=environment)
         require(removed.action == "uninstalled", "per-user uninstall result changed")
         require(all(path.exists() for path in preserved),

@@ -181,7 +181,7 @@ def _gate(relative: str, data: bytes) -> None:
 def _write_sha256(archive_path: Path) -> Path:
     digest = hashlib.sha256(archive_path.read_bytes()).hexdigest()
     sha_path = archive_path.with_name(archive_path.name + ".sha256")
-    sha_path.write_text(f"{digest}  {archive_path.name}\n", encoding="utf-8")
+    sha_path.write_text(f"{digest}  {archive_path.name}\n", encoding="utf-8", newline="\n")
     return sha_path
 
 

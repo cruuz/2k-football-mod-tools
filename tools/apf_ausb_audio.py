@@ -361,7 +361,7 @@ def main(argv: list[str] | None = None) -> int:
             args.max_decompressed,
         )
         args.report.parent.mkdir(parents=True, exist_ok=True)
-        args.report.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+        args.report.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8", newline="\n")
         print(
             f"APF AUSB export: entry={args.entry} file={args.file} "
             f"substream={args.substream} xma={result['xma']['status']} "

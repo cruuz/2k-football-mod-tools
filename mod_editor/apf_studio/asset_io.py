@@ -144,7 +144,7 @@ def _write_audio_playlist(
             f"#EXTINF:{_playlist_duration(row.get('duration_seconds'))},{title}"
         )
         lines.append(str(row["path"]))
-    destination.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    destination.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     return len(selected)
 
 
@@ -604,7 +604,8 @@ class ApfAssetIO:
                 )
                 + "\n",
                 encoding="utf-8",
-            )
+    newline="\n",
+)
             archive_path = root / "bank.zip"
             with zipfile.ZipFile(
                 archive_path, "x", compression=zipfile.ZIP_DEFLATED
@@ -736,7 +737,8 @@ class ApfAssetIO:
                 )
                 + "\n",
                 encoding="utf-8",
-            )
+    newline="\n",
+)
             archive_path = root / "matching-sounds.zip"
             with zipfile.ZipFile(
                 archive_path, "x", compression=zipfile.ZIP_DEFLATED

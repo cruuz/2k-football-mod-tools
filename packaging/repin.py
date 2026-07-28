@@ -171,7 +171,7 @@ def apply_replacements(source: Path, reps: list[Replacement]) -> None:
         if old not in segment:
             raise SystemExit(f"pin text drift at {source}:{lineno}: {segment!r}")
         lines[lineno - 1] = line[:col] + segment.replace(old, new, 1) + line[end_col:]
-    source.write_text("".join(lines), encoding="utf-8")
+    source.write_text("".join(lines), encoding="utf-8", newline="\n")
 
 
 def main() -> int:

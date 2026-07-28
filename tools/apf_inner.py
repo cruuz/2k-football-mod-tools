@@ -1595,7 +1595,7 @@ def dump_file_parts(
         }
 
     metadata_path = output_dir / f"{base}.json"
-    metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8", newline="\n")
     written.append(metadata_path)
     if png_error is not None:
         raise FormatError(f"{png_error}; metadata written to {metadata_path}")
@@ -1812,7 +1812,8 @@ def main(argv: list[str] | None = None) -> int:
             args.manifest.write_text(
                 json.dumps(document, indent=2, sort_keys=False) + "\n",
                 encoding="utf-8",
-            )
+    newline="\n",
+)
 
         if args.inventory_tsv is not None:
             args.inventory_tsv.parent.mkdir(parents=True, exist_ok=True)

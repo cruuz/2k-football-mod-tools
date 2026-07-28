@@ -862,7 +862,8 @@ def main() -> int:
     args.json.write_text(
         json.dumps(report, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
         encoding="utf-8",
-    )
+    newline="\n",
+)
     write_tsv(args.tsv, apf_books + nfl_books, shared)
     print(
         "PLAYBOOK_INVENTORY_COMPLETE "

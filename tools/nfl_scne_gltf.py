@@ -362,7 +362,7 @@ def main() -> int:
             ],
         },
     }
-    args.output.write_text(json.dumps(gltf, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.output.write_text(json.dumps(gltf, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     print(
         f"NFL2K5_GLTF_EXPORT_COMPLETE scene={scene['name']!r} shape={shape['name']!r} "
         f"vertices={vertex_count} primitives={len(primitives)} -> {args.output}"

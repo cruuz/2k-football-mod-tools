@@ -1861,8 +1861,9 @@ def main(argv: list[str] | None = None) -> int:
             if args.export_report is not None:
                 args.export_report.parent.mkdir(parents=True, exist_ok=True)
                 args.export_report.write_text(
-                    json.dumps(result, indent=2) + "\n", encoding="utf-8"
-                )
+                    json.dumps(result, indent=2) + "\n", encoding="utf-8",
+    newline="\n",
+)
             print(
                 f"APF AUDO export: entry={args.export_entry} file={args.export_file} "
                 f"xma={result['xma']['status']} wav="
@@ -1877,8 +1878,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.inventory_json is not None:
             args.inventory_json.parent.mkdir(parents=True, exist_ok=True)
             args.inventory_json.write_text(
-                json.dumps(document, indent=2) + "\n", encoding="utf-8"
-            )
+                json.dumps(document, indent=2) + "\n", encoding="utf-8",
+    newline="\n",
+)
         if args.inventory_tsv is not None:
             write_tsv(args.inventory_tsv, document)
         if args.ausb_json is not None:
@@ -1887,8 +1889,9 @@ def main(argv: list[str] | None = None) -> int:
             )
             args.ausb_json.parent.mkdir(parents=True, exist_ok=True)
             args.ausb_json.write_text(
-                json.dumps(ausb_document, indent=2) + "\n", encoding="utf-8"
-            )
+                json.dumps(ausb_document, indent=2) + "\n", encoding="utf-8",
+    newline="\n",
+)
         unique_verification = None
         if args.verify_unique_json is not None:
             unique_verification = verify_unique_payloads(
@@ -1896,8 +1899,9 @@ def main(argv: list[str] | None = None) -> int:
             )
             args.verify_unique_json.parent.mkdir(parents=True, exist_ok=True)
             args.verify_unique_json.write_text(
-                json.dumps(unique_verification, indent=2) + "\n", encoding="utf-8"
-            )
+                json.dumps(unique_verification, indent=2) + "\n", encoding="utf-8",
+    newline="\n",
+)
         summary = document["summary"]
         print(
             f"APF AUDO inventory: {summary['parsed_audo_count']}/"

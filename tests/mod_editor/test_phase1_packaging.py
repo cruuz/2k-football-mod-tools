@@ -29,7 +29,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc32"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc33"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
@@ -49,17 +49,17 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC32 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC33 — Getting Started"
         ))
         self.assertIn(
-            "## v1.0 RC32 Find The Filesystem, And Import On Windows", changelog
+            "## v1.0 RC33 The Game Index Is Byte-Identical On Windows", changelog
         )
         self.assertIn(
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
         )
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC32 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC33 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:

@@ -476,7 +476,7 @@ def main(argv: list[str] | None = None) -> int:
                 sys.stdout.write(document)
             else:
                 args.manifest.parent.mkdir(parents=True, exist_ok=True)
-                args.manifest.write_text(document, encoding="utf-8")
+                args.manifest.write_text(document, encoding="utf-8", newline="\n")
     except BrokenPipeError:
         return 0
     except (FormatError, OSError) as exc:

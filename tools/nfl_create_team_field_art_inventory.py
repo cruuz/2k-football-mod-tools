@@ -449,7 +449,7 @@ def main() -> int:
         report, rows = build(args.index, args.xbe)
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n",
-                             encoding="utf-8")
+                             encoding="utf-8", newline="\n")
         write_tsv(args.tsv, rows)
         print("NFL_CREATE_TEAM_FIELD_ART_INVENTORY_OK "
               f"packages={report['summary']['package_count']} "

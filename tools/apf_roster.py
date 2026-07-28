@@ -717,7 +717,7 @@ def build_report(data: bytes, source: dict[str, object]) -> dict[str, object]:
 
 def write_json(path: Path, document: dict[str, object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8", newline="\n")
 
 
 def _tsv(path: Path, header: Iterable[str], rows: Iterable[Iterable[object]]) -> None:

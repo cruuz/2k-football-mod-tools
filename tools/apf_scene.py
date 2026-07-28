@@ -794,7 +794,7 @@ def write_gltf(path: Path, scene: dict[str, object], outer_index: int, inner_ind
         ],
     }
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8", newline="\n")
 
 
 def _little_endian_array(typecode: str, values: Iterable[float | int]) -> bytes:
@@ -1017,8 +1017,9 @@ def write_gltf_collection(
     bin_path.parent.mkdir(parents=True, exist_ok=True)
     bin_path.write_bytes(binary)
     path.write_text(
-        json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+        json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8",
+    newline="\n",
+)
     return {
         "status": "exported",
         "gltf": path.name,
@@ -1254,8 +1255,9 @@ def main(argv: list[str] | None = None) -> int:
                 ],
             }
             (args.gltf_dir / "manifest.json").write_text(
-                json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-            )
+                json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8",
+    newline="\n",
+)
         for scene in scenes:
             _strip_private_geometry(scene)
 
@@ -1309,7 +1311,7 @@ def main(argv: list[str] | None = None) -> int:
             ],
         }
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+        args.output.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8", newline="\n")
 
         if args.tsv is not None:
             args.tsv.parent.mkdir(parents=True, exist_ok=True)

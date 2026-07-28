@@ -275,7 +275,8 @@ class ApfStadiumService:
             manifest_path.write_text(
                 json.dumps(document, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
-            )
+    newline="\n",
+)
             # A directory rename publishes the complete triplet at once.  If a
             # concurrent worker won the race, validate and use that completed
             # cache rather than replacing it.

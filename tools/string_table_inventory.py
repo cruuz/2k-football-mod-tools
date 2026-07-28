@@ -775,7 +775,8 @@ def main() -> int:
     args.json.write_text(
         json.dumps(report, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
         encoding="utf-8",
-    )
+    newline="\n",
+)
     write_tsv(args.tsv, translations)
     print(
         "STRING_TABLE_INVENTORY_COMPLETE "

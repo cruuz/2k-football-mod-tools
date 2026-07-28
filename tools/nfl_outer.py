@@ -403,7 +403,7 @@ def main(argv: list[str] | None = None) -> int:
                 sys.stdout.write(text)
             else:
                 args.manifest.parent.mkdir(parents=True, exist_ok=True)
-                args.manifest.write_text(text, encoding="utf-8")
+                args.manifest.write_text(text, encoding="utf-8", newline="\n")
 
         selected = None
         if args.extract_index is not None:

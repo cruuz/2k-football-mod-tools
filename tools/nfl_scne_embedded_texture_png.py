@@ -699,8 +699,9 @@ def main() -> int:
     write_tsv(args.pngs_tsv, PNG_FIELDS, png_rows)
     args.manifest_json.parent.mkdir(parents=True, exist_ok=True)
     args.manifest_json.write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8",
+    newline="\n",
+)
     check_disk(args.asset_dir, minimum_free, "after export")
     print(
         "NFL_SCNE_EMBEDDED_TEXTURE_PNG_EXPORT_PASS "

@@ -1138,7 +1138,7 @@ def main() -> int:
     }
 
     args.json.parent.mkdir(parents=True, exist_ok=True)
-    args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     write_tsv(
         args.scenes_tsv, scene_rows,
         [
