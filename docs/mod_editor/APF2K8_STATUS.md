@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio — Status
 
-The source code and UI identify as the retail-free **`0.1.0-alpha.36`**.
+The source code and UI identify as the retail-free **`0.1.0-alpha.37`**.
 `0.1.0-alpha.34` remains preserved unchanged; its mode-`0444`,
 815,213-byte archive has SHA-256
 `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`,
@@ -527,6 +527,16 @@ that preserves every user-data directory. The release/runtime gates exercise
 that lifecycle headlessly in an isolated home before a package can ship.
 
 Last updated: 2026-07-27
+
+## 0.1.0-alpha.37 candidate boundary — sibling imports on installed Windows
+
+- Source/UI identity is `0.1.0-alpha.37`. No capability changed.
+- Fixed: shipped `tools/*.py` import each other, and the embeddable CPython the
+  installer ships defines `sys.path` from its `._pth` without adding a script's
+  own directory. `apf_texture_patch` and `apf_roster` among others therefore
+  raised ModuleNotFoundError on installed Windows copies only -- never from the
+  tarball, never in CI. Each shipped tool now restores its own directory, and
+  the `._pth` lists `app\tools` as a second guard.
 
 ## 0.1.0-alpha.36 candidate boundary — failed-build cleanup on Windows
 

@@ -56,12 +56,12 @@ class Apf2k8DigitalFontProvider:
     max_manifest_bytes = 8 * 1024 * 1024
     max_pinned_file_bytes = 16 * 1024 * 1024
     module_pins: Mapping[str, str] = {
-        "tools/apf_inner.py": "75a74b34524b3861785b916e3470862bccfe278825a63aa2dccb924849ae9606",
+        "tools/apf_inner.py": "fe35cd96ecc2f6710ba8ee2d5f73f77da95d32b8f378f7bebeb0a9dd5c7a4e28",
         "tools/apf_outer.py": "eb89734ed3ad0205ff7d8732b2f7f93368eff861ccbc5e1473d4e21f25e8a62e",
-        "tools/apf_texture_patch.py": "ccd93112884b5f90904383240565897b8407b6465ee0b9694632834bec242184",
-        "tools/apf_xenos_dxt5a.py": "c95e556e55de81b8576da2e3bd3311018137cb449167c74121be3d5010ff5443",
-        "tools/apf_digital_font_layout.py": "a5de052f5579259ee47a6ce94c26163ad4558fa3d5fcb324997125f0728f4c10",
-        "tools/apf_digital_font_transport.py": "a4b08c3ad31d195aa1b3e312a54690b42faba83de93369b732669264d959d481",
+        "tools/apf_texture_patch.py": "d29532405a2e719fb78de13636bf0cbcb43348da68e7b14130b9502dad3488fa",
+        "tools/apf_xenos_dxt5a.py": "b3f855c45da7eace3768344ae0e52e967ceb40b1f024761e81c6578fe7cab86c",
+        "tools/apf_digital_font_layout.py": "df7ef3f9f5a664a0b5edce4e1dc15ccbca6fd9e3eb3579377f12abb0b392fcb4",
+        "tools/apf_digital_font_transport.py": "a90012096965a1f710772b499bddb20a966acf9f84b8847eb9091a4575c9f5f7",
         backend_module: "e72f91b746f44f1729b5e36d39a1cd0944ffab0194ab7e2cb36d5f3c1185ccd7",
         verifier_module: "7846a5ecc91763296bea5e2b2f722de3c1b2137b769ceaa9406a64999042baf8",
         recipe_schema_file: "265edf051e513cdb9174b6c2d0109e892ca2e64e281ee07711c1665bfbc9cb93",

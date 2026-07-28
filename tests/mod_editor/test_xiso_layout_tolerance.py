@@ -193,6 +193,37 @@ class XisoLayoutToleranceTests(unittest.TestCase):
             "byte_offset ignored the partition base, which is the original bug",
         )
 
+    def test_an_offset_we_have_never_seen_is_still_found(self) -> None:
+        """Known offsets are a fast path, not the contract.
+
+        The first fix for this bug probed a LIST of partition offsets, and a
+        real user's raw disc read was still refused -- because guessing from a
+        list is the same mistake as guessing one number, just with four guesses.
+        The reader now searches for the filesystem, so a ripper nobody here has
+        ever seen still works. These offsets are deliberately absent from
+        XDVDFS_BASE_OFFSETS.
+        """
+        for base_offset in (0x00A00000, 0x0A000000, 0x1F400000):
+            with self.subTest(base=hex(base_offset)):
+                self.assertNotIn(base_offset, xiso.XDVDFS_BASE_OFFSETS)
+                body = build_xdvdfs(self.PAYLOAD, base_offset)
+                handle = tempfile.NamedTemporaryFile(suffix=".iso", delete=False)
+                self.addCleanup(
+                    lambda p=handle.name: os.path.exists(p) and os.unlink(p)
+                )
+                handle.write(body)
+                handle.close()
+                descriptor, found, entries = self._parse(Path(handle.name))
+                self.assertEqual(found, base_offset)
+                self.assertEqual(
+                    xiso.read_exact(
+                        descriptor,
+                        entries["default.xbe"].byte_offset,
+                        entries["default.xbe"].size,
+                    ),
+                    self.PAYLOAD["default.xbe"],
+                )
+
     def test_a_non_disc_image_is_still_refused(self) -> None:
         """Tolerating layouts must not become tolerating anything at all."""
         for label, blob in {

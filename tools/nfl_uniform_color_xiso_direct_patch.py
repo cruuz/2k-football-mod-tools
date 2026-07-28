@@ -293,12 +293,69 @@ def locate_xdvdfs_base(descriptor: int, image_size: int) -> int:
             continue
         if header[:20] == XDVDFS_MAGIC and header[-20:] == XDVDFS_MAGIC:
             return base
+    # The known offsets are only a fast path. Rippers exist that we have never
+    # seen and cannot enumerate, and guessing from a list is exactly what made
+    # this reject legal dumps in the first place, so fall back to FINDING the
+    # filesystem: search sector-aligned positions for the 20-byte magic and
+    # confirm the candidate really is a header by requiring the magic at BOTH
+    # ends of its sector and a root directory that fits inside the image.
+    found = _scan_for_xdvdfs_base(descriptor, image_size)
+    if found is not None:
+        return found
     raise PatchError(
-        "No Xbox XDVDFS filesystem was found in this image. Looked at every "
-        "known game-partition offset ("
+        "No Xbox XDVDFS filesystem was found in this image. The known "
+        "game-partition offsets ("
         + ", ".join(f"0x{value:X}" for value in XDVDFS_BASE_OFFSETS)
-        + "). This does not look like an Xbox disc image."
+        + f") were checked and then the first {_XDVDFS_SCAN_LIMIT >> 20} MiB "
+        "were searched sector by sector. This does not look like an Xbox disc "
+        "image."
     )
+
+
+# How far in to search for a game partition. Video partitions sit at the front
+# of a disc and the largest we know of ends at 0x18300000 (387 MiB), so a 1 GiB
+# window covers every real layout with a wide margin while staying quick.
+_XDVDFS_SCAN_LIMIT = 1 << 30
+
+
+def _scan_for_xdvdfs_base(descriptor: int, image_size: int) -> int | None:
+    """Search for a genuine XDVDFS header sector and return its partition base."""
+    window = min(image_size, _XDVDFS_SCAN_LIMIT)
+    chunk_size = 8 << 20
+    overlap = len(XDVDFS_MAGIC)
+    position = 0
+    while position < window:
+        length = min(chunk_size, window - position)
+        try:
+            chunk = read_exact(descriptor, position, length)
+        except PatchError:
+            return None
+        start = 0
+        while True:
+            hit = chunk.find(XDVDFS_MAGIC, start)
+            if hit < 0:
+                break
+            start = hit + 1
+            absolute = position + hit
+            # The magic opens the header sector, and that sector must be the
+            # 0x10000th byte of its partition.
+            if absolute % SECTOR_SIZE or absolute < XDVDFS_HEADER_OFFSET:
+                continue
+            base = absolute - XDVDFS_HEADER_OFFSET
+            try:
+                header = read_exact(descriptor, absolute, 0x800)
+            except PatchError:
+                continue
+            if header[-20:] != XDVDFS_MAGIC:
+                continue
+            root_sector, root_size = struct.unpack_from("<II", header, 20)
+            if root_sector <= 0 or root_size < 14:
+                continue
+            if base + root_sector * SECTOR_SIZE + root_size > image_size:
+                continue
+            return base
+        position += max(length - overlap, 1)
+    return None
 
 
 def parse_xdvdfs(

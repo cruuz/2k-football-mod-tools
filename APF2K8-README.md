@@ -77,11 +77,11 @@ sudo apt install ffmpeg
 The Audio tab inventories all 2,261 standalone sounds, all 45,514 addressable
 substreams, both 15-track soundtrack encodings, and all 19 named physical XMA1
 banks. Original XMA1/WAV export and exact raw-bank export are available. The
-current sealed release, **`0.1.0-alpha.36`**, gives the 2,261 standalone
+current sealed release, **`0.1.0-alpha.37`**, gives the 2,261 standalone
 rows and all 45,514 individually addressed AUSB rows an advanced exact-slot
 replacement route, selected-sound PCM16 authoring through a separately
 installed encoder, and v1 XMA1 plus v2 exact-PCM16 folder/ZIP batch hand-off.
-Alpha.35 and earlier remain preserved as previous sealed retail-free packages. AUSB index rows and
+Alpha.36 and earlier remain preserved as previous sealed retail-free packages. AUSB index rows and
 whole physical-bank rows remain descriptive/private raw exports rather than
 single-sound editors.
 

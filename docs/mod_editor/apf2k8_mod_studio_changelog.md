@@ -1,5 +1,16 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.37 — sibling imports work on installed Windows copies 2026-07-27
+
+- Fixed `ModuleNotFoundError` from the shipped `tools/*.py` on installed Windows
+  copies. Those scripts import each other, and the embeddable CPython the
+  installer ships defines `sys.path` from a `._pth` file without adding a
+  script's own directory the way every ordinary interpreter does.
+  `apf_texture_patch` and `apf_roster` were among those affected. Never
+  reproducible from the tarball, from source, or in CI — only after installing.
+- Each shipped tool now restores its own directory, and the `._pth` lists
+  `app\tools` as a second, independent guard. No capability changed.
+
 ## 0.1.0-alpha.36 — failed builds clean up after themselves on Windows 2026-07-27
 
 - Fixed cleanup after a failed write. Every writer unlinked the partial output

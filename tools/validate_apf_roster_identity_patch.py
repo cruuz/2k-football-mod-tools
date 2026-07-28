@@ -7,6 +7,16 @@ import json
 from pathlib import Path
 import sys
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 import apf_roster_identity_patch as writer
 
 

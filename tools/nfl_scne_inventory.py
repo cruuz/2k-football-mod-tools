@@ -30,6 +30,16 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import parse_archive, read_entry_range
 from nfl_scene_probe import ProbeError, ResourceRecord, decode_resource, parse_inventory, utf16z
 from nfl_txtr import Chunk, TextureInfo, TxtrError, XBOX_FORMAT_NAMES, texture_to_rgba, write_png

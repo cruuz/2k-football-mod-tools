@@ -12,6 +12,16 @@ from pathlib import Path
 import stat
 import sys
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import parse_archive
 from nfl_txtr import HEADER, TxtrError, compress_vc_lz, decode_chunk, encode_rgba_png, \
     minimum_vc_lz_overlap_scratch, rebuild_compressed_chunk_fixed_span, \

@@ -7,9 +7,30 @@ Release-level history. Per-product detail lives in
 
 Product versions and release tags are deliberately separate. A tag like
 `beta-3` names a *published set of archives*; the editors inside carry their own
-versions (`v1.0-RC31`, `0.1.0-alpha.36`) and only change when their code does.
+versions (`v1.0-RC32`, `0.1.0-alpha.37`) and only change when their code does.
 
 ---
+
+## beta-7 — 2026-07-27
+
+**beta-6 fixed half of this. If it still refused your game, or failed straight
+after loading it, this is the one.** `v1.0-RC32` and `0.1.0-alpha.37`.
+
+### Fixed
+- **A raw disc read is accepted whatever tool made it.** beta-6 checked a *list*
+  of four known game-partition offsets — the same mistake as checking one, with
+  four guesses — and a real user's rip was not in it. The reader now **searches**
+  for the disc filesystem instead of guessing, so layouts nobody here has seen
+  still work.
+- **`ModuleNotFoundError: No module named 'nfl_outer'` right after loading.**
+  This one reached only people who *install* rather than unzip. The product runs
+  `tools/*.py` as subprocesses and they import each other; an ordinary Python
+  adds a script's own directory to `sys.path`, but the embeddable runtime inside
+  the installer does not, because its `._pth` defines the path outright. The
+  tarball, CI and a source checkout all launch Python the ordinary way, which is
+  exactly why nothing we ran caught it — and the installer is what most people
+  use. Every shipped tool now restores its own directory, and the `._pth` lists
+  `app\tools` too. Affected both editors.
 
 ## beta-6 — 2026-07-27
 

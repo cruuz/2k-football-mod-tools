@@ -168,6 +168,15 @@ def build_runtime(work: pathlib.Path, downloads: pathlib.Path) -> pathlib.Path:
                 ".",
                 "Lib\\site-packages",
                 "..\\app",
+                # The product shells out to app\tools\*.py, and a ._pth file
+                # makes this interpreter behave unlike every other one: it does
+                # NOT prepend a script's own directory to sys.path. Those
+                # scripts import each other, so without this entry they died
+                # with ModuleNotFoundError on installed Windows copies only --
+                # never in CI, never from the tarball. The scripts also insert
+                # their own directory now; this is the belt to that pair of
+                # braces, and it costs nothing.
+                "..\\app\\tools",
                 "import site",
                 "",
             ]

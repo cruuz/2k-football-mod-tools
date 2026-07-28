@@ -5,6 +5,30 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC32 Find The Filesystem, And Import On Windows — 2026-07-27
+
+- **A raw disc read is accepted now, whatever tool made it.** RC31 checked a
+  *list* of four known game-partition offsets, which is the same mistake as
+  checking one, only with four guesses — and a real user's rip was not among
+  them, so it was still refused. The reader now **searches** for the XDVDFS
+  header rather than guessing where it should be, confirming a candidate by
+  requiring the magic at both ends of its sector and a root directory that fits
+  inside the image. Offsets nobody here has ever seen now work.
+- **Fixed the error that reached people who install rather than unzip:**
+  `Could not catalog the game files: ModuleNotFoundError: No module named
+  'nfl_outer'`. The product runs `tools/*.py` as subprocesses and those scripts
+  import each other. Any ordinary Python adds a script's own directory to
+  `sys.path`; the embeddable runtime inside the installer does not, because a
+  `._pth` file defines the path outright. So this failed **only** on installed
+  Windows copies — not from the tarball, not in CI, not from source. Every
+  shipped tool now restores its own directory, and the `._pth` lists
+  `app\tools` as an independent second guard.
+- Both are covered by tests that need no game data and no Windows: one resolves
+  partition offsets deliberately absent from the known list, the other launches
+  every shipped tool with its directory removed from `sys.path`. The second one
+  immediately found six tools a hand-written check had missed, including
+  `apf_texture_patch` and `apf_roster`.
+
 ## v1.0 RC31 Any Legal Dump Of The Disc — 2026-07-27
 
 - **Your own dump of ESPN NFL 2K5 is now accepted, however you made it.** The
