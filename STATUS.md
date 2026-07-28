@@ -168,7 +168,27 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-10` — 2026-07-27 · CURRENT
+### `beta-11` — 2026-07-28 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-11>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC36-20260728.tar.gz` | 9,473,398 | `028959b26e991e9ef5ec0a75d48d7ba19afa79f2b712cc96a577c705c9cf3cc4` |
+| `apf2k8-mod-studio-0.1.0-alpha.39-20260728.tar.gz` | 1,118,445 | `db613a4e0b1929600335357bf152b3bb3004204d7638550ee803e6bbca6fb03f` |
+| `2K5-Mod-Studio-1.0-RC36-Setup.exe` | 55,900,541 | `79a3c5ec3a114febad6914065763b70e9676571c3f0f979f122a693375379f06` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.39-Setup.exe` | 52,351,553 | `5a2b14f212d99e1a3beb280c37b7cec7e874a5f1aedf3386acb30aeb1f6d4bf8` |
+
+Export Team Kit as a folder failed on Windows for everyone: the export reserved
+its destination with `mkdir` and renamed the staged tree onto it, which POSIX
+allows and Windows cannot do for a directory at all. It now publishes through
+`platform_compat.publish_no_replace`, as three other publishers in the tree
+already did. The ZIP export's hard-link publish is routed the same way, since
+`os.link` needs NTFS and an external drive holding disc images is often exFAT.
+No disc, indexing or build behaviour changed; the beta-10 fixes were re-verified
+against the reporter's pressed-disc read from this published tarball.
+
+### `beta-10` — 2026-07-27 · superseded by beta-11
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-10>
 
