@@ -5,6 +5,26 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC44 The Facemask Colour Is A Colour Picker — 2026-07-28
+
+- **You can pick the facemask colour in the editor now.** Uniforms & Equipment
+  → **Colours & Other Tools** has two swatches, Apply and Revert. Word 0 of the
+  `Unif` pair tints the facemask and faceshield; word 1 tints `HI_turtleneck`,
+  which the game reads only when a player's two-bit selector is 3.
+- It is a project edit like any other: it counts toward pending edits, Revert
+  All clears it, it saves with the project, and it reaches the disc through the
+  same composed **Build Modded XISO** as every texture and audio change.
+- One colour choice touches two packs, so it composes as two imports bound
+  per-extent — the build locates each pack in your own image, re-derives the
+  offset, and verifies the pack and span hashes before writing.
+- Proved by building a real disc: the composed output is byte-identical to the
+  standalone writer's for the same colours.
+- **Repainting the coloured square on a helmet texture still will not move the
+  facemask.** It is a separate material fed by this value — the difference from
+  CFB 2K3 that started this whole thread.
+- Ownership is proved by executable trace. A controlled in-game capture is
+  still outstanding and the capability continues to say so.
+
 ## v1.0 RC43 All Textures Previews And Exports Actually Work — 2026-07-28
 
 - **Export PNG failed with "The file name is not valid."** The suggested

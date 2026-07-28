@@ -332,6 +332,10 @@ class StudioSession:
         self._stadium_textures: dict[str, StadiumTexture] = {}
         self.stadium_delegate = _SessionStadiumDelegate(self)
         self._stadium_edits: dict[str, StadiumSessionEdit] = {}
+        # The facemask/faceshield and HI_turtleneck tints. One choice, not a
+        # per-asset edit: it is two eight-byte words shared by the whole game,
+        # so it is held as a single optional pair rather than a dict.
+        self._unif_colors: tuple[str, str] | None = None
         self._stadium_undo: list[_UndoAction] = []
         self._project_catalog_router = _ProjectCatalogRouter(self)
         self._project_io_router = _ProjectAssetIORouter(self)
@@ -400,6 +404,7 @@ class StudioSession:
         return (
             len(self._edits) + len(self._crib_edits) + len(self._stadium_edits)
             + len(self._audio_edits)
+            + (1 if self._unif_colors is not None else 0)
             + (self.text_edits.modified_count if self.text_edits is not None else 0)
         )
 
@@ -998,17 +1003,42 @@ class StudioSession:
         self._write_manifest()
         return True
 
+    @property
+    def unif_colors(self) -> tuple[str, str] | None:
+        """The chosen facemask and turtleneck colours, or None for retail."""
+        return self._unif_colors
+
+    def set_unif_colors(self, facemask: str, turtleneck: str) -> None:
+        """Record the colour pair. Validated here so a bad value cannot reach
+        the build, and stored as canonical AARRGGBB so the project is stable."""
+        from mod_editor.core import nfl2k5_unif_color_writer as colour
+
+        try:
+            pair = (colour.parse_color(facemask), colour.parse_color(turtleneck))
+        except colour.UnifColorWriterError as exc:
+            raise ValidationError(str(exc)) from exc
+        self._unif_colors = (f"{pair[0]:08X}", f"{pair[1]:08X}")
+
+    def clear_unif_colors(self) -> bool:
+        """Drop the colour edit. Returns whether anything was set."""
+        had = self._unif_colors is not None
+        self._unif_colors = None
+        return had
+
     def revert_all(self) -> int:
         text_count = self.text_edits.modified_count if self.text_edits else 0
         audio_count = len(self._audio_edits)
         crib_count = len(self._crib_edits)
         stadium_count = len(self._stadium_edits)
         annotation_count = len(self._audio_annotations)
+        colour_count = 1 if self._unif_colors is not None else 0
         if (
             not self._edits and not text_count and not audio_count
             and not crib_count and not stadium_count and not annotation_count
+            and not colour_count
         ):
             return 0
+        self._unif_colors = None
         # Revert All is one transaction across every editor. Replacement bytes
         # remain in place until the empty manifest commits; on any failure the
         # new history snapshots and ledgers are removed and the live edit maps
@@ -2906,6 +2936,7 @@ class StudioSession:
             and not self._stadium_edits
             and not text_provider_edits
             and not self._audio_edits
+            and self._unif_colors is None
         ):
             raise ValidationError("Replace at least one asset before building a modded XISO.")
         edits: list[dict[str, object]] = []
@@ -2925,6 +2956,13 @@ class StudioSession:
                 "kind": "stadium_texture",
                 "target": asset_id,
                 "png": str(edit.replacement_path),
+            })
+        if self._unif_colors is not None:
+            facemask, turtleneck = self._unif_colors
+            edits.append({
+                "kind": "unif_color",
+                "facemask": facemask,
+                "turtleneck": turtleneck,
             })
         edits.extend(text_provider_edits)
         if self._audio_edits:

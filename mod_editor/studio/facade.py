@@ -1951,6 +1951,36 @@ class Nfl2k5StudioFacade:
         progress("Stadium texture exported", 1, 1)
         return path
 
+    def unif_colors(self) -> tuple[str, str] | None:
+        """The facemask and turtleneck tints currently staged, if any."""
+        with self._lock:
+            return self._require_session().unif_colors
+
+    def set_unif_colors(
+        self, facemask: str, turtleneck: str, progress: ProgressSink
+    ) -> tuple[str, str]:
+        """Stage the facemask/faceshield and HI_turtleneck tints.
+
+        This is a project edit like any other: nothing touches the source, and
+        the colours only reach a disc when Build Modded XISO runs.
+        """
+        progress("Setting uniform colours", 0, 1)
+        with self._lock:
+            session = self._require_session()
+            session.set_unif_colors(facemask, turtleneck)
+            chosen = session.unif_colors
+        progress("Uniform colours set", 1, 1)
+        assert chosen is not None
+        return chosen
+
+    def clear_unif_colors(self, progress: ProgressSink) -> bool:
+        """Drop the staged colour edit and go back to retail."""
+        progress("Reverting uniform colours", 0, 1)
+        with self._lock:
+            had = self._require_session().clear_unif_colors()
+        progress("Uniform colours reverted", 1, 1)
+        return had
+
     def replace_stadium_texture(
         self, texture_id: str, supplied_png: Path, progress: ProgressSink
     ) -> object:

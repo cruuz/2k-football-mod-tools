@@ -113,10 +113,21 @@ class EveryCapabilityIsReachableTests(unittest.TestCase):
         mount = source.index("if category == ProductCategory.UNIFORMS_EQUIPMENT:")
         window = source[mount:mount + 1600]
         self.assertIn("_build_uniform_page(section)", window)
-        self.assertIn(
-            "_build_capability_page(section)", window,
+        # The second tab renders the section's remaining capabilities. It is
+        # _build_colors_page now, which puts the facemask colour control above
+        # those cards and then embeds the capability page itself -- so assert
+        # the section reaches a page that renders them, not one call name.
+        self.assertTrue(
+            "_build_capability_page(section)" in window
+            or "_build_colors_page(section)" in window,
             "Uniforms & Equipment must render its remaining capabilities, or "
             "enabling one of them changes nothing a modder can see",
+        )
+        colours = source[source.index("def _build_colors_page"):]
+        colours = colours[:colours.index("def _refresh_unif_color_swatches")]
+        self.assertIn(
+            "_build_capability_page(section)", colours,
+            "the colours tab must still show the section's capability cards",
         )
 
     def test_the_studio_module_still_parses(self) -> None:
@@ -146,6 +157,7 @@ class CardsTellTheTruthTests(unittest.TestCase):
         }
         titles.add("Uniform Sets")           # the first tab of Uniforms & Equipment
         titles.add("Portraits & Faces")      # the second tab of Rosters & Players
+        titles.add("Colours & Other Tools")  # the second tab of Uniforms & Equipment
         for capability_id, workspace in self.workspaces.items():
             with self.subTest(capability_id=capability_id):
                 self.assertIn(
@@ -159,15 +171,14 @@ class CardsTellTheTruthTests(unittest.TestCase):
             with self.subTest(capability_id=capability_id):
                 self.assertIn(capability_id, known)
 
-    def test_the_facemask_says_where_to_edit_it(self) -> None:
-        """It is command-line only today, and must admit that rather than
-        showing an Editable pill over an inert card."""
+    def test_the_facemask_now_has_a_colour_picker(self) -> None:
+        """It was command-line only; the control shipped, so the card must
+        point at it instead of sending people to a terminal."""
         binding = self.catalog.binding("nfl2k5.colors.unif_words")
         self.assertEqual(binding.capability.raw["backend"]["operation"], "write")
-        self.assertNotIn(
-            "nfl2k5.colors.unif_words", self.workspaces,
-            "if a colour picker ever ships, map it here so the card stops "
-            "sending people to a terminal",
+        self.assertEqual(
+            self.workspaces.get("nfl2k5.colors.unif_words"),
+            "Colours & Other Tools",
         )
 
     def test_the_all_textures_lane_now_has_a_real_workspace(self) -> None:

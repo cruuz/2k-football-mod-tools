@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import (
     QApplication,
     QCheckBox,
     QComboBox,
+    QColorDialog,
     QFileDialog,
     QFrame,
     QHeaderView,
@@ -747,6 +748,7 @@ def category_display_title(
 # nothing on it.
 _WORKSPACE_CAPABILITIES = {
     "nfl2k5.uniforms.all_visual": "Uniform Sets",
+    "nfl2k5.colors.unif_words": "Colours & Other Tools",
     # Team Select cards are three of the Team Kit's 39 per-set components
     # (uniform_card_256, helmet_card_256, helmet_card_128), so they are edited
     # in the same browser rather than from a command line.
@@ -1634,7 +1636,7 @@ class StudioMainWindow(QMainWindow):
                 uniform_tabs.setAccessibleName("Uniforms and equipment workspaces")
                 uniform_tabs.addTab(self._build_uniform_page(section), "Uniform Sets")
                 uniform_tabs.addTab(
-                    self._build_capability_page(section), "Colours & Other Tools"
+                    self._build_colors_page(section), "Colours & Other Tools"
                 )
                 # The uniform browser is why people open this page; never let a
                 # newly added tab take the landing position away from it.
@@ -2079,6 +2081,143 @@ class StudioMainWindow(QMainWindow):
         detail_layout.addLayout(split, 1)
         outer.addWidget(detail, 1)
         return page
+
+    def _build_colors_page(self, section: ProductCategorySection) -> QWidget:
+        """The facemask/turtleneck colour control, above this section's cards.
+
+        These two words are the one edit modders kept asking for and could only
+        ever make from a terminal. Word 0 is the facemask/faceshield tint and
+        word 1 is HI_turtleneck; both reach the disc through the same composed
+        build as every other edit, so Undo, Revert All and project save treat
+        them like anything else.
+        """
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.setContentsMargins(30, 24, 30, 12)
+        layout.setSpacing(10)
+
+        panel = QFrame()
+        panel.setObjectName("panel")
+        panel_layout = QVBoxLayout(panel)
+        panel_layout.setContentsMargins(18, 16, 18, 16)
+        panel_layout.setSpacing(10)
+        title = QLabel("Facemask & Turtleneck Colours")
+        title.setObjectName("heroTitleSmall")
+        blurb = QLabel(
+            "Word 0 of the Unif pair tints the facemask and faceshield. Word 1 "
+            "tints HI_turtleneck, which the game reads only when a player's "
+            "two-bit selector is 3. Repainting the coloured square on a helmet "
+            "texture will not move the facemask — it is a separate material fed "
+            "by this value. Ownership is proved by executable trace; a "
+            "controlled in-game capture is still outstanding."
+        )
+        blurb.setObjectName("mutedLabel")
+        blurb.setWordWrap(True)
+        panel_layout.addWidget(title)
+        panel_layout.addWidget(blurb)
+
+        row = QHBoxLayout()
+        row.setSpacing(10)
+        self.facemask_button = QPushButton("Facemask colour…")
+        self.facemask_button.setObjectName("secondaryButton")
+        self.turtleneck_button = QPushButton("Turtleneck colour…")
+        self.turtleneck_button.setObjectName("secondaryButton")
+        self.unif_color_apply = QPushButton("Apply to project")
+        self.unif_color_revert = QPushButton("Revert")
+        self.unif_color_revert.setObjectName("dangerQuietButton")
+        row.addWidget(self.facemask_button)
+        row.addWidget(self.turtleneck_button)
+        row.addStretch(1)
+        row.addWidget(self.unif_color_apply)
+        row.addWidget(self.unif_color_revert)
+        panel_layout.addLayout(row)
+
+        self.unif_color_status = QLabel("Using the retail colours.")
+        self.unif_color_status.setObjectName("mutedLabel")
+        self.unif_color_status.setWordWrap(True)
+        panel_layout.addWidget(self.unif_color_status)
+        layout.addWidget(panel)
+
+        self._pending_facemask = "FF000000"
+        self._pending_turtleneck = "FF385AAF"
+        self.facemask_button.clicked.connect(
+            lambda: self._choose_unif_color("facemask")
+        )
+        self.turtleneck_button.clicked.connect(
+            lambda: self._choose_unif_color("turtleneck")
+        )
+        self.unif_color_apply.clicked.connect(self._apply_unif_colors)
+        self.unif_color_revert.clicked.connect(self._revert_unif_colors)
+        self._refresh_unif_color_swatches()
+
+        layout.addWidget(self._build_capability_page(section), 1)
+        return page
+
+    def _refresh_unif_color_swatches(self) -> None:
+        for button, value in (
+            (self.facemask_button, self._pending_facemask),
+            (self.turtleneck_button, self._pending_turtleneck),
+        ):
+            colour = QColor(int(value[2:4], 16), int(value[4:6], 16),
+                            int(value[6:8], 16))
+            readable = "#101828" if colour.lightness() > 140 else "#edf3fc"
+            button.setStyleSheet(
+                f"background:{colour.name()};color:{readable};"
+                "border:1px solid #2b3d5f;border-radius:8px;padding:8px 14px;"
+            )
+
+    def _choose_unif_color(self, which: str) -> None:
+        current = (self._pending_facemask if which == "facemask"
+                   else self._pending_turtleneck)
+        initial = QColor(int(current[2:4], 16), int(current[4:6], 16),
+                         int(current[6:8], 16))
+        chosen = QColorDialog.getColor(
+            initial, self, f"Choose the {which} colour"
+        )
+        if not chosen.isValid():
+            return
+        packed = f"FF{chosen.red():02X}{chosen.green():02X}{chosen.blue():02X}"
+        if which == "facemask":
+            self._pending_facemask = packed
+        else:
+            self._pending_turtleneck = packed
+        self._refresh_unif_color_swatches()
+
+    def _apply_unif_colors(self) -> None:
+        facemask = self._pending_facemask
+        turtleneck = self._pending_turtleneck
+
+        def success(value: object) -> None:
+            chosen = value if isinstance(value, tuple) else (facemask, turtleneck)
+            self.unif_color_status.setText(
+                f"Staged — facemask #{chosen[0][2:]}, turtleneck #{chosen[1][2:]}. "
+                "Build Modded XISO to write them to a copy of your disc."
+            )
+            self._mark_workspace_changed()
+
+        self._start_task(
+            lambda progress: self.facade.set_unif_colors(
+                facemask, turtleneck, progress
+            ),
+            success,
+            label="Setting uniform colours",
+            blocking=True,
+        )
+
+    def _revert_unif_colors(self) -> None:
+        def success(value: object) -> None:
+            self.unif_color_status.setText(
+                "Using the retail colours." if value
+                else "Nothing to revert — already using the retail colours."
+            )
+            self._mark_workspace_changed()
+
+        self._start_task(
+            self.facade.clear_unif_colors,
+            success,
+            label="Reverting uniform colours",
+            blocking=True,
+        )
 
     def _build_capability_page(self, section: ProductCategorySection) -> QWidget:
         scroll = QScrollArea()
