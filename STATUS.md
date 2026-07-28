@@ -168,7 +168,31 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-11` — 2026-07-28 · CURRENT
+### `beta-12` — 2026-07-28 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-12>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC37-20260728.tar.gz` | 9,475,714 | `b269206ded978509500544f322ff7fe6383bbbe6d25e927a11a5adf85d060349` |
+| `apf2k8-mod-studio-0.1.0-alpha.40-20260728.tar.gz` | 1,131,263 | `8df1f32890f1f5ba0488ad7addb262f62f2bb4ebb67e223015eddafa45ba5d6c` |
+| `2K5-Mod-Studio-1.0-RC37-Setup.exe` | 55,900,578 | `a0f10b019ac385ad3eb481c87bf529e0b7c9d807d7d518faa32e4bd09155a5b1` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.40-Setup.exe` | 52,357,508 | `f66e9272cdeece95191ffb2194a5c1b099ed7b6cb9dc21acc4a05f70baca1803` |
+
+A legally dumped APF disc could be refused with "does not appear to be a valid
+xbox iso image". The bundled `extract-xiso` probes four fixed partition offsets
+and rejects anything else -- the 2K5 layout defect, hidden inside a vendored
+binary. The disc is now read with the project's own searching XDVDFS reader
+first. The report that prompted it was the PlayStation 3 release of the same
+game named `.iso`, so containers are now identified by structure and named:
+ISO 9660 volumes, PS3 and PlayStation discs, STFS packages, ZIP/RAR/7z.
+
+On the 2K5 side the two `Unif` colour words now say what they own: word 0 is
+the facemask/faceshield tint and word 1 is `HI_turtleneck`. Repainting the
+coloured square on a helmet texture cannot move the facemask, because the
+facemask is a separate material fed by that value.
+
+### `beta-11` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-11>
 
