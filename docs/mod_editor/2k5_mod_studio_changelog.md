@@ -5,6 +5,37 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC42 All Textures Is A Workspace Now, And Its Edits Reach The Disc — 2026-07-28
+
+- **All Textures shipped as a sidebar entry with nothing behind it.** It is a
+  real workspace now: **3,024 targets** you can search, preview, Export PNG,
+  Replace PNG and Revert, exactly like every other visual family. That is 1,770
+  end-zone panels, 1,024 goalpost pads, 225 grass `divots` overlays and the
+  five shared equipment textures.
+- **The half that mattered: those edits now survive Build Modded XISO.** A new
+  `p8_texture` edit kind runs through the composed build, is validated, refuses
+  duplicate targets, and binds per-extent — the build locates each pack in your
+  own image, re-derives the offset from where it actually lands, and verifies
+  the pack hash and retail span before writing. A browser whose edits vanished
+  at build time would have been worse than the bare card it replaced.
+- Proved end-to-end on **three differently packed dumps of the same game** --
+  the project's canonical `.xiso`, a reporter's repack and a reporter's
+  pressed-disc read. All three composed two texture edits and changed an
+  identical **31,652 bytes**.
+- This corpus is separate from Stadium Studio's 23,838. That lane edits
+  textures embedded *inside* SCNE scenes; these are standalone `TXTR` chunks
+  sitting beside them. Outer 3136 carries five SCNE chunks and eight separate
+  TXTRs; outer 853 carries ten TXTRs and no SCNE at all.
+- **The Nameplate Atlas exported as gibberish and now doesn't.** `names` is a
+  1024x32 horizontal character strip; the descriptor reader was transposing it
+  to 32x1024 and shredding every letterform. Only `VC_P8_LINEAR` orders its two
+  size halfwords that way, so the 4,081 `A1R5G5B5` player strips are untouched.
+- **Stadium geometry export is command-line only and now says so.** The
+  Stadiums viewport renders private glTF exports but has no save-to-file
+  control, so pointing its card at that page would have been another
+  overpromise. Whole-model *import* still does not exist: only same-count
+  position writers across 75 pinned targets, and no topology importer.
+
 ## v1.0 RC41 The Uniform Browser Comes Back, And Cards Stop Overpromising — 2026-07-28
 
 - **Fixes a regression RC40 introduced.** Splitting Uniforms & Equipment into

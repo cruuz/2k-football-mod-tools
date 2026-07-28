@@ -170,10 +170,11 @@ class CardsTellTheTruthTests(unittest.TestCase):
             "sending people to a terminal",
         )
 
-    def test_the_all_textures_lane_is_honest_about_having_no_workspace(self) -> None:
+    def test_the_all_textures_lane_now_has_a_real_workspace(self) -> None:
+        """It shipped as a bare card; it is a browser now, so say so."""
         binding = self.catalog.binding("nfl2k5.textures.all_p8")
         self.assertEqual(binding.capability.raw["backend"]["operation"], "write")
-        self.assertNotIn("nfl2k5.textures.all_p8", self.workspaces)
+        self.assertEqual(self.workspaces.get("nfl2k5.textures.all_p8"), "All Textures")
 
     def test_the_uniform_browser_stays_the_landing_tab(self) -> None:
         source = _STUDIO.read_text(encoding="utf-8")

@@ -185,7 +185,10 @@ class ProviderIntegrityTests(unittest.TestCase):
         )
         self.assertEqual(
             [len(provider.module_pins) for provider in providers],
-            [61, 9, 8, 9, 8, 9],
+            # 63: the unified visual provider grew the standalone-P8
+            # writer and its workflow module when All Textures gained a
+            # route into Build Modded XISO.
+            [63, 9, 8, 9, 8, 9],
         )
         for provider in providers:
             entries = [provider.backend_module]
@@ -203,6 +206,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                     "mod_editor/core/nfl2k5_safe_text_banks.py",
                     "mod_editor/core/nfl2k5_scorebug_unified_adapter.py",
                     "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+                    "mod_editor/core/nfl2k5_p8_texture_writer.py",
                 })
                 expected_closure.update(local_import_closure(
                     *adapters, exact_path_entries=adapters

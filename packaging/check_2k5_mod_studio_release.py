@@ -24,6 +24,11 @@ MAX_RELEASE_FILE_BYTES = 8 * 1024 * 1024
 # product data instead of ``reports/``, but are held to the same immutable
 # contract so a release cannot silently acquire retail payloads.
 REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
+    "reports/assets/nfl2k5_p8_texture_inventory.json": (
+        1_485_065,
+        "5238021650bf5557f11a2eda3e923c9136c92be177c38b946bc1a7f6ac34fd22",
+        "nfl2k5_p8_texture_inventory/v1",
+    ),
     "reports/assets/nfl2k5_jersey_tset_compatibility.json": (
         2_155_779,
         "046d03546242c11478d39b48d7f6f80b5f2009c85641b5c81abdaa6f8171cacd",

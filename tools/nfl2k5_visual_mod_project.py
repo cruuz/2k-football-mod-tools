@@ -80,6 +80,23 @@ def _load_scorebug_adapter() -> Any:
     return module
 
 
+def _load_p8_texture_adapter() -> Any:
+    """Load the standalone-P8 compiler without product package imports."""
+
+    path = ROOT / "mod_editor/core/nfl2k5_p8_texture_writer.py"
+    spec = importlib.util.spec_from_file_location(
+        "_nfl2k5_p8_texture_unified_adapter", path
+    )
+    if spec is None or spec.loader is None:
+        raise ImportError("could not load the unified P8 texture adapter")
+    module = importlib.util.module_from_spec(spec)
+    # Register before exec: @dataclass resolves annotations through
+    # sys.modules[cls.__module__], which is None for an unregistered module.
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 def _load_stadium_texture_adapter() -> Any:
     """Load the reviewed exact-span compiler without product package imports."""
 
@@ -127,6 +144,7 @@ def _load_fixed_audo_adapter() -> Any:
 
 scorebug_adapter = _load_scorebug_adapter()
 stadium_texture_adapter = _load_stadium_texture_adapter()
+p8_texture_adapter = _load_p8_texture_adapter()
 safe_text_adapter = _load_safe_text_adapter()
 fixed_audo_adapter = _load_fixed_audo_adapter()
 
@@ -234,6 +252,7 @@ CRIB_TEAM_PHOTO_FIELDS = {"kind", "selector", "png"}
 CRIB_SCENE_TEXTURE_FIELDS = {"kind", "selector", "png"}
 SCOREBUG_TEXTURE_FIELDS = {"kind", "target", "png"}
 STADIUM_TEXTURE_FIELDS = {"kind", "target", "png"}
+P8_TEXTURE_FIELDS = {"kind", "asset_id", "png"}
 UNIVERSAL_FIXED_TEXT_FIELDS = {"kind", "selector", "text"}
 ROSTER_TEAM_TEXT_FIELDS = {
     "kind", "resource_outer_index", "team_index", "changes",
@@ -258,6 +277,7 @@ AUSB_AUDIO_KIND = "ausb_audio"
 CRIB_TEAM_PHOTO_KIND = "crib_team_photo"
 CRIB_SCENE_TEXTURE_KIND = "crib_scene_texture"
 SCOREBUG_TEXTURE_KIND = scorebug_adapter.SCOREBUG_TEXTURE_KIND
+P8_TEXTURE_KIND = "p8_texture"
 STADIUM_TEXTURE_KIND = "stadium_texture"
 STADIUM_TEXTURE_TARGET = stadium_texture_adapter.TARGET_TEXTURE_ID
 STADIUM_TEXTURE_SELECTOR_RE = stadium_texture_adapter.SELECTOR_RE
@@ -270,6 +290,7 @@ REPORT_FREE_KINDS = ROSTER_REPORT_FREE_KINDS | {
     MENU_BACK_AUDIO_KIND,
     AUSB_AUDIO_KIND,
     STADIUM_TEXTURE_KIND,
+    P8_TEXTURE_KIND,
     CRIB_SCENE_TEXTURE_KIND,
     UNIVERSAL_FIXED_TEXT_KIND,
 }
@@ -770,6 +791,15 @@ def validate_edit_shape(record: object, order: int) -> dict[str, Any]:
             f"edit {order} has invalid stadium_texture fields/types; choose a "
             "canonical Editable P8 target from Stadium Studio",
         )
+    elif kind == P8_TEXTURE_KIND:
+        require(
+            set(record) == P8_TEXTURE_FIELDS
+            and type(record.get("asset_id")) is str
+            and record["asset_id"].startswith("p8:")
+            and _string(record, "png"),
+            f"edit {order} has invalid p8_texture fields/types; choose a "
+            "target from the All Textures workspace",
+        )
     elif kind == UNIVERSAL_FIXED_TEXT_KIND:
         require(
             set(record) == UNIVERSAL_FIXED_TEXT_FIELDS
@@ -889,6 +919,14 @@ def read_project(path: Path) -> ProjectFile:
     require(
         len(stadium_texture_targets) == len(set(stadium_texture_targets)),
         "project repeats one stadium_texture target",
+    )
+    p8_texture_targets = [
+        edit["asset_id"] for edit in edits
+        if edit["kind"] == P8_TEXTURE_KIND
+    ]
+    require(
+        len(p8_texture_targets) == len(set(p8_texture_targets)),
+        "project repeats one p8_texture target",
     )
     universal_text_selectors = [
         edit["selector"] for edit in edits
@@ -2086,6 +2124,13 @@ def build_one_import(order: int, edit: dict[str, Any], project: ProjectFile,
                 index, inventory, edit["target"], png
             )
         except stadium_texture_adapter.StadiumTextureWriterError as exc:
+            raise ProjectError(str(exc)) from exc
+    if kind == P8_TEXTURE_KIND:
+        try:
+            return p8_texture_adapter.build_unified_p8_texture_import(
+                index, str(edit["asset_id"]), Path(png)
+            )
+        except p8_texture_adapter.P8TextureWriterError as exc:
             raise ProjectError(str(exc)) from exc
     raise ProjectError(f"unsupported edit kind after validation: {kind}")
 

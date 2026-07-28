@@ -29,7 +29,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc41"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc42"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
@@ -49,17 +49,17 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC41 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC42 — Getting Started"
         ))
         self.assertIn(
-            "## v1.0 RC41 The Uniform Browser Comes Back, And Cards Stop Overpromising", changelog
+            "## v1.0 RC42 All Textures Is A Workspace Now, And Its Edits Reach The Disc", changelog
         )
         self.assertIn(
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
         )
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC41 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC42 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
@@ -235,11 +235,11 @@ class ModStudioPackagingTests(unittest.TestCase):
                 release_gate.audit_release(root, allowlist)
 
     def test_reviewed_metadata_files_match_exact_contract_and_have_no_payload(self) -> None:
-        self.assertEqual(len(release_gate.REVIEWED_METADATA), 14)
+        self.assertEqual(len(release_gate.REVIEWED_METADATA), 15)
         self.assertEqual(
             sum(path.startswith("reports/assets/")
                 for path in release_gate.REVIEWED_METADATA),
-            11,
+            12,
         )
         for relative, (size, expected_sha, schema) in release_gate.REVIEWED_METADATA.items():
             path = ROOT / relative
@@ -447,7 +447,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn(
             '"apf2k8.scorebug_presentation.digital_font"', runtime_probe
         )
-        self.assertIn("reports=11 reviewed_metadata=14", runtime_probe)
+        self.assertIn("reports=12 reviewed_metadata=15", runtime_probe)
         self.assertIn("Nfl2k5StadiumCacheCoordinator", runtime_probe)
         self.assertIn("build_scorebug_texture_import", runtime_probe)
 

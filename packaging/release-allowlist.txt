@@ -52,6 +52,7 @@ mod_editor/core/nfl2k5_build_service.py
 mod_editor/core/nfl2k5_crib.py
 mod_editor/core/nfl2k5_extended_visual_catalog.py
 mod_editor/core/nfl2k5_extended_visual_io.py
+mod_editor/core/nfl2k5_p8_texture_writer.py
 mod_editor/core/nfl2k5_playbook_inspector.py
 mod_editor/core/nfl2k5_safe_text_banks.py
 mod_editor/core/nfl2k5_scorebug_unified_adapter.py
@@ -107,6 +108,7 @@ reports/assets/nfl2k5_jersey_tset_compatibility.json
 reports/assets/nfl2k5_live_face_texture_compatibility.json
 reports/assets/nfl2k5_live_helmet_txtr_compatibility.json
 reports/assets/nfl2k5_live_numbers_nameplate_compatibility.json
+reports/assets/nfl2k5_p8_texture_inventory.json
 reports/assets/nfl2k5_pants_tset_compatibility.json
 reports/assets/nfl2k5_player_portrait_compatibility.json
 reports/assets/nfl2k5_sleeve_tset_compatibility.json
@@ -136,6 +138,7 @@ tools/nfl_live_helmet_txtr_targets.py
 tools/nfl_live_numbers_nameplate_png_import.py
 tools/nfl_live_numbers_nameplate_targets.py
 tools/nfl_outer.py
+tools/nfl_p8_texture_inventory.py
 tools/nfl_pants_tset_png_import.py
 tools/nfl_pants_tset_targets.py
 tools/nfl_player_portrait_png_import.py

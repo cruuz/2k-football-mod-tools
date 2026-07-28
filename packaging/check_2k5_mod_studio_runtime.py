@@ -52,6 +52,7 @@ REQUIRED_REPORTS = frozenset(
         "nfl2k5_create_team_field_art_inventory.json",
         "scorebug_presentation_audit.json",
         "nfl2k5_audo_import_capacity.json",
+        "nfl2k5_p8_texture_inventory.json",
     }
 )
 PRIVATE_INVENTORY = "nfl2k5_resource_chunks_v2.json"
@@ -88,7 +89,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "c781fa99206309f03e2a0a80d579c3105a5d2d413c2588ec2c702405a10c957f",
     "mod_editor/gui/studio_qt.py":
-        "1ac55c3538866d1d698eaf2a2598297ce50f51cb5be5b5203901be3cfb2be469",
+        "03164686ccf7766946aeb2dcc05f74fdc33e56f42b1258193abf25d2ba8889fb",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1531,7 +1532,7 @@ def main() -> int:
         if path.is_file() and not path.is_symlink()
     }
     require(actual_reports == REQUIRED_REPORTS,
-            "release reports/assets must contain only the eleven reviewed metadata files")
+            "release reports/assets must contain only the twelve reviewed metadata files")
     require(not os.path.lexists(REPORTS / PRIVATE_INVENTORY),
             "private 55 MiB user-XISO inventory was included in the release")
     require(COMPACT_CRIB.is_file() and not COMPACT_CRIB.is_symlink(),
@@ -1658,9 +1659,9 @@ def main() -> int:
 
     visual_module = modules["mod_editor.core.nfl2k5_extended_visual_catalog"]
     visual_catalog = visual_module.load_nfl2k5_product_visual_catalog()
-    require(len(visual_catalog.extended.assets) == 7_312,
+    require(len(visual_catalog.extended.assets) == 10_336,
             "extended visual asset count changed")
-    require(len(visual_catalog.assets) == 32_038,
+    require(len(visual_catalog.assets) == 35_062,
             "complete visual asset count changed")
     scorebug = next(
         asset for asset in visual_catalog.extended.assets
@@ -1944,7 +1945,7 @@ def main() -> int:
             "desktop --studio route did not construct the product facade")
     require(captured.get("uniform_catalog") is not None,
             "desktop --studio route omitted the uniform catalog")
-    require(len(getattr(captured.get("extended_visual_catalog"), "assets", ())) == 7_312,
+    require(len(getattr(captured.get("extended_visual_catalog"), "assets", ())) == 10_336,
             "desktop --studio route omitted the extended visual catalog")
     launched_catalog = captured.get("product_catalog")
     require(
@@ -1980,7 +1981,7 @@ def main() -> int:
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
         "registry=66 sections=12 nfl2k5_capabilities=32 "
-        "reports=11 reviewed_metadata=14 sets=634 visuals=32038 "
+        "reports=12 reviewed_metadata=15 sets=634 visuals=35062 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "
         "text_read_only=3272 roster_numbers=6522 "

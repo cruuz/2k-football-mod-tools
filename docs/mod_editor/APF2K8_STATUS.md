@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio — Status
 
-The source code and UI identify as the retail-free **`0.1.0-alpha.44`**.
+The source code and UI identify as the retail-free **`0.1.0-alpha.45`**.
 `0.1.0-alpha.34` remains preserved unchanged; its mode-`0444`,
 815,213-byte archive has SHA-256
 `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`,
@@ -527,6 +527,11 @@ that preserves every user-data directory. The release/runtime gates exercise
 that lifecycle headlessly in an isolated home before a package can ship.
 
 Last updated: 2026-07-28
+
+## 0.1.0-alpha.45 candidate boundary — no APF change
+
+- Source/UI identity is `0.1.0-alpha.45`. Version parity only; the 2K5 side
+  gained the All Textures workspace and a corrected linear-texture decode.
 
 ## 0.1.0-alpha.44 candidate boundary — no APF change
 

@@ -449,7 +449,7 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "093926be2b1f1bbea5c8c949010ee711a8e905ec2812d86c96052e48b772d0cc"
+    backend_module_sha256 = "db980456320ade8c36727bf71d93b60fb9a9f787d37d4ef32525c895072587ec"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
@@ -466,6 +466,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_safe_text_banks.py": "c7ea4288611615204f53c40f5da06728bd9e5511eec5ae06711145e509461d48",
         "mod_editor/core/nfl2k5_scorebug_unified_adapter.py": "3307d3b1777fcb51f112dea2c6c5290dd969c3037d5bc21112f9740b7cef9bfd",
         "mod_editor/core/nfl2k5_source_cache.py": "662f1a9c0be6c73b647ba3850396f1016e10ef1c5227e01a4474d6d679c36731",
+        "mod_editor/core/nfl2k5_p8_texture_writer.py": "94aa984f9dad9666b79b091071a81c194fa1cd4880a1af8d9ed0c68a26de9731",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py": "c270d03fe92985baeb867182370207d2b4a224524fcaf3a6759438860d1601f9",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "5e205827d9fcec50ef9999cd508469481a718816947ecb42c346182325c5ed6b",
@@ -474,6 +475,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
         "tools/nfl2k5_jersey_png_workflow.py": "e7af6773a07085da33745e62bfccc59c2f013e833f2aa1ae9009c965938f5832",
         backend_module: backend_module_sha256,
+        "tools/nfl_all_texture_xiso_workflow.py": "a07a08b292e94a1a2a4e4925d5a6383a3fa2cf7806184948d88feaf06e700b53",
         "tools/nfl_audo_wav_xiso_workflow.py": "d684cbe7b30f77caf808bcef3d0219777b333336ae5bee4837d10f69cc1d13c6",
         "tools/nfl_create_team_field_art_inventory.py": "42358fb588bdc9b25f75640781bf16ed873913385e53e43c41f6bccf12d11bb3",
         "tools/nfl_create_team_field_art_png_import.py": "4f550de59e2827c0f3784ca1609ff499d01d94ee0b6b4b36c6c1fbb24a28482f",

@@ -757,7 +757,11 @@ _WORKSPACE_CAPABILITIES = {
     "nfl2k5.scorebug_presentation.inventory": "Scorebug & Presentation",
     "nfl2k5.crib.assets": "The Crib",
     "nfl2k5.audio.audo_wav": "Audio",
-    "nfl2k5.stadiums.geometry": "Stadiums",
+    # NOT mapped: the Stadiums viewport renders private glTF exports but
+    # has no save-to-file control, so geometry export is command-line
+    # only and the card must say so rather than pointing at a page that
+    # cannot do it.
+    "nfl2k5.textures.all_p8": "All Textures",
 }
 
 
@@ -1585,6 +1589,9 @@ class StudioMainWindow(QMainWindow):
                 ProductCategory.SCOREBUG_PRESENTATION: frozenset({
                     "scorebug_texture",
                 }),
+                ProductCategory.TEXTURES: frozenset({
+                    "p8_texture",
+                }),
             }.get(category)
             if category == ProductCategory.UNIFORMS_EQUIPMENT:
                 # The uniform browser is built around one capability
@@ -1606,6 +1613,13 @@ class StudioMainWindow(QMainWindow):
                 # newly added tab take the landing position away from it.
                 uniform_tabs.setCurrentIndex(0)
                 page = uniform_tabs
+            elif category == ProductCategory.TEXTURES:
+                # This category shipped as a bare capability card with nothing
+                # to click. It gets the same browser every other visual family
+                # uses: search, preview, Export/Replace PNG, Revert.
+                if visual_kinds is None:
+                    raise RuntimeError("All Textures visual kinds are unavailable")
+                page = self._build_visual_page(section, visual_kinds)
             elif category == ProductCategory.ROSTERS_PLAYERS:
                 if visual_kinds is None:
                     raise RuntimeError("Rosters & Players visual kinds are unavailable")

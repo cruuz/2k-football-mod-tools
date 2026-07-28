@@ -41,6 +41,11 @@ SCHEMA = "nfl2k5_p8_texture_inventory/v1"
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INDEX = ROOT / "extracted/ESPN NFL 2K5 (USA)/vc_53450030/0"
 DEFAULT_JSON = ROOT / "reports/assets/nfl2k5_p8_texture_inventory.json"
+# Retail sectors, recorded for the build proof only. A pressed disc or a
+# repack puts the same pack somewhere else, so the build locates it by path
+# and re-derives every offset; nothing compares against these.
+RETAIL_PACK_SECTORS = {"0": 796_479, "1": 649_995, "2": 891_064,
+                       "8": 1_574_589, "9": 35_531}
 
 # The families this workspace claims, and the label each carries in the browser.
 # Every entry is a texture name that exists in a standalone TXTR chunk.
@@ -150,6 +155,27 @@ def build(index_path: Path) -> dict[str, object]:
     targets.sort(key=lambda row: (row["group"], row["texture"], row["outer_index"]))
     require(targets, "no eligible standalone P8 targets were found")
     groups = Counter(str(row["group"]) for row in targets)
+    # Per-pack identity. The composed build locates each pack in the user's own
+    # image, derives the absolute offset from where it actually lands, and then
+    # checks the pack's content hash -- which is the same on every legal dump
+    # because a pack is one file. That is why these are safe to pin and the
+    # container's size and hash are not.
+    packs: dict[str, dict[str, object]] = {}
+    for name in sorted({str(row["pack_name"]) for row in targets}):
+        pack_path = index_path.parent / name
+        if not pack_path.is_file():
+            pack_path = index_path.parent / name.upper()
+        require(pack_path.is_file(), f"pack {name} is missing beside the index")
+        hasher = hashlib.sha256()
+        with pack_path.open("rb") as stream:
+            for block in iter(lambda: stream.read(16 << 20), b""):
+                hasher.update(block)
+        packs[name] = {
+            "path": f"vc_53450030/{name}",
+            "retail_sector": RETAIL_PACK_SECTORS[name],
+            "sha256": hasher.hexdigest(),
+            "size": pack_path.stat().st_size,
+        }
     return {
         "schema": SCHEMA,
         "source": {"index": index_path.name},
@@ -159,6 +185,7 @@ def build(index_path: Path) -> dict[str, object]:
             "distinct_textures": len({str(row["texture"]) for row in targets}),
             "skipped": dict(sorted(skipped.items())),
         },
+        "packs": packs,
         "contract": {
             "format": "P8",
             "requires": "compressed, swizzled, index chain at the video buffer "

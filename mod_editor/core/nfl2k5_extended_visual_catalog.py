@@ -54,6 +54,7 @@ class VisualReportPaths:
     live_faces: Path = ROOT / "reports/assets/nfl2k5_live_face_texture_compatibility.json"
     field_art: Path = ROOT / "reports/assets/nfl2k5_create_team_field_art_inventory.json"
     scorebug: Path = ROOT / "reports/assets/scorebug_presentation_audit.json"
+    p8_textures: Path = ROOT / "reports/assets/nfl2k5_p8_texture_inventory.json"
 
 
 @dataclass(frozen=True, slots=True)
@@ -70,6 +71,7 @@ class VisualCatalogExpectations:
     field_package_count: int
     field_texture_count: int
     scorebug_count: int
+    p8_texture_count: int = 0
 
 
 PRODUCTION_EXPECTATIONS = VisualCatalogExpectations(
@@ -79,6 +81,7 @@ PRODUCTION_EXPECTATIONS = VisualCatalogExpectations(
     field_package_count=126,
     field_texture_count=1_134,
     scorebug_count=3,
+    p8_texture_count=3_024,
 )
 
 
@@ -274,6 +277,11 @@ class ExtendedVisualAsset:
                 "texture": self.texture,
                 "weather": self.weather,
             }
+        if self.kind == "p8_texture":
+            _require(self.texture is not None and self.target_selector,
+                     "P8 texture catalog selector is missing")
+            return {"asset_id": self.target_selector, "kind": "p8_texture",
+                    "png": png}
         raise ExtendedVisualCatalogError(f"Unsupported visual kind: {self.kind}")
 
     def scorebug_recipe_edit(self, png_path: str | os.PathLike[str]) -> ScorebugRecipeEdit:
@@ -326,14 +334,67 @@ class Nfl2k5ExtendedVisualCatalog:
             "vc_scorebug_presentation_audit/v1",
             "Scorebug",
         )
+        # Retail-free tests build the other four families from synthetic
+        # reports and have no standalone-P8 inventory to point at. Expecting
+        # zero of them is how such a catalog says "not this family", so do not
+        # demand the report in that case.
+        p8: dict[str, Any] = {"targets": []}
+        if expectations.p8_texture_count:
+            p8 = _read_report(
+                report_paths.p8_textures,
+                "nfl2k5_p8_texture_inventory/v1",
+                "Standalone P8 texture",
+            )
         owners = _portrait_owners(portraits)
         assets = [
             *cls._portrait_assets(portraits, owners, expectations),
             *cls._face_assets(faces, owners, expectations),
             *cls._field_assets(field, expectations),
             *cls._scorebug_assets(scorebug, expectations),
+            *cls._p8_texture_assets(p8, expectations),
         ]
         return cls(assets, report_paths)
+
+    @staticmethod
+    def _p8_texture_assets(
+        report: dict[str, Any],
+        expectations: VisualCatalogExpectations,
+    ) -> list[ExtendedVisualAsset]:
+        """The standalone TXTR corpus: end zones, pads, divots, equipment.
+
+        Deliberately distinct from Stadium Studio, which edits textures
+        embedded inside SCNE scenes. These sit beside those scenes as their own
+        chunks and had no workspace at all until now.
+        """
+        rows = report.get("targets") or []
+        _require(
+            len(rows) == expectations.p8_texture_count,
+            "Standalone P8 texture inventory count changed",
+        )
+        assets: list[ExtendedVisualAsset] = []
+        for row in rows:
+            asset_id = str(row["asset_id"])
+            texture = str(row["texture"])
+            outer = int(row["outer_index"])
+            assets.append(ExtendedVisualAsset(
+                asset_id=asset_id,
+                label=f"{row['label']} — package {outer}",
+                group=str(row["group"]),
+                kind="p8_texture",
+                target_selector=asset_id,
+                width=int(row["width"]),
+                height=int(row["height"]),
+                writer_route=VisualWriterRoute.UNIFIED_VISUAL,
+                capability_id="nfl2k5.textures.all_p8",
+                search_terms=(texture, str(row["group"]), str(outer),
+                              str(row["label"])),
+                authoring_note=(
+                    "Replaced inside its exact retail byte span, so the PNG "
+                    "must match the listed size exactly."
+                ),
+                texture=texture,
+            ))
+        return assets
 
     @staticmethod
     def _portrait_assets(
