@@ -168,7 +168,32 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-6` — 2026-07-27 · CURRENT
+### `beta-7` — 2026-07-27 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-7>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC32-20260727.tar.gz` | 9,466,662 | `ddc23b37676e8f9efc0941d0d298c7de5a048ea681dd2a4c342f11a9d02be5fb` |
+| `apf2k8-mod-studio-0.1.0-alpha.37-20260727.tar.gz` | 1,117,404 | `fc1fce34c50ddce003923307172ac6be9d4eed5dc6a055a2c51801717338b46f` |
+| `2K5-Mod-Studio-1.0-RC32-Setup.exe` | 55,889,723 | `8927f974689b8d95abb672a805eb0b64b77d3107d6afbd7a7efdec842fd7624f` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.37-Setup.exe` | 52,353,300 | `3400ce01378ae134b7c31becbbc2bdc78569af25f8612746cb9f6c5050a31b6e` |
+
+beta-6 fixed only half of the dump-acceptance problem and shipped anyway. Two
+follow-on failures came back from the same users: a raw disc read whose
+partition offset was not in the list beta-6 probed, and -- reaching only people
+who *install* rather than unzip -- `ModuleNotFoundError: No module named
+'nfl_outer'` immediately after loading, because the embeddable runtime's `._pth`
+defines `sys.path` without adding a script's own directory. Both are fixed here
+and both are pinned by tests that need neither game data nor Windows. See
+`CHANGELOG.md`.
+
+**Every digest in this table was generated from the built files, not
+transcribed.** The two installer digests in the beta-6 notes were written out by
+hand from a truncated printout and the tail was wrong; they were corrected in
+place, and this table is now produced mechanically so that cannot recur.
+
+### `beta-6` — 2026-07-27 · superseded by beta-7
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-6>
 
