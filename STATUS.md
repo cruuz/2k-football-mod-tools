@@ -168,7 +168,26 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-9` — 2026-07-27 · CURRENT
+### `beta-10` — 2026-07-27 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-10>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC35-20260727.tar.gz` | 9,472,304 | `6ee4d6f8922fe1ebd4636af45b7e4aa632c65643d3b0d5dfb26acd08ee241a7a` |
+| `apf2k8-mod-studio-0.1.0-alpha.39-20260727.tar.gz` | 1,118,430 | `89416520a43dab0a94b2f3fcad465ac54a4bf5c539b9f0dbd32e6397db792b37` |
+| `2K5-Mod-Studio-1.0-RC35-Setup.exe` | 55,901,479 | `1e64ab600d59454f74185cd4f51a25333aac998c8e032d6f4e2d2546943a6b44` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.39-Setup.exe` | 52,351,553 | `5a2b14f212d99e1a3beb280c37b7cec7e874a5f1aedf3386acb30aeb1f6d4bf8` |
+
+beta-9 loaded a user's disc but could not build from it: the build path pinned
+sector numbers and absolute byte offsets, both of which are properties of
+whoever assembled the image rather than of the game. All nineteen files sit at
+different sectors in a pressed disc, an extract-xiso rebuild and a repack while
+being byte-identical. Files are located by name now and offsets derived from the
+image in hand. Verified by building real mods from both of the reporter's images
+and again from this published tarball.
+
+### `beta-9` — 2026-07-27 · superseded by beta-10
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-9>
 
