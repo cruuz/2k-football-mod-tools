@@ -1,5 +1,10 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.43 — no APF change 2026-07-28
+
+- Version parity only. The 2K5 side fixed a stale on-screen version and three
+  capabilities its Uniforms page never rendered; APF behaviour is unchanged.
+
 ## 0.1.0-alpha.42 — the PNG importer accepts real PNGs 2026-07-28
 
 - The shared PNG importer demanded colour type 6 at bit depth 8, non-interlaced,

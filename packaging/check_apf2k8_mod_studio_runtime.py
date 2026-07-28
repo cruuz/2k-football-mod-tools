@@ -24,7 +24,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.42"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.43"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:

@@ -1567,7 +1567,22 @@ class StudioMainWindow(QMainWindow):
                 }),
             }.get(category)
             if category == ProductCategory.UNIFORMS_EQUIPMENT:
-                page = self._build_uniform_page(section)
+                # The uniform browser is built around one capability
+                # (nfl2k5.uniforms.all_visual). Every other capability filed
+                # under Uniforms & Equipment -- the facemask/turtleneck packed
+                # colours and the Team Select cards among them -- used to be
+                # dropped on the floor here, so enabling one changed nothing a
+                # modder could see and the only honest answer to "where is it?"
+                # was "nowhere". They get their own tab, the same shape Rosters
+                # & Players already uses for its two workspaces.
+                uniform_tabs = QTabWidget()
+                uniform_tabs.setObjectName("uniformsEquipmentTabs")
+                uniform_tabs.setAccessibleName("Uniforms and equipment workspaces")
+                uniform_tabs.addTab(self._build_uniform_page(section), "Uniform Sets")
+                uniform_tabs.addTab(
+                    self._build_capability_page(section), "Colours & Other Tools"
+                )
+                page = uniform_tabs
             elif category == ProductCategory.ROSTERS_PLAYERS:
                 if visual_kinds is None:
                     raise RuntimeError("Rosters & Players visual kinds are unavailable")

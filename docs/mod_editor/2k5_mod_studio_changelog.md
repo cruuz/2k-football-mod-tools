@@ -5,6 +5,21 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC40 The Facemask Option Is Actually On Screen — 2026-07-28
+
+- **The facemask colours were switched on and still invisible.** Uniforms &
+  Equipment builds its uniform-set browser around one capability
+  (`nfl2k5.uniforms.all_visual`) and silently dropped the other three filed
+  under that category -- the facemask/turtleneck packed colours, the Team Select
+  cards, and the Detroit away runtime proof. Enabling one changed nothing a
+  modder could see. The category is now two tabs: **Uniform Sets** and
+  **Colours & Other Tools**, the same shape Rosters & Players already used.
+- **The window said RC36 while running RC38.** `mod_editor.__version__` is what
+  the title bar renders, and three releases bumped the changelog, STATUS.md and
+  the docs without touching it -- so nobody, including us, could tell from a
+  screenshot which build they were on. It is now checked against STATUS.md and
+  the newest changelog heading, so it cannot drift again.
+
 ## v1.0 RC39 Your PNG Editor's Normal Export Now Works — 2026-07-28
 
 - **"needs an exact 512×256 8-bit RGBA PNG with interlacing off" was half our
