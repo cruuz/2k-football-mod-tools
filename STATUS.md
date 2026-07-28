@@ -168,7 +168,27 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-14` — 2026-07-28 · CURRENT
+### `beta-15` — 2026-07-28 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-15>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC40-20260728.tar.gz` | 9,486,881 | `287ba54f734bf91acc7fea279dfcf83342414f9d3ae083fc239088f229efb56f` |
+| `apf2k8-mod-studio-0.1.0-alpha.43-20260728.tar.gz` | 1,132,681 | `187f66c642ea8708601b248e1625777d8de9a974fc3e90649191dd4b763e77f5` |
+| `2K5-Mod-Studio-1.0-RC40-Setup.exe` | 55,917,960 | `3f5d7dbf1d5c261b332927f8a014faaad1ec27ca6b3f6438dab881f0468edca7` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.43-Setup.exe` | 52,361,519 | `0ef084513f5bdc4c49b796c69dd673a405161b4db06c26d1feb12fb52c5c7c08` |
+
+Uniforms & Equipment built its browser around one capability and dropped the
+other three filed under that category, so the facemask/turtleneck colours were
+enabled and still unreachable. The category is now two tabs, Uniform Sets and
+Colours & Other Tools. Verified headless against the shipped build.
+
+`mod_editor.__version__` had not moved since RC36, so the window reported a
+version three releases old. It is now asserted against STATUS.md and the newest
+changelog heading.
+
+### `beta-14` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-14>
 
