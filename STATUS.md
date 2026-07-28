@@ -168,7 +168,28 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-13` — 2026-07-28 · CURRENT
+### `beta-14` — 2026-07-28 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-14>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC39-20260728.tar.gz` | 9,486,332 | `4e282225464c93f96e2b7e63f78eb49c94560fa87f8e8ed5b98dfb12bf8c89f1` |
+| `apf2k8-mod-studio-0.1.0-alpha.42-20260728.tar.gz` | 1,132,573 | `f727ee9db33de0415fff7b38cd6c651f785d43db3f1d12145ecb8747d4628bad` |
+| `2K5-Mod-Studio-1.0-RC39-Setup.exe` | 55,908,087 | `77786e55b69cee53dc580e52c6595f4f8905b79b1a5bd1370dee941159f18d55` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.42-Setup.exe` | 52,359,139 | `a9487afa79c1f31c1ca58c8205c3228be5b9c5ee801e4b29648fddb375cc06f5` |
+
+The shared PNG importer accepted only colour type 6 at bit depth 8,
+non-interlaced, so an image editor's ordinary export -- usually colour type 2
+(RGB) or 3 (indexed) -- was rejected as if the file were wrong. Every colour
+type and bit depth the specification defines now decodes and is widened to
+RGBA internally, interlaced or not, with `tRNS` honoured. Verified pixel-exact
+against Pillow on every variant.
+
+The exact-dimensions rule stays: a texture fills a fixed byte span, so a
+differently sized image cannot occupy it. The message now says so.
+
+### `beta-13` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-13>
 
