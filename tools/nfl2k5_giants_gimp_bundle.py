@@ -798,7 +798,7 @@ def standalone_exports(builder: BundleBuilder) -> None:
         key = (target.outer_index, target.chunk_index, target.resource_name)
         require(key in lookup, f"nameplate is absent from all-TXTR inventory: {key}")
         row = lookup[key]
-        payload, rgba = authenticated_png_from_inventory(row, (32, 1024), None)
+        payload, rgba = authenticated_png_from_inventory(row, (1024, 32), None)
         relative = f"EDIT_THESE/{side_name}/04_NAMEPLATE/nameplate_atlas.png"
         edit = {
             "asset_code": ASSET_CODE,
@@ -820,7 +820,7 @@ def standalone_exports(builder: BundleBuilder) -> None:
             "span_sha256": target.span_sha256,
             "xiso_absolute_span_offset": target.xiso_absolute_span_offset,
         }
-        builder.add_png(relative, payload, rgba, 32, 1024, "editable", side_name,
+        builder.add_png(relative, payload, rgba, 1024, 32, "editable", side_name,
                         "nameplate_atlas", target.selector, storage, edit)
 
         # Menu-only uniform card and both independent helmet-card resolutions.

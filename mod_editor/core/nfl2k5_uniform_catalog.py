@@ -215,7 +215,10 @@ def _component_specs() -> tuple[_ComponentSpec, ...]:
     specs.extend((
         _ComponentSpec(
             "nameplate", "Nameplate Atlas", "Nameplate",
-            "live_number_nameplate", 32, 1024, family="nameplate",
+            # 1024x32, not 32x1024: this is a horizontal character strip.
+            # The transposed value came from the descriptor bug fixed in
+            # nfl_txtr.parse_texture and is why the export looked scrambled.
+            "live_number_nameplate", 1024, 32, family="nameplate",
         ),
         _ComponentSpec(
             "team-select.unif.256", "Uniform Card", "Team Select Cards",

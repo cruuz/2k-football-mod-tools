@@ -83,7 +83,7 @@ def main() -> int:
         generated = {
             "digit_64": ("detroit_away_style0_digit5_64_nonretail.png", image(64, 64, "digit")),
             "digit_32": ("detroit_away_style0_digit5_32_nonretail.png", image(32, 32, "digit")),
-            "nameplate": ("detroit_away_style0_nameplate_nonretail.png", image(32, 1024, "nameplate")),
+            "nameplate": ("detroit_away_style0_nameplate_nonretail.png", image(1024, 32, "nameplate")),
         }
         rows = []
         for role, (name, payload) in generated.items():
