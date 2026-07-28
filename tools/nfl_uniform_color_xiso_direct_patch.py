@@ -43,6 +43,20 @@ EXPECTED_XBE_SHA256 = (
 )
 EXPECTED_XBE_SIZE = 11_948_032
 MAGENTA_PAIR = struct.pack("<II", 0xFFFF00FF, 0xFFFF00FF)
+
+
+def pack_colors(facemask: int, turtleneck: int) -> bytes:
+    """The eight bytes this writer replaces, from two ARGB colours.
+
+    Word 0 is the facemask/faceshield tint and word 1 is HI_turtleneck, both
+    established by executable trace. Passing the same magenta for both
+    reproduces the original visibility proof exactly, which is why that stays
+    the default.
+    """
+    for value, name in ((facemask, "facemask"), (turtleneck, "turtleneck")):
+        require(type(value) is int and 0 <= value <= 0xFFFFFFFF,
+                f"{name} colour must be a 32-bit ARGB integer")
+    return struct.pack("<II", facemask, turtleneck)
 COPY_CHUNK = 32 * 1024 * 1024
 HASH_CHUNK = 16 * 1024 * 1024
 MAX_DIRECTORY_NODES = 4096
@@ -625,7 +639,11 @@ def write_owned_json(owned: OwnedFile, value: dict[str, object]) -> None:
     require(owned_path_matches(owned), "manifest pathname changed during write")
 
 
-def run(source_path: Path, output_path: Path, manifest_path: Path) -> dict[str, object]:
+def run(source_path: Path, output_path: Path, manifest_path: Path,
+        colors: bytes = MAGENTA_PAIR) -> dict[str, object]:
+    require(isinstance(colors, (bytes, bytearray)) and len(colors) == 8,
+            "replacement colour pair must be exactly eight bytes")
+    colors = bytes(colors)
     try:
         supplied_source_info = source_path.lstat()
     except FileNotFoundError as exc:
@@ -688,7 +706,7 @@ def run(source_path: Path, output_path: Path, manifest_path: Path) -> dict[str, 
             patch_offsets.append(absolute)
             changed_relative = [
                 index for index, (before, after) in
-                enumerate(zip(target.expected_bytes, MAGENTA_PAIR)) if before != after
+                enumerate(zip(target.expected_bytes, colors)) if before != after
             ]
             allowed_changed_offsets.update(absolute + index for index in changed_relative)
             target_records.append({
@@ -701,15 +719,25 @@ def run(source_path: Path, output_path: Path, manifest_path: Path) -> dict[str, 
                 "absolute_patch_offset": absolute,
                 "expected_absolute_patch_offset": target.expected_absolute_patch_offset,
                 "before_hex": target.expected_bytes.hex(),
-                "after_hex": MAGENTA_PAIR.hex(),
+                "after_hex": colors.hex(),
                 "changed_relative_bytes": changed_relative,
                 "source_file_sha256": target.expected_sha256,
             })
 
         require(len(patch_offsets) == len(set(patch_offsets)) == 2,
                 "target patch windows overlap or are missing")
-        require(len(allowed_changed_offsets) == 10,
-                "replacement no longer has the proved ten-byte delta")
+        # The original proof wrote magenta over both words and happened to
+        # differ in exactly ten bytes. That count is a property of *that*
+        # colour, not of the writer, so pinning it made every other colour
+        # impossible. What has to hold is that nothing outside the two eight-
+        # byte colour words can change, which is what the offsets are checked
+        # against here and independently re-verified against the built image.
+        require(allowed_changed_offsets, "replacement is identical to retail")
+        window = {
+            offset + index for offset in patch_offsets for index in range(8)
+        }
+        require(allowed_changed_offsets <= window,
+                "replacement would change a byte outside the two colour words")
 
         output_owned = reserve_file(output)
         require(fd_identity(output_owned.descriptor) != source_identity,
@@ -717,9 +745,9 @@ def run(source_path: Path, output_path: Path, manifest_path: Path) -> dict[str, 
         copy_method = copy_fd_exact(source_fd, output_owned.descriptor, source_info.st_size)
         require(owned_path_matches(output_owned), "output pathname changed during copy")
         for absolute in patch_offsets:
-            require(pwrite(output_owned.descriptor, MAGENTA_PAIR, absolute) == 8,
+            require(pwrite(output_owned.descriptor, colors, absolute) == 8,
                     f"short patch write at 0x{absolute:x}")
-            require(read_exact(output_owned.descriptor, absolute, 8) == MAGENTA_PAIR,
+            require(read_exact(output_owned.descriptor, absolute, 8) == colors,
                     f"patch readback mismatch at 0x{absolute:x}")
         os.fsync(output_owned.descriptor)
         require(owned_path_matches(output_owned), "output pathname changed during patch")
@@ -815,9 +843,27 @@ def main() -> int:
     parser.add_argument("--source-xiso", required=True, type=Path)
     parser.add_argument("--output-xiso", required=True, type=Path)
     parser.add_argument("--manifest", required=True, type=Path)
+    parser.add_argument(
+        "--facemask", default=None,
+        help="facemask/faceshield colour as AARRGGBB hex, e.g. FF1A1A1A",
+    )
+    parser.add_argument(
+        "--turtleneck", default=None,
+        help="HI_turtleneck colour as AARRGGBB hex; defaults to --facemask",
+    )
     args = parser.parse_args()
+    if args.facemask is None and args.turtleneck is None:
+        colors = MAGENTA_PAIR
+    else:
+        facemask_text = args.facemask or args.turtleneck
+        turtleneck_text = args.turtleneck or args.facemask
+        try:
+            colors = pack_colors(int(facemask_text, 16), int(turtleneck_text, 16))
+        except ValueError as exc:
+            print(f"ERROR: colours must be AARRGGBB hex: {exc}", file=sys.stderr)
+            return 1
     try:
-        result = run(args.source_xiso, args.output_xiso, args.manifest)
+        result = run(args.source_xiso, args.output_xiso, args.manifest, colors)
     except (OSError, PatchError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1

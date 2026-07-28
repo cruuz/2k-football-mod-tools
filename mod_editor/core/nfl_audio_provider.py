@@ -169,7 +169,7 @@ class Nfl2k5MenuBackAudioProvider:
     verifier_module_sha256 = "2b6d159334a00fa18fc0276eb1f400bd49069a68e6e478be2c7a9b50e1371d00"
     writer_dependency_module = "tools/nfl_uniform_color_xiso_direct_patch.py"
     writer_dependency_module_sha256 = (
-        "4114bb9d91079c6c013972540f0ef3bc58251d0c332fdb1d097a09d29b01ac3d"
+        "7b86c201d4dee4e6744297533fbb4e369be32970915982a40fc69f35e58d50b0"
     )
     verifier_dependency_module = "tools/nfl_team_identity_xiso_verify.py"
     verifier_dependency_module_sha256 = (
