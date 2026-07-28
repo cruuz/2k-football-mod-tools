@@ -34,6 +34,7 @@ mod_editor/core/capabilities.py
 mod_editor/core/controller.py
 mod_editor/core/errors.py
 mod_editor/core/gameplay_inspection.py
+mod_editor/core/image_fit.py
 mod_editor/core/json_stream.py
 mod_editor/core/menu_modes.py
 mod_editor/core/model.py

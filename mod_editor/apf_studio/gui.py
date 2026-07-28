@@ -2496,36 +2496,75 @@ class ApfTeamLogoPanel(QFrame):
     def _choose_replacement(self) -> None:
         path, _filter = QFileDialog.getOpenFileName(
             self,
-            "Choose edited 512×512 RGBA team-logo PNG",
+            f"Choose a team-logo image (any size — {self._WIDTH}×{self._HEIGHT} exact, "
+            "or it can be resized for you)",
             str(Path.home()),
-            "RGBA PNG (*.png)",
+            "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.tga);;All files (*)",
         )
         if path:
             self._stage_path(Path(path))
 
     def _stage_path(self, path: Path) -> None:
+        """Stage an image for the crest, resizing it when it is not exact.
+
+        The crest occupies a fixed byte span, so the writer needs exactly
+        512x512 and always will. Refusing anything else was the app's choice,
+        not the disc's, and it stopped people at the first step: a logo pulled
+        from anywhere is never already that size. Now the wrong size is an
+        offer rather than a dead end, and the exact case is untouched -- an
+        already-correct PNG is handed to the writer as the user supplied it.
+        """
         if not self.facade.source_ready:
             return
-        pixmap = QPixmap(str(path))
-        if pixmap.isNull():
+        from mod_editor.core.errors import ValidationError
+        from mod_editor.core.image_fit import fit_image, fit_to_png
+
+        try:
+            # 'contain' for a crest: keep the whole shape and pad the
+            # difference with transparency. Cropping the sides off an
+            # Eagles logo to fill a square is exactly the wrong answer,
+            # and this texture already has an alpha channel.
+            probe = fit_image(path, self._WIDTH, self._HEIGHT,
+                              mode="contain")
+        except ValidationError as exc:
             QMessageBox.information(
-                self,
-                "Choose a PNG",
-                "That file could not be read as a PNG. Choose a "
-                f"{self._WIDTH}×{self._HEIGHT} RGBA PNG and try again.",
+                self, "Choose an image",
+                f"That file could not be read as an image.\n\n{exc}",
             )
             return
-        if (pixmap.width(), pixmap.height()) != (self._WIDTH, self._HEIGHT):
-            QMessageBox.information(
-                self,
-                "Wrong PNG size",
-                f"The team-logo crest must be exactly {self._WIDTH}×{self._HEIGHT}. "
-                f"That PNG is {pixmap.width()}×{pixmap.height()}. The offline-proved "
-                "writer will also refuse any other size.",
-            )
+
+        if not probe.changed:
+            self._staged_png = Path(path)
+            self.set_context()
             return
-        self._staged_png = Path(path)
+
+        answer = QMessageBox.question(
+            self,
+            "Resize this image?",
+            f"The team-logo crest must be exactly {self._WIDTH}×{self._HEIGHT}, "
+            f"and that image is {probe.source_width}×{probe.source_height}.\n\n"
+            f"Mod Studio can {probe.describe()} for you.\n\n"
+            "Your original file is not modified — the resized copy is staged "
+            "for this build only.",
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Yes,
+        )
+        if answer != QMessageBox.Yes:
+            return
+        try:
+            staged = self._preview_path("team_logo_resized.png")
+            result = fit_to_png(path, self._WIDTH, self._HEIGHT, staged,
+                                mode="contain")
+        except ValidationError as exc:
+            QMessageBox.information(self, "Could not resize", str(exc))
+            return
+        self._staged_png = staged
         self.set_context()
+        QMessageBox.information(
+            self, "Resized",
+            f"Staged a {self._WIDTH}×{self._HEIGHT} copy — {result.describe()}.\n\n"
+            "Preview it before building; your original file is unchanged.",
+        )
 
     def _revert(self) -> None:
         self._staged_png = None

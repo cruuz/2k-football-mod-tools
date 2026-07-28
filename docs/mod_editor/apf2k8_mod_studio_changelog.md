@@ -1,5 +1,14 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.48 — helmet crests accept any image 2026-07-28
+
+- **The team-logo panel refused anything that was not already 512x512.** A
+  crest pulled from anywhere never is, so helmet-logo work died on that dialog.
+  It now offers to resize, keeps the whole shape by padding rather than
+  cropping, accepts JPEG and friends as well as PNG, and says exactly what it
+  did. Your original file is never modified and the proved writer still gets an
+  exact 512x512 RGBA PNG.
+
 ## 0.1.0-alpha.47 — no APF change 2026-07-28
 
 - Version parity only. No APF behaviour changed.

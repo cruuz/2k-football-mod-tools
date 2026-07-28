@@ -63,6 +63,7 @@ mod_editor/capabilities/registry.v1.json
 mod_editor/capabilities/validate_registry.py
 mod_editor/core/capabilities.py
 mod_editor/core/errors.py
+mod_editor/core/image_fit.py
 mod_editor/core/model.py
 mod_editor/core/platform_compat.py
 mod_editor/data/apf2k8_player_positions.v1.json

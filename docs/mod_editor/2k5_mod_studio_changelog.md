@@ -5,6 +5,20 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC45 Images Get Resized For You — 2026-07-28
+
+- New shared image-fitting layer, used by both editors. A texture slot occupies
+  a fixed byte span so its replacement must be the exact retail pixel size, and
+  that will always be true — but refusing the file instead of offering to fit
+  it was our choice, and it stopped people at step one.
+- Three fits, picked to suit the content: an image that is already exact is
+  passed through **untouched**; a same-aspect image is resampled with Lanczos;
+  and a different aspect either **pads** (crests and logos, keeping the whole
+  shape on transparency) or **crops** (jerseys and field panels, where
+  transparent bars would show in game as holes).
+- JPEG, BMP, GIF, WebP and TGA are read as well as PNG, so a texture lifted
+  from another mod or a photo does not need converting first.
+
 ## v1.0 RC44 The Facemask Colour Is A Colour Picker — 2026-07-28
 
 - **You can pick the facemask colour in the editor now.** Uniforms & Equipment
