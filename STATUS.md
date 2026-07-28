@@ -168,7 +168,34 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-16` — 2026-07-28 · CURRENT
+### `beta-17` — 2026-07-28 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-17>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC42-20260728.tar.gz` | 9,616,358 | `c45ea25e0b763cf932b327cc9d237fa81d2a057ea7b1a5aa96c91e404d1f396c` |
+| `apf2k8-mod-studio-0.1.0-alpha.45-20260728.tar.gz` | 1,133,134 | `6cdff11f3e7ec03a5f3dfe2225dae3526d86a5e3a435bc6ee68bea1c12822d62` |
+| `2K5-Mod-Studio-1.0-RC42-Setup.exe` | 55,990,350 | `c5a2a0c78f6a4be9279e209a851bd871188d6a15b98234b730416e72a9a182e2` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.45-Setup.exe` | 52,363,680 | `5d9e52caf6db404ca2e30aae0203c2ecbb461be85e9f930929dcc30ba72f0f4b` |
+
+All Textures is a real workspace: 3,024 standalone P8 targets (1,770 end-zone
+panels, 1,024 goalpost pads, 225 divots overlays, 5 shared equipment textures)
+with search, preview, Export/Replace PNG and Revert.
+
+The route that mattered is the composed build. A `p8_texture` edit kind binds
+per-extent -- the build locates each pack in the user's own image, re-derives
+the offset, and verifies the pack and span hashes. Proved on three differently
+packed dumps: identical 31,652 changed bytes on all three.
+
+The Nameplate Atlas decoded transposed (32x1024 instead of 1024x32) and shredded
+every letterform; only VC_P8_LINEAR orders its size halfwords that way, so the
+4,081 A1R5G5B5 player strips are untouched.
+
+Stadium geometry export is command-line only and its card says so. Whole-model
+stadium import still does not exist.
+
+### `beta-16` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-16>
 
