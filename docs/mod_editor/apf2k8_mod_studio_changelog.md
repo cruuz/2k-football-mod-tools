@@ -1,5 +1,17 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.38 — generated text is LF on every platform 2026-07-27
+
+- Every shipped module now pins the line ending when it writes text. Text mode
+  on Windows rewrites `\n` as `\r\n`, so any file this product generates and
+  later hashes or size-checks could not match there. 38 call sites across 29
+  files; the shipped surface is at zero unguarded text writes and a test holds
+  it there.
+- The failure that exposed this was on the 2K5 side, but the defect was
+  repo-wide, so the APF writers and reports are covered by the same sweep.
+- No capability, pin or writer contract changed. Binary writes were never
+  affected.
+
 ## 0.1.0-alpha.37 — sibling imports work on installed Windows copies 2026-07-27
 
 - Fixed `ModuleNotFoundError` from the shipped `tools/*.py` on installed Windows
