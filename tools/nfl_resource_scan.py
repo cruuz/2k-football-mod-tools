@@ -142,7 +142,10 @@ def main() -> int:
 
     result = {
         "schema": "nfl2k5_resource_chunk_inventory/v1",
-        "source_index": str(args.index),
+        # as_posix(), never str(): on Windows str(Path) yields backslashes, which
+        # JSON escapes, so the same scan of the same packs produced a
+        # different index and failed its own pinned hash.
+        "source_index": args.index.as_posix(),
         "summary": {
             "outer_entry_count": len(archive.entries),
             "structured_prefix_entry_count": structured_entries,

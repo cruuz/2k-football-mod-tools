@@ -266,7 +266,54 @@ def read_exact(descriptor: int, offset: int, length: int) -> bytes:
     return b"".join(chunks)
 
 
-def locate_xdvdfs_base(descriptor: int, image_size: int) -> int:
+def iter_xdvdfs_bases(
+    descriptor: int, image_size: int, *, require_entry: str | None = None
+) -> "Iterable[int]":
+    """Yield every game-partition base in this image, best candidate first.
+
+    A raw disc read contains TWO filesystems. The video partition sits at
+    byte 0 and holds only the "this disc requires an Xbox" placeholder; the
+    game is in a second partition further in. Stopping at the first valid
+    header therefore finds the wrong one and concludes the disc is not the
+    game -- which is precisely how a real raw dump was rejected even after
+    the reader learned to search. So candidates are ENUMERATED, and when
+    ``require_entry`` is given only a partition actually containing that
+    file is yielded.
+    """
+    seen: set[int] = set()
+
+    def candidate(base: int) -> bool:
+        if base in seen:
+            return False
+        seen.add(base)
+        start = base + XDVDFS_HEADER_OFFSET
+        if start + 0x800 > image_size:
+            return False
+        try:
+            header = read_exact(descriptor, start, 0x800)
+        except PatchError:
+            return False
+        if header[:20] != XDVDFS_MAGIC or header[-20:] != XDVDFS_MAGIC:
+            return False
+        if require_entry is None:
+            return True
+        try:
+            entries, _ = parse_xdvdfs(descriptor, image_size, base)
+        except PatchError:
+            return False
+        return require_entry.casefold() in entries
+
+    for base in XDVDFS_BASE_OFFSETS:
+        if candidate(base):
+            yield base
+    for base in _scan_xdvdfs_candidates(descriptor, image_size):
+        if candidate(base):
+            yield base
+
+
+def locate_xdvdfs_base(
+    descriptor: int, image_size: int, *, require_entry: str | None = "default.xbe"
+) -> int:
     """Find the byte where this image's game partition starts.
 
     A dump of an Xbox disc is not one canonical file. Which byte the game
@@ -283,25 +330,19 @@ def locate_xdvdfs_base(descriptor: int, image_size: int) -> int:
     a 40-byte agreement at a 2,048-aligned position -- not something arbitrary
     data supplies by accident.
     """
-    for base in XDVDFS_BASE_OFFSETS:
-        start = base + XDVDFS_HEADER_OFFSET
-        if start + 0x800 > image_size:
-            continue
-        try:
-            header = read_exact(descriptor, start, 0x800)
-        except PatchError:
-            continue
-        if header[:20] == XDVDFS_MAGIC and header[-20:] == XDVDFS_MAGIC:
-            return base
+    for base in iter_xdvdfs_bases(descriptor, image_size, require_entry=require_entry):
+        return base
     # The known offsets are only a fast path. Rippers exist that we have never
     # seen and cannot enumerate, and guessing from a list is exactly what made
     # this reject legal dumps in the first place, so fall back to FINDING the
     # filesystem: search sector-aligned positions for the 20-byte magic and
     # confirm the candidate really is a header by requiring the magic at BOTH
     # ends of its sector and a root directory that fits inside the image.
-    found = _scan_for_xdvdfs_base(descriptor, image_size)
-    if found is not None:
-        return found
+    # Nothing carried the required file; fall back to any real filesystem so
+    # a non-game Xbox image still parses rather than being called corrupt.
+    if require_entry is not None:
+        for base in iter_xdvdfs_bases(descriptor, image_size):
+            return base
     raise PatchError(
         "No Xbox XDVDFS filesystem was found in this image. The known "
         "game-partition offsets ("
@@ -318,8 +359,8 @@ def locate_xdvdfs_base(descriptor: int, image_size: int) -> int:
 _XDVDFS_SCAN_LIMIT = 1 << 30
 
 
-def _scan_for_xdvdfs_base(descriptor: int, image_size: int) -> int | None:
-    """Search for a genuine XDVDFS header sector and return its partition base."""
+def _scan_xdvdfs_candidates(descriptor: int, image_size: int) -> "Iterable[int]":
+    """Yield every sector-aligned position that looks like a real header."""
     window = min(image_size, _XDVDFS_SCAN_LIMIT)
     chunk_size = 8 << 20
     overlap = len(XDVDFS_MAGIC)
@@ -329,7 +370,7 @@ def _scan_for_xdvdfs_base(descriptor: int, image_size: int) -> int | None:
         try:
             chunk = read_exact(descriptor, position, length)
         except PatchError:
-            return None
+            return
         start = 0
         while True:
             hit = chunk.find(XDVDFS_MAGIC, start)
@@ -353,9 +394,8 @@ def _scan_for_xdvdfs_base(descriptor: int, image_size: int) -> int | None:
                 continue
             if base + root_sector * SECTOR_SIZE + root_size > image_size:
                 continue
-            return base
+            yield base
         position += max(length - overlap, 1)
-    return None
 
 
 def parse_xdvdfs(
@@ -424,8 +464,14 @@ def parse_xdvdfs(
             if attributes & 0x10:
                 require(file_size >= 14, f"empty/invalid XDVDFS directory: {path}")
                 walk_directory(start_sector, file_size, path)
-            else:
-                require(attributes & 0x20, f"unsupported XDVDFS node type: {path}")
+            # Anything that is not a directory is a file. The old rule demanded
+            # the ARCHIVE bit (0x20), which extract-xiso happens to set on
+            # everything it rebuilds -- but a pressed disc carries the original
+            # attributes, and this game's files are 0x80 (FILE_ATTRIBUTE_NORMAL)
+            # there. That single bit rejected every file on a genuine disc read,
+            # default.xbe included, so the image could not even be identified.
+            # The attribute was never a safety property: extents are bounds
+            # checked against the image independently, just above.
             if right:
                 walk_node(right * 4)
 

@@ -615,7 +615,9 @@ class Nfl2k5AudioSourceContainmentTests(unittest.TestCase):
             entries, _directory = self.fixture.parser(
                 source.descriptor, self.fixture.pins.source_size
             )
-            extents = source_scanner._pack_extents(entries)
+            extents = source_scanner._pack_extents(
+                entries, os.fstat(source.descriptor).st_size
+            )
             archive = source_scanner._parse_source_archive(
                 source.descriptor, source.path, extents
             )

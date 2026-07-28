@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio — Status
 
-The source code and UI identify as the retail-free **`0.1.0-alpha.38`**.
+The source code and UI identify as the retail-free **`0.1.0-alpha.39`**.
 `0.1.0-alpha.34` remains preserved unchanged; its mode-`0444`,
 815,213-byte archive has SHA-256
 `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`,
@@ -527,6 +527,17 @@ that preserves every user-data directory. The release/runtime gates exercise
 that lifecycle headlessly in an isolated home before a package can ship.
 
 Last updated: 2026-07-27
+
+## 0.1.0-alpha.39 candidate boundary — a disc image is identified by its contents
+
+- Source/UI identity is `0.1.0-alpha.39`. No capability changed.
+- Selecting an APF disc image no longer requires the whole container to hash
+  to the project's own rip. Xbox 360 dumps vary as much as original-Xbox ones,
+  and the real identity check already ran straight afterwards against the
+  per-file ledger (0A/0B/1A/1B and default.xex by exact size and hash). The
+  container gate refused legal dumps before that stronger check could run --
+  the same defect the 2K5 side was fixed for. The container hash is still
+  recorded and still keys the extraction cache; it is simply no longer a gate.
 
 ## 0.1.0-alpha.38 candidate boundary — text output is LF everywhere
 

@@ -7,9 +7,53 @@ Release-level history. Per-product detail lives in
 
 Product versions and release tags are deliberately separate. A tag like
 `beta-3` names a *published set of archives*; the editors inside carry their own
-versions (`v1.0-RC33`, `0.1.0-alpha.38`) and only change when their code does.
+versions (`v1.0-RC34`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
+
+## beta-9 — 2026-07-27
+
+**The one that actually works with your disc, all the way through a build.**
+`v1.0-RC34` and `0.1.0-alpha.39`.
+
+Every release before this fixed one wall and revealed the next. This was
+developed against a reporter's own two disc images rather than the project's
+copy, which is what finally exposed the causes the project's own image could
+never contain.
+
+### Fixed — a genuine disc read is accepted
+- **A raw disc read has two filesystems.** The video partition sits at byte 0
+  with only a placeholder in it; the game is further in. The reader stopped at
+  the first filesystem, found no `default.xbe`, and rejected the disc. It now
+  enumerates partitions and picks the one holding the game.
+- **A pressed disc marks its files `0x80` (NORMAL).** The reader demanded the
+  ARCHIVE bit, which extract-xiso sets on everything it rebuilds but a real disc
+  does not. That rejected every file on a genuine read, `default.xbe` included.
+- **The game index embedded a Windows path.** `str()` on a path is backslashes
+  there, and JSON escaping added three bytes, so the index could never match its
+  own pinned hash.
+
+### Fixed — building, not just loading
+The build lane still demanded the user's container equal the project's rip, in
+three places. An image could load, index, be browsed and edited, then be refused
+at the final step. Container equality is gone across the build, audio and
+stadium lanes; copy lengths follow the user's real file, and identity comes from
+the located game partition, its file count and `default.xbe`.
+
+### Fixed — Stadium Studio on Fedora and openSUSE
+It pinned the bytes of a PNG it generates itself. zlib-ng, the system zlib on
+those distributions, emits different but perfectly valid compressed output, so
+Stadium Studio refused to open even with a flawless dump. It now verifies the
+decoded pixels, which are identical on every platform.
+
+### APF
+The same container-hash gate existed on APF disc images and is gone; the
+per-file ledger that already ran afterwards is the stronger check.
+
+### Verified against the reporter's images
+A 7,825,162,240-byte raw disc read and a 6,300,958,720-byte repack. Both
+recognised, both fully indexed (16 packs, index byte-identical to its pin), both
+accepted by the build lane's source validation.
 
 ## beta-8 — 2026-07-27
 

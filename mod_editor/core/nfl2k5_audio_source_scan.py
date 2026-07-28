@@ -633,7 +633,7 @@ class Nfl2k5AudioSourceScanner:
                 )
             except (OSError, ValueError) as exc:
                 raise AudioSourceScanError(f"Could not parse source XDVDFS: {exc}") from exc
-            pack_extents = self._pack_extents(entries)
+            pack_extents = self._pack_extents(entries, os.fstat(source.descriptor).st_size)
             source_pack0_hash = _sha256_fd(
                 source.descriptor,
                 offset=pack_extents["0"].byte_offset,
@@ -859,7 +859,7 @@ class Nfl2k5AudioSourceScanner:
         )
 
     def _pack_extents(
-        self, entries: Mapping[str, xiso.XdvdfsEntry]
+        self, entries: Mapping[str, xiso.XdvdfsEntry], image_size: int
     ) -> dict[str, xiso.XdvdfsEntry]:
         result: dict[str, xiso.XdvdfsEntry] = {}
         for name in self.pins.pack_names:
@@ -872,7 +872,7 @@ class Nfl2k5AudioSourceScanner:
                 and entry.size > 0
                 and entry.byte_offset >= 0
                 and entry.byte_offset % xiso.SECTOR_SIZE == 0
-                and entry.byte_offset + entry.size <= self.pins.source_size,
+                and entry.byte_offset + entry.size <= image_size,
                 f"Source XISO archive pack {name} has an unsafe extent",
             )
             result[name] = entry

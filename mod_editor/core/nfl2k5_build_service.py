@@ -1359,8 +1359,13 @@ class Nfl2k5BuildService:
             raise ValidationError(
                 "Load the supported USA retail NFL 2K5 Xbox XISO before building."
             )
+        # No expected size: the user's container legitimately differs from the
+        # project's own rip, and pinning it here refused every legal dump at the
+        # moment of Build -- after it had already loaded, indexed and been edited,
+        # which is the worst possible place to say no. The cache's pack-0 and
+        # index below are still pinned, and those are the bytes a build consumes.
         source, _ = _regular_file(
-            Path(record.inspected_path), "NFL 2K5 source XISO", SOURCE_SIZE)
+            Path(record.inspected_path), "NFL 2K5 source XISO")
         _regular_file(cache.pack0, "private NFL 2K5 archive cache", PACK0_SIZE)
         _regular_file(
             cache.inventory, "private NFL 2K5 asset index", INVENTORY_SIZE)

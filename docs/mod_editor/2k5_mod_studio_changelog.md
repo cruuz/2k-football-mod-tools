@@ -5,6 +5,38 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC34 Every Legal Dump, All The Way Through A Build — 2026-07-27
+
+- **A genuine disc read is finally accepted.** Three separate causes, each
+  hidden behind the last, all found against a real user's ISO:
+  - A raw disc read contains **two** filesystems -- the video partition at byte 0
+    holding only a placeholder, and the game further in. The reader stopped at
+    the first one it found, saw no `default.xbe`, and called the disc wrong.
+    Partitions are now enumerated and the one containing the game is chosen.
+  - A **pressed disc marks its files `0x80`** (NORMAL). The reader demanded the
+    ARCHIVE bit `0x20`, which extract-xiso happens to set on everything it
+    rebuilds. On a real disc that rejected every file, `default.xbe` included.
+    A node is now simply a directory or a file.
+  - The generated game index embedded its pack path with `str()`, which is
+    backslashes on Windows and three more bytes once JSON escapes them, so the
+    index could not match its own pinned hash.
+- **Build works too, not just loading.** The build lane still required the user's
+  container to equal the project's own rip in three places, so an image that had
+  loaded, indexed and been edited was refused at the last step. Container
+  equality is gone; every copy length now follows the user's actual file, and
+  identity comes from the located game partition, its file count and
+  `default.xbe`.
+- Audio preparation, the stadium writer and the stadium build lane carried the
+  same container pins and are fixed the same way.
+- **Stadium Studio no longer depends on which zlib you have.** It pinned the
+  bytes of a PNG it generates, and zlib-ng -- shipped as the system zlib on
+  Fedora 40+ and openSUSE -- emits different but perfectly valid output. It now
+  verifies the decoded pixels, which are identical everywhere.
+- Verified against the reporter's own two images: a 7,825,162,240-byte raw disc
+  read and a 6,300,958,720-byte repack. Both are recognised, both index fully
+  (16 packs, index byte-identical to its pin), and both pass the build lane's
+  source validation.
+
 ## v1.0 RC33 The Game Index Is Byte-Identical On Windows — 2026-07-27
 
 - **Fixed the error every Windows user hit, whatever disc image they had:**

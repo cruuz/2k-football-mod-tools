@@ -469,6 +469,20 @@ class _FixedSpanBuild:
     scratch_after: int
 
 
+
+def _decoded_rgba(path: Path) -> bytes:
+    """The PNG's pixels, which are identical everywhere its bytes may not be.
+
+    Two zlib implementations can compress the same image to different valid
+    files, so the compressed bytes cannot be pinned across machines. What can be
+    pinned is what those bytes decode to.
+    """
+    from PIL import Image
+
+    with Image.open(path) as image:
+        return image.convert("RGBA").tobytes()
+
+
 def _sha256_bytes(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
@@ -1559,17 +1573,17 @@ class Nfl2k5StadiumTextureWriter:
         success = False
         try:
             source_info = os.fstat(source_fd)
-            _require(
-                stat.S_ISREG(source_info.st_mode)
-                and source_info.st_size == xiso.EXPECTED_XISO_SIZE,
-                "Retail source XISO descriptor is incompatible",
-            )
+            # The container is not pinned: how the disc was read changes the
+            # file's size and hash without changing the game. Identity comes
+            # from the located game partition, its file count, its two volume
+            # extents and default.xbe -- all checked immediately below, and all
+            # stronger than a hash of the wrapper.
+            _require(stat.S_ISREG(source_info.st_mode),
+                     "Retail source XISO descriptor is incompatible")
             source_identity = xiso.fd_identity(source_fd)
             _require(xiso.path_identity(source) == source_identity,
                      "Retail source XISO pathname changed after open")
             source_sha = _sha256_fd(source_fd)
-            _require(source_sha == xiso.EXPECTED_XISO_SHA256,
-                     "Retail source XISO hash does not match NFL 2K5 USA")
             entries, directory = xiso.parse_xdvdfs(source_fd, source_info.st_size)
             files = [row for row in entries.values() if not (row.attributes & 0x10)]
             pack = entries.get(PACK_PATH.casefold())
@@ -1582,7 +1596,12 @@ class Nfl2k5StadiumTextureWriter:
                      "XDVDFS volume 0 extent changed")
             _require(xbe is not None and xbe.size == xiso.EXPECTED_XBE_SIZE,
                      "default.xbe extent changed")
-            _require(pack.byte_offset + CHUNK_PACK_OFFSET == ABSOLUTE_XISO_SPAN,
+            # ABSOLUTE_XISO_SPAN was measured on an image whose game partition
+            # begins at byte 0. The same sector in a raw disc read sits
+            # base_offset further in, so the invariant is the offset WITHIN the
+            # partition, not the absolute byte.
+            _require(pack.byte_offset - pack.base_offset + CHUNK_PACK_OFFSET
+                     == ABSOLUTE_XISO_SPAN,
                      "Authorized stadium XISO span arithmetic changed")
             retail_span = xiso.read_exact(source_fd, ABSOLUTE_XISO_SPAN, CHUNK_SPAN_SIZE)
             _require(_sha256_bytes(retail_span) == CHUNK_SPAN_SHA256,
@@ -1782,7 +1801,13 @@ class Nfl2k5StadiumTextureWriter:
             "depth": 1,
             "dimensions": 2,
             "rgba_sha256": STOCK_RGBA_SHA256,
-            "png_sha256": STOCK_PNG_SHA256,
+            # png_sha256 is deliberately NOT required here: it is the hash of
+            # zlib-compressed bytes, and zlib-ng (Fedora 40+, openSUSE, newer
+            # python.org Windows builds) emits different but perfectly valid
+            # deflate output than the zlib this value was measured with. Pinning
+            # it made Stadium Studio refuse to open on those machines even with
+            # a byte-perfect game. The decoded pixels below are the real
+            # contract and they are implementation-independent.
             "mapped_material_names": TARGET_MATERIAL_NAME,
             "mapped_material_count": 1,
         }
@@ -1819,8 +1844,8 @@ class Nfl2k5StadiumTextureWriter:
             stock_png.relative_to(texture_root)
         except ValueError as exc:
             raise StadiumTextureWriterError("Private cement01 PNG escapes texture cache") from exc
-        _require(_sha256_file(stock_png) == STOCK_PNG_SHA256,
-                 "Private cement01 PNG no longer matches its manifest")
+        _require(_sha256_bytes(_decoded_rgba(stock_png)) == STOCK_RGBA_SHA256,
+                 "Private cement01 PNG no longer decodes to its manifest pixels")
         pack9 = _regular(self.cache.pack0.parent / PACK_NAME, "private archive volume 9")
         _require(pack9.stat().st_size == PACK_SIZE, "Private archive volume 9 size changed")
         source_xiso = _regular(Path(source.selected_path), "retail source XISO")

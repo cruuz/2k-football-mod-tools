@@ -2785,14 +2785,18 @@ def validate_source(source_path: Path) \
     try:
         info = os.fstat(descriptor)
         identity = common.fd_identity(descriptor)
+        # The container is NOT pinned. How a disc was read -- raw with the video
+        # partition in front, extracted, padded, trimmed -- changes the file's
+        # size and hash without changing one byte of the game, and requiring it
+        # to equal the project's own rip refused legal dumps at Build time. What
+        # is still exact is below and stronger: the game partition is located,
+        # its file count checked, and default.xbe hashed. `sha` remains the real
+        # digest of this file, recorded for provenance rather than compared.
         require(stat.S_ISREG(info.st_mode) and
-                info.st_size == common.EXPECTED_XISO_SIZE and
                 identity == (supplied.st_dev, supplied.st_ino) and
                 common.path_identity(source) == identity,
-                "source XISO identity/type/size changed")
+                "source XISO identity/type changed")
         sha = common.sha256_fd(descriptor)
-        require(sha == common.EXPECTED_XISO_SHA256,
-                "retail source XISO SHA-256 mismatch")
         entries, directory = common.parse_xdvdfs(descriptor, info.st_size)
         files = [entry for entry in entries.values() if not (entry.attributes & 0x10)]
         xbe = entries.get("default.xbe")
@@ -3594,10 +3598,15 @@ def build(project_path: Path, source_path: Path, output_path: Path,
         ownership.assert_owned_tree(prepared.temp_root, prepared.temp_files, [])
         bind_prepared_to_source(prepared, source_fd, entries)
 
+        # The build copies the user's container and patches it in place, so
+        # every length here is the size of THEIR file. Using the project's own
+        # EXPECTED_XISO_SIZE truncated or over-read any legal dump packaged
+        # differently, which is why Build refused images that had loaded fine.
+        source_size = os.fstat(source_fd).st_size
         output_owned = common.reserve_file(output)
         require(output_owned.identity != source_identity, "output XISO aliases source")
         copy_method = common.copy_fd_exact(
-            source_fd, output_owned.descriptor, common.EXPECTED_XISO_SIZE)
+            source_fd, output_owned.descriptor, source_size)
         for edit in prepared.edits:
             replacement = edit.replacement_path.read_bytes()
             write_all(output_owned.descriptor, edit.absolute, replacement)
@@ -3606,14 +3615,14 @@ def build(project_path: Path, source_path: Path, output_path: Path,
                     f"replacement readback failed for {edit.kind}:{edit.selector}")
         os.fsync(output_owned.descriptor)
         union = verify_union(
-            source_fd, output_owned.descriptor, common.EXPECTED_XISO_SIZE,
+            source_fd, output_owned.descriptor, source_size,
             prepared.edits)
         require(union["source_sha256"] == source_sha and
                 common.path_identity(source) == source_identity and
                 common.owned_path_matches(output_owned),
                 "source/output identity or union verification changed")
         output_entries, output_directory = common.parse_xdvdfs(
-            output_owned.descriptor, common.EXPECTED_XISO_SIZE)
+            output_owned.descriptor, source_size)
         require(output_entries == entries and output_directory == directory and
                 common.sha256_fd(output_owned.descriptor, xbe.byte_offset, xbe.size) ==
                 common.EXPECTED_XBE_SHA256,
@@ -3649,7 +3658,7 @@ def build(project_path: Path, source_path: Path, output_path: Path,
                 "edit_count": len(project.value["edits"]),
             },
             "source": {
-                "path": str(source), "size": common.EXPECTED_XISO_SIZE,
+                "path": str(source), "size": source_size,
                 "sha256_before": source_sha,
                 "sha256_after": union["source_sha256"],
                 "device": source_identity[0], "inode": source_identity[1],
@@ -3668,7 +3677,7 @@ def build(project_path: Path, source_path: Path, output_path: Path,
             },
             "edits": [stable_edit_record(edit) for edit in prepared.edits],
             "output": {
-                "xiso_path": str(output), "xiso_size": common.EXPECTED_XISO_SIZE,
+                "xiso_path": str(output), "xiso_size": source_size,
                 "xiso_sha256": union["output_sha256"],
                 "device": output_owned.identity[0], "inode": output_owned.identity[1],
                 "copy_method": copy_method, "exclusively_created": True,
@@ -3783,6 +3792,8 @@ def verify(project_path: Path, source_path: Path, output_path: Path,
             INVENTORY_SIZE, INVENTORY_SHA256)
         source, source_fd, source_identity, source_sha, entries, directory, xbe = \
             validate_source(source_path)
+        # The user's container size, never the project's own -- see build().
+        source_size = os.fstat(source_fd).st_size
         output_supplied = output_path.lstat()
         require(stat.S_ISREG(output_supplied.st_mode) and
                 not stat.S_ISLNK(output_supplied.st_mode),
@@ -3793,7 +3804,7 @@ def verify(project_path: Path, source_path: Path, output_path: Path,
         output_info = os.fstat(output_fd)
         output_identity = common.fd_identity(output_fd)
         require(stat.S_ISREG(output_info.st_mode) and
-                output_info.st_size == common.EXPECTED_XISO_SIZE and
+                output_info.st_size == source_size and
                 output_identity == (output_supplied.st_dev, output_supplied.st_ino) and
                 common.path_identity(output) == output_identity and
                 output_identity != source_identity,
@@ -3805,10 +3816,10 @@ def verify(project_path: Path, source_path: Path, output_path: Path,
             containment_inventory_path)
         ownership.assert_owned_tree(prepared.temp_root, prepared.temp_files, [])
         bind_prepared_to_source(prepared, source_fd, entries)
-        union = verify_union(source_fd, output_fd, common.EXPECTED_XISO_SIZE,
+        union = verify_union(source_fd, output_fd, source_size,
                              prepared.edits)
         output_entries, output_directory = common.parse_xdvdfs(
-            output_fd, common.EXPECTED_XISO_SIZE)
+            output_fd, source_size)
         require(output_entries == entries and output_directory == directory and
                 common.sha256_fd(output_fd, xbe.byte_offset, xbe.size) ==
                 common.EXPECTED_XBE_SHA256,
@@ -3839,7 +3850,7 @@ def verify(project_path: Path, source_path: Path, output_path: Path,
                 manifest.get("project", {}).get("edit_count") ==
                 len(project.value["edits"]) and
                 manifest.get("source", {}).get("path") == str(source) and
-                manifest.get("source", {}).get("size") == common.EXPECTED_XISO_SIZE and
+                manifest.get("source", {}).get("size") == source_size and
                 manifest.get("source", {}).get("sha256_before") == source_sha and
                 manifest.get("source", {}).get("sha256_after") == source_sha and
                 manifest.get("source", {}).get("device") == source_identity[0] and
@@ -3871,7 +3882,7 @@ def verify(project_path: Path, source_path: Path, output_path: Path,
             artifact_dir_path, expected_artifacts)
         require(manifest.get("output", {}).get("xiso_path") == str(output) and
                 manifest.get("output", {}).get("xiso_size") ==
-                common.EXPECTED_XISO_SIZE and
+                source_size and
                 manifest.get("output", {}).get("device") == output_identity[0] and
                 manifest.get("output", {}).get("inode") == output_identity[1] and
                 manifest.get("output", {}).get("exclusively_created") is True and

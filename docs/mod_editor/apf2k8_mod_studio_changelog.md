@@ -1,5 +1,14 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.39 — a disc image is identified by its contents 2026-07-27
+
+- Selecting an APF disc image no longer requires the whole container to hash to
+  the project's own rip. The per-file ledger (0A/0B/1A/1B and default.xex, by
+  exact size and hash) already ran immediately afterwards and is the stronger
+  check; the container gate simply refused legal dumps before it could. The
+  container hash is still recorded and still keys the extraction cache.
+- No capability, pin or writer contract changed.
+
 ## 0.1.0-alpha.38 — generated text is LF on every platform 2026-07-27
 
 - Every shipped module now pins the line ending when it writes text. Text mode

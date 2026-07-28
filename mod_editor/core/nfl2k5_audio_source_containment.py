@@ -340,10 +340,11 @@ class Nfl2k5AudioSourceContainmentStore:
 
     def _validate_cache(self, cache: SourceCache) -> Path:
         _require(isinstance(cache, SourceCache), "Containment needs a source cache")
+        # No container-hash equality: the user's image legitimately differs from
+        # the project's own rip. The sibling fingerprint store dropped this same
+        # comparison; this one kept it and became the next wall behind it.
         _require(
-            cache.source.sha256 == self.expected_source_sha256
-            and cache.source.recognized
-            and cache.source.kind == "xiso",
+            cache.source.recognized and cache.source.kind == "xiso",
             "Containment cache belongs to a different or unsupported source",
         )
         root = _regular_directory(cache.root, "NFL 2K5 source cache")
@@ -1009,7 +1010,8 @@ class Nfl2k5AudioSourceContainmentScanner:
                 raise AudioSourceContainmentError(
                     f"Could not parse source XDVDFS for containment: {exc}"
                 ) from exc
-            extents = scanner._pack_extents(entries)
+            extents = scanner._pack_extents(
+                entries, os.fstat(source.descriptor).st_size)
             pack0_digest = _sha256_fd(
                 source.descriptor,
                 offset=extents["0"].byte_offset,

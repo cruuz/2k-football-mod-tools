@@ -154,11 +154,13 @@ class SourceManager:
             source_iso_sha256 = sha256_file(
                 selected, progress, stage="Checking APF disc image"
             )
-            if source_iso_sha256 != EXPECTED_ISO_SHA256:
-                raise SourceError(
-                    "This disc image is not the supported USA retail APF 2K8 revision. "
-                    "The app did not change it."
-                )
+            # The container hash is recorded and used as the extraction-cache
+            # key, but it is NOT a gate. Xbox 360 dumps vary at least as much as
+            # original-Xbox ones, and the real identity check already happens
+            # after extraction, against the per-file ledger (0A/0B/1A/1B and
+            # default.xex, by exact size and hash). Gating on the wrapper here
+            # refused legal dumps before that stronger check could ever run --
+            # the same defect the 2K5 side was fixed for.
             root = self._extract_iso(selected, source_iso_sha256, progress)
             extracted_from_iso = True
         else:
