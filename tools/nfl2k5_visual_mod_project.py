@@ -292,6 +292,9 @@ TEAM_IDENTITY_POINTERS = {
     "city_abbreviation": 0x13C,
 }
 ROST_OUTER_PACK_OFFSET = 0x00392800
+# The pack holding the compressed-SCNE Crib texture, by name rather than by
+# sector: sector numbers differ between a pressed disc and any rebuild.
+CRIB_SCENE_PACK_NAME = "c"
 ROST_WRAPPER_SIZE = 0x20
 ROST_TEAM_STRIDE = 0x1F4
 ROST_BODY_SIZE = 593_760
@@ -1893,8 +1896,19 @@ def build_crib_scene_texture_import(
 ) -> tuple[bytes, list[tuple[str, bytes]], dict[str, Any], str, dict[str, Any]]:
     """Compile the one proved compressed-SCNE Crib texture from the live source."""
 
+    # SPAN_ABSOLUTE is where this span sits in the project's own rebuild, and a
+    # pressed disc or a repack puts the same pack somewhere else entirely. The
+    # pack is therefore located by NAME -- which is layout-independent -- and the
+    # span offset derived from wherever that pack actually starts. Verified: in
+    # the reference image pack "c" is at 5,231,806,464 and
+    # 5,231,806,464 + SPAN_PACK_OFFSET == SPAN_ABSOLUTE exactly.
+    _entries, _ = common.parse_xdvdfs(source_fd, os.fstat(source_fd).st_size)
+    _pack = _entries.get(f"vc_53450030/{CRIB_SCENE_PACK_NAME}".casefold())
+    require(_pack is not None, "crib scene source pack is missing")
+    assert _pack is not None
+    _span_absolute = _pack.byte_offset + crib_scene_import.SPAN_PACK_OFFSET
     source_span = common.read_exact(
-        source_fd, crib_scene_import.SPAN_ABSOLUTE, crib_scene_import.SPAN_SIZE
+        source_fd, _span_absolute, crib_scene_import.SPAN_SIZE
     )
     try:
         resolved, png_payload, rgba = crib_scene_import.read_png(png)
@@ -3014,7 +3028,6 @@ def validate_universal_fixed_text_source(
         and UNIVERSAL_TEXT_SELECTOR_RE.fullmatch(edit.selector) is not None
         and target["selector"] == edit.selector
         and int(target["allocation_bytes"]) == edit.replacement_size
-        and edit.absolute == pack.byte_offset + edit.pack_offset
         and edit.replacement_size >= 4
         and edit.replacement_size % 2 == 0,
         f"universal text target arithmetic changed: {edit.selector}",
@@ -3056,7 +3069,6 @@ def validate_menu_back_audio_source(
         digest(wrapper) == target["wrapper_sha256"] and
         edit.pack_offset == wrapper_offset + audo_import.HEADER_SIZE +
         audo_import.SYSTEM_SIZE and
-        edit.absolute == audo_import.ABSOLUTE_PAYLOAD_OFFSET and
         edit.replacement_size == audo_import.PAYLOAD_SIZE,
         "menu-back AUDO target arithmetic changed",
     )
@@ -3095,7 +3107,6 @@ def validate_audo_audio_source(
         and wrapper_offset == slot.wrapper_pack_offset
         and wrapper_size == slot.wrapper_size
         and edit.pack_offset == slot.payload_pack_offset
-        and edit.absolute == slot.payload_absolute_offset
         and edit.replacement_size == slot.payload_size
         and edit.retail_span_sha256 == slot.payload_sha256,
         f"standalone-audio target arithmetic changed: {edit.selector}",
@@ -3148,7 +3159,6 @@ def validate_ausb_audio_source(
         and target.get("xiso_pack_sector") == pack.sector
         and target.get("xiso_pack_size") == pack.size
         and target.get("pack_offset") == edit.pack_offset
-        and target.get("xiso_absolute_span_offset") == edit.absolute
         and target.get("span_sha256") == edit.retail_span_sha256,
         f"streaming-audio target arithmetic changed: {edit.selector}",
     )
@@ -3165,7 +3175,6 @@ def validate_crib_team_photo_source(
         edit.selector == target["selector"]
         and edit.replacement_size == int(target["span_size"])
         and edit.pack_offset == int(target["pack_offset"])
-        and edit.absolute == int(target["xiso_absolute_span_offset"])
         and padding_size == crib_photo_targets.POST_SPAN_ZERO_PADDING,
         f"Crib Team Photo target arithmetic changed: {edit.selector}",
     )
@@ -3200,10 +3209,24 @@ def bind_prepared_to_source(prepared: PreparedProject, source_fd: int,
     for edit in prepared.edits:
         pack_key = edit.pack_path.casefold()
         pack = entries.get(pack_key)
-        require(pack is not None and pack.sector == edit.pack_sector and
-                pack.size == edit.pack_size,
+        # Sector is NOT compared. A sector number is where a particular build
+        # of the image happened to place the file: a pressed disc, an
+        # extract-xiso rebuild and a repack put all 19 files at completely
+        # different sectors while every file is byte-identical. Pinning it meant
+        # no image but the project's own could ever build. Size is compared here
+        # and the pack's CONTENT hash immediately below, which is what actually
+        # matters and is layout-independent.
+        require(pack is not None and pack.size == edit.pack_size,
                 f"source pack extent changed for {edit.kind}:{edit.selector}")
         assert pack is not None
+        # DERIVE the absolute offset from the pack we just located, rather than
+        # trusting the one recorded in the target. That recorded value was the
+        # byte position in the project's own rebuild; a pressed disc and a
+        # repack put the same pack somewhere else entirely, so every downstream
+        # read would have landed in the wrong place. Everything that matters --
+        # the pack's content hash, the span hash, the wrapper and padding -- is
+        # still verified below, now against the right bytes.
+        edit.absolute = pack.byte_offset + edit.pack_offset
         if pack_key not in pack_hashes:
             pack_hashes[pack_key] = common.sha256_fd(
                 source_fd, pack.byte_offset, pack.size)

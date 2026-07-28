@@ -7,9 +7,33 @@ Release-level history. Per-product detail lives in
 
 Product versions and release tags are deliberately separate. A tag like
 `beta-3` names a *published set of archives*; the editors inside carry their own
-versions (`v1.0-RC34`, `0.1.0-alpha.39`) and only change when their code does.
+versions (`v1.0-RC35`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
+
+## beta-10 — 2026-07-27
+
+**beta-9 let you load your disc. This one lets you save.** `v1.0-RC35`.
+
+Building refused every image except the project's own, so you could load, browse
+and edit and then be stopped at the last step. The cause was layout, not content:
+
+- **Sector numbers were pinned.** extract-xiso relocates files when it rebuilds
+  an image. All nineteen files sit at different sectors in a pressed disc, an
+  extract-xiso rebuild and a repack -- while every file is byte-identical. No
+  image but ours could match.
+- **Absolute byte offsets were pinned**, so reads would have landed in the wrong
+  place on any other image.
+- The Crib scene texture was read at a fixed offset; it now finds its pack by
+  name and derives the offset from the image in front of it.
+
+Sizes and content hashes are still checked exactly. Those describe the game. The
+sector a file happens to occupy describes only whoever built the image.
+
+Verified by building real mods from the reporter's own two images -- a
+7,825,162,240-byte pressed-disc read and a 6,300,958,720-byte repack -- across
+scorebug, Crib photo and roster-text edits. Four builds, four outputs, each the
+size of its own source.
 
 ## beta-9 — 2026-07-27
 

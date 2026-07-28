@@ -449,7 +449,7 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "5e78f11f2a944170c4fe426e697a856607db4e90cc5ff82564dfde98e2c9ff87"
+    backend_module_sha256 = "093926be2b1f1bbea5c8c949010ee711a8e905ec2812d86c96052e48b772d0cc"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
@@ -999,7 +999,7 @@ class Nfl2k5ScorebugProvider:
     provider_id = "nfl2k5-scorebug-v1"
     capability_ids = frozenset({"nfl2k5.scorebug_presentation.inventory"})
     backend_module = "tools/nfl2k5_scorebug_mod_project.py"
-    backend_module_sha256 = "9e0fb359560a34063f8003c55f517449539f1c782b1bfa2f188cac56cf8b6ec5"
+    backend_module_sha256 = "98b3b656d9101afbed60b42f4390dcb50536e1202632553b8c099088e077f60a"
     module_pins: Mapping[str, str] = {
         backend_module: backend_module_sha256,
         "tools/nfl_outer.py": "affbb92ea9fcce81b5d3502b2946fc0cf275b660c1ea93492730267110d49b46",

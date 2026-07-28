@@ -5,6 +5,30 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC35 Saving Works On Any Legal Dump — 2026-07-27
+
+- **RC34 let you load and edit your disc; it could not save.** Building refused
+  every image but the project's own, and the reason was layout rather than
+  content.
+  - **Sector numbers were pinned.** extract-xiso relocates files when it
+    rebuilds an image: all nineteen files sit at different sectors in a pressed
+    disc, in an extract-xiso rebuild and in a repack, while every file is
+    byte-identical. Pinning the sector meant no other image could ever match.
+  - **Absolute byte offsets were pinned.** `1,631,188,992 + pack_offset` is
+    where pack 0 happens to sit in this project's rebuild; on a pressed disc it
+    is somewhere else entirely, so every downstream read would have landed in
+    the wrong place.
+  - The Crib scene texture was read at a pinned absolute offset. It now locates
+    pack `c` by name -- names do not move -- and derives the span from wherever
+    that pack actually starts.
+- Sizes and content hashes are still verified exactly, because those are
+  properties of the game rather than of the image someone built. What is gone is
+  only the requirement that a file sit where ours does.
+- Verified by building real mods from a reporter's own two images: a
+  7,825,162,240-byte pressed-disc read and a 6,300,958,720-byte repack, each
+  producing an output the size of its own source. Same span bytes read from
+  5,399,363,856 in one image and 5,661,790,480 in the other.
+
 ## v1.0 RC34 Every Legal Dump, All The Way Through A Build — 2026-07-27
 
 - **A genuine disc read is finally accepted.** Three separate causes, each

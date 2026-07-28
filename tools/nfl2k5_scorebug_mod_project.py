@@ -421,9 +421,11 @@ def bind_to_source(edits: list[PreparedEdit], source_fd: int,
         target = edit.target
         path = str(target["pack_path"])
         pack = entries.get(path.casefold())
+        # Neither sector nor absolute byte offset is compared: both are pure
+        # layout, and differ between a pressed disc, an extract-xiso rebuild and
+        # a repack even though every file is byte-identical. Size is checked
+        # here and the pack's content hash immediately below.
         require(pack is not None and
-                pack.sector == int(target["xiso_pack_sector"]) and
-                pack.byte_offset == int(target["xiso_pack_byte_offset"]) and
                 pack.size == int(target["pack_size"]),
                 f"retail target pack extent changed: {edit.name}")
         if path not in pack_hashes:
