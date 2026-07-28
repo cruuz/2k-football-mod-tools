@@ -168,7 +168,28 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-18` — 2026-07-28 · CURRENT
+### `beta-19` — 2026-07-28 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-19>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC44-20260728.tar.gz` | 9,621,947 | `cd5433623a2e5b608d720c378c266daf2d310d716e9d79a0fa13151a2ed33b93` |
+| `apf2k8-mod-studio-0.1.0-alpha.47-20260728.tar.gz` | 1,133,882 | `f4b3803f116a3dea3859c86fa917e6b79a6446196b536a5e7d306ba5c224c63b` |
+| `2K5-Mod-Studio-1.0-RC44-Setup.exe` | 55,995,790 | `d02c86a4ba157c18feb1b10058abc5f5688aecd5ca7c44b9b7545f51f60c9c03` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.47-Setup.exe` | 52,353,778 | `18b1d78019c91921a7bcb75bec5e086157b8975835c912ad2596187e9a86fef9` |
+
+The facemask/turtleneck colours are a colour picker in Uniforms & Equipment ->
+Colours & Other Tools. The edit counts as pending, Revert All clears it, it
+saves with the project, and it composes into Build Modded XISO as two
+per-extent imports (packs A and B). Composed output is byte-identical to the
+standalone writer for the same colours.
+
+Tests walk the whole chain -- picker, session, canonical project, composed
+build -- and check producer against consumer, which is the join this lane kept
+dying at across three previous attempts.
+
+### `beta-18` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-18>
 
