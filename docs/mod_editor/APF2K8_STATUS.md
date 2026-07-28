@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio — Status
 
-The source code and UI identify as the retail-free **`0.1.0-alpha.39`**.
+The source code and UI identify as the retail-free **`0.1.0-alpha.40`**.
 `0.1.0-alpha.34` remains preserved unchanged; its mode-`0444`,
 815,213-byte archive has SHA-256
 `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`,
@@ -526,7 +526,26 @@ absolute app-menu command, atomic staged updates, and authenticated cleanup
 that preserves every user-data directory. The release/runtime gates exercise
 that lifecycle headlessly in an isolated home before a package can ship.
 
-Last updated: 2026-07-27
+Last updated: 2026-07-28
+
+## 0.1.0-alpha.40 candidate boundary — the game partition is found, not guessed
+
+- Source/UI identity is `0.1.0-alpha.40`. No capability changed.
+- A legally dumped disc could be refused with "does not appear to be a valid
+  xbox iso image". The bundled `extract-xiso` probes exactly four partition
+  offsets (`0`, `0x0FD90000`, `0x02080000`, `0x18300000`) and rejects anything
+  else -- the same defect the 2K5 lane was fixed for, hidden in a vendored
+  binary. The disc is now read with the project's own XDVDFS reader first,
+  which searches sector-aligned positions for the magic and confirms a
+  candidate at both ends of the header sector; `extract-xiso` stays a fallback.
+- A disc for another console is now named rather than called invalid. The
+  prompting report was the PlayStation 3 release of the same game, named
+  `.iso`. ISO 9660 volumes, PS3 discs, STFS packages and ZIP/RAR/7z archives
+  are identified by structure and reported by name.
+- Only the six files the editor reads are extracted: the supported USA dump
+  resolves in ~26s and 3.9 GB rather than unpacking the whole 7.8 GB disc.
+- The identity ledger is unchanged and all six files come out byte-identical
+  to it.
 
 ## 0.1.0-alpha.39 candidate boundary — a disc image is identified by its contents
 

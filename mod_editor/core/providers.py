@@ -508,7 +508,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl_tset_png_import_verify.py": "777ca0ed729e54c41f7b522c4b121f577a573f5b010a851ab36218fff472076b",
         "tools/nfl_tset_png_import_xiso_generic_patch.py": "c89b24551752d003ab58a35ac94d9de2850003040573a48d362af3c4e31c9b87",
         "tools/nfl_txtr.py": "15327068fcfa0de55022c4704212f5010e73ff4710d4c1f4ce3804c1b8e30139",
-        "tools/nfl_uniform_color_xiso_direct_patch.py": "f78514afebab8c1aa2a7be7f7165e71b26a34453f10ab7dbbe369f4502c747a6",
+        "tools/nfl_uniform_color_xiso_direct_patch.py": "a9a3b987767d477a588957fddc37991cab5e2c1c53ebd5736ee1f303a6965924",
         "tools/nfl_uniform_inventory.py": "c8593288ab737609d1f8ce4787af2a76a0e80d96a3d09cd686695c1e408b17c3",
         "tools/string_table_inventory.py": "88877c5c83d75382a7b349390b2babbe724da88927f53c916056eb88622d1ea4",
         "tools/xbe_info.py": "c7843c317a7ec022bc22ee6266b96d856b57233af2d6baa71ec071a94212e0ef",
@@ -1007,7 +1007,7 @@ class Nfl2k5ScorebugProvider:
         "tools/nfl_scorebug_png_import.py": "99bdfb9fbcab09790686e18972532c98f6d6096e92b8a6575dd271bd43a6285f",
         "tools/nfl_tset_png_import.py": "a2d22652ff641209f165bf59ade13938a53dce0a596771f10badde34868b3dcf",
         "tools/nfl_txtr.py": "15327068fcfa0de55022c4704212f5010e73ff4710d4c1f4ce3804c1b8e30139",
-        "tools/nfl_uniform_color_xiso_direct_patch.py": "f78514afebab8c1aa2a7be7f7165e71b26a34453f10ab7dbbe369f4502c747a6",
+        "tools/nfl_uniform_color_xiso_direct_patch.py": "a9a3b987767d477a588957fddc37991cab5e2c1c53ebd5736ee1f303a6965924",
         "tools/nfl_uniform_inventory.py": "c8593288ab737609d1f8ce4787af2a76a0e80d96a3d09cd686695c1e408b17c3",
         "tools/xbe_info.py": "c7843c317a7ec022bc22ee6266b96d856b57233af2d6baa71ec071a94212e0ef",
     }

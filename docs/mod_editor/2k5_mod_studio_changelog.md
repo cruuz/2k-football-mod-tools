@@ -5,6 +5,25 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC37 The Facemask Colour Is Named — 2026-07-28
+
+- **The two `Unif` packed colour words now say what they own.** They were
+  presented as "packed colours" whose "visual semantics remain incomplete",
+  which is why a modder reported that nothing in the editor reads a facemask
+  colour. The executable trace had in fact already resolved them:
+  **word 0 is the facemask/faceshield tint** -- it reaches the selected
+  `FACEMASK%02d` player records and the `LO_FACEMASK` / `HI_faceshield`
+  materials, and a dedicated `facemask` scene colours `bar_01..bar_03` after a
+  fixed darkening transform -- and **word 1 is the `HI_turtleneck` tint**, read
+  only when a per-player two-bit selector is 3.
+- This confirms the reported behaviour: **repainting the coloured square on a
+  helmet texture cannot move the facemask**, because the facemask is a separate
+  material fed by this value. That differs from CFB 2K3, where the square does
+  drive it.
+- Ownership is proved by static executable trace. A controlled runtime capture
+  is still outstanding and the capability says so; the rung did not change.
+- No writer, pin or file format changed.
+
 ## v1.0 RC36 Exporting A Team Kit Folder Works On Windows — 2026-07-28
 
 - **Export Team Kit as a folder failed on Windows for everyone**, with

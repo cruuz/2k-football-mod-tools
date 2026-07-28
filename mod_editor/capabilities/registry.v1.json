@@ -2780,7 +2780,9 @@
       "id": "nfl2k5.colors.unif_words",
       "input_constraints": [
         "The current writer is a bounded Detroit current-home/current-away proof, not a generalized color picker.",
-        "The two words are downstream packed colors whose exact material-region names remain unproved."
+        "Word 0 is the facemask/faceshield packed tint: it reaches the selected FACEMASK%02d player records and the LO_FACEMASK / HI_faceshield materials, and a dedicated facemask SCNE colors bar_01..bar_03 after a fixed darkening transform. Changing the helmet TEXTURE does not move it -- the facemask is a separate material fed by this value.",
+        "Word 1 is the HI_turtleneck packed tint and is read only when a per-player two-bit selector is 3; selector 0 leaves the material alone, 1 forces white, 2 forces black.",
+        "Ownership above is proved by static executable trace, not by a controlled runtime capture; the visual test is planned and not yet done."
       ],
       "portme": [
         "Generalize target selection only after per-package ownership and validation.",
@@ -2815,9 +2817,9 @@
         "resource": "fixed-size Unif packed-color words",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Apply the narrow proved packed-color edit to a copied NFL 2K5 XISO; visual semantics remain incomplete.",
+      "summary": "Apply the proved packed-color edit to a copied NFL 2K5 XISO. The two Unif words are not jersey diffuse colors: word 0 is the facemask/faceshield tint and word 1 is the HI_turtleneck tint. Ownership is proved by executable trace; a controlled runtime capture is still outstanding.",
       "surface": "colors",
-      "title": "NFL 2K5 uniform packed colors",
+      "title": "NFL 2K5 facemask and turtleneck packed colors",
       "validation_command": "bash tools/validate_nfl_uniform_color_xiso_direct.sh"
     },
     {

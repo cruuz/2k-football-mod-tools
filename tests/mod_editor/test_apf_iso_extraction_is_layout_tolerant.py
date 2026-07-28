@@ -63,8 +63,15 @@ class ApfIsoLayoutToleranceTests(unittest.TestCase):
         staging = Path(tempfile.mkdtemp(dir=self.root))
         manager = apf_source.SourceManager(cache_root=self.root / "cache")
         with mock.patch.object(apf_source, "EXPECTED_GAME_FILES", _SIZES):
-            reason = manager._extract_native(image, staging, lambda *_: None)
-        return reason, staging
+            outcome = manager._extract_native(image, staging, lambda *_: None)
+        return (None if outcome is None else outcome[0]), staging
+
+    def _definitive(self, image: Path) -> bool:
+        staging = Path(tempfile.mkdtemp(dir=self.root))
+        manager = apf_source.SourceManager(cache_root=self.root / "cache")
+        with mock.patch.object(apf_source, "EXPECTED_GAME_FILES", _SIZES):
+            outcome = manager._extract_native(image, staging, lambda *_: None)
+        return bool(outcome and outcome[1])
 
     def test_every_offset_the_bundled_tool_knows_is_still_read(self) -> None:
         """No regression: the layouts that worked before must keep working."""
@@ -137,6 +144,34 @@ class ApfIsoLayoutToleranceTests(unittest.TestCase):
         )
         with mock.patch.object(apf_source, "EXPECTED_GAME_FILES", _SIZES):
             self.assertIsNone(manager._extract_native(image, staging, lambda *_: None))
+
+    def test_a_playstation_3_disc_is_named_instead_of_called_invalid(self) -> None:
+        """The report that mattered: a PS3 disc of the same game, named .iso.
+
+        extract-xiso answered "does not appear to be a valid xbox iso image",
+        which reads as a bad dump, so the user re-dumped a disc that was fine.
+        It was the PlayStation 3 release. Say that.
+        """
+        path = self.root / "ps3.iso"
+        blob = bytearray(0x8000 + 4096)
+        blob[0x8000:0x8006] = b"\x01CD001"
+        blob[0x8028:0x8028 + 6] = b"APF2K8"
+        blob[0x9000:0x9000 + 8] = b"PS3_GAME"
+        path.write_bytes(bytes(blob))
+        reason, _ = self._extract(path)
+        self.assertIn("PlayStation 3", str(reason))
+        self.assertIn("APF2K8", str(reason))
+        self.assertTrue(
+            self._definitive(path),
+            "a positively identified container must not also run the bundled "
+            "extractor, whose vaguer failure would bury the real answer",
+        )
+
+    def test_an_unrecognized_file_still_falls_back(self) -> None:
+        """Only a positive identification may skip the bundled extractor."""
+        junk = self.root / "mystery.iso"
+        junk.write_bytes(b"\x00" * (1 << 20))
+        self.assertFalse(self._definitive(junk))
 
     def test_both_failures_are_reported_together(self) -> None:
         """When neither reader works, say so -- don't blame the disc alone."""

@@ -314,7 +314,7 @@ class SourceManager:
 
     def _extract_native(
         self, source_iso: Path, staging: Path, progress: Progress
-    ) -> str | None:
+    ) -> tuple[str, bool] | None:
         """Copy the six files the editor reads straight out of the image.
 
         Returns ``None`` on success, or a human-readable reason it could not be
@@ -336,13 +336,13 @@ class SourceManager:
         """
         xiso = _xdvdfs_module()
         if xiso is None:  # pragma: no cover - lean checkouts without tools/
-            return "the XDVDFS reader is not installed"
+            return ("the XDVDFS reader is not installed", False)
         try:
             descriptor = os.open(
                 source_iso, os.O_RDONLY | getattr(os, "O_BINARY", 0)
             )
         except OSError as exc:
-            return f"the disc image could not be opened ({exc.strerror})"
+            return (f"the disc image could not be opened ({exc.strerror})", False)
         try:
             image_size = os.fstat(descriptor).st_size
             base = xiso.locate_xdvdfs_base(
@@ -354,9 +354,9 @@ class SourceManager:
             for name, expected_size in EXPECTED_GAME_FILES.items():
                 entry = by_name.get(name.lower())
                 if entry is None:
-                    return f"the image does not contain {name}"
+                    return (f"the image does not contain {name}", False)
                 if entry.size != expected_size:
-                    return f"{name} has the wrong size for the supported APF USA revision"
+                    return (f"{name} has the wrong size for the supported APF USA revision", False)
                 wanted.append((name, entry, expected_size))
             total = sum(size for _, _, size in wanted)
             done = 0
@@ -374,7 +374,17 @@ class SourceManager:
                         done += count
                         progress("Extracting APF ISO into a private cache", done, total)
         except (OSError, ValueError) as exc:
-            return str(exc)
+            # A positively identified non-Xbox container is a final answer.
+            # Running the bundled extractor after it can only append a second,
+            # vaguer failure that buries the one sentence the user needs.
+            identified = False
+            try:
+                identified = (
+                    xiso.identify_non_xdvdfs_image(descriptor, image_size) is not None
+                )
+            except Exception:  # pragma: no cover - identification is advisory
+                identified = False
+            return (str(exc), identified)
         finally:
             os.close(descriptor)
         return None
@@ -452,8 +462,11 @@ class SourceManager:
         staging = Path(tempfile.mkdtemp(prefix="extracting-", dir=parent))
         progress("Extracting APF ISO into a private cache", 0, 0)
         try:
-            native_error = self._extract_native(source_iso, staging, progress)
-            if native_error is not None:
+            native = self._extract_native(source_iso, staging, progress)
+            if native is not None:
+                native_error, definitive = native
+                if definitive:
+                    raise SourceError(f"APF ISO extraction failed: {native_error}")
                 self._extract_with_bundled_tool(
                     source_iso, staging, progress, native_error
                 )

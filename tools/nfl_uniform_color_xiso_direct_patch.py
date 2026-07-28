@@ -343,13 +343,70 @@ def locate_xdvdfs_base(
     if require_entry is not None:
         for base in iter_xdvdfs_bases(descriptor, image_size):
             return base
+    identified = identify_non_xdvdfs_image(descriptor, image_size)
     raise PatchError(
         "No Xbox XDVDFS filesystem was found in this image. The known "
         "game-partition offsets ("
         + ", ".join(f"0x{value:X}" for value in XDVDFS_BASE_OFFSETS)
         + f") were checked and then the first {_XDVDFS_SCAN_LIMIT >> 20} MiB "
-        "were searched sector by sector. This does not look like an Xbox disc "
-        "image."
+        "were searched sector by sector. "
+        + (identified or "This does not look like an Xbox disc image.")
+    )
+
+
+# Containers people actually hand these editors instead of an Xbox disc image.
+# Saying which one it is turns a dead end into an answer: the first report of
+# this sent someone off to re-dump a disc that was fine, because "not a valid
+# xbox iso image" cannot tell a bad dump apart from a different console.
+def identify_non_xdvdfs_image(descriptor: int, image_size: int) -> str | None:
+    """Name the container, when it is one we recognise but cannot read.
+
+    Returns a sentence for the user, or ``None`` when nothing is recognised.
+    Recognition is by on-disc structure, never by file name or extension --
+    the reported case arrived named ``.iso`` and was a PlayStation 3 disc.
+    """
+    try:
+        head = pread(descriptor, 4, 0)
+    except (OSError, PatchError, ValueError):
+        return None
+    if head in (b"CON ", b"LIVE", b"PIRS"):
+        return (
+            "This is an Xbox 360 STFS package, not a disc image. Installed "
+            "titles and downloads are packaged; the editor needs the disc."
+        )
+    for magic, name in (
+        (b"PK\x03\x04", "ZIP archive"),
+        (b"Rar!", "RAR archive"),
+        (b"7z\xbc\xaf", "7-Zip archive"),
+        (b"\x1f\x8b", "gzip file"),
+    ):
+        if head.startswith(magic):
+            return f"This is a {name}. Extract the disc image from it first."
+
+    # ISO 9660: primary volume descriptor at sector 16, "\x01CD001".
+    if image_size < 0x8000 + 2048:
+        return None
+    try:
+        volume = pread(descriptor, 2048, 0x8000)
+        front = pread(descriptor, min(image_size, 4 << 20), 0)
+    except (OSError, PatchError, ValueError):
+        return None
+    if volume[:6] != b"\x01CD001":
+        return None
+    label = volume[40:72].decode("ascii", "replace").strip()
+    named = f" (volume label {label})" if label else ""
+    if b"PS3_GAME" in front or b"PS3_DISC" in front:
+        return (
+            "This is a PlayStation 3 disc image" + named + ", not an Xbox one. "
+            "It holds PS3_GAME/USRDIR and an EBOOT.BIN where an Xbox disc holds "
+            "default.xex, and the two releases split their game archives "
+            "differently, so the PS3 disc cannot stand in for the Xbox one."
+        )
+    if b"SYSTEM.CNF" in front:
+        return "This is a PlayStation disc image" + named + ", not an Xbox one."
+    return (
+        "This is an ISO 9660 disc image" + named + ". Xbox discs use XDVDFS "
+        "instead, so this is a disc for another system."
     )
 
 

@@ -1,5 +1,35 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.40 — the game partition is found, not guessed 2026-07-28
+
+- **A legally dumped disc could be refused with "does not appear to be a valid
+  xbox iso image."** The bundled `extract-xiso` probes exactly four partition
+  offsets -- `0`, `0x0FD90000`, `0x02080000`, `0x18300000` -- and rejects the
+  image when none of them carries the XDVDFS magic. That is the same defect the
+  2K5 source lane was fixed for, hidden inside a vendored binary: a layout
+  measured on one machine treated as the only legal layout.
+- The disc is now read with the project's own XDVDFS reader first, which
+  *searches* sector-aligned positions for the magic and confirms a candidate by
+  requiring it at both ends of the header sector plus a root directory that
+  fits inside the image. `extract-xiso` remains a fallback, so no layout that
+  loaded before can stop loading.
+- **A disc for another console is now named instead of called invalid.** The
+  report that prompted this was the PlayStation 3 release of the same game,
+  named `.iso`; the old message reads as a bad dump, so the reporter re-dumped a
+  disc that was fine. ISO 9660 volumes, PS3 discs, STFS packages and ZIP/RAR/7z
+  archives are identified by structure and reported by name.
+- Only the six files the editor reads are extracted, so the supported USA dump
+  now resolves in about 26 seconds and 3.9 GB instead of unpacking the whole
+  7.8 GB disc.
+- The bundled extractor is no longer resolved before any image is examined, so
+  an installation missing it can still open a disc the native reader handles.
+- The private extraction cache is published through `platform_compat` rather
+  than `os.replace` on a directory -- the POSIX-only idiom behind the RC36
+  Windows folder-export failure, in a second place.
+- No capability, writer contract or identity ledger changed. The per-file
+  ledger (0A/0B/1A/1B and default.xex, by exact size and hash) is still the
+  identity check, and all six files come out byte-identical to it.
+
 ## 0.1.0-alpha.39 — a disc image is identified by its contents 2026-07-27
 
 - Selecting an APF disc image no longer requires the whole container to hash to
