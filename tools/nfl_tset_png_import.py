@@ -114,6 +114,8 @@ def decode_rgba_png(
     offset = len(PNG_SIGNATURE)
     ihdr: tuple[int, int, int, int, int, int, int] | None = None
     idat = bytearray()
+    plte: bytes | None = None
+    trns: bytes | None = None
     saw_iend = False
     saw_idat = False
     idat_closed = False
@@ -131,6 +133,16 @@ def decode_rgba_png(
             require(ihdr is None and offset == len(PNG_SIGNATURE) and length == 13,
                     "PNG IHDR placement/size mismatch")
             ihdr = struct.unpack(">IIBBBBB", data)
+        elif kind == b"PLTE":
+            require(ihdr is not None and not saw_idat and plte is None,
+                    "PNG PLTE placement mismatch")
+            require(length % 3 == 0 and 3 <= length <= 768,
+                    "PNG PLTE size is not 1..256 RGB triples")
+            plte = bytes(data)
+        elif kind == b"tRNS":
+            require(ihdr is not None and not saw_idat and trns is None,
+                    "PNG tRNS placement mismatch")
+            trns = bytes(data)
         elif kind == b"IDAT":
             require(ihdr is not None and not idat_closed,
                     "PNG IDAT placement mismatch")
@@ -154,31 +166,47 @@ def decode_rgba_png(
     if expected_dimensions is not None:
         require((width, height) == expected_dimensions,
                 f"PNG must be exactly {expected_dimensions[0]}x{expected_dimensions[1]}")
-    require((bit_depth, color_type, compression, filtering, interlace) ==
-            (8, 6, 0, 0, 0),
-            "PNG must be non-interlaced RGBA8 with standard compression/filtering")
-    row_bytes = width * 4
-    expected = (row_bytes + 1) * height
-    decompressor = zlib.decompressobj()
-    raw = decompressor.decompress(bytes(idat), expected + 1)
-    require(len(raw) <= expected and not decompressor.unconsumed_tail,
-            "PNG inflated data exceeds expected RGBA scanlines")
-    raw += decompressor.flush()
-    require(decompressor.eof and not decompressor.unused_data and len(raw) == expected,
-            "PNG IDAT stream is truncated, trailing, or wrong-sized")
+    require(compression == 0 and filtering == 0,
+            "PNG uses a non-standard compression or filtering method")
+    require(interlace in (0, 1), "PNG declares an unknown interlace method")
+    # Colour types and the bit depths the specification allows for each.
+    allowed_depths = {0: (1, 2, 4, 8, 16), 2: (8, 16), 3: (1, 2, 4, 8),
+                      4: (8, 16), 6: (8, 16)}
+    require(color_type in allowed_depths,
+            f"PNG colour type {color_type} is not a PNG colour type")
+    require(bit_depth in allowed_depths[color_type],
+            f"PNG colour type {color_type} cannot carry {bit_depth}-bit samples")
+    require(color_type != 3 or plte is not None,
+            "PNG is palette-coloured but carries no PLTE")
+    rgba = _png_samples_to_rgba(
+        bytes(idat), width, height, bit_depth, color_type, interlace, plte, trns)
+    return width, height, rgba
 
-    rgba = bytearray(width * height * 4)
+
+_PNG_CHANNELS = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}
+# Adam7: (x origin, y origin, x step, y step) for each of the seven passes.
+_ADAM7 = ((0, 0, 8, 8), (4, 0, 8, 8), (0, 4, 4, 8), (2, 0, 4, 4),
+          (0, 2, 2, 4), (1, 0, 2, 2), (0, 1, 1, 2))
+
+
+def _png_unfilter(raw: bytes, width: int, height: int, bits_per_pixel: int) -> bytes:
+    """Reverse the five PNG row filters for one (sub)image."""
+    row_bytes = (width * bits_per_pixel + 7) // 8
+    step = max(1, bits_per_pixel // 8)
+    expected = (row_bytes + 1) * height
+    require(len(raw) == expected, "PNG scanline block is the wrong size")
+    out = bytearray(row_bytes * height)
     previous = bytearray(row_bytes)
     for y in range(height):
-        row_start = y * (row_bytes + 1)
-        filter_type = raw[row_start]
+        start = y * (row_bytes + 1)
+        filter_type = raw[start]
         require(filter_type <= 4, f"unsupported PNG filter {filter_type}")
-        encoded = raw[row_start + 1:row_start + 1 + row_bytes]
+        encoded = raw[start + 1:start + 1 + row_bytes]
         row = bytearray(row_bytes)
         for x, value in enumerate(encoded):
-            left = row[x - 4] if x >= 4 else 0
+            left = row[x - step] if x >= step else 0
             up = previous[x]
-            upper_left = previous[x - 4] if x >= 4 else 0
+            upper_left = previous[x - step] if x >= step else 0
             if filter_type == 0:
                 predictor = 0
             elif filter_type == 1:
@@ -198,9 +226,123 @@ def decode_rgba_png(
                     else upper_left
                 )
             row[x] = (value + predictor) & 0xFF
-        rgba[y * row_bytes:(y + 1) * row_bytes] = row
+        out[y * row_bytes:(y + 1) * row_bytes] = row
         previous = row
-    return width, height, bytes(rgba)
+    return bytes(out)
+
+
+def _png_read_samples(row: bytes, width: int, channels: int,
+                      bit_depth: int) -> list[tuple[int, ...]]:
+    """One unfiltered row to per-pixel sample tuples, scaled to 0..255."""
+    pixels: list[tuple[int, ...]] = []
+    if bit_depth == 8:
+        for x in range(width):
+            base = x * channels
+            pixels.append(tuple(row[base:base + channels]))
+    elif bit_depth == 16:
+        for x in range(width):
+            base = x * channels * 2
+            pixels.append(tuple(row[base + c * 2] for c in range(channels)))
+    else:
+        mask = (1 << bit_depth) - 1
+        per_byte = 8 // bit_depth
+        for x in range(width):
+            values = []
+            for channel in range(channels):
+                index = x * channels + channel
+                byte = row[index // per_byte]
+                shift = 8 - bit_depth * (index % per_byte + 1)
+                values.append((byte >> shift) & mask)
+            pixels.append(tuple(values))
+    return pixels
+
+
+def _png_samples_to_rgba(compressed: bytes, width: int, height: int, bit_depth: int,
+                         color_type: int, interlace: int, plte: bytes | None,
+                         trns: bytes | None) -> bytes:
+    """Inflate, unfilter and widen any standard PNG to 8-bit RGBA.
+
+    The importer used to demand colour type 6 at depth 8 and reject everything
+    else, which is why a perfectly good jersey exported straight out of an image
+    editor -- usually colour type 2 (RGB) or 3 (palette) -- came back as "PNG
+    must be 8-bit RGBA with interlacing off". Every colour type and bit depth
+    the specification defines is accepted here and widened internally; nothing
+    about the retail side changes, because the importer always worked in RGBA.
+    """
+    channels = _PNG_CHANNELS[color_type]
+    bits_per_pixel = channels * bit_depth
+    if interlace == 0:
+        blocks = [(width, height, _ADAM7[0])]
+        expected = ((width * bits_per_pixel + 7) // 8 + 1) * height
+    else:
+        blocks = []
+        expected = 0
+        for pass_index, (x0, y0, dx, dy) in enumerate(_ADAM7):
+            pass_width = (width - x0 + dx - 1) // dx if width > x0 else 0
+            pass_height = (height - y0 + dy - 1) // dy if height > y0 else 0
+            blocks.append((pass_width, pass_height, _ADAM7[pass_index]))
+            if pass_width and pass_height:
+                expected += ((pass_width * bits_per_pixel + 7) // 8 + 1) * pass_height
+
+    decompressor = zlib.decompressobj()
+    raw = decompressor.decompress(compressed, expected + 1)
+    require(len(raw) <= expected and not decompressor.unconsumed_tail,
+            "PNG inflated data exceeds its declared image size")
+    raw += decompressor.flush()
+    require(decompressor.eof and not decompressor.unused_data and len(raw) == expected,
+            "PNG IDAT stream is truncated, trailing, or wrong-sized")
+
+    palette_entries = len(plte) // 3 if plte else 0
+    scale = {1: 255, 2: 85, 4: 17, 8: 1, 16: 1}[bit_depth]
+
+    def widen(sample: int) -> int:
+        return sample * scale if bit_depth < 8 else sample
+
+    rgba = bytearray(width * height * 4)
+    consumed = 0
+    for pass_width, pass_height, (x0, y0, dx, dy) in blocks:
+        if not pass_width or not pass_height:
+            continue
+        row_bytes = (pass_width * bits_per_pixel + 7) // 8
+        block_size = (row_bytes + 1) * pass_height
+        block = _png_unfilter(raw[consumed:consumed + block_size],
+                              pass_width, pass_height, bits_per_pixel)
+        consumed += block_size
+        for y in range(pass_height):
+            row = block[y * row_bytes:(y + 1) * row_bytes]
+            target_y = y0 + y * dy if interlace else y
+            for x, sample in enumerate(
+                    _png_read_samples(row, pass_width, channels, bit_depth)):
+                target_x = x0 + x * dx if interlace else x
+                if color_type == 3:
+                    index = sample[0]
+                    require(index < palette_entries,
+                            "PNG palette index is outside the PLTE")
+                    red, green, blue = plte[index * 3:index * 3 + 3]
+                    alpha = trns[index] if trns and index < len(trns) else 255
+                elif color_type == 0:
+                    red = green = blue = widen(sample[0])
+                    alpha = 255
+                    if trns and len(trns) >= 2:
+                        grey = struct.unpack(">H", trns[:2])[0]
+                        alpha = 0 if sample[0] == (grey if bit_depth == 16 else grey & 0xFF) else 255
+                elif color_type == 4:
+                    red = green = blue = widen(sample[0])
+                    alpha = widen(sample[1])
+                elif color_type == 2:
+                    red, green, blue = (widen(value) for value in sample[:3])
+                    alpha = 255
+                    if trns and len(trns) >= 6:
+                        keys = struct.unpack(">HHH", trns[:6])
+                        if bit_depth == 8:
+                            keys = tuple(value & 0xFF for value in keys)
+                        if tuple(sample[:3]) == keys:
+                            alpha = 0
+                else:
+                    red, green, blue, alpha = (widen(value) for value in sample[:4])
+                base = (target_y * width + target_x) * 4
+                rgba[base:base + 4] = bytes((red, green, blue, alpha))
+    return bytes(rgba)
 
 
 def read_rgba_png(path: Path) -> tuple[int, int, bytes, str]:

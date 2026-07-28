@@ -161,8 +161,10 @@ class Nfl2k5AssetIO:
                 payload, (int(asset.width), int(asset.height)))
         except ValueError as exc:
             raise ValidationError(
-                f"{asset.label} needs an exact {asset.width}×{asset.height} "
-                "8-bit RGBA PNG with interlacing off. " + str(exc)
+                f"{asset.label} needs a PNG that is exactly "
+                f"{asset.width}×{asset.height}. Any standard PNG works -- "
+                "RGB, RGBA, greyscale, indexed, interlaced -- but the size "
+                "is fixed by the disc and cannot be scaled. " + str(exc)
             ) from exc
         if (width, height) != (asset.width, asset.height):
             raise ValidationError(

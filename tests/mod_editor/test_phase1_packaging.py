@@ -49,17 +49,17 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC38 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC39 — Getting Started"
         ))
         self.assertIn(
-            "## v1.0 RC38 All Textures, And The Writers Stop Demanding One Exact Disc", changelog
+            "## v1.0 RC39 Your PNG Editor's Normal Export Now Works", changelog
         )
         self.assertIn(
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
         )
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC38 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC39 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:

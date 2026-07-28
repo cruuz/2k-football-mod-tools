@@ -386,7 +386,8 @@ nameplate atlas, and three independent Team Select cards.
 
 1. Edit PNGs under `SETS/`; leave `{TEAM_KIT_MANIFEST}` unchanged.
 2. Keep every image at its exact dimensions as an 8-bit RGBA PNG with
-   interlacing off. Do not crop, rotate, rename, or flatten transparency.
+   any standard PNG (RGB, RGBA, greyscale, indexed, interlaced all work).
+   Do not crop, rotate, rename, or flatten transparency.
 3. Paint over existing UV islands and preserve seams, registration, blank
    margins, and orientation. Exact body-region UV coordinates are not decoded.
 4. Edit both `helmet00` and `helmet02` for full player-model coverage. Team

@@ -1,5 +1,11 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.42 — the PNG importer accepts real PNGs 2026-07-28
+
+- The shared PNG importer demanded colour type 6 at bit depth 8, non-interlaced,
+  and refused everything else. Every standard colour type and bit depth is now
+  decoded and widened to RGBA internally.
+
 ## 0.1.0-alpha.41 — shared registry row count 2026-07-28
 
 - No APF behaviour changed. The shared capability registry gained NFL 2K5's

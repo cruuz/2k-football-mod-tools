@@ -5,6 +5,23 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC39 Your PNG Editor's Normal Export Now Works — 2026-07-28
+
+- **"needs an exact 512×256 8-bit RGBA PNG with interlacing off" was half our
+  fault.** The importer accepted only colour type 6 at bit depth 8,
+  non-interlaced. An image editor saving a jersey normally writes colour type 2
+  (RGB, no alpha) or 3 (indexed), because those are smaller -- so good art came
+  back rejected with a message that read like the user had done something wrong.
+- Every colour type and bit depth the PNG specification defines now imports:
+  RGB, RGBA, greyscale, greyscale+alpha and indexed, at 1, 2, 4, 8 and 16 bits,
+  interlaced or not, with `tRNS` transparency honoured. Each is widened to RGBA
+  internally, so nothing about the retail side changed.
+- Decoding is verified pixel-for-pixel against Pillow across every variant.
+- **The size rule stays**, because it is the disc's rule and not ours: a texture
+  occupies a byte span its index chain has to fill exactly, so an image of a
+  different size genuinely cannot go there. The message now says that instead of
+  telling you to convert a file that was already fine.
+
 ## v1.0 RC38 All Textures, And The Writers Stop Demanding One Exact Disc — 2026-07-28
 
 - **New workspace: All Textures.** 36,761 of the disc's 57,208 textures can now

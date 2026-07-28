@@ -852,8 +852,10 @@ def _read_png(path: Path, dimensions: tuple[int, int]) -> tuple[bytes, bytes]:
         width, height, rgba = palette_tools.decode_rgba_png(payload, dimensions)
     except ValueError as exc:
         raise ValidationError(
-            f"This Crib asset needs an exact {dimensions[0]}×{dimensions[1]} "
-            f"8-bit RGBA PNG with interlacing off. {exc}"
+            f"This Crib asset needs a PNG that is exactly "
+            f"{dimensions[0]}×{dimensions[1]}. Any standard PNG works -- RGB, "
+            f"RGBA, greyscale, indexed, interlaced -- but the size is fixed "
+            f"by the disc and cannot be scaled. {exc}"
         ) from exc
     if (width, height) != dimensions:
         raise ValidationError(
