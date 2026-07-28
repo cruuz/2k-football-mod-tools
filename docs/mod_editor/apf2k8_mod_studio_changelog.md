@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.44 — no APF change 2026-07-28
+
+- Version parity only. No APF behaviour changed.
+
 ## 0.1.0-alpha.43 — no APF change 2026-07-28
 
 - Version parity only. The 2K5 side fixed a stale on-screen version and three

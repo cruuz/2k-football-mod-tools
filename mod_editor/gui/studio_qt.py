@@ -741,6 +741,26 @@ def category_display_title(
     return catalog.section(category).title
 
 
+# Capabilities that really do have controls somewhere in the app. Anything
+# absent from this map and marked as a writer is honest about being
+# command-line only, rather than showing an "Editable" pill over a page with
+# nothing on it.
+_WORKSPACE_CAPABILITIES = {
+    "nfl2k5.uniforms.all_visual": "Uniform Sets",
+    # Team Select cards are three of the Team Kit's 39 per-set components
+    # (uniform_card_256, helmet_card_256, helmet_card_128), so they are edited
+    # in the same browser rather than from a command line.
+    "nfl2k5.logos.team_select_cards": "Uniform Sets",
+    "nfl2k5.portraits_faces.roster_portraits": "Portraits & Faces",
+    "nfl2k5.portraits_faces.live_textures": "Portraits & Faces",
+    "nfl2k5.stadiums.create_team_field_art": "Field Art & Create-Team Art",
+    "nfl2k5.scorebug_presentation.inventory": "Scorebug & Presentation",
+    "nfl2k5.crib.assets": "The Crib",
+    "nfl2k5.audio.audo_wav": "Audio",
+    "nfl2k5.stadiums.geometry": "Stadiums",
+}
+
+
 def specialized_panel_for_category(category: ProductCategory) -> str | None:
     """Identify categories mounted as dedicated panels instead of capability cards."""
 
@@ -1582,6 +1602,9 @@ class StudioMainWindow(QMainWindow):
                 uniform_tabs.addTab(
                     self._build_capability_page(section), "Colours & Other Tools"
                 )
+                # The uniform browser is why people open this page; never let a
+                # newly added tab take the landing position away from it.
+                uniform_tabs.setCurrentIndex(0)
                 page = uniform_tabs
             elif category == ProductCategory.ROSTERS_PLAYERS:
                 if visual_kinds is None:
@@ -2512,6 +2535,31 @@ class StudioMainWindow(QMainWindow):
             findings.setObjectName("findingsNote")
             findings.setWordWrap(True)
             layout.addWidget(findings)
+        # A card is a description with no controls on it. When the capability
+        # is a writer, an "Editable" pill on a card with nothing to click reads
+        # as a broken button -- a modder went looking for the facemask colour,
+        # found this card, and reasonably reported it as a regression. Say
+        # plainly where the workspace is, or that there isn't one yet and the
+        # command line is the way in.
+        workspace = _WORKSPACE_CAPABILITIES.get(binding.capability_id)
+        backend = binding.capability.raw.get("backend") or {}
+        if workspace is not None:
+            where = QLabel(f"Edit this in the {workspace} workspace.")
+            where.setObjectName("findingsNote")
+            where.setWordWrap(True)
+            layout.addWidget(where)
+        elif backend.get("operation") == "write":
+            where = QLabel(
+                "No in-app workspace yet — this one runs from the command line:"
+            )
+            where.setObjectName("findingsNote")
+            where.setWordWrap(True)
+            layout.addWidget(where)
+            command = QLabel(str(backend.get("command", "")))
+            command.setObjectName("codeLabel")
+            command.setWordWrap(True)
+            command.setTextInteractionFlags(Qt.TextSelectableByMouse)
+            layout.addWidget(command)
         capability_id = QLabel(binding.capability_id)
         capability_id.setObjectName("codeLabel")
         layout.addWidget(capability_id)
@@ -4790,6 +4838,37 @@ class StudioMainWindow(QMainWindow):
                 background: #0c1220;
                 color: #edf3fc;
             }
+            /*
+             * QTabWidget had no rules at all, so it rendered in the platform
+             * style: a light tab strip with near-invisible labels on this dark
+             * surface.  Rosters & Players has used tabs since it shipped and
+             * inherited the same defect; it became obvious only when Uniforms &
+             * Equipment -- the page people open first -- gained a second tab.
+             */
+            QTabWidget::pane {
+                border: 1px solid #1e2b45;
+                border-radius: 10px;
+                background: #0c1220;
+                top: -1px;
+            }
+            QTabBar { background: transparent; }
+            QTabBar::tab {
+                background: #131c30;
+                color: #9fb2cd;
+                border: 1px solid #1e2b45;
+                border-bottom: none;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                padding: 8px 18px;
+                margin-right: 4px;
+                font-weight: 600;
+            }
+            QTabBar::tab:selected {
+                background: #0c1220;
+                color: #6ee7c7;
+                border-color: #2b3d5f;
+            }
+            QTabBar::tab:hover:!selected { color: #edf3fc; }
             /*
              * The blanket QWidget rule above paints an opaque dark background on
              * every QLabel, which shows as a dark rectangle whenever a label sits

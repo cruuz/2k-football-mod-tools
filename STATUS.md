@@ -1,4 +1,4 @@
-# 2K5 Mod Studio — v1.0 RC40 Release Status
+# 2K5 Mod Studio — v1.0 RC41 Release Status
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The

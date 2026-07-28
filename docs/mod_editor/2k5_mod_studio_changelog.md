@@ -5,6 +5,24 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC41 The Uniform Browser Comes Back, And Cards Stop Overpromising — 2026-07-28
+
+- **Fixes a regression RC40 introduced.** Splitting Uniforms & Equipment into
+  two tabs put the uniform browser behind a tab bar that had no styling at all,
+  so it rendered in the platform's light style with near-unreadable labels. The
+  tab strip is now styled for the dark theme and **Uniform Sets is always the
+  landing tab**. Rosters & Players had carried the same unstyled tabs since it
+  shipped and is fixed by the same rule.
+- **Capability cards no longer imply you can edit from them.** A card is a
+  description with no controls; only seven of the nineteen writers have a real
+  workspace in the app. Clicking through to the facemask colours and finding a
+  paragraph with an "Editable" pill on it reads as a broken button, and it was
+  reported as one. Each writer card now either names the workspace that edits
+  it, or says plainly that it is command-line only **and prints the command**.
+- Twelve writers are command-line only today, including the facemask colours
+  and the new All Textures lane. That is the honest state, and the next builds
+  are the workspaces that change it.
+
 ## v1.0 RC40 The Facemask Option Is Actually On Screen — 2026-07-28
 
 - **The facemask colours were switched on and still invisible.** Uniforms &

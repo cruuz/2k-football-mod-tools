@@ -31,7 +31,7 @@ if str(_REPO_ROOT) not in sys.path:
 from mod_editor import __version__  # noqa: E402
 from mod_editor.core.capabilities import CapabilityRegistryLoader  # noqa: E402
 from mod_editor.core.product_catalog import (  # noqa: E402
-    PRODUCT_CATEGORY_ORDER, build_nfl2k5_product_catalog,
+    _CATEGORY_TITLES, PRODUCT_CATEGORY_ORDER, build_nfl2k5_product_catalog,
 )
 
 _STUDIO = _REPO_ROOT / "mod_editor" / "gui" / "studio_qt.py"
@@ -121,6 +121,75 @@ class EveryCapabilityIsReachableTests(unittest.TestCase):
 
     def test_the_studio_module_still_parses(self) -> None:
         ast.parse(_STUDIO.read_text(encoding="utf-8"))
+
+
+class CardsTellTheTruthTests(unittest.TestCase):
+    """An "Editable" pill over a page with no controls reads as a broken button.
+
+    A modder was told the facemask colour lived in Uniforms & Equipment, clicked
+    through to it, and found a description card with nothing on it -- and
+    reasonably reported that as a regression. Capability cards carry labels
+    only; only a handful of categories have a real workspace behind them. Each
+    writer card now either names the workspace that edits it or says plainly
+    that it is command-line only, and prints the command.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.catalog = build_nfl2k5_product_catalog(CapabilityRegistryLoader().load())
+        from mod_editor.gui.studio_qt import _WORKSPACE_CAPABILITIES
+        cls.workspaces = _WORKSPACE_CAPABILITIES
+
+    def test_every_named_workspace_is_a_real_sidebar_section(self) -> None:
+        titles = {
+            _CATEGORY_TITLES[category] for category in PRODUCT_CATEGORY_ORDER
+        }
+        titles.add("Uniform Sets")           # the first tab of Uniforms & Equipment
+        titles.add("Portraits & Faces")      # the second tab of Rosters & Players
+        for capability_id, workspace in self.workspaces.items():
+            with self.subTest(capability_id=capability_id):
+                self.assertIn(
+                    workspace, titles,
+                    f"{capability_id} points at a workspace that does not exist",
+                )
+
+    def test_every_mapped_capability_exists(self) -> None:
+        known = {binding.capability_id for binding in self.catalog.capabilities}
+        for capability_id in self.workspaces:
+            with self.subTest(capability_id=capability_id):
+                self.assertIn(capability_id, known)
+
+    def test_the_facemask_says_where_to_edit_it(self) -> None:
+        """It is command-line only today, and must admit that rather than
+        showing an Editable pill over an inert card."""
+        binding = self.catalog.binding("nfl2k5.colors.unif_words")
+        self.assertEqual(binding.capability.raw["backend"]["operation"], "write")
+        self.assertNotIn(
+            "nfl2k5.colors.unif_words", self.workspaces,
+            "if a colour picker ever ships, map it here so the card stops "
+            "sending people to a terminal",
+        )
+
+    def test_the_all_textures_lane_is_honest_about_having_no_workspace(self) -> None:
+        binding = self.catalog.binding("nfl2k5.textures.all_p8")
+        self.assertEqual(binding.capability.raw["backend"]["operation"], "write")
+        self.assertNotIn("nfl2k5.textures.all_p8", self.workspaces)
+
+    def test_the_uniform_browser_stays_the_landing_tab(self) -> None:
+        source = _STUDIO.read_text(encoding="utf-8")
+        mount = source.index("if category == ProductCategory.UNIFORMS_EQUIPMENT:")
+        window = source[mount:mount + 2200]
+        self.assertIn("uniform_tabs.setCurrentIndex(0)", window)
+        self.assertLess(
+            window.index('"Uniform Sets"'), window.index('"Colours & Other Tools"'),
+            "the uniform browser must be the first tab",
+        )
+
+    def test_the_tab_bar_is_styled_for_the_dark_theme(self) -> None:
+        """Unstyled QTabBar renders a light strip with unreadable labels."""
+        source = _STUDIO.read_text(encoding="utf-8")
+        for rule in ("QTabBar::tab", "QTabBar::tab:selected", "QTabWidget::pane"):
+            self.assertIn(rule, source)
 
 
 if __name__ == "__main__":
