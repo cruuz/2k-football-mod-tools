@@ -9,6 +9,7 @@ from pathlib import Path
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 from typing import Callable
 
@@ -19,6 +20,18 @@ from .models import ApfSource
 
 
 Progress = Callable[[str, int, int], None]
+
+
+def _xdvdfs_module():
+    """The XDVDFS reader, imported the way the rest of the tree imports tools/."""
+    tools = str(Path(__file__).resolve().parents[2] / "tools")
+    if tools not in sys.path:
+        sys.path.insert(0, tools)
+    try:
+        import nfl_uniform_color_xiso_direct_patch as module
+    except ImportError:  # pragma: no cover - lean checkouts without tools/
+        return None
+    return module
 
 EXPECTED_0A_SHA256 = "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
 EXPECTED_0A_SIZE = 1_140_850_688
@@ -299,6 +312,117 @@ class SourceManager:
             raise
         return hashes
 
+    def _extract_native(
+        self, source_iso: Path, staging: Path, progress: Progress
+    ) -> str | None:
+        """Copy the six files the editor reads straight out of the image.
+
+        Returns ``None`` on success, or a human-readable reason it could not be
+        done, in which case the caller falls back to the bundled extractor.
+
+        The bundled ``extract-xiso`` probes exactly four partition offsets --
+        0, 0x0FD90000, 0x02080000, 0x18300000 -- and calls anything else "not a
+        valid xbox iso image".  That is the same defect the 2K5 source lane was
+        fixed for: a layout measured on one machine treated as the only legal
+        layout.  A dump is not one canonical file, and a list of four guesses is
+        still guessing.  Our reader *searches* sector-aligned positions for the
+        XDVDFS magic and confirms a candidate by requiring it at both ends of
+        the header sector plus a root directory that fits inside the image, so
+        it accepts a strict superset of what the bundled tool accepts.
+
+        It is also much cheaper: the editor reads six files, and unpacking the
+        whole disc to get them costs several gigabytes of disk and minutes of
+        wall clock that this path does not spend.
+        """
+        xiso = _xdvdfs_module()
+        if xiso is None:  # pragma: no cover - lean checkouts without tools/
+            return "the XDVDFS reader is not installed"
+        try:
+            descriptor = os.open(
+                source_iso, os.O_RDONLY | getattr(os, "O_BINARY", 0)
+            )
+        except OSError as exc:
+            return f"the disc image could not be opened ({exc.strerror})"
+        try:
+            image_size = os.fstat(descriptor).st_size
+            base = xiso.locate_xdvdfs_base(
+                descriptor, image_size, require_entry="default.xex"
+            )
+            entries, _ = xiso.parse_xdvdfs(descriptor, image_size, base)
+            by_name = {name.lower(): entry for name, entry in entries.items()}
+            wanted: list[tuple[str, object, int]] = []
+            for name, expected_size in EXPECTED_GAME_FILES.items():
+                entry = by_name.get(name.lower())
+                if entry is None:
+                    return f"the image does not contain {name}"
+                if entry.size != expected_size:
+                    return f"{name} has the wrong size for the supported APF USA revision"
+                wanted.append((name, entry, expected_size))
+            total = sum(size for _, _, size in wanted)
+            done = 0
+            for name, entry, expected_size in wanted:
+                target = staging.joinpath(*name.split("/"))
+                target.parent.mkdir(parents=True, exist_ok=True)
+                offset = entry.byte_offset
+                remaining = expected_size
+                with open(target, "wb") as handle:
+                    while remaining:
+                        count = min(4 << 20, remaining)
+                        handle.write(xiso.pread(descriptor, count, offset))
+                        offset += count
+                        remaining -= count
+                        done += count
+                        progress("Extracting APF ISO into a private cache", done, total)
+        except (OSError, ValueError) as exc:
+            return str(exc)
+        finally:
+            os.close(descriptor)
+        return None
+
+    def _extract_with_bundled_tool(
+        self,
+        source_iso: Path,
+        staging: Path,
+        progress: Progress,
+        native_error: str,
+    ) -> None:
+        """Last resort: unpack the whole disc with the bundled extract-xiso."""
+        for leftover in sorted(staging.iterdir(), reverse=True):
+            if leftover.is_dir() and not leftover.is_symlink():
+                shutil.rmtree(leftover, ignore_errors=True)
+            else:
+                leftover.unlink()
+        if self.extract_xiso is None:
+            raise SourceError(f"APF ISO extraction failed: {native_error}")
+        try:
+            tool = self.extract_xiso.resolve(strict=True)
+        except OSError as exc:
+            raise SourceError(
+                f"APF ISO extraction failed: {native_error}"
+            ) from exc
+        tool_mode = tool.lstat().st_mode
+        if not stat.S_ISREG(tool_mode) or stat.S_ISLNK(tool_mode) or not os.access(tool, os.X_OK):
+            raise SourceError("The bundled APF ISO extractor is unavailable")
+        result = subprocess.run(
+            [str(tool), "-q", "-d", str(staging), str(source_iso)],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            detail = (result.stderr or result.stdout).strip()
+            # Report BOTH attempts. "does not appear to be a valid xbox iso
+            # image" on its own sends people off to re-dump a disc that is
+            # usually fine, when what actually happened is that neither reader
+            # could find a filesystem where it looked.
+            raise SourceError(
+                "APF ISO extraction failed: "
+                + native_error
+                + (f"; the bundled extractor also failed: {detail[-300:]}" if detail else "")
+            )
+
     def _extract_iso(
         self,
         source_iso: Path,
@@ -306,11 +430,6 @@ class SourceManager:
         progress: Progress,
     ) -> Path:
         assert self.cache_root is not None
-        assert self.extract_xiso is not None
-        tool = self.extract_xiso.resolve(strict=True)
-        tool_mode = tool.lstat().st_mode
-        if not stat.S_ISREG(tool_mode) or stat.S_ISLNK(tool_mode) or not os.access(tool, os.X_OK):
-            raise SourceError("The bundled APF ISO extractor is unavailable")
         sources = self.cache_root / "sources"
         destination = sources / source_iso_sha256 / "game"
         cache_complete = all(
@@ -333,19 +452,10 @@ class SourceManager:
         staging = Path(tempfile.mkdtemp(prefix="extracting-", dir=parent))
         progress("Extracting APF ISO into a private cache", 0, 0)
         try:
-            result = subprocess.run(
-                [str(tool), "-q", "-d", str(staging), str(source_iso)],
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                check=False,
-            )
-            if result.returncode != 0:
-                detail = (result.stderr or result.stdout).strip()
-                raise SourceError(
-                    "APF ISO extraction failed"
-                    + (f": {detail[-500:]}" if detail else ".")
+            native_error = self._extract_native(source_iso, staging, progress)
+            if native_error is not None:
+                self._extract_with_bundled_tool(
+                    source_iso, staging, progress, native_error
                 )
             candidate = staging
             if not (candidate / "0A").is_file():
@@ -358,10 +468,16 @@ class SourceManager:
                 if (destination / "0A").is_file():
                     return destination
                 raise SourceError("The private APF extraction cache is incomplete")
+            # Windows MoveFileEx cannot rename onto an existing directory, so
+            # publish through the platform layer rather than os.replace here.
             if candidate == staging:
-                os.replace(staging, destination)
+                platform_compat.publish_no_replace(
+                    staging, destination, is_directory=True, require_atomic=False
+                )
             else:
-                os.replace(candidate, destination)
+                platform_compat.publish_no_replace(
+                    candidate, destination, is_directory=True, require_atomic=False
+                )
                 shutil.rmtree(staging, ignore_errors=True)
             progress("APF ISO extraction complete", 1, 1)
             return destination
