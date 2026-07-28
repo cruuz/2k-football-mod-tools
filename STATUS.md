@@ -168,7 +168,29 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-17` — 2026-07-28 · CURRENT
+### `beta-18` — 2026-07-28 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-18>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC43-20260728.tar.gz` | 9,617,797 | `7079bf7a00a89f3bf6c764f91e25d554c5038b2f40e5f9b8a88dcce9071ebf8f` |
+| `apf2k8-mod-studio-0.1.0-alpha.46-20260728.tar.gz` | 1,133,158 | `a81ab72379ca1644dc06f8aea8b6ad5b32a1c605a8017479db7eef88e0e6c6d4` |
+| `2K5-Mod-Studio-1.0-RC43-Setup.exe` | 55,991,319 | `555ce2e2aa2b4d9cdb56fb4c40b1c1d6e76599130aaca6c113b7e9c4b0824330` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.46-Setup.exe` | 52,363,159 | `10bd0cd4b6b27c8b9e594cd440b4ecc3363de1e238c614e24f6f428fe60aa641` |
+
+All Textures shipped able to neither preview nor export. Export PNG suggested
+the asset id as a filename and `:` is reserved on Windows; suggested names are
+now sanitised for every illegal character, trailing dots/spaces and reserved
+device names, across all asset kinds. The per-kind decoder dispatch had no
+`p8_texture` branch, so previews raised and the swallowed error left the panel
+on "Preparing..." forever; the decoder is implemented and a failed preview now
+reports itself.
+
+Tests assert the rules: every published kind must have a decoder, and no
+catalog id may produce a filename Windows rejects.
+
+### `beta-17` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-17>
 
