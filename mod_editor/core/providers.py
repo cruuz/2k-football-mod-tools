@@ -449,7 +449,7 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "db980456320ade8c36727bf71d93b60fb9a9f787d37d4ef32525c895072587ec"
+    backend_module_sha256 = "cd365cf2c868f01578d262037231d98590d1bbe7c7f0ecb0be45581e240d8ee1"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
@@ -466,6 +466,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_safe_text_banks.py": "c7ea4288611615204f53c40f5da06728bd9e5511eec5ae06711145e509461d48",
         "mod_editor/core/nfl2k5_scorebug_unified_adapter.py": "3307d3b1777fcb51f112dea2c6c5290dd969c3037d5bc21112f9740b7cef9bfd",
         "mod_editor/core/nfl2k5_source_cache.py": "662f1a9c0be6c73b647ba3850396f1016e10ef1c5227e01a4474d6d679c36731",
+        "mod_editor/core/nfl2k5_unif_color_writer.py": "80cbea2665321b19bb1876730faf593856701ec44bf1f56d077518dc2d816552",
         "mod_editor/core/nfl2k5_p8_texture_writer.py": "94aa984f9dad9666b79b091071a81c194fa1cd4880a1af8d9ed0c68a26de9731",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py": "c270d03fe92985baeb867182370207d2b4a224524fcaf3a6759438860d1601f9",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",

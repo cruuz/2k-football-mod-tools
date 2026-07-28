@@ -80,6 +80,21 @@ def _load_scorebug_adapter() -> Any:
     return module
 
 
+def _load_unif_color_adapter() -> Any:
+    """Load the facemask/turtleneck colour compiler."""
+
+    path = ROOT / "mod_editor/core/nfl2k5_unif_color_writer.py"
+    spec = importlib.util.spec_from_file_location(
+        "_nfl2k5_unif_color_unified_adapter", path
+    )
+    if spec is None or spec.loader is None:
+        raise ImportError("could not load the unified Unif colour adapter")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 def _load_p8_texture_adapter() -> Any:
     """Load the standalone-P8 compiler without product package imports."""
 
@@ -145,6 +160,7 @@ def _load_fixed_audo_adapter() -> Any:
 scorebug_adapter = _load_scorebug_adapter()
 stadium_texture_adapter = _load_stadium_texture_adapter()
 p8_texture_adapter = _load_p8_texture_adapter()
+unif_color_adapter = _load_unif_color_adapter()
 safe_text_adapter = _load_safe_text_adapter()
 fixed_audo_adapter = _load_fixed_audo_adapter()
 
@@ -253,6 +269,7 @@ CRIB_SCENE_TEXTURE_FIELDS = {"kind", "selector", "png"}
 SCOREBUG_TEXTURE_FIELDS = {"kind", "target", "png"}
 STADIUM_TEXTURE_FIELDS = {"kind", "target", "png"}
 P8_TEXTURE_FIELDS = {"kind", "asset_id", "png"}
+UNIF_COLOR_FIELDS = {"kind", "facemask", "turtleneck"}
 UNIVERSAL_FIXED_TEXT_FIELDS = {"kind", "selector", "text"}
 ROSTER_TEAM_TEXT_FIELDS = {
     "kind", "resource_outer_index", "team_index", "changes",
@@ -277,6 +294,7 @@ AUSB_AUDIO_KIND = "ausb_audio"
 CRIB_TEAM_PHOTO_KIND = "crib_team_photo"
 CRIB_SCENE_TEXTURE_KIND = "crib_scene_texture"
 SCOREBUG_TEXTURE_KIND = scorebug_adapter.SCOREBUG_TEXTURE_KIND
+UNIF_COLOR_KIND = "unif_color"
 P8_TEXTURE_KIND = "p8_texture"
 STADIUM_TEXTURE_KIND = "stadium_texture"
 STADIUM_TEXTURE_TARGET = stadium_texture_adapter.TARGET_TEXTURE_ID
@@ -291,6 +309,7 @@ REPORT_FREE_KINDS = ROSTER_REPORT_FREE_KINDS | {
     AUSB_AUDIO_KIND,
     STADIUM_TEXTURE_KIND,
     P8_TEXTURE_KIND,
+    UNIF_COLOR_KIND,
     CRIB_SCENE_TEXTURE_KIND,
     UNIVERSAL_FIXED_TEXT_KIND,
 }
@@ -800,6 +819,14 @@ def validate_edit_shape(record: object, order: int) -> dict[str, Any]:
             f"edit {order} has invalid p8_texture fields/types; choose a "
             "target from the All Textures workspace",
         )
+    elif kind == UNIF_COLOR_KIND:
+        require(
+            set(record) == UNIF_COLOR_FIELDS
+            and _string(record, "facemask")
+            and (record.get("turtleneck") is None or _string(record, "turtleneck")),
+            f"edit {order} has invalid unif_color fields/types; give colours as "
+            "AARRGGBB or #RRGGBB",
+        )
     elif kind == UNIVERSAL_FIXED_TEXT_KIND:
         require(
             set(record) == UNIVERSAL_FIXED_TEXT_FIELDS
@@ -928,6 +955,10 @@ def read_project(path: Path) -> ProjectFile:
         len(p8_texture_targets) == len(set(p8_texture_targets)),
         "project repeats one p8_texture target",
     )
+    require(
+        sum(1 for edit in edits if edit["kind"] == UNIF_COLOR_KIND) <= 1,
+        "project sets the Unif colours more than once",
+    )
     universal_text_selectors = [
         edit["selector"] for edit in edits
         if edit["kind"] == UNIVERSAL_FIXED_TEXT_KIND
@@ -961,6 +992,8 @@ def project_asset_paths(project: ProjectFile) -> list[Path]:
             ROSTER_TEAM_PROVIDER_KIND,
             ROSTER_PLAYER_PROVIDER_KIND,
             UNIVERSAL_FIXED_TEXT_KIND,
+            # A colour edit carries colours, not a file to pin.
+            UNIF_COLOR_KIND,
         }:
             names = []
         elif edit["kind"] in AUDIO_KINDS:
@@ -2690,7 +2723,12 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 continue
             effective_edit = edit
             effective_input_hashes: dict[str, str | None] | None = None
-            if kind == "team_identity":
+            if kind == UNIF_COLOR_KIND:
+                try:
+                    built = unif_color_adapter.build_unif_color_imports(edit)
+                except unif_color_adapter.UnifColorWriterError as exc:
+                    raise ProjectError(str(exc)) from exc
+            elif kind == "team_identity":
                 built = build_team_identity_imports(edit, report_paths[kind])
             elif kind == "player_roster":
                 built = build_player_roster_imports(edit, report_paths[kind])
@@ -2810,7 +2848,8 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                         input_fields = ("clean_png", "mud_png")
                     elif kind in {"team_identity", "player_roster"} \
                             | ROSTER_REPORT_FREE_KINDS \
-                            | {UNIVERSAL_FIXED_TEXT_KIND}:
+                            | {UNIVERSAL_FIXED_TEXT_KIND, UNIF_COLOR_KIND}:
+                        # A colour edit carries no file input to hash.
                         input_fields = ()
                     elif kind in AUDIO_KINDS:
                         input_fields = ("wav",)

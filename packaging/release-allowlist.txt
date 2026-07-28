@@ -61,6 +61,7 @@ mod_editor/core/nfl2k5_stadium_cache.py
 mod_editor/core/nfl2k5_stadium_studio.py
 mod_editor/core/nfl2k5_stadium_texture_writer.py
 mod_editor/core/nfl2k5_text_catalog.py
+mod_editor/core/nfl2k5_unif_color_writer.py
 mod_editor/core/nfl2k5_uniform_catalog.py
 mod_editor/core/nfl2k5_universal_asset_index.py
 mod_editor/core/nfl_audio.py
