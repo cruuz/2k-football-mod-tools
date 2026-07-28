@@ -168,7 +168,31 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-12` — 2026-07-28 · CURRENT
+### `beta-13` — 2026-07-28 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-13>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC38-20260728.tar.gz` | 9,483,708 | `088dad57b92b147b27ac337a645e57025bb27276bb1bd781a1bcd2463b155d9d` |
+| `apf2k8-mod-studio-0.1.0-alpha.41-20260728.tar.gz` | 1,132,386 | `2f8b7f7d072327360e52c8b6343b468f4a34d040e94b5d654256104fd4b4b61c` |
+| `2K5-Mod-Studio-1.0-RC38-Setup.exe` | 55,915,151 | `7e424a6ed2ca4f4765757e3cadcf68b682108ea3fc26c1f04122b39d6f1195da` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.41-Setup.exe` | 52,359,113 | `6fa468fbfcd8ec85819885e8133e5fc79c79ec5a86779a156777c73b99ee2825` |
+
+New All Textures workspace: 36,761 of the disc's 57,208 textures are editable
+from a PNG, recompressed into the original byte span. Covers the real teams'
+end-zone art, goalpost pads, `divots`, the `mark*` overlays and the shared
+equipment textures. P8 only; other Xbox formats are refused by name.
+
+Four shipped writers -- audio, generic texture import, Crib bar-monitor and
+uniform colours -- stopped gating on the whole container's size and SHA-256,
+which had made them unusable on any legally dumped disc that differed from the
+project's own copy. Identity is per-extent everywhere now.
+
+Proved on three differently packed images of the same game: identical 31,652
+changed bytes at three different absolute offsets.
+
+### `beta-12` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-12>
 
