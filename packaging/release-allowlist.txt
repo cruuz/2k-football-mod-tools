@@ -55,6 +55,7 @@ mod_editor/core/nfl2k5_extended_visual_catalog.py
 mod_editor/core/nfl2k5_extended_visual_io.py
 mod_editor/core/nfl2k5_p8_texture_writer.py
 mod_editor/core/nfl2k5_playbook_inspector.py
+mod_editor/core/nfl2k5_player_assets.py
 mod_editor/core/nfl2k5_safe_text_banks.py
 mod_editor/core/nfl2k5_scorebug_unified_adapter.py
 mod_editor/core/nfl2k5_source_cache.py

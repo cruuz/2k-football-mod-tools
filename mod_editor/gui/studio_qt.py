@@ -1668,6 +1668,11 @@ class StudioMainWindow(QMainWindow):
                 roster_tabs.setAccessibleName("Rosters and players workspaces")
                 roster_tabs.addTab(self._roster_panel, "Players & Numbers")
                 roster_tabs.addTab(portrait_page, "Portraits & Faces")
+                # "Which face is this player?" had no answer in the app: faces
+                # are found by a face_id buried in the roster record and filed
+                # under a number, so the only method was scrolling 1,872
+                # textures hoping a label matched.
+                roster_tabs.addTab(self._build_player_assets_page(), "Player Assets")
                 page = roster_tabs
             elif category == ProductCategory.TEAM_IDENTITY:
                 self._text_roster_panel = TextRosterPanel(
@@ -2222,6 +2227,147 @@ class StudioMainWindow(QMainWindow):
             label="Reverting uniform colours",
             blocking=True,
         )
+
+    def _build_player_assets_page(self) -> QWidget:
+        """One player, and every texture the disc lets you edit for them."""
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.setContentsMargins(24, 20, 24, 16)
+        layout.setSpacing(10)
+
+        title = QLabel("Player Assets")
+        title.setObjectName("heroTitleSmall")
+        blurb = QLabel(
+            "Search a player to see the face textures and portrait that belong "
+            "to them. Faces are linked by the face_id stored in the player's own "
+            "roster record; a portrait is matched by name, because nothing in "
+            "the bytes ties a portrait number to a player — that is labelled so "
+            "you know which is which."
+        )
+        blurb.setObjectName("mutedLabel")
+        blurb.setWordWrap(True)
+        layout.addWidget(title)
+        layout.addWidget(blurb)
+
+        self.player_asset_search = QLineEdit()
+        self.player_asset_search.setPlaceholderText(
+            "Search players by name…  (load your XISO first)"
+        )
+        self.player_asset_search.setClearButtonEnabled(True)
+        layout.addWidget(self.player_asset_search)
+
+        self.player_asset_list = QListWidget()
+        self.player_asset_list.setObjectName("panel")
+        layout.addWidget(self.player_asset_list, 1)
+
+        self.player_asset_detail = QLabel(
+            "Load your NFL 2K5 XISO, then search for a player."
+        )
+        self.player_asset_detail.setObjectName("mutedLabel")
+        self.player_asset_detail.setWordWrap(True)
+        self.player_asset_detail.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        layout.addWidget(self.player_asset_detail)
+
+        equipment = QFrame()
+        equipment.setObjectName("panel")
+        equipment_layout = QVBoxLayout(equipment)
+        equipment_layout.setContentsMargins(14, 12, 14, 12)
+        equipment_layout.setSpacing(6)
+        heading = QLabel("Shared equipment")
+        heading.setObjectName("heroTitleSmall")
+        equipment_layout.addWidget(heading)
+        from mod_editor.core.nfl2k5_player_assets import (
+            EQUIPMENT_NOTE, equipment_rows,
+        )
+        names = QLabel(
+            "  •  ".join(label for _key, label in equipment_rows())
+        )
+        names.setWordWrap(True)
+        note = QLabel(EQUIPMENT_NOTE)
+        note.setObjectName("findingsNote")
+        note.setWordWrap(True)
+        equipment_layout.addWidget(names)
+        equipment_layout.addWidget(note)
+        layout.addWidget(equipment)
+
+        self.player_asset_search.textChanged.connect(self._filter_player_assets)
+        self.player_asset_list.currentItemChanged.connect(
+            self._show_player_assets
+        )
+        self._player_asset_rows: tuple[object, ...] = ()
+        return page
+
+    def _player_asset_summaries(self) -> tuple[object, ...]:
+        """Build the join lazily; it needs a loaded source to say anything."""
+        if self._player_asset_rows:
+            return self._player_asset_rows
+        if not bool(getattr(self.facade, "source_ready", False)):
+            return ()
+        from mod_editor.core.nfl2k5_player_assets import build_player_assets
+
+        try:
+            catalog = self.facade.text_catalog_snapshot(lambda *_a: None)
+        except Exception:  # noqa: BLE001 - an unloaded source simply has none
+            return ()
+        players = []
+        for player in getattr(catalog, "players", ()) or ():
+            players.append({
+                # RosterPlayer already carries the face_id read out of the
+                # player record at 0x06, which is the whole basis of the join.
+                "player_index": player.player_index,
+                "outer_index": player.outer_index,
+                "name": player.display_name,
+                "face_id": f"{int(player.face_id):04d}",
+                "identity_asset_ids": (
+                    player.first_name_asset_id, player.last_name_asset_id,
+                ),
+                "jersey_asset_id": player.jersey_number_asset_id,
+            })
+        if not players:
+            return ()
+        self._player_asset_rows = build_player_assets(
+            players, self.extended_visual_catalog.assets
+        )
+        return self._player_asset_rows
+
+    def _filter_player_assets(self, text: str = "") -> None:
+        rows = self._player_asset_summaries()
+        self.player_asset_list.clear()
+        if not rows:
+            self.player_asset_detail.setText(
+                "Load your NFL 2K5 XISO, then search for a player."
+            )
+            return
+        needle = text.strip().casefold()
+        shown = 0
+        for row in rows:
+            name = getattr(row, "name", "")
+            if needle and needle not in name.casefold():
+                continue
+            item = QListWidgetItem(f"{name}  ·  face {row.face_id}")
+            item.setData(Qt.UserRole, row.player_index)
+            self.player_asset_list.addItem(item)
+            shown += 1
+            if shown >= 400:      # a search box, not a scroll-the-whole-roster list
+                break
+
+    def _show_player_assets(self, current: object, _previous: object = None) -> None:
+        if current is None:
+            return
+        index = current.data(Qt.UserRole)
+        rows = self._player_asset_summaries()
+        row = next((r for r in rows if r.player_index == index), None)
+        if row is None:
+            return
+        lines = [f"{row.name} — face_id {row.face_id}"]
+        for asset in row.assets:
+            origin = ("linked by the roster record"
+                      if asset.link == "face_id" else "matched by name")
+            lines.append(
+                f"  • {asset.label}  ({asset.width}×{asset.height}, {origin})"
+            )
+        lines.extend(f"  · {note}" for note in row.notes)
+        self.player_asset_detail.setText("\n".join(lines))
 
     def _build_capability_page(self, section: ProductCategorySection) -> QWidget:
         scroll = QScrollArea()
