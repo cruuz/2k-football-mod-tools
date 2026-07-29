@@ -168,7 +168,35 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-21` — 2026-07-28 · CURRENT
+### `beta-22` — 2026-07-28 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-22>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC47-20260728.tar.gz` | 9,643,511 | `4897126de1c5ba00033f36650d782a7a379a2014ce9fe3d9ac998edacdce4839` |
+| `apf2k8-mod-studio-0.1.0-alpha.50-20260728.tar.gz` | 1,146,436 | `92050b9044aa89b2f81de855645c1a0a93743401600b178b0dc979c56ceb1817` |
+| `2K5-Mod-Studio-1.0-RC47-Setup.exe` | 56,011,866 | `6221d28dfc362d3049cf2e82197d7dc95b7cbfec1275a54b3b31432040cb09d2` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.50-Setup.exe` | 52,369,218 | `0f3c3f5d6c27107fbb587694fe037c5de8364a5c1427ad9c5f0d5dbc43e0dfac` |
+
+Stadium geometry round-trips through Blender: an edited glTF becomes the recipe
+the proved position writer validates. Proved on the real disc -- the retail
+574-vertex roof raised five units, 670 decoded bytes changed, topology and
+every unrelated stream preserved. Moves vertices; cannot add or remove them.
+
+Player Assets joins a player to their face textures and portrait, stating which
+link is real (face_id, from the roster record) and which is a name match
+(portraits). Equipment is listed once as five shared textures.
+
+Roster names import from a PS2 memory-card save into a normal project. A name
+too long for its fixed slot is skipped and reported, never truncated.
+
+The rating-slot disagreement is settled statistically by APFe's own
+SFLSettings.csv, which maps 1:1 onto bytes 0xBA..0xD8 and scores 0.649 against
+Star defaults where our ordering scores 0.436, identically on two roster files.
+The registry is deliberately not rewritten until a save-diff confirms it.
+
+### `beta-21` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-21>
 
