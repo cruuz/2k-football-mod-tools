@@ -1,5 +1,15 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.50 — rating-slot research 2026-07-28
+
+- No behaviour changed. APFe's own `SFLSettings.csv` lists 31 attributes in a
+  fixed order that maps 1:1 onto the player record's `0xBA`..`0xD8`, scoring
+  0.649 against Star-tier defaults where our current ordering scores 0.436 --
+  identically on two independent roster files. Our three unnamed bytes are
+  where APFe places PassArmStrength, Aggressiveness and KickStyle. The registry
+  is not rewritten until a save-diff confirms it; the write-up states the exact
+  prediction that experiment should produce.
+
 ## 0.1.0-alpha.49 — draw on the crest in the app 2026-07-28
 
 - **Edit…** on the team-logo panel opens the crest at its exact 512x512 size:

@@ -5,6 +5,27 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC47 Player Assets, Save Roster Import, Stadium Round-Trip — 2026-07-28
+
+- **Player Assets** joins Rosters & Players. Search a player and see the face
+  textures and portrait that belong to them. The face link is real — it comes
+  from the `face_id` in the player's own roster record — and is labelled as
+  such; a portrait is matched by name because nothing in the bytes ties a
+  portrait number to a player, and that is labelled too. Equipment is listed
+  once with a plain statement that NFL 2K5 stores it as five shared textures,
+  so editing one changes it for everybody.
+- **Roster names can come off a PS2 memory card.**
+  `tools/nfl2k5_save_roster_import.py` reads a save's ROST arena and emits a
+  project the normal build applies. A name too long for its fixed slot is
+  skipped and reported rather than truncated, and capacity is measured in
+  UTF-16LE because that is what the disc stores.
+- **Stadium geometry round-trips through Blender.**
+  `tools/nfl_stadium_gltf_roundtrip.py` turns an edited glTF into the recipe
+  the proved position writer already validates. Proved end to end on the real
+  disc: the retail 574-vertex roof raised five units, composed into a patched
+  volume 9, 670 decoded bytes changed, topology and every unrelated stream
+  preserved. It moves vertices; it cannot add or remove them, and it says so.
+
 ## v1.0 RC46 A Built-In Pixel Editor — 2026-07-28
 
 - **Edit…** next to Export/Replace in every texture browser opens the slot at
