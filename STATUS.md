@@ -168,7 +168,32 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-19` — 2026-07-28 · CURRENT
+### `beta-21` — 2026-07-28 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-21>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC46-20260728.tar.gz` | 9,634,076 | `fe3da70618305c5f2b701ca374cfffb9783cc78c0bf655dfd479fdf77e6e8157` |
+| `apf2k8-mod-studio-0.1.0-alpha.49-20260728.tar.gz` | 1,145,950 | `14777605a743b3090cd07851bf064330f07496f7064a96a8e03a6f533075dfff` |
+| `2K5-Mod-Studio-1.0-RC46-Setup.exe` | 55,998,899 | `435e03d90ee58ea7fd9938d041b5dcb87e454f4f4bb16e584d14e6fb0b3bcece` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.49-Setup.exe` | 52,372,747 | `3e446a934a2ee904b0ba7c0d3e75ee62a64b836389ab856cf1cae8b314b74cfc` |
+
+A built-in pixel editor in both products: pencil, eraser, fill, eyedropper,
+colour picker with alpha, zoom to 16x with a pixel grid, 24-step undo. The
+canvas has no resize control -- it is the slot's exact size -- so a saved
+result can never be the wrong shape.
+
+Any image can now be imported at any size. A crest pads and keeps its whole
+shape; a jersey or field panel crops to fill; an already-exact image is passed
+through untouched. JPEG/BMP/GIF/WebP/TGA are read as well as PNG.
+`tools/nfl_fit_image.py` does the same for whole folders.
+
+Caught while doing it: the APF field-art test drove the staging path with a
+wrong-sized PNG and hit the new modal, hanging forever. It now drives both
+answers.
+
+### `beta-19` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-19>
 
