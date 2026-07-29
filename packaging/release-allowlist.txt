@@ -124,6 +124,7 @@ tools/launch_2k5_mod_studio.sh
 tools/nfl2k5_jersey_png_workflow.py
 tools/nfl2k5_ps2_save.py
 tools/nfl2k5_ps2_save_verify.py
+tools/nfl2k5_save_roster_import.py
 tools/nfl2k5_visual_mod_project.py
 tools/nfl_all_texture_xiso_workflow.py
 tools/nfl_audo_wav_xiso_workflow.py

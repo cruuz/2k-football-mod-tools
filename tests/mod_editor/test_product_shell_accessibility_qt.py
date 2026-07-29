@@ -104,7 +104,10 @@ class ProductShellAccessibilityTests(unittest.TestCase):
                 rosters_page.tabText(index)
                 for index in range(rosters_page.count())
             ],
-            ["Players & Numbers", "Portraits & Faces"],
+            # Player Assets joins a player to the face textures and
+            # portrait that belong to them, which the app could not
+            # answer before.
+            ["Players & Numbers", "Portraits & Faces", "Player Assets"],
         )
         self.assertIs(rosters_page.widget(0), self.two_k5._roster_panel)
         self.assertEqual(
