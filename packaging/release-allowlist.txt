@@ -156,6 +156,7 @@ tools/nfl_scne_inventory.py
 tools/nfl_scorebug_png_import.py
 tools/nfl_sleeve_tset_png_import.py
 tools/nfl_sleeve_tset_targets.py
+tools/nfl_stadium_gltf_roundtrip.py
 tools/nfl_stadium_studio_cache.py
 tools/nfl_static_gltf.py
 tools/nfl_team_select_card_png_import.py
