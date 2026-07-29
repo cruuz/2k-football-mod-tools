@@ -156,5 +156,55 @@ class WiringTests(unittest.TestCase):
         self.assertIn("*.jpg", source)
 
 
+    def test_the_apf_uniform_panel_offers_to_resize(self) -> None:
+        """Jerseys, pants and colour maps hit the same wall as the crest."""
+        source = (
+            _REPO_ROOT / "mod_editor" / "apf_studio" / "gui.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("Wrong PNG size", source)
+        # Two staging paths -- the crest panel and the uniform/field panel --
+        # each import the helper and call it, so four mentions in total.
+        self.assertEqual(source.count("fit_to_png(path"), 2,
+                         "both APF staging paths must offer the fit")
+
+    def test_the_2k5_replace_path_fits_before_replacing(self) -> None:
+        source = (
+            _REPO_ROOT / "mod_editor" / "gui" / "studio_qt.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("def _fit_for_slot", source)
+        start = source.index("    def _replace_visual_asset(")
+        block = source[start:start + 900]
+        self.assertIn("_fit_for_slot(path, asset.width, asset.height", block)
+
+    def test_the_2k5_chooser_accepts_more_than_png(self) -> None:
+        source = (
+            _REPO_ROOT / "mod_editor" / "gui" / "studio_qt.py"
+        ).read_text(encoding="utf-8")
+        start = source.index("    def _choose_visual_replacement(")
+        block = source[start:start + 600]
+        self.assertIn("*.jpg", block)
+
+    def test_an_already_correct_image_is_never_resampled(self) -> None:
+        """The rule that keeps a good file byte-identical through the GUI."""
+        source = (
+            _REPO_ROOT / "mod_editor" / "gui" / "studio_qt.py"
+        ).read_text(encoding="utf-8")
+        start = source.index("    def _fit_for_slot(")
+        block = source[start:start + 2400]
+        self.assertIn("if not probe.changed:", block)
+        self.assertIn("return path", block)
+
+    def test_the_batch_cli_exists_and_is_executable(self) -> None:
+        """For folders of textures a dialog cannot reach."""
+        import os
+        tool = _REPO_ROOT / "tools" / "nfl_fit_image.py"
+        self.assertTrue(tool.is_file())
+        self.assertTrue(os.access(tool, os.X_OK), "shipped tools must be 0755")
+        source = tool.read_text(encoding="utf-8")
+        self.assertIn("--mode", source)
+        for mode in FIT_MODES:
+            self.assertIn(mode, source)
+
+
 if __name__ == "__main__":
     unittest.main()

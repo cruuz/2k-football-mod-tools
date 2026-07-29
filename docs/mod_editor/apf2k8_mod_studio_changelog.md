@@ -1,5 +1,15 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.49 — draw on the crest in the app 2026-07-28
+
+- **Edit…** on the team-logo panel opens the crest at its exact 512x512 size:
+  pencil, eraser, fill, eyedropper, full colour picker with alpha, and zoom to
+  16x with a pixel grid. No resize control exists, so the saved result always
+  fits. Transparency is drawn over a chequerboard so an accidental hole is
+  visible before you build.
+- `tools/nfl_fit_image.py` converts images to an exact size from a terminal,
+  one file or a whole folder at a time.
+
 ## 0.1.0-alpha.48 — helmet crests accept any image 2026-07-28
 
 - **The team-logo panel refused anything that was not already 512x512.** A

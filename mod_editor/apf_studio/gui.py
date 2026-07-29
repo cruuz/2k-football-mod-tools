@@ -2300,6 +2300,15 @@ class ApfTeamLogoPanel(QFrame):
         self.revert_button.setObjectName("dangerQuietButton")
         self.build_button = QPushButton("Build copied 0A (team logo)…")
         self.build_button.setObjectName("secondaryButton")
+        # Editing in place removes the export/other-program/import round trip,
+        # which is where crests lose their alpha or come back the wrong size.
+        # The canvas is 512x512 with no resize control, so it always fits.
+        self.edit_button = QPushButton("Edit…")
+        self.edit_button.setObjectName("secondaryButton")
+        self.edit_button.setToolTip(
+            "Draw on the crest here at its exact 512×512 size."
+        )
+        self.edit_button.clicked.connect(self._edit_in_place)
         self.export_button.setToolTip(
             "Export the current source-derived 512×512 RGBA crest PNG from your game."
         )
@@ -2317,6 +2326,7 @@ class ApfTeamLogoPanel(QFrame):
         self.revert_button.clicked.connect(self._revert)
         self.build_button.clicked.connect(self._build_copied_volume)
         actions.addWidget(self.export_button)
+        actions.addWidget(self.edit_button)
         actions.addWidget(self.replace_button)
         actions.addWidget(self.revert_button)
         actions.addWidget(self.build_button)
@@ -2503,6 +2513,52 @@ class ApfTeamLogoPanel(QFrame):
         )
         if path:
             self._stage_path(Path(path))
+
+    def _edit_in_place(self) -> None:
+        """Draw on the crest at its exact size, then stage the result.
+
+        The pixels come from whatever is current -- a staged replacement if one
+        exists, otherwise the crest decoded out of the user's own game -- so a
+        second edit continues from where the first finished rather than
+        starting over from retail.
+        """
+        if not self.facade.source_ready:
+            QMessageBox.information(
+                self, "Load your game first",
+                "Open your APF 2K8 disc or game folder before editing the crest.",
+            )
+            return
+        from mod_editor.core.errors import ValidationError
+        from mod_editor.core.image_fit import fit_image
+        from mod_editor.gui.texture_editor import edit_texture
+
+        source = self._staged_png
+        if source is None:
+            try:
+                source = self._decode_source_operation(lambda *_a: None)
+            except Exception as exc:  # noqa: BLE001 - decode paths raise broadly
+                QMessageBox.information(
+                    self, "Could not open the crest",
+                    f"The current crest could not be decoded for editing.\n\n{exc}",
+                )
+                return
+        try:
+            pixels = fit_image(Path(str(source)), self._WIDTH, self._HEIGHT).rgba
+        except ValidationError as exc:
+            QMessageBox.information(self, "Could not open the crest", str(exc))
+            return
+
+        edited = edit_texture(
+            pixels, self._WIDTH, self._HEIGHT, "team-logo crest", self
+        )
+        if edited is None:
+            return
+        staged = self._preview_path("team_logo_edited.png")
+        Image.frombytes(
+            "RGBA", (edited.width, edited.height), edited.rgba
+        ).save(staged)
+        self._staged_png = staged
+        self.set_context()
 
     def _stage_path(self, path: Path) -> None:
         """Stage an image for the crest, resizing it when it is not exact.
@@ -3252,37 +3308,68 @@ class ApfFieldArtPanel(QFrame):
         target = self.current_target()
         path, _filter = QFileDialog.getOpenFileName(
             self,
-            f"Choose edited {target.width}×{target.height} RGBA {target.name} PNG",
+            f"Choose a {target.name} image (any size — "
+            f"{target.width}×{target.height} exact, or it can be resized)",
             str(Path.home()),
-            "RGBA PNG (*.png)",
+            "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.tga);;All files (*)",
         )
         if path:
             self._stage_path(Path(path))
 
     def _stage_path(self, path: Path) -> None:
+        """Stage an image for this slot, resizing it when it is not exact.
+
+        These are full-bleed textures -- a jersey, pants, a colour map -- so a
+        mismatched aspect ratio fills the slot and trims the overflow rather
+        than padding. Transparent bars baked into a jersey read as holes in
+        game, which is the opposite of what a crest wants.
+        """
         if not self.facade.source_ready:
             return
         target = self.current_target()
-        pixmap = QPixmap(str(path))
-        if pixmap.isNull():
+        from mod_editor.core.errors import ValidationError
+        from mod_editor.core.image_fit import fit_image, fit_to_png
+
+        try:
+            probe = fit_image(path, target.width, target.height)
+        except ValidationError as exc:
             QMessageBox.information(
-                self,
-                "Choose a PNG",
-                "That file could not be read as a PNG. Choose a "
-                f"{target.width}×{target.height} RGBA PNG and try again.",
+                self, "Choose an image",
+                f"That file could not be read as an image.\n\n{exc}",
             )
             return
-        if (pixmap.width(), pixmap.height()) != (target.width, target.height):
-            QMessageBox.information(
-                self,
-                "Wrong PNG size",
-                f"{target.name} must be exactly {target.width}×{target.height}. "
-                f"That PNG is {pixmap.width()}×{pixmap.height()}. The "
-                "offline-proved writer will also refuse any other size.",
-            )
+
+        if not probe.changed:
+            self._staged[target.key] = Path(path)
+            self.set_context()
             return
-        self._staged[target.key] = Path(path)
+
+        answer = QMessageBox.question(
+            self,
+            "Resize this image?",
+            f"{target.name} must be exactly {target.width}×{target.height}, and "
+            f"that image is {probe.source_width}×{probe.source_height}.\n\n"
+            f"Mod Studio can {probe.describe()} for you.\n\n"
+            "Your original file is not modified — the resized copy is staged "
+            "for this build only.",
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Yes,
+        )
+        if answer != QMessageBox.Yes:
+            return
+        try:
+            staged = self._preview_path(f"{target.key}_resized.png")
+            result = fit_to_png(path, target.width, target.height, staged)
+        except ValidationError as exc:
+            QMessageBox.information(self, "Could not resize", str(exc))
+            return
+        self._staged[target.key] = staged
         self.set_context()
+        QMessageBox.information(
+            self, "Resized",
+            f"Staged a {target.width}×{target.height} copy — {result.describe()}."
+            "\n\nPreview it before building; your original file is unchanged.",
+        )
 
     def _revert(self) -> None:
         self._staged.pop(self.current_target().key, None)

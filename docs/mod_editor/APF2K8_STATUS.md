@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio — Status
 
-The source code and UI identify as the retail-free **`0.1.0-alpha.48`**.
+The source code and UI identify as the retail-free **`0.1.0-alpha.49`**.
 `0.1.0-alpha.34` remains preserved unchanged; its mode-`0444`,
 815,213-byte archive has SHA-256
 `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`,
@@ -527,6 +527,15 @@ that preserves every user-data directory. The release/runtime gates exercise
 that lifecycle headlessly in an isolated home before a package can ship.
 
 Last updated: 2026-07-28
+
+## 0.1.0-alpha.49 candidate boundary — a built-in pixel editor
+
+- Source/UI identity is `0.1.0-alpha.49`. No capability or writer changed.
+- The team-logo panel gains **Edit…**, which opens the crest at its exact
+  512x512 size with pencil, eraser, fill, eyedropper, colour picker and zoom.
+  There is no resize control, so what it saves is always the right shape.
+- Editing twice continues from the staged edit rather than starting over from
+  retail.
 
 ## 0.1.0-alpha.48 candidate boundary — a crest no longer has to already be 512x512
 

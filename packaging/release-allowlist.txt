@@ -89,6 +89,7 @@ mod_editor/gui/playbooks_panel_qt.py
 mod_editor/gui/stadium_viewer.py
 mod_editor/gui/studio_qt.py
 mod_editor/gui/text_rosters_panel.py
+mod_editor/gui/texture_editor.py
 mod_editor/studio/__init__.py
 mod_editor/studio/audio_annotations.py
 mod_editor/studio/audio_bundle.py
@@ -131,6 +132,7 @@ tools/nfl_crib_bar_monitor_png_xiso.py
 tools/nfl_crib_team_photo_png_import.py
 tools/nfl_crib_team_photo_targets.py
 tools/nfl_dxt1.py
+tools/nfl_fit_image.py
 tools/nfl_jersey_tset_png_import.py
 tools/nfl_jersey_tset_targets.py
 tools/nfl_live_face_texture_png_import.py

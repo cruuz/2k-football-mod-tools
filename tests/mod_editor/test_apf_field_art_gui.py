@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+
+from PIL import Image
 from unittest import mock
 
 
@@ -513,7 +515,14 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             page.deleteLater()
             self.application.processEvents()
 
-    def test_editor_refuses_a_png_that_is_not_the_exact_base_size(self) -> None:
+    def test_editor_offers_to_resize_a_png_that_is_not_the_base_size(self) -> None:
+        """A wrong size is an offer now, not a dead end.
+
+        The writer still demands the exact base size and always will. Refusing
+        the user's file instead of fitting it was the app's choice, and it
+        stopped people before they started -- so the prompt is the behaviour
+        under test, along with declining it leaving nothing staged.
+        """
         page = self._page()
         try:
             target_index = next(
@@ -528,16 +537,34 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             with tempfile.TemporaryDirectory() as directory:
                 wrong = Path(directory) / "wrong.png"
                 _write_png(wrong, target.width // 2, target.height)
+
+                # Declining leaves the slot exactly as it was.
                 with mock.patch.object(
-                    gui.QMessageBox, "information", return_value=None
-                ) as reported:
+                    gui.QMessageBox, "question",
+                    return_value=gui.QMessageBox.Cancel,
+                ) as asked:
                     page.editor._stage_path(wrong)
                 self.application.processEvents()
-
-                reported.assert_called_once()
-                self.assertIn("Wrong PNG size", reported.call_args.args[1])
+                asked.assert_called_once()
+                self.assertIn("Resize this image?", asked.call_args.args[1])
                 self.assertIsNone(page.editor.staged_path(target))
                 self.assertFalse(page.editor.build_button.isEnabled())
+
+                # Accepting stages a copy at exactly the base size.
+                with mock.patch.object(
+                    gui.QMessageBox, "question",
+                    return_value=gui.QMessageBox.Yes,
+                ), mock.patch.object(
+                    gui.QMessageBox, "information", return_value=None
+                ):
+                    page.editor._stage_path(wrong)
+                self.application.processEvents()
+                staged = page.editor.staged_path(target)
+                self.assertIsNotNone(staged)
+                with Image.open(staged) as fitted:
+                    self.assertEqual(
+                        fitted.size, (target.width, target.height)
+                    )
         finally:
             page.deleteLater()
             self.application.processEvents()

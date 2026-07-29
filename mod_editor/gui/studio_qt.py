@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import tempfile
 from typing import Any, Callable, Iterable, Protocol, Sequence, runtime_checkable
 
 from PyQt5.QtCore import (
@@ -1030,6 +1031,9 @@ class StudioMainWindow(QMainWindow):
         self._preview_generation = 0
         self._category_pages: dict[ProductCategory, QWidget] = {}
         self._visual_browsers: dict[ProductCategory, _VisualBrowserState] = {}
+        # Where resized copies live for this session. Created lazily so a
+        # user who never needs a resize never gets a temp directory.
+        self._fit_dir: Path | None = None
         self._universal_browser: _UniversalBrowserState | None = None
         self._stadium_browser: _StadiumBrowserState | None = None
         self._audio_panel: AudioPanel | None = None
@@ -2368,7 +2372,16 @@ class StudioMainWindow(QMainWindow):
         replace_button.setObjectName("primaryButton")
         revert_button = QPushButton("Revert")
         revert_button.setObjectName("dangerQuietButton")
+        # Editing in place removes the export/other-program/import round trip,
+        # which is where size and alpha get lost. The canvas is the slot's exact
+        # size and has no resize control, so what it saves always fits.
+        edit_button = QPushButton("Edit…")
+        edit_button.setObjectName("secondaryButton")
+        edit_button.clicked.connect(
+            lambda _checked=False, category=section.category: self._edit_visual_asset(category)
+        )
         actions.addWidget(export_button)
+        actions.addWidget(edit_button)
         actions.addWidget(replace_button)
         actions.addWidget(revert_button)
         detail_layout.addLayout(actions)
@@ -3084,13 +3097,101 @@ class StudioMainWindow(QMainWindow):
             blocking=True,
         )
 
+    def _fit_for_slot(
+        self, path: Path, width: int, height: int, label: str, *,
+        mode: str = "auto",
+    ) -> Path | None:
+        """Return a path that is exactly this slot's size, or None if declined.
+
+        The size rule belongs to the disc -- a texture occupies a fixed byte
+        span -- and the core validators still enforce it, which is what makes
+        them a safety net rather than a suggestion. Refusing the user's file
+        instead of offering to fit it was the app's choice, and it stopped
+        people before they had started.
+
+        An already-correct image is returned untouched, so nothing is resampled
+        that does not need to be.
+        """
+        from mod_editor.core.errors import ValidationError
+        from mod_editor.core.image_fit import fit_image, fit_to_png
+
+        try:
+            probe = fit_image(path, width, height, mode=mode)
+        except ValidationError as exc:
+            self._show_error(f"That file could not be read as an image. {exc}")
+            return None
+        if not probe.changed:
+            return path
+
+        answer = QMessageBox.question(
+            self,
+            "Resize this image?",
+            f"{label} must be exactly {width}×{height}, and that image is "
+            f"{probe.source_width}×{probe.source_height}.\n\n"
+            f"Mod Studio can {probe.describe()} for you.\n\n"
+            "Your original file is not modified — the resized copy is used for "
+            "this edit only.",
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Yes,
+        )
+        if answer != QMessageBox.Yes:
+            return None
+        try:
+            if self._fit_dir is None:
+                self._fit_dir = Path(tempfile.mkdtemp(prefix="2k5-fitted-"))
+            staged = self._fit_dir / f"{_suggested_png_name(label)}"
+            result = fit_to_png(path, width, height, staged, mode=mode)
+        except ValidationError as exc:
+            self._show_error(f"Could not resize that image. {exc}")
+            return None
+        self._set_status(f"Resized for {label} — {result.describe()}.")
+        return staged
+
+    def _edit_visual_asset(self, category: ProductCategory) -> None:
+        """Open the built-in editor on the selected slot's current pixels."""
+        selected = self._selected_visual(category)
+        if selected is None:
+            self._show_error("Choose an asset to edit.")
+            return
+        if not bool(getattr(self.facade, "source_ready", False)):
+            self._show_error("Load your NFL 2K5 XISO before editing an asset.")
+            return
+        state, asset = selected
+        from mod_editor.core.errors import ValidationError
+        from mod_editor.core.image_fit import fit_image
+        from mod_editor.gui.texture_editor import edit_texture
+
+        try:
+            current = self.facade.preview_asset(asset, lambda *_a: None)
+            pixels = fit_image(Path(current), asset.width, asset.height).rgba
+        except (ValidationError, OSError) as exc:
+            self._show_error(f"Could not open {asset.label} for editing. {exc}")
+            return
+
+        edited = edit_texture(pixels, asset.width, asset.height, asset.label, self)
+        if edited is None:
+            return
+        import sys as _sys
+
+        tools = str(Path(__file__).resolve().parents[2] / "tools")
+        if tools not in _sys.path:
+            _sys.path.insert(0, tools)
+        from nfl_txtr import encode_rgba_png
+
+        if self._fit_dir is None:
+            self._fit_dir = Path(tempfile.mkdtemp(prefix="2k5-fitted-"))
+        staged = self._fit_dir / _suggested_png_name(f"{asset.asset_id}-edited")
+        staged.write_bytes(encode_rgba_png(edited.width, edited.height, edited.rgba))
+        self._replace_visual_asset(state, asset, staged)
+
     def _choose_visual_replacement(self, category: ProductCategory) -> None:
         selected = self._selected_visual(category)
         if selected is None:
             return
         state, asset = selected
         filename, _ = QFileDialog.getOpenFileName(
-            self, f"Replace {asset.label}", str(Path.home()), "PNG image (*.png)"
+            self, f"Replace {asset.label}", str(Path.home()),
+            "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.tga);;All files (*)",
         )
         if filename:
             self._replace_visual_asset(state, asset, Path(filename))
@@ -3114,6 +3215,11 @@ class StudioMainWindow(QMainWindow):
         asset: ExtendedVisualAsset,
         path: Path,
     ) -> None:
+        fitted = self._fit_for_slot(path, asset.width, asset.height, asset.label)
+        if fitted is None:
+            return
+        path = fitted
+
         def success(result: object) -> None:
             self._set_status(_result_message(result, f"{asset.label} is ready to build."))
             state.selected_asset_id = asset.asset_id

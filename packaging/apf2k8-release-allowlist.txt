@@ -73,6 +73,7 @@ mod_editor/data/apf2k8_stadium_material_findings.v1.json
 mod_editor/data/apf2k8_uniform_targets.v1.json
 mod_editor/gui/apf_audio_waveform_qt.py
 mod_editor/gui/stadium_viewer.py
+mod_editor/gui/texture_editor.py
 packaging/apf2k8-mod-studio.desktop
 packaging/apf2k8-mod-studio.svg
 packaging/apf2k8-release-allowlist.txt
@@ -113,6 +114,7 @@ tools/apf_xenos_mip_layout.py
 tools/director_inventory.py
 tools/launch_apf2k8_mod_studio.sh
 tools/nfl_dxt1.py
+tools/nfl_fit_image.py
 tools/nfl_outer.py
 tools/nfl_scene_probe.py
 tools/nfl_txtr.py

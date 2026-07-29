@@ -5,6 +5,23 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC46 A Built-In Pixel Editor — 2026-07-28
+
+- **Edit…** next to Export/Replace in every texture browser opens the slot at
+  its exact retail size. Pencil, eraser, fill, eyedropper, a full colour picker
+  with alpha, brush sizes to 64, zoom to 16x with a pixel grid, and 24 steps of
+  undo.
+- **The canvas has no resize control** — it *is* the slot's size — so what you
+  save can never be the wrong shape. That round trip through another program is
+  where a resaved 512×256 came back 513×256, or a crest lost its alpha.
+- Transparency is drawn over a chequerboard rather than white, because an
+  accidentally transparent crest is a black box on a helmet and you should see
+  that before you build, not after.
+- Nothing is written until you press Save; Cancel leaves the slot untouched.
+- `tools/nfl_fit_image.py` does the same conversion from a terminal, one file or
+  a whole folder at a time, for batches a dialog cannot reach — a directory of
+  textures lifted out of another mod, for instance.
+
 ## v1.0 RC45 Images Get Resized For You — 2026-07-28
 
 - New shared image-fitting layer, used by both editors. A texture slot occupies
