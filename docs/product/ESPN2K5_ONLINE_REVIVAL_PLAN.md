@@ -94,6 +94,27 @@ steady rather than speculative.
 **Five — the service itself.** Accounts, VIP profiles, leaderboards, the Crib,
 roster distribution. What that involves is only knowable once step three is done.
 
+## How it is meant to be deployed
+
+The target is a **single Docker container that anyone can run cheaply**, and
+that shapes the design rather than being packaging applied at the end.
+
+In practice it means the server holds its state in a file-backed SQLite database
+rather than expecting a database service beside it, keeps its dependencies to
+the standard library so the image stays small and has nothing to patch, and
+takes the handful of things that vary between deployments — the address it
+advertises back to consoles, its ports, the roster it serves — as configuration
+rather than edits to the source. A `docker run` with a mounted volume should be
+the whole install.
+
+That matters more than it sounds. The failure mode for revived game services is
+not that nobody can write one, it is that the one that exists lives on a single
+person's box and disappears when they lose interest. A container that costs a
+few dollars a month on the smallest instance any host sells, and that someone
+can stand up for their own group of friends without asking permission, is what
+makes the difference between a working service and a demonstration. The Madden
+server is already built this way.
+
 ## Why this is worth doing
 
 The reason to care is not nostalgia for a lobby. It is roster distribution.
