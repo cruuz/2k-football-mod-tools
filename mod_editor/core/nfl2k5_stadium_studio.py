@@ -42,6 +42,14 @@ PREVIEW_EXPORT_ONLY = "Preview/Export-only"
 EDITABLE = "Editable"
 COPY_BLOCK = 1024 * 1024
 
+#: glTF's unit is the metre; NFL 2K5 authors stadium geometry in centimetres.
+#: Measured on real exports, a stadium spans over 23,000 authored units, which
+#: an unscaled file declares as 23 km -- past Blender's default 1 km view
+#: distance, so the model appears to vanish.  Exported models carry one root
+#: node scaled by this instead of having their vertices rewritten, so the buffer
+#: stays byte-identical to what the game shipped.
+GLTF_UNIT_SCALE = 0.01
+
 TEXTURE_FINDINGS = (
     "The scene's material-to-embedded-texture pointer and exact PNG provenance "
     "are mapped, but shader stage, UV set, sampler behavior, and a general "
@@ -58,9 +66,12 @@ EDITABLE_TEXTURE_FINDINGS = (
 )
 
 GEOMETRY_FINDINGS = (
-    "Only the listed same-count raw FLOAT3 position targets have bounded offline "
-    "writers. General edited-glTF import, UV/material changes, collision, LOD, "
-    "semantic attachment, and visible runtime ownership remain unproved."
+    "The proved full scene accepts edited glTF vertex positions when every mesh "
+    "keeps its exact vertex count and equivalent faces. The importer writes only "
+    "catalogued FLOAT3 position lanes and preserves game UV, material, collision, "
+    "LOD, selector, and other stream bytes. Adding/removing topology, changing "
+    "UV/material data, semantic attachment, and visible runtime ownership remain "
+    "unproved."
 )
 
 
@@ -175,6 +186,10 @@ class StadiumTextureEditDelegate(Protocol):
     def replace(self, texture: StadiumTexture, supplied_png: Path) -> object: ...
 
     def revert(self, texture: StadiumTexture) -> object: ...
+
+    def supports_geometry(self, scene: StadiumScene) -> bool: ...
+
+    def replace_geometry(self, scene: StadiumScene, compiled: object) -> object: ...
 
 
 def _integer(value: object, label: str, *, minimum: int = 0) -> int:
@@ -479,6 +494,191 @@ class Nfl2k5StadiumStudio:
         finally:
             temporary.unlink(missing_ok=True)
         return target.resolve(strict=True)
+
+    def export_scene_gltf(
+        self, scene_or_id: "StadiumScene | str", destination: Path
+    ) -> tuple[Path, Path]:
+        """Save the stadium model the viewport is already showing.
+
+        The Stadiums page could render a scene but offered no way to get the
+        file out, so a modder could look at a stadium and still not open it in
+        Blender -- which is exactly what was reported.  The model is a glTF that
+        already exists, so this re-verifies it against the manifest and writes a
+        copy rather than re-deriving any geometry.
+
+        One thing changes on the way out.  NFL 2K5 authors stadium geometry in
+        centimetres and glTF's unit is the metre, so an untouched copy opens
+        about a hundred times too large: a real stadium here measures over
+        23,000 units across, which Blender reads as 23 km and clips away at its
+        default 1 km view distance.  The exported file therefore carries a
+        single root node scaled by :data:`GLTF_UNIT_SCALE`, with every former
+        root parented to it.  The buffer is copied byte for byte and no vertex
+        is re-encoded, so the geometry still means exactly what the game says it
+        means -- only the file's declared units change.
+
+        Returns the written ``(gltf, bin)`` pair.  Both land or neither does.
+        """
+
+        scene = (
+            self.get_scene(scene_or_id)
+            if isinstance(scene_or_id, str)
+            else scene_or_id
+        )
+        if self.get_scene(scene.scene_id) != scene:
+            raise ValidationError("That stadium scene does not match the manifest")
+        if _sha256(scene.gltf_path) != scene.gltf_sha256 \
+                or _sha256(scene.bin_path) != scene.bin_sha256:
+            raise ValidationError(
+                "The stadium glTF export no longer matches its manifest"
+            )
+
+        try:
+            document = json.loads(scene.gltf_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise ValidationError(f"Could not read that stadium scene: {exc}") from exc
+        if not isinstance(document, dict):
+            raise ValidationError("That stadium glTF is not a JSON object")
+
+        nodes = document.get("nodes")
+        if not isinstance(nodes, list) or not nodes:
+            raise ValidationError("That stadium glTF has no nodes to export")
+
+        # ``scenes``/``scene`` are optional in glTF 2.0 and the corpus here is
+        # not uniform about them, so both shapes are handled. When a scene is
+        # declared its root list is what gets re-parented; when none is, the
+        # roots are every node nothing else claims as a child, which is the same
+        # set a viewer would treat as top level.
+        scenes = document.get("scenes")
+        entry: dict[str, object]
+        if isinstance(scenes, list) and scenes:
+            scene_index = document.get("scene", 0)
+            if not isinstance(scene_index, int) or not 0 <= scene_index < len(scenes):
+                raise ValidationError("That stadium glTF names no default scene")
+            candidate = scenes[scene_index]
+            if not isinstance(candidate, dict):
+                raise ValidationError("That stadium glTF scene is not an object")
+            entry = candidate
+            roots = entry.get("nodes")
+            if not isinstance(roots, list) or not roots:
+                raise ValidationError("That stadium glTF scene has no root nodes")
+        else:
+            claimed: set[int] = set()
+            for node in nodes:
+                if isinstance(node, dict) and isinstance(node.get("children"), list):
+                    claimed.update(
+                        child for child in node["children"] if isinstance(child, int)
+                    )
+            roots = [index for index in range(len(nodes)) if index not in claimed]
+            if not roots:
+                raise ValidationError(
+                    "That stadium glTF has no top-level nodes to export"
+                )
+            entry = {}
+            document["scenes"] = [entry]
+            document["scene"] = 0
+
+        nodes.append({
+            "name": "nfl2k5_units_centimetre_to_metre",
+            "scale": [GLTF_UNIT_SCALE, GLTF_UNIT_SCALE, GLTF_UNIT_SCALE],
+            "children": list(roots),
+        })
+        entry["nodes"] = [len(nodes) - 1]
+        extras = document.setdefault("extras", {})
+        if isinstance(extras, dict):
+            extras["nfl2k5_unit_contract"] = {
+                "authored_unit": "centimetre",
+                "gltf_unit": "metre",
+                "applied_as": "root node scale",
+                "scale": GLTF_UNIT_SCALE,
+                "buffer_rewritten": False,
+            }
+
+        target = destination.expanduser()
+        if not target.is_absolute():
+            target = Path.cwd() / target
+        target.parent.mkdir(parents=True, exist_ok=True)
+        # The glTF names its buffer by filename, so the pair must keep that name
+        # and land side by side or the copy will not open.
+        binary_target = target.with_name(scene.bin_path.name)
+        if target.name == binary_target.name:
+            raise ValidationError(
+                "The stadium model and its buffer cannot share one filename; "
+                f"choose a name other than {scene.bin_path.name}"
+            )
+        for candidate in (target, binary_target):
+            if os.path.lexists(candidate):
+                raise ValidationError(f"A file already exists there: {candidate}")
+
+        payload = json.dumps(document, indent=2, sort_keys=True).encode("utf-8")
+        written: list[Path] = []
+        try:
+            self._write_new_file(target, payload)
+            written.append(target)
+            self._write_new_file(binary_target, scene.bin_path.read_bytes())
+            written.append(binary_target)
+        except Exception:
+            for path in written:
+                path.unlink(missing_ok=True)
+            raise
+        return target.resolve(strict=True), binary_target.resolve(strict=True)
+
+    def import_scene_gltf(
+        self, scene_or_id: "StadiumScene | str", edited_gltf: Path
+    ) -> object:
+        """Validate and stage same-topology position edits for one full scene.
+
+        The importer consumes only position lanes authorized by the bounded
+        catalog. Topology is proved equivalent before staging; UV, material,
+        collision, transform, selector, and every other game stream are kept
+        from the source SCNE rather than copied from the glTF.
+        """
+
+        scene = (
+            self.get_scene(scene_or_id)
+            if isinstance(scene_or_id, str)
+            else scene_or_id
+        )
+        if self.get_scene(scene.scene_id) != scene:
+            raise ValidationError("That stadium scene does not match the manifest")
+        supports = getattr(self.edit_delegate, "supports_geometry", None)
+        replace_geometry = getattr(self.edit_delegate, "replace_geometry", None)
+        if not callable(supports) or not supports(scene) or not callable(replace_geometry):
+            raise ActionNotImplementedError(GEOMETRY_FINDINGS)
+        from .nfl2k5_stadium_texture_writer import compile_stadium_geometry_recipe
+
+        compiled = compile_stadium_geometry_recipe(
+            scene,
+            edited_gltf,
+            catalog_path=self.geometry_catalog,
+        )
+        return replace_geometry(scene, compiled)
+
+    @staticmethod
+    def _write_new_file(target: Path, payload: bytes) -> None:
+        """Exclusive create through a temporary, the way export_texture does."""
+
+        temporary = target.with_name(
+            f".{target.name}.{os.getpid()}.{uuid4().hex}.tmp"
+        )
+        descriptor = os.open(
+            temporary,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL
+            | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
+            0o600,
+        )
+        try:
+            with os.fdopen(descriptor, "wb", closefd=True) as stream:
+                stream.write(payload)
+                stream.flush()
+                os.fsync(stream.fileno())
+            try:
+                os.link(temporary, target, follow_symlinks=False)
+            except FileExistsError as exc:
+                raise ValidationError(
+                    f"A file appeared at the export destination: {target}"
+                ) from exc
+        finally:
+            temporary.unlink(missing_ok=True)
 
     def replace_texture(self, texture_id: str, supplied_png: Path) -> object:
         texture = self._get_texture(texture_id)

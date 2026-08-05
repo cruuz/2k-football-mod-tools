@@ -20,7 +20,9 @@ def _put(body: bytearray, offset: int, value: str) -> None:
     body[offset:offset + len(payload)] = payload
 
 
-def _fixture(*, shared_player_name: bool = False) -> tuple[dict, RosterResourceView]:
+def _fixture(
+    *, shared_player_name: bool = False, secondary_player: bool = False
+) -> tuple[dict, RosterResourceView]:
     body = bytearray(0x900)
     _put(body, 0x20, "historic")
     strings = {
@@ -36,11 +38,38 @@ def _fixture(*, shared_player_name: bool = False) -> tuple[dict, RosterResourceV
         strings["last_name"] = strings["first_name"]
     for offset, value in strings.values():
         _put(body, offset, value)
+    if secondary_player:
+        # Zero-capacity placeholder names: only a UTF-16 NUL terminator each.
+        _put(body, 0x360, "")
+        _put(body, 0x362, "")
 
     raw = bytearray(0x54)
     struct.pack_into("<H", raw, 0x06, 1234)
     struct.pack_into("<I", raw, 0x20, (12 << 3) | 0x80000)
     raw[0x35] = 3
+    players = [{
+        "pool": "primary_players",
+        "index": 0,
+        "first_name": strings["first_name"][1],
+        "first_name_offset": strings["first_name"][0],
+        "last_name": strings["last_name"][1],
+        "last_name_offset": strings["last_name"][0],
+        "raw_hex": raw.hex(),
+    }]
+    if secondary_player:
+        secondary_raw = bytearray(0x54)
+        struct.pack_into("<H", secondary_raw, 0x06, 4321)
+        struct.pack_into("<I", secondary_raw, 0x20, (77 << 3) | 0x80000)
+        secondary_raw[0x35] = 7
+        players.append({
+            "pool": "secondary_players",
+            "index": 0,
+            "first_name": "",
+            "first_name_offset": 0x360,
+            "last_name": "",
+            "last_name_offset": 0x362,
+            "raw_hex": secondary_raw.hex(),
+        })
     parsed = {
         "label": "historic",
         "teams": [{
@@ -56,15 +85,7 @@ def _fixture(*, shared_player_name: bool = False) -> tuple[dict, RosterResourceV
             "city_abbreviation": strings["city_abbreviation"][1],
             "city_abbreviation_offset": strings["city_abbreviation"][0],
         }],
-        "players": [{
-            "pool": "primary_players",
-            "index": 0,
-            "first_name": strings["first_name"][1],
-            "first_name_offset": strings["first_name"][0],
-            "last_name": strings["last_name"][1],
-            "last_name_offset": strings["last_name"][0],
-            "raw_hex": raw.hex(),
-        }],
+        "players": players,
         "stadiums": [], "coaches": [], "colleges": [],
         "historic_descriptors": [], "team_labels": [], "generated_names": [],
     }
@@ -120,6 +141,13 @@ class Nfl2k5TextCatalogTests(unittest.TestCase):
         number = catalog.get_number_asset(catalog.players[0].jersey_number_asset_id)
         self.assertEqual(number.value, 12)
         self.assertTrue(number.editable)
+        shield = catalog.get_number_asset(catalog.players[0].face_shield_asset_id)
+        self.assertEqual(shield.value, 0)
+        self.assertEqual(shield.display_value(), "None")
+        self.assertEqual(shield.choices, ((0, "None"), (1, "Clear"), (2, "Dark")))
+        self.assertTrue(shield.editable)
+        self.assertIn("not a HOME/AWAY visor tint", shield.reason)
+        self.assertIn("loaded roster or franchise save may override", shield.reason)
 
     def test_staged_edits_are_sparse_reversible_and_retail_free(self) -> None:
         inventory, view = _fixture()
@@ -130,11 +158,14 @@ class Nfl2k5TextCatalogTests(unittest.TestCase):
         session.set_text(nickname, "Comets")
         session.set_text(player.first_name_asset_id, "Al")
         session.set_number(player.jersey_number_asset_id, 88)
-        self.assertEqual(session.modified_count, 3)
+        session.set_number(player.face_shield_asset_id, 2)
+        self.assertEqual(session.modified_count, 4)
         self.assertEqual(session.provider_edits(), (
             {"kind": "roster_player_text", "resource_outer_index": 113,
              "primary_player_index": 0,
-             "changes": {"first_name": "Al", "jersey_number": 88}},
+             "changes": {
+                 "first_name": "Al", "jersey_number": 88, "face_shield": 2,
+             }},
             {"kind": "roster_team_text", "resource_outer_index": 113,
              "team_index": 0, "changes": {"nickname": "Comets"}},
         ))
@@ -152,8 +183,41 @@ class Nfl2k5TextCatalogTests(unittest.TestCase):
         clone = Nfl2k5TextEdits(catalog)
         clone.load_replacement_document(document)
         self.assertEqual(clone.provider_edits(), session.provider_edits())
+        self.assertEqual(clone.number(player.face_shield_asset_id), 2)
         clone.revert_all()
         self.assertEqual(clone.modified_count, 0)
+
+    def test_face_shield_reserved_value_three_is_refused_on_stage_and_reopen(self) -> None:
+        inventory, view = _fixture()
+        catalog = Nfl2k5TextCatalog.from_parsed(inventory, {113: view})
+        shield_id = catalog.players[0].face_shield_asset_id
+        edits = Nfl2k5TextEdits(catalog)
+        with self.assertRaisesRegex(ValidationError, "0 through 2"):
+            edits.set_number(shield_id, 3)
+        with self.assertRaisesRegex(ValidationError, "Invalid replacement"):
+            edits.load_replacement_document({
+                "schema": "2k5_mod_studio_text_replacements/v1",
+                "edits": [{"asset_id": shield_id, "kind": "number", "value": 3}],
+            })
+
+    def test_source_reserved_face_shield_is_visible_read_only_without_locking_jersey(self) -> None:
+        inventory, view = _fixture()
+        player = view.parsed["players"][0]
+        raw = bytearray.fromhex(player["raw_hex"])
+        word = struct.unpack_from("<I", raw, 0x20)[0]
+        struct.pack_into("<I", raw, 0x20, word | (3 << 15))
+        player["raw_hex"] = raw.hex()
+        catalog = Nfl2k5TextCatalog.from_parsed(inventory, {113: view})
+        row = catalog.players[0]
+        jersey = catalog.get_number_asset(row.jersey_number_asset_id)
+        shield = catalog.get_number_asset(row.face_shield_asset_id)
+        self.assertTrue(jersey.editable)
+        self.assertFalse(shield.editable)
+        self.assertEqual(shield.display_value(), "3")
+        self.assertIn("reserved value 3", shield.reason)
+        edits = Nfl2k5TextEdits(catalog)
+        edits.set_number(jersey.asset_id, 44)
+        self.assertEqual(edits.provider_edits()[0]["changes"], {"jersey_number": 44})
 
     def test_shared_name_allocations_fail_closed_as_read_only(self) -> None:
         inventory, view = _fixture(shared_player_name=True)
@@ -165,9 +229,54 @@ class Nfl2k5TextCatalogTests(unittest.TestCase):
         self.assertEqual(last.reference_count, 2)
         self.assertIs(first.access, TextAccess.READ_ONLY)
         self.assertIs(last.access, TextAccess.READ_ONLY)
-        self.assertFalse(player.editable)
+        # The shared allocations fail closed for names, but the row keeps its
+        # own proved jersey-number and face-shield targets, so it is still
+        # counted as writable.
+        self.assertTrue(player.editable)
+        number = catalog.get_number_asset(player.jersey_number_asset_id)
+        self.assertTrue(number.editable)
         with self.assertRaisesRegex(ValidationError, "shared"):
             Nfl2k5TextEdits(catalog).set_text(first.asset_id, "A")
+
+    def test_secondary_pool_rows_count_writable_through_number_and_shield(self) -> None:
+        inventory, view = _fixture(secondary_player=True)
+        catalog = Nfl2k5TextCatalog.from_parsed(inventory, {113: view})
+        primary, secondary = catalog.players
+        self.assertEqual(secondary.pool, "secondary_players")
+        first = catalog.get_asset(secondary.first_name_asset_id)
+        last = catalog.get_asset(secondary.last_name_asset_id)
+        self.assertEqual(first.character_limit, 0)
+        self.assertIs(first.access, TextAccess.READ_ONLY)
+        self.assertIs(last.access, TextAccess.READ_ONLY)
+        self.assertIsNone(first.provider_kind)
+        self.assertIn("zero-capacity", first.reason)
+        number = catalog.get_number_asset(secondary.jersey_number_asset_id)
+        shield = catalog.get_number_asset(secondary.face_shield_asset_id)
+        self.assertEqual(number.value, 77)
+        self.assertTrue(number.editable)
+        self.assertTrue(shield.editable)
+        # Zero-capacity names lock only the name fields; the row itself stays
+        # in the writable count, exactly as every current secondary-pool
+        # player does for the published 2,547-player total.
+        self.assertTrue(secondary.editable)
+        self.assertTrue(primary.editable)
+        self.assertEqual(
+            sum(row.editable for row in catalog.players), len(catalog.players)
+        )
+        self.assertEqual(
+            catalog.get_bank("nfl2k5.text-bank.rost.113.0").access, "mixed"
+        )
+        with self.assertRaisesRegex(ValidationError, "zero-capacity"):
+            Nfl2k5TextEdits(catalog).set_text(first.asset_id, "A")
+        edits = Nfl2k5TextEdits(catalog)
+        edits.set_number(number.asset_id, 42)
+        self.assertEqual(edits.provider_edits(), ({
+            "kind": "roster_player_text",
+            "resource_outer_index": 113,
+            "player_pool": "secondary_players",
+            "player_index": 0,
+            "changes": {"jersey_number": 42},
+        },))
 
     def test_replacement_document_rejects_read_only_and_duplicates(self) -> None:
         inventory, view = _fixture()
@@ -233,7 +342,9 @@ class Nfl2k5TextCatalogTests(unittest.TestCase):
         self.assertFalse(selector.editable)
         self.assertIn("team-resource selector", selector.reason)
         situation_bank = catalog.get_bank(selector.bank_id)
-        self.assertIn("Coming Soon", situation_bank.reason)
+        self.assertIn("Research boundary", situation_bank.reason)
+        self.assertIn("inspect-only", situation_bank.reason)
+        self.assertNotIn("Coming Soon", situation_bank.reason)
         name_bank = next(bank for bank in catalog.banks if bank.kind == "NAME")
         self.assertIn("glyph metrics", name_bank.label)
 

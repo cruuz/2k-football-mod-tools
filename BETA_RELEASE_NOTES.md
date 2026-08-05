@@ -6,6 +6,57 @@
 > [**Beta 2**](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-2),
 > which runs on Windows, macOS and Linux; its notes live on that release page.
 
+> **Current candidate (unreleased) — 2026-08-04.** The working tree is
+> **2K5 Mod Studio v1.0 RC49** + **APF 2K8 Mod Studio 0.1.0-alpha.54**. It is
+> a release candidate, not a release: nothing here has been committed,
+> packaged, or published. The latest published release remains
+> [**beta-22**](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-22)
+> (2K5 v1.0 RC47 + APF 0.1.0-alpha.50, 2026-07-28), which supersedes the
+> Beta 2 pointer above. The changelogs are the candidate's source of truth:
+> [`docs/mod_editor/2k5_mod_studio_changelog.md`](docs/mod_editor/2k5_mod_studio_changelog.md)
+> and [`docs/mod_editor/apf2k8_mod_studio_changelog.md`](docs/mod_editor/apf2k8_mod_studio_changelog.md).
+>
+> Headlines since beta-22:
+>
+> - **2K5 RC48:** drop-in ordinary-audio replacement (849/849 authorable slots
+>   converted and re-verified), per-uniform facemask/faceshield/turtleneck
+>   colours across all 634 sets, 28,530 package-local equipment textures
+>   editable in All Textures, stadium glTF export scaled to metres, update
+>   check.
+> - **2K5 RC49:** standalone editable inventory raised from 9,640 to 11,395
+>   (+1,755 menu/mini-card/franchise/draft presentation surfaces); the 4,080
+>   explicit-size A1 player strips no longer blanket-refused; all 2,547
+>   current jersey numbers editable including 68 secondary-pool rows;
+>   per-player face shield (None/Clear/Dark); all 498 Crib textures editable
+>   plus a Crib Models tab; Team Kit → Browse 45 Equipment Textures; bounded
+>   stadium glTF vertex import (75 position lanes; runtime visibility
+>   unproved); exact same-book playbook stock-route copy; high-resolution
+>   authoring masters.
+> - **APF alpha.51:** `default.xex` decryption settled the ratings — 31
+>   editable rating bytes, up from 28; crest editor widened to all 118 logo
+>   slots; `endzone_l0` accepts edits; stadium glTF opens at sane units.
+> - **APF alpha.52:** Team Independence — every built-in team points at its
+>   own uniform textures (95 assignments changed, nothing added); ordinary
+>   audio accepted at the drop target with exact-slot conformance; external
+>   XMA1 output compared with authored PCM before staging.
+> - **APF alpha.53:** Custom Team Appearance owns shell colours for user slots
+>   32–39 with a one-click 2017 Eagles preset; the full-shell crest route is a
+>   normal headless editor build; raw-save appearance path with verified STFS
+>   handoff; Save Assignments for all 40 teams / 69 books; paired RPCS3/Xenia
+>   roster audit (zero unexplained rows); helmet/player same-topology POSITION
+>   import.
+> - **APF alpha.54:** whole-shell atlas v24 (all 118 packages / 236 layers
+>   compile; 10-view static visual gate passed); complete 206-slot wordmark
+>   editor; verified stock assignment-route copy/swap across 586 MASTER plays;
+>   complete 149-field Save Players editor with verified STFS handoff; stadium
+>   selected-mesh POSITION round trip (77 surfaces); explicit Team Logo
+>   coupled-write disclosure; high-resolution helmet-logo masters.
+> - **Known APF issue:** an accepted-team Xenia menu witness (Eagles helmet
+>   preview in Manage Team → Logo Selection, 2026-08-03) passed with stated
+>   caveats, but in live gameplay the v24 shell renders semi-transparent/flat
+>   (known background-alpha `0x88` defect; fix in flight). Gameplay shell
+>   proof is not claimed.
+
 **Release:** Beta 1
 **Date:** 2026-07-22
 **Tools included:**
@@ -21,22 +72,23 @@ and Linux-first. Read the [README](README.md) for install/usage and the
 ## What's in this beta
 
 ### 2K5 Mod Studio (v1.0-RC29)
-- Unified visual mod project: uniforms/Complete Team Kit, portraits, live faces,
+- Unified visual mod project: uniforms/Supported Team Kit, portraits, live faces,
   create-team field art, scorebug/presentation art, Team Select cards.
 - Stadium Studio: 477 scenes, 23,838 editable P8 textures, with a
   **"People & sideline only"** filter (fans, cheerleaders, coaches, officials,
   chain crew, camera/media, ushers, sideline props).
 - Audio: all 850 standalone cues + all 53,571 playable streaming ranges
   (exact-slot), with cue labels/notes.
-- Rosters: primary players (names + jersey), historical teams, and
-  secondary-pool jersey numbers.
+- Rosters: primary players (names + jersey), historical teams, and jersey plus
+  per-player None/Clear/Dark face-shield type for both pools. The face-shield
+  selector is not a HOME/AWAY tint; loaded saves may override the disc seed.
 - Text: 20,074 editable strings across 716 banks.
 - Project save/load, autosave/crash recovery, build-to-new-XISO, xemu launch.
 
 ### APF 2K8 Mod Studio (v0.1.0-alpha.34)
 - Uniforms: 96 editable textures (jersey/pants/helmet/shoulder) + `digital_font`
   + `draft_logo`.
-- Rosters & Players: team names, player names, all 28 ratings, exact Position,
+- Rosters & Players: team names, player names, all 31 ratings, exact Position,
   53-row roster planner.
 - Audio: all 47,775 editable AUDO/AUSB cues (exact-slot XMA1 via a user-supplied
   encoder), cue labels/notes, batch folder/ZIP authoring.
@@ -67,18 +119,21 @@ pixels/audio, private paths, symlinks, or undeclared files) and a
 - **Offline-proved vs runtime-proved.** Most writers are offline-proved
   (copied-image byte-diff verified). A smaller set is also runtime-proved in an
   emulator. The capability registry labels each writer
-  (`PROVED` / `READ ONLY` / `PORTME`).
+  (`Editable`, `Preview`/`Export-only`, `Proof boundary`, or `Research boundary`).
 - **Emulator-only executable patches.** Features that patch the game executable
   invalidate the retail signature and run only on the named emulators (xemu /
   Xenia), never original hardware.
-- **Not done yet** (tracked in
+- **Still outside the proved boundary** (tracked in
   [`docs/product/NFL2K5_COMPLETION_STATUS_AND_WALLS.md`](docs/product/NFL2K5_COMPLETION_STATUS_AND_WALLS.md)):
-  3D model import (Crib/stadium geometry), whole streaming-bank audio repack and
-  per-cue loop/gain/pan/mixer editing, playbook route drawing/import, franchise
+  arbitrary/new-topology 3D model import (bounded position-only Stadium and
+  Crib imports are available), whole streaming-bank audio repack and per-cue
+  loop/gain/pan/mixer editing, freehand playbook route drawing/import (exact
+  same-book stock assignment copying is available), franchise
   rookie-draft AI variety, Xbox save editing (its saves are signed with a
   platform key; PS2 saves are writable — see below), and uniform
   pixel→body-region UV decoding.
-- **Windows / macOS are a preview.** Launchers are now bundled for all three
+- **Historical Beta 1 platform note (not current): Windows / macOS were a
+  preview.** Launchers were bundled for all three
   platforms and CI runs the suite on all three, but it does not yet pass on
   Windows or macOS and neither GUI has been manually driven. Linux is the
   supported platform. On Windows the bundled `extract-xiso` extractor is a Linux

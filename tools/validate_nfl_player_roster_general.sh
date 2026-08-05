@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Validate the generalized NFL 2K5 roster writer end-to-end against the retail
 # XISO. Builds a copied XISO in a private temp dir, verifies the planned
-# byte-diff (primary name + jersey and secondary-pool jersey), exercises the
+# byte-diff (primary name + composed jersey/face shield and secondary jersey), exercises the
 # negative guards, then discards the multi-GB output so it is never retained.
 set -euo pipefail
 
@@ -24,6 +24,7 @@ cat >"$temporary/plan.json" <<'PLAN'
     {"pool": "primary_players", "player_index": 512, "field": "first_name", "value": "Noah"},
     {"pool": "primary_players", "player_index": 512, "field": "last_name", "value": "CodexProof"},
     {"pool": "primary_players", "player_index": 512, "field": "jersey_number", "value": 42},
+    {"pool": "primary_players", "player_index": 512, "field": "face_shield", "value": 2},
     {"pool": "secondary_players", "player_index": 0, "field": "jersey_number", "value": 7}
   ]
 }
@@ -35,7 +36,7 @@ python3 tools/nfl_player_roster_general_workflow.py \
   --plan "$temporary/plan.json" \
   --manifest "$temporary/manifest.json" \
   --audit "$audit" >"$temporary/run.stdout"
-grep -q 'NFL_PLAYER_ROSTER_GENERAL_WORKFLOW_OK edits=4 changed=15' "$temporary/run.stdout"
+grep -q 'NFL_PLAYER_ROSTER_GENERAL_WORKFLOW_OK edits=4 changed=16' "$temporary/run.stdout"
 
 python3 - "$temporary/manifest.json" <<'PY'
 import json
@@ -45,12 +46,15 @@ manifest = json.load(open(sys.argv[1]))
 assert manifest["schema"] == "nfl2k5_player_roster_general_workflow/v1"
 claims = manifest["claims"]
 assert claims["edit_count"] == 4
-assert claims["allowed_changed_byte_count"] == 15
+assert claims["allowed_changed_byte_count"] == 16
 assert claims["all_other_xiso_bytes_identical"] is True
 assert claims["layout_identical_copy_only_xiso"] is True
 assert claims["roster_membership_changed"] is False
 assert claims["position_changed"] is False
 assert claims["face_id_changed"] is False
+assert claims["face_shield_is_per_player_type_not_uniform_tint"] is True
+assert claims["face_shield_authorable_values"] == [0, 1, 2]
+assert claims["loaded_save_may_override_disc_seed"] is True
 assert claims["original_source_modified"] is False
 assert claims["runtime_visibility_proved"] is False
 assert manifest["source"]["modified"] is False
@@ -58,7 +62,9 @@ edits = {(e["pool"], e["player_index"], e["field"]): e for e in manifest["edits"
 assert edits[("primary_players", 512, "first_name")]["before"] == "Joey"
 assert edits[("primary_players", 512, "first_name")]["after"] == "Noah"
 assert edits[("primary_players", 512, "last_name")]["after"] == "CodexProof"
-assert edits[("primary_players", 512, "jersey_number")]["after"] == 42
+packed = edits[("primary_players", 512, "player_word_20")]
+assert packed["packed_fields"] == ["jersey_number", "face_shield"]
+assert packed["after"] == {"jersey_number": 42, "face_shield": 2}
 sec = edits[("secondary_players", 0, "jersey_number")]
 assert sec["before"] == 19 and sec["after"] == 7
 print("manifest assertions passed")
@@ -136,4 +142,6 @@ fi
 grep -q 'plan must not be a symlink' "$temporary/neg4.stderr"
 test ! -e "$temporary/neg4.xiso.iso"
 
-echo 'NFL_PLAYER_ROSTER_GENERAL_VALIDATION_PASS pools=primary+secondary edits=4 changed=15 secondary_name_refused=yes overflow_refused=yes binding_refused=yes symlink_refused=yes runtime=false'
+python3 -m unittest tests.test_nfl_player_roster_general_workflow
+
+echo 'NFL_PLAYER_ROSTER_GENERAL_VALIDATION_PASS pools=primary+secondary edits=4 changed=16 face_shield=none+clear+dark reserved_3_refused=yes secondary_name_refused=yes overflow_refused=yes binding_refused=yes symlink_refused=yes runtime=false'

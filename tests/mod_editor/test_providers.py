@@ -655,6 +655,30 @@ class ProviderTests(unittest.TestCase):
             with self.assertRaises(ProviderError):
                 provider.preflight(job, capability, lambda event: None)
 
+    def test_unified_provider_accepts_a_legal_noncanonical_disc_container(self) -> None:
+        """The executable identity, not ripper-specific padding, is the game."""
+
+        variant_sha = "a" * 64
+        checked: list[Path] = []
+        provider = Nfl2k5UnifiedVisualProvider(
+            runner=RecordingRunner(),
+            source_hasher=lambda path, progress: (variant_sha, path.stat().st_size),
+            contained_source_validator=lambda path: checked.append(path) is None,
+        )
+        capability = self.registry.get(CAPABILITY_ID)
+        with tempfile.TemporaryDirectory() as temporary:
+            job = request(Path(temporary))
+            job = replace(
+                job,
+                source=replace(
+                    job.source,
+                    sha256=variant_sha,
+                    size=Path(job.source.selected_path).stat().st_size,
+                ),
+            )
+            provider.preflight(job, capability, lambda event: None)
+        self.assertEqual(checked, [Path(job.source.selected_path).resolve()])
+
     def test_scorebug_provider_constructs_fixed_argv_and_three_stages(self) -> None:
         runner = ScorebugRecordingRunner()
         provider = Nfl2k5ScorebugProvider(
@@ -697,6 +721,28 @@ class ProviderTests(unittest.TestCase):
                 self.registry.get(SCOREBUG_CAPABILITY_ID).raw["backend"]["command"],
                 argv,
             )
+
+    def test_scorebug_provider_accepts_a_legal_noncanonical_disc_container(self) -> None:
+        variant_sha = "b" * 64
+        checked: list[Path] = []
+        provider = Nfl2k5ScorebugProvider(
+            runner=ScorebugRecordingRunner(),
+            source_hasher=lambda path, progress: (variant_sha, path.stat().st_size),
+            contained_source_validator=lambda path: checked.append(path) is None,
+        )
+        capability = self.registry.get(SCOREBUG_CAPABILITY_ID)
+        with tempfile.TemporaryDirectory() as temporary:
+            job = scorebug_request(Path(temporary))
+            job = replace(
+                job,
+                source=replace(
+                    job.source,
+                    sha256=variant_sha,
+                    size=Path(job.source.selected_path).stat().st_size,
+                ),
+            )
+            provider.preflight(job, capability, lambda event: None)
+        self.assertEqual(checked, [Path(job.source.selected_path).resolve()])
 
     def test_scorebug_preflight_rejects_project_png_source_and_output_forgery(self) -> None:
         provider = Nfl2k5ScorebugProvider(
@@ -744,7 +790,7 @@ class ProviderTests(unittest.TestCase):
 
             job = scorebug_request(root)
             wrong_source = replace(job.source, size=1)
-            with self.assertRaisesRegex(ProviderError, "pinned retail XISO"):
+            with self.assertRaisesRegex(ProviderError, "changed after editor recognition"):
                 provider.preflight(
                     replace(job, source=wrong_source), capability, lambda event: None
                 )

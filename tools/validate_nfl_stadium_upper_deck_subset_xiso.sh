@@ -64,7 +64,7 @@ test "$(sha256sum tests/test_nfl_stadium_upper_deck_s42_xiso.py | cut -d' ' -f1)
 
 test "$(stat -c %s "$closure")" = 9320
 test "$(sha256sum "$closure" | cut -d' ' -f1)" = \
-  'a612a4e48684d03a2f12abe6d7a0d5074f7270cbd76ced1e7b4e2be5d5cd9e85'
+  'a921dfd6b0abcafbcb341a81f6c1179e8f7252b5ec16bf2f58842f1654abf2b2'
 test "$(stat -c %s "$runtime")" = 7849
 test "$(sha256sum "$runtime" | cut -d' ' -f1)" = \
   'ca2fdcc324b0da6e63df23152ab04cf3ac35d7f30ab842b9146e0e75d6d23b8b'

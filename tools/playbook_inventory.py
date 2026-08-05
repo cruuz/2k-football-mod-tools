@@ -7,9 +7,11 @@ tool parses only relationships established by the complete corpora and the
 NFL executable relocator/accessors: named categories, formations, plays, the
 eleven assignment pointers per play, and their bounded eight-byte node pool.
 
-Opaque record words are retained as raw bytes.  No writer is provided because
-route-node opcodes, formation fields, ownership, and capacity consumers have
-not yet been recovered sufficiently for safe archive mutation.
+Opaque record words are retained as raw bytes.  This inventory tool provides no
+general writer because route-node opcodes, formation fields, and count-changing
+capacity consumers are not recovered.  The product's separate bounded route
+writer may copy an exact stock assignment descriptor and existing same-resource
+chain pointer; it never edits or interprets a route node.
 """
 
 from __future__ import annotations
@@ -72,6 +74,17 @@ APF_PLAY_BASE = 0x80C4
 APF_PLAY_SIZE = 0x0064
 APF_ROUTE_BASE = 0x17AC4
 APF_STRING_BASE = 0x22384
+# The MASTER body ends with a fixed-capacity, MSB-first formation-to-play
+# membership bitmap table.  Every active formation owns one 0x54-byte row:
+# 586 play bits (74 bytes, with the final six padding bits zero) followed by a
+# still-opaque ten-byte tail.  Thirteen unused rows and twelve final alignment
+# bytes are zero in the complete retail corpus.
+APF_FORMATION_MEMBERSHIP_BASE = 0x28D84
+APF_FORMATION_MEMBERSHIP_SIZE = 0x0054
+APF_FORMATION_MEMBERSHIP_CAPACITY = 176
+APF_FORMATION_MEMBERSHIP_MASK_SIZE = 74
+APF_FORMATION_MEMBERSHIP_TAIL_SIZE = 10
+APF_FORMATION_MEMBERSHIP_FINAL_PADDING = 12
 MAX_COUNT = 1_000_000
 
 
@@ -230,6 +243,118 @@ def parse_slots(
             }
         )
     return slots
+
+
+def parse_apf_formation_memberships(
+    data: bytes,
+    *,
+    formation_count: int,
+    play_count: int,
+) -> tuple[list[dict[str, object]], dict[str, object]]:
+    """Parse APF MASTER's fixed formation/play-membership bitmap table.
+
+    The bit order is MSB first within each byte: play ``n`` is selected by
+    ``row[n // 8] & (0x80 >> (n % 8))``.  Only the bitmap relationship is
+    named here.  The ten-byte row tail remains raw until its consumers are
+    recovered.
+    """
+
+    if not 0 < formation_count <= APF_FORMATION_MEMBERSHIP_CAPACITY:
+        raise PlaybookError(
+            f"APF formation membership count {formation_count} is outside "
+            f"1..{APF_FORMATION_MEMBERSHIP_CAPACITY}"
+        )
+    maximum_play_bits = APF_FORMATION_MEMBERSHIP_MASK_SIZE * 8
+    if not 0 < play_count <= maximum_play_bits:
+        raise PlaybookError(
+            f"APF play count {play_count} exceeds the {maximum_play_bits}-bit "
+            "formation membership mask"
+        )
+    table_size = (
+        APF_FORMATION_MEMBERSHIP_CAPACITY * APF_FORMATION_MEMBERSHIP_SIZE
+    )
+    table_end = APF_FORMATION_MEMBERSHIP_BASE + table_size
+    if table_end + APF_FORMATION_MEMBERSHIP_FINAL_PADDING != len(data):
+        raise PlaybookError(
+            "APF formation membership table no longer ends at the fixed body "
+            "boundary"
+        )
+
+    rows: list[dict[str, object]] = []
+    for formation_index in range(formation_count):
+        offset = (
+            APF_FORMATION_MEMBERSHIP_BASE
+            + formation_index * APF_FORMATION_MEMBERSHIP_SIZE
+        )
+        raw = checked_range(
+            data,
+            offset,
+            APF_FORMATION_MEMBERSHIP_SIZE,
+            f"APF formation {formation_index} membership",
+        )
+        mask = raw[:APF_FORMATION_MEMBERSHIP_MASK_SIZE]
+        tail = raw[APF_FORMATION_MEMBERSHIP_MASK_SIZE:]
+        if len(tail) != APF_FORMATION_MEMBERSHIP_TAIL_SIZE:
+            raise PlaybookError("APF formation membership tail size changed")
+        indices = [
+            play_index
+            for play_index in range(play_count)
+            if mask[play_index // 8] & (0x80 >> (play_index % 8))
+        ]
+        for bit_index in range(play_count, maximum_play_bits):
+            if mask[bit_index // 8] & (0x80 >> (bit_index % 8)):
+                raise PlaybookError(
+                    f"APF formation {formation_index} sets unused membership "
+                    f"bit {bit_index}"
+                )
+        rows.append(
+            {
+                "formation_index": formation_index,
+                "offset": offset,
+                "size": len(raw),
+                "raw_hex": raw.hex(),
+                "raw_sha256": sha256_bytes(raw),
+                "play_indices": indices,
+                "play_count": len(indices),
+                "opaque_tail_hex": tail.hex(),
+            }
+        )
+
+    unused_start = (
+        APF_FORMATION_MEMBERSHIP_BASE
+        + formation_count * APF_FORMATION_MEMBERSHIP_SIZE
+    )
+    unused = checked_range(
+        data,
+        unused_start,
+        table_end - unused_start,
+        "APF unused formation-membership capacity",
+    )
+    if any(unused):
+        raise PlaybookError("APF unused formation-membership rows are nonzero")
+    final_padding = checked_range(
+        data,
+        table_end,
+        APF_FORMATION_MEMBERSHIP_FINAL_PADDING,
+        "APF formation-membership final padding",
+    )
+    if any(final_padding):
+        raise PlaybookError("APF formation-membership final padding is nonzero")
+    return rows, {
+        "base": APF_FORMATION_MEMBERSHIP_BASE,
+        "row_size": APF_FORMATION_MEMBERSHIP_SIZE,
+        "capacity": APF_FORMATION_MEMBERSHIP_CAPACITY,
+        "active_count": formation_count,
+        "mask_size": APF_FORMATION_MEMBERSHIP_MASK_SIZE,
+        "mask_bit_order": "MSB-first within each byte",
+        "opaque_tail_size": APF_FORMATION_MEMBERSHIP_TAIL_SIZE,
+        "unused_capacity_offset": unused_start,
+        "unused_capacity_size": len(unused),
+        "unused_capacity_all_zero": True,
+        "final_padding_offset": table_end,
+        "final_padding_size": len(final_padding),
+        "final_padding_all_zero": True,
+    }
 
 
 def named_record(
@@ -544,6 +669,27 @@ def parse_apf_body(data: bytes, outer_index: int, inner_index: int) -> dict[str,
     name_pool, pool_end = parse_name_pool(
         data, APF_STRING_BASE, "utf-16be", declared_name_targets, identity
     )
+    memberships, membership_table = parse_apf_formation_memberships(
+        data,
+        formation_count=formation_count,
+        play_count=play_count,
+    )
+    if len(memberships) != len(formations):
+        raise PlaybookError(f"{identity}: formation membership count differs")
+    for formation, membership in zip(formations, memberships, strict=True):
+        indices = [int(value) for value in membership["play_indices"]]
+        formation["play_membership_offset"] = membership["offset"]
+        formation["play_membership_size"] = membership["size"]
+        formation["play_membership_raw_hex"] = membership["raw_hex"]
+        formation["play_membership_raw_sha256"] = membership["raw_sha256"]
+        formation["play_membership_indices"] = indices
+        formation["play_membership_names"] = [
+            str(plays[index]["name"]) for index in indices
+        ]
+        formation["play_membership_count"] = membership["play_count"]
+        formation["play_membership_opaque_tail_hex"] = membership[
+            "opaque_tail_hex"
+        ]
     route_blob = data[APF_ROUTE_BASE:route_end]
     post_pool = data[pool_end:]
     padding = [
@@ -560,6 +706,12 @@ def parse_apf_body(data: bytes, outer_index: int, inner_index: int) -> dict[str,
         ),
         zero_region(
             data, route_end, APF_STRING_BASE, f"{identity} route/string padding",
+        ),
+        zero_region(
+            data,
+            pool_end,
+            APF_FORMATION_MEMBERSHIP_BASE,
+            f"{identity} string/membership padding",
         ),
     ]
     return {
@@ -593,6 +745,10 @@ def parse_apf_body(data: bytes, outer_index: int, inner_index: int) -> dict[str,
             "route_node_end": route_end,
             "string_pool_base": APF_STRING_BASE,
             "string_pool_end": pool_end,
+            "formation_play_membership_base": APF_FORMATION_MEMBERSHIP_BASE,
+            "formation_play_membership_size": APF_FORMATION_MEMBERSHIP_SIZE,
+            "formation_play_membership_capacity": APF_FORMATION_MEMBERSHIP_CAPACITY,
+            "formation_play_membership_mask_size": APF_FORMATION_MEMBERSHIP_MASK_SIZE,
             "post_string_opaque_offset": pool_end,
             "post_string_opaque_size": len(post_pool),
         },
@@ -601,6 +757,10 @@ def parse_apf_body(data: bytes, outer_index: int, inner_index: int) -> dict[str,
         "route_node_blob_hex": route_blob.hex(),
         "post_string_opaque_sha256": sha256_bytes(post_pool),
         "post_string_opaque_hex": post_pool.hex(),
+        "formation_play_membership_table": membership_table,
+        "formation_play_membership_count": sum(
+            int(row["play_count"]) for row in memberships
+        ),
         "name_pool": [entry.__dict__ for entry in name_pool],
         "formations": formations,
         "plays": plays,
@@ -772,6 +932,9 @@ def main() -> int:
         "apf_route_node_count": sum(
             int(book["root_counts"]["route_node_count"]) for book in apf_books
         ),
+        "apf_formation_play_membership_count": sum(
+            int(book["formation_play_membership_count"]) for book in apf_books
+        ),
         "nfl_category_count": len(nfl_records["category"]),
         "nfl_formation_count": len(nfl_records["formation"]),
         "nfl_play_count": len(nfl_records["play"]),
@@ -791,6 +954,8 @@ def main() -> int:
         "all_name_pools_exact_and_fully_referenced": True,
         "all_play_slot_counts_equal_eleven": True,
         "all_route_references_bounded_and_node_aligned": True,
+        "all_apf_formation_play_membership_masks_bounded": True,
+        "all_apf_unused_formation_membership_capacity_zero": True,
         "all_unused_named_record_capacity_padding_zero": True,
     }
     report = {
@@ -822,6 +987,10 @@ def main() -> int:
             "apf_formation_size": APF_FORMATION_SIZE,
             "apf_play_size": APF_PLAY_SIZE,
             "apf_category_size": APF_CATEGORY_SIZE,
+            "apf_formation_play_membership_base": APF_FORMATION_MEMBERSHIP_BASE,
+            "apf_formation_play_membership_size": APF_FORMATION_MEMBERSHIP_SIZE,
+            "apf_formation_play_membership_capacity": APF_FORMATION_MEMBERSHIP_CAPACITY,
+            "apf_formation_play_membership_mask_size": APF_FORMATION_MEMBERSHIP_MASK_SIZE,
         },
         "executable_evidence": {
             "nfl_registration": (
@@ -852,7 +1021,7 @@ def main() -> int:
         "portme": [
             "PORTME: name remaining root, formation, category, play, and assignment descriptor fields from consumers.",
             "PORTME: recover eight-byte route-node opcodes, chain termination, coordinate units, and branching semantics.",
-            "PORTME: prove APF's post-string opaque tables and any formation-aux relationship before editing.",
+            "PORTME: name the ten-byte tail on each proved APF formation/play-membership bitmap row from executable consumers.",
             "PORTME: trace every fixed-capacity/count consumer before allowing added formations, plays, categories, or route nodes.",
             "PORTME: implement a writer and archive repacker only after pointer ownership, hashing, and capacity invariants are complete.",
         ],

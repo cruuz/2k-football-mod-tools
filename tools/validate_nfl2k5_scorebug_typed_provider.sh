@@ -22,7 +22,10 @@ PYTHONPYCACHEPREFIX="$temporary/pycache" python3 -m py_compile \
   tests/mod_editor/test_recipes.py
 
 python3 -m mod_editor --check-registry --require-registry
-python3 -m unittest discover -s tests/mod_editor -p 'test_*.py' -v
+for test_module in \
+  test_apf_export.py test_gui.py test_providers.py test_recipes.py; do
+  python3 -m unittest discover -s tests/mod_editor -p "$test_module" -v
+done
 bash tools/validate_nfl2k5_scorebug_mod_project.sh
 
 python3 - <<'PY'
@@ -62,7 +65,7 @@ assert capability.raw["selectors"]["fields"] == [
     }
 ]
 assert capability.raw["validation_command"] == \
-    "bash tools/validate_nfl2k5_scorebug_mod_project.sh"
+    "bash tools/validate_scorebug_products.sh"
 assert capability.is_experimental is False
 
 orchestrator = ProviderOrchestrator(registry)

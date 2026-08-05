@@ -5,6 +5,294 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC49 — complete uniform fixes, menu/presentation logos, model tools, and release hardening — 2026-08-04
+
+### Uniform-equipment discoverability
+
+- **Socks and other package-local equipment are now directly findable from
+  Team Kit.** Select a physical uniform set and choose **Browse 45 Equipment
+  Textures** to open the existing All Textures browser filtered to its exact 45
+  socks, elbow-pad, glove, long-sleeve, shoe, and wristband records. Searching
+  within that list narrows the selected set. The route reuses the canonical
+  asset IDs and existing Export, Edit, Replace, Revert, project, and Build
+  handlers; it does not create a second writer or duplicate edit IDs.
+
+### Crib textures and bounded model editing
+
+- **All 498 catalogued Crib textures are Editable.** Coverage is 242 raw Team
+  Item P8 textures (including all 128 Team Photos), 68 standalone P8 textures,
+  and 188 material/submesh-owned P8 surfaces across 36 SCNE scenes. The writer
+  preserves the reflection texture's 109,440-byte source gap, the ticker's
+  1024x32 linear layout, every unselected allocation, and the fixed compressed
+  span.
+- **The Crib now has a Models tab.** It exports seven proved scenes and imports
+  same-count, same-topology position changes for ten exact electronics meshes.
+  UVs, materials, collision, indices, normals, other registers, commands, and
+  opaque tails stay source bytes. Changed topology and arbitrary model swaps
+  remain explicitly unsupported.
+
+### Jersey numbers and stock play routes
+
+- **All 2,547 current-player jersey numbers are Editable, including the 68
+  secondary-pool players that previously errored or stayed disabled.** The
+  writer patches only the masked number bits. Secondary names remain read-only
+  because their text allocation is zero; the UI now enables each field from its
+  own proved contract instead of locking the whole row.
+- **Every current and historical player now has a Face shield control.** It
+  authors only player word `+0x20` bits 15..16 with exact choices **None**,
+  **Clear**, and **Dark**; reserved value `3` is refused. Jersey and face shield
+  changes compose into one four-byte replacement, preserving every unrelated
+  bit. This is a per-player equipment type, not a HOME/AWAY visor tint, and a
+  loaded roster or franchise save may override the disc seed.
+- **Playbooks & Plays can copy exact stock assignment routes within one PLAY
+  book.** Choose a target assignment and a donor assignment, then stage or
+  Revert the copy. The writer changes only the target descriptor word and
+  relative pointer to the donor's existing node chain, reparses the full PLAY
+  resource, and refuses orphaning or count changes. Freehand waypoint/opcode
+  authoring remains unsupported.
+
+### A1 player strips in All Textures
+
+- **The twelve explicit-size `p001`…`p006` / `p011`…`p016` A1R5G5B5
+  families are no longer blanket-refused.** The authenticated source contains
+  340 copies of each name: 4,080 strips total. All remain searchable,
+  previewable, exportable, and editable through the composed-XISO build.
+- The writer regenerates all five linear mip levels, keeps the measured
+  source-owned video tail byte-exact, preserves every descriptor and the
+  complete resource span, and independently decodes the fixed-span VC-LZ
+  rebuild. If native five-bit colour is too complex for the retail allocation,
+  it tries deterministic four-, three-, two-, then one-bit-per-channel tiers
+  before refusing with a simplify-art message.
+- **The boundary target is complete too:** outer 581 `p005` straddles physical
+  packs 0 and 1 as exact 53,888-byte and 21,008-byte slices. The editor builds
+  one logical TXTR, stages both pieces before reserving a new output, verifies
+  both source packs, writes only the fresh copy, reads each piece back, and
+  reassembles the complete 74,896-byte chain for an independent final check.
+
+### Audited boundaries: stock midfield and PCSX2 packs
+
+- The exact standalone `center_logo` corpus is 126 create-team weather/logo
+  packages at outers 384–509. The stock disc has no additional TXTR named
+  `center_logo`. Its 85 `NN_teamlogo_00_h0` P8 rasters are not a safe midpoint
+  substitute: the executable formats that name at `0x00142AF0`, loads it as a
+  TXTR, and attaches it to the `FRANCHISE2` / `coach_desk` scene element named
+  `teamlogo`. Stock midfield texture ownership remains unproved and the editor
+  does not relabel franchise-office art as field art.
+- The supplied `NFL2K27` tree is not a complete PCSX2
+  replacement pack: it contains 5,688 directories but only four distinct
+  Roman Reigns cyberface PNGs, copied into three locations, with no PCSX2 hash
+  filenames or mapping manifest. There is therefore no source-owned mapping to
+  automate into Xbox slots. High-resolution authoring and native Xbox fitting
+  remain available, but cross-console hash mapping waits for the actual pack.
+- NFL 2K3/2K4 discs or extracted packs are also absent. The shared container
+  parser is not treated as proof that a 2K5 resource selector or byte extent is
+  valid in either earlier game; source admission/build stays closed until each
+  title has a pinned executable identity and independently inventoried writer
+  targets.
+
+### Bounded Stadium model import
+
+- **Stadium Studio now imports edited glTF vertex positions.** Export the proved
+  full scene, move vertices in Blender, keep the sidecar `.bin` beside the
+  `.gltf`, then choose **Import edited model…**. The importer requires every
+  bounded mesh to keep its exact vertex count and equivalent triangle set.
+  Adding/removing faces, welding, subdivision, decimation, sparse accessors, or
+  another mesh is refused before the session changes.
+- Only the 75 catalogued fixed `FLOAT3` position lanes can change. Game UVs,
+  materials, collision data, selectors, LOD/other streams, and the fixed opaque
+  SCNE tail are kept from the user's source bytes. Stadium texture edits in the
+  same scene are composed with the geometry edit before one VC-LZ rebuild, so
+  their spans cannot overwrite one another.
+- The position recipe stays in the private working session because it is
+  derived from the user's game. It can build a local XISO and supports Undo and
+  Revert All, but it is deliberately excluded from shareable `.2k5mod` files.
+  Offline topology and byte preservation are proved; visible in-game runtime
+  ownership is still labeled unproved until a matched capture exists.
+
+### High-resolution authoring masters
+
+- The Portraits & Faces, Create-a-Team Field Art, Scorebug Presentation, and
+  All Textures browsers now expose **Save high-resolution authoring master…**
+  after a dialog or drag/drop import. The non-overwriting `.2ktexmaster`
+  preserves the exact original bytes, exact native staged PNG, source hash,
+  final scale/cover geometry and Lanczos compile metadata, plus a direct 2x or
+  4x original-source render. It is an authoring sidecar, not a larger Xbox
+  texture or an emulator pack.
+- Exact-size JPEG and non-RGBA PNG inputs now receive the same confirmed
+  conversion path as off-size images. The source file stays byte-exact; the
+  private staged copy is an exact-size RGBA PNG.
+- Built-in pixel painting after an external import retains the original master.
+  The archive stores the exact native pre-edit canvas and verifies a native
+  raster-edit layer over the direct high-resolution render. A retail-only edit
+  cannot enable this export because a shareable bundle must not contain
+  source-derived retail pixels.
+- Existing `.2k5mod` v1 projects retain native replacement PNGs only. Masters
+  are explicit sidecars and are not reconstructed from downsampled project
+  content. See `high_resolution_texture_authoring.md` for the exact coverage
+  boundary and RPCS3 explanation.
+
+### Complete menu, mini-card, franchise, and draft logo coverage
+
+- **All 1,755 team-linked presentation surfaces outside the uniform packages
+  are now first-class All Textures assets.** Coverage is all 317 full 256×256
+  menu logos, 317 compact logos, 317 shared flip chips, 634 home/away mini
+  cards, 85 franchise-office logos, and 85 draft/PDA logos. Together with the
+  existing catalog this raises the standalone editable inventory from 9,640
+  to **11,395** targets.
+- The browser exposes **Team Logos — Menus / Presentation**, **Team Mini Cards
+  — Menus / Presentation**, and **Franchise & Draft Presentation** as separate
+  groups. Every row carries the exact team asset code, style and home/away set
+  owners where applicable, archive name, and statically established consumer
+  scope. Searches such as `Eagles`, `21H0`, `menu logo`, `mini helmet`, `coach
+  desk`, and `pda logo` reach the intended family. Franchise team logos remain
+  explicitly separate from midfield art.
+- `logos.cdf`, `mini.cdf`, and `flipchip.cdf` are raw P8 fixed-slot arrays, not
+  VC-LZ streams. Their importer preserves the wrapper, descriptor/system
+  region, exact 66,720/5,280-byte resource span, and 96-byte zero slot padding;
+  only the swizzled indices and 1,024-byte palette are regenerated. This removes
+  false “VC-LZ stream needs more” failures for these menu assets. Franchise and
+  draft logos keep the existing bounded compressed-P8 path. All 1,755 targets
+  support Preview, Export, Edit, resized dialog/drag-drop Replace, Revert,
+  project persistence, and composed-XISO Build.
+
+- **The report was correct: NFL 2K5 keeps presentation art separate from live
+  uniform art.** Every one of the 634 physical uniform packages contains four
+  additional standalone textures: `logo` (128×128), `chiclet` (64×64),
+  `splayer` (256×128 with five mips), and `flipchip` (64×64). Those 2,536
+  records are not either live helmet diffuse, and they are not the three
+  pre-rendered Team Select uniform/helmet cards.
+- **All 2,536 are now explicit in All Textures.** Open the new **Team
+  Presentation — Menu / UI** group, or search a team name, abbreviation,
+  physical selector such as `21H0`, `menu logo`, or the exact resource name.
+  Preview, Export PNG, Edit, dialog/drag-drop Replace, Revert, project save/load,
+  and Build Modded XISO all use the existing fixed-span P8 route. The editor
+  labels this as presentation/menu/UI art because `logo` and team-chiclet
+  lookups are statically present but a complete screen-by-screen consumer map
+  is not proved.
+- **Small presentation spans now get the same bounded palette recovery as
+  numbers and sleeves.** A complex Eagles `logo` fixture overflowed its
+  6,656-byte VC-LZ budget at 256, 128, 64, and 32 colours, then rebuilt and
+  independently decoded at 16 colours inside the exact retail span. Build now
+  tries deterministic quality tiers before showing a useful simplify-image
+  error; it no longer stops at the first raw “VC-LZ stream needs more” message.
+- **Pack-boundary uniforms are covered.** An outer package may cross two
+  internal pack files while the selected texture remains wholly inside one of
+  them. The resolver now maps the texture's exact physical extent and refuses
+  only an individual TXTR that actually straddles a boundary.
+
+## v1.0 RC48 Audio Converter, Stadium Model Export, Update Check - 2026-07-30
+
+- **Facemask/faceshield and turtleneck colours are truly per uniform now.**
+  The previous control patched two fixed records and called them global; those
+  offsets are actually Detroit current HOME (`09H0`) and AWAY (`09A0`). The
+  Colours tab now has a searchable 634-set team/uniform selector. Each project
+  row carries only that logical selector and the two authored ARGB values, and
+  Build resolves it against the user's pinned source before replacing exactly
+  one eight-byte record. HOME, AWAY, throwbacks, and alternate sets can all keep
+  independent values in one project. Word 0 jointly controls facemask and
+  faceshield; there is no independently proved visor field. Word 1 controls
+  `HI_turtleneck`.
+- **Socks and the rest of each uniform's equipment are editable now.** All
+  28,530 package-local socks, elbow-pad, glove, long-sleeve, shoe, and wristband
+  P8 references across 634 physical sets are searchable in **All Textures**,
+  with preview, PNG export, built-in Edit, dialog/drag-drop Replace, Revert,
+  project persistence, and composed-XISO build. Each TSET shares one retail
+  shape/mip index chain, so an import changes only the selected palette and
+  proves every sibling byte and decoded image stayed exact. Deterministic colour
+  tiers keep the complete compressed TSET inside its original fixed span; a
+  target that cannot fit a usable two-colour result is refused. Facemask and
+  faceshield colour are not TXTR entries and remain in the per-uniform Colours
+  control above.
+- **Team Kit export no longer mistakes an old cache for tampering.** The exact
+  report was “A private original-backup file changed outside Mod Studio.” Team
+  Kit uses the uniform cache lane, while the first repair covered only the
+  extended-visual lane. Both now distinguish internally valid stale metadata
+  from bytes actually changed behind the app's back, regenerate old-schema or
+  old-dimension entries only after a fresh decode succeeds, and preserve the
+  old pair if that decode fails. Real changed bytes still fail closed.
+- **Titans arm/shoulder numbers are present at their authored size.** Retail did
+  not use one dimension per digit family: 380 arm-digit targets are 32×32, and
+  200 helmet-digit targets are 64×64. The catalog now resolves every digit from
+  the same compatibility row its decoder uses; `28H0`, `28H7`, and `28H8` no
+  longer inherit a false 64×64 arm-number size. A real-source regression exports
+  and revalidates all 33 reported surfaces: one sleeve and all ten arm digits in
+  each of those three Titans packages.
+- **All Textures export is exercised through the public router.** The Windows
+  filename `p8:386:endzone_north_left.png` is still sanitized to
+  `p8-386-endzone_north_left.png`, and a functional regression test now proves
+  a `p8_texture` export reaches the extended decoder instead of the uniform IO
+  that reports “Export is not implemented.” The exact DM transcription
+  `p8:386:endzone_north_;eft.png` is also pinned; its illegal colons are removed
+  without guessing that the legal semicolon was meant to be another character.
+- **The reported 1,568-byte number/sleeve build error is fixed.** Small P8
+  targets now retry deterministic palette tiers until the complete VC-LZ stream
+  fits their original allocation, keeping the richest tier that passes. A real
+  1,568-byte number target is compiled through the public project route, bound
+  to the source XISO, and independently reopened and decoded after composition.
+- **Any audio file can now replace a sound.** Drop an MP3, WAV, FLAC, OGG, M4A
+  or similar onto an editable sound and it is converted to that slot's exact
+  channel count, sample rate and frame count before it is written. Building a
+  file to match by hand in an audio editor is no longer necessary. The drop zone
+  states what the selected sound needs, and after a replacement the status line
+  names what changed: resampled, trimmed to fit, padded with silence, or level
+  lowered. Hover it for the full explanation.
+- **Nothing external is needed for the codec itself.** All 850 of this game's
+  sounds are Xbox IMA ADPCM, which is fully documented, so the encoder is part
+  of the app. FFmpeg is used only to read your own file. A file that already
+  matches the slot exactly is passed through untouched, byte for byte.
+- **This was measured, not assumed.** All 849 authorable slots were converted
+  from one ordinary source file, validated by the app's own strict parser,
+  encoded and decoded back: 849 of 849 succeeded, signal-to-noise 32.34 dB
+  minimum and 32.53 dB median. Typical IMA implementations land nearer 20-25 dB;
+  the difference comes from searching every candidate start index per block
+  rather than carrying the previous one forward.
+- **Long sounds no longer stall the window.** That exhaustive search cost about
+  110 seconds for a 30-second sound. It is now vectorised across blocks and
+  candidates together, roughly 24 times faster, producing byte-identical output.
+  The tests assert byte equality against the original encoder, not similarity.
+- **Export model (glTF) on the Stadiums page.** The viewport could draw a
+  stadium but offered no way to save it. It now writes the model and its buffer,
+  and says where both landed, because the buffer keeps its own name and has to
+  travel with the model. The export is scaled to metres: the game stores stadium
+  geometry in centimetres, so an unscaled file opens about a hundred times too
+  large and disappears past Blender's default view distance. No vertex is
+  rewritten; the buffer is copied unchanged.
+- **Update check.** Help now offers Check for Updates, an automatic-check
+  toggle, and a link to the downloads page. When a newer release exists a strip
+  appears at the top of the window. It never downloads or installs anything, it
+  cannot delay startup, a failed check is silent, and dismissing one version
+  does not hide the next. The first automatic check explains itself once.
+- **Wider disc support.** Reading a disc image no longer aborts over an empty
+  folder, a single accented filename, or deep directory nesting. Extent bounds,
+  cycle detection and filename-separator rejection are unchanged.
+- **Nameplate Atlas is exportable again** for all 634 uniform sets. Its
+  compatibility report still carried a transposed 32x1024 dimension after the
+  texture descriptor fix moved to 1024x32, so every set was refused. The atlas
+  is a wide strip and its mip chain halves from 1024x32, so written the other
+  way round the check could never pass. All 19,654 art resources now report
+  compatible, where 634 were refused before.
+- **An unexpected error now tells you what happened.** Previously the window
+  simply closed: Qt ends the process when an error reaches it and no handler is
+  installed, and the editor runs from an icon with no console, so nothing was
+  shown anywhere. There is now a message naming the problem, stating that your
+  original game files were untouched, and giving the path of a log file to
+  attach to a bug report. The editor keeps running. A fault that repeats is
+  logged every time but only interrupts once, so a problem in a redraw cannot
+  bury the screen in identical boxes.
+- **Odd and broken disc images are answered in words.** An empty file, a partial
+  download, an archive renamed to .iso, a folder, or a file that has since been
+  moved or deleted each get a sentence saying what was wrong. A file picked from
+  a recent list and since deleted used to raise a raw system error.
+- **A disc image reached through a symlink is recognised.** Keeping the image on
+  another drive and linking it into a working folder is ordinary, but the
+  identifier refused to follow the link and called it "not an Xbox game" while
+  the recogniser accepted the same file. The two now agree.
+- **A corrupt disc image cannot exhaust the reader.** A directory whose entries
+  form one long chain rather than a balanced tree recursed once per entry and
+  ran the interpreter out of stack, which surfaced as a crash instead of a
+  refusal. The reader now counts every recursive step and refuses well before
+  that. A balanced directory of the same size still reads normally.
+
 ## v1.0 RC47 Player Assets, Save Roster Import, Stadium Round-Trip — 2026-07-28
 
 - **Player Assets** joins Rosters & Players. Search a player and see the face
@@ -66,11 +354,9 @@ build path.
 - It is a project edit like any other: it counts toward pending edits, Revert
   All clears it, it saves with the project, and it reaches the disc through the
   same composed **Build Modded XISO** as every texture and audio change.
-- One colour choice touches two packs, so it composes as two imports bound
-  per-extent — the build locates each pack in your own image, re-derives the
-  offset, and verifies the pack and span hashes before writing.
-- Proved by building a real disc: the composed output is byte-identical to the
-  standalone writer's for the same colours.
+- This release's control was later found to be global only in the UI: the two
+  fixed records were Detroit current HOME and AWAY. RC48 replaces that route
+  with one independently selectable record for every physical uniform set.
 - **Repainting the coloured square on a helmet texture still will not move the
   facemask.** It is a separate material fed by this value — the difference from
   CFB 2K3 that started this whole thread.

@@ -1291,13 +1291,23 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             host = CatalogAudioPanelHost(catalog, service, root / "replacements")
             panel = AudioPanel(host, page_size=2)
 
-            self.assertEqual(panel.meaning_filter.count(), 4)
+            self.assertEqual(panel.meaning_filter.count(), 5)
             self.assertEqual(
                 panel.meaning_filter.accessibleName(),
                 "Standalone audio meaning confidence filter",
             )
             self.assertIn("Separate from edit status", panel.meaning_filter.accessibleDescription())
+            self.assertIn(
+                "one family-reviewed",
+                panel.meaning_filter.accessibleDescription(),
+            )
             self.assertEqual(panel.meaning_filter.itemText(0), "All meaning confidence (850)")
+            self.assertEqual(
+                panel.meaning_filter.itemText(3), "Family-reviewed labels (1)"
+            )
+            self.assertEqual(
+                panel.meaning_filter.itemText(4), "Provisional labels (696)"
+            )
             self.assertEqual(
                 panel.meaning_filter.itemData(1),
                 "menu_back_route_runtime_unproved",
@@ -1308,6 +1318,10 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             )
             self.assertEqual(
                 panel.meaning_filter.itemData(3),
+                "family_reviewed_label_runtime_meaning_unproved",
+            )
+            self.assertEqual(
+                panel.meaning_filter.itemData(4),
                 "provisional_label_runtime_meaning_unproved",
             )
             self.assertEqual(panel.scope_filter.currentData(), PLAYABLE_AUDIO_SCOPE_ID)
@@ -1726,7 +1740,7 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel.table.item(0, 5).text(), "Export-only")
             self.assertEqual(
                 panel.table.item(0, 5).toolTip(),
-                "Export-only • Replace Coming Soon",
+                "Export-only • raw aggregate; edit individual indexed ranges",
             )
             self.assertFalse(panel.replace_button.isEnabled())
             self.assertTrue(panel.pack_path_card.isHidden())

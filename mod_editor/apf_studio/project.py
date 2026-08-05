@@ -33,8 +33,20 @@ from .models import (
     DRAFT_LOGO_OUTER_INDEX,
     Modification,
 )
+from .helmet_crest_design import (
+    HELMET_CREST_DESIGN_EDIT_ID,
+    HELMET_CREST_DESIGN_KIND,
+    HelmetCrestDesignError,
+    validate_metadata as validate_helmet_crest_metadata,
+)
 from mod_editor.core import platform_compat
 from mod_editor.core.platform_compat import fsync_directory
+from mod_editor.core.apf2k8_playbook_route_writer import (
+    PROVIDER_KIND as PLAY_ASSIGNMENT_ROUTE_KIND,
+    decode_route_clone_payload,
+    request_from_mapping as route_clone_request_from_mapping,
+)
+from mod_editor.core.errors import ValidationError
 
 from .player_ratings import PlayerRatingsError, load_player_rating_schema
 from .player_positions import PlayerPositionsError, load_player_position_schema
@@ -45,6 +57,12 @@ PROJECT_SCHEMA = "apf2k8_mod_project/v1"
 TEXT_PAYLOAD_SCHEMA = "apf2k8_text_replacement/v1"
 PLAYER_RATING_PAYLOAD_SCHEMA = "apf2k8_player_rating_replacement/v1"
 PLAYER_POSITION_PAYLOAD_SCHEMA = "apf2k8_player_position_replacement/v1"
+CUSTOM_TEAM_APPEARANCE_PAYLOAD_SCHEMA = (
+    "apf2k8_custom_team_appearance_replacement/v1"
+)
+UNIFORM_EQUIPMENT_COLOR_PAYLOAD_SCHEMA = (
+    "apf2k8_uniform_equipment_color_replacement/v1"
+)
 WORKSPACE_STATE_SCHEMA = "apf2k8_mod_studio_workspace_state/v1"
 RECOVERY_PROJECT_NAME = "unsaved-recovery.apf2k8mod"
 MAX_RECENT_ITEMS = 8
@@ -766,6 +784,9 @@ def _payload_name(asset_id: str, kind: str) -> str:
             "roster_identity_text",
             "player_base_rating",
             "player_position",
+            "custom_team_appearance",
+            "uniform_equipment_colors",
+            PLAY_ASSIGNMENT_ROUTE_KIND,
         }
         else ".xma1-packets"
         if kind in {AUDO_EXACT_SLOT_KIND, AUSB_EXACT_SLOT_KIND}
@@ -915,6 +936,15 @@ def _validate_payload_source(
         decode_player_rating_payload(data, modification.asset_id)
     elif modification.kind == "player_position":
         decode_player_position_payload(data, modification.asset_id)
+    elif modification.kind == "custom_team_appearance":
+        decode_custom_team_appearance_payload(data, modification.asset_id)
+    elif modification.kind == "uniform_equipment_colors":
+        decode_uniform_equipment_color_payload(data, modification.asset_id)
+    elif modification.kind == PLAY_ASSIGNMENT_ROUTE_KIND:
+        try:
+            decode_route_clone_payload(data, modification.asset_id)
+        except ValidationError as exc:
+            raise ProjectError(str(exc)) from exc
     elif modification.kind in {AUDO_EXACT_SLOT_KIND, AUSB_EXACT_SLOT_KIND}:
         validate_xma1_packet_payload(
             data,
@@ -1085,6 +1115,138 @@ def decode_player_position_payload(data: bytes, asset_id: str) -> int:
     return value
 
 
+def decode_custom_team_appearance_payload(
+    data: bytes, asset_id: str
+) -> dict[str, object]:
+    """Validate bounded, canonical replacement-only custom-team JSON."""
+
+    try:
+        document = json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ProjectError(
+            f"Custom-team appearance replacement is not valid UTF-8 JSON: {asset_id}"
+        ) from exc
+    fields = asset_id.split(":")
+    try:
+        asset_slot = int(fields[2])
+    except (IndexError, ValueError) as exc:
+        raise ProjectError(
+            f"Custom-team appearance target is invalid: {asset_id}"
+        ) from exc
+    if (
+        not isinstance(document, dict)
+        or set(document) != {"schema", "slot", "home", "away"}
+        or document.get("schema") != CUSTOM_TEAM_APPEARANCE_PAYLOAD_SCHEMA
+        or type(document.get("slot")) is not int
+        or not 32 <= int(document["slot"]) <= 39
+        or len(fields) != 3
+        or fields[:2] != ["apf", "custom-team-appearance"]
+        or int(document["slot"]) != asset_slot
+    ):
+        raise ProjectError(
+            f"Custom-team appearance replacement payload is invalid: {asset_id}"
+        )
+    for label in ("home", "away"):
+        bank = document.get(label)
+        if (
+            not isinstance(bank, dict)
+            or set(bank) != {"palette", "helmet_selector", "logo_selector"}
+        ):
+            raise ProjectError(
+                f"Custom-team appearance {label.upper()} bank is invalid: {asset_id}"
+            )
+        palette = bank.get("palette")
+        helmet = bank.get("helmet_selector")
+        logo = bank.get("logo_selector")
+        if (
+            not isinstance(palette, list)
+            or len(palette) != 10
+            or any(
+                not isinstance(item, str)
+                or len(item) != 8
+                or any(character not in "0123456789ABCDEF" for character in item)
+                for item in palette
+            )
+            or not isinstance(helmet, str)
+            or len(helmet) != 16
+            or any(character not in "0123456789ABCDEF" for character in helmet)
+            or not isinstance(logo, str)
+            or len(logo) != 16
+            or any(character not in "0123456789ABCDEF" for character in logo)
+            or int(helmet[:2], 16) > 23
+            or int(helmet[2:4], 16) > 9
+            or int(logo[:2], 16) > 117
+        ):
+            raise ProjectError(
+                f"Custom-team appearance {label.upper()} values are invalid: {asset_id}"
+            )
+    canonical = (
+        json.dumps(document, sort_keys=True, separators=(",", ":")) + "\n"
+    ).encode("utf-8")
+    if canonical != data:
+        raise ProjectError(
+            f"Custom-team appearance replacement is not canonical: {asset_id}"
+        )
+    return document
+
+
+def decode_uniform_equipment_color_payload(
+    data: bytes, asset_id: str
+) -> dict[str, object]:
+    """Validate canonical selector-index JSON without retaining source colors."""
+
+    try:
+        document = json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ProjectError(
+            f"Uniform equipment-color replacement is not valid UTF-8 JSON: {asset_id}"
+        ) from exc
+    fields = asset_id.split(":")
+    try:
+        asset_team = int(fields[2])
+    except (IndexError, ValueError) as exc:
+        raise ProjectError(
+            f"Uniform equipment-color target is invalid: {asset_id}"
+        ) from exc
+    if (
+        not isinstance(document, dict)
+        or set(document) != {"schema", "team_index", "home", "away"}
+        or document.get("schema") != UNIFORM_EQUIPMENT_COLOR_PAYLOAD_SCHEMA
+        or type(document.get("team_index")) is not int
+        or not 0 <= int(document["team_index"]) < 40
+        or len(fields) != 3
+        or fields[:2] != ["apf", "uniform-equipment-colors"]
+        or int(document["team_index"]) != asset_team
+    ):
+        raise ProjectError(
+            f"Uniform equipment-color replacement payload is invalid: {asset_id}"
+        )
+    for label in ("home", "away"):
+        bank = document.get(label)
+        if (
+            not isinstance(bank, dict)
+            or set(bank) != {
+                "facemask_palette_index",
+                "team_turtleneck_palette_index",
+            }
+            or type(bank.get("facemask_palette_index")) is not int
+            or type(bank.get("team_turtleneck_palette_index")) is not int
+            or not 0 <= int(bank["facemask_palette_index"]) <= 9
+            or not 0 <= int(bank["team_turtleneck_palette_index"]) <= 9
+        ):
+            raise ProjectError(
+                f"Uniform equipment-color {label.upper()} bank is invalid: {asset_id}"
+            )
+    canonical = (
+        json.dumps(document, sort_keys=True, separators=(",", ":")) + "\n"
+    ).encode("utf-8")
+    if canonical != data:
+        raise ProjectError(
+            f"Uniform equipment-color replacement is not canonical: {asset_id}"
+        )
+    return document
+
+
 def validate_xma1_packet_payload(
     data: bytes,
     asset_id: str,
@@ -1163,6 +1325,14 @@ def _validated_metadata(
     """Allow only small scalar target coordinates in shareable projects."""
 
     value = dict(metadata)
+    if (
+        kind == HELMET_CREST_DESIGN_KIND
+        and asset_id == HELMET_CREST_DESIGN_EDIT_ID
+    ):
+        try:
+            return validate_helmet_crest_metadata(asset_id, kind, value)
+        except HelmetCrestDesignError as exc:
+            raise ProjectError(str(exc)) from exc
     if kind == "uniform":
         allowed = {
             "family",
@@ -1181,12 +1351,14 @@ def _validated_metadata(
             "pants": (512, 512),
             "helmet": (256, 1024),
             "shoulder": (1024, 1024),
+            "textlogo": (512, 128),
         }
+        maximum_index = 205 if family == "textlogo" else 23
         if (
             not isinstance(family, str)
             or family not in dimensions
             or type(asset_index) is not int
-            or not 0 <= asset_index < 24
+            or not 0 <= asset_index <= maximum_index
             or asset_id != f"apf:uniform:{family}:{asset_index:02d}"
         ):
             raise ProjectError(f"Uniform project target is invalid: {asset_id}")
@@ -1386,6 +1558,115 @@ def _validated_metadata(
         ):
             raise ProjectError(
                 f"Player-position project target metadata changed: {asset_id}"
+            )
+        return value
+    if kind == "custom_team_appearance":
+        allowed = {
+            "slot",
+            "config_index",
+            "home_palette_index",
+            "away_palette_index",
+            "home_helmet_selector_index",
+            "home_logo_selector_index",
+            "away_helmet_selector_index",
+            "away_logo_selector_index",
+            "palette_color_count",
+            "selector_size",
+            "selector_tail_semantics",
+        }
+        fields = asset_id.split(":")
+        try:
+            parsed_slot = int(fields[2])
+        except (IndexError, ValueError) as exc:
+            raise ProjectError(
+                f"Custom-team appearance project target is invalid: {asset_id}"
+            ) from exc
+        fixed = {
+            "slot": parsed_slot,
+            "config_index": parsed_slot,
+            "home_palette_index": parsed_slot * 2 + 1,
+            "away_palette_index": parsed_slot * 2,
+            "home_helmet_selector_index": parsed_slot * 28 + 17,
+            "home_logo_selector_index": parsed_slot * 28 + 19,
+            "away_helmet_selector_index": parsed_slot * 28 + 3,
+            "away_logo_selector_index": parsed_slot * 28 + 5,
+            "palette_color_count": 10,
+            "selector_size": 8,
+            "selector_tail_semantics": "opaque",
+        }
+        if (
+            len(fields) != 3
+            or fields[:2] != ["apf", "custom-team-appearance"]
+            or not 32 <= parsed_slot <= 39
+            or set(value) != allowed
+            or value != fixed
+        ):
+            raise ProjectError(
+                f"Custom-team appearance project target changed: {asset_id}"
+            )
+        return value
+    if kind == "uniform_equipment_colors":
+        allowed = {
+            "team_index",
+            "config_index",
+            "home_palette_index",
+            "away_palette_index",
+            "home_facemask_selector_index",
+            "away_facemask_selector_index",
+            "home_turtleneck_selector_index",
+            "away_turtleneck_selector_index",
+            "palette_color_count",
+            "facemask_selector_slot",
+            "facemask_selector_byte",
+            "turtleneck_selector_slot",
+            "turtleneck_selector_byte",
+            "visor_scope",
+        }
+        fields = asset_id.split(":")
+        try:
+            team_index = int(fields[2])
+        except (IndexError, ValueError) as exc:
+            raise ProjectError(
+                f"Uniform equipment-color project target is invalid: {asset_id}"
+            ) from exc
+        selector_base = value.get("away_turtleneck_selector_index")
+        palette_base = value.get("away_palette_index")
+        if (
+            len(fields) != 3
+            or fields[:2] != ["apf", "uniform-equipment-colors"]
+            or not 0 <= team_index < 40
+            or set(value) != allowed
+            or value.get("team_index") != team_index
+            or value.get("config_index") != team_index
+            or type(palette_base) is not int
+            or palette_base % 2
+            or not 0 <= palette_base // 2 < 40
+            or value.get("home_palette_index") != palette_base + 1
+            or type(selector_base) is not int
+            or selector_base % 28
+            or not 0 <= selector_base // 28 < 40
+            or value.get("home_facemask_selector_index") != selector_base + 17
+            or value.get("away_facemask_selector_index") != selector_base + 3
+            or value.get("home_turtleneck_selector_index") != selector_base + 14
+            or value.get("palette_color_count") != 10
+            or value.get("facemask_selector_slot") != 3
+            or value.get("facemask_selector_byte") != 6
+            or value.get("turtleneck_selector_slot") != 0
+            or value.get("turtleneck_selector_byte") != 2
+            or value.get("visor_scope") != "per_player_none_clear_dark_only"
+        ):
+            raise ProjectError(
+                f"Uniform equipment-color project target changed: {asset_id}"
+            )
+        return value
+    if kind == PLAY_ASSIGNMENT_ROUTE_KIND:
+        try:
+            request = route_clone_request_from_mapping(value)
+        except ValidationError as exc:
+            raise ProjectError(str(exc)) from exc
+        if request.selector != asset_id:
+            raise ProjectError(
+                f"APF route-clone target metadata changed: {asset_id}"
             )
         return value
     if kind == AUDO_EXACT_SLOT_KIND:
@@ -1865,6 +2146,18 @@ def load_project(
                 extension = ".json"
             elif kind == "player_position":
                 decode_player_position_payload(data, asset_id)
+                extension = ".json"
+            elif kind == "custom_team_appearance":
+                decode_custom_team_appearance_payload(data, asset_id)
+                extension = ".json"
+            elif kind == "uniform_equipment_colors":
+                decode_uniform_equipment_color_payload(data, asset_id)
+                extension = ".json"
+            elif kind == PLAY_ASSIGNMENT_ROUTE_KIND:
+                try:
+                    decode_route_clone_payload(data, asset_id)
+                except ValidationError as exc:
+                    raise ProjectError(str(exc)) from exc
                 extension = ".json"
             elif kind in {AUDO_EXACT_SLOT_KIND, AUSB_EXACT_SLOT_KIND}:
                 validate_xma1_packet_payload(

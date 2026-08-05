@@ -261,7 +261,7 @@ PINNED_REPORTS = {
     "reports/cut_content/apf_nfl_lineage/apf_2k6_animation_lineage.json":
         "f2e348386dc4c042252f766f5cf4046760ff6723e101ac9ab84b27bee9a33f4d",
     "reports/cut_content/apf_nfl_lineage/apf_2k6_animation_runtime.json":
-        "3861da491a2f033ef5fe2d9cb6d8c663b5a0c0c55fd16585a533f228700b918c",
+        "150c77bb0184e19f15920d912e3dd8e820356b7bbb06a67622c971b78abbbbd6",
     "reports/cross_title/cfg_candidates.json":
         "b3a459b87d3f0663719d780ca08a8d7e77835bf024c29e69adefd402f66f8526",
     "reports/assets/playbook_descriptor_lineage.json":
@@ -269,7 +269,7 @@ PINNED_REPORTS = {
     "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json":
         "33d76b3bbc9d11b52af6cf2861cf2890574a6d5b6820df8972d8419a63459d60",
     "reports/assets/nfl_stadium_upper_deck_source_subset_roundtrip.v1.json":
-        "b3fde5789a6a499073d13c6deba1d5ceb3b228126154ccbba1bbb62ca88fd40b",
+        "dd9858e01e571a6bfc7fc9577caa1cf218390cb1f19b1436d1bb099805aeb4e0",
 }
 
 # These five identities are intentionally ledger-only: the dossier names no

@@ -39,8 +39,12 @@ def _source_body() -> bytes:
         start = apf_roster.ROOT_SIZE + player_index * apf_roster.PLAYER_STRIDE
         for item in SCHEMA.fields:
             body[start + item.relative_offset] = 50
-    special = apf_roster.ROOT_SIZE + SCHEMA.fields[25].relative_offset
-    body[special] = 100
+    # The one byte that carries a native 100.  Looked up by id rather than by
+    # position so a change to display order cannot silently move it.
+    native_100 = next(
+        item for item in SCHEMA.fields if item.field_id == "unknown_rating_d4"
+    )
+    body[apf_roster.ROOT_SIZE + native_100.relative_offset] = 100
     return bytes(body)
 
 
@@ -63,7 +67,7 @@ def _model() -> PagedModel:
     for player_index in range(rating_writer.EXPECTED_PLAYER_COUNT):
         values = dict(regular)
         if player_index == 0:
-            values["unknown_rating_24"] = 100
+            values["unknown_rating_d4"] = 100
         rows.append(
             _row(
                 f"apf:roster:player:{player_index}",
@@ -137,11 +141,11 @@ class PlayerRatingSheetImportTests(unittest.TestCase):
                     )
                     preview = preview_player_rating_sheet(session, MODEL, edited)
                     self.assertEqual(preview.row_count, 2_254)
-                    self.assertEqual(preview.cell_count, 2_254 * 28)
+                    self.assertEqual(preview.cell_count, 2_254 * len(SCHEMA.fields))
                     self.assertEqual(preview.changed_count, 1)
                     self.assertEqual(preview.replacement_count, 1)
                     self.assertEqual(preview.revert_count, 0)
-                    self.assertEqual(preview.unchanged_count, 2_254 * 28 - 1)
+                    self.assertEqual(preview.unchanged_count, 2_254 * len(SCHEMA.fields) - 1)
                     self.assertEqual(preview.conflict_count, 0)
                     self.assertEqual(preview.error_count, 0)
                     self.assertTrue(preview.private_data)
@@ -256,14 +260,14 @@ class PlayerRatingSheetImportTests(unittest.TestCase):
                     self.assertEqual(bad.error_count, 1)
                     self.assertIn("source 100", bad.errors[0].message)
 
-                    session.replace_player_base_rating(0, "unknown_rating_24", 99)
+                    session.replace_player_base_rating(0, "unknown_rating_d4", 99)
                     active_sheet = self._export(session, root / "active.csv")
                     revert_sheet = root / "revert.csv"
                     _rewrite_sheet(
                         active_sheet,
                         revert_sheet,
                         lambda rows: rows[0].__setitem__(
-                            "rating.unknown_rating_24", "100"
+                            "rating.unknown_rating_d4", "100"
                         ),
                     )
                     preview = preview_player_rating_sheet(session, MODEL, revert_sheet)
@@ -276,11 +280,11 @@ class PlayerRatingSheetImportTests(unittest.TestCase):
                     )
                     self.assertEqual(applied.applied_count, 1)
                     self.assertEqual(
-                        session.player_base_rating_value(0, "unknown_rating_24"), 100
+                        session.player_base_rating_value(0, "unknown_rating_d4"), 100
                     )
                     self.assertIsNone(
                         session.modification(
-                            "apf:player-rating:0:unknown_rating_24"
+                            "apf:player-rating:0:unknown_rating_d4"
                         )
                     )
             finally:

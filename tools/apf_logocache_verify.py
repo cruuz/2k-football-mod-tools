@@ -10,9 +10,9 @@ imports ``apf_logocache_patch``'s repack code), that a copied ``0A`` volume:
   ``uniform_logocache.cdf`` (0A @ 0x3DF63000, 0x9E0800 B); every other byte of the
   1,140,850,688-byte volume is identical;
 * decompresses (all 236 ``[DRAM 0xE0][VRAM 0xAC000]`` sub-block pairs) to content
-  in which EXACTLY the intended catalog entries' VRAM base level(s) changed, while
-  every DRAM part, every 0x2C000 packed mip tail, and every other catalog entry's
-  base are byte-identical to the source;
+  in which EXACTLY the intended catalog entries' VRAM base level(s) and their
+  regenerated 0x2C000 packed mip tails changed, while every DRAM part and every
+  other catalog entry are byte-identical to the source;
 * keeps a valid, strictly re-parseable directory (all 236 descriptors, aggregate
   slots, footer names and per-name CRC ids unchanged; only auxiliary
   ``[stream_a, len_a, stream_b, len_b]`` records move).
@@ -39,6 +39,12 @@ if str(_TOOLS_DIR) not in sys.path:
 
 import apf_inner  # noqa: E402
 import apf_outer  # noqa: E402
+# The verifier re-derives the expected mip levels itself; it shares only
+# the transport, not the writer's decision about what to write.
+from apf_logo_patch import (  # noqa: E402
+    decode_4444_base,
+    rebuild_mip_tail,
+)
 
 
 VOLUME_SIZE = 1_140_850_688
@@ -52,6 +58,7 @@ PAYLOAD_SIZE = 0x9E0800
 PAYLOAD_PACK_OFFSET = 1039226880
 DIR_MAGIC = 0xF0985030
 DIR_HEADER_SIZE = 0x2924
+DIR_INTERNAL_NAME = "uniform_logocache.cdf"
 FILE_COUNT = 236
 CATALOG_COUNT = 118
 DRAM_STRIDE = 0xE0
@@ -104,13 +111,29 @@ def _parse_directory(raw: bytes) -> list[_Sub]:
         raise VerifyError("directory header/magic/length invalid")
     if zero != 0 or block_count != 2 or file_count != FILE_COUNT:
         raise VerifyError("directory block/file counts invalid")
+    block_table = 0x14 + block_pointer - 1
     file_pointer_table = 0x1C + file_pointer - 1
     auxiliary_pointer_table = 0x20 + auxiliary_pointer - 1
     cache_name_offset = 0x24 + cache_name_pointer - 1
-    if file_pointer_table != 0x68 or auxiliary_pointer_table != 0x1688:
+    if (
+        block_table != 0x28
+        or file_pointer_table != 0x68
+        or auxiliary_pointer_table != 0x1688
+    ):
         raise VerifyError("directory pointer tables moved")
     if cache_name_offset != 0x28F8:
         raise VerifyError("directory internal-name pointer moved")
+
+    strides: list[int] = []
+    type_hashes: list[int] = []
+    for block_index in range(block_count):
+        values = struct.unpack_from(">8I", raw, block_table + block_index * 0x20)
+        type_hashes.append(values[1])
+        strides.append(values[3])
+    if strides != [DRAM_STRIDE, VRAM_STRIDE]:
+        raise VerifyError("directory virtual block strides changed")
+    if type_hashes != [0xBB05A9C1, 0x411536D5]:
+        raise VerifyError("directory virtual blocks are not DRAM/VRAM")
 
     # File descriptors (for the file-id CRC and aggregate-slot permutation check).
     descriptor_start = file_pointer_table + file_count * 4
@@ -150,6 +173,13 @@ def _parse_directory(raw: bytes) -> list[_Sub]:
     names = apf_inner._parse_footer_names(  # type: ignore[attr-defined]
         raw[file_length + 8 : footer_end], file_count
     )
+    expected_names = {
+        (f"{catalog:02d}_logo_l{level}", "TXTR")
+        for catalog in range(CATALOG_COUNT)
+        for level in range(2)
+    }
+    if set(names) != expected_names or len(set(names)) != file_count:
+        raise VerifyError("directory is not the exact 118 x 2 logo catalog")
 
     # Auxiliary records.
     auxiliary_start = auxiliary_pointer_table + file_count * 4
@@ -188,9 +218,33 @@ def _parse_directory(raw: bytes) -> list[_Sub]:
         )
         previous_end = stream_b + length_b
         cursor += 0x10
+    if cursor != cache_name_offset:
+        raise VerifyError("auxiliary descriptors do not end at the cache name")
+    name_end = cache_name_offset
+    while name_end + 1 < len(raw) and raw[name_end : name_end + 2] != b"\0\0":
+        name_end += 2
+    try:
+        cache_name = raw[cache_name_offset:name_end].decode("utf-16be")
+    except UnicodeDecodeError as exc:
+        raise VerifyError("directory internal name is not valid UTF-16BE") from exc
+    if cache_name != DIR_INTERNAL_NAME or name_end + 2 != header_size:
+        raise VerifyError("directory internal CDF name or boundary changed")
     if previous_end > PAYLOAD_SIZE:
         raise VerifyError("auxiliary stream exceeds the fixed payload allocation")
     return subs
+
+
+def _decompress_dram(stored: bytes, what: str) -> bytes:
+    """The TXTR descriptor, which is stored compressed like the VRAM part."""
+    if len(stored) < 0x14:
+        raise VerifyError(f"{what} shorter than its H7A wrapper")
+    magic, uncompressed, compressed, _unknown, shift = struct.unpack_from(">5I", stored, 0)
+    if magic != apf_inner.H7A_MAGIC or compressed != len(stored):
+        raise VerifyError(f"{what} H7A wrapper invalid")
+    decoded = apf_inner.decompress_h7a(stored[0x14:], uncompressed, shift)
+    if len(decoded) != DRAM_STRIDE:
+        raise VerifyError(f"{what} decoded to 0x{len(decoded):x}, expected 0x{DRAM_STRIDE:x}")
+    return decoded
 
 
 def _decompress_vram(stored: bytes, what: str) -> bytes:
@@ -203,6 +257,100 @@ def _decompress_vram(stored: bytes, what: str) -> bytes:
     if len(decoded) != VRAM_STRIDE:
         raise VerifyError(f"{what} decoded to 0x{len(decoded):x}, expected 0x{VRAM_STRIDE:x}")
     return decoded
+
+
+def verify_cache_structure(
+    directory_bytes: bytes,
+    payload_bytes: bytes,
+) -> dict[str, object]:
+    """Read-only proof for one rebuilt raw cache directory/payload pair.
+
+    These two outer entries are not VC-IFF containers.  This verifier instead
+    parses their fixed ``F0985030`` directory, proves the exact 118 x 2 catalog,
+    and fully decompresses every referenced DRAM/VRAM sub-block.  It accepts no
+    source paths and performs no writes.
+    """
+
+    directory = bytes(directory_bytes)
+    payload = bytes(payload_bytes)
+    if len(payload) != PAYLOAD_SIZE:
+        raise VerifyError(
+            f"payload is 0x{len(payload):x}, expected 0x{PAYLOAD_SIZE:x}"
+        )
+    try:
+        subs = _parse_directory(directory)
+        pairs = {(sub.catalog_index, sub.level) for sub in subs}
+        expected_pairs = {
+            (catalog, level)
+            for catalog in range(CATALOG_COUNT)
+            for level in range(2)
+        }
+        if len(subs) != FILE_COUNT or pairs != expected_pairs:
+            raise VerifyError("payload directory is not the exact 118 x 2 catalog")
+
+        descriptor_hashes: set[str] = set()
+        for sub in subs:
+            if (
+                sub.len_b < apf_inner.H7A_HEADER_SIZE
+                or sub.stream_b + sub.len_b > len(payload)
+            ):
+                raise VerifyError(f"{sub.name} VRAM stream exceeds the payload")
+            dram = _decompress_dram(
+                payload[sub.stream_a : sub.stream_a + sub.len_a],
+                f"{sub.name} DRAM",
+            )
+            metadata = apf_inner.parse_txtr_metadata(dram)
+            required_metadata = {
+                "vc_width": 512,
+                "vc_height": 512,
+                "vc_base_data_length": BASE_LEN,
+                "vc_mip_data_length": MIP_LEN,
+                "width": 512,
+                "height": 512,
+                "format": 15,
+                "tiled": True,
+                "packed_mips": True,
+            }
+            if any(metadata.get(key) != value for key, value in required_metadata.items()):
+                raise VerifyError(f"{sub.name} TXTR descriptor contract changed")
+            if metadata.get("warnings"):
+                raise VerifyError(f"{sub.name} TXTR descriptor has warnings")
+            descriptor_hashes.add(_sha(dram))
+            _decompress_vram(
+                payload[sub.stream_b : sub.stream_b + sub.len_b],
+                f"{sub.name} VRAM",
+            )
+
+        stream_length = subs[-1].stream_b + subs[-1].len_b
+        if any(payload[stream_length:]):
+            raise VerifyError("payload allocation tail contains nonzero bytes")
+    except VerifyError:
+        raise
+    except (apf_inner.FormatError, struct.error, ValueError) as exc:
+        raise VerifyError(f"cache sub-block structure is invalid: {exc}") from exc
+
+    return {
+        "schema": "apf_logocache_structure_verify/v1",
+        "verified": True,
+        "directory": {
+            "magic": f"0x{DIR_MAGIC:08X}",
+            "sha256": _sha(directory),
+            "catalog_entry_count": len(subs),
+        },
+        "payload": {
+            "sha256": _sha(payload),
+            "size": len(payload),
+            "stream_length": stream_length,
+            "zero_tail_bytes": len(payload) - stream_length,
+            "sub_blocks_decompressed": len(subs) * 2,
+            "distinct_txtr_descriptor_count": len(descriptor_hashes),
+        },
+        "proof": {
+            "exact_118_by_2_catalog": True,
+            "all_dram_and_vram_sub_blocks_valid": True,
+            "payload_tail_zero": True,
+        },
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -324,7 +472,8 @@ def verify_cache_patch(
     changed_entries: list[str] = []
     entry_reports: list[dict[str, object]] = []
     dram_preserved = True
-    mip_preserved = True
+    unedited_mips_preserved = True
+    edited_mips_regenerated = True
     for src_sub, out_sub in zip(src_subs, out_subs):
         src_a = src_pay[src_sub.stream_a : src_sub.stream_a + src_sub.len_a]
         out_a = out_pay[out_sub.stream_a : out_sub.stream_a + out_sub.len_a]
@@ -337,10 +486,35 @@ def verify_cache_patch(
         out_vram = _decompress_vram(
             out_pay[out_sub.stream_b : out_sub.stream_b + out_sub.len_b], f"{out_sub.name} out"
         )
-        if src_vram[BASE_LEN:] != out_vram[BASE_LEN:]:
-            mip_preserved = False
-            raise VerifyError(f"{out_sub.name} packed mip tail changed")
-        if src_vram[:BASE_LEN] != out_vram[:BASE_LEN]:
+        edited = src_vram[:BASE_LEN] != out_vram[:BASE_LEN]
+        if not edited:
+            # An entry nobody asked to change must be untouched, tail included.
+            if src_vram[BASE_LEN:] != out_vram[BASE_LEN:]:
+                unedited_mips_preserved = False
+                raise VerifyError(
+                    f"{out_sub.name} was not edited but its mip tail changed"
+                )
+        else:
+            # An edited entry's tail is regenerated from its new base rather
+            # than preserved: keeping retail's levels leaves the OLD crest in
+            # every draw smaller than mip 0, which is what made modded crests
+            # look like they had not applied.  Recompute the levels here and
+            # require exactly those -- a stronger claim than "unchanged".
+            descriptor = apf_inner.parse_txtr_metadata(
+                _decompress_dram(out_a, f"{out_sub.name} DRAM")
+            )
+            expected_tail = rebuild_mip_tail(
+                descriptor,
+                decode_4444_base(descriptor, out_vram[:BASE_LEN]),
+                src_vram[BASE_LEN:],
+            )
+            if out_vram[BASE_LEN:] != expected_tail:
+                edited_mips_regenerated = False
+                raise VerifyError(
+                    f"{out_sub.name} packed mip tail is not the regeneration of "
+                    "its own base level"
+                )
+        if edited:
             changed_entries.append(out_sub.name)
             entry_reports.append(
                 {
@@ -349,7 +523,10 @@ def verify_cache_patch(
                     "level": out_sub.level,
                     "base_sha256_before": _sha(src_vram[:BASE_LEN]),
                     "base_sha256_after": _sha(out_vram[:BASE_LEN]),
-                    "mip_tail_preserved": True,
+                    "mip_tail_preserved": False,
+                    "mip_tail_regenerated": True,
+                    "mip_tail_sha256_before": _sha(src_vram[BASE_LEN:]),
+                    "mip_tail_sha256_after": _sha(out_vram[BASE_LEN:]),
                 }
             )
 
@@ -392,7 +569,8 @@ def verify_cache_patch(
         },
         "proof": {
             "every_dram_part_preserved": dram_preserved,
-            "every_mip_tail_preserved": mip_preserved,
+            "every_unedited_mip_tail_preserved": unedited_mips_preserved,
+            "edited_mip_tails_regenerated": edited_mips_regenerated,
             "changed_vram_base_levels": changed_entries,
             "changed_catalog_indices": catalog_indices,
             "changed_entry_details": entry_reports,

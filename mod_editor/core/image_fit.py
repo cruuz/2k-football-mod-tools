@@ -58,6 +58,8 @@ class FitResult:
     cropped_y: int = 0
     padded_x: int = 0
     padded_y: int = 0
+    source_format: str = "UNKNOWN"
+    source_mode: str = "UNKNOWN"
 
     @property
     def changed(self) -> bool:
@@ -90,7 +92,7 @@ def _require(condition: bool, message: str) -> None:
         raise ValidationError(message)
 
 
-def _load(path: Path) -> Any:
+def _load(path: Path) -> tuple[Any, str, str]:
     try:
         from PIL import Image
     except ImportError as exc:  # pragma: no cover - Pillow ships with the app
@@ -115,7 +117,7 @@ def _load(path: Path) -> Any:
         raise ValidationError(
             f"{resolved.name} could not be read as an image: {exc}"
         ) from exc
-    return image.convert("RGBA")
+    return image.convert("RGBA"), str(image.format or "UNKNOWN").upper(), str(image.mode)
 
 
 def fit_image(
@@ -126,19 +128,23 @@ def fit_image(
     _require(width > 0 and height > 0, "target size must be positive")
     from PIL import Image
 
-    image = _load(path)
+    image, source_format, source_mode = _load(path)
     source_width, source_height = image.size
     _require(source_width > 0 and source_height > 0, "image has no pixels")
 
     if (source_width, source_height) == (width, height):
-        return FitResult(width, height, image.tobytes(),
-                         source_width, source_height, "exact")
+        return FitResult(
+            width, height, image.tobytes(), source_width, source_height, "exact",
+            source_format=source_format, source_mode=source_mode,
+        )
 
     same_aspect = source_width * height == source_height * width
     if mode == "scale" or (mode == "auto" and same_aspect):
         resized = image.resize((width, height), Image.LANCZOS)
-        return FitResult(width, height, resized.tobytes(),
-                         source_width, source_height, "scaled")
+        return FitResult(
+            width, height, resized.tobytes(), source_width, source_height, "scaled",
+            source_format=source_format, source_mode=source_mode,
+        )
 
     if mode == "contain":
         # Fit the whole image inside the slot and centre it on transparency.
@@ -150,10 +156,13 @@ def fit_image(
         left = (width - inner_width) // 2
         top = (height - inner_height) // 2
         canvas.paste(resized, (left, top))
-        return FitResult(width, height, canvas.tobytes(),
-                         source_width, source_height, "padded",
-                         padded_x=width - inner_width,
-                         padded_y=height - inner_height)
+        return FitResult(
+            width, height, canvas.tobytes(), source_width, source_height, "padded",
+            padded_x=width - inner_width,
+            padded_y=height - inner_height,
+            source_format=source_format,
+            source_mode=source_mode,
+        )
 
     # Cover: scale until both axes reach the target, then trim the overflow.
     scale = max(width / source_width, height / source_height)
@@ -164,8 +173,11 @@ def fit_image(
     top = (cover_height - height) // 2
     cropped = resized.crop((left, top, left + width, top + height))
     _require(cropped.size == (width, height), "cover crop produced the wrong size")
-    return FitResult(width, height, cropped.tobytes(), source_width, source_height,
-                     "cropped", cover_width - width, cover_height - height)
+    return FitResult(
+        width, height, cropped.tobytes(), source_width, source_height,
+        "cropped", cover_width - width, cover_height - height,
+        source_format=source_format, source_mode=source_mode,
+    )
 
 
 def fit_to_png(

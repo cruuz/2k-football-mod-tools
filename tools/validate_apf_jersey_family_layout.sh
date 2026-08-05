@@ -54,7 +54,7 @@ for key in (
 ):
     assert equivalence[key] is True
 assert equivalence["minimum_original_allocation_slack"] == 110
-assert equivalence["minimum_controlled_solid_allocation_slack"] == 1775
+assert equivalence["minimum_controlled_solid_allocation_slack"] == 855
 
 descriptor = equivalence["canonical_txtr_descriptor"]
 assert descriptor["vc_file_id"] == "0x1ff6ec38"

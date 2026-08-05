@@ -13,6 +13,8 @@ collection_dir=reports/asset_samples/apf_scene/online_titlebar
 collection_gltf=$collection_dir/0899_0021_online_titlebar.gltf
 collection_bin=$collection_dir/0899_0021_online_titlebar.bin
 collection_manifest=$collection_dir/manifest.json
+hi_head_probe=reports/assets/apf_scene_hi_head_probe.json
+hi_head_gltf=reports/asset_samples/apf_scene/hi_head/hi_head_position.gltf
 
 test -f "$index"
 test -f "$inventory"
@@ -22,6 +24,8 @@ test -f "$collection_probe"
 test -f "$collection_gltf"
 test -f "$collection_bin"
 test -f "$collection_manifest"
+test -f "$hi_head_probe"
+test -f "$hi_head_gltf"
 python3 -m py_compile tools/apf_scene.py
 
 temporary=$(mktemp -d /tmp/apf-scene-validate.XXXXXX)
@@ -47,10 +51,19 @@ cmp "$temporary/online_titlebar/0899_0021_online_titlebar.gltf" "$collection_glt
 cmp "$temporary/online_titlebar/0899_0021_online_titlebar.bin" "$collection_bin"
 cmp "$temporary/online_titlebar/manifest.json" "$collection_manifest"
 
+python3 tools/apf_scene.py "$index" \
+  --select 3:1 \
+  --output "$temporary/hi_head.json" \
+  --gltf "$temporary/hi_head_position.gltf" \
+  --max-decompressed 67108864
+
+cmp "$temporary/hi_head.json" "$hi_head_probe"
+cmp "$temporary/hi_head_position.gltf" "$hi_head_gltf"
+
 python3 - \
   "$inventory" "$canonical_probe" "$canonical_gltf" \
   "$collection_probe" "$collection_gltf" "$collection_bin" \
-  "$collection_manifest" <<'PY'
+  "$collection_manifest" "$hi_head_probe" "$hi_head_gltf" <<'PY'
 import base64
 import json
 from pathlib import Path
@@ -64,6 +77,21 @@ collection_probe = json.loads(Path(sys.argv[4]).read_text(encoding="utf-8"))
 collection_gltf = json.loads(Path(sys.argv[5]).read_text(encoding="utf-8"))
 collection_blob = Path(sys.argv[6]).read_bytes()
 collection_manifest = json.loads(Path(sys.argv[7]).read_text(encoding="utf-8"))
+hi_head_probe = json.loads(Path(sys.argv[8]).read_text(encoding="utf-8"))
+hi_head_gltf = json.loads(Path(sys.argv[9]).read_text(encoding="utf-8"))
+
+unit_contract = {
+    "source_linear_unit": "centimeter",
+    "target_linear_unit": "meter",
+    "linear_scale": 0.01,
+    "applied_as": "root node scale; buffer bytes are unmodified",
+    "buffer_space": "serialized_scne_object_space",
+    "recipe_note": (
+        "A position recipe must be in serialized_scne_object_space. "
+        "Coordinates read out of a viewer are metres, so multiply them by "
+        "1 / linear_scale before writing a recipe."
+    ),
+}
 
 summary = inventory["summary"]
 expected = {
@@ -85,6 +113,8 @@ assert summary["position_format_counts"] == {
 }
 assert not inventory["failures"]
 assert len(inventory["scenes"]) == 1303
+assert inventory["constants"]["hierarchy_table_header"] == \
+    "none; the table is count * 0x30 records"
 
 nodes = [node for scene in inventory["scenes"] for node in scene["nodes"]]
 assert len(nodes) == 13006
@@ -101,6 +131,14 @@ assert all(hierarchy is not None for hierarchy in hierarchies)
 assert sum(hierarchy["count"] for hierarchy in hierarchies) == 40991
 assert sum(hierarchy["topology_status"] == "variant" for hierarchy in hierarchies) == 8
 assert sum(hierarchy["topology_status"] == "validated" for hierarchy in hierarchies) == 12998
+assert all("header_words" not in hierarchy for hierarchy in hierarchies)
+assert all(hierarchy["record_offset"] == hierarchy["offset"] for hierarchy in hierarchies)
+assert all(hierarchy["byte_length"] == hierarchy["count"] * 0x30
+           for hierarchy in hierarchies)
+assert all(len(hierarchy["records"]) == hierarchy["count"]
+           for hierarchy in hierarchies)
+assert all(record["vector_a"] is not None and record["vector_b"] is not None
+           for hierarchy in hierarchies for record in hierarchy["records"])
 
 matrix_variants = [
     scene for scene in inventory["scenes"]
@@ -135,6 +173,21 @@ assert positions == [
 ]
 assert gltf["accessors"][0]["count"] == 4
 assert gltf["accessors"][1]["count"] == 6
+assert gltf["asset"]["extras"]["coordinate_contract"] == unit_contract
+assert gltf["scenes"] == [{"nodes": [1]}]
+assert len(gltf["nodes"]) == 2
+assert gltf["nodes"][0]["extras"] == {
+    "raw_coordinates": True, "source_raw_coordinates": True,
+}
+assert gltf["nodes"][1] == {
+    "name": "glowball_plane__centimeters_to_meters",
+    "scale": [0.01, 0.01, 0.01],
+    "children": [0],
+    "extras": {
+        "purpose": "unit conversion only; adds no transform of its own",
+        "linear_scale": 0.01,
+    },
+}
 
 assert collection_probe["summary"]["scne_parsed"] == 1
 collection_scene = collection_probe["scenes"][0]
@@ -162,7 +215,7 @@ export = collection_manifest["exports"][0]
 assert export["status"] == "exported"
 assert export["mesh_count"] == 2 and export["triangle_count"] == 2
 assert export["gltf_sha256"] == \
-    "144b779b2309c5fc1348159031515ea73b94acc4c5d076e5ead4fb284da605f4"
+    "d33c3845f9c55c15acde0f12db4c41acf48741fbe96d9b8364c02519701ec97a"
 assert export["bin_sha256"] == \
     "24525c2ae1177d2b5e0584cf7b8265d9254d022db1a7b7f7461fea7c22dd2312"
 assert all(item.startswith("PORTME:") for item in collection_manifest["portme"])
@@ -171,9 +224,19 @@ assert collection_gltf["asset"]["version"] == "2.0"
 assert collection_gltf["buffers"] == [
     {"byteLength": 96, "uri": "0899_0021_online_titlebar.bin"}
 ]
+assert collection_gltf["asset"]["extras"]["coordinate_contract"] == unit_contract
 assert [node["name"] for node in collection_gltf["nodes"]] == [
     "TXT_grp", "title_bar_faceButtons_TXT_grp",
+    "online_titlebar__centimeters_to_meters",
 ]
+assert collection_gltf["scenes"] == [
+    {"name": "online_titlebar", "nodes": [2]}
+]
+assert collection_gltf["nodes"][2]["children"] == [0, 1]
+assert collection_gltf["nodes"][2]["scale"] == [0.01, 0.01, 0.01]
+assert all(node["extras"]["raw_coordinates"] is True and
+           node["extras"]["source_raw_coordinates"] is True
+           for node in collection_gltf["nodes"][:2])
 assert len(collection_gltf["meshes"]) == 2
 assert [accessor["count"] for accessor in collection_gltf["accessors"]] == [3, 3, 3, 3]
 assert [accessor["componentType"] for accessor in collection_gltf["accessors"]] == [
@@ -185,10 +248,20 @@ assert struct.unpack_from("<3I", collection_blob, 84) == (0, 1, 2)
 assert not collection_gltf["extras"]["skipped"]
 assert all(item.startswith("PORTME:") for item in collection_gltf["extras"]["portme"])
 
+hi_scene = hi_head_probe["scenes"][0]
+assert (hi_scene["outer_table_index"], hi_scene["inner_file_index"],
+        hi_scene["root_name"]) == (3, 1, "hi_head")
+assert hi_scene["nodes"][0]["hierarchy"]["count"] == 61
+assert hi_scene["nodes"][0]["hierarchy"]["records"][0]["name"] == "neckThorax"
+assert hi_head_gltf["asset"]["extras"]["coordinate_contract"] == unit_contract
+assert hi_head_gltf["scenes"] == [{"nodes": [1]}]
+assert hi_head_gltf["nodes"][1]["scale"] == [0.01, 0.01, 0.01]
+assert hi_head_gltf["nodes"][1]["children"] == [0]
+
 print(
     "APF_SCENE_VALIDATION_PASS "
     "scenes=1303 nodes=13006 hierarchies=40991 "
-    "matrix_variants=49 hierarchy_variants=8 collection_meshes=2"
+    "matrix_variants=49 hierarchy_variants=8 collection_meshes=2 units=cm-to-m"
 )
 PY
 

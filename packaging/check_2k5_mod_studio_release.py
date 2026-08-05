@@ -25,8 +25,8 @@ MAX_RELEASE_FILE_BYTES = 8 * 1024 * 1024
 # contract so a release cannot silently acquire retail payloads.
 REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
     "reports/assets/nfl2k5_p8_texture_inventory.json": (
-        1_485_065,
-        "5238021650bf5557f11a2eda3e923c9136c92be177c38b946bc1a7f6ac34fd22",
+        8_338_553,
+        "01b030e9f7b58786a76ba23a66d59a485024e7001656b03d595991aec0c8cf3f",
         "nfl2k5_p8_texture_inventory/v1",
     ),
     "reports/assets/nfl2k5_jersey_tset_compatibility.json": (
@@ -50,8 +50,8 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
         "nfl2k5_live_helmet_txtr_compatibility/v1",
     ),
     "reports/assets/nfl2k5_live_numbers_nameplate_compatibility.json": (
-        63_407_338,
-        "e22215b2db5c93f6098cd2d12b344f62abbc02a2e805605a2a180f13e5dd7aea",
+        63_407_409,
+        "d122c1e7de4fbad42c725969dce3473fc16a100e75d68ae5fb5d64077f536cd4",
         "nfl2k5_live_numbers_nameplate_compatibility/v1",
     ),
     "reports/assets/nfl2k5_team_select_card_inventory.json": (
@@ -84,10 +84,30 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
         "1d9ebb31a8822d113ae0fc8ec028e4ff652ccb7cbcf9d6d1d870aa58ef65f556",
         "nfl2k5_audo_import_capacity/v1",
     ),
+    "reports/assets/nfl2k5_audo_family_labels.json": (
+        72_257,
+        "ea66da8ea539114563de5694599a6046bde78661556846a34f8addeb31d544dd",
+        "nfl2k5_audo_family_labels/v2",
+    ),
     "mod_editor/data/nfl2k5_crib_catalog.v1.json": (
-        709_752,
-        "2f862fc6602bb23d433f0599c519839be9cd43ca6cd42bc22aeb7b94d56d305a",
+        735_928,
+        "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
         "2k5_mod_studio_crib_catalog/v1",
+    ),
+    "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json": (
+        5_851_450,
+        "fa2c9ca9bcc267b6981735347bf6daf6243d6ab8b83fba268804c280cfd94173",
+        "nfl2k5_uniform_equipment_export_catalog/v1",
+    ),
+    "reports/specs/nfl2k5_crib_static_position_targets.v1.json": (
+        14_024,
+        "90f955166c8582f7041bd0d936bacbef1f44b3869487f71535acec1caeb44b4f",
+        "nfl2k5_crib_static_position_targets/v1",
+    ),
+    "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json": (
+        858_600,
+        "f44472856044a5d8a50d18476a4c7af18ef98bcc3f7cf1d567db2b33d5336bfa",
+        "nfl2k5_stadium_static_target_catalog/v1",
     ),
     "mod_editor/data/nfl2k5_gameplay_inspection.v1.json": (
         22_874,

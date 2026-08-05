@@ -52,11 +52,18 @@ REQUIRED_REPORTS = frozenset(
         "nfl2k5_create_team_field_art_inventory.json",
         "scorebug_presentation_audit.json",
         "nfl2k5_audo_import_capacity.json",
+        "nfl2k5_audo_family_labels.json",
         "nfl2k5_p8_texture_inventory.json",
     }
 )
 PRIVATE_INVENTORY = "nfl2k5_resource_chunks_v2.json"
 COMPACT_CRIB = ROOT / "mod_editor/data/nfl2k5_crib_catalog.v1.json"
+COMPACT_UNIFORM_EQUIPMENT = (
+    ROOT / "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json"
+)
+STADIUM_GEOMETRY_CATALOG = (
+    ROOT / "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json"
+)
 
 # These full-corpus totals are resolved only after the user supplies their own
 # XISO.  The clean public stage contains the parsers, constraints, and pinned
@@ -87,19 +94,19 @@ EXPECTED_PRIVATE_STADIUM_TEXTURES = 23_838
 # widening Nfl2k5UnifiedVisualProvider.module_pins would misstate ownership.
 RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
-        "c781fa99206309f03e2a0a80d579c3105a5d2d413c2588ec2c702405a10c957f",
+        "d354ef2e58856abb83956b26a4bccc06b7bc622b919d49432b4a8e991b0e5333",
     "mod_editor/gui/studio_qt.py":
-        "df611636cf89c625e6fd4a98bda06df6cb76778eca476bd22c31cf8518983dc2",
+        "b3a04342cdc6b218e9bc3caeb724f9c26e216460b6b8beb8459ed092cd48eedf",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
-        "4aaff7706ba68b7c306f5ee8e35f4f85a016e2c0b3786f084cebbe1bd2330d39",
+        "433e68c9872bad8dbe96d2103f20c30e93289e8c62265ee657e5fc9e18939108",
     "mod_editor/studio/facade.py":
-        "cd84fa9199f551cd7e183a1aaf27843fa61dc3b5aa1f3b646e3de61aa1b22172",
+        "46a5d9bc601befe46b5ccdc0d2b70bb7ca28465a4669a6e37d8eeaf5cae85d63",
     "mod_editor/studio/project_archive.py":
-        "d229759d46dfb5c04e97d4839a560a3aa78721c6184c6c47bee76b5ec888b7d8",
+        "b3f5abd58820d0759f4c6f020aeee1c2a1672f7952fd80ce8f6eec198c2ec415",
     "mod_editor/studio/session.py":
-        "33d2103ea1290ad27c34d1d00ce6a0c034cacde016220a66e0e3916d871eb2b9",
+        "22a1ed2fa643e6a9d18ac4efa5d772a91e0e666effc658b77d66638d7f196aaa",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
@@ -109,14 +116,25 @@ REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
         "mod_editor/core/nfl2k5_audio_source_containment.py",
         "mod_editor/core/nfl2k5_audio_source_fingerprints.py",
         "mod_editor/core/nfl2k5_audio_source_scan.py",
+        "mod_editor/core/nfl2k5_audo_family_labels.py",
         "mod_editor/core/nfl2k5_audo_fixed_slots.py",
         "mod_editor/core/nfl2k5_ausb_build_adapter.py",
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py",
+        "mod_editor/core/nfl2k5_crib.py",
+        "mod_editor/core/nfl2k5_crib_electronics_targets.py",
+        "mod_editor/core/nfl2k5_crib_geometry_writer.py",
+        "mod_editor/core/nfl2k5_crib_scene_texture_writer.py",
+        "mod_editor/core/nfl2k5_crib_standalone_texture_writer.py",
+        "mod_editor/core/nfl2k5_playbook_inspector.py",
+        "mod_editor/core/nfl2k5_playbook_route_writer.py",
         "mod_editor/core/nfl2k5_safe_text_banks.py",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+        "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
         "tools/apf_inner.py",
         "tools/apf_outer.py",
         "tools/nfl_crib_bar_monitor_png_xiso.py",
+        "tools/nfl_scne_gltf.py",
+        "tools/nfl_static_gltf.py",
         "tools/string_table_inventory.py",
     }
 )
@@ -191,6 +209,49 @@ def _exercise_safe_fixed_text(safe_text_module: object) -> None:
         pass
     else:
         raise RuntimeError("universal fixed-text allocation overflow was accepted")
+
+
+def _exercise_per_uniform_colour_project(visual_project: object) -> None:
+    """Keep the public project logical and independently addressable per set."""
+
+    adapter = visual_project.unif_color_adapter
+    require(
+        adapter.parse_color("#123456") == 0xFF123456
+        and set(adapter.PACK_PROVENANCE) == set("9ABC"),
+        "per-uniform colour adapter provenance contract changed",
+    )
+    rows = [
+        {
+            "kind": "unif_color", "selector": "18H0",
+            "facemask": "FF123456", "turtleneck": "FFABCDEF",
+        },
+        {
+            "kind": "unif_color", "selector": "18A0",
+            "facemask": "FF654321", "turtleneck": "FFFEDCBA",
+        },
+    ]
+    with tempfile.TemporaryDirectory(prefix="2k5-runtime-unif-colour-") as name:
+        project = Path(name) / "project.json"
+        document = {
+            "schema": visual_project.SCHEMA,
+            "purpose": "runtime per-uniform colour closure",
+            "edits": rows,
+        }
+        project.write_bytes(visual_project.canonical_json(document))
+        parsed = visual_project.read_project(project)
+        require(
+            [row["selector"] for row in parsed.value["edits"]]
+            == ["18H0", "18A0"],
+            "multiple per-uniform colour selectors no longer validate",
+        )
+        document["edits"] = [rows[0], dict(rows[0])]
+        project.write_bytes(visual_project.canonical_json(document))
+        try:
+            visual_project.read_project(project)
+        except visual_project.ProjectError:
+            pass
+        else:
+            raise RuntimeError("duplicate per-uniform colour selector was accepted")
 
 
 def _exercise_audio(audio_module: object, audo_tool: object) -> None:
@@ -1225,6 +1286,22 @@ def _exercise_stadium_writer(writer_module: object, studio_module: object) -> No
         in source_text,
         "Stadium private editable-count contract changed",
     )
+    geometry_payload = STADIUM_GEOMETRY_CATALOG.read_bytes()
+    geometry_catalog = json.loads(geometry_payload)
+    require(
+        len(geometry_payload) == writer_module.GEOMETRY_CATALOG_SIZE
+        and hashlib.sha256(geometry_payload).hexdigest()
+        == writer_module.GEOMETRY_CATALOG_SHA256
+        and geometry_catalog.get("schema")
+        == writer_module.GEOMETRY_CATALOG_SCHEMA
+        and len(geometry_catalog.get("targets", ())) == 75
+        and callable(writer_module.compile_stadium_geometry_recipe)
+        and callable(writer_module.build_unified_stadium_geometry_import)
+        and callable(
+            writer_module.build_unified_stadium_geometry_and_texture_import
+        ),
+        "Stadium same-topology geometry-import contract changed",
+    )
 
 
 def _exercise_playbook(playbook_module: object, panel_module: object) -> None:
@@ -1524,6 +1601,42 @@ def _exercise_team_kit(
     )
 
 
+def _exercise_texture_master(texture_master: object) -> None:
+    """Round-trip a retail-free master with one native-canvas edit."""
+
+    from PIL import Image
+
+    with tempfile.TemporaryDirectory(prefix="2k5-runtime-master-") as name:
+        root = Path(name)
+        source = root / "user-source.png"
+        Image.new("RGBA", (32, 16), (20, 80, 140, 255)).save(source)
+        baseline = root / "baseline.png"
+        Image.new("RGBA", (8, 8), (20, 80, 140, 255)).save(baseline)
+        final = root / "final.png"
+        edited = Image.open(baseline).copy()
+        edited.putpixel((1, 2), (255, 20, 90, 128))
+        edited.save(final)
+        archive = texture_master.save_texture_master_bundle(
+            source_image=source,
+            destination=root / "fixture.2ktexmaster",
+            asset_id="runtime.user.texture",
+            editor_target="nfl2k5_xbox",
+            native_width=8,
+            native_height=8,
+            compiled_native_png=final,
+            compiled_native_baseline_png=baseline,
+            high_resolution_scale=2,
+            editor_transform={"operation": "runtime-native-edit"},
+        )
+        loaded = texture_master.load_texture_master_bundle(archive)
+        require(
+            loaded.manifest["native_raster_edit"]["changed_pixel_count"] == 1
+            and loaded.native_png == final.read_bytes()
+            and loaded.native_baseline_png == baseline.read_bytes(),
+            "high-resolution texture-master runtime contract changed",
+        )
+
+
 def main() -> int:
     require(REPORTS.is_dir() and not REPORTS.is_symlink(),
             "reviewed target metadata directory is missing")
@@ -1537,6 +1650,16 @@ def main() -> int:
             "private 55 MiB user-XISO inventory was included in the release")
     require(COMPACT_CRIB.is_file() and not COMPACT_CRIB.is_symlink(),
             "compact retail-free Crib catalog is missing")
+    require(
+        COMPACT_UNIFORM_EQUIPMENT.is_file()
+        and not COMPACT_UNIFORM_EQUIPMENT.is_symlink(),
+        "compact uniform-equipment export catalog is missing",
+    )
+    require(
+        STADIUM_GEOMETRY_CATALOG.is_file()
+        and not STADIUM_GEOMETRY_CATALOG.is_symlink(),
+        "bounded Stadium geometry catalog is missing",
+    )
     for forbidden in ("extracted", "assets", "cache", "derived"):
         require(not os.path.lexists(ROOT / forbidden),
                 f"private or retail-derived {forbidden} data was included in the release")
@@ -1545,7 +1668,9 @@ def main() -> int:
         "mod_editor.__main__",
         "mod_editor.core.capabilities",
         "mod_editor.core.controller",
+        "mod_editor.core.image_fit",
         "mod_editor.core.product_catalog",
+        "mod_editor.core.texture_master",
         "mod_editor.core.nfl2k5_source_cache",
         "mod_editor.core.nfl2k5_asset_io",
         "mod_editor.core.nfl2k5_uniform_catalog",
@@ -1602,6 +1727,7 @@ def main() -> int:
         )
 
     modules = {name: importlib.import_module(name) for name in product_modules}
+    _exercise_texture_master(modules["mod_editor.core.texture_master"])
 
     tool_modules = (
         "apf_inner",
@@ -1636,7 +1762,7 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 67,
+    require(len(registry.capabilities) == 70,
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
@@ -1656,12 +1782,29 @@ def main() -> int:
             "uniform catalog asset count changed")
     require(len(uniform_catalog.assets_for_set("18H0")) == 39,
             "Giants home uniform component count changed")
+    _exercise_per_uniform_colour_project(
+        loaded["nfl2k5_visual_mod_project"]
+    )
+    require(
+        all(
+            hasattr(modules["mod_editor.studio.session"].StudioSession, member)
+            and hasattr(
+                modules["mod_editor.studio.facade"].Nfl2k5StudioFacade, member
+            )
+            for member in (
+                "uniform_colors", "set_uniform_colors", "clear_uniform_colors",
+            )
+        )
+        and modules["mod_editor.studio.project_archive"].MAX_UNIFORM_COLOR_EDITS
+        == 634,
+        "per-uniform colour GUI/session/project closure changed",
+    )
 
     visual_module = modules["mod_editor.core.nfl2k5_extended_visual_catalog"]
     visual_catalog = visual_module.load_nfl2k5_product_visual_catalog()
-    require(len(visual_catalog.extended.assets) == 10_336,
+    require(len(visual_catalog.extended.assets) == 47_237,
             "extended visual asset count changed")
-    require(len(visual_catalog.assets) == 35_062,
+    require(len(visual_catalog.assets) == 71_963,
             "complete visual asset count changed")
     scorebug = next(
         asset for asset in visual_catalog.extended.assets
@@ -1675,15 +1818,48 @@ def main() -> int:
         },
         "extended scorebug asset no longer routes through the unified project",
     )
+    equipment = next(
+        asset for asset in visual_catalog.extended.assets
+        if asset.kind == "uniform_equipment_texture"
+        and asset.texture == "socks00"
+    )
+    require(
+        equipment.editable
+        and equipment.provider_edit("user-socks.png") == {
+            "asset_id": equipment.asset_id,
+            "kind": "uniform_equipment_texture",
+            "png": "user-socks.png",
+        },
+        "package-local equipment no longer routes through the unified project",
+    )
 
     crib_module = modules["mod_editor.core.nfl2k5_crib"]
     crib_catalog = crib_module.load_nfl2k5_crib_catalog()
     editable_crib = tuple(asset for asset in crib_catalog.assets if asset.editable)
-    require(len(crib_catalog.assets) == 498 and len(editable_crib) == 129,
+    editable_scenes = tuple(
+        asset for asset in editable_crib
+        if asset.storage is crib_module.CribStorage.SCENE_EMBEDDED
+    )
+    require(
+        len(crib_catalog.assets) == len(editable_crib) == 498
+        and len(editable_scenes) == 188,
             "compact Crib catalog coverage changed")
-    crib_edit = editable_crib[0].provider_edit("user-crib-photo.png")
+    photo = next(
+        asset for asset in editable_crib
+        if asset.selector.startswith("crib_team_photo:")
+    )
+    crib_edit = photo.provider_edit("user-crib-photo.png")
     require(crib_edit["kind"] == "crib_team_photo" and len(crib_edit) == 3,
             "Crib photo logical provider route changed")
+    standalone = crib_catalog.by_selector("crib_item_texture:00_helmet")
+    require(
+        standalone.provider_edit("user-crib-item.png") == {
+            "kind": "crib_standalone_texture",
+            "png": "user-crib-item.png",
+            "selector": "crib_item_texture:00_helmet",
+        },
+        "Crib standalone logical provider route changed",
+    )
     bar_monitor = crib_catalog.get(crib_module.BAR_MONITOR_ASSET_ID)
     require(
         bar_monitor.provider_edit("user-bar-monitor.png") == {
@@ -1857,6 +2033,12 @@ def main() -> int:
             "unified provider omitted the Crib photo kind")
     require("crib_scene_texture" in unified_provider.backend_known_kinds,
             "unified provider omitted the Crib scene-texture kind")
+    require("crib_standalone_texture" in unified_provider.backend_known_kinds,
+            "unified provider omitted the Crib standalone-texture kind")
+    require("crib_scene_geometry" in unified_provider.backend_known_kinds,
+            "unified provider omitted the Crib scene-geometry kind")
+    require("play_assignment_route" in unified_provider.backend_known_kinds,
+            "unified provider omitted the PLAY assignment-route kind")
     require("universal_fixed_text" in unified_provider.backend_known_kinds,
             "unified provider omitted the universal fixed-text kind")
     require("audo_audio" in unified_provider.backend_known_kinds,
@@ -1865,6 +2047,8 @@ def main() -> int:
             "unified provider omitted fixed-range streaming-AUSB kind")
     require("stadium_texture" in unified_provider.backend_known_kinds,
             "unified provider omitted the Stadium texture kind")
+    require("stadium_geometry" in unified_provider.backend_known_kinds,
+            "unified provider omitted the Stadium geometry kind")
     require(
         REQUIRED_UNIFIED_PROVIDER_CLOSURE
         <= set(unified_provider.module_pins),
@@ -1895,6 +2079,11 @@ def main() -> int:
             "Stadium Studio private-cache contract changed")
 
     facade_module = modules["mod_editor.studio.facade"]
+    require(
+        callable(getattr(facade_module.Nfl2k5StudioFacade,
+                         "import_stadium_scene_gltf", None)),
+        "Stadium edited-glTF facade route is missing",
+    )
     facade = facade_module.Nfl2k5StudioFacade(
         uniform_catalog=uniform_catalog,
         visual_catalog=visual_catalog,
@@ -1945,7 +2134,7 @@ def main() -> int:
             "desktop --studio route did not construct the product facade")
     require(captured.get("uniform_catalog") is not None,
             "desktop --studio route omitted the uniform catalog")
-    require(len(getattr(captured.get("extended_visual_catalog"), "assets", ())) == 10_336,
+    require(len(getattr(captured.get("extended_visual_catalog"), "assets", ())) == 47_237,
             "desktop --studio route omitted the extended visual catalog")
     launched_catalog = captured.get("product_catalog")
     require(
@@ -1980,8 +2169,8 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=66 sections=12 nfl2k5_capabilities=32 "
-        "reports=12 reviewed_metadata=15 sets=634 visuals=35062 "
+        "registry=70 sections=12 nfl2k5_capabilities=32 "
+        "reports=13 reviewed_metadata=19 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "
         "text_read_only=3272 roster_numbers=6522 "
@@ -2009,10 +2198,14 @@ def main() -> int:
         "embedded_audio_task=global_action_guarded_until_drain "
         "embedded_operation_task=audio_crib_mutually_exclusive_until_drain "
         "audio_bundle_modified_range=user_wav "
-        "crib=498 crib_editable=129 crib_scene_editable=1 "
+        "crib=498 crib_editable=498 crib_standalone_editable=182 "
+        "crib_scene_editable=188 crib_geometry=10_meshes_7_scenes_position_only "
         "stadium_scenes=477 stadium_textures_editable=23838 "
+        "stadium_geometry=same_topology_position_only_private "
         "playbooks=37 formations=1533 plays=9251 chains=32502 "
-        "play_nodes=91833 play_slot_refs=101761 startup=connected "
+        "play_nodes=91833 play_slot_refs=101761 "
+        "play_assignment_route=same_book_stock_copy_only startup=connected "
+        "texture_master=direct_source_with_native_edit_layer "
         "private_inventory=false retail=false generated_stadium=false"
     )
     return 0

@@ -21,7 +21,8 @@ remains the default.
    encoder. A Windows `.exe` can use a separately installed Wine executable.
 6. Choose **Replace from PCM WAV…** and select the edited WAV.
 7. Mod Studio privately runs the encoder, validates its finished XMA1 output,
-   and adds one normal, revertible project edit only if every check passes.
+   decodes it back, compares the decoded signal with the authored PCM, and adds
+   one normal, revertible project edit only if every check passes.
 
 The exported template is deterministic silence. It contains no original game
 audio or other retail payload. Its receipt shows the selected sound's channel
@@ -128,6 +129,9 @@ the same independent admission path as **Replace with XMA1…**:
 - exact selected channel count and sample rate;
 - exact fixed encoded allocation and `0x800`-byte APF packet framing;
 - complete decoder acceptance and the bounded decoded-tail rule;
+- for the PCM/external-encoder route, an alignment-aware signal comparison that
+  rejects silence/collapse, channel swap/interleave, wrong rate or pitch, gross
+  level change, new sustained clipping, excessive DC, and a corrupt tail;
 - source-game fingerprint rejection, including cross-family AUDO/AUSB packet
   reuse;
 - exact source and target identity; and
@@ -154,16 +158,19 @@ ends. The source ISO or extracted game folder is never opened for writing.
 
 The silence-template writer, no-shell process adapter, cancellation/timeout
 cleanup, Wine routing, selected and batch dispatch, 256-supplied-WAV ceiling,
-Undo atomicity, and final-validator handoff have synthetic automated proof.
-Those tests use fake encoders only to prove plumbing; they do not claim that
-the fake output is perceptually valid XMA1.
+Undo atomicity, final-validator handoff, and signal comparator have synthetic
+automated proof. The comparator passes aligned lossy reconstruction and rejects
+silence, wrong pitch/rate, channel swaps, clipping, DC, and tail corruption.
+The decoder runner and fail-closed session wiring are also tested. These tests
+do not claim that fake output is perceptually valid XMA1.
 
 No distributable XMA1 encoder is bundled, and no real encoder was available in
 the build environment for an end-to-end authored-audio acceptance test. The
 earlier Xenia audio experiment proved boot, selection, and stability but did
-not isolate audible modified-stream causality. Alpha 28 therefore ships both
-PCM routes as strict user-supplied-tool bridges, not as a promise that every
-encoder or every APF cue will work.
+not isolate audible modified-stream causality. The signal gate now prevents the
+known gross artifact families from being staged, but it is not a listening test
+or a transparency score. The PCM routes remain strict user-supplied-tool
+bridges, not a promise that every encoder or every APF cue will work.
 
 The project format structurally excludes original source bytes and exact source
 XMA packet reuse. It cannot recognize whether separately encoded PCM resembles

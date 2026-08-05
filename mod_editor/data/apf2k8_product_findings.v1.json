@@ -76,16 +76,18 @@
   "presentation": {
     "field_scorebug": {
       "components": [
-        {"name": "scorebug_bottombar", "mesh_count": 46, "triangle_count": 221, "writer_available": false},
-        {"name": "scorebug_titlebar", "mesh_count": 5, "triangle_count": 31, "writer_available": false},
-        {"name": "scorebug_team_logos", "mesh_count": 4, "triangle_count": 8, "writer_available": false},
-        {"name": "scorebug_infobar", "mesh_count": 4, "triangle_count": 149, "writer_available": false},
-        {"name": "scorebug_messages", "mesh_count": 2, "triangle_count": 14, "writer_available": false},
-        {"name": "scorebug_blackbar", "mesh_count": 1, "triangle_count": 5, "writer_available": false},
-        {"name": "scorebug_statbar", "mesh_count": 8, "triangle_count": 181, "writer_available": false}
+        {"name": "scorebug_bottombar", "mesh_count": 46, "triangle_count": 221, "writer_available": false, "embedded_texture_count": 8, "dynamic_logo_sampler_count": 0, "draw_material_texture_ownership_proved": true, "runtime_source_texture_family_proved": true},
+        {"name": "scorebug_titlebar", "mesh_count": 5, "triangle_count": 31, "writer_available": false, "embedded_texture_count": 1, "dynamic_logo_sampler_count": 0, "draw_material_texture_ownership_proved": true, "runtime_source_texture_family_proved": true},
+        {"name": "scorebug_team_logos", "mesh_count": 4, "triangle_count": 8, "writer_available": false, "embedded_texture_count": 0, "dynamic_logo_sampler_count": 2, "draw_material_texture_ownership_proved": true, "runtime_source_texture_family_proved": false},
+        {"name": "scorebug_infobar", "mesh_count": 4, "triangle_count": 149, "writer_available": false, "embedded_texture_count": 1, "dynamic_logo_sampler_count": 0, "draw_material_texture_ownership_proved": true, "runtime_source_texture_family_proved": true},
+        {"name": "scorebug_messages", "mesh_count": 2, "triangle_count": 14, "writer_available": false, "embedded_texture_count": 0, "dynamic_logo_sampler_count": 0, "draw_material_texture_ownership_proved": true, "runtime_source_texture_family_proved": true},
+        {"name": "scorebug_blackbar", "mesh_count": 1, "triangle_count": 5, "writer_available": false, "embedded_texture_count": 0, "dynamic_logo_sampler_count": 0, "draw_material_texture_ownership_proved": true, "runtime_source_texture_family_proved": true},
+        {"name": "scorebug_statbar", "mesh_count": 8, "triangle_count": 181, "writer_available": false, "embedded_texture_count": 1, "dynamic_logo_sampler_count": 0, "draw_material_texture_ownership_proved": true, "runtime_source_texture_family_proved": true}
       ],
       "geometry_writer_available": false,
-      "runtime_behavior_writer_available": false
+      "runtime_behavior_writer_available": false,
+      "team_logo_textures_are_runtime_injected": true,
+      "team_logo_runtime_cache_layer_proved": false
     },
     "season_gamecast_is_separate": true,
     "digital_font": {
@@ -103,6 +105,6 @@
       "runtime_visibility_proved": false
     },
     "safe_writer_count": 1,
-    "warning": "Only the shared alpha-only digital_font has a proved copied-volume writer. The seven SCNE components, clocks, identity, visibility, timing, GameCast, replay/halftime, and audio remain separate and read-only."
+        "warning": "Only the shared alpha-only digital_font has a proved copied-volume writer. The team-logo scene has two runtime-injected logo samplers and no embedded TXTR; Team Logo writes both candidate reservoirs, while the final package-versus-cache resolver remains unproved. The seven SCNE components, clocks, identity, visibility, timing, GameCast, replay/halftime, and audio remain separate and read-only."
   }
 }

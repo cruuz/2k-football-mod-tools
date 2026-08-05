@@ -71,10 +71,22 @@ def file_digest(path: Path) -> str:
     return result.hexdigest()
 
 
-def pin(path: Path) -> dict[str, Any]:
+#: This report ships in the release archive, so an input is named by what it is
+#: rather than by where it sat on the machine that produced it. ``str(path)``
+#: recorded the operator's own directories, which the release gate refuses and
+#: which nobody should be publishing. Fixed labels also make the report
+#: reproducible: the same disc and checkout produce the same bytes anywhere.
+#: ``user-source`` is what the reader supplied; ``generation-evidence`` is what
+#: an earlier reviewed step produced. Identity is carried by the size and
+#: SHA-256 beside each label, which is the part that means anything.
+USER_SOURCE = "user-source"
+GENERATION_EVIDENCE = "generation-evidence"
+
+
+def pin(path: Path, label: str) -> dict[str, Any]:
     resolved = path.resolve(strict=True)
     return {
-        "path": str(resolved), "size": resolved.stat().st_size,
+        "path": label, "size": resolved.stat().st_size,
         "sha256": file_digest(resolved),
     }
 
@@ -501,13 +513,20 @@ def run(root: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     report: dict[str, Any] = {
         "schema": SCHEMA,
         "inputs": {
-            "canonical_index": pin(index_path),
-            "chunk_inventory": pin(chunks_path),
-            "uniform_inventory": pin(uniforms_path),
-            "standalone_texture_inventory": pin(standalone_path),
-            "default_xbe": {"path": str(xbe_path.resolve()), "sha256": XBE_SHA256},
+            "canonical_index": pin(
+                index_path,
+                f"{USER_SOURCE}/{index_path.parent.name}/{index_path.name}"),
+            "chunk_inventory": pin(
+                chunks_path, f"{GENERATION_EVIDENCE}/{chunks_path.name}"),
+            "uniform_inventory": pin(
+                uniforms_path, f"{GENERATION_EVIDENCE}/{uniforms_path.name}"),
+            "standalone_texture_inventory": pin(
+                standalone_path, f"{GENERATION_EVIDENCE}/{standalone_path.name}"),
+            "default_xbe": {"path": f"{USER_SOURCE}/{xbe_path.name}",
+                            "sha256": XBE_SHA256},
             "retail_xiso": {
-                "path": str(source), "size": xiso.EXPECTED_XISO_SIZE,
+                "path": f"{USER_SOURCE}/ESPN NFL 2K5.xiso.iso",
+                "size": xiso.EXPECTED_XISO_SIZE,
                 "expected_sha256": xiso.EXPECTED_XISO_SHA256,
                 "opened_read_only": True,
             },

@@ -27,8 +27,10 @@ from pathlib import Path
 import re
 import shutil
 import stat
+import tempfile
 from typing import Callable, Iterable, Protocol, Sequence, runtime_checkable
 
+from mod_editor.core import audio_conform
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_audio_catalog import (
     AudioReplacementMetadata,
@@ -55,6 +57,7 @@ from mod_editor.studio.audio_bundle import (
     export_audio_bundle as publish_audio_bundle,
 )
 from mod_editor.studio.audio_replacement_pack import (
+    FAMILY_REVIEWED_MEANING_STATUS,
     complete_standalone_pack_path,
     standalone_runtime_meaning_status,
 )
@@ -97,6 +100,7 @@ PROVISIONAL_LABEL_MEANING_STATUS = "provisional_label_runtime_meaning_unproved"
 STANDALONE_MEANING_STATUSES = (
     MENU_BACK_MEANING_STATUS,
     REVIEWED_LABEL_MEANING_STATUS,
+    FAMILY_REVIEWED_MEANING_STATUS,
     PROVISIONAL_LABEL_MEANING_STATUS,
 )
 
@@ -276,25 +280,26 @@ class AudioPanelHost(Protocol):
 def audio_search_text(asset: Nfl2k5AudioAsset) -> str:
     """Return the product-facing metadata searched by the panel."""
 
-    return " ".join(
-        (
-            asset.name,
-            asset.asset_id,
-            asset.outer_id,
-            asset.edit_status,
-            asset.alias_status,
-            asset.ownership_status,
-            asset.family_id,
-            asset.family_label,
-            asset.container_label,
-            asset.format_label,
-            str(asset.outer_index),
-            str(asset.chunk_index),
-            str(asset.sample_rate),
-            f"{asset.channels} channel",
-            "stereo" if asset.channels == 2 else "mono" if asset.channels == 1 else "",
-        )
-    ).casefold()
+    fields = [
+        asset.name,
+        asset.asset_id,
+        asset.outer_id,
+        asset.edit_status,
+        asset.alias_status,
+        asset.ownership_status,
+        asset.family_id,
+        asset.family_label,
+        asset.container_label,
+        asset.format_label,
+        str(asset.outer_index),
+        str(asset.chunk_index),
+        str(asset.sample_rate),
+        f"{asset.channels} channel",
+        "stereo" if asset.channels == 2 else "mono" if asset.channels == 1 else "",
+    ]
+    if asset.family_reviewed_label is not None:
+        fields.append(asset.family_reviewed_label)
+    return " ".join(fields).casefold()
 
 
 def filter_audio_assets(
@@ -306,9 +311,9 @@ def filter_audio_assets(
 ) -> tuple[Nfl2k5AudioAsset, ...]:
     """Filter the complete catalog without touching Qt or audio payloads."""
 
-    if status not in (None, "Editable", "Export-only", "Coming Soon"):
+    if status not in (None, "Editable", "Export-only"):
         raise ValidationError(
-            "Audio status filter must be All, Editable, Export-only, or Coming Soon"
+            "Audio status filter must be All, Editable, or Export-only"
         )
     valid_families = {family_id for family_id, _label in STANDALONE_AUDIO_FAMILIES}
     if family is not None and family not in valid_families:
@@ -351,7 +356,7 @@ def audio_bank_search_text(asset: Nfl2k5StreamingAudioBank) -> str:
         str(asset.external_outer_index),
         str(asset.entry_count),
         str(asset.sample_rate),
-        "raw bin opaque undecoded replace replacement coming soon",
+        "raw bin aggregate undecoded edit individual indexed ranges",
     )).casefold()
 
 
@@ -364,9 +369,9 @@ def filter_audio_banks(
 ) -> tuple[Nfl2k5StreamingAudioBank, ...]:
     """Filter streaming banks without decoding or reading bank payloads."""
 
-    if status not in (None, "Editable", "Export-only", "Coming Soon"):
+    if status not in (None, "Editable", "Export-only"):
         raise ValidationError(
-            "Audio status filter must be All, Editable, Export-only, or Coming Soon"
+            "Audio status filter must be All, Editable, or Export-only"
         )
     valid_families = {family_id for family_id, _label in STREAMING_AUDIO_FAMILIES}
     if family is not None and family not in valid_families:
@@ -427,9 +432,9 @@ def filter_audio_ranges(
 ) -> tuple[Nfl2k5StreamingAudioRange, ...]:
     """Filter indexed streaming ranges without reading their retail bytes."""
 
-    if status not in (None, "Editable", "Export-only", "Coming Soon"):
+    if status not in (None, "Editable", "Export-only"):
         raise ValidationError(
-            "Audio status filter must be All, Editable, Export-only, or Coming Soon"
+            "Audio status filter must be All, Editable, or Export-only"
         )
     valid_families = {family_id for family_id, _label in STREAMING_AUDIO_FAMILIES}
     if family is not None and family not in valid_families:
@@ -713,9 +718,9 @@ class CatalogAudioPanelHost:
         | Nfl2k5StreamingAudioRange,
         ...,
     ]:
-        if status not in (None, "Editable", "Export-only", "Coming Soon", "Modified"):
+        if status not in (None, "Editable", "Export-only", "Modified"):
             raise ValidationError(
-                "Audio status must be All, Modified, Editable, Export-only, or Coming Soon"
+                "Audio status must be All, Modified, Editable, or Export-only"
             )
         if meaning_status not in (None, *STANDALONE_MEANING_STATUSES):
             raise ValidationError("Audio meaning-confidence filter is invalid")
@@ -1177,7 +1182,7 @@ if PYQT5_AVAILABLE:
             self.setMinimumHeight(86)
             layout = QVBoxLayout(self)
             layout.setContentsMargins(16, 12, 16, 12)
-            self.title = QLabel("Drop replacement WAV here")
+            self.title = QLabel("Drop replacement audio here")
             self.title.setObjectName("audioDropTitle")
             self.hint = QLabel("Select an Editable standalone sound first")
             self.hint.setWordWrap(True)
@@ -1193,18 +1198,49 @@ if PYQT5_AVAILABLE:
         def dragEnterEvent(self, event: object) -> None:  # type: ignore[override]
             mime = event.mimeData()  # type: ignore[attr-defined]
             urls = mime.urls() if mime.hasUrls() else []
-            if (
-                self._accepting
-                and len(urls) == 1
-                and urls[0].isLocalFile()
-                and urls[0].toLocalFile().lower().endswith(".wav")
-            ):
+            if not self._accepting:
+                event.ignore()  # type: ignore[attr-defined]
+                return
+            if urls:
+                # Accept the drag so an unusable drop can explain itself with
+                # a plain message instead of silently bouncing off the zone.
                 event.acceptProposedAction()  # type: ignore[attr-defined]
             else:
                 event.ignore()  # type: ignore[attr-defined]
 
         def dropEvent(self, event: object) -> None:  # type: ignore[override]
-            path = Path(event.mimeData().urls()[0].toLocalFile())  # type: ignore[attr-defined]
+            urls = event.mimeData().urls()  # type: ignore[attr-defined]
+            if len(urls) != 1:
+                QMessageBox.information(
+                    self,
+                    "That drop can't be used yet",
+                    "Drop one audio file at a time. Pick the single sound you "
+                    "want to use and drop it here again.",
+                )
+                event.ignore()  # type: ignore[attr-defined]
+                return
+            url = urls[0]
+            if not url.isLocalFile() or url.host():
+                QMessageBox.information(
+                    self,
+                    "That drop can't be used yet",
+                    "That drop is a link or a web address, not a file on this "
+                    "computer. Save or download the audio first, then drop the "
+                    "real file here.",
+                )
+                event.ignore()  # type: ignore[attr-defined]
+                return
+            path = Path(url.toLocalFile())
+            if not audio_conform.is_supported_suffix(str(path)):
+                QMessageBox.information(
+                    self,
+                    "That drop can't be used yet",
+                    "Drop one local audio file — WAV, MP3, FLAC, OGG, M4A and "
+                    "similar. It is converted to this sound's exact shape for "
+                    "you.",
+                )
+                event.ignore()  # type: ignore[attr-defined]
+                return
             self.wav_dropped.emit(path)
             event.acceptProposedAction()  # type: ignore[attr-defined]
 
@@ -1400,7 +1436,10 @@ if PYQT5_AVAILABLE:
                 "Reviewed labels (152)", REVIEWED_LABEL_MEANING_STATUS
             )
             self.meaning_filter.addItem(
-                "Provisional labels (697)", PROVISIONAL_LABEL_MEANING_STATUS
+                "Family-reviewed labels (1)", FAMILY_REVIEWED_MEANING_STATUS
+            )
+            self.meaning_filter.addItem(
+                "Provisional labels (696)", PROVISIONAL_LABEL_MEANING_STATUS
             )
             self.meaning_filter.setMinimumWidth(205)
             self.meaning_filter.setAccessibleName(
@@ -1408,7 +1447,8 @@ if PYQT5_AVAILABLE:
             )
             self.meaning_filter.setAccessibleDescription(
                 "Separate from edit status. Limit standalone sounds to the one "
-                "Menu Back writer route, 152 reviewed labels, or 697 provisional "
+                "Menu Back writer route, 152 reviewed labels, one family-reviewed "
+                "label inferred from a reviewed sibling, or 696 provisional "
                 "labels whose exact runtime cue meanings remain unproved."
             )
             self.meaning_filter.setToolTip(
@@ -2830,11 +2870,11 @@ if PYQT5_AVAILABLE:
                     if asset.selector == MENU_BACK_SELECTOR else
                     f"{base} • exact physical slot • runtime cue meaning unproved"
                     if asset.editable else
-                    "Export-only • Replace Coming Soon"
+                    "Export-only • no exact-slot writer"
                 )
             elif isinstance(asset, Nfl2k5StreamingAudioBank):
                 base = "Export-only"
-                detail = "Export-only • Replace Coming Soon"
+                detail = "Export-only • raw aggregate; edit individual indexed ranges"
             else:
                 base = (
                     "Modified" if asset.asset_id in modified_ids
@@ -2850,7 +2890,7 @@ if PYQT5_AVAILABLE:
                     if asset.editable and shared else
                     "Editable • strict PCM16 WAV • fixed streaming slot"
                     if asset.editable else
-                    "Export-only • Replace Coming Soon"
+                    "Export-only • no exact-range writer"
                 )
             annotation = (
                 self._annotation_for(asset.asset_id)
@@ -4145,7 +4185,7 @@ if PYQT5_AVAILABLE:
                 )
                 self.status_label.setText(
                     "Modified • Editable" if modified else (
-                        "Export-only • Replace Coming Soon"
+                        "Export-only • raw aggregate; edit individual indexed ranges"
                         if isinstance(asset, Nfl2k5StreamingAudioBank)
                         else asset.edit_status
                     )
@@ -4322,13 +4362,13 @@ if PYQT5_AVAILABLE:
             hint = (
                 "Opaque raw container: export-only; decoding and replacement are unavailable"
                 if raw_container else
-                "Streaming-bank replacement is Coming Soon; use Export Raw Bank"
+                "A complete bank is an export-only aggregate; edit its individual indexed ranges"
                 if isinstance(asset, Nfl2k5StreamingAudioBank) else
                 "The first audio replacement may take roughly 20–35 minutes while "
                 "Mod Studio reads your XISO and builds private safety indexes. This "
                 "happens once; your XISO stays read-only."
                 if editable and not audio_editing_ready else
-                asset.action_note if asset is not None else
+                self._replacement_hint(asset) if asset is not None else
                 "Select one of the Editable fixed-allocation sounds or ranges"
             )
             self.drop_zone.set_accepting(editable, hint)
@@ -5220,12 +5260,46 @@ if PYQT5_AVAILABLE:
                 return
             selected, _filter = QFileDialog.getOpenFileName(
                 self,
-                f"Choose replacement WAV for {asset.name}",
+                f"Choose replacement audio for {asset.name}",
                 "",
-                "Wave audio (*.wav)",
+                audio_conform.file_dialog_filter(),
             )
             if selected:
                 self._replace_with_path(Path(selected))
+
+        def _replacement_hint(self, asset: object) -> str:
+            """Say what this sound needs, and that the app will handle it.
+
+            The slot's shape is fixed and unforgiving, which used to mean the
+            modder had to build a file to match it by hand. It no longer does,
+            but only if the panel says so -- otherwise "exactly 10,624 frames"
+            reads like a wall rather than something already taken care of.
+            """
+
+            note = getattr(asset, "action_note", "") or ""
+            channels = getattr(asset, "channels", None)
+            sample_rate = getattr(asset, "sample_rate", None)
+            frame_count = getattr(asset, "frame_count", None)
+            if not isinstance(channels, int) or not isinstance(sample_rate, int) \
+                    or not isinstance(frame_count, int) or sample_rate <= 0:
+                return note
+
+            layout = {1: "mono", 2: "stereo"}.get(channels, f"{channels}-channel")
+            seconds = frame_count / sample_rate
+            shape = f"{layout}, {sample_rate:,} Hz, {seconds:.2f} seconds"
+            if audio_conform.conversion_available():
+                lead = (
+                    f"Drop any audio file here (MP3, WAV, FLAC, OGG, M4A and "
+                    f"more). It is converted to fit this sound: {shape}. "
+                    f"Longer audio is trimmed, shorter is padded with silence."
+                )
+            else:
+                lead = (
+                    f"This sound needs a PCM16 WAV that is exactly {shape}. "
+                    f"Install FFmpeg to drop other formats and have them "
+                    f"converted for you."
+                )
+            return f"{lead}\n\n{note}" if note else lead
 
         def _replace_with_path(self, supplied: Path) -> None:
             if self._busy:
@@ -5241,18 +5315,75 @@ if PYQT5_AVAILABLE:
                 )
                 return
 
+            # Anything that is not already the slot's exact shape is converted
+            # first, so a modder can drop an ordinary mp3 or a 48 kHz stereo WAV
+            # instead of hand-building a file in an audio editor. The conversion
+            # runs inside the worker because the largest slots take a few
+            # seconds, and its output then goes through `replace_audio` and every
+            # validation behind it exactly as a hand-made file would -- nothing
+            # downstream is relaxed to accommodate it.
+            conformed_notes: list[str] = []
+
+            def operation(progress: ProgressSink) -> object:
+                try:
+                    shape = audio_conform.shape_for(
+                        asset.channels, asset.sample_rate, asset.frame_count
+                    )
+                except audio_conform.AudioConformError:
+                    return self.host.replace_audio(asset.asset_id, supplied, progress)
+
+                with tempfile.TemporaryDirectory(
+                    prefix="nfl2k5-audio-conform-"
+                ) as workspace:
+                    try:
+                        result = audio_conform.conform(supplied, shape, Path(workspace))
+                    except audio_conform.AudioConformError:
+                        # Strictly additive: a file that cannot be converted goes
+                        # through untouched, so the existing importer produces the
+                        # same refusal it always did. Conversion adds a route; it
+                        # never removes one or rewords an existing failure.
+                        return self.host.replace_audio(
+                            asset.asset_id, supplied, progress
+                        )
+                    if result.converted:
+                        conformed_notes.extend(result.notes)
+                    return self.host.replace_audio(
+                        asset.asset_id, result.path, progress
+                    )
+
             def complete(_value: object) -> None:
                 self.audio_modified.emit(asset.asset_id)
-                self.progress_label.setText("Replacement staged")
+                if conformed_notes:
+                    # Reported, not hidden: someone who hears something
+                    # unexpected should be able to see that the file was
+                    # resampled or trimmed, and why. It is not an error, so it
+                    # does not go to error_raised. The status line names the
+                    # changes; the tooltip carries the full sentences.
+                    changes: list[str] = []
+                    joined = " ".join(conformed_notes)
+                    if "Resampled" in joined:
+                        changes.append("resampled")
+                    if "Channels" in joined:
+                        changes.append("channels changed")
+                    if "trimmed" in joined:
+                        changes.append("trimmed to fit")
+                    if "padded" in joined:
+                        changes.append("padded with silence")
+                    if "headroom" in joined:
+                        changes.append("level lowered to avoid clipping")
+                    summary = ", ".join(changes) if changes else "converted"
+                    self.progress_label.setText(
+                        f"Replacement staged. Your file was {summary}. "
+                        "Hover for details."
+                    )
+                    self.progress_label.setToolTip("\n".join(conformed_notes))
+                else:
+                    self.progress_label.setText("Replacement staged")
+                    self.progress_label.setToolTip("")
                 self.invalidate_audio_content()
                 self.refresh()
 
-            self._run(
-                lambda progress: self.host.replace_audio(
-                    asset.asset_id, supplied, progress
-                ),
-                complete,
-            )
+            self._run(operation, complete)
 
         def _revert_selected(self) -> None:
             if self._busy:

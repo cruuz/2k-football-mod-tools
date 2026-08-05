@@ -162,9 +162,28 @@ def _rebuild_entry(
     shifts = [block.wrapper.shift for block in record.blocks if block.wrapper]
     if shifts != [9, 9]:
         raise ShoulderTransportError(f"PORTME: shoulder H7A shifts changed: {shifts}")
+    if record.footer is None:
+        raise ShoulderTransportError("PORTME: shoulder IFF has no validated footer")
+    footer_total = 8 + record.footer.payload_size
+    footer = original_entry[record.file_length : record.file_length + footer_total]
+    if len(footer) != footer_total:
+        raise ShoulderTransportError("PORTME: shoulder IFF footer is truncated")
+    if any(original_entry[record.file_length + footer_total :]):
+        raise ShoulderTransportError("PORTME: shoulder allocation tail is nonzero")
     descriptor = record.blocks[1]
     assert descriptor.wrapper is not None
     encoded = archive_patch.compress_h7a(new_blocks[1], descriptor.wrapper.shift)
+    greedy_active_length = (
+        record.header_size
+        + len(original_stored[0])
+        + apf_inner.H7A_HEADER_SIZE
+        + len(encoded)
+        + footer_total
+    )
+    if greedy_active_length > entry.size:
+        encoded = archive_patch.compress_h7a_best(
+            new_blocks[1], descriptor.wrapper.shift, greedy=encoded
+        )
     encoded_stored = struct.pack(
         ">5I",
         apf_inner.H7A_MAGIC,
@@ -217,12 +236,6 @@ def _rebuild_entry(
 
     new_file_length = record.header_size + len(body)
     struct.pack_into(">I", header, 0x08, new_file_length)
-    if record.footer is None:
-        raise ShoulderTransportError("PORTME: shoulder IFF has no validated footer")
-    footer_total = 8 + record.footer.payload_size
-    footer = original_entry[record.file_length : record.file_length + footer_total]
-    if any(original_entry[record.file_length + footer_total :]):
-        raise ShoulderTransportError("PORTME: shoulder allocation tail is nonzero")
     active = bytes(header) + bytes(body) + footer
     if len(active) > entry.size:
         raise ShoulderTransportError(

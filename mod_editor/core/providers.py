@@ -191,6 +191,27 @@ class TypedProvider(Protocol):
 
 
 SourceHasher = Callable[[Path, Callable[[int, int], None] | None], tuple[str, int]]
+ContainedSourceValidator = Callable[[Path], bool]
+
+
+def _is_supported_nfl2k5_container(path: Path) -> bool:
+    """Recheck the game inside a non-canonical NFL 2K5 disc container.
+
+    Legal dumps of one Xbox disc can have different whole-file hashes and
+    sizes.  The executable inside them cannot: :func:`contained_identity`
+    hashes ``default.xbe`` and returns a match only for the reviewed USA retail
+    revision.  Backends still bind every edited pack/span independently.
+    """
+
+    from .sources import contained_identity
+
+    identity = contained_identity(path)
+    return bool(
+        identity is not None
+        and identity.fingerprint_id == "nfl2k5-usa-retail-xiso"
+        and identity.game == GameId.NFL2K5
+        and identity.kind == "xiso"
+    )
 
 
 @dataclass(frozen=True)
@@ -426,7 +447,31 @@ def _pinned_execution_bundle(
                 raise ProviderError(
                     f"Pinned {label} evidence root must be a non-symlink directory"
                 )
-            destination.symlink_to(source.resolve(strict=True), target_is_directory=True)
+            if not destination.exists():
+                destination.symlink_to(
+                    source.resolve(strict=True), target_is_directory=True
+                )
+                continue
+            # A pinned data file may already have created one child directory
+            # (for example reports/specs). Merge only the other read-only
+            # evidence children; never replace the freshly staged pinned bytes.
+            if not destination.is_dir() or destination.is_symlink():
+                raise ProviderError(
+                    f"Pinned {label} evidence destination has an invalid type"
+                )
+            for child in source.iterdir():
+                child_destination = destination / child.name
+                if child_destination.exists():
+                    continue
+                child_info = child.lstat()
+                if stat.S_ISLNK(child_info.st_mode):
+                    raise ProviderError(
+                        f"Pinned {label} evidence child must not be a symlink"
+                    )
+                child_destination.symlink_to(
+                    child.resolve(strict=True),
+                    target_is_directory=stat.S_ISDIR(child_info.st_mode),
+                )
         entry = bundle_root / entry_module
         try:
             yield entry
@@ -449,40 +494,53 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "cd365cf2c868f01578d262037231d98590d1bbe7c7f0ecb0be45581e240d8ee1"
+    backend_module_sha256 = "9364c92b3b85e07d700fd52291fad7fffbc11b38e0732d9e084fb7e1af257a51"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
-        "mod_editor/core/nfl2k5_audio_catalog.py": "7b938b1fa47f9c86d05868015ba0cd2d764df08b8040ca0f8c7499b49fae4005",
+        "mod_editor/core/nfl2k5_audio_catalog.py": "377fe9db5a74e1d01a424cb2a0cd0f46cfa25c3c46f462ff24c841231b4d9cf3",
+        "mod_editor/core/nfl2k5_audo_family_labels.py": "b4d699da1a1d58b32a1bbd0e49b62d69c9ae89a2c24d450a26d7b8831e49cef8",
         "mod_editor/core/nfl2k5_audio_containment_fingerprints.py": "da564ae30a18e9bfc7a3006b2422bceef0d0078d3cb9a919671ade23eda5f146",
         "mod_editor/core/nfl2k5_audio_origin_authorization.py": "664e43a7d2bb7dfcccf328b622b5fe7be3f5510d03919c56fa85149d7d3ffb8d",
         "mod_editor/core/nfl2k5_audio_source_containment.py": "2f1f9700922ac20042a6ffc4e4bd93202e1be05d26e99d4a5e019f41530238c6",
         "mod_editor/core/nfl2k5_audio_source_fingerprints.py": "81724f6e68b95457356d78286619ffe3c9f109e5f7dc6c78410f671e0bd92cd3",
         "mod_editor/core/nfl2k5_audio_source_scan.py": "b8bb4eef4d6a94a072b5e1e5c87fc0a113e8269118ba4e5857cb89c9560950e8",
-        "mod_editor/core/nfl2k5_audo_fixed_slots.py": "bd92ac9d727b7516c8e99ee13a30e56153088d49259db606b86b8bbcb2db974f",
+        "mod_editor/core/nfl2k5_audo_fixed_slots.py": "7b63203e40b1410f04e0866bbe3ad91044fc06700f21a164b65cf8872638c32c",
         "mod_editor/core/nfl2k5_ausb_build_adapter.py": "138eccfa097da8005dca74d43c0a10808558c4a4f1702c31e8f009cc49a7ecc7",
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "49c4391884b2e3ed5a3928ab7b85316c2194213cae2892cae769ea807a2e1259",
         "mod_editor/core/nfl2k5_safe_text_banks.py": "c7ea4288611615204f53c40f5da06728bd9e5511eec5ae06711145e509461d48",
         "mod_editor/core/nfl2k5_scorebug_unified_adapter.py": "3307d3b1777fcb51f112dea2c6c5290dd969c3037d5bc21112f9740b7cef9bfd",
         "mod_editor/core/nfl2k5_source_cache.py": "662f1a9c0be6c73b647ba3850396f1016e10ef1c5227e01a4474d6d679c36731",
-        "mod_editor/core/nfl2k5_unif_color_writer.py": "80cbea2665321b19bb1876730faf593856701ec44bf1f56d077518dc2d816552",
-        "mod_editor/core/nfl2k5_p8_texture_writer.py": "94aa984f9dad9666b79b091071a81c194fa1cd4880a1af8d9ed0c68a26de9731",
-        "mod_editor/core/nfl2k5_stadium_texture_writer.py": "c270d03fe92985baeb867182370207d2b4a224524fcaf3a6759438860d1601f9",
+        "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
+        "mod_editor/core/nfl2k5_p8_texture_writer.py": "3b0d59ff7b81ffc71c22f4ba049b6662cc35c623918a01a163c9a614652fdd9f",
+        "mod_editor/core/nfl2k5_crib.py": "d70fffdbfb0bf514206199ad35536855daa8f156f382ddd20ae875f638ba852b",
+        "mod_editor/core/nfl2k5_crib_electronics_targets.py": "6d474769ee594d792d11f112fb3e39da8bd2ae8117bae92231956b4305112e2b",
+        "mod_editor/core/nfl2k5_crib_geometry_writer.py": "d1cb53a2e801cfd14c469dc58cf8e433a8045e93e724ed502073a1cb2b8d0d78",
+        "mod_editor/core/nfl2k5_crib_scene_texture_writer.py": "4f72f59fab6f116c164a2acafb110829a46eb18dc5abcc5cd2c05978a0f0cdbd",
+        "mod_editor/core/nfl2k5_crib_standalone_texture_writer.py": "95cab3bb2d666fa4f4dfddfb25816c443b17a51bb97abbe90d9532a5f117bae6",
+        "mod_editor/core/nfl2k5_playbook_route_writer.py": "9607daa8b63b0afac400c34e82ad98a0253c2dd95b88aa3468aa86e82bd50698",
+        "mod_editor/core/nfl2k5_playbook_inspector.py": "7d38c9051bc8bbfd92d19061fda00aad3f92e555e7ce7c6289e6f633a2340cdd",
+        "mod_editor/core/nfl2k5_universal_asset_index.py": "3bf99afe588f381d4604a883ad92a5bfbb1bb39391bce4acb5b97eda54bc27d7",
+        "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "aea43c39b8101e9507930f6a9014cfebd966189bef1f96c297702bfb62acb7b9",
+        "mod_editor/core/nfl2k5_stadium_texture_writer.py": "4d292f46a4c7e8b590c636b0996ec6db1f7e1aa844d1a461faa372c95d4edc7b",
+        "mod_editor/core/nfl2k5_build_service.py": "24fb0d80f2bcc88c069ebaed8dba3ce9778116cbbd95bfef5707ca7bb2e28ee6",
+        "mod_editor/core/nfl2k5_stadium_cache.py": "34946ff628eb0e0795f62ee59b4536128f5cb5f936cea32276801119de71377f",
+        "mod_editor/core/nfl2k5_stadium_studio.py": "54fc34b0f72b0f8d98d5599e49bd4735a0e51a3d6067963e188190f9a5bb6430",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "5e205827d9fcec50ef9999cd508469481a718816947ecb42c346182325c5ed6b",
-        "mod_editor/core/sources.py": "3d63ce6305fbd0a44e990045fbf9c7331c657971ff90af44090b2e05a90b6878",
+        "mod_editor/core/sources.py": "eb6e4d030f757dee05123b1319fb75607ebf219aaadcf3c4eeaaede7529acdca",
         "tools/apf_inner.py": "4f6fb5ca21f48f96d498f976350f88c1f060569abc52d44a3742d2071e2f41cc",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
         "tools/nfl2k5_jersey_png_workflow.py": "e7af6773a07085da33745e62bfccc59c2f013e833f2aa1ae9009c965938f5832",
         backend_module: backend_module_sha256,
-        "tools/nfl_all_texture_xiso_workflow.py": "a07a08b292e94a1a2a4e4925d5a6383a3fa2cf7806184948d88feaf06e700b53",
+        "tools/nfl_all_texture_xiso_workflow.py": "61d0574ae5320cb7b12b96f1be0b34dcf1fdef363091b00de0fd0fac7130bd91",
         "tools/nfl_audo_wav_xiso_workflow.py": "d684cbe7b30f77caf808bcef3d0219777b333336ae5bee4837d10f69cc1d13c6",
-        "tools/nfl_create_team_field_art_inventory.py": "42358fb588bdc9b25f75640781bf16ed873913385e53e43c41f6bccf12d11bb3",
+        "tools/nfl_create_team_field_art_inventory.py": "da59018f1417871516b75769ea53a351a1d2b03ed855f985c1f88ac333b42489",
         "tools/nfl_create_team_field_art_png_import.py": "4f550de59e2827c0f3784ca1609ff499d01d94ee0b6b4b36c6c1fbb24a28482f",
         "tools/nfl_crib_bar_monitor_png_xiso.py": "d0ff8f4ebfb20e443dd12892e531a6ac1736831c182c35a19edb94a8f4cc8c11",
         "tools/nfl_crib_team_photo_png_import.py": "00c05c92fe9ee194b2c1c96830efc09aa99f5023687f29b5a08c16f3dbdf9539",
-        "tools/nfl_crib_team_photo_targets.py": "5b4e72c65d5e169810033d4a9f7a0bc1c8ae318a400749e2652eaa02ed2f53a1",
+        "tools/nfl_crib_team_photo_targets.py": "e0ec8925ae179ce0955e32c681f7bc866ccd8807d5489791d8f9210bb955b357",
         "tools/nfl_dxt1.py": "bce75aca68acbfaa5112927e228672d4d77c58fc27cd3ce047751d8875dcb9a2",
         "tools/nfl_jersey_tset_png_import.py": "a2c7c641ae37dbdd2459ecb2541961b27f48e3c5db96a83b590ef8e1e2a3f7bb",
         "tools/nfl_jersey_tset_targets.py": "73f55ae819ff4cfb0d5a7314a783a0247535be4d0055ed0563bfad65f4a5872a",
@@ -490,8 +548,8 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl_live_face_texture_targets.py": "c9748ee6cbb0441fded6c961ef25ec913e3294218c7892eacb731456c315f8d4",
         "tools/nfl_live_helmet_txtr_png_import.py": "ddaf7c2621b8cb4db139bd5ab4698b2076b18f6d91eb029b52dde8fadaeb29f8",
         "tools/nfl_live_helmet_txtr_targets.py": "26b18b9aa8f0afd71e0b137eef52f2cbfd0f2108cb63546979883446bc93325f",
-        "tools/nfl_live_numbers_nameplate_png_import.py": "9deb7255ba757d23875b0ff8037718b91e085934a98de1960c5bfbfebcaa9c2c",
-        "tools/nfl_live_numbers_nameplate_targets.py": "4c66e8fb98f731bad2c5d1957ed3f682ed3f755ab6bb1811f6c51deaa85652dd",
+        "tools/nfl_live_numbers_nameplate_png_import.py": "c7407bbfd17768acd6910194f7d5fea79dc0ee924c0516fd80dd5dd7fabfc0b9",
+        "tools/nfl_live_numbers_nameplate_targets.py": "e122e41055e4d3b02ab35041db2e3cbd828fcf90c1b8f258abeb8718c20fc6a4",
         "tools/nfl_outer.py": "affbb92ea9fcce81b5d3502b2946fc0cf275b660c1ea93492730267110d49b46",
         "tools/nfl_roster.py": "8b5268787b072888d24be13952732b302ce41d648f7c59a1dd1a89a3aad56511",
         "tools/nfl_pants_tset_png_import.py": "7ceff6c3956c0e4993e20c710d5ff08d671c8474864c63a31d3e532c1bd54ed6",
@@ -500,25 +558,34 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl_player_portrait_targets.py": "0121d71588ad717ca68f4b2c67dbf32f8d0d36eb47b7b1e28bc4d39ce093c3ba",
         "tools/nfl_scene_probe.py": "31b17ded825d4379b517affece54fc5cd96abea49330017296a10a029216fc26",
         "tools/nfl_scne_inventory.py": "0f58222812df6b380588f8b0a2592101136a863cd0dd170b0f32df726de2fc6b",
+        "tools/nfl_scne_gltf.py": "69f560d9a665a40868f25334f6f90c5713135f9c4ee8321d0abd30bf3c847058",
+        "tools/nfl_static_gltf.py": "5249732b635374eb33bcb39f162224bccd2163cf1cfd01b1dfc8db42ac40bea3",
         "tools/nfl_scorebug_png_import.py": "99bdfb9fbcab09790686e18972532c98f6d6096e92b8a6575dd271bd43a6285f",
-        "tools/nfl_sleeve_tset_png_import.py": "7e8f6f43d74c1eee79e94f9a27c609d904747eac63691e7a5936dc56aed9d334",
+        "tools/nfl_sleeve_tset_png_import.py": "311fe433ac3df898e33176caa305647d1b9c62e8823b53c1a89146f97ebed041",
         "tools/nfl_sleeve_tset_targets.py": "75ad68a32188fdefb883397b7406539c6a5ec50b1ab8f99ddf266f4c58d0bfe4",
         "tools/nfl_team_select_card_png_import.py": "7012a7d75a4203016b532e301f9727ebf5d58f9f88dc1271087c5461e493af1d",
         "tools/nfl_team_select_card_targets.py": "125361ee0aefbcbb46da8d466a1d850c91c3d9f33ea0eced3f2240f4563d5766",
         "tools/nfl_tset_fixed_span_verify.py": "d9a60349538962cb7c3ea8e3d2461b118fbbc10d05e9b68f0fe010f8cc1c2eb1",
-        "tools/nfl_tset_png_import.py": "b92f6fb28155b3adfd86d8a687ce1d9f777634cc9547e860171f4bac406685cd",
+        "tools/nfl_tset_png_import.py": "1b77ac19044424c73ed4402b9c2a6d0761c462b9ecd8000de3894c8640d88a4c",
         "tools/nfl_tset_png_import_dynamic_validate.py": "da20c1dff0145780c0d485970a527a0f172ab8a8653977784deae5e7c7ce6a03",
         "tools/nfl_tset_png_import_verify.py": "777ca0ed729e54c41f7b522c4b121f577a573f5b010a851ab36218fff472076b",
         "tools/nfl_tset_png_import_xiso_generic_patch.py": "a84699a55b7e34ff49a28913a7b892ce673fac4b78d427929683c2afc0c68cc2",
         "tools/nfl_txtr.py": "0896e3f409f38116602d37a8902f1403e8afe6ad9e17e9ee9d36244ae97a5107",
-        "tools/nfl_uniform_color_xiso_direct_patch.py": "7b86c201d4dee4e6744297533fbb4e369be32970915982a40fc69f35e58d50b0",
+        "tools/xbox_ima_encoder.py": "995e5c217c0a78bb3713f1d91db3dfde53da101e23519e2b3b47751c394b1e7c",
+        "tools/nfl_uniform_color_xiso_direct_patch.py": "8615a75b2943a119c8cc9244f4934a7eb9c95610dd0d8431ff7cf3dfb5977d06",
         "tools/nfl_uniform_inventory.py": "c8593288ab737609d1f8ce4787af2a76a0e80d96a3d09cd686695c1e408b17c3",
         "tools/string_table_inventory.py": "88877c5c83d75382a7b349390b2babbe724da88927f53c916056eb88622d1ea4",
         "tools/xbe_info.py": "c7843c317a7ec022bc22ee6266b96d856b57233af2d6baa71ec071a94212e0ef",
     }
     data_pins: Mapping[str, str] = {
         "mod_editor/data/nfl2k5_crib_catalog.v1.json":
-            "2f862fc6602bb23d433f0599c519839be9cd43ca6cd42bc22aeb7b94d56d305a",
+            "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
+        "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json":
+            "fa2c9ca9bcc267b6981735347bf6daf6243d6ab8b83fba268804c280cfd94173",
+        "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json":
+            "f44472856044a5d8a50d18476a4c7af18ef98bcc3f7cf1d567db2b33d5336bfa",
+        "reports/specs/nfl2k5_crib_static_position_targets.v1.json":
+            "90f955166c8582f7041bd0d936bacbef1f44b3869487f71535acec1caeb44b4f",
     }
     backend_schema = "nfl2k5_visual_mod_project/v1"
     source_sha256 = "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
@@ -547,9 +614,16 @@ class Nfl2k5UnifiedVisualProvider:
         "player_roster",
         "player_portrait",
         "crib_team_photo",
+        "crib_standalone_texture",
         "crib_scene_texture",
+        "crib_scene_geometry",
+        "play_assignment_route",
         "scorebug_texture",
         "stadium_texture",
+        "stadium_geometry",
+        "p8_texture",
+        "uniform_equipment_texture",
+        "unif_color",
         "roster_team_text",
         "roster_player_text",
         "universal_fixed_text",
@@ -576,10 +650,14 @@ class Nfl2k5UnifiedVisualProvider:
         runner: CommandRunner | None = None,
         source_hasher: SourceHasher | None = None,
         workspace: Path | None = None,
+        contained_source_validator: ContainedSourceValidator | None = None,
     ):
         self.runner = runner or SubprocessCommandRunner()
         self.workspace = workspace or Path(__file__).resolve().parents[2]
         self.source_hasher = source_hasher or self._hash_source
+        self.contained_source_validator = (
+            contained_source_validator or _is_supported_nfl2k5_container
+        )
 
     def preflight(
         self, request: ProviderRequest, capability: Capability, emit: ProviderEventCallback
@@ -619,9 +697,10 @@ class Nfl2k5UnifiedVisualProvider:
             or request.source.detected_game != GameId.NFL2K5.value
             or request.source.fingerprint_id != "nfl2k5-usa-retail-xiso"
             or request.source.kind != "xiso"
-            or request.source.sha256 != self.source_sha256
         ):
-            raise ProviderError("Typed build requires the recognized pinned NFL 2K5 retail XISO")
+            raise ProviderError(
+                "Typed build requires the recognized NFL 2K5 USA retail XISO"
+            )
         try:
             inspected_path = Path(request.source.inspected_path).resolve(strict=True)
         except (FileNotFoundError, OSError) as exc:
@@ -645,10 +724,17 @@ class Nfl2k5UnifiedVisualProvider:
                 )
 
         digest, size = self.source_hasher(source_path, hash_progress)
-        if digest != self.source_sha256 or digest != request.source.sha256:
-            raise ProviderError("Source XISO changed or does not match the pinned retail SHA-256")
+        if digest != request.source.sha256:
+            raise ProviderError("Source XISO changed after editor recognition")
         if size != request.source.size:
             raise ProviderError("Source XISO size changed after editor recognition")
+        if (
+            digest != self.source_sha256
+            and not self.contained_source_validator(source_path)
+        ):
+            raise ProviderError(
+                "Source XISO no longer contains the reviewed NFL 2K5 USA default.xbe"
+            )
         emit(ProviderEvent(ProviderStage.PREFLIGHT, "INFO", "Preflight gates passed"))
 
     def validate(
@@ -1008,9 +1094,9 @@ class Nfl2k5ScorebugProvider:
         "tools/nfl_outer.py": "affbb92ea9fcce81b5d3502b2946fc0cf275b660c1ea93492730267110d49b46",
         "tools/nfl_scene_probe.py": "31b17ded825d4379b517affece54fc5cd96abea49330017296a10a029216fc26",
         "tools/nfl_scorebug_png_import.py": "99bdfb9fbcab09790686e18972532c98f6d6096e92b8a6575dd271bd43a6285f",
-        "tools/nfl_tset_png_import.py": "b92f6fb28155b3adfd86d8a687ce1d9f777634cc9547e860171f4bac406685cd",
+        "tools/nfl_tset_png_import.py": "1b77ac19044424c73ed4402b9c2a6d0761c462b9ecd8000de3894c8640d88a4c",
         "tools/nfl_txtr.py": "0896e3f409f38116602d37a8902f1403e8afe6ad9e17e9ee9d36244ae97a5107",
-        "tools/nfl_uniform_color_xiso_direct_patch.py": "7b86c201d4dee4e6744297533fbb4e369be32970915982a40fc69f35e58d50b0",
+        "tools/nfl_uniform_color_xiso_direct_patch.py": "8615a75b2943a119c8cc9244f4934a7eb9c95610dd0d8431ff7cf3dfb5977d06",
         "tools/nfl_uniform_inventory.py": "c8593288ab737609d1f8ce4787af2a76a0e80d96a3d09cd686695c1e408b17c3",
         "tools/xbe_info.py": "c7843c317a7ec022bc22ee6266b96d856b57233af2d6baa71ec071a94212e0ef",
     }
@@ -1044,10 +1130,14 @@ class Nfl2k5ScorebugProvider:
         runner: CommandRunner | None = None,
         source_hasher: SourceHasher | None = None,
         workspace: Path | None = None,
+        contained_source_validator: ContainedSourceValidator | None = None,
     ):
         self.runner = runner or SubprocessCommandRunner()
         self.workspace = workspace or Path(__file__).resolve().parents[2]
         self.source_hasher = source_hasher or Nfl2k5UnifiedVisualProvider._hash_source
+        self.contained_source_validator = (
+            contained_source_validator or _is_supported_nfl2k5_container
+        )
 
     def preflight(
         self, request: ProviderRequest, capability: Capability, emit: ProviderEventCallback
@@ -1074,8 +1164,15 @@ class Nfl2k5ScorebugProvider:
                 )
 
         digest, size = self.source_hasher(source, progress)
-        if digest != self.source_sha256 or size != self.source_size:
-            raise ProviderError("Scorebug source changed or does not match the pinned retail XISO")
+        if digest != request.source.sha256 or size != request.source.size:
+            raise ProviderError("Scorebug source changed after editor recognition")
+        if (
+            digest != self.source_sha256
+            and not self.contained_source_validator(source)
+        ):
+            raise ProviderError(
+                "Scorebug source no longer contains the reviewed NFL 2K5 USA default.xbe"
+            )
         emit(
             ProviderEvent(
                 ProviderStage.PREFLIGHT,
@@ -1390,10 +1487,10 @@ class Nfl2k5ScorebugProvider:
             or request.source.detected_game != GameId.NFL2K5.value
             or request.source.fingerprint_id != "nfl2k5-usa-retail-xiso"
             or request.source.kind != "xiso"
-            or request.source.sha256 != self.source_sha256
-            or request.source.size != self.source_size
         ):
-            raise ProviderError("Typed scorebug build requires the recognized pinned retail XISO")
+            raise ProviderError(
+                "Typed scorebug build requires the recognized NFL 2K5 USA retail XISO"
+            )
         resolved = Nfl2k5UnifiedVisualProvider._regular_non_symlink(source, "source XISO")
         if Path(request.source.inspected_path).resolve(strict=True) != resolved:
             raise ProviderError("Scorebug source inspection path does not match the selected XISO")
@@ -1442,16 +1539,16 @@ class Apf2k8JerseyColorProvider:
     provider_id = "apf2k8-jersey-color-v1"
     capability_ids = frozenset({"apf2k8.uniforms.jersey_00_23"})
     backend_module = "tools/apf_jersey_family_patch.py"
-    backend_module_sha256 = "0eace20481a94c439d789bee30ef457ede08bcf321b490a59cffe5eb58cd7435"
+    backend_module_sha256 = "a07d2d28f287185b231e93405e3c2a0354567d28ba70f38b0d3e9f4e9b621821"
     verifier_module = "tools/apf_jersey_family_verify.py"
-    verifier_module_sha256 = "588f8ba9a556092d3307535867b3760ca06b062847991f8bcfd95a49623cd249"
+    verifier_module_sha256 = "4bdd1a716d39ae5084967efe7f3f342a9301c15a54e5ff28c55da2ca3725b4e0"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "5e205827d9fcec50ef9999cd508469481a718816947ecb42c346182325c5ed6b",
         "tools/apf_inner.py": "4f6fb5ca21f48f96d498f976350f88c1f060569abc52d44a3742d2071e2f41cc",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_texture_patch.py": "d29532405a2e719fb78de13636bf0cbcb43348da68e7b14130b9502dad3488fa",
+        "tools/apf_texture_patch.py": "194d37682ac28fef1853e4c27c8a0327b75ef52218afcf1fbc6f4fa169e1b7b9",
         "tools/apf_uniform_mip_patch.py": "26ee8964c84f8aa2676e00d9b05af99582fddc4c2e7b040304d44a0aa75c9881",
         "tools/apf_xenos_mip_layout.py": "ec07ea62ad67b3fff7e92fb8779c0cf85f65bc9f196c39b374dd19455619f9d7",
     }
@@ -1966,9 +2063,9 @@ class Apf2k8PantsColorProvider(Apf2k8JerseyColorProvider):
     provider_id = "apf2k8-pants-color-v1"
     capability_ids = frozenset({"apf2k8.uniforms.pants_color_00_23"})
     backend_module = "tools/apf_pants_family_patch.py"
-    backend_module_sha256 = "f4fe8a9bdc1579fa4447963a07aa268d2a773785a4dce9c17fd2e703f49026ed"
+    backend_module_sha256 = "19fc4fc7ae02f1983ad2b0d1a9ef893cccb19fb92009d959acd0cff993ae2112"
     verifier_module = "tools/apf_pants_family_verify.py"
-    verifier_module_sha256 = "8647749896c53f6333181391dbbec50fbd837e2f442c89257fff6b6a17dcac3e"
+    verifier_module_sha256 = "4a253a09389c62919e921eb6a9771acf319dc0486ac9b22e0c2c5a4bfe8325a8"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "5e205827d9fcec50ef9999cd508469481a718816947ecb42c346182325c5ed6b",
         "tools/apf_inner.py": "4f6fb5ca21f48f96d498f976350f88c1f060569abc52d44a3742d2071e2f41cc",
@@ -1976,7 +2073,7 @@ class Apf2k8PantsColorProvider(Apf2k8JerseyColorProvider):
         "tools/apf_pants_color_transport.py": "a3f33a0fc5b860f78a0686f3e559db4c3d22a05cdfb7793019599ef67cd05615",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
-        "tools/apf_texture_patch.py": "d29532405a2e719fb78de13636bf0cbcb43348da68e7b14130b9502dad3488fa",
+        "tools/apf_texture_patch.py": "194d37682ac28fef1853e4c27c8a0327b75ef52218afcf1fbc6f4fa169e1b7b9",
         "tools/apf_xenos_bc1_mip_layout.py": "56f53603e73e563ff66305430956373468160fb0af9380fe0257c5a5edde9234",
         "tools/nfl_dxt1.py": "bce75aca68acbfaa5112927e228672d4d77c58fc27cd3ce047751d8875dcb9a2",
     }
@@ -1996,17 +2093,17 @@ class Apf2k8HelmetColorProvider(Apf2k8JerseyColorProvider):
     provider_id = "apf2k8-helmet-color-v1"
     capability_ids = frozenset({"apf2k8.uniforms.helmet_color_00_23"})
     backend_module = "tools/apf_helmet_family_patch.py"
-    backend_module_sha256 = "c43408e28acf8e953905115835cac38c66c7120de48c845e14e6490c47aca8c3"
+    backend_module_sha256 = "8f7260bd9005dc451698068c3f84176a8d3b356425943c3b218c638f2b353ca4"
     verifier_module = "tools/apf_helmet_family_verify.py"
-    verifier_module_sha256 = "7240193adb4fc02e0971abb93e1390ddf93e7f54b114b95d7be86ed9bad50d48"
+    verifier_module_sha256 = "a1c07511ddcaacda083a4970555ee3c61c88c188227b853689dd299cb7841a18"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "5e205827d9fcec50ef9999cd508469481a718816947ecb42c346182325c5ed6b",
-        "tools/apf_helmet_color_transport.py": "3c75f6744ca5d85a1222622c440a4d038a55412e16d1d1dab4e1e421a879cd7e",
+        "tools/apf_helmet_color_transport.py": "ac181589e29142f74b2ec0b951f046bb9a15039e4404c876d0533547e29f7526",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
         "tools/apf_inner.py": "4f6fb5ca21f48f96d498f976350f88c1f060569abc52d44a3742d2071e2f41cc",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_texture_patch.py": "d29532405a2e719fb78de13636bf0cbcb43348da68e7b14130b9502dad3488fa",
+        "tools/apf_texture_patch.py": "194d37682ac28fef1853e4c27c8a0327b75ef52218afcf1fbc6f4fa169e1b7b9",
         "tools/apf_xenos_dxn_mip_layout.py": "eed0f39a027c06ec4e4f46a55eab80dad07bd675801b78cdda079c29ff4839d5",
     }
     recipe_schema_file = "mod_editor/apf_helmet_recipe.schema.json"
@@ -2027,17 +2124,17 @@ class Apf2k8ShoulderColorProvider(Apf2k8JerseyColorProvider):
     provider_id = "apf2k8-shoulder-color-v1"
     capability_ids = frozenset({"apf2k8.uniforms.shoulder_color_00_23"})
     backend_module = "tools/apf_shoulder_family_patch.py"
-    backend_module_sha256 = "ac5d8571a87293d28b8889550f1a37879eeb0bc5c37bdb341719725cbda42515"
+    backend_module_sha256 = "eef8adb6679337019226621426c1998ffe401bfdea8b7593bbdb30dc212527a8"
     verifier_module = "tools/apf_shoulder_family_verify.py"
-    verifier_module_sha256 = "e84f0f4714cf55bb52be040ab17faeda9854dea80e91ca55052064ce637183bf"
+    verifier_module_sha256 = "9481262b3bcaa112bcb83c74f596bc09c98b6081a5d3c78162ad35599ae2fbd9"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "5e205827d9fcec50ef9999cd508469481a718816947ecb42c346182325c5ed6b",
         "tools/apf_inner.py": "4f6fb5ca21f48f96d498f976350f88c1f060569abc52d44a3742d2071e2f41cc",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_shoulder_color_transport.py": "aa77e667a91bc1b5c33f1d744cab6f5e89b872b2a693d417aeb6a981eda1e96c",
+        "tools/apf_shoulder_color_transport.py": "23073d7701d14aa762f1c43598528c446c2174d154162ed542cbd377aafdaf26",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
-        "tools/apf_texture_patch.py": "d29532405a2e719fb78de13636bf0cbcb43348da68e7b14130b9502dad3488fa",
+        "tools/apf_texture_patch.py": "194d37682ac28fef1853e4c27c8a0327b75ef52218afcf1fbc6f4fa169e1b7b9",
         "tools/apf_uniform_mip_patch.py": "26ee8964c84f8aa2676e00d9b05af99582fddc4c2e7b040304d44a0aa75c9881",
         "tools/apf_xenos_mip_layout.py": "ec07ea62ad67b3fff7e92fb8779c0cf85f65bc9f196c39b374dd19455619f9d7",
     }

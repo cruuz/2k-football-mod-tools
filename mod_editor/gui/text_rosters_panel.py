@@ -36,6 +36,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core.nfl2k5_text_catalog import (
+    FACE_SHIELD_CHOICES,
     Nfl2k5TextCatalog,
     RosterNumberAsset,
     RosterPlayer,
@@ -62,7 +63,7 @@ TEXT_STATUSES = frozenset(
 ESPN_25TH_COMING_SOON_NOTE = (
     "ESPN 25th Anniversary: titles, history, objectives, and dates are Editable. "
     "Team selectors are Preview/Export-only; scenario setup and unlock logic are "
-    "Coming Soon."
+    "inspect-only because their authoring ownership is not proved."
 )
 
 
@@ -217,6 +218,25 @@ def _safe_number(original: int, asset_id: str, lookup: NumberLookup | None) -> i
     return value if type(value) is int else original
 
 
+def _set_face_shield_combo(
+    combo: QComboBox, asset: RosterNumberAsset, value: int
+) -> None:
+    """Show a source-only reserved value without ever making it authorable."""
+
+    combo.blockSignals(True)
+    reserved = combo.findData(3)
+    if reserved >= 0:
+        combo.removeItem(reserved)
+    index = combo.findData(value)
+    if index < 0:
+        combo.addItem(f"Unsupported ({value})", value)
+        index = combo.count() - 1
+    combo.setCurrentIndex(index)
+    combo.blockSignals(False)
+    combo.setEnabled(asset.editable)
+    combo.setToolTip(asset.reason)
+
+
 def text_asset_status(
     asset: TextAsset,
     current_value: TextLookup | None = None,
@@ -307,7 +327,7 @@ def historical_resources(
 def current_roster_players(
     catalog: Nfl2k5TextCatalog,
 ) -> tuple[CurrentPlayerRow, ...]:
-    """Return every current-roster player, including read-only secondary rows."""
+    """Return every current player; secondary names and numbers have separate access."""
 
     return tuple(
         CurrentPlayerRow(player)
@@ -322,7 +342,10 @@ def roster_number_coverage(catalog: Nfl2k5TextCatalog) -> RosterNumberCoverage:
     """Prove every player number has exactly one row in current or history views."""
 
     player_ids = [player.jersey_number_asset_id for player in catalog.players]
-    number_ids = [asset.asset_id for asset in catalog.number_assets]
+    number_ids = [
+        asset.asset_id for asset in catalog.number_assets
+        if asset.field == "jersey_number"
+    ]
     if len(player_ids) != len(set(player_ids)):
         raise ValueError("Roster players contain duplicate jersey-number asset IDs.")
     if len(number_ids) != len(set(number_ids)):
@@ -331,20 +354,17 @@ def roster_number_coverage(catalog: Nfl2k5TextCatalog) -> RosterNumberCoverage:
         raise ValueError(
             "Roster player rows and jersey-number assets are not a one-to-one match."
         )
-    players_by_number = {
-        player.jersey_number_asset_id: player for player in catalog.players
-    }
     current_ids = {
         player.jersey_number_asset_id
         for player in catalog.players if not player.historical
     }
     historical_ids = set(player_ids) - current_ids
     current_editable = sum(
-        asset.editable and players_by_number[asset.asset_id].editable
+        asset.editable
         for asset in catalog.number_assets if asset.asset_id in current_ids
     )
     historical_editable = sum(
-        asset.editable and players_by_number[asset.asset_id].editable
+        asset.editable
         for asset in catalog.number_assets if asset.asset_id in historical_ids
     )
     return RosterNumberCoverage(
@@ -366,15 +386,25 @@ def _player_status(
     first = catalog.get_asset(player.first_name_asset_id)
     last = catalog.get_asset(player.last_name_asset_id)
     number = catalog.get_number_asset(player.jersey_number_asset_id)
+    shield = (
+        catalog.get_number_asset(player.face_shield_asset_id)
+        if player.face_shield_asset_id else None
+    )
     if (
         _safe_text(first, text_value) != first.value
         or _safe_text(last, text_value) != last.value
         or _safe_number(number.value, number.asset_id, number_value) != number.value
+        or (
+            shield is not None
+            and _safe_number(shield.value, shield.asset_id, number_value)
+            != shield.value
+        )
     ):
         return STATUS_MODIFIED
     return (
         STATUS_EDITABLE
-        if player.editable and first.editable and last.editable and number.editable
+        if first.editable or last.editable or number.editable
+        or (shield is not None and shield.editable)
         else STATUS_READ_ONLY
     )
 
@@ -406,11 +436,21 @@ def filter_current_players(
             first = catalog.get_asset(player.first_name_asset_id)
             last = catalog.get_asset(player.last_name_asset_id)
             number = catalog.get_number_asset(player.jersey_number_asset_id)
+            shield = (
+                catalog.get_number_asset(player.face_shield_asset_id)
+                if player.face_shield_asset_id else None
+            )
             current_first = _safe_text(first, text_value)
             current_last = _safe_text(last, text_value)
             current_number = _safe_number(
                 number.value, number.asset_id, number_value
             )
+            shield_terms = (() if shield is None else (
+                shield.display_value(),
+                shield.display_value(_safe_number(
+                    shield.value, shield.asset_id, number_value
+                )),
+            ))
             haystack = "\n".join((
                 player.group_id,
                 player.resource_label,
@@ -424,6 +464,7 @@ def filter_current_players(
                 str(number.value),
                 str(current_number),
                 str(player.position_code),
+                *shield_terms,
                 actual_status,
             )).casefold()
             if not all(term in haystack for term in terms):
@@ -477,11 +518,21 @@ def filter_historical_players(
                 first = catalog.get_asset(player.first_name_asset_id)
                 last = catalog.get_asset(player.last_name_asset_id)
                 number = catalog.get_number_asset(player.jersey_number_asset_id)
+                shield = (
+                    catalog.get_number_asset(player.face_shield_asset_id)
+                    if player.face_shield_asset_id else None
+                )
                 current_first = _safe_text(first, text_value)
                 current_last = _safe_text(last, text_value)
                 current_number = _safe_number(
                     number.value, number.asset_id, number_value
                 )
+                shield_terms = (() if shield is None else (
+                    shield.display_value(),
+                    shield.display_value(_safe_number(
+                        shield.value, shield.asset_id, number_value
+                    )),
+                ))
                 haystack = "\n".join(
                     (
                         resource.display_label,
@@ -497,6 +548,7 @@ def filter_historical_players(
                         str(number.value),
                         str(current_number),
                         str(player.position_code),
+                        *shield_terms,
                     )
                 ).casefold()
                 if not all(term in haystack for term in terms):
@@ -594,7 +646,9 @@ class TextAssetTableModel(QAbstractTableModel):
 
 
 class HistoricalPlayerTableModel(QAbstractTableModel):
-    HEADERS = ("Resource", "Team", "Player", "#", "Position", "Status")
+    HEADERS = (
+        "Resource", "Team", "Player", "#", "Face shield", "Position", "Status",
+    )
 
     def __init__(
         self, host: TextRosterPanelHost, catalog: Nfl2k5TextCatalog
@@ -639,6 +693,10 @@ class HistoricalPlayerTableModel(QAbstractTableModel):
         first = self.catalog.get_asset(player.first_name_asset_id)
         last = self.catalog.get_asset(player.last_name_asset_id)
         number = self.catalog.get_number_asset(player.jersey_number_asset_id)
+        shield = (
+            self.catalog.get_number_asset(player.face_shield_asset_id)
+            if player.face_shield_asset_id else None
+        )
         current_first = _safe_text(first, self.host.text_value)
         current_last = _safe_text(last, self.host.text_value)
         current_number = _safe_number(
@@ -648,6 +706,15 @@ class HistoricalPlayerTableModel(QAbstractTableModel):
             current_first != first.value
             or current_last != last.value
             or current_number != number.value
+            or (
+                shield is not None
+                and _safe_number(shield.value, shield.asset_id, self.host.number_value)
+                != shield.value
+            )
+        )
+        editable = (
+            first.editable or last.editable or number.editable
+            or (shield is not None and shield.editable)
         )
         team = (
             _current_team_name(self.catalog, row.team, self.host.text_value)
@@ -659,12 +726,15 @@ class HistoricalPlayerTableModel(QAbstractTableModel):
                 team,
                 _single_line(f"{current_first} {current_last}"),
                 str(current_number),
+                (shield.display_value(_safe_number(
+                    shield.value, shield.asset_id, self.host.number_value
+                )) if shield is not None else "—"),
                 f"Code {player.position_code}",
-                "Modified" if modified else ("Editable" if player.editable else "Read-only"),
+                "Modified" if modified else ("Editable" if editable else "Read-only"),
             )[index.column()]
-        if role == Qt.ForegroundRole and index.column() == 5:
+        if role == Qt.ForegroundRole and index.column() == 6:
             return QColor("#f5c451" if modified else (
-                "#39d98a" if player.editable else "#91a0b5"
+                "#39d98a" if editable else "#91a0b5"
             ))
         if role == Qt.FontRole and modified:
             font = QFont()
@@ -679,7 +749,9 @@ class HistoricalPlayerTableModel(QAbstractTableModel):
 class CurrentPlayerTableModel(QAbstractTableModel):
     """Table model for all current primary and secondary roster players."""
 
-    HEADERS = ("Resource", "Pool", "Player", "#", "Position", "Status")
+    HEADERS = (
+        "Resource", "Pool", "Player", "#", "Face shield", "Position", "Status",
+    )
 
     def __init__(
         self, host: TextRosterPanelHost, catalog: Nfl2k5TextCatalog
@@ -721,6 +793,10 @@ class CurrentPlayerTableModel(QAbstractTableModel):
         first = self.catalog.get_asset(player.first_name_asset_id)
         last = self.catalog.get_asset(player.last_name_asset_id)
         number = self.catalog.get_number_asset(player.jersey_number_asset_id)
+        shield = (
+            self.catalog.get_number_asset(player.face_shield_asset_id)
+            if player.face_shield_asset_id else None
+        )
         current_first = _safe_text(first, self.host.text_value)
         current_last = _safe_text(last, self.host.text_value)
         current_number = _safe_number(
@@ -735,6 +811,9 @@ class CurrentPlayerTableModel(QAbstractTableModel):
                 player.pool.replace("_", " ").title(),
                 _single_line(f"{current_first} {current_last}"),
                 str(current_number),
+                (shield.display_value(_safe_number(
+                    shield.value, shield.asset_id, self.host.number_value
+                )) if shield is not None else "—"),
                 f"Code {player.position_code}",
                 {
                     STATUS_MODIFIED: "Modified",
@@ -742,7 +821,7 @@ class CurrentPlayerTableModel(QAbstractTableModel):
                     STATUS_READ_ONLY: "Read-only",
                 }[status],
             )[index.column()]
-        if role == Qt.ForegroundRole and index.column() == 5:
+        if role == Qt.ForegroundRole and index.column() == 6:
             return QColor({
                 STATUS_MODIFIED: "#f5c451",
                 STATUS_EDITABLE: "#39d98a",
@@ -812,8 +891,9 @@ class TextRosterPanel(QWidget):
                 "Shared strings show their affected owners before Apply."
             ),
             "rosters": (
-                "Edit proved current and historical player names and jersey numbers. "
-                "Unsafe secondary-pool rows remain visible and read-only."
+                "Edit proved current and historical player names, jersey numbers, "
+                "and per-player face-shield type. Secondary-pool packed fields are "
+                "editable; their zero-capacity names remain Preview/Export-only."
             ),
         }
         heading = QLabel(heading_copy[self.view])
@@ -963,7 +1043,7 @@ class TextRosterPanel(QWidget):
         filters = QHBoxLayout()
         self.current_search = QLineEdit()
         self.current_search.setPlaceholderText(
-            "Search current player, current name, number, pool, or resource…"
+            "Search current player, name, number, face shield, pool, or resource…"
         )
         self.current_status_filter = QComboBox()
         for label, value in (
@@ -981,8 +1061,11 @@ class TextRosterPanel(QWidget):
         layout.addLayout(filters)
 
         self.current_note = QLabel(
-            "Primary current-roster players are Editable. Secondary-pool players "
-            "remain Preview/Export-only until their writeback contract is proved."
+            "Primary current-roster names and numbers are Editable. Secondary-pool "
+            "jersey numbers and per-player face-shield types are also Editable; "
+            "secondary names remain Preview/Export-only. Face shield selects "
+            "None, Clear, or Dark for this player. It is not a HOME/AWAY tint. "
+            "A loaded roster or franchise save may override this disc seed."
         )
         self.current_note.setObjectName("textPanelCallout")
         self.current_note.setWordWrap(True)
@@ -1004,6 +1087,7 @@ class TextRosterPanel(QWidget):
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(6, QHeaderView.ResizeToContents)
         splitter.addWidget(self.current_table)
         splitter.addWidget(self._build_current_player_editor())
         splitter.setStretchFactor(0, 3)
@@ -1032,10 +1116,14 @@ class TextRosterPanel(QWidget):
         self.current_first_original = QLabel("—")
         self.current_last_original = QLabel("—")
         self.current_number_original = QLabel("—")
+        self.current_face_shield_original = QLabel("—")
         self.current_first = QLineEdit()
         self.current_last = QLineEdit()
         self.current_number = QLineEdit()
         self.current_number.setPlaceholderText("0–99")
+        self.current_face_shield = QComboBox()
+        for value, label in FACE_SHIELD_CHOICES:
+            self.current_face_shield.addItem(label, value)
         self.current_first_limit = QLabel("")
         self.current_last_limit = QLabel("")
         self.current_first_limit.setObjectName("textPanelMuted")
@@ -1044,6 +1132,8 @@ class TextRosterPanel(QWidget):
             ("First name", self.current_first_original, self.current_first),
             ("Last name", self.current_last_original, self.current_last),
             ("Jersey number", self.current_number_original, self.current_number),
+            ("Face shield", self.current_face_shield_original,
+             self.current_face_shield),
         )
         for row, (label, original, current) in enumerate(fields, start=2):
             layout.addWidget(QLabel(label), row * 2 - 2, 0)
@@ -1056,9 +1146,9 @@ class TextRosterPanel(QWidget):
         self.apply_current_button = QPushButton("Apply Player")
         self.revert_current_button = QPushButton("Revert Player")
         self.export_current_number_button = QPushButton("Export Number…")
-        layout.addWidget(self.apply_current_button, 8, 0)
-        layout.addWidget(self.revert_current_button, 8, 1)
-        layout.addWidget(self.export_current_number_button, 8, 2)
+        layout.addWidget(self.apply_current_button, 10, 0)
+        layout.addWidget(self.revert_current_button, 10, 1)
+        layout.addWidget(self.export_current_number_button, 10, 2)
         self.apply_current_button.clicked.connect(self._apply_current_player)
         self.revert_current_button.clicked.connect(self._revert_current_player)
         self.export_current_number_button.clicked.connect(
@@ -1067,6 +1157,9 @@ class TextRosterPanel(QWidget):
         self.current_first.textChanged.connect(self._update_current_controls)
         self.current_last.textChanged.connect(self._update_current_controls)
         self.current_number.textChanged.connect(self._update_current_controls)
+        self.current_face_shield.currentIndexChanged.connect(
+            self._update_current_controls
+        )
         self._clear_current_player()
         return group
 
@@ -1078,7 +1171,7 @@ class TextRosterPanel(QWidget):
         filters = QHBoxLayout()
         self.historical_search = QLineEdit()
         self.historical_search.setPlaceholderText(
-            "Search historical team, player, current name, number, or resource…"
+            "Search historical team, player, name, number, face shield, or resource…"
         )
         self.resource_filter = QComboBox()
         self.resource_filter.setMinimumWidth(300)
@@ -1108,6 +1201,7 @@ class TextRosterPanel(QWidget):
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(6, QHeaderView.ResizeToContents)
         splitter.addWidget(self.historical_table)
 
         editor_scroll = QScrollArea()
@@ -1188,10 +1282,14 @@ class TextRosterPanel(QWidget):
         self.player_first_original = QLabel("—")
         self.player_last_original = QLabel("—")
         self.player_number_original = QLabel("—")
+        self.player_face_shield_original = QLabel("—")
         self.player_first = QLineEdit()
         self.player_last = QLineEdit()
         self.player_number = QLineEdit()
         self.player_number.setPlaceholderText("0–99")
+        self.player_face_shield = QComboBox()
+        for value, label in FACE_SHIELD_CHOICES:
+            self.player_face_shield.addItem(label, value)
         self.player_first_limit = QLabel("")
         self.player_last_limit = QLabel("")
         self.player_first_limit.setObjectName("textPanelMuted")
@@ -1200,6 +1298,8 @@ class TextRosterPanel(QWidget):
             ("First name", self.player_first_original, self.player_first),
             ("Last name", self.player_last_original, self.player_last),
             ("Jersey number", self.player_number_original, self.player_number),
+            ("Face shield", self.player_face_shield_original,
+             self.player_face_shield),
         )
         for row, (label, original, current) in enumerate(fields, start=2):
             layout.addWidget(QLabel(label), row * 2 - 2, 0)
@@ -1212,9 +1312,9 @@ class TextRosterPanel(QWidget):
         self.apply_player_button = QPushButton("Apply Player")
         self.revert_player_button = QPushButton("Revert Player")
         self.export_historical_number_button = QPushButton("Export Number…")
-        layout.addWidget(self.apply_player_button, 8, 0)
-        layout.addWidget(self.revert_player_button, 8, 1)
-        layout.addWidget(self.export_historical_number_button, 8, 2)
+        layout.addWidget(self.apply_player_button, 10, 0)
+        layout.addWidget(self.revert_player_button, 10, 1)
+        layout.addWidget(self.export_historical_number_button, 10, 2)
         self.apply_player_button.clicked.connect(self._apply_historical_player)
         self.revert_player_button.clicked.connect(self._revert_historical_player)
         self.export_historical_number_button.clicked.connect(
@@ -1223,6 +1323,9 @@ class TextRosterPanel(QWidget):
         self.player_first.textChanged.connect(self._update_player_controls)
         self.player_last.textChanged.connect(self._update_player_controls)
         self.player_number.textChanged.connect(self._update_player_controls)
+        self.player_face_shield.currentIndexChanged.connect(
+            self._update_player_controls
+        )
         self.apply_player_button.setEnabled(False)
         self.revert_player_button.setEnabled(False)
         return group
@@ -1539,9 +1642,19 @@ class TextRosterPanel(QWidget):
         first = self.catalog.get_asset(player.first_name_asset_id)
         last = self.catalog.get_asset(player.last_name_asset_id)
         number = self.catalog.get_number_asset(player.jersey_number_asset_id)
-        access = "Editable" if (
-            player.editable and first.editable and last.editable and number.editable
-        ) else "Preview/Export-only"
+        shield = self.catalog.get_number_asset(player.face_shield_asset_id)
+        editable_fields = [
+            label for label, editable in (
+                ("first name", first.editable),
+                ("last name", last.editable),
+                ("number", number.editable),
+                ("face shield", shield.editable),
+            ) if editable
+        ]
+        access = (
+            "Editable: " + ", ".join(editable_fields)
+            if editable_fields else "Preview/Export-only"
+        )
         self.current_player_title.setText(
             f"{player.display_name} · {player.pool.replace('_', ' ')} · "
             f"resource {player.outer_index} · {access}"
@@ -1549,6 +1662,7 @@ class TextRosterPanel(QWidget):
         self.current_first_original.setText(first.value)
         self.current_last_original.setText(last.value)
         self.current_number_original.setText(str(number.value))
+        self.current_face_shield_original.setText(shield.display_value())
         self.current_first.blockSignals(True)
         self.current_last.blockSignals(True)
         self.current_number.blockSignals(True)
@@ -1560,12 +1674,14 @@ class TextRosterPanel(QWidget):
         self.current_first.blockSignals(False)
         self.current_last.blockSignals(False)
         self.current_number.blockSignals(False)
-        editable = (
-            player.editable and first.editable and last.editable and number.editable
+        _set_face_shield_combo(
+            self.current_face_shield,
+            shield,
+            _safe_number(shield.value, shield.asset_id, self.host.number_value),
         )
-        self.current_first.setEnabled(editable)
-        self.current_last.setEnabled(editable)
-        self.current_number.setEnabled(editable)
+        self.current_first.setEnabled(first.editable)
+        self.current_last.setEnabled(last.editable)
+        self.current_number.setEnabled(number.editable)
         self.export_current_number_button.setEnabled(True)
         self._update_current_controls()
 
@@ -1581,10 +1697,12 @@ class TextRosterPanel(QWidget):
             self.current_first_original,
             self.current_last_original,
             self.current_number_original,
+            self.current_face_shield_original,
         ):
             label.setText("—")
         self.current_first_limit.clear()
         self.current_last_limit.clear()
+        self.current_face_shield.setEnabled(False)
         self.apply_current_button.setEnabled(False)
         self.revert_current_button.setEnabled(False)
         self.export_current_number_button.setEnabled(False)
@@ -1597,6 +1715,7 @@ class TextRosterPanel(QWidget):
         first = self.catalog.get_asset(player.first_name_asset_id)
         last = self.catalog.get_asset(player.last_name_asset_id)
         number = self.catalog.get_number_asset(player.jersey_number_asset_id)
+        shield = self.catalog.get_number_asset(player.face_shield_asset_id)
         first_usage = text_usage(first, self.current_first.text())
         last_usage = text_usage(last, self.current_last.text())
         self.current_first_limit.setText(first_usage.message)
@@ -1619,22 +1738,30 @@ class TextRosterPanel(QWidget):
         current_number = _safe_number(
             number.value, number.asset_id, self.host.number_value
         )
-        changed = (
-            self.current_first.text() != current_first
-            or self.current_last.text() != current_last
-            or jersey != current_number
+        current_shield = _safe_number(
+            shield.value, shield.asset_id, self.host.number_value
         )
+        selected_shield = self.current_face_shield.currentData()
+        first_changed = self.current_first.text() != current_first
+        last_changed = self.current_last.text() != current_last
+        number_changed = jersey != current_number
+        shield_changed = selected_shield != current_shield
+        changed = first_changed or last_changed or number_changed or shield_changed
         modified = (
             current_first != first.value
             or current_last != last.value
             or current_number != number.value
-        )
-        editable = (
-            player.editable and first.editable and last.editable and number.editable
+            or current_shield != shield.value
         )
         self.apply_current_button.setEnabled(
-            editable and first_usage.valid and last_usage.valid
-            and jersey_valid and changed
+            changed
+            and (not first_changed or first.editable and first_usage.valid)
+            and (not last_changed or last.editable and last_usage.valid)
+            and (not number_changed or number.editable and jersey_valid)
+            and (
+                not shield_changed
+                or shield.editable and selected_shield in {0, 1, 2}
+            )
         )
         self.revert_current_button.setEnabled(modified)
         self.current_number.setStyleSheet(
@@ -1649,6 +1776,7 @@ class TextRosterPanel(QWidget):
         first = self.catalog.get_asset(player.first_name_asset_id)
         last = self.catalog.get_asset(player.last_name_asset_id)
         number = self.catalog.get_number_asset(player.jersey_number_asset_id)
+        shield = self.catalog.get_number_asset(player.face_shield_asset_id)
         first_value = self.current_first.text()
         last_value = self.current_last.text()
         first_usage = text_usage(first, first_value)
@@ -1657,27 +1785,51 @@ class TextRosterPanel(QWidget):
             jersey = int(self.current_number.text(), 10)
         except ValueError:
             jersey = -1
-        if (
-            not player.editable or not first.editable or not last.editable
-            or not number.editable or not first_usage.valid
-            or not last_usage.valid
-            or not number.minimum <= jersey <= number.maximum
+        current_first = _safe_text(first, self.host.text_value)
+        current_last = _safe_text(last, self.host.text_value)
+        current_number = _safe_number(
+            number.value, number.asset_id, self.host.number_value
+        )
+        current_shield = _safe_number(
+            shield.value, shield.asset_id, self.host.number_value
+        )
+        selected_shield = self.current_face_shield.currentData()
+        first_changed = first_value != current_first
+        last_changed = last_value != current_last
+        number_changed = jersey != current_number
+        shield_changed = selected_shield != current_shield
+        if not (first_changed or last_changed or number_changed or shield_changed) or (
+            first_changed and (not first.editable or not first_usage.valid)
+        ) or (
+            last_changed and (not last.editable or not last_usage.valid)
+        ) or (
+            number_changed and (
+                not number.editable
+                or not number.minimum <= jersey <= number.maximum
+            )
+        ) or (
+            shield_changed and (
+                not shield.editable or selected_shield not in {0, 1, 2}
+            )
         ):
             self._status(
-                player.reason if not player.editable else
-                "Player names must fit their shown allocations and jersey number "
-                f"must be {number.minimum} through {number.maximum}."
+                "Only fields marked editable can change. Names must fit their "
+                "shown allocations, jersey number must be "
+                f"{number.minimum} through {number.maximum}, and face shield "
+                "must be None, Clear, or Dark."
             )
             return
         try:
-            if first_value != _safe_text(first, self.host.text_value):
+            if first_changed:
                 self.host.replace_text(first.asset_id, first_value, self._progress)
-            if last_value != _safe_text(last, self.host.text_value):
+            if last_changed:
                 self.host.replace_text(last.asset_id, last_value, self._progress)
-            if jersey != _safe_number(
-                number.value, number.asset_id, self.host.number_value
-            ):
+            if number_changed:
                 self.host.replace_number(number.asset_id, jersey, self._progress)
+            if shield_changed:
+                self.host.replace_number(
+                    shield.asset_id, int(selected_shield), self._progress
+                )
         except Exception as exc:
             self._status(
                 (str(exc).strip() or "Could not apply the current player edit.")
@@ -1699,6 +1851,7 @@ class TextRosterPanel(QWidget):
             self.host.revert_text(player.first_name_asset_id, self._progress)
             self.host.revert_text(player.last_name_asset_id, self._progress)
             self.host.revert_text(player.jersey_number_asset_id, self._progress)
+            self.host.revert_text(player.face_shield_asset_id, self._progress)
         except Exception as exc:
             self._status(str(exc).strip() or "Could not revert that current player.")
             self.reload()
@@ -1884,6 +2037,7 @@ class TextRosterPanel(QWidget):
         first = self.catalog.get_asset(player.first_name_asset_id)
         last = self.catalog.get_asset(player.last_name_asset_id)
         number = self.catalog.get_number_asset(player.jersey_number_asset_id)
+        shield = self.catalog.get_number_asset(player.face_shield_asset_id)
         self.historical_player_title.setText(
             f"{player.display_name} · resource {row.resource.outer_index} · "
             f"position code {player.position_code}"
@@ -1891,6 +2045,7 @@ class TextRosterPanel(QWidget):
         self.player_first_original.setText(first.value)
         self.player_last_original.setText(last.value)
         self.player_number_original.setText(str(number.value))
+        self.player_face_shield_original.setText(shield.display_value())
         self.player_first.blockSignals(True)
         self.player_last.blockSignals(True)
         self.player_number.blockSignals(True)
@@ -1902,9 +2057,14 @@ class TextRosterPanel(QWidget):
         self.player_first.blockSignals(False)
         self.player_last.blockSignals(False)
         self.player_number.blockSignals(False)
-        self.player_first.setEnabled(player.editable)
-        self.player_last.setEnabled(player.editable)
-        self.player_number.setEnabled(player.editable)
+        _set_face_shield_combo(
+            self.player_face_shield,
+            shield,
+            _safe_number(shield.value, shield.asset_id, self.host.number_value),
+        )
+        self.player_first.setEnabled(first.editable)
+        self.player_last.setEnabled(last.editable)
+        self.player_number.setEnabled(number.editable)
         self.export_historical_number_button.setEnabled(True)
         self._update_player_controls()
 
@@ -1918,10 +2078,12 @@ class TextRosterPanel(QWidget):
             self.player_first_original,
             self.player_last_original,
             self.player_number_original,
+            self.player_face_shield_original,
         ):
             label.setText("—")
         self.player_first_limit.clear()
         self.player_last_limit.clear()
+        self.player_face_shield.setEnabled(False)
         self.apply_player_button.setEnabled(False)
         self.revert_player_button.setEnabled(False)
         self.export_historical_number_button.setEnabled(False)
@@ -1934,6 +2096,7 @@ class TextRosterPanel(QWidget):
         first = self.catalog.get_asset(player.first_name_asset_id)
         last = self.catalog.get_asset(player.last_name_asset_id)
         number = self.catalog.get_number_asset(player.jersey_number_asset_id)
+        shield = self.catalog.get_number_asset(player.face_shield_asset_id)
         first_usage = text_usage(first, self.player_first.text())
         last_usage = text_usage(last, self.player_last.text())
         self.player_first_limit.setText(first_usage.message)
@@ -1956,22 +2119,30 @@ class TextRosterPanel(QWidget):
         current_number = _safe_number(
             number.value, number.asset_id, self.host.number_value
         )
-        changed = (
-            self.player_first.text() != current_first
-            or self.player_last.text() != current_last
-            or jersey != current_number
+        current_shield = _safe_number(
+            shield.value, shield.asset_id, self.host.number_value
         )
+        selected_shield = self.player_face_shield.currentData()
+        first_changed = self.player_first.text() != current_first
+        last_changed = self.player_last.text() != current_last
+        number_changed = jersey != current_number
+        shield_changed = selected_shield != current_shield
+        changed = first_changed or last_changed or number_changed or shield_changed
         modified = (
             current_first != first.value
             or current_last != last.value
             or current_number != number.value
+            or current_shield != shield.value
         )
         self.apply_player_button.setEnabled(
-            player.editable
-            and first_usage.valid
-            and last_usage.valid
-            and jersey_valid
-            and changed
+            changed
+            and (not first_changed or first.editable and first_usage.valid)
+            and (not last_changed or last.editable and last_usage.valid)
+            and (not number_changed or number.editable and jersey_valid)
+            and (
+                not shield_changed
+                or shield.editable and selected_shield in {0, 1, 2}
+            )
         )
         self.revert_player_button.setEnabled(modified)
         self.player_number.setStyleSheet(
@@ -1986,6 +2157,7 @@ class TextRosterPanel(QWidget):
         first = self.catalog.get_asset(player.first_name_asset_id)
         last = self.catalog.get_asset(player.last_name_asset_id)
         number = self.catalog.get_number_asset(player.jersey_number_asset_id)
+        shield = self.catalog.get_number_asset(player.face_shield_asset_id)
         first_value = self.player_first.text()
         last_value = self.player_last.text()
         first_usage = text_usage(first, first_value)
@@ -1994,24 +2166,51 @@ class TextRosterPanel(QWidget):
             jersey = int(self.player_number.text(), 10)
         except ValueError:
             jersey = -1
-        if (
-            not player.editable
-            or not first_usage.valid
-            or not last_usage.valid
-            or not number.minimum <= jersey <= number.maximum
+        current_first = _safe_text(first, self.host.text_value)
+        current_last = _safe_text(last, self.host.text_value)
+        current_number = _safe_number(
+            number.value, number.asset_id, self.host.number_value
+        )
+        current_shield = _safe_number(
+            shield.value, shield.asset_id, self.host.number_value
+        )
+        selected_shield = self.player_face_shield.currentData()
+        first_changed = first_value != current_first
+        last_changed = last_value != current_last
+        number_changed = jersey != current_number
+        shield_changed = selected_shield != current_shield
+        if not (first_changed or last_changed or number_changed or shield_changed) or (
+            first_changed and (not first.editable or not first_usage.valid)
+        ) or (
+            last_changed and (not last.editable or not last_usage.valid)
+        ) or (
+            number_changed and (
+                not number.editable
+                or not number.minimum <= jersey <= number.maximum
+            )
+        ) or (
+            shield_changed and (
+                not shield.editable or selected_shield not in {0, 1, 2}
+            )
         ):
             self._status(
-                "Player names must fit their shown allocations and jersey number "
-                f"must be {number.minimum} through {number.maximum}."
+                "Only fields marked editable can change. Names must fit their "
+                "shown allocations, jersey number must be "
+                f"{number.minimum} through {number.maximum}, and face shield "
+                "must be None, Clear, or Dark."
             )
             return
         try:
-            if first_value != _safe_text(first, self.host.text_value):
+            if first_changed:
                 self.host.replace_text(first.asset_id, first_value, self._progress)
-            if last_value != _safe_text(last, self.host.text_value):
+            if last_changed:
                 self.host.replace_text(last.asset_id, last_value, self._progress)
-            if jersey != _safe_number(number.value, number.asset_id, self.host.number_value):
+            if number_changed:
                 self.host.replace_number(number.asset_id, jersey, self._progress)
+            if shield_changed:
+                self.host.replace_number(
+                    shield.asset_id, int(selected_shield), self._progress
+                )
         except Exception as exc:
             self._status(
                 (str(exc).strip() or "Could not apply the player edit.")
@@ -2033,6 +2232,7 @@ class TextRosterPanel(QWidget):
             self.host.revert_text(player.first_name_asset_id, self._progress)
             self.host.revert_text(player.last_name_asset_id, self._progress)
             self.host.revert_text(player.jersey_number_asset_id, self._progress)
+            self.host.revert_text(player.face_shield_asset_id, self._progress)
         except Exception as exc:
             self._status(str(exc).strip() or "Could not revert that player edit.")
             self.reload()

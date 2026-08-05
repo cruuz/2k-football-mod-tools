@@ -1,0 +1,42 @@
+{
+  "authority": {
+    "path": "reports/assets/apf_field_art_roundtrip.json",
+    "sha256": "135c8cb20b631d7a9e0c03848f25046a47e49144e2db64bb30967963691b56d5"
+  },
+  "contains_game_or_replacement_bytes": false,
+  "mode": "patched",
+  "schema": "apf_field_art_verify/v1",
+  "source": {
+    "modified": false,
+    "sha256_after": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+    "sha256_before": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+  },
+  "target": {
+    "codec": "rgba8888",
+    "dimensions": [
+      64,
+      64
+    ],
+    "entry_index": 53,
+    "file_index": 0,
+    "name": "divots"
+  },
+  "validation": {
+    "all_other_volume_bytes_identical": true,
+    "descriptor_pad_preserved": true,
+    "descriptor_preserved": true,
+    "fixed_outer_allocation_preserved": true,
+    "name_footer_preserved": true,
+    "only_target_base_part_changed": true,
+    "output_edit_within_png_footprint": true,
+    "packed_mip_tail_preserved": true,
+    "runtime_visibility_proved": false,
+    "source_is_pinned_retail": true,
+    "source_opened_read_only": true
+  },
+  "whole_volume_diff": {
+    "all_other_bytes_identical": true,
+    "changed_byte_count": 1842893,
+    "changed_bytes_inside_target_entry": 1842893
+  }
+}

@@ -21,19 +21,19 @@ from .errors import ValidationError
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REPORT = ROOT / "reports/assets/uniform_texture_sharing.v2.json"
 REPORT_SIZE = 415_528
-REPORT_SHA256 = "9094ad0b6a199adc240dc254fdcd031573a16070c0aa80805f36fc951143b36a"
+REPORT_SHA256 = "9e137a17d0a5faaf6c12f35b7503193f583f4a97e7370deced28fefadf7c26cf"
 REPORT_SCHEMA = "uniform_texture_sharing_audit/v2"
 DEFAULT_PANTS_REPORT = ROOT / "reports/assets/apf_pants_family_layout.json"
-PANTS_REPORT_SIZE = 274_896
-PANTS_REPORT_SHA256 = "82241aefe6728a7426552663ee69ecffbdabca01f4359e8322edf75775adf293"
+PANTS_REPORT_SIZE = 274_895
+PANTS_REPORT_SHA256 = "707d916213f04499608b492ce2ea37a0e33b770af0f69c57248755d71ef5c32a"
 PANTS_REPORT_SCHEMA = "apf_pants_family_layout/v1"
 DEFAULT_HELMET_REPORT = ROOT / "reports/assets/apf_helmet_family_layout.json"
-HELMET_REPORT_SIZE = 280_394
-HELMET_REPORT_SHA256 = "72bf3efd4495e03fb856e0fb776313c842ebfafeb8d20d19f91318d7161aba03"
+HELMET_REPORT_SIZE = 280_392
+HELMET_REPORT_SHA256 = "29c3f097f63105f0ae2067d8f99f0ce8666e447d8bf13de4b1cb071e9638ed4c"
 HELMET_REPORT_SCHEMA = "apf_helmet_family_layout/v1"
 DEFAULT_SHOULDER_REPORT = ROOT / "reports/assets/apf_shoulder_family_layout.json"
-SHOULDER_REPORT_SIZE = 345_097
-SHOULDER_REPORT_SHA256 = "a2ea45adb931677ef4d9d9a37530f2acc53013050793a47f41f69c65e8319875"
+SHOULDER_REPORT_SIZE = 345_091
+SHOULDER_REPORT_SHA256 = "6899b356c6364fb6f315dcb7ef599572ca1cb5771735a5540fcc70ef202456b8"
 SHOULDER_REPORT_SCHEMA = "apf_shoulder_family_layout/v1"
 NFL_SELECTOR = re.compile(r"^[0-9]{2}[HA](?:0|[1-9][0-9]?)$")
 

@@ -1,46 +1,45 @@
 {
   "schema": "apf2k8_mod_studio_stadium_material_findings/v1",
-  "outcome": "texture_owner_unresolved",
+  "outcome": "embedded_texture_ownership_proved",
   "experiment": {
     "scene_name": "stadium",
-    "scene_mesh_nodes": 116,
-    "draw_records": 328,
-    "serialized_material_records": 113,
-    "shader_family_records": 13,
-    "minimum_material_slot": 0,
-    "maximum_material_slot": 112,
-    "out_of_range_material_slots": 0,
-    "known_named_texture_identities_checked": 737,
-    "named_texture_identity_matches_in_scene_system_part": 0,
-    "same_package_named_texture_candidates": 3,
-    "same_package_identity_matches_in_scene_system_part": 0
+    "scene_surface_nodes": 89,
+    "serialized_material_records": 84,
+    "shader_family_records": 20,
+    "embedded_texture_descriptors": 78,
+    "material_slots_referenced": 84,
+    "orphaned_material_slots": 0,
+    "orphaned_embedded_textures": 0,
+    "editable_texture_descriptors": 78,
+    "retail_format_classes": 8
   },
   "proved": {
     "draw_to_serialized_material_slot": true,
-    "material_slot_to_serialized_material_record": true,
-    "serialized_material_to_shader_family": true,
-    "mesh_to_named_texture_identity": false,
-    "texture_writer_safe_to_expose": false
+    "material_slot_to_embedded_texture": true,
+    "all_embedded_textures_have_material_owners": true,
+    "full_declared_mip_transport_for_every_texture": true,
+    "fixed_allocation_copy_only_writer": true,
+    "texture_writer_safe_to_expose": true,
+    "runtime_visibility_proved": false
   },
   "runtime_capture": {
-    "route": "Wine-hosted Xenia instruction breakpoint",
-    "outcome": "host_breakpoint_intercepted",
-    "game_frame_rendered": false,
-    "guest_registers_captured": false,
-    "configuration_restored": true
+    "route": "headless static archive parse and copied-volume reopen",
+    "outcome": "offline_writer_proved",
+    "emulator_used": false,
+    "source_opened_read_only": true,
+    "copied_output_reopened": true
   },
   "boundary": {
-    "material_payload_status": "Opaque material parameters remain serialized behind each material record.",
-    "texture_reference_status": "No named TXTR identity occurs in the scene system part, including the serialized material roster and payloads.",
-    "package_candidate_status": "The three same-package TXTR resources are package-level candidates only; none is statically referenced by identity.",
-    "gpu_part_status": "The scene has a separate GPU-memory part, but the static material-to-GPU-resource join is not decoded.",
-    "product_behavior": "Show scene node, draw, material slot, and shader-family identity; keep texture owner unresolved and Replace/Revert disabled."
+    "material_payload_status": "Every draw-selected material slot in the authenticated scene is bounded and joined to its serialized material record.",
+    "texture_reference_status": "All 78 anonymous embedded TXTR descriptors are joined through material command payloads; none is orphaned.",
+    "package_candidate_status": "The writer is limited to the authenticated stadium scene and does not infer ownership for sibling venue packages.",
+    "gpu_part_status": "All eight retail format classes have exact full-mip Xenos transport, including the separately pinned linear DXN descriptor.",
+    "product_behavior": "Clicked surfaces list only their exact owned textures; Preview, Export, Replace, Revert, and copied-1A Build are enabled for all 78 descriptors."
   },
   "missing_runtime_fields": [
-    "the loaded stadium instance material-array base",
-    "the selected pixel-shader eight-entry texture mapping",
-    "the live texture object in each selected material texture record",
-    "the guest allocation or resource identity behind each live texture object"
+    "runtime visibility of a changed stadium texture",
+    "embedded texture ownership graphs for additional stadium scenes",
+    "Xbox 360 hardware acceptance of changed copied output"
   ],
-  "best_next_experiment": "Use a small instrumented Xenia build or a native-Windows guest debugger that logs one known stadium draw at the renderer handoff without raising a Wine host breakpoint. Capture the material-array base, selected pixel-shader mapping, every live texture-object pointer, and each guest allocation and dimensions. A matching allocation proves an owner; no match falsifies the same-package candidates and identifies the next loader boundary."
+  "best_next_experiment": "Validate one high-contrast copied-1A texture edit on authorized Xbox 360 hardware, then repeat the static draw-to-material-to-embedded-texture ownership join for each additional stadium scene before widening the selector."
 }

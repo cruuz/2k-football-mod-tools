@@ -282,8 +282,8 @@ class BundledExtractorTests(unittest.TestCase):
         expected = "extract-xiso.exe" if platform_compat.IS_WINDOWS else "extract-xiso"
         self.assertEqual(SourceManager().extract_xiso.name, expected)
 
-    def test_both_bundled_extractors_are_the_pinned_reviewed_builds(self) -> None:
-        # Both binaries ship in the APF release and are pinned by the release
+    def test_bundled_binaries_are_the_pinned_reviewed_builds(self) -> None:
+        # All binaries ship in the APF release and are pinned by the release
         # gate; a bundled executable nobody rebuilds at review time is only
         # trustworthy if its bytes are fixed. Assert the shipped files still
         # match those pins, and that each is the image format its platform can
@@ -327,6 +327,12 @@ class BundledExtractorTests(unittest.TestCase):
                 module.REVIEWED_WINDOWS_BINARY_SIZE,
                 module.REVIEWED_WINDOWS_BINARY_SHA256,
                 b"MZ",
+            ),
+            (
+                module.REVIEWED_H7A_BINARY,
+                module.REVIEWED_H7A_BINARY_SIZE,
+                module.REVIEWED_H7A_BINARY_SHA256,
+                b"\x7fELF",
             ),
         ):
             with self.subTest(binary=relative):

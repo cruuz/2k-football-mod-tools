@@ -1,0 +1,33 @@
+{
+  "schema": "apf2k8_full_shell_all_team_gate/v1",
+  "observed_at": "2026-08-03",
+  "execution": {
+    "mode": "ram_only_no_volume_write",
+    "h7a_candidate_limit": 256,
+    "elapsed_seconds": 2283.4,
+    "exit_code": 0
+  },
+  "source": {
+    "path_role": "pristine_retail_0A",
+    "sha256": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+  },
+  "design_png": {
+    "sha256": "3d7e10828af458c9ad13663f8031311b364fa56be5c852f6aa8f38574d9c3597"
+  },
+  "selection": {
+    "asset_index": 30,
+    "outer_entry_index": 1133
+  },
+  "result": {
+    "catalog_slot_count": 118,
+    "compiled_outer_entry_count": 121,
+    "nonselected_retail_migration_count": 117,
+    "all_packages_recompressed_and_reparsed": true,
+    "selected_package_sha256": "16494c1d4b6f184efbd5dc6fc16dedce4c130bf7116b9fd11e21532d87db35f1",
+    "shell_atlas_sha256": "5a3e111098562aae86fc95f5830b920eed8173e6ff9880c2be9236b705ed2545"
+  },
+  "tool_sha256": {
+    "tools/apf_helmet_crest_wrap_patch.py": "f521a96574a3e54f6c8af53fa77340cb6f33fa886f0b6f882eaf5e3e77c4ddb4",
+    "tools/apf_logo_patch.py": "61c1887fe888992c4df329f36da2c95c58886fc7cbb301c9ae87cadc1071c4e9"
+  }
+}

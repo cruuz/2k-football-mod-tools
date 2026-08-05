@@ -28,22 +28,22 @@ cmp reports/assets/nfl2k5_uniform_texture_sharing.tsv "$temporary/nfl.tsv"
 cmp reports/assets/apf2k8_jersey_selector_sharing.tsv "$temporary/apf.tsv"
 
 test "$(sha256sum reports/assets/uniform_texture_sharing.json | cut -d' ' -f1)" = \
-  'eb37c92a2e2aeaf6d458028e5e5273110c80b3cdbaeb2b5925af99327f4cec6a'
+  '4c6557f8e9732267a078ecf42f2d8e8696d7207c9ed6aacd9a76a3e1c67c9910'
 test "$(sha256sum reports/assets/uniform_texture_sharing.v2.json | cut -d' ' -f1)" = \
-  '9094ad0b6a199adc240dc254fdcd031573a16070c0aa80805f36fc951143b36a'
+  '9e137a17d0a5faaf6c12f35b7503193f583f4a97e7370deced28fefadf7c26cf'
 test "$(sha256sum reports/assets/nfl2k5_uniform_texture_sharing.tsv | cut -d' ' -f1)" = \
   'f4367f8fb1a3f2da3ccc20890635ff15dbd1c45c86f118627bbf2895dd7a1658'
 test "$(sha256sum reports/assets/apf2k8_jersey_selector_sharing.tsv | cut -d' ' -f1)" = \
   '603c7100a3ece052652420c0102f5bd995935391e2612259bfa1e42f365b0ee5'
-test "$(wc -c < reports/assets/apf_pants_family_layout.json)" = 274896
+test "$(wc -c < reports/assets/apf_pants_family_layout.json)" = 274895
 test "$(sha256sum reports/assets/apf_pants_family_layout.json | cut -d' ' -f1)" = \
-  '82241aefe6728a7426552663ee69ecffbdabca01f4359e8322edf75775adf293'
-test "$(wc -c < reports/assets/apf_helmet_family_layout.json)" = 280394
+  '707d916213f04499608b492ce2ea37a0e33b770af0f69c57248755d71ef5c32a'
+test "$(wc -c < reports/assets/apf_helmet_family_layout.json)" = 280392
 test "$(sha256sum reports/assets/apf_helmet_family_layout.json | cut -d' ' -f1)" = \
-  '72bf3efd4495e03fb856e0fb776313c842ebfafeb8d20d19f91318d7161aba03'
-test "$(wc -c < reports/assets/apf_shoulder_family_layout.json)" = 345097
+  '29c3f097f63105f0ae2067d8f99f0ce8666e447d8bf13de4b1cb071e9638ed4c'
+test "$(wc -c < reports/assets/apf_shoulder_family_layout.json)" = 345091
 test "$(sha256sum reports/assets/apf_shoulder_family_layout.json | cut -d' ' -f1)" = \
-  'a2ea45adb931677ef4d9d9a37530f2acc53013050793a47f41f69c65e8319875'
+  '6899b356c6364fb6f315dcb7ef599572ca1cb5771735a5540fcc70ef202456b8'
 
 python3 -m unittest -v \
   tests/uniform_texture_sharing_audit_test.py \
@@ -155,7 +155,7 @@ fi
 
 rg -q '3,170 writer targets have 3,170 distinct' \
   docs/research/uniform_texture_sharing.md
-rg -q 'does \*\*not\*\* expose it as a writer' \
+rg -q 'still does \*\*not\*\* expose this writer' \
   docs/research/uniform_texture_sharing.md
 rg -q 'does not claim a fix for the PS2 disc layout used by PCSX2' \
   docs/research/uniform_texture_sharing.md

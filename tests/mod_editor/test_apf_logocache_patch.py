@@ -33,6 +33,7 @@ sys.path.insert(0, str(WORKSPACE / "tools"))
 
 import apf_inner  # noqa: E402
 import apf_logocache_patch as cache_patch  # noqa: E402
+import apf_logocache_verify as cache_verify  # noqa: E402
 from apf_logo_patch import decode_4444_base, encode_4444_base  # noqa: E402
 
 
@@ -74,6 +75,26 @@ class CacheWriterPinTests(unittest.TestCase):
             "5683fb638cf72e4532149f757ac49d702a6d158043faa930c58745a1b81f9037",
         )
 
+    def test_public_raw_pair_structure_verifier(self) -> None:
+        directory, payload = cache_verify._locate_pair(INDEX_PATH)
+        report = cache_verify.verify_cache_structure(directory, payload)
+        self.assertTrue(report["verified"])
+        self.assertEqual(report["directory"]["catalog_entry_count"], 236)
+        self.assertEqual(report["payload"]["sub_blocks_decompressed"], 472)
+        self.assertEqual(report["payload"]["zero_tail_bytes"], 858)
+
+    def test_public_raw_pair_structure_verifier_rejects_corruption(self) -> None:
+        directory, payload = cache_verify._locate_pair(INDEX_PATH)
+        bad_directory = bytearray(directory)
+        bad_directory[0] ^= 1
+        with self.assertRaisesRegex(cache_verify.VerifyError, "header/magic/length"):
+            cache_verify.verify_cache_structure(bytes(bad_directory), payload)
+
+        bad_payload = bytearray(payload)
+        bad_payload[0] ^= 1
+        with self.assertRaisesRegex(cache_verify.VerifyError, "H7A wrapper invalid"):
+            cache_verify.verify_cache_structure(directory, bytes(bad_payload))
+
 
 @unittest.skipUnless(DISC_AVAILABLE, "extracted APF 0A not present")
 class CacheWriterRoundTripTests(unittest.TestCase):
@@ -100,7 +121,11 @@ class CacheWriterRoundTripTests(unittest.TestCase):
                 src_vram = _decompress_part_b(pay_raw, src_e.stream_b, src_e.len_b)
                 out_vram = _decompress_part_b(result.payload_bytes, out_e.stream_b, out_e.len_b)
                 self.assertNotEqual(src_vram[:0x80000], out_vram[:0x80000])
-                self.assertEqual(src_vram[0x80000:], out_vram[0x80000:])
+                # The packed mip tail is regenerated from the new base, not
+                # preserved: keeping retail's levels leaves the OLD crest in
+                # every draw below mip 0, which is what made cache writes look
+                # like they had not applied.
+                self.assertNotEqual(src_vram[0x80000:], out_vram[0x80000:])
                 observed_changed.add(src_e.name)
             else:
                 # Unedited: stored sub-block byte-identical (relocation only).
@@ -126,6 +151,11 @@ class CacheWriterRoundTripTests(unittest.TestCase):
             result.manifest["layers"]["01_logo_l0"]["decode_back_max_abs_error"], 0
         )
         self._assert_only_intended_changed(result, {"01_logo_l0"})
+        structure = cache_verify.verify_cache_structure(
+            result.directory_bytes, result.payload_bytes
+        )
+        self.assertTrue(structure["verified"])
+        self.assertEqual(structure["payload"]["sub_blocks_decompressed"], 472)
 
     def test_both_layers_edit(self) -> None:
         with tempfile.TemporaryDirectory() as d:

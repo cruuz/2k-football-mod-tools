@@ -16,9 +16,12 @@ from __future__ import annotations
 import ctypes
 from dataclasses import dataclass
 import hashlib
+import math
+import mmap
 import os
 from pathlib import Path
 import signal
+import shutil
 import stat
 import string
 import struct
@@ -44,6 +47,15 @@ MAX_TIMEOUT_SECONDS = 30 * 60
 PROCESS_POLL_SECONDS = 0.05
 PROCESS_STOP_GRACE_SECONDS = 2.0
 COPY_BLOCK_BYTES = 1024 * 1024
+SIGNAL_COMPARE_SAMPLE_FRAMES = 65_536
+SIGNAL_ALIGNMENT_SAMPLE_FRAMES = 2_048
+SIGNAL_ALIGNMENT_MAX_FRAMES = 127
+SIGNAL_MIN_ACTIVE_RMS = 0.01
+SIGNAL_MIN_CORRELATION = 0.55
+SIGNAL_MAX_DC_OFFSET = 0.08
+SIGNAL_MAX_DC_INCREASE = 0.05
+SIGNAL_MAX_CLIPPED_FRACTION = 0.02
+SIGNAL_MAX_TAIL_RMS = 0.12
 
 # Every descriptor this module opens carries audio or diagnostic *bytes*.  On
 # Windows ``os.open`` defaults to the CRT's text mode, which rewrites CRLF and
@@ -553,6 +565,515 @@ def _write_canonical_pcm(
         return digest.hexdigest()
     finally:
         os.close(location.descriptor)
+
+
+def _sample_pcm16(buffer, byte_offset: int, frame: int, channel: int, channels: int) -> float:
+    sample_offset = byte_offset + ((frame * channels + channel) * 2)
+    return struct.unpack_from("<h", buffer, sample_offset)[0] / 32768.0
+
+
+def _sample_positions(frame_count: int, maximum: int) -> tuple[int, ...]:
+    if frame_count <= maximum:
+        return tuple(range(frame_count))
+    # Cover the complete cue, including both ends.  This makes a rate drift or
+    # late corruption visible instead of looking only at the first seconds.
+    return tuple(
+        (index * (frame_count - 1)) // (maximum - 1)
+        for index in range(maximum)
+    )
+
+
+def _correlation(
+    reference,
+    decoded,
+    *,
+    reference_offset: int,
+    decoded_offset: int,
+    positions: tuple[int, ...],
+    lag: int,
+    reference_channel: int,
+    decoded_channel: int,
+    channels: int,
+) -> float:
+    count = len(positions)
+    if count < 8:
+        return 1.0
+    sum_reference = sum_decoded = 0.0
+    sum_reference_sq = sum_decoded_sq = cross = 0.0
+    for frame in positions:
+        left = _sample_pcm16(
+            reference, reference_offset, frame, reference_channel, channels
+        )
+        right = _sample_pcm16(
+            decoded, decoded_offset, frame + lag, decoded_channel, channels
+        )
+        sum_reference += left
+        sum_decoded += right
+        sum_reference_sq += left * left
+        sum_decoded_sq += right * right
+        cross += left * right
+    numerator = cross - (sum_reference * sum_decoded / count)
+    left_energy = sum_reference_sq - (sum_reference * sum_reference / count)
+    right_energy = sum_decoded_sq - (sum_decoded * sum_decoded / count)
+    if left_energy <= 1e-12 or right_energy <= 1e-12:
+        return 1.0 if abs(left_energy - right_energy) <= 1e-8 else 0.0
+    return numerator / math.sqrt(left_energy * right_energy)
+
+
+def _channel_metrics(
+    reference,
+    decoded,
+    *,
+    reference_offset: int,
+    decoded_offset: int,
+    reference_frames: int,
+    decoded_frames: int,
+    channel: int,
+    channels: int,
+) -> dict[str, float]:
+    common = min(reference_frames, decoded_frames)
+    positions = _sample_positions(common, SIGNAL_COMPARE_SAMPLE_FRAMES)
+    reference_sum = decoded_sum = 0.0
+    reference_sq = decoded_sq = 0.0
+    reference_peak = decoded_peak = 0.0
+    reference_clipped = decoded_clipped = 0
+    for frame in positions:
+        left = _sample_pcm16(reference, reference_offset, frame, channel, channels)
+        right = _sample_pcm16(decoded, decoded_offset, frame, channel, channels)
+        reference_sum += left
+        decoded_sum += right
+        reference_sq += left * left
+        decoded_sq += right * right
+        reference_peak = max(reference_peak, abs(left))
+        decoded_peak = max(decoded_peak, abs(right))
+        reference_clipped += abs(left) >= (32760 / 32768)
+        decoded_clipped += abs(right) >= (32760 / 32768)
+    count = max(1, len(positions))
+    return {
+        "reference_mean": reference_sum / count,
+        "decoded_mean": decoded_sum / count,
+        "reference_rms": math.sqrt(reference_sq / count),
+        "decoded_rms": math.sqrt(decoded_sq / count),
+        "reference_peak": reference_peak,
+        "decoded_peak": decoded_peak,
+        "reference_clipped_fraction": reference_clipped / count,
+        "decoded_clipped_fraction": decoded_clipped / count,
+    }
+
+
+def _tail_rms(buffer, byte_offset: int, frame_count: int, channel: int, channels: int) -> float:
+    count = min(256, frame_count)
+    start = frame_count - count
+    energy = 0.0
+    for frame in range(start, frame_count):
+        value = _sample_pcm16(buffer, byte_offset, frame, channel, channels)
+        energy += value * value
+    return math.sqrt(energy / max(1, count))
+
+
+def _compare_pcm16_signal_views(
+    reference,
+    decoded,
+    *,
+    reference_offset: int,
+    decoded_offset: int,
+    reference_frames: int,
+    decoded_frames: int,
+    target: Pcm16Target,
+) -> Mapping[str, object]:
+    """Reject gross encode/decode damage, allowing normal lossy XMA error.
+
+    Correlation is measured after searching the XMA decoder's documented
+    127-frame tail/alignment window.  Metrics sample the complete cue rather
+    than only its beginning, so a wrong clock/rate cannot pass by matching a
+    short prefix.  The thresholds are deliberately broad: this is an artifact
+    gate for silence, channel routing, clock, clipping, DC and tail failures,
+    not a claim that XMA is lossless.
+    """
+
+    target = validate_pcm16_target(target)
+    if abs(reference_frames - decoded_frames) > SIGNAL_ALIGNMENT_MAX_FRAMES:
+        raise AudioEncodingError(
+            "Encoded XMA1 decoded to the wrong duration; no project edit was staged"
+        )
+    common = min(reference_frames, decoded_frames)
+    if common <= 0:
+        raise AudioEncodingError(
+            "Encoded XMA1 decoded to silence/no samples; no project edit was staged"
+        )
+
+    margin = min(SIGNAL_ALIGNMENT_MAX_FRAMES, max(0, (common - 8) // 2))
+    usable_start = margin
+    usable_frames = common - (margin * 2)
+    if usable_frames < 8:
+        alignment_positions = tuple(range(common))
+        lag_range = range(0, 1)
+    else:
+        relative = _sample_positions(usable_frames, SIGNAL_ALIGNMENT_SAMPLE_FRAMES)
+        alignment_positions = tuple(usable_start + value for value in relative)
+        lag_range = range(-margin, margin + 1)
+
+    best_lag = 0
+    best_pair_correlation = -2.0
+    for lag in lag_range:
+        for reference_channel in range(target.channels):
+            for decoded_channel in range(target.channels):
+                value = _correlation(
+                    reference,
+                    decoded,
+                    reference_offset=reference_offset,
+                    decoded_offset=decoded_offset,
+                    positions=alignment_positions,
+                    lag=lag,
+                    reference_channel=reference_channel,
+                    decoded_channel=decoded_channel,
+                    channels=target.channels,
+                )
+                if value > best_pair_correlation:
+                    best_pair_correlation = value
+                    best_lag = lag
+
+    metrics = tuple(
+        _channel_metrics(
+            reference,
+            decoded,
+            reference_offset=reference_offset,
+            decoded_offset=decoded_offset,
+            reference_frames=reference_frames,
+            decoded_frames=decoded_frames,
+            channel=channel,
+            channels=target.channels,
+        )
+        for channel in range(target.channels)
+    )
+    active_channels = tuple(
+        channel
+        for channel, values in enumerate(metrics)
+        if values["reference_rms"] >= SIGNAL_MIN_ACTIVE_RMS
+    )
+    decoded_rms = max(values["decoded_rms"] for values in metrics)
+    mean_same_correlation: float | None = None
+    if not active_channels:
+        if decoded_rms > SIGNAL_MIN_ACTIVE_RMS * 2:
+            raise AudioEncodingError(
+                "Encoded XMA1 added audible signal to a silent source; "
+                "no project edit was staged"
+            )
+        correlations: tuple[float, ...] = ()
+    else:
+        correlations = tuple(
+            _correlation(
+                reference,
+                decoded,
+                reference_offset=reference_offset,
+                decoded_offset=decoded_offset,
+                positions=alignment_positions,
+                lag=best_lag,
+                reference_channel=channel,
+                decoded_channel=channel,
+                channels=target.channels,
+            )
+            for channel in active_channels
+        )
+        for channel in active_channels:
+            values = metrics[channel]
+            ratio = values["decoded_rms"] / values["reference_rms"]
+            if not 0.20 <= ratio <= 5.0:
+                raise AudioEncodingError(
+                    "Encoded XMA1 changed the signal level grossly or collapsed "
+                    "to silence; no project edit was staged"
+                )
+        maximum_reference_rms = max(
+            values["reference_rms"] for values in metrics
+        )
+        for channel, values in enumerate(metrics):
+            if (
+                channel not in active_channels
+                and values["decoded_rms"]
+                > max(SIGNAL_MIN_ACTIVE_RMS * 2, maximum_reference_rms * 0.10)
+            ):
+                raise AudioEncodingError(
+                    "Encoded XMA1 leaked or interleaved signal into a silent "
+                    "channel; no project edit was staged"
+                )
+        mean_same_correlation = sum(correlations) / len(correlations)
+
+    if target.channels == 2 and len(active_channels) == 2:
+        same = sum(correlations) / len(correlations)
+        swapped = sum(
+            _correlation(
+                reference,
+                decoded,
+                reference_offset=reference_offset,
+                decoded_offset=decoded_offset,
+                positions=alignment_positions,
+                lag=best_lag,
+                reference_channel=channel,
+                decoded_channel=1 - channel,
+                channels=2,
+            )
+            for channel in (0, 1)
+        ) / 2
+        reference_cross = sum(
+            _correlation(
+                reference,
+                reference,
+                reference_offset=reference_offset,
+                decoded_offset=reference_offset,
+                positions=alignment_positions,
+                lag=0,
+                reference_channel=channel,
+                decoded_channel=1 - channel,
+                channels=2,
+            )
+            for channel in (0, 1)
+        ) / 2
+        if reference_cross < 0.90 and swapped > same + 0.15:
+            raise AudioEncodingError(
+                "Encoded XMA1 swapped or interleaved the stereo channels; "
+                "no project edit was staged"
+            )
+
+    channel_receipts: list[Mapping[str, object]] = []
+    for channel, values in enumerate(metrics):
+        if (
+            abs(values["decoded_mean"]) > SIGNAL_MAX_DC_OFFSET
+            and abs(values["decoded_mean"] - values["reference_mean"])
+            > SIGNAL_MAX_DC_INCREASE
+        ):
+            raise AudioEncodingError(
+                "Encoded XMA1 introduced excessive DC offset; no project edit was staged"
+            )
+        if (
+            values["decoded_clipped_fraction"] > SIGNAL_MAX_CLIPPED_FRACTION
+            and values["decoded_clipped_fraction"]
+            > values["reference_clipped_fraction"] + 0.01
+        ):
+            raise AudioEncodingError(
+                "Encoded XMA1 introduced sustained full-scale clipping; "
+                "no project edit was staged"
+            )
+        reference_tail = _tail_rms(
+            reference, reference_offset, reference_frames, channel, target.channels
+        )
+        decoded_tail = _tail_rms(
+            decoded, decoded_offset, decoded_frames, channel, target.channels
+        )
+        reference_last = abs(
+            _sample_pcm16(
+                reference,
+                reference_offset,
+                reference_frames - 1,
+                channel,
+                target.channels,
+            )
+        )
+        decoded_last = abs(
+            _sample_pcm16(
+                decoded,
+                decoded_offset,
+                decoded_frames - 1,
+                channel,
+                target.channels,
+            )
+        )
+        if (
+            reference_tail < 0.03
+            and decoded_tail > SIGNAL_MAX_TAIL_RMS
+        ) or (reference_last < 0.05 and decoded_last > 0.25):
+            raise AudioEncodingError(
+                "Encoded XMA1 introduced a gross tail discontinuity/click; "
+                "no project edit was staged"
+            )
+        channel_receipts.append(
+            {
+                key: round(value, 6) for key, value in values.items()
+            }
+            | {
+                "reference_tail_rms": round(reference_tail, 6),
+                "decoded_tail_rms": round(decoded_tail, 6),
+            }
+        )
+
+    if (
+        mean_same_correlation is not None
+        and mean_same_correlation < SIGNAL_MIN_CORRELATION
+    ):
+        raise AudioEncodingError(
+            "Encoded XMA1 does not match the authored signal after alignment; "
+            "check encoder rate, pitch, and channel settings. No project edit "
+            "was staged"
+        )
+
+    return {
+        "status": "signal_quality_verified",
+        "alignment_lag_frames": best_lag,
+        "minimum_correlation": SIGNAL_MIN_CORRELATION,
+        "same_channel_correlations": tuple(round(value, 6) for value in correlations),
+        "reference_frames": reference_frames,
+        "decoded_frames": decoded_frames,
+        "channels": tuple(channel_receipts),
+        "checks": (
+            "non_silence",
+            "channel_routing",
+            "alignment_rate_pitch",
+            "level",
+            "clipping",
+            "dc_offset",
+            "tail_discontinuity",
+        ),
+    }
+
+
+def compare_pcm16_signal(
+    reference_pcm16le: bytes,
+    decoded_pcm16le: bytes,
+    target: Pcm16Target,
+) -> Mapping[str, object]:
+    """Pure artifact-gate seam used by tests and decoder integrations."""
+
+    target = validate_pcm16_target(target)
+    if not isinstance(reference_pcm16le, bytes) or not isinstance(decoded_pcm16le, bytes):
+        raise AudioEncodingError("Signal comparison requires immutable PCM16 bytes")
+    if len(reference_pcm16le) != target.data_size:
+        raise AudioEncodingError("Reference PCM16 length does not match the target")
+    if len(decoded_pcm16le) % target.block_align:
+        raise AudioEncodingError("Decoded PCM16 is not frame aligned")
+    return _compare_pcm16_signal_views(
+        reference_pcm16le,
+        decoded_pcm16le,
+        reference_offset=0,
+        decoded_offset=0,
+        reference_frames=target.frame_count,
+        decoded_frames=len(decoded_pcm16le) // target.block_align,
+        target=target,
+    )
+
+
+def verify_xma1_signal_quality(
+    source_pcm_wav: Path,
+    xma1_riff: bytes,
+    target: Pcm16Target,
+    *,
+    ffmpeg_path: str | Path | None = None,
+    timeout_seconds: int = 120,
+    cancel_requested: CancelRequested | None = None,
+) -> Mapping[str, object]:
+    """Decode external-encoder output and compare it with its authored PCM.
+
+    This is intentionally used only by the PCM/external-encoder route.  Direct
+    pre-encoded XMA admission remains byte-preserving and continues to use the
+    exact-slot structural/decode gate without inventing an unavailable PCM
+    reference.
+    """
+
+    target = validate_pcm16_target(target)
+    if not isinstance(xma1_riff, bytes) or not xma1_riff:
+        raise AudioEncodingError("XMA1 signal verification requires encoded bytes")
+    if type(timeout_seconds) is not int or timeout_seconds <= 0:
+        raise AudioEncodingError("XMA1 signal verification timeout is invalid")
+    executable = str(ffmpeg_path) if ffmpeg_path is not None else shutil.which("ffmpeg")
+    if not executable:
+        raise AudioEncodingError(
+            "FFmpeg is required to compare encoded XMA1 with the authored PCM"
+        )
+    _not_cancelled(cancel_requested)
+    source = _open_pcm_data(source_pcm_wav, target)
+    try:
+        with tempfile.TemporaryDirectory(prefix="apf-xma1-signal-verify-") as name:
+            directory = Path(name)
+            os.chmod(directory, 0o700)
+            decoded_path = directory / "decoded.pcm"
+            stderr_path = directory / "ffmpeg.stderr"
+            try:
+                with decoded_path.open("xb") as decoded_stream, stderr_path.open("xb") as stderr:
+                    completed = subprocess.run(
+                        [
+                            executable,
+                            "-hide_banner",
+                            "-nostdin",
+                            "-v",
+                            "error",
+                            "-xerror",
+                            "-i",
+                            "pipe:0",
+                            "-map",
+                            "0:a:0",
+                            "-map_metadata",
+                            "-1",
+                            "-vn",
+                            "-sn",
+                            "-dn",
+                            "-c:a",
+                            "pcm_s16le",
+                            "-ac",
+                            str(target.channels),
+                            "-ar",
+                            str(target.sample_rate),
+                            "-f",
+                            "s16le",
+                            "pipe:1",
+                        ],
+                        input=xma1_riff,
+                        stdout=decoded_stream,
+                        stderr=stderr,
+                        check=False,
+                        timeout=timeout_seconds,
+                    )
+            except subprocess.TimeoutExpired as exc:
+                raise AudioEncodingError(
+                    "XMA1 signal verification timed out; no project edit was staged"
+                ) from exc
+            except OSError as exc:
+                raise AudioEncodingError(
+                    f"Could not decode XMA1 for signal verification: {exc}"
+                ) from exc
+            if stderr_path.stat().st_size > MAX_ENCODER_LOG_BYTES:
+                raise AudioEncodingError(
+                    "XMA1 signal verification produced too much diagnostic output"
+                )
+            diagnostic = stderr_path.read_text(encoding="utf-8", errors="replace").strip()
+            if completed.returncode != 0 or diagnostic:
+                detail = diagnostic or f"FFmpeg exited with status {completed.returncode}"
+                raise AudioEncodingError(
+                    f"Encoded XMA1 could not pass signal verification ({detail})"
+                )
+            decoded_size = decoded_path.stat().st_size
+            maximum = target.data_size + (SIGNAL_ALIGNMENT_MAX_FRAMES * target.block_align)
+            minimum = max(
+                target.block_align,
+                target.data_size - (SIGNAL_ALIGNMENT_MAX_FRAMES * target.block_align),
+            )
+            if not minimum <= decoded_size <= maximum or decoded_size % target.block_align:
+                raise AudioEncodingError(
+                    "Encoded XMA1 decoded to the wrong PCM length during signal verification"
+                )
+            _not_cancelled(cancel_requested)
+            decoded_descriptor = os.open(decoded_path, os.O_RDONLY | _O_BINARY)
+            try:
+                with (
+                    mmap.mmap(source.descriptor, 0, access=mmap.ACCESS_READ) as reference_map,
+                    mmap.mmap(decoded_descriptor, 0, access=mmap.ACCESS_READ) as decoded_map,
+                ):
+                    receipt = _compare_pcm16_signal_views(
+                        reference_map,
+                        decoded_map,
+                        reference_offset=source.data_offset,
+                        decoded_offset=0,
+                        reference_frames=target.frame_count,
+                        decoded_frames=decoded_size // target.block_align,
+                        target=target,
+                    )
+            finally:
+                os.close(decoded_descriptor)
+            if _source_identity(os.fstat(source.descriptor)) != source.source_identity:
+                raise AudioEncodingError(
+                    "The authored PCM changed during XMA1 signal verification"
+                )
+            _not_cancelled(cancel_requested)
+            return receipt
+    finally:
+        os.close(source.descriptor)
 
 
 def _validate_tool_path(
@@ -1499,6 +2020,8 @@ __all__ = [
     "PCM16_TEMPLATE_SCHEMA",
     "Pcm16Target",
     "Pcm16TemplateReceipt",
+    "compare_pcm16_signal",
     "export_pcm16_template",
     "validate_pcm16_target",
+    "verify_xma1_signal_quality",
 ]

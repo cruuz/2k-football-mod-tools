@@ -1,9 +1,10 @@
 """Lazy PNG export and strict input checks for proved Phase 2 visuals.
 
 Retail artwork is decoded only from the user's private source cache and is
-stored only in that cache's ``originals`` directory.  This module never writes
+stored only in that cache's ``originals`` directory. This module never writes
 the source XISO, never places an original in a project, and accepts only exact
-RGBA PNG dimensions understood by the existing fixed-span importers.
+RGBA PNG dimensions understood by the fixed-span importers, including reviewed
+package-local uniform-equipment P8 palettes.
 """
 
 from __future__ import annotations
@@ -34,14 +35,14 @@ if str(TOOLS) not in sys.path:
 import nfl_create_team_field_art_png_import as field_import  # noqa: E402
 import nfl_live_face_texture_png_import as face_import  # noqa: E402
 import nfl_live_face_texture_targets as face_targets  # noqa: E402
-from nfl_outer import parse_archive, read_entry_range  # noqa: E402
+from nfl_outer import parse_archive, read_entry_bytes, read_entry_range  # noqa: E402
 import nfl_player_portrait_png_import as portrait_import  # noqa: E402
 import nfl_player_portrait_targets as portrait_targets  # noqa: E402
 import nfl_all_texture_xiso_workflow as p8_workflow  # noqa: E402
 import nfl_scorebug_png_import as scorebug_import  # noqa: E402
 import nfl_tset_png_import as png_codec  # noqa: E402
-from nfl_txtr import (decode_dxt1, encode_rgba_png, parse_texture,  # noqa: E402
-                      texture_to_rgba)
+from nfl_txtr import (TextureInfo, decode_chunk, decode_dxt1, encode_rgba_png,  # noqa: E402
+                      parse_chunks, parse_texture, texture_to_rgba)
 
 
 ORIGINAL_SCHEMA = "2k5_mod_studio_extended_visual_original_png/v1"
@@ -118,30 +119,62 @@ class Nfl2k5ExtendedVisualIO:
 
         path = self.original_path(asset)
         metadata = path.with_suffix(".json")
+        stale = False
+        tampered = ValidationError(
+            "A private original-backup file changed outside Mod Studio. "
+            "Remove the source cache and load the XISO again."
+        )
         if path.is_file() and metadata.is_file() and not path.is_symlink() \
                 and not metadata.is_symlink():
             try:
                 record = json.loads(metadata.read_text(encoding="utf-8"))
                 payload = path.read_bytes()
-                width, height, rgba = png_codec.decode_rgba_png(
-                    payload, asset.dimensions
-                )
+                recorded_dimensions = record.get("dimensions")
                 if (
-                    record.get("schema") == ORIGINAL_SCHEMA
-                    and record.get("asset_id") == asset.asset_id
-                    and record.get("source_sha256") == self.cache.source.sha256
-                    and record.get("dimensions") == [asset.width, asset.height]
-                    and record.get("png_sha256") == _sha256(payload)
-                    and record.get("rgba_sha256") == _sha256(rgba)
-                    and (width, height) == asset.dimensions
+                    not isinstance(recorded_dimensions, list)
+                    or len(recorded_dimensions) != 2
+                    or any(
+                        not isinstance(value, int) or isinstance(value, bool)
+                        or not 0 < value <= 16_384
+                        for value in recorded_dimensions
+                    )
                 ):
-                    return path
+                    raise ValueError("invalid cached dimensions")
+                width, height, rgba = png_codec.decode_rgba_png(
+                    payload,
+                    (recorded_dimensions[0], recorded_dimensions[1]),
+                )
             except (OSError, ValueError, KeyError, json.JSONDecodeError):
-                pass
-            raise ValidationError(
-                "A private original-backup file changed outside Mod Studio. "
-                "Remove the source cache and load the XISO again."
-            )
+                raise tampered from None
+            # Two different situations used to share one message. A file whose
+            # own recorded hashes no longer match its bytes really was edited
+            # behind our back. A file that is internally consistent but was
+            # recorded against a different source XISO or an older schema is
+            # just a stale cache entry -- and calling that tampering stopped
+            # people exporting after they loaded a different disc.
+            if (
+                record.get("png_sha256") != _sha256(payload)
+                or record.get("rgba_sha256") != _sha256(rgba)
+                or [width, height] != recorded_dimensions
+            ):
+                raise tampered
+            if (
+                record.get("schema") == ORIGINAL_SCHEMA
+                and record.get("asset_id") == asset.asset_id
+                and record.get("source_sha256") == self.cache.source.sha256
+                and recorded_dimensions == [asset.width, asset.height]
+            ):
+                return path
+            stale = True
+        elif os.path.lexists(path) or os.path.lexists(metadata):
+            # Recover a regular half-written generated pair, but never replace
+            # a link or directory hidden at either cache pathname.
+            for leftover in (path, metadata):
+                if os.path.lexists(leftover) and (
+                    leftover.is_symlink() or not leftover.is_file()
+                ):
+                    raise tampered
+            stale = True
         try:
             png, rgba = (
                 self._decoder(asset) if self._decoder is not None
@@ -156,7 +189,6 @@ class Nfl2k5ExtendedVisualIO:
             raise ValidationError(f"Could not export {asset.label}: {exc}") from exc
         if (width, height) != asset.dimensions or reparsed != rgba:
             raise ValidationError(f"Could not verify the decoded pixels for {asset.label}")
-        _atomic_write(path, png)
         record = {
             "asset_id": asset.asset_id,
             "dimensions": [asset.width, asset.height],
@@ -165,9 +197,12 @@ class Nfl2k5ExtendedVisualIO:
             "schema": ORIGINAL_SCHEMA,
             "source_sha256": self.cache.source.sha256,
         }
+        # Do not delete an intact stale pair before the fresh decode succeeds.
+        _atomic_write(path, png, replace=stale)
         _atomic_write(
             metadata,
             (json.dumps(record, indent=2, sort_keys=True) + "\n").encode("utf-8"),
+            replace=stale,
         )
         return path
 
@@ -191,6 +226,11 @@ class Nfl2k5ExtendedVisualIO:
     ) -> tuple[bytes, bytes]:
         """Validate the exact user-facing PNG contract for one asset."""
 
+        if not asset.editable:
+            raise ValidationError(
+                f"{asset.label} is preview/export-only because its texture "
+                "format has no proved fixed-span importer."
+            )
         requested = path.expanduser()
         try:
             supplied = requested.lstat()
@@ -258,7 +298,12 @@ class Nfl2k5ExtendedVisualIO:
             return self._decode_scorebug(asset)
         if asset.kind == "p8_texture":
             return self._decode_p8_texture(asset)
-        raise ValidationError(f"Export is not implemented for asset kind {asset.kind!r}")
+        if asset.kind == "uniform_equipment_texture":
+            return self._decode_uniform_equipment(asset)
+        raise ValidationError(
+            f"No safe export route exists for asset kind {asset.kind!r}; "
+            "this asset is inspect-only"
+        )
 
     def _decode_portrait(
         self, asset: ExtendedVisualAsset
@@ -321,12 +366,12 @@ class Nfl2k5ExtendedVisualIO:
         raised straight out of the dispatch above.
         """
         if asset.texture is None:
-            raise ValidationError("The standalone P8 texture selector is missing")
+            raise ValidationError("The standalone texture selector is missing")
         try:
             outer_index = int(asset.asset_id.split(":")[1])
         except (IndexError, ValueError) as exc:
             raise ValidationError(
-                f"{asset.asset_id} is not a standalone P8 texture selector"
+                f"{asset.asset_id} is not a standalone texture selector"
             ) from exc
         try:
             target = p8_workflow.resolve_target(
@@ -340,6 +385,73 @@ class Nfl2k5ExtendedVisualIO:
         info = parse_texture(target.decoded, target.chunk)
         rgba = texture_to_rgba(target.decoded, target.chunk, info)
         return _canonical_png(target.width, target.height, rgba), rgba
+
+    def _decode_uniform_equipment(
+        self, asset: ExtendedVisualAsset
+    ) -> tuple[bytes, bytes]:
+        """Decode one reviewed embedded TSET reference for preview/export/edit."""
+
+        descriptor = asset.equipment_descriptor
+        if descriptor is None or asset.texture is None:
+            raise ValidationError("The uniform-equipment export selector is incomplete")
+        try:
+            entry = self.archive.entries[descriptor.outer_index]
+            package = read_entry_bytes(self.archive, entry)
+            chunks = parse_chunks(package, allow_trailing=True)
+            chunk = next(
+                row for row in chunks
+                if row.index == descriptor.chunk_index and row.kind == "TSET"
+            )
+            decoded, info = decode_chunk(package, chunk)
+        except (IndexError, OSError, ValueError, StopIteration) as exc:
+            raise ValidationError(
+                f"Could not locate {asset.label} in the loaded game: {exc}"
+            ) from exc
+        if info is None:
+            raise ValidationError(f"{asset.label} is not a compressed retail TSET")
+        format_code = (descriptor.packed_format >> 8) & 0xFF
+        dimensions = (descriptor.packed_format >> 4) & 0xF
+        mip_levels = (descriptor.packed_format >> 16) & 0xF
+        depth = 1 << ((descriptor.packed_format >> 28) & 0xF)
+        texture = TextureInfo(
+            name=asset.texture,
+            name_offset=0,
+            descriptor_offset=0,
+            pixel_offset=descriptor.pixel_offset,
+            palette_offset=descriptor.palette_offset,
+            packed_format=descriptor.packed_format,
+            packed_size=descriptor.packed_size,
+            descriptor_flags=descriptor.descriptor_flags,
+            dimensions=dimensions,
+            format_code=format_code,
+            format_name="P8" if format_code == 0x0B else f"UNKNOWN_0x{format_code:02X}",
+            mip_levels=mip_levels,
+            width=asset.width,
+            height=asset.height,
+            depth=depth,
+        )
+        video = decoded[chunk.system_bytes:chunk.system_bytes + chunk.video_bytes]
+        base_size = asset.width * asset.height
+        base = video[
+            descriptor.pixel_offset:descriptor.pixel_offset + base_size
+        ]
+        palette = video[
+            descriptor.palette_offset:descriptor.palette_offset + 1024
+        ]
+        if (
+            len(base) != base_size
+            or len(palette) != 1024
+            or _sha256(base) != descriptor.base_pixel_sha256
+            or _sha256(palette) != descriptor.palette_bgra_sha256
+        ):
+            raise ValidationError(
+                f"{asset.label} no longer matches the reviewed source hashes"
+            )
+        try:
+            rgba = texture_to_rgba(decoded, chunk, texture)
+        except ValueError as exc:
+            raise ValidationError(f"Could not decode {asset.label}: {exc}") from exc
+        return _canonical_png(asset.width, asset.height, rgba), rgba
 
     def _decode_scorebug(
         self, asset: ExtendedVisualAsset
@@ -365,11 +477,18 @@ class Nfl2k5ExtendedVisualIO:
 class Nfl2k5ProductVisualIO:
     """Session-compatible router for uniform and extended visual assets."""
 
+    # Every kind Nfl2k5ExtendedVisualIO can decode has to be listed here, or
+    # the router hands it to the uniform IO instead and the author sees
+    # the inspect-only no-safe-route error.  That is what happened to
+    # p8_texture: the decoder existed, the routing entry did not, so the whole
+    # All Textures panel could neither preview nor export an end-zone package.
     _extended_kinds = frozenset({
         "player_portrait",
         "live_face",
         "create_team_field_art",
         "scorebug_texture",
+        "p8_texture",
+        "uniform_equipment_texture",
     })
 
     def __init__(

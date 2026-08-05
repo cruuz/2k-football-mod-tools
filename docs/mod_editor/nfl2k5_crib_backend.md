@@ -17,17 +17,19 @@ is decoded lazily from the user's private NFL 2K5 source cache.
   128x128 non-interlaced RGBA PNG, regenerates the 128, 64, 32, 16, and 8 pixel
   P8 mip levels, swizzles each mip independently, retains the existing wrapper
   and system bytes, and produces one 23,008-byte fixed-span build-time patch.
-- The exact `crib_scene_texture:room:22` / `bar_monitor` screen is also
-  `Editable`. It accepts a 128x128 RGBA8 PNG, regenerates five P8 mips, changes
-  only that decoded texture allocation, recompresses its fixed room SCNE span,
-  and preserves geometry, other decoded allocations, and the source-derived
-  opaque tail. Images outside the proved compression/scratch envelope are
-  refused with a modder-facing suggestion.
-- The 369 remaining textures are deliberately `Preview/Export-only`. The
-  electronics ownership spike mapped 25 exact material/submesh consumers; only
-  `bar_monitor` has the reviewed writer, leaving the other 24 export-only.
-- A shareable Crib edit contains only `kind`, the logical `selector`, the user's
-  PNG, and its hashes. Absolute offsets, original hashes, wrapper bytes, opaque
+- The other 114 Team Item textures are `Editable` through the same raw,
+  fixed-allocation P8 path generalized to their own dimensions and mip counts.
+- All 68 standalone CRIB textures are `Editable`. The writer handles 66 normal
+  swizzled P8 resources, preserves the reflection texture's exact 109,440-byte
+  source-owned pre-palette gap, and writes `ticker_src` as its native 1024x32
+  row-major `VC_P8_LINEAR` surface. VC-LZ resources are deterministically
+  refitted into the original stored bound.
+- All 188 P8 textures embedded in 36 SCNE resources are `Editable`. Same-scene
+  edits are composed before one fixed-span recompression; geometry, descriptors,
+  unrelated texture allocations, and the source-derived opaque tail are kept.
+- The catalog therefore has **498 editable / 0 export-only** texture rows.
+- A shareable Crib edit contains only `kind`, the logical `selector`, and the
+  user's PNG path. Absolute offsets, original hashes, wrapper bytes, opaque
   tails, and compiled replacement spans stay private build-time values.
 
 ## Complete inventory and ownership
@@ -36,9 +38,9 @@ The 498 textures divide into three physical storage families:
 
 | Storage family | Count | Contents | Product status |
 | --- | ---: | --- | --- |
-| Crib item aggregate (outer resource 4274) | 242 | 128 Team Photos, 32 helmets, 32 foam fingers, 32 street signs, 18 collection-art images | Team Photos editable; 114 others export-only |
-| Standalone CRIB textures | 68 | 32 bobbleheads, 32 team logos, logo, reflection, and two ticker surfaces | Export-only |
-| Embedded textures in 36 SCNE resources | 188 | Room and collectible/object surfaces | `room:22 / bar_monitor` editable; 187 others export-only |
+| Crib item aggregate (outer resource 4274) | 242 | 128 Team Photos, 32 helmets, 32 foam fingers, 32 street signs, 18 collection-art images | All editable, raw fixed-allocation P8 |
+| Standalone CRIB textures | 68 | 32 bobbleheads, 32 team logos, logo, reflection, and two ticker surfaces | All editable, fixed-allocation VC-LZ P8 / linear P8 |
+| Embedded textures in 36 SCNE resources | 188 | Room and collectible/object surfaces | All editable, grouped fixed-allocation SCNE P8 |
 
 The Team Photo writer has stronger ownership evidence than a name-only match.
 The executable-owned catalog row names the `team_photo` scene and `photo`
@@ -60,8 +62,8 @@ The 188 scene-embedded rows cover these 36 scenes: `100_complete_lo`,
 
 ## Read-only production-cache result
 
-The production catalog loaded with exactly 498 unique selectors: 129 editable
-and 369 export-only. A one-time private-cache export pass decoded and strictly
+The production catalog loads exactly 498 unique selectors: 498 editable and
+zero export-only. A one-time private-cache export pass decoded and strictly
 reparsed **all 498 assets** successfully: all 242 aggregate resources, all 68
 standalone textures, and all 188 scene-embedded textures. Every PNG remained
 under the user's private source-cache originals directory. Representative
@@ -71,11 +73,12 @@ selectors from the three ownership routes were:
 - `crib_external_texture:9:bobblehead_00` (standalone compressed TXTR, 64x128)
 - `crib_scene_texture:room:22` (P8 texture inside a compressed SCNE, 128x128)
 
-The real Team Photo template also passed the five-mip compiler's independent
-decode, allocation, swizzle, and PNG checks. The result remained exactly
-23,008 bytes. This pass did not modify a pack or XISO and is not a claim of
-in-game runtime visibility; build-pipeline integration and a single xemu spot
-check remain the acceptance step for the product owner.
+The real Team Photo template passed the five-mip compiler's independent decode,
+allocation, swizzle, and PNG checks and remained exactly 23,008 bytes. Private
+read-only compiler proofs also passed for a raw helmet item, an ordinary
+standalone VC-LZ logo, the reflection-gap layout, the row-major linear ticker,
+and a non-electronics embedded scene surface. No proof run modified a pack or
+XISO, and these are not claims of in-game runtime visibility.
 
 ## Object reskin and "PS5 in the Crib" spike
 
@@ -88,23 +91,13 @@ evidence does **not** support promising a PS5-shaped console: a texture can
 change colors, labels, and screen art, but it cannot change the silhouette or
 add missing geometry.
 
-Best next step: implement one fixed-span P8 writer for
-`crib_scene_texture:room:22` (`bar_monitor`) or the mapped `screen_crib`
-surface, rebuild a copied XISO, and spot-check the result in xemu. If it renders
-on the expected surface, generalize the same bounded SCNE serializer to the
-other compatible Crib scene textures.
-
-## Model-swap spike: Coming Soon
+## Bounded model editing
 
 The 36 Crib SCNE resources contain interdependent node, shape, submesh,
 material, pointer, bounds, marker, and command structures inside fixed
-compressed allocations. Existing evidence supports bounded edits to selected
-geometry fields elsewhere in the game; it does not establish a safe general
-mesh importer or a same-footprint Crib object replacement contract. Therefore
-general model swapping remains **Coming Soon**, rather than being exposed as a
-writer that could silently corrupt a scene. The single best follow-up is a
-same-footprint experiment on one isolated object: map every pointer and draw
-record, replace only its vertex/index payload without changing counts, rebuild
-inside the original allocation, and verify both scene traversal and runtime
-rendering. Arbitrary glTF/OBJ import would still require relocation, bounds,
-material binding, and command-stream semantics after that succeeds.
+compressed allocations. The bounded geometry lane exports and reimports
+position-only edits for ten exactly catalogued meshes across seven scenes, with
+vertex counts and topology held fixed. UVs, materials, collision/index data,
+normals and all unrelated registers remain source-owned. Arbitrary model
+swapping, changed topology, new vertices, and replacement helmet/object formats
+remain outside this proved boundary.

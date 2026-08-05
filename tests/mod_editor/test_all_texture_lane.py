@@ -18,6 +18,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -105,8 +106,8 @@ class MipChainTests(unittest.TestCase):
 
 
 class ContractTests(unittest.TestCase):
-    def test_only_p8_is_claimed(self) -> None:
-        self.assertEqual(lane.SUPPORTED_FORMATS, ("P8",))
+    def test_only_the_two_proved_standalone_formats_are_claimed(self) -> None:
+        self.assertEqual(lane.SUPPORTED_FORMATS, ("P8", "A1R5G5B5"))
 
     def test_the_palette_is_a_fixed_1024_byte_block(self) -> None:
         self.assertEqual(lane.PALETTE_BYTES, 1024)
@@ -120,6 +121,33 @@ class ContractTests(unittest.TestCase):
                 f"{pin} identifies how a disc was dumped, not which game it is; "
                 "identity here is default.xbe plus each touched pack",
             )
+
+    def test_a_synthetic_logical_span_splits_and_reassembles_exactly(self) -> None:
+        entry = SimpleNamespace(
+            size=16,
+            segments=(
+                SimpleNamespace(pack_name="0", pack_offset=100, size=8),
+                SimpleNamespace(pack_name="1", pack_offset=200, size=8),
+            ),
+        )
+        payload = b"abcdefghijkl"
+        pieces = lane._physical_spans(entry, 4, payload)
+        self.assertEqual(
+            [
+                (piece.pack_name, piece.pack_relative_offset,
+                 piece.replacement_offset, piece.size)
+                for piece in pieces
+            ],
+            [("0", 104, 0, 4), ("1", 200, 4, 8)],
+        )
+        self.assertEqual(
+            b"".join(
+                payload[piece.replacement_offset:
+                        piece.replacement_offset + piece.size]
+                for piece in pieces
+            ),
+            payload,
+        )
 
 
 @unittest.skipUnless(_INDEX.is_file(), "retail extracted index is not present")
@@ -142,6 +170,43 @@ class RetailTargetTests(unittest.TestCase):
         target = lane.resolve_target(self.archive, 853, "endzone_north_left")
         self.assertEqual((target.width, target.height), (256, 128))
         self.assertEqual(target.pack_name, "1")
+
+    def test_a_uniform_outer_may_span_packs_when_its_texture_does_not(self) -> None:
+        target = lane.resolve_target(self.archive, 3625, "logo")
+        self.assertEqual((target.width, target.height), (128, 128))
+        self.assertEqual(target.pack_name, "A")
+
+    def test_an_explicit_size_player_strip_resolves_with_its_full_mip_prefix(self) -> None:
+        target = lane.resolve_target(self.archive, 684, "p011")
+        self.assertEqual(target.format_name, "A1R5G5B5")
+        self.assertEqual((target.width, target.height), (1056, 64))
+        self.assertEqual(target.mip_levels, 5)
+        self.assertEqual(target.pixel_chain_bytes, 180_048)
+        self.assertEqual(target.video_bytes - target.pixel_chain_bytes, 1_584)
+
+    def test_the_retail_p005_boundary_is_two_exact_ordered_pack_slices(self) -> None:
+        target = lane.resolve_target(self.archive, 581, "p005")
+        self.assertEqual(target.format_name, "A1R5G5B5")
+        self.assertEqual((target.width, target.height), (1_344, 64))
+        self.assertEqual(
+            [
+                (piece.pack_name, piece.pack_relative_offset,
+                 piece.replacement_offset, piece.size)
+                for piece in target.physical_spans
+            ],
+            [
+                ("0", 193_656_192, 0, 53_888),
+                ("1", 0, 53_888, 21_008),
+            ],
+        )
+        self.assertEqual(sum(piece.size for piece in target.physical_spans),
+                         target.span_size)
+
+    def test_an_unreviewed_a1_texture_is_still_refused(self) -> None:
+        with self.assertRaisesRegex(
+            lane.TextureWorkflowError, "not a reviewed A1R5G5B5 player strip"
+        ):
+            lane.resolve_target(self.archive, 513, "crowdbase")
 
     def test_an_absent_texture_name_is_refused(self) -> None:
         with self.assertRaises(lane.TextureWorkflowError):
@@ -171,6 +236,70 @@ class RetailTargetTests(unittest.TestCase):
         self.assertNotEqual(replacement, target.template_span)
         self.assertLessEqual(report["palette_entries"], 256)
 
+    def test_a_p011_a1_strip_rebuilds_all_mips_in_the_exact_span(self) -> None:
+        from nfl_txtr import decode_chunk, write_png
+        import dataclasses
+
+        target = lane.resolve_target(self.archive, 684, "p011")
+        rgba = bytes(
+            component
+            for y in range(target.height)
+            for x in range(target.width)
+            for component in (
+                (255 if (x // 64 + y // 8) % 2 else 0),
+                96,
+                72,
+                255,
+            )
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            png = Path(directory) / "p011.png"
+            write_png(png, target.width, target.height, rgba)
+            replacement, report = lane.build_replacement(target, png)
+        self.assertEqual(len(replacement), len(target.template_span))
+        self.assertNotEqual(replacement, target.template_span)
+        self.assertEqual(report["format"], "A1R5G5B5")
+        self.assertEqual(report["pixel_chain_bytes"], 180_048)
+        self.assertEqual(report["source_owned_tail_bytes"], 1_584)
+        standalone = dataclasses.replace(target.chunk, offset=0)
+        decoded, _ = decode_chunk(replacement, standalone)
+        video = target.system_bytes
+        self.assertEqual(
+            decoded[video + target.pixel_chain_bytes:video + target.video_bytes],
+            target.decoded[
+                video + target.pixel_chain_bytes:video + target.video_bytes
+            ],
+        )
+
+    def test_the_cross_pack_p005_rebuild_reassembles_one_exact_txtr(self) -> None:
+        from nfl_txtr import write_png
+
+        target = lane.resolve_target(self.archive, 581, "p005")
+        rgba = bytes(
+            component
+            for y in range(target.height)
+            for x in range(target.width)
+            for component in (
+                176 if (x // 48 + y // 8) % 2 else 24,
+                214 if (x // 96) % 2 else 48,
+                90,
+                255,
+            )
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            png = Path(directory) / "p005.png"
+            write_png(png, target.width, target.height, rgba)
+            replacement, report = lane.build_replacement(target, png)
+        pieces = [
+            replacement[piece.replacement_offset:
+                        piece.replacement_offset + piece.size]
+            for piece in target.physical_spans
+        ]
+        self.assertEqual([len(piece) for piece in pieces], [53_888, 21_008])
+        self.assertEqual(b"".join(pieces), replacement)
+        self.assertEqual(len(replacement), target.span_size)
+        self.assertEqual(report["format"], "A1R5G5B5")
+
     def test_a_png_of_the_wrong_size_is_refused(self) -> None:
         from nfl_txtr import write_png
 
@@ -180,6 +309,35 @@ class RetailTargetTests(unittest.TestCase):
             write_png(png, 64, 64, bytes(64 * 64 * 4))
             with self.assertRaises(Exception):
                 lane.build_replacement(target, png)
+
+    def test_a_complex_eagles_menu_logo_retries_palette_tiers_to_fit(self) -> None:
+        from nfl_txtr import write_png
+
+        target = lane.resolve_target(self.archive, 3783, "logo")
+        rgba = bytes(
+            component
+            for y in range(target.height)
+            for x in range(target.width)
+            for component in (
+                255 if (x // 8 + y // 8) % 2 else 0,
+                (x * 5) % 256,
+                (y * 7) % 256,
+                255,
+            )
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            png = Path(directory) / "eagles-menu-logo.png"
+            write_png(png, target.width, target.height, rgba)
+            replacement, report = lane.build_replacement(target, png)
+        self.assertEqual(len(replacement), len(target.template_span))
+        self.assertNotEqual(replacement, target.template_span)
+        fit = report["bounded_palette_fit"]
+        self.assertEqual(fit["selected_palette_entries"], 16)
+        self.assertEqual(fit["attempts"][-1]["result"], "fit")
+        self.assertTrue(all(
+            attempt["result"] == "vc_lz_overflow"
+            for attempt in fit["attempts"][:-1]
+        ))
 
 
 if __name__ == "__main__":

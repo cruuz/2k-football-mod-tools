@@ -335,8 +335,26 @@ def compress_h7a(
                             candidate,
                             min(max_length, len(data) - cursor),
                         )
+                        # Never emit a match that reads bytes it is still
+                        # writing.  Our decoder copies one byte at a time and so
+                        # reproduces an overlapping run correctly, which is why
+                        # this round-trips offline while the rebuilt asset comes
+                        # back as fine speckle in game.  Retail settles it: the
+                        # shipped 512x512 crest block holds 36,099 matches and
+                        # not one overlaps, where a plain greedy encoder emits
+                        # nearly eleven thousand, almost all at distance 2.
+                        if length > distance:
+                            length = distance
+                        if length < 3:
+                            continue
+                        # On a tie prefer the FARTHER match.  Both encode to
+                        # the same two bytes, but since a match may no longer
+                        # overlap, the reachable length at the next position is
+                        # bounded by the distance -- so taking the near copy
+                        # caps every following match at the same short length
+                        # and a run ramps up far more slowly.
                         if length > best_length or (
-                            length == best_length and distance < best_distance
+                            length == best_length and distance > best_distance
                         ):
                             best_length = length
                             best_distance = distance
@@ -358,6 +376,83 @@ def compress_h7a(
             cursor += consumed
         output[descriptor_offset] = descriptor
     return bytes(output)
+
+
+# Greedy parsing is normally both fast and small enough for APF's fixed outer
+# allocations.  A handful of large textures sit within a few hundred bytes of
+# their bounds after a safe (non-overlapping) edit, however, and require a
+# minimum-cost parse.  Keep the slower encoder out of the common path: callers
+# first try ``compress_h7a`` and pass that result back here only when it does
+# not fit.
+_OPTIMAL_BINARY = Path(__file__).resolve().parent / "apf_h7a_optimal"
+_OPTIMAL_BINARY_SIZE = 14_472
+_OPTIMAL_BINARY_SHA256 = (
+    "9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab"
+)
+
+
+def _optimal_binary() -> Path | None:
+    """Return the exact reviewed Linux encoder bundled with the editor."""
+    import platform
+
+    if not sys.platform.startswith("linux") or platform.machine() not in {
+        "x86_64",
+        "amd64",
+    }:
+        return None
+    try:
+        info = _OPTIMAL_BINARY.lstat()
+    except OSError:
+        return None
+    if (
+        not stat.S_ISREG(info.st_mode)
+        or stat.S_ISLNK(info.st_mode)
+        or info.st_nlink != 1
+        or info.st_size != _OPTIMAL_BINARY_SIZE
+        or info.st_mode & 0o022
+        or not info.st_mode & stat.S_IXUSR
+    ):
+        return None
+    if sha256_file(_OPTIMAL_BINARY) != _OPTIMAL_BINARY_SHA256:
+        return None
+    return _OPTIMAL_BINARY
+
+
+def compress_h7a_best(
+    data: bytes,
+    shift: int,
+    *,
+    greedy: bytes | None = None,
+) -> bytes:
+    """Return the smaller verified safe parse, never worse than ``greedy``."""
+    import subprocess
+
+    baseline = compress_h7a(data, shift) if greedy is None else greedy
+    binary = _optimal_binary()
+    if binary is None:
+        return baseline
+    try:
+        finished = subprocess.run(
+            [str(binary), str(shift)],
+            input=data,
+            capture_output=True,
+            timeout=180,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return baseline
+    candidate = finished.stdout
+    if (
+        finished.returncode != 0
+        or not candidate
+        or len(candidate) >= len(baseline)
+    ):
+        return baseline
+    try:
+        if apf_inner.decompress_h7a(candidate, len(data), shift) != data:
+            return baseline
+    except Exception:  # noqa: BLE001 - any decode failure means fall back
+        return baseline
+    return candidate
 
 
 def _rgba_metrics(wanted: bytes, decoded: bytes) -> dict[str, object]:

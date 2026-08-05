@@ -60,6 +60,14 @@ def pack_colors(facemask: int, turtleneck: int) -> bytes:
 COPY_CHUNK = 32 * 1024 * 1024
 HASH_CHUNK = 16 * 1024 * 1024
 MAX_DIRECTORY_NODES = 4096
+#: Real discs nest a handful of levels; this only has to stop a
+#: degenerate tree before the interpreter stack does.
+MAX_DIRECTORY_DEPTH = 64
+#: Every recursive step of the parse, directory descent and AVL walk alike,
+#: counted together. CPython allows about 1000 frames; a real disc uses well
+#: under a hundred here, so this refuses long before the stack runs out and
+#: leaves generous room for the caller's own frames.
+MAX_PARSE_RECURSION = 400
 
 
 class PatchError(ValueError):
@@ -486,8 +494,23 @@ def parse_xdvdfs(
     visited_directories: set[tuple[int, int]] = set()
     total_nodes = 0
 
-    def walk_directory(sector: int, size: int, prefix: str) -> None:
+    def walk_directory(sector: int, size: int, prefix: str, depth: int = 0,
+                       stack: int = 0) -> None:
         nonlocal total_nodes
+        # Both walks below recurse. Without a bound, a deep or hostile tree
+        # exhausts the interpreter stack and surfaces as RecursionError, which
+        # escapes every caller's `except PatchError` and reads like a crash
+        # rather than a rejected image.
+        require(depth <= MAX_DIRECTORY_DEPTH,
+                f"XDVDFS directory nesting is too deep at {prefix or '/'}")
+        # `depth` counts nested directories only. The AVL walk inside one
+        # directory recurses too, and the two interleave, so neither bound alone
+        # describes the interpreter stack: 4096 nodes chained left is 4096 frames
+        # deep inside a single directory nested zero deep. `stack` counts every
+        # recursive call of either kind, which is the thing that actually runs
+        # out.
+        require(stack <= MAX_PARSE_RECURSION,
+                f"XDVDFS structure is nested too deeply at {prefix or '/'}")
         key = (sector, size)
         require(key not in visited_directories, "cyclic XDVDFS directory extent")
         visited_directories.add(key)
@@ -497,8 +520,11 @@ def parse_xdvdfs(
         directory = read_exact(descriptor, base, size)
         visited_offsets: set[int] = set()
 
-        def walk_node(offset: int) -> None:
+        def walk_node(offset: int, depth: int = 0, stack: int = 0) -> None:
             nonlocal total_nodes
+            require(stack <= MAX_PARSE_RECURSION,
+                    f"XDVDFS directory tree is unbalanced past the safe depth "
+                    f"in {prefix or '/'}")
             require(offset not in visited_offsets,
                     f"cyclic XDVDFS AVL offset in {prefix or '/'}")
             require(offset >= 0 and offset + 14 <= size,
@@ -520,11 +546,16 @@ def parse_xdvdfs(
                     "invalid character in XDVDFS filename")
             try:
                 name = name_bytes.decode("ascii")
-            except UnicodeDecodeError as exc:
-                raise PatchError("non-ASCII XDVDFS filename") from exc
+            except UnicodeDecodeError:
+                # One oddly-named file used to abort the entire listing, so a
+                # disc with a single accented filename could not be read at all.
+                # latin-1 maps every byte to exactly one codepoint and back, so
+                # the name stays usable and byte-reversible rather than being
+                # guessed at or replaced.
+                name = name_bytes.decode("latin-1")
 
             if left:
-                walk_node(left * 4)
+                walk_node(left * 4, depth, stack + 1)
             path = f"{prefix}/{name}" if prefix else name
             normalized = path.casefold()
             require(normalized not in entries, f"duplicate XDVDFS path: {path}")
@@ -533,8 +564,12 @@ def parse_xdvdfs(
             entry = XdvdfsEntry(path, start_sector, file_size, attributes, base_offset)
             entries[normalized] = entry
             if attributes & 0x10:
-                require(file_size >= 14, f"empty/invalid XDVDFS directory: {path}")
-                walk_directory(start_sector, file_size, path)
+                # An empty directory is legal and carries no extent. Demanding
+                # one used to abort the whole parse over a folder with nothing
+                # in it, so the directory is recorded and simply not descended.
+                if file_size >= 14:
+                    walk_directory(start_sector, file_size, path, depth + 1,
+                                   stack + 1)
             # Anything that is not a directory is a file. The old rule demanded
             # the ARCHIVE bit (0x20), which extract-xiso happens to set on
             # everything it rebuilds -- but a pressed disc carries the original
@@ -544,9 +579,9 @@ def parse_xdvdfs(
             # The attribute was never a safety property: extents are bounds
             # checked against the image independently, just above.
             if right:
-                walk_node(right * 4)
+                walk_node(right * 4, depth, stack + 1)
 
-        walk_node(0)
+        walk_node(0, depth, stack + 1)
 
     walk_directory(root_sector, root_size, "")
     return entries, {

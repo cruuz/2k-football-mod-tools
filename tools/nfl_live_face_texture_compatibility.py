@@ -70,9 +70,11 @@ def file_digest(path: Path) -> str:
     return value.hexdigest()
 
 
-def pin(path: Path) -> dict[str, Any]:
+def pin(path: Path, logical_path: str) -> dict[str, Any]:
+    """Pin bytes while keeping private host paths out of retained evidence."""
+
     resolved = path.resolve(strict=True)
-    return {"path": str(resolved), "size": resolved.stat().st_size,
+    return {"path": logical_path, "size": resolved.stat().st_size,
             "sha256": file_digest(resolved)}
 
 
@@ -572,11 +574,23 @@ def run(root: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     report = {
         "schema": SCHEMA,
         "inputs": {
-            "canonical_index": pin(index_path), "txtr_inventory": pin(txtr_path),
-            "chunk_inventory": pin(chunks_path), "default_xbe": pin(xbe_path),
-            "scene_materials": pin(material_path), "scene_submeshes": pin(submesh_path),
+            "canonical_index": pin(index_path, "user-source/vc_53450030/0"),
+            "txtr_inventory": pin(
+                txtr_path, "generation-evidence/nfl2k5_all_txtr_inventory_v2.json"
+            ),
+            "chunk_inventory": pin(
+                chunks_path, "generation-evidence/nfl2k5_resource_chunks_v2.json"
+            ),
+            "default_xbe": pin(xbe_path, "user-source/default.xbe"),
+            "scene_materials": pin(
+                material_path, "generation-evidence/nfl2k5_scne_material_textures.tsv"
+            ),
+            "scene_submeshes": pin(
+                submesh_path, "generation-evidence/nfl2k5_scne_submeshes.tsv"
+            ),
             "retail_xiso": {
-                "path": str(source), "size": xiso.EXPECTED_XISO_SIZE,
+                "path": "user-source/ESPN NFL 2K5.xiso.iso",
+                "size": xiso.EXPECTED_XISO_SIZE,
                 "expected_sha256": xiso.EXPECTED_XISO_SHA256,
                 "opened_read_only": True,
             },

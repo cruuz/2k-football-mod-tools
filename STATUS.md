@@ -1,11 +1,11 @@
-# 2K5 Mod Studio — v1.0 RC47 Release Status
+# 2K5 Mod Studio — v1.0 RC49 Release Status
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The
-> source code and UI identify as the **`0.1.0-alpha.35`** release, whose
-> published asset is `apf2k8-mod-studio-0.1.0-alpha.35-20260727.tar.gz`
-> (`1,110,239` bytes, SHA-256
-> `dc9e149a107f8111601483382c080eff72ae81e4f0d386c802c7614fc9d2c596`).
+> source code and UI identify as the retail-free **`0.1.0-alpha.54` release
+> candidate**. This status does not claim that the candidate has been committed,
+> pushed, or published; the immutable archive receipts below are retained as
+> release history.
 > The previous
 > sealed package is `0.1.0-alpha.34`; its `815,213`-byte archive checksum is
 > `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`
@@ -32,7 +32,7 @@
 > bounded Audio waveforms, atomic 47,814-row audio export, a 258-record Field
 > Art inventory, exact team display-name and player first/last-name editing,
 > complete shared-name alias disclosure, true independent 0–99
-> Replace/Revert for all 28 base ratings on all 2,254 player records, and a
+> Replace/Revert for all 31 base ratings on all 2,254 player records, and a
 > source-bound 63,112-cell ratings-sheet importer with conflict preview, a
 > separate atomic export for all 19 original physical audio banks, and a
 > self-describing 47,814-row cue archive with deterministic CSV, ordered
@@ -155,7 +155,75 @@
 > It is default-off and has not been launched; the live scenario matrix still
 > requires the designated Spark desktop operator.
 
-Last updated: 2026-07-25 (America/New_York)
+Last updated: 2026-08-04 (America/New_York)
+
+## Unreleased RC49 closure
+
+- The standalone browser inventory rises from 9,640 to **11,395 editable
+  targets**: the existing catalog of standalone P8 targets plus the 4,080
+  reviewed explicit-size A1R5G5B5 `p001`…`p006` / `p011`…`p016` player
+  strips, plus a +1,755 delta of team-linked presentation surfaces outside
+  the uniform packages: 317 full 256×256 menu logos, 317 compact logos, 317
+  shared flip chips, 634 home/away mini cards, 85 franchise-office logos,
+  and 85 draft/PDA logos. Every row carries its exact team asset code,
+  owners, archive, and statically established consumer scope; a complete
+  screen-by-screen consumer map is not proved, so these keep the honest
+  presentation/menu umbrella label.
+- `logos.cdf`, `mini.cdf`, and `flipchip.cdf` are raw P8 fixed-slot arrays,
+  not VC-LZ streams: Replace preserves the wrapper, descriptor/system region,
+  exact resource span, and 96-byte zero slot padding, regenerating only the
+  swizzled indices and palette. Franchise and draft logos keep the bounded
+  compressed-P8 path. Outer 581 `p005` still crosses packs 0 and 1 as exact
+  53,888-byte and 21,008-byte slices; the composed build stages both, writes
+  only a fresh output, verifies each slice, and reassembles the complete
+  logical TXTR before accepting the result.
+- The A1 writer regenerates five linear mips, preserves the measured opaque
+  video tail and exact resource span, bounds VC-LZ size with deterministic
+  colour-bit tiers, and verifies the rebuilt decode before returning it.
+- All 2,547 current-player jersey numbers are Editable, including the 68
+  secondary-pool rows that previously errored or stayed disabled; the writer
+  patches only the masked number bits, and secondary names remain read-only
+  because their text allocation is zero. Every current and historical player
+  also has a Face shield control authoring only player word `+0x20` bits
+  15..16 with exact choices **None**, **Clear**, and **Dark**; reserved value
+  `3` is refused, jersey and face-shield changes compose into one four-byte
+  replacement, and a loaded roster or franchise save may override the disc
+  seed. This is a per-player equipment type, not a HOME/AWAY visor tint.
+- Team Kit gains **Browse 45 Equipment Textures**: one selected physical set
+  opens the existing All Textures browser filtered to its exact 45 socks,
+  elbow-pad, glove, long-sleeve, shoe, and wristband records, reusing the
+  canonical asset IDs and existing handlers rather than a second writer.
+- All 498 catalogued Crib textures are Editable: 242 raw Team Item P8
+  textures (including all 128 Team Photos), 68 standalone P8 textures, and
+  188 material/submesh-owned P8 surfaces across 36 SCNE scenes, preserving
+  the reflection texture's 109,440-byte source gap and the ticker's 1024x32
+  linear layout. The Crib Models tab exports seven proved scenes and imports
+  same-count, same-topology position changes for ten exact electronics
+  meshes; changed topology and arbitrary model swaps remain unsupported.
+- Stadium Studio imports edited glTF vertex positions for the proved full
+  scene: exact vertex counts and equivalent triangles are required, only the
+  75 catalogued fixed `FLOAT3` position lanes can change, UVs, materials,
+  collision, selectors, LOD/other streams, and the opaque SCNE tail stay
+  source bytes, and the position recipe stays private (local builds, Undo,
+  and Revert All, but excluded from shareable `.2k5mod` files). Offline
+  topology and byte preservation are proved; visible in-game runtime
+  ownership remains labeled unproved until a matched capture exists.
+- Playbooks & Plays can copy exact stock assignment routes within one PLAY
+  book: the writer changes only the target descriptor word and relative
+  pointer to the donor's existing node chain, reparses the full PLAY
+  resource, and refuses orphaning or count changes. Freehand waypoint/opcode
+  authoring remains unsupported.
+- Stock midfield ownership is not overclaimed: all 126 exact `center_logo`
+  rows are create-team packages. The separate 85 `NN_teamlogo_00_h0` rasters
+  are statically bound to the `FRANCHISE2` / `coach_desk` scene's `teamlogo`
+  element, not proved stock midfield art; as stock team-logo candidates they
+  remain inspection/export-only, and the editor does not relabel
+  franchise-office art as field art.
+- The local NFL2K27 tree is an incomplete directory skeleton with only four
+  distinct cyberface PNGs repeated three times and no PCSX2 hash/manifest
+  mapping. NFL 2K3/2K4 source discs/packs are also absent, so neither
+  cross-console mapping nor earlier-title write authorization can be proved
+  from the available source.
 
 ## Published releases — the assets actually on GitHub
 
@@ -196,6 +264,23 @@ SFLSettings.csv, which maps 1:1 onto bytes 0xBA..0xD8 and scores 0.649 against
 Star defaults where our ordering scores 0.436, identically on two roster files.
 The registry is deliberately not rewritten until a save-diff confirms it.
 
+> **Correction (2026-07-30):** that prediction was wrong, and the decision not to
+> rewrite the registry on it was right. APFe's row *order* is the byte order, but
+> its row *names* are misassigned. The executable's own attribute descriptor table
+> at `0x820E4D94` pairs each UI name with the setter that writes its byte, and it
+> confirms the mapping this project already shipped. See
+> `docs/research/apf_rating_slot_settlement.md`.
+
+> **RC49 correction candidate (under test):** package-local socks, elbow
+> pads, gloves, long sleeves, shoes, and wristbands are no longer hidden. All
+> 28,530 reviewed P8 equipment occurrences are searchable, PNG-exportable, and
+> palette-editable from All Textures. The composed writer groups edits sharing a
+> TSET, preserves its retail shape/mip indices and every unselected palette, and
+> refits the complete resource to its fixed VC-LZ span. The same correction repairs stale Team Kit original
+> caches without accepting changed source bytes, restores target-authored digit
+> dimensions such as the Titans' 32x32 sleeve/shoulder numbers, and keeps every
+> export-only selector outside the writer path.
+
 ### `beta-21` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-21>
@@ -232,11 +317,13 @@ answers.
 | `2K5-Mod-Studio-1.0-RC44-Setup.exe` | 55,995,790 | `d02c86a4ba157c18feb1b10058abc5f5688aecd5ca7c44b9b7545f51f60c9c03` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.47-Setup.exe` | 52,353,778 | `18b1d78019c91921a7bcb75bec5e086157b8975835c912ad2596187e9a86fef9` |
 
-The facemask/turtleneck colours are a colour picker in Uniforms & Equipment ->
-Colours & Other Tools. The edit counts as pending, Revert All clears it, it
-saves with the project, and it composes into Build Modded XISO as two
-per-extent imports (packs A and B). Composed output is byte-identical to the
-standalone writer for the same colours.
+The facemask/faceshield and `HI_turtleneck` colours are per physical uniform in
+Uniforms & Equipment -> Colours & Other Tools. The searchable selector covers
+all 634 sets. A shareable project stores a logical selector and two authored
+ARGB words; Build resolves that selector from the pinned source archive and
+changes exactly one eight-byte record. Multiple HOME, AWAY, alternate, and
+throwback sets can coexist in one project. The former fixed A/B targets were
+Detroit current HOME (`09H0`) and AWAY (`09A0`), not a global pair.
 
 Tests walk the whole chain -- picker, session, canonical project, composed
 build -- and check producer against consumer, which is the join this lane kept
@@ -2058,12 +2145,15 @@ All 11 product tabs exist from the first launch:
 1. **Uniforms & Equipment** — searchable PNG previews and bounded
    Export/Replace/Revert/Build for proved jerseys/torsos, sleeves, pants,
    helmets, digits/nameplates, and separate Team Select cards.
-2. **Rosters & Players** — complete current/historical name and jersey-number
+2. **Rosters & Players** — complete current/historical name, jersey-number, and
+   per-player None/Clear/Dark face-shield-type
    workflows under **Players & Numbers**, plus searchable portrait and
    live-face texture workflows under **Portraits & Faces**. All 6,522 indexed
    jersey-number assets have exactly one current or historical player row;
-   proved primary rows are editable and unsafe secondary-pool rows remain
-   Preview/Export-only.
+   all jersey numbers and face-shield selectors are editable, including
+   secondary-pool rows. Face shield is not a HOME/AWAY tint, and loaded saves
+   may override the disc seed. Secondary names remain read-only because their
+   text allocation is zero.
 3. **Text & Team Identity** — the universal fixed-allocation text browser,
    including team identity and all safely owned strings. Roster editing is no
    longer filed here.
@@ -2077,8 +2167,8 @@ All 11 product tabs exist from the first launch:
 7. **Menus & UI** — all seven named Main Menu rows/transitions, layout and
    rendering ownership, actionable limitations, JSON/CSV export, capability
    cards, and the complete archive-resource raw fallback.
-8. **The Crib** — all 498 catalogued textures, with 128 Team Photos and the
-   exact `room:22 / bar_monitor` surface editable.
+8. **The Crib** — all 498 catalogued textures editable, plus bounded
+   same-topology position import for ten exact meshes across seven scenes.
 9. **Audio** — browse/play/export for all 850 standalone AUDO resources, with
    all 850 exact physical slots editable and honest semantic warnings on 697
    alias-related rows; searchable raw export for all 17 AUSB soundtrack/
@@ -2094,21 +2184,22 @@ All 11 product tabs exist from the first launch:
     presets or writers.
 11. **Playbooks & Plays** — a structured viewer for every decoded PLAY book,
     formation, play, assignment chain, node, and player-slot reference, plus
-    raw resource export. Route authoring remains Coming Soon.
+    raw resource export and exact same-book stock assignment-route copy/revert.
+    Freehand waypoint/opcode authoring remains unsupported.
 
 The archive-resource browser remains the universal fallback: no resource in
 that index is hidden merely because a specialized editor has not been built.
-Registry-derived **Editable**, **Preview/Export-only**, or **Coming Soon**
-states appear on capability cards; raw fallback rows retain their explicit
+Registry-derived **Editable**, **Preview/Export-only**, **Proof boundary**, or
+**Research boundary** states appear on capability cards; raw fallback rows retain their explicit
 Export-only boundary instead of pretending that registry status is an action.
 
 ## Exact v1.0 inventory
 
 | Product surface | Exact release-candidate coverage |
 | --- | ---: |
-| Capability registry | 62 rows total; 31 NFL 2K5 rows |
+| Capability registry | 70 rows total; 32 Xbox NFL 2K5 rows; 1 NFL 2K5 PS2 save-import row |
 | Sidebar tabs | 11 |
-| Specialized visual assets | 32,038 |
+| Specialized visual assets | 63,592 total; all 63,592 Editable, including 28,530 package-local equipment P8 palettes |
 | Text banks | 716 |
 | Decoded strings | 23,346 |
 | Editable strings | 20,074 |
@@ -2116,7 +2207,7 @@ Export-only boundary instead of pretending that registry status is an action.
 | Jersey-number assets | 6,522 |
 | Standalone AUDO resources | 850 total; 850 Editable; 0 Export-only; 697 carry semantic/runtime-selector warnings |
 | Streaming AUSB audio | 17 descriptors; 16 external `.bin` owners; 53,571 Editable logical Xbox IMA ranges through 53,570 fixed physical slots; complete banks Export-only |
-| Crib assets | 498 total; 129 Editable; 369 Export-only |
+| Crib assets | 498 total; 498 Editable; 0 Export-only |
 | Stadium scenes | 477 |
 | Editable Stadium P8 occurrences | 23,838 |
 | PLAY books | 37 |
@@ -2132,13 +2223,13 @@ Export-only boundary instead of pretending that registry status is an action.
 | --- | --- | --- |
 | Uniforms and equipment | Shipped | Fixed owned allocations only; gameplay textures and Team Select cards remain separate assets. |
 | Portraits and live faces | Shipped | Exact proved formats/dimensions; the importer rejects incompatible PNGs. |
-| Names, team identity, and jersey numbers | Shipped for every proved allocation | All 6,522 numbers are browsable; unsafe secondary-pool writeback stays read-only. Ratings, membership, position, and depth charts are not implied. |
+| Names, team identity, jersey numbers, and face-shield type | Shipped for every proved allocation | All 6,522 jersey numbers and per-player None/Clear/Dark face-shield selectors are editable through masked player-word writeback. Reserved value 3 is refused. Face shield is not a HOME/AWAY tint; loaded saves may override the disc seed. Secondary names with zero text capacity stay read-only. Ratings, membership, position, and depth charts are not implied. |
 | Historical rosters | Shipped | All 75 historical ROST resources and 3,975 historical players are present. Proved same-allocation names/numbers are editable. |
 | Field art and scorebug | Shipped | Only owned fixed-allocation visual classes are writable; `digital_font` is shared presentation art. |
 | Universal text | Shipped | 20,074 fixed-allocation strings are editable. The 3,272 unsafe/zero-capacity entries remain visible and read-only with a reason. |
 | Audio | Shipped at the proved boundary | All 850 standalone physical AUDO slots and all 53,571 logical AUSB ranges are writable under each row's exact PCM contract. Alias-related standalone rows remain distinct physical edits; AUSB aliases share one of 53,570 fixed physical slots. Complete raw banks remain Export-only; runtime audibility and semantic cue ownership are not claimed. |
 | Stadium Studio texture swaps | Shipped | All 23,838 P8 occurrences are editable on existing geometry. A replacement that cannot fit the original compressed SCNE allocation is refused. |
-| Crib photos | Shipped | All 128 Team Photos are editable. The proved `bar_monitor` object reskin also ships as a bonus bounded surface. |
+| Crib textures and bounded models | Shipped | All 498 textures are editable in fixed allocations. Ten exact meshes across seven scenes support same-count, same-topology position import; arbitrary topology remains unsupported. |
 | Project, undo, revert, and build safety | Shipped | Projects contain user replacements and logical metadata only; source XISOs are read-only; output creation is exclusive and published only after success. |
 
 ## Composed Tier 1 smoke result
@@ -2183,31 +2274,32 @@ v1.0 does not claim a clean long-duration gameplay session from this smoke.
 
 ## Complete post-v1 triage ledger
 
-Every item below is either partially delivered, visible as Preview/Export-only,
-or represented by an in-app Coming Soon boundary and its findings note. These
+Every item below is delivered at its named bounded scope, visible as
+Preview/Export-only, or represented by an in-app Proof/Research boundary and
+its findings note. These
 items did not block v1.0.
 
 ### Tier 2 — best effort
 
 | Item | v1.0 disposition | Why it is not fully shipped | Single best next step |
 | --- | --- | --- | --- |
-| Catch-strength presets | Coming Soon; private 125/150/200 executable transports exist | Offline transport does not prove polarity or drop-rate effect. | Run matched stock/125/150/200 same-play samples in xemu, count catchable-target drops, and promote only presets with a repeatable effect. |
-| Draft-AI presets | Fantasy Draft control remains experimental; Franchise Draft remains Coming Soon | The known 17-float table is consumed by Fantasy Draft, not the Franchise rookie draft. | Runtime A/B the extreme Fantasy control first, then trace the separate Franchise rookie prospect-scoring call chain. |
+| Catch-strength presets | Research boundary; private 125/150/200 executable transports exist | Offline transport does not prove polarity or drop-rate effect. | Run matched stock/125/150/200 same-play samples in xemu, count catchable-target drops, and promote only presets with a repeatable effect. |
+| Draft-AI presets | Fantasy Draft control remains experimental; Franchise Draft is a Research boundary | The known 17-float table is consumed by Fantasy Draft, not the Franchise rookie draft. | Runtime A/B the extreme Fantasy control first, then trace the separate Franchise rookie prospect-scoring call chain. |
 | Additional AUDO replacement | Shipped: 850 of 850 physical resources Editable | Physical ownership is complete; semantic names/runtime selector owners remain uncertain for 697 alias-related rows. | Runtime-trace one alias family so provisional labels can be replaced with confirmed in-game meanings. |
 | Music/commentary and other banked audio | All 53,571 logical ranges are Editable through 53,570 exact physical fixed slots; complete raw banks remain Export-only | Cue names, loops, gain/pan/priority, mixer routing, and whole-bank repacking are still unresolved; audible runtime consumption is not yet claimed. | Runtime spot-check one clearly authored range, then map its cue/loop/mixer owner without weakening the shipped fixed-slot boundary. |
-| Crib object reskins | `bar_monitor` shipped; 24 other electronics-like rows Export-only | Catalog ownership is mapped, but their fixed-span writers have not been proved individually. | Choose one uniquely owned electronics surface, prove a same-allocation texture rebuild, and generalize only if the scene reparse stays exact. |
-| Bounded Stadium geometry | Coming Soon; texture editing shipped | General mesh serialization, draw commands, transforms/collision, and relocation are not owned as one safe contract. | Productize one already bounded vertex/plane edit as an explicitly narrow tool before attempting broader geometry. |
+| Crib object reskins | Shipped for all 498 catalogued textures | Every raw, standalone, and embedded P8 row has a bounded writer; this does not add or replace object topology. | Runtime-capture representative aggregate, reflection, ticker, embedded-scene, and position-only changes. |
+| Bounded Stadium geometry | Shipped for the proved full scene: same-topology POSITION-only glTF import | Exact vertex counts and equivalent triangles are required; UV/material/collision/LOD/other streams stay source-exact, while runtime visibility remains unproved. | Capture a matched in-game view of a distinctive vertex move before promoting runtime ownership. |
 | ESPN 25th moment text | Shipped | All four display strings for each of 25 moments are editable; no remaining Tier 2 text gap is hidden. | Use the shipped text editor; keep scenario state and unlock behavior in the Tier 3 lane below. |
-| Deeper roster editing | Coming Soon beyond proved names/numbers | Position codes/labels and selected read-only metadata are already decoded in research, but are not yet surfaced in the product form; ratings, membership, depth charts, and secondary-pool writeback do not share the proved fixed-text contract. | First wire the already-decoded team/position/face metadata into the roster browser, then isolate and runtime-check one writable field family. |
+| Deeper roster editing | Unsupported beyond proved names and all jersey numbers | Position codes/labels and selected read-only metadata are decoded for inspection, but ratings, membership, depth charts, and zero-capacity secondary-pool names do not share the proved fixed-field contract. | Isolate and runtime-check one additional writable field family before exposing it. |
 
 ### Tier 3 — spike-only
 
 | Item | v1.0 disposition | Why it is not fully shipped | Single best next step |
 | --- | --- | --- | --- |
-| Visual Play Editor | Structured viewer/inspector shipped; authoring Coming Soon | Coordinates, player roles, opcode operands, custom-save ownership, and inverse compilation remain undecoded. | Create four controlled game-authored custom-play fixtures, diff X/Y/waypoint/route-type changes, then correlate them with runtime reads. |
-| Stadium/Crib model import or swapping | Coming Soon | UV/normal registers, inverse draw-command serialization, transforms, collision, and relocation are not safely decoded. | Try one same-allocation mesh swap with identical topology and prove render plus collision before considering arbitrary import. |
-| ESPN 25th scenario logic and unlocks | Coming Soon; display text shipped | SITU numeric fields and persistent-profile unlock ownership are not semantically mapped. | Trace one moment while loading its score, clock, possession, field position, and completion state; name fields only when the runtime consumer agrees. |
-| Franchise/save-backed structural features | Coming Soon | Save ownership, integrity, and mode-state precedence are not bounded enough for product writeback. | Use an isolated xemu profile to produce one clean single-field save differential and identify its integrity owner before writing anything. |
+| Visual Play Editor | Structured viewer plus exact stock assignment copy/revert shipped | Same-book descriptor/pointer reuse is proved; freehand coordinates, player roles, opcode operands, custom-save ownership, and inverse compilation remain undecoded. | Create four controlled game-authored custom-play fixtures, diff X/Y/waypoint/route-type changes, then correlate them with runtime reads. |
+| Arbitrary Stadium/Crib model swapping | Bounded position-only imports shipped for Stadium and ten Crib meshes; arbitrary topology unsupported | New topology, UV/material authoring, transforms, collision, and relocation are not safely decoded. | Runtime-capture the shipped bounded edits, then prove relocation and complete attribute serialization before widening either boundary. |
+| ESPN 25th scenario logic and unlocks | Research boundary; display text shipped | SITU numeric fields and persistent-profile unlock ownership are not semantically mapped. | Trace one moment while loading its score, clock, possession, field position, and completion state; name fields only when the runtime consumer agrees. |
+| Franchise/save-backed structural features | Research boundary | Save ownership, integrity, and mode-state precedence are not bounded enough for product writeback. | Use an isolated xemu profile to produce one clean single-field save differential and identify its integrity owner before writing anything. |
 
 ## Deliberate non-claims
 
@@ -2217,24 +2309,24 @@ items did not block v1.0.
 - Catching values are not presented as finished presets before a measured A/B.
 - The Playbooks tab does not pretend raw route bytes are understood well enough
   to draw and save new plays.
-- Stadium Studio edits textures on existing geometry; it is not a general model
-  importer.
+- Stadium Studio imports same-topology position moves for its proved full scene;
+  it is not a general new-topology, UV/material, or collision importer.
 - The release does not ship experimental XISOs, source extracts, originals,
   preview caches, research screenshots, or other retail-derived payloads.
 
-## Five-line 2K5 status
+## Five-line current 2K5 status
 
-- **Shipped:** RC28 is sealed with fully validated read-only Audio-pack Preview followed by explicit token-bound Apply/revalidation.
-- **Experiment result:** 609/609 2K5, 162/162 release-focused, and 90/90 pack/panel checks pass; clean stage/extraction gates, deterministic rebuild, and independent review are all green.
-- **Blocked on user:** nothing blocks headless closure; cue audibility/meaning still needs a later controller-driven xemu listen A/B, and teaser candidates still need one human visual look.
-- **Next:** seal APF Alpha32, then continue the next bounded Audio/UX improvement without changing RC28's reviewed bytes.
-- **Deliberately not done:** no audible-runtime claim, retail payload, visible desktop, pointer control, emulator, external player, recovered song titles, or whole-bank replacement claim is asserted for RC28.
+- **Current candidate:** RC49 source and UI, with the complete product surface represented as Editable, Preview, Export-only, Proof, or Research—never a placeholder promise.
+- **Headless result:** the exact allowlist, retail/private-data release gate, staged runtime closure, desktop-entry validation, launcher syntax, and repeated post-runtime release gate pass from a clean stage.
+- **Runtime evidence:** boot-level proofs remain separate from causal feature proofs; a successful launch never gets relabeled as proof that a changed texture, model, or cue was consumed.
+- **Release boundary:** this working tree is a candidate only until its owner explicitly authorizes commit, push, packaging, or publication.
+- **Deliberate non-claims:** no authored-audio causality, changed-topology model import, arbitrary stadium geometry, or unverified in-game helmet screenshot is claimed.
 
 ## Definition-of-Done tracking
 
 - [x] All 11 sidebar tabs exist; every indexed resource has at least a browsable/exportable home through a specialized panel or the universal fallback browser.
 - [x] Every admitted Tier 1 class is replaceable/revertible/buildable; all 6,522 current and historical jersey-number assets are now covered by explicit player rows, with unsafe rows visibly read-only.
-- [x] Every Tier 2/3 surface is editable, Preview/Export-only, or Coming Soon with an in-app reason/findings note.
+- [x] Every Tier 2/3 surface is editable, Preview/Export-only, or an explicit Proof/Research boundary with an in-app reason/findings note.
 - [x] One 19-edit Tier 1 project built, preserved the source, booted in xemu, and passed the agreed boot-level visual spot check.
 - [x] Getting Started documentation and a v1.0 modder-facing capability changelog are present.
 - [x] RC26 is sealed as a 145-file, 9,825,591-byte portable archive. Its stage

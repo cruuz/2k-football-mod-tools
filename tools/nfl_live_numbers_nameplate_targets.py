@@ -14,7 +14,7 @@ from typing import Any
 
 
 SCHEMA = "nfl2k5_live_numbers_nameplate_compatibility/v1"
-REPORT_SHA256 = "e22215b2db5c93f6098cd2d12b344f62abbc02a2e805605a2a180f13e5dd7aea"
+REPORT_SHA256 = "d122c1e7de4fbad42c725969dce3473fc16a100e75d68ae5fb5d64077f536cd4"
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT = ROOT / "reports/assets/nfl2k5_live_numbers_nameplate_compatibility.json"
 

@@ -151,6 +151,16 @@ def quad_area(points: list[tuple[float, float, float]]) -> float:
                for value in vectors)
 
 
+@unittest.skipUnless(
+    OUTPUT_VOLUME.is_file(),
+    # ``build/`` is gitignored, and this volume is a large generated output from
+    # one dated build. On any checkout that does not happen to still hold it,
+    # the class used to raise FileNotFoundError out of setUpClass -- an error
+    # that looks like a real regression, and one that masks real regressions by
+    # sitting permanently red. It is a missing input, so it skips. When the
+    # build IS present the assertions below run exactly as before.
+    "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/native/9 not built",
+)
 class UpperDeckWideOverlay8Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

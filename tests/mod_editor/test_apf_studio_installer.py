@@ -43,6 +43,23 @@ def _stage_release(destination: Path) -> None:
         target.chmod(0o755 if source_mode & stat.S_IXUSR else 0o644)
 
 
+def _launcher_python() -> str:
+    """Return the interpreter the shipped Linux launcher actually uses.
+
+    Pytest is often installed in an isolated virtual environment that does not
+    inherit distro packages such as PyQt5.  The product launcher deliberately
+    executes the system ``python3`` after checking those distro dependencies,
+    so using ``sys.executable`` here would test the runner rather than the
+    installed application.  Windows has a separate bundled-runtime installer.
+    """
+
+    if os.name != "nt":
+        executable = shutil.which("python3")
+        if executable is not None:
+            return executable
+    return sys.executable
+
+
 class ReleaseClosureTests(unittest.TestCase):
     def test_external_xma1_bridge_is_in_the_retail_free_runtime_closure(self) -> None:
         entries = set(_release_entries())
@@ -160,7 +177,7 @@ class ReleaseClosureTests(unittest.TestCase):
         self.assertIn('"mod_editor.apf_studio.player_positions"', runtime)
         self.assertIn('"apf_player_rating_patch"', runtime)
         self.assertIn('"apf_player_position_patch"', runtime)
-        self.assertIn("len(rating_schema.fields) == 28", runtime)
+        self.assertIn("len(rating_schema.fields) == 31", runtime)
         self.assertIn(
             'rating_schema.runtime_status == "token_preserving_runtime_loaded"',
             runtime,
@@ -170,7 +187,7 @@ class ReleaseClosureTests(unittest.TestCase):
         self.assertIn('"replace_player_position"', runtime)
         self.assertIn('"player first/last names"', runtime)
         self.assertIn('"team abbreviations"', runtime)
-        self.assertIn('"jersey numbers"', runtime)
+        self.assertIn('"raw-save jersey"', runtime)
         self.assertIn('"membership"', runtime)
         self.assertIn("project.MAX_PROJECT_FILES == 131_072", runtime)
         self.assertIn(
@@ -242,7 +259,7 @@ class ReleaseClosureTests(unittest.TestCase):
             )
             result = subprocess.run(
                 [
-                    sys.executable,
+                    _launcher_python(),
                     str(stage / "packaging/check_apf2k8_mod_studio_runtime.py"),
                 ],
                 cwd=stage,
@@ -285,15 +302,15 @@ class ReleaseClosureTests(unittest.TestCase):
         )
         self.assertIn("load_stadium_material_findings()", runtime)
         self.assertIn(
-            'material_findings.outcome == "texture_owner_unresolved"',
+            'material_findings.outcome == "embedded_texture_ownership_proved"',
             runtime,
         )
         self.assertIn(
-            'material_findings.proof["texture_writer_safe_to_expose"] is False',
+            'material_findings.proof["texture_writer_safe_to_expose"] is True',
             runtime,
         )
         self.assertIn("STADIUM_MATERIAL_FINDINGS_SHA256", runtime)
-        self.assertIn("len(registry.capabilities) == 67", runtime)
+        self.assertIn("len(registry.capabilities) == 70", runtime)
 
 
 class PerUserPathTests(unittest.TestCase):
@@ -407,7 +424,7 @@ class PerUserLifecycleTests(unittest.TestCase):
             "print('APF_AUDIO_PACKET_GATE_PASS')"
         )
         runtime_result = subprocess.run(
-            [sys.executable, "-c", installed_probe],
+            [_launcher_python(), "-c", installed_probe],
             cwd=paths.app_dir,
             env=runtime_environment,
             stdin=subprocess.DEVNULL,

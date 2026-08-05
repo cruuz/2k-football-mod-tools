@@ -4,8 +4,8 @@ APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-The source code and UI identify as **`0.1.0-alpha.50`**, the current sealed
-retail-free release; its mode-`0444` archive is authenticated by the adjacent
+The source code and UI identify as **`0.1.0-alpha.54`**, the current retail-free
+release candidate; its mode-`0444` archive is authenticated by the adjacent
 `.sha256` sidecar. Alpha.38 and earlier remain preserved unchanged. Verify
 whichever sealed archive you install with its authoritative adjacent `.sha256`
 sidecar. Packaged guides remain deliberately self-hash-free.
@@ -70,7 +70,10 @@ action. The legacy pre-encoded-XMA1 pack remains the default and byte-compatible
 import detects either generation automatically. Mod Studio ships no encoder,
 and external output receives no special trust: every final XMA1 still crosses
 the exact-slot, decode, duration, alias, target, and cross-family source-packet
-gates. FLAC/MP3 and mixed-format packs remain unsupported. Alpha 28 carries
+gates. Selected-sound import accepts WAV, FLAC, MP3, OGG, M4A, and other
+FFmpeg-readable ordinary audio and conforms it before encoding. Folder/ZIP
+packs remain intentionally narrower: pre-encoded XMA1 or exact PCM16 WAV only;
+mixed-format ordinary-audio packs are unsupported. Alpha 28 carries
 forward Alpha 27's selected-sound PCM route, passive slot-43 result
 `path_not_reached`, Position (17), exact 0–99 ratings, pre-build free-space
 refusal, and the honest 42-active-plus-11-project-reserve planner.
@@ -81,8 +84,9 @@ one-span build boots and survives repeated triggers without XMA faults; the
 captured audio did not prove that the tested menu cue was actually consumed.
 The UI therefore labels the writer as an advanced exact-slot workflow rather
 than runtime-proved audio replacement. Alpha 27's PCM bridge makes one selected
-PCM16 WAV easier to hand to an encoder the user supplies; it does not prove
-that every encoder or cue works and does not accept FLAC directly.
+PCM16 WAV easier to hand to an encoder the user supplies; the current selected-
+sound route also conforms supported ordinary-audio input before that hand-off.
+Neither route proves that every encoder or cue works.
 
 Alpha.23 extends that advanced route to all 45,514 individually
 addressed AUSB soundtrack, commentary, speech, PA, music, and presentation
@@ -159,17 +163,21 @@ error and no source file is changed.
    - **Editable** — Replace/Revert and the transactional build path are wired;
    - **Export-only** — local export works, but safe replacement does not yet;
    - **Preview** — a decoded structure can be inspected without an authoring
-     writer; and
-   - **Coming Soon** — the tab remains visible with its current technical limit.
+     writer;
+   - **Proof boundary** — a reviewed technical witness is available but is not
+     itself an editor; and
+   - **Research boundary** — the finding stays visible without fabricating a
+     write contract.
    Universal-browser rows add the exact export level: editable PNG, PNG when a
    codec is decoded, raw-parts ZIP only, or raw outer record only.
    These badges come from an explicit capability/action binding: a
-   non-Coming-Soon card must have the matching
+   actionable card must have the matching
    desktop handler, and an Editable card must have real Replace and Revert
-   methods. Unbound semantic research remains visible as Coming Soon instead
-   of borrowing actions from a similarly named raw asset. Across the 31 APF
-   capability records, the Alpha.28 source split is 10 Editable, 6 Preview,
-   1 Export-only, and 14 Coming Soon. The hidden `jersey_06_runtime` proof alias
+   methods (or a verified copied-volume writer). Unbound semantic findings use
+   explicit Proof/Research boundaries instead of borrowing actions from a
+   similarly named raw asset. Across the 37 APF
+   capability records, the current source split is 19 Editable, 8 Preview,
+   3 Export-only, 4 Evidence, and 3 Research. The hidden `jersey_06_runtime` proof alias
    does not create a duplicate editor in the product.
 5. Select an editable item, export its PNG, edit a copy in GIMP or Photoshop,
    and use **Replace**. The app checks dimensions, color mode, and the special
@@ -205,29 +213,33 @@ it contains the user's own game data. Share the `.apf2k8mod` project instead.
 
 Every individually editable Audio sound now has five complementary actions:
 
-- **Drop .xma or exact PCM16 .wav here** routes one local file without opening
+- **Drop .xma or audio file here** routes one local file without opening
   a chooser, while keeping the same validators as the matching button;
 - **Export PCM authoring template…** creates a new exact-length, source-free
   PCM16 silence WAV for that selected slot;
-- **Replace from PCM WAV…** runs a separately installed encoder and admits its
-  output only after every exact-slot gate passes;
+- **Replace from PCM WAV…** accepts ordinary audio, conforms it to PCM, runs a
+  separately installed encoder, and admits its output only after the signal
+  comparison and every exact-slot gate pass;
 - **Replace with XMA1…** keeps the direct pre-encoded advanced route; and
 - **Revert sound** removes that selected staged replacement.
 
 To use the PCM route:
 
 1. Select one standalone AUDO row or one AUSB substream.
-2. Export its template and replace only the silence. Preserve the exact channel
-   count, sample rate, signed 16-bit PCM format, and frame count.
+2. Either export its template and replace the silence, or choose/drop an
+   ordinary WAV, FLAC, MP3, OGG, M4A, or other supported audio file. FFmpeg
+   conforms non-exact input to the slot's exact PCM16 shape.
 3. Choose **Configure XMA1 encoder…**. Select a trusted encoder you legally
    obtained. A Windows `.exe` can use a separately installed Wine executable.
 4. If the tool needs switches, open Advanced and enter one literal argument per
    line. This is not a shell command. `{input}` and `{output}` are required;
    channel/rate/sample-count/encoded-size placeholders are available.
-5. Choose **Replace from PCM WAV…**. You can cancel while encoding or validating.
-   Cancellation, timeout, tool failure, or validator failure adds no edit.
+5. Choose **Replace from PCM WAV…**. The encoded result is decoded back and
+   compared with the authored PCM for silence, channel routing, rate/pitch,
+   clipping, DC, and tail failures before exact-slot validation. Cancellation,
+   timeout, tool failure, signal failure, or validator failure adds no edit.
 
-You may instead drag that `.wav` onto **Drop .xma or exact PCM16 .wav here**.
+You may instead drag that `.wav` onto **Drop .xma or audio file here**.
 An `.xma` drop takes the direct pre-encoded route. The drop target accepts
 exactly one local regular file and rejects folders, links, remote URLs, multiple
 files, and other extensions. It is disabled on bank/index rows. All Audio
@@ -237,10 +249,11 @@ packet, decode, source-reuse, alias, project, or Undo checks.
 
 Encoder/Wine paths, arguments, and timeout are PC-local settings, not project
 data. Mod Studio does not bundle an encoder. A fake encoder proves only the
-headless bridge mechanics; no real XMA1 encoder compatibility or in-game
-audibility is claimed. Alpha 28 can use the same configuration for exact PCM16
-folder/ZIP batches. FLAC/MP3 must first be converted to the target's exact
-PCM16 shape.
+headless bridge mechanics. The alignment-aware artifact comparator and its
+fail-closed handoff have synthetic proof, but no real XMA1 encoder compatibility,
+perceptual transparency, or in-game audibility is claimed. Alpha 28 can use the
+same configuration for exact PCM16 folder/ZIP batches; those batch v2 payloads
+remain exact WAVs even though the selected-sound chooser accepts ordinary audio.
 
 Read the complete [external encoder guide](apf2k8_external_xma1_encoder.md) for
 placeholders, error messages, safety gates, and the exact proof boundary.
@@ -256,13 +269,61 @@ The first editable uniform surface contains 96 physical assets:
 | Helmet | 24 | 256×1024 RGBA | R/G carry the two stored mask planes; B must be 0 and A must be 255. |
 | Shoulder | 24 | 1024×1024 RGBA | Edits `shoulder_color`; the paired normal package is preserved. |
 
-The Uniforms page has two workspaces. **Editable Materials (96)** is the
+The Uniforms page starts with two texture workspaces. **Editable Materials (96)** is the
 bounded writer above. **Additional Assets (312)** inventories every other
 uniform/equipment record: 275 more textures, 24 NumberFont resources, 11
 NameFont resources, and two scenes. Together they cover all 408 indexed
 uniform/equipment records without duplicating the 96 writer targets. Additional
 items are searchable, previewable when decoded, and exportable, but they remain
 read-only until an exact writer owns their format and archive boundary.
+
+**Equipment Colors** is the all-team HOME/AWAY equipment selector editor.
+Choose any of the 40 teams, then independently pick the facemask-bar color and
+the color used by players whose turtleneck setting is **Team**. Each dropdown
+shows the bank's exact palette index, name, hex value, and swatch. The writer
+changes only helmet selector slot 3 byte 6 and turtleneck selector slot 0 byte
+2; both full palettes, their metadata, and every other selector byte remain
+exact. Visors stay in **Save Players** as the proved per-player None/Clear/Dark
+choice because APF has no verified per-uniform visor-tint field.
+
+**Custom Team Appearance** is a separate bounded workspace for user-team slots
+32–39. Pick a slot, edit the ten HOME and ten AWAY ARGB swatches, and inspect or
+author the exact eight-byte helmet and crest selectors. Only helmet asset byte
+0, helmet shell-palette byte 1, and crest catalog byte 0 have proved names; the
+remaining selector fields are intentionally labeled opaque. **Apply 2017
+Eagles preset** preserves the chosen helmet model, selects crest catalog 30,
+preserves the complete helmet-selector tail, applies the exact Xenia-proved
+Eagles crest-routing tail, and sets both banks to the midnight-green/silver/
+white palette. The individual routing bytes remain unnamed. Choose
+**Stage appearance** to add its replacement-only JSON to the project; the
+normal Build path composes it with roster names, ratings, and positions and
+independently reparses the result.
+
+The same panel now has a separate **Raw Roster Save · runtime user team**
+source. Use this only after a custom team has been accepted and saved: the
+game's user-facing team IDs 24–31 are the save's ROST slots 32–39. Choose a raw
+`Roster.ROS`, select the occupied team, apply the Eagles preset or exact values,
+then choose **Write verified raw save…**. The source is opened read-only; the
+editor exclusively creates a separate raw payload and JSON receipt, SHA-binds
+the inspected source to the write, accounts for the exact 112-byte authorized
+union per edited team, reopens both files, and independently verifies the
+pointer graph and changed-byte set. Save bytes and paths never enter the
+`.apf2k8mod` project.
+
+`CON `, `LIVE`, and `PIRS` STFS packages can be opened directly in this panel.
+The editor verifies the STFS metadata/hash tree and the complete `Roster.ROS`
+block chain before showing the eight user-team slots. Use **Extract verified
+Roster.ROS…** for an exact raw copy, or stage an appearance and use **Write
+patched raw handoff…**. Both operations create a new raw payload and a
+source-bound manifest; neither writes a signed container or claims to verify
+its RSA signature. Reinject, rehash, and resign with an external save manager.
+LIVE/PIRS retail signatures require Microsoft's unavailable private keys; CON
+signing requires the owning console's private keyvault.
+
+The raw-save handoff and its receipt prove only the bounded file edit. They do
+not establish emulator consumption, gameplay visibility, or Xbox 360 hardware
+behavior, and the editor does not need to launch an emulator to build or verify
+the output.
 
 These are shared physical assets, not 40 independent team slots. Before
 replacing one, read **Affected teams** in the asset details. Every listed use
@@ -274,6 +335,185 @@ Home/Away editor. Pants has a separate positive witness: an unmistakable
 red/white/blue checker appeared on the Americans Away Uniform Type PANTS leg
 preview. Helmet and shoulder have passed bounded offline reconstruction but do
 not yet have positive visible proofs. Those distinctions remain in the UI.
+
+### Team crest workflow
+
+Open **Logos & Team Art → Team Logo**. After a game is loaded, the selector
+contains all **118** `uniform_logo_00.iff` through `uniform_logo_117.iff`
+packages. Built-in team names come from the source selector graph; the other
+game-library slots stay index-labeled because their in-game picker ownership is
+not proved.
+
+The ownership line beneath the editor shows exactly what the selected index
+means. Selector slot 5 links crest package `uniform_logo_NN.iff` to the same
+index `N` in the statically mapped frontend/Team Select `uniform_logocache`,
+and Team Logo co-writes both. Selector slot 6 is a different 206-entry
+rectangular wordmark bank owned by **Wordmarks**; Team Logo never resizes the
+square crest into it. This is a static storage/path statement, not proof that a
+changed cache image was consumed during a running Team Select screen.
+
+1. Select a slot. Retail coverage keeps its existing exact/contain resize flow.
+   For Full-shell, choose **Normal logo — convert to APF regions (recommended)**
+   for ordinary painted art, or **APF region mask — exact channels (advanced)**
+   only for an authored mask already on the Xenos four-bit lattice.
+2. Choose **Retail side decal** to preserve stock geometry, or choose
+   **Full-shell crest wrap — entire helmet shell (affects every team)** for the
+   fixed `front_crown_to_rear_v1` stock-shell atlas route.
+3. Normal-logo import contains the whole source at 512×512, suggests three
+   colours only when the artwork itself has a stable colour triangle, and
+   requires you to confirm/edit the rendered helmet shell and two detail
+   colours. Inspect the palette-mapped preview and error metric: APF stores
+   colour weights, so the editor does not pass through or promise literal
+   source RGB. Advanced import instead rejects non-four-bit components,
+   nonzero blue, overweight red/green sums, hidden RGB under alpha zero, and empty masks.
+4. In **Place on helmet…**, drag the converted/validated mask on the labeled **FRONT / CROWN →
+   REAR** guide, or edit X center, Y center, independent Width/Height, and
+   Rotation. **Auto-fit front → rear** spans the proved shell envelope;
+   **Reset** restores the imported placement. The accepted result is always an
+   exact 512×512 semantic RGBA design. Nearest-neighbour transforms
+   preserve the region-mask palette; empty or clipped/off-canvas art is refused.
+   Reopen the canvas to adjust again: during this editing session it reuses the
+   normalized original import and last transform instead of resampling the
+   flattened staged PNG. The old one-shot fit checkbox is hidden so it cannot
+   silently erase an authored X/Y placement.
+5. After an external import, choose **Save high-resolution authoring master…**
+   if you want a portable `.2ktexmaster` sidecar. It retains the exact original,
+   palette/semantic pipeline, final placement controls, exact staged 512×512
+   mask, and a direct 2×/4× authoring render. A later built-in pixel edit is
+   recorded as a native edit layer without discarding the original. The action
+   never overwrites an existing file and creates no RPCS3 texture pack.
+6. Choose **Build copied 0A (team logo)…** and select a new output path. This is
+   a headless file build; it creates no Xenia patch and never edits
+   `default.xex`.
+
+If a Custom Team Appearance slot is staged, the confirmation lists it and the
+same action composes the crest package, custom-team ROST records, and logo cache
+into one copied `0A`. A separate appearance receipt proves the final ROST was
+reopened and decoded. Other staged Mod Studio edits are not silently included
+in this specialized Team Logo action.
+
+The same staged crest is mirrored into `logo_l0` and `logo_l1` in both the
+selected package and matching uniform-logocache index. Both packed mip tails
+are regenerated, not preserved. The source stays read-only; the package writer,
+cache writer, and independent cache verifier account for the new copied volume.
+The raw cache directory/payload pair is dispatched to its dedicated verifier,
+not parsed as two ordinary IFF entries.
+
+For every full-shell build, the editor maps the fixed semantic canvas directly
+to physical shell Z (front to rear) and Y (top to the audited opening bound),
+then bakes it bilaterally into the noncollapsed, consistently oriented,
+nonoverlapping retail high/low shell UV atlas. It changes no shell vertex,
+index, or UV. The old bounded overlay is replaced by in-range repeated indices
+that produce zero triangles. Before that shared route can be published, both
+layers of all 118 crest packages are rebuilt in memory: the selected package
+gets the new shell atlas; every other package's retail RGBA mask is sampled from
+its original draw-2 physical Y/Z placement into the shell atlas. The selected
+menu cache receives the semantic design rather than the distorted atlas. Any
+compression overflow fails before the one copied output volume is created.
+
+The v24 all-package headless gate compiled and reparsed **121 outer entries** in
+memory before any output was created: all 118 source-resolved crest packages,
+cache directory 171, cache payload 213, and shared helmet outer 1310. If a
+custom-team appearance is staged, outer 1126 is composed as one additional
+entry. The pristine source remained unchanged, all 117 non-selected retail
+crests were migrated, and the selected Eagles shell-atlas hash matched its
+pinned value. The exact atomically published candidate then passed an
+independent 118-package/236-layer reopen plus a **10-view static asset-space
+visual gate** at the stock high and low helmet LODs. Spark review of both
+hash-pinned contact sheets found a coherent shell-spanning Eagles wing from
+side/front/crown through the rear, with its low-LOD silhouette retained and no
+smears, gaps, holes, seam breaks, or visible UV artifacts. This proves the
+static Eagles visual match, not game consumption; the proof used no Xenia, Wine, emulator,
+controller, or FIFO. The frontend menu-cache path is statically mapped;
+gameplay consumption and the scorebug dynamic sampler's package-versus-cache
+resolver, plus Xbox 360 hardware parity, remain unproved.
+
+Since that static gate, one bounded runtime witness exists. On 2026-08-03 the
+accepted user team's raw save — the Manage Team flow, not the Create Team
+scratch editor — combined with the catalog-30 crest package/cache and the
+retired global crest-box emulator patch, rendered midnight-green Eagles
+helmet previews on **Main Menu → Teams → Manage Team → Edit Team → Logo
+Selection**, and strict visual review passed both HOME and AWAY. The witness
+proves the coupled accepted-team save + catalog-30 package/cache + emulator
+crest-box patch path in a menu preview. It does not isolate package from cache
+ownership, prove the scorebug or other menu consumers, or establish Xbox 360
+hardware parity. Full receipts are in the
+[custom-team appearance findings note](../research/apf_custom_team_appearance.md).
+
+**Known defect, fix in flight:** in live gameplay the v24 shell currently
+renders semi-transparent/flat (background alpha `0x88`). Until the fix lands
+and is re-witnessed, live-gameplay shell rendering is explicitly not claimed
+as proved; the static 10-view gate and the menu witness above stand on their
+own.
+
+### Uniform wordmark workflow
+
+Open **Logos & Team Art → Wordmarks** for the separate rectangular team-text
+family. The typed selector exposes all **206**
+`uniform_textlogo_00.iff` through `uniform_textlogo_205.iff` targets and lists
+the teams currently selecting each asset through ROST slot 6. These indices do
+not generally match the 118 square crest indices.
+
+1. Select a wordmark index from 0 through 205.
+2. Choose **Contain** to keep the entire image or **Cover** to fill and crop the
+   exact 512×128 canvas, then import or drag a PNG. Transparent pixels are
+   composited onto opaque black because the retail texture is BC1 without
+   alpha. The preview is the exact staged image.
+3. Choose **Replace** to stage it. Revert, Revert All, Undo, project save/load,
+   and normal Build work like every other typed uniform asset.
+
+Build regenerates all six tiled BC1 mip levels, token-preserves the package's
+H7A streams inside the original fixed allocation, reparses the IFF, and runs an
+independent whole-volume verifier on the copied output. The source `0A` is
+never modified. Wordmarks do not edit square crests or crest-cache layers, and
+Team Logo does not silently reshape a crest into a wordmark. File transport is
+offline-proved; the exact in-game/menu consumer and Xbox 360 behavior remain
+unproved.
+
+### Helmet and player POSITION round trip
+
+Open **Uniforms & Equipment → Model Export**. The dedicated cards remove the
+need to discover the stock targets manually:
+
+- **Helmet:** outer 1310, inner 128, `helmet_00`, 33 meshes.
+- **Player:** outer 1310, inner 273, `player`, one mesh.
+
+Each export button reads `0A` without modifying it and writes new `.gltf`,
+`.bin`, and source-bound v2 `.apf-model.json` files. Edit vertex positions only,
+keep the companion manifest, do not apply mesh-node transforms, and do not add
+or remove vertices, faces, attributes, materials, or primitives. **Import edited
+glTF** independently reopens the loaded source, verifies every expanded triangle
+and vertex count, quantizes XYZ into the existing signed-normalized lanes, and
+writes a new `0A` plus receipt without overwriting the source.
+
+This is a structural round trip, not a general DCC re-export path. A program
+that removes the exported node identity, bakes transforms, emits normals or
+materials, or reorders the expanded indices will produce a glTF that the
+importer deliberately refuses. Keep the emitted glTF structure and edit only
+the float32 POSITION values in its companion binary.
+
+The importer preserves POSITION W, normals, packed tangent/UV data, blend
+indices/weights, existing skin/attachment data, materials, animation, collision,
+and every byte outside POSITION XYZ. It therefore cannot replace the stock mold
+with a SpeedFlex/F7 model or author rigs, materials, UVs, normals, topology, or
+attachments. The offline round trip is verified; in-game/Xenia/hardware model
+visibility is not claimed.
+
+## Give every team its own uniform textures (Team Independence)
+
+APF's forty teams draw helmets from only six textures, jerseys from nine,
+numbers from seven, and socks from six — painting art on a shared helmet puts
+it on every team that wears it. The **Team Independence** tab on Uniforms &
+Equipment writes a new `0A` in which each built-in team points at its own
+packages: helmets 6→24, jerseys 9→24, numbers 7→24, socks 6→24, pants 11→24,
+shoulders 14→24, fonts 7→11 (95 selector assignments). The game already ships
+24 complete helmet packages with only six referenced, so nothing is added —
+teams are simply pointed at slots that were already there. The tab lists every
+helmet with the teams currently sharing it and marks unused packages free to
+take over. Only selector bytes change, uniforms look identical until you edit
+them, and the loaded volume stays read-only while the new one is written.
+In-game visibility of the repointed selectors is not yet proved; treat the
+output volume as the authoring precondition for per-team art.
 
 ## Roster and true 0–99 ratings editing
 
@@ -362,7 +602,7 @@ version-pinned XEX accessor/direct-consumer patch plus owned side-table storage.
 Teams 25–32 are populated online-placeholder records with real 42-player source
 rosters, but their offline Team Select ownership is still unproved.
 
-Selecting a player opens **Base Ratings**. The 28 rows are independent stored
+Selecting a player opens **Base Ratings**. The 31 rows are independent stored
 attributes, not percentages derived from one Overall. Choose an attribute,
 enter an integer from 0 through 99, and press **Apply Rating**. A changed row
 shows a modified badge; **Revert Rating** removes only that player/attribute
@@ -379,10 +619,10 @@ still pending. Player-name, team-name, rating, and position edits can coexist in
 one project and one token-preserving Build.
 
 For a whole-league edit, choose **Export ratings sheet…**. The private v2 CSV
-contains exactly 2,254 player rows and one stable column for each of the 28
+contains exactly 2,254 player rows and one stable column for each of the 31
 attributes. Edit only the `rating.*` columns, save as UTF-8 CSV, then choose
 **Import ratings sheet…** (or press **Ctrl+Shift+I**). Mod Studio checks the
-complete 63,112-cell sheet
+complete 69,874-cell sheet
 without changing the project and shows replacements, reverts, matches,
 conflicts, and errors before Apply. A wrong-game sheet or changed source-owned
 identity column cannot be overridden. If a sheet disagrees with an existing
@@ -400,10 +640,28 @@ The engine can read a native value of 100. If the source contains one, the app
 displays 100 exactly instead of clipping it, but new edits are intentionally
 limited to the familiar 0–99 scale. Overall is calculated separately by
 position. A position edit is explicit and separate; rating edits never infer or
-change it. Abilities, Gold/Silver/Bronze tier, equipment, membership, depth
-charts, and jersey numbers are not inferred or changed by either editor. Jersey
-numbers remain **read-only / unmapped** because no consumer-backed field has
-been identified.
+change it. The on-disc rating and position editors do not infer or change
+abilities, Gold/Silver/Bronze tier, equipment, membership, depth charts, or
+jersey numbers. Jersey numbers remain **read-only / unmapped in the on-disc
+`0A` project lane** because no consumer-backed on-disc field has been
+identified. Use the separate **Save Players** raw-save workspace for the exact
+packed APFe jersey-number, ability, tier, depth, appearance/equipment, text,
+and count-preserving membership fields it explicitly exposes.
+
+### Paired RPCS3/Xenia roster-label audit
+
+The supplied stock APFe text exports contain **1,344 rows** each. The comparison
+is positional because the header has 169 labels for 177 fields, repeats
+`RunCoverage`, and leaves eight trailing fields unlabeled. The audit preserves
+those hazards instead of inventing names and normalizes only the exact bounded
+`TeamJerseyBytes` RGBA-to-ARGB platform serialization.
+
+After that normalization, 1,312 rows are equivalent, one is the known stock
+identity variant, 31 are randomized Atoms filler rows, and **zero are
+unexplained**. The stock identity is RPCS3 **Mike Haynes** versus Xenia **Mark
+Smith**, not Mike Smith. Only First, Last, College, DOB, Number, Photo, PBP, and
+Age differ; their equipment, ratings, and skills match positionally. Here PBP
+means the play-by-play announcer identifier, not playbook.
 
 ## Presentation editing
 
@@ -417,9 +675,14 @@ exported.
 
 The **Presentation Map** names all seven field-scorebug scene components and
 shows their mesh/triangle counts beside the `digital_font` writer boundary.
-It is an inspector, not a geometry or behavior editor. Season GameCast,
-clocks, timing, replay/halftime presentation, and scorebug audio remain
-separate systems.
+It also reports the closed draw/material texture ownership trace. Four scenes
+own 11 embedded textures total; the team-logo scene deliberately owns no
+embedded TXTR. Its two logo quads use two runtime-injected samplers. Team Logo
+updates both candidate reservoirs (`uniform_logo` gameplay packages and the
+separate `uniform_logocache` menu cache), so the editor does not need to invent
+a third scorebug texture. Which cache the runtime sampler resolves remains
+unproved. Season GameCast, clocks, timing, replay/halftime presentation, and
+scorebug audio remain separate systems.
 
 ## Draft logo editing
 
@@ -428,16 +691,105 @@ The Logos & Team Art tab exposes one additional bounded target:
 `franchise.iff`. It has the same Export, Replace, Revert, modified badge,
 Undo, project-save, and Build workflow as other editable PNGs.
 
-This does not unlock APF's uniform logos or text-logo cache. It also does not
-claim that a Logo Selection thumbnail consumes this resource. The writer and
-archive rebuild are offline-proved; an actual franchise/draft screen still
-needs a positive runtime witness.
+This draft resource is separate from both the Team Logo crest and Wordmarks
+workflows above. It also does not claim that a
+Logo Selection thumbnail consumes `draft_logo`. The writer and archive rebuild
+are offline-proved; an actual franchise/draft screen still needs a positive
+runtime witness.
 
-The alpha.13 registry gives this writer its own
+The registry gives this writer its own
 `apf2k8.logos_cards.draft_logo` capability instead of letting it inherit the
-broader read-only logo catalog's status. That produces 31 APF capability
-records and 61 total records across APF 2K8 and NFL 2K5. Those numbers describe
+broader read-only logo catalog's status. The current registry contains 37 APF
+records and 70 records across all registered game/platform targets. Those numbers describe
 product capabilities, not the number of logos or editable team slots.
+
+## Edit every proved player field in a roster save
+
+Open **Rosters & Players → Save Players**, then choose a raw `Roster.ROS` or a
+`CON ` / `LIVE` / `PIRS` package. A signed package is hash-tree verified and its
+`Roster.ROS` is extracted read-only; the editor never labels its output as a
+signed container.
+
+1. Choose player index 0–2253. The panel shows the source identity and exposes
+   all 149 exact packed/numeric fields in one searchable category-labeled list.
+2. Stage any base rating, ability, style, tier, number, mirrored position,
+   depth, appearance/equipment, or exact ID/metadata change. Choice-backed
+   fields offer only proved values.
+3. For any of the 15 known player text fields, enter replacement text that fits
+   the displayed existing UTF-16 allocation. Shared aliases show how many known
+   fields will change together.
+4. To move existing players between depth-chart memberships, choose two
+   populated team/slot entries and stage a swap. This cannot add a 43rd player,
+   create duplicates, or change any roster count.
+5. Write a new raw save. Keep the adjacent `.players.json` receipt with it.
+
+The independent verifier reconstructs the selected bit masks, preserves all
+unselected bits and every text pointer, reparses all 2,254 players and 40 teams,
+and checks the complete membership multiset. Whole-pound weight editing leaves
+the low packed nibble used by abilities untouched. Overall is intentionally not
+offered because the complete engine formula is not proved.
+
+For a signed source, reinject the new raw `Roster.ROS`, rebuild the STFS hashes,
+and resign it with the owner's save manager/keyvault before emulator or hardware
+testing. Mod Studio does not have Microsoft signing keys or the owner's keyvault.
+
+## Assign existing playbooks in a raw save
+
+Open **Playbooks & Plays → Save Assignments**. This workflow changes the
+team-to-playbook pointers in a roster save; it is separate from the neighboring
+on-disc inspector and stock assignment-route editor.
+
+1. Choose a save. All 40 team slots and their current offense/defense choices
+   are listed.
+2. Select one of the **36 offensive** books and one of the **33 defensive**
+   books, then choose **Stage both assignments**.
+3. Stage any other teams, then write a new raw save and manifest.
+
+The writer rechecks the inspected source SHA-256, never opens the source for
+writing, refuses output aliases and overwrites, changes only the selected
+assignment pointer bytes, reparses the result, confirms the 69-name book table
+is unchanged, and runs an independent verification pass.
+
+Synthetic fixtures remain green. A private raw-save witness also parsed all 40
+teams and 69 books, changed team slot 32 offense 25→13 and defense 56→32,
+accounted for exactly two assignment fields / three bytes, reopened to IDs
+13/32 with the book table unchanged, then reverse-patched to the byte-exact
+original. This proves bounded raw-save transport only; gameplay consumption in
+Xenia or on Xbox 360 remains unproved.
+
+A signed Xbox package now uses the same verified raw-handoff lane as Save
+Players: Mod Studio verifies and extracts `Roster.ROS`, writes an independently
+verified raw result, and requires external reinjection, STFS rehashing, and
+resigning. It never emits or labels an unsigned result as a signed container.
+This feature selects existing books; it does not change on-disc PLAY/DRCT.
+Signed-STFS reinjection/rehash/resign and changed assignment gameplay
+consumption remain unproved.
+
+## Copy or swap stock player-assignment routes on disc
+
+Open **Playbooks & Plays → Assignment Routes** after loading the game.
+
+1. Choose a target play and one of its 11 player slots.
+2. Choose a donor play and slot.
+3. Use **Copy donor route to target** when the target's current chain is also
+   used elsewhere. If the editor reports that the copy would orphan a chain,
+   use **Swap both assignment routes** instead.
+4. Save the `.apf2k8mod` project or Build a new game folder normally. Every
+   staged target has a Revert row; when chain safety requires it, reverting one
+   half also reverts its reciprocal swap partner. A two-way swap is one Undo
+   action.
+
+The project stores only MASTER/play/slot selectors. During Build, Mod Studio
+reads the donor descriptor and chain from your recognized source, re-encodes
+the target-relative pointer, and changes only the selected eight-byte
+assignment fields. It reparses the fixed 0x2C750 MASTER body, preserves every
+route-node byte, name, formation, exact MSB-first formation/play membership
+bit, opaque membership tail, and the complete set of chain starts, then
+token-preserves H7A inside fixed outer 180.
+
+This reuses exact stock assignments. It does not decode or draw route-node
+waypoint coordinates/opcodes, create new plays or formations, edit DRCT, or
+claim gameplay/runtime behavior.
 
 ## Browsing and exporting everything
 
@@ -484,28 +836,30 @@ own game and opens the dependency-free 3D viewer:
 
 **Export 3D Scene ZIP** writes `scene.gltf`, `scene.bin`, and a source-bound
 manifest as one private local export. The right panel lists every record in the
-same outer archive package. A decoded TXTR can be previewed/exported as PNG;
-other records retain exact raw export. Same-package proximity is only a useful
-inventory clue: APF draw/material/TXTR ownership is not decoded, so clicking a
-surface never auto-selects a supposed texture and stadium Replace/Revert stay
-disabled. General mesh import is not claimed.
+same outer archive package. In the proved outer-14/inner-8 stadium, the editor
+closes an exact 89-node → 84-material → 78-embedded-TXTR ownership join.
+Clicking a surface lists only its owned textures. All 78 embedded textures can
+be previewed/exported, replaced from PNG with target-size auto-resizing and a
+complete regenerated mip chain, reverted, and built into a source-fenced copied
+`1A`. The independent verifier reopens the result and checks every unrelated
+byte. Other stadium scenes retain browse/export until their own ownership map
+is proved; package proximity alone never grants write permission.
 
-The completed static ownership experiment narrows that boundary without
-pretending it solved texture selection. In the first 116-mesh scene, 328 draw
-records resolve cleanly to material slots 0–112, all 113 serialized material
-records, and 13 shader families. A scan of 737 unique named texture identities
-found zero static identity references in the scene-system material data,
-including zero references to the three same-package texture candidates.
+The exact outer-14/inner-8 stadium has a separate, bounded geometry lane. Click
+one of its 77 catalog-authorized surfaces, choose **Export selected mesh**, edit
+only vertex POSITION values, apply object transforms, and export the same
+vertex count and triangles. **Import edited mesh** authenticates the private
+source reference, rejects changed topology, transforms, materials, skins and
+extra attributes, then creates a new folder containing a copied `1A` and
+hash-only manifest only after independent full-volume verification. Original
+UVs, normals, materials, attachments and every unrelated game byte are
+preserved. This is not a changed-topology or runtime-visibility claim.
 
-The bounded runtime follow-up set Xenia to break at the renderer material
-handoff under Wine. Wine intercepted that host instruction breakpoint before a
-game frame or guest-register capture, so it did not test material ownership.
-The complete private debugger change was restored exactly. The next credible
-route is a small logging-instrumented Xenia build, or a native-Windows guest
-debugger capture that can observe the live material array and texture-object
-pointers. Repeating the same Wine breakpoint route would not add evidence.
-Until a live mesh/primitive-to-TXTR join exists, **Replace (locked)** is the
-truthful action.
+The earlier same-package and Wine-breakpoint experiments remain useful history,
+but the current serialized-node/material/TXTR join supersedes their unresolved
+inventory boundary for this one stadium. Runtime visibility, other stadium
+scenes, arbitrary material reassignment, changed topology, UV editing, collision,
+and allocation growth are still explicit boundaries.
 
 ## Field Art map
 
@@ -524,10 +878,13 @@ that category. The header shows seven families across 125 archive packages:
 
 Search by name, choose a family, inspect the source package, and use the
 existing PNG/scene/raw export offered for that asset. An export comes from the
-user's game and stays private. **Replace (locked)** and Revert remain disabled:
-archive-package co-location alone does not establish team, stadium, selector,
-field material, shader, or runtime ownership. This map makes every candidate
-easy to find without pretending that a bounded Field Art writer exists.
+user's game and stays private. Six exact texture targets have bounded
+Replace/Revert/project/Build transports: `endzone_l0`, `endzone_l1`,
+`pc_field_goal`, `Field_Pass_text`, `Stride_number_field`, and `divots`. Import
+auto-resizes to the target dimensions, regenerates the required encoded payload,
+stages a source-fenced copied `0A`, and fails closed if the fixed allocation
+cannot be preserved. The other Field Art rows remain inspect/export-only until
+their team, stadium, selector, material, shader, and runtime ownership is proved.
 
 Use **Export decoded rows** in any specialized inspector to save all rows
 matching the current search and kind filter. JSON preserves nested decoded
@@ -776,7 +1133,7 @@ In Alpha.22, selecting a **Standalone AUDO** row exposes **Replace with XMA1…*
 and **Revert sound**. Alpha.23 exposes the same controls for every
 individual **AUSB substream** row. Physical External Bank and AUSB index rows
 remain containers, not individual sounds, so author through their linked
-substream rows. Alpha.33 also exposes **Drop .xma or exact PCM16 .wav here** for
+substream rows. Alpha.33 also exposes **Drop .xma or audio file here** for
 those same editable rows; it is a shortcut into the existing routes, not a new
 format or a weaker validator. The exact-slot editor is deliberately narrow:
 
@@ -789,7 +1146,9 @@ format or a weaker validator. The exact-slot editor is deliberately narrow:
    shrink.
 3. Mod Studio validates the RIFF structure, every `0x800`-byte packet, and a
    complete FFmpeg decode. The decoded duration must match the target within
-   the bounded XMA packet-tail tolerance.
+   the bounded XMA packet-tail tolerance. PCM/external-encoder submissions must
+   first decode back and pass the alignment-aware authored-signal artifact gate;
+   direct pre-encoded XMA has no PCM reference and remains byte-preserved.
 4. A successful import receives a modified badge and participates in Undo,
    individual Revert, project save/load, private preview, and Build like other
    typed edits.
@@ -912,8 +1271,9 @@ sides and rejected 12 otherwise packet-valid retail inputs. All 45,514 rows are
 addressable, but every new replacement must decode cleanly and match its target
 within the packet-tail tolerance. Alpha.28 can hand one selected WAV or up to
 256 supplied exact-shape PCM16 pack WAVs to a separately installed encoder.
-Mod Studio ships no encoder, real-tool compatibility remains unproved, and
-FLAC/MP3 input remains unsupported.
+Mod Studio ships no encoder and real-tool compatibility remains unproved.
+Selected-sound FLAC/MP3/OGG/M4A input is conformed through FFmpeg; those formats
+remain unsupported in the bounded folder/ZIP batch route.
 
 The private Alpha.23 candidate booted, selected **Track 12 — Bury Me Standing
 Remix**, and visibly remained in playback for 25 seconds without crashing.
@@ -1062,7 +1422,15 @@ automation to the user's active display merely to index or build a project.
 
 ## Privacy and distribution rule
 
-The installed tool includes one exact reviewed `extract-xiso` executable and
-its license. It contains no game data. Users supply their own dump, and all
-derived game content remains outside the public application tree. Xenia is the
-supported emulator target; original Xbox 360 hardware is untested.
+The installed tool includes exact reviewed Linux and Windows `extract-xiso`
+executables with their license, plus the exact reviewed Linux x86-64
+minimum-cost H7A helper used for tight fixed-allocation rebuilds. These files
+contain no game data and are independently size/hash-pinned by both release
+gates. Users supply their own dump, and all derived game content remains
+outside the public application tree. Xenia is the supported emulator target;
+original Xbox 360 hardware is untested.
+
+The minimum-cost H7A helper is currently a Linux x86-64 release component. On
+Windows and macOS the same writers keep the verified greedy encoder and refuse
+an edit when that stream cannot fit its fixed retail allocation; they do not
+publish an oversized fallback.

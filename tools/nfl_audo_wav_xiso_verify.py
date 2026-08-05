@@ -9,8 +9,10 @@ checks that only the fixed ``menu-back_01`` payload differs.
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 import hashlib
 import io
+import itertools
 import json
 import math
 import os
@@ -20,13 +22,16 @@ import struct
 import sys
 import wave
 
+_TOOLS = str(Path(__file__).resolve().parent)
+if _TOOLS not in sys.path:
+    sys.path.insert(0, _TOOLS)
+
 import nfl_team_identity_xiso_verify as base
 
 
 SCHEMA = "nfl2k5_audo_wav_xiso_workflow/v1"
 ARTIFACT_SCHEMA = "nfl2k5_menu_back_audio_verification/v1"
 PACK_PATH = "vc_53450030/0"
-PACK_SECTOR = 796_479
 PACK_SIZE = 193_710_080
 PACK_SHA256 = "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d"
 OUTER_PACK_OFFSET = 851_968
@@ -36,8 +41,6 @@ SYSTEM_SIZE = 128
 PAYLOAD_SIZE = 3_204
 TAIL_SIZE = 12
 WRAPPER_SIZE = 3_376
-ABSOLUTE_WRAPPER_OFFSET = 1_632_809_616
-ABSOLUTE_PAYLOAD_OFFSET = 1_632_809_776
 WRAPPER_SHA256 = "cb8d0c27b7687f13374176a50cc0ca32c817d98ab64342a8a6d2193c28274ac3"
 SYSTEM_SHA256 = "b3090973e21d57e5f433ff1c1b9a0288ff7295dc477b3537e80b772c2b36c875"
 SOURCE_PAYLOAD_SHA256 = "50d8d4efc2b9f6d2405c005c27b544d8f9f8b57dc3e9449517f58d799985724b"
@@ -47,6 +50,13 @@ FRAME_COUNT = 5_696
 BLOCK_BYTES = 36
 BLOCK_FRAMES = 64
 CHUNK = 16 * 1024 * 1024
+SECTOR = 2_048
+XDVDFS_HEADER_OFFSET = 0x10000
+XDVDFS_MAGIC = b"MICROSOFT*XBOX*MEDIA"
+XDVDFS_BASE_OFFSETS = (0, 0x18300000, 0x0FD90000, 0x02080000)
+XDVDFS_SCAN_LIMIT = 1 << 30
+MAX_DIRECTORY_NODES = 4_096
+MAX_PARSE_RECURSION = 400
 
 INDEX_TABLE = (-1, -1, -1, -1, 2, 4, 6, 8)
 STEP_TABLE = (
@@ -65,6 +75,19 @@ class AudioVerifyError(ValueError):
     pass
 
 
+@dataclass(frozen=True)
+class XdvdfsEntry:
+    path: str
+    sector: int
+    size: int
+    attributes: int
+    base_offset: int
+
+    @property
+    def offset(self) -> int:
+        return self.base_offset + self.sector * SECTOR
+
+
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise AudioVerifyError(message)
@@ -72,6 +95,141 @@ def require(condition: bool, message: str) -> None:
 
 def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def _scan_xdvdfs_bases(fd: int, image_size: int):
+    window = min(image_size, XDVDFS_SCAN_LIMIT)
+    position = 0
+    overlap = len(XDVDFS_MAGIC)
+    while position < window:
+        length = min(8 << 20, window - position)
+        block = base.pread_exact(fd, position, length)
+        start = 0
+        while True:
+            hit = block.find(XDVDFS_MAGIC, start)
+            if hit < 0:
+                break
+            start = hit + 1
+            absolute = position + hit
+            if absolute < XDVDFS_HEADER_OFFSET or absolute % SECTOR:
+                continue
+            candidate = absolute - XDVDFS_HEADER_OFFSET
+            header = base.pread_exact(fd, absolute, 0x800)
+            if header[-20:] != XDVDFS_MAGIC:
+                continue
+            root_sector, root_size = struct.unpack_from("<II", header, 20)
+            if (
+                root_sector > 0
+                and root_size >= 14
+                and candidate + root_sector * SECTOR + root_size <= image_size
+            ):
+                yield candidate
+        position += max(length - overlap, 1)
+
+
+def _parse_xdvdfs_at(
+    fd: int, image_size: int, base_offset: int
+) -> tuple[dict[str, XdvdfsEntry], tuple[int, int, int, int, int]]:
+    header = base.pread_exact(fd, base_offset + XDVDFS_HEADER_OFFSET, 0x800)
+    require(
+        header[:20] == XDVDFS_MAGIC and header[-20:] == XDVDFS_MAGIC,
+        "XDVDFS signature mismatch",
+    )
+    root_sector, root_size = struct.unpack_from("<II", header, 20)
+    require(
+        root_sector > 0
+        and root_size >= 14
+        and base_offset + root_sector * SECTOR + root_size <= image_size,
+        "XDVDFS root directory is invalid",
+    )
+    entries: dict[str, XdvdfsEntry] = {}
+    active: set[tuple[int, int]] = set()
+    directory_count = 0
+    node_count = 0
+
+    def parse_directory(
+        sector: int, size: int, prefix: str, recursion: int = 0
+    ) -> None:
+        nonlocal directory_count, node_count
+        require(recursion <= MAX_PARSE_RECURSION, "XDVDFS structure is too deep")
+        extent = (sector, size)
+        require(extent not in active, "recursive directory extent")
+        absolute = base_offset + sector * SECTOR
+        require(
+            14 <= size and absolute + size <= image_size,
+            f"directory outside image: {prefix or '/'}",
+        )
+        active.add(extent)
+        directory_count += 1
+        table = base.pread_exact(fd, absolute, size)
+        visited: set[int] = set()
+
+        def visit(offset: int, depth: int) -> None:
+            nonlocal node_count
+            require(depth <= MAX_PARSE_RECURSION, "XDVDFS tree is too deep")
+            require(
+                offset not in visited and 0 <= offset <= size - 14,
+                f"invalid directory node: {prefix or '/'}",
+            )
+            visited.add(offset)
+            node_count += 1
+            require(node_count <= MAX_DIRECTORY_NODES, "too many directory nodes")
+            left, right, start_sector, length = struct.unpack_from(
+                "<HHII", table, offset
+            )
+            attributes, name_size = struct.unpack_from("BB", table, offset + 12)
+            require(
+                name_size and offset + 14 + name_size <= size,
+                "invalid filename range",
+            )
+            raw = table[offset + 14:offset + 14 + name_size]
+            require(not any(value in raw for value in (0, 47, 92)), "unsafe filename")
+            try:
+                name = raw.decode("ascii")
+            except UnicodeDecodeError:
+                name = raw.decode("latin-1")
+            if left:
+                visit(left * 4, depth + 1)
+            path = f"{prefix}/{name}" if prefix else name
+            key = path.casefold()
+            require(key not in entries, f"duplicate path: {path}")
+            require(
+                base_offset + start_sector * SECTOR + length <= image_size,
+                f"extent outside image: {path}",
+            )
+            entry = XdvdfsEntry(path, start_sector, length, attributes, base_offset)
+            entries[key] = entry
+            if attributes & 0x10 and length >= 14:
+                parse_directory(start_sector, length, path, recursion + depth + 1)
+            if right:
+                visit(right * 4, depth + 1)
+
+        visit(0, recursion + 1)
+        active.remove(extent)
+
+    parse_directory(root_sector, root_size, "")
+    return entries, (
+        base_offset, root_sector, root_size, directory_count, node_count
+    )
+
+
+def parse_xdvdfs(
+    fd: int, image_size: int
+) -> tuple[dict[str, XdvdfsEntry], tuple[int, int, int, int, int]]:
+    seen: set[int] = set()
+    for candidate in itertools.chain(
+        XDVDFS_BASE_OFFSETS, _scan_xdvdfs_bases(fd, image_size)
+    ):
+        if candidate in seen or candidate + XDVDFS_HEADER_OFFSET + 0x800 > image_size:
+            continue
+        seen.add(candidate)
+        try:
+            entries, tree = _parse_xdvdfs_at(fd, image_size, candidate)
+        except (AudioVerifyError, base.VerifyError):
+            continue
+        if PACK_PATH in entries and "default.xbe" in entries:
+            return entries, tree
+    raise AudioVerifyError("NFL 2K5 XDVDFS game partition was not found")
 
 
 def canonical_report(path: Path) -> tuple[Path, dict]:
@@ -170,13 +328,15 @@ def runs(values: list[int]) -> list[tuple[int, int]]:
     return result
 
 
-def scan_images(source_fd: int, output_fd: int, allowed: set[int]) -> tuple[str, str, list[int]]:
+def scan_images(
+    source_fd: int, output_fd: int, allowed: set[int], image_size: int
+) -> tuple[str, str, list[int]]:
     source_hash = hashlib.sha256()
     output_hash = hashlib.sha256()
     changed: list[int] = []
     position = 0
-    while position < base.IMAGE_SIZE:
-        size = min(CHUNK, base.IMAGE_SIZE - position)
+    while position < image_size:
+        size = min(CHUNK, image_size - position)
         before = base.pread_exact(source_fd, position, size)
         after = base.pread_exact(output_fd, position, size)
         source_hash.update(before)
@@ -197,8 +357,11 @@ def verify(source_path: Path, output_path: Path, wav_path: Path, manifest_path: 
     source, source_fd = base.open_regular(source_path)
     output, output_fd = base.open_regular(output_path)
     try:
-        require(os.fstat(source_fd).st_size == os.fstat(output_fd).st_size == base.IMAGE_SIZE,
-                "source/output image size differs")
+        image_size = os.fstat(source_fd).st_size
+        require(
+            image_size > 0 and os.fstat(output_fd).st_size == image_size,
+            "source/output image size differs",
+        )
         require((os.fstat(source_fd).st_dev, os.fstat(source_fd).st_ino) !=
                 (os.fstat(output_fd).st_dev, os.fstat(output_fd).st_ino),
                 "source/output inode aliases")
@@ -214,20 +377,22 @@ def verify(source_path: Path, output_path: Path, wav_path: Path, manifest_path: 
                 digest(struct.pack(f"<{FRAME_COUNT}h", *wav_samples)),
                 "manifest WAV identity differs")
 
-        source_entries, source_tree = base.parse_xdvdfs(source_fd)
-        output_entries, output_tree = base.parse_xdvdfs(output_fd)
+        source_entries, source_tree = parse_xdvdfs(source_fd, image_size)
+        output_entries, output_tree = parse_xdvdfs(output_fd, image_size)
         require(source_entries == output_entries and source_tree == output_tree,
                 "output XDVDFS tree or extents differ")
         pack = source_entries.get(PACK_PATH)
-        require(pack is not None and pack.sector == PACK_SECTOR and pack.size == PACK_SIZE,
+        require(pack is not None and pack.size == PACK_SIZE,
                 "pack-0 extent differs")
         assert pack is not None
         require(base.hash_extent(source_fd, pack.offset, pack.size) == PACK_SHA256,
                 "retail pack-0 hash differs")
         wrapper = pack.offset + OUTER_PACK_OFFSET + CHUNK_OFFSET
         payload_offset = wrapper + HEADER_SIZE + SYSTEM_SIZE
-        require(wrapper == ABSOLUTE_WRAPPER_OFFSET and payload_offset == ABSOLUTE_PAYLOAD_OFFSET,
-                "AUDO absolute-offset arithmetic differs")
+        require(
+            wrapper + WRAPPER_SIZE <= pack.offset + pack.size,
+            "AUDO wrapper is outside pack-0",
+        )
         source_span = base.pread_exact(source_fd, wrapper, WRAPPER_SIZE)
         output_span = base.pread_exact(output_fd, wrapper, WRAPPER_SIZE)
         require(digest(source_span) == WRAPPER_SHA256, "retail AUDO wrapper hash differs")
@@ -253,14 +418,27 @@ def verify(source_path: Path, output_path: Path, wav_path: Path, manifest_path: 
             enumerate(zip(source_payload, output_payload, strict=True)) if left != right
         ]
         allowed = {payload_offset + value for value in relative}
-        source_hash, output_hash, changed = scan_images(source_fd, output_fd, allowed)
-        require(source_hash == base.SOURCE_SHA256 and
-                report["source"]["sha256_before"] == source_hash and
+        source_hash, output_hash, changed = scan_images(
+            source_fd, output_fd, allowed, image_size
+        )
+        require(report["source"]["sha256_before"] == source_hash and
                 report["source"]["sha256_after"] == source_hash and
+                report["source"]["size"] == image_size and
                 report["source"]["modified"] is False,
                 "source XISO identity/manifest differs")
-        require(output_hash == report["output"]["sha256"],
+        require(output_hash == report["output"]["sha256"] and
+                report["output"]["size"] == image_size,
                 "output XISO hash/manifest differs")
+
+        target = report["target"]
+        require(
+            target["pack_path"] == PACK_PATH
+            and target["pack_sector"] == pack.sector
+            and target["pack_size"] == pack.size
+            and target["absolute_wrapper_offset"] == wrapper
+            and target["absolute_payload_offset"] == payload_offset,
+            "dynamic target extent/manifest differs",
+        )
 
         decoded = decode_payload(output_payload)
         decoded_pcm = struct.pack(f"<{FRAME_COUNT}h", *decoded)
@@ -294,8 +472,9 @@ def verify(source_path: Path, output_path: Path, wav_path: Path, manifest_path: 
             "title_executed": False,
             "retail_original_modified": False,
         }, "workflow claims differ")
-        require(base.hash_extent(output_fd, output_entries["default.xbe"].offset,
-                                 output_entries["default.xbe"].size) == base.XBE_SHA256,
+        xbe = output_entries["default.xbe"]
+        require(xbe.size == 11_948_032 and
+                base.hash_extent(output_fd, xbe.offset, xbe.size) == base.XBE_SHA256,
                 "output default.xbe changed")
         require(source.stat().st_ino == os.fstat(source_fd).st_ino and
                 output.stat().st_ino == os.fstat(output_fd).st_ino,

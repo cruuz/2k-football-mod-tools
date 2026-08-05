@@ -129,7 +129,7 @@ class PlaybooksPanelModelTests(unittest.TestCase):
 
     def test_findings_state_exact_authoring_and_retail_boundaries(self) -> None:
         note = PLAY_EDITOR_FINDINGS_PLAIN_TEXT
-        self.assertIn("Route drawing and editing — Coming Soon", note)
+        self.assertIn("Freehand route drawing is not supported", note)
         self.assertIn("37 PLAY books", note)
         self.assertIn("32,502 complete chains", note)
         self.assertIn("all 91,833 eight-byte nodes", note)

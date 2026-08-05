@@ -5,8 +5,14 @@ from __future__ import annotations
 from contextlib import nullcontext
 from dataclasses import replace
 from pathlib import Path
+import tempfile
 from threading import RLock
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Mapping
+
+from mod_editor.core.texture_master import (
+    AuthoringTransform,
+    save_texture_master_bundle,
+)
 
 from .audio_batch_export import (
     ApfAudioBatchExporter,
@@ -46,6 +52,10 @@ from .inspectors import (
     export_player_rating_sheet,
     export_semantic_rows,
 )
+from .helmet_crest_design import (
+    HELMET_CREST_DESIGN_EDIT_ID,
+    RETAIL_CREST_PROFILE,
+)
 from .launcher import LaunchReceipt, XeniaLauncher
 from .models import (
     ApfAsset,
@@ -77,6 +87,7 @@ from .roster_workspace import (
 from .session import ApfSession
 from .source import SourceManager
 from .stadium import ApfStadiumPreview, ApfStadiumScene
+from . import stadium_texture
 from .text_sheet import (
     TextSheetExportReceipt,
     TextSheetImportReceipt,
@@ -89,10 +100,12 @@ Progress = Callable[[str, int, int], None]
 
 
 ROSTER_IDENTITY_RUNTIME_LOCK_MESSAGE = (
-    "Team display names and player first/last names are editable through the "
-    "runtime-proved token-preserving route. Team abbreviations, jersey numbers, "
-    "membership, depth charts, and mixed or unknown identity allocations remain "
-    "runtime-locked until each route is separately proved."
+    "The on-disc project route edits proved team display names and player "
+    "first/last names. The separate Save Players tab edits exact raw-save jersey, "
+    "tier, depth, equipment/appearance, abilities, all 15 bounded player text "
+    "fields, and count-preserving populated membership swaps. Team abbreviations, "
+    "Overall, capacity expansion, and mixed/unknown on-disc allocations stay "
+    "runtime-locked."
 )
 
 TEAM_DISPLAY_NAME_EDIT_SCOPE_MESSAGE = (
@@ -152,6 +165,8 @@ class ApfStudioFacade:
         # and are never counted as shared project modifications.
         self._staged_team_logo_png: Path | None = None
         self._staged_field_art: dict[tuple[int, int], Path] = {}
+        self._stadium_texture_stage_dir: tempfile.TemporaryDirectory[str] | None = None
+        self._staged_stadium_textures: dict[int, Path] = {}
 
     @property
     def source_ready(self) -> bool:
@@ -228,6 +243,7 @@ class ApfStudioFacade:
             self._reserve_roster_plan = ReserveRosterPlan.empty()
             self._staged_team_logo_png = None
             self._staged_field_art = {}
+            self._clear_stadium_texture_stage()
             return catalog
 
     def require_catalog(self) -> ApfCatalog:
@@ -529,40 +545,112 @@ class ApfStudioFacade:
     # cycle -- gui imports this facade -- stays broken).  The retail source is
     # never opened for writing.
 
+    def replace_helmet_crest_design(
+        self,
+        supplied_png: Path,
+        *,
+        profile: str,
+        crest_asset_index: int,
+        crest_outer_entry_index: int,
+        fit_visible_mask: bool = False,
+        progress: Progress = _noop,
+    ) -> Modification:
+        """Stage the selected crest in the normal project/build transaction."""
+
+        with self._session_lock:
+            progress("Checking helmet crest design", 0, 1)
+            result = self.require_session().replace_helmet_crest_design(
+                supplied_png,
+                profile=profile,
+                crest_asset_index=crest_asset_index,
+                crest_outer_entry_index=crest_outer_entry_index,
+                fit_visible_mask=fit_visible_mask,
+            )
+            self._staged_team_logo_png = result.replacement_path
+            self.last_build = None
+            progress("Helmet crest design staged", 1, 1)
+            return result
+
+    def save_helmet_crest_authoring_master(
+        self,
+        *,
+        source_image: Path,
+        source_sha256: str,
+        destination: Path,
+        transform: AuthoringTransform,
+        editor_transform: Mapping[str, object],
+        high_resolution_scale: int,
+        native_baseline_png: Path | None = None,
+        progress: Progress = _noop,
+    ) -> Path:
+        """Save the original crest art beside the exact staged native mask."""
+
+        with self._session_lock:
+            progress("Validating full-resolution helmet-logo master", 0, 2)
+            modification = self.require_session().modification(
+                HELMET_CREST_DESIGN_EDIT_ID
+            )
+            if modification is None:
+                raise FacadeError(
+                    "Import and place a helmet logo before saving its authoring master."
+                )
+            output = save_texture_master_bundle(
+                source_image=source_image,
+                destination=destination,
+                asset_id=HELMET_CREST_DESIGN_EDIT_ID,
+                editor_target="apf2k8_xbox360-helmet-crest",
+                native_width=self._TEAM_LOGO_PNG_SIZE[0],
+                native_height=self._TEAM_LOGO_PNG_SIZE[1],
+                transform=transform,
+                high_resolution_scale=high_resolution_scale,
+                compiled_native_png=modification.replacement_path,
+                compiled_native_baseline_png=native_baseline_png,
+                expected_source_sha256=source_sha256,
+                editor_transform=editor_transform,
+            )
+            progress("High-resolution helmet-logo master saved", 2, 2)
+            return output
+
     def replace_team_logo(
         self, supplied_png: Path, progress: Progress = _noop
     ) -> Path:
         """Stage one exact 512x512 RGBA crest for the Team Logo build.
 
-        :meth:`build_team_logo` writes it into both the ``uniform_logo_01``
-        package and the matching entry of the prebuilt ``uniform_logocache``
+        :meth:`build_team_logo` mirrors it into both crest layers of the selected
+        ``uniform_logo_NN`` package and both matching entries of the prebuilt
+        ``uniform_logocache``
         aggregate, so this same staged crest drives both the ``team_logo`` and
         the coupled ``team_logo_cache`` capabilities.
         """
 
         with self._session_lock:
-            self.require_session()
-            progress("Checking team-logo PNG", 0, 1)
-            staged = self._validate_editor_png(
-                supplied_png, self._TEAM_LOGO_PNG_SIZE, "team-logo crest"
+            result = self.replace_helmet_crest_design(
+                supplied_png,
+                profile=RETAIL_CREST_PROFILE,
+                crest_asset_index=self._TEAM_LOGO_CACHE_CATALOG_INDEX,
+                crest_outer_entry_index=36,
+                fit_visible_mask=False,
+                progress=progress,
             )
-            self._staged_team_logo_png = staged
-            progress("Team-logo PNG staged", 1, 1)
-            return staged
+            return result.replacement_path
 
     def revert_team_logo(self, progress: Progress = _noop) -> bool:
         """Discard any staged team-logo crest; the source game is untouched."""
 
         with self._session_lock:
-            had = self._staged_team_logo_png is not None
+            session = self.require_session()
+            had = self._staged_team_logo_png is not None or (
+                HELMET_CREST_DESIGN_EDIT_ID in session.modified_asset_ids
+            )
             self._staged_team_logo_png = None
+            session.revert(HELMET_CREST_DESIGN_EDIT_ID)
             return had
 
     def build_team_logo(
         self, output_volume: Path, progress: Progress = _noop
     ) -> dict[str, object]:
         """Copy the loaded 0A and write the staged crest into both the
-        ``uniform_logo_01`` package and the prebuilt logo cache through the two
+        selected ``uniform_logo_NN`` package and the prebuilt logo cache through the two
         offline-proved writers, delivering one 0A that carries both edits."""
 
         with self._session_lock:
@@ -582,7 +670,15 @@ class ApfStudioFacade:
             cache_manifest = (
                 out_volume.parent / f"{out_volume.name}.team_logo_cache.json"
             )
-            self._require_absent(out_volume, package_manifest, cache_manifest)
+            cache_verify_manifest = cache_manifest.with_name(
+                f"{cache_manifest.stem}.verify.json"
+            )
+            self._require_absent(
+                out_volume,
+                package_manifest,
+                cache_manifest,
+                cache_verify_manifest,
+            )
             from . import gui  # reuse the panel-proven, test-pinned builder
 
             return gui.build_team_logo_copied_volume(
@@ -596,6 +692,91 @@ class ApfStudioFacade:
             )
 
     # -- Field art: the six offline-proved base textures --------------------
+
+    # -- Stadium embedded textures: exact outer-14/inner-8 ownership --------
+
+    def _clear_stadium_texture_stage(self) -> None:
+        temporary = self._stadium_texture_stage_dir
+        self._stadium_texture_stage_dir = None
+        self._staged_stadium_textures = {}
+        if temporary is not None:
+            temporary.cleanup()
+
+    def stage_stadium_texture(
+        self,
+        texture_index: int,
+        supplied_png: Path,
+        progress: Progress = _noop,
+    ) -> Path:
+        """Snapshot one validated replacement for the proved stadium page."""
+
+        with self._session_lock:
+            source = self.source
+            if source is None:
+                raise FacadeError("Load your APF 2K8 game first")
+            if self._stadium_texture_stage_dir is None:
+                self._stadium_texture_stage_dir = tempfile.TemporaryDirectory(
+                    prefix="apf-stadium-texture-stage-"
+                )
+            root = Path(self._stadium_texture_stage_dir.name)
+            destination = root / (
+                f"texture-{texture_index:03d}-{len(tuple(root.iterdir())):04d}.png"
+            )
+            progress("Checking stadium texture PNG", 0, 1)
+            staged, _source_size = stadium_texture.stage_replacement_png(
+                source.game_root,
+                texture_index,
+                Path(supplied_png),
+                destination,
+            )
+            previous = self._staged_stadium_textures.get(texture_index)
+            self._staged_stadium_textures[texture_index] = staged
+            if previous is not None and previous != staged:
+                previous.unlink(missing_ok=True)
+            progress("Stadium texture PNG staged", 1, 1)
+            return staged
+
+    def revert_stadium_texture(
+        self,
+        texture_index: int | None = None,
+        progress: Progress = _noop,
+    ) -> bool:
+        """Discard one or every private stadium texture snapshot."""
+
+        with self._session_lock:
+            if texture_index is None:
+                had = bool(self._staged_stadium_textures)
+                self._clear_stadium_texture_stage()
+                return had
+            staged = self._staged_stadium_textures.pop(texture_index, None)
+            if staged is None:
+                return False
+            staged.unlink(missing_ok=True)
+            return True
+
+    def build_stadium_texture(
+        self,
+        texture_index: int,
+        output_directory: Path,
+        progress: Progress = _noop,
+    ) -> stadium_texture.StadiumTextureReceipt:
+        """Publish one staged edit as a new copied 1A plus hashes-only receipt."""
+
+        with self._session_lock:
+            source = self.source
+            if source is None:
+                raise FacadeError("Load your APF 2K8 game first")
+            staged = self._staged_stadium_textures.get(texture_index)
+            if staged is None:
+                raise FacadeError(
+                    "Stage this stadium texture with stage_stadium_texture first"
+                )
+            progress("Building copied stadium 1A", 0, 1)
+            receipt = stadium_texture.write_output(
+                source.game_root, staged, texture_index, Path(output_directory)
+            )
+            progress("Copied stadium 1A built", 1, 1)
+            return receipt
 
     def replace_field_art(
         self,
@@ -800,6 +981,87 @@ class ApfStudioFacade:
                 player_index, value
             )
             progress("Checking player position", 1, 1)
+            self.last_build = None
+            return result
+
+    def custom_team_appearance_value(self, slot: int):
+        return self.require_session().custom_team_appearance_value(slot)
+
+    def custom_team_appearance_source_value(self, slot: int):
+        return self.require_session().custom_team_appearance_source_value(slot)
+
+    def replace_custom_team_appearance(
+        self,
+        appearance,
+        progress: Progress = _noop,
+    ) -> Modification:
+        with self._session_lock:
+            progress("Checking custom-team palette and selectors", 0, 1)
+            result = self.require_session().replace_custom_team_appearance(
+                appearance
+            )
+            progress("Checking custom-team palette and selectors", 1, 1)
+            self.last_build = None
+            return result
+
+    def uniform_equipment_color_inspection(self, team_index: int):
+        return self.require_session().uniform_equipment_color_inspection(team_index)
+
+    def uniform_equipment_color_value(self, team_index: int):
+        return self.require_session().uniform_equipment_color_value(team_index)
+
+    def uniform_equipment_color_source_value(self, team_index: int):
+        return self.require_session().uniform_equipment_color_source_value(team_index)
+
+    def replace_uniform_equipment_colors(
+        self,
+        value,
+        progress: Progress = _noop,
+    ) -> Modification:
+        with self._session_lock:
+            progress("Checking uniform equipment colors", 0, 1)
+            result = self.require_session().replace_uniform_equipment_colors(value)
+            progress("Uniform equipment colors staged", 1, 1)
+            self.last_build = None
+            return result
+
+    def replace_play_assignment_route(
+        self,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+        progress: Progress = _noop,
+    ) -> Modification:
+        with self._session_lock:
+            progress("Checking stock APF assignment route", 0, 1)
+            result = self.require_session().replace_play_assignment_route(
+                target_play_index,
+                target_slot_index,
+                donor_play_index,
+                donor_slot_index,
+            )
+            progress("APF assignment route verified", 1, 1)
+            self.last_build = None
+            return result
+
+    def swap_play_assignment_routes(
+        self,
+        first_play_index: int,
+        first_slot_index: int,
+        second_play_index: int,
+        second_slot_index: int,
+        progress: Progress = _noop,
+    ) -> tuple[Modification, Modification]:
+        with self._session_lock:
+            progress("Checking reciprocal APF assignment routes", 0, 2)
+            result = self.require_session().swap_play_assignment_routes(
+                first_play_index,
+                first_slot_index,
+                second_play_index,
+                second_slot_index,
+            )
+            progress("Both APF assignment routes verified", 2, 2)
             self.last_build = None
             return result
 
@@ -1530,6 +1792,8 @@ class ApfStudioFacade:
         with self._session_lock:
             progress("Reverting edit", 0, 1)
             result = self.require_session().revert(asset_id)
+            if asset_id == HELMET_CREST_DESIGN_EDIT_ID and result:
+                self._staged_team_logo_png = None
             progress("Reverting edit", 1, 1)
             if result:
                 self.last_build = None
@@ -1540,6 +1804,7 @@ class ApfStudioFacade:
             progress("Reverting all edits", 0, 0)
             count = self.require_session().revert_all()
             if count:
+                self._staged_team_logo_png = None
                 self.last_build = None
             return count
 
@@ -1548,6 +1813,14 @@ class ApfStudioFacade:
             progress("Undoing last action", 0, 0)
             result = self.require_session().undo()
             if result:
+                crest_design = self.require_session().modification(
+                    HELMET_CREST_DESIGN_EDIT_ID
+                )
+                self._staged_team_logo_png = (
+                    crest_design.replacement_path
+                    if crest_design is not None
+                    else None
+                )
                 self.last_build = None
             return result
 
@@ -1631,6 +1904,10 @@ class ApfStudioFacade:
                 raise
             self.session = candidate
             active_session.close()
+            crest_design = candidate.modification(HELMET_CREST_DESIGN_EDIT_ID)
+            self._staged_team_logo_png = (
+                crest_design.replacement_path if crest_design is not None else None
+            )
             self.last_build = None
             self.last_project_identity = current_identity
             return count
@@ -1669,6 +1946,7 @@ class ApfStudioFacade:
 
     def close(self) -> None:
         with self._session_lock:
+            self._clear_stadium_texture_stage()
             if self.session is not None:
                 self.session.close()
             self.session = None

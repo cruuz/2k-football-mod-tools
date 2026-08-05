@@ -27,6 +27,35 @@ import nfl_uniform_color_xiso_direct_patch as xiso
 
 
 SCHEMA = "nfl2k5_sleeve_tset_compatibility/v1"
+
+WORKSPACE = Path(__file__).resolve().parents[1]
+#: The disc is the reader's own file and its name and location vary, so it is
+#: recorded under one fixed label. Its identity is carried by the size and
+#: SHA-256 recorded beside it, which is the part that means anything.
+USER_SOURCE_LABEL = "user-source/ESPN NFL 2K5.xiso.iso"
+
+
+def release_safe_path(path, *, user_source: bool = False) -> str:
+    """How an input path is named in the report.
+
+    This report ships in the release archive, and ``str(path)`` puts whatever
+    the operator typed into it. Run with absolute arguments that was the
+    maintainer's own directory, which the release gate refuses outright and
+    which nobody should be publishing. Naming inputs relative to the checkout
+    also makes the report reproducible: the same disc and the same checkout
+    produce the same bytes on any machine.
+    """
+
+    if user_source:
+        return USER_SOURCE_LABEL
+    resolved = Path(path).resolve()
+    try:
+        return resolved.relative_to(WORKSPACE).as_posix()
+    except ValueError:
+        # Outside the checkout entirely, so there is no relative name to give.
+        # The file name alone identifies it without naming anyone's directories.
+        return f"user-source/{resolved.name}"
+
 INDEX_SHA256 = "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d"
 INVENTORY_SHA256 = "af881421c10fa01288556fec12a24ad0d8e36d6f58db8134fd956db686b0bcac"
 UNIFORM_INVENTORY_SHA256 = "b9799b6f67b023f51b56695443fe2d5ff9e5ee3abc08a2c567f4c3c6cd5d04b8"
@@ -479,16 +508,16 @@ def run(index: Path, inventory_path: Path, uniform_inventory_path: Path,
         return {
             "schema": SCHEMA,
             "sources": {
-                "index": {"path": str(index), "sha256": INDEX_SHA256},
+                "index": {"path": release_safe_path(index), "sha256": INDEX_SHA256},
                 "chunk_inventory": {
-                    "path": str(inventory_path), "sha256": INVENTORY_SHA256,
+                    "path": release_safe_path(inventory_path), "sha256": INVENTORY_SHA256,
                 },
                 "uniform_inventory": {
-                    "path": str(uniform_inventory_path),
+                    "path": release_safe_path(uniform_inventory_path),
                     "sha256": UNIFORM_INVENTORY_SHA256,
                 },
                 "retail_xiso": {
-                    "path": str(source), "size": xiso.EXPECTED_XISO_SIZE,
+                    "path": release_safe_path(source, user_source=True), "size": xiso.EXPECTED_XISO_SIZE,
                     "sha256": xiso.EXPECTED_XISO_SHA256,
                     "opened_read_only": True,
                 },

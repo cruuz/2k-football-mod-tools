@@ -407,23 +407,23 @@
     },
     "nfl_parent_static_scne_spec": {
       "path": "reports/specs/nfl2k5_xbox_static_scne.v1.json",
-      "sha256": "d1e684a0b86c3a933355217174938cb95c5192eb2680c8b9698f7eb15ac39884",
+      "sha256": "5947b18a7f9fe4b4f6895ca4ea37e5aadd55edb5d365128f46561011fdf8a01e",
       "size_bytes": 47126
     },
     "resource_decoder_and_compressor": {
       "path": "tools/nfl_txtr.py",
-      "sha256": "15327068fcfa0de55022c4704212f5010e73ff4710d4c1f4ce3804c1b8e30139",
-      "size_bytes": 42563
+      "sha256": "0896e3f409f38116602d37a8902f1403e8afe6ad9e17e9ee9d36244ae97a5107",
+      "size_bytes": 43341
     },
     "resource_wrapper_parser": {
       "path": "tools/nfl_scene_probe.py",
-      "sha256": "0cab4e10367c950aada642853995b6a954e82b7e37c88c0539abd2a90a78dc2e",
-      "size_bytes": 39862
+      "sha256": "31b17ded825d4379b517affece54fc5cd96abea49330017296a10a029216fc26",
+      "size_bytes": 40326
     },
     "scne_parser": {
       "path": "tools/nfl_scne_inventory.py",
-      "sha256": "1925041fb672fd9529d3cd7d01bdbbc2758e73eb1e14042c25c9ec454e6f5b5c",
-      "size_bytes": 50116
+      "sha256": "0f58222812df6b380588f8b0a2592101136a863cd0dd170b0f32df726de2fc6b",
+      "size_bytes": 50580
     },
     "shape_loader_and_skin_pseudo_c": {
       "path": "reports/assets/nfl_transform_semantics_ghidra/nfl_transform_semantics_focused_pseudo_c.c",

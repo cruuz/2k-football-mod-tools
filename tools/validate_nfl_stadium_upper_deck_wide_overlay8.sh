@@ -51,7 +51,7 @@ test "$(sha256sum "$test_file" | cut -d' ' -f1)" = \
 
 test "$(stat -c %s tools/nfl_stadium_upper_deck_subset_verify.py)" = 64069
 test "$(sha256sum tools/nfl_stadium_upper_deck_subset_verify.py | cut -d' ' -f1)" = \
-  8eaf78f4a0a4a26777d2b9d672e50d4298b3b4f3afd2565c84947ceb799e1585
+  bd8a7561e809fcd29296fcaa8123176b1bc7a3bbe3ac3ad1d30457d03404799c
 test "$(stat -c %s tools/nfl_stadium_upper_deck_subset_xiso_verify.py)" = 15734
 test "$(sha256sum tools/nfl_stadium_upper_deck_subset_xiso_verify.py | cut -d' ' -f1)" = \
   e22cc5476a65ee83457082a061e29a49dd15bd646dbc69ad0686c9e350c5d038

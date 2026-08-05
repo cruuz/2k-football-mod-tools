@@ -127,7 +127,8 @@ def run(report_path: Path, full_copy: bool) -> None:
             assert set(verified.changed_entries) == {"01_logo_l0", "01_logo_l1"}
             assert verified.manifest["volume_diff"]["all_changes_within_extents"] is True
             assert verified.manifest["proof"]["every_dram_part_preserved"] is True
-            assert verified.manifest["proof"]["every_mip_tail_preserved"] is True
+            assert verified.manifest["proof"]["every_unedited_mip_tail_preserved"] is True
+            assert verified.manifest["proof"]["edited_mip_tails_regenerated"] is True
             assert verified.manifest["directory"]["only_auxiliary_records_changed"] is True
             copied_summary = {
                 "volume_size": copied["volume_size"],
@@ -147,8 +148,8 @@ def run(report_path: Path, full_copy: bool) -> None:
             "note": (
                 "uniform_logocache is the prebuilt runtime-resident aggregate of the "
                 "same 236 team-logo textures; this writer rewrites one catalog index's "
-                "VRAM base level(s) and preserves every DRAM part, mip tail, and other "
-                "catalog entry"
+                "VRAM base level(s), regenerates their packed mip tails, and preserves "
+                "every DRAM part and other catalog entry"
             ),
         },
         "source": {
@@ -169,7 +170,8 @@ def run(report_path: Path, full_copy: bool) -> None:
             "existing_output_refused": True,
             "fixed_outer_allocations": True,
             "every_dram_part_preserved": True,
-            "every_mip_tail_preserved": True,
+            "edited_mip_tails_regenerated": True,
+            "every_unedited_mip_tail_preserved": True,
             "every_other_catalog_entry_preserved": True,
             "directory_changes_confined_to_auxiliary_records": True,
             "replacement_bytes_embedded_in_report": False,

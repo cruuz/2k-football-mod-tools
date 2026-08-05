@@ -22,8 +22,8 @@ import apf_uniform_selector_patch as core
 
 ROOT = Path(__file__).resolve().parents[1]
 CORE_FILE = ROOT / "tools/apf_uniform_selector_patch.py"
-CORE_FILE_SIZE = 27_197
-CORE_FILE_SHA256 = "4b107f2d77d33d65d1e91ccc96e3a80bd23f732040cdeee9e0c61a6ac16db3fe"
+CORE_FILE_SIZE = 27_577
+CORE_FILE_SHA256 = "dff67326a52f61bd479b13aad72c59878d8f4a602692a3cb85bf8708781abfef"
 
 SCHEMA = "apf_assassins_helmet_selector_patch/v1"
 TEAM_INDEX = 1

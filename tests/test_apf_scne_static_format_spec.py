@@ -20,8 +20,15 @@ sys.path.insert(0, str(ROOT / "tools"))
 import apf_scne_static_format_spec as spec  # noqa: E402
 
 
-EXPECTED_SPEC_SIZE = 75_274
-EXPECTED_SPEC_SHA256 = "e7eeaf35d897d188d6a0c2faa5e0300a741d751204bc4fae1222460bc980802b"
+EXPECTED_SPEC_SIZE = 75_227
+# Regenerated twice: once when the SCNE hierarchy layout was corrected, and again
+# when the glTF exporter gained its centimetre-to-metre root node.  The spec's
+# structure is unchanged; only embedded source paths/pins moved. The latest
+# refresh preserves the public reports/ copies while also shipping byte-identical
+# product-data copies used by the desktop runtime.
+# Two of those pins (tools/apf_inner.py and tools/apf_texture_patch.py) had been
+# left stale by earlier work, which is why this test was already failing at HEAD.
+EXPECTED_SPEC_SHA256 = "8c945740e987b1a27786b29858e46d6a99da65fa96abb019b7e1f28cc1f92b0c"
 
 
 class ApfScneStaticFormatSpecTest(unittest.TestCase):
@@ -58,6 +65,26 @@ class ApfScneStaticFormatSpecTest(unittest.TestCase):
         self.assertEqual(footer["magic_u32be"], int(footer["magic_hex"], 16))
         for item in document["scne"]["position0_formats"]:
             self.assertEqual(item["format_code"], int(item["format_code_hex"], 16))
+        hierarchy = document["scne"]["hierarchy_table"]
+        self.assertEqual(hierarchy["header_size_bytes"], 0)
+        self.assertEqual(hierarchy["byte_length_formula"], "count * 0x30")
+        self.assertEqual(
+            hierarchy["terminal_rule"],
+            "all records, including the last, contain vector_a and vector_b",
+        )
+        self.assertEqual(
+            [(field["name"], field["offset_bytes"]) for field in hierarchy["core_fields"]],
+            [
+                ("vector_a", 0x00),
+                ("vector_b", 0x10),
+                ("name", 0x20),
+                ("name_crc32", 0x24),
+                ("parent", 0x28),
+                ("first_child", 0x2A),
+                ("next_sibling", 0x2C),
+                ("reserved", 0x2E),
+            ],
+        )
         draw = document["scne"]["draw_record"]
         self.assertEqual(draw["size_bytes"], 0x30)
         self.assertEqual(

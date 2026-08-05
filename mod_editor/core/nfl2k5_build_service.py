@@ -765,10 +765,26 @@ def _new_output_path(path: Path) -> Path:
     )
 
 
-def _require_build_space(parent: Path) -> None:
-    """Refuse before staging when one complete XISO cannot fit safely."""
+def _require_build_space(parent: Path, source: Path | None = None) -> None:
+    """Refuse before staging when one complete XISO cannot fit safely.
 
-    required = SOURCE_SIZE + BUILD_SPACE_MARGIN
+    ``source`` is the user's own XISO.  Measure it rather than assuming
+    ``SOURCE_SIZE``: ``_validate_cache`` deliberately stopped pinning the source
+    size because a legal dump's container legitimately differs from this
+    project's own rip, so the constant is the wrong number to budget against. A
+    larger dump would have been under-budgeted and could then fail part-way
+    through staging on a full disk instead of refusing cleanly up front, which is
+    the whole point of checking here. Falls back to the constant when the size
+    cannot be read, which keeps the old behaviour rather than skipping the check.
+    """
+
+    output_size = SOURCE_SIZE
+    if source is not None:
+        try:
+            output_size = source.stat().st_size
+        except OSError:
+            output_size = SOURCE_SIZE
+    required = output_size + BUILD_SPACE_MARGIN
     try:
         free = shutil.disk_usage(parent).free
     except OSError as exc:
@@ -1222,7 +1238,7 @@ class Nfl2k5BuildService:
         _emit(progress, BuildStage.PREPARING, 0, 4, "Preparing a safe build")
         source = self._validate_cache(cache)
         output = _new_output_path(output_xiso)
-        _require_build_space(output.parent)
+        _require_build_space(output.parent, source)
         backend, _ = _regular_file(self.backend, "2K5 ISO builder")
         stage = Path(tempfile.mkdtemp(
             prefix=f".{output.name}.2k5mod-", dir=output.parent))

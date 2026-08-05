@@ -27,10 +27,10 @@ check_file() {
   test "$(sha256sum "$path" | cut -d' ' -f1)" = "$expected_sha256"
 }
 
-check_file "$tool" 29551 0b41cb9c16b2a3f0b8607c6540638e7fe7769e30b35f59168ad11a749e83c0d2
+check_file "$tool" 29551 8bc7138df13e1cabbae29ec77f793ea2331fb3a3272d2f477ec002047b19b9e2
 check_file "$test_file" 6811 55387579ff12e72272602375bede5682d8f98bd27295a7427db0f58f3a3c0e32
 check_file "$doc" 7184 28acea11a48745a7a81e3f67a1646457c4d06c18ac82bacd43075c0859ec3422
-check_file "$report" 8254 16096ab6ac4e3389f7d566153b054db1652af5ee187720cd612fbe9201df69a9
+check_file "$report" 8254 74c35c9c097e9d84a9ef8a3c9bfb163b6606f655d0fd576610fa3c9b4ec3864b
 check_file "$ghidra_script" 5198 0b7b67116fa4533cf352f1b4af48e620762a9ff3ef09beab093fa9e92818d633
 check_file "$trace" 73919 cf2c4f5f69ecacd32ea0937be052565696674739da2bc8f94ac174a13ef373e9
 check_file "$pseudo" 30242 0ef867ee61fdda6c47bda70ac65844f2b7fb618048fc5b04f846ed9bd9ab8e72

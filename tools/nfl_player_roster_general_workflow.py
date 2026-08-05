@@ -7,6 +7,10 @@ roster pools:
 
 * ``jersey_number`` — the proved masked field (``+0x20`` bits 3..9).  Available
   for primary AND secondary players; unrelated word bits are preserved.
+* ``face_shield`` — the per-player None/Clear/Dark selector (``+0x20`` bits
+  15..16, authored values 0/1/2 only).  It is a player equipment type, not a
+  HOME/AWAY tint.  A loaded roster or franchise save may override this disc
+  seed.
 * ``first_name`` / ``last_name`` — a same-allocation UTF-16LE edit.  Available
   for primary players whose name is uniquely referenced.  The replacement must
   fit inside the current decoded name span (up to and including its NUL
@@ -51,6 +55,9 @@ LAST_POINTER_FIELD = 0x14
 JERSEY_WORD_FIELD = 0x20
 JERSEY_MASK = 0x3F8
 JERSEY_SHIFT = 3
+FACE_SHIELD_MASK = 0x18000
+FACE_SHIELD_SHIFT = 15
+FACE_SHIELD_VALUES = frozenset({0, 1, 2})
 
 POOL_LAYOUT = {
     "primary_players": {"offset": 44968, "count": 2479},
@@ -136,31 +143,87 @@ def read_utf16z(fd: int, absolute: int, maximum: int = 256) -> bytes:
     raise WorkflowError("unterminated UTF-16 string in roster name span")
 
 
-def prepare_jersey_edit(fd: int, body: int, record: dict[str, object],
-                        value: object) -> dict[str, object]:
-    require(isinstance(value, int) and 0 <= value <= 99,
-            "jersey_number must be an integer 0..99")
+def prepare_packed_word_edit(
+    fd: int,
+    body: int,
+    record: dict[str, object],
+    changes: dict[str, object],
+) -> dict[str, object]:
+    require(bool(changes) and set(changes) <= {"jersey_number", "face_shield"},
+            "packed player edit has unsupported fields")
+    if "jersey_number" in changes:
+        value = changes["jersey_number"]
+        require(isinstance(value, int) and 0 <= value <= 99,
+                "jersey_number must be an integer 0..99")
+    if "face_shield" in changes:
+        value = changes["face_shield"]
+        require(type(value) is int and value in FACE_SHIELD_VALUES,
+                "face_shield must be 0 None, 1 Clear, or 2 Dark")
     record_offset = record["record_body_offset"]
     absolute = body + record_offset + JERSEY_WORD_FIELD
     word = struct.unpack("<I", common.pread_exact(fd, absolute, 4))[0]
-    new_word = (word & ~JERSEY_MASK) | ((value & 0x7F) << JERSEY_SHIFT)
-    require((new_word & ~JERSEY_MASK) == (word & ~JERSEY_MASK),
-            "jersey edit would change unrelated word bits")
+    old_jersey = (word >> JERSEY_SHIFT) & 0x7F
+    old_face_shield = (word >> FACE_SHIELD_SHIFT) & 0x3
+    new_jersey = int(changes.get("jersey_number", old_jersey))
+    new_face_shield = int(changes.get("face_shield", old_face_shield))
+    new_word = (word & ~JERSEY_MASK) | (new_jersey << JERSEY_SHIFT)
+    new_word = ((new_word & ~FACE_SHIELD_MASK) |
+                (new_face_shield << FACE_SHIELD_SHIFT))
+    authored_mask = (
+        (JERSEY_MASK if "jersey_number" in changes else 0)
+        | (FACE_SHIELD_MASK if "face_shield" in changes else 0)
+    )
+    require((new_word & ~authored_mask) == (word & ~authored_mask),
+            "packed player edit would change unrelated word bits")
     before = struct.pack("<I", word)
     after = struct.pack("<I", new_word)
     changed = [i for i, pair in enumerate(zip(before, after)) if pair[0] != pair[1]]
+    fields = tuple(
+        field for field in ("jersey_number", "face_shield") if field in changes
+    )
+    field = fields[0] if len(fields) == 1 else "player_word_20"
+    before_value: object = (
+        old_jersey if field == "jersey_number" else
+        old_face_shield if field == "face_shield" else
+        {"jersey_number": old_jersey, "face_shield": old_face_shield}
+    )
+    after_value: object = (
+        new_jersey if field == "jersey_number" else
+        new_face_shield if field == "face_shield" else
+        {"jersey_number": new_jersey, "face_shield": new_face_shield}
+    )
     return {
-        "field": "jersey_number",
+        "field": field,
+        "packed_fields": list(fields),
         "pool": record["pool"],
         "player_index": record["index"],
         "xiso_absolute_offset": absolute,
-        "before": (word >> JERSEY_SHIFT) & 0x7F,
-        "after": value,
+        "before": before_value,
+        "after": after_value,
+        "before_jersey_number": old_jersey,
+        "after_jersey_number": new_jersey,
+        "before_face_shield": old_face_shield,
+        "after_face_shield": new_face_shield,
+        "authored_mask": f"0x{authored_mask:08x}",
         "before_word": f"0x{word:08x}",
         "after_word": f"0x{new_word:08x}",
         "payload": after,
         "changed_relative_bytes": [absolute + i for i in changed],
     }
+
+
+def prepare_jersey_edit(fd: int, body: int, record: dict[str, object],
+                        value: object) -> dict[str, object]:
+    return prepare_packed_word_edit(
+        fd, body, record, {"jersey_number": value}
+    )
+
+
+def prepare_face_shield_edit(fd: int, body: int, record: dict[str, object],
+                             value: object) -> dict[str, object]:
+    return prepare_packed_word_edit(
+        fd, body, record, {"face_shield": value}
+    )
 
 
 def prepare_name_edit(fd: int, body: int, record: dict[str, object],
@@ -209,6 +272,8 @@ def prepare_edits(fd: int, body: int, audit: dict[str, object],
     prepared: list[dict[str, object]] = []
     allowed: set[int] = set()
     seen: set[tuple[str, int, str]] = set()
+    records: dict[tuple[str, int], dict[str, object]] = {}
+    packed: dict[tuple[str, int], dict[str, object]] = {}
     for edit in plan["edits"]:
         pool = edit.get("pool")
         index = edit.get("player_index")
@@ -217,12 +282,28 @@ def prepare_edits(fd: int, body: int, audit: dict[str, object],
         require(key not in seen, f"duplicate edit for {key}")
         seen.add(key)
         record = player_record(audit, pool, index)
-        if field == "jersey_number":
-            prepped = prepare_jersey_edit(fd, body, record, edit.get("value"))
+        records[(pool, index)] = record
+        if field in {"jersey_number", "face_shield"}:
+            packed.setdefault((pool, index), {})[field] = edit.get("value")
+        elif field not in NAME_FIELDS:
+            raise WorkflowError(f"unsupported field {field!r}")
+
+    emitted_packed: set[tuple[str, int]] = set()
+    for edit in plan["edits"]:
+        pool = edit.get("pool")
+        index = edit.get("player_index")
+        field = edit.get("field")
+        record = records[(pool, index)]
+        if field in {"jersey_number", "face_shield"}:
+            packed_key = (pool, index)
+            if packed_key in emitted_packed:
+                continue
+            emitted_packed.add(packed_key)
+            prepped = prepare_packed_word_edit(
+                fd, body, record, packed[packed_key]
+            )
         elif field in NAME_FIELDS:
             prepped = prepare_name_edit(fd, body, record, field, edit.get("value"))
-        else:
-            raise WorkflowError(f"unsupported field {field!r}")
         prepared.append(prepped)
         allowed.update(prepped["changed_relative_bytes"])
     require(len(allowed) > 0, "plan changes no bytes")
@@ -321,6 +402,9 @@ def run(source_path: Path, output_path: Path, plan_path: Path,
                 "roster_membership_changed": False,
                 "position_changed": False,
                 "face_id_changed": False,
+                "face_shield_is_per_player_type_not_uniform_tint": True,
+                "face_shield_authorable_values": [0, 1, 2],
+                "loaded_save_may_override_disc_seed": True,
                 "runtime_visibility_proved": False,
                 "xemu_started": False,
                 "original_source_modified": False,

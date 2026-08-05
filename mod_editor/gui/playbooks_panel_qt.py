@@ -1,7 +1,7 @@
-"""Read-only PyQt panel for NFL 2K5's 37 private PLAY resources.
+"""Structured PyQt panel for NFL 2K5's 37 private PLAY resources.
 
-The panel is the mandated Phase 4 fallback: a useful structured inspector ships
-even though route drawing and safe write-back did not decode inside the spike.
+The panel combines a complete structured inspector with one bounded writer:
+exact stock assignment-route copying inside the same PLAY resource.
 Retail PLAY bodies and decoded names are supplied only by the user's active
 source cache.  This module contains presentation logic, structural metadata,
 and findings text; it never persists a playbook or contributes project edits.
@@ -28,11 +28,19 @@ ProgressSink = Callable[[str, int, int], None]
 
 
 PLAY_EDITOR_FINDINGS_PLAIN_TEXT = """\
-Route drawing and editing — Coming Soon
+Freehand route drawing is not supported
 The six-hour Play Editor spike recovered a complete read-only structure, but it
 did not recover enough coordinate, opcode, player-role, save-container, and
 inverse-compiler semantics to write a route safely. The v1.0 product therefore
-ships this structured viewer and keeps Replace/Import disabled.
+ships this structured viewer while keeping freehand Replace/Import disabled.
+
+Safe stock-route authoring is available now
+Copy Assignment Route copies an existing donor descriptor and points the target
+slot at that donor's game-authored chain inside the same PLAY book. The fixed
+resource size, complete chain partition, every node, formation, name, and all
+non-target bytes are preserved and the complete result is reparsed. Undo,
+Revert, Build, and retail-free shareable projects are supported. This is not
+freehand waypoint drawing and does not invent slot roles or opcode meanings.
 
 What is exact now
 All 37 PLAY books are parsed from the user's private cache. The viewer exposes
@@ -64,11 +72,16 @@ a new user-owned file; shareable Mod Studio projects never contain PLAY data.
 
 
 PLAY_EDITOR_FINDINGS_HTML = """
-<h2 style="color:#ffca80">Route drawing and editing — Coming Soon</h2>
+<h2 style="color:#ffca80">Freehand route drawing — not supported</h2>
 <p>The six-hour Play Editor spike recovered a complete read-only structure, but
 not enough coordinate, opcode, player-role, save-container, or inverse-compiler
-semantics to write a route safely. v1.0 therefore ships this inspector and keeps
-Replace/Import disabled.</p>
+semantics to draw a new route safely. Freehand Replace/Import stays disabled.</p>
+<h3 style="color:#62e6ad">Safe stock-route authoring now</h3>
+<p><b>Copy Assignment Route</b> copies an exact donor descriptor and points the
+target at the donor's existing chain in the same stock PLAY book. Fixed size,
+the complete chain partition, all nodes, formations, names, and non-target bytes
+are preserved and the result is reparsed. Undo, Revert, Build, and retail-free
+projects are supported. This does not claim freehand waypoint semantics.</p>
 <h3 style="color:#62e6ad">What is exact now</h3>
 <p>All <b>37 PLAY books</b> are read from your private cache: 1,533 formations,
 9,251 plays, eight exact play families, 101,761 assignment references, 32,502
@@ -116,6 +129,8 @@ class FormationPlayRow:
 @dataclass(frozen=True, slots=True)
 class PlaybookActionState:
     can_export: bool
+    can_copy_route: bool = False
+    can_revert_route: bool = False
 
 
 def playbook_search_text(book: Nfl2k5Playbook) -> str:
@@ -194,7 +209,9 @@ def playbook_action_state(
     book: Nfl2k5Playbook | None, *, source_ready: bool, busy: bool
 ) -> PlaybookActionState:
     return PlaybookActionState(
-        can_export=bool(book is not None and source_ready and not busy)
+        can_export=bool(book is not None and source_ready and not busy),
+        can_copy_route=bool(book is not None and source_ready and not busy),
+        can_revert_route=bool(book is not None and source_ready and not busy),
     )
 
 
@@ -222,6 +239,16 @@ class PlaybooksPanelHost(Protocol):
     def export_playbook(
         self, asset_id: str, destination: Path, progress: ProgressSink
     ) -> Path: ...
+
+    def copy_play_assignment_route(
+        self, asset_id: str, target_play_index: int, target_slot_index: int,
+        donor_play_index: int, donor_slot_index: int, progress: ProgressSink,
+    ) -> object: ...
+
+    def revert_play_assignment_route(
+        self, asset_id: str, target_play_index: int, target_slot_index: int,
+        progress: ProgressSink,
+    ) -> object: ...
 
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, pyqtSignal
@@ -273,7 +300,7 @@ class _Task(QRunnable):
 
 
 class PlaybooksPanel(QWidget):
-    """Structured viewer for all private PLAY books; deliberately no writer."""
+    """Structured viewer plus exact stock route-copy authoring."""
 
     error_raised = pyqtSignal(str)
 
@@ -326,8 +353,8 @@ class PlaybooksPanel(QWidget):
         root.addLayout(header)
 
         boundary = QLabel(
-            "ROUTE DRAWING / EDITING — COMING SOON  •  Viewer and raw Export are "
-            "available now; Replace and Import stay disabled."
+            "FREEHAND WAYPOINT DRAWING — NOT SUPPORTED  •  Copy an existing stock "
+            "assignment route safely, then Undo, Revert, save a project, or Build."
         )
         boundary.setObjectName("playBoundary")
         boundary.setWordWrap(True)
@@ -411,6 +438,26 @@ class PlaybooksPanel(QWidget):
         self.play_meta.setWordWrap(True)
         inspector_layout.addWidget(self.play_meta)
 
+        route_row = QHBoxLayout()
+        route_label = QLabel("Copy selected target from")
+        route_label.setObjectName("playFieldLabel")
+        self.donor_play_combo = QComboBox()
+        self.donor_play_combo.setToolTip(
+            "Choose a donor play in this same stock PLAY book."
+        )
+        self.donor_slot_combo = QComboBox()
+        for slot in range(11):
+            self.donor_slot_combo.addItem(f"Slot {slot}", slot)
+        self.copy_route_button = QPushButton("Copy Assignment Route")
+        self.copy_route_button.setObjectName("playPrimaryButton")
+        self.revert_route_button = QPushButton("Revert Selected Route")
+        route_row.addWidget(route_label)
+        route_row.addWidget(self.donor_play_combo, 1)
+        route_row.addWidget(self.donor_slot_combo)
+        route_row.addWidget(self.copy_route_button)
+        route_row.addWidget(self.revert_route_button)
+        inspector_layout.addLayout(route_row)
+
         raw_split = QSplitter(Qt.Horizontal)
         self.assignment_table = QTableWidget(0, 5)
         self.assignment_table.setHorizontalHeaderLabels(
@@ -439,7 +486,7 @@ class PlaybooksPanel(QWidget):
         findings.setObjectName("playFindings")
         findings.setOpenExternalLinks(False)
         findings.setHtml(PLAY_EDITOR_FINDINGS_HTML)
-        self.tabs.addTab(findings, "Why editing is Coming Soon")
+        self.tabs.addTab(findings, "Editing boundary")
         splitter.addWidget(self.tabs)
         splitter.setStretchFactor(0, 3)
         splitter.setStretchFactor(1, 7)
@@ -480,6 +527,10 @@ class PlaybooksPanel(QWidget):
         self.play_table.itemSelectionChanged.connect(self._play_selected)
         self.assignment_table.itemSelectionChanged.connect(self._assignment_selected)
         self.export_button.clicked.connect(self._export_selected)
+        self.copy_route_button.clicked.connect(self._copy_selected_route)
+        self.revert_route_button.clicked.connect(self._revert_selected_route)
+        self.donor_play_combo.currentIndexChanged.connect(self._refresh_controls)
+        self.donor_slot_combo.currentIndexChanged.connect(self._refresh_controls)
         self.error_raised.connect(
             lambda message: QMessageBox.warning(self, "Playbooks & Plays", message)
         )
@@ -499,6 +550,7 @@ class PlaybooksPanel(QWidget):
             table.clearContents()
             table.setRowCount(0)
         self.formation_combo.clear()
+        self.donor_play_combo.clear()
         self.book_title.setText("Select a playbook")
         self.book_meta.setText(
             "Load your NFL 2K5 XISO to read the 37 private PLAY resources."
@@ -629,6 +681,14 @@ class PlaybooksPanel(QWidget):
                 f"({len(formation.play_links)} linked plays)",
                 formation.index,
             )
+        self.donor_play_combo.blockSignals(True)
+        self.donor_play_combo.clear()
+        for play in book.plays:
+            self.donor_play_combo.addItem(
+                f"Play {play.index} · {play.name} · {play.family_label}",
+                play.index,
+            )
+        self.donor_play_combo.blockSignals(False)
         self.formation_combo.blockSignals(False)
         if book.formations:
             self.formation_combo.setCurrentIndex(0)
@@ -721,6 +781,9 @@ class PlaybooksPanel(QWidget):
                 item.setData(Qt.UserRole, assignment.chain_start_index)
                 self.assignment_table.setItem(row, column, item)
         self.assignment_table.blockSignals(False)
+        donor_index = self.donor_play_combo.findData(play.index)
+        if donor_index >= 0:
+            self.donor_play_combo.setCurrentIndex(donor_index)
         if play.assignments:
             self.assignment_table.selectRow(0)
             self._assignment_selected()
@@ -747,6 +810,15 @@ class PlaybooksPanel(QWidget):
             )
             for column, value in enumerate(values):
                 self.node_table.setItem(row, column, QTableWidgetItem(value))
+        linked = self._selected_linked_play()
+        target_slot = rows[0].row()
+        if (
+            linked is not None
+            and self.donor_play_combo.currentData() == linked.play.index
+            and self.donor_slot_combo.currentData() == target_slot
+        ):
+            self.donor_slot_combo.setCurrentIndex((target_slot + 1) % 11)
+        self._refresh_controls()
 
     def _refresh_controls(self) -> None:
         state = playbook_action_state(
@@ -755,9 +827,71 @@ class PlaybooksPanel(QWidget):
             busy=self._busy,
         )
         self.export_button.setEnabled(state.can_export)
+        linked = self._selected_linked_play()
+        assignment_rows = self.assignment_table.selectionModel().selectedRows()
+        target_slot = assignment_rows[0].row() if assignment_rows else None
+        donor_play = self.donor_play_combo.currentData()
+        donor_slot = self.donor_slot_combo.currentData()
+        different = bool(
+            linked is not None and target_slot is not None
+            and (linked.play.index, target_slot) != (donor_play, donor_slot)
+        )
+        self.copy_route_button.setEnabled(state.can_copy_route and different)
+        self.revert_route_button.setEnabled(
+            state.can_revert_route and linked is not None and target_slot is not None
+        )
         self.book_table.setEnabled(not self._busy)
         self.search.setEnabled(not self._busy)
         self.family_filter.setEnabled(not self._busy)
+        self.donor_play_combo.setEnabled(not self._busy)
+        self.donor_slot_combo.setEnabled(not self._busy)
+
+    def _selected_route_target(self) -> tuple[Nfl2k5Playbook, int, int] | None:
+        book = self._selected_book()
+        linked = self._selected_linked_play()
+        rows = self.assignment_table.selectionModel().selectedRows()
+        if book is None or linked is None or not rows:
+            return None
+        return book, linked.play.index, rows[0].row()
+
+    def _copy_selected_route(self) -> None:
+        target = self._selected_route_target()
+        donor_play = self.donor_play_combo.currentData()
+        donor_slot = self.donor_slot_combo.currentData()
+        if target is None or donor_play is None or donor_slot is None:
+            return
+        book, target_play, target_slot = target
+
+        def ready(_value: object) -> None:
+            self.progress_label.setText(
+                f"Copied stock route to play {target_play}, slot {target_slot}"
+            )
+
+        self._run(
+            lambda progress: self.host.copy_play_assignment_route(
+                book.asset_id, target_play, target_slot,
+                int(donor_play), int(donor_slot), progress,
+            ),
+            ready,
+        )
+
+    def _revert_selected_route(self) -> None:
+        target = self._selected_route_target()
+        if target is None:
+            return
+        book, target_play, target_slot = target
+
+        def ready(_value: object) -> None:
+            self.progress_label.setText(
+                f"Reverted route at play {target_play}, slot {target_slot}"
+            )
+
+        self._run(
+            lambda progress: self.host.revert_play_assignment_route(
+                book.asset_id, target_play, target_slot, progress,
+            ),
+            ready,
+        )
 
     def _export_selected(self) -> None:
         book = self._selected_book()

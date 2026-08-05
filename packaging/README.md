@@ -58,13 +58,14 @@ write. Its positive receipt is
 unchanged-only paths publish no project edit or Undo action; an Apply token is
 session-local and is never a retail-data or rollback container.
 
-`reports/` has one narrow exception: the gate admits exactly eleven size-,
+`reports/` has one narrow exception: the gate admits exactly fourteen size-,
 SHA-256-, and schema-pinned JSON catalogs required by the current product.
 They cover uniforms, Team Select cards, portraits, faces, create-team field
-art, scorebug textures, and standalone-audio ownership. Three additional
+art, scorebug textures, and standalone-audio ownership. Four additional
 reviewed snapshots live under `mod_editor/data/`: the compact 498-entry Crib
-catalog, the sanitized Gameplay inspector data, and the sanitized named Main
-Menu inspector data. All fourteen reviewed metadata files are pinned by the
+catalog, the sanitized Gameplay inspector data, the sanitized named Main Menu
+inspector data, and the compact package-local uniform-equipment catalog.
+All eighteen reviewed metadata files are pinned by the
 same contract. They contain selectors, dimensions, offsets, hashes, ownership
 labels, and constraints, but no compressed spans, decoded pixels, decoded
 audio, replacement spans, or other retail payload bytes. An arbitrary report
@@ -105,7 +106,7 @@ project/source/build/close actions wait for the owner to drain; pins the
 source/search/filter applied-query token that fences debounced page-wide Audio
 actions from stale results; pins exact-order one-level shortlist Clear undo and
 transactional old-catalog recovery after a refused source load; checks the
-eleven-section desktop launch signature; and proves the private inventory and
+twelve-section desktop launch signature; and proves the private inventory and
 `extracted/` tree are absent. This clean-stage probe is synthetic and structural;
 it neither opens a retail source nor claims that an authored cue was heard
 in-game.

@@ -2,6 +2,7 @@
 set -euo pipefail
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+cd "$root"
 source_xiso="$root/ESPN NFL 2K5 (USA).xiso.iso"
 output_xiso="/media/noah/Storage/.codex-tmp/nfl2k5-lions-magenta-direct-20260710/ESPN-NFL-2K5-Lions-magenta-layout-identical.xiso.iso"
 manifest="/media/noah/Storage/.codex-tmp/nfl2k5-lions-magenta-direct-20260710/manifest.json"
@@ -45,6 +46,7 @@ if [[ "$output_mode" == materialized ]]; then
 fi
 
 python3 "$root/tools/test_nfl_uniform_color_xiso_direct_patch.py"
+python3 -m unittest -v tests.mod_editor.test_unif_color_control
 python3 "$root/tools/nfl_uniform_color_xiso_direct_verify.py" \
   --source "$source_xiso" \
   --output "$output_xiso" \
@@ -53,4 +55,4 @@ python3 "$root/tools/nfl_uniform_color_xiso_direct_verify.py" \
   --extract-xiso "$extract_xiso" \
   "${verify_mode[@]}"
 
-echo "NFL_UNIFORM_COLOR_XISO_DIRECT_VALIDATION_PASS output_sha=4d7474e1994d08fc9c4eefec2f3eaa1ec7d4ea4fbf94e5370b2532060c26b7b4 output_mode=$output_mode output_materialized=$([[ "$output_mode" == materialized ]] && echo true || echo false) manifest_source=$manifest_source changed_bytes=10 files=19 layout=identical source=unchanged xbe=unchanged pack0=unchanged runtime_visibility=false"
+echo "NFL_UNIFORM_COLOR_XISO_DIRECT_VALIDATION_PASS output_sha=4d7474e1994d08fc9c4eefec2f3eaa1ec7d4ea4fbf94e5370b2532060c26b7b4 output_mode=$output_mode output_materialized=$([[ "$output_mode" == materialized ]] && echo true || echo false) manifest_source=$manifest_source changed_bytes=10 files=19 layout=identical source=unchanged xbe=unchanged pack0=unchanged generalized_uniform_sets=634 runtime_visibility=false"

@@ -58,10 +58,10 @@ class Apf2k8DigitalFontProvider:
     module_pins: Mapping[str, str] = {
         "tools/apf_inner.py": "4f6fb5ca21f48f96d498f976350f88c1f060569abc52d44a3742d2071e2f41cc",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_texture_patch.py": "d29532405a2e719fb78de13636bf0cbcb43348da68e7b14130b9502dad3488fa",
+        "tools/apf_texture_patch.py": "194d37682ac28fef1853e4c27c8a0327b75ef52218afcf1fbc6f4fa169e1b7b9",
         "tools/apf_xenos_dxt5a.py": "b3f855c45da7eace3768344ae0e52e967ceb40b1f024761e81c6578fe7cab86c",
         "tools/apf_digital_font_layout.py": "df7ef3f9f5a664a0b5edce4e1dc15ccbca6fd9e3eb3579377f12abb0b392fcb4",
-        "tools/apf_digital_font_transport.py": "a90012096965a1f710772b499bddb20a966acf9f84b8847eb9091a4575c9f5f7",
+        "tools/apf_digital_font_transport.py": "4ed563c17df79df3f0bef6190546c5fbe82314ed71fc3bf7a965c845130a0bf8",
         backend_module: "e72f91b746f44f1729b5e36d39a1cd0944ffab0194ab7e2cb36d5f3c1185ccd7",
         verifier_module: "7846a5ecc91763296bea5e2b2f722de3c1b2137b769ceaa9406a64999042baf8",
         recipe_schema_file: "265edf051e513cdb9174b6c2d0109e892ca2e64e281ee07711c1665bfbc9cb93",

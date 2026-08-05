@@ -25,6 +25,10 @@ import struct
 import sys
 from typing import Any
 
+_TOOLS = str(Path(__file__).resolve().parent)
+if _TOOLS not in sys.path:
+    sys.path.insert(0, _TOOLS)
+
 import apf_inner
 import apf_outer
 import apf_scene
@@ -32,11 +36,11 @@ import apf_stadium_static_position_patch as container
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CATALOG_PATH = ROOT / "reports/assets/apf_stadium_static_position_target_catalog.json"
+CATALOG_PATH = ROOT / "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json"
 CATALOG_SCHEMA = "apf2k8_stadium_static_position_target_catalog/v1"
 CATALOG_SIZE = 456_821
 CATALOG_SHA256 = "e2b21ebf4d358358627d26b7d7ea3c6cf600ea3f9d1e139cb9caa8ff1748a424"
-RECIPE_SCHEMA_PATH = ROOT / "reports/specs/apf2k8_scne_catalog_position_recipe.schema.json"
+RECIPE_SCHEMA_PATH = ROOT / "mod_editor/data/apf2k8_stadium_position_recipe.v2.schema.json"
 RECIPE_SCHEMA = "apf2k8_scne_catalog_position_recipe/v2"
 RECIPE_SCHEMA_SIZE = 5_585
 RECIPE_SCHEMA_SHA256 = "41fcf955c65d81bb5da2d229d6a2ffee692a9c5ae80eda1c0849911c90950277"

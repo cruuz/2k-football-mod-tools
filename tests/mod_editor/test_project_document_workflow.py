@@ -515,6 +515,16 @@ class ActiveProjectWindowTests(unittest.TestCase):
             "Ctrl+Shift+S",
         )
 
+    def test_accepted_close_removes_private_texture_master_workspace(self) -> None:
+        private_workspace = self.window._texture_master_root
+        self.assertTrue(private_workspace.is_dir())
+
+        self.assertTrue(self.window.close())
+        self.application.processEvents()
+
+        self.assertFalse(private_workspace.exists())
+        self.assertFalse(self.window._texture_master_finalizer.alive)
+
 
 if __name__ == "__main__":
     unittest.main()

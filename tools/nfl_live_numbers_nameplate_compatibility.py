@@ -30,6 +30,36 @@ import nfl_uniform_color_xiso_direct_patch as xiso
 
 
 SCHEMA = "nfl2k5_live_numbers_nameplate_compatibility/v1"
+
+WORKSPACE = Path(__file__).resolve().parents[1]
+#: The disc is the reader's own file and its name and location vary, so it is
+#: recorded under one fixed label. Its identity is carried by the size and
+#: SHA-256 next to it, which is the part that means anything.
+USER_SOURCE_LABEL = "user-source/ESPN NFL 2K5.xiso.iso"
+
+
+def release_safe_path(path, *, user_source: bool = False) -> str:
+    """How an input path is named in the report.
+
+    This report ships in the release archive, and ``str(path)`` puts whatever
+    the operator typed into it. Run with absolute arguments, that was the
+    maintainer's own home directory, which the release gate refuses outright and
+    which nobody should be publishing anyway. Recording the path relative to the
+    checkout also makes the report reproducible: the same disc and the same
+    checkout now produce the same bytes on any machine.
+    """
+
+    if user_source:
+        return USER_SOURCE_LABEL
+    resolved = Path(path).resolve()
+    try:
+        return resolved.relative_to(WORKSPACE).as_posix()
+    except ValueError:
+        # Outside the checkout entirely, so there is no relative name to give.
+        # The file name alone identifies it without naming anyone's directories.
+        return f"user-source/{resolved.name}"
+
+
 FIRST_OUTER = 3613
 LAST_OUTER = 4246
 PACKAGE_COUNT = 634
@@ -196,7 +226,11 @@ def compatible_layout(family: str, projection: dict[str, object]) -> bool:
         return (
             projection["format_name"] == "VC_P8_LINEAR" and
             projection["format_code"] == 0x7F and
-            projection["width"] == 32 and projection["height"] == 1024 and
+            # The atlas is a wide strip, not a tall one: every name sits on one
+            # row, and the mip chain halves from [1024, 32]. Written the other
+            # way round this condition could never hold, so all 634 atlases were
+            # reported incompatible while the descriptor was in fact uniform.
+            projection["width"] == 1024 and projection["height"] == 32 and
             projection["mip_levels"] == 6 and
             projection["palette_offset"] == 43712 and
             projection["pre_palette_gap_bytes"] == 32 and
@@ -492,19 +526,21 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         return {
             "schema": SCHEMA,
             "sources": {
-                "index": {"path": str(index), "size": index.stat().st_size,
+                "index": {"path": release_safe_path(index),
+                          "size": index.stat().st_size,
                           "sha256": file_digest(index)},
-                "chunk_inventory": {"path": str(inventory_path),
+                "chunk_inventory": {"path": release_safe_path(inventory_path),
                                     "sha256": file_digest(inventory_path)},
-                "uniform_inventory": {"path": str(uniform_path),
+                "uniform_inventory": {"path": release_safe_path(uniform_path),
                                       "sha256": file_digest(uniform_path)},
-                "retail_xiso": {"path": str(source_xiso),
+                "retail_xiso": {"path": release_safe_path(source_xiso,
+                                                          user_source=True),
                                 "size": xiso.EXPECTED_XISO_SIZE,
                                 "sha256": xiso.EXPECTED_XISO_SHA256,
                                 "opened_read_only": True},
-                "ghidra_trace": {"path": str(trace_path),
+                "ghidra_trace": {"path": release_safe_path(trace_path),
                                  "sha256": file_digest(trace_path)},
-                "ghidra_pseudo_c": {"path": str(pseudo_path),
+                "ghidra_pseudo_c": {"path": release_safe_path(pseudo_path),
                                     "sha256": file_digest(pseudo_path)},
                 "packs": pack_extents,
                 "xdvdfs": {**directory, "file_count": len([

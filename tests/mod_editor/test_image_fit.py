@@ -162,10 +162,12 @@ class WiringTests(unittest.TestCase):
             _REPO_ROOT / "mod_editor" / "apf_studio" / "gui.py"
         ).read_text(encoding="utf-8")
         self.assertNotIn("Wrong PNG size", source)
-        # Two staging paths -- the crest panel and the uniform/field panel --
-        # each import the helper and call it, so four mentions in total.
-        self.assertEqual(source.count("fit_to_png(path"), 2,
-                         "both APF staging paths must offer the fit")
+        # Three staging paths call the writer: the crest panel, the field-art
+        # panel, and the shared fit_slot_image helper that the uniform,
+        # digital-font and browser routes all go through.
+        self.assertEqual(source.count("fit_to_png(path"), 3,
+                         "every APF staging path must offer the fit")
+        self.assertIn("def fit_slot_image", source)
 
     def test_the_2k5_replace_path_fits_before_replacing(self) -> None:
         source = (
@@ -191,7 +193,10 @@ class WiringTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         start = source.index("    def _fit_for_slot(")
         block = source[start:start + 2400]
-        self.assertIn("if not probe.changed:", block)
+        self.assertIn("needs_png_conversion", block)
+        self.assertIn(
+            "if not probe.changed and not needs_png_conversion:", block
+        )
         self.assertIn("return path", block)
 
     def test_the_batch_cli_exists_and_is_executable(self) -> None:

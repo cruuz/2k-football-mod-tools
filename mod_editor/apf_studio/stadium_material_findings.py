@@ -40,35 +40,35 @@ _FORBIDDEN_PROVENANCE = (
 _EXACT_EXPERIMENT: Mapping[str, object] = MappingProxyType(
     {
         "scene_name": "stadium",
-        "scene_mesh_nodes": 116,
-        "draw_records": 328,
-        "serialized_material_records": 113,
-        "shader_family_records": 13,
-        "minimum_material_slot": 0,
-        "maximum_material_slot": 112,
-        "out_of_range_material_slots": 0,
-        "known_named_texture_identities_checked": 737,
-        "named_texture_identity_matches_in_scene_system_part": 0,
-        "same_package_named_texture_candidates": 3,
-        "same_package_identity_matches_in_scene_system_part": 0,
+        "scene_surface_nodes": 89,
+        "serialized_material_records": 84,
+        "shader_family_records": 20,
+        "embedded_texture_descriptors": 78,
+        "material_slots_referenced": 84,
+        "orphaned_material_slots": 0,
+        "orphaned_embedded_textures": 0,
+        "editable_texture_descriptors": 78,
+        "retail_format_classes": 8,
     }
 )
 _EXACT_PROOF: Mapping[str, bool] = MappingProxyType(
     {
         "draw_to_serialized_material_slot": True,
-        "material_slot_to_serialized_material_record": True,
-        "serialized_material_to_shader_family": True,
-        "mesh_to_named_texture_identity": False,
-        "texture_writer_safe_to_expose": False,
+        "material_slot_to_embedded_texture": True,
+        "all_embedded_textures_have_material_owners": True,
+        "full_declared_mip_transport_for_every_texture": True,
+        "fixed_allocation_copy_only_writer": True,
+        "texture_writer_safe_to_expose": True,
+        "runtime_visibility_proved": False,
     }
 )
 _EXACT_RUNTIME_CAPTURE: Mapping[str, object] = MappingProxyType(
     {
-        "route": "Wine-hosted Xenia instruction breakpoint",
-        "outcome": "host_breakpoint_intercepted",
-        "game_frame_rendered": False,
-        "guest_registers_captured": False,
-        "configuration_restored": True,
+        "route": "headless static archive parse and copied-volume reopen",
+        "outcome": "offline_writer_proved",
+        "emulator_used": False,
+        "source_opened_read_only": True,
+        "copied_output_reopened": True,
     }
 )
 _BOUNDARY_KEYS = frozenset(
@@ -81,10 +81,9 @@ _BOUNDARY_KEYS = frozenset(
     }
 )
 _EXACT_MISSING_RUNTIME_FIELDS = (
-    "the loaded stadium instance material-array base",
-    "the selected pixel-shader eight-entry texture mapping",
-    "the live texture object in each selected material texture record",
-    "the guest allocation or resource identity behind each live texture object",
+    "runtime visibility of a changed stadium texture",
+    "embedded texture ownership graphs for additional stadium scenes",
+    "Xbox 360 hardware acceptance of changed copied output",
 )
 
 
@@ -127,16 +126,13 @@ def _validate_payload_is_retail_free(payload: str) -> None:
 
 def _author_summary(experiment: Mapping[str, object]) -> str:
     return (
-        f"{experiment['scene_mesh_nodes']} scene meshes and "
-        f"{experiment['draw_records']} draws map cleanly through "
-        f"{experiment['serialized_material_records']} material records and "
-        f"{experiment['shader_family_records']} shader families. Texture "
-        f"ownership remains unresolved: none of the "
-        f"{experiment['known_named_texture_identities_checked']} known named "
-        "texture identities appears in the scene system part, so texture "
-        "Replace/Revert stays disabled. A bounded Wine-hosted Xenia instruction "
-        "breakpoint was intercepted by the host before a game frame or guest "
-        "register capture, so that route is complete but did not test ownership."
+        f"{experiment['scene_surface_nodes']} exact scene surfaces map through "
+        f"all {experiment['serialized_material_records']} material records to "
+        f"all {experiment['embedded_texture_descriptors']} embedded textures "
+        f"across {experiment['shader_family_records']} shader families. Every "
+        "descriptor has a material owner and a full-mip writer, so Preview, "
+        "Export, Replace, Revert, and copied-1A Build are enabled. Runtime "
+        "visibility and additional stadium scenes remain unproved."
     )
 
 
@@ -159,7 +155,7 @@ def load_stadium_material_findings(
         raise StadiumMaterialFindingsError(
             "APF stadium material findings use an unsupported schema"
         )
-    if document.get("outcome") != "texture_owner_unresolved":
+    if document.get("outcome") != "embedded_texture_ownership_proved":
         raise StadiumMaterialFindingsError(
             "APF stadium material findings have an unsupported outcome"
         )
@@ -204,19 +200,14 @@ def load_stadium_material_findings(
         raise StadiumMaterialFindingsError(
             "APF stadium material findings are missing the next experiment"
         )
-    for required in (
-        "material-array base",
-        "pixel-shader mapping",
-        "texture-object pointer",
-        "guest allocation",
-    ):
+    for required in ("Xbox 360 hardware", "additional stadium scene"):
         if required not in best_next:
             raise StadiumMaterialFindingsError(
                 "APF stadium material next experiment is incomplete"
             )
 
     return StadiumMaterialFindings(
-        outcome="texture_owner_unresolved",
+        outcome="embedded_texture_ownership_proved",
         experiment=MappingProxyType(experiment),
         proof=MappingProxyType(proof),
         runtime_capture=MappingProxyType(runtime_capture),

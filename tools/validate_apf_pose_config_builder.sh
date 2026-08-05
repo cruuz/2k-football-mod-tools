@@ -45,7 +45,7 @@ cmp "$temporary/bindings.tsv" "$bindings"
 
 test "$(wc -l < "$bindings")" -eq 48
 test "$(sha256sum "$report" | cut -d' ' -f1)" = \
-  e4e0c0ef633d5915ce151ee51bd423b79178951a4285038767813678a698d726
+  59d2a424d9bfd4ac94bda5fc42aaafd7b01e29665565541b9a12ae9d0c2c2188
 test "$(sha256sum "$bindings" | cut -d' ' -f1)" = \
   35290be6b28bfc69b08d8edaabd632e49721202fe166c3e48c751ac319cf5035
 test "$(sha256sum "$trace" | cut -d' ' -f1)" = \

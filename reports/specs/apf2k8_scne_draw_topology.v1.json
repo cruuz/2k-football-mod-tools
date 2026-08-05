@@ -95,7 +95,7 @@
     "restart_elements": 4217225,
     "scne_resources": 1303,
     "serialized_indices": 24519417,
-    "sha256": "ca4465e7e7723c1363d42f2c7b9564e740bb1a6049279fb5055ee14309d3711b"
+    "sha256": "8032c0eda8fefe75d61ae607feabad7bf477c845469374781856237bd13c16a2"
   },
   "data_policy": {
     "contains_only_aggregate_metrics_hashes_offsets_and_semantic_invariants": true,

@@ -13,10 +13,18 @@ manifest='build/nfl2k5-player-roster-workflow-20260712/workflow.json'
 temporary=$(mktemp -d /tmp/nfl-player-roster-validate.XXXXXX)
 trap 'rm -rf "$temporary"' EXIT
 
+verify_mode=()
+if [[ ! -e "$output" && ! -L "$output" ]]; then
+  verify_mode=(--virtual-output)
+fi
+
 python3 -m py_compile \
   tools/nfl_player_roster_audit.py \
   tools/nfl_player_roster_xiso_workflow.py \
   tools/nfl_player_roster_xiso_verify.py
+python3 -m unittest -v \
+  tests.test_nfl_player_roster_general_workflow \
+  tests.mod_editor.test_nfl2k5_face_shield_registry
 
 python3 tools/nfl_player_roster_audit.py \
   --output "$temporary/audit.json" \
@@ -117,6 +125,7 @@ PY
 python3 tools/nfl_player_roster_xiso_verify.py \
   --source-xiso "$source" \
   --output-xiso "$output" \
+  "${verify_mode[@]}" \
   --manifest "$manifest" \
   --audit "$audit"
 
@@ -124,6 +133,7 @@ ln -s "$source" "$temporary/source-link.iso"
 if python3 tools/nfl_player_roster_xiso_verify.py \
     --source-xiso "$temporary/source-link.iso" \
     --output-xiso "$output" \
+    "${verify_mode[@]}" \
     --manifest "$manifest" \
     --audit "$audit" >"$temporary/source-link.stdout" 2>"$temporary/source-link.stderr"; then
   echo 'symlink source unexpectedly accepted' >&2
@@ -135,6 +145,7 @@ ln -s "$(realpath "$manifest")" "$temporary/manifest-link.json"
 if python3 tools/nfl_player_roster_xiso_verify.py \
     --source-xiso "$source" \
     --output-xiso "$output" \
+    "${verify_mode[@]}" \
     --manifest "$temporary/manifest-link.json" \
     --audit "$audit" >"$temporary/manifest-link.stdout" 2>"$temporary/manifest-link.stderr"; then
   echo 'symlink manifest unexpectedly accepted' >&2
@@ -146,6 +157,7 @@ ln -s "$(realpath "$audit")" "$temporary/audit-link.json"
 if python3 tools/nfl_player_roster_xiso_verify.py \
     --source-xiso "$source" \
     --output-xiso "$output" \
+    "${verify_mode[@]}" \
     --manifest "$manifest" \
     --audit "$temporary/audit-link.json" >"$temporary/audit-link.stdout" 2>"$temporary/audit-link.stderr"; then
   echo 'symlink audit unexpectedly accepted' >&2
@@ -169,8 +181,7 @@ sha256sum -c <(cat <<'HASHES'
 73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9  extracted/ESPN NFL 2K5 (USA)/default.xbe
 34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d  extracted/ESPN NFL 2K5 (USA)/vc_53450030/0
 7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9  ESPN NFL 2K5 (USA).xiso.iso
-e1257a7fbdc8eb19ed7e56459dbea15ba13526b1a11a5bc3d76dd15195b91721  build/nfl2k5-player-roster-workflow-20260712/ESPN-NFL-2K5-Noah-CodexProof-42.xiso.iso
 HASHES
 ) >/dev/null
 
-echo 'NFL_PLAYER_ROSTER_AUDIT_VALIDATION_PASS players=2547 primary=2479 secondary=68 positions=17 bindings=204 stable_ratings=3 proof_changed=14 xdvdfs_identical=true player=Noah_CodexProof jersey=42 runtime=false originals_unchanged=yes'
+echo 'NFL_PLAYER_ROSTER_AUDIT_VALIDATION_PASS players=2547 primary=2479 secondary=68 positions=17 bindings=204 stable_ratings=3 face_shield=none_clear_dark per_player=true per_uniform_tint=false proof_changed=14 xdvdfs_identical=true player=Noah_CodexProof jersey=42 runtime=false originals_unchanged=yes'

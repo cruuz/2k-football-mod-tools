@@ -30,7 +30,7 @@ done
   exit 1
 }
 
-printf '%s  %s\n' 423f082f09f3678185663cac1a4dd74fb2094d992e82c92180e7319e486b5d53 "$compatibility" | sha256sum -c - >/dev/null
+printf '%s  %s\n' cab15d4f03c69f5143edd40f567ec038d2425bba80bf9dd1a85b642e144ac1ac "$compatibility" | sha256sum -c - >/dev/null
 printf '%s  %s\n' 9d439360f4d1051ddfd13bce994eb0dd7ec9613fdf20026ff73522205e5fdeb7 "$compatibility_tsv" | sha256sum -c - >/dev/null
 printf '%s  %s\n' 6ae65b7c4f982fbadb6da20444b21d7a2bb3c13f28a84b22c612967dc8a8f3c8 "$fixture" | sha256sum -c - >/dev/null
 printf '%s  %s\n' 49474ae4548f9cb7115d780f6478e9e441d415a0821f6b171a49057b2ae30549 "$manifest" | sha256sum -c - >/dev/null

@@ -71,7 +71,7 @@ EVIDENCE_PINS = {
     "nfl_parent_static_scne_spec": (
         "reports/specs/nfl2k5_xbox_static_scne.v1.json",
         47_126,
-        "d1e684a0b86c3a933355217174938cb95c5192eb2680c8b9698f7eb15ac39884",
+        "5947b18a7f9fe4b4f6895ca4ea37e5aadd55edb5d365128f46561011fdf8a01e",
     ),
     "stadium_target_catalog": (
         "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json",
@@ -85,8 +85,8 @@ EVIDENCE_PINS = {
     ),
     "scne_parser": (
         "tools/nfl_scne_inventory.py",
-        50_116,
-        "1925041fb672fd9529d3cd7d01bdbbc2758e73eb1e14042c25c9ec454e6f5b5c",
+        50_580,
+        "0f58222812df6b380588f8b0a2592101136a863cd0dd170b0f32df726de2fc6b",
     ),
     "stadium_catalog_generator": (
         "tools/nfl_stadium_static_target_catalog.py",
@@ -95,13 +95,13 @@ EVIDENCE_PINS = {
     ),
     "resource_decoder_and_compressor": (
         "tools/nfl_txtr.py",
-        42_563,
-        "15327068fcfa0de55022c4704212f5010e73ff4710d4c1f4ce3804c1b8e30139",
+        43_341,
+        "0896e3f409f38116602d37a8902f1403e8afe6ad9e17e9ee9d36244ae97a5107",
     ),
     "resource_wrapper_parser": (
         "tools/nfl_scene_probe.py",
-        39_862,
-        "0cab4e10367c950aada642853995b6a954e82b7e37c88c0539abd2a90a78dc2e",
+        40_326,
+        "31b17ded825d4379b517affece54fc5cd96abea49330017296a10a029216fc26",
     ),
     "shape_loader_and_skin_pseudo_c": (
         "reports/assets/nfl_transform_semantics_ghidra/nfl_transform_semantics_focused_pseudo_c.c",

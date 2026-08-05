@@ -73,7 +73,12 @@ import apf_outer  # noqa: E402
 
 
 SCHEMA = "apf_field_art_patch/v1"
-MAX_H7A_CANDIDATES = 256
+# Field art's blocks are over a megabyte and their fixed allocation has almost
+# no slack, so the encoder has to search harder here than elsewhere.  At 256 the
+# no-overlap rule costs 162 bytes against retail and the rebuild overflows by
+# 185; at 1024 it comes in 4 bytes *under* retail's own compressor.  Raising it
+# further changes nothing, so this is the knee of the curve, not a guess.
+MAX_H7A_CANDIDATES = 1024
 
 
 # ---------------------------------------------------------------------------
@@ -304,8 +309,24 @@ def compress_h7a(
                             candidate,
                             min(max_length, len(data) - cursor),
                         )
+                        # Never emit a match that reads bytes it is still
+                        # writing.  Our decoder copies one byte at a time and so
+                        # reproduces an overlapping run correctly, which is why
+                        # this round-trips offline while the rebuilt asset comes
+                        # back as fine speckle in game.  Retail settles it: the
+                        # shipped 512x512 crest block holds 36,099 matches and
+                        # not one overlaps, where a plain greedy encoder emits
+                        # nearly eleven thousand, almost all at distance 2.
+                        if length > distance:
+                            length = distance
+                        if length < 3:
+                            continue
+                        # On a tie prefer the FARTHER match: both encode to the
+                        # same two bytes, but the reachable length at the next
+                        # position is now bounded by the distance, so the near
+                        # copy caps every following match.
                         if length > best_length or (
-                            length == best_length and distance < best_distance
+                            length == best_length and distance > best_distance
                         ):
                             best_length = length
                             best_distance = distance
@@ -327,6 +348,86 @@ def compress_h7a(
             cursor += consumed
         output[descriptor_offset] = descriptor
     return bytes(output)
+
+
+# The optional minimum-cost encoder.  Greedy parsing lands 21 bytes over
+# endzone_l0's fixed allocation once overlapping matches are (correctly)
+# forbidden, and no candidate-limit setting closes that gap -- greedy simply
+# cannot trade a shorter match now for a longer one immediately after.
+# tools/apf_h7a_optimal.c does that trade as a shortest path and recovers about
+# 585 bytes on that block, which is what makes endzone_l0 editable at all.  It is
+# used when the exact reviewed Linux helper bundled in the release is available
+# and its output round-trips; otherwise the greedy encoder is used unchanged.
+#
+# The gain is ~0.5%, so it only decides fit for edits near the allocation.  See
+# docs/research/apf_h7a_allocation_budget.md for the measured budget: a 900x220
+# region tolerates 16 distinct 4x4 blocks with this parse and 12 with greedy.
+_OPTIMAL_BINARY = Path(__file__).resolve().parent / "apf_h7a_optimal"
+_OPTIMAL_BINARY_SIZE = 14_472
+_OPTIMAL_BINARY_SHA256 = (
+    "9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab"
+)
+
+
+def _optimal_binary() -> Path | None:
+    """Return the exact reviewed Linux encoder bundled with the editor."""
+    import platform
+
+    if not sys.platform.startswith("linux") or platform.machine() not in {
+        "x86_64",
+        "amd64",
+    }:
+        return None
+    try:
+        info = _OPTIMAL_BINARY.lstat()
+    except OSError:
+        return None
+    if (
+        not stat.S_ISREG(info.st_mode)
+        or stat.S_ISLNK(info.st_mode)
+        or info.st_nlink != 1
+        or info.st_size != _OPTIMAL_BINARY_SIZE
+        or info.st_mode & 0o022
+        or not info.st_mode & stat.S_IXUSR
+    ):
+        return None
+    if hashlib.sha256(_OPTIMAL_BINARY.read_bytes()).hexdigest() != _OPTIMAL_BINARY_SHA256:
+        return None
+    return _OPTIMAL_BINARY
+
+
+def compress_h7a_best(data: bytes, shift: int) -> bytes:
+    """The smaller of the greedy and minimum-cost parses, both verified.
+
+    Never returns a stream that does not decode back to ``data``, and never
+    returns the optimal parse unless it is actually smaller, so this can only
+    improve on the greedy result or match it.
+    """
+    greedy = compress_h7a(data, shift)
+    binary = _optimal_binary()
+    if binary is None:
+        return greedy
+    import subprocess
+
+    try:
+        finished = subprocess.run(
+            # The largest real block, endzone_l0 at 1.44 MB, takes about 30s, so
+            # this is a generous ceiling.  Kept low deliberately: exceeding it
+            # falls back to greedy rather than stalling a caller or a test run.
+            [str(binary), str(shift)], input=data,
+            capture_output=True, timeout=180,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return greedy
+    candidate = finished.stdout
+    if finished.returncode != 0 or not candidate or len(candidate) >= len(greedy):
+        return greedy
+    try:
+        if apf_inner.decompress_h7a(candidate, len(data), shift) != data:
+            return greedy
+    except Exception:  # noqa: BLE001 - any decode failure means fall back
+        return greedy
+    return candidate
 
 
 def _inverse_swizzle_pixels(
@@ -886,7 +987,7 @@ def build_field_art_patch(
     if not changed_block_descriptor.is_compressed or changed_block_descriptor.wrapper is None:
         raise PatchError(f"PORTME: {contract.name} pixel block is not H7A-compressed")
     shift = changed_block_descriptor.wrapper.shift
-    compressed = compress_h7a(new_blocks[pixel_part.block_index], shift)
+    compressed = compress_h7a_best(new_blocks[pixel_part.block_index], shift)
     if apf_inner.decompress_h7a(
         compressed, len(new_blocks[pixel_part.block_index]), shift
     ) != new_blocks[pixel_part.block_index]:

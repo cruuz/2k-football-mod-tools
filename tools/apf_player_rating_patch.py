@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bounded APF 2K8 on-disc player base-rating writer.
 
-APF stores the 28 mapped base ratings as independent unsigned bytes inside
+APF stores the 31 mapped base ratings as independent unsigned bytes inside
 each fixed ``0x14C`` player record.  This writer accepts only player indices
 ``0..2253``, the exact public field IDs, and public replacement values
 ``0..99``.  It changes those selected bytes in the decoded ROST body, rebuilds
@@ -95,7 +95,7 @@ def _schema_fields() -> tuple[PlayerRatingField, ...]:
             f"Could not load the APF player-rating target dictionary: {exc}"
         ) from exc
     if (
-        len(schema.fields) != 28
+        len(schema.fields) != 31
         or schema.record_stride != apf_roster.PLAYER_STRIDE
         or schema.stock_observed_minimum != PUBLIC_MINIMUM
         or schema.stock_observed_maximum != PUBLIC_MAXIMUM
@@ -167,6 +167,32 @@ def validate_value(value: object) -> int:
     return value
 
 
+def validate_field_value(field_id: str, value: object) -> int:
+    """``validate_value`` plus the per-byte domain, when the field is known.
+
+    Most of the block is an ordinary magnitude where any 0..99 is authorable, but
+    0xD2 is a two-value style enum: across the 1,437 stock records with a
+    populated rating block it holds only 0 or 1, plus 50 in two malformed records.
+    Writing 47 there is not a weaker rating, it is an index the game never sees.
+    Refusing it here means every route in -- desktop UI, ratings CSV, CLI -- is
+    covered, rather than one dropdown in one panel.
+    """
+
+    rating = validate_value(value)
+    field = next(
+        (item for item in _schema_fields() if item.field_id == field_id), None
+    )
+    if field is None:
+        raise PlayerRatingPatchError(f"APF has no player rating {field_id!r}")
+    if not field.authorable(rating):
+        allowed = ", ".join(str(item) for item in field.observed_stock_values)
+        raise PlayerRatingPatchError(
+            f"{field.label} is a fixed set of values, not a 0-99 rating; "
+            f"{rating} is unproved. Stock uses only: {allowed}"
+        )
+    return rating
+
+
 def encode_replacement_payload(value: object) -> bytes:
     """Encode a canonical replacement-only payload; never a retail preimage."""
 
@@ -229,7 +255,7 @@ def normalize_replacements(
                     f"APF player rating was selected twice: {target.asset_id}"
                 )
             seen.add(target.asset_id)
-            rows.append((target, validate_value(supplied)))
+            rows.append((target, validate_field_value(target.field_id, supplied)))
     order = {
         field.field_id: field.display_order for field in _schema_fields()
     }
@@ -639,6 +665,7 @@ __all__ = [
     "parse_asset_id",
     "target_for",
     "target_metadata",
+    "validate_field_value",
     "validate_value",
     "write_private_outer_entry",
 ]

@@ -1080,8 +1080,8 @@
   "source_evidence": {
     "bulk_static_exporter": {
       "path": "tools/nfl_static_gltf.py",
-      "sha256": "860655825d81f1d55958213048ac1c2d71fe9db8f77792fed303d7f2af29bdbe",
-      "size": 34715
+      "sha256": "5249732b635374eb33bcb39f162224bccd2163cf1cfd01b1dfc8db42ac40bea3",
+      "size": 35165
     },
     "catalog_position_independent_verifier": {
       "path": "tools/nfl_stadium_catalog_position_verify.py",
@@ -1150,8 +1150,8 @@
     },
     "outer_archive_parser": {
       "path": "tools/nfl_outer.py",
-      "sha256": "fe6f2d422b71a55b873b41bda5996f4a0205d0bf8297b3476d61a419936aaabb",
-      "size": 15881
+      "sha256": "affbb92ea9fcce81b5d3502b2946fc0cf275b660c1ea93492730267110d49b46",
+      "size": 15895
     },
     "resource_inventory_report": {
       "path": "reports/assets/nfl2k5_resource_chunks_v2.json",
@@ -1160,18 +1160,18 @@
     },
     "resource_probe": {
       "path": "tools/nfl_scene_probe.py",
-      "sha256": "0cab4e10367c950aada642853995b6a954e82b7e37c88c0539abd2a90a78dc2e",
-      "size": 39862
+      "sha256": "31b17ded825d4379b517affece54fc5cd96abea49330017296a10a029216fc26",
+      "size": 40326
     },
     "resource_wrapper_vc_lz": {
       "path": "tools/nfl_txtr.py",
-      "sha256": "15327068fcfa0de55022c4704212f5010e73ff4710d4c1f4ce3804c1b8e30139",
-      "size": 42563
+      "sha256": "0896e3f409f38116602d37a8902f1403e8afe6ad9e17e9ee9d36244ae97a5107",
+      "size": 43341
     },
     "scne_inventory_parser": {
       "path": "tools/nfl_scne_inventory.py",
-      "sha256": "1925041fb672fd9529d3cd7d01bdbbc2758e73eb1e14042c25c9ec454e6f5b5c",
-      "size": 50116
+      "sha256": "0f58222812df6b380588f8b0a2592101136a863cd0dd170b0f32df726de2fc6b",
+      "size": 50580
     },
     "scne_inventory_report": {
       "path": "reports/assets/nfl2k5_scne_inventory.json",
@@ -1195,8 +1195,8 @@
     },
     "topology_exporter": {
       "path": "tools/nfl_scne_gltf.py",
-      "sha256": "ceb466f37bc41c1b9484bdac5500cac53161a44405f47c4d165bccee137f169f",
-      "size": 14579
+      "sha256": "69f560d9a665a40868f25334f6f90c5713135f9c4ee8321d0abd30bf3c847058",
+      "size": 15043
     },
     "upper_deck_nonretail_zero_recipe": {
       "path": "reports/asset_samples/nfl_scne/stadium_upper_deck_nonretail_zero_recipe.v2.json",

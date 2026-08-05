@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
 import os
@@ -28,7 +28,8 @@ from nfl_txtr import (HEADER, decode_chunk, encode_rgba_png, parse_chunks,
                       parse_texture, rebuild_compressed_chunk_fixed_span,
                       swizzle_2d, unswizzle_2d)
 from nfl_tset_png_import import (MipLevel, decode_rgba_png, palette_bytes,
-                                 quantize_levels, rgba_from_indices)
+                                 quantize_levels_to_vc_lz_bound,
+                                 rgba_from_indices)
 from nfl_live_numbers_nameplate_targets import (DEFAULT_REPORT, LiveArtTarget,
                                                   select_target)
 
@@ -182,14 +183,40 @@ def decode_levels(decoded: bytes, chunk: Any, texture: Any) -> list[MipLevel]:
     return result
 
 
-def validate_template(span: bytes, target: LiveArtTarget) -> tuple[Any, bytes, Any]:
+def target_texture_dimensions(texture: Any, target: LiveArtTarget,
+                              legacy_linear_dimensions: bool) -> Any:
+    """Return the descriptor view used by one explicitly requested replay.
+
+    Builds made before the linear-P8 dimension fix interpreted the two explicit
+    size halfwords in the generic order.  Historical proof verification must be
+    able to reproduce those bytes, but normal imports must continue using the
+    corrected wide nameplate atlas.  Keep that compatibility interpretation
+    opt-in and require the exact transposed VC_P8_LINEAR relationship.
+    """
+
+    if not legacy_linear_dimensions:
+        return texture
+    require(
+        target.format_name == texture.format_name == "VC_P8_LINEAR"
+        and target.width == texture.height
+        and target.height == texture.width,
+        "legacy linear-P8 dimensions are not the exact descriptor transpose",
+    )
+    return replace(texture, width=target.width, height=target.height)
+
+
+def validate_template(span: bytes, target: LiveArtTarget,
+                      legacy_linear_dimensions: bool = False) \
+        -> tuple[Any, bytes, Any]:
     require(len(span) == target.span_size and digest(span) == target.span_sha256,
             "retail target span hash/size mismatch")
     chunks = parse_chunks(span)
     require(len(chunks) == 1, "isolated span is not exactly one resource")
     chunk = chunks[0]
     decoded, info = decode_chunk(span, chunk)
-    texture = parse_texture(decoded, chunk)
+    texture = target_texture_dimensions(
+        parse_texture(decoded, chunk), target, legacy_linear_dimensions
+    )
     require(info is not None and chunk.compressed and chunk.kind == "TXTR" and
             chunk.stored_size == target.stored_size and
             chunk.system_bytes == target.system_bytes and
@@ -218,10 +245,34 @@ def validate_template(span: bytes, target: LiveArtTarget) -> tuple[Any, bytes, A
 
 def build_import(index_path: Path, compatibility_path: Path, family: str,
                  asset_code: str, side: str, variant: int, digit: int | None,
-                 png_path: Path, output_names: dict[str, str] | None = None) \
+                 png_path: Path, output_names: dict[str, str] | None = None,
+                 *, target_override: LiveArtTarget | None = None,
+                 legacy_linear_dimensions: bool = False) \
         -> tuple[bytes, bytes, dict[str, Any]]:
-    compatibility, compatibility_payload, target = select_target(
+    compatibility, compatibility_payload, selected_target = select_target(
         family, asset_code, side, variant, digit, compatibility_path)
+    target = selected_target
+    if target_override is not None:
+        selected_record = asdict(selected_target)
+        override_record = asdict(target_override)
+        differences = {
+            name for name in selected_record
+            if selected_record[name] != override_record.get(name)
+        }
+        require(
+            legacy_linear_dimensions
+            and differences == {"width", "height", "layout_signature_sha256"}
+            and target_override.width == selected_target.height
+            and target_override.height == selected_target.width
+            and target_override.format_name == selected_target.format_name
+            == "VC_P8_LINEAR",
+            "historical target override changes more than the proved linear-P8 "
+            "dimension interpretation",
+        )
+        target = target_override
+    else:
+        require(not legacy_linear_dimensions,
+                "legacy linear-P8 dimensions require an explicit target")
     supplied_index = index_path.lstat()
     require(stat.S_ISREG(supplied_index.st_mode) and
             not stat.S_ISLNK(supplied_index.st_mode),
@@ -237,7 +288,9 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
     require(entry.name_id == target.outer_id and entry.size == target.outer_size,
             "target outer identity changed")
     span = read_entry_range(archive, entry, target.chunk_offset, target.span_size)
-    chunk, decoded, texture = validate_template(span, target)
+    chunk, decoded, texture = validate_template(
+        span, target, legacy_linear_dimensions
+    )
     current_index = index.stat(follow_symlinks=False)
     require((current_index.st_dev, current_index.st_ino, current_index.st_size) ==
             (index_info.st_dev, index_info.st_ino, index_info.st_size),
@@ -245,33 +298,59 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
 
     png, png_payload, rgba = read_png(png_path, (target.width, target.height))
     input_mips = make_mips(rgba, target.width, target.height, target.mip_levels)
-    palette, index_levels, quantization = quantize_levels(input_mips)
-    require(len(index_levels) == target.mip_levels and
-            sum(len(level) for level in index_levels) == target.index_chain_bytes,
-            "quantized mip chain differs from target allocation")
-    encoded_levels = []
-    for level, indices in zip(input_mips, index_levels):
-        if target.mip_storage == "xbox_morton_swizzled":
-            encoded_levels.append(swizzle_2d(indices, level.width, level.height, 1))
-        else:
-            require(target.mip_storage == "linear", "unknown mip storage class")
-            encoded_levels.append(indices)
-    index_chain = b"".join(encoded_levels)
-    require(len(index_chain) == target.index_chain_bytes,
-            "encoded index chain size mismatch")
     template_video = decoded[target.system_bytes:]
     gap_first = target.index_chain_bytes
     gap_after = gap_first + target.pre_palette_gap_bytes
     gap = template_video[gap_first:gap_after]
     require(gap_after == target.palette_offset and len(gap) == target.pre_palette_gap_bytes,
             "template pre-palette gap differs from report")
-    rebuilt_video = index_chain + gap + palette_bytes(palette)
-    require(len(rebuilt_video) == target.video_bytes,
-            "rebuilt video allocation size mismatch")
-    rebuilt_decoded = decoded[:target.system_bytes] + rebuilt_video
+
+    def candidate_decoded(
+        candidate_palette: list[tuple[int, int, int, int]],
+        candidate_levels: list[bytes],
+    ) -> bytes:
+        require(len(candidate_levels) == target.mip_levels and
+                sum(len(level) for level in candidate_levels) ==
+                target.index_chain_bytes,
+                "quantized mip chain differs from target allocation")
+        encoded_levels = []
+        for level, indices in zip(input_mips, candidate_levels):
+            if target.mip_storage == "xbox_morton_swizzled":
+                encoded_levels.append(
+                    swizzle_2d(indices, level.width, level.height, 1)
+                )
+            else:
+                require(target.mip_storage == "linear",
+                        "unknown mip storage class")
+                encoded_levels.append(indices)
+        candidate_chain = b"".join(encoded_levels)
+        require(len(candidate_chain) == target.index_chain_bytes,
+                "encoded index chain size mismatch")
+        rebuilt_video = candidate_chain + gap + palette_bytes(candidate_palette)
+        require(len(rebuilt_video) == target.video_bytes,
+                "rebuilt video allocation size mismatch")
+        return decoded[:target.system_bytes] + rebuilt_video
+
+    bounded = quantize_levels_to_vc_lz_bound(
+        input_mips,
+        candidate_decoded,
+        stream_tag=target.stream_tag,
+        offset_bits=target.offset_bits,
+        max_encoded_size=target.stored_size,
+    )
+    palette = bounded.palette
+    index_levels = bounded.index_levels
+    quantization = bounded.quantization
+    rebuilt_decoded = bounded.decoded
+    compressed = bounded.compressed
+    index_chain = rebuilt_decoded[
+        target.system_bytes:target.system_bytes + target.index_chain_bytes
+    ]
     rebuilt_span, rebuild = rebuild_compressed_chunk_fixed_span(span, rebuilt_decoded)
     require(len(rebuilt_span) == len(span) and
             rebuilt_span[:20] == span[:20] and rebuilt_span[24:32] == span[24:32] and
+            rebuild.recompressed_bytes == len(compressed) and
+            rebuilt_span[HEADER.size:HEADER.size + len(compressed)] == compressed and
             rebuild.loader_in_place_end_guard and rebuild.loader_in_place_alias_guard and
             rebuild.recompressed_bytes <= target.stored_size,
             "fixed-span rebuild contract failed")
@@ -279,7 +358,10 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
     require(len(rebuilt_chunks) == 1, "rebuilt span is not one TXTR")
     rebuilt_chunk = rebuilt_chunks[0]
     roundtrip, info = decode_chunk(rebuilt_span, rebuilt_chunk)
-    rebuilt_texture = parse_texture(roundtrip, rebuilt_chunk)
+    rebuilt_texture = target_texture_dimensions(
+        parse_texture(roundtrip, rebuilt_chunk), target,
+        legacy_linear_dimensions,
+    )
     require(info is not None and roundtrip == rebuilt_decoded and
             roundtrip[:target.system_bytes] == decoded[:target.system_bytes] and
             rebuilt_texture == texture and
@@ -336,6 +418,12 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
                  "storage": target.mip_storage,
                  "index_bytes": [len(level) for level in index_levels]},
         "quantization": quantization,
+        **({"bounded_palette_fit": {
+            "attempts": list(bounded.attempts),
+            "selected_palette_entries": len(palette),
+            "selected_encoded_bytes": len(compressed),
+            "stored_size_bound": target.stored_size,
+        }} if len(bounded.attempts) > 1 else {}),
         "template": {"span_sha256": digest(span), "decoded_sha256": digest(decoded),
                      "system_sha256": digest(decoded[:target.system_bytes]),
                      "pre_palette_gap_sha256": digest(gap),

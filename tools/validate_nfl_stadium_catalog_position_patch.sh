@@ -46,7 +46,7 @@ test "$(sha256sum "$doc" | cut -d' ' -f1)" = \
   '70814b7af841359ec638cce98ac934afa000f987cb05d6c7b07469523ffee7a1'
 test "$(stat -c %s "$spec")" = 47126
 test "$(sha256sum "$spec" | cut -d' ' -f1)" = \
-  'd1e684a0b86c3a933355217174938cb95c5192eb2680c8b9698f7eb15ac39884'
+  '5947b18a7f9fe4b4f6895ca4ea37e5aadd55edb5d365128f46561011fdf8a01e'
 
 # The original one-target implementation stays byte-identical.
 test "$(sha256sum tools/nfl_stadium_group36_position_patch.py | cut -d' ' -f1)" = \
@@ -173,4 +173,4 @@ test "$(sha256sum "$index" | cut -d' ' -f1)" = \
 test "$(sha256sum "$pack" | cut -d' ' -f1)" = \
   '779b37455fc44cd7eb60674b926d7ccaf9cd6bd9d894157a1d68119281790c7a'
 
-echo 'NFL_CATALOG_POSITION_PATCH_VALIDATION_PASS target=3280/5/2648/1:upper_deck vertices=12 catalog_targets=75 format=FLOAT3 noop_pack_exact=true changed_decoded_bytes=144 changed_consumed=908799/908864 zero_gap=65 alias=66 scratch=96 fixed_tail=16 outside_chunk_exact=true overflow_refused=true wrong_target_count_hash_refused=true hardlink_refused=true symlink_parent_refused=true staged_symlink_redirection_refused=true publication_races_refused=true manifest_tamper_refused=true independent_verify=true output_pack_sha256=96c2d8dd4ed4f65df67157ad6a822878bcbd4eefc960135176cd8030c9f9b176 report_sha256=05ab26057b0ebd244a0a090d2268f1cac49b3b820269b410e38c5e6b89a6d9c3 spec_sha256=d1e684a0b86c3a933355217174938cb95c5192eb2680c8b9698f7eb15ac39884 runtime=false semantic_rigidity=false production=false originals_unchanged=yes tests=10'
+echo 'NFL_CATALOG_POSITION_PATCH_VALIDATION_PASS target=3280/5/2648/1:upper_deck vertices=12 catalog_targets=75 format=FLOAT3 noop_pack_exact=true changed_decoded_bytes=144 changed_consumed=908799/908864 zero_gap=65 alias=66 scratch=96 fixed_tail=16 outside_chunk_exact=true overflow_refused=true wrong_target_count_hash_refused=true hardlink_refused=true symlink_parent_refused=true staged_symlink_redirection_refused=true publication_races_refused=true manifest_tamper_refused=true independent_verify=true output_pack_sha256=96c2d8dd4ed4f65df67157ad6a822878bcbd4eefc960135176cd8030c9f9b176 report_sha256=05ab26057b0ebd244a0a090d2268f1cac49b3b820269b410e38c5e6b89a6d9c3 spec_sha256=5947b18a7f9fe4b4f6895ca4ea37e5aadd55edb5d365128f46561011fdf8a01e runtime=false semantic_rigidity=false production=false originals_unchanged=yes tests=10'

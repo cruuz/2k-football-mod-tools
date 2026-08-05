@@ -31,6 +31,7 @@ from dataclasses import replace
 import hashlib
 import os
 from pathlib import Path
+import random
 import sys
 import tempfile
 import unittest
@@ -247,10 +248,62 @@ class FieldArtEditTests(unittest.TestCase):
         self.assertFalse(manifest["binary_patch_manifest"]["contains_replacement_bytes"])
 
     def test_endzone_l0_edit_changes_only_its_base(self) -> None:
-        # Flat magenta is RGB565-exact, so the DXT1 edit is bit-exact (maxerr 0).
+        """``endzone_l0`` accepts an edit now.  It did not, and why is worth keeping.
+
+        The encoder once emitted H7A matches that overlap their own output, which
+        compressed this block about 1,800 bytes under retail and left plenty of
+        room.  Those streams are not safe: the same encoding made a rebuilt team
+        crest render as coloured speckle in game, and removing it -- with nothing
+        else changed -- fixed the crest.  On this very block the old output held
+        10,016 overlapping matches out of 22,636.
+
+        Forbidding overlaps cost the headroom.  Outer entry 6 allocates 110,592
+        bytes and retail fills 110,320, leaving 272 bytes of slack, and a painted
+        rectangle scatters through the Xenos tiling rather than staying local, so
+        it costs a few hundred compressed bytes however small it is.  Greedy
+        overran by 21 bytes at 32x32 and still by 9 at 8x8, so the writer refused
+        -- correctly, since a refusal is recoverable and a console-invalid volume
+        is not.
+
+        The earlier version of this test named the fix it needed: "closing l0
+        properly needs a stronger parse, not a relaxed rule."
+        ``tools/apf_h7a_optimal.c`` is that parse.  It recovers about 585 bytes
+        over greedy here, more than the shortfall, so l0 now carries the same
+        2048x512 DXT1 edit coverage as its sibling.  The no-overlap rule did not
+        move.
+        """
         self._controlled_edit(6, 0, (255, 0, 255, 255), 32)
 
+    def test_an_endzone_edit_too_detailed_to_fit_is_still_refused(self) -> None:
+        """The allocation guard still has to fail closed.
+
+        Now that l0 absorbs an ordinary edit, the refusal path needs an edit that
+        genuinely cannot fit or it stops being covered.  Noise is the honest case:
+        incompressible pixels do not go into a fixed allocation at any parse
+        quality, so this pins the real ceiling rather than an encoder shortfall.
+        """
+        source = _extract(6, 0)
+        contract = source["contract"]
+        rng = random.Random(20260729)
+        rgba = bytearray(source["rgba"])
+        for y in range(160, 352):
+            row = y * contract.width
+            for x in range(640, 1408):
+                offset = (row + x) * 4
+                rgba[offset:offset + 3] = bytes(
+                    (rng.randrange(256), rng.randrange(256), rng.randrange(256))
+                )
+        with tempfile.TemporaryDirectory() as directory:
+            png = Path(directory) / "noise.png"
+            _save_png(png, contract.width, contract.height, bytes(rgba))
+            with self.assertRaisesRegex(
+                fa.PatchError, "exceeds its fixed outer allocation"
+            ):
+                fa.build_field_art_patch(INDEX_PATH, png, 6, 0)
+
     def test_endzone_l1_edit_changes_only_its_base(self) -> None:
+        # l1 has room where l0 does not, so the endzone DXT1 edit path stays
+        # covered on a real 2048x512 endzone slot.
         self._controlled_edit(6, 1, (255, 0, 255, 255), 32)
 
     def test_divots_edit_changes_only_its_base(self) -> None:
@@ -314,12 +367,15 @@ class FieldArtFailClosedTests(unittest.TestCase):
 @unittest.skipUnless(DISC_AVAILABLE, "extracted APF 0A not present")
 class FieldArtCopiedVolumeTests(unittest.TestCase):
     def test_source_volume_is_never_modified_by_a_copy(self) -> None:
-        source = _extract(6, 0)
+        # Uses endzone l1: l0's allocation cannot absorb an edit now that the
+        # encoder emits only streams the console can decode (see
+        # _endzone_edit_refused), but l1 has room.
+        source = _extract(6, 1)
         with tempfile.TemporaryDirectory() as directory:
             png = Path(directory) / "magenta.png"
             edited = _paint_rect(source["rgba"], source["contract"].width, 32, (255, 0, 255, 255))
             _save_png(png, source["contract"].width, source["contract"].height, edited)
-            result = fa.build_field_art_patch(INDEX_PATH, png, 6, 0)
+            result = fa.build_field_art_patch(INDEX_PATH, png, 6, 1)
             out = Path(directory) / "copied" / "0A"
             summary = fa._write_copied_volume(INDEX_PATH, out, source["entry"], result.entry_bytes)
         self.assertEqual(
@@ -328,7 +384,8 @@ class FieldArtCopiedVolumeTests(unittest.TestCase):
         self.assertTrue(summary["outside_replacement"]["source_and_output_match"])
 
     def test_endzone_edit_is_verified_by_the_independent_verifier(self) -> None:
-        source = _extract(6, 0)
+        # Same reason as above: exercised on endzone l1, which has room.
+        source = _extract(6, 1)
         contract = source["contract"]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -340,12 +397,12 @@ class FieldArtCopiedVolumeTests(unittest.TestCase):
             self.assertEqual(
                 fa.main([
                     "--index", str(INDEX_PATH), "--png", str(png),
-                    "--entry-index", "6", "--file-index", "0",
+                    "--entry-index", "6", "--file-index", "1",
                     "--output-volume", str(out), "--manifest", str(manifest),
                 ]),
                 0,
             )
-            report = fav.verify(INDEX_PATH, out, png, 6, 0, manifest)
+            report = fav.verify(INDEX_PATH, out, png, 6, 1, manifest)
         self.assertEqual(report["mode"], "patched")
         diff = report["whole_volume_diff"]
         self.assertTrue(diff["all_other_bytes_identical"])

@@ -55,8 +55,18 @@ REVIEWED_WINDOWS_BINARY_SIZE = 293_273
 REVIEWED_WINDOWS_BINARY_SHA256 = (
     "e9567fe31b168b226531ed532714b3e1cc9070cdfac0c102fb881e2825aee68d"
 )
+REVIEWED_H7A_BINARY = "tools/apf_h7a_optimal"
+REVIEWED_H7A_BINARY_SIZE = 14_472
+REVIEWED_H7A_BINARY_SHA256 = (
+    "9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab"
+)
 REVIEWED_PATHS = frozenset(
-    {REVIEWED_BINARY, REVIEWED_WINDOWS_BINARY, REVIEWED_LICENSE}
+    {
+        REVIEWED_BINARY,
+        REVIEWED_WINDOWS_BINARY,
+        REVIEWED_H7A_BINARY,
+        REVIEWED_LICENSE,
+    }
 )
 
 INSTALL_SURFACE = frozenset(
@@ -86,7 +96,7 @@ INSTALL_EXECUTABLES = frozenset(
 # private paths are embedded in the release checker.
 REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
     "mod_editor/apf_studio/__init__.py": (
-        '__version__ = "0.1.0-alpha.50"',
+        '__version__ = "0.1.0-alpha.54"',
     ),
     "mod_editor/apf_studio/audio_annotations.py": (
         'AUDIO_ANNOTATIONS_SCHEMA = "apf2k8_audio_annotations/v1"',
@@ -104,8 +114,8 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "Labeled only",
         "Your cue label & notes",
         "AUDIO_DIRECT_DROP_CONTRACT",
-        "selected_exact_slot_xma1_or_pcm16_wav",
-        "Drop .xma or exact PCM16 .wav here",
+        "selected_exact_slot_xma1_or_conformed_audio",
+        "Drop .xma or audio file here",
         "directAudioReplacementWorkerFinished",
         "submission through worker drain",
         "AUDIO_REPLACEMENT_IMPORT_CONFIRMATION_CONTRACT",
@@ -115,6 +125,107 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "Modified audio after Apply",
         "run_when_idle=self._run_when_idle",
         "self._idle_callbacks.append(callback)",
+        'QPushButton("Place on helmet…")',
+        "import_mask_nearest",
+        "place_helmet_logo(",
+        "semantic pre-guard 512x512",
+        "self._placement_source_rgba",
+        "initial_placement=self._placement_state",
+        "self.fit_visible_mask.setVisible(False)",
+        "Normal logo — convert to APF regions (recommended)",
+        "APF region mask — exact channels (advanced)",
+        "validate_region_mask_rgba",
+        "convert_normal_logo(normalized.rgba, parent=self)",
+        "class ApfTextLogoPanel(QFrame):",
+        'self.fit_mode.addItem("Contain — keep the entire logo", "contain")',
+        'self.fit_mode.addItem("Cover — fill and center-crop", "cover")',
+        'tabs.addTab(self.wordmarks, "Wordmarks (206)")',
+    ),
+    "mod_editor/apf_studio/textlogo_authoring.py": (
+        "WORDMARK_WIDTH = 512",
+        "WORDMARK_HEIGHT = 128",
+        'WORDMARK_FIT_MODES = ("contain", "cover")',
+        "def prepare_wordmark_png(",
+        "Composite straight-alpha RGBA onto the retail opaque-black background.",
+    ),
+    "mod_editor/apf_studio/helmet_crest_design.py": (
+        'HELMET_CREST_DESIGN_EDIT_ID = "apf:logos:helmet_crest_design"',
+        'FULL_SHELL_CREST_PROFILE = "front_crown_to_rear_v1"',
+        'GLOBAL_COVERAGE_SCOPE = "global_helmet_model"',
+        '"It creates no Xenia patch and does not edit default.xex."',
+    ),
+    "mod_editor/apf_studio/helmet_logo_placement.py": (
+        "AUTO_TARGET_BOUNDS = (0, 122, 511, 389)",
+        "def import_mask_nearest(",
+        "def auto_fit_placement(",
+        "def render_placement(",
+        "Nearest-neighbour placement introduced a palette value",
+        "clips visible art outside the 512x512 canvas",
+    ),
+    "mod_editor/apf_studio/helmet_logo_placement_qt.py": (
+        'self.setWindowTitle("Place full-shell helmet logo")',
+        'painter.drawText(12, 24, "FRONT / CROWN")',
+        'painter.drawText(427, 24, "REAR")',
+        'QPushButton("Auto-fit front → rear")',
+        'QPushButton("Reset")',
+        'setText("Use this placement")',
+    ),
+    "mod_editor/apf_studio/helmet_logo_regions.py": (
+        'NORMAL_LOGO_IMPORT_MODE = "normal_logo"',
+        'REGION_MASK_IMPORT_MODE = "apf_region_mask"',
+        "def clear_fully_transparent_rgb(",
+        "def validate_region_mask_rgba(",
+        "def convert_normal_logo_to_region_mask(",
+        "joint Xenos 4-bit unit-simplex quantization",
+    ),
+    "mod_editor/apf_studio/helmet_logo_regions_qt.py": (
+        'self.setWindowTitle("Convert normal logo to APF color regions")',
+        'QPushButton("Update material preview")',
+        'setText("Use palette-mapped mask")',
+        "not a promise of literal source RGB or gameplay visibility",
+    ),
+    "mod_editor/apf_studio/build.py": (
+        "compile_full_shell_crest_entries",
+        "build_patch_rgba_batch",
+        "bake_retail_crest_atlas",
+        "publish_compiled_outer_entries",
+        "apf_helmet_crest_wrap_patch.build_patch",
+        "apf_logocache_verify.verify_cache_structure",
+        "RAW_LOGOCACHE_OUTER_INDICES",
+        '"apf2k8_helmet_crest_design_composite/v3"',
+        '"creates_xenia_patch": False',
+        '"edits_default_xex": False',
+    ),
+    "tools/apf_helmet_crest_wrap_patch.py": (
+        'SCHEMA = "apf2k8_helmet_shell_atlas_patch/v24"',
+        'OPERATION = "route_shell_draw_to_crest_atlas_and_neutralize_overlay"',
+        "def build_patch(",
+        "design_rgba: bytes | bytearray | memoryview",
+        "def bake_retail_crest_atlas(",
+        '"mapping": "semantic single-side canvas baked bilaterally into retail shell atlas"',
+        "draw_2_indices_replaced_only_by_in_range_degenerates",
+    ),
+    "tools/apf_helmet_crest_wrap_verify.py": (
+        'PATCH_SCHEMA = "apf2k8_helmet_shell_atlas_patch/v24"',
+        'VERIFY_SCHEMA = "apf2k8_helmet_shell_atlas_verify/v24"',
+        'OPERATION = "route_shell_draw_to_crest_atlas_and_neutralize_overlay"',
+        "def verify_outer(",
+        '"stock_shell_atlas_noncollapsed_unmixed_and_nonoverlapping": True',
+        '"old_overlay_zero_triangle_degenerate": True',
+        '"fixed_semantic_bake_exact": True',
+    ),
+    "tools/apf_textlogo_patch.py": (
+        'SCHEMA = "apf2k8_textlogo_patch/v1"',
+        "CATALOG_COUNT = 206",
+        "SELECTOR_SLOT = 6",
+        "def build_patch(",
+        "archive_patch._write_copied_volume(",
+        '"all_six_levels_regenerated": True',
+    ),
+    "tools/apf_textlogo_verify.py": (
+        'SCHEMA = "apf2k8_textlogo_whole_volume_verify/v1"',
+        "def verify_copied_volume(",
+        "bytes outside the selected wordmark package changed",
     ),
     "mod_editor/apf_studio/session.py": (
         "set_audio_annotation",
@@ -125,6 +236,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "validated_result_sha256",
         "project_audio_revision",
         "hmac.compare_digest",
+        "Full-shell helmet crests must be semantic APF region masks",
     ),
     "mod_editor/apf_studio/facade.py": (
         "labeled_only",
@@ -134,36 +246,82 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "confirmation_token",
     ),
     "APF2K8-README.md": (
-        "0.1.0-alpha.50",
+        "0.1.0-alpha.54",
+        "Normal logo — convert to APF regions (recommended)",
+        "APF region mask (advanced)",
         "Your cue label & notes",
         "Labeled only",
         "47,775 playable cues",
-        "Drop .xma or exact PCM16 .wav here",
+        "Drop .xma or audio file here",
         "Review replacement",
         "nothing is staged",
+        "front_crown_to_rear_v1",
+        "weighted 4-bit",
+        "all 118 source-resolved crest packages",
+        "121 outer entries",
+        "stock high/low UV atlas",
+        "10-view static asset-space",
+        "static Eagles visual match",
+        "Xenia, Wine, emulator, controller, or FIFO",
+        "creates no Xenia patch",
+        "Place on helmet…",
+        "FRONT / CROWN → REAR",
+        "independent Width, Height, and Rotation",
+        "off-canvas",
+        "normalized original import plus the last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_getting_started.md": (
-        "0.1.0-alpha.50",
+        "0.1.0-alpha.54",
         "Your cue label & notes",
         "Labeled only",
         "audio-annotations.json",
-        "Drop .xma or exact PCM16 .wav here",
+        "Drop .xma or audio file here",
         "Would change",
         "Modified audio after Apply",
+        "front_crown_to_rear_v1",
+        "all 118 source-resolved crest packages",
+        "121 outer entries",
+        "retail high/low shell UV atlas",
+        "10-view static asset-space",
+        "static Eagles visual match",
+        "no Xenia, Wine, emulator",
+        "Place on helmet…",
+        "X center, Y center, independent Width/Height",
+        "clipped/off-canvas",
+        "normalized original import and last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_changelog.md": (
-        "0.1.0-alpha.50",
+        "0.1.0-alpha.54",
         "project_metadata_only_stable_logical_cue_id",
         "audio-annotations.json",
-        "selected_exact_slot_xma1_or_pcm16_wav",
+        "selected_exact_slot_xma1_or_conformed_audio",
         "fully_validated_read_only_preview_then_explicit_apply",
+        "headless crest pipeline",
+        "front_crown_to_rear_v1",
+        "Raw logo-cache verification now reaches the right parser",
+        "64-pixel sampler guards",
+        "dynamic convex hull",
+        "passes the visual gate",
+        "No Xenia, Wine, emulator, controller, or FIFO",
+        "direct helmet placement canvas",
+        "FRONT / CROWN → REAR",
+        "independent Width, Height, and Rotation",
+        "original import plus its last transform",
     ),
     "docs/mod_editor/APF2K8_STATUS.md": (
-        "0.1.0-alpha.50 candidate boundary",
+        "0.1.0-alpha.54",
+        "0.1.0-alpha.51 candidate boundary",
         "project_metadata_only_stable_logical_cue_id",
         "47,775 playable cues",
-        "selected_exact_slot_xma1_or_pcm16_wav",
+        "selected_exact_slot_xma1_or_conformed_audio",
         "fully_validated_read_only_preview_then_explicit_apply",
+        "front_crown_to_rear_v1",
+        "64-pixel sampler guards",
+        "strict six-view plus native high-side",
+        "static asset-space visual gate",
+        "10-view high/low static Eagles visual gate",
+        "proof used no Xenia, Wine, emulator",
+        "controller, or FIFO",
     ),
 }
 
@@ -173,13 +331,13 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
 # broadening the public metadata boundary.
 REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
     "mod_editor/data/apf2k8_product_findings.v1.json": (
-        4_763,
-        "aa25d22534bce1b84bcf97b7f534c41ac37da71b22aca10110b2f867b482cd7d",
+        6_157,
+        "99b4cdf72ed73c170a829b13054af1f934999a866f2f0728cc48fd83beffa4c7",
         "apf2k8_mod_studio_product_findings/v1",
     ),
     "mod_editor/data/apf2k8_player_ratings.v1.json": (
-        9_591,
-        "b727bcb6bf99b26df077c780c9c77320d28506817a42cfa7749cf140942b1797",
+        17_034,
+        "bc63a2f51f14ce0e23a35d3bf579abbd6691166a11f66606fe1e01ea63b16fc6",
         "apf2k8_player_ratings/v1",
     ),
     "mod_editor/data/apf2k8_player_positions.v1.json": (
@@ -192,11 +350,16 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
         "2c5457150195a9c634e0dda93f05d28814c275fef6d4d2f1485428e98b800ed9",
         "apf2k8_uniform_targets/v1",
     ),
+    "mod_editor/data/apf2k8_textlogo_targets.v1.json": (
+        98_846,
+        "39a1e0c944a846e24d7a11c52d6a0fbba4091959f01856d3a087efde01ba490c",
+        "apf2k8_textlogo_targets/v1",
+    ),
 }
 
 ALLOWED_TEXT_SUFFIXES = frozenset(
     {
-        ".bat", ".command", ".css", ".desktop", ".html", ".ini", ".json",
+        ".bat", ".c", ".command", ".css", ".desktop", ".html", ".ini", ".json",
         ".md", ".py", ".sh", ".svg", ".toml", ".txt",
     }
 )
@@ -451,6 +614,23 @@ def _validate_reviewed_binary(path: Path, info: os.stat_result) -> str:
     return digest
 
 
+def _validate_reviewed_h7a_binary(path: Path, info: os.stat_result) -> str:
+    if info.st_size != REVIEWED_H7A_BINARY_SIZE:
+        raise ReleaseCheckError("reviewed H7A encoder binary size changed")
+    digest, payload = _hash_regular(
+        path, info.st_size, REVIEWED_H7A_BINARY_SIZE
+    )
+    if digest != REVIEWED_H7A_BINARY_SHA256:
+        raise ReleaseCheckError("reviewed H7A encoder binary hash changed")
+    if not payload.startswith(b"\x7fELF"):
+        raise ReleaseCheckError("reviewed H7A encoder binary is no longer ELF")
+    if not info.st_mode & stat.S_IXUSR or info.st_mode & 0o022:
+        raise ReleaseCheckError(
+            "reviewed H7A encoder must be executable and not group/world writable"
+        )
+    return digest
+
+
 def _validate_text(path: Path, relative: str, info: os.stat_result) -> tuple[str, str]:
     if info.st_size > MAX_TEXT_FILE_BYTES:
         raise ReleaseCheckError(f"release text file exceeds 8 MiB: {relative}")
@@ -648,6 +828,8 @@ def audit_release(root: Path, allowlist_path: Path) -> dict[str, object]:
             digest = _validate_reviewed_binary(path, info)
         elif relative == REVIEWED_WINDOWS_BINARY:
             digest = _validate_reviewed_windows_binary(path, info)
+        elif relative == REVIEWED_H7A_BINARY:
+            digest = _validate_reviewed_h7a_binary(path, info)
         else:
             suffix = path.suffix.casefold()
             if suffix in FORBIDDEN_MEDIA_SUFFIXES:
@@ -683,7 +865,7 @@ def audit_release(root: Path, allowlist_path: Path) -> dict[str, object]:
         "file_count": len(seen_files),
         "total_bytes": total_bytes,
         "retail_hash_count_rejected": len(KNOWN_RETAIL_SHA256),
-        "reviewed_binary_count": 1,
+        "reviewed_binary_count": 3,
         "reviewed_metadata_count": reviewed_metadata_count,
         "install_surface_count": len(INSTALL_SURFACE),
         "retail_payloads_included": False,

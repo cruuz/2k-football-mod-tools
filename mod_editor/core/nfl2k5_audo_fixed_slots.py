@@ -23,6 +23,7 @@ import math
 from pathlib import Path
 import re
 import struct
+import sys
 from typing import Any
 import wave
 
@@ -487,10 +488,57 @@ def _encode_channel_block(samples: tuple[int, ...]) -> bytes:
     return bytes(encoded)
 
 
+def _encode_vectorised(wav: StrictWav, slot: FixedAudoSlot) -> bytes | None:
+    """The same exhaustive search, stepped in bulk. ``None`` if unavailable.
+
+    Every block tries all 89 start indices and keeps the lowest-error one, which
+    measures about 3 dB better than carrying the previous block's index forward
+    and is not worth trading away.  In scalar Python it costs roughly 11 ms per
+    64-frame block, so the longest slot in the corpus -- 370,624 frames of
+    stereo -- takes around two minutes, which is far too slow to sit in front of
+    a modder.
+
+    ADPCM cannot be vectorised along time, because each sample needs the
+    previous predictor.  The 89 candidates and the blocks themselves *are*
+    independent, though, and stepping those together turns the whole encode into
+    a fixed number of array operations regardless of length.  The output is
+    byte-identical to the reference encoder below -- pinned by
+    ``tests/mod_editor/test_2k5_fast_ima_matches_scalar.py`` -- so this is purely
+    a speed path, and it disappears silently when NumPy is absent, exactly like
+    the decoder's fast path in ``nfl2k5_audio_source_scan``.
+    """
+
+    try:
+        import numpy  # noqa: F401
+    except ImportError:
+        return None
+
+    tools = str(Path(__file__).resolve().parents[2] / "tools")
+    if tools not in sys.path:
+        sys.path.insert(0, tools)
+    try:
+        import xbox_ima_encoder
+    except ImportError:  # pragma: no cover - lean checkouts without tools/
+        return None
+
+    try:
+        pcm = struct.pack(f"<{len(wav.samples)}h", *wav.samples)
+        return xbox_ima_encoder.encode_stream(pcm, slot.channels)
+    except (ValueError, struct.error):
+        # Anything the fast path cannot express falls back to the reference
+        # encoder rather than failing outright.
+        return None
+
+
 def encode_xbox_ima(wav: StrictWav, slot: FixedAudoSlot) -> bytes:
     _require((wav.channels, wav.sample_rate, wav.frame_count) ==
              (slot.channels, slot.sample_rate, slot.frame_count),
              "WAV shape differs from the selected AUDO slot")
+    fast = _encode_vectorised(wav, slot)
+    if fast is not None:
+        _require(len(fast) == slot.payload_size,
+                 "encoded Xbox IMA payload no longer fits the fixed allocation")
+        return fast
     chunks: list[bytes] = []
     for first_frame in range(0, slot.frame_count, BLOCK_FRAMES):
         base = first_frame * slot.channels

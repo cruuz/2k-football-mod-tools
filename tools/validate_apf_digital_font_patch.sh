@@ -152,7 +152,7 @@ assert typed["verification"]["contains_game_or_replacement_bytes"] is False
 assert hashlib.sha256(layout_path.read_bytes()).hexdigest() == \
     "1d5e83d476dee76b4013c957cb450b316ab2251d0337907e269855ac8c800a02"
 assert hashlib.sha256(roundtrip_path.read_bytes()).hexdigest() == \
-    "c1ccb433832fe4c3465c2f9632e3a31887133cc5f8cf811cdff71ec9b36cd06e"
+    "96ee9a01eec320011154531272c570cbf2227c3d7ef9d1fe9ff5638baeac3b70"
 assert spec["schema"] == "apf_digital_font_asset_format/v1"
 assert spec["source_gate"]["outer_table_index"] == 1310
 assert spec["source_gate"]["inner_file_index"] == 246
@@ -204,7 +204,7 @@ assert roundtrip["no_op"] == {
 changed = roundtrip["controlled_edit"]
 assert changed["changed_dxt5a_block_count"] == 702
 assert changed["decode_back_metrics"]["different_pixels"] == 0
-assert changed["allocation_slack_after"] == 78773
+assert changed["allocation_slack_after"] == 121577
 assert changed["all_750_unrelated_inner_parts_preserved"] is True
 assert changed["decoded_vram_outside_target_bit_exact"] is True
 assert changed["dram_and_sram_stored_blocks_preserved"] is True
@@ -252,4 +252,4 @@ PY
 test "$(sha256sum "$source_volume" | cut -d' ' -f1)" = \
   'dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e'
 
-echo 'APF_DIGITAL_FONT_PATCH_VALIDATION_PASS outer=1310 inner=246 format=DXT5A changed_blocks=702 parts=751 unrelated=750 slack=78773 copied_volume=true typed_recipe=true typed_artifacts=hashes-metrics-only shared_global=true field_only=false runtime=false hardware=false originals_unchanged=yes'
+echo 'APF_DIGITAL_FONT_PATCH_VALIDATION_PASS outer=1310 inner=246 format=DXT5A changed_blocks=702 parts=751 unrelated=750 slack=121577 copied_volume=true typed_recipe=true typed_artifacts=hashes-metrics-only shared_global=true field_only=false runtime=false hardware=false originals_unchanged=yes'

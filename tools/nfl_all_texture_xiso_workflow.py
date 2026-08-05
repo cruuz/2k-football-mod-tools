@@ -24,8 +24,11 @@ Three properties make that safe enough to ship:
 * **Copy only.**  The source is opened read-only, hashed before and after, and
   the output is a fresh file that never aliases it.
 
-Resources reachable from more than one pack segment are refused: such a chunk
-would need two writes at two unrelated offsets, and nothing we target does it.
+An outer package -- and, in one measured retail case, the selected TXTR itself
+-- may cross a physical pack boundary.  The replacement is still built as one
+exact logical TXTR span, then split back across the source-owned extents.  All
+pieces are staged before the new XISO is reserved, written into that fresh copy,
+and independently read back before the copy is kept.
 """
 
 from __future__ import annotations
@@ -38,6 +41,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import struct
 import sys
 from typing import Any
 
@@ -54,7 +58,8 @@ if _here not in _sys.path:
 import nfl_uniform_color_xiso_direct_patch as common
 import nfl_tset_png_import as palette_tools
 from nfl_outer import parse_archive, read_entry_bytes
-from nfl_txtr import (HEADER, Chunk, decode_chunk, parse_chunks, parse_texture,
+from nfl_txtr import (HEADER, Chunk, TxtrError, compress_vc_lz, decode_chunk,
+                      parse_chunks, parse_texture,
                       rebuild_compressed_chunk_fixed_span, swizzle_2d)
 
 
@@ -64,7 +69,17 @@ PACK_ROOT = "vc_53450030"
 PALETTE_BYTES = 1024
 MAX_PLAN_BYTES = 16 * 1024 * 1024
 MAX_EDITS = 512
-SUPPORTED_FORMATS = ("P8",)
+SUPPORTED_FORMATS = ("P8", "A1R5G5B5")
+PLAYER_STRIP_NAMES = frozenset({
+    "p001", "p002", "p003", "p004", "p005", "p006",
+    "p011", "p012", "p013", "p014", "p015", "p016",
+})
+RAW_P8_SLOT_ARRAYS = {
+    # outer index: (complete size, fixed slot size, slot count, name CRC)
+    3_096: (1_704_192, 5_376, 317, 0xF50B1A31),       # flipchip.cdf
+    3_102: (105_903_360, 66_816, 1_585, 0x823E3053),  # logos.cdf
+    3_103: (5_123_328, 5_376, 953, 0x48F8908C),       # mini.cdf
+}
 
 
 class TextureWorkflowError(ValueError):
@@ -85,6 +100,17 @@ def canonical_json(value: Any) -> bytes:
 
 
 @dataclass(frozen=True)
+class PhysicalSpan:
+    """One ordered physical slice of a logical TXTR span."""
+
+    pack_name: str
+    pack_relative_offset: int
+    replacement_offset: int
+    size: int
+    span_sha256: str
+
+
+@dataclass(frozen=True)
 class ResolvedTarget:
     pack_name: str
     outer_index: int
@@ -93,6 +119,9 @@ class ResolvedTarget:
     width: int
     height: int
     mip_levels: int
+    format_name: str
+    packed_size: int
+    pixel_chain_bytes: int
     pixel_offset: int
     palette_offset: int
     system_bytes: int
@@ -103,6 +132,45 @@ class ResolvedTarget:
     decoded: bytes
     template_span: bytes
     chunk: Chunk
+    physical_spans: tuple[PhysicalSpan, ...]
+
+
+def _physical_spans(entry: Any, offset: int, payload: bytes) \
+        -> tuple[PhysicalSpan, ...]:
+    """Map a logical entry range to every physical pack slice, in order."""
+
+    require(offset >= 0 and offset + len(payload) <= entry.size,
+            "TXTR span lies outside its outer package")
+    result: list[PhysicalSpan] = []
+    logical_start = 0
+    replacement_offset = 0
+    range_end = offset + len(payload)
+    for segment in entry.segments:
+        logical_end = logical_start + segment.size
+        part_start = max(offset, logical_start)
+        part_end = min(range_end, logical_end)
+        if part_start < part_end:
+            size = part_end - part_start
+            piece = payload[replacement_offset:replacement_offset + size]
+            require(len(piece) == size, "TXTR physical split is incomplete")
+            result.append(PhysicalSpan(
+                pack_name=segment.pack_name,
+                pack_relative_offset=(
+                    segment.pack_offset + part_start - logical_start
+                ),
+                replacement_offset=replacement_offset,
+                size=size,
+                span_sha256=digest(piece),
+            ))
+            replacement_offset += size
+        logical_start = logical_end
+        if part_end == range_end:
+            break
+    require(result and replacement_offset == len(payload),
+            "TXTR span could not be mapped across physical packs")
+    require(len(result) <= 2,
+            "TXTR span reaches more than two physical packs")
+    return tuple(result)
 
 
 def read_plan(path: Path) -> tuple[Path, bytes, list[dict[str, Any]]]:
@@ -135,13 +203,47 @@ def resolve_target(archive: Any, outer_index: int, texture: str) -> ResolvedTarg
     require(0 <= outer_index < len(archive.entries),
             f"outer index {outer_index} is outside this archive")
     entry = archive.entries[outer_index]
-    require(len(entry.segments) == 1,
-            f"outer {outer_index} spans {len(entry.segments)} pack segments; "
-            "a straddling resource is not editable through this lane")
-    segment = entry.segments[0]
     data = read_entry_bytes(archive, entry)
     matches: list[tuple[int, Chunk, bytes, Any]] = []
-    for position, chunk in enumerate(parse_chunks(data, allow_trailing=True)):
+    raw_layout = RAW_P8_SLOT_ARRAYS.get(outer_index)
+    if raw_layout is None:
+        candidate_chunks = tuple(enumerate(parse_chunks(data, allow_trailing=True)))
+    else:
+        outer_size, slot_size, slot_count, outer_name_id = raw_layout
+        require(
+            entry.name_id == outer_name_id
+            and entry.size == len(data) == outer_size == slot_size * slot_count,
+            f"outer {outer_index} no longer has its reviewed raw fixed-slot layout",
+        )
+        raw_candidates: list[tuple[int, Chunk]] = []
+        for position in range(slot_count):
+            offset = position * slot_size
+            fields = HEADER.unpack_from(data, offset)
+            chunk = Chunk(
+                index=position,
+                offset=offset,
+                kind=fields[0].decode("ascii", errors="replace"),
+                stored_size=fields[1],
+                system_bytes=fields[2],
+                video_bytes=fields[3],
+                compression_magic=fields[4],
+                overlap_scratch_bytes=fields[5],
+                reserved0=fields[6],
+                reserved1=fields[7],
+            )
+            # Read only the tiny descriptor while searching. Decoding every
+            # 256x256 slot would copy the entire 106 MB logos.cdf once per edit.
+            try:
+                descriptor = data[
+                    chunk.body_offset:chunk.body_offset + chunk.system_bytes
+                ]
+                candidate_info = parse_texture(descriptor, chunk)
+            except (TxtrError, UnicodeError):
+                continue
+            if candidate_info.name == texture:
+                raw_candidates.append((position, chunk))
+        candidate_chunks = tuple(raw_candidates)
+    for position, chunk in candidate_chunks:
         if chunk.kind != "TXTR":
             continue
         try:
@@ -150,6 +252,14 @@ def resolve_target(archive: Any, outer_index: int, texture: str) -> ResolvedTarg
         except Exception:  # noqa: BLE001 - a chunk we cannot read is simply skipped
             continue
         if info.name == texture:
+            if raw_layout is not None:
+                _outer_size, slot_size, _slot_count, _outer_name_id = raw_layout
+                span_end = chunk.offset + HEADER.size + chunk.stored_size
+                require(
+                    span_end + 96 == (position + 1) * slot_size
+                    and data[span_end:span_end + 96] == bytes(96),
+                    f"{texture} fixed-slot padding changed",
+                )
             matches.append((position, chunk, decoded, info))
     require(matches, f"outer {outer_index} has no TXTR named {texture!r}")
     require(len(matches) == 1,
@@ -158,40 +268,66 @@ def resolve_target(archive: Any, outer_index: int, texture: str) -> ResolvedTarg
     require(info.format_name in SUPPORTED_FORMATS,
             f"{texture} is {info.format_name}; this lane replaces "
             f"{'/'.join(SUPPORTED_FORMATS)} textures only")
-    require(info.packed_size == 0,
-            f"{texture} stores linear pixels; only swizzled P8 is supported")
     require(info.pixel_offset == 0,
-            f"{texture} does not begin its index chain at the video buffer start")
+            f"{texture} does not begin its pixel chain at the video buffer start")
     span_size = HEADER.size + chunk.stored_size
     require(chunk.offset + span_size <= len(data),
             f"{texture} span runs past the end of outer {outer_index}")
+    bytes_per_pixel = 1 if info.format_name == "P8" else 2
     expected_chain = sum(
         max(1, info.width >> level) * max(1, info.height >> level)
+        * bytes_per_pixel
         for level in range(info.mip_levels)
     )
-    require(info.palette_offset == expected_chain,
-            f"{texture} palette does not follow its {info.mip_levels}-level chain")
-    require(info.palette_offset + PALETTE_BYTES <= chunk.video_bytes,
-            f"{texture} palette runs past its video buffer")
+    if info.format_name == "P8":
+        require(info.packed_size == 0,
+                f"{texture} stores linear P8 pixels; that layout is unsupported")
+        require(info.palette_offset == expected_chain,
+                f"{texture} palette does not follow its {info.mip_levels}-level chain")
+        require(info.palette_offset + PALETTE_BYTES <= chunk.video_bytes,
+                f"{texture} palette runs past its video buffer")
+    else:
+        # These twelve explicit-size strips are the complete proved A1 lane.
+        # Their five linear mip levels occupy the prefix computed above; the
+        # small source-owned tail is retained byte-for-byte.  Do not infer this
+        # contract for crowdbase, seat, or an arbitrary 16-bit texture.
+        require(texture in PLAYER_STRIP_NAMES,
+                f"{texture} is not a reviewed A1R5G5B5 player strip")
+        require(info.packed_size != 0 and info.palette_offset == 0,
+                f"{texture} does not use the reviewed explicit-size A1 layout")
+        require(info.mip_levels == 5 and info.dimensions == 2 and info.depth == 1,
+                f"{texture} A1 descriptor shape changed")
+        require(expected_chain <= chunk.video_bytes,
+                f"{texture} A1 mip chain runs past its video buffer")
+        require(
+            chunk.video_bytes - expected_chain == (info.width * 3) // 2,
+            f"{texture} A1 source-owned video tail changed",
+        )
     template_span = data[chunk.offset:chunk.offset + span_size]
+    physical_spans = _physical_spans(entry, chunk.offset, template_span)
+    first_span = physical_spans[0]
     return ResolvedTarget(
-        pack_name=segment.pack_name,
+        pack_name=first_span.pack_name,
         outer_index=outer_index,
         chunk_index=position,
         texture=texture,
         width=info.width,
         height=info.height,
         mip_levels=info.mip_levels,
+        format_name=info.format_name,
+        packed_size=info.packed_size,
+        pixel_chain_bytes=expected_chain,
         pixel_offset=info.pixel_offset,
         palette_offset=info.palette_offset,
         system_bytes=chunk.system_bytes,
         video_bytes=chunk.video_bytes,
-        pack_relative_offset=segment.pack_offset + chunk.offset,
+        pack_relative_offset=first_span.pack_relative_offset,
         span_size=span_size,
         span_sha256=digest(template_span),
         decoded=decoded,
         template_span=template_span,
         chunk=chunk,
+        physical_spans=physical_spans,
     )
 
 
@@ -248,34 +384,131 @@ def build_replacement(target: ResolvedTarget,
         png_payload, (target.width, target.height))
     levels = generate_mips(rgba, width, height, target.mip_levels)
     require(len(levels) == target.mip_levels, "mip generation level-count mismatch")
-    palette, index_levels, quantization = palette_tools.quantize_levels(levels)
-    chain = b"".join(
-        swizzle_2d(indices, level.width, level.height, 1)
-        for level, indices in zip(levels, index_levels)
+    if target.format_name == "A1R5G5B5":
+        return _build_a1r5g5b5_replacement(
+            target, levels, png_sha256, width, height
+        )
+
+    def candidate_decoded(
+        candidate_palette: list[tuple[int, int, int, int]],
+        candidate_levels: list[bytes],
+    ) -> bytes:
+        require(len(candidate_levels) == len(levels),
+                "quantized mip level count changed")
+        chain = b"".join(
+            swizzle_2d(indices, level.width, level.height, 1)
+            for level, indices in zip(levels, candidate_levels)
+        )
+        require(len(chain) == target.palette_offset,
+                "encoded index chain does not fill the retail chain span")
+        rebuilt = bytearray(target.decoded)
+        video = target.system_bytes
+        rebuilt[video:video + len(chain)] = chain
+        encoded_palette = palette_tools.palette_bytes(candidate_palette)
+        require(len(encoded_palette) == PALETTE_BYTES,
+                "encoded palette size mismatch")
+        rebuilt[video + target.palette_offset:
+                video + target.palette_offset + PALETTE_BYTES] = encoded_palette
+        result = bytes(rebuilt)
+        require(len(result) == len(target.decoded),
+                "rebuilt texture payload changed size")
+        return result
+
+    # logos.cdf, mini.cdf, and flipchip.cdf use the same raw fixed-slot P8
+    # transport already proved by the Team Select card importer.  There is no
+    # VC-LZ stream to refit: retain the wrapper, descriptor/system bytes, and
+    # any source-owned video tail, then replace only the swizzled index chain
+    # and 1,024-byte palette.  Keeping this branch here lets All Textures use
+    # its existing typed project/composed-XISO route without inventing a
+    # parallel menu-logo writer.
+    if not target.chunk.compressed:
+        require(
+            target.chunk.compression_magic == 0
+            and target.chunk.stored_size
+            == target.chunk.system_bytes + target.chunk.video_bytes
+            and target.chunk.overlap_scratch_bytes == 0
+            and target.chunk.reserved0 == 0
+            and target.chunk.reserved1 == 0,
+            f"{target.texture} is not the reviewed raw TXTR wrapper class",
+        )
+        palette, index_levels, quantization = palette_tools.quantize_levels(levels)
+        rebuilt_decoded = candidate_decoded(palette, index_levels)
+        rebuilt_span = target.template_span[:HEADER.size] + rebuilt_decoded
+        require(
+            len(rebuilt_span) == len(target.template_span)
+            and rebuilt_span[:HEADER.size] == target.template_span[:HEADER.size]
+            and rebuilt_decoded[:target.system_bytes]
+            == target.decoded[:target.system_bytes],
+            "raw P8 wrapper, descriptor, or fixed span changed",
+        )
+        standalone = dataclasses.replace(target.chunk, offset=0)
+        roundtrip, decode_info = decode_chunk(rebuilt_span, standalone)
+        require(
+            decode_info is None and roundtrip == rebuilt_decoded,
+            "rebuilt raw P8 span does not decode back to its authored payload",
+        )
+        runs = [
+            index for index, (before, after) in enumerate(
+                zip(target.template_span, rebuilt_span)
+            ) if before != after
+        ]
+        require(runs, "input PNG quantized to the retail target unchanged")
+        require(
+            min(runs) >= HEADER.size + target.system_bytes
+            and max(runs) < HEADER.size + target.system_bytes + target.video_bytes,
+            "raw P8 differences escape the video allocation",
+        )
+        return rebuilt_span, {
+            "png_sha256": png_sha256,
+            "png_width": width,
+            "png_height": height,
+            "format": "P8",
+            "mip_levels": target.mip_levels,
+            "palette_entries": quantization.get("palette_entries"),
+            "raw_uncompressed_fixed_span": True,
+            "vc_lz_not_applicable": True,
+            "rebuilt_span_sha256": digest(rebuilt_span),
+            "rebuilt_decoded_sha256": digest(rebuilt_decoded),
+            "changed_byte_count": len(runs),
+            "wrapper_identical": True,
+            "system_bytes_identical": True,
+        }
+
+    template_stream = target.template_span[HEADER.size:]
+    require(len(template_stream) >= 9,
+            "compressed retail texture stream prefix is truncated")
+    output_size, stream_tag = struct.unpack_from("<II", template_stream, 0)
+    offset_bits = template_stream[8]
+    require(output_size == len(target.decoded),
+            "compressed retail texture output size changed")
+    bounded = palette_tools.quantize_levels_to_vc_lz_bound(
+        levels,
+        candidate_decoded,
+        stream_tag=stream_tag,
+        offset_bits=offset_bits,
+        max_encoded_size=target.chunk.stored_size,
     )
-    require(len(chain) == target.palette_offset,
-            "encoded index chain does not fill the retail chain span")
-    rebuilt = bytearray(target.decoded)
-    video = target.system_bytes
-    rebuilt[video:video + len(chain)] = chain
-    encoded_palette = palette_tools.palette_bytes(palette)
-    require(len(encoded_palette) == PALETTE_BYTES, "encoded palette size mismatch")
-    rebuilt[video + target.palette_offset:
-            video + target.palette_offset + PALETTE_BYTES] = encoded_palette
-    rebuilt_decoded = bytes(rebuilt)
-    require(len(rebuilt_decoded) == len(target.decoded),
-            "rebuilt texture payload changed size")
+    palette = bounded.palette
+    index_levels = bounded.index_levels
+    quantization = bounded.quantization
+    rebuilt_decoded = bounded.decoded
     rebuilt_span, rebuild_info = rebuild_compressed_chunk_fixed_span(
         target.template_span, rebuilt_decoded)
     require(len(rebuilt_span) == len(target.template_span),
             "rebuilt span size differs from the retail span")
+    require(
+        rebuild_info.recompressed_bytes == len(bounded.compressed)
+        and rebuilt_span[HEADER.size:
+                         HEADER.size + len(bounded.compressed)] == bounded.compressed,
+        "bounded-palette stream differs from the fixed-span rebuild",
+    )
     # target.chunk.offset points into the whole package; the rebuilt span is
     # standalone, so decode it through a copy anchored at its own byte 0.
     standalone = dataclasses.replace(target.chunk, offset=0)
     roundtrip, _info = decode_chunk(rebuilt_span, standalone)
     require(roundtrip == rebuilt_decoded,
             "rebuilt span does not decode back to the payload it was built from")
-    return rebuilt_span, {
+    report = {
         "png_sha256": png_sha256,
         "png_width": width,
         "png_height": height,
@@ -286,6 +519,164 @@ def build_replacement(target: ResolvedTarget,
         "recompressed_bytes": rebuild_info.recompressed_bytes,
         "zero_padding_bytes": rebuild_info.zero_padding_bytes,
     }
+    if len(bounded.attempts) > 1:
+        report["bounded_palette_fit"] = {
+            "attempts": list(bounded.attempts),
+            "selected_palette_entries": len(palette),
+            "selected_encoded_bytes": len(bounded.compressed),
+            "stored_size_bound": target.chunk.stored_size,
+        }
+    return rebuilt_span, report
+
+
+def _a1r5g5b5_level(rgba: bytes, *, retained_bits: int) -> bytes:
+    """Encode one linear A1R5G5B5 level with deterministic colour fallback.
+
+    The native five-bit candidate is tried first.  When authored noise cannot
+    fit the retail VC-LZ allocation, progressively clearing low colour bits
+    lowers entropy without changing dimensions, mip ownership, alpha shape, or
+    any descriptor bytes.  A one-bit-per-channel image is the last usable tier;
+    the writer refuses rather than flattening the art to one colour.
+    """
+
+    require(1 <= retained_bits <= 5, "A1 retained colour bits must be 1..5")
+    require(len(rgba) % 4 == 0, "A1 RGBA byte count is not pixel-aligned")
+    low_mask = (1 << (5 - retained_bits)) - 1
+    encoded = bytearray(len(rgba) // 2)
+    for source in range(0, len(rgba), 4):
+        red5 = (rgba[source] * 31 + 127) // 255
+        green5 = (rgba[source + 1] * 31 + 127) // 255
+        blue5 = (rgba[source + 2] * 31 + 127) // 255
+        if low_mask:
+            red5 &= ~low_mask
+            green5 &= ~low_mask
+            blue5 &= ~low_mask
+        value = (
+            (0x8000 if rgba[source + 3] >= 128 else 0)
+            | (red5 << 10) | (green5 << 5) | blue5
+        )
+        target_offset = source // 2
+        encoded[target_offset:target_offset + 2] = value.to_bytes(2, "little")
+    return bytes(encoded)
+
+
+def _is_size_overflow(exc: TxtrError) -> bool:
+    message = str(exc)
+    return (
+        message.startswith("VC-LZ stream needs more than the ")
+        or (message.startswith("VC-LZ stream is ") and " exceeds " in message)
+    )
+
+
+def _build_a1r5g5b5_replacement(
+    target: ResolvedTarget,
+    levels: list[Any],
+    png_sha256: str,
+    width: int,
+    height: int,
+) -> tuple[bytes, dict[str, Any]]:
+    """Rebuild a reviewed explicit-size player strip in its exact span."""
+
+    require(target.texture in PLAYER_STRIP_NAMES,
+            "A1 replacement target is not a reviewed player strip")
+    template_stream = target.template_span[HEADER.size:]
+    require(len(template_stream) >= 9,
+            "compressed retail A1 texture stream prefix is truncated")
+    output_size, stream_tag = struct.unpack_from("<II", template_stream, 0)
+    offset_bits = template_stream[8]
+    require(output_size == len(target.decoded),
+            "compressed retail A1 texture output size changed")
+
+    attempts: list[dict[str, object]] = []
+    selected_decoded: bytes | None = None
+    selected_compressed: bytes | None = None
+    selected_bits: int | None = None
+    for retained_bits in (5, 4, 3, 2, 1):
+        chain = b"".join(
+            _a1r5g5b5_level(level.rgba, retained_bits=retained_bits)
+            for level in levels
+        )
+        require(len(chain) == target.pixel_chain_bytes,
+                "encoded A1 mip chain does not fill its reviewed prefix")
+        rebuilt = bytearray(target.decoded)
+        video = target.system_bytes
+        tail_before = bytes(rebuilt[
+            video + target.pixel_chain_bytes:video + target.video_bytes
+        ])
+        rebuilt[video:video + len(chain)] = chain
+        decoded = bytes(rebuilt)
+        require(
+            decoded[video + target.pixel_chain_bytes:video + target.video_bytes]
+            == tail_before,
+            "A1 source-owned video tail changed",
+        )
+        try:
+            compressed, _compression = compress_vc_lz(
+                decoded,
+                stream_tag=stream_tag,
+                offset_bits=offset_bits,
+                max_encoded_size=target.chunk.stored_size,
+            )
+        except TxtrError as exc:
+            if not _is_size_overflow(exc):
+                raise
+            attempts.append({
+                "retained_color_bits": retained_bits,
+                "result": "vc_lz_overflow",
+            })
+            continue
+        attempts.append({
+            "retained_color_bits": retained_bits,
+            "result": "fit",
+            "encoded_bytes": len(compressed),
+        })
+        selected_decoded = decoded
+        selected_compressed = compressed
+        selected_bits = retained_bits
+        break
+    if selected_decoded is None or selected_compressed is None \
+            or selected_bits is None:
+        raise TextureWorkflowError(
+            f"VC-LZ target cannot fit a usable A1R5G5B5 player strip inside "
+            f"its {target.chunk.stored_size}-byte bound; simplify texture or noise"
+        )
+
+    rebuilt_span, rebuild_info = rebuild_compressed_chunk_fixed_span(
+        target.template_span, selected_decoded
+    )
+    require(
+        rebuild_info.recompressed_bytes == len(selected_compressed)
+        and rebuilt_span[
+            HEADER.size:HEADER.size + len(selected_compressed)
+        ] == selected_compressed,
+        "A1 bounded stream differs from the fixed-span rebuild",
+    )
+    standalone = dataclasses.replace(target.chunk, offset=0)
+    roundtrip, _info = decode_chunk(rebuilt_span, standalone)
+    require(roundtrip == selected_decoded,
+            "rebuilt A1 span does not decode back to its authored payload")
+    report: dict[str, Any] = {
+        "png_sha256": png_sha256,
+        "png_width": width,
+        "png_height": height,
+        "format": "A1R5G5B5",
+        "mip_levels": target.mip_levels,
+        "pixel_chain_bytes": target.pixel_chain_bytes,
+        "source_owned_tail_bytes": target.video_bytes - target.pixel_chain_bytes,
+        "retained_color_bits": selected_bits,
+        "rebuilt_span_sha256": digest(rebuilt_span),
+        "rebuilt_decoded_sha256": digest(selected_decoded),
+        "recompressed_bytes": rebuild_info.recompressed_bytes,
+        "zero_padding_bytes": rebuild_info.zero_padding_bytes,
+    }
+    if len(attempts) > 1:
+        report["bounded_a1_fit"] = {
+            "attempts": attempts,
+            "selected_retained_color_bits": selected_bits,
+            "selected_encoded_bytes": len(selected_compressed),
+            "stored_size_bound": target.chunk.stored_size,
+        }
+    return rebuilt_span, report
 
 
 def run(source_path: Path, output_path: Path, manifest_path: Path,
@@ -337,30 +728,50 @@ def run(source_path: Path, output_path: Path, manifest_path: Path,
         writes: list[dict[str, Any]] = []
         spans: list[tuple[int, int]] = []
         for target, replacement, report in resolved:
-            pack_path = f"{PACK_ROOT}/{target.pack_name}"
-            pack = entries.get(pack_path.casefold())
-            require(pack is not None, f"source XISO has no {pack_path}")
-            if target.pack_name not in packs:
-                packs[target.pack_name] = {
-                    "path": pack_path,
-                    "size": pack.size,
-                    "sha256": common.sha256_fd(source_fd, pack.byte_offset, pack.size),
-                }
-            absolute = pack.byte_offset + target.pack_relative_offset
-            require(absolute + target.span_size <= pack.byte_offset + pack.size,
-                    f"{target.texture} span does not lie inside {pack_path}")
-            actual = common.read_exact(source_fd, absolute, target.span_size)
-            require(digest(actual) == target.span_sha256,
-                    f"source span for {target.outer_index}:{target.texture} differs "
-                    "from the extracted index it was resolved against")
-            end = absolute + target.span_size
-            require(all(end <= first or absolute >= last for first, last in spans),
-                    "plan target spans overlap")
-            spans.append((absolute, end))
-            writes.append({
-                "absolute": absolute, "replacement": replacement,
-                "target": target, "report": report, "pack_path": pack_path,
-            })
+            require(
+                sum(piece.size for piece in target.physical_spans)
+                == target.span_size == len(replacement),
+                f"physical split for {target.outer_index}:{target.texture} changed",
+            )
+            for part_index, piece in enumerate(target.physical_spans):
+                pack_path = f"{PACK_ROOT}/{piece.pack_name}"
+                pack = entries.get(pack_path.casefold())
+                require(pack is not None, f"source XISO has no {pack_path}")
+                if piece.pack_name not in packs:
+                    packs[piece.pack_name] = {
+                        "path": pack_path,
+                        "size": pack.size,
+                        "sha256": common.sha256_fd(
+                            source_fd, pack.byte_offset, pack.size
+                        ),
+                    }
+                absolute = pack.byte_offset + piece.pack_relative_offset
+                require(absolute + piece.size <= pack.byte_offset + pack.size,
+                        f"{target.texture} part does not lie inside {pack_path}")
+                actual = common.read_exact(source_fd, absolute, piece.size)
+                require(digest(actual) == piece.span_sha256,
+                        f"source part for {target.outer_index}:{target.texture} "
+                        "differs from the extracted index it was resolved against")
+                end = absolute + piece.size
+                require(all(end <= first or absolute >= last
+                            for first, last in spans),
+                        "plan target spans overlap")
+                spans.append((absolute, end))
+                replacement_piece = replacement[
+                    piece.replacement_offset:piece.replacement_offset + piece.size
+                ]
+                require(len(replacement_piece) == piece.size,
+                        "replacement physical split is incomplete")
+                writes.append({
+                    "absolute": absolute,
+                    "replacement": replacement_piece,
+                    "target": target,
+                    "report": report,
+                    "pack_path": pack_path,
+                    "physical_span": piece,
+                    "part_index": part_index,
+                    "part_count": len(target.physical_spans),
+                })
 
         output_owned = common.reserve_file(output)
         require(output_owned.identity != source_identity, "output XISO aliases source")
@@ -370,7 +781,7 @@ def run(source_path: Path, output_path: Path, manifest_path: Path,
         for write in writes:
             common.pwrite(output_owned.descriptor, write["replacement"], write["absolute"])
             before = common.read_exact(source_fd, write["absolute"],
-                                       write["target"].span_size)
+                                       write["physical_span"].size)
             allowed.update(
                 write["absolute"] + position
                 for position, (old, new) in enumerate(zip(before, write["replacement"]))
@@ -379,9 +790,26 @@ def run(source_path: Path, output_path: Path, manifest_path: Path,
         os.fsync(output_owned.descriptor)
         for write in writes:
             readback = common.read_exact(output_owned.descriptor, write["absolute"],
-                                         write["target"].span_size)
+                                         write["physical_span"].size)
             require(readback == write["replacement"],
-                    f"output span readback differs for {write['target'].texture}")
+                    f"output part readback differs for {write['target'].texture}")
+        # A per-piece readback proves each physical write. Reassembly proves
+        # that their order and split recreate the exact logical TXTR chain.
+        for target, replacement, _report in resolved:
+            target_writes = sorted(
+                (write for write in writes if write["target"] is target),
+                key=lambda write: write["part_index"],
+            )
+            reassembled = b"".join(
+                common.read_exact(
+                    output_owned.descriptor,
+                    write["absolute"],
+                    write["physical_span"].size,
+                )
+                for write in target_writes
+            )
+            require(reassembled == replacement,
+                    f"output logical span readback differs for {target.texture}")
         source_sha_after, output_sha, changed = common.compare_and_hash(
             source_fd, output_owned.descriptor, source_size, allowed)
         require(source_sha_after == source_sha_before,
@@ -405,21 +833,40 @@ def run(source_path: Path, output_path: Path, manifest_path: Path,
                 "note": "Identity is per-extent. The container size and hash are "
                         "recorded, never gated: a legally repacked dump differs.",
             },
+            "transaction": {
+                "all_replacements_staged_before_output_reservation": True,
+                "source_opened_read_only": True,
+                "output_reserved_with_no_overwrite": True,
+                "every_physical_piece_read_back": True,
+                "every_logical_txtr_reassembled_and_verified": True,
+            },
             "edits": [
                 {
-                    "outer_index": write["target"].outer_index,
-                    "chunk_index": write["target"].chunk_index,
-                    "texture": write["target"].texture,
-                    "pack_path": write["pack_path"],
-                    "width": write["target"].width,
-                    "height": write["target"].height,
-                    "format": "P8",
-                    "absolute_offset": write["absolute"],
-                    "span_size": write["target"].span_size,
-                    "source_span_sha256": write["target"].span_sha256,
-                    **write["report"],
+                    "outer_index": target.outer_index,
+                    "chunk_index": target.chunk_index,
+                    "texture": target.texture,
+                    "width": target.width,
+                    "height": target.height,
+                    "format": target.format_name,
+                    "span_size": target.span_size,
+                    "source_span_sha256": target.span_sha256,
+                    "physical_spans": [
+                        {
+                            "part_index": write["part_index"],
+                            "pack_path": write["pack_path"],
+                            "absolute_offset": write["absolute"],
+                            "replacement_offset": write["physical_span"].replacement_offset,
+                            "span_size": write["physical_span"].size,
+                            "source_span_sha256": write["physical_span"].span_sha256,
+                        }
+                        for write in sorted(
+                            (item for item in writes if item["target"] is target),
+                            key=lambda item: item["part_index"],
+                        )
+                    ],
+                    **report,
                 }
-                for write in writes
+                for target, _replacement, report in resolved
             ],
             "changed_byte_count": len(changed),
         }

@@ -145,12 +145,12 @@ class VisualModProjectTests(unittest.TestCase):
         }
         self.assertEqual(project.validate_edit_shape(valid, 0), valid)
         for row in (
-            {**valid, "selector": "crib_scene_texture:room:31"},
+            {**valid, "selector": "crib_scene_texture:room:999"},
             {**valid, "offset": 123},
             {**valid, "png": ""},
         ):
             with self.subTest(row=row), self.assertRaisesRegex(
-                project.ProjectError, "only the proved room:22"
+                project.ProjectError, "25 proved Crib electronics surfaces"
             ):
                 project.validate_edit_shape(row, 0)
 
@@ -172,6 +172,14 @@ class VisualModProjectTests(unittest.TestCase):
                 png = Path(raw) / "screen.png"
                 png.write_bytes(b"user png")
                 with (
+                    mock.patch.object(
+                        project.common,
+                        "parse_xdvdfs",
+                        return_value=({
+                            f"vc_53450030/{project.CRIB_SCENE_PACK_NAME}".casefold():
+                                mock.Mock(byte_offset=0),
+                        }, {}),
+                    ),
                     mock.patch.object(project.common, "read_exact", return_value=b"source"),
                     mock.patch.object(
                         project.crib_scene_import,
@@ -720,6 +728,157 @@ class VisualModProjectTests(unittest.TestCase):
             self.assertEqual(result["output_sha256"],
                              hashlib.sha256(output_bytes).hexdigest())
             self.assertTrue(result["all_bytes_outside_selected_spans_identical"])
+
+    def test_virtual_union_matches_the_materialized_output_proof(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source_bytes = bytes(range(128))
+            output_bytes = bytearray(source_bytes)
+            output_bytes[12:16] = b"ABCD"
+            output_bytes[80:83] = b"xyz"
+            source = root / "source.bin"
+            output = root / "output.bin"
+            source.write_bytes(source_bytes)
+            output.write_bytes(output_bytes)
+            edits = [
+                self.prepared(
+                    root, 0, 12, source_bytes[12:16],
+                    bytes(output_bytes[12:16]),
+                ),
+                self.prepared(
+                    root, 1, 80, source_bytes[80:83],
+                    bytes(output_bytes[80:83]),
+                ),
+            ]
+            source_fd = os.open(source, os.O_RDONLY)
+            output_fd = os.open(output, os.O_RDONLY)
+            try:
+                materialized = project.verify_union(
+                    source_fd, output_fd, len(source_bytes), edits
+                )
+                virtual = project.verify_union_virtual(
+                    source_fd, len(source_bytes), edits
+                )
+            finally:
+                os.close(source_fd)
+                os.close(output_fd)
+            self.assertEqual(virtual, materialized)
+            self.assertEqual(
+                virtual["output_sha256"], hashlib.sha256(output_bytes).hexdigest()
+            )
+
+    def test_virtual_union_refuses_a_changed_replacement_after_preparation(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source_bytes = b"a" * 64
+            source = root / "source.bin"
+            source.write_bytes(source_bytes)
+            edit = self.prepared(root, 0, 10, b"aa", b"bc")
+            edit.replacement_path.write_bytes(b"bd")
+            source_fd = os.open(source, os.O_RDONLY)
+            try:
+                with self.assertRaisesRegex(
+                    project.ProjectError, "virtual selected span reconstruction"
+                ):
+                    project.verify_union_virtual(source_fd, 64, [edit])
+            finally:
+                os.close(source_fd)
+
+    def test_virtual_union_refuses_overlapping_selected_spans(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source_bytes = b"a" * 64
+            source = root / "source.bin"
+            source.write_bytes(source_bytes)
+            edits = [
+                self.prepared(root, 0, 10, b"aaaa", b"ABCD"),
+                self.prepared(root, 1, 12, b"aaaa", b"EFGH"),
+            ]
+            source_fd = os.open(source, os.O_RDONLY)
+            try:
+                with self.assertRaisesRegex(project.ProjectError, "overlap"):
+                    project.verify_union_virtual(source_fd, 64, edits)
+            finally:
+                os.close(source_fd)
+
+    def test_virtual_output_requires_a_missing_non_symlink_path(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            absent = root / "proof.xiso.iso"
+            self.assertEqual(project.absent_virtual_output_path(absent), absent)
+            absent.write_bytes(b"not a historical output")
+            with self.assertRaisesRegex(project.ProjectError, "requires an absent"):
+                project.absent_virtual_output_path(absent)
+            absent.unlink()
+            real = root / "real"
+            real.mkdir()
+            linked = root / "linked"
+            linked.symlink_to(real, target_is_directory=True)
+            with self.assertRaisesRegex(project.ProjectError, "symlink"):
+                project.absent_virtual_output_path(linked / "proof.xiso.iso")
+
+    def test_historical_receipt_replay_only_changes_catalog_provenance(self) -> None:
+        current = {
+            "schema": "fixture/v1",
+            "compatibility_report": {
+                "path": "$PINNED_REPORT/torso", "sha256": "b" * 64,
+            },
+            "target": {"selector": "09H0", "span_sha256": "c" * 64},
+            "replacement": {"span_sha256": "d" * 64},
+        }
+        historical = json.loads(json.dumps(current))
+        historical["compatibility_report"]["sha256"] = "a" * 64
+        self.assertEqual(
+            project.replay_historical_import_report(
+                current, historical, "torso"
+            ),
+            historical,
+        )
+
+        forged = json.loads(json.dumps(historical))
+        forged["target"]["span_sha256"] = "e" * 64
+        with self.assertRaisesRegex(
+            project.ProjectError, "beyond catalog provenance"
+        ):
+            project.replay_historical_import_report(current, forged, "torso")
+
+    def test_historical_catalog_pin_must_match_every_import_receipt(self) -> None:
+        current = {
+            "index": {"path": "/index", "size": 1, "sha256": "1" * 64},
+            "inventory": {
+                "path": "/inventory", "size": 2, "sha256": "2" * 64,
+            },
+            "compatibility_reports": {
+                "torso": {
+                    "path": "/catalog", "size": 20, "sha256": "b" * 64,
+                },
+            },
+        }
+        historical = json.loads(json.dumps(current))
+        historical["compatibility_reports"]["torso"].update({
+            "size": 19, "sha256": "a" * 64,
+        })
+        receipts = {
+            0: {
+                "compatibility_report": {
+                    "path": "$PINNED_REPORT/torso", "sha256": "a" * 64,
+                },
+            },
+        }
+        self.assertIs(
+            project.validate_historical_canonical_inputs(
+                historical, current, [{"kind": "torso"}], receipts
+            ),
+            historical,
+        )
+
+        forged = {0: json.loads(json.dumps(receipts[0]))}
+        forged[0]["compatibility_report"]["sha256"] = "f" * 64
+        with self.assertRaisesRegex(project.ProjectError, "catalog pin"):
+            project.validate_historical_canonical_inputs(
+                historical, current, [{"kind": "torso"}],
+                forged,
+            )
 
     def test_union_verifier_refuses_difference_outside_union(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

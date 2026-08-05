@@ -99,9 +99,20 @@ class DraftLogoCatalogTests(unittest.TestCase):
         selector_cards = tuple(
             card for card in cards if card.capability_id.startswith("apf2k8.colors.")
         )
-        self.assertEqual(len(selector_cards), 3)
+        self.assertEqual(len(selector_cards), 4)
+        appearance_card = next(
+            card
+            for card in selector_cards
+            if card.capability_id
+            == "apf2k8.colors.uniform_selector_appearance_custom_team"
+        )
+        self.assertIs(appearance_card.category, ApfCategory.UNIFORMS)
         self.assertTrue(
-            all(card.category is ApfCategory.TEAM_IDENTITY for card in selector_cards)
+            all(
+                card.category is ApfCategory.TEAM_IDENTITY
+                for card in selector_cards
+                if card is not appearance_card
+            )
         )
 
     def test_ui_does_not_hide_capability_cards_and_names_raw_exports(self) -> None:

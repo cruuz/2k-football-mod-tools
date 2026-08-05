@@ -26,7 +26,7 @@ import apf_xenos_bc1_mip_layout as bc1_mips
 SCHEMA = "apf_pants_family_patch/v1"
 WORKSPACE = Path(__file__).resolve().parents[1]
 CATALOG = WORKSPACE / "reports/assets/apf_pants_family_layout.json"
-EXPECTED_CATALOG_SHA256 = "82241aefe6728a7426552663ee69ecffbdabca01f4359e8322edf75775adf293"
+EXPECTED_CATALOG_SHA256 = "707d916213f04499608b492ce2ea37a0e33b770af0f69c57248755d71ef5c32a"
 EXPECTED_VOLUME_SHA256 = "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
 
 

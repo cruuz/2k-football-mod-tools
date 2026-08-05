@@ -248,7 +248,7 @@ for needle in (
 PY
 
 test "$(sha256sum "$report" | cut -d' ' -f1)" = \
-  cacc5d3e57aab9a2c372c851d6a3ee5c219251192fa1fc72ccbe766db4c0eb3c
+  def110c3bd0119e6b8fcf23cd91a48e30eb8be2afc69d8a43f5ed12890983472
 test "$(sha256sum "$vertices" | cut -d' ' -f1)" = \
   3d7804af488827a226a6690c0785501741bbb9aa8171690b53b87f387ceacc3c
 test "$(sha256sum "$samplers" | cut -d' ' -f1)" = \
@@ -260,7 +260,7 @@ test "$(sha256sum "$trace" | cut -d' ' -f1)" = \
 test "$(sha256sum "$pseudo" | cut -d' ' -f1)" = \
   75a6d7cba7bb8ff85919d459fda7a68038195e0e9c6e34bed5faf95a1d741e54
 test "$(sha256sum "$gltf" | cut -d' ' -f1)" = \
-  e245811657d4808053a244996b9850dcc607ee70ab6eafa87194e6917d2ae30f
+  ffc5570c6205ea3bbaa7714eba6bee0ba5f4df7196996ae5a9473e0c4525abfc
 test "$(sha256sum "$bin" | cut -d' ' -f1)" = \
   d72016179707c752979d8e079295b1e2ed28a33031b6c5d5ac7176f59aaf9029
 test "$(sha256sum "$doc" | cut -d' ' -f1)" = \

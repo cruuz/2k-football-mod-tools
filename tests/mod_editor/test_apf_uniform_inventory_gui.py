@@ -205,9 +205,15 @@ class ApfUniformInventoryGuiTests(unittest.TestCase):
     def test_page_partitions_all_408_records_without_duplicate_coordinates(self) -> None:
         facade, page = self._page()
         try:
-            self.assertEqual(page.tabs.count(), 2)
+            # Five: two record workspaces plus the three specialized whole-game
+            # tools, which do not partition the 408 records at all.
+            self.assertEqual(page.tabs.count(), 6)
             self.assertEqual(page.tabs.tabText(0), "Editable Materials (96)")
             self.assertEqual(page.tabs.tabText(1), "Additional Assets (312)")
+            self.assertEqual(page.tabs.tabText(2), "Team Independence")
+            self.assertEqual(page.tabs.tabText(3), "Custom Team Appearance")
+            self.assertEqual(page.tabs.tabText(4), "Model Round Trip")
+            self.assertEqual(page.tabs.tabText(5), "Equipment Colors")
             self.assertEqual(page.tabs.objectName(), "workspaceTabs")
             self.assertEqual(page.list.count(), 96)
             self.assertEqual(len(page.inventory_browser._matches), 312)
@@ -368,9 +374,16 @@ class ApfUniformInventoryGuiTests(unittest.TestCase):
     def test_unloaded_page_keeps_both_workspaces_safe_and_empty(self) -> None:
         _facade, page = self._page(ready=False)
         try:
-            self.assertEqual(page.tabs.count(), 2)
+            self.assertEqual(page.tabs.count(), 6)
             self.assertEqual(page.tabs.tabText(0), "Editable Materials (96)")
             self.assertEqual(page.tabs.tabText(1), "Additional Assets")
+            self.assertEqual(page.tabs.tabText(2), "Team Independence")
+            self.assertEqual(page.tabs.tabText(3), "Custom Team Appearance")
+            self.assertEqual(page.tabs.tabText(4), "Model Round Trip")
+            self.assertEqual(page.tabs.tabText(5), "Equipment Colors")
+            # Team Independence describes the shipped game, so it fills in with
+            # no game loaded; only its action is withheld.
+            self.assertFalse(page.independence_panel.apply_button.isEnabled())
             self.assertEqual(page.list.count(), 0)
             self.assertEqual(page.inventory_browser.table.rowCount(), 0)
             self.assertEqual(page.inventory_browser.page_label.text(), "Page 0 of 0")

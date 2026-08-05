@@ -99,29 +99,77 @@ class Nfl2k5AssetIO:
     def ensure_original(self, asset: Any) -> Path:
         path = self.original_path(asset)
         metadata = path.with_suffix(".json")
+        tampered = ValidationError(
+            "A private original-backup file changed outside Mod Studio. "
+            "Remove the source cache and load the XISO again."
+        )
+        stale = False
         if path.is_file() and metadata.is_file() and not path.is_symlink() \
                 and not metadata.is_symlink():
             try:
                 record = json.loads(metadata.read_text(encoding="utf-8"))
                 payload = path.read_bytes()
-                width, height, rgba = png_codec.decode_rgba_png(
-                    payload, (int(asset.width), int(asset.height)))
+                recorded_dimensions = record.get("dimensions")
                 if (
-                    record.get("schema") == ORIGINAL_SCHEMA
-                    and record.get("asset_id") == asset.asset_id
-                    and record.get("png_sha256") == sha256_bytes(payload)
-                    and record.get("rgba_sha256") == sha256_bytes(rgba)
-                    and (width, height) == (asset.width, asset.height)
+                    not isinstance(recorded_dimensions, list)
+                    or len(recorded_dimensions) != 2
+                    or any(
+                        not isinstance(value, int) or isinstance(value, bool)
+                        or not 0 < value <= 16_384
+                        for value in recorded_dimensions
+                    )
                 ):
-                    return path
+                    raise ValueError("invalid cached dimensions")
+                width, height, rgba = png_codec.decode_rgba_png(
+                    payload,
+                    (recorded_dimensions[0], recorded_dimensions[1]),
+                )
             except (OSError, ValueError, KeyError, json.JSONDecodeError):
-                pass
-            raise ValidationError(
-                "A private original-backup file changed outside Mod Studio. "
-                "Remove the source cache and load the XISO again."
-            )
+                raise tampered from None
+            # Check the entry against its own record before deciding that it is
+            # stale. This keeps genuine behind-the-app edits loud, but lets an
+            # intact entry from an older schema or dimension catalog be decoded
+            # again. Team Kit export reaches this uniform IO, not the extended
+            # visual IO, which is why repairing only that router was incomplete.
+            if (
+                record.get("png_sha256") != sha256_bytes(payload)
+                or record.get("rgba_sha256") != sha256_bytes(rgba)
+                or [width, height] != recorded_dimensions
+            ):
+                raise tampered
+            if (
+                record.get("schema") == ORIGINAL_SCHEMA
+                and record.get("asset_id") == asset.asset_id
+                and record.get("source_sha256") == self.cache.source.sha256
+                and recorded_dimensions == [asset.width, asset.height]
+            ):
+                return path
+            stale = True
+        elif os.path.lexists(path) or os.path.lexists(metadata):
+            # A stopped process can leave one regular half of this generated
+            # pair. Recover it, but never replace a link or directory.
+            for leftover in (path, metadata):
+                if os.path.lexists(leftover) and (
+                    leftover.is_symlink() or not leftover.is_file()
+                ):
+                    raise tampered
+            stale = True
         png, rgba = self._decode_original(asset)
-        _atomic_write(path, png)
+        try:
+            width, height, reparsed = png_codec.decode_rgba_png(
+                png, (int(asset.width), int(asset.height))
+            )
+        except ValueError as exc:
+            raise ValidationError(
+                f"Could not verify the decoded pixels for {asset.label}"
+            ) from exc
+        if (
+            (width, height) != (asset.width, asset.height)
+            or reparsed != rgba
+        ):
+            raise ValidationError(
+                f"Could not verify the decoded pixels for {asset.label}"
+            )
         record = {
             "asset_id": asset.asset_id,
             "dimensions": [asset.width, asset.height],
@@ -130,9 +178,13 @@ class Nfl2k5AssetIO:
             "schema": ORIGINAL_SCHEMA,
             "source_sha256": self.cache.source.sha256,
         }
+        # Keep the valid stale pair until fresh decoding succeeds. Each final
+        # pathname is then replaced atomically; no pre-emptive unlink is needed.
+        _atomic_write(path, png, replace=stale)
         _atomic_write(
             metadata,
             (json.dumps(record, indent=2, sort_keys=True) + "\n").encode("utf-8"),
+            replace=stale,
         )
         return path
 
@@ -187,7 +239,10 @@ class Nfl2k5AssetIO:
             raise
         except (OSError, ValueError, KeyError, TypeError) as exc:
             raise ValidationError(f"Could not export {asset.label}: {exc}") from exc
-        raise ValidationError(f"Export is not implemented for asset kind {asset.kind!r}")
+        raise ValidationError(
+            f"No safe export route exists for asset kind {asset.kind!r}; "
+            "this asset is inspect-only"
+        )
 
     def _decode_tset(self, asset: Any) -> tuple[bytes, bytes]:
         modules = {

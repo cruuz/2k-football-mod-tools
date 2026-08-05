@@ -15,16 +15,16 @@
   },
   "catalog_dispatcher_implementation_witness": {
     "changed_all_zero_node3": {
-      "allocation_slack_after_bytes": 1513,
+      "allocation_slack_after_bytes": 21907,
       "authorized_lane_bytes": 288,
-      "block0_stored_length_after": 3299595,
+      "block0_stored_length_after": 3279201,
       "block0_stored_length_before": 3299082,
       "changed_decoded_block0_bytes": 284,
       "draw_record_count": 3,
       "node_name": "polySurface19821",
       "operation": "replace all 24 positions with the public nonretail all-zero witness",
-      "output_1a_sha256": "bae670cdc1f07a5201a21c6a7ecadb5499c7c2d46dff2a78f4342cf9ce8a7e33",
-      "output_outer_sha256": "ad58fc4b0adee1044c3c55df987d04d24875eb0f042e146ccd032f18a3664505",
+      "output_1a_sha256": "cf8cd039e6ef3f078f193c1563bce76d3983372cd67b30a0b051487699378022",
+      "output_outer_sha256": "23e15b372b7e3be49a2b0a475232c4f44b9c4de9d4a7a572e5e98a8df9d7af9e",
       "output_stadium_dram_sha256": "af1efab4cab214ef796258d685eeb5fd9608c3ee238147fde610bd3eeac0b4c1",
       "target_id": "outer14.inner8.node3",
       "vertex_count": 24
@@ -740,12 +740,28 @@
       "write_rule": "preserve all 48 bytes unless a separately specified profile proves every affected derived field; the pinned same-footprint node17 permutation preserves all derived fields and therefore forbids draw mutation"
     },
     "hierarchy_table": {
-      "byte_length_formula": "0x20 + (count - 1) * 0x30 + 0x10 for count > 0",
+      "byte_length_formula": "count * 0x30",
       "claim_boundary": "names and graph links are proved; skeleton, joint palette, attachment socket, bind matrix, inverse bind, and runtime transform meanings are not",
       "core_fields": [
         {
-          "name": "name",
+          "name": "vector_a",
           "offset_bytes": 0,
+          "rule": "present in every record; preserve bit-exact",
+          "size_bytes": 16,
+          "status": "unknown",
+          "storage": "4*f32be"
+        },
+        {
+          "name": "vector_b",
+          "offset_bytes": 16,
+          "rule": "present in every record; preserve bit-exact",
+          "size_bytes": 16,
+          "status": "unknown",
+          "storage": "4*f32be"
+        },
+        {
+          "name": "name",
+          "offset_bytes": 32,
           "rule": "UTF-16BE NUL-terminated",
           "size_bytes": 4,
           "status": "proved",
@@ -753,7 +769,7 @@
         },
         {
           "name": "name_crc32",
-          "offset_bytes": 4,
+          "offset_bytes": 36,
           "rule": "CRC32(exact ASCII name)",
           "size_bytes": 4,
           "status": "proved",
@@ -761,7 +777,7 @@
         },
         {
           "name": "parent",
-          "offset_bytes": 8,
+          "offset_bytes": 40,
           "rule": "-1 or record index",
           "size_bytes": 2,
           "status": "proved_graph",
@@ -769,7 +785,7 @@
         },
         {
           "name": "first_child",
-          "offset_bytes": 10,
+          "offset_bytes": 42,
           "rule": "-1 or record index",
           "size_bytes": 2,
           "status": "proved_graph",
@@ -777,7 +793,7 @@
         },
         {
           "name": "next_sibling",
-          "offset_bytes": 12,
+          "offset_bytes": 44,
           "rule": "-1 or record index",
           "size_bytes": 2,
           "status": "proved_graph",
@@ -785,34 +801,18 @@
         },
         {
           "name": "reserved",
-          "offset_bytes": 14,
+          "offset_bytes": 46,
           "rule": "preserve bit-exact",
           "size_bytes": 2,
           "status": "unknown",
           "storage": "u16be"
-        },
-        {
-          "name": "vector_a",
-          "offset_bytes": 16,
-          "rule": "present only before terminal record; preserve bit-exact",
-          "size_bytes": 16,
-          "status": "unknown",
-          "storage": "4*f32be"
-        },
-        {
-          "name": "vector_b",
-          "offset_bytes": 32,
-          "rule": "present only before terminal record; preserve bit-exact",
-          "size_bytes": 16,
-          "status": "unknown",
-          "storage": "4*f32be"
         }
       ],
-      "header_size_bytes": 32,
-      "header_status": "eight opaque u32be words; preserve bit-exact",
+      "header_size_bytes": 0,
+      "header_status": "no separate header; the first two float4 values belong to record 0",
       "ordinary_record_size_bytes": 48,
       "record_core_size_bytes": 16,
-      "terminal_rule": "the last record has only the 0x10-byte core and omits vector_a/vector_b",
+      "terminal_rule": "all records, including the last, contain vector_a and vector_b",
       "variants": "eight tables fail the common child/sibling-versus-parent identity; preserve all signed indices and reject hierarchy authoring"
     },
     "index_strip": {
@@ -1014,7 +1014,7 @@
         {
           "name": "hierarchy",
           "offset_bytes": 100,
-          "rule": "variable terminal-short hierarchy table",
+          "rule": "hierarchy_count * 0x30 bytes",
           "size_bytes": 4,
           "status": "proved_extent",
           "storage": "relptr_u32be"
@@ -1380,8 +1380,8 @@
       "path": "reports/assets/apf_scene_inventory.json",
       "role": "complete 1,303-resource structural and POSITION/topology evidence ledger",
       "schema": "apf_scene_inventory/v1",
-      "sha256": "2243b5a3eb4dfcdebdda055e1a6fd9399b12b2704338f80ae4529d8476e85a17",
-      "size_bytes": 99250791
+      "sha256": "93269dbc2fbace97890af389cd97a35e5291fec39bdfd1ed411639550e4dac36",
+      "size_bytes": 98732152
     },
     {
       "id": "inner_manifest",
@@ -1396,24 +1396,24 @@
       "path": "tools/apf_scene.py",
       "role": "strict SCNE parser, POSITION decoder, strip decoder, and corpus generator",
       "schema": null,
-      "sha256": "8b8c87249e33fb0606074b3f9047befad4eef94106ac5df3fa58f0b602730dcf",
-      "size_bytes": 56792
+      "sha256": "0f416e57fe02b8ac7a3695820f23af6875d2413a50905a0292c88e231fd899c2",
+      "size_bytes": 61388
     },
     {
       "id": "iff_h7a_parser",
       "path": "tools/apf_inner.py",
       "role": "strict IFF/H7A parser and part-range derivation",
       "schema": null,
-      "sha256": "dde4573cb79b9a90c16537fe283cf6ce63a7da3d84e68f0a606438de0e3cdec1",
-      "size_bytes": 63440
+      "sha256": "4f6fb5ca21f48f96d498f976350f88c1f060569abc52d44a3742d2071e2f41cc",
+      "size_bytes": 69984
     },
     {
       "id": "iff_h7a_rebuild_proof",
       "path": "tools/apf_texture_patch.py",
       "role": "proved copied-entry H7A encode/decode and fixed-allocation IFF rebuild pattern",
       "schema": null,
-      "sha256": "6a4ae4ab13ce8478c4adef6bf464e6ab6c83a692b12a65cab24906fe0da588c1",
-      "size_bytes": 43155
+      "sha256": "194d37682ac28fef1853e4c27c8a0327b75ef52218afcf1fbc6f4fa169e1b7b9",
+      "size_bytes": 48541
     },
     {
       "id": "xex_vertex_encoder_pseudoc",
@@ -1436,16 +1436,16 @@
       "path": "docs/research/apf_scene.md",
       "role": "human-auditable derivation, examples, limitations, and reproduction contract",
       "schema": null,
-      "sha256": "7ec123153e9b7da418206b4af6e29781e0e5c3f4d239850a20c04fd8dff10ec0",
-      "size_bytes": 24225
+      "sha256": "3c972eab05effe039e26ac620b639c918f21733b946884aafecf4cc4dc9216c4",
+      "size_bytes": 24735
     },
     {
       "id": "static_gltf_research",
       "path": "docs/research/apf_static_gltf.md",
       "role": "complete read-side glTF corpus scope and omission contract",
       "schema": null,
-      "sha256": "985ec80a769e2f1157dbb794b36b56369553fffaee355477e4ce4e1da6c9e757",
-      "size_bytes": 4460
+      "sha256": "6eb87bd39efe136b60d9596f66aa70acc4ce8c591aba68d2aa4f893db6160da5",
+      "size_bytes": 4930
     },
     {
       "id": "same_count_recipe_schema",
@@ -1476,8 +1476,8 @@
       "path": "tools/apf_stadium_static_position_patch.py",
       "role": "fail-closed copied-1A writer for outer14/inner8/node17 only",
       "schema": null,
-      "sha256": "8f5e03ab306e2b985c4bf4058d855da6d9530daf304c1b6b164e589cbea61c5d",
-      "size_bytes": 42766
+      "sha256": "37210991eb4c470facd778358c477931e6074e4e84915d330e6adbb44c2c2f4b",
+      "size_bytes": 43189
     },
     {
       "id": "same_count_independent_verifier",
@@ -1497,7 +1497,7 @@
     },
     {
       "id": "stadium_static_target_catalog",
-      "path": "reports/assets/apf_stadium_static_position_target_catalog.json",
+      "path": "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json",
       "role": "hashes-only outer14/inner8 catalog of 77 additional bounded FLOAT32x3/no-blend same-count targets and exact node3 handoff",
       "schema": "apf2k8_stadium_static_position_target_catalog/v1",
       "sha256": "e2b21ebf4d358358627d26b7d7ea3c6cf600ea3f9d1e139cb9caa8ff1748a424",
@@ -1508,8 +1508,8 @@
       "path": "tools/apf_stadium_static_target_catalog.py",
       "role": "deterministically re-derives target spans, all part ownership, H7A envelope, and the local-only node3 fit witness",
       "schema": null,
-      "sha256": "cc412804d43ebbb18230531fa9082362cb8daaa27b493663106911e400c9cefc",
-      "size_bytes": 35099
+      "sha256": "0f14bc77d890494429b5e1dd898b2e166c4df6eecdb23b63cc52b1878c01a401",
+      "size_bytes": 35106
     },
     {
       "id": "stadium_static_target_catalog_research",
@@ -1521,7 +1521,7 @@
     },
     {
       "id": "catalog_position_recipe_schema",
-      "path": "reports/specs/apf2k8_scne_catalog_position_recipe.schema.json",
+      "path": "mod_editor/data/apf2k8_stadium_position_recipe.v2.schema.json",
       "role": "canonical v2 recipe contract that pins the hashes-only catalog and derives count, stride, lane offset, and FLOAT32x3_BE encoding from target_id",
       "schema": null,
       "sha256": "41fcf955c65d81bb5da2d229d6a2ffee692a9c5ae80eda1c0849911c90950277",
@@ -1548,24 +1548,24 @@
       "path": "tools/apf_stadium_catalog_position_patch.py",
       "role": "fail-closed copied-1A v2 dispatcher for all 77 additional hashes-only outer14 stadium targets",
       "schema": null,
-      "sha256": "67f6385add0ee9a3851be36a598b2f989c8cc962d2185028e3d47bccf1656c99",
-      "size_bytes": 32870
+      "sha256": "8a68a4aaa73daf1fd35543e5f6e3f41ab20daf6649a9c98eea367c984d321e7b",
+      "size_bytes": 32982
     },
     {
       "id": "catalog_position_independent_verifier",
       "path": "tools/apf_stadium_catalog_position_verify.py",
       "role": "writer-independent catalog/IFF/H7A/SCNE target re-derivation and complete manifest/byte verifier",
       "schema": null,
-      "sha256": "90c7d10a58cd2587031910b1b895b680862e29398da8a56a1755262c3e800419",
-      "size_bytes": 35956
+      "sha256": "3ce51ea6721939efb3b1f73bd10310f1db36d78a36b248a68b94ac2ce09db4d9",
+      "size_bytes": 36068
     },
     {
       "id": "catalog_position_roundtrip_report",
       "path": "reports/assets/apf_scne_catalog_position_roundtrip.json",
       "role": "node3 complete copied-1A no-op and public all-zero changed witnesses plus all 77-target dispatcher claim boundary",
       "schema": "apf2k8_scne_catalog_position_roundtrip/v2",
-      "sha256": "a701d74927e8a9ee36d24ffe33624016acc7058d6439ae7c60450489748f631b",
-      "size_bytes": 5919
+      "sha256": "eebd060dbcbeb07a01ccb2ac5a3491f0306ec43424080b33ad49258819333eea",
+      "size_bytes": 5932
     },
     {
       "id": "catalog_position_research",
@@ -1580,7 +1580,7 @@
       "path": "reports/specs/apf2k8_scne_draw_topology.v1.json",
       "role": "normative full 0x30 draw-record layout, corpus-wide index coupling, and bounded node17 same-footprint topology profile",
       "schema": "apf2k8_scne_draw_topology/v1",
-      "sha256": "560865eb765d9af09d6246f594d213f965afcc89e77a8da854767775a2eee1da",
+      "sha256": "ef29fc07d80582d938fbb0a00985c9bd0669ca88ba296d06cd39d9029233224b",
       "size_bytes": 11851
     },
     {
@@ -1588,7 +1588,7 @@
       "path": "reports/assets/apf_scne_draw_topology_corpus.v1.json",
       "role": "complete 1,303-resource draw/index relationship proof with aggregate-only topology evidence",
       "schema": "apf2k8_scne_draw_topology_corpus/v1",
-      "sha256": "ca4465e7e7723c1363d42f2c7b9564e740bb1a6049279fb5055ee14309d3711b",
+      "sha256": "8032c0eda8fefe75d61ae607feabad7bf477c845469374781856237bd13c16a2",
       "size_bytes": 3591
     },
     {
@@ -1596,7 +1596,7 @@
       "path": "tools/apf_scne_draw_topology_spec.py",
       "role": "strict corpus scanner, canonical topology-spec generator, and source-backed validator",
       "schema": null,
-      "sha256": "91b61b651e96646eaaf7dd8fc590f30f13fda205e0c0cd5d37b789dc6050eec5",
+      "sha256": "f92c90a2e29f4490b199fc012b3671f02776332d30b05b2fd255d12d207ff275",
       "size_bytes": 30576
     },
     {

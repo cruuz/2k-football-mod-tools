@@ -19,9 +19,11 @@ catalog index N contributes ``N_logo_l0`` and ``N_logo_l1``, Xenos ``4_4_4_4``,
 The decompressed VRAM sub-blocks are byte-identical to the package logo layers
 (proven: cache ``01_logo_l0`` VRAM base hash equals the pinned package
 ``EXPECTED_BASE_SHA256``).  This writer rewrites the base level(s) of one catalog
-index inside a COPY of the volume, byte-preserves every DRAM part, every packed
-mip tail, and every other catalog entry, updates only the affected auxiliary
-records, recompresses each edited VRAM part once (with that part's original H7A
+index inside a COPY of the volume and regenerates that entry's packed mip tail
+from the new base -- byte-preserving the tail leaves the RETAIL crest in every
+level below mip 0, so a modded crest still showed the old logo on any surface
+that drew it small.  It byte-preserves every DRAM part and every other catalog
+entry, updates only the affected auxiliary records, recompresses each edited VRAM part once (with that part's original H7A
 shift), and fails closed if the repacked payload would exceed its fixed
 ``0x9E0800`` allocation.  The retail source is never opened for writing, and the
 copied volume is byte-diffed against the source so only the two fixed extents
@@ -73,6 +75,7 @@ import apf_outer  # noqa: E402
 from apf_logo_patch import (  # noqa: E402
     BASE_LEN,
     MIP_LEN,
+    rebuild_mip_tail,
     OutputReservation,
     PatchError,
     _abort_reserved,
@@ -142,8 +145,6 @@ _PORTME = [
     "the package-only / cache-only / both Xenia differential identifies, per "
     "surface (frontend team-select grid, in-game scorebug, on-field helmet crest), "
     "whether the live source is the uniform_logo package or this cache aggregate",
-    "implement 4_4_4_4 packed MIP regeneration (the 0x2C000 mip tail is "
-    "byte-preserved/stale here, not regenerated from the new base)",
     "the greedy H7A encoder does not reproduce retail compressed bytes; edited "
     "VRAM parts are proved by round-trip (decompress==intended) + fixed-allocation "
     "fail-closed, not by matching retail's compressor output",
@@ -560,7 +561,7 @@ def build_cache_patch(
 
     edits: dict[int, bytes] = {}
     # (target, wanted_rgba, new_base, new_stored_b)
-    changed: list[tuple[_CacheLayerTarget, bytes, bytes, bytes]] = []
+    changed: list[tuple[_CacheLayerTarget, bytes, bytes, bytes, bytes]] = []
     for target, png in targets:
         wanted = _load_png(png, 512, 512)
         if wanted == target.rgba:
@@ -571,14 +572,21 @@ def build_cache_patch(
                 f"no-op detection inconsistent for {target.entry.name}: encode "
                 "reproduced retail base"
             )
-        new_vram = new_base + target.mip_tail
-        if new_vram[BASE_LEN:] != target.mip_tail or len(new_vram) != VRAM_STRIDE:
-            raise PatchError(f"mip-tail preservation invariant failed for {target.entry.name}")
+        # Regenerate the packed mip levels from the new base.  Preserving
+        # them keeps the RETAIL logo in every level below mip 0, so the cached
+        # copy still serves the old crest to any surface that draws it small --
+        # exactly the bug that made modded crests look like they had not
+        # applied.  The package writer does the same, so both copies of a crest
+        # stay identical.
+        new_tail = rebuild_mip_tail(target.metadata, wanted, target.mip_tail)
+        new_vram = new_base + new_tail
+        if len(new_vram) != VRAM_STRIDE:
+            raise PatchError(f"VRAM stride invariant failed for {target.entry.name}")
         new_stored_b = _compress_part(
             new_vram, target.shift, target.unknown, f"{target.entry.name} VRAM part"
         )
         edits[target.entry.index] = new_stored_b
-        changed.append((target, wanted, new_base, new_stored_b))
+        changed.append((target, wanted, new_base, new_stored_b, new_tail))
 
     common_source = {
         "archive_index": str(index_path),
@@ -626,10 +634,18 @@ def build_cache_patch(
         if new_entry.index in edited_indices:
             old_vram, _, _ = _decompress_part(old_b, VRAM_STRIDE, f"{new_entry.name} old VRAM")
             new_vram, _, _ = _decompress_part(new_b, VRAM_STRIDE, f"{new_entry.name} new VRAM")
-            if new_vram[BASE_LEN:] != old_vram[BASE_LEN:]:
-                raise PatchError(f"{new_entry.name} mip tail changed; refusing")
+            expected_tail = next(
+                tail for t, _w, _base, _s, tail in changed
+                if t.entry.index == new_entry.index
+            )
+            if new_vram[BASE_LEN:] != expected_tail:
+                raise PatchError(
+                    f"{new_entry.name} mip tail is not the intended regeneration; "
+                    "refusing"
+                )
             expected_base = next(
-                base for t, _w, base, _s in changed if t.entry.index == new_entry.index
+                base for t, _w, base, _s, _tail in changed
+                if t.entry.index == new_entry.index
             )
             if new_vram[:BASE_LEN] != expected_base:
                 raise PatchError(f"{new_entry.name} base is not the intended edit; refusing")
@@ -655,13 +671,16 @@ def build_cache_patch(
             "h7a_shift": target.shift,
             "base_sha256_before": sha256_bytes(target.base),
             "mip_tail_sha256": sha256_bytes(target.mip_tail),
-            "mip_tail_preserved": True,
+            "mip_tail_preserved": False,
+            "mip_tail_regenerated": True,
             "changed": edited,
             "stored_part_b_len_before": target.entry.len_b,
         }
         if edited:
             wanted, new_base, new_stored_b = next(
-                (w, base, stored) for t, w, base, stored in changed if t is target
+                (w, base, stored)
+                for t, w, base, stored, _tail in changed
+                if t is target
             )
             decoded_back = decode_4444_base(target.metadata, new_base)
             report["base_sha256_after"] = sha256_bytes(new_base)
@@ -720,7 +739,8 @@ def build_cache_patch(
             "directory_reparsed": True,
             "every_dram_part_preserved": True,
             "every_unedited_vram_part_preserved": True,
-            "edited_mip_tails_preserved": True,
+            "edited_mip_tails_preserved": False,
+            "edited_mip_tails_regenerated": True,
             "descriptors_aggregate_footer_preserved": True,
             "fixed_outer_allocation": True,
             "changed_cache_entries": sorted(edited_indices),

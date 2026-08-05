@@ -154,7 +154,15 @@ class SourceManager:
         selected: Path,
         progress: Progress = _noop_progress,
     ) -> ApfSource:
-        selected = selected.expanduser().resolve(strict=True)
+        try:
+            selected = selected.expanduser().resolve(strict=True)
+        except OSError as exc:
+            # Same reason as the 2K5 side: a stale recent-files entry or an
+            # unmounted drive is ordinary, and the raw OSError is not the
+            # SourceError callers catch, so it reached the user as a crash.
+            raise SourceError(
+                f"That file or folder is not there any more: {selected}"
+            ) from exc
         extracted_from_iso = False
         source_iso_sha256: str | None = None
         if selected.is_dir():

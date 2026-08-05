@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import stat
 from typing import Any, Iterable, Mapping
@@ -26,6 +27,10 @@ from mod_editor.core.json_stream import read_bounded_regular_file
 from mod_editor.core.nfl2k5_audio_origin_authorization import (
     AuthorizedPcm16Wav,
     require_authorized_pcm16_wav,
+)
+from mod_editor.core.nfl2k5_playbook_route_writer import (
+    PROVIDER_KIND as PLAY_ROUTE_KIND,
+    request_from_mapping as play_route_request_from_mapping,
 )
 from mod_editor.studio.audio_annotations import (
     AudioCueAnnotation,
@@ -53,6 +58,11 @@ MAX_PROJECT_EXPANDED_BYTES = (
     + MAX_AUDIO_ANNOTATIONS_BYTES
 )
 MAX_PROJECT_MEMBERS = MAX_PROJECT_EDITS + 3
+MAX_UNIFORM_COLOR_EDITS = 634
+UNIFORM_SELECTOR_RE = re.compile(
+    r"^[0-9]{2}[HA](?:[0-9]|[1-9][0-9])$", re.ASCII
+)
+ARGB_RE = re.compile(r"^[0-9A-F]{8}$", re.ASCII)
 
 
 def _asset_key(asset_id: str) -> str:
@@ -195,6 +205,8 @@ class LoadedProject:
     text_replacements: Mapping[str, Any] | None = None
     audio_edits: tuple[LoadedProjectAudioEdit, ...] = ()
     audio_annotations: tuple[AudioCueAnnotation, ...] = ()
+    uniform_colors: tuple[Mapping[str, str], ...] = ()
+    play_route_edits: tuple[Mapping[str, object], ...] = ()
 
     def cleanup(self) -> None:
         shutil.rmtree(self.staging_root, ignore_errors=True)
@@ -318,6 +330,8 @@ def save_project_archive(
     text_replacements: Mapping[str, Any] | None = None,
     audio_edits: Iterable[Any] = (),
     audio_annotations: Mapping[str, object] | Iterable[AudioCueAnnotation] = (),
+    uniform_colors: Iterable[Mapping[str, str]] = (),
+    play_route_edits: Iterable[Mapping[str, object]] = (),
 ) -> Path:
     """Atomically save only user-authored replacements and annotation metadata."""
 
@@ -337,7 +351,11 @@ def save_project_archive(
             )
     visual_edits = tuple(edits)
     supplied_audio_edits = tuple(audio_edits)
-    if len(visual_edits) + len(supplied_audio_edits) > MAX_PROJECT_EDITS:
+    supplied_play_route_edits = tuple(play_route_edits)
+    if (
+        len(visual_edits) + len(supplied_audio_edits)
+        + len(supplied_play_route_edits) > MAX_PROJECT_EDITS
+    ):
         raise ValidationError(
             f"A project can contain at most {MAX_PROJECT_EDITS:,} combined "
             "visual and audio edits."
@@ -429,11 +447,68 @@ def save_project_archive(
         }, payload))
     audio_rows.sort(key=lambda value: value[0]["asset_id"])
     annotations, annotations_payload = _prepare_audio_annotations(audio_annotations)
+    uniform_rows: list[dict[str, str]] = []
+    uniform_seen: set[str] = set()
+    for number, supplied in enumerate(uniform_colors, 1):
+        row = dict(supplied) if isinstance(supplied, Mapping) else {}
+        if set(row) != {"selector", "facemask", "turtleneck"}:
+            raise ValidationError(
+                f"Uniform colour row {number} has unsupported fields."
+            )
+        selector = row.get("selector")
+        facemask = row.get("facemask")
+        turtleneck = row.get("turtleneck")
+        if (
+            not isinstance(selector, str)
+            or UNIFORM_SELECTOR_RE.fullmatch(selector) is None
+            or selector in uniform_seen
+            or not isinstance(facemask, str)
+            or ARGB_RE.fullmatch(facemask) is None
+            or not isinstance(turtleneck, str)
+            or ARGB_RE.fullmatch(turtleneck) is None
+        ):
+            raise ValidationError(
+                f"Uniform colour row {number} has an invalid selector or ARGB value."
+            )
+        uniform_seen.add(selector)
+        uniform_rows.append({
+            "selector": selector,
+            "facemask": facemask,
+            "turtleneck": turtleneck,
+        })
+    if len(uniform_rows) > MAX_UNIFORM_COLOR_EDITS:
+        raise ValidationError("A project cannot edit more than 634 uniform colour records.")
+    uniform_rows.sort(key=lambda row: row["selector"])
+    play_route_rows: list[dict[str, object]] = []
+    play_route_seen: set[tuple[str, int, int]] = set()
+    for number, supplied in enumerate(supplied_play_route_edits, 1):
+        row = dict(supplied) if isinstance(supplied, Mapping) else {}
+        if row.get("kind") != PLAY_ROUTE_KIND:
+            raise ValidationError(
+                f"PLAY route row {number} has an invalid provider kind."
+            )
+        request = play_route_request_from_mapping({
+            key: value for key, value in row.items() if key != "kind"
+        })
+        target = (
+            request.asset_id, request.target_play_index,
+            request.target_slot_index,
+        )
+        if target in play_route_seen:
+            raise ValidationError("Project repeats one PLAY assignment-route target.")
+        play_route_seen.add(target)
+        play_route_rows.append(request.provider_edit())
+    play_route_rows.sort(key=lambda row: (
+        str(row["asset_id"]), int(row["target_play_index"]),
+        int(row["target_slot_index"]),
+    ))
     empty_project = (
         not rows
         and text_payload is None
         and not audio_rows
         and annotations_payload is None
+        and not uniform_rows
+        and not play_route_rows
     )
     if empty_project and not allow_empty:
         raise ValidationError(
@@ -465,6 +540,10 @@ def save_project_archive(
             "sha256": _sha256(annotations_payload),
             "size": len(annotations_payload),
         }
+    if uniform_rows:
+        manifest["uniform_colors"] = uniform_rows
+    if play_route_rows:
+        manifest["play_route_edits"] = play_route_rows
     manifest_payload = _canonical_json(manifest)
     replacement_bytes = sum(len(payload) for _row, payload in rows) + sum(
         len(payload) for _row, payload in audio_rows
@@ -590,7 +669,8 @@ def load_project_archive(
             base_fields = {"edits", "game", "payload_policy", "schema"}
             optional_fields = {
                 "text_replacements", "audio_edits", "audio_annotations",
-                "empty_project",
+                "uniform_colors", "empty_project",
+                "play_route_edits",
             }
             if not isinstance(document, dict) or not (
                 base_fields <= set(document) <= base_fields | optional_fields
@@ -613,6 +693,8 @@ def load_project_archive(
             loaded_audio: list[LoadedProjectAudioEdit] = []
             text_document: Mapping[str, Any] | None = None
             loaded_annotations: tuple[AudioCueAnnotation, ...] = ()
+            loaded_uniform_colors: list[Mapping[str, str]] = []
+            loaded_play_routes: list[Mapping[str, object]] = []
             text_meta = document.get("text_replacements")
             if text_meta is not None:
                 if not isinstance(text_meta, dict) or set(text_meta) != {
@@ -703,6 +785,67 @@ def load_project_archive(
                     f"Project exceeds the {MAX_PROJECT_EDITS:,} combined visual "
                     "and audio edit limit."
                 )
+            uniform_rows = document.get("uniform_colors", [])
+            if not isinstance(uniform_rows, list) or len(uniform_rows) \
+                    > MAX_UNIFORM_COLOR_EDITS:
+                raise ValidationError("Project uniform colour edit count is outside the limit.")
+            uniform_seen: set[str] = set()
+            for number, row in enumerate(uniform_rows, 1):
+                if not isinstance(row, dict) or set(row) != {
+                    "selector", "facemask", "turtleneck",
+                }:
+                    raise ValidationError(
+                        f"Project uniform colour row {number} has unsupported fields."
+                    )
+                selector = row.get("selector")
+                facemask = row.get("facemask")
+                turtleneck = row.get("turtleneck")
+                if (
+                    not isinstance(selector, str)
+                    or UNIFORM_SELECTOR_RE.fullmatch(selector) is None
+                    or selector in uniform_seen
+                    or not isinstance(facemask, str)
+                    or ARGB_RE.fullmatch(facemask) is None
+                    or not isinstance(turtleneck, str)
+                    or ARGB_RE.fullmatch(turtleneck) is None
+                ):
+                    raise ValidationError(
+                        f"Project uniform colour row {number} has an invalid selector or ARGB value."
+                    )
+                uniform_seen.add(selector)
+                loaded_uniform_colors.append({
+                    "selector": selector,
+                    "facemask": facemask,
+                    "turtleneck": turtleneck,
+                })
+            play_route_rows = document.get("play_route_edits", [])
+            if not isinstance(play_route_rows, list) or len(play_route_rows) \
+                    > MAX_PROJECT_EDITS:
+                raise ValidationError("Project PLAY route edit count is outside the limit.")
+            if len(rows) + len(audio_rows) + len(play_route_rows) > MAX_PROJECT_EDITS:
+                raise ValidationError(
+                    f"Project exceeds the {MAX_PROJECT_EDITS:,} combined edit limit."
+                )
+            play_route_seen: set[tuple[str, int, int]] = set()
+            for number, raw_route in enumerate(play_route_rows, 1):
+                if not isinstance(raw_route, dict) or raw_route.get("kind") \
+                        != PLAY_ROUTE_KIND:
+                    raise ValidationError(
+                        f"Project PLAY route row {number} has unsupported fields."
+                    )
+                request = play_route_request_from_mapping({
+                    key: value for key, value in raw_route.items() if key != "kind"
+                })
+                target_key = (
+                    request.asset_id, request.target_play_index,
+                    request.target_slot_index,
+                )
+                if target_key in play_route_seen:
+                    raise ValidationError(
+                        "Project repeats one PLAY assignment-route target."
+                    )
+                play_route_seen.add(target_key)
+                loaded_play_routes.append(request.provider_edit())
             seen_audio: set[str] = set()
             for row in audio_rows:
                 if not isinstance(row, dict) or set(row) != {
@@ -747,6 +890,8 @@ def load_project_archive(
                 and text_document is None
                 and not loaded_audio
                 and not loaded_annotations
+                and not loaded_uniform_colors
+                and not loaded_play_routes
             ):
                 if empty_marker is not True:
                     raise ValidationError(
@@ -835,6 +980,8 @@ def load_project_archive(
         text_document,
         tuple(loaded_audio),
         loaded_annotations,
+        tuple(loaded_uniform_colors),
+        tuple(loaded_play_routes),
     )
 
 
@@ -848,6 +995,7 @@ __all__ = [
     "MAX_PROJECT_EXPANDED_BYTES",
     "MAX_PROJECT_MEMBERS",
     "MAX_PROJECT_REPLACEMENT_BYTES",
+    "MAX_UNIFORM_COLOR_EDITS",
     "PROJECT_EXTENSION",
     "PROJECT_GAME",
     "PROJECT_SCHEMA",

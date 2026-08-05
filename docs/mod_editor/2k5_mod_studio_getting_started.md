@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC47 — Getting Started
+# 2K5 Mod Studio v1.0 RC49 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -51,6 +51,25 @@ originals from your XISO on your computer; do not share that private cache.
 12. Click **Launch in xemu** if xemu is configured, or select the newly built
     XISO from xemu yourself.
 
+### Keep a high-resolution texture master
+
+In **Portraits & Faces**, **Create-a-Team Field Art**, **Scorebug
+Presentation**, and **All Textures**, an external image import enables **Save
+high-resolution authoring master…**. Choose 4x (recommended) or 2x and a new
+`.2ktexmaster` filename. The editor never overwrites an existing master.
+
+The sidecar keeps your exact original file, the exact staged native PNG, and
+the resize/crop transform. Its high-resolution PNG is rendered from your
+original, not enlarged from the Xbox texture. If you then use **Edit…**, the
+original stays in the bundle and changed native pixels are recorded as an
+explicit edit layer. The game build still uses the catalog's native size.
+
+Current `.2k5mod` projects do not embed full-resolution sources. Save the
+sidecar before switching sources or projects. Uniform Sets, Team Kit, Stadium,
+and other specialist panels do not offer this action until their controllers
+retain the same exact source/transform evidence. This sidecar is not an RPCS3
+or xemu texture pack.
+
 ## Keyboard access and readable layout
 
 You can move between the two parts of the interface used most often without
@@ -73,11 +92,11 @@ controls also use roomier spacing and padding for easier scanning and targeting.
 At unusually large system scaling, maximize the window to give asset details
 and previews the most usable room.
 
-## Edit a Complete Team Kit
+## Edit a Supported Team Kit
 
-The **Complete Team Kit** panel in **Uniforms & Equipment** moves an entire
-uniform design between Mod Studio and GIMP without making you export and import
-dozens of components one at a time. The existing per-component **Export PNG**,
+The **Supported Team Kit** panel in **Uniforms & Equipment** moves all 39 parts
+with proved writers between Mod Studio and GIMP without making you export and
+import them one at a time. The existing per-component **Export PNG**,
 **Replace**, and **Revert** buttons remain available when you only need one
 small change.
 
@@ -110,13 +129,115 @@ small change.
    entry are added.
 9. Save the resulting `.2k5mod` project, then Build normally.
 
-Every physical set contains **39 supported components**: torso/jersey, sleeve,
-pants, both live helmet families, jersey/helmet/arm digits 0–9, the vertical
+Every physical set has **39 writable components**: torso/jersey, sleeve,
+pants, both live helmet families, jersey/helmet/arm digits 0–9, the horizontal
 nameplate atlas, and three separate Team Select cards. The live textures and
 Team Select pictures are different storage: changing one never regenerates the
 other. Edit both `helmet00` and `helmet02` for complete player-model coverage.
 Mud palettes are derived during the normal visual build from the edited clean
 uniform art.
+
+The package also contains **45 equipment references that are not part of that
+writable bundle**: socks (clean/mud), elbow pads, gloves, long sleeves, shoes,
+and wristbands. Select a physical set in **Uniform Sets**, then click **Browse
+45 Equipment Textures**. Mod Studio opens the existing **All Textures** browser
+already filtered to that exact selector; add `socks`, `gloves`, `shoes`,
+`sleeves`, `pads`, or `wristbands` in the same search box to narrow it. This is
+one canonical list, not a second import path. All **28,530** references across
+the 634 physical sets keep the existing preview, Export, Edit, dialog/drag-drop
+Replace, Revert, project save/load, and modded-XISO Build behavior. They are
+labelled **Editable** only when the reviewed descriptor is compressed,
+swizzled P8; any future unsupported format remains **Preview / Export only**.
+
+Equipment variants inside one TSET share the retail shape/mip indices and own
+separate colour palettes. Import therefore projects your image onto that proved
+shape and changes only the selected palette. Every unselected sock/glove/shoe
+variant remains byte- and pixel-identical. Highly detailed or noisy art may use
+fewer colours so the complete VC-LZ TSET stays inside its original fixed span;
+if even a usable two-colour result cannot fit, Build refuses it with a clear
+message. The five global `shoes_taped`/`wristband_qb`/`elbowpad_*` targets in All
+Textures are different standalone assets and keep their full P8 writer.
+
+Each physical set also owns four **separate presentation textures** that are
+not part of Team Kit's 39 live/card components:
+
+| Resource | Size | Editor label |
+| --- | ---: | --- |
+| `logo` | 128×128 | Team Logo — Presentation |
+| `chiclet` | 64×64 | Team Chiclet |
+| `splayer` | 256×128 | Team Player Banner |
+| `flipchip` | 64×64 | Team Flip Chip |
+
+Open **All Textures → Team Presentation — Menu / UI**, or search a team name,
+abbreviation, selector such as `21H0`, `menu logo`, or one of the four resource
+names. All 2,536 records across 634 sets support preview, Export PNG, Edit,
+dialog/drag-drop Replace, Revert, project save/load, and the composed XISO
+build. A differently sized image goes through the same resize offer as other
+visual imports before the fixed-size replacement is staged.
+
+These resources are different bytes from `helmet00`/`helmet02`, jersey art,
+and the three pre-rendered Team Select cards. Static `logo` and team-chiclet
+lookups establish presentation/UI use, but not every exact screen consumer is
+mapped, so the editor uses the honest umbrella label instead of claiming that
+one texture controls every menu. Edit the live/card targets separately when
+you want those views changed too.
+
+The game also carries **1,755 team-linked menu, mini-card, franchise, and
+draft logo surfaces outside the uniform packages**. These are now separate,
+typed All Textures entries instead of being hidden behind the three aggregate
+archives:
+
+| Family | Count | Size | Find it with |
+| --- | ---: | ---: | --- |
+| Full menu team logo | 317 | 256×256 | `menu logo`, team name, or `logo_21_0` |
+| Compact menu team logo | 317 | 64×64 | `compact team logo` or `logo_s21_0` |
+| Shared menu flip chip | 317 | 64×64 | `flipchip` or `playoff picture` |
+| Home/away mini card | 634 | 64×64 | `mini helmet`, `mini card`, or `21H0` |
+| Franchise-office team logo | 85 | 256×256 | `franchise logo` or `coach desk` |
+| Draft/PDA team logo | 85 | 64×64 | `draft logo` or `pda logo` |
+
+Open **Team Logos — Menus / Presentation**, **Team Mini Cards — Menus /
+Presentation**, or **Franchise & Draft Presentation**. Each entry shows its
+team asset code, known team/style owners, exact archive, and statically
+established consumer scope. A complete screen-by-screen consumer map is not
+proved, so these rows keep the honest presentation/menu umbrella label;
+franchise-office logos are deliberately not labelled midfield art, because
+stock midfield graphics are a different resource family.
+
+All 1,585 entries from `logos.cdf`, `mini.cdf`, and `flipchip.cdf` use raw P8
+fixed slots. Replace preserves the wrapper, descriptor/system bytes, complete
+resource span, and the 96-byte slot padding while regenerating only swizzled
+indices and the palette, so a raw menu logo cannot fail with a VC-LZ size
+error. The 85 draft/PDA entries use their existing compressed P8 spans and
+the normal bounded compression recovery. Preview, Export, Edit,
+dialog/drag-drop Replace with resize, Revert, project save/load, and composed
+XISO Build are available for every one of these menu and draft/PDA entries.
+
+The 85 `NN_teamlogo_00_h0` franchise-office rasters are editable presentation
+textures in the **Franchise & Draft Presentation** group, each replaced inside
+its exact compressed P8 span. Their consumer scope is statically established
+— the executable binds them to the `FRANCHISE2` / `coach_desk` scene's
+`teamlogo` element — and their ownership as stock midfield team logos remains
+unproved, so the editor does not relabel franchise-office art as field art.
+
+## Set facemask, faceshield, and turtleneck colours
+
+1. Open **Uniforms & Equipment → Colours & Other Tools**.
+2. Search by team name, abbreviation, or selector, then choose the exact
+   physical uniform set. HOME, AWAY, alternate, and throwback records are
+   independent.
+3. Pick **Facemask / faceshield colour** and **HI_turtleneck colour**, then
+   click **Apply to project**. The status line repeats the selector and values
+   that were staged.
+4. Repeat for any other sets, save the `.2k5mod`, and Build normally. Revert on
+   this panel restores only the selected set; Revert All restores every edit.
+
+The game stores two proved words in each set's `Unif` record. Word 0 jointly
+controls the facemask and faceshield; Mod Studio does not invent a separate
+visor control because no independent visor field has been proved. Word 1 is
+`HI_turtleneck`. Shareable projects contain only the logical set selector and
+your two ARGB choices. Raw retail bytes and physical offsets remain private and
+are resolved and verified from the source XISO during Build.
 
 A Team Kit folder or ZIP is a **private working export**. Its templates may
 reproduce retail artwork from your own disc, so do not upload, publish, or send
@@ -191,27 +312,31 @@ Build remains disabled until at least one replacement is staged.
   supported for that row.
 - **Preview/Export-only** means the app can safely show and export the asset,
   but does not yet own a safe replacement contract.
-- **Coming Soon** means the resource is inventoried and visible, but a format,
-  ownership, runtime, or save-writeback question still blocks authoring.
+- **Proof boundary** identifies a reviewed witness that is useful for auditing
+  but is not itself an authoring action.
+- **Research boundary** keeps unresolved ownership visible without pretending
+  that a safe writer exists.
 - **Modified** means your current project has staged a replacement for that
   asset.
 
 These labels come from the same capability registry used by the build system.
-The v1.0 registry has 62 cross-title rows, including 31 NFL 2K5 capabilities.
-An asset never becomes writable merely because it has a preview.
+The current registry has 70 cross-title rows, including 32 Xbox NFL 2K5
+capabilities and the separate PS2 save-import bridge. No current 2K5 capability
+is labeled Coming Soon, and an asset never becomes writable merely because it
+has a preview.
 
 ## What v1.0 covers
 
-The complete 11-tab sidebar is present even where a feature remains read-only.
+The complete 12-tab sidebar is present even where a feature remains read-only.
 The whole-game resource browser is the fallback home for anything that does not
 yet have a specialized editor, so indexed assets are not hidden.
 
 ### Uniforms, players, identity, fields, and presentation
 
-- The visual catalog contains **32,038 assets**. Proved uniforms/equipment,
-  portraits, live faces, create-team field art, scorebug/presentation art, and
-  Team Select cards support their bounded editing workflows.
-- **Complete Team Kit** exports/imports all 39 components for any catalogued
+- The visual catalog includes all **28,530 package-local uniform-equipment P8
+  palettes** as editable assets alongside uniforms, portraits, live faces,
+  create-team field art, scorebug/presentation art, and Team Select cards.
+- **Supported Team Kit** exports/imports all 39 writable components for any catalogued
   physical set, including paired HOME/AWAY kits. Imports validate the complete
   source-bound bundle first and stage pixel changes as one Undo action.
 - Uniform gameplay textures and Team Select cards are separate. Replacing a
@@ -230,18 +355,25 @@ yet have a specialized editor, so indexed assets are not hidden.
   longer filed under two unrelated concepts.
 - **All Text** searches 716 recognized banks and 23,346 decoded strings. Exactly
   20,074 strings are Editable; 3,272 remain read-only with a reason.
-- **Current Roster Players** gives every current player/jersey-number asset an
-  explicit searchable row with current name/number, status, Export, Apply, and
-  Revert controls. Proved primary players are Editable. Secondary-pool rows are
-  still Preview/Export-only because their writeback contract differs.
+- **Current Roster Players** gives every current player an explicit searchable
+  row with current name, number, face-shield type, status, Export, Apply, and
+  Revert controls. All 2,547 current jersey numbers and face-shield selectors
+  are Editable, including all 68 secondary-pool rows. Primary same-allocation
+  names are Editable; secondary-pool names remain read-only because their text
+  allocation is zero.
+- **Face shield is per player:** choose **None**, **Clear**, or **Dark**. It is
+  not a HOME/AWAY visor tint or color picker. The editor refuses reserved raw
+  value `3`, preserves every unrelated bit in the shared player word, and
+  composes simultaneous jersey/face-shield edits into one write. A loaded
+  roster or franchise save may override this disc-default value.
 - **Historical Teams & Players** exposes all 75 historical ROST resources and
   3,975 historical players.
 - Across the current and historical views, all **6,522 jersey-number assets**
-  are covered exactly once. Browsable does not always mean editable: the row's
-  status is the authority.
+  are covered exactly once and Editable through masked number-bit writeback.
 - ESPN 25th Anniversary moment titles, historical descriptions, objectives,
   and dates are Editable. Team selectors, scenario values, and unlock logic
-  remain Preview/Export-only or Coming Soon because they are not ordinary text.
+  remain inspect-only because their selector/unlock ownership is not proved and
+  they are not ordinary text.
 
 ### Stadium Studio
 
@@ -250,10 +382,25 @@ view, click a surface to identify its owning texture, then Export, Replace, or
 Revert that texture in the same panel. All **23,838 indexed P8 texture
 occurrences** support the bounded project/build route.
 
-Stadium Studio changes textures on existing geometry; it is not a general 3D
-model importer. Each SCNE resource must retain its original compressed
-allocation. If an unusually noisy replacement cannot fit, the app refuses it
-with an actionable message instead of creating a risky build.
+The proved full scene also supports a deliberately narrow model round trip:
+
+1. Select it and choose **Export model (glTF)…**.
+2. Keep the exported `.gltf` and `.bin` together, then move existing vertices
+   in Blender. Do not add/remove faces or vertices, weld, subdivide, decimate,
+   rename/remove meshes, or apply a topology-changing modifier.
+3. Choose **Import edited model…** and select the edited `.gltf`.
+
+Mod Studio compares the complete triangle topology and vertex counts before it
+stages anything, then writes only the catalogued position lanes. The game's UV,
+material, collision, selector, LOD, and other stream bytes stay untouched.
+Texture and geometry changes in that same scene are composed before one fixed
+SCNE rebuild. This is not arbitrary model swapping and cannot install a new
+topology. The source-derived position recipe remains private: build it locally;
+it cannot be saved inside a shareable `.2k5mod`.
+
+Each SCNE resource must retain its original compressed allocation. If an
+unusually noisy texture or edited position stream cannot fit, the app refuses
+it with an actionable message instead of creating a risky build.
 
 The first Stadium visit derives private glTF/PNG data from your own source
 cache. This can take 10–30 minutes and use roughly 750 MiB. Completed scenes are
@@ -264,14 +411,20 @@ models/textures stay private and are not part of a shareable project.
 
 The Crib lists **498 assets**:
 
-- all 128 Team Photos are Editable;
-- the exact `room:22 / bar_monitor` electronics surface is Editable; and
-- the other 369 rows remain Preview/Export-only.
+- 242 raw Team Item P8 textures, including all 128 Team Photos;
+- 68 standalone P8 textures, including the reflection and linear ticker; and
+- 188 material/submesh-owned P8 surfaces across 36 SCNE scenes.
 
-That means the shipped texture-level route can put custom art on the proved wall
-screen, but it does not add a new PS5-shaped 3D model. Extremely flat or heavily
-noisy/dithered art can exceed the scene's fixed compressed slot; simplify the
+All **498 are Editable** through their original fixed allocations. Extremely
+flat or heavily noisy/dithered art can exceed a compressed slot; simplify the
 image if the app reports that boundary.
+
+The **Models** tab also exports and imports position-only edits for ten exact
+electronics meshes across seven scenes. Move existing vertices in Blender, but
+keep every vertex count and face unchanged. UVs, materials, collision, indices,
+normals, other registers, and topology remain original game data. This can
+reshape the proved meshes within their existing structure; it is not arbitrary
+object or helmet replacement.
 
 Crib preview/export/replace work and Audio preparation share one safe background
 operation lane. While either owns it, the category list and global
@@ -620,11 +773,13 @@ routing. Never rename a raw bank to `.wav`; use a range's **Export WAV** action.
 
 ### Playbooks and gameplay experiments
 
-- **Playbooks & Plays** is a structured read-only inspector for 37 books, 1,533
+- **Playbooks & Plays** is a structured inspector for 37 books, 1,533
   formations, 9,251 plays, 32,502 assignment chains, 91,833 nodes, and 101,761
-  player-slot references. Raw PLAY export is supported. Drawing/importing routes
-  remains Coming Soon because coordinates, opcodes, player roles, save ownership,
-  and inverse compilation are not safely decoded.
+  player-slot references. Raw PLAY export is supported. You can copy an exact
+  stock assignment route from another play/slot in the same book, Revert it,
+  save it in a project, and Build. Freehand route drawing/import remains
+  unsupported because coordinates, opcodes, player roles, save ownership, and
+  inverse compilation are not safely decoded.
 - **Sliders & Gameplay** shows the real state of the Draft and Catching work.
   The known 17-position table belongs to Fantasy Draft, not Franchise rookie
   drafting. Catch 125/150/200 and the Fantasy Draft control remain experiments

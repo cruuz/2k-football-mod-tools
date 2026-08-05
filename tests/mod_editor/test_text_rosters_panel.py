@@ -5,8 +5,10 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_text_catalog import (
     Nfl2k5TextCatalog,
+    Nfl2k5TextEdits,
     RosterNumberAsset,
     RosterPlayer,
     RosterTeam,
@@ -111,6 +113,7 @@ def catalog_fixture() -> Nfl2k5TextCatalog:
         first_id = f"text.{resource}.player.first"
         last_id = f"text.{resource}.player.last"
         number_id = f"number.{resource}.player"
+        shield_id = f"face-shield.{resource}.player"
         assets.extend((
             text_asset(
                 first_id, bank_id, first, outer=resource,
@@ -128,10 +131,17 @@ def catalog_fixture() -> Nfl2k5TextCatalog:
             TextAccess.EDITABLE, "Masked jersey field", resource, 0,
             player_group,
         ))
+        numbers.append(RosterNumberAsset(
+            shield_id, f"Player {resource} face shield", 0, 0, 2,
+            TextAccess.EDITABLE,
+            "Per-player type; not a HOME/AWAY tint", resource, 0,
+            player_group, field="face_shield",
+            choices=((0, "None"), (1, "Clear"), (2, "Dark")),
+        ))
         players.append(RosterPlayer(
             player_group, resource, "historic", True, "primary_players", 0,
             f"{first} {last}", 5, resource - 100, first_id, last_id,
-            number_id, True, "Primary historical player",
+            number_id, True, "Primary historical player", shield_id,
         ))
     for pool, index, first, last, jersey, editable in (
         ("primary_players", 0, "Current", "Starter", 55, True),
@@ -141,6 +151,7 @@ def catalog_fixture() -> Nfl2k5TextCatalog:
         first_id = f"text.5.{pool}.{index}.first"
         last_id = f"text.5.{pool}.{index}.last"
         number_id = f"number.5.{pool}.{index}"
+        shield_id = f"face-shield.5.{pool}.{index}"
         assets.extend((
             text_asset(
                 first_id, "bank.5", first, outer=5,
@@ -153,17 +164,24 @@ def catalog_fixture() -> Nfl2k5TextCatalog:
                 field="last_name", group=player_group, editable=editable,
             ),
         ))
-        access = TextAccess.EDITABLE if editable else TextAccess.READ_ONLY
         numbers.append(RosterNumberAsset(
             number_id, f"Current {pool} jersey", jersey, 0, 99,
-            access, "Masked jersey field" if editable else "Secondary writer unproved",
+            TextAccess.EDITABLE, "Masked jersey field for either player pool",
             5, index, player_group,
+        ))
+        numbers.append(RosterNumberAsset(
+            shield_id, f"Current {pool} face shield", 0, 0, 2,
+            TextAccess.EDITABLE,
+            "Per-player type; loaded saves can override the disc seed",
+            5, index, player_group, field="face_shield",
+            choices=((0, "None"), (1, "Clear"), (2, "Dark")),
         ))
         players.append(RosterPlayer(
             player_group, 5, "current", False, pool, index,
             f"{first} {last}", 3, index, first_id, last_id,
             number_id, editable,
             "Primary current player" if editable else "Secondary writer unproved",
+            shield_id,
         ))
     assets.append(text_asset(
         "text.strg.welcome", "bank.strg", "Welcome", outer=300,
@@ -243,7 +261,7 @@ class TextRosterPanelViewModelTests(unittest.TestCase):
         )
         self.assertIn("ESPN 25th Anniversary", ESPN_25TH_COMING_SOON_NOTE)
         self.assertIn("Team selectors", ESPN_25TH_COMING_SOON_NOTE)
-        self.assertIn("Coming Soon", ESPN_25TH_COMING_SOON_NOTE)
+        self.assertIn("ownership is not proved", ESPN_25TH_COMING_SOON_NOTE)
 
     def test_universal_filter_searches_current_values_bank_and_status(self) -> None:
         changed = "text.113.team.nickname"
@@ -321,23 +339,23 @@ class TextRosterPanelViewModelTests(unittest.TestCase):
             self.catalog, rows, status=STATUS_READ_ONLY,
             text_value=self.host.text_value, number_value=self.host.number_value,
         )
-        self.assertEqual(
-            [row.player.group_id for row in read_only],
-            ["player.5.secondary_players.0"],
-        )
+        self.assertEqual(read_only, ())
         editable = filter_current_players(
             self.catalog, rows, status=STATUS_EDITABLE,
             text_value=self.host.text_value, number_value=self.host.number_value,
         )
-        self.assertEqual(editable, ())
+        self.assertEqual(
+            [row.player.group_id for row in editable],
+            ["player.5.secondary_players.0"],
+        )
 
     def test_fixture_number_coverage_is_one_to_one_across_both_views(self) -> None:
         coverage = roster_number_coverage(self.catalog)
         self.assertEqual(coverage.total, 4)
         self.assertEqual(coverage.current, 2)
         self.assertEqual(coverage.historical, 2)
-        self.assertEqual(coverage.editable, 3)
-        self.assertEqual(coverage.current_editable, 1)
+        self.assertEqual(coverage.editable, 4)
+        self.assertEqual(coverage.current_editable, 2)
         self.assertEqual(coverage.historical_editable, 2)
 
     def test_exact_6522_number_scope_and_access_counts(self) -> None:
@@ -346,8 +364,8 @@ class TextRosterPanelViewModelTests(unittest.TestCase):
         for index in range(6522):
             historical = index < 3975
             current_index = index - 3975
-            editable = historical or current_index < 2479
-            pool = "primary_players" if editable else "secondary_players"
+            player_editable = historical or current_index < 2479
+            pool = "primary_players" if player_editable else "secondary_players"
             outer = 100 + index // 53 if historical else 5
             group_id = f"synthetic.player.{index}"
             number_id = f"synthetic.number.{index}"
@@ -355,18 +373,18 @@ class TextRosterPanelViewModelTests(unittest.TestCase):
                 group_id, outer, "historic" if historical else "current",
                 historical, pool, index, f"Player {index}", 0, 0,
                 f"first.{index}", f"last.{index}", number_id,
-                editable, "Synthetic coverage row",
+                player_editable, "Synthetic coverage row",
             ))
             numbers.append(RosterNumberAsset(
                 number_id, f"Jersey {index}", index % 100, 0, 99,
-                TextAccess.EDITABLE if editable else TextAccess.READ_ONLY,
+                TextAccess.EDITABLE,
                 "Synthetic coverage row", outer, index, group_id,
             ))
         catalog = Nfl2k5TextCatalog((), (), (), players, numbers)
         coverage = roster_number_coverage(catalog)
         self.assertEqual(
             coverage,
-            type(coverage)(6522, 2547, 3975, 6454, 2479, 3975),
+            type(coverage)(6522, 2547, 3975, 6522, 2547, 3975),
         )
         self.assertEqual(len(current_roster_players(catalog)), 2547)
         self.assertEqual(
@@ -398,6 +416,39 @@ class TextRosterPanelViewModelTests(unittest.TestCase):
             self.assertEqual(destination.read_bytes(), b"88\n")
         self.host.revert_text(asset_id, lambda *_args: None)
         self.assertEqual(self.host.number_value(asset_id), 55)
+
+    def test_secondary_number_project_reopens_with_pool_aware_provider_edit(self) -> None:
+        asset_id = "number.5.secondary_players.0"
+        edits = Nfl2k5TextEdits(self.catalog)
+        edits.set_number(asset_id, 66)
+        self.assertEqual(edits.provider_edits(), ({
+            "kind": "roster_player_text",
+            "resource_outer_index": 5,
+            "player_pool": "secondary_players",
+            "player_index": 0,
+            "changes": {"jersey_number": 66},
+        },))
+        reopened = Nfl2k5TextEdits(self.catalog)
+        reopened.load_replacement_document(edits.replacement_document())
+        self.assertEqual(reopened.number(asset_id), 66)
+        self.assertEqual(reopened.provider_edits(), edits.provider_edits())
+
+    def test_face_shield_project_reopens_and_stays_per_player(self) -> None:
+        asset_id = "face-shield.5.secondary_players.0"
+        edits = Nfl2k5TextEdits(self.catalog)
+        edits.set_number(asset_id, 2)
+        self.assertEqual(edits.provider_edits(), ({
+            "kind": "roster_player_text",
+            "resource_outer_index": 5,
+            "player_pool": "secondary_players",
+            "player_index": 0,
+            "changes": {"face_shield": 2},
+        },))
+        reopened = Nfl2k5TextEdits(self.catalog)
+        reopened.load_replacement_document(edits.replacement_document())
+        self.assertEqual(reopened.number(asset_id), 2)
+        with self.assertRaisesRegex(ValidationError, "0 through 2"):
+            reopened.set_number(asset_id, 3)
 
 
 class TextRosterPanelOffscreenTests(unittest.TestCase):
@@ -444,8 +495,12 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
         roster_panel.current_table.selectRow(0)
         application.processEvents()
         roster_panel.current_number.setText("88")
+        roster_panel.current_face_shield.setCurrentIndex(
+            roster_panel.current_face_shield.findData(2)
+        )
         roster_panel._apply_current_player()
         self.assertEqual(host.number_value("number.5.primary_players.0"), 88)
+        self.assertEqual(host.number_value("face-shield.5.primary_players.0"), 2)
 
         text_panel.deleteLater()
         roster_panel.deleteLater()
@@ -487,20 +542,42 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
         application.processEvents()
         self.assertFalse(panel.apply_current_button.isEnabled())
         self.assertTrue(panel.export_current_number_button.isEnabled())
+        self.assertEqual(panel.current_face_shield.currentText(), "None")
+        self.assertIn("not a HOME/AWAY tint", panel.current_note.text())
         panel.current_number.setText("88")
+        panel.current_face_shield.setCurrentIndex(
+            panel.current_face_shield.findData(1)
+        )
         self.assertTrue(panel.apply_current_button.isEnabled())
         panel._apply_current_player()
         self.assertEqual(host.number_value("number.5.primary_players.0"), 88)
+        self.assertEqual(host.number_value("face-shield.5.primary_players.0"), 1)
 
         panel.current_table.selectRow(1)
         application.processEvents()
-        self.assertFalse(panel.current_number.isEnabled())
+        self.assertFalse(panel.current_first.isEnabled())
+        self.assertFalse(panel.current_last.isEnabled())
+        self.assertTrue(panel.current_number.isEnabled())
+        self.assertTrue(panel.current_face_shield.isEnabled())
         self.assertFalse(panel.apply_current_button.isEnabled())
         self.assertTrue(panel.export_current_number_button.isEnabled())
+        panel.current_number.setText("66")
+        panel.current_face_shield.setCurrentIndex(
+            panel.current_face_shield.findData(2)
+        )
+        self.assertTrue(panel.apply_current_button.isEnabled())
+        panel._apply_current_player()
+        self.assertEqual(
+            host.number_value("number.5.secondary_players.0"), 66
+        )
+        self.assertEqual(
+            host.number_value("face-shield.5.secondary_players.0"), 2
+        )
 
         panel.historical_table.selectRow(0)
         application.processEvents()
         self.assertTrue(panel.export_historical_number_button.isEnabled())
+        self.assertEqual(panel.player_face_shield.currentText(), "None")
         panel.deleteLater()
         application.processEvents()
 

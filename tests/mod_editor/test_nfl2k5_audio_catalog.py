@@ -561,7 +561,7 @@ class Nfl2k5AudioCatalogTests(unittest.TestCase):
         self.assertEqual(bank.name, BANK_NAME)
         self.assertEqual(bank.family_label, "Soundtrack & music")
         self.assertEqual(bank.edit_status, "Export-only")
-        self.assertEqual(bank.replacement_status, "Coming Soon")
+        self.assertEqual(bank.replacement_status, "Edit individual indexed ranges")
         self.assertIn("not one playable cue", bank.action_note)
         self.assertIn("individual cues as WAV", bank.action_note)
         output = self.root / bank.suggested_filename

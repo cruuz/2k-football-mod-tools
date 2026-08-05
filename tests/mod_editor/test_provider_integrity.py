@@ -185,10 +185,12 @@ class ProviderIntegrityTests(unittest.TestCase):
         )
         self.assertEqual(
             [len(provider.module_pins) for provider in providers],
-            # 63: the unified visual provider grew the standalone-P8
-            # writer and its workflow module when All Textures gained a
-            # route into Build Modded XISO.
-            [64, 9, 8, 9, 8, 9],
+            # 80: the unified visual provider includes standalone/SCNE Crib
+            # textures, bounded Crib/Stadium geometry, stock PLAY route copy,
+            # fixed-slot audio, the fail-closed AUDO family-label loader,
+            # package-local equipment, and every local module in those exact
+            # import closures.
+            [80, 9, 8, 9, 8, 9],
         )
         for provider in providers:
             entries = [provider.backend_module]
@@ -198,7 +200,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             expected_closure = local_import_closure(*entries)
             if isinstance(provider, Nfl2k5UnifiedVisualProvider):
                 # The backend directly imports reviewed product audio modules
-                # and dynamically loads these four adapters by exact path.
+                # and dynamically loads these seven adapters by exact path.
                 # Both package init files stay absent so their unrelated eager
                 # GUI/provider imports cannot escape the finite pin closure.
                 adapters = frozenset({
@@ -208,6 +210,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                     "mod_editor/core/nfl2k5_stadium_texture_writer.py",
                     "mod_editor/core/nfl2k5_p8_texture_writer.py",
                     "mod_editor/core/nfl2k5_unif_color_writer.py",
+                    "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
                 })
                 expected_closure.update(local_import_closure(
                     *adapters, exact_path_entries=adapters
@@ -228,7 +231,13 @@ class ProviderIntegrityTests(unittest.TestCase):
             unified.data_pins,
             {
                 "mod_editor/data/nfl2k5_crib_catalog.v1.json":
-                    "2f862fc6602bb23d433f0599c519839be9cd43ca6cd42bc22aeb7b94d56d305a"
+                    "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
+                "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json":
+                    "fa2c9ca9bcc267b6981735347bf6daf6243d6ab8b83fba268804c280cfd94173",
+                "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json":
+                    "f44472856044a5d8a50d18476a4c7af18ef98bcc3f7cf1d567db2b33d5336bfa",
+                "reports/specs/nfl2k5_crib_static_position_targets.v1.json":
+                    "90f955166c8582f7041bd0d936bacbef1f44b3869487f71535acec1caeb44b4f",
             },
         )
         for relative, expected in unified.data_pins.items():

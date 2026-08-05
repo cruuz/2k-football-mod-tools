@@ -235,42 +235,11 @@ jobs:
       - name: Stage and run BOTH retail-free release gates
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           export QT_QPA_PLATFORM=offscreen
           repo="${GITHUB_WORKSPACE:-$PWD}"
           cd "$repo"
-          stage_root="${RUNNER_TEMP:-/tmp}/release-gates"
-          rm -rf "$stage_root"; mkdir -p "$stage_root"
-
-          # Copy exactly the allowlisted paths (matching the checker's own parse:
-          # strip, skip blank/`#`) into a fresh staging tree, outside the
-          # workspace so the run leaves no untracked files behind. Preserves the
-          # executable bit for launchers / the vendored extractor.
-          stage_release() {   # $1 = allowlist path  $2 = destination stage dir
-            ALLOWLIST="$1" DEST="$2" ROOT="$repo" python3 <<'PY'
-          import os, pathlib, shutil, sys
-          root = pathlib.Path(os.environ["ROOT"])
-          allow = pathlib.Path(os.environ["ALLOWLIST"])
-          dest = pathlib.Path(os.environ["DEST"])
-          staged = 0; absent = []
-          for raw in allow.read_text(encoding="utf-8").splitlines():
-              line = raw.strip()
-              if not line or line.startswith("#"):
-                  continue
-              src = root / line
-              if not src.exists():
-                  absent.append(line); continue
-              out = dest / line
-              out.parent.mkdir(parents=True, exist_ok=True)
-              shutil.copy2(src, out)
-              if os.access(src, os.X_OK):
-                  os.chmod(out, os.stat(out).st_mode | 0o111)
-              staged += 1
-          print(f"  staged {staged} files; {len(absent)} declared inputs absent from this checkout")
-          for a in absent:
-              print(f"    absent: {a}")
-          PY
-          }
+          stage_root="$(mktemp -d "${RUNNER_TEMP:-/tmp}/release-gates.XXXXXX")"
 
           # Presence sentinels for the intentionally-gitignored release-build
           # inputs. If a maintainer commits only a partial set, the gate itself
@@ -280,8 +249,8 @@ jobs:
 
           if [ "$have_2k5" -eq 1 ]; then
             echo "=================== 2K5 Mod Studio retail-free release gate ==================="
-            s="$stage_root/2k5"; mkdir -p "$s"
-            stage_release packaging/release-allowlist.txt "$s"
+            s="$stage_root/2k5"
+            python3 packaging/stage_release.py packaging/release-allowlist.txt "$s" "$repo"
             # Exactly the sequence documented in packaging/README.md.
             python3 packaging/check_2k5_mod_studio_release.py "$s"
             python3 "$s/packaging/check_2k5_mod_studio_runtime.py"
@@ -294,8 +263,8 @@ jobs:
 
           if [ "$have_apf" -eq 1 ]; then
             echo "=================== APF 2K8 Mod Studio retail-free release gate ==================="
-            a="$stage_root/apf"; mkdir -p "$a"
-            stage_release packaging/apf2k8-release-allowlist.txt "$a"
+            a="$stage_root/apf"
+            python3 packaging/stage_release.py packaging/apf2k8-release-allowlist.txt "$a" "$repo"
             # The two source-free commands from the APF changelog. The optional
             # --source integration check is deliberately NOT run: it requires a
             # private retail image, which must never touch a CI runner.

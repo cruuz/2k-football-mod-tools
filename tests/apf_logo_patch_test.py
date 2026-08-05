@@ -8,7 +8,7 @@ the extracted retail ``0A``:
 * the 4_4_4_4 Xenos transport (untile/endian/tile) round-trips the retail base
   bit-exactly, and a decode->PNG->encode no-op reproduces the entry byte-for-byte;
 * a controlled solid-magenta edit changes only the logo_l0 base region of the
-  VRAM block, byte-preserves the 0x2C000 packed mip tail and the entire sibling
+  VRAM block, regenerates the 0x2C000 packed mip tail from it, preserves the sibling
   logo_l1 layer, reparses, and fits the fixed outer allocation; and
 * the independent copied-volume verifier (``--full-copy``) copies the whole 1.1
   GB volume, replaces only the fixed entry, and proves every byte outside that
@@ -135,22 +135,29 @@ def run(report_path: Path, full_copy: bool) -> None:
         rebuilt_block1 = rebuilt_blocks[1]
         assert rebuilt_blocks[0] == blocks[0], "DRAM block changed"
         assert len(rebuilt_block1) == len(original_block1)
-        # base region (may differ), mip tail + sibling layer (must be identical)
+        # base region and mip tail may differ (the tail is regenerated from
+        # the new base); the sibling layer must be identical
         base_lo = vram_off
         base_hi = vram_off + logo_patch.BASE_LEN
         mip_hi = vram_off + logo_patch.PAYLOAD_LEN
         assert rebuilt_block1[:base_lo] == original_block1[:base_lo], "pre-base bytes changed"
-        assert rebuilt_block1[base_hi:mip_hi] == original_block1[base_hi:mip_hi], "mip tail changed"
+        assert rebuilt_block1[base_hi:mip_hi] != original_block1[base_hi:mip_hi], (
+            "mip tail was preserved; it must be regenerated from the new base, "
+            "or every draw below mip 0 keeps showing the retail crest"
+        )
         assert rebuilt_block1[mip_hi:] == original_block1[mip_hi:], "sibling logo_l1 changed"
         assert rebuilt_block1[base_lo:base_hi] != original_block1[base_lo:base_hi], "base did not change"
         changed_in_block1 = [
             i for i in range(len(original_block1)) if original_block1[i] != rebuilt_block1[i]
         ]
         assert changed_in_block1, "no decoded texture bytes changed"
-        assert min(changed_in_block1) >= base_lo and max(changed_in_block1) < base_hi
+        # Changes stay inside this layer's own base+mip span; the sibling
+        # layer beyond it must not move.
+        assert min(changed_in_block1) >= base_lo and max(changed_in_block1) < mip_hi
 
         # Manifest invariants.
-        assert manifest["mip_tail"]["bit_exact"] is True
+        assert manifest["mip_tail"]["bit_exact"] is False
+        assert manifest["mip_tail"]["regenerated"] is True
         assert manifest["iff"]["footer_bit_exact"] is True
         assert manifest["iff"]["allocation_size"] == entry.size
         assert manifest["iff"]["allocation_slack_after"] >= 0
@@ -232,8 +239,9 @@ def run(report_path: Path, full_copy: bool) -> None:
             # DUAL-LAYER independent full-volume verifier: co-write logo_l0 (magenta)
             # and logo_l1 (cyan), copy the whole 1.1 GB volume replacing only entry
             # 36, reparse the copied volume, and prove the shared VRAM block changed
-            # in EXACTLY the two base sub-spans (l0 [0,0x80000), l1 [0xAC000,0x12C000))
-            # while both packed mip tails and the DRAM block are byte-identical.
+            # in EXACTLY the two layer payload spans (l0 [0,0xAC000),
+            # l1 [0xAC000,0x158000)) while the DRAM block is byte-identical and
+            # both packed mip tails are regenerated from their own new bases.
             dual_l0 = temp / "dual-l0-magenta.png"
             dual_l1 = temp / "dual-l1-cyan.png"
             Image.new("RGBA", (512, 512), (255, 0, 255, 255)).save(dual_l0)
@@ -268,17 +276,17 @@ def run(report_path: Path, full_copy: bool) -> None:
             assert dual_block0 == blocks[0], "dual copy changed the DRAM block"
             assert dual_block1[0x0:0x80000] != original1[0x0:0x80000], "l0 base unchanged"
             assert dual_block1[0xAC000:0x12C000] != original1[0xAC000:0x12C000], "l1 base unchanged"
-            assert dual_block1[0x80000:0xAC000] == original1[0x80000:0xAC000], "l0 mip changed"
-            assert dual_block1[0x12C000:0x158000] == original1[0x12C000:0x158000], "l1 mip changed"
+            assert dual_block1[0x80000:0xAC000] != original1[0x80000:0xAC000], "l0 mip unchanged"
+            assert dual_block1[0x12C000:0x158000] != original1[0x12C000:0x158000], "l1 mip unchanged"
             dual_changed = [
                 i for i in range(len(original1)) if original1[i] != dual_block1[i]
             ]
             dual_out_of_bounds = [
                 i
                 for i in dual_changed
-                if not (0x0 <= i < 0x80000 or 0xAC000 <= i < 0x12C000)
+                if not (0x0 <= i < 0xAC000 or 0xAC000 <= i < 0x158000)
             ]
-            assert not dual_out_of_bounds, "dual copy changed bytes outside the two bases"
+            assert not dual_out_of_bounds, "dual copy changed bytes outside the two layer payloads"
             dual_copied_summary = {
                 "volume_size": dual_copied["volume_size"],
                 "source_volume_sha256_before": dual_copied["source_volume_sha256_before"],
@@ -286,7 +294,7 @@ def run(report_path: Path, full_copy: bool) -> None:
                 "output_volume_sha256": dual_copied["output_volume_sha256"],
                 "copied_entry_sha256": sha256(dual_entry_bytes),
                 "changed_block1_byte_count": len(dual_changed),
-                "changed_only_the_two_base_subspans": True,
+                "changed_only_the_two_layer_payload_spans": True,
             }
 
         controlled_manifest = manifest
@@ -302,8 +310,8 @@ def run(report_path: Path, full_copy: bool) -> None:
             "descriptor": source["metadata"],
             "note": (
                 "logo_l0 is the shared team-logo/helmet-crest base texture; this "
-                "writer rewrites the base level and byte-preserves the packed mip "
-                "tail and the sibling logo_l1 layer"
+                "writer rewrites the base level, regenerates its packed mip tail, "
+                "and byte-preserves the sibling logo_l1 layer"
             ),
         },
         "source": {
@@ -338,10 +346,10 @@ def run(report_path: Path, full_copy: bool) -> None:
             "existing_output_refused": True,
             "wrong_dimensions_refused": True,
             "fixed_outer_allocation": True,
-            "mip_tail_preserved": True,
+            "mip_tail_regenerated": True,
             "sibling_logo_l1_preserved": True,
             "footer_preserved": True,
-            "dual_layer_changed_only_two_base_subspans": full_copy,
+            "dual_layer_changed_only_two_payload_spans": full_copy,
             "replacement_bytes_embedded_in_report": False,
         },
         "artifacts": {
@@ -358,7 +366,7 @@ def run(report_path: Path, full_copy: bool) -> None:
             "xenia_runtime_validation": False,
             "hardware_runtime_validation": False,
             "scorebug_runtime_binding_proved": False,
-            "mip_regeneration_implemented": False,
+            "mip_regeneration_implemented": True,
         },
         "portme": logo_patch._PORTME,
     }

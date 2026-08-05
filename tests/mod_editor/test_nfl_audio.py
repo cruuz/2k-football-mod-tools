@@ -195,6 +195,59 @@ def copy_provider_pins(destination: Path) -> None:
 
 
 class NflAudioRecipeTests(unittest.TestCase):
+    def test_independent_verifier_locates_a_noncanonical_xdvdfs_base(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            image = Path(temporary) / "raw-layout.iso"
+            partition_base = 0x40000
+            image_size = partition_base + 40 * audio_verify.SECTOR
+            payload = bytearray(image_size)
+            header = bytearray(0x800)
+            header[:20] = audio_verify.XDVDFS_MAGIC
+            header[-20:] = audio_verify.XDVDFS_MAGIC
+
+            def node(
+                name: bytes,
+                sector: int,
+                size: int,
+                attributes: int,
+                *,
+                right: int = 0,
+            ) -> bytes:
+                raw = struct.pack(
+                    "<HHIIBB", 0, right, sector, size, attributes, len(name)
+                ) + name
+                return raw + b"\0" * ((-len(raw)) % 4)
+
+            first = node(b"default.xbe", 35, 16, 0x20)
+            root = node(
+                b"default.xbe", 35, 16, 0x20, right=len(first) // 4
+            ) + node(b"vc_53450030", 34, 32, 0x10)
+            child = node(b"0", 36, 16, 0x20)
+            struct.pack_into("<II", header, 20, 33, len(root))
+            volume = partition_base + audio_verify.XDVDFS_HEADER_OFFSET
+            payload[volume:volume + len(header)] = header
+            root_offset = partition_base + 33 * audio_verify.SECTOR
+            payload[root_offset:root_offset + len(root)] = root
+            child_offset = partition_base + 34 * audio_verify.SECTOR
+            payload[child_offset:child_offset + len(child)] = child
+            image.write_bytes(payload)
+
+            descriptor = os.open(image, os.O_RDONLY)
+            try:
+                entries, tree = audio_verify.parse_xdvdfs(descriptor, image_size)
+            finally:
+                os.close(descriptor)
+
+        self.assertEqual(tree[0], partition_base)
+        self.assertEqual(
+            entries["default.xbe"].offset,
+            partition_base + 35 * audio_verify.SECTOR,
+        )
+        self.assertEqual(
+            entries[audio_verify.PACK_PATH].offset,
+            partition_base + 36 * audio_verify.SECTOR,
+        )
+
     def test_headless_cli_creates_fixed_audio_recipe(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -534,6 +587,30 @@ class NflAudioRecipeTests(unittest.TestCase):
                 ).hexdigest(),
                 provider.verifier_dependency_module_sha256,
             )
+
+    def test_typed_provider_accepts_a_legal_noncanonical_disc_container(self) -> None:
+        variant_sha = "c" * 64
+        checked: list[Path] = []
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            request, _wav = make_provider_request(root)
+            request = replace(
+                request,
+                source=replace(
+                    request.source,
+                    sha256=variant_sha,
+                    size=Path(request.source.selected_path).stat().st_size,
+                ),
+            )
+            provider = Nfl2k5MenuBackAudioProvider(
+                source_hasher=lambda path, _progress: (
+                    variant_sha, path.stat().st_size
+                ),
+                contained_source_validator=lambda path: checked.append(path) is None,
+                workspace=ROOT,
+            )
+            provider.preflight(request, audio_capability(), lambda _event: None)
+        self.assertEqual(checked, [Path(request.source.selected_path).resolve()])
 
     def test_typed_provider_fails_closed_on_registry_or_module_pin_change(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -48,6 +48,26 @@ class UnifiedStadiumTextureCompositionTests(unittest.TestCase):
         }
         path.write_bytes(unified.canonical_json(document))
 
+    def _geometry_project(
+        self, path: Path, recipe: Path, texture: Path | None = None
+    ) -> None:
+        edits = [{
+            "kind": unified.STADIUM_GEOMETRY_KIND,
+            "target": unified.STADIUM_GEOMETRY_TARGET,
+            "recipe": str(recipe),
+        }]
+        if texture is not None:
+            edits.append({
+                "kind": unified.STADIUM_TEXTURE_KIND,
+                "target": unified.STADIUM_TEXTURE_TARGET,
+                "png": str(texture),
+            })
+        path.write_bytes(unified.canonical_json({
+            "edits": edits,
+            "purpose": "Synthetic bounded Stadium geometry contract test.",
+            "schema": unified.SCHEMA,
+        }))
+
     @staticmethod
     def _built() -> tuple[bytes, list[tuple[str, bytes]], dict, str, dict]:
         target = {
@@ -240,6 +260,69 @@ class UnifiedStadiumTextureCompositionTests(unittest.TestCase):
             }
             project_path.write_bytes(unified.canonical_json(duplicate))
             with self.assertRaisesRegex(unified.ProjectError, "repeats"):
+                unified.read_project(project_path)
+
+    def test_geometry_recipe_schema_and_same_scene_texture_composition(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="unified-stadium-geometry-") as temporary:
+            root = Path(temporary)
+            recipe = root / "positions.json"
+            recipe.write_bytes(b'{"private":"recipe"}\n')
+            png = root / "surface.png"
+            png.write_bytes(b"user-authored texture")
+            project_path = root / "project.json"
+            self._geometry_project(project_path, recipe, png)
+            project = unified.read_project(project_path)
+            self.assertEqual(
+                [row["kind"] for row in project.value["edits"]],
+                [unified.STADIUM_GEOMETRY_KIND, unified.STADIUM_TEXTURE_KIND],
+            )
+            self.assertEqual(
+                unified.validate_only(project_path)["kind_counts"],
+                {"stadium_geometry": 1, "stadium_texture": 1},
+            )
+            pins = unified.pin_project_inputs(project)
+            work = root / "work"
+            work.mkdir()
+            owned_root = unified.ownership.track_existing(work, True)
+            files = []
+            try:
+                with mock.patch.object(
+                    unified.stadium_texture_adapter,
+                    "build_unified_stadium_geometry_and_texture_import",
+                    return_value=self._built(),
+                ) as compiler:
+                    built = unified.build_stadium_geometry_import(
+                        0,
+                        project.value["edits"][0],
+                        [project.value["edits"][1]],
+                        project,
+                        pins,
+                        root / "0",
+                        root / "inventory.json",
+                        owned_root,
+                        files,
+                    )
+                self.assertEqual(built[0], b"synthetic fixed SCNE replacement")
+                self.assertEqual(compiler.call_count, 1)
+                staged_recipe = compiler.call_args.args[2]
+                staged_textures = compiler.call_args.args[3]
+                self.assertEqual(staged_recipe.read_bytes(), recipe.read_bytes())
+                self.assertEqual(staged_textures[0][0], unified.STADIUM_TEXTURE_TARGET)
+                self.assertEqual(staged_textures[0][1].read_bytes(), png.read_bytes())
+            finally:
+                unified.ownership.cleanup_owned(files, [owned_root])
+
+            invalid = {
+                "edits": [{
+                    "kind": unified.STADIUM_GEOMETRY_KIND,
+                    "target": "nfl2k5.stadium.arbitrary.geometry",
+                    "recipe": str(recipe),
+                }],
+                "purpose": "Invalid geometry target must fail.",
+                "schema": unified.SCHEMA,
+            }
+            project_path.write_bytes(unified.canonical_json(invalid))
+            with self.assertRaisesRegex(unified.ProjectError, "bounded full-scene"):
                 unified.read_project(project_path)
 
 

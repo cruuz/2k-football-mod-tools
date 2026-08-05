@@ -22,10 +22,14 @@ import struct
 import sys
 from typing import Any
 
+_TOOLS = str(Path(__file__).resolve().parent)
+if _TOOLS not in sys.path:
+    sys.path.insert(0, _TOOLS)
+
 import apf_inner
 import apf_outer
 import apf_scene
-from apf_texture_patch import compress_h7a
+from apf_texture_patch import compress_h7a, compress_h7a_best
 
 
 RECIPE_SCHEMA = "apf2k8_scne_same_count_position_recipe/v1"
@@ -436,6 +440,15 @@ def _rebuild_entry(
     if not descriptor.is_compressed or descriptor.wrapper is None or descriptor.wrapper.shift != 12:
         raise PatchError("target DRAM H7A profile drift")
     compressed = compress_h7a(new_block0, 12)
+    greedy_active_length = (
+        record.header_size
+        + apf_inner.H7A_HEADER_SIZE
+        + len(compressed)
+        + len(original_stored[1])
+        + FOOTER_TOTAL
+    )
+    if greedy_active_length > OUTER_LENGTH:
+        compressed = compress_h7a_best(new_block0, 12, greedy=compressed)
     if apf_inner.decompress_h7a(compressed, len(new_block0), 12) != new_block0:
         raise PatchError("H7A encode/decode round-trip failed")
     new_stored = list(original_stored)

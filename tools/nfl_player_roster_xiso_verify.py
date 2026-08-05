@@ -9,6 +9,7 @@ checks player/team pointers and fields directly, and audits the manifest.
 from __future__ import annotations
 
 import argparse
+from collections.abc import Callable
 import hashlib
 import json
 import os
@@ -112,6 +113,83 @@ def scan_images(
     return source_hash.hexdigest(), output_hash.hexdigest(), differences
 
 
+def virtual_replacements(pack_offset: int) -> dict[int, int]:
+    """Return the independently reconstructed proof bytes by absolute offset."""
+
+    body = pack_offset + ROST_BODY
+    replacements: dict[int, int] = {}
+    for relative, before, after in (
+        (FIRST_STRING, FIRST_BEFORE, FIRST_AFTER),
+        (LAST_STRING, LAST_BEFORE, LAST_AFTER),
+    ):
+        require(len(before) == len(after), "fixed-size name proof changed")
+        for index, (old, new) in enumerate(zip(before, after)):
+            if old != new:
+                replacements[body + relative + index] = new
+    old_word = struct.pack("<I", OLD_WORD)
+    new_word = struct.pack("<I", NEW_WORD)
+    for index, (old, new) in enumerate(zip(old_word, new_word)):
+        if old != new:
+            replacements[body + PLAYER_RECORD + JERSEY_FIELD + index] = new
+    require(len(replacements) == 14, "virtual proof byte count changed")
+    return replacements
+
+
+def scan_virtual_output(
+    source_fd: int, replacements: dict[int, int], allowed: set[int]
+) -> tuple[str, str, list[int]]:
+    """Hash the complete logical output without creating a 6.3 GB copy."""
+
+    require(set(replacements) == allowed, "virtual replacement ledger mismatch")
+    source_hash = hashlib.sha256()
+    output_hash = hashlib.sha256()
+    differences: list[int] = []
+    position = 0
+    ordered = sorted(replacements)
+    replacement_index = 0
+    while position < IMAGE_SIZE:
+        size = min(base.CHUNK, IMAGE_SIZE - position)
+        before = base.pread_exact(source_fd, position, size)
+        source_hash.update(before)
+        end = position + size
+        chunk_offsets: list[int] = []
+        while replacement_index < len(ordered) and ordered[replacement_index] < end:
+            absolute = ordered[replacement_index]
+            require(absolute >= position, "virtual replacement order changed")
+            chunk_offsets.append(absolute)
+            replacement_index += 1
+        if chunk_offsets:
+            after = bytearray(before)
+            for absolute in chunk_offsets:
+                relative = absolute - position
+                require(
+                    after[relative] != replacements[absolute],
+                    "virtual replacement does not change its source byte",
+                )
+                after[relative] = replacements[absolute]
+                differences.append(absolute)
+            output_hash.update(after)
+        else:
+            output_hash.update(before)
+        position = end
+    require(replacement_index == len(ordered), "virtual replacement outside image")
+    return source_hash.hexdigest(), output_hash.hexdigest(), differences
+
+
+def virtual_reader(
+    source_fd: int, replacements: dict[int, int]
+) -> Callable[[int, int], bytes]:
+    def read(offset: int, size: int) -> bytes:
+        payload = bytearray(base.pread_exact(source_fd, offset, size))
+        end = offset + size
+        for absolute, value in replacements.items():
+            if offset <= absolute < end:
+                payload[absolute - offset] = value
+        return bytes(payload)
+
+    return read
+
+
 def validate_audit(raw: bytes) -> str:
     require(hashlib.sha256(raw).hexdigest() == AUDIT_SHA256, "audit hash mismatch")
     value = json.loads(raw)
@@ -127,13 +205,13 @@ def validate_audit(raw: bytes) -> str:
 
 
 def validate_structures(
-    source_fd: int, output_fd: int, pack: base.Entry
+    source_fd: int, read_output: Callable[[int, int], bytes], pack: base.Entry
 ) -> None:
     require(base.hash_extent(source_fd, pack.offset, pack.size) == PACK0_SHA256,
             "retail pack 0 hash mismatch")
     body = pack.offset + ROST_BODY
     source_wrapper = base.pread_exact(source_fd, pack.offset + ROST_OUTER, 0x20)
-    output_wrapper = base.pread_exact(output_fd, pack.offset + ROST_OUTER, 0x20)
+    output_wrapper = read_output(pack.offset + ROST_OUTER, 0x20)
     require(source_wrapper == output_wrapper, "ROST wrapper changed")
     require(struct.unpack("<4s7I", source_wrapper) ==
             (b"ROST", ROST_BODY_SIZE, ROST_BODY_SIZE, 0, 0, 0, 0, 0),
@@ -141,21 +219,23 @@ def validate_structures(
 
     require(base.pread_exact(source_fd, body + FIRST_STRING, len(FIRST_BEFORE)) ==
             FIRST_BEFORE, "source first name mismatch")
-    require(base.pread_exact(output_fd, body + FIRST_STRING, len(FIRST_AFTER)) ==
+    require(read_output(body + FIRST_STRING, len(FIRST_AFTER)) ==
             FIRST_AFTER, "output first name mismatch")
     require(base.pread_exact(source_fd, body + LAST_STRING, len(LAST_BEFORE)) ==
             LAST_BEFORE, "source last name mismatch")
-    require(base.pread_exact(output_fd, body + LAST_STRING, len(LAST_AFTER)) ==
+    require(read_output(body + LAST_STRING, len(LAST_AFTER)) ==
             LAST_AFTER, "output last name mismatch")
+    output_record = read_output(body + PLAYER_RECORD, PLAYER_STRIDE)
+    output_first_pointer = struct.unpack_from("<i", output_record, 0x10)[0]
+    output_last_pointer = struct.unpack_from("<i", output_record, 0x14)[0]
     require(pointer_target(source_fd, body, PLAYER_RECORD, 0x10) ==
-            pointer_target(output_fd, body, PLAYER_RECORD, 0x10) == FIRST_STRING,
+            PLAYER_RECORD + 0x10 + output_first_pointer - 1 == FIRST_STRING,
             "first-name pointer changed")
     require(pointer_target(source_fd, body, PLAYER_RECORD, 0x14) ==
-            pointer_target(output_fd, body, PLAYER_RECORD, 0x14) == LAST_STRING,
+            PLAYER_RECORD + 0x14 + output_last_pointer - 1 == LAST_STRING,
             "last-name pointer changed")
 
     source_record = base.pread_exact(source_fd, body + PLAYER_RECORD, PLAYER_STRIDE)
-    output_record = base.pread_exact(output_fd, body + PLAYER_RECORD, PLAYER_STRIDE)
     expected = bytearray(source_record)
     struct.pack_into("<I", expected, JERSEY_FIELD, NEW_WORD)
     require(output_record == bytes(expected), "player record has unrelated changes")
@@ -172,12 +252,13 @@ def validate_structures(
             struct.pack("<H", 3593), "face ID changed")
 
     source_team = base.pread_exact(source_fd, body + TEAM18_RECORD, 0x1F4)
-    output_team = base.pread_exact(output_fd, body + TEAM18_RECORD, 0x1F4)
+    output_team = read_output(body + TEAM18_RECORD, 0x1F4)
     require(source_team == output_team, "Detroit team record changed")
     require(source_team[0x11C] == 53, "Detroit roster count changed")
+    output_team_pointer = struct.unpack_from("<i", output_team, TEAM18_SLOT * 4)[0]
     require(pointer_target(source_fd, body, TEAM18_RECORD, TEAM18_SLOT * 4) ==
-            pointer_target(output_fd, body, TEAM18_RECORD, TEAM18_SLOT * 4) ==
-            PLAYER_RECORD, "Detroit slot 35 changed")
+            TEAM18_RECORD + TEAM18_SLOT * 4 + output_team_pointer - 1 == PLAYER_RECORD,
+            "Detroit slot 35 changed")
 
 
 def validate_manifest(
@@ -232,7 +313,8 @@ def validate_manifest(
 
 
 def run(
-    source_path: Path, output_path: Path, manifest_path: Path, audit_path: Path
+    source_path: Path, output_path: Path, manifest_path: Path, audit_path: Path,
+    *, virtual_output: bool = False,
 ) -> dict[str, object]:
     audit_resolved, audit_raw, audit_identity = base.read_regular_bytes(
         audit_path, "audit"
@@ -242,28 +324,60 @@ def run(
     )
     audit_sha = validate_audit(audit_raw)
     source, source_fd = base.open_regular(source_path)
-    output, output_fd = base.open_regular(output_path)
+    output_fd: int | None = None
     try:
+        if virtual_output:
+            require(
+                not os.path.lexists(output_path),
+                "virtual output path must be absent",
+            )
+            output = output_path.expanduser().resolve(strict=False)
+        else:
+            output, output_fd = base.open_regular(output_path)
         require(source != output, "source and output paths match")
-        require(os.fstat(source_fd).st_size == os.fstat(output_fd).st_size == IMAGE_SIZE,
-                "XISO size mismatch")
+        require(os.fstat(source_fd).st_size == IMAGE_SIZE, "source XISO size mismatch")
+        if output_fd is not None:
+            require(os.fstat(output_fd).st_size == IMAGE_SIZE, "output XISO size mismatch")
         source_entries, source_directory = base.parse_xdvdfs(source_fd)
-        output_entries, output_directory = base.parse_xdvdfs(output_fd)
-        require(source_entries == output_entries and source_directory == output_directory,
-                "XDVDFS trees differ")
         pack = source_entries.get("vc_53450030/0")
         xbe = source_entries.get("default.xbe")
         require(pack is not None and xbe is not None, "required XDVDFS file missing")
         require((pack.sector, pack.size) == (PACK0_SECTOR, PACK0_SIZE),
                 "pack 0 extent mismatch")
-        require(base.hash_extent(source_fd, xbe.offset, xbe.size) ==
-                base.hash_extent(output_fd, xbe.offset, xbe.size) == XBE_SHA256,
-                "default.xbe differs or has wrong hash")
         rows, allowed = expected_offsets(pack.offset)
-        source_hash, output_hash, differences = scan_images(source_fd, output_fd, allowed)
+        if output_fd is None:
+            replacements = virtual_replacements(pack.offset)
+            require(
+                all(pack.offset <= absolute < pack.offset + pack.size for absolute in allowed),
+                "virtual replacement escaped pack 0",
+            )
+            read_output = virtual_reader(source_fd, replacements)
+            source_hash, output_hash, differences = scan_virtual_output(
+                source_fd, replacements, allowed
+            )
+        else:
+            output_entries, output_directory = base.parse_xdvdfs(output_fd)
+            require(
+                source_entries == output_entries and source_directory == output_directory,
+                "XDVDFS trees differ",
+            )
+            read_output = lambda offset, size: base.pread_exact(
+                output_fd, offset, size
+            )
+            source_hash, output_hash, differences = scan_images(
+                source_fd, output_fd, allowed
+            )
+        require(base.hash_extent(source_fd, xbe.offset, xbe.size) == XBE_SHA256,
+                "default.xbe has wrong hash")
+        require(
+            read_output(xbe.offset, xbe.size) == base.pread_exact(
+                source_fd, xbe.offset, xbe.size
+            ),
+            "default.xbe differs",
+        )
         require(source_hash == SOURCE_SHA256, "retail XISO hash mismatch")
         require(output_hash == OUTPUT_SHA256, "proof XISO hash mismatch")
-        validate_structures(source_fd, output_fd, pack)
+        validate_structures(source_fd, read_output, pack)
         manifest_sha = validate_manifest(
             manifest_raw, source, output, audit_sha, differences, rows
         )
@@ -284,13 +398,18 @@ def run(
         }
     finally:
         os.close(source_fd)
-        os.close(output_fd)
+        if output_fd is not None:
+            os.close(output_fd)
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-xiso", required=True, type=Path)
     parser.add_argument("--output-xiso", required=True, type=Path)
+    parser.add_argument(
+        "--virtual-output", action="store_true",
+        help="verify the absent historical output by independently overlaying its 14 bytes",
+    )
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument(
         "--audit", type=Path,
@@ -298,7 +417,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
     try:
-        result = run(args.source_xiso, args.output_xiso, args.manifest, args.audit)
+        result = run(
+            args.source_xiso, args.output_xiso, args.manifest, args.audit,
+            virtual_output=args.virtual_output,
+        )
     except (OSError, VerifyError, base.VerifyError, json.JSONDecodeError) as exc:
         print(f"nfl_player_roster_xiso_verify: {exc}", file=sys.stderr)
         return 1

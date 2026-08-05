@@ -35,6 +35,7 @@ import apf_xenos_dxn_mip_layout as dxn_mips
 SCHEMA = "apf_helmet_color_transport/v1"
 INNER_INDEX = 0
 INNER_NAME = "helmet_color"
+H7A_CANDIDATE_LIMIT = 1024
 PRODUCTION_DXN_CAVEAT = (
     "The deterministic BC4 endpoint search is a bounded proof backend, not a "
     "production perceptual DXN compressor; visually inspect mods and replace "
@@ -313,7 +314,11 @@ def _rebuild_entry(
     descriptor = record.blocks[1]
     if not descriptor.is_compressed or descriptor.wrapper is None:
         raise HelmetTransportError("PORTME: helmet VRAM block is not H7A-compressed")
-    encoded = archive_patch.compress_h7a(new_blocks[1], descriptor.wrapper.shift)
+    encoded = archive_patch.compress_h7a(
+        new_blocks[1],
+        descriptor.wrapper.shift,
+        candidate_limit=H7A_CANDIDATE_LIMIT,
+    )
     encoded_stored = struct.pack(
         ">5I", apf_inner.H7A_MAGIC, len(new_blocks[1]),
         apf_inner.H7A_HEADER_SIZE + len(encoded), descriptor.unknown_10,

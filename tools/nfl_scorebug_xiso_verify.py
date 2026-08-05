@@ -178,7 +178,7 @@ def verify(source_path: Path, output_path: Path, manifest_path: Path,
                 output_record.get("preview_path") == str(preview) and
                 output_record.get("preview_sha256") == digest(preview_expected) and
                 output_record.get("copy_method") in {
-                    "copy_file_range", "sendfile", "read_write"
+                    "copy_file_range", "pread_pwrite"
                 } and output_record.get("exclusively_created") is True,
                 "manifest output record changed")
         require(value.get("xdvdfs") == {

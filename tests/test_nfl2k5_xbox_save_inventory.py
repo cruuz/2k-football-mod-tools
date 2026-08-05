@@ -441,6 +441,12 @@ class SaveInventoryCanonicalTests(unittest.TestCase):
         self.assertNotIn('"$QEMU_IMG" convert', source)
         self.assertIn('chmod 0400 "$RAW_NAME"', source)
         self.assertIn('mktemp -d /tmp/nfl2k5-save-inventory.XXXXXX', source)
+        self.assertIn("QCOW_WAS_EXPLICIT=1", source)
+        self.assertIn("mode=committed-evidence-only", source)
+        self.assertIn("mode=private-reproduction", source)
+        self.assertIn("canonical_private_fixture=unavailable", source)
+        self.assertIn("committed_evidence=true", source)
+        self.assertLess(source.index("fixture_reason=''"), source.index("pin_qemu_img\n"))
 
 
 if __name__ == "__main__":

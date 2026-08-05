@@ -26,7 +26,7 @@ for required in \
 done
 
 test "$(sha256sum "$inventory" | cut -d' ' -f1)" = \
-  e477214f818be01891253683d731551c98a06bf3da0b396dc9de968b031dfb69
+  adf7554d9fb1745048a044aa25462e9b11eb860ea788b9e6e1db82d346f0aa2b
 test "$(sha256sum "$corpus" | cut -d' ' -f1)" = \
   ba6ddcddd018f579e4ddbe385d63b31b45cca3c2aaf450850cf0fce20344d15f
 test "$(sha256sum tools/vendor/XenonRecomp/thirdparty/disasm/ppc-dis.c | cut -d' ' -f1)" = \
@@ -69,7 +69,7 @@ cmp "$temporary/inventory.json" "$report"
 cmp "$temporary/clips.tsv" "$clips"
 
 test "$(sha256sum "$report" | cut -d' ' -f1)" = \
-  2d0acb45822af39fc3fe95dc79618ff54f650631decf721864940f0b6db7d9e2
+  6eba188581d32a565fa5b9757fb0865ef20677eef7fdbe0ab8a1d21d2e8b15b7
 test "$(sha256sum "$clips" | cut -d' ' -f1)" = \
   fcc867bb5b5998f4a18d4160ca090a291189b4cd082fa5b9a74ccce0724af6f3
 test "$(sha256sum "$trace" | cut -d' ' -f1)" = \

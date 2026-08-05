@@ -1,6 +1,599 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.54 candidate — whole-shell v24, complete wordmarks/save players, roster truth, and release hardening — 2026-08-04
+
+### Team Logo ownership is explicit in the editor
+
+- The Team Logo panel now labels selector-slot-5 crest index `N` as one linked
+  write to `uniform_logo_NN.iff` and frontend/Team Select cache entries
+  `N_logo_l0`/`N_logo_l1`. Its status chip, selected-slot ownership line, build
+  tooltip, and workspace tab tooltip all disclose the coupled write.
+- The same UI identifies selector slot 6 as the independent 206-entry
+  rectangular **Wordmarks** bank. Team Logo never stretches or squeezes the
+  square crest into that family and does not invent a third logo reservoir.
+- The wording keeps the evidence boundary visible: the frontend cache path is
+  statically mapped, while changed-logo runtime consumption and the scorebug's
+  package-versus-cache resolver remain unproved.
+
+### Complete 206-slot rectangular wordmark editor
+
+- **Logos & Team Art → Wordmarks** exposes the complete independently selected
+  `uniform_textlogo_00.iff` through `uniform_textlogo_205.iff` family. The
+  selector is typed 0–205 and shows current ROST slot-6 team ownership; it does
+  not alias the 118 square Team Logo crest slots.
+- File selection and drag/drop accept ordinary image dimensions through
+  explicit Contain or Cover fitting to 512×128. Transparency is composited onto
+  opaque black to match retail BC1 semantics, and the preview displays the
+  exact staged pixels. Replace, per-asset Revert, Revert All, Undo, project
+  save/load, and normal Build are fully wired.
+- The copy-only writer regenerates the complete six-level tiled BC1 mip chain,
+  preserves descriptor, footer, inactive packed-tail bytes, and unrelated IFF
+  parts, then fits the H7A streams inside the original fixed allocation. The
+  independent verifier reopens the copied `0A` and proves that only the selected
+  outer package may differ. All 206 retail targets pass bit-exact no-op compile;
+  changed-output and whole-volume tests cover the bounded write.
+- This is an offline file-transport proof, not a claim that every consumer or
+  Xbox 360 hardware has rendered a changed wordmark. A Team Logo crest is never
+  silently squeezed into this different rectangular texture family.
+
+### Verified stock assignment-route copy and swap
+
+- **Playbooks & Plays → Assignment Routes** exposes all 586 MASTER plays and
+  their 11 player-assignment slots. A modder can copy one stock assignment or
+  swap two assignments atomically. The operation copies the donor's exact
+  four-byte descriptor and re-encodes the target field-relative pointer to the
+  donor's existing game-authored chain; no route node is edited or relocated.
+- The compiler reparses the complete source and output, permits changes only in
+  the selected eight-byte assignment fields, preserves the fixed 0x2C750 body,
+  route-node blob, names, formations, and the newly decoded MSB-first
+  formation-to-play membership table. It also preserves the complete distinct
+  assignment-chain start set, refusing a one-way copy that would orphan a
+  unique chain and directing the user to a balanced swap.
+- `.apf2k8mod` files store only MASTER/play/slot selectors in canonical JSON.
+  Build resolves all descriptors, relative pointers, names, and nodes from the
+  user's recognized source, token-preserves the H7A block inside fixed outer
+  180, reparses it independently, and emits a retail-free receipt. Copy, swap,
+  Revert, Revert All, Undo, save/load project, and composed Build share that one
+  validation path.
+- This is exact stock assignment reuse, not freehand route drawing. Waypoint
+  coordinates, route-node opcodes/operands, custom-play save ownership, and
+  gameplay/runtime behavior are not claimed.
+
+### Complete APFe-compatible save player editor and verified STFS handoff
+
+- **Rosters & Players → Save Players** opens either a raw `Roster.ROS` or a
+  hash-tree-verified `CON ` / `LIVE` / `PIRS` package. It exposes 149 exact
+  writable player fields: 31 native base fields, 77 boolean ability bits, five
+  motion/style fields, jersey number, dual-byte mirrored position, tier, both
+  depth values, body/skin/weight, equipment, PBP/photo IDs, player type, years,
+  height, and handedness. Packed writes preserve every non-selected bit; whole-
+  pound weight deliberately preserves the low nibble shared with abilities.
+- All 15 known player UTF-16 fields are available under their existing
+  allocation limits. Shared aliases disclose their owner count, every pointer
+  remains exact, and receipts store hashes/limits rather than source or
+  replacement text. Membership authoring is deliberately swap-only between two
+  populated counted slots, preserving all team counts, the complete player
+  multiset, global uniqueness, and the native 42-slot capacity.
+- Output is always a new raw payload plus a JSON receipt. The verifier rebuilds
+  its authorized byte masks from the semantic edits, reparses the complete save,
+  and rechecks field values, text ownership, membership invariants, and source
+  identity. Cleanup removes only paths exclusively created by that operation;
+  an existing destination is never deleted.
+- Signed-package authoring is an explicit handoff, not fake signing. The editor
+  verifies the STFS hash tree, extracts `Roster.ROS` read-only, writes and
+  independently rereads a raw output, then requires external reinjection,
+  rehashing, and resigning with the owner's save manager/keyvault. The same
+  verified raw-handoff behavior now applies to **Save Assignments**, superseding
+  the older inspect-only wording retained later in these historical notes.
+- Overall is not written because the complete position formula tables are not
+  proved. Active-capacity expansion beyond 42, arbitrary insertion, and
+  game/runtime consumption are likewise not claimed.
+
+### Stadium selected-mesh POSITION round trip
+
+- Stadium Studio now exposes 77 catalog-authorized surfaces in the pinned
+  outer-14/inner-8 scene instead of leaving the proved writer hidden. A clicked
+  authorized surface can export a source-authenticated POSITION plus
+  expanded-triangle glTF and import it into a new copied `1A`.
+- Import requires the exact source vertex count and expanded triangles, rejects
+  object transforms, materials, skins, morphs, animation and every non-POSITION
+  attribute, then requires the independent full-volume verifier. The source is
+  read-only; UVs, normals, materials, attachments, topology and unrelated bytes
+  remain exact.
+- Package texture Replace remains separately locked because material/TXTR
+  ownership is still unproved. Runtime visibility and rigid attachment are not
+  claimed, and the workflow requires no emulator.
+
+### High-resolution helmet-logo authoring masters
+
+- **Save high-resolution authoring master…** is available beside Team Logo
+  import after an external Retail or Full-shell import. Its non-overwriting
+  `.2ktexmaster` keeps the exact ordinary-art/advanced-mask source, source hash,
+  original-to-contain-to-placement geometry, final X/Y, independent
+  width/height, rotation, palette/semantic conversion metadata, exact staged
+  512x512 game mask, and a direct 2x or 4x authoring render.
+- Built-in pixel painting no longer discards an existing master. The exact
+  post-import native canvas is retained privately and later changed pixels are
+  applied as a verified nearest-neighbour layer over the direct master render.
+  A retail-only Edit does not package retail source pixels as user artwork.
+- The output is an authoring sidecar. It is not an RPCS3 texture pack, does not
+  increase APF's native texture size, and is not embedded in `.apf2k8mod` v1.
+  The separate capability boundary is documented in
+  `high_resolution_texture_authoring.md`.
+
+### Whole-shell atlas v24 correction
+
+> **Current truth:** this correction supersedes the alpha.53 carrier and visual
+> wording retained below as historical release notes. Those older guarded
+> convex-hull/carrier passages are not claims about the current v24 route.
+
+- The full-shell implementation now uses the helmet's exact retail high/low UV
+  atlas instead of constructing a mask-shaped overlay disk. Shell vertices,
+  indices, UVs, and accessory draws remain exact; draw 1 routes from shell
+  material 1 to crest material 2, and the old draw-2 overlay becomes in-range
+  zero-triangle degenerates.
+- The direct helmet placement canvas retains its semantic 512×512 design with
+  fixed physical axes: X maps front-to-rear
+  shell Z and Y maps top-to-opening-bound shell Y. Moving artwork therefore
+  moves it on the helmet instead of being erased by active-bbox normalization.
+- The shared route is transactionally safe for every team. All 118 package l0/l1
+  pairs compile and reparse in memory before publication. The selected pair
+  receives the bilateral shell atlas, the selected menu-cache pair keeps the
+  undistorted semantic design, and all other retail pairs are RGBA-preserving
+  migrated from their original side-decal placement. The editor creates one new
+  0A only after every fixed allocation passes; no Xenia patch is involved.
+- The exact atomically published v24 candidate now has a release-safe visual
+  receipt at `docs/mod_editor/apf2k8_full_shell_visual_gate.json`. Its
+  independent reopen verified all 118 packages / 236 layers, and its
+  deterministic high/low renderer produced ten nonempty side, front, rear, and
+  crown views. Spark review of both hash-pinned contact sheets passed: the wing
+  reads as one authentic shell-spanning Eagles design with coherent bilateral,
+  front, rear, and crown coverage, while the low LOD retains its silhouette
+  without visible UV smear, gaps, holes, or seam breaks. This is static
+  asset-space proof only; runtime/gameplay consumption and Xbox 360 hardware
+  behavior remain unproved.
+
+## 0.1.0-alpha.53 candidate — headless crest pipeline, save assignments, roster parity, and model export 2026-08-03
+
+### Team crests and helmet coverage
+
+- **Custom Team Appearance now owns the missing shell-color path for user slots
+  32–39.** HOME and AWAY each expose ten ARGB swatches plus exact helmet and
+  crest selectors with unproved bytes labeled opaque. The one-click 2017 Eagles
+  preset preserves the helmet model and complete opaque helmet tail, selects
+  crest 30 with the complete Xenia-proved crest-routing sequence, and uses
+  palette index 8 as `FF004C54` midnight green. The routing bytes remain
+  individually unnamed.
+- Appearance projects carry canonical replacement-only JSON and compose through
+  the same fixed-allocation ROST transaction as names, ratings, and positions.
+  The writer re-resolves unique pointer ownership, preserves palette metadata,
+  token-preserves H7A, and reparses the complete output.
+- **The full-shell route is a normal, headless editor build.** Select the fixed
+  `front_crown_to_rear_v1` profile and the editor atomically publishes one new
+  `0A`; it creates no Xenia patch and never edits `default.xex`. The exact Eagles
+  proof build changed only outer entries **171, 213, 1126, 1133, and 1310**:
+  cache directory, cache payload, custom-team appearance, selected crest
+  package, and shared helmet geometry. The source stayed read-only and every
+  other outer entry stayed exact.
+- **The accepted carrier is dynamic, deterministic, and capacity-bounded.** The
+  project retains the semantic pre-guard 512×512 design. At build time, exact
+  64-pixel sampler guards leave a 384-pixel usable interval; the same guarded
+  PNG feeds package and cache. A dynamic convex hull from the imported mask
+  drives connected high/low shell-native disks, and the independent verifier
+  proves every active guarded texel maps exactly once per side. Unsupported
+  masks fail before publication with needed/available vertex and index counts.
+- **Full-shell imports now separate painted art from APF weight maps.**
+  **Normal logo (recommended)** high-quality-contains ordinary art, asks the
+  author to confirm shell plus two rendered detail colours, shows a material
+  preview and error metrics, then converts to joint-quantized four-bit red/green
+  weights. **APF region mask (advanced)** strictly requires the Xenos nibble
+  lattice, blue fixed to zero, a one-unit red/green sum, no hidden RGB under alpha zero, and a nonempty
+  mask. Neither mode claims arbitrary source RGB survives literally. The
+  converted/validated mask is auto-fitted across a clearly labeled
+  **FRONT / CROWN → REAR** guide before staging. Dragging changes X/Y directly;
+  independent Width, Height, and Rotation fields handle exact adjustments, with
+  **Reset** and **Auto-fit front → rear** buttons always available. The result
+  is an exact semantic pre-guard 512×512 RGBA mask. Nearest-neighbour placement
+  preserve region-mask palette values, and empty or off-canvas art fails closed.
+  Reopening the canvas in the same editing session reuses the normalized
+  original import plus its last transform, preventing cumulative resampling.
+  The superseded one-shot fit checkbox is hidden and disconnected so it cannot
+  silently overwrite manual X/Y placement.
+- **The Eagles proof mask retains weighted 4-bit antialiasing.** It uses all 16
+  Xenos red/green levels, 7,927 antialiased texels, and 1,833 mixed silver/white
+  edge texels instead of reducing the feather edge to flat binary regions. The
+  package and cache decode back to the same weighted mask and regenerated mip
+  chains.
+- **Raw logo-cache verification now reaches the right parser.** The composed
+  headless build previously dispatched the directory/payload pair as ordinary
+  IFF outer entries. It now recognizes only the typed helmet-crest composite,
+  verifies the raw pair with `apf_logocache_verify.py`, then performs the normal
+  whole-volume changed-span and atomic-publication checks.
+- **Accepted custom teams now have a direct raw-save appearance path.** Switch
+  the same panel to **Raw Roster Save**, load a raw `Roster.ROS`, and the editor
+  maps user-facing IDs 24–31 to ROST slots 32–39 before exposing HOME/AWAY
+  palettes and helmet/crest selectors. It writes only a new payload plus
+  receipt, SHA-binds the source, revalidates unique aligned pointer ownership,
+  restricts each edit to an exact 112-byte union, and independently reopens and
+  verifies the result. `CON `, `LIVE`, and `PIRS` STFS packages can now be
+  hash-verified and opened directly: the editor can emit an exact extracted
+  `Roster.ROS` or a patched raw handoff plus source-bound verification manifest.
+  It never writes or labels that raw output as a signed package. External
+  reinjection, rehashing, and resigning remain required; LIVE/PIRS private keys
+  are unavailable and CON signing needs the owning console's private keyvault.
+  No emulator runtime consumption, gameplay visibility, or Xbox 360 hardware
+  parity is claimed by this offline path.
+
+- **All 118 crest packages use one complete product path.** The loaded archive
+  resolves `uniform_logo_00.iff` through `uniform_logo_117.iff`; built-in teams
+  retain source-derived names and the remaining game-library slots stay labeled
+  only by index.
+- **One staged 512×512 RGBA crest is mirrored everywhere this bounded workflow
+  owns:** `logo_l0` and `logo_l1` in the selected package, plus both matching
+  uniform-logocache layers. Both package mip tails and both cache mip tails are
+  regenerated from the new base. The old l0-only and preserved/stale-mip
+  descriptions no longer apply to Team Logo. Field Art remains a separate
+  base-level-only writer and does not inherit this claim.
+- **The source stays read-only and the output is new.** The package writer feeds
+  the cache writer through a private intermediate copy, the final cache stage
+  is independently reparsed across all 236 layers, and whole-volume byte checks
+  preserve every unrelated package/cache extent.
+- **The final Eagles carrier passes the visual gate.** Exact package, cache,
+  guard, appearance, geometry, and source-preservation receipts pass offline
+  verification. Strict six-view and native high-side static asset-space review
+  found a crisp, coherent Eagles wing spanning the front/crown through the rear
+  with no holes, clipping, smear, halo, or floating carrier, plus high/low and
+  bilateral parity. The high carrier is 21.80×8.52 cm with 258 faces / 161
+  welded vertices; the low carrier is 21.80×8.51 cm with 78 faces / 56 welded
+  vertices. No Xenia, Wine, emulator, controller, or FIFO participated in this
+  proof, and no runtime consumption, gameplay visibility, scorebug/menu
+  ownership, or Xbox 360 hardware parity is claimed.
+
+### Raw-save playbook assignments
+
+- **Save Assignments lists all 40 team slots and all 69 named books:** 36
+  offense and 33 defense. Both sides are staged explicitly; multiple teams can
+  be staged before one new raw save and manifest are written.
+- The source is opened read-only and SHA-bound from inspection to write. Output
+  alias/overwrite is refused, exact changed bytes are accounted, the result is
+  reparsed, the name table and unrelated bytes are checked unchanged, and a
+  separate verification pass confirms the output. Synthetic fixtures remain
+  green. A private raw-save witness also parsed all 40 teams / 69 books, changed
+  slot 32 offense 25→13 and defense 56→32 in exactly two assignment fields /
+  three bytes, independently reopened to IDs 13/32 with the book table unchanged,
+  and reverse-patched to the byte-exact original.
+- **Signed Xbox CON stays inspect-only.** Safe container writeback additionally
+  needs extraction, reinjection, STFS rehashing, and resigning; the editor
+  refuses rather than creating an invalid container.
+- This selects existing books. The separate on-disc **Assignment Routes** tab
+  now copies or swaps exact stock descriptor/chain assignments inside
+  `playbook_master.iff`; formation membership is decoded for inspection.
+  Freehand route nodes, new plays/formations, and DRCT instructions remain
+  read-only. Signed-STFS reinjection/rehash/resign and assignment gameplay
+  consumption remain unproved. PB means playbook; player PBP is the distinct
+  play-by-play announcer identifier.
+
+### Paired stock roster audit
+
+- The RPCS3 and Xenia APFe exports each contain 1,344 rows. Their 169-field
+  header describes 177 positions, repeats `RunCoverage`, and leaves eight
+  trailing fields unnamed, so the audit disambiguates duplicates and preserves
+  the unlabeled positions instead of inventing semantics.
+- Every `TeamJerseyBytes` difference is explained by the exact bounded
+  RGBA-to-ARGB platform serialization. After that normalization: **1,312
+  equivalent, one stock identity variant, 31 randomized Atoms fillers, zero
+  unexplained**.
+- The stock identity variant is RPCS3 **Mike Haynes** versus Xenia **Mark
+  Smith**. Only First, Last, College, DOB, Number, Photo, PBP, and Age differ;
+  equipment, ratings, and skills match positionally.
+
+### Helmet and player same-topology POSITION import
+
+- **Uniforms & Equipment → Model Export** exposes exact cards for helmet
+  `outer 1310 / inner 128 / helmet_00` (33 meshes) and player
+  `outer 1310 / inner 273 / player` (one mesh).
+- Each export reads the source archive only and creates new `.gltf`, `.bin`, and
+  source-bound v2 `.apf-model.json` files.
+- A paired import action now accepts same-count POSITION edits, requires exact
+  source expanded triangles, preserves the fourth POSITION component and every
+  non-position/skin/attachment byte, rebuilds H7A inside the fixed allocation,
+  independently reopens it, and publishes a new `0A` plus receipt.
+- Changed topology or vertex count, materials, texture bindings, normals,
+  packed tangent/UV data, skin/rig editing, helmet/head attachment authoring,
+  animation, collision, SpeedFlex/F7 replacement molds, and runtime visibility
+  remain unavailable or unproved.
+
+## 0.1.0-alpha.52: give every team its own uniform, and drop ordinary audio 2026-07-30
+
+### Team Independence
+
+- **Every built-in team can now own its uniform textures.** APF's forty teams
+  draw helmets from only **six** textures, socks from six, numbers from seven,
+  jerseys from nine. That is why painting a wing on one team's helmet put it on
+  other teams too, and why the standing advice was that this was as good as it
+  got. A new **Team Independence** tab on Uniforms & Equipment writes a new `0A`
+  in which each team points at its own: helmets go 6 to 24, jerseys 9 to 24,
+  numbers 7 to 24, socks 6 to 24, pants 11 to 24, shoulders 14 to 24, fonts 7
+  to 11. Ninety-five team assignments change in total.
+- **The game already had the room.** Twenty-four helmet packages ship and only
+  six are referenced; the other eighteen sit complete and unused. Nothing is
+  added, teams are simply pointed at slots that were already there.
+- **You can now see who shares a texture before painting it.** The tab lists
+  every helmet with the teams currently using it by name, and marks unused ones
+  as free to take over. Helmet 01 alone is worn by sixteen teams.
+- **No artwork is altered and your game is not modified.** Only selector bytes
+  change, so helmets look identical until you edit them, and the loaded volume
+  is opened read-only while a new one is written.
+- The underlying writer is unchanged and still refuses any plan but the frozen
+  one it derives from the pinned allocation report. This release exposes it; it
+  grants no new write authority. Runtime visibility and Xbox 360 hardware
+  acceptance remain unproved, and the panel says so.
+
+### Audio
+
+- **The audio drop target and both choosers now accept ordinary audio files.**
+  The product contract becomes `selected_exact_slot_xma1_or_conformed_audio`
+  and the target is labeled **Drop .xma or audio file here**. WAV, MP3, FLAC,
+  OGG, M4A and similar are converted to the selected slot's exact channel
+  count, sample rate and frame count before encoding, so a replacement no
+  longer has to be shaped by hand in an audio editor first.
+- **A file that already matches the slot exactly is passed through untouched.**
+  Not re-encoded, not rewritten, not copied: anyone who prepared a precise WAV
+  keeps byte-for-byte control, and the path that shipped before this is
+  unchanged.
+- **Nothing downstream was relaxed.** Conversion sits in front of the existing
+  importer, so whatever it produces still faces the link-count, RIFF-structure,
+  five-way shape and exact-data-size checks, then the full exact-slot
+  allocation, packet, complete-decode, source-reuse, target and alias contract.
+  A file that cannot be converted is handed to the encoder unchanged, so its
+  original refusal message is preserved rather than replaced.
+- **External XMA1 output is now compared with the authored PCM before it can be
+  staged.** The editor decodes the encoder result, searches the decoder's
+  bounded 127-frame alignment window, and rejects collapse/silence, wrong
+  rate/pitch, channel swap/interleave, gross level changes, new sustained
+  clipping, excessive DC, and corrupt tails. Failure reaches neither the exact
+  slot writer nor the edit map. Direct pre-encoded `.xma` remains byte-preserved
+  and does not pretend to have an unavailable authored-PCM reference.
+- **The `.xma` route is unchanged and is still the only one that re-encodes
+  nothing.** The Xbox 360 stores this game's audio as XMA1 and no
+  redistributable XMA1 encoder exists: FFmpeg decodes `xma1`/`xma2` and
+  encodes neither: so the final encode still uses the encoder the user
+  configures. Dropping an already-encoded `.xma` remains lossless.
+- **Conversion quality is deliberate rather than incidental.** Resampling uses
+  soxr at high precision instead of the default resampler; both the mono and
+  stereo mixes are stated explicitly, because FFmpeg's implicit `-ac` downmix
+  does not normalise consistently across sample formats (measured on 6.1.1:
+  `(L+R)/2` for `s16le` but `(L+R)/√2` for `f32le`); the decode stays in float
+  so resampler overshoot is measured before it can clip; and a trim fades
+  briefly into the cut so it does not click. Every change is reported to the
+  user rather than applied silently.
+- Requires FFmpeg on `PATH` for conversion only. Without it, exact files still
+  work and anything else is refused with an explanation.
+
+## 0.1.0-alpha.51 — the executable answers three open questions 2026-07-30
+
+One session's work, kept as one entry: decrypting `default.xex` settled the rating
+labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
+
+### Player ratings
+
+- **All 31 rating bytes are editable, up from 28, and all 27 names now come from
+  the executable rather than inference.** `tools/xex_extract_pe.cpp` decrypts
+  `default.xex` into its 54 MB loaded image, which contains an **attribute
+  descriptor table at `0x820E4D94`** — 27 records of stride `0x60`, each holding
+  the UI abbreviation at `+0x00`, the display name at `+0x0C`, and a pointer at
+  `+0x18` to that attribute's own setter. The setter's `stb` displacement names
+  the byte, decoded from instruction words for all 27 records.
+- **The name-to-byte mapping this project already shipped was correct.** All 27
+  pairings match. `Pass Read Coverage` is `0xC9`, `Composure` is `0xD5`,
+  `Consistency` is `0xD7`, `Kicking Style` is `0xD1`, `Leadership` is `0xD3`,
+  `Kick Accuracy` is `0xD0`, `Aggressiveness` is `0xD8`.
+- **What is new: `0xBD`, `0xC5` and `0xD2` are now editable fields** instead of
+  excluded neighbours, and all four unnamed bytes (`0xBD`, `0xC5`, `0xD2`, `0xD4`)
+  carry a neutral label. No descriptor record points at their setters, so the
+  game's own UI has no name for them and none is invented. `0xD4` is the odd one
+  out — it owns formula slot 24 and a getter but no UI string, which is exactly
+  the "hidden rating" earlier notes described. The Base Ratings tab lists 31 rows
+  and the private CSV exports 31 columns.
+- **An APFe-derived relabelling was applied and then reverted the same day.** Its
+  `SFLSettings.csv` row *order* genuinely is the record's byte order (11 slots
+  reproduce all 61 stock Gold players exactly across 17 positions, a result that
+  stands), but its row *names* are misassigned, and its Attributes panel
+  contradicts its own CSV on three passing attributes. Per-position "this profile
+  looks like X" reasoning on top of that produced six confident wrong names. The
+  write-up keeps the whole path, including the wrong turn:
+  `docs/research/apf_rating_slot_settlement.md`.
+- **Not every one of the 31 bytes is a 0–99 magnitude, and the writer now knows
+  the difference.** Read off the 1,437 stock records with a populated block:
+  `Kicking Style` (`0xD1`) holds 49 at every field position with 99 for the 30
+  kickers and 1 for the 30 punters, and `0xD2` holds 0 in 1,433 records and 1 in
+  2. Both are indices, so an unobserved value is refused in
+  `validate_field_value` — at the writer, so the desktop panel, the ratings CSV
+  and the CLI are all covered. `Leadership` (`0xD3`, constant 50 everywhere) and
+  `Consistency` (`0xD7`, 99 in 1,435 of 1,437) are recorded as constants but
+  deliberately *not* blocked: APF shipped them unvaried, so writing them is
+  pointless rather than dangerous. Every field carries a `value_domain` and, where
+  the set is small, `observed_stock_values`.
+- Caveat for anyone parsing an APFe export: `RunCoverage` appears twice in the
+  header, the header names 169 of 177 fields, and past the rating block the names
+  are shifted off their data — `SpecialTeamDemon` flags 12 quarterbacks and 4
+  punters. Only the 31 rating columns are trustworthy, and only positionally.
+
+### Field art
+
+- **`endzone_l0` accepts edits.** It was refused before: forbidding the
+  overlapping H7A matches that caused the crest speckle cost the headroom, and
+  greedy overran the fixed allocation by 21 bytes at 32x32 and 9 at 8x8. The
+  minimum-cost parse recovers ~585 bytes on that block, which is more than the
+  shortfall, so the money asset now carries the same 2048x512 DXT1 coverage as
+  its sibling. The no-overlap rule did not move. Linux x86-64 releases now ship
+  the exact reviewed minimum-cost helper, validated by type, link count,
+  permissions, size, SHA-256, and decode round-trip, so users do not need a C
+  compiler for this safe fit path.
+- **Fixed a quadratic walk in the minimum-cost encoder** that made it unusable on
+  the data it exists for. It started each candidate walk at the newest position
+  holding a 3-byte key anywhere in the file; the dynamic-programming pass runs
+  backwards, so most of that chain sat above the current position and got skipped
+  with a bare `continue` that never reached the candidate cap. On texture data one
+  key dominates, so the cap bounded nothing: the 1.44 MB endzone block ran past
+  six minutes without finishing and looked like a hung test suite. It now records
+  the newest *earlier* position per key, so every visited link is a legal
+  candidate — **28 seconds** for the same block and the same output.
+  `compress_h7a_best`'s subprocess ceiling dropped 900s to 180s so a pathological
+  input takes the greedy fallback instead of stalling its caller.
+- Measured the real budget, in `docs/research/apf_h7a_allocation_budget.md`: a
+  900x220 painted region tolerates **16 distinct 4x4 blocks** with this parse and
+  12 with greedy. Flat paint compresses *better* than the art it replaces, so a
+  solid wordmark has thousands of bytes spare; gradients and photographic detail
+  will not fit at any parse quality, which is a data-entropy ceiling rather than
+  an encoder limit.
+- `tests/apf_h7a_optimal_is_bounded_test.py` pins the consequence: a 256 KB block
+  of one repeated key must encode in under 20 seconds and round-trip. The
+  endzone-refusal test now uses an edit that genuinely cannot fit, so the
+  fail-closed path stays covered.
+
+### Crest slots
+
+- **The crest editor now offers all 118 of the game's logo slots, up from 24.**
+  APF ships `uniform_logo_00.iff` through `uniform_logo_117.iff`. Twenty-four are
+  worn by built-in teams; the other ninety-four are the game's own selectable logo
+  library — the "swappable options" a modder described cycling through in the
+  in-game uniform editor while asking how to get more of their art onto helmets.
+- This was a **catalog limit, not a writer limit**. `build_patch` already took
+  `entry_index` as an ordinary parameter and consulted `PINNED_ENTRIES` only via
+  `.get()`, so unpinned slots were permitted all along; and
+  `tools/apf_logocache_patch.py` has always declared `CATALOG_COUNT = 118`, so the
+  runtime aggregate catalogues every one. Confirmed by building a real patch
+  against the unmapped `uniform_logo_00.iff` (outer entry 363) beside the
+  Americans control.
+- Slots are **resolved from the user's own archive** by CRC32 of the uppercase
+  filename, not from a typed table. The packages are scattered — slot 0 lives at
+  outer entry 363 while slot 30 is at 1133 — and a hand-written list of a
+  hundred-odd indices is a list someone can get wrong. The picker starts as the
+  twenty-four teams and widens once a game is loaded.
+- **Library slots are labelled by index, never given invented team names.** That
+  they are writable is proved; which picker position a given slot backs in game is
+  not, and the label says only what is known.
+- Unchanged deliberately: the sixteen absent team *selectors* that alias to
+  `uniform_logo_80` and own no art of their own. That is a different question from
+  these packages and they stay out.
+
+### When something goes wrong
+
+- **An unexpected error now tells you what happened.** Previously the window
+  simply closed: Qt ends the process when an error reaches it and no handler is
+  installed, and the editor runs from an icon with no console, so nothing was
+  shown anywhere. There is now a message naming the problem, stating that your
+  original game files were untouched, and giving the path of a log file to
+  attach to a bug report. The editor keeps running. A fault that repeats is
+  logged every time but only interrupts once.
+- **A game folder or ISO that has been moved or deleted is refused in words.**
+  Picking one from a recent list after moving it used to raise a raw system
+  error instead of a sentence.
+- **Broken and unrelated disc images already refused cleanly, and now say so
+  consistently.** An empty file, a partial download, an archive renamed to .iso,
+  a folder without `0A`, and a disc for a different game each report what was
+  actually wrong rather than failing generically.
+
+### Stadium glTF units
+
+- **Exported stadium glTF now opens at a sane size in Blender.** APF authors
+  geometry in centimetres and glTF's unit is the metre, so an unscaled export
+  arrived ~100x too large — a stadium spans ~17,759 units, well past Blender's
+  default 1000 m clip distance. A modder reported it as "not sure if the gltf is
+  loading correctly on blender", with a screenshot of a mesh filling the viewport.
+- The conversion is **one root node scaled by 0.01**, not a rewritten buffer.
+  `scene.bin` stays byte-identical game data, which the static topology
+  conformance spec depends on, and the position writer's recipe still declares
+  `coordinate_space` as the const `serialized_scne_object_space` — pre-scaling the
+  buffer would have put the export and the writer in different spaces.
+- **The trade-off is stated in the file rather than left to be discovered.**
+  Anything read out of a viewer is now in metres while a recipe must be in raw
+  object space, so `asset.extras.coordinate_contract` records the exact factor and
+  says to multiply by `1 / linear_scale`. Both export paths share one contract
+  helper so they cannot drift apart, and mesh nodes still carry
+  `raw_coordinates: true`.
+- Verified on the real stadium scene: one root, all 89 mesh nodes parented to it,
+  buffer still reading raw centimetres, and the scaled extent landing in the tens
+  of metres. `tests/apf_gltf_units_test.py` pins that the declaration matches what
+  the wrapper actually does — metadata claiming a conversion that was not applied
+  would be worse than none.
+- **Not verified by me:** the Blender round-trip itself. Re-exporting from Blender
+  may bake the root scale into vertices, so anyone building a recipe from a
+  Blender export should check the magnitudes before trusting them.
+
+### Skeleton / SCNE geometry
+
+- **`tools/apf_scene.py` was attaching every joint's vectors one record late, and
+  committed bone values were wrong because of it.** The joint table has no `0x20`
+  header: each `0x30` record is
+  `[absolute vector][parent-relative vector][name/crc/parent/child/sibling]`. Both
+  the old and new models put the name block at the same address, so names, CRCs
+  and the child/sibling topology always validated — only the vectors moved, and
+  they moved to the *next* record.
+- Two things that looked like findings were artifacts of it: "the serializer omits
+  the two float4 payloads from the terminal record" (there is no record *count+1*
+  to borrow from) and an eight-word table header (actually record 0's two
+  vectors). Total table length is identical either way, which is why the bounds
+  check never caught it.
+- Settled by measurement, not argument. Scoring
+  `relative(i) == absolute(i) - absolute(parent(i))` across **1,303 scenes and
+  25,615 relations**: the old layout satisfied **9,029 (35.2%)**, the corrected one
+  **25,614 (99.996%)**. `player_shadow` 20/20, stadium 47/47. The single exception
+  is a retail parent-index anomaly, not a layout problem.
+- Published values corrected: `apf_named_head_y` was `46.4520`, which is
+  `r_clavicle`; `head` is **63.86804**. `apf_named_right_knee_y` was `-94.96063`,
+  which is `r_ankle`; `r_knee_hinge` is **-49.97603**. Neither was hardcoded, so
+  fixing the parser fixed them. The skeleton now reads anatomically.
+- Corroboration: the recorded note that `0x84B0FB4C` "adds hierarchy record `+0x10`
+  XYZ" only makes sense under the corrected layout, where `+0x10` is the
+  parent-relative vector.
+
+### Crest / shader interfaces
+
+- **Task #10 is closed: the crest UV transform is pixel-shader constant `c29`.**
+  Three `ps_3_0` variants declare it as `ReverseLogoScaleAndOffset`, a single
+  `float4`, and all three carry the compiled default `(1, 1, 0, 0)`. It is not in
+  any asset, so no texture edit can move it — which is why the crest box never
+  responded to art changes.
+- **The name points at the mirrored side, but that is not proved.** The constant
+  is called *Reverse*, so the shader has a notion of a reversed helmet side and a
+  UV transform for it — the obvious way to draw one crest on both sides. Its
+  compiled default is identity though, so a mirror only happens if the engine
+  overrides `c29` at draw time. Catching that write is task #11; until then no
+  claim is made about the "wings are backwards" report.
+- **New tool: `tools/apf_xex_shader_interfaces.py`.** Point it at the decrypted
+  image from the already-vendored `tools/xex_extract_pe.cpp` and it reports every
+  shader constant interface — name, register set, register index, count and
+  compiled default. **130 constant tables** are present. It prints an interface
+  report only; no shader bytecode or texture bytes are read out.
+- **The region-colour scheme is declared outright**, where it had only been
+  measured by painting test patterns and reading screenshots. Shader `84E95944`
+  binds `RegionMap` next to `Region0Weight`…`Region5Weight` and the same
+  `Palette[6]` at `c12`–`c17` as the crest shader, plus `WeaveMap` and three
+  wrinkle-normal maps. Six regions, six palette entries, six weights. Seven
+  shaders bind a `RegionMap`.
+- **Do not patch `c29` by register number.** The crest and cloth shaders are
+  register-compatible variants of one material — same `Layer0`/`Layer1` samplers,
+  same `Palette` range, same lighting registers — but `c29` is
+  `ReverseLogoScaleAndOffset` in one and `WeaveRepeat` in the other (and `c26`,
+  `c27`, `c31`, `c36` are likewise reused). A register-global patch would set
+  fabric weave repetition to a UV transform. Any executable patch has to be scoped
+  to the bound shader.
+- Still open (task #11): which engine code writes `c29`, and with what values per
+  side. The compiled default is identity, so a mirror is either an engine override
+  or happens elsewhere; candidate mirror `float4`s exist in the image but cannot be
+  attributed without tracing the writer, so nothing is claimed either way. A
+  promising lead: `Layer0` appears as a plain string in the raw `0A` archive with
+  H7A-mangled fragments of the same constant names around it, so reflection tables
+  exist on the asset side too. If the crest shader is reachable as an asset, editing
+  it beats patching the executable outright.
+
 ## 0.1.0-alpha.50 — rating-slot research 2026-07-28
+
+> **Superseded by alpha.51:** the predicted shift did not exist. The shipped
+> mapping was already correct; APFe's labels are misassigned.
+
 
 - No behaviour changed. APFe's own `SFLSettings.csv` lists 31 attributes in a
   fixed order that maps 1:1 onto the player record's `0xBA`..`0xD8`, scoring

@@ -8,18 +8,23 @@ assets and does not touch a user's source directly; every operation crosses the
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 import html
 import json
+import math
 import os
 from pathlib import Path
 import shutil
+import stat
+import subprocess
 import sys
 import tempfile
 import threading
 import traceback
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Mapping
+from uuid import uuid4
+import wave
 
 from PyQt5.QtCore import (
     QObject,
@@ -30,12 +35,14 @@ from PyQt5.QtCore import (
     Qt,
     QThreadPool,
     QTimer,
+    QUrl,
     pyqtSignal,
 )
 from PyQt5.QtGui import (
     QBrush,
     QCloseEvent,
     QColor,
+    QDesktopServices,
     QIcon,
     QKeySequence,
     QPainter,
@@ -54,6 +61,7 @@ from PyQt5.QtWidgets import (
     QFrame,
     QGridLayout,
     QHBoxLayout,
+    QInputDialog,
     QLabel,
     QLineEdit,
     QListWidget,
@@ -78,6 +86,15 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from mod_editor.core import audio_conform, platform_compat
+from mod_editor.core import update_check
+from mod_editor.core.texture_master import (
+    AuthoringTransform,
+    fit_transform as texture_master_fit_transform,
+    snapshot_texture_master_source,
+)
+from mod_editor.gui import crash_report
+from mod_editor.gui import update_ui
 from mod_editor.gui.apf_audio_waveform_qt import (
     AudioWaveformPreview,
     WaveformCancelled,
@@ -89,7 +106,26 @@ from mod_editor.gui.apf_audio_waveform_qt import (
 from mod_editor.gui.stadium_viewer import GltfWireframeModel, StadiumViewport
 
 from . import __version__
+_TOOLS_DIR = str(Path(__file__).resolve().parents[2] / "tools")
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+import apf_crest_box_patch  # noqa: E402
+import apf_custom_team_appearance_patch  # noqa: E402
+from apf_team_crests import TEAM_CRESTS, crest_slots, default_crest  # noqa: E402
+
 from .audio_encoding import ExternalXma1Encoder
+from .build import (
+    compile_full_shell_crest_entries,
+    publish_compiled_outer_entries,
+)
+from .custom_team_appearance_qt import CustomTeamAppearancePanel
+from .uniform_equipment_colors_qt import UniformEquipmentColorsPanel
+from .uniform_independence_panel import UniformIndependencePanel
+from .textlogo_authoring import (
+    WORDMARK_HEIGHT,
+    WORDMARK_WIDTH,
+    prepare_wordmark_png,
+)
 from .facade import (
     ApfStudioFacade,
     ROSTER_IDENTITY_RUNTIME_LOCK_MESSAGE,
@@ -102,6 +138,26 @@ from .field_art import (
     build_field_art_inventory,
 )
 from .inspectors import ApfInspectorService, ExportIdentity, InspectorRow, PagedModel
+from .helmet_crest_design import (
+    FULL_SHELL_CREST_PROFILE,
+    GLOBAL_HELMET_WARNING,
+    HELMET_CREST_DESIGN_EDIT_ID,
+    RETAIL_CREST_PROFILE,
+)
+from .helmet_logo_placement import (
+    HelmetLogoPlacementError,
+    Placement,
+    compose_contained_master_transform,
+    import_mask_nearest,
+)
+from .helmet_logo_placement_qt import place_helmet_logo
+from .helmet_logo_regions import (
+    NORMAL_LOGO_IMPORT_MODE,
+    REGION_MASK_IMPORT_MODE,
+    HelmetLogoRegionError,
+    validate_region_mask_rgba,
+)
+from .helmet_logo_regions_qt import convert_normal_logo
 from .models import (
     APF_CATEGORY_ORDER,
     ApfAsset,
@@ -113,6 +169,7 @@ from .models import (
     UniformAsset,
     asset_action_binding,
 )
+from .model_export_qt import PlayerEquipmentModelExportPanel
 from .project import (
     ProjectError,
     ProjectTargetIdentity,
@@ -122,8 +179,13 @@ from .project import (
 )
 from .product_findings import gameplay_snapshot, presentation_snapshot
 from .roster_workspace_qt import RosterReservePlanner
+from .save_playbooks_qt import SavePlaybookAssignmentsPanel
+from .playbook_route_qt import PlayAssignmentRoutePanel
+from .save_roster_players_qt import SaveRosterPlayersPanel
 from .stadium import ApfStadiumPreview, ApfStadiumScene
 from .stadium_material_findings import load_stadium_material_findings
+from . import stadium_model_import
+from . import stadium_texture
 
 
 PRODUCT_NAME = "APF 2K8 Mod Studio"
@@ -155,7 +217,7 @@ def _window_icon() -> QIcon | None:
 AUDIO_REPLACEMENT_IMPORT_CONFIRMATION_CONTRACT = (
     "fully_validated_read_only_preview_then_explicit_apply"
 )
-AUDIO_DIRECT_DROP_CONTRACT = "selected_exact_slot_xma1_or_pcm16_wav"
+AUDIO_DIRECT_DROP_CONTRACT = "selected_exact_slot_xma1_or_conformed_audio"
 AUDIO_ANNOTATION_UI_CONTRACT = "project_metadata_only_stable_logical_cue_id"
 AUDIO_ANNOTATION_MAX_TITLE_CHARS = 120
 AUDIO_ANNOTATION_MAX_NOTE_CHARS = 2_000
@@ -164,16 +226,16 @@ AUDIO_ANNOTATION_MAX_NOTE_CHARS = 2_000
 CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.GETTING_STARTED: "Load your own game, make familiar PNG edits, then build a separate playable copy.",
     ApfCategory.UNIFORMS: "Edit all 96 mapped material-color textures and browse or export every one of the 408 indexed uniform and equipment records.",
-    ApfCategory.ROSTERS: "Browse every mapped player and team, replace nonempty player first/last names and team display names under their exact source limits, choose any of 17 exact player positions, edit 28 native 0–99 base ratings per player, or safely export/import all 2,254 players through a private ratings CSV. Shared name allocations change every disclosed owner together; team abbreviations and roster structure remain locked.",
+    ApfCategory.ROSTERS: "Browse the on-disc roster or open Save Players for a raw Roster.ROS / verified STFS handoff. The save editor exposes 149 exact packed fields per player, all 15 fixed-allocation identity text fields, and count-preserving populated roster-slot swaps. Overall and capacity expansion remain locked because their complete engine contracts are not proved.",
     ApfCategory.TEAM_IDENTITY: "Browse team-facing resources; more identity editing unlocks here as each field is proven safe.",
     ApfCategory.LOGOS: "Replace the shared 512×512 team-logo crest and the 128×128 draft logo, and browse every indexed logo and team-art record.",
     ApfCategory.SCOREBUG: "Edit the proved digital_font mask and inspect the rest of the broadcast presentation inventory.",
     ApfCategory.FIELD_ART: "Replace the six proven field textures — endzone layers, practice overlays, and the divot base — and browse the complete field-art inventory.",
-    ApfCategory.STADIUMS: "Explore your game's stadium geometry in 3D; stadium textures stay export-only until material ownership is proven.",
+    ApfCategory.STADIUMS: "Explore stadium geometry in 3D, edit any of the 78 statically owned embedded textures, and round-trip same-topology POSITION edits for 77 catalog-authorized surfaces into a separately verified copied 1A.",
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
-    ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, author from PCM WAV with your own encoder, or batch-stage exact-slot replacements from a retail-free XMA1 or PCM16 WAV folder or ZIP.",
+    ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",
     ApfCategory.GAMEPLAY: "Inspect mapped sliders and follow gameplay research; nothing is offered as an edit until it is proven safe.",
-    ApfCategory.PLAYBOOKS: "Inspect mapped PLAY and DRCT structures while route authoring semantics remain under study.",
+    ApfCategory.PLAYBOOKS: "Inspect mapped PLAY and DRCT structures, copy or safely swap exact stock player-assignment routes in MASTER PLAY, or reassign the 69 existing offensive/defensive books across all 40 team slots in a raw roster save. Freehand route nodes and DRCT remain read-only.",
     ApfCategory.FRANCHISE: "Browse season, schedule, save, and franchise structures while deeper franchise editing is researched.",
     ApfCategory.ALL_ASSETS: "Every record the live indexer sees appears here, including opaque and export-only resources.",
 }
@@ -230,6 +292,8 @@ def _status_color(status: ApfStatus) -> str:
         ApfStatus.PREVIEW: "#73a8ff",
         ApfStatus.EXPORT_ONLY: "#f2bd5a",
         ApfStatus.COMING_SOON: "#8795aa",
+        ApfStatus.EVIDENCE: "#9aa8bd",
+        ApfStatus.RESEARCH: "#8795aa",
     }[status]
 
 
@@ -241,6 +305,39 @@ def _status_text(status: ApfStatus) -> str:
         ApfStatus.PREVIEW: "◉ Preview",
         ApfStatus.EXPORT_ONLY: "↓ Export only",
         ApfStatus.COMING_SOON: "◷ Coming soon",
+        ApfStatus.EVIDENCE: "◇ Proof boundary",
+        ApfStatus.RESEARCH: "⌕ Research boundary",
+    }[status]
+
+
+def _capability_next_step(status: ApfStatus) -> str:
+    """A plain next step so capability cards never end at a boundary."""
+
+    return {
+        ApfStatus.EDITABLE: (
+            "Next: pick an item in this category, then use Replace — or drop "
+            "your image right onto its preview. Any size or format works."
+        ),
+        ApfStatus.PREVIEW: (
+            "Next: pick a row to preview it. Editing unlocks once a proved "
+            "writer exists for that exact resource."
+        ),
+        ApfStatus.EXPORT_ONLY: (
+            "Next: pick a row to export it. Editing unlocks once a proved "
+            "writer exists for that exact resource."
+        ),
+        ApfStatus.COMING_SOON: (
+            "Next: choose your game on the Getting Started page to unlock "
+            "this category."
+        ),
+        ApfStatus.EVIDENCE: (
+            "Next: review the linked findings; editable rows are listed "
+            "separately in this category."
+        ),
+        ApfStatus.RESEARCH: (
+            "Next: review the linked findings; editable rows are listed "
+            "separately in this category."
+        ),
     }[status]
 
 
@@ -365,6 +462,162 @@ def _declared_sibling_packs(index_path: Path) -> tuple[str, ...]:
     )
 
 
+def _write_json_new(path: Path, document: Mapping[str, object]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8") as stream:
+        json.dump(document, stream, indent=2, sort_keys=True)
+        stream.write("\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+
+
+def _build_full_shell_team_logo_volume(
+    index_path: Path,
+    staged_png: Path,
+    out_volume: Path,
+    package_manifest: Path,
+    cache_manifest: Path,
+    cache_verify_manifest: Path,
+    crest_wrap_manifest: Path,
+    progress: Callable[[str, int, int], None],
+    *,
+    cache_catalog_index: int,
+    outer_entry_index: int,
+    siblings: tuple[str, ...],
+    appearance_replacements: Mapping[
+        int, apf_custom_team_appearance_patch.CustomTeamAppearance
+    ] | None,
+    appearance_manifest: Path | None,
+) -> dict[str, object]:
+    """Compile everything first, then atomically publish one complete new 0A."""
+
+    compilation = compile_full_shell_crest_entries(
+        index_path,
+        staged_png,
+        selected_asset_index=cache_catalog_index,
+        selected_outer_index=outer_entry_index,
+        progress=progress,
+    )
+    created_receipts: list[Path] = []
+    appearance_verification: dict[str, object] | None = None
+    stage_directory = Path(
+        tempfile.mkdtemp(
+            prefix=f".{out_volume.name}.full-shell-", dir=str(out_volume.parent)
+        )
+    )
+    staged_volume = stage_directory / out_volume.name
+    staged_sibling_links: list[Path] = []
+    final_published = False
+    try:
+        staged_publication = publish_compiled_outer_entries(
+            index_path, staged_volume, compilation.entries, progress=progress
+        )
+        if appearance_replacements:
+            # The staged 0A still declares its retail sibling packs. Make those
+            # read-only packs visible beside the private copy for the bounded
+            # appearance parser; reference them without copying or modifying
+            # the user's game files.
+            for pack in siblings:
+                destination = stage_directory / pack
+                _link_reference(index_path.parent / pack, destination)
+                staged_sibling_links.append(destination)
+            progress("Writing HOME/AWAY appearance into the private stage", 0, 1)
+            appearance_receipt = (
+                apf_custom_team_appearance_patch.patch_private_staged_volume(
+                    staged_volume, appearance_replacements
+                )
+            )
+            appearance_verification = (
+                apf_custom_team_appearance_patch.verify_output_appearances(
+                    index_path, staged_volume, appearance_replacements
+                )
+            )
+            assert appearance_manifest is not None
+            _write_json_new(appearance_manifest, {
+                "schema": "apf2k8_team_logo_and_custom_appearance_build/v2",
+                "appearance_stage": appearance_receipt,
+                "final_appearance_verification": appearance_verification,
+                "selected_crest_asset_index": cache_catalog_index,
+                "appearance_slots": sorted(appearance_replacements),
+                "all_home_away_crest_selectors_match_selected_asset": True,
+                "source_opened_read_only": True,
+                "output_created_new": True,
+            })
+            created_receipts.append(appearance_manifest)
+
+        publication = dict(staged_publication)
+        publication.update({
+            "private_stage_completed_before_final_name": True,
+            "final_publish_atomic_no_replace": True,
+        })
+        _write_json_new(package_manifest, {
+            "schema": "apf2k8_full_shell_all_package_build/v1",
+            "compilation": compilation.report,
+            "publication": publication,
+        })
+        created_receipts.append(package_manifest)
+        _write_json_new(cache_manifest, compilation.cache_manifest)
+        created_receipts.append(cache_manifest)
+        _write_json_new(
+            cache_verify_manifest, compilation.cache_structure_verification
+        )
+        created_receipts.append(cache_verify_manifest)
+        crest_document = json.loads(json.dumps(compilation.carrier_manifest))
+        crest_document["product_integration"] = {
+            "coverage_profile": FULL_SHELL_CREST_PROFILE,
+            "creates_xenia_patch": False,
+            "edits_default_xex": False,
+            "selected_package_l0_l1_identical_atlas": True,
+            "selected_cache_l0_l1_semantic_not_atlas": True,
+            "all_118_packages_migrated_before_publication": True,
+            "verification": compilation.carrier_verification,
+        }
+        _write_json_new(crest_wrap_manifest, crest_document)
+        created_receipts.append(crest_wrap_manifest)
+
+        progress("Publishing the complete full-shell 0A", 0, 1)
+        final_publication = platform_compat.publish_no_replace(
+            staged_volume,
+            out_volume,
+            is_directory=False,
+            require_atomic=True,
+        )
+        if not final_publication.atomic_no_clobber:
+            raise RuntimeError("The platform did not provide atomic no-replace publish")
+        final_published = True
+        progress("Publishing the complete full-shell 0A", 1, 1)
+    except BaseException:
+        for path in reversed(created_receipts):
+            path.unlink(missing_ok=True)
+        # The final name never exists until the hidden same-filesystem stage is
+        # complete. Never unlink the final path here: after a no-replace race it
+        # may belong to somebody else.
+        if not final_published:
+            staged_volume.unlink(missing_ok=True)
+        raise
+    finally:
+        for path in reversed(staged_sibling_links):
+            path.unlink(missing_ok=True)
+        try:
+            stage_directory.rmdir()
+        except OSError:
+            # A failed cleanup can leave only this exact empty/private staging
+            # directory; it must never turn a completed final 0A into failure.
+            pass
+    return {
+        "volume": out_volume,
+        "cache_manifest": cache_manifest,
+        "cache_verify_manifest": cache_verify_manifest,
+        "package_manifest": package_manifest,
+        "crest_patch": None,
+        "crest_coverage": 1.0,
+        "appearance_manifest": appearance_manifest,
+        "appearance_verification": appearance_verification,
+        "crest_profile": FULL_SHELL_CREST_PROFILE,
+        "crest_wrap_manifest": crest_wrap_manifest,
+    }
+
+
 def build_team_logo_copied_volume(
     index_path: Path,
     staged_png: Path,
@@ -374,18 +627,25 @@ def build_team_logo_copied_volume(
     progress: Callable[[str, int, int], None],
     *,
     cache_catalog_index: int,
+    outer_entry_index: int | None = None,
     siblings: tuple[str, ...] | None = None,
+    crest_coverage: float = 1.0,
+    crest_patch: Path | None = None,
+    appearance_replacements: Mapping[
+        int, apf_custom_team_appearance_patch.CustomTeamAppearance
+    ] | None = None,
+    appearance_manifest: Path | None = None,
+    crest_profile: str = RETAIL_CREST_PROFILE,
+    crest_wrap_manifest: Path | None = None,
 ) -> dict[str, object]:
-    """Run the two offline-proved team-logo writers over a copy of one 0A.
+    """Build one complete package/cache crest result from a read-only source.
 
-    One action, two proved writers.  The package write
-    (``tools/apf_logo_patch.py``) lands in an intermediate copy; the cache write
-    (``tools/apf_logocache_patch.py``) then reads that copy and produces the
-    volume the author keeps, so the single delivered 0A carries both the
-    ``uniform_logo_01`` package edit and the matching ``uniform_logocache``
-    entry.  Either writer failing raises, and both writers remove their own
-    partial outputs, so a failed build leaves nothing behind but the workspace
-    this cleans up.  The retail source is never opened for writing.
+    The staged crest is mirrored into both ``logo_l0`` and ``logo_l1``. Retail
+    side-decal builds use the bounded package/cache tools; full-shell builds
+    compile every crest package plus the cache and shell route before a hidden
+    same-filesystem stage is atomically published to the requested 0A name.
+    Either profile fails closed, and the retail source is never opened for
+    writing.
 
     This is the exact builder :class:`ApfTeamLogoPanel` dispatches and that
     ``tests/mod_editor/test_apf_team_logo_gui.py`` pins; the facade's
@@ -414,16 +674,128 @@ def build_team_logo_copied_volume(
                 or f"The {writer.stem} writer failed."
             )
 
+    cache_verify_manifest = cache_manifest.with_name(
+        f"{cache_manifest.stem}.verify.json"
+    )
+    destinations = [
+        out_volume,
+        package_manifest,
+        cache_manifest,
+        cache_verify_manifest,
+    ]
+    if crest_patch is not None:
+        destinations.append(crest_patch)
+    if appearance_manifest is not None:
+        destinations.append(appearance_manifest)
+    if crest_wrap_manifest is not None:
+        destinations.append(crest_wrap_manifest)
+    for destination in destinations:
+        if destination.exists() or destination.is_symlink():
+            raise RuntimeError(
+                "The proved team-logo build never overwrites existing files; "
+                f"choose a new location ({destination} already exists)."
+            )
+
+    if (crest_coverage > 1.0) != (crest_patch is not None):
+        raise RuntimeError(
+            "A non-retail crest coverage and its Xenia patch destination must "
+            "be supplied together."
+        )
+    if crest_profile not in {RETAIL_CREST_PROFILE, FULL_SHELL_CREST_PROFILE}:
+        raise RuntimeError("Unknown helmet crest coverage profile")
+    if (crest_profile == FULL_SHELL_CREST_PROFILE) != (
+        crest_wrap_manifest is not None
+    ):
+        raise RuntimeError(
+            "The full-shell crest profile and its verifier receipt destination "
+            "must be supplied together."
+        )
+    if bool(appearance_replacements) != (appearance_manifest is not None):
+        raise RuntimeError(
+            "Custom-team appearance replacements and their receipt destination "
+            "must be supplied together."
+        )
+    if appearance_replacements:
+        for slot, requested in sorted(appearance_replacements.items()):
+            try:
+                appearance = apf_custom_team_appearance_patch.validate_appearance(
+                    requested
+                )
+            except apf_custom_team_appearance_patch.CustomTeamAppearanceError as exc:
+                raise RuntimeError(
+                    f"Custom-team appearance slot {slot} is invalid: {exc}"
+                ) from exc
+            if slot != appearance.slot:
+                raise RuntimeError(
+                    f"Custom-team appearance mapping key {slot} does not match "
+                    f"payload slot {appearance.slot}"
+                )
+            for bank_name, bank in (("HOME", appearance.home), ("AWAY", appearance.away)):
+                if bank.logo_selector[0] != cache_catalog_index:
+                    raise RuntimeError(
+                        f"Custom-team appearance slot {slot} {bank_name} selects "
+                        f"crest asset {bank.logo_selector[0]}, but this Team Logo "
+                        f"build selected asset {cache_catalog_index}"
+                    )
+    # Validate the tiny patch before copying a 1.1 GB volume.  The document is
+    # rebuilt on the final write, but this catches a bad multiplier with zero
+    # disk cost and before either offline writer starts.
+    if crest_patch is not None:
+        if crest_patch.exists() or crest_patch.is_symlink():
+            raise RuntimeError(f"Crest patch destination already exists: {crest_patch}")
+        apf_crest_box_patch.patch_document(crest_coverage)
     if siblings is None:
         siblings = _declared_sibling_packs(index_path)
     out_volume.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        free_bytes = shutil.disk_usage(out_volume.parent).free
+        # Retail chains two legacy copied-volume writers. Full-shell compiles
+        # every bounded entry first and then creates exactly one delivered
+        # copy, which also avoids wasting another 1.1 GB temporary allocation.
+        copy_count = 1 if crest_profile == FULL_SHELL_CREST_PROFILE else 2
+        required_bytes = (
+            index_path.stat().st_size * copy_count + 256 * 1024 * 1024
+        )
+    except OSError as exc:
+        raise RuntimeError(
+            f"Could not check free space for the team-logo build: {exc}"
+        ) from exc
+    if free_bytes < required_bytes:
+        raise RuntimeError(
+            "Not enough free space for a safe team-logo build: "
+            f"{required_bytes:,} bytes are required and {free_bytes:,} are free."
+        )
+    if crest_profile == FULL_SHELL_CREST_PROFILE:
+        if outer_entry_index is None or crest_wrap_manifest is None:
+            raise RuntimeError(
+                "Full-shell builds require one source-resolved crest package"
+            )
+        return _build_full_shell_team_logo_volume(
+            index_path,
+            staged_png,
+            out_volume,
+            package_manifest,
+            cache_manifest,
+            cache_verify_manifest,
+            crest_wrap_manifest,
+            progress,
+            cache_catalog_index=cache_catalog_index,
+            outer_entry_index=outer_entry_index,
+            siblings=siblings,
+            appearance_replacements=appearance_replacements,
+            appearance_manifest=appearance_manifest,
+        )
     workspace = Path(
         tempfile.mkdtemp(
             prefix=".apf-team-logo-build-", dir=str(out_volume.parent)
         )
     )
     retained: Path | None = None
+    appearance_receipt: dict[str, object] | None = None
+    appearance_verification: dict[str, object] | None = None
+    build_complete = False
     try:
+        texture_png = staged_png
         # The cache writer re-parses its --index volume, and an APF index only
         # parses under its own pack name beside every sibling pack it declares.
         # Stage the intermediate that way and reference the siblings by link, so
@@ -433,20 +805,39 @@ def build_team_logo_copied_volume(
         for pack in siblings:
             _link_reference(index_path.parent / pack, workspace / pack)
         staged_manifest = workspace / "team_logo_package.json"
+        package_arguments = [
+            "--index",
+            str(index_path),
+            "--png",
+            str(texture_png),
+            "--png-l1",
+            str(texture_png),
+            "--output-volume",
+            str(staged_volume),
+            "--manifest",
+            str(staged_manifest),
+        ]
+        if outer_entry_index is not None:
+            # Which team's crest this is.  Omitted, the writer keeps its own
+            # historical default, so callers that never chose a team are
+            # unaffected.
+            package_arguments += ["--entry-index", str(outer_entry_index)]
         run(
             tools / "apf_logo_patch.py",
-            [
-                "--index",
-                str(index_path),
-                "--png",
-                str(staged_png),
-                "--output-volume",
-                str(staged_volume),
-                "--manifest",
-                str(staged_manifest),
-            ],
+            package_arguments,
             "Copying volume and writing the crest package through the proved writer",
         )
+        if appearance_replacements:
+            progress(
+                "Writing HOME/AWAY colors and helmet/crest selectors into the private stage",
+                0,
+                0,
+            )
+            appearance_receipt = (
+                apf_custom_team_appearance_patch.patch_private_staged_volume(
+                    staged_volume, appearance_replacements
+                )
+            )
         run(
             tools / "apf_logocache_patch.py",
             [
@@ -455,7 +846,9 @@ def build_team_logo_copied_volume(
                 "--catalog-index",
                 str(cache_catalog_index),
                 "--png",
-                str(staged_png),
+                str(texture_png),
+                "--png-l1",
+                str(texture_png),
                 "--output-volume",
                 str(out_volume),
                 "--manifest",
@@ -463,18 +856,116 @@ def build_team_logo_copied_volume(
             ],
             "Writing the same crest into the prebuilt logo cache",
         )
+        run(
+            tools / "apf_logocache_verify.py",
+            [
+                "--source",
+                str(staged_volume),
+                "--output",
+                str(out_volume),
+                "--catalog-index",
+                str(cache_catalog_index),
+                "--expect-l1",
+                "--manifest",
+                str(cache_verify_manifest),
+            ],
+            "Independently verifying the copied volume and regenerated crest mips",
+        )
+        if appearance_replacements:
+            progress(
+                "Independently reopening the final ROST appearance records",
+                0,
+                0,
+            )
+            appearance_verification = (
+                apf_custom_team_appearance_patch.verify_output_appearances(
+                    staged_volume,
+                    out_volume,
+                    appearance_replacements,
+                )
+            )
+            assert appearance_manifest is not None
+            try:
+                package_document = json.loads(
+                    staged_manifest.read_text(encoding="utf-8")
+                )
+                cache_document = json.loads(
+                    cache_manifest.read_text(encoding="utf-8")
+                )
+                source_volume_sha256 = package_document["copied_volume"][
+                    "source_volume_sha256_before"
+                ]
+                final_volume_sha256 = cache_document["copied_volume"][
+                    "output_volume_sha256"
+                ]
+            except (OSError, KeyError, TypeError, ValueError) as exc:
+                raise RuntimeError(
+                    "The unified appearance provenance receipts are incomplete"
+                ) from exc
+            if any(
+                not isinstance(digest, str)
+                or len(digest) != 64
+                or any(character not in "0123456789abcdef" for character in digest)
+                for digest in (source_volume_sha256, final_volume_sha256)
+            ):
+                raise RuntimeError(
+                    "The unified appearance provenance hashes are invalid"
+                )
+            document = {
+                "schema": "apf2k8_team_logo_and_custom_appearance_build/v1",
+                "provenance": {
+                    "source_volume": str(index_path),
+                    "source_volume_sha256": source_volume_sha256,
+                    "source_opened_read_only": True,
+                    "final_volume": str(out_volume),
+                    "final_volume_sha256": final_volume_sha256,
+                    "final_volume_created_new": True,
+                },
+                "appearance_stage": appearance_receipt,
+                "final_appearance_verification": appearance_verification,
+                "composition": {
+                    "crest_package_then_roster_then_logo_cache": True,
+                    "original_source_opened_read_only": True,
+                    "private_intermediate_exclusively_owned": True,
+                    "final_output_created_new": True,
+                    "all_three_consumers_present_in_one_0A": True,
+                },
+            }
+            appearance_manifest.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                with appearance_manifest.open("x", encoding="utf-8") as stream:
+                    json.dump(document, stream, indent=2, sort_keys=True)
+                    stream.write("\n")
+                    stream.flush()
+                    os.fsync(stream.fileno())
+            except BaseException:
+                appearance_manifest.unlink(missing_ok=True)
+                raise
         try:
             retained = _copy_new(staged_manifest, package_manifest)
         except OSError:
             # The volume and its cache manifest are already written and
             # verified; only the package-stage evidence copy failed.
             retained = None
+        if crest_patch is not None:
+            progress("Writing the optional Xenia crest-coverage patch", 0, 0)
+            apf_crest_box_patch.write_new_patch(crest_patch, crest_coverage)
+        build_complete = True
     finally:
         shutil.rmtree(workspace, ignore_errors=True)
+        if not build_complete and crest_wrap_manifest is not None:
+            crest_wrap_manifest.unlink(missing_ok=True)
     return {
         "volume": out_volume,
         "cache_manifest": cache_manifest,
+        "cache_verify_manifest": cache_verify_manifest,
         "package_manifest": retained,
+        "crest_patch": crest_patch,
+        "crest_coverage": crest_coverage,
+        "appearance_manifest": appearance_manifest,
+        "appearance_verification": appearance_verification,
+        "crest_profile": crest_profile,
+        "crest_wrap_manifest": crest_wrap_manifest,
     }
 
 
@@ -583,9 +1074,101 @@ TaskRunner = Callable[
 ]
 IdleRunner = Callable[[Callable[[], None]], None]
 
+# Every image route in the editor accepts the same ordinary formats.  The fit
+# layer (mod_editor.core.image_fit) converts whatever arrives to the slot's
+# exact size and an 8-bit RGBA PNG, so the chooser and the drop target both
+# advertise the full set instead of only PNG.
+IMAGE_IMPORT_EXTENSIONS = {
+    ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp", ".tga",
+}
+IMAGE_IMPORT_FILTER = (
+    "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.tga);;All files (*)"
+)
+
+# First-run guidance: before a game is loaded the panels would otherwise be a
+# wall of disabled buttons.  Every empty state names the one next step.
+START_HERE_HINT = (
+    "Start here: File → Open APF ISO… (or Getting Started → Choose ISO). "
+    "Everything on this page unlocks once your game is recognized."
+)
+
+
+def _plain_image_formats() -> str:
+    return "PNG, JPEG, BMP, GIF, WebP or TGA"
+
+
+# Plain-language "what to do next" for the backend's exact-slot refusals.  The
+# fail-closed behaviour itself never changes -- the writer still rejects the
+# same bytes -- but the GUI pairs each refusal with the fix a first-time
+# modder should try, instead of leaving them with jargon and a dead end.
+_ERROR_FIX_HINTS: tuple[tuple[str, str], ...] = (
+    (
+        "Expected an exact",
+        "Fix: this slot needs one exact pixel size, but you don't need another "
+        "app to get there — use the panel's Replace button or drop the image on "
+        "its preview, and Mod Studio resizes it for you.",
+    ),
+    (
+        "Wordmark PNG alpha must be 255",
+        "Fix: use Logos → Wordmarks → Import, which flattens transparent art "
+        "onto black for you automatically.",
+    ),
+    (
+        "PNG alpha must be 255",
+        "Fix: this slot stores fully opaque pixels. Open the image and fill in "
+        "its transparent areas, or export it without transparency, then try again.",
+    ),
+    (
+        "must stay",
+        "Fix: that image has the wrong dimensions for this slot. Import it "
+        "through its panel and let Mod Studio resize it to the exact slot size.",
+    ),
+    (
+        "RGB must be solid white",
+        "Fix: the score-digit mask draws only in transparency. Use the panel's "
+        "Replace button — it converts any image to solid-white-with-alpha for you.",
+    ),
+    (
+        "blue must be 0",
+        "Fix: this helmet mask stores only red/green region weights. Use the "
+        "Team Logo panel's Normal-logo import, which converts ordinary artwork.",
+    ),
+    (
+        "could not be read as an image",
+        "Fix: choose or drop a "
+        "PNG, JPEG, BMP, GIF, WebP or TGA image. Any size works.",
+    ),
+    (
+        "require opaque artwork",
+        "Fix: this stadium slot cannot store transparency. Flatten the image's "
+        "transparent areas to a solid colour, then try again.",
+    ),
+    (
+        "FFmpeg was not found",
+        "Fix: install FFmpeg to convert ordinary audio (MP3, FLAC, OGG, M4A), or "
+        "supply a PCM16 WAV that already matches the slot's exact shape.",
+    ),
+)
+
+
+def friendly_fix_hint(message: str) -> str | None:
+    """Return the plain next-step for a known refusal, or None."""
+
+    lowered = message.casefold()
+    for needle, hint in _ERROR_FIX_HINTS:
+        if needle.casefold() in lowered:
+            return hint
+    return None
+
 
 class ImageDropLabel(QLabel):
-    """Scaled preview that also accepts one local PNG replacement."""
+    """Scaled preview that also accepts one local image replacement.
+
+    Any ordinary image format may be dropped -- the panels convert it to the
+    slot's exact size.  Drops that cannot be used (several files at once,
+    links, non-image files) are refused with a plain explanation instead of
+    silently bouncing, so a first-time modder learns what to do next.
+    """
 
     pngDropped = pyqtSignal(Path)
 
@@ -713,20 +1296,49 @@ class ImageDropLabel(QLabel):
 
     def dragEnterEvent(self, event: object) -> None:
         mime = event.mimeData()  # type: ignore[attr-defined]
-        urls = mime.urls() if mime.hasUrls() else []
-        if len(urls) == 1 and urls[0].isLocalFile() and urls[0].toLocalFile().lower().endswith(".png"):
+        if mime.hasUrls() and mime.urls():
+            # Accept the drag so an unusable drop can explain itself with a
+            # plain message instead of silently bouncing off the panel.
             event.acceptProposedAction()  # type: ignore[attr-defined]
         else:
             event.ignore()  # type: ignore[attr-defined]
 
+    def _refuse_drop(self, message: str) -> None:
+        QMessageBox.information(self, "That drop can't be used yet", message)
+
     def dropEvent(self, event: object) -> None:
-        url = event.mimeData().urls()[0]  # type: ignore[attr-defined]
-        self.pngDropped.emit(Path(url.toLocalFile()))
+        urls = event.mimeData().urls()  # type: ignore[attr-defined]
+        if len(urls) != 1:
+            self._refuse_drop(
+                "Drop one file at a time. Pick the single image you want to "
+                "use and drop it on this panel again."
+            )
+            event.ignore()  # type: ignore[attr-defined]
+            return
+        url = urls[0]
+        if not url.isLocalFile() or url.host():
+            self._refuse_drop(
+                "That drop is a link or a web address, not a file on this "
+                "computer. Save or download the image first, then drop the "
+                "real file here."
+            )
+            event.ignore()  # type: ignore[attr-defined]
+            return
+        path = Path(url.toLocalFile())
+        if path.suffix.casefold() not in IMAGE_IMPORT_EXTENSIONS:
+            self._refuse_drop(
+                f"That file is not an image this panel can read. Drop a "
+                f"{_plain_image_formats()} image — any size is fine, the "
+                "editor resizes it for you."
+            )
+            event.ignore()  # type: ignore[attr-defined]
+            return
+        self.pngDropped.emit(path)
         event.acceptProposedAction()  # type: ignore[attr-defined]
 
 
 class AudioReplacementDropZone(QFrame):
-    """Accept one local XMA1 or PCM16 WAV for the selected exact sound slot."""
+    """Accept one local XMA1 or convertible audio file for one exact slot."""
 
     audioDropped = pyqtSignal(Path)
 
@@ -737,13 +1349,13 @@ class AudioReplacementDropZone(QFrame):
         self.setMinimumHeight(58)
         self.setAccessibleName("Drop an audio replacement for the selected sound")
         self.setAccessibleDescription(
-            "Accepts one pre-encoded RIFF XMA1 file, or one exact PCM16 WAV when "
-            "a user-supplied XMA1 encoder is configured."
+            "Accepts one pre-encoded RIFF XMA1 file, or ordinary audio such as "
+            "WAV, MP3, FLAC, OGG or M4A when a user-supplied XMA1 encoder is configured."
         )
         box = QVBoxLayout(self)
         box.setContentsMargins(12, 8, 12, 8)
         box.setSpacing(2)
-        self.title = QLabel("Drop .xma or exact PCM16 .wav here")
+        self.title = QLabel("Drop .xma or audio file here")
         self.title.setObjectName("audioDropTitle")
         self.hint = QLabel(
             "The selected slot's normal validation and Undo-safe writer still apply."
@@ -773,9 +1385,19 @@ class AudioReplacementDropZone(QFrame):
             regular = path.is_file() and not path.is_symlink()
         except OSError:
             regular = False
+        # ``.xma`` stays the direct passthrough: an already-encoded XMA1 file is
+        # written without re-encoding, which is the only lossless route on this
+        # console and the right answer for anyone who already has XMA. Every
+        # other accepted extension is converted to the slot's exact PCM shape
+        # and then handed to the user's own XMA1 encoder, exactly as a
+        # hand-shaped WAV always was.
         return (
             path
-            if regular and path.suffix.casefold() in {".xma", ".wav"}
+            if regular
+            and (
+                path.suffix.casefold() == ".xma"
+                or audio_conform.is_supported_suffix(path)
+            )
             else None
         )
 
@@ -786,16 +1408,24 @@ class AudioReplacementDropZone(QFrame):
         self.style().polish(self)
         if available:
             self.title.setText(
-                "Drop another .xma or exact PCM16 .wav here"
+                "Drop another .xma or audio file here"
                 if modified
-                else "Drop .xma or exact PCM16 .wav here"
+                else "Drop .xma or audio file here"
             )
             self.hint.setText(
-                "WAV uses your configured encoder; XMA1 uses the advanced exact-slot route."
+                "MP3, WAV, FLAC, OGG and M4A are converted to this sound's exact "
+                "shape, then encoded by the XMA1 encoder you configured. "
+                "An .xma goes straight in with no re-encoding at all."
             )
             self.setToolTip(
-                "Drop one local .xma or .wav file. It is validated for the currently "
-                "selected sound; failures stage nothing."
+                "Drop one local audio file for the selected sound.\n\n"
+                "Already have an .xma? That is the only lossless route: it is "
+                "written unchanged.\n\n"
+                "Anything else is resampled and fitted to the slot first, then "
+                "handed to your own XMA1 encoder. The Xbox 360 stores this "
+                "game's audio as XMA1 and no free XMA1 encoder exists, which is "
+                "why that one step needs a tool you supply.\n\n"
+                "Nothing is staged if any check fails."
             )
         else:
             self.title.setText("Select an Editable sound to drop audio")
@@ -805,23 +1435,238 @@ class AudioReplacementDropZone(QFrame):
             self.setToolTip(self.hint.text())
 
     def dragEnterEvent(self, event: object) -> None:
-        path = (
-            self.local_audio_path(event.mimeData())  # type: ignore[attr-defined]
-            if self.isEnabled()
-            else None
-        )
-        if path is None:
+        mime = event.mimeData()  # type: ignore[attr-defined]
+        if not self.isEnabled():
             event.ignore()  # type: ignore[attr-defined]
-        else:
+            return
+        if mime.hasUrls() and mime.urls():
+            # Accept the drag so an unusable drop can explain itself instead
+            # of silently bouncing off the zone.
             event.acceptProposedAction()  # type: ignore[attr-defined]
+        else:
+            event.ignore()  # type: ignore[attr-defined]
 
     def dropEvent(self, event: object) -> None:
-        path = self.local_audio_path(event.mimeData())  # type: ignore[attr-defined]
+        mime = event.mimeData()  # type: ignore[attr-defined]
+        path = self.local_audio_path(mime) if self.isEnabled() else None
         if not self.isEnabled() or path is None:
+            if self.isEnabled():
+                try:
+                    urls = mime.urls() if mime.hasUrls() else []
+                except (AttributeError, TypeError):
+                    urls = []
+                if len(urls) > 1:
+                    QMessageBox.information(
+                        self,
+                        "That drop can't be used yet",
+                        "Drop one audio file at a time. Pick the single sound "
+                        "you want to use and drop it here again.",
+                    )
+                elif urls and (not urls[0].isLocalFile() or urls[0].host()):
+                    QMessageBox.information(
+                        self,
+                        "That drop can't be used yet",
+                        "That drop is a link or a web address, not a file on "
+                        "this computer. Save or download the audio first, then "
+                        "drop the real file here.",
+                    )
+                elif urls:
+                    QMessageBox.information(
+                        self,
+                        "That drop can't be used yet",
+                        "Drop one local audio file: an already-encoded .xma, or "
+                        "ordinary audio such as WAV, MP3, FLAC, OGG or M4A, "
+                        "which is converted to this sound's exact shape first.",
+                    )
             event.ignore()  # type: ignore[attr-defined]
             return
         self.audioDropped.emit(path)
         event.acceptProposedAction()  # type: ignore[attr-defined]
+
+
+def fit_slot_image(
+    parent: QWidget | None,
+    path: Path,
+    width: int,
+    height: int,
+    label: str,
+    *,
+    mode: str = "auto",
+    staged_destination: Path,
+) -> Path | None:
+    """Return an exact-size image for one slot, offering to convert for the user.
+
+    Any format and any size are accepted: the fit layer does the resize and
+    writes an exact RGBA PNG. An already-correct RGBA PNG is returned untouched
+    so a good file is never resampled "just in case". Returns ``None`` when the
+    file cannot be read or the user declines -- never a dead-end error, because
+    the prepared copy is offered before anything is refused.
+    """
+    from mod_editor.core.errors import ValidationError
+    from mod_editor.core.image_fit import fit_image, fit_to_png
+
+    try:
+        probe = fit_image(path, width, height, mode=mode)
+    except ValidationError as exc:
+        QMessageBox.information(
+            parent,
+            "That file could not be read as an image",
+            f"{exc}\n\nFix: choose or drop a {_plain_image_formats()} image. "
+            "Any size works -- the editor resizes it for you.",
+        )
+        return None
+
+    needs_png_conversion = (
+        probe.source_format != "PNG" or probe.source_mode != "RGBA"
+    )
+    if not probe.changed and not needs_png_conversion:
+        return path
+
+    proposed_change = (
+        "convert that exact-size image to an 8-bit RGBA PNG"
+        if not probe.changed
+        else probe.describe()
+    )
+    answer = QMessageBox.question(
+        parent,
+        "Prepare this image?",
+        f"{label} must be exactly {width}×{height}, and that image is "
+        f"{probe.source_width}×{probe.source_height}.\n\n"
+        f"Mod Studio can {proposed_change} for you.\n\n"
+        "Your original file is not modified -- the prepared copy is used for "
+        "this edit only.",
+        QMessageBox.Yes | QMessageBox.Cancel,
+        QMessageBox.Yes,
+    )
+    if answer != QMessageBox.Yes:
+        return None
+    try:
+        result = fit_to_png(path, width, height, staged_destination, mode=mode)
+    except ValidationError as exc:
+        QMessageBox.information(
+            parent,
+            "Could not prepare that image",
+            f"{exc}\n\nFix: try a different {_plain_image_formats()} image. "
+            "No edit was staged.",
+        )
+        return None
+    # The panel's preview updates to show the exact staged pixels; no extra
+    # dialog stands between the modder and the result.
+    del result
+    return staged_destination
+
+
+class SlotImagePreviewDialog(QDialog):
+    """Shows exactly what will land in a slot before the edit is committed.
+
+    Placement and fit matter for crests and wordmarks, so a plain text dialog
+    is not enough: this renders the prepared, exact-size PNG against a
+    checkerboard so the modder sees the real result -- not a promise -- before
+    anything is staged.  It previews only; the writer semantics are unchanged.
+    """
+
+    def __init__(
+        self,
+        image_path: Path,
+        *,
+        width: int,
+        height: int,
+        title: str,
+        summary_lines: Iterable[str] = (),
+        accept_label: str = "Use this image",
+        parent: QWidget | None = None,
+    ) -> None:
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self.setModal(True)
+        self.setMinimumWidth(560)
+        root = QVBoxLayout(self)
+        root.setContentsMargins(16, 16, 16, 14)
+        root.setSpacing(10)
+
+        heading = QLabel("Preview of the result")
+        heading.setObjectName("panelTitle")
+        root.addWidget(heading)
+        explanation = QLabel(
+            f"This is exactly what will be written into the {width}×{height} "
+            "slot. Nothing is staged until you choose "
+            f"“{accept_label}”."
+        )
+        explanation.setObjectName("findingText")
+        explanation.setWordWrap(True)
+        root.addWidget(explanation)
+
+        board = QFrame()
+        board.setObjectName("previewCheckerboard")
+        tile = QPixmap(24, 24)
+        tile.fill(QColor("#0b121e"))
+        painter = QPainter(tile)
+        painter.fillRect(0, 0, 12, 12, QColor("#21314a"))
+        painter.fillRect(12, 12, 12, 12, QColor("#21314a"))
+        painter.end()
+        palette = board.palette()
+        palette.setBrush(QPalette.Window, QBrush(tile))
+        board.setPalette(palette)
+        board.setAutoFillBackground(True)
+        board_layout = QVBoxLayout(board)
+        board_layout.setContentsMargins(14, 14, 14, 14)
+        self.image_label = QLabel()
+        self.image_label.setAlignment(Qt.AlignCenter)
+        board_layout.addWidget(self.image_label)
+        root.addWidget(board, 1)
+
+        pixmap = QPixmap(str(image_path))
+        if pixmap.isNull():
+            self.image_label.setText("This prepared image could not be previewed.")
+        else:
+            fitted = pixmap.scaled(
+                QSize(520, 240), Qt.KeepAspectRatio, Qt.SmoothTransformation
+            )
+            self.image_label.setPixmap(fitted)
+        self.image_label.setToolTip(
+            f"Exact slot pixels: {width}×{height}. Transparency uses the "
+            "checkerboard background."
+        )
+
+        for line in summary_lines:
+            detail = QLabel(line)
+            detail.setObjectName("metadataText")
+            detail.setWordWrap(True)
+            root.addWidget(detail)
+
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        )
+        accept = buttons.button(QDialogButtonBox.Ok)
+        accept.setText(accept_label)
+        accept.setObjectName("primaryButton")
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        root.addWidget(buttons)
+
+
+def confirm_prepared_slot_image(
+    parent: QWidget | None,
+    image_path: Path,
+    *,
+    width: int,
+    height: int,
+    title: str,
+    summary_lines: Iterable[str] = (),
+    accept_label: str = "Use this image",
+) -> bool:
+    """True when the modder approves the exact pixels about to be staged."""
+
+    dialog = SlotImagePreviewDialog(
+        image_path,
+        width=width,
+        height=height,
+        title=title,
+        summary_lines=summary_lines,
+        accept_label=accept_label,
+        parent=parent,
+    )
+    return dialog.exec_() == QDialog.Accepted
 
 
 class WordElidedLabel(QLabel):
@@ -929,7 +1774,13 @@ class CapabilityPanel(QFrame):
             card.setObjectName("capabilityCard")
             card.setProperty("status", status.value)
             card.setFixedHeight(66)
-            details = "\n\n".join(part for part in (summary, findings) if part)
+            # Every card's full text ends with a plain next step, so a
+            # first-time modder always knows what to do after reading the
+            # boundary.  The one-line summary on the card itself is unchanged.
+            next_step = _capability_next_step(status)
+            details = "\n\n".join(
+                part for part in (summary, findings, next_step) if part
+            )
             card.setToolTip(f"{title}\n\n{details}")
             box = QVBoxLayout(card)
             box.setContentsMargins(10, 7, 10, 7)
@@ -1000,6 +1851,10 @@ class AssetBrowser(QWidget):
         self.action_lock_reason = action_lock_reason.strip()
         self._page = 0
         self._preview_token = 0
+        # Private exact-size copies prepared from ordinary images; removed with
+        # the browser, never entered into a project.
+        self._fit_dir: Path | None = None
+        self.destroyed.connect(self._cleanup_fitted_images)
 
         root = QVBoxLayout(self)
         root.setContentsMargins(0, 0, 0, 0)
@@ -1062,8 +1917,12 @@ class AssetBrowser(QWidget):
         self.detail_status = QLabel("Every indexed record remains visible.")
         self.detail_status.setObjectName("mutedLabel")
         self.detail_status.setWordWrap(True)
-        self.preview = ImageDropLabel("Select a texture to generate a PNG preview.")
+        self.preview = ImageDropLabel(
+            "Select a texture to generate a PNG preview. You can also drop a "
+            "replacement image here — any size or format works."
+        )
         self.preview.setAcceptDrops(False)
+        self.preview.pngDropped.connect(self._replace_from_drop)
         self.preview.setMinimumHeight(190)
         self.preview.setMaximumHeight(270)
         self.detail_metadata = QLabel("")
@@ -1081,7 +1940,10 @@ class AssetBrowser(QWidget):
         self.revert_button = QPushButton("Revert")
         self.revert_button.setObjectName("dangerQuietButton")
         self.export_button.setToolTip("Export this asset from your own game copy.")
-        self.replace_button.setToolTip("Choose a validated replacement PNG.")
+        self.replace_button.setToolTip(
+            "Choose any image (any size or format), or drop one onto the "
+            "preview — it is resized to this slot for you."
+        )
         self.revert_button.setToolTip("Nothing to revert—this asset is unmodified.")
         self.export_button.clicked.connect(self._export_selected)
         self.replace_button.clicked.connect(self._replace_selected)
@@ -1299,6 +2161,9 @@ class AssetBrowser(QWidget):
         self.detail_notes.setText("\n".join(notes) or "This exact record can be exported from your own game.")
         self.export_button.setEnabled(True)
         editable_png = _is_editable_png_asset(asset) and not self.browse_export_only
+        # Drop parity with the Replace button: a drop is admitted exactly when
+        # the Replace action is available for this row.
+        self.preview.setAcceptDrops(editable_png)
         if self.browse_export_only:
             self.replace_button.setText("Replace locked")
             self.revert_button.setText("Revert locked")
@@ -1361,6 +2226,7 @@ class AssetBrowser(QWidget):
         self.detail_title.setText("Choose an asset")
         self.detail_status.setText("Every indexed record remains visible.")
         self.preview.set_message(message)
+        self.preview.setAcceptDrops(False)
         self.detail_metadata.setText("")
         self.detail_notes.setText("")
         self.export_button.setEnabled(False)
@@ -1453,23 +2319,80 @@ class AssetBrowser(QWidget):
             f"Saved to:\n{path}\n\nThis local export came from your own game copy.",
         )
 
+    def _cleanup_fitted_images(self, *_args: object) -> None:
+        root = self._fit_dir
+        self._fit_dir = None
+        if root is not None and root.name.startswith("apf-browser-fitted-"):
+            shutil.rmtree(root, ignore_errors=True)
+
+    def _fitted_path(self, name: str) -> Path:
+        if self._fit_dir is None:
+            self._fit_dir = Path(tempfile.mkdtemp(prefix="apf-browser-fitted-"))
+        return self._fit_dir / f"{name}-{uuid4().hex}.png"
+
     def _replace_selected(self) -> None:
+        asset = self._selected_asset()
+        if asset is None:
+            return
+        path, _filter = QFileDialog.getOpenFileName(
+            self,
+            f"Choose an image for {asset.name} (any size or format)",
+            str(Path.home()),
+            IMAGE_IMPORT_FILTER,
+        )
+        if not path:
+            return
+        self._replace_from_drop(Path(path))
+
+    def _replace_from_drop(self, path: Path) -> None:
+        """Replace the selected row from a chosen or dropped image.
+
+        The file dialog and the drop target share this one route, so both
+        accept any ordinary image and hand the writer an exact-size PNG.
+        """
+
         asset = self._selected_asset()
         action = _asset_product_action(asset) if asset is not None else None
         if asset is None or action is None:
             return
-        path, _filter = QFileDialog.getOpenFileName(
-            self,
-            f"Choose edited {asset.name} PNG",
-            str(Path.home()),
-            "PNG image (*.png)",
-        )
-        if not path:
+        if not self.preview.acceptDrops():
+            QMessageBox.information(
+                self,
+                "This row can't be replaced yet",
+                "Only editable texture rows accept a replacement image. "
+                "Choose a row marked Editable and try again.",
+            )
             return
-        replace = getattr(self.facade, action.replace_method)
+
+        safe_name = "".join(
+            character if character.isalnum() or character in "-_" else "_"
+            for character in asset.name
+        )
+        replace_method = action.replace_method
+        if replace_method == "replace_digital_font":
+            # The score-digit mask has a white-RGB / alpha-only contract; the
+            # dedicated preparer converts any image into that exact shape.
+            prepared = _prepare_digital_font_mask(
+                self, Path(path), self._fitted_path(safe_name)
+            )
+        else:
+            # draft_logo (and any future exact-size PNG editor) accepts any
+            # image, contained onto the slot with transparent padding.
+            prepared = fit_slot_image(
+                self,
+                Path(path),
+                128,
+                128,
+                f"The {asset.name} texture",
+                mode="contain",
+                staged_destination=self._fitted_path(safe_name),
+            )
+        if prepared is None:
+            return
+        replace = getattr(self.facade, replace_method)
         self.run_task(
             f"Replacing {asset.name}",
-            lambda progress: replace(Path(path), progress),
+            lambda progress: replace(prepared, progress),
             lambda _result: self._mutation_complete(asset.asset_id),
             True,
         )
@@ -1503,6 +2426,10 @@ class UniformStudioPage(QWidget):
         self._assets: tuple[UniformAsset, ...] = ()
         self._visible: dict[str, UniformAsset] = {}
         self._preview_token = 0
+        # Private exact-size copies prepared from ordinary images.  They serve
+        # one edit and are removed with the panel, never entered into projects.
+        self._fit_dir: Path | None = None
+        self.destroyed.connect(self._cleanup_fitted_images)
 
         outer = QVBoxLayout(self)
         outer.setContentsMargins(24, 16, 24, 16)
@@ -1592,7 +2519,8 @@ class UniformStudioPage(QWidget):
         detail_heading.addWidget(self.modified_badge, 0, Qt.AlignTop)
         self.preview = ImageDropLabel(
             "Load your game, then choose one of the 96 texture cards.\n\n"
-            "You can also drop an edited PNG here."
+            "You can also drop any image here — any size or format works; it "
+            "is resized to the slot for you."
         )
         self.preview.pngDropped.connect(self._replace_path)
         self.contract = QLabel("")
@@ -1613,7 +2541,10 @@ class UniformStudioPage(QWidget):
         self.revert_button = QPushButton("Revert")
         self.revert_button.setObjectName("dangerQuietButton")
         self.export_button.setToolTip("Export the current PNG, including your replacement if modified.")
-        self.replace_button.setToolTip("Choose an edited PNG or drop one onto the preview.")
+        self.replace_button.setToolTip(
+            "Choose any image (any size or format) or drop one onto the "
+            "preview — it is resized to this slot for you."
+        )
         self.revert_button.setToolTip("Nothing to revert—this texture is unmodified.")
         self.export_button.clicked.connect(self._export_selected)
         self.replace_button.clicked.connect(self._choose_replacement)
@@ -1667,6 +2598,49 @@ class UniformStudioPage(QWidget):
             1,
             "Every remaining indexed uniform/equipment record, with decoded PNG when supported and exact raw export always available.",
         )
+        self.independence_panel = UniformIndependencePanel(facade, run_task)
+        self.tabs.addTab(self.independence_panel, "Team Independence")
+        self.tabs.setTabToolTip(
+            2,
+            "Teams share helmet, jersey and sock textures, so editing one team "
+            "changes others. This gives every team its own.",
+        )
+        self.custom_team_appearance_panel = CustomTeamAppearancePanel(
+            facade, run_task
+        )
+        self.custom_team_appearance_panel.modifiedChanged.connect(
+            self.modifiedChanged
+        )
+        self.tabs.addTab(
+            self.custom_team_appearance_panel, "Custom Team Appearance"
+        )
+        self.tabs.setTabToolTip(
+            3,
+            "HOME/AWAY ARGB palettes and exact helmet/crest selectors for "
+            "safe user-team slots 32–39, including the 2017 Eagles preset.",
+        )
+        self.model_export_panel = PlayerEquipmentModelExportPanel(facade, run_task)
+        self.tabs.addTab(self.model_export_panel, "Model Round Trip")
+        self.tabs.setTabToolTip(
+            4,
+            "Export stock helmet/equipment and player-body geometry, then import "
+            "same-topology POSITION edits into a separately verified copied 0A. "
+            "Materials, skinning, attachment and changed topology stay preserved/locked.",
+        )
+        self.uniform_equipment_colors_panel = UniformEquipmentColorsPanel(
+            facade, run_task
+        )
+        self.uniform_equipment_colors_panel.modifiedChanged.connect(
+            self.modifiedChanged
+        )
+        self.tabs.addTab(
+            self.uniform_equipment_colors_panel, "Equipment Colors"
+        )
+        self.tabs.setTabToolTip(
+            5,
+            "Independent HOME/AWAY facemask and Team-turtleneck palette "
+            "selectors for all 40 teams.",
+        )
         outer.addWidget(self.tabs, 1)
         self._clear_detail()
 
@@ -1675,7 +2649,11 @@ class UniformStudioPage(QWidget):
         self.refresh()
 
     def set_context(self) -> None:
+        self.model_export_panel.set_context()
+        self.custom_team_appearance_panel.set_context()
+        self.uniform_equipment_colors_panel.set_context()
         if not self.facade.source_ready:
+            self.independence_panel.set_source_ready(False)
             self._assets = ()
             self.inventory_browser.set_excluded_asset_ids(())
             self.capabilities.set_cards(())
@@ -1687,7 +2665,15 @@ class UniformStudioPage(QWidget):
             self.refresh()
             self.inventory_browser.set_context()
             return
-        self._assets = self.facade.uniform_assets()
+        self.independence_panel.set_source_ready(True)
+        # Rectangular textlogo assets share the same project/build transport,
+        # but their user-facing home is Logos → Wordmarks, not this material
+        # color workspace.
+        self._assets = tuple(
+            asset
+            for asset in self.facade.uniform_assets()
+            if asset.family != "textlogo"
+        )
         all_uniform_records = self.facade.browse_assets(
             category=ApfCategory.UNIFORMS,
             limit=len(self.facade.require_catalog().assets) + 1,
@@ -1783,7 +2769,8 @@ class UniformStudioPage(QWidget):
             # source yet, not because a search failed; say so honestly.
             self._clear_detail(
                 "Uniform textures · exact-size RGBA PNG\n"
-                "Load your game to browse and edit all 96 mapped slots."
+                "Load your game to browse and edit all 96 mapped slots.\n\n"
+                + START_HERE_HINT
             )
 
     def _selected_asset(self) -> UniformAsset | None:
@@ -1843,7 +2830,10 @@ class UniformStudioPage(QWidget):
             False,
         )
 
-    def _clear_detail(self, message: str = "Load your APF game to begin.") -> None:
+    def _clear_detail(
+        self,
+        message: str = "Load your APF game to begin.\n\n" + START_HERE_HINT,
+    ) -> None:
         self.title.setText("Choose a uniform texture")
         self.subtitle.setText("All 96 mapped physical uniform slots appear in this browser.")
         self.modified_badge.setText("○ Not loaded")
@@ -1908,20 +2898,49 @@ class UniformStudioPage(QWidget):
             return
         path, _filter = QFileDialog.getOpenFileName(
             self,
-            f"Choose edited {asset.width}×{asset.height} RGBA PNG",
+            f"Choose an image for {asset.title} (any size — "
+            f"{asset.width}×{asset.height} exact, or it can be resized)",
             str(Path.home()),
-            "RGBA PNG (*.png)",
+            IMAGE_IMPORT_FILTER,
         )
         if path:
             self._replace_path(Path(path))
+
+    def _cleanup_fitted_images(self, *_args: object) -> None:
+        root = self._fit_dir
+        self._fit_dir = None
+        if root is not None and root.name.startswith("apf-uniform-fitted-"):
+            shutil.rmtree(root, ignore_errors=True)
+
+    def _fitted_path(self, name: str) -> Path:
+        if self._fit_dir is None:
+            self._fit_dir = Path(tempfile.mkdtemp(prefix="apf-uniform-fitted-"))
+        return self._fit_dir / f"{name}-{uuid4().hex}.png"
 
     def _replace_path(self, path: Path) -> None:
         asset = self._selected_asset()
         if asset is None:
             return
+        # Uniform slots occupy fixed byte spans, so the writers still require
+        # the exact pixel size.  Any image the user has is converted here
+        # instead of being refused, so the chooser and the drop target both
+        # hand the writer an already-correct RGBA PNG.
+        fitted = fit_slot_image(
+            self,
+            Path(path),
+            asset.width,
+            asset.height,
+            f"The {asset.family} texture “{asset.title}”",
+            mode="auto",
+            staged_destination=self._fitted_path(
+                f"{asset.family}-{asset.asset_index:02d}"
+            ),
+        )
+        if fitted is None:
+            return
         self.run_task(
             f"Replacing {asset.title}",
-            lambda progress: self.facade.replace_uniform(asset.asset_id, path, progress),
+            lambda progress: self.facade.replace_uniform(asset.asset_id, fitted, progress),
             lambda _result: self._mutation_complete(asset.asset_id),
             True,
         )
@@ -1942,6 +2961,99 @@ class UniformStudioPage(QWidget):
         self.modifiedChanged.emit()
 
 
+def _prepare_digital_font_mask(
+    parent: QWidget | None,
+    path: Path,
+    destination: Path,
+) -> Path | None:
+    """Convert any image into the score-digit slot's white-on-alpha mask.
+
+    The writer's contract is unchanged: exactly 128×128, RGB solid white, and
+    the digits drawn only in the alpha channel.  This helper does that work
+    for the user -- resizing any size, reading any ordinary format, keeping
+    existing transparency where the image has it, and otherwise turning
+    brightness into transparency -- instead of refusing the file.
+    """
+    from mod_editor.core.errors import ValidationError
+    from mod_editor.core.image_fit import fit_image
+    from PIL import Image
+
+    width = height = 128
+    try:
+        probe = fit_image(path, width, height, mode="contain")
+    except ValidationError as exc:
+        QMessageBox.information(
+            parent,
+            "That file could not be read as an image",
+            f"{exc}\n\nFix: choose or drop a {_plain_image_formats()} image. "
+            "Any size works -- the editor resizes it for you.",
+        )
+        return None
+    rgba = probe.rgba
+    has_alpha = any(
+        rgba[offset + 3] != 255 for offset in range(0, len(rgba), 4)
+    )
+    converted = bytearray(len(rgba))
+    if has_alpha:
+        for offset in range(0, len(rgba), 4):
+            converted[offset] = 255
+            converted[offset + 1] = 255
+            converted[offset + 2] = 255
+            converted[offset + 3] = rgba[offset + 3]
+        change = (
+            "keep its transparency as the digit mask and make the rest of "
+            "the image solid white"
+        )
+    else:
+        for offset in range(0, len(rgba), 4):
+            luminance = (
+                rgba[offset] * 54
+                + rgba[offset + 1] * 183
+                + rgba[offset + 2] * 19
+            ) >> 8
+            converted[offset] = 255
+            converted[offset + 1] = 255
+            converted[offset + 2] = 255
+            converted[offset + 3] = luminance
+        change = (
+            "turn its brightness into transparency (bright stays visible, "
+            "dark fades out) and make the color solid white"
+        )
+    size_note = (
+        f"That image is {probe.source_width}×{probe.source_height}, so Mod "
+        f"Studio will also {probe.describe().lower()} to the exact 128×128 "
+        "slot size. "
+        if probe.changed
+        else ""
+    )
+    answer = QMessageBox.question(
+        parent,
+        "Prepare this image?",
+        "The score-digit texture reads only transparency: the digits are "
+        "drawn in the alpha channel and the color must stay solid white.\n\n"
+        f"{size_note}Mod Studio can {change} for you.\n\n"
+        "Your original file is not modified -- the prepared copy is used for "
+        "this edit only.",
+        QMessageBox.Yes | QMessageBox.Cancel,
+        QMessageBox.Yes,
+    )
+    if answer != QMessageBox.Yes:
+        return None
+    try:
+        Image.frombytes("RGBA", (width, height), bytes(converted)).save(
+            destination, "PNG"
+        )
+    except (OSError, ValueError) as exc:
+        QMessageBox.information(
+            parent,
+            "Could not prepare that image",
+            f"{exc}\n\nFix: try a different {_plain_image_formats()} image. "
+            "No edit was staged.",
+        )
+        return None
+    return destination
+
+
 class DigitalFontPanel(QFrame):
     """Focused editor for the proved 128×128 DXT5A score-digit mask."""
 
@@ -1951,6 +3063,8 @@ class DigitalFontPanel(QFrame):
         super().__init__()
         self.facade = facade
         self.run_task = run_task
+        self._fit_dir: Path | None = None
+        self.destroyed.connect(self._cleanup_fitted_images)
         self.setObjectName("panel")
         box = QHBoxLayout(self)
         box.setContentsMargins(16, 14, 16, 14)
@@ -1977,8 +3091,9 @@ class DigitalFontPanel(QFrame):
                 "128×128 RGBA PNG",
                 emphasis=True,
                 tooltip=(
-                    "The writer accepts exactly 128×128; any other size is "
-                    "refused before it can enter your project."
+                    "The writer accepts exactly 128×128. Drop or choose any "
+                    "image size or format — the editor resizes and converts "
+                    "it for you before anything is staged."
                 ),
             )
         )
@@ -1987,15 +3102,17 @@ class DigitalFontPanel(QFrame):
                 "Alpha-only mask",
                 tooltip=(
                     "The game reads only the alpha channel of this texture. "
-                    "Keep RGB solid white and draw the digits in alpha."
+                    "Keep RGB solid white and draw the digits in alpha — or "
+                    "drop any image and Mod Studio converts it for you."
                 ),
             )
         )
         specs.addStretch(1)
         description = QLabel(
-            "Export the mask, keep RGB solid white, and draw only in the alpha "
-            "channel. Replace stores your original automatically; Revert removes "
-            "only this edit."
+            "Choose or drop any image — the editor resizes it to 128×128 and "
+            "converts it to the white-on-transparency mask this slot needs. "
+            "Replace stores your original automatically; Revert removes only "
+            "this edit."
         )
         description.setObjectName("cardBody")
         description.setWordWrap(True)
@@ -2015,7 +3132,10 @@ class DigitalFontPanel(QFrame):
         self.revert_button = QPushButton("Revert")
         self.revert_button.setObjectName("dangerQuietButton")
         self.export_button.setToolTip("Export the current score-digit mask PNG.")
-        self.replace_button.setToolTip("Choose an edited 128×128 RGBA PNG or drop it onto the preview.")
+        self.replace_button.setToolTip(
+            "Choose any image (any size or format) or drop it onto the "
+            "preview — it is resized and converted to the digit mask for you."
+        )
         self.revert_button.setToolTip("Nothing to revert—digital_font is unmodified.")
         self.export_button.clicked.connect(self._export)
         self.replace_button.clicked.connect(self._choose_replacement)
@@ -2059,7 +3179,9 @@ class DigitalFontPanel(QFrame):
             self.preview.set_message(
                 "digital_font · 128×128 RGBA PNG\nLoad your game to see the original mask."
             )
-            self.path_note.setText("No source loaded.")
+            self.path_note.setText(
+                "No source loaded.\n\n" + START_HERE_HINT
+            )
             return
         modification = self.facade.require_session().modification(DIGITAL_FONT_EDIT_ID)
         if modification is not None:
@@ -2116,19 +3238,40 @@ class DigitalFontPanel(QFrame):
     def _choose_replacement(self) -> None:
         path, _filter = QFileDialog.getOpenFileName(
             self,
-            "Choose edited 128×128 RGBA digital_font PNG",
+            "Choose an image for digital_font (any size or format)",
             str(Path.home()),
-            "RGBA PNG (*.png)",
+            IMAGE_IMPORT_FILTER,
         )
         if path:
             self._replace_path(Path(path))
 
+    def _cleanup_fitted_images(self, *_args: object) -> None:
+        root = self._fit_dir
+        self._fit_dir = None
+        if root is not None and root.name.startswith("apf-digital-font-fitted-"):
+            shutil.rmtree(root, ignore_errors=True)
+
+    def _fitted_path(self) -> Path:
+        if self._fit_dir is None:
+            self._fit_dir = Path(
+                tempfile.mkdtemp(prefix="apf-digital-font-fitted-")
+            )
+        return self._fit_dir / f"digital-font-{uuid4().hex}.png"
+
     def _replace_path(self, path: Path) -> None:
         if not self.facade.source_ready:
             return
+        # The writer still demands exactly 128×128, white RGB, alpha-only
+        # digits.  Instead of refusing anything else, prepare that exact mask
+        # from whatever ordinary image the user chose or dropped.
+        prepared = _prepare_digital_font_mask(
+            self, Path(path), self._fitted_path()
+        )
+        if prepared is None:
+            return
         self.run_task(
             "Replacing digital_font",
-            lambda progress: self.facade.replace_digital_font(path, progress),
+            lambda progress: self.facade.replace_digital_font(prepared, progress),
             lambda _result: self._mutation_complete(),
             True,
         )
@@ -2146,61 +3289,97 @@ class DigitalFontPanel(QFrame):
         self.modifiedChanged.emit()
 
 
+@dataclass(frozen=True)
+class _HelmetTextureMasterDraft:
+    source_image: Path
+    source_sha256: str
+    source_width: int
+    source_height: int
+    source_resample: str
+    pipeline: Mapping[str, object]
+    transform: AuthoringTransform
+    editor_transform: Mapping[str, object]
+    native_baseline_png: Path | None = None
+    native_canvas_edited: bool = False
+
+
+@dataclass(frozen=True)
+class _HelmetTextureMasterInput:
+    source_image: Path
+    source_width: int
+    source_height: int
+    source_resample: str
+    pipeline: Mapping[str, object]
+    source_sha256: str | None = None
+    private_snapshot: bool = False
+
+
 class ApfTeamLogoPanel(QFrame):
-    """Focused editor for the offline-proved shared team-logo crest.
+    """Focused editor for a selected APF team-logo / helmet crest.
 
     This surface is intentionally self-contained.  It reads the loaded game's
-    read-only ``0A`` to render a source-derived preview of ``uniform_logo_01``
-    ``logo_l0`` (the shared team-logo texture that is the helmet crest), stages
-    exactly one 512x512 RGBA PNG, and presents one "Team Logo" build that runs
-    two offline-proved writers in sequence so the edit lands in both places the
-    disc stores this crest:
+    read-only ``0A`` to render a source-derived preview of the selected
+    ``uniform_logo_NN`` ``logo_l0`` helmet crest, stages
+    exactly one 512x512 RGBA PNG, mirrors it to the package's ``logo_l0`` and
+    ``logo_l1`` crest consumers, and presents one "Team Logo" build that keeps
+    package and menu-cache ownership explicit:
 
     * ``apf2k8.logos_cards.team_logo`` (``tools/apf_logo_patch.py``) rewrites the
-      crest base level inside the ``uniform_logo_01`` package, byte-preserving
-      the packed mip tail and the sibling ``logo_l1`` layer;
+      crest layers inside the selected ``uniform_logo_NN`` package and rebuilds
+      their packed mip tails from the new mask;
     * ``apf2k8.logos_cards.team_logo_cache`` (``tools/apf_logocache_patch.py``)
       rewrites the matching catalog entry inside the prebuilt, runtime-resident
       ``uniform_logocache`` aggregate.
 
-    The package write lands in an intermediate copy that the cache write then
-    consumes, so the single delivered volume carries both edits.  Each writer
-    byte-diffs the whole copied volume so only its own fixed extents change, each
-    is paired with an independent verifier, and the retail source is never opened
-    for writing.  Either writer failing fails the whole action.
+    Full-shell compiles all package/cache/shell bytes before a private staged
+    volume is created; only a complete, reopened stage receives the requested
+    final name through atomic no-replace publication. The retail source is never
+    opened for writing, and any failed gate leaves the final name absent.
 
-    The panel never mutates the shared editing session, so it never marks
-    unrelated project state modified, and it makes no in-game/runtime claim:
-    which runtime surface reads which copy -- helmet crest, team-select grid, or
-    scorebug -- is not statically recoverable and is unproved without a Xenia
-    capture.
+    Coverage is one of two fixed product profiles: the retail side decal or the
+    whole-shell atlas route. The latter affects every
+    team's shared helmet material, so all 118 packages are migrated before the
+    selected art is applied. It
+    creates no emulator patch and never edits ``default.xex``.  The staged design
+    participates in the normal shareable project and complete-game Build.
     """
 
-    # tools/apf_logo_patch.py is the authority for these pins; the panel mirrors
-    # them only for honest, read-only-safe labels and its 512x512 stage guard.
-    _OUTER_INDEX = 36
-    _INNER_INDEX = 1
+    modifiedChanged = pyqtSignal()
+
+    # tools/apf_logo_patch.py is the authority for these dimensions; the panel
+    # mirrors them only for its honest, read-only-safe stage guard.
     _WIDTH = 512
     _HEIGHT = 512
-    _OUTER_NAME = "uniform_logo_01.iff"
-    _INNER_NAME = "logo_l0"
-    # uniform_logo_01 is catalog index 1 inside uniform_logocache, whose layers
-    # are named 01_logo_l0 / 01_logo_l1.  tools/apf_logocache_patch.py re-checks
-    # this against its pinned retail directory and payload and fails closed.
-    _CACHE_CATALOG_INDEX = 1
+
+    def selected_crest(self):
+        """The team whose crest a build will write.
+
+        Falls back to the historical default rather than raising, so a panel
+        constructed without its combo populated still targets something real.
+        """
+        crest = self.slot.currentData()
+        return crest if crest is not None else default_crest()
 
     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
         super().__init__()
         self.facade = facade
         self.run_task = run_task
         self._staged_png: Path | None = None
+        self._source_staged_png: Path | None = None
+        self._placement_source_rgba: bytes | None = None
+        self._placement_state: Placement | None = None
+        self._texture_master_draft: _HelmetTextureMasterDraft | None = None
+        self._texture_master_game_source: str | None = None
+        self._staged_profile: str | None = None
         self._preview_dir: Path | None = None
+        self.destroyed.connect(self._cleanup_private_preview_files)
         self.setObjectName("panel")
         box = QHBoxLayout(self)
         box.setContentsMargins(16, 14, 16, 14)
         box.setSpacing(16)
         self.preview = ImageDropLabel(
-            "Team logo crest · 512×512 RGBA PNG\nLoad your game to see the original."
+            "Team crest + linked Team Select cache · 512×512 RGBA PNG\n"
+            "Load your game to see the original."
         )
         self.preview.setFixedSize(220, 220)
         self.preview.pngDropped.connect(self._stage_path)
@@ -2208,7 +3387,7 @@ class ApfTeamLogoPanel(QFrame):
 
         content = QVBoxLayout()
         title_row = QHBoxLayout()
-        title = QLabel("Team logo — shared crest")
+        title = QLabel("Team Logo — crest + frontend cache")
         title.setObjectName("panelTitle")
         self.status = QLabel("Not loaded")
         self.status.setObjectName("statusBadge")
@@ -2223,8 +3402,9 @@ class ApfTeamLogoPanel(QFrame):
                 "512×512 RGBA PNG",
                 emphasis=True,
                 tooltip=(
-                    "The writers accept exactly 512×512; any other size is "
-                    "refused before anything is staged."
+                    "The crest slot holds exactly 512×512. Drop or choose any "
+                    "image size or format — an off-size file is resized and "
+                    "converted for you before anything is staged."
                 ),
             )
         )
@@ -2238,53 +3418,137 @@ class ApfTeamLogoPanel(QFrame):
                 ),
             )
         )
-        specs.addWidget(
-            _spec_pill(
-                "Writes package + logo cache",
-                tooltip=(
-                    "One Team Logo build writes the crest into both places the "
-                    "disc stores it: the uniform_logo_01 package (logo_l0) and "
-                    "the matching entry of the prebuilt uniform_logocache "
-                    "aggregate."
-                ),
-            )
+        self.crest_cache_pill = _spec_pill(
+            "Co-writes crest + Team Select cache",
+            tooltip=(
+                "One Team Logo build writes selector-slot-5 crest index N to "
+                "both the selected uniform_logo_NN package and linked index N "
+                "in the statically mapped frontend/Team Select "
+                "uniform_logocache. This describes storage ownership, not a "
+                "changed-logo runtime capture."
+            ),
         )
+        specs.addWidget(self.crest_cache_pill)
         specs.addStretch(1)
 
         slot_row = QHBoxLayout()
         slot_row.setSpacing(8)
-        slot_label = QLabel("Team slot:")
-        slot_label.setObjectName("metadataText")
+        self.slot_label = QLabel("Crest slot (selector slot 5):")
+        self.slot_label.setObjectName("metadataText")
         self.slot = QComboBox()
         self.slot.setObjectName("comboField")
-        self.slot.addItem(
-            "uniform_logo_01 — shared team logo / helmet crest (offline-proved)"
+        # Starts as the built-in teams; _populate_slots() widens this to every
+        # crest package once a game is loaded and the archive can be read.
+        self._slots_populated = False
+        for crest in TEAM_CRESTS:
+            self.slot.addItem(crest.label, crest)
+        self.slot.setCurrentIndex(
+            max(0, self.slot.findData(default_crest()))
         )
         self.slot.setToolTip(
-            "The offline-proved writers own exactly the shared uniform_logo_01 "
-            "logo_l0 base level (outer 36 / inner 1) and its matching entry in "
-            "the prebuilt logo cache. Additional per-team logo slots are not "
-            "proved yet, so only this target is selectable."
+            "Selector slot 5 chooses the square crest. Every built-in team wears "
+            "a crest package, and each is written the same way: both "
+            "uniform_logo_NN layers plus linked index NN in the statically mapped "
+            "frontend/Team Select cache. Selector slot 6 independently chooses a "
+            "rectangular uniform_textlogo wordmark, which Team Logo does not edit. "
+            "Load your game and "
+            "this list widens from the twenty-four teams to all 118 crest slots "
+            "the disc carries -- the other ninety-four are the game's own logo "
+            "library. Which package belongs to which team comes from the disc's "
+            "selector table, not a typed list; library slots are named by index "
+            "because what a given slot shows in game has not been established."
         )
-        slot_row.addWidget(slot_label)
+        slot_row.addWidget(self.slot_label)
         slot_row.addWidget(self.slot, 1)
 
+        coverage_row = QHBoxLayout()
+        coverage_row.setSpacing(8)
+        coverage_label = QLabel("Helmet coverage:")
+        coverage_label.setObjectName("metadataText")
+        self.coverage = QComboBox()
+        self.coverage.setObjectName("comboField")
+        self.coverage.addItem("Retail side decal", RETAIL_CREST_PROFILE)
+        self.coverage.addItem(
+            "Full-shell crest wrap — entire helmet shell (affects every team)",
+            FULL_SHELL_CREST_PROFILE,
+        )
+        self.coverage.setToolTip(
+            "Retail keeps the original side decal. Full-shell uses the exact "
+            "stock helmet-shell atlas and migrates every team package first. "
+            + GLOBAL_HELMET_WARNING
+        )
+        coverage_row.addWidget(coverage_label)
+        coverage_row.addWidget(self.coverage, 1)
+
+        import_mode_row = QHBoxLayout()
+        import_mode_row.setSpacing(8)
+        self.import_mode_label = QLabel("Full-shell import:")
+        self.import_mode_label.setObjectName("metadataText")
+        self.import_mode = QComboBox()
+        self.import_mode.setObjectName("comboField")
+        self.import_mode.addItem(
+            "Normal logo — convert to APF regions (recommended)",
+            NORMAL_LOGO_IMPORT_MODE,
+        )
+        self.import_mode.addItem(
+            "APF region mask — exact channels (advanced)",
+            REGION_MASK_IMPORT_MODE,
+        )
+        self.import_mode.setToolTip(
+            "Normal logo converts ordinary artwork through three colors you "
+            "confirm and shows the palette-mapped material preview. Advanced "
+            "accepts only an exact zero-blue Xenos 4-bit APF red/green weight mask."
+        )
+        import_mode_row.addWidget(self.import_mode_label)
+        import_mode_row.addWidget(self.import_mode, 1)
+
+        self.fit_visible_mask = QCheckBox(
+            "Fit visible mask to full helmet wrap"
+        )
+        self.fit_visible_mask.setToolTip(
+            "Legacy project state only. New full-shell imports use Place on "
+            "helmet, where Auto-fit is explicit and reversible before staging."
+        )
+        # The direct placement canvas supersedes this one-shot transform. Keep
+        # the object only to load/re-save legacy project metadata; exposing it
+        # after placement could silently refit and erase authored X/Y.
+        self.fit_visible_mask.setVisible(False)
+        self.fit_visible_mask.setEnabled(False)
+        self.coverage_warning = QLabel(GLOBAL_HELMET_WARNING)
+        self.coverage_warning.setObjectName("warningText")
+        self.coverage_warning.setWordWrap(True)
+        self.coverage.currentIndexChanged.connect(self._coverage_changed)
+        self.slot.currentIndexChanged.connect(self._coverage_changed)
+
         description = QLabel(
-            "This is the shared team-logo texture that serves as the helmet "
-            "crest. Drop or choose an exact 512×512 RGBA PNG — colors are stored "
-            "at 4 bits per channel, and the build reports exactly how far "
-            "quantization moved them. One build writes the crest into both "
-            "places the disc stores it. Which screen reads which copy is not "
-            "proved without a Xenia capture."
+            "This is the team-logo texture that serves as the helmet crest. "
+            "For Full-shell, choose Normal logo to import ordinary artwork: you "
+            "confirm the shell and two rendered detail colors, inspect an honest "
+            "palette-mapped preview, then place the converted mask. Choose APF "
+            "region mask only for an already-authored weight map; its colors are "
+            "always weights, and strict validation rejects blue, hidden transparent "
+            "color, overweight red/green, or non-four-bit values. "
+            "The game fills mask regions from its palette, so arbitrary source RGB "
+            "cannot be preserved literally. "
+            "One build writes the crest into both places the disc stores it, "
+            "and regenerates the packed mip levels so the crest is right at "
+            "every distance rather than only in close-up."
         )
         description.setObjectName("cardBody")
         description.setWordWrap(True)
         description.setToolTip(
-            "Full contract: the offline-proved writers own outer 36 / inner 1 "
-            "(logo_l0) and the matching uniform_logocache entry. The packed mip "
-            "tail and the sibling logo_l1 layer are byte-preserved. Which "
-            "runtime surface reads which copy — helmet crest, team-select grid, "
-            "or scorebug — is not proved without a Xenia capture."
+            "Full contract: the writers own both crest layers in the selected "
+            "team's uniform_logo_NN package and both matching uniform_logocache "
+            "entries, and regenerate every edited packed mip tail from the new "
+            "base. Byte-preserving those tails, or leaving logo_l1 retail, is why "
+            "older mods showed the old logo at a distance or in uniform previews."
+        )
+        self.ownership_note = QLabel("")
+        self.ownership_note.setObjectName("ownershipText")
+        self.ownership_note.setWordWrap(True)
+        self.ownership_note.setToolTip(
+            "Crest selector slot 5 and wordmark selector slot 6 are independent. "
+            "Team Logo never derives, resizes, or overwrites a wordmark."
         )
         self.path_note = QLabel("No source loaded.")
         self.path_note.setObjectName("metadataText")
@@ -2294,6 +3558,18 @@ class ApfTeamLogoPanel(QFrame):
         actions.setSpacing(8)
         self.export_button = QPushButton("Export original PNG…")
         self.export_button.setObjectName("secondaryButton")
+        self.master_button = QPushButton(
+            "Save high-resolution authoring master…"
+        )
+        self.master_button.setObjectName("secondaryButton")
+        self.master_button.setEnabled(False)
+        self.master_button.setToolTip(
+            "After an external logo import, save the exact original artwork, "
+            "the final X/Y, independent width/height, rotation and palette/region "
+            "pipeline, the exact 512×512 native semantic mask, and a direct 2×/4× "
+            "master render. This is not an RPCS3 pack and does not change the "
+            "game's native texture resolution."
+        )
         self.replace_button = QPushButton("Replace PNG…")
         self.replace_button.setObjectName("primaryButton")
         self.revert_button = QPushButton("Revert")
@@ -2308,6 +3584,13 @@ class ApfTeamLogoPanel(QFrame):
         self.edit_button.setToolTip(
             "Draw on the crest here at its exact 512×512 size."
         )
+        self.place_button = QPushButton("Place on helmet…")
+        self.place_button.setObjectName("secondaryButton")
+        self.place_button.setToolTip(
+            "For Full-shell coverage: drag the logo on a labeled front/crown/rear "
+            "canvas, then adjust width, height, and rotation before staging."
+        )
+        self.place_button.clicked.connect(self._place_current_logo)
         self.edit_button.clicked.connect(self._edit_in_place)
         self.export_button.setToolTip(
             "Export the current source-derived 512×512 RGBA crest PNG from your game."
@@ -2317,16 +3600,20 @@ class ApfTeamLogoPanel(QFrame):
         )
         self.revert_button.setToolTip("Nothing to revert—no replacement is staged.")
         self.build_button.setToolTip(
-            "Copy your 0A and write this crest into both the uniform_logo_01 "
-            "package and the prebuilt logo cache through the offline-proved "
-            "writers and their independent full-volume verifiers."
+            "Copy your 0A and write this crest into the selected uniform_logo_NN "
+            "package and matching logo-cache slot through the offline-proved "
+            "writers. The full-shell profile also writes the shared shell-atlas "
+            "route; it creates no Xenia patch and never edits default.xex."
         )
         self.export_button.clicked.connect(self._export_original)
+        self.master_button.clicked.connect(self._save_authoring_master)
         self.replace_button.clicked.connect(self._choose_replacement)
         self.revert_button.clicked.connect(self._revert)
         self.build_button.clicked.connect(self._build_copied_volume)
         actions.addWidget(self.export_button)
+        actions.addWidget(self.master_button)
         actions.addWidget(self.edit_button)
+        actions.addWidget(self.place_button)
         actions.addWidget(self.replace_button)
         actions.addWidget(self.revert_button)
         actions.addWidget(self.build_button)
@@ -2335,7 +3622,12 @@ class ApfTeamLogoPanel(QFrame):
         content.addLayout(title_row)
         content.addLayout(specs)
         content.addLayout(slot_row)
+        content.addLayout(coverage_row)
+        content.addLayout(import_mode_row)
+        content.addWidget(self.fit_visible_mask)
+        content.addWidget(self.coverage_warning)
         content.addWidget(description)
+        content.addWidget(self.ownership_note)
         content.addWidget(self.path_note)
         # Keep the edit workflow with its copy; spare height goes below.
         content.addLayout(actions)
@@ -2343,13 +3635,520 @@ class ApfTeamLogoPanel(QFrame):
         box.addLayout(content, 1)
         self.set_context()
 
+    def _selected_profile(self) -> str:
+        value = self.coverage.currentData()
+        return (
+            str(value)
+            if value in {RETAIL_CREST_PROFILE, FULL_SHELL_CREST_PROFILE}
+            else RETAIL_CREST_PROFILE
+        )
+
+    def _selected_import_mode(self) -> str:
+        value = self.import_mode.currentData()
+        return (
+            str(value)
+            if value in {NORMAL_LOGO_IMPORT_MODE, REGION_MASK_IMPORT_MODE}
+            else NORMAL_LOGO_IMPORT_MODE
+        )
+
+    def _refresh_logo_ownership(self) -> None:
+        """Expose the proved linked crest owners and independent wordmark bank."""
+
+        crest = self.selected_crest()
+        asset_index = int(crest.asset_index)
+        package_name = str(crest.package_name)
+        self.ownership_note.setText(
+            f"Linked crest index {asset_index} (selector slot 5): {package_name} "
+            f"(outer {crest.outer_entry_index}) logo_l0/logo_l1 + frontend/Team "
+            f"Select cache {asset_index}_logo_l0/{asset_index}_logo_l1. Team Logo "
+            "co-writes those two storage owners. Separate wordmark ownership: "
+            "selector slot 6 selects an independent uniform_textlogo_00..205 "
+            "slot in the Wordmarks tab; it is not resized or changed here. The "
+            "frontend cache path is statically mapped; changed-logo runtime "
+            "consumption remains unproved."
+        )
+
+    def _clear_texture_master_draft(self) -> None:
+        draft = self._texture_master_draft
+        self._texture_master_draft = None
+        self._texture_master_game_source = None
+        self._delete_texture_master_files(draft)
+        if hasattr(self, "master_button"):
+            self.master_button.setEnabled(False)
+
+    def _cleanup_private_preview_files(self, *_args: object) -> None:
+        """Remove only this panel's exact session-temporary workspace."""
+
+        draft = self._texture_master_draft
+        self._texture_master_draft = None
+        self._texture_master_game_source = None
+        self._delete_texture_master_files(draft)
+        root = self._preview_dir
+        self._preview_dir = None
+        if root is not None and root.name.startswith("apf-team-logo-"):
+            shutil.rmtree(root, ignore_errors=True)
+
+    @staticmethod
+    def _delete_texture_master_files(
+        draft: _HelmetTextureMasterDraft | None,
+    ) -> None:
+        if draft is None:
+            return
+        draft.source_image.unlink(missing_ok=True)
+        if (
+            draft.native_baseline_png is not None
+            and draft.native_baseline_png != draft.source_image
+        ):
+            draft.native_baseline_png.unlink(missing_ok=True)
+
+    def _current_game_source_identity(self) -> str | None:
+        source = getattr(self.facade, "source", None)
+        index_0a = getattr(source, "index_0a", None) if source is not None else None
+        return str(Path(index_0a)) if index_0a is not None else None
+
+    @staticmethod
+    def _placement_editor_transform(
+        placement: Placement, pipeline: Mapping[str, object]
+    ) -> dict[str, object]:
+        return {
+            "canvas_height": 512,
+            "canvas_width": 512,
+            "coordinate_space": "native-semantic-mask-pixels",
+            "operation": "apf-full-shell-semantic-mask-placement",
+            "pipeline": dict(pipeline),
+            "placement": {
+                "center_x": placement.center_x,
+                "center_y": placement.center_y,
+                "height_scale": placement.scale_y,
+                "height_scale_percent": placement.scale_y * 100.0,
+                "resample": "nearest",
+                "rotation_degrees": placement.rotation_degrees,
+                "source_basis": "contained-512x512-semantic-region-mask-active-bbox",
+                "width_scale": placement.scale_x,
+                "width_scale_percent": placement.scale_x * 100.0,
+            },
+        }
+
+    def _prepare_placed_texture_master_draft(
+        self,
+        normalized_rgba: bytes,
+        placement: Placement,
+        master_input: _HelmetTextureMasterInput | None,
+    ) -> tuple[_HelmetTextureMasterDraft | None, bool]:
+        """Return a composed original→contain→placement draft and ownership flag."""
+
+        existing = self._texture_master_draft
+        if master_input is None and existing is None:
+            return None, False
+        if master_input is not None:
+            if master_input.private_snapshot:
+                if master_input.source_sha256 is None:
+                    raise ValueError("Private helmet-logo source hash is missing.")
+                snapshot = master_input.source_image
+                source_sha256 = master_input.source_sha256
+            else:
+                snapshot, source_sha256 = snapshot_texture_master_source(
+                    master_input.source_image,
+                    self._preview_path(f"master-{uuid4().hex}.source"),
+                )
+            source_width = master_input.source_width
+            source_height = master_input.source_height
+            source_resample = master_input.source_resample
+            pipeline = dict(master_input.pipeline)
+            owns_new_snapshot = True
+        else:
+            assert existing is not None
+            snapshot = existing.source_image
+            source_sha256 = existing.source_sha256
+            source_width = existing.source_width
+            source_height = existing.source_height
+            source_resample = existing.source_resample
+            pipeline = dict(existing.pipeline)
+            owns_new_snapshot = False
+        transform = compose_contained_master_transform(
+            source_width,
+            source_height,
+            normalized_rgba,
+            placement,
+            resample=source_resample,
+        )
+        editor_transform = self._placement_editor_transform(
+            placement, pipeline
+        )
+        native_baseline_png = None
+        native_canvas_edited = False
+        if master_input is None and existing is not None:
+            native_baseline_png = existing.native_baseline_png
+            native_canvas_edited = existing.native_canvas_edited
+            if native_canvas_edited:
+                editor_transform.update({
+                    "native_canvas_edit": dict(
+                        existing.editor_transform.get("native_canvas_edit", {})
+                    ),
+                    "native_canvas_edit_revision": int(
+                        existing.editor_transform.get(
+                            "native_canvas_edit_revision", 1
+                        )
+                    ),
+                    "subsequent_placement_captured_by_final_native_delta": True,
+                })
+        return (
+            _HelmetTextureMasterDraft(
+                source_image=snapshot,
+                source_sha256=source_sha256,
+                source_width=source_width,
+                source_height=source_height,
+                source_resample=source_resample,
+                pipeline=pipeline,
+                transform=transform,
+                editor_transform=editor_transform,
+                native_baseline_png=native_baseline_png,
+                native_canvas_edited=native_canvas_edited,
+            ),
+            owns_new_snapshot,
+        )
+
+    def _install_texture_master_draft(
+        self, draft: _HelmetTextureMasterDraft, *, owns_new_snapshot: bool
+    ) -> None:
+        previous = self._texture_master_draft
+        if owns_new_snapshot and previous is not None:
+            self._delete_texture_master_files(previous)
+        self._texture_master_draft = draft
+        self._texture_master_game_source = self._current_game_source_identity()
+
+    def _attach_native_baseline(
+        self, draft: _HelmetTextureMasterDraft, native: Path
+    ) -> _HelmetTextureMasterDraft:
+        if draft.native_baseline_png is not None:
+            return draft
+        baseline, _digest = snapshot_texture_master_source(
+            native, self._preview_path(f"master-{uuid4().hex}.native.png")
+        )
+        if draft.pipeline.get("import_mode") == "retail-literal-crest":
+            from mod_editor.core.errors import ValidationError
+            from mod_editor.core.image_fit import fit_image
+
+            expected = fit_image(
+                draft.source_image, self._WIDTH, self._HEIGHT, mode="contain"
+            )
+            compiled = fit_image(
+                baseline, self._WIDTH, self._HEIGHT, mode="scale"
+            )
+            if expected.rgba != compiled.rgba:
+                baseline.unlink(missing_ok=True)
+                raise ValidationError(
+                    "The image changed while Mod Studio was preparing its native "
+                    "crest. Import it again; the inconsistent master was not kept."
+                )
+        return replace(draft, native_baseline_png=baseline)
+
+    def _prepare_retail_texture_master_draft(
+        self, source: Path, probe: object
+    ) -> _HelmetTextureMasterDraft:
+        source_width = int(getattr(probe, "source_width"))
+        source_height = int(getattr(probe, "source_height"))
+        transform = texture_master_fit_transform(
+            source_width,
+            source_height,
+            self._WIDTH,
+            self._HEIGHT,
+            mode="contain",
+            resample="lanczos",
+        )
+        snapshot, source_sha256 = snapshot_texture_master_source(
+            source, self._preview_path(f"master-{uuid4().hex}.source")
+        )
+        pipeline = {
+            "import_mode": "retail-literal-crest",
+            "normalization": {
+                "action": str(getattr(probe, "action")),
+                "canvas_height": self._HEIGHT,
+                "canvas_width": self._WIDTH,
+                "fit_mode": "contain",
+                "padded_x": int(getattr(probe, "padded_x")),
+                "padded_y": int(getattr(probe, "padded_y")),
+                "resample": "lanczos",
+                "source_height": source_height,
+                "source_width": source_width,
+            },
+        }
+        editor_transform = {
+            "canvas_height": self._HEIGHT,
+            "canvas_width": self._WIDTH,
+            "center_x": transform.center_x,
+            "center_y": transform.center_y,
+            "coordinate_space": "native-texture-pixels",
+            "height": transform.height,
+            "operation": "apf-retail-crest-contain",
+            "pipeline": pipeline,
+            "resample": "lanczos",
+            "rotation_degrees": 0.0,
+            "width": transform.width,
+        }
+        return _HelmetTextureMasterDraft(
+            snapshot,
+            source_sha256,
+            source_width,
+            source_height,
+            "lanczos",
+            pipeline,
+            transform,
+            editor_transform,
+        )
+
+    def _save_authoring_master(self) -> None:
+        draft = self._texture_master_draft
+        save = getattr(self.facade, "save_helmet_crest_authoring_master", None)
+        if draft is None or not callable(save):
+            QMessageBox.information(
+                self,
+                "Import a logo first",
+                "Import and place external artwork in this session before saving "
+                "its full-resolution authoring master. Existing project files "
+                "retain the exact native 512×512 PNG only.",
+            )
+            return
+        choice, accepted = QInputDialog.getItem(
+            self,
+            "Authoring preview size",
+            "Render directly from the preserved full-resolution source at:",
+            ("4× (recommended)", "2×"),
+            0,
+            False,
+        )
+        if not accepted:
+            return
+        scale = 4 if str(choice).startswith("4") else 2
+        destination, _filter = QFileDialog.getSaveFileName(
+            self,
+            "Save high-resolution helmet-logo authoring master",
+            str(Path.home() / "apf-helmet-logo.2ktexmaster"),
+            "2K texture authoring master (*.2ktexmaster)",
+        )
+        if not destination:
+            return
+        output = Path(destination)
+        if output.suffix.casefold() != ".2ktexmaster":
+            output = output.with_suffix(".2ktexmaster")
+
+        self.run_task(
+            "Saving high-resolution helmet-logo authoring master",
+            lambda progress: save(
+                source_image=draft.source_image,
+                source_sha256=draft.source_sha256,
+                destination=output,
+                transform=draft.transform,
+                editor_transform=draft.editor_transform,
+                high_resolution_scale=scale,
+                native_baseline_png=(
+                    draft.native_baseline_png
+                    if draft.native_canvas_edited
+                    else None
+                ),
+                progress=progress,
+            ),
+            lambda result: QMessageBox.information(
+                self,
+                "Authoring master saved",
+                f"Saved to:\n{Path(str(result))}\n\n"
+                "The 2×/4× image is an authoring preview rendered from your "
+                "preserved source. The game build still uses the exact native "
+                "512×512 semantic mask; no RPCS3 pack was created.",
+            ),
+            True,
+        )
+
+    @staticmethod
+    def _coverage_text(value: float) -> str:
+        return f"{value:.0%}" if value in {0.0, 1.0} else f"{value:.1%}"
+
+    def _coverage_changed(self, *_args: object) -> None:
+        self._refresh_logo_ownership()
+        full_shell = self._selected_profile() == FULL_SHELL_CREST_PROFILE
+        self.fit_visible_mask.setEnabled(False)
+        self.coverage_warning.setVisible(full_shell)
+        self.import_mode_label.setVisible(full_shell)
+        self.import_mode.setVisible(full_shell)
+        self.import_mode.setEnabled(self.facade.source_ready and full_shell)
+        self.place_button.setEnabled(self.facade.source_ready and full_shell)
+        if not full_shell and self.fit_visible_mask.isChecked():
+            self.fit_visible_mask.blockSignals(True)
+            self.fit_visible_mask.setChecked(False)
+            self.fit_visible_mask.blockSignals(False)
+        if self._staged_png is not None:
+            profile_ready = self._staged_profile == self._selected_profile()
+            self.build_button.setEnabled(self.facade.source_ready and profile_ready)
+            self.master_button.setEnabled(
+                self.facade.source_ready
+                and profile_ready
+                and self._texture_master_draft is not None
+                and callable(
+                    getattr(
+                        self.facade, "save_helmet_crest_authoring_master", None
+                    )
+                )
+            )
+            if not profile_ready:
+                self.path_note.setText(
+                    "Helmet coverage changed. Import or drop the logo again so "
+                    "Mod Studio can validate/convert it for this profile before Build."
+                )
+
+    def _commit_design(self, path: Path, *, remember_source: bool = True) -> bool:
+        """Stage through the shareable session; retain a fake-facade test seam."""
+
+        if remember_source:
+            self._source_staged_png = Path(path)
+        replace = getattr(self.facade, "replace_helmet_crest_design", None)
+        if not callable(replace):
+            self._staged_png = Path(path)
+            self._staged_profile = self._selected_profile()
+            self.set_context()
+            return True
+        crest = self.selected_crest()
+        try:
+            modification = replace(
+                Path(path),
+                profile=self._selected_profile(),
+                crest_asset_index=int(crest.asset_index),
+                crest_outer_entry_index=int(crest.outer_entry_index),
+                fit_visible_mask=bool(self.fit_visible_mask.isChecked()),
+            )
+        except Exception as exc:  # facade/session errors are user-correctable
+            QMessageBox.information(
+                self,
+                "Could not stage helmet crest",
+                str(exc),
+            )
+            return False
+        self._staged_png = Path(modification.replacement_path)
+        self._staged_profile = self._selected_profile()
+        self.set_context()
+        self.modifiedChanged.emit()
+        return True
+
+    def _populate_slots(self) -> None:
+        """Offer every crest package the loaded game carries, not just the teams.
+
+        The picker is built before a game is loaded, so it starts as the
+        twenty-four built-in teams -- the only rows knowable without reading a
+        disc.  Once a source is ready the archive itself is asked, which adds the
+        game's other ninety-four logo packages: real crest slots with their own
+        art, catalogued by the same runtime aggregate that already declares 118,
+        and writable by the same writer.  A modder wanting more helmet art was
+        previously held to twenty-four by this list alone.
+        """
+
+        if self._slots_populated:
+            return
+        source = getattr(self.facade, "source", None)
+        index_0a = getattr(source, "index_0a", None) if source is not None else None
+        if index_0a is None:
+            return
+        try:
+            slots = crest_slots(Path(index_0a))
+        except Exception:  # noqa: BLE001 - a picker must never break loading a game
+            return
+        if not slots:
+            return
+        previous = self.slot.currentData()
+        self.slot.blockSignals(True)
+        self.slot.clear()
+        for slot in slots:
+            self.slot.addItem(slot.label, slot)
+        restored = -1
+        if previous is not None:
+            restored = next(
+                (index for index in range(self.slot.count())
+                 if self.slot.itemData(index).asset_index == previous.asset_index),
+                -1,
+            )
+        self.slot.setCurrentIndex(restored if restored >= 0 else 0)
+        self.slot.blockSignals(False)
+        self._slots_populated = True
+
     def set_context(self) -> None:
         ready = self.facade.source_ready
+        current_game_source = self._current_game_source_identity()
+        if (
+            self._texture_master_game_source is not None
+            and self._texture_master_game_source != current_game_source
+        ):
+            self._clear_texture_master_draft()
+        if ready:
+            self._populate_slots()
+        self._refresh_logo_ownership()
+        session = getattr(self.facade, "session", None)
+        modification = (
+            session.modification(HELMET_CREST_DESIGN_EDIT_ID)
+            if session is not None and hasattr(session, "modification")
+            else None
+        )
+        if modification is not None:
+            wanted_asset_index = int(
+                modification.metadata.get("crest_asset_index", -1)
+            )
+            wanted_slot = next(
+                (
+                    index
+                    for index in range(self.slot.count())
+                    if getattr(self.slot.itemData(index), "asset_index", -2)
+                    == wanted_asset_index
+                ),
+                -1,
+            )
+            if wanted_slot >= 0 and wanted_slot != self.slot.currentIndex():
+                self.slot.blockSignals(True)
+                self.slot.setCurrentIndex(wanted_slot)
+                self.slot.blockSignals(False)
+            wanted_profile = str(
+                modification.metadata.get("profile", RETAIL_CREST_PROFILE)
+            )
+            wanted_index = self.coverage.findData(wanted_profile)
+            if wanted_index >= 0 and wanted_index != self.coverage.currentIndex():
+                self.coverage.blockSignals(True)
+                self.coverage.setCurrentIndex(wanted_index)
+                self.coverage.blockSignals(False)
+            wanted_fit = bool(modification.metadata.get("fit_visible_mask", False))
+            if wanted_fit != self.fit_visible_mask.isChecked():
+                self.fit_visible_mask.blockSignals(True)
+                self.fit_visible_mask.setChecked(wanted_fit)
+                self.fit_visible_mask.blockSignals(False)
+            self._staged_png = Path(modification.replacement_path)
+            self._staged_profile = wanted_profile
+            if self._source_staged_png is None:
+                self._source_staged_png = self._staged_png
         staged = self._staged_png is not None
         self.slot.setEnabled(ready)
+        self.coverage.setEnabled(ready)
+        full_shell = self._selected_profile() == FULL_SHELL_CREST_PROFILE
+        self.fit_visible_mask.setEnabled(False)
+        self.coverage_warning.setVisible(full_shell)
+        self.import_mode_label.setVisible(full_shell)
+        self.import_mode.setVisible(full_shell)
+        self.import_mode.setEnabled(ready and full_shell)
+        self.place_button.setEnabled(ready and full_shell)
         self.export_button.setEnabled(ready)
         self.replace_button.setEnabled(ready)
-        self.build_button.setEnabled(ready and staged)
+        self.replace_button.setToolTip(
+            "Choose ordinary artwork or an advanced APF weight mask according "
+            "to Full-shell import. Normal artwork is palette-converted and "
+            "previewed before the front/crown/rear placement canvas opens."
+            if full_shell
+            else "Choose an edited image; Retail keeps the normal contain/resize flow."
+        )
+        profile_ready = self._staged_profile == self._selected_profile()
+        self.build_button.setEnabled(ready and staged and profile_ready)
+        self.master_button.setEnabled(
+            ready
+            and staged
+            and profile_ready
+            and self._texture_master_draft is not None
+            and callable(
+                getattr(self.facade, "save_helmet_crest_authoring_master", None)
+            )
+        )
         self.revert_button.setEnabled(staged)
         self.revert_button.setToolTip(
             "Discard the staged replacement PNG and show your original crest again."
@@ -2357,15 +4156,18 @@ class ApfTeamLogoPanel(QFrame):
             else "Nothing to revert—no replacement is staged."
         )
         self.build_button.setToolTip(
-            "Copy your 0A and write this crest into both the uniform_logo_01 "
-            "package and the prebuilt logo cache through the offline-proved "
-            "writers and their independent full-volume verifiers."
-            if (ready and staged)
+            "Copy your 0A and write this crest into the selected uniform_logo_NN "
+            "package and its linked frontend/Team Select logo-cache index through "
+            "the offline-proved writers. The separate selector-slot-6 wordmark "
+            "is not changed. Full-shell also writes the shared shell-atlas route; "
+            "no Xenia patch or default.xex edit is created. Changed-logo runtime "
+            "consumption remains unproved."
+            if (ready and staged and profile_ready)
             else "Load your game and stage a 512×512 RGBA PNG to build."
         )
         self.preview.setAcceptDrops(ready)
         if staged and ready:
-            self.status.setText("● Staged")
+            self.status.setText("● Staged" if profile_ready else "△ Re-import needed")
             color = "#39d98a"
         elif ready:
             self.status.setText(_status_text(ApfStatus.EDITABLE))
@@ -2377,19 +4179,33 @@ class ApfTeamLogoPanel(QFrame):
 
         if not ready:
             self.preview.set_message(
-                "Team logo crest · 512×512 RGBA PNG\n"
+                "Team crest + linked Team Select cache · 512×512 RGBA PNG\n"
                 "Load your game to see the original."
             )
             self.path_note.setText(
                 "No game loaded yet — preview, export, and Replace unlock once "
-                "your source is recognized."
+                "your source is recognized.\n\n" + START_HERE_HINT
             )
             return
         if staged:
             self.preview.set_image(self._staged_png)
+            coverage_detail = ""
+            if modification is not None:
+                before = float(
+                    modification.metadata.get("source_horizontal_coverage", 1.0)
+                )
+                after = float(
+                    modification.metadata.get("output_horizontal_coverage", before)
+                )
+                coverage_detail = (
+                    " Visible horizontal mask coverage: "
+                    f"{self._coverage_text(before)} → "
+                    f"{self._coverage_text(after)}."
+                )
             self.path_note.setText(
-                "Current preview: your staged 512×512 RGBA replacement. Build copies "
-                "your 0A and writes only the crest; your source game stays untouched."
+                "Current preview: your staged 512×512 RGBA replacement. It is "
+                "included in shareable projects and the main complete-game Build; "
+                "your source stays untouched." + coverage_detail
             )
             return
         self.preview.set_loading("Decoding the original crest from your game…")
@@ -2531,6 +4347,7 @@ class ApfTeamLogoPanel(QFrame):
         from mod_editor.core.errors import ValidationError
         from mod_editor.core.image_fit import fit_image
         from mod_editor.gui.texture_editor import edit_texture
+        from PIL import Image
 
         source = self._staged_png
         if source is None:
@@ -2557,8 +4374,290 @@ class ApfTeamLogoPanel(QFrame):
         Image.frombytes(
             "RGBA", (edited.width, edited.height), edited.rgba
         ).save(staged)
-        self._staged_png = staged
-        self.set_context()
+        if self._selected_profile() == FULL_SHELL_CREST_PROFILE:
+            try:
+                validate_region_mask_rgba(edited.rgba)
+            except HelmetLogoRegionError as exc:
+                QMessageBox.information(
+                    self,
+                    "APF region mask required",
+                    "Full-shell Edit accepts semantic region weights only. Use "
+                    "Normal logo import to convert painted artwork first.\n\n"
+                    f"{exc}",
+                )
+                return
+        existing_master = self._texture_master_draft
+        changed_pixels = sum(
+            pixels[offset:offset + 4] != edited.rgba[offset:offset + 4]
+            for offset in range(0, len(pixels), 4)
+        )
+        if self._commit_design(staged):
+            self._placement_source_rgba = None
+            self._placement_state = None
+            if existing_master is not None:
+                revision = int(
+                    existing_master.editor_transform.get(
+                        "native_canvas_edit_revision", 0
+                    )
+                ) + 1
+                editor_transform = dict(existing_master.editor_transform)
+                editor_transform.update({
+                    "native_canvas_edit": {
+                        "changed_pixel_count_from_previous_canvas": changed_pixels,
+                        "operation": "native-canvas-raster-edit-after-import",
+                        "preview_composition": (
+                            "nearest-native-pixel-edits-over-direct-master-render"
+                        ),
+                    },
+                    "native_canvas_edit_revision": revision,
+                })
+                self._texture_master_draft = replace(
+                    existing_master,
+                    editor_transform=editor_transform,
+                    native_canvas_edited=True,
+                )
+                self.set_context()
+
+    def _place_mask_rgba(
+        self,
+        source_rgba: bytes,
+        *,
+        auto_fit: bool,
+        initial_placement: Placement | None = None,
+        master_input: _HelmetTextureMasterInput | None = None,
+    ) -> bool:
+        """Edit from one stable import basis, never a repeatedly flattened copy."""
+
+        edit = place_helmet_logo(
+            source_rgba,
+            auto_fit=auto_fit,
+            initial_placement=initial_placement,
+            parent=self,
+        )
+        if edit is None:
+            return False
+        candidate_master: _HelmetTextureMasterDraft | None = None
+        owns_new_snapshot = False
+        try:
+            from PIL import Image
+
+            staged = self._preview_path("team_logo_placed.png")
+            Image.frombytes("RGBA", (self._WIDTH, self._HEIGHT), edit.rgba).save(staged)
+            candidate_master, owns_new_snapshot = (
+                self._prepare_placed_texture_master_draft(
+                    source_rgba, edit.placement, master_input
+                )
+            )
+            if candidate_master is not None and owns_new_snapshot:
+                candidate_master = self._attach_native_baseline(
+                    candidate_master, staged
+                )
+        except Exception as exc:  # noqa: BLE001 - Pillow reports format details
+            if owns_new_snapshot and candidate_master is not None:
+                self._delete_texture_master_files(candidate_master)
+            QMessageBox.information(
+                self,
+                "Could not stage helmet placement",
+                "The exact 512×512 placement or its full-resolution source "
+                f"could not be preserved.\n\n{exc}",
+            )
+            return False
+
+        # The placement output is already the semantic pre-guard 512x512
+        # design. Session-level one-click fitting would erase the user's X/Y,
+        # independent width/height, and rotation choices, so disable it before
+        # crossing the normal staging boundary.
+        self.fit_visible_mask.blockSignals(True)
+        self.fit_visible_mask.setChecked(False)
+        self.fit_visible_mask.blockSignals(False)
+        if not self._commit_design(staged):
+            if owns_new_snapshot and candidate_master is not None:
+                self._delete_texture_master_files(candidate_master)
+            return False
+        self._placement_source_rgba = bytes(source_rgba)
+        self._placement_state = edit.placement
+        if candidate_master is not None:
+            self._install_texture_master_draft(
+                candidate_master, owns_new_snapshot=owns_new_snapshot
+            )
+            self.set_context()
+        return True
+
+    def _place_region_mask_path(
+        self,
+        path: Path,
+        *,
+        auto_fit: bool,
+        preserve_external_master: bool = True,
+    ) -> bool:
+        """Normalize and strictly validate an advanced semantic mask."""
+
+        private_source: Path | None = None
+        source_sha256: str | None = None
+        if preserve_external_master:
+            try:
+                private_source, source_sha256 = snapshot_texture_master_source(
+                    Path(path),
+                    self._preview_path(f"master-input-{uuid4().hex}.source.png"),
+                )
+            except Exception as exc:
+                QMessageBox.information(
+                    self, "Could not preserve region-mask source", str(exc)
+                )
+                return False
+        try:
+            imported = import_mask_nearest(private_source or Path(path))
+        except HelmetLogoPlacementError as exc:
+            if private_source is not None:
+                private_source.unlink(missing_ok=True)
+            QMessageBox.information(
+                self,
+                "Could not place helmet logo",
+                str(exc),
+            )
+            return False
+        try:
+            validate_region_mask_rgba(imported.rgba)
+        except HelmetLogoRegionError as exc:
+            if private_source is not None:
+                private_source.unlink(missing_ok=True)
+            QMessageBox.information(
+                self,
+                "Invalid APF region mask",
+                str(exc)
+                + "\n\nUse Normal logo import for ordinary painted artwork.",
+            )
+            return False
+        master_input = (
+            _HelmetTextureMasterInput(
+                source_image=private_source or Path(path),
+                source_width=imported.source_width,
+                source_height=imported.source_height,
+                source_resample="nearest",
+                pipeline={
+                    "import_mode": REGION_MASK_IMPORT_MODE,
+                    "normalization": {
+                        "canvas_height": self._HEIGHT,
+                        "canvas_width": self._WIDTH,
+                        "fit_mode": "contain",
+                        "resample": "nearest",
+                        "source_height": imported.source_height,
+                        "source_width": imported.source_width,
+                    },
+                    "semantic_conversion": "already-authored exact APF red/green region weights",
+                },
+                source_sha256=source_sha256,
+                private_snapshot=True,
+            )
+            if preserve_external_master
+            else None
+        )
+        placed = self._place_mask_rgba(
+            imported.rgba, auto_fit=auto_fit, master_input=master_input
+        )
+        if not placed and private_source is not None:
+            private_source.unlink(missing_ok=True)
+        return placed
+
+    def _place_normal_logo_path(self, path: Path, *, auto_fit: bool) -> bool:
+        """Contain normal artwork, confirm its palette mapping, then place its mask."""
+
+        from mod_editor.core.errors import ValidationError
+        from mod_editor.core.image_fit import fit_image
+
+        private_source: Path | None = None
+        try:
+            private_source, source_sha256 = snapshot_texture_master_source(
+                Path(path),
+                self._preview_path(f"master-input-{uuid4().hex}.source.png"),
+            )
+            normalized = fit_image(
+                private_source, self._WIDTH, self._HEIGHT, mode="contain"
+            )
+        except (ValidationError, OSError) as exc:
+            if private_source is not None:
+                private_source.unlink(missing_ok=True)
+            QMessageBox.information(self, "Could not read normal logo", str(exc))
+            return False
+        assert private_source is not None
+        conversion = convert_normal_logo(normalized.rgba, parent=self)
+        if conversion is None:
+            private_source.unlink(missing_ok=True)
+            return False
+        palette = conversion.palette
+        master_input = _HelmetTextureMasterInput(
+            source_image=private_source,
+            source_width=normalized.source_width,
+            source_height=normalized.source_height,
+            source_resample="bicubic",
+            pipeline={
+                "import_mode": NORMAL_LOGO_IMPORT_MODE,
+                "normalization": {
+                    "canvas_height": self._HEIGHT,
+                    "canvas_width": self._WIDTH,
+                    "fit_mode": "contain",
+                    "resample": "lanczos",
+                    "source_height": normalized.source_height,
+                    "source_width": normalized.source_width,
+                },
+                "semantic_conversion": {
+                    "mapping": conversion.mapping,
+                    "palette": {
+                        "green_region_rgb": list(palette.green_region),
+                        "red_region_rgb": list(palette.red_region),
+                        "shell_rgb": list(palette.shell),
+                    },
+                    "stored_channels": "red/green Xenos 4-bit unit-simplex weights; blue zero",
+                },
+            },
+            source_sha256=source_sha256,
+            private_snapshot=True,
+        )
+        placed = self._place_mask_rgba(
+            conversion.mask_rgba,
+            auto_fit=auto_fit,
+            master_input=master_input,
+        )
+        if not placed:
+            private_source.unlink(missing_ok=True)
+        return placed
+
+    def _place_full_shell_path(self, path: Path, *, auto_fit: bool) -> bool:
+        if self._selected_import_mode() == REGION_MASK_IMPORT_MODE:
+            return self._place_region_mask_path(path, auto_fit=auto_fit)
+        return self._place_normal_logo_path(path, auto_fit=auto_fit)
+
+    def _place_current_logo(self) -> None:
+        """Reposition the staged design, or start from the decoded retail crest."""
+
+        if (
+            not self.facade.source_ready
+            or self._selected_profile() != FULL_SHELL_CREST_PROFILE
+        ):
+            return
+        if self._placement_source_rgba is not None:
+            self._place_mask_rgba(
+                self._placement_source_rgba,
+                auto_fit=False,
+                initial_placement=self._placement_state,
+            )
+            return
+        source = self._staged_png
+        if source is None:
+            try:
+                source = self._decode_source_operation(lambda *_args: None)
+            except Exception as exc:  # noqa: BLE001 - decode paths raise broadly
+                QMessageBox.information(
+                    self,
+                    "Could not open the crest",
+                    f"The current crest could not be decoded for placement.\n\n{exc}",
+                )
+                return
+        # A staged/source crest is already an APF region mask regardless of the
+        # import mode selected for the next external file.
+        self._place_region_mask_path(
+            Path(source), auto_fit=False, preserve_external_master=False
+        )
 
     def _stage_path(self, path: Path) -> None:
         """Stage an image for the crest, resizing it when it is not exact.
@@ -2572,6 +4671,12 @@ class ApfTeamLogoPanel(QFrame):
         """
         if not self.facade.source_ready:
             return
+        if self._selected_profile() == FULL_SHELL_CREST_PROFILE:
+            # Full-shell normal art is converted to semantic weights first;
+            # advanced masks are strict-validated. Only then can placement and
+            # staging receive a semantic pre-guard PNG.
+            self._place_full_shell_path(Path(path), auto_fit=True)
+            return
         from mod_editor.core.errors import ValidationError
         from mod_editor.core.image_fit import fit_image, fit_to_png
 
@@ -2584,51 +4689,118 @@ class ApfTeamLogoPanel(QFrame):
                               mode="contain")
         except ValidationError as exc:
             QMessageBox.information(
-                self, "Choose an image",
-                f"That file could not be read as an image.\n\n{exc}",
+                self,
+                "That file could not be read as an image",
+                f"{exc}\n\nFix: choose or drop a {_plain_image_formats()} "
+                "image. Any size works -- the editor resizes it for you.",
             )
             return
 
-        if not probe.changed:
-            self._staged_png = Path(path)
-            self.set_context()
+        needs_png_conversion = (
+            probe.source_format != "PNG" or probe.source_mode != "RGBA"
+        )
+        if not probe.changed and not needs_png_conversion:
+            draft: _HelmetTextureMasterDraft | None = None
+            try:
+                draft = self._prepare_retail_texture_master_draft(Path(path), probe)
+                draft = self._attach_native_baseline(draft, Path(path))
+            except Exception as exc:  # user source/disk validation is recoverable
+                self._delete_texture_master_files(draft)
+                QMessageBox.information(
+                    self,
+                    "Could not preserve full-resolution source",
+                    str(exc),
+                )
+                return
+            if self._commit_design(Path(path)):
+                self._placement_source_rgba = None
+                self._placement_state = None
+                self._install_texture_master_draft(
+                    draft, owns_new_snapshot=True
+                )
+                self.set_context()
+            else:
+                self._delete_texture_master_files(draft)
             return
 
-        answer = QMessageBox.question(
-            self,
-            "Resize this image?",
-            f"The team-logo crest must be exactly {self._WIDTH}×{self._HEIGHT}, "
-            f"and that image is {probe.source_width}×{probe.source_height}.\n\n"
-            f"Mod Studio can {probe.describe()} for you.\n\n"
-            "Your original file is not modified — the resized copy is staged "
-            "for this build only.",
-            QMessageBox.Yes | QMessageBox.Cancel,
-            QMessageBox.Yes,
-        )
-        if answer != QMessageBox.Yes:
-            return
+        # Prepare the exact pixels first, then show them for approval. A
+        # modder deciding a crest fit should see the actual result, not a
+        # promise, before anything is staged.
         try:
-            staged = self._preview_path("team_logo_resized.png")
+            staged = self._preview_path(f"team_logo_resized-{uuid4().hex}.png")
             result = fit_to_png(path, self._WIDTH, self._HEIGHT, staged,
                                 mode="contain")
         except ValidationError as exc:
-            QMessageBox.information(self, "Could not resize", str(exc))
+            QMessageBox.information(
+                self,
+                "Could not prepare that image",
+                f"{exc}\n\nFix: try a different {_plain_image_formats()} "
+                "image. No edit was staged.",
+            )
             return
-        self._staged_png = staged
+        if not confirm_prepared_slot_image(
+            self,
+            staged,
+            width=self._WIDTH,
+            height=self._HEIGHT,
+            title="Preview the prepared crest",
+            summary_lines=(
+                (
+                    f"That image is {probe.source_width}×{probe.source_height}. "
+                    f"Mod Studio prepared it by: {result.describe()}."
+                ),
+                "Your original file is not modified — this prepared copy is "
+                "staged for this build only.",
+            ),
+            accept_label="Stage this crest",
+        ):
+            staged.unlink(missing_ok=True)
+            return
+        draft = None
+        try:
+            draft = self._prepare_retail_texture_master_draft(Path(path), probe)
+            draft = self._attach_native_baseline(draft, staged)
+        except Exception as exc:  # user source/disk validation is recoverable
+            self._delete_texture_master_files(draft)
+            QMessageBox.information(
+                self,
+                "Could not preserve full-resolution source",
+                str(exc),
+            )
+            return
+        if not self._commit_design(staged):
+            self._delete_texture_master_files(draft)
+            return
+        assert draft is not None
+        self._placement_source_rgba = None
+        self._placement_state = None
+        self._install_texture_master_draft(draft, owns_new_snapshot=True)
         self.set_context()
-        QMessageBox.information(
-            self, "Resized",
-            f"Staged a {self._WIDTH}×{self._HEIGHT} copy — {result.describe()}.\n\n"
-            "Preview it before building; your original file is unchanged.",
-        )
 
     def _revert(self) -> None:
+        revert = getattr(self.facade, "revert", None)
+        if callable(revert):
+            revert(HELMET_CREST_DESIGN_EDIT_ID)
         self._staged_png = None
+        self._source_staged_png = None
+        self._placement_source_rgba = None
+        self._placement_state = None
+        self._clear_texture_master_draft()
         self.set_context()
+        self.modifiedChanged.emit()
 
     def _build_copied_volume(self) -> None:
         source = self.facade.source
         if not self.facade.source_ready or source is None or self._staged_png is None:
+            return
+        if self._staged_profile != self._selected_profile():
+            QMessageBox.information(
+                self,
+                "Re-import for this helmet coverage",
+                "The staged crest belongs to the other helmet coverage profile. "
+                "Import or drop it again so Mod Studio can validate/convert it "
+                "before Build.",
+            )
             return
         destination, _filter = QFileDialog.getSaveFileName(
             self,
@@ -2643,10 +4815,39 @@ class ApfTeamLogoPanel(QFrame):
             out_volume.parent / f"{out_volume.name}.team_logo_package.json"
         )
         cache_manifest = out_volume.parent / f"{out_volume.name}.team_logo_cache.json"
+        cache_verify_manifest = cache_manifest.with_name(
+            f"{cache_manifest.stem}.verify.json"
+        )
+        appearance_replacements = {
+            slot: self.facade.custom_team_appearance_value(slot)
+            for slot in apf_custom_team_appearance_patch.USER_SLOTS
+            if apf_custom_team_appearance_patch.asset_id(slot)
+            in self.facade.modified_asset_ids
+        }
+        appearance_manifest = (
+            out_volume.parent / f"{out_volume.name}.custom_team_appearance.json"
+            if appearance_replacements
+            else None
+        )
+        crest_profile = self._selected_profile()
+        crest_wrap_manifest = (
+            out_volume.parent / f"{out_volume.name}.helmet_crest_wrap.json"
+            if crest_profile == FULL_SHELL_CREST_PROFILE
+            else None
+        )
         if (
             out_volume.exists()
             or package_manifest.exists()
             or cache_manifest.exists()
+            or cache_verify_manifest.exists()
+            or (
+                appearance_manifest is not None
+                and appearance_manifest.exists()
+            )
+            or (
+                crest_wrap_manifest is not None
+                and crest_wrap_manifest.exists()
+            )
         ):
             QMessageBox.information(
                 self,
@@ -2656,27 +4857,47 @@ class ApfTeamLogoPanel(QFrame):
             )
             return
         index_path = Path(source.index_0a)
+        crest = self.selected_crest()
+        coverage_detail = (
+            "\nHelmet coverage: entire helmet shell\n"
+            f"Wrap verifier: {crest_wrap_manifest.name}\n"
+            + GLOBAL_HELMET_WARNING
+            if crest_wrap_manifest is not None
+            else "\nHelmet coverage: retail side decal"
+        )
+        appearance_detail = (
+            "\nCustom-team appearance slots: "
+            + ", ".join(str(slot) for slot in sorted(appearance_replacements))
+            + f"\nAppearance verifier: {appearance_manifest.name}"
+            if appearance_manifest is not None
+            else "\nCustom-team appearance: no staged slot edits"
+        )
         confirm = QMessageBox.question(
             self,
             "Build copied 0A (team logo)?",
             "This copies your entire ~1.1 GB 0A volume to the chosen path and "
-            "replaces the shared team-logo crest in both places the disc stores "
-            "it: the uniform_logo_01 package (logo_l0) and the matching entry in "
+            "replaces both sibling layers of the selected team-logo crest in both "
+            "places the disc stores "
+            f"it: {crest.package_name} (outer {crest.outer_entry_index}) and catalog "
+            f"slot {crest.asset_index} in "
             "the prebuilt uniform_logocache aggregate. Both writes go through "
             "offline-proved writers; each byte-diffs the whole copied volume so "
             "only its own fixed extents change, and your source game is never "
             "modified.\n\n"
-            "This writes only the 0A volume and only this team-logo edit — not other "
-            "Mod Studio edits. Boot it alongside your own unmodified game packs.\n\n"
-            "The two writes are chained through one intermediate copy, so the "
-            "destination needs roughly twice the volume size free while it builds; "
-            "the intermediate is removed when the build finishes.\n\n"
+            "This writes the team-logo edit and any staged Custom Team Appearance "
+            "slot listed below into one 0A. Other Mod Studio edits are not included. "
+            "Boot it alongside your own unmodified game packs.\n\n"
+            "The builder checks free space first and keeps the requested output "
+            "name absent until a complete private stage has passed every gate.\n\n"
             f"Source (read-only): {index_path}\n"
             f"New copied 0A: {out_volume}\n"
             f"Manifests: {package_manifest.name}\n"
-            f"           {cache_manifest.name}\n\n"
-            "Which runtime surface reads which copy — helmet crest, team-select "
-            "grid, or scorebug — is not proved without a Xenia capture.\n\n"
+            f"           {cache_manifest.name}\n"
+            f"Verifier:  {cache_verify_manifest.name}\n"
+            f"{coverage_detail}\n\n"
+            f"{appearance_detail}\n\n"
+            "The selected uniform_logo_NN package is the helmet-crest source. "
+            "The cache is co-written for the other logo surfaces that may read it.\n\n"
             "Proceed?",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No,
@@ -2686,8 +4907,8 @@ class ApfTeamLogoPanel(QFrame):
         staged = self._staged_png
 
         def operation(progress: Callable[[str, int, int], None]) -> dict[str, object]:
-            # One Team Logo action, two proved writers, through the shared
-            # copied-volume builder the facade reuses.  Sibling resolution stays
+            # One Team Logo action through the shared copied-volume builder the
+            # facade reuses. Sibling resolution stays
             # a panel seam so this path keeps its declared-sibling behaviour.
             siblings = self._declared_sibling_packs(index_path)
             return build_team_logo_copied_volume(
@@ -2697,8 +4918,13 @@ class ApfTeamLogoPanel(QFrame):
                 package_manifest,
                 cache_manifest,
                 progress,
-                cache_catalog_index=self._CACHE_CATALOG_INDEX,
+                cache_catalog_index=crest.asset_index,
+                outer_entry_index=crest.outer_entry_index,
                 siblings=siblings,
+                appearance_replacements=appearance_replacements or None,
+                appearance_manifest=appearance_manifest,
+                crest_profile=crest_profile,
+                crest_wrap_manifest=crest_wrap_manifest,
             )
 
         self.run_task(
@@ -2712,7 +4938,11 @@ class ApfTeamLogoPanel(QFrame):
         report = result if isinstance(result, dict) else {}
         volume = report.get("volume")
         cache_manifest = report.get("cache_manifest")
+        cache_verify_manifest = report.get("cache_verify_manifest")
         package_manifest = report.get("package_manifest")
+        crest_profile = report.get("crest_profile", RETAIL_CREST_PROFILE)
+        crest_wrap_manifest = report.get("crest_wrap_manifest")
+        appearance_manifest = report.get("appearance_manifest")
         detail = ""
         if package_manifest is not None:
             try:
@@ -2737,7 +4967,10 @@ class ApfTeamLogoPanel(QFrame):
                 detail += f"\nCopied 0A sha256: {copied['output_volume_sha256']}"
         except (OSError, ValueError):
             pass
-        evidence = f"Cache manifest:\n{cache_manifest}\n"
+        evidence = (
+            f"Cache manifest:\n{cache_manifest}\n"
+            f"Independent cache verification:\n{cache_verify_manifest}\n"
+        )
         if package_manifest is not None:
             evidence += f"Package manifest:\n{package_manifest}"
         else:
@@ -2745,22 +4978,416 @@ class ApfTeamLogoPanel(QFrame):
                 "Package manifest: the package-stage evidence copy could not be "
                 "written; the copied volume and its cache manifest are unaffected."
             )
+        if crest_wrap_manifest is not None:
+            evidence += (
+                "\nFull-shell helmet-atlas verification:\n"
+                f"{crest_wrap_manifest}"
+            )
+        if appearance_manifest is not None:
+            evidence += (
+                "\nCustom-team palette/selector verification:\n"
+                f"{appearance_manifest}"
+            )
+        if crest_profile == FULL_SHELL_CREST_PROFILE:
+            opening = (
+                "The full-shell builder created one new 0A only after every team "
+                "package, the selected menu cache, and the shared shell route "
+                "compiled and reparsed successfully. Any staged Custom Team "
+                "Appearance was composed into that same new volume."
+            )
+            proof_summary = (
+                "The full-shell builder compiled and reparsed all 118 team crest "
+                "packages in memory before creating one new 0A. The selected "
+                "package contains identical l0/l1 shell atlases; the selected "
+                "menu cache keeps the undistorted semantic design; every other "
+                "package preserves its retail RGBA mask at the original physical "
+                "side-logo placement. The shell route and neutralized old overlay "
+                "were independently reopened. No Xenia patch or default.xex edit "
+                "was created."
+            )
+        else:
+            opening = (
+                "The offline-proved writers copied your 0A and wrote the same crest "
+                "into the selected uniform_logo_NN package and the prebuilt "
+                "uniform_logocache aggregate, then independently re-read and "
+                "verified the cache edit against the whole volume. Any staged "
+                "Custom Team Appearance slot was composed into the same 0A and its "
+                "ROST was independently reopened and decoded."
+            )
+            proof_summary = (
+                "The three manifests are the evidence chain: the package manifest "
+                "covers your game → the intermediate copy, and the cache manifest "
+                "covers that copy → this volume. The independent verifier re-parses "
+                "all 236 cached logo layers and proves the intended base and packed "
+                "mips changed while all other cached content stayed intact."
+            )
         QMessageBox.information(
             self,
             "Copied 0A built",
-            "The offline-proved writers copied your 0A and wrote the same crest "
-            "into both the uniform_logo_01 package and the prebuilt "
-            "uniform_logocache aggregate, each verified against the whole "
-            f"volume.\n\nCopied 0A:\n{volume}\n\n{evidence}{detail}\n\n"
-            "The two manifests are the evidence chain: the package manifest "
-            "covers your game → the intermediate copy, and the cache manifest "
-            "covers that copy → this volume. Because this volume carries both "
-            "edits, running a single-writer verifier straight from your game to "
-            "this volume reports the other writer's extent as unexpected; that is "
-            "the verifier's one-writer scope, not a fault in this volume.\n\n"
-            "Which runtime surface reads which copy — helmet crest, team-select "
-            "grid, or scorebug — is not proved without a Xenia capture.",
+            f"{opening}\n\nCopied 0A:\n"
+            f"{volume}\n\n{evidence}{detail}\n\n{proof_summary}"
+            + (
+                "\n\n" + GLOBAL_HELMET_WARNING
+                if crest_profile == FULL_SHELL_CREST_PROFILE
+                else ""
+            ),
         )
+
+
+class ApfTextLogoPanel(QFrame):
+    """All 206 rectangular selector-slot-6 wordmarks, never helmet crests."""
+
+    modifiedChanged = pyqtSignal()
+
+    def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
+        super().__init__()
+        self.facade = facade
+        self.run_task = run_task
+        self._assets: dict[int, UniformAsset] = {}
+        self._preview_token = 0
+        self._source_identity: str | None = None
+        self._prepare_root: Path | None = None
+        self.destroyed.connect(self._cleanup_prepared_wordmarks)
+        self.setObjectName("panel")
+
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(16, 14, 16, 14)
+        layout.setSpacing(16)
+        self.preview = ImageDropLabel(
+            "Wordmark · 512×128 RGBA PNG\nLoad your game, then choose slot 0..205."
+        )
+        self.preview.setMinimumSize(420, 150)
+        self.preview.setMaximumHeight(210)
+        self.preview.pngDropped.connect(self._stage_path)
+        layout.addWidget(self.preview, 2)
+
+        content = QVBoxLayout()
+        heading = QHBoxLayout()
+        title = QLabel("Team/menu wordmark")
+        title.setObjectName("panelTitle")
+        self.status = QLabel("Not loaded")
+        self.status.setObjectName("statusBadge")
+        heading.addWidget(title)
+        heading.addStretch(1)
+        heading.addWidget(self.status)
+        content.addLayout(heading)
+
+        selector = QHBoxLayout()
+        selector.addWidget(QLabel("Wordmark slot:"))
+        self.slot = QSpinBox()
+        self.slot.setRange(0, 205)
+        self.slot.setPrefix("#")
+        self.slot.setAccessibleName("APF wordmark asset index 0 through 205")
+        self.slot.setToolTip(
+            "Exact selector-slot-6 asset index. Teams may share a physical "
+            "wordmark; the owner line lists every current reference."
+        )
+        self.fit_mode = QComboBox()
+        self.fit_mode.addItem("Contain — keep the entire logo", "contain")
+        self.fit_mode.addItem("Cover — fill and center-crop", "cover")
+        self.fit_mode.setToolTip(
+            "Contain is the safe default for long logos. Cover fills all 512×128 "
+            "pixels and trims overflow. Transparent pixels are flattened onto "
+            "the retail opaque-black background."
+        )
+        selector.addWidget(self.slot)
+        selector.addSpacing(8)
+        selector.addWidget(QLabel("Import fit:"))
+        selector.addWidget(self.fit_mode, 1)
+        content.addLayout(selector)
+
+        self.identity = QLabel(
+            "uniform_textlogo is a rectangular wordmark. It is not the square "
+            "uniform_logo helmet crest and is never squeezed into that texture."
+        )
+        self.identity.setObjectName("findingText")
+        self.identity.setWordWrap(True)
+        self.owners = QLabel("Load a game to resolve package ownership.")
+        self.owners.setObjectName("metadataText")
+        self.owners.setWordWrap(True)
+        self.contract = QLabel(
+            "512×128 opaque RGBA → tiled BC1/DXT1 · all six mips regenerated · "
+            "fixed-allocation IFF/H7A rebuild · included in normal project Build"
+        )
+        self.contract.setObjectName("contractText")
+        self.contract.setWordWrap(True)
+        content.addWidget(self.identity)
+        content.addWidget(self.owners)
+        content.addWidget(self.contract)
+
+        actions = QHBoxLayout()
+        self.export_button = QPushButton("Export current PNG…")
+        self.export_button.setObjectName("secondaryButton")
+        self.import_button = QPushButton("Import logo/image…")
+        self.import_button.setObjectName("primaryButton")
+        self.revert_button = QPushButton("Revert")
+        self.revert_button.setObjectName("dangerQuietButton")
+        self.export_button.clicked.connect(self._export_current)
+        self.import_button.clicked.connect(self._choose_image)
+        self.revert_button.clicked.connect(self._revert)
+        actions.addWidget(self.export_button)
+        actions.addWidget(self.import_button)
+        actions.addWidget(self.revert_button)
+        actions.addStretch(1)
+        content.addLayout(actions)
+        content.addStretch(1)
+        layout.addLayout(content, 3)
+
+        self.slot.valueChanged.connect(lambda _value: self._selection_changed())
+        self.set_context()
+
+    def _cleanup_prepared_wordmarks(self, *_args: object) -> None:
+        root = self._prepare_root
+        self._prepare_root = None
+        if root is not None and root.name.startswith("apf-textlogo-authoring-"):
+            shutil.rmtree(root, ignore_errors=True)
+
+    def _prepared_path(self) -> Path:
+        if self._prepare_root is None:
+            self._prepare_root = Path(
+                tempfile.mkdtemp(prefix="apf-textlogo-authoring-")
+            )
+        return self._prepare_root / (
+            f"wordmark-{self.slot.value():03d}-{uuid4().hex}.png"
+        )
+
+    def current_asset(self) -> UniformAsset | None:
+        return self._assets.get(self.slot.value())
+
+    def set_context(self) -> None:
+        source = getattr(self.facade, "source", None)
+        source_identity = (
+            str(getattr(source, "source_sha256", "")) if source is not None else None
+        )
+        if source_identity != self._source_identity:
+            self._cleanup_prepared_wordmarks()
+            self._source_identity = source_identity
+        if not self.facade.source_ready:
+            self._assets = {}
+            self.preview.setAcceptDrops(False)
+            self.preview.set_message(
+                "Wordmark · 512×128 RGBA PNG\nLoad your game to browse all 206 slots."
+            )
+            self.status.setText("Not loaded")
+            self.status.setStyleSheet("")
+            self.owners.setText(
+                "Load a game to resolve package ownership.\n\n" + START_HERE_HINT
+            )
+            self.export_button.setEnabled(False)
+            self.import_button.setEnabled(False)
+            self.revert_button.setEnabled(False)
+            return
+        assets = self.facade.uniform_assets("textlogo")
+        if len(assets) != 206 or [asset.asset_index for asset in assets] != list(range(206)):
+            self._assets = {}
+            self.preview.set_error("The 206-slot wordmark catalog did not validate.")
+            self.status.setText("Catalog error")
+            self.export_button.setEnabled(False)
+            self.import_button.setEnabled(False)
+            self.revert_button.setEnabled(False)
+            return
+        self._assets = {asset.asset_index: asset for asset in assets}
+        self.preview.setAcceptDrops(True)
+        self.export_button.setEnabled(True)
+        self.import_button.setEnabled(True)
+        self._selection_changed()
+
+    def _selection_changed(self) -> None:
+        asset = self.current_asset()
+        if asset is None:
+            return
+        modified = asset.asset_id in self.facade.modified_asset_ids
+        self.status.setText("● Modified" if modified else "Editable")
+        self.status.setStyleSheet(
+            "color: #39d98a; border-color: #39d98a;"
+        )
+        owner_text = (
+            ", ".join(asset.affected_teams)
+            if asset.affected_teams
+            else "No current team selector references this library slot."
+        )
+        self.owners.setText(
+            f"uniform_textlogo_{asset.asset_index:02d}.iff · outer "
+            f"{asset.outer_index} / inner {asset.inner_index} · selector owners: "
+            f"{owner_text}"
+        )
+        self.revert_button.setEnabled(modified)
+        self.revert_button.setToolTip(
+            "Remove this staged wordmark from the project."
+            if modified
+            else "Nothing to revert for this wordmark."
+        )
+        modification = self.facade.require_session().modification(asset.asset_id)
+        if modification is not None:
+            self.preview.set_image(modification.replacement_path)
+            return
+        self._preview_token += 1
+        token = self._preview_token
+        self.preview.set_loading(
+            f"Decoding wordmark {asset.asset_index} from your read-only game…"
+        )
+
+        def complete(result: object) -> None:
+            if token == self._preview_token and self.current_asset() == asset:
+                self.preview.set_image(Path(str(result)))
+
+        self.run_task(
+            f"Preparing wordmark {asset.asset_index}",
+            lambda progress: self.facade.preview_uniform(asset.asset_id, progress),
+            complete,
+            False,
+        )
+
+    def _choose_image(self) -> None:
+        asset = self.current_asset()
+        if asset is None:
+            return
+        path, _filter = QFileDialog.getOpenFileName(
+            self,
+            f"Import art for wordmark {asset.asset_index} (any size)",
+            str(Path.home()),
+            "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.tga);;All files (*)",
+        )
+        if path:
+            self._stage_path(Path(path))
+
+    def _stage_path(self, source_path: Path) -> None:
+        asset = self.current_asset()
+        if asset is None:
+            return
+        fit_mode = str(self.fit_mode.currentData() or "contain")
+        prepared_path = self._prepared_path()
+
+        def prepare_operation(
+            progress: Callable[[str, int, int], None]
+        ) -> object:
+            progress("Fitting your image to the 512×128 wordmark slot", 0, 1)
+            return prepare_wordmark_png(
+                source_path, prepared_path, fit_mode=fit_mode
+            )
+
+        self.run_task(
+            f"Preparing wordmark {asset.asset_index} preview",
+            prepare_operation,
+            lambda prepared: self._preview_prepared_wordmark(asset, prepared),
+            True,
+        )
+
+    def _preview_prepared_wordmark(
+        self, asset: UniformAsset, prepared: object
+    ) -> None:
+        """Show the exact fitted wordmark and stage it only on approval."""
+
+        output_path = Path(getattr(prepared, "output_path"))
+        fit_description = str(getattr(prepared, "fit_description"))
+        fit_mode = str(getattr(prepared, "fit_mode"))
+        transparent_pixels = int(
+            getattr(prepared, "transparent_source_pixels")
+        )
+        approved = confirm_prepared_slot_image(
+            self,
+            output_path,
+            width=WORDMARK_WIDTH,
+            height=WORDMARK_HEIGHT,
+            title=f"Preview wordmark {asset.asset_index}",
+            summary_lines=(
+                (
+                    f"Fitted {getattr(prepared, 'source_width')}×"
+                    f"{getattr(prepared, 'source_height')} with "
+                    f"{fit_mode.title()}: {fit_description}."
+                ),
+                (
+                    f"Transparent source pixels flattened onto black: "
+                    f"{transparent_pixels:,}. This wordmark slot stores "
+                    "opaque pixels only."
+                ),
+                "Nothing is staged until you choose “Stage this wordmark”.",
+            ),
+            accept_label="Stage this wordmark",
+        )
+        if not approved:
+            output_path.unlink(missing_ok=True)
+            return
+
+        def operation(progress: Callable[[str, int, int], None]) -> object:
+            progress("Validating and staging wordmark", 0, 1)
+            return self.facade.replace_uniform(
+                asset.asset_id, output_path, progress
+            )
+
+        def complete(_result: object) -> None:
+            self._selection_changed()
+            self.modifiedChanged.emit()
+            QMessageBox.information(
+                self,
+                "Wordmark staged",
+                f"Slot {asset.asset_index}: {fit_description}.\n\n"
+                f"Fit mode: {fit_mode.title()}\n\n"
+                "The square helmet crest was not changed. This wordmark is "
+                "now part of the normal project Build and can be undone or "
+                "reverted.",
+            )
+
+        self.run_task(
+            f"Importing wordmark {asset.asset_index}",
+            operation,
+            complete,
+            True,
+        )
+
+    def _export_current(self) -> None:
+        asset = self.current_asset()
+        if asset is None:
+            return
+        destination, _filter = QFileDialog.getSaveFileName(
+            self,
+            f"Export wordmark {asset.asset_index}",
+            str(Path.home() / f"apf-wordmark-{asset.asset_index:03d}.png"),
+            "RGBA PNG (*.png)",
+        )
+        if not destination:
+            return
+        output = Path(destination)
+        if not output.suffix:
+            output = output.with_suffix(".png")
+        if output.exists() or output.is_symlink():
+            QMessageBox.information(
+                self,
+                "Choose a new filename",
+                "Exports never overwrite an existing file.",
+            )
+            return
+
+        def operation(progress: Callable[[str, int, int], None]) -> Path:
+            modification = self.facade.require_session().modification(asset.asset_id)
+            if modification is not None:
+                progress("Exporting staged wordmark", 0, 0)
+                return _copy_new(modification.replacement_path, output)
+            return self.facade.export_uniform(asset.asset_id, output, progress)
+
+        self.run_task(
+            f"Exporting wordmark {asset.asset_index}",
+            operation,
+            lambda result: QMessageBox.information(
+                self, "Wordmark exported", f"Saved to:\n{Path(str(result))}"
+            ),
+            True,
+        )
+
+    def _revert(self) -> None:
+        asset = self.current_asset()
+        if asset is None:
+            return
+        self.run_task(
+            f"Reverting wordmark {asset.asset_index}",
+            lambda progress: self.facade.revert(asset.asset_id, progress),
+            lambda _result: self._revert_complete(),
+            True,
+        )
+
+    def _revert_complete(self) -> None:
+        self._selection_changed()
+        self.modifiedChanged.emit()
 
 
 class LogosStudioPage(QWidget):
@@ -2781,12 +5408,26 @@ class LogosStudioPage(QWidget):
         tabs = QTabWidget()
         tabs.setObjectName("workspaceTabs")
         self.team_logo = ApfTeamLogoPanel(facade, run_task)
+        self.wordmarks = ApfTextLogoPanel(facade, run_task)
         self.browser = AssetBrowser(facade, ApfCategory.LOGOS, run_task)
-        # Browser edits (e.g. draft_logo) participate in the shared session and
-        # mark the project modified; the standalone team-logo crest panel does not.
+        # Both the crest design and browser edits participate in the shareable
+        # project and normal complete-game Build.
+        self.team_logo.modifiedChanged.connect(self.modifiedChanged)
+        self.wordmarks.modifiedChanged.connect(self.modifiedChanged)
         self.browser.modifiedChanged.connect(self.modifiedChanged)
-        tabs.addTab(self.team_logo, "Team Logo")
+        team_logo_index = tabs.addTab(self.team_logo, "Team Logo")
+        wordmark_index = tabs.addTab(self.wordmarks, "Wordmarks (206)")
         tabs.addTab(self.browser, "All Logo && Team Art")
+        tabs.setTabToolTip(
+            team_logo_index,
+            "Selector slot 5: co-writes the square crest package and its linked "
+            "frontend/Team Select cache index.",
+        )
+        tabs.setTabToolTip(
+            wordmark_index,
+            "Separate selector slot 6: edits rectangular uniform_textlogo "
+            "wordmarks; Team Logo never resizes a crest into this family.",
+        )
         layout.addWidget(tabs, 1)
 
     def set_context(self) -> None:
@@ -2805,10 +5446,12 @@ class LogosStudioPage(QWidget):
         else:
             self.capabilities.set_cards(())
         self.team_logo.set_context()
+        self.wordmarks.set_context()
         self.browser.set_context()
 
     def refresh(self) -> None:
         self.team_logo.set_context()
+        self.wordmarks.set_context()
         self.browser.refresh()
 
 
@@ -2985,8 +5628,9 @@ class ApfFieldArtPanel(QFrame):
             "2048×512 RGBA PNG",
             emphasis=True,
             tooltip=(
-                "The writer accepts exactly this size for the selected texture; "
-                "any other size is refused before anything is staged."
+                "The slot holds exactly this size for the selected texture. "
+                "Drop or choose any image size — an off-size file is resized "
+                "to this for you before anything is staged."
             ),
         )
         self.codec_pill = _spec_pill(
@@ -3140,11 +5784,11 @@ class ApfFieldArtPanel(QFrame):
             )
         )
         self.description.setText(
-            f"{lead}. Drop or choose an exact {target.width}×{target.height} "
-            f"RGBA PNG — any other size is refused. {codec_sentence} Only this "
-            "base level changes — the packed mip tail keeps its original bytes — "
-            "and how the edit looks in play is not proved without a Xenia "
-            "capture."
+            f"{lead}. Drop or choose any image — an off-size file is resized to "
+            f"the exact {target.width}×{target.height} slot for you before "
+            f"anything is staged. {codec_sentence} Only this base level changes "
+            "— the packed mip tail keeps its original bytes — and how the edit "
+            "looks in play is not proved without a Xenia capture."
         )
         self.description.setToolTip(
             f"Full contract: the offline-proved writer owns outer "
@@ -3164,7 +5808,7 @@ class ApfFieldArtPanel(QFrame):
             )
             self.path_note.setText(
                 "No game loaded yet — preview, export, and Replace unlock once "
-                "your source is recognized."
+                "your source is recognized.\n\n" + START_HERE_HINT
             )
             return
         if staged is not None:
@@ -3334,8 +5978,10 @@ class ApfFieldArtPanel(QFrame):
             probe = fit_image(path, target.width, target.height)
         except ValidationError as exc:
             QMessageBox.information(
-                self, "Choose an image",
-                f"That file could not be read as an image.\n\n{exc}",
+                self,
+                "That file could not be read as an image",
+                f"{exc}\n\nFix: choose or drop a {_plain_image_formats()} "
+                "image. Any size works -- the editor resizes it for you.",
             )
             return
 
@@ -3361,7 +6007,12 @@ class ApfFieldArtPanel(QFrame):
             staged = self._preview_path(f"{target.key}_resized.png")
             result = fit_to_png(path, target.width, target.height, staged)
         except ValidationError as exc:
-            QMessageBox.information(self, "Could not resize", str(exc))
+            QMessageBox.information(
+                self,
+                "Could not prepare that image",
+                f"{exc}\n\nFix: try a different {_plain_image_formats()} "
+                "image. No edit was staged.",
+            )
             return
         self._staged[target.key] = staged
         self.set_context()
@@ -3735,7 +6386,7 @@ class FieldArtStudioPage(QWidget):
 
 
 class StadiumStudioPage(QWidget):
-    """Private APF stadium viewer with an explicit unresolved-material boundary."""
+    """Private stadium viewer plus the bounded same-count POSITION hand-off."""
 
     modifiedChanged = pyqtSignal()
 
@@ -3750,11 +6401,17 @@ class StadiumStudioPage(QWidget):
         self._scenes: tuple[ApfStadiumScene, ...] = ()
         self._visible_scenes: dict[str, ApfStadiumScene] = {}
         self._package_assets: dict[str, ApfAsset] = {}
+        self._embedded_textures: dict[str, stadium_texture.EmbeddedTexture] = {}
+        self._staged_embedded_textures: dict[int, tuple[Path, tuple[int, int]]] = {}
+        self._texture_catalog: stadium_texture.StadiumTextureCatalog | None = None
+        self._stadium_texture_preview_dir: Path | None = None
         self._preview: ApfStadiumPreview | None = None
         self._model: GltfWireframeModel | None = None
         self._scene_generation = 0
         self._texture_generation = 0
         self._source_sha256: str | None = None
+        self._selected_model_target: stadium_model_import.StadiumTarget | None = None
+        self.destroyed.connect(self._cleanup_stadium_texture_previews)
 
         outer = QVBoxLayout(self)
         outer.setContentsMargins(24, 16, 24, 16)
@@ -3825,14 +6482,22 @@ class StadiumStudioPage(QWidget):
         self.reset_view_button.setObjectName("secondaryButton")
         self.export_scene_button = QPushButton("Export 3D Scene ZIP…")
         self.export_scene_button.setObjectName("secondaryButton")
+        self.export_model_button = QPushButton("Export selected mesh…")
+        self.export_model_button.setObjectName("secondaryButton")
+        self.import_model_button = QPushButton("Import edited mesh…")
+        self.import_model_button.setObjectName("primaryButton")
         self.reset_view_button.setEnabled(False)
         self.export_scene_button.setEnabled(False)
+        self.export_model_button.setEnabled(False)
+        self.import_model_button.setEnabled(False)
         self.export_scene_button.setToolTip(
-            "Export the private raw-coordinate glTF, binary buffer, and evidence manifest."
+            "Export the private glTF, binary buffer, and evidence manifest. Geometry is raw game data; a root node scales it from centimetres to metres so it opens at a sane size."
         )
         view_heading.addLayout(view_titles, 1)
         view_heading.addWidget(self.reset_view_button)
         view_heading.addWidget(self.export_scene_button)
+        view_heading.addWidget(self.export_model_button)
+        view_heading.addWidget(self.import_model_button)
         self.viewport = StadiumViewport()
         self.viewport.setMinimumSize(480, 330)
         self.surface_identity = QLabel("No surface selected")
@@ -3867,11 +6532,11 @@ class StadiumStudioPage(QWidget):
         package_box.setContentsMargins(14, 13, 14, 13)
         package_box.setSpacing(8)
         package_heading = QHBoxLayout()
-        package_title = QLabel("Owning outer package")
-        package_title.setObjectName("panelTitle")
+        self.package_panel_title = QLabel("Owning outer package")
+        self.package_panel_title.setObjectName("panelTitle")
         self.package_count = QLabel("0 records")
         self.package_count.setObjectName("countPill")
-        package_heading.addWidget(package_title)
+        package_heading.addWidget(self.package_panel_title)
         package_heading.addStretch(1)
         package_heading.addWidget(self.package_count)
         self.package_list = QListWidget()
@@ -3879,9 +6544,13 @@ class StadiumStudioPage(QWidget):
         self.package_list.setSpacing(1)
         self.package_list.setMaximumHeight(190)
         self.package_preview = ImageDropLabel(
-            "Choose a package texture to prepare its private PNG preview."
+            "Choose a package texture to prepare its private PNG preview. You "
+            "can also drop a replacement image here — any size or format works."
         )
         self.package_preview.setAcceptDrops(False)
+        self.package_preview.pngDropped.connect(
+            self._replace_embedded_texture_from_drop
+        )
         self.package_preview.setMinimumHeight(185)
         self.package_preview.setMaximumHeight(245)
         self.package_title = QLabel("Choose a package record")
@@ -3900,17 +6569,24 @@ class StadiumStudioPage(QWidget):
         self.replace_package_button.setObjectName("primaryButton")
         self.revert_package_button = QPushButton("Revert")
         self.revert_package_button.setObjectName("dangerQuietButton")
+        self.build_package_button = QPushButton("Build copied 1A…")
+        self.build_package_button.setObjectName("secondaryButton")
         self.export_package_button.setEnabled(False)
         self.replace_package_button.setEnabled(False)
         self.revert_package_button.setEnabled(False)
+        self.build_package_button.setEnabled(False)
+        self.build_package_button.setVisible(False)
         unresolved = (
-            "Coming Soon: surface/material/TXTR ownership and a bounded stadium texture writer are not proved."
+            "Package texture replacement remains unavailable because surface/material/TXTR "
+            "ownership is not proved. Use the selected-mesh controls for the separate "
+            "same-count POSITION-only geometry lane."
         )
         self.replace_package_button.setToolTip(unresolved)
         self.revert_package_button.setToolTip(unresolved)
         package_actions.addWidget(self.export_package_button)
         package_actions.addWidget(self.replace_package_button)
         package_actions.addWidget(self.revert_package_button)
+        package_actions.addWidget(self.build_package_button)
         package_box.addLayout(package_heading)
         package_box.addWidget(self.package_list)
         package_box.addWidget(self.package_preview, 1)
@@ -3933,11 +6609,17 @@ class StadiumStudioPage(QWidget):
         self.viewport.surfaceSelected.connect(self._surface_selected)
         self.reset_view_button.clicked.connect(self.viewport.reset_view)
         self.export_scene_button.clicked.connect(self._export_scene)
+        self.export_model_button.clicked.connect(self._export_selected_mesh)
+        self.import_model_button.clicked.connect(self._import_selected_mesh)
         self.export_package_button.clicked.connect(self._export_package_asset)
+        self.replace_package_button.clicked.connect(self._replace_embedded_texture)
+        self.revert_package_button.clicked.connect(self._revert_embedded_texture)
+        self.build_package_button.clicked.connect(self._build_embedded_texture_output)
 
     def set_context(self) -> None:
         if not self.facade.source_ready:
             self._source_sha256 = None
+            self._texture_catalog = None
             self._scenes = ()
             self._clear_scene("Load your APF game to browse stadium geometry.")
             self.capabilities.set_cards(())
@@ -3958,7 +6640,10 @@ class StadiumStudioPage(QWidget):
         )
         source_sha = self.facade.source.source_sha256 if self.facade.source else None
         if source_sha != self._source_sha256:
+            self._cleanup_stadium_texture_previews()
+            self._staged_embedded_textures = {}
             self._source_sha256 = source_sha
+            self._texture_catalog = None
             self._preview = None
             self._model = None
             self._scenes = self.facade.stadium_scenes()
@@ -3966,6 +6651,22 @@ class StadiumStudioPage(QWidget):
         elif not self._scenes:
             self._scenes = self.facade.stadium_scenes()
             self._apply_scene_filter()
+
+    def _cleanup_stadium_texture_previews(self, *_args: object) -> None:
+        root = self._stadium_texture_preview_dir
+        self._stadium_texture_preview_dir = None
+        self._staged_embedded_textures = {}
+        if root is not None and root.name.startswith("apf-stadium-texture-"):
+            shutil.rmtree(root, ignore_errors=True)
+
+    def _stadium_texture_preview_path(self, texture_index: int) -> Path:
+        if self._stadium_texture_preview_dir is None:
+            self._stadium_texture_preview_dir = Path(
+                tempfile.mkdtemp(prefix="apf-stadium-texture-")
+            )
+        return self._stadium_texture_preview_dir / (
+            f"texture-{texture_index:03d}-{uuid4().hex}.png"
+        )
 
     def refresh(self) -> None:
         if not self.facade.source_ready:
@@ -4043,10 +6744,15 @@ class StadiumStudioPage(QWidget):
         generation = self._scene_generation
         self._preview = None
         self._model = None
+        self._texture_catalog = None
+        self._embedded_textures = {}
+        self._texture_catalog = None
+        self._embedded_textures = {}
+        self._selected_model_target = None
         self.viewport.set_model(None)
         self.scene_title.setText(f"Outer {scene.outer_index} • stadium SCNE")
         self.scene_metadata.setText(
-            "Preparing private raw-coordinate geometry from your game…"
+            "Preparing private geometry from your game…"
         )
         self.surface_identity.setText("No surface selected")
         self.surface_boundary.setText(
@@ -4054,21 +6760,39 @@ class StadiumStudioPage(QWidget):
         )
         self.reset_view_button.setEnabled(False)
         self.export_scene_button.setEnabled(True)
+        self.export_model_button.setEnabled(False)
+        self.import_model_button.setEnabled(False)
         self._populate_package(self.facade.stadium_package_assets(scene))
 
-        def operation(progress: Callable[[str, int, int], None]) -> tuple[ApfStadiumPreview, GltfWireframeModel]:
+        def operation(
+            progress: Callable[[str, int, int], None]
+        ) -> tuple[
+            ApfStadiumPreview,
+            GltfWireframeModel,
+            stadium_texture.StadiumTextureCatalog | None,
+        ]:
             preview = self.facade.prepare_stadium_scene(scene, progress)
             progress("Building the interactive stadium view", 0, 1)
             model = GltfWireframeModel.load(preview.gltf_path, preview.bin_path)
+            texture_catalog = None
+            source = self.facade.source
+            if (
+                scene.outer_index == stadium_texture.OUTER_INDEX
+                and scene.inner_index == stadium_texture.INNER_INDEX
+                and source is not None
+            ):
+                progress("Resolving draw, material, and texture ownership", 0, 1)
+                texture_catalog = stadium_texture.load_catalog(source.game_root)
             progress("Interactive stadium view ready", 1, 1)
-            return preview, model
+            return preview, model, texture_catalog
 
         def complete(result: object) -> None:
             if generation != self._scene_generation:
                 return
-            preview, model = result  # type: ignore[misc]
+            preview, model, texture_catalog = result  # type: ignore[misc]
             self._preview = preview
             self._model = model
+            self._texture_catalog = texture_catalog
             self.viewport.set_model(model)
             self.reset_view_button.setEnabled(True)
             self.scene_metadata.setText(
@@ -4076,6 +6800,23 @@ class StadiumStudioPage(QWidget):
                 f"{preview.triangle_count:,} source triangles • "
                 f"{preview.skipped_mesh_count:,} unsupported meshes skipped"
             )
+            if texture_catalog is not None:
+                editable = sum(texture.editable for texture in texture_catalog.textures)
+                self.package_panel_title.setText("Selected surface textures")
+                self.material_findings_note.setText(
+                    "Exact static join: 89 scene nodes → 84 draw-used materials → "
+                    f"78 embedded textures. {editable} have bounded full-mip writers; "
+                    "every owned texture has an exact transport."
+                )
+                self.material_findings_note.setToolTip(
+                    "Click a rendered surface to list only the TXTR descriptors named "
+                    "by its serialized material command payload."
+                )
+                self.surface_boundary.setText(
+                    "Texture ownership is resolved for this authenticated outer-14 / "
+                    "inner-8 scene. Click a surface to see its exact embedded textures."
+                )
+                self._populate_embedded_textures(())
 
         self.run_task("Opening APF Stadium Studio", operation, complete, False)
 
@@ -4084,12 +6825,16 @@ class StadiumStudioPage(QWidget):
         self._texture_generation += 1
         self._preview = None
         self._model = None
+        self._selected_model_target = None
         self.viewport.set_model(None)
         self.scene_title.setText("Choose a stadium scene")
         self.scene_metadata.setText(message)
         self.surface_identity.setText("No surface selected")
         self.reset_view_button.setEnabled(False)
         self.export_scene_button.setEnabled(False)
+        self.export_model_button.setEnabled(False)
+        self.import_model_button.setEnabled(False)
+        self.package_panel_title.setText("Owning outer package")
         self._populate_package(())
 
     def _surface_selected(self, mesh_index: int, primitive_index: int) -> None:
@@ -4098,6 +6843,9 @@ class StadiumStudioPage(QWidget):
             return
         identity = model.surface_identity(mesh_index, primitive_index)
         if identity is None:
+            self._selected_model_target = None
+            self.export_model_button.setEnabled(False)
+            self.import_model_button.setEnabled(False)
             self.surface_identity.setText(
                 f"Mesh {mesh_index} / primitive {primitive_index}"
             )
@@ -4115,13 +6863,182 @@ class StadiumStudioPage(QWidget):
             f"{identity.mesh_name} • glTF mesh {mesh_index} / primitive {primitive_index}\n"
             f"APF scene node {apf_nodes} • source mesh {source_mesh}"
         )
-        self.surface_boundary.setText(
-            "Surface selected, but APF draw/material/TXTR ownership is not decoded. "
-            "No package texture was auto-selected and Replace/Revert remain disabled."
+        scene = self._selected_scene()
+        selected_target = (
+            stadium_model_import.target_for_surface(
+                scene.outer_index,
+                scene.inner_index,
+                identity.apf_scene_node_indices,
+            )
+            if scene is not None
+            else None
+        )
+        self._selected_model_target = selected_target
+        texture_ownership = ""
+        if self._texture_catalog is not None:
+            owned = self._texture_catalog.textures_for_nodes(
+                identity.apf_scene_node_indices
+            )
+            self._populate_embedded_textures(owned)
+            slots = sorted(
+                {
+                    slot
+                    for node_index in identity.apf_scene_node_indices
+                    for surface in self._texture_catalog.surfaces
+                    if surface.node_index == node_index
+                    for slot in surface.material_slots
+                }
+            )
+            texture_ownership = (
+                f" Exact serialized ownership resolves material slots {slots or 'none'} "
+                f"to {len(owned)} embedded texture{'s' if len(owned) != 1 else ''}."
+            )
+        available = selected_target is not None and self._preview is not None
+        self.export_model_button.setEnabled(available)
+        self.import_model_button.setEnabled(available)
+        if selected_target is None:
+            self.surface_boundary.setText(
+                "Surface selected, but it is not one of the 77 catalog-authorized "
+                "outer-14/inner-8 POSITION targets."
+                + texture_ownership
+            )
+        else:
+            self.surface_boundary.setText(
+                f"Editable geometry target {selected_target.target_id}: export then "
+                "re-import the exact same vertex count and expanded topology. Only "
+                "POSITION may change; original UVs, normals, materials and attachments "
+                "stay byte-identical."
+                + texture_ownership
+            )
+
+    def _export_selected_mesh(self) -> None:
+        target = self._selected_model_target
+        preview = self._preview
+        if target is None or preview is None:
+            return
+        destination, _selected_filter = QFileDialog.getSaveFileName(
+            self,
+            "Export editable APF stadium mesh",
+            str(Path.home() / f"{target.target_id.replace('.', '-')}.gltf"),
+            "glTF 2.0 (*.gltf)",
+        )
+        if not destination:
+            return
+        path = Path(destination)
+        if not path.suffix:
+            path = path.with_suffix(".gltf")
+        self.run_task(
+            "Exporting editable stadium mesh",
+            lambda _progress: stadium_model_import.export_editable_mesh(
+                preview.gltf_path, target.target_id, path
+            ),
+            lambda result: QMessageBox.information(
+                self,
+                "Editable stadium mesh exported",
+                f"Saved:\n{result.gltf_path}\n{result.bin_path}\n\n"
+                "Keep the vertex count and triangles exact, apply object transforms, "
+                "and export POSITION only. The game keeps its original UVs, normals, "
+                "materials and attachments during import.",
+            ),
+            True,
+        )
+
+    def _import_selected_mesh(self) -> None:
+        target = self._selected_model_target
+        preview = self._preview
+        source = self.facade.source
+        if target is None or preview is None or source is None:
+            return
+        edited, _selected_filter = QFileDialog.getOpenFileName(
+            self,
+            "Choose edited APF stadium mesh",
+            str(Path.home()),
+            "glTF 2.0 (*.gltf)",
+        )
+        if not edited:
+            return
+        destination, _selected_filter = QFileDialog.getSaveFileName(
+            self,
+            "Choose a new stadium output-folder name",
+            str(Path.home() / f"{target.target_id.replace('.', '-')}-copied-1A"),
+            "Output folder name (*)",
+        )
+        if not destination:
+            return
+        output = Path(destination)
+        self.run_task(
+            "Importing and independently verifying stadium mesh",
+            lambda _progress: stadium_model_import.import_edited_mesh(
+                source.game_root,
+                preview.gltf_path,
+                target.target_id,
+                Path(edited),
+                output,
+            ),
+            lambda result: QMessageBox.information(
+                self,
+                "Stadium mesh output verified",
+                f"Saved a copied 1A and manifest to:\n{result.output_directory}\n\n"
+                f"Changed decoded POSITION bytes: {result.changed_byte_count:,}. "
+                "The source game was not modified. Runtime visibility still requires "
+                "your own target-system test.",
+            ),
+            True,
+        )
+
+    def _populate_embedded_textures(
+        self, textures: Iterable[stadium_texture.EmbeddedTexture]
+    ) -> None:
+        values = tuple(textures)
+        self._package_assets = {}
+        self._embedded_textures = {texture.selector: texture for texture in values}
+        self.package_list.blockSignals(True)
+        self.package_list.clear()
+        for texture in values:
+            suffix = "editable" if texture.editable else "locked descriptor"
+            item = QListWidgetItem(f"{texture.index:02d} • {texture.label} • {suffix}")
+            item.setData(Qt.UserRole, texture.selector)
+            item.setToolTip(
+                f"{texture.selector} • material slots {list(texture.material_slots)}\n"
+                "Exact draw → material command payload → embedded TXTR ownership."
+            )
+            self.package_list.addItem(item)
+        if values:
+            self.package_list.setCurrentRow(0)
+        self.package_list.blockSignals(False)
+        self.package_count.setText(f"{len(values):,} textures")
+        if values:
+            self._package_selected(self.package_list.currentItem(), None)
+        else:
+            self.package_title.setText("Click a stadium surface")
+            self.package_detail.setText(
+                "Its serialized draw/material route will populate only the embedded "
+                "textures that surface owns."
+            )
+            self.package_preview.set_message("No surface texture selected.")
+            self.export_package_button.setEnabled(False)
+            self.replace_package_button.setEnabled(False)
+            self.revert_package_button.setEnabled(False)
+            self.build_package_button.setEnabled(False)
+
+    def _selected_embedded_texture(
+        self,
+    ) -> stadium_texture.EmbeddedTexture | None:
+        item = self.package_list.currentItem()
+        return (
+            self._embedded_textures.get(str(item.data(Qt.UserRole)))
+            if item is not None
+            else None
         )
 
     def _populate_package(self, assets: Iterable[ApfAsset]) -> None:
         values = tuple(assets)
+        self._embedded_textures = {}
+        self.revert_package_button.setVisible(True)
+        self.build_package_button.setVisible(False)
+        self.build_package_button.setEnabled(False)
+        self.replace_package_button.setText("Replace (locked)")
+        self.replace_package_button.setEnabled(False)
         self._package_assets = {asset.asset_id: asset for asset in values}
         self.package_list.blockSignals(True)
         self.package_list.clear()
@@ -4167,6 +7084,10 @@ class StadiumStudioPage(QWidget):
     ) -> None:
         if current is None:
             return
+        embedded = self._embedded_textures.get(str(current.data(Qt.UserRole)))
+        if embedded is not None:
+            self._embedded_texture_selected(embedded)
+            return
         asset = self._package_assets.get(str(current.data(Qt.UserRole)))
         if asset is None:
             return
@@ -4205,6 +7126,82 @@ class StadiumStudioPage(QWidget):
                 self.package_preview.set_error(str(value))
 
         self.run_task("Preparing stadium package texture", operation, complete, False)
+
+    def _embedded_texture_selected(
+        self, texture: stadium_texture.EmbeddedTexture
+    ) -> None:
+        self._texture_generation += 1
+        generation = self._texture_generation
+        source = self.facade.source
+        self.package_title.setText(
+            f"{texture.selector} • ID 0x{texture.texture_id:08x}"
+        )
+        self.package_detail.setText(
+            f"{texture.width}×{texture.height} {texture.format_name} • "
+            f"{_human_bytes(texture.payload_length)} full mip allocation • "
+            f"material slots {list(texture.material_slots)}.\n"
+            + (
+                "Replace accepts any image (any size or format), resizes it to "
+                "this slot, regenerates every declared mip, and builds a "
+                "separately verified copied 1A."
+                if texture.editable
+                else "This unusual descriptor has no proved writer and remains locked."
+            )
+        )
+        available = source is not None and texture.editable
+        staged = self._staged_embedded_textures.get(texture.index)
+        self.export_package_button.setEnabled(available)
+        self.replace_package_button.setText(
+            "Replace image…" if available else "Replace (locked)"
+        )
+        self.replace_package_button.setEnabled(available)
+        self.replace_package_button.setToolTip(
+            "Choose any image — any size or format works; Mod Studio resizes it "
+            "to this slot and snapshots it inside this private session. Build "
+            "then regenerates the complete mip chain in a copied 1A; your source "
+            "remains read-only."
+            if available
+            else "This embedded texture descriptor has no proved bounded writer."
+        )
+        # Drop parity with the Replace button.
+        self.package_preview.setAcceptDrops(available)
+        self.revert_package_button.setVisible(True)
+        self.revert_package_button.setEnabled(staged is not None)
+        self.build_package_button.setVisible(available)
+        self.build_package_button.setEnabled(staged is not None)
+        if not available:
+            self.package_preview.set_message(
+                "PNG preview/export is unavailable for this locked descriptor."
+            )
+            return
+        if staged is not None:
+            staged_path, source_size = staged
+            self.package_preview.set_image(staged_path)
+            self.package_detail.setText(
+                self.package_detail.text()
+                + f"\nStaged from {source_size[0]}×{source_size[1]}; the private "
+                f"snapshot is {texture.width}×{texture.height}."
+            )
+            return
+        self.package_preview.set_loading("Decoding the exact embedded texture…")
+        destination = self._stadium_texture_preview_path(texture.index)
+
+        def operation(_progress: Callable[[str, int, int], None]) -> Path:
+            assert source is not None
+            return stadium_texture.export_png(
+                source.game_root, texture.index, destination
+            )
+
+        def complete(result: object) -> None:
+            if (
+                generation != self._texture_generation
+                or self._selected_embedded_texture() != texture
+            ):
+                Path(result).unlink(missing_ok=True)
+                return
+            self.package_preview.set_image(Path(result))
+
+        self.run_task("Preparing exact stadium surface texture", operation, complete, False)
 
     def _export_scene(self) -> None:
         scene = self._selected_scene()
@@ -4250,6 +7247,10 @@ class StadiumStudioPage(QWidget):
         )
 
     def _export_package_asset(self) -> None:
+        embedded = self._selected_embedded_texture()
+        if embedded is not None:
+            self._export_embedded_texture(embedded)
+            return
         asset = self._selected_package_asset()
         if asset is None:
             return
@@ -4300,6 +7301,174 @@ class StadiumStudioPage(QWidget):
                 "Package record exported",
                 f"Saved to:\n{Path(result)}\n\n"
                 "Package proximity does not establish surface/texture ownership.",
+            ),
+            True,
+        )
+
+    def _export_embedded_texture(
+        self, texture: stadium_texture.EmbeddedTexture
+    ) -> None:
+        source = self.facade.source
+        if source is None or not texture.editable:
+            return
+        destination, _selected_filter = QFileDialog.getSaveFileName(
+            self,
+            "Export exact APF stadium surface texture",
+            str(Path.home() / f"stadium-texture-{texture.index:03d}.png"),
+            "PNG image (*.png)",
+        )
+        if not destination:
+            return
+        path = Path(destination)
+        if not path.suffix:
+            path = path.with_suffix(".png")
+        self.run_task(
+            "Exporting exact stadium surface texture",
+            lambda _progress: stadium_texture.export_png(
+                source.game_root, texture.index, path
+            ),
+            lambda result: QMessageBox.information(
+                self,
+                "Stadium texture exported",
+                f"Saved the decoded source texture to:\n{Path(result)}",
+            ),
+            True,
+        )
+
+    def _replace_embedded_texture(self) -> None:
+        texture = self._selected_embedded_texture()
+        source = self.facade.source
+        if texture is None or source is None or not texture.editable:
+            return
+        replacement, _selected_filter = QFileDialog.getOpenFileName(
+            self,
+            f"Choose an image for this stadium texture (any size or format — "
+            f"it is resized to {texture.width}×{texture.height} for you)",
+            str(Path.home()),
+            IMAGE_IMPORT_FILTER,
+        )
+        if not replacement:
+            return
+        self._replace_embedded_texture_path(texture, Path(replacement))
+
+    def _replace_embedded_texture_path(
+        self, texture: stadium_texture.EmbeddedTexture, supplied: Path
+    ) -> None:
+        """Stage a chosen or dropped image for one embedded stadium texture.
+
+        The stadium writer reads PNG only, so any other ordinary format is
+        converted to an exact-size RGBA PNG first; a PNG is handed straight
+        through and resized by the existing staging step, exactly as before.
+        """
+
+        source = self.facade.source
+        if source is None or not texture.editable:
+            return
+
+        def operation(_progress: Callable[[str, int, int], None]) -> object:
+            candidate = Path(supplied)
+            if candidate.suffix.casefold() != ".png":
+                from mod_editor.core.image_fit import fit_to_png
+
+                converted = self._stadium_texture_preview_path(
+                    texture.index
+                ).with_name(
+                    f"stadium-{texture.index:03d}-converted-{uuid4().hex}.png"
+                )
+                fit_to_png(
+                    candidate,
+                    texture.width,
+                    texture.height,
+                    converted,
+                    mode="auto",
+                )
+                candidate = converted
+            return stadium_texture.stage_replacement_png(
+                source.game_root,
+                texture.index,
+                candidate,
+                self._stadium_texture_preview_path(texture.index),
+            )
+
+        def complete(result: object) -> None:
+            staged_path, source_size = result  # type: ignore[misc]
+            previous = self._staged_embedded_textures.get(texture.index)
+            if previous is not None:
+                previous[0].unlink(missing_ok=True)
+            self._staged_embedded_textures[texture.index] = (
+                Path(staged_path),
+                tuple(source_size),
+            )
+            self._embedded_texture_selected(texture)
+            self.modifiedChanged.emit()
+
+        self.run_task(
+            "Validating and staging stadium texture",
+            operation,
+            complete,
+            True,
+        )
+
+    def _replace_embedded_texture_from_drop(self, supplied: Path) -> None:
+        texture = self._selected_embedded_texture()
+        source = self.facade.source
+        if texture is None or source is None or not texture.editable:
+            QMessageBox.information(
+                self,
+                "This stadium texture can't be replaced yet",
+                "Select an editable stadium texture first, then drop your image "
+                "again. Locked descriptors stay preview/export-only.",
+            )
+            return
+        self._replace_embedded_texture_path(texture, Path(supplied))
+
+    def _revert_embedded_texture(self) -> None:
+        texture = self._selected_embedded_texture()
+        if texture is None:
+            return
+        staged = self._staged_embedded_textures.pop(texture.index, None)
+        if staged is None:
+            return
+        staged[0].unlink(missing_ok=True)
+        self._embedded_texture_selected(texture)
+        self.modifiedChanged.emit()
+
+    def _build_embedded_texture_output(self) -> None:
+        texture = self._selected_embedded_texture()
+        source = self.facade.source
+        staged = (
+            self._staged_embedded_textures.get(texture.index)
+            if texture is not None
+            else None
+        )
+        if texture is None or source is None or staged is None:
+            return
+        destination, _selected_filter = QFileDialog.getSaveFileName(
+            self,
+            "Choose a new copied-1A output folder",
+            str(Path.home() / f"stadium-texture-{texture.index:03d}-copied-1A"),
+            "Output folder name (*)",
+        )
+        if not destination:
+            return
+        output = Path(destination)
+        self.run_task(
+            "Building and verifying copied stadium 1A",
+            lambda _progress: stadium_texture.write_output(
+                source.game_root,
+                staged[0],
+                texture.index,
+                output,
+            ),
+            lambda receipt: QMessageBox.information(
+                self,
+                "Stadium texture output verified",
+                f"Saved a copied 1A and manifest to:\n{receipt.output_directory}\n\n"
+                f"Original input was {staged[1][0]}×{staged[1][1]} and the staged "
+                f"snapshot is {texture.width}×{texture.height}; "
+                f"{receipt.changed_vram_bytes:,} decoded VRAM bytes changed. Your "
+                "source game was not modified. Runtime visibility still requires "
+                "your own target-system test.",
             ),
             True,
         )
@@ -4365,7 +7534,7 @@ class ScorebugStudioPage(QWidget):
 
 
 class BaseRatingsPanel(QFrame):
-    """Searchable exact-value editor for one player's 28 native rating bytes."""
+    """Searchable exact-value editor for one player's 31 native rating bytes."""
 
     applyRequested = pyqtSignal(int, str, int)
     revertRequested = pyqtSignal(int, str)
@@ -4393,7 +7562,7 @@ class BaseRatingsPanel(QFrame):
         self.search = QLineEdit()
         self.search.setObjectName("baseRatingsSearch")
         self.search.setAccessibleName("Search this player's base ratings")
-        self.search.setPlaceholderText("Search 28 ratings…")
+        self.search.setPlaceholderText("Search 31 ratings…")
         self.search.setClearButtonEnabled(True)
         self.search.textChanged.connect(self._refresh)
 
@@ -4495,8 +7664,17 @@ class BaseRatingsPanel(QFrame):
             ):
                 raise ValueError(f"Base rating row {index} is malformed")
             parsed.append(dict(value))
-        if len(parsed) != 28:
-            raise ValueError(f"Player exposes {len(parsed)} base ratings; expected 28")
+        # Imported here rather than at module scope: this panel is a pure view, and
+        # the count has to follow the schema instead of a frozen literal that goes
+        # stale the next time a rating byte gets named.
+        from .player_ratings import load_player_rating_schema
+
+        expected_ratings = len(load_player_rating_schema().fields)
+        if len(parsed) != expected_ratings:
+            raise ValueError(
+                f"Player exposes {len(parsed)} base ratings; "
+                f"expected {expected_ratings}"
+            )
         player_index = row.fields.get("player_index")
         if (
             isinstance(player_index, bool)
@@ -4605,7 +7783,7 @@ class BaseRatingsPanel(QFrame):
         self.table.blockSignals(False)
         self.table.setUpdatesEnabled(True)
         self.status.setText(
-            f"EDITABLE · {len(visible)} / 28"
+            f"EDITABLE · {len(visible)} / {self.table.rowCount()}"
             + (f" · {modified_count} MODIFIED" if modified_count else "")
         )
         if visible:
@@ -5657,6 +8835,537 @@ class ExternalXma1EncoderDialog(QDialog):
         return self._encoder
 
 
+# Guided XMA1 encoder setup -----------------------------------------------
+#
+# No XMA1 encoder ships with the editor, so the first audio replacement needs
+# a user-supplied tool.  The wizard below auto-detects what it can (ffmpeg for
+# format conversion, Wine for Windows .exe tools), explains the two required
+# argv placeholders, and test-runs the chosen encoder on a private one-second
+# tone before anything is saved.  The real exact-slot gates still run on every
+# genuine encode; the tone test is a setup-time sanity check only.
+
+XMA1_WIZARD_TEMPLATE_ARGUMENTS = ("{input}", "{output}")
+XMA1_SMOKE_TIMEOUT_SECONDS = 30.0
+
+
+@dataclass(frozen=True)
+class Xma1SmokeTestResult:
+    """Outcome of test-running a user-supplied encoder on a one-second tone."""
+
+    passed: bool
+    testable: bool
+    summary: str
+    exit_code: int | None = None
+    output_bytes: int = 0
+
+
+def xma1_encoder_argument_problem(
+    arguments: tuple[str, ...] | list[str],
+) -> str | None:
+    """Plain-language check of the argv template, before anything runs."""
+
+    if not arguments:
+        return (
+            "The encoder needs at least two arguments: {input} and {output}. "
+            "Choose “Use the recommended template” to fill them in."
+        )
+    for placeholder in ("{input}", "{output}"):
+        count = sum(argument.count(placeholder) for argument in arguments)
+        if count != 1:
+            plural = "s" if count != 1 else ""
+            return (
+                f"The encoder arguments must contain {placeholder} exactly "
+                f"once (currently {count} time{plural}). {input_hint(placeholder)}"
+            )
+    return None
+
+
+def input_hint(placeholder: str) -> str:
+    if placeholder == "{input}":
+        return "That is where the PCM WAV to encode goes. "
+    return "That is where the encoder must write the finished XMA1 file. "
+
+
+def write_xma1_test_tone(destination: Path) -> Path:
+    """Write a private one-second 440 Hz PCM16 WAV used only to test encoders."""
+
+    import struct
+
+    sample_rate = 44100
+    frames = b"".join(
+        struct.pack(
+            "<h",
+            int(12000.0 * math.sin(2.0 * math.pi * 440.0 * index / sample_rate)),
+        )
+        for index in range(sample_rate)
+    )
+    destination = Path(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with wave.open(str(destination), "wb") as tone:
+        tone.setnchannels(1)
+        tone.setsampwidth(2)
+        tone.setframerate(sample_rate)
+        tone.writeframes(frames)
+    return destination
+
+
+def run_xma1_smoke_test(
+    *,
+    executable: Path,
+    arguments: tuple[str, ...],
+    wine_executable: Path | None = None,
+    work_dir: Path,
+    timeout_seconds: float = XMA1_SMOKE_TIMEOUT_SECONDS,
+) -> Xma1SmokeTestResult:
+    """Run the user's encoder once on a one-second tone and report plainly.
+
+    This never touches game audio and stages nothing; it exists so a setup
+    mistake is caught at configuration time rather than mid-encode.
+    """
+
+    problem = xma1_encoder_argument_problem(arguments)
+    if problem is not None:
+        return Xma1SmokeTestResult(False, False, problem)
+    if any("{encoded_size}" in argument for argument in arguments):
+        return Xma1SmokeTestResult(
+            False,
+            False,
+            "Your arguments use {encoded_size}, the slot's exact byte count. "
+            "A one-second tone has no slot to predict that from, so the test "
+            "cannot run. You can still save this setup — every real encode is "
+            "fully validated against its slot.",
+        )
+    work = Path(work_dir)
+    work.mkdir(parents=True, exist_ok=True)
+    tone = work / "tone-input.wav"
+    output = work / "tone-output.xma"
+    output.unlink(missing_ok=True)
+    write_xma1_test_tone(tone)
+
+    argv: list[str] = []
+    if wine_executable is not None:
+        argv.append(str(wine_executable))
+    argv.append(str(executable))
+    replacements = {
+        "{input}": str(tone),
+        "{output}": str(output),
+        "{channels}": "1",
+        "{sample_rate}": "44100",
+        "{sample_count}": "44100",
+    }
+    for argument in arguments:
+        rendered = argument
+        for placeholder, value in replacements.items():
+            rendered = rendered.replace(placeholder, value)
+        argv.append(rendered)
+
+    try:
+        completed = subprocess.run(
+            argv,
+            capture_output=True,
+            timeout=timeout_seconds,
+        )
+    except FileNotFoundError:
+        return Xma1SmokeTestResult(
+            False,
+            True,
+            "The encoder could not be started. Fix: check that the path points "
+            "to a real program, and that a Windows .exe has a Wine executable "
+            "selected.",
+        )
+    except subprocess.TimeoutExpired:
+        return Xma1SmokeTestResult(
+            False,
+            True,
+            f"The encoder did not finish within {int(timeout_seconds)} seconds "
+            "on a one-second tone. Fix: check that it is the right program and "
+            "that its arguments write the output file.",
+        )
+    except OSError as exc:
+        return Xma1SmokeTestResult(
+            False, True, f"The encoder could not be started: {exc}"
+        )
+
+    size = output.stat().st_size if output.exists() else 0
+    if completed.returncode == 0 and size > 0:
+        return Xma1SmokeTestResult(
+            True,
+            True,
+            f"Success — the encoder ran and wrote {size:,} bytes of XMA1 for "
+            "the one-second tone.",
+            completed.returncode,
+            size,
+        )
+    detail = (completed.stderr or completed.stdout or b"").decode(
+        "utf-8", "replace"
+    ).strip()
+    if detail:
+        detail = "\n\nEncoder output:\n" + "\n".join(detail.splitlines()[:6])
+    if completed.returncode != 0:
+        message = (
+            f"The encoder exited with code {completed.returncode}. Fix: check "
+            "its arguments — one literal argument per line, with {input} and "
+            "{output} exactly once."
+        )
+    else:
+        message = (
+            "The encoder exited cleanly but did not write the {output} file. "
+            "Fix: check that {output} is the argument where it writes the "
+            "result."
+        )
+    return Xma1SmokeTestResult(
+        False, True, message + detail, completed.returncode, size
+    )
+
+
+class Xma1EncoderSetupWizard(QDialog):
+    """Guided first-time setup for a user-supplied XMA1 encoder.
+
+    The editor cannot ship an XMA1 encoder, so audio replacement needs one
+    the user already has.  This wizard walks that setup end to end: it shows
+    what was auto-detected, explains the two required {input}/{output}
+    placeholders with a copy-paste template, test-runs the encoder on a
+    one-second tone, and only then saves anything.
+    """
+
+    def __init__(
+        self,
+        *,
+        encoder_path: Path | None = None,
+        wine_path: Path | None = None,
+        use_wine: bool = False,
+        arguments: tuple[str, ...] = XMA1_WIZARD_TEMPLATE_ARGUMENTS,
+        timeout_seconds: int = 600,
+        parent: QWidget | None = None,
+    ) -> None:
+        super().__init__(parent)
+        self.setWindowTitle("Set up your XMA1 encoder")
+        self.setModal(True)
+        self.setMinimumWidth(640)
+        self._encoder: ExternalXma1Encoder | None = None
+        self._smoke_passed = False
+        self._smoke_testable = True
+        self._temporary: Path | None = None
+        self._timeout_seconds = max(30, min(1800, int(timeout_seconds)))
+        self.destroyed.connect(self._cleanup_tone_workspace)
+
+        root = QVBoxLayout(self)
+        root.setContentsMargins(20, 18, 20, 16)
+        root.setSpacing(11)
+
+        heading = QLabel("Set up your XMA1 encoder")
+        heading.setObjectName("heroTitle")
+        root.addWidget(heading)
+        explanation = QLabel(
+            "The Xbox 360 stores this game's audio as XMA1, and no XMA1 encoder "
+            "ships with Mod Studio. Point this setup at a legally obtained "
+            "encoder already on this PC. The editor test-runs it on a private "
+            "one-second tone before saving, and every real encode is still "
+            "checked against its exact slot before anything is staged. The "
+            "encoder path stays in this PC's settings and never enters a "
+            "project."
+        )
+        explanation.setObjectName("findingText")
+        explanation.setWordWrap(True)
+        root.addWidget(explanation)
+
+        self.ffmpeg_status = QLabel(self._ffmpeg_status_text())
+        self.ffmpeg_status.setObjectName("metadataText")
+        self.ffmpeg_status.setWordWrap(True)
+        root.addWidget(self.ffmpeg_status)
+
+        form = QGridLayout()
+        form.setHorizontalSpacing(10)
+        form.setVerticalSpacing(9)
+        encoder_label = QLabel("XMA1 encoder")
+        encoder_label.setObjectName("fieldLabel")
+        self.encoder_path = QLineEdit(
+            str(encoder_path) if encoder_path is not None else ""
+        )
+        self.encoder_path.setReadOnly(True)
+        self.encoder_path.setPlaceholderText("Choose an encoder executable…")
+        self.encoder_path.setAccessibleName("Selected external XMA1 encoder path")
+        self.encoder_browse_button = QPushButton("Browse…")
+        self.encoder_browse_button.setObjectName("secondaryButton")
+        self.encoder_browse_button.clicked.connect(self._browse_encoder)
+        form.addWidget(encoder_label, 0, 0)
+        form.addWidget(self.encoder_path, 0, 1)
+        form.addWidget(self.encoder_browse_button, 0, 2)
+
+        self.use_wine_checkbox = QCheckBox("Run a Windows .exe through Wine")
+        self.use_wine_checkbox.setToolTip(
+            "Windows .exe encoders require a real Wine executable on Linux. "
+            "Native Linux encoder tools run directly."
+        )
+        form.addWidget(self.use_wine_checkbox, 1, 1, 1, 2)
+
+        wine_label = QLabel("Wine executable")
+        wine_label.setObjectName("fieldLabel")
+        self.wine_path = QLineEdit(str(wine_path) if wine_path is not None else "")
+        self.wine_path.setReadOnly(True)
+        self.wine_path.setPlaceholderText("Wine is detected automatically when available…")
+        self.wine_browse_button = QPushButton("Browse…")
+        self.wine_browse_button.setObjectName("secondaryButton")
+        self.wine_browse_button.clicked.connect(self._browse_wine)
+        form.addWidget(wine_label, 2, 0)
+        form.addWidget(self.wine_path, 2, 1)
+        form.addWidget(self.wine_browse_button, 2, 2)
+        form.setColumnStretch(1, 1)
+        root.addLayout(form)
+
+        arguments_heading = QLabel("Encoder arguments")
+        arguments_heading.setObjectName("fieldLabel")
+        root.addWidget(arguments_heading)
+        self.arguments_editor = QPlainTextEdit()
+        self.arguments_editor.setObjectName("externalEncoderArguments")
+        self.arguments_editor.setAccessibleName(
+            "External XMA1 encoder arguments, one argument per line"
+        )
+        self.arguments_editor.setPlainText("\n".join(arguments))
+        self.arguments_editor.setFixedHeight(96)
+        root.addWidget(self.arguments_editor)
+        template_row = QHBoxLayout()
+        self.template_note = QLabel(
+            "One argument per line — not a shell command. {input} is the PCM WAV "
+            "to encode and {output} is where the XMA1 result is written; each "
+            "must appear exactly once. Optional: {channels}, {sample_rate}, "
+            "{sample_count}, {encoded_size}."
+        )
+        self.template_note.setObjectName("mutedLabel")
+        self.template_note.setWordWrap(True)
+        self.use_template_button = QPushButton("Use the recommended template")
+        self.use_template_button.setObjectName("secondaryButton")
+        self.use_template_button.clicked.connect(self._use_recommended_template)
+        template_row.addWidget(self.template_note, 1)
+        template_row.addWidget(self.use_template_button)
+        root.addLayout(template_row)
+
+        test_row = QHBoxLayout()
+        self.test_button = QPushButton("Test encoder on a 1-second tone")
+        self.test_button.setObjectName("primaryButton")
+        self.test_button.clicked.connect(self._run_smoke_test)
+        self.test_result = QLabel("Not tested yet.")
+        self.test_result.setObjectName("mutedLabel")
+        self.test_result.setWordWrap(True)
+        test_row.addWidget(self.test_button)
+        test_row.addWidget(self.test_result, 1)
+        root.addLayout(test_row)
+
+        self.buttons = QDialogButtonBox(
+            QDialogButtonBox.Save | QDialogButtonBox.Cancel
+        )
+        self.save_button = self.buttons.button(QDialogButtonBox.Save)
+        self.save_button.setText("Save encoder settings")
+        self.save_button.setObjectName("primaryButton")
+        self.save_button.setEnabled(False)
+        self.buttons.accepted.connect(self._accept_configuration)
+        self.buttons.rejected.connect(self.reject)
+        root.addWidget(self.buttons)
+
+        if use_wine and wine_path is None:
+            discovered = shutil.which("wine")
+            if discovered:
+                self.wine_path.setText(str(Path(discovered).resolve()))
+        is_windows_encoder = self._is_windows_encoder(self.encoder_path.text())
+        self.use_wine_checkbox.setChecked(use_wine or is_windows_encoder)
+        self.encoder_path.textChanged.connect(self._update_state)
+        self.wine_path.textChanged.connect(self._update_state)
+        self.use_wine_checkbox.toggled.connect(self._update_state)
+        self.arguments_editor.textChanged.connect(self._invalidate_test)
+        self._update_state()
+
+    @staticmethod
+    def _ffmpeg_status_text() -> str:
+        if audio_conform.conversion_available():
+            return (
+                "✓ FFmpeg was found — MP3, FLAC, OGG, M4A and other formats are "
+                "converted to the slot's exact shape automatically."
+            )
+        return (
+            "○ FFmpeg was not found — install it to drop MP3, FLAC, OGG or M4A "
+            "and have them converted. Exact PCM16 WAVs work without it."
+        )
+
+    @staticmethod
+    def _is_windows_encoder(value: str) -> bool:
+        return Path(value.strip()).suffix.casefold() == ".exe" if value.strip() else False
+
+    @staticmethod
+    def _canonical_tool_path(value: str) -> Path:
+        try:
+            return Path(value).expanduser().resolve(strict=True)
+        except (OSError, RuntimeError) as exc:
+            raise ValueError(
+                f"That tool path could not be resolved to a real local file: {exc}"
+            ) from exc
+
+    def _browse_encoder(self) -> None:
+        selected, _selected_filter = QFileDialog.getOpenFileName(
+            self,
+            "Choose your external XMA1 encoder",
+            str(Path.home()),
+            "Windows XMA1 encoder (*.exe);;Executable files (*)",
+        )
+        if not selected:
+            return
+        try:
+            selected_path = self._canonical_tool_path(selected)
+        except ValueError as exc:
+            QMessageBox.information(self, "Encoder path is unavailable", str(exc))
+            return
+        self.encoder_path.setText(str(selected_path))
+        if selected_path.suffix.casefold() == ".exe":
+            self.use_wine_checkbox.setChecked(True)
+            if not self.wine_path.text().strip():
+                discovered = shutil.which("wine")
+                if discovered:
+                    try:
+                        self.wine_path.setText(
+                            str(self._canonical_tool_path(discovered))
+                        )
+                    except ValueError:
+                        pass
+        self._update_state()
+
+    def _browse_wine(self) -> None:
+        selected, _selected_filter = QFileDialog.getOpenFileName(
+            self,
+            "Choose the Wine executable",
+            str(Path.home()),
+            "Executable files (*)",
+        )
+        if not selected:
+            return
+        try:
+            selected_path = self._canonical_tool_path(selected)
+        except ValueError as exc:
+            QMessageBox.information(self, "Wine path is unavailable", str(exc))
+            return
+        self.wine_path.setText(str(selected_path))
+
+    def _use_recommended_template(self) -> None:
+        self.arguments_editor.setPlainText(
+            "\n".join(XMA1_WIZARD_TEMPLATE_ARGUMENTS)
+        )
+
+    def _cleanup_tone_workspace(self, *_args: object) -> None:
+        root = self._temporary
+        self._temporary = None
+        if root is not None and root.name.startswith("apf-xma1-wizard-"):
+            shutil.rmtree(root, ignore_errors=True)
+
+    def _current_arguments(self) -> tuple[str, ...]:
+        return tuple(
+            line
+            for line in (
+                line.strip()
+                for line in self.arguments_editor.toPlainText().splitlines()
+            )
+            if line
+        )
+
+    def _invalidate_test(self) -> None:
+        # Any change to the tool or its arguments voids a previous test run.
+        self._smoke_passed = False
+        self._smoke_testable = True
+        self.test_result.setText("Not tested yet.")
+        self._update_state()
+
+    def _update_state(self, *_args: object) -> None:
+        encoder_value = self.encoder_path.text().strip()
+        windows_encoder = self._is_windows_encoder(encoder_value)
+        self.use_wine_checkbox.setEnabled(windows_encoder)
+        if not windows_encoder and self.use_wine_checkbox.isChecked():
+            self.use_wine_checkbox.blockSignals(True)
+            self.use_wine_checkbox.setChecked(False)
+            self.use_wine_checkbox.blockSignals(False)
+        wine_enabled = windows_encoder and self.use_wine_checkbox.isChecked()
+        self.wine_path.setEnabled(wine_enabled)
+        self.wine_browse_button.setEnabled(wine_enabled)
+        configuration_complete = bool(encoder_value) and (
+            not windows_encoder
+            or (self.use_wine_checkbox.isChecked() and bool(self.wine_path.text().strip()))
+        )
+        self.test_button.setEnabled(configuration_complete)
+        self.save_button.setEnabled(
+            configuration_complete
+            and (self._smoke_passed or not self._smoke_testable)
+        )
+
+    def _spec_from_fields(self) -> tuple[Path, tuple[str, ...], Path | None] | None:
+        encoder_value = self.encoder_path.text().strip()
+        if not encoder_value:
+            return None
+        try:
+            executable = self._canonical_tool_path(encoder_value)
+        except ValueError as exc:
+            QMessageBox.information(self, "Encoder path is unavailable", str(exc))
+            return None
+        wine_executable: Path | None = None
+        if self._is_windows_encoder(encoder_value) and self.use_wine_checkbox.isChecked():
+            wine_value = self.wine_path.text().strip()
+            if not wine_value:
+                return None
+            try:
+                wine_executable = self._canonical_tool_path(wine_value)
+            except ValueError as exc:
+                QMessageBox.information(self, "Wine path is unavailable", str(exc))
+                return None
+        return executable, self._current_arguments(), wine_executable
+
+    def _run_smoke_test(self) -> None:
+        spec = self._spec_from_fields()
+        if spec is None:
+            return
+        executable, arguments, wine_executable = spec
+        if self._temporary is None:
+            self._temporary = Path(tempfile.mkdtemp(prefix="apf-xma1-wizard-"))
+        self.test_result.setText("Running the encoder on a one-second tone…")
+        application = QApplication.instance()
+        if application is not None:
+            application.processEvents()
+        result = run_xma1_smoke_test(
+            executable=executable,
+            arguments=arguments,
+            wine_executable=wine_executable,
+            work_dir=self._temporary,
+        )
+        self._smoke_passed = result.passed
+        self._smoke_testable = result.testable
+        self.test_result.setText(result.summary)
+        self._update_state()
+
+    def _accept_configuration(self) -> None:
+        spec = self._spec_from_fields()
+        if spec is None:
+            return
+        executable, arguments, wine_executable = spec
+        try:
+            encoder = ExternalXma1Encoder(
+                executable,
+                arguments=arguments,
+                wine_executable=wine_executable,
+                timeout_seconds=self._timeout_seconds,
+            )
+            encoder.validate()
+        except Exception as exc:
+            QMessageBox.information(
+                self,
+                "Encoder is not ready",
+                f"{exc}\n\nFix: choose another encoder or Wine executable. No "
+                "setting was changed.",
+            )
+            return
+        self._encoder = encoder
+        self.accept()
+
+    @property
+    def encoder(self) -> ExternalXma1Encoder:
+        if self._encoder is None:
+            raise RuntimeError("The encoder wizard has not saved a configuration")
+        return self._encoder
+
+
 class InspectorBrowser(QFrame):
     """Paged renderer for live-source semantic models and their owned actions."""
 
@@ -5846,7 +9555,7 @@ class InspectorBrowser(QFrame):
         self.export_ratings_sheet_button.setVisible(roster_mode)
         self.export_ratings_sheet_button.setEnabled(False)
         self.export_ratings_sheet_button.setToolTip(
-            "Export all 2,254 players and all 28 exact base ratings as one "
+            "Export all 2,254 players and all 31 exact base ratings as one "
             "private CSV. It contains data derived from your game copy and "
             "never enters a shareable project."
         )
@@ -6343,21 +10052,22 @@ class InspectorBrowser(QFrame):
         )
         self.export_pcm_template_button.setToolTip(
             "Export a retail-free, exact-length PCM16 silence WAV. Paint it with "
-            "your sound editor, then return it with Replace from PCM WAV."
+            "your sound editor, then return it with Replace from audio."
         )
         self.export_pcm_template_button.clicked.connect(
             self._export_audio_pcm_template
         )
-        self.replace_pcm_audio_button = QPushButton("Replace from PCM WAV…")
+        self.replace_pcm_audio_button = QPushButton("Replace from audio…")
         self.replace_pcm_audio_button.setObjectName("primaryButton")
         self.replace_pcm_audio_button.setVisible(audio_mode)
         self.replace_pcm_audio_button.setEnabled(False)
         self.replace_pcm_audio_button.setAccessibleName(
-            "Replace this APF sound from an exact PCM WAV"
+            "Replace this APF sound from an ordinary audio file"
         )
         self.replace_pcm_audio_button.setToolTip(
-            "Encode an exact-shape PCM16 WAV with your configured external XMA1 "
-            "encoder, then stage it only after every exact-slot gate passes."
+            "Convert WAV, MP3, FLAC, OGG, M4A or another supported audio file to "
+            "this slot's exact PCM shape, encode it with your configured external "
+            "XMA1 encoder, then stage it only after every exact-slot gate passes."
         )
         self.replace_pcm_audio_button.clicked.connect(
             self._replace_audio_from_pcm
@@ -6680,7 +10390,7 @@ class InspectorBrowser(QFrame):
                 roster_identity_page, "Identity & Names"
             )
             self.roster_detail_tabs.addTab(
-                roster_ratings_page, "Base Ratings (28)"
+                roster_ratings_page, "Base Ratings (31)"
             )
             self.roster_detail_tabs.addTab(
                 roster_position_page, "Position (17)"
@@ -7319,33 +11029,9 @@ class InspectorBrowser(QFrame):
     def _configure_external_xma1_encoder(self) -> None:
         if not self.audio_mode or self._audio_mutation_busy():
             return
-        try:
-            current = self._external_xma1_encoder()
-        except Exception:
-            # Corrupt local preferences must never strand the Audio panel. A
-            # fresh valid selection replaces them only after dialog validation.
-            current = None
-        dialog = ExternalXma1EncoderDialog(
-            encoder_path=current.executable if current is not None else None,
-            wine_path=(
-                current.wine_executable if current is not None else None
-            ),
-            use_wine=bool(
-                current is not None and current.wine_executable is not None
-            ),
-            arguments=(
-                current.arguments
-                if current is not None
-                else ("{input}", "{output}")
-            ),
-            timeout_seconds=(
-                int(current.timeout_seconds) if current is not None else 600
-            ),
-            parent=self,
-        )
-        if dialog.exec_() != QDialog.Accepted:
+        encoder = self._run_xma1_encoder_setup_wizard()
+        if encoder is None:
             return
-        encoder = dialog.encoder
         try:
             self._save_external_xma1_encoder(encoder)
         except OSError as exc:
@@ -7366,6 +11052,42 @@ class InspectorBrowser(QFrame):
                 "output will be staged only after all exact-slot gates pass."
             ),
         )
+
+    def _run_xma1_encoder_setup_wizard(self) -> ExternalXma1Encoder | None:
+        """Open the guided encoder setup; return the accepted adapter or None.
+
+        The wizard test-runs the encoder on a private one-second tone before
+        it accepts, so a returned encoder is one the user has already seen
+        work.  Saving to settings happens in the caller, never here.
+        """
+
+        try:
+            current = self._external_xma1_encoder()
+        except Exception:
+            # Corrupt local preferences must never strand the Audio panel. A
+            # fresh valid selection replaces them only after wizard validation.
+            current = None
+        wizard = Xma1EncoderSetupWizard(
+            encoder_path=current.executable if current is not None else None,
+            wine_path=(
+                current.wine_executable if current is not None else None
+            ),
+            use_wine=bool(
+                current is not None and current.wine_executable is not None
+            ),
+            arguments=(
+                current.arguments
+                if current is not None
+                else XMA1_WIZARD_TEMPLATE_ARGUMENTS
+            ),
+            timeout_seconds=(
+                int(current.timeout_seconds) if current is not None else 600
+            ),
+            parent=self,
+        )
+        if wizard.exec_() != QDialog.Accepted:
+            return None
+        return wizard.encoder
 
     def _audio_mutation_busy(self) -> bool:
         return bool(
@@ -7459,6 +11181,8 @@ class InspectorBrowser(QFrame):
                 f"{family}. "
                 f"Required: {_human_bytes(size)} encoded data, {rate:,} Hz, "
                 f"{channel_label}. Export the exact PCM template for easy WAV authoring, "
+                "or choose an ordinary WAV, MP3, FLAC, OGG, M4A, or other supported "
+                "audio file and let Mod Studio conform it to this slot, "
                 "or use Replace with XMA1 when you already have a finished stream. "
                 f"No encoder ships with Mod Studio. {state} Every final XMA1 result "
                 "must pass a complete decode, all packet checks, both source-audio "
@@ -7472,8 +11196,9 @@ class InspectorBrowser(QFrame):
                 "this slot. The template contains no retail audio."
             )
             self.replace_pcm_audio_button.setToolTip(
-                f"Choose an exact {rate:,} Hz {channel_label} PCM16 WAV. Your external "
-                "encoder runs privately; its final output must fit exactly "
+                "Choose WAV, MP3, FLAC, OGG, M4A, or another supported audio file. "
+                f"Mod Studio conforms it privately to {rate:,} Hz {channel_label} "
+                "PCM16 before your external encoder runs; the final output must fit exactly "
                 f"{size:,} encoded bytes and pass every slot gate."
             )
             self.replace_audio_button.setToolTip(
@@ -7494,7 +11219,7 @@ class InspectorBrowser(QFrame):
             "Choose one individual AUDO or AUSB sound before exporting its exact PCM template."
         )
         self.replace_pcm_audio_button.setToolTip(
-            "Choose one individual AUDO or AUSB sound before importing an authored PCM WAV."
+            "Choose one individual AUDO or AUSB sound before importing ordinary audio."
         )
         self.revert_audio_button.setToolTip(
             "Choose a modified individual AUDO or AUSB sound first."
@@ -8242,7 +11967,7 @@ class InspectorBrowser(QFrame):
                     if status_parts:
                         status = " · ".join(status_parts)
                     else:
-                        status = "Position + 28 base ratings editable · " + (
+                        status = "Position + 31 base ratings editable · " + (
                             "Player names editable"
                             if editable_count
                             else "Player names locked"
@@ -8769,22 +12494,16 @@ class InspectorBrowser(QFrame):
         self.roster_field_combo.setEnabled(bool(fields))
 
         if row.kind == "player":
-            finding = row.fields.get("jersey_number_edit_status")
-            finding = finding if isinstance(finding, dict) else {}
-            result = str(
-                finding.get(
-                    "result",
-                    "No consumer-backed jersey-number field has been mapped.",
-                )
-            )
             self.roster_boundary_note.setText(
                 (
-                    "Player names, all 28 native base ratings, and all 17 exact "
-                    "position choices are editable in separate tabs. Position "
-                    "changes do not move team membership or depth-chart slots. "
-                    "Names keep their exact source limits; shared allocations "
-                    "change every affected field together. Jersey number remains "
-                    "read-only / unmapped."
+                    "This on-disc row editor handles names, all 31 native base "
+                    "ratings, and 17 exact position choices in separate tabs. "
+                    "Jersey number remains read-only in this on-disc row. For "
+                    "raw Roster.ROS "
+                    "or a verified STFS extraction, open Save Players: jersey "
+                    "number, tier, abilities, depth, equipment/appearance, all "
+                    "15 fixed-allocation text fields, and safe populated-slot "
+                    "membership swaps are authorable there."
                 )
                 if self.roster_writes_enabled
                 else ROSTER_IDENTITY_RUNTIME_LOCK_MESSAGE
@@ -8792,8 +12511,10 @@ class InspectorBrowser(QFrame):
             self.roster_boundary_note.setToolTip(
                 "Dan CODEX rendered in player selection and the Star Card. The "
                 "token-preserving Speed candidate also loaded normally, but APF "
-                "showed stars rather than a numeric rating readout. "
-                f"{result} {finding.get('best_next_experiment', '')}"
+                "showed stars rather than a numeric rating readout. Save Players "
+                "uses the separate APFe/raw-save packed-record contract and emits "
+                "a byte-verification receipt. No consumer-backed Overall formula "
+                "is claimed."
             )
             self.roster_boundary_note.setVisible(True)
         elif row.kind == "team":
@@ -10991,7 +14712,7 @@ class InspectorBrowser(QFrame):
                 f"Final APF allocation: {_human_bytes(encoded_size)}\n\n"
                 "This is an exact-length silence template containing no retail "
                 "audio. Edit its samples without changing channel count, sample "
-                "rate, or length, then choose Replace from PCM WAV."
+                "rate, or length, then choose Replace from audio."
             ),
         )
 
@@ -11099,7 +14820,13 @@ class InspectorBrowser(QFrame):
     def _configured_audio_encoder_for_replace(
         self,
     ) -> ExternalXma1Encoder | None:
-        """Resolve one valid local encoder or explain the non-mutating refusal."""
+        """Resolve one valid local encoder, offering guided setup on first use.
+
+        No XMA1 encoder ships with the editor, so the first time a user tries
+        to replace a sound there is nothing configured.  Instead of a dead-end
+        refusal, this offers the guided setup wizard; if the user declines or
+        it is cancelled, nothing is staged and the refusal stays fail-closed.
+        """
 
         try:
             encoder = self._external_xma1_encoder()
@@ -11107,15 +14834,35 @@ class InspectorBrowser(QFrame):
                 raise ValueError("No external XMA1 encoder is configured")
             encoder.validate()
         except Exception as exc:
-            QMessageBox.information(
+            answer = QMessageBox.question(
                 self,
-                "Configure an XMA1 encoder first",
+                "Set up your XMA1 encoder now?",
                 (
-                    f"{exc}\n\nChoose Configure XMA1 encoder, select your own "
-                    "installed tool, and save it. No encoder ships with Mod Studio, "
-                    "and no project data changed."
+                    f"{exc}\n\n"
+                    "APF audio is stored as XMA1, and no encoder ships with Mod "
+                    "Studio. The guided setup finds what it can, explains the "
+                    "two {input}/{output} placeholders, and test-runs your "
+                    "encoder on a one-second tone before saving anything.\n\n"
+                    "Start guided setup now? No project data changes either way."
                 ),
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes,
             )
+            if answer == QMessageBox.Yes:
+                wizard_encoder = self._run_xma1_encoder_setup_wizard()
+                if wizard_encoder is not None:
+                    try:
+                        self._save_external_xma1_encoder(wizard_encoder)
+                    except OSError as save_exc:
+                        QMessageBox.information(
+                            self,
+                            "Encoder setting was not saved",
+                            f"{save_exc}. The mod project was not changed.",
+                        )
+                        self._update_audio_encoder_status()
+                        return None
+                    self._update_audio_encoder_status()
+                    return wizard_encoder
             self._update_audio_encoder_status()
             return None
         return encoder
@@ -11133,9 +14880,9 @@ class InspectorBrowser(QFrame):
             return
         source, _selected_filter = QFileDialog.getOpenFileName(
             self,
-            "Choose your exact PCM WAV for this APF sound",
+            "Choose your audio for this APF sound",
             str(Path.home()),
-            "PCM16 WAV audio (*.wav)",
+            audio_conform.file_dialog_filter(),
         )
         if not source:
             return
@@ -11154,13 +14901,24 @@ class InspectorBrowser(QFrame):
         if not self._audio_row_has_exact_slot_editor(row):
             return
         assert row.export_identity is not None
-        if path.suffix.casefold() != ".wav":
+        if not audio_conform.is_supported_suffix(path):
             QMessageBox.information(
                 self,
-                "Choose a PCM WAV file",
-                "This authoring route accepts PCM16 .wav files. FLAC, MP3, WMA, "
-                "and xWMA are not accepted; convert them to the exact template "
-                "shape first.",
+                "Choose an audio file",
+                "This authoring route accepts ordinary audio files - WAV, MP3, "
+                "FLAC, OGG, M4A and similar - and converts them to this slot's "
+                "exact shape before encoding. That file type is not one it can "
+                "read.",
+            )
+            return
+        if not audio_conform.conversion_available() and path.suffix.casefold() != ".wav":
+            QMessageBox.information(
+                self,
+                "FFmpeg is required to convert audio",
+                "Converting other audio formats to this slot's exact shape needs "
+                "FFmpeg, which was not found. Install FFmpeg, or supply a PCM16 "
+                "WAV already matching the slot's channels, sample rate and frame "
+                "count.",
             )
             return
         identity = row.export_identity
@@ -11190,28 +14948,30 @@ class InspectorBrowser(QFrame):
         if suffix == ".xma":
             self._replace_audio_xma_path(row, path)
             return
-        if suffix == ".wav":
+        if audio_conform.is_supported_suffix(path):
             encoder = self._configured_audio_encoder_for_replace()
             if encoder is not None:
                 self._replace_audio_pcm_path(row, path, encoder)
             return
         QMessageBox.information(
             self,
-            "Drop an XMA or PCM WAV file",
-            "This drop target accepts one local .xma or exact PCM16 .wav file. "
-            "FLAC, MP3, WMA, folders, links, and multiple files are not accepted.",
+            "Drop an audio file",
+            "This drop target accepts one local audio file - an already-encoded "
+            ".xma, or ordinary audio such as WAV, MP3, FLAC, OGG or M4A, which "
+            "is converted to this slot's exact shape first. Folders, links, and "
+            "multiple files are not accepted.",
         )
 
     def _pcm_audio_mutation_complete(self, row_id: str) -> None:
         self._audio_mutation_complete(row_id)
         QMessageBox.information(
             self,
-            "PCM WAV replacement staged",
+            "Audio replacement staged",
             (
                 "The user-supplied encoder output passed the exact allocation, "
                 "packet, complete-decode, duration, source-fingerprint, and shared-"
                 "owner gates. The untouched source game was not modified.\n\n"
-                "The encoder binary/path and input PCM remain outside this shareable "
+                "The encoder binary/path and input audio remain outside this shareable "
                 "mod project; the project contains only the accepted replacement stream."
             ),
         )
@@ -11617,7 +15377,7 @@ class InspectorBrowser(QFrame):
             lambda result: QMessageBox.information(
                 self,
                 "Private ratings sheet exported",
-                f"Saved all 2,254 players × 28 exact ratings to:\n{Path(result)}\n\n"
+                f"Saved all 2,254 players × 31 exact ratings to:\n{Path(result)}\n\n"
                 "This CSV contains retail-derived names and values from your own game. "
                 "Keep it private; share Mod Studio projects, not this sheet.",
             ),
@@ -11815,6 +15575,21 @@ class InspectorCategoryPage(QWidget):
             if category is ApfCategory.ROSTERS
             else None
         )
+        self.save_roster_players = (
+            SaveRosterPlayersPanel(run_task)
+            if category is ApfCategory.ROSTERS
+            else None
+        )
+        self.save_playbooks = (
+            SavePlaybookAssignmentsPanel(run_task)
+            if category is ApfCategory.PLAYBOOKS
+            else None
+        )
+        self.playbook_routes = (
+            PlayAssignmentRoutePanel(facade, run_task)
+            if category is ApfCategory.PLAYBOOKS
+            else None
+        )
         self.workspace_tabs: QTabWidget | None = None
         self.inspector.modifiedChanged.connect(self.modifiedChanged)
         self.inspector.audioAnnotationChanged.connect(
@@ -11822,12 +15597,15 @@ class InspectorCategoryPage(QWidget):
         )
         if self.assets is not None:
             self.assets.modifiedChanged.connect(self.modifiedChanged)
+        if self.playbook_routes is not None:
+            self.playbook_routes.modifiedChanged.connect(self.modifiedChanged)
         if not include_assets:
             layout.addWidget(self.inspector, 1)
         elif category in {
             ApfCategory.MENUS,
             ApfCategory.AUDIO,
             ApfCategory.ROSTERS,
+            ApfCategory.PLAYBOOKS,
         }:
             # Authoring and audio action stacks need the full working height.
             # Dedicated raw-asset tabs keep universal coverage one click away
@@ -11842,8 +15620,14 @@ class InspectorCategoryPage(QWidget):
                 # Avoid a second literal ampersand being interpreted as a Qt
                 # mnemonic marker and visually eating the tab label.
                 tabs.addTab(self.inspector, "Roster + Base Ratings")
+                tabs.addTab(self.save_roster_players, "Save Players")  # type: ignore[arg-type]
                 tabs.addTab(self.roster_planner, "53-player Planner")  # type: ignore[arg-type]
                 tabs.addTab(self.assets, "&Raw Roster Assets")  # type: ignore[arg-type]
+            elif category is ApfCategory.PLAYBOOKS:
+                tabs.addTab(self.inspector, "PLAY / DRCT Inspector")
+                tabs.addTab(self.playbook_routes, "Assignment Routes")  # type: ignore[arg-type]
+                tabs.addTab(self.save_playbooks, "Save Assignments")  # type: ignore[arg-type]
+                tabs.addTab(self.assets, "Raw Playbook Assets")  # type: ignore[arg-type]
             else:
                 tabs.addTab(self.inspector, "Audio Browser")
                 tabs.addTab(self.assets, "Raw Audio Assets")  # type: ignore[arg-type]
@@ -11865,7 +15649,16 @@ class InspectorCategoryPage(QWidget):
         self._requested_workspace = normalized or "primary"
         if normalized in {"", "primary", "inspector", "browser"}:
             target = 0
+        elif normalized in {"save-players", "save-roster-players"} \
+                and self.category is ApfCategory.ROSTERS:
+            target = 1
         elif normalized == "roster-planner" and self.category is ApfCategory.ROSTERS:
+            target = 2
+        elif normalized in {"save-playbooks", "save-assignments"} \
+                and self.category is ApfCategory.PLAYBOOKS:
+            target = 2
+        elif normalized in {"assignment-routes", "route-clone", "routes"} \
+                and self.category is ApfCategory.PLAYBOOKS:
             target = 1
         elif normalized == "soundtrack" and self.category is ApfCategory.AUDIO:
             target = 0
@@ -11911,6 +15704,8 @@ class InspectorCategoryPage(QWidget):
         if service is None or source_sha is None:
             self._loaded_source = None
             self.inspector.set_unavailable("Load your APF game to decode this live model.")
+            if self.playbook_routes is not None:
+                self.playbook_routes.set_model(None)
             return
         if self._loaded_source == source_sha or self._loading:
             return
@@ -11943,6 +15738,8 @@ class InspectorCategoryPage(QWidget):
             summary, model = value  # type: ignore[misc]
             self._loaded_source = source_sha
             self.inspector.set_model(model, summary)
+            if self.playbook_routes is not None:
+                self.playbook_routes.set_model(model)
             if (
                 self._requested_workspace == "soundtrack"
                 and not self.inspector._soundtrack_album_mode
@@ -11968,6 +15765,8 @@ class InspectorCategoryPage(QWidget):
             self.roster_planner.set_context()
         if self.assets is not None:
             self.assets.refresh()
+        if self.playbook_routes is not None:
+            self.playbook_routes.refresh()
 
 
 def _format_summary(values: dict[str, int] | object) -> str:
@@ -12310,12 +16109,24 @@ class ApfStudioMainWindow(QMainWindow):
         self._apply_style()
         self._update_product_state()
         self._activate_page(0, force=True)
+        # After the window is up, never during construction: a slow network must
+        # not delay the app appearing.
+        QTimer.singleShot(1200, self._start_automatic_update_check)
         if offer_recovery and self.workspace_store is not None:
             QTimer.singleShot(0, self._offer_startup_recovery)
 
     def _build_ui(self) -> None:
         root = QWidget()
-        root_layout = QHBoxLayout(root)
+        # The update strip sits above everything and stays hidden unless a
+        # newer release exists, so the normal window is unchanged.
+        shell = QVBoxLayout(root)
+        shell.setContentsMargins(0, 0, 0, 0)
+        shell.setSpacing(0)
+        self._update_banner = update_ui.UpdateBanner()
+        shell.addWidget(self._update_banner)
+        body = QWidget()
+        shell.addWidget(body, 1)
+        root_layout = QHBoxLayout(body)
         root_layout.setContentsMargins(0, 0, 0, 0)
         root_layout.setSpacing(0)
         self.setCentralWidget(root)
@@ -12415,6 +16226,49 @@ class ApfStudioMainWindow(QMainWindow):
         quit_action.setShortcut("Ctrl+Q")
         quit_action.triggered.connect(self.close)
         self._refresh_recent_menus()
+        self._install_help_menu()
+
+    def _install_help_menu(self) -> None:
+        help_menu = self.menuBar().addMenu("&Help")
+        check_action = help_menu.addAction("Check for Updates…")
+        check_action.triggered.connect(self._check_for_updates_now)
+        self._auto_update_action = help_menu.addAction(
+            "Check for updates automatically"
+        )
+        self._auto_update_action.setCheckable(True)
+        self._auto_update_action.setChecked(update_ui.automatic_checks_enabled())
+        self._auto_update_action.toggled.connect(
+            update_ui.set_automatic_checks_enabled
+        )
+        help_menu.addSeparator()
+        releases_action = help_menu.addAction("Downloads and release notes…")
+        releases_action.triggered.connect(
+            lambda: QDesktopServices.openUrl(QUrl(update_check.RELEASES_PAGE))
+        )
+
+    def _check_for_updates_now(self) -> None:
+        """A manual check always answers, even to say nothing changed."""
+
+        update_ui.start_check(
+            update_check.BUILD_RELEASE_TAG, self._manual_update_result
+        )
+
+    def _manual_update_result(self, status: object) -> None:
+        update_ui.report_manual_check(self, status)
+        banner = getattr(self, "_update_banner", None)
+        if banner is not None and getattr(status, "available", False):
+            banner.show_status(status)
+
+    def _start_automatic_update_check(self) -> None:
+        """Quiet on startup: only a genuinely newer release shows anything."""
+
+        if not update_ui.automatic_checks_enabled():
+            return
+        banner = getattr(self, "_update_banner", None)
+        if banner is None:
+            return
+        update_ui.explain_automatic_checks_once(self)
+        update_ui.start_check(update_check.BUILD_RELEASE_TAG, banner.show_status)
 
     def _install_keyboard_shortcuts(self) -> None:
         """Expose the shell navigation even when focus is deep in an editor."""
@@ -13015,7 +16869,8 @@ class ApfStudioMainWindow(QMainWindow):
         dialog = QMessageBox(self)
         dialog.setIcon(QMessageBox.Critical)
         dialog.setWindowTitle(f"{PRODUCT_NAME} could not finish that")
-        dialog.setText(message)
+        hint = friendly_fix_hint(message)
+        dialog.setText(message if hint is None else f"{message}\n\n{hint}")
         dialog.setInformativeText(
             "The original game was not modified. Correct the item described above and try again."
         )
@@ -13847,7 +17702,13 @@ class ApfStudioMainWindow(QMainWindow):
             return
         executable = Path(selected)
         wine: Path | None = None
-        if executable.suffix.casefold() == ".exe" and shutil.which("wine") is None:
+        if (
+            executable.suffix.casefold() == ".exe"
+            and not platform_compat.IS_WINDOWS
+            and shutil.which("wine") is None
+        ):
+            # A ``.exe`` Xenia runs natively on Windows; only a *Unix host
+            # needs a separate Wine loader for it.
             QMessageBox.information(
                 self,
                 "Wine is also required",
@@ -14335,6 +18196,11 @@ def launch_studio(
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
         QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
         application = QApplication([sys.argv[0]])
+        # Only when this call owns the application: an embedded caller has its
+        # own error handling and should not have it replaced. Installing the
+        # hook is also what stops PyQt5 aborting the process, so an unexpected
+        # error becomes a dialog instead of a window that simply disappears.
+        crash_report.install(PRODUCT_NAME)
     application.setApplicationName(PRODUCT_NAME)
     application.setOrganizationName(PRODUCT_NAME)
     state_error = ""

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Compose validated APF ROST edit classes into one collision-free entry.
 
-Roster identity text, player ratings, and player positions all own outer entry
-1126.  This compositor reconstructs each component's authorized decoded-byte
-set from retail-free target metadata, rejects overlap or cross-source results,
-then performs one token-preserving H7A rebuild.  The returned entry contains
-private user-owned game data; its manifest contains only metadata and hashes.
+Roster identity text, player ratings, player positions, and custom-team
+appearance records all own outer entry 1126. This compositor reconstructs each
+component's authorized decoded-byte set from retail-free target metadata,
+rejects overlap or cross-source results, then performs one token-preserving H7A
+rebuild. The returned entry contains private user-owned game data; its manifest
+contains only metadata and hashes.
 """
 
 from __future__ import annotations
@@ -26,6 +27,8 @@ _here = str(_Path(__file__).resolve().parent)
 if _here not in _sys.path:
     _sys.path.insert(0, _here)
 
+import apf_custom_team_appearance_patch
+import apf_uniform_equipment_color_patch
 import apf_inner
 import apf_outer
 import apf_player_position_patch
@@ -232,6 +235,99 @@ def _position_allowed_offsets(
     return allowed
 
 
+def _appearance_allowed_offsets(
+    original_body: bytes, manifest: Mapping[str, object]
+) -> set[int]:
+    try:
+        targets = apf_custom_team_appearance_patch._resolve_targets(original_body)
+    except apf_custom_team_appearance_patch.CustomTeamAppearanceError as exc:
+        raise RosterCompositeError(
+            f"Could not reconstruct custom-team appearance targets: {exc}"
+        ) from exc
+    rows = manifest.get("edits")
+    if not isinstance(rows, (tuple, list)) or not rows:
+        raise RosterCompositeError("Custom-team appearance component has no bounded edit rows")
+    allowed: set[int] = set()
+    for row in rows:
+        if not isinstance(row, Mapping):
+            raise RosterCompositeError("Custom-team appearance component edit row is malformed")
+        try:
+            slot = apf_custom_team_appearance_patch.parse_asset_id(
+                str(row.get("asset_id"))
+            )
+        except apf_custom_team_appearance_patch.CustomTeamAppearanceError as exc:
+            raise RosterCompositeError(
+                f"Custom-team appearance target changed: {exc}"
+            ) from exc
+        target = targets[slot]
+        if any(
+            row.get(key) != expected
+            for key, expected in apf_custom_team_appearance_patch.target_metadata(
+                target.public
+            ).items()
+        ):
+            raise RosterCompositeError("Custom-team appearance component metadata changed")
+        for start, length in (
+            (target.home_palette_offset, 40),
+            (target.away_palette_offset, 40),
+            (target.home_helmet_offset, 8),
+            (target.home_logo_offset, 8),
+            (target.away_helmet_offset, 8),
+            (target.away_logo_offset, 8),
+        ):
+            allowed.update(range(start, start + length))
+    return allowed
+
+
+def _equipment_color_allowed_offsets(
+    original_body: bytes, manifest: Mapping[str, object]
+) -> set[int]:
+    try:
+        targets = apf_uniform_equipment_color_patch._resolve_targets(original_body)
+    except apf_uniform_equipment_color_patch.UniformEquipmentColorError as exc:
+        raise RosterCompositeError(
+            f"Could not reconstruct uniform equipment-color targets: {exc}"
+        ) from exc
+    rows = manifest.get("edits")
+    if not isinstance(rows, (tuple, list)) or not rows:
+        raise RosterCompositeError(
+            "Uniform equipment-color component has no bounded edit rows"
+        )
+    allowed: set[int] = set()
+    for row in rows:
+        if not isinstance(row, Mapping):
+            raise RosterCompositeError(
+                "Uniform equipment-color component edit row is malformed"
+            )
+        try:
+            team_index = apf_uniform_equipment_color_patch.parse_asset_id(
+                str(row.get("asset_id"))
+            )
+        except apf_uniform_equipment_color_patch.UniformEquipmentColorError as exc:
+            raise RosterCompositeError(
+                f"Uniform equipment-color component target changed: {exc}"
+            ) from exc
+        target = targets[team_index]
+        if any(
+            row.get(key) != expected
+            for key, expected in apf_uniform_equipment_color_patch.target_metadata(
+                target.public
+            ).items()
+        ):
+            raise RosterCompositeError(
+                "Uniform equipment-color component metadata changed"
+            )
+        allowed.update(
+            {
+                target.home_facemask_offset,
+                target.away_facemask_offset,
+                target.home_turtleneck_offset,
+                target.away_turtleneck_offset,
+            }
+        )
+    return allowed
+
+
 def _component(
     kind: str,
     expected_schema: str,
@@ -274,6 +370,10 @@ def _component(
         allowed = _rating_allowed_offsets(manifest)
     elif kind == "player_position":
         allowed = _position_allowed_offsets(manifest, changes)
+    elif kind == "custom_team_appearance":
+        allowed = _appearance_allowed_offsets(original_body, manifest)
+    elif kind == "uniform_equipment_colors":
+        allowed = _equipment_color_allowed_offsets(original_body, manifest)
     else:
         raise RosterCompositeError(f"Unknown ROST component kind: {kind}")
     if not changes.issubset(allowed):
@@ -289,8 +389,14 @@ def compose_components(
     identity: apf_roster_identity_patch.RosterIdentityPatchResult | None = None,
     ratings: apf_player_rating_patch.PlayerRatingPatchResult | None = None,
     positions: apf_player_position_patch.PlayerPositionPatchResult | None = None,
+    appearances: (
+        apf_custom_team_appearance_patch.CustomTeamAppearancePatchResult | None
+    ) = None,
+    equipment_colors: (
+        apf_uniform_equipment_color_patch.UniformEquipmentColorPatchResult | None
+    ) = None,
 ) -> RosterCompositePatchResult:
-    """Merge any two or three validated, disjoint ROST-owned edit classes."""
+    """Merge two or more validated, disjoint ROST-owned edit classes."""
 
     supplied = tuple(
         item
@@ -298,6 +404,16 @@ def compose_components(
             ("identity", apf_roster_identity_patch.SCHEMA, identity),
             ("player_rating", apf_player_rating_patch.SCHEMA, ratings),
             ("player_position", apf_player_position_patch.SCHEMA, positions),
+            (
+                "custom_team_appearance",
+                apf_custom_team_appearance_patch.SCHEMA,
+                appearances,
+            ),
+            (
+                "uniform_equipment_colors",
+                apf_uniform_equipment_color_patch.SCHEMA,
+                equipment_colors,
+            ),
         )
         if item[2] is not None
     )
@@ -358,6 +474,32 @@ def compose_components(
         )
         for kind, schema, result in supplied
     )
+    component_by_kind = {component.kind: component for component in components}
+    if {
+        "custom_team_appearance",
+        "uniform_equipment_colors",
+    }.issubset(component_by_kind):
+        appearance_manifest = _result_fields(
+            component_by_kind["custom_team_appearance"].result
+        )[2]
+        equipment_manifest = _result_fields(
+            component_by_kind["uniform_equipment_colors"].result
+        )[2]
+        appearance_teams = {
+            apf_custom_team_appearance_patch.parse_asset_id(str(row.get("asset_id")))
+            for row in appearance_manifest.get("edits", ())
+            if isinstance(row, Mapping)
+        }
+        equipment_teams = {
+            apf_uniform_equipment_color_patch.parse_asset_id(str(row.get("asset_id")))
+            for row in equipment_manifest.get("edits", ())
+            if isinstance(row, Mapping)
+        }
+        if appearance_teams.intersection(equipment_teams):
+            raise RosterCompositeError(
+                "Custom-team appearance and uniform equipment colors select "
+                "overlapping selector records for the same team"
+            )
     occupied: set[int] = set()
     for component in components:
         overlap = occupied.intersection(component.changes)
@@ -475,6 +617,12 @@ def compose_components(
             "player_position_edit_count": int(
                 manifests.get("player_position", {}).get("edit_count", 0)
             ),
+            "custom_team_appearance_edit_count": int(
+                manifests.get("custom_team_appearance", {}).get("edit_count", 0)
+            ),
+            "uniform_equipment_color_edit_count": int(
+                manifests.get("uniform_equipment_colors", {}).get("edit_count", 0)
+            ),
             "output": {
                 "entry_size": len(rebuilt),
                 "entry_sha256": _sha256(rebuilt),
@@ -484,6 +632,12 @@ def compose_components(
                 ),
                 "player_position_changed_byte_count": len(
                     changes_by_kind.get("player_position", ())
+                ),
+                "custom_team_appearance_changed_byte_count": len(
+                    changes_by_kind.get("custom_team_appearance", ())
+                ),
+                "uniform_equipment_color_changed_byte_count": len(
+                    changes_by_kind.get("uniform_equipment_colors", ())
                 ),
                 "decoded_changed_byte_count": len(occupied),
                 "compressed_block_size": compressed_size_after,

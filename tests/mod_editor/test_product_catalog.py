@@ -93,17 +93,18 @@ class ProductCatalogTests(unittest.TestCase):
     def test_category_and_global_counts_match_the_registry(self) -> None:
         catalog = build_nfl2k5_product_catalog(self.registry)
         expected = {
-            ProductCategory.UNIFORMS_EQUIPMENT: (4, 4, 0, 0, 0),
-            ProductCategory.ROSTERS_PLAYERS: (3, 3, 0, 0, 0),
-            ProductCategory.TEAM_IDENTITY: (0, 0, 0, 0, 0),
-            ProductCategory.FIELD_ART_CREATE_TEAM: (1, 1, 0, 0, 0),
-            ProductCategory.STADIUMS: (6, 3, 1, 2, 0),
-            ProductCategory.SCOREBUG_PRESENTATION: (3, 3, 0, 0, 0),
-            ProductCategory.MENUS_UI: (2, 0, 2, 0, 0),
-            ProductCategory.CRIB: (1, 1, 0, 0, 0),
-            ProductCategory.AUDIO: (4, 3, 0, 1, 0),
-            ProductCategory.SLIDERS_GAMEPLAY: (6, 0, 4, 0, 2),
-            ProductCategory.PLAYBOOKS_PLAYS: (1, 0, 1, 0, 0),
+            ProductCategory.UNIFORMS_EQUIPMENT: (4, 3, 0, 0, 0, 1, 0),
+            ProductCategory.ROSTERS_PLAYERS: (3, 3, 0, 0, 0, 0, 0),
+            ProductCategory.TEAM_IDENTITY: (0, 0, 0, 0, 0, 0, 0),
+            ProductCategory.FIELD_ART_CREATE_TEAM: (1, 1, 0, 0, 0, 0, 0),
+            ProductCategory.STADIUMS: (6, 2, 1, 0, 0, 3, 0),
+            ProductCategory.SCOREBUG_PRESENTATION: (3, 1, 0, 0, 0, 2, 0),
+            ProductCategory.MENUS_UI: (2, 0, 2, 0, 0, 0, 0),
+            ProductCategory.CRIB: (1, 1, 0, 0, 0, 0, 0),
+            ProductCategory.AUDIO: (4, 3, 0, 1, 0, 0, 0),
+            ProductCategory.SLIDERS_GAMEPLAY: (6, 0, 4, 0, 0, 0, 2),
+            ProductCategory.PLAYBOOKS_PLAYS: (1, 1, 0, 0, 0, 0, 0),
+            ProductCategory.TEXTURES: (1, 1, 0, 0, 0, 0, 0),
         }
         for category, values in expected.items():
             with self.subTest(category=category.value):
@@ -115,6 +116,8 @@ class ProductCatalogTests(unittest.TestCase):
                         counts.preview,
                         counts.export_only,
                         counts.coming_soon,
+                        counts.evidence,
+                        counts.research,
                     ),
                     values,
                 )
@@ -125,8 +128,10 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.preview,
                 catalog.counts.export_only,
                 catalog.counts.coming_soon,
+                catalog.counts.evidence,
+                catalog.counts.research,
             ),
-            (32, 19, 8, 3, 2),
+            (32, 16, 7, 1, 0, 6, 2),
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:

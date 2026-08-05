@@ -14,6 +14,7 @@ crest.
 
 from __future__ import annotations
 
+import ast
 from pathlib import Path
 import sys
 import unittest
@@ -34,6 +35,26 @@ if QApplication is not None:
     )
 
 _APP = None
+
+
+def _function_source(path: Path, name: str) -> str:
+    """Return one complete named function without a brittle character window."""
+
+    source = path.read_text(encoding="utf-8")
+    matches = [
+        node
+        for node in ast.walk(ast.parse(source, filename=str(path)))
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == name
+    ]
+    if len(matches) != 1:
+        raise AssertionError(
+            f"expected exactly one {name} function in {path}, found {len(matches)}"
+        )
+    block = ast.get_source_segment(source, matches[0])
+    if block is None:
+        raise AssertionError(f"could not recover {name} source from {path}")
+    return block
 
 
 def setUpModule() -> None:
@@ -241,11 +262,12 @@ class WiringTests(unittest.TestCase):
         """An edit that does not become a staged replacement changes nothing."""
         source = (
             _REPO_ROOT / "mod_editor" / "gui" / "studio_qt.py"
-        ).read_text(encoding="utf-8")
-        start = source.index("    def _edit_visual_asset(")
-        block = source[start:start + 2200]
+        )
+        block = _function_source(source, "_edit_visual_asset")
         self.assertIn("edit_texture(", block)
-        self.assertIn("_replace_visual_asset(state, asset, staged)", block)
+        self.assertIn("self._replace_visual_asset(", block)
+        self.assertIn("staged,", block)
+        self.assertIn("native_canvas_edit=", block)
 
     def test_the_apf_crest_panel_has_an_edit_button(self) -> None:
         source = (
@@ -259,12 +281,15 @@ class WiringTests(unittest.TestCase):
         """Editing twice must not silently start over from retail."""
         source = (
             _REPO_ROOT / "mod_editor" / "apf_studio" / "gui.py"
-        ).read_text(encoding="utf-8")
-        start = source.index("    def _edit_in_place(")
-        block = source[start:start + 2200]
+        )
+        block = _function_source(source, "_edit_in_place")
+        commit = _function_source(source, "_commit_design")
         self.assertIn("source = self._staged_png", block)
         self.assertIn("_decode_source_operation", block)
-        self.assertIn("self._staged_png = staged", block)
+        self.assertIn("if self._commit_design(staged)", block)
+        self.assertIn(
+            "self._staged_png = Path(modification.replacement_path)", commit
+        )
 
 
 if __name__ == "__main__":

@@ -15,9 +15,13 @@ import shutil
 import subprocess
 import stat
 import threading
-from typing import Callable, Iterable, Sequence
+from typing import Callable, Iterable, Mapping, Sequence
 
 from mod_editor.core.errors import ValidationError
+from mod_editor.core.texture_master import (
+    AuthoringTransform,
+    save_texture_master_bundle,
+)
 from mod_editor.core.gameplay_inspection import (
     DEFAULT_FRANCHISE_REPORT,
     DEFAULT_NFL_SAVE_REPORT,
@@ -45,6 +49,10 @@ from mod_editor.core.nfl2k5_universal_asset_index import (
 from mod_editor.core.nfl2k5_playbook_inspector import (
     Nfl2k5Playbook,
     Nfl2k5PlaybookInspector,
+)
+from mod_editor.core.nfl2k5_playbook_route_writer import (
+    PlayRouteCloneRequest,
+    route_selector as play_route_selector,
 )
 from mod_editor.core.nfl2k5_stadium_studio import (
     Nfl2k5StadiumStudio,
@@ -94,6 +102,11 @@ from mod_editor.core.nfl2k5_crib import (
     Nfl2k5CribIO,
     load_nfl2k5_crib_catalog,
 )
+from mod_editor.core.nfl2k5_crib_geometry_writer import (
+    compile_crib_geometry_recipe,
+    export_crib_scene_gltf,
+    list_editable_scenes as list_editable_crib_geometry_scenes,
+)
 
 from .session import (
     AudioProjectPreparationRequired,
@@ -109,6 +122,7 @@ from .audio_bundle import (
 )
 from .audio_replacement_pack import (
     AudioReplacementPackService,
+    FAMILY_REVIEWED_MEANING_STATUS,
     complete_standalone_pack_path,
     standalone_runtime_meaning_status,
 )
@@ -174,6 +188,9 @@ def _publish_new_export(payload: bytes, destination: Path) -> Path:
 
 
 _PRODUCT_ROOT = Path(__file__).resolve().parents[2]
+_STADIUM_GEOMETRY_CATALOG = (
+    _PRODUCT_ROOT / "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json"
+)
 _GAMEPLAY_SNAPSHOT = (
     _PRODUCT_ROOT / "mod_editor/data/nfl2k5_gameplay_inspection.v1.json"
 )
@@ -535,6 +552,8 @@ def _audio_search_haystack(asset: AudioCatalogItem) -> str:
         extra = (
             "stereo" if asset.channels == 2 else "mono",
         )
+        if asset.family_reviewed_label is not None:
+            extra = (*extra, asset.family_reviewed_label)
     elif isinstance(asset, Nfl2k5StreamingAudioBank):
         extra = (
             asset.role_class,
@@ -1077,6 +1096,86 @@ class Nfl2k5StudioFacade:
             "That Crib texture was already original."
         )
 
+    def list_crib_model_scenes(self) -> tuple[dict[str, object], ...]:
+        """Return the seven scenes with bounded position-only model import."""
+
+        with self._lock:
+            if self._session is None:
+                return ()
+            return list_editable_crib_geometry_scenes()
+
+    @property
+    def modified_crib_model_scene_ids(self) -> frozenset[str]:
+        with self._lock:
+            session = self._session
+            if session is None or not hasattr(
+                session, "modified_crib_model_scene_ids"
+            ):
+                return frozenset()
+            return frozenset(session.modified_crib_model_scene_ids)
+
+    def export_crib_model(
+        self, scene_id: str, destination: Path, progress: ProgressSink
+    ) -> tuple[Path, Path]:
+        """Export one source-derived Crib scene glTF and adjacent buffer."""
+
+        progress("Exporting Crib model", 0, 1)
+        with self._lock:
+            cache = self._cache
+            self._require_session()
+            if cache is None:
+                raise ValidationError("Load your NFL 2K5 XISO first.")
+            paths = export_crib_scene_gltf(
+                cache.pack0, cache.inventory, scene_id, destination
+            )
+        progress("Crib model exported", 1, 1)
+        return paths
+
+    def _crib_model_source_export(self, scene_id: str) -> Path:
+        cache = self._cache
+        self._require_session()
+        if cache is None:
+            raise ValidationError("Load your NFL 2K5 XISO first.")
+        key = hashlib.sha256(scene_id.encode("utf-8")).hexdigest()
+        directory = cache.originals / "crib-models" / key
+        source = directory / "source.gltf"
+        if not source.exists():
+            directory.mkdir(parents=True, exist_ok=True)
+            export_crib_scene_gltf(
+                cache.pack0, cache.inventory, scene_id, source
+            )
+        # The compiler revalidates the source positions/topology against the
+        # pinned retail-free catalog; a modified private cache cannot stage.
+        return source
+
+    def import_crib_model(
+        self, scene_id: str, edited_gltf: Path, progress: ProgressSink
+    ) -> object:
+        """Stage same-topology vertex moves after a full fixed-span preflight."""
+
+        progress("Validating edited Crib model", 0, 2)
+        with self._lock:
+            source = self._crib_model_source_export(scene_id)
+            compiled = compile_crib_geometry_recipe(
+                scene_id, source, edited_gltf
+            )
+            progress("Checking fixed Crib scene allocation", 1, 2)
+            result = self._require_session().replace_crib_geometry(compiled)
+        progress("Edited Crib model staged", 2, 2)
+        return result
+
+    def revert_crib_model(
+        self, scene_id: str, progress: ProgressSink
+    ) -> object:
+        progress("Reverting edited Crib model", 0, 1)
+        with self._lock:
+            changed = self._require_session().revert_crib_geometry(scene_id)
+        progress("Crib model reverted", 1, 1)
+        return StudioOperationResult(
+            "Original Crib model positions restored." if changed else
+            "That Crib model was already original."
+        )
+
     @property
     def modified_audio_asset_ids(self) -> Iterable[str]:
         with self._lock:
@@ -1177,6 +1276,7 @@ class Nfl2k5StudioFacade:
         meaning_domain = {
             "menu_back_route_runtime_unproved",
             "reviewed_label_runtime_meaning_unproved",
+            FAMILY_REVIEWED_MEANING_STATUS,
             "provisional_label_runtime_meaning_unproved",
         }
         if meaning_status is not None and (
@@ -1814,6 +1914,11 @@ class Nfl2k5StudioFacade:
 
         with self._lock:
             inspector = self._require_playbook_inspector()
+            attach_playbooks = getattr(
+                self._require_session(), "attach_playbook_inspector", None
+            )
+            if callable(attach_playbooks):
+                attach_playbooks(inspector)
             records = inspector.records()
         books: list[Nfl2k5Playbook] = []
         total = len(records)
@@ -1866,6 +1971,53 @@ class Nfl2k5StudioFacade:
         path = index.export_raw(asset_id, destination)
         progress("Raw PLAY resource exported", 2, 2)
         return path
+
+    def copy_play_assignment_route(
+        self,
+        asset_id: str,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+        progress: ProgressSink = _quiet_progress,
+    ) -> object:
+        """Copy one exact stock assignment route inside the same PLAY book."""
+
+        progress("Checking source and target assignment routes", 0, 2)
+        request = PlayRouteCloneRequest(
+            asset_id, target_play_index, target_slot_index,
+            donor_play_index, donor_slot_index,
+        )
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            session.attach_playbook_inspector(inspector)
+            changed = session.copy_play_assignment_route(request)
+        progress("Assignment route copied", 2, 2)
+        return StudioOperationResult(
+            "Assignment route copied. Build uses the donor's exact existing "
+            "descriptor and chain; waypoint drawing is not implied."
+            if changed else "That assignment route copy is already staged."
+        )
+
+    def revert_play_assignment_route(
+        self,
+        asset_id: str,
+        target_play_index: int,
+        target_slot_index: int,
+        progress: ProgressSink = _quiet_progress,
+    ) -> object:
+        progress("Reverting assignment route", 0, 1)
+        selector = play_route_selector(
+            asset_id, target_play_index, target_slot_index
+        )
+        with self._lock:
+            changed = self._require_session().revert_play_assignment_route(selector)
+        progress("Assignment route reverted", 1, 1)
+        return StudioOperationResult(
+            "Assignment route reverted."
+            if changed else "That assignment route is already original."
+        )
 
     @property
     def stadium_available(self) -> bool:
@@ -1951,34 +2103,75 @@ class Nfl2k5StudioFacade:
         progress("Stadium texture exported", 1, 1)
         return path
 
-    def unif_colors(self) -> tuple[str, str] | None:
-        """The facemask and turtleneck tints currently staged, if any."""
-        with self._lock:
-            return self._require_session().unif_colors
+    def export_stadium_scene_gltf(
+        self, scene_id: str, destination: Path, progress: ProgressSink
+    ) -> tuple[Path, Path]:
+        """Save the selected stadium model as glTF, with its buffer beside it.
 
-    def set_unif_colors(
-        self, facemask: str, turtleneck: str, progress: ProgressSink
-    ) -> tuple[str, str]:
-        """Stage the facemask/faceshield and HI_turtleneck tints.
+        The viewport could already draw a stadium; this is what lets a modder
+        take it into Blender. Returns the ``(gltf, bin)`` pair, which the caller
+        needs because the buffer keeps its own name.
+        """
+
+        progress("Exporting stadium model", 0, 1)
+        with self._lock:
+            self._require_session()
+            paths = self._require_stadium_studio().export_scene_gltf(
+                scene_id, destination
+            )
+        progress("Stadium model exported", 1, 1)
+        return paths
+
+    def import_stadium_scene_gltf(
+        self, scene_id: str, source: Path, progress: ProgressSink
+    ) -> object:
+        """Stage same-topology vertex moves from an edited Stadium glTF."""
+
+        progress("Validating edited stadium model", 0, 1)
+        with self._lock:
+            self._require_session()
+            result = self._require_stadium_studio().import_scene_gltf(
+                scene_id, source
+            )
+        progress("Edited stadium model staged", 1, 1)
+        return result
+
+    def uniform_colors(
+        self, selector: str, progress: ProgressSink
+    ) -> tuple[str, str, bool]:
+        """Read one set's current facemask/faceshield and turtleneck pair."""
+        progress(f"Reading {selector} uniform colours", 0, 1)
+        with self._lock:
+            chosen = self._require_session().uniform_colors(selector)
+        progress(f"{selector} uniform colours ready", 1, 1)
+        return chosen
+
+    def set_uniform_colors(
+        self, selector: str, facemask: str, turtleneck: str,
+        progress: ProgressSink,
+    ) -> tuple[str, str, bool]:
+        """Stage one set's facemask/faceshield and HI_turtleneck tints.
 
         This is a project edit like any other: nothing touches the source, and
         the colours only reach a disc when Build Modded XISO runs.
         """
-        progress("Setting uniform colours", 0, 1)
+        progress(f"Setting {selector} uniform colours", 0, 1)
         with self._lock:
             session = self._require_session()
-            session.set_unif_colors(facemask, turtleneck)
-            chosen = session.unif_colors
-        progress("Uniform colours set", 1, 1)
-        assert chosen is not None
+            chosen = session.set_uniform_colors(
+                selector, facemask, turtleneck
+            )
+        progress(f"{selector} uniform colours set", 1, 1)
         return chosen
 
-    def clear_unif_colors(self, progress: ProgressSink) -> bool:
-        """Drop the staged colour edit and go back to retail."""
-        progress("Reverting uniform colours", 0, 1)
+    def clear_uniform_colors(
+        self, selector: str, progress: ProgressSink
+    ) -> bool:
+        """Revert one selected set and leave every other set unchanged."""
+        progress(f"Reverting {selector} uniform colours", 0, 1)
         with self._lock:
-            had = self._require_session().clear_unif_colors()
-        progress("Uniform colours reverted", 1, 1)
+            had = self._require_session().clear_uniform_colors(selector)
+        progress(f"{selector} uniform colours reverted", 1, 1)
         return had
 
     def replace_stadium_texture(
@@ -2072,6 +2265,41 @@ class Nfl2k5StudioFacade:
             path = self._require_session().export_asset(asset, destination)
         progress(f"Exported {asset.label}", 1, 1)
         return path
+
+    def save_texture_authoring_master(
+        self,
+        asset: UniformAsset,
+        *,
+        source_image: Path,
+        source_sha256: str,
+        destination: Path,
+        transform: AuthoringTransform,
+        editor_transform: Mapping[str, object],
+        high_resolution_scale: int,
+        native_baseline_png: Path | None = None,
+        progress: ProgressSink = _quiet_progress,
+    ) -> Path:
+        """Save one imported full-res source beside its staged native PNG."""
+
+        progress(f"Validating {asset.label} authoring master", 0, 2)
+        with self._lock:
+            native = self._require_session().current_path(asset)
+            output = save_texture_master_bundle(
+                source_image=source_image,
+                destination=destination,
+                asset_id=asset.asset_id,
+                editor_target="nfl2k5_xbox",
+                native_width=asset.width,
+                native_height=asset.height,
+                transform=transform,
+                high_resolution_scale=high_resolution_scale,
+                compiled_native_png=native,
+                compiled_native_baseline_png=native_baseline_png,
+                expected_source_sha256=source_sha256,
+                editor_transform=editor_transform,
+            )
+        progress(f"Saved {asset.label} authoring master", 2, 2)
+        return output
 
     def export_team_kit_sets(
         self,
@@ -2292,6 +2520,10 @@ class Nfl2k5StudioFacade:
             attach_crib = getattr(candidate, "attach_crib", None)
             if callable(attach_crib):
                 attach_crib(crib_catalog, crib_io)
+        attach_playbooks = getattr(candidate, "attach_playbook_inspector", None)
+        if callable(attach_playbooks):
+            with self._lock:
+                attach_playbooks(self._require_playbook_inspector())
         candidate_stadium = None
         if stadium_result is not None:
             candidate_stadium = self._studio_for_session(
@@ -2457,7 +2689,7 @@ class Nfl2k5StudioFacade:
             result.gltf_manifest,
             result.texture_manifest,
             result.texture_root,
-            geometry_catalog=None,
+            geometry_catalog=_STADIUM_GEOMETRY_CATALOG,
         )
 
     def _studio_for_session(
@@ -2487,7 +2719,7 @@ class Nfl2k5StudioFacade:
             result.gltf_manifest,
             result.texture_manifest,
             result.texture_root,
-            geometry_catalog=None,
+            geometry_catalog=_STADIUM_GEOMETRY_CATALOG,
             edit_delegate=session.stadium_delegate,
         )
 

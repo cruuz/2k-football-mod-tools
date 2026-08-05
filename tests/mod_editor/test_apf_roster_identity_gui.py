@@ -28,6 +28,13 @@ from mod_editor.apf_studio.player_positions import (  # noqa: E402
 
 PLAYER_RATING_SCHEMA = load_player_rating_schema()
 PLAYER_POSITION_SCHEMA = load_player_position_schema()
+#: Table row holding the one byte with a native 100.  Derived from the schema so
+#: it follows display order instead of being re-pinned by hand.
+NATIVE_100_ROW = next(
+    field.display_order
+    for field in PLAYER_RATING_SCHEMA.fields
+    if field.field_id == "unknown_rating_d4"
+)
 
 
 def _base_rating_rows() -> tuple[dict[str, object], ...]:
@@ -36,7 +43,7 @@ def _base_rating_rows() -> tuple[dict[str, object], ...]:
             99
             if field.field_id == "speed"
             else 100
-            if field.field_id == "unknown_rating_24"
+            if field.field_id == "unknown_rating_d4"
             else 50
         )
         for field in PLAYER_RATING_SCHEMA.fields
@@ -496,18 +503,18 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
                     browser.roster_detail_tabs.tabText(index)
                     for index in range(browser.roster_detail_tabs.count())
                 ],
-                ["Identity & Names", "Base Ratings (28)", "Position (17)"],
+                ["Identity & Names", "Base Ratings (31)", "Position (17)"],
             )
             self.assertEqual(browser.roster_detail_tabs.currentIndex(), 0)
             self.assertTrue(browser.roster_detail_tabs.isTabEnabled(1))
             self.assertTrue(browser.roster_detail_tabs.isTabEnabled(2))
             status = browser.table.item(0, 3).text()
-            self.assertIn("28 base ratings editable", status)
+            self.assertIn("31 base ratings editable", status)
             self.assertIn("Player names locked", status)
             self.assertTrue(browser.export_ratings_sheet_button.isVisibleTo(browser))
             self.assertTrue(browser.export_ratings_sheet_button.isEnabled())
             self.assertIn("2,254", browser.export_ratings_sheet_button.toolTip())
-            self.assertIn("28", browser.export_ratings_sheet_button.toolTip())
+            self.assertIn("31", browser.export_ratings_sheet_button.toolTip())
             self.assertIn("private", browser.export_ratings_sheet_button.toolTip())
             self.assertTrue(browser.roster_name_editor.isEnabled())
             self.assertTrue(browser.roster_name_editor.isReadOnly())
@@ -550,7 +557,7 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
                 self.assertIs(facade.rating_sheet_calls[0][0], browser.model)
                 self.assertEqual(facade.rating_sheet_calls[0][1], destination)
                 message = information.call_args.args[2]
-                self.assertIn("2,254 players × 28", message)
+                self.assertIn("2,254 players × 31", message)
                 self.assertIn("Keep it private", message)
         finally:
             browser.deleteLater()
@@ -776,15 +783,18 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             browser.roster_detail_tabs.setCurrentIndex(1)
             self.application.processEvents()
             self.assertTrue(panel.isVisibleTo(browser))
-            self.assertEqual(panel.table.rowCount(), 28)
+            self.assertEqual(panel.table.rowCount(), len(PLAYER_RATING_SCHEMA.fields))
             self.assertEqual(panel.table.editTriggers(), panel.table.NoEditTriggers)
             self.assertEqual(panel.table.columnCount(), 4)
             self.assertEqual(panel.table.item(0, 0).text(), "Speed")
             self.assertEqual(panel.table.item(0, 1).text(), "99")
             self.assertEqual(panel.table.item(0, 2).text(), "0xBA")
             self.assertEqual(panel.table.item(0, 3).text(), "Original")
-            self.assertEqual(panel.table.item(25, 0).text(), "Unknown Rating 24")
-            self.assertEqual(panel.table.item(25, 1).text(), "100")
+            self.assertEqual(panel.table.item(25, 0).text(), "Unknown Rating (0xD4)")
+            self.assertEqual(
+                panel.table.item(NATIVE_100_ROW, 0).text(), "Unknown Rating (0xD4)"
+            )
+            self.assertEqual(panel.table.item(NATIVE_100_ROW, 1).text(), "100")
             self.assertIn("0–99", panel.note.text())
             self.assertIn("native 100", panel.note.text())
             self.assertIn("Overall", panel.note.text())
@@ -792,7 +802,7 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.assertIn("tier", panel.note.text())
             self.assertIn("Dan Marino", panel.note.text())
             self.assertIn("no on-screen numeric", panel.note.text())
-            self.assertIn("28 / 28", panel.status.text())
+            self.assertIn("31 / 31", panel.status.text())
             self.assertIn("EDITABLE", panel.status.text())
             self.assertTrue(panel.value_editor.isEnabled())
             self.assertEqual(panel.value_editor.value(), 99)
@@ -926,9 +936,9 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
         browser, facade, tasks = self._browser(writes_enabled=False)
         try:
             panel = browser.base_ratings_panel
-            panel.table.selectRow(25)
+            panel.table.selectRow(NATIVE_100_ROW)
             self.application.processEvents()
-            self.assertEqual(panel.table.item(25, 1).text(), "100")
+            self.assertEqual(panel.table.item(NATIVE_100_ROW, 1).text(), "100")
             self.assertEqual(panel.value_editor.maximum(), 100)
             self.assertEqual(panel.value_editor.value(), 100)
             self.assertFalse(panel.apply_button.isEnabled())
@@ -939,14 +949,14 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             panel._apply_rating()
             self.assertEqual(
                 facade.rating_replace_calls,
-                [(7, "unknown_rating_24", 99)],
+                [(7, "unknown_rating_d4", 99)],
             )
             self.assertEqual(panel.value_editor.maximum(), 99)
             self.assertEqual(panel.value_editor.value(), 99)
 
             panel._revert_rating()
             self.assertEqual(tasks[-1], ("Reverting exact APF base rating", True))
-            self.assertEqual(panel.table.item(25, 1).text(), "100")
+            self.assertEqual(panel.table.item(NATIVE_100_ROW, 1).text(), "100")
             self.assertEqual(panel.value_editor.maximum(), 100)
             self.assertEqual(panel.value_editor.value(), 100)
         finally:
@@ -963,7 +973,7 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.assertEqual(
                 browser.table.horizontalHeaderItem(3).text(), "Roster status"
             )
-            self.assertIn("28 base ratings editable", browser.table.item(0, 3).text())
+            self.assertIn("31 base ratings editable", browser.table.item(0, 3).text())
             self.assertIn("Player names editable", browser.table.item(0, 3).text())
             self.assertEqual(browser.roster_field_combo.count(), 2)
             self.assertEqual(browser.roster_field_combo.itemData(0), "first_name")
@@ -981,7 +991,7 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             assert browser.roster_detail_tabs is not None
             self.assertEqual(browser.roster_detail_tabs.currentIndex(), 0)
             self.assertEqual(browser.roster_detail_tabs.tabText(0), "Identity & Names")
-            self.assertEqual(browser.roster_detail_tabs.tabText(1), "Base Ratings (28)")
+            self.assertEqual(browser.roster_detail_tabs.tabText(1), "Base Ratings (31)")
             self.assertEqual(browser.roster_detail_tabs.tabText(2), "Position (17)")
             self.assertTrue(browser.roster_detail_tabs.isTabEnabled(1))
             self.assertTrue(browser.roster_detail_tabs.isTabEnabled(2))

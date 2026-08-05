@@ -23,6 +23,14 @@ from mod_editor.core.json_stream import read_bounded_regular_file
 from mod_editor.core.nfl2k5_asset_io import copy_user_asset_atomic, sha256_bytes
 from mod_editor.core.nfl2k5_extended_visual_io import Nfl2k5ProductVisualIO
 from mod_editor.core.nfl2k5_source_cache import SourceCache
+from mod_editor.core.nfl2k5_playbook_inspector import (
+    Nfl2k5Playbook,
+    Nfl2k5PlaybookInspector,
+)
+from mod_editor.core.nfl2k5_playbook_route_writer import (
+    PlayRouteCloneRequest,
+    request_from_mapping as play_route_request_from_mapping,
+)
 from mod_editor.core.nfl2k5_audio_catalog import (
     AudioReplacementSnapshot,
     MENU_BACK_SELECTOR,
@@ -35,11 +43,18 @@ from mod_editor.core.nfl2k5_crib import (
     Nfl2k5CribCatalog,
     Nfl2k5CribIO,
 )
-from mod_editor.core.nfl2k5_stadium_studio import StadiumTexture
+from mod_editor.core.nfl2k5_crib_geometry_writer import (
+    CompiledCribGeometryRecipe,
+    build_unified_crib_geometry_import,
+    list_editable_scenes as list_editable_crib_geometry_scenes,
+)
+from mod_editor.core.nfl2k5_stadium_studio import StadiumScene, StadiumTexture
 from mod_editor.core.nfl2k5_stadium_texture_writer import (
+    CompiledStadiumGeometryRecipe,
     CompiledStadiumTextureEdit,
     Nfl2k5StadiumTextureWriter,
     SELECTOR_RE as STADIUM_TEXTURE_SELECTOR_RE,
+    TARGET_SCENE_ID as STADIUM_GEOMETRY_SCENE_ID,
 )
 from mod_editor.core.nfl2k5_text_catalog import (
     Nfl2k5TextCatalog,
@@ -151,6 +166,34 @@ class StadiumSessionEdit:
     rgba_sha256: str
     preview_path: Path
     preview_sha256: str
+
+
+@dataclass(frozen=True)
+class StadiumGeometrySessionEdit:
+    scene_id: str
+    recipe_path: Path
+    recipe_sha256: str
+    changed_target_count: int
+    changed_vertex_count: int
+    preserved_triangle_count: int
+
+    @property
+    def asset_id(self) -> str:
+        return f"{self.scene_id}.geometry"
+
+
+@dataclass(frozen=True)
+class CribGeometrySessionEdit:
+    scene_id: str
+    recipe_path: Path
+    recipe_sha256: str
+    changed_target_count: int
+    changed_vertex_count: int
+    preserved_triangle_count: int
+
+    @property
+    def asset_id(self) -> str:
+        return f"{self.scene_id}.geometry"
 
 
 @dataclass(frozen=True)
@@ -284,6 +327,14 @@ class _SessionStadiumDelegate:
     def revert(self, texture: StadiumTexture) -> bool:
         return self.session.revert_stadium_texture(texture)
 
+    def supports_geometry(self, scene: StadiumScene) -> bool:
+        return self.session.supports_stadium_geometry(scene)
+
+    def replace_geometry(
+        self, scene: StadiumScene, compiled: CompiledStadiumGeometryRecipe
+    ) -> ReplaceResult:
+        return self.session.replace_stadium_geometry(scene, compiled)
+
 
 class StudioSession:
     """A reversible edit set bound to one recognized, user-owned XISO."""
@@ -327,15 +378,19 @@ class StudioSession:
         self.crib_io: Nfl2k5CribIO | None = None
         self._crib_edits: dict[str, SessionEdit] = {}
         self._crib_undo: list[_UndoAction] = []
+        self._crib_geometry_edits: dict[str, CribGeometrySessionEdit] = {}
+        self.playbook_inspector: Nfl2k5PlaybookInspector | None = None
+        self._play_route_edits: dict[str, PlayRouteCloneRequest] = {}
         self.stadium_writer: Nfl2k5StadiumTextureWriter | None = None
         self.stadium_texture: StadiumTexture | None = None
         self._stadium_textures: dict[str, StadiumTexture] = {}
         self.stadium_delegate = _SessionStadiumDelegate(self)
         self._stadium_edits: dict[str, StadiumSessionEdit] = {}
-        # The facemask/faceshield and HI_turtleneck tints. One choice, not a
-        # per-asset edit: it is two eight-byte words shared by the whole game,
-        # so it is held as a single optional pair rather than a dict.
-        self._unif_colors: tuple[str, str] | None = None
+        self._stadium_geometry_edit: StadiumGeometrySessionEdit | None = None
+        # Each physical uniform package owns its own pair. Word 0 jointly
+        # tints facemask/faceshield; word 1 is HI_turtleneck. The old global
+        # pair was actually Detroit HOME/AWAY and must never be revived.
+        self._unif_colors: dict[str, tuple[str, str]] = {}
         self._stadium_undo: list[_UndoAction] = []
         self._project_catalog_router = _ProjectCatalogRouter(self)
         self._project_io_router = _ProjectAssetIORouter(self)
@@ -403,8 +458,11 @@ class StudioSession:
     def modified_count(self) -> int:
         return (
             len(self._edits) + len(self._crib_edits) + len(self._stadium_edits)
+            + len(self._crib_geometry_edits)
+            + int(self._stadium_geometry_edit is not None)
             + len(self._audio_edits)
-            + (1 if self._unif_colors is not None else 0)
+            + len(self._unif_colors)
+            + len(self._play_route_edits)
             + (self.text_edits.modified_count if self.text_edits is not None else 0)
         )
 
@@ -511,7 +569,10 @@ class StudioSession:
         }
         return frozenset((
             *self._edits, *self._crib_edits, *self._stadium_edits,
-            *audio_ids, *text_ids
+            *(edit.asset_id for edit in self._crib_geometry_edits.values()),
+            *((self._stadium_geometry_edit.asset_id,)
+              if self._stadium_geometry_edit is not None else ()),
+            *audio_ids, *text_ids, *self._play_route_edits,
         ))
 
     @property
@@ -579,11 +640,22 @@ class StudioSession:
 
     @property
     def modified_crib_asset_ids(self) -> frozenset[str]:
-        return frozenset(self._crib_edits)
+        return frozenset((
+            *self._crib_edits,
+            *(edit.asset_id for edit in self._crib_geometry_edits.values()),
+        ))
+
+    @property
+    def modified_crib_model_scene_ids(self) -> frozenset[str]:
+        return frozenset(self._crib_geometry_edits)
 
     @property
     def modified_stadium_asset_ids(self) -> frozenset[str]:
-        return frozenset(self._stadium_edits)
+        return frozenset((
+            *self._stadium_edits,
+            *((self._stadium_geometry_edit.asset_id,)
+              if self._stadium_geometry_edit is not None else ()),
+        ))
 
     def attach_text_catalog(self, catalog: Nfl2k5TextCatalog) -> None:
         if self.text_catalog is not None or self.modified_count:
@@ -591,6 +663,134 @@ class StudioSession:
         self.text_catalog = catalog
         self.text_edits = Nfl2k5TextEdits(catalog)
         self._write_manifest()
+
+    def attach_playbook_inspector(
+        self, inspector: Nfl2k5PlaybookInspector
+    ) -> None:
+        if self.playbook_inspector is not None:
+            if self.playbook_inspector is not inspector:
+                raise ValidationError("A different PLAY source is already attached.")
+            return
+        if self._play_route_edits:
+            raise ValidationError("PLAY editing must be attached before route edits.")
+        self.playbook_inspector = inspector
+
+    @staticmethod
+    def _validate_play_route_set(
+        book: Nfl2k5Playbook,
+        requests: Iterable[PlayRouteCloneRequest],
+    ) -> None:
+        rows = tuple(requests)
+        targets: set[tuple[int, int]] = set()
+        replacement_starts: dict[tuple[int, int], int] = {}
+        for request in rows:
+            if request.asset_id != book.asset_id:
+                raise ValidationError("PLAY route selector names another playbook.")
+            if not 0 <= request.target_play_index < len(book.plays) \
+                    or not 0 <= request.donor_play_index < len(book.plays):
+                raise ValidationError("PLAY route play index is outside this book.")
+            if not 0 <= request.target_slot_index < 11 \
+                    or not 0 <= request.donor_slot_index < 11:
+                raise ValidationError("PLAY assignment slots must be between 0 and 10.")
+            target_key = (
+                request.target_play_index, request.target_slot_index
+            )
+            if target_key in targets:
+                raise ValidationError("A PLAY route target is already edited.")
+            targets.add(target_key)
+            if target_key == (
+                request.donor_play_index, request.donor_slot_index
+            ):
+                raise ValidationError("Choose a different donor assignment route.")
+            donor = book.plays[request.donor_play_index].assignments[
+                request.donor_slot_index
+            ]
+            target = book.plays[request.target_play_index].assignments[
+                request.target_slot_index
+            ]
+            if (
+                donor.chain_start_index == target.chain_start_index
+                and donor.descriptor_word == target.descriptor_word
+            ):
+                raise ValidationError("That donor already matches the target route.")
+            replacement_starts[target_key] = donor.chain_start_index
+        before_starts = {
+            assignment.chain_start_index
+            for play in book.plays for assignment in play.assignments
+        }
+        after_starts = {
+            replacement_starts.get(
+                (play.index, assignment.slot_index),
+                assignment.chain_start_index,
+            )
+            for play in book.plays for assignment in play.assignments
+        }
+        if before_starts != after_starts:
+            raise ValidationError(
+                "That copy would orphan an existing route chain. Choose a target "
+                "whose current chain is also used elsewhere, or use a balanced swap."
+            )
+
+    @property
+    def play_route_edits(self) -> tuple[PlayRouteCloneRequest, ...]:
+        return tuple(
+            self._play_route_edits[key] for key in sorted(self._play_route_edits)
+        )
+
+    def copy_play_assignment_route(
+        self, request: PlayRouteCloneRequest
+    ) -> bool:
+        inspector = self.playbook_inspector
+        if inspector is None:
+            raise ValidationError("Open the Playbooks & Plays editor first.")
+        book = inspector.load(request.asset_id)
+        previous = self._play_route_edits.get(request.selector)
+        if previous == request:
+            return False
+        candidate = dict(self._play_route_edits)
+        candidate[request.selector] = request
+        self._validate_play_route_set(
+            book,
+            (row for row in candidate.values() if row.asset_id == book.asset_id),
+        )
+        self._play_route_edits = candidate
+        label = (
+            f"Copy assignment route to play {request.target_play_index + 1}, "
+            f"slot {request.target_slot_index + 1}"
+        )
+        self._undo_order.append(_SessionUndo(
+            "play_route", label, (request.selector, previous)
+        ))
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._undo_order.pop()
+            if previous is None:
+                self._play_route_edits.pop(request.selector, None)
+            else:
+                self._play_route_edits[request.selector] = previous
+            raise
+        return True
+
+    def revert_play_assignment_route(self, selector: str) -> bool:
+        previous = self._play_route_edits.get(selector)
+        if previous is None:
+            return False
+        del self._play_route_edits[selector]
+        label = (
+            f"Revert assignment route at play {previous.target_play_index + 1}, "
+            f"slot {previous.target_slot_index + 1}"
+        )
+        self._undo_order.append(_SessionUndo(
+            "play_route", label, (selector, previous)
+        ))
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._undo_order.pop()
+            self._play_route_edits[selector] = previous
+            raise
+        return True
 
     def attach_audio_service(self, service: Nfl2k5AudioService) -> None:
         if self.audio_service is not None or self.modified_count:
@@ -721,6 +921,75 @@ class StudioSession:
         self._write_manifest()
         return True
 
+    def supports_stadium_geometry(self, scene: StadiumScene) -> bool:
+        return bool(
+            self.stadium_writer is not None
+            and scene.scene_id == STADIUM_GEOMETRY_SCENE_ID
+            and scene.geometry_targets
+        )
+
+    def replace_stadium_geometry(
+        self,
+        scene: StadiumScene,
+        compiled: CompiledStadiumGeometryRecipe,
+    ) -> ReplaceResult:
+        """Stage one private, source-bound position recipe as an Undo action."""
+
+        if not self.supports_stadium_geometry(scene):
+            raise ValidationError(
+                "That Stadium scene is export-only because its bounded position "
+                "catalog is unavailable."
+            )
+        if (
+            not isinstance(compiled, CompiledStadiumGeometryRecipe)
+            or compiled.scene_id != scene.scene_id
+            or sha256_bytes(compiled.recipe) != compiled.recipe_sha256
+            or compiled.changed_target_count <= 0
+            or compiled.changed_vertex_count <= 0
+            or compiled.preserved_triangle_count <= 0
+        ):
+            raise ValidationError(
+                "The compiled Stadium geometry recipe changed before staging."
+            )
+        current = self._stadium_geometry_edit
+        if current is not None and current.recipe_sha256 == compiled.recipe_sha256:
+            return ReplaceResult(
+                current.asset_id,
+                True,
+                "That edited model is already staged.",
+            )
+
+        key = _asset_key(f"{scene.scene_id}.geometry")
+        destination = self.replacements / f"{key}-{uuid4().hex}.geometry.json"
+        _write_new_atomic(destination, compiled.recipe)
+        staged = StadiumGeometrySessionEdit(
+            scene.scene_id,
+            destination,
+            compiled.recipe_sha256,
+            compiled.changed_target_count,
+            compiled.changed_vertex_count,
+            compiled.preserved_triangle_count,
+        )
+        self._stadium_geometry_edit = staged
+        self._undo_order.append(_SessionUndo(
+            "stadium_geometry",
+            "Import edited Stadium model",
+            current,
+        ))
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._stadium_geometry_edit = current
+            self._undo_order.pop()
+            destination.unlink(missing_ok=True)
+            raise
+        return ReplaceResult(
+            staged.asset_id,
+            True,
+            f"Stadium geometry is ready to build: {staged.changed_vertex_count:,} "
+            f"vertices across {staged.changed_target_count} fixed target(s).",
+        )
+
     def is_modified(self, asset_or_id: Any) -> bool:
         asset_id = (
             asset_or_id if isinstance(asset_or_id, str) else asset_or_id.asset_id
@@ -750,6 +1019,11 @@ class StudioSession:
         return destination.resolve(strict=True)
 
     def replace(self, asset: Any, supplied_png: Path) -> ReplaceResult:
+        if not bool(getattr(asset, "editable", True)):
+            raise ValidationError(
+                f"{asset.label} is preview/export-only because its texture "
+                "format has no proved fixed-span importer."
+            )
         original_path = self.asset_io.ensure_original(asset)
         _original_payload, original_rgba = self.asset_io.validate_replacement(
             asset, original_path
@@ -839,6 +1113,11 @@ class StudioSession:
             # Resolve through this session's catalog so a caller cannot attach
             # foreign dimensions/provider selectors to a familiar-looking ID.
             asset = self.catalog.get_asset(asset_id)
+            if not bool(getattr(asset, "editable", True)):
+                raise ValidationError(
+                    f"{asset.label} is preview/export-only because its texture "
+                    "format has no proved fixed-span importer."
+                )
             selected.append((asset, Path(supplied_path)))
 
         @dataclass(frozen=True)
@@ -1003,42 +1282,106 @@ class StudioSession:
         self._write_manifest()
         return True
 
-    @property
-    def unif_colors(self) -> tuple[str, str] | None:
-        """The chosen facemask and turtleneck colours, or None for retail."""
-        return self._unif_colors
-
-    def set_unif_colors(self, facemask: str, turtleneck: str) -> None:
-        """Record the colour pair. Validated here so a bad value cannot reach
-        the build, and stored as canonical AARRGGBB so the project is stable."""
+    def uniform_colors(self, selector: str) -> tuple[str, str, bool]:
+        """Current pair for one physical set and whether it is staged."""
         from mod_editor.core import nfl2k5_unif_color_writer as colour
 
+        uniform_set = self.catalog.get_uniform_set(selector)
+        staged = self._unif_colors.get(uniform_set.selector)
+        if staged is not None:
+            return staged[0], staged[1], True
         try:
-            pair = (colour.parse_color(facemask), colour.parse_color(turtleneck))
+            retail = colour.resolve_uniform_color_record(
+                self.cache.pack0, uniform_set.selector
+            )
         except colour.UnifColorWriterError as exc:
             raise ValidationError(str(exc)) from exc
-        self._unif_colors = (f"{pair[0]:08X}", f"{pair[1]:08X}")
+        return retail.facemask_argb, retail.turtleneck_argb, False
 
-    def clear_unif_colors(self) -> bool:
-        """Drop the colour edit. Returns whether anything was set."""
-        had = self._unif_colors is not None
-        self._unif_colors = None
-        return had
+    def set_uniform_colors(
+        self, selector: str, facemask: str, turtleneck: str
+    ) -> tuple[str, str, bool]:
+        """Stage one selected set, preserving every neighboring record."""
+        from mod_editor.core import nfl2k5_unif_color_writer as colour
+
+        uniform_set = self.catalog.get_uniform_set(selector)
+        try:
+            pair = (colour.parse_color(facemask), colour.parse_color(turtleneck))
+            retail = colour.resolve_uniform_color_record(
+                self.cache.pack0, uniform_set.selector, verify_pack_hash=True
+            )
+        except colour.UnifColorWriterError as exc:
+            raise ValidationError(str(exc)) from exc
+        canonical = (f"{pair[0]:08X}", f"{pair[1]:08X}")
+        previous = self._unif_colors.get(uniform_set.selector)
+        if canonical == previous:
+            return canonical[0], canonical[1], True
+        if previous is None and canonical == retail.pair:
+            # Applying the source pair to an unmodified set is a true no-op:
+            # do not create phantom Undo history or dirty a project that still
+            # contains no build edits.
+            return canonical[0], canonical[1], False
+        if canonical == retail.pair:
+            self._unif_colors.pop(uniform_set.selector, None)
+        else:
+            self._unif_colors[uniform_set.selector] = canonical
+        label = f"Set colours for {uniform_set.label}"
+        self._undo_order.append(
+            _SessionUndo("uniform_color", label,
+                         (uniform_set.selector, previous))
+        )
+        try:
+            self._write_manifest()
+        except BaseException:
+            if previous is None:
+                self._unif_colors.pop(uniform_set.selector, None)
+            else:
+                self._unif_colors[uniform_set.selector] = previous
+            self._undo_order.pop()
+            raise
+        return canonical[0], canonical[1], canonical != retail.pair
+
+    def clear_uniform_colors(self, selector: str) -> bool:
+        """Revert only the selected set to its source colours."""
+        uniform_set = self.catalog.get_uniform_set(selector)
+        previous = self._unif_colors.pop(uniform_set.selector, None)
+        if previous is None:
+            return False
+        label = f"Revert colours for {uniform_set.label}"
+        self._undo_order.append(
+            _SessionUndo("uniform_color", label,
+                         (uniform_set.selector, previous))
+        )
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._unif_colors[uniform_set.selector] = previous
+            self._undo_order.pop()
+            raise
+        return True
 
     def revert_all(self) -> int:
         text_count = self.text_edits.modified_count if self.text_edits else 0
         audio_count = len(self._audio_edits)
         crib_count = len(self._crib_edits)
+        crib_geometry_count = len(self._crib_geometry_edits)
         stadium_count = len(self._stadium_edits)
+        stadium_geometry_count = int(self._stadium_geometry_edit is not None)
         annotation_count = len(self._audio_annotations)
-        colour_count = 1 if self._unif_colors is not None else 0
+        colour_count = len(self._unif_colors)
+        play_route_count = len(self._play_route_edits)
         if (
             not self._edits and not text_count and not audio_count
             and not crib_count and not stadium_count and not annotation_count
-            and not colour_count
+            and not crib_geometry_count
+            and not stadium_geometry_count and not colour_count
+            and not play_route_count
         ):
             return 0
-        self._unif_colors = None
+        previous_unif_colors = dict(self._unif_colors)
+        previous_play_routes = dict(self._play_route_edits)
+        self._unif_colors = {}
+        self._play_route_edits = {}
         # Revert All is one transaction across every editor. Replacement bytes
         # remain in place until the empty manifest commits; on any failure the
         # new history snapshots and ledgers are removed and the live edit maps
@@ -1096,6 +1439,8 @@ class StudioSession:
                 snapshot_paths.append(snapshot)
                 stadium_items.append(_UndoItem(asset_id, snapshot))
         except BaseException:
+            self._unif_colors = previous_unif_colors
+            self._play_route_edits = previous_play_routes
             for snapshot in snapshot_paths:
                 snapshot.unlink(missing_ok=True)
             self._history_sequence = history_sequence
@@ -1105,14 +1450,18 @@ class StudioSession:
         previous_text_edits = self.text_edits
         previous_audio_edits = self._audio_edits
         previous_crib_edits = self._crib_edits
+        previous_crib_geometry_edits = self._crib_geometry_edits
         previous_stadium_edits = self._stadium_edits
+        previous_stadium_geometry_edit = self._stadium_geometry_edit
         previous_annotations = self._audio_annotations
         self._edits = {}
         if text_snapshot is not None:
             self.text_edits = Nfl2k5TextEdits(self.text_catalog)  # type: ignore[arg-type]
         self._audio_edits = {}
         self._crib_edits = {}
+        self._crib_geometry_edits = {}
         self._stadium_edits = {}
+        self._stadium_geometry_edit = None
         self._audio_annotations = {}
         if items:
             self._undo.append(_UndoAction("Revert all assets", tuple(items)))
@@ -1128,7 +1477,10 @@ class StudioSession:
             "revert_all", "Revert all assets",
             (
                 bool(items), text_snapshot, audio_snapshots, bool(crib_items),
-                bool(stadium_items), annotation_snapshot,
+                bool(stadium_items), previous_crib_geometry_edits,
+                previous_stadium_geometry_edit,
+                annotation_snapshot, previous_unif_colors,
+                previous_play_routes,
             ),
         ))
         try:
@@ -1138,8 +1490,12 @@ class StudioSession:
             self.text_edits = previous_text_edits
             self._audio_edits = previous_audio_edits
             self._crib_edits = previous_crib_edits
+            self._crib_geometry_edits = previous_crib_geometry_edits
             self._stadium_edits = previous_stadium_edits
+            self._stadium_geometry_edit = previous_stadium_geometry_edit
             self._audio_annotations = previous_annotations
+            self._unif_colors = previous_unif_colors
+            self._play_route_edits = previous_play_routes
             del self._undo[undo_length:]
             del self._crib_undo[crib_undo_length:]
             del self._stadium_undo[stadium_undo_length:]
@@ -1161,7 +1517,9 @@ class StudioSession:
             self._remove_stadium_edit_files(edit)
         return (
             len(items) + text_count + audio_count + crib_count + stadium_count
-            + annotation_count
+            + crib_geometry_count + stadium_geometry_count
+            + annotation_count + colour_count
+            + play_route_count
         )
 
     def undo(self) -> str | None:
@@ -1191,9 +1549,91 @@ class StudioSession:
                 raise
             self._undo_order.pop()
             return record.label
+        if record.source == "play_route":
+            selector, previous = record.payload  # type: ignore[misc]
+            current = self._play_route_edits.get(selector)
+            if previous is None:
+                self._play_route_edits.pop(selector, None)
+            else:
+                self._play_route_edits[selector] = previous
+            try:
+                self._write_manifest()
+            except BaseException:
+                if current is None:
+                    self._play_route_edits.pop(selector, None)
+                else:
+                    self._play_route_edits[selector] = current
+                raise
+            self._undo_order.pop()
+            return record.label
         if record.source == "revert_all":
             self._undo_revert_all_transaction(record)
             self._undo_order.pop()
+            return record.label
+        if record.source == "uniform_color":
+            selector, previous = record.payload  # type: ignore[misc]
+            current = self._unif_colors.get(selector)
+            if previous is None:
+                self._unif_colors.pop(selector, None)
+            else:
+                self._unif_colors[selector] = previous
+            try:
+                self._write_manifest()
+            except BaseException:
+                if current is None:
+                    self._unif_colors.pop(selector, None)
+                else:
+                    self._unif_colors[selector] = current
+                raise
+            self._undo_order.pop()
+            return record.label
+        if record.source == "stadium_geometry":
+            current = self._stadium_geometry_edit
+            previous = record.payload
+            if previous is not None and not isinstance(
+                previous, StadiumGeometrySessionEdit
+            ):
+                raise ValidationError(
+                    "The Stadium geometry undo history is inconsistent."
+                )
+            self._stadium_geometry_edit = previous
+            try:
+                self._write_manifest()
+            except BaseException:
+                self._stadium_geometry_edit = current
+                raise
+            self._undo_order.pop()
+            if current is not None and (
+                previous is None or current.recipe_path != previous.recipe_path
+            ):
+                current.recipe_path.unlink(missing_ok=True)
+            return record.label
+        if record.source == "crib_geometry":
+            scene_id, previous = record.payload  # type: ignore[misc]
+            current = self._crib_geometry_edits.get(scene_id)
+            if previous is not None and not isinstance(
+                previous, CribGeometrySessionEdit
+            ):
+                raise ValidationError(
+                    "The Crib geometry undo history is inconsistent."
+                )
+            if previous is None:
+                self._crib_geometry_edits.pop(scene_id, None)
+            else:
+                self._crib_geometry_edits[scene_id] = previous
+            try:
+                self._write_manifest()
+            except BaseException:
+                if current is None:
+                    self._crib_geometry_edits.pop(scene_id, None)
+                else:
+                    self._crib_geometry_edits[scene_id] = current
+                raise
+            self._undo_order.pop()
+            if current is not None and (
+                previous is None or current.recipe_path != previous.recipe_path
+            ):
+                current.recipe_path.unlink(missing_ok=True)
             return record.label
         record = self._undo_order.pop()
         if record.source == "text":
@@ -1218,7 +1658,9 @@ class StudioSession:
 
         (
             has_visual, text_snapshot, audio_snapshots, has_crib, has_stadium,
-            annotation_snapshot,
+            crib_geometry_snapshot, stadium_geometry_snapshot, annotation_snapshot,
+            uniform_color_snapshot,
+            play_route_snapshot,
         ) = record.payload  # type: ignore[misc]
         if self.modified_count or self._audio_annotations:
             raise ValidationError(
@@ -1351,15 +1793,23 @@ class StudioSession:
 
             previous_text = self.text_edits
             previous_annotations = self._audio_annotations
+            previous_unif_colors = self._unif_colors
+            previous_crib_geometry = self._crib_geometry_edits
+            previous_stadium_geometry = self._stadium_geometry_edit
+            previous_play_routes = self._play_route_edits
             self._edits = restored_visual
             self.text_edits = restored_text
             self._audio_edits = restored_audio
             self._crib_edits = restored_crib
+            self._crib_geometry_edits = dict(crib_geometry_snapshot)
             self._stadium_edits = restored_stadium
+            self._stadium_geometry_edit = stadium_geometry_snapshot
             self._audio_annotations = {
                 annotation.cue_id: annotation
                 for annotation in annotation_snapshot
             }
+            self._unif_colors = dict(uniform_color_snapshot)
+            self._play_route_edits = dict(play_route_snapshot)
             try:
                 self._write_manifest()
             except BaseException:
@@ -1367,8 +1817,12 @@ class StudioSession:
                 self.text_edits = previous_text
                 self._audio_edits = {}
                 self._crib_edits = {}
+                self._crib_geometry_edits = previous_crib_geometry
                 self._stadium_edits = {}
+                self._stadium_geometry_edit = previous_stadium_geometry
                 self._audio_annotations = previous_annotations
+                self._unif_colors = previous_unif_colors
+                self._play_route_edits = previous_play_routes
                 raise
         except BaseException:
             for path in written_paths:
@@ -1598,6 +2052,120 @@ class StudioSession:
         ))
         self._undo_order.append(_SessionUndo("crib", f"Revert {selected.label}"))
         self._write_manifest()
+        return True
+
+    def _crib_geometry_texture_edits(
+        self, scene_id: str
+    ) -> tuple[tuple[str, Path], ...]:
+        """Return staged P8 edits sharing the geometry scene's one SCNE."""
+
+        scene_rows = {
+            str(row["scene_id"]): row
+            for row in list_editable_crib_geometry_scenes()
+        }
+        scene = scene_rows.get(scene_id)
+        if scene is None:
+            raise ValidationError(
+                "That Crib scene is export-only because its bounded position "
+                "catalog is unavailable."
+            )
+        chunk_index = int(scene["chunk_index"])
+        catalog = self._require_crib_catalog()
+        rows: list[tuple[str, Path]] = []
+        for asset_id, edit in sorted(self._crib_edits.items()):
+            asset = catalog.get(asset_id)
+            if asset.storage == "scene_embedded" and asset.chunk_index == chunk_index:
+                rows.append((asset.selector, edit.replacement_path))
+        return tuple(rows)
+
+    def replace_crib_geometry(
+        self, compiled: CompiledCribGeometryRecipe
+    ) -> ReplaceResult:
+        """Preflight and stage one bounded Crib position-only recipe."""
+
+        editable_scene_ids = {
+            str(row["scene_id"])
+            for row in list_editable_crib_geometry_scenes()
+        }
+        if (
+            not isinstance(compiled, CompiledCribGeometryRecipe)
+            or compiled.scene_id not in editable_scene_ids
+            or sha256_bytes(compiled.recipe) != compiled.recipe_sha256
+            or compiled.changed_target_count <= 0
+            or compiled.changed_vertex_count <= 0
+            or compiled.preserved_triangle_count <= 0
+        ):
+            raise ValidationError(
+                "The compiled Crib geometry recipe changed before staging."
+            )
+        current = self._crib_geometry_edits.get(compiled.scene_id)
+        if current is not None and current.recipe_sha256 == compiled.recipe_sha256:
+            return ReplaceResult(
+                current.asset_id, True, "That edited Crib model is already staged."
+            )
+
+        key = _asset_key(f"{compiled.scene_id}.geometry")
+        destination = self.replacements / f"{key}-{uuid4().hex}.geometry.json"
+        _write_new_atomic(destination, compiled.recipe)
+        try:
+            # A recipe is accepted only when the exact current source and every
+            # staged same-SCNE P8 edit fit one deterministic fixed allocation.
+            build_unified_crib_geometry_import(
+                self.cache.pack0,
+                self.cache.inventory,
+                destination,
+                self._crib_geometry_texture_edits(compiled.scene_id),
+            )
+        except BaseException:
+            destination.unlink(missing_ok=True)
+            raise
+
+        staged = CribGeometrySessionEdit(
+            compiled.scene_id,
+            destination,
+            compiled.recipe_sha256,
+            compiled.changed_target_count,
+            compiled.changed_vertex_count,
+            compiled.preserved_triangle_count,
+        )
+        self._crib_geometry_edits[compiled.scene_id] = staged
+        self._undo_order.append(_SessionUndo(
+            "crib_geometry",
+            "Import edited Crib model",
+            (compiled.scene_id, current),
+        ))
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._undo_order.pop()
+            if current is None:
+                self._crib_geometry_edits.pop(compiled.scene_id, None)
+            else:
+                self._crib_geometry_edits[compiled.scene_id] = current
+            destination.unlink(missing_ok=True)
+            raise
+        return ReplaceResult(
+            staged.asset_id,
+            True,
+            f"Crib geometry is ready to build: {staged.changed_vertex_count:,} "
+            f"vertices across {staged.changed_target_count} fixed target(s).",
+        )
+
+    def revert_crib_geometry(self, scene_id: str) -> bool:
+        """Revert one staged Crib model while keeping its Undo recipe private."""
+
+        current = self._crib_geometry_edits.pop(scene_id, None)
+        if current is None:
+            return False
+        self._undo_order.append(_SessionUndo(
+            "crib_geometry", "Revert edited Crib model", (scene_id, current)
+        ))
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._undo_order.pop()
+            self._crib_geometry_edits[scene_id] = current
+            raise
         return True
 
     @staticmethod
@@ -2933,10 +3501,13 @@ class StudioSession:
         if (
             not self._edits
             and not self._crib_edits
+            and not self._crib_geometry_edits
             and not self._stadium_edits
+            and self._stadium_geometry_edit is None
             and not text_provider_edits
             and not self._audio_edits
-            and self._unif_colors is None
+            and not self._unif_colors
+            and not self._play_route_edits
         ):
             raise ValidationError("Replace at least one asset before building a modded XISO.")
         edits: list[dict[str, object]] = []
@@ -2957,14 +3528,31 @@ class StudioSession:
                 "target": asset_id,
                 "png": str(edit.replacement_path),
             })
-        if self._unif_colors is not None:
-            facemask, turtleneck = self._unif_colors
+        if self._stadium_geometry_edit is not None:
+            edits.append({
+                "kind": "stadium_geometry",
+                "target": self._stadium_geometry_edit.scene_id,
+                "recipe": str(self._stadium_geometry_edit.recipe_path),
+            })
+        for scene_id in sorted(self._crib_geometry_edits):
+            edit = self._crib_geometry_edits[scene_id]
+            edits.append({
+                "kind": "crib_scene_geometry",
+                "target": edit.scene_id,
+                "recipe": str(edit.recipe_path),
+            })
+        for selector in sorted(self._unif_colors):
+            facemask, turtleneck = self._unif_colors[selector]
             edits.append({
                 "kind": "unif_color",
+                "selector": selector,
                 "facemask": facemask,
                 "turtleneck": turtleneck,
             })
         edits.extend(text_provider_edits)
+        edits.extend(
+            request.provider_edit() for request in self.play_route_edits
+        )
         if self._audio_edits:
             audio_service = self._require_audio_service()
             for edit in sorted(
@@ -3006,6 +3594,20 @@ class StudioSession:
         allow_empty: bool = False,
     ) -> Path:
         """Save only user replacements and metadata to a portable project."""
+
+        if self._stadium_geometry_edit is not None or self._crib_geometry_edits:
+            subjects = []
+            if self._stadium_geometry_edit is not None:
+                subjects.append("Stadium")
+            if self._crib_geometry_edits:
+                subjects.append("Crib")
+            raise ValidationError(
+                f"Edited {' and '.join(subjects)} model positions are kept only "
+                "in this private "
+                "working session because they are derived from your game copy. "
+                "Build the XISO locally, or revert the edited model before "
+                "saving a shareable project."
+            )
 
         audio_edits = tuple(
             sorted(self._audio_edits.values(), key=lambda item: item.asset_id)
@@ -3059,6 +3661,17 @@ class StudioSession:
             ),
             audio_edits=archive_audio_edits,
             audio_annotations=self.audio_annotations,
+            uniform_colors=(
+                {
+                    "selector": selector,
+                    "facemask": self._unif_colors[selector][0],
+                    "turtleneck": self._unif_colors[selector][1],
+                }
+                for selector in sorted(self._unif_colors)
+            ),
+            play_route_edits=(
+                request.provider_edit() for request in self.play_route_edits
+            ),
         )
 
     def load_shareable_project(self, source: Path) -> int:
@@ -3075,6 +3688,27 @@ class StudioSession:
             private_root=self.root,
         )
         try:
+            new_play_routes: dict[str, PlayRouteCloneRequest] = {}
+            if loaded.play_route_edits:
+                inspector = self.playbook_inspector
+                if inspector is None:
+                    raise ValidationError(
+                        "This project includes PLAY routes, but the private "
+                        "playbook source is not attached."
+                    )
+                by_book: dict[str, list[PlayRouteCloneRequest]] = {}
+                for raw in loaded.play_route_edits:
+                    request = play_route_request_from_mapping({
+                        key: value for key, value in raw.items() if key != "kind"
+                    })
+                    if request.selector in new_play_routes:
+                        raise ValidationError(
+                            "Project repeats one PLAY assignment-route target."
+                        )
+                    new_play_routes[request.selector] = request
+                    by_book.setdefault(request.asset_id, []).append(request)
+                for asset_id, requests in by_book.items():
+                    self._validate_play_route_set(inspector.load(asset_id), requests)
             if self.audio_service is not None:
                 for annotation in loaded.audio_annotations:
                     self.audio_service.resolve_playable_audio(annotation.cue_id)
@@ -3235,10 +3869,33 @@ class StudioSession:
                 annotation.cue_id: annotation
                 for annotation in loaded.audio_annotations
             }
+            from mod_editor.core import nfl2k5_unif_color_writer as colour
+
+            new_unif_colors: dict[str, tuple[str, str]] = {}
+            for row in loaded.uniform_colors:
+                uniform_set = self.catalog.get_uniform_set(row["selector"])
+                try:
+                    retail = colour.resolve_uniform_color_record(
+                        self.cache.pack0, uniform_set.selector
+                    )
+                    canonical = (
+                        f"{colour.parse_color(row['facemask']):08X}",
+                        f"{colour.parse_color(row['turtleneck']):08X}",
+                    )
+                except colour.UnifColorWriterError as exc:
+                    raise ValidationError(str(exc)) from exc
+                if canonical == retail.pair:
+                    raise ValidationError(
+                        f"Project colours for {uniform_set.selector} match the "
+                        "source record; replacement-only projects may not carry no-op edits."
+                    )
+                new_unif_colors[uniform_set.selector] = canonical
             previous_state = (
                 self._edits, self.text_edits, self._audio_edits,
                 self._crib_edits, self._stadium_edits,
-                self._audio_annotations, self._undo, self._crib_undo,
+                self._audio_annotations, self._unif_colors,
+                self._play_route_edits,
+                self._undo, self._crib_undo,
                 self._stadium_undo, self._audio_undo, self._undo_order,
             )
             # Compute exact atomic-manifest and generated-preview headroom while
@@ -3249,13 +3906,16 @@ class StudioSession:
             self._crib_edits = new_crib
             self._stadium_edits = new_stadium
             self._audio_annotations = new_annotations
+            self._unif_colors = new_unif_colors
+            self._play_route_edits = new_play_routes
             try:
                 manifest_size = len(_canonical_json(self._manifest_document()))
             finally:
                 (
                     self._edits, self.text_edits, self._audio_edits,
                     self._crib_edits, self._stadium_edits,
-                    self._audio_annotations,
+                    self._audio_annotations, self._unif_colors,
+                    self._play_route_edits,
                     _old_undo, _old_crib_undo, _old_stadium_undo,
                     _old_audio_undo, _old_undo_order,
                 ) = previous_state
@@ -3283,6 +3943,8 @@ class StudioSession:
                 self._crib_edits = new_crib
                 self._stadium_edits = new_stadium
                 self._audio_annotations = new_annotations
+                self._unif_colors = new_unif_colors
+                self._play_route_edits = new_play_routes
                 self._undo = []
                 self._crib_undo = []
                 self._stadium_undo = []
@@ -3293,7 +3955,9 @@ class StudioSession:
                 (
                     self._edits, self.text_edits, self._audio_edits,
                     self._crib_edits, self._stadium_edits,
-                    self._audio_annotations, self._undo, self._crib_undo,
+                    self._audio_annotations, self._unif_colors,
+                    self._play_route_edits,
+                    self._undo, self._crib_undo,
                     self._stadium_undo, self._audio_undo, self._undo_order,
                 ) = previous_state
                 rollback_errors: list[str] = []
@@ -3317,7 +3981,8 @@ class StudioSession:
                 raise
             return len(loaded.edits) + (
                 new_text.modified_count if new_text is not None else 0
-            ) + len(new_audio) + len(new_annotations)
+            ) + len(new_audio) + len(new_annotations) + len(new_unif_colors) \
+                + len(new_play_routes)
         finally:
             loaded.cleanup()
 
@@ -3494,6 +4159,46 @@ class StudioSession:
                 for edit in sorted(
                     self._stadium_edits.values(), key=lambda item: item.asset_id
                 )
+            ]
+        if self._stadium_geometry_edit is not None:
+            edit = self._stadium_geometry_edit
+            document["stadium_geometry_edit"] = {
+                "asset_id": edit.asset_id,
+                "scene_id": edit.scene_id,
+                "recipe_sha256": edit.recipe_sha256,
+                "changed_target_count": edit.changed_target_count,
+                "changed_vertex_count": edit.changed_vertex_count,
+                "preserved_triangle_count": edit.preserved_triangle_count,
+                "private_source_derived_recipe": True,
+            }
+        if self._crib_geometry_edits:
+            document["crib_geometry_edits"] = [
+                {
+                    "asset_id": edit.asset_id,
+                    "scene_id": edit.scene_id,
+                    "recipe_sha256": edit.recipe_sha256,
+                    "changed_target_count": edit.changed_target_count,
+                    "changed_vertex_count": edit.changed_vertex_count,
+                    "preserved_triangle_count": edit.preserved_triangle_count,
+                    "private_source_derived_recipe": True,
+                }
+                for edit in sorted(
+                    self._crib_geometry_edits.values(),
+                    key=lambda item: item.scene_id,
+                )
+            ]
+        if self._unif_colors:
+            document["uniform_colors"] = [
+                {
+                    "selector": selector,
+                    "facemask": self._unif_colors[selector][0],
+                    "turtleneck": self._unif_colors[selector][1],
+                }
+                for selector in sorted(self._unif_colors)
+            ]
+        if self._play_route_edits:
+            document["play_route_edits"] = [
+                request.provider_edit() for request in self.play_route_edits
             ]
         return document
 

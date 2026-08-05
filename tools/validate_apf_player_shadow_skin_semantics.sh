@@ -190,7 +190,7 @@ assert "0x84B0E890\t0x19416F10\tvrlimi128\tv10,v13,1,0" in vmx
 PY
 
 test "$(sha256sum "$report" | cut -d' ' -f1)" = \
-  e25381d9ecd5c9f9c1df5e630a1d34151834c35101ede73c1b990c8bfc2055c2
+  1c00097388ae68aa0a585503ab853c1fd2effd4bdad40ff5eb51d6261acd2f1e
 test "$(sha256sum "$vertices" | cut -d' ' -f1)" = \
   5dba11ffe43e310f84d7b827ba3834aa7e6b1341a3e7b5b1cd4dc7e320c7c222
 test "$(sha256sum "$joints" | cut -d' ' -f1)" = \
@@ -204,7 +204,7 @@ test "$(sha256sum "$pseudo" | cut -d' ' -f1)" = \
 test "$(sha256sum "$vmx" | cut -d' ' -f1)" = \
   2a95aa846366ef85cc49ade0e14b068ef452c10908d6f64702e4ebeafc45eb57
 test "$(sha256sum "$doc" | cut -d' ' -f1)" = \
-  a8648cabe1344af7c5e543eb4f4cf9d005de67b52f60b8cc20bf2eecb6acf840
+  63f3cba299d272c6fb5be3119908dfba3acc95294cf415409309985c984bec65
 test "$(wc -l < "$vertices")" -eq 352
 test "$(wc -l < "$joints")" -eq 22
 test "$(wc -l < "$shader")" -eq 14

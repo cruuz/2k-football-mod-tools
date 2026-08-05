@@ -1,0 +1,3110 @@
+{
+  "game": "apf2k8_xbox360_usa",
+  "purpose": "Retail-free structural pins for the 206 uniform_textlogo wordmark packages. No decoded pixels, texture payloads, or game bytes are included.",
+  "schema": "apf2k8_textlogo_targets/v1",
+  "selector_slot": 6,
+  "source_0a_sha256": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+  "targets": [
+    {
+      "asset_index": 0,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_00.iff",
+      "outer_name_id": "0xa7a5b17e",
+      "outer_table_index": 1007
+    },
+    {
+      "asset_index": 1,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "10ba39f6676111b59ae7625b3466d01d515186d2473598a869938d188ebf784f"
+      },
+      "outer_allocation": {
+        "sha256": "afbb77b43b82da604e1479b573a954208b7b686b483dcbb9d56a624bc59c6d65",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_01.iff",
+      "outer_name_id": "0x9ac598ce",
+      "outer_table_index": 924
+    },
+    {
+      "asset_index": 2,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "a3e69a7b6fbd1ff0bedcff95678004da7359007d1351016f93eda5aa78f23e82"
+      },
+      "outer_allocation": {
+        "sha256": "ab1456f85feb47f245750974d1e3d217bc1ee6bc70bce1bcb46d8f3e925df41a",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_02.iff",
+      "outer_name_id": "0xdd65e21e",
+      "outer_table_index": 1329
+    },
+    {
+      "asset_index": 3,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "25c1bd88b3a01bd5f6f0cb4a5e9010fa0a3c46e7fc5f99180a3a715881a18154"
+      },
+      "outer_allocation": {
+        "sha256": "3de4fa8d04f14dce8c111cca9d0593b5c2cdc971840c7368ca58ca0c5679ff19",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_03.iff",
+      "outer_name_id": "0xe005cbae",
+      "outer_table_index": 1344
+    },
+    {
+      "asset_index": 4,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "78e807bacd4733e2db463a43e494875a571c498aab226df91987f2b10e29259d"
+      },
+      "outer_allocation": {
+        "sha256": "d1d07c654e6dde77c743af719dedaf418332c38ce7e29545bf9b1706d53d4f8f",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_04.iff",
+      "outer_name_id": "0x522517be",
+      "outer_table_index": 485
+    },
+    {
+      "asset_index": 5,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "5284ab0460f7cb866fdecc998143154e3e1f80e429417c4179dcbb070818fe29"
+      },
+      "outer_allocation": {
+        "sha256": "69cef04775666d27fbff76622a72cf0d696f791420e60e9441e28117b9453717",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_05.iff",
+      "outer_name_id": "0x6f453e0e",
+      "outer_table_index": 680
+    },
+    {
+      "asset_index": 6,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "ed0e4d29ffa8f4f0785cf8e0dce49e5728636c2ad58cef3548de63c6fce61f03"
+      },
+      "outer_allocation": {
+        "sha256": "d4b6888fda4514b14012c683146632cccaec1c22823b1174204dba560147e5d9",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_06.iff",
+      "outer_name_id": "0x28e544de",
+      "outer_table_index": 242
+    },
+    {
+      "asset_index": 7,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "2c6257afaf33292f8f1eb052cc752481269256358a84e634457d6f5ef463985d"
+      },
+      "outer_allocation": {
+        "sha256": "3e5f7371a19de875f960bc3270a5ec5977f00ae174c8df01b73fd4313bace6d9",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_07.iff",
+      "outer_name_id": "0x15856d6e",
+      "outer_table_index": 131
+    },
+    {
+      "asset_index": 8,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "424214cdfd4c803594426283edce75884ab9654d9c0caa9eaf152595a049cbe3"
+      },
+      "outer_allocation": {
+        "sha256": "1dd35a06e2ad58e7e265cdc66603b135b5457dd8e078f74bc078d14d51867394",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_08.iff",
+      "outer_name_id": "0x97d5fabf",
+      "outer_table_index": 906
+    },
+    {
+      "asset_index": 9,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "8fae1d9b5e2d4cdb681c72e51032ba4d61fe7ac4e6c174c64a22a50570b7c50d"
+      },
+      "outer_allocation": {
+        "sha256": "1743fda4bc919f13e02534a915ceec008b845a740fd521a52846ce0ff7c7a836",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_09.iff",
+      "outer_name_id": "0xaab5d30f",
+      "outer_table_index": 1020
+    },
+    {
+      "asset_index": 10,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "4ee8cb5c8d6e8a8dccb9b6285d4858239f762d04875a98a453acab41ae4f793f"
+      },
+      "outer_allocation": {
+        "sha256": "3e03ee2af8ebd24fe1b3a036ca047f2aac2ee6051264494b4f934b927b502c38",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_10.iff",
+      "outer_name_id": "0x6cf962db",
+      "outer_table_index": 661
+    },
+    {
+      "asset_index": 11,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "c5975f77b5fc406bbf4e709746ae43fa116b06dcbba311fe16c886c68d71040e"
+      },
+      "outer_allocation": {
+        "sha256": "f7d641cdd6b2de665f164a61389bad65a9939de3592b5f18f248371e88850dbd",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_11.iff",
+      "outer_name_id": "0x51994b6b",
+      "outer_table_index": 481
+    },
+    {
+      "asset_index": 12,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "ffc6fc50d2f82a76ca8fbecb82e453cfcc82d04d024b71838b21c54e775ed4ea"
+      },
+      "outer_allocation": {
+        "sha256": "801aab8f55764528e108241ee2a9b73e90c8bc80232e44ff806176c041dfa96a",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_12.iff",
+      "outer_name_id": "0x163931bb",
+      "outer_table_index": 136
+    },
+    {
+      "asset_index": 13,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "6176d89fc7b3d03c5e11c05e16d6b619ca7bcab690841089ab4cf867ea8d15ed"
+      },
+      "outer_allocation": {
+        "sha256": "0cc3c90913b8e26aa8846ad2a1c435e7220692844b76f252a98d03a8fa8475db",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_13.iff",
+      "outer_name_id": "0x2b59180b",
+      "outer_table_index": 266
+    },
+    {
+      "asset_index": 14,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "62f3a4bbea90b304a87aa7caa4ddc1a5aac3237858c2a33ad454621ef58e39b7"
+      },
+      "outer_allocation": {
+        "sha256": "60ca6800242d238b510c26a10b0b71dfe8025ece0ca5d508dda8aecb493883e1",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_14.iff",
+      "outer_name_id": "0x9979c41b",
+      "outer_table_index": 918
+    },
+    {
+      "asset_index": 15,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "8c1eeed50a117a1a53b1b5fdce2ef9bd259cf296bd13805860ed71c5d4c91b0d"
+      },
+      "outer_allocation": {
+        "sha256": "0f9a75cd63e210f7e877cc939a0eb8e430419e9bb2bfa884816939ef120423c0",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_15.iff",
+      "outer_name_id": "0xa419edab",
+      "outer_table_index": 984
+    },
+    {
+      "asset_index": 16,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "86dd1cf10c725ca0bbc571e78b27970d57962fd20f002ac873c03d875461603e"
+      },
+      "outer_allocation": {
+        "sha256": "407efcaaa4b4e5cdc29ca11b0d9abc3bd9a9e5e0c3eab01a650cde51ee6ad9cd",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_16.iff",
+      "outer_name_id": "0xe3b9977b",
+      "outer_table_index": 1368
+    },
+    {
+      "asset_index": 17,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "2f978a87bdbcc513a5bda8d512d3c68ab7d40a8d2a1bd88e35a8a71fd9ef660f"
+      },
+      "outer_allocation": {
+        "sha256": "092f4f0b762d43e6a604ccbccc351b5bf2ea271c9c1d059467c8f5e04368977d",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_17.iff",
+      "outer_name_id": "0xded9becb",
+      "outer_table_index": 1335
+    },
+    {
+      "asset_index": 18,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "d9986d8ccbbfd09e63fd690aa87da4ee4d306bac26195f1bf852b8c9a8e1b7e7"
+      },
+      "outer_allocation": {
+        "sha256": "b73a2c7e985fb717c324ffe0c694a7bf2d363d71a8a6b527a5f99eb7ca7f949a",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_18.iff",
+      "outer_name_id": "0x5c89291a",
+      "outer_table_index": 556
+    },
+    {
+      "asset_index": 19,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "b88120d61542fe8919b72c3927f19a4e2e5b489e98fb7d757ca2549cb6184466"
+      },
+      "outer_allocation": {
+        "sha256": "213f26fbce8c518094f9b6f0093248ada5839af75bd4c191ee4d7ddacf52dcc3",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_19.iff",
+      "outer_name_id": "0x61e900aa",
+      "outer_table_index": 591
+    },
+    {
+      "asset_index": 20,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "c511d8d49633cd328a0dcf088a5b4929a52ec020a8a174f4a69b221155d72287"
+      },
+      "outer_allocation": {
+        "sha256": "1a3ce7c1b7b959f611c7cfb2f4da9b325aece2c3fd314351c199b683cbe55a2d",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_20.iff",
+      "outer_name_id": "0xea6d1075",
+      "outer_table_index": 1413
+    },
+    {
+      "asset_index": 21,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "719b1ccb8a9c061fffbc19511402c01e2c5b3c308bca7302e72a7a79270dadc4"
+      },
+      "outer_allocation": {
+        "sha256": "41cbb2efd16d42dd0f59aa668157e897cf2402aa438322c5d0098df08e6a4add",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_21.iff",
+      "outer_name_id": "0xd70d39c5",
+      "outer_table_index": 1280
+    },
+    {
+      "asset_index": 22,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "c0c8b62fc7f8f1f5236e2b8c18c6dc77c85d3017d90310612aa0746021ca88d5"
+      },
+      "outer_allocation": {
+        "sha256": "1f3e8df0f4eb8030b9ebc72eb8d2bac98aced392d3418bd6ac1ec7b089875aa3",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_22.iff",
+      "outer_name_id": "0x90ad4315",
+      "outer_table_index": 869
+    },
+    {
+      "asset_index": 23,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "d81f93d5d8ea80afd6534ffe5b7a31159152664fe6abcc9fc6ed4b086937386c"
+      },
+      "outer_allocation": {
+        "sha256": "1206f5521d7bb05837728c03e7b6090a75282bc4ccb6d58b7d1f587710ddede7",
+        "size": 14336
+      },
+      "outer_name": "uniform_textlogo_23.iff",
+      "outer_name_id": "0xadcd6aa5",
+      "outer_table_index": 1039
+    },
+    {
+      "asset_index": 24,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "ef3c8fe5d746561e75acb76739ea3a0a0e6d6963ac7a25632ba0061710029490"
+      },
+      "outer_allocation": {
+        "sha256": "1962fce3b93a029857b49b379d2b94a23c2efd829b0c6f96e7b754dc874ede47",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_24.iff",
+      "outer_name_id": "0x1fedb6b5",
+      "outer_table_index": 193
+    },
+    {
+      "asset_index": 25,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "4487c4b023a658977a5d20fe9acd8b9eee5f8d15fcf4de1ab263ecf72956444c"
+      },
+      "outer_allocation": {
+        "sha256": "d8ef404a4bf76300f5938e7d1721bbeb22c028916739736e1275f2942f156a77",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_25.iff",
+      "outer_name_id": "0x228d9f05",
+      "outer_table_index": 208
+    },
+    {
+      "asset_index": 26,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "f6ca5dfe312f1910b94dfbb6e7cda750f22cf9526e17f6f631e9791014fe22ea"
+      },
+      "outer_allocation": {
+        "sha256": "72abdbb8f1a632d4d77e94308979ac782edcd3ac0fbd68fc4216bb5d01a19179",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_26.iff",
+      "outer_name_id": "0x652de5d5",
+      "outer_table_index": 613
+    },
+    {
+      "asset_index": 27,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "d5f8f5325a782fe4341c808f425feebbeadb16a845465fe2dae1b360c8818b8b"
+      },
+      "outer_allocation": {
+        "sha256": "0cd8f2d327a058a62f85c0a6ea7bcdfa8bf8d26216b2ac5937fced36f2364efa",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_27.iff",
+      "outer_name_id": "0x584dcc65",
+      "outer_table_index": 528
+    },
+    {
+      "asset_index": 28,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "64624e00d37478fb73201b19cfd46e9063474442d3af5d72ea4c725d6dfaeb04"
+      },
+      "outer_allocation": {
+        "sha256": "a8d55ff84b4065ac89022818e509b7dda34ad49e017d749f6d2b357ba0b2b320",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_28.iff",
+      "outer_name_id": "0xda1d5bb4",
+      "outer_table_index": 1301
+    },
+    {
+      "asset_index": 29,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "cfbe216b99a45a55a0fdf88595a55a7f1e2b79229b454c21b8777ab7fcdc28b8"
+      },
+      "outer_allocation": {
+        "sha256": "91358ef72e62e95c7d3aefa01a453221005521c918ecda1780d7751b866544d6",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_29.iff",
+      "outer_name_id": "0xe77d7204",
+      "outer_table_index": 1391
+    },
+    {
+      "asset_index": 30,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "b4947df417ef5cbd17560457cd5a3c84d3f6f3827ec9e003ce9a893bbf74055a"
+      },
+      "outer_allocation": {
+        "sha256": "2d60a8840a169c94b4bae54cd1d739d8aa23d8abd6795a19fbf52b83d956d00a",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_30.iff",
+      "outer_name_id": "0x2131c3d0",
+      "outer_table_index": 201
+    },
+    {
+      "asset_index": 31,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "5b88996603a15a13eb1681bcd47c191faa1747d87533b15a6eb1c0fdfa9ed5d6"
+      },
+      "outer_allocation": {
+        "sha256": "6f7170e67e67b3e98869f66c01c1a0e55c23bb67a170dc0dafe3fa56f3a7eb98",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_31.iff",
+      "outer_name_id": "0x1c51ea60",
+      "outer_table_index": 172
+    },
+    {
+      "asset_index": 32,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "050764ebf35b0a08b58cd1b04043f0e3a3725c7fb20444596170b91bae6c90fc"
+      },
+      "outer_allocation": {
+        "sha256": "e3a5d520e6aa6246867ef38b6b7edae955a678beb9be723318b1e27b6775715e",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_32.iff",
+      "outer_name_id": "0x5bf190b0",
+      "outer_table_index": 552
+    },
+    {
+      "asset_index": 33,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "353233930f5819dbb904a479238be0c91e98beac562e777b266ff49820742183"
+      },
+      "outer_allocation": {
+        "sha256": "d49cddb5acca7dc0a08b6084642184eb004280e937a7347d56547eb8f18e6784",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_33.iff",
+      "outer_name_id": "0x6691b900",
+      "outer_table_index": 619
+    },
+    {
+      "asset_index": 34,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09dc3d72eb1a801465b705acd5cd6139f50d1ffc035d1cd74c1725ea2559bd6c"
+      },
+      "outer_allocation": {
+        "sha256": "cd2fa2eaabcc10008aa195ca6c017b0daebebed2c170d7d29b155908f785752c",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_34.iff",
+      "outer_name_id": "0xd4b16510",
+      "outer_table_index": 1265
+    },
+    {
+      "asset_index": 35,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "c7a0adb642712a10a2344bfbdeacf30f11b7070c79e315a7ffa1123e1c427da0"
+      },
+      "outer_allocation": {
+        "sha256": "e673948808d89ad15e10e8d71b0249543216a6b94c666ea83487b9fc6a2a884c",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_35.iff",
+      "outer_name_id": "0xe9d14ca0",
+      "outer_table_index": 1408
+    },
+    {
+      "asset_index": 36,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "48a2654d0fcfd69f98c2816d417ac393512d69ee5d892be279aacbe5863b7c61"
+      },
+      "outer_allocation": {
+        "sha256": "3db405bd03b16b294087c15f86824c7a783bd33050dde5ebd7c81a32bf573ef9",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_36.iff",
+      "outer_name_id": "0xae713670",
+      "outer_table_index": 1044
+    },
+    {
+      "asset_index": 37,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "c62acad4a0569c24b69a8d253274cf24f401d0eb9505f4b9b2ca9ea939a47d4e"
+      },
+      "outer_allocation": {
+        "sha256": "08b98bbbb3670b93abe022aeb2a49f49f3cb77c62baa485219b6b0765957dec4",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_37.iff",
+      "outer_name_id": "0x93111fc0",
+      "outer_table_index": 882
+    },
+    {
+      "asset_index": 38,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "4a8604e6904a88d4537a85299c195b657a5a1f40566affda43cebaf89cb9f52d"
+      },
+      "outer_allocation": {
+        "sha256": "fa0ffc903aec424623bd124a59e88c9bb97089c0516c7faa4d73db738c528d3a",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_38.iff",
+      "outer_name_id": "0x11418811",
+      "outer_table_index": 104
+    },
+    {
+      "asset_index": 39,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "63a03fa7c6465e84c39379c996469183a7cb1cb33818293d63b8232530a45711"
+      },
+      "outer_allocation": {
+        "sha256": "3684fe28589b89ac8db4b7945489afb0e775d1f6fa3754ca23a51d0debd3d936",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_39.iff",
+      "outer_name_id": "0x2c21a1a1",
+      "outer_table_index": 271
+    },
+    {
+      "asset_index": 40,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "cd8fb9c9f9884ea2a88e001d631ac4ed443b4675245a925edb5adbad51626b3e"
+      },
+      "outer_allocation": {
+        "sha256": "1036c525a9dc38e7eceeff2d0dddce96a85ca0ba4b10d9e8b787aed40f057fb5",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_40.iff",
+      "outer_name_id": "0x3c34f368",
+      "outer_table_index": 366
+    },
+    {
+      "asset_index": 41,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "2c3e89254173dc1c137fdbbde794b2432d63874206041246a80a3d561838acaf"
+      },
+      "outer_allocation": {
+        "sha256": "de370807c98479f7474db2417a6e866e96edd0b27377c6b5af7c5df14607d166",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_41.iff",
+      "outer_name_id": "0x0154dad8",
+      "outer_table_index": 4
+    },
+    {
+      "asset_index": 42,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "6d05cbf6be9d85e3a6f4580c26b3f0ecfb49d07080c3f1f64b2c272a7feabc61"
+      },
+      "outer_allocation": {
+        "sha256": "44c81886d7e1378fd3b1b677c3477d9ed01e87691a0a9f978232bc2cf8051ff1",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_42.iff",
+      "outer_name_id": "0x46f4a008",
+      "outer_table_index": 423
+    },
+    {
+      "asset_index": 43,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "c92230670f28e5135eeed8b3d3c6c1c729ee06a79165baf169e5105c34f5f495"
+      },
+      "outer_allocation": {
+        "sha256": "a9c15de5f8b387ddebfb4de42f0944bc7401552459bd284ccb4218e4ac30cfda",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_43.iff",
+      "outer_name_id": "0x7b9489b8",
+      "outer_table_index": 755
+    },
+    {
+      "asset_index": 44,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "da80efcf4309d01978b233c2d94f74e7a68a1a1a4bbcc41197a008d22f8736c2"
+      },
+      "outer_allocation": {
+        "sha256": "34c70e3721cd4242decaf674b7e1e770612fe0955e40c5a0aaff70f37a03ecd0",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_44.iff",
+      "outer_name_id": "0xc9b455a8",
+      "outer_table_index": 1198
+    },
+    {
+      "asset_index": 45,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "812207f69882ad6e1525522646fef0afa92670cccdaa1d04795d1c649cf3371d"
+      },
+      "outer_allocation": {
+        "sha256": "8a0c678798e79b301808fa4bc26ad259feb7a294b30db5882ee7f112343daf3f",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_45.iff",
+      "outer_name_id": "0xf4d47c18",
+      "outer_table_index": 1481
+    },
+    {
+      "asset_index": 46,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "e2f6ebe4c5cf13266eea3dd549f82d2a786f345dbe1cb5c448a5e358c52940cd"
+      },
+      "outer_allocation": {
+        "sha256": "66eb9d8d8e052c60d752be45cbf4d5cf7383d99e0e2b1cfdc3e0b72f8a744591",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_46.iff",
+      "outer_name_id": "0xb37406c8",
+      "outer_table_index": 1072
+    },
+    {
+      "asset_index": 47,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "9a0e9e3105a9a2345301d4014902c60714adc7b0e9772ee034141647217dc6f6"
+      },
+      "outer_allocation": {
+        "sha256": "05eeb1cb121ffa29ae73d12b99c163a9ae25ca497226c263210e4cf1975e48a5",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_47.iff",
+      "outer_name_id": "0x8e142f78",
+      "outer_table_index": 855
+    },
+    {
+      "asset_index": 48,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "7f2704f40063b43c8a8b0e441f4d53a1d8561c28ad84d1eedebce027c92da269"
+      },
+      "outer_allocation": {
+        "sha256": "691adc1c779eb41ab989317a3b79a4d39c5b15f4974eba97cd325c000a8907ed",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_48.iff",
+      "outer_name_id": "0x0c44b8a9",
+      "outer_table_index": 71
+    },
+    {
+      "asset_index": 49,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "8d41e54ab1583e326a61cef8c0f05d3072aaafd50c41d6bf83cc02ea88ad60dd"
+      },
+      "outer_allocation": {
+        "sha256": "c7d5cfb215734428b98effbf2e3a5422b54ef30615b6645410637192e848fb11",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_49.iff",
+      "outer_name_id": "0x31249119",
+      "outer_table_index": 303
+    },
+    {
+      "asset_index": 50,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "fbf568a0c50e386ab3ff5a514128a0ecbe170a099f076058bb163fc5800e410e"
+      },
+      "outer_allocation": {
+        "sha256": "5b8ae5e33ef03bae453b06fba2dced9ecd550e8254a9db8ce854517eb28cebd9",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_50.iff",
+      "outer_name_id": "0xf76820cd",
+      "outer_table_index": 1498
+    },
+    {
+      "asset_index": 51,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "bc8a1e2a2dd7030a30e158512882fe43f96354f60e9dd8b41289cf98c73a2941"
+      },
+      "outer_allocation": {
+        "sha256": "a046efb5e0b8861170f17d0e802862283de75c841885024ac1cbbb3093da6f43",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_51.iff",
+      "outer_name_id": "0xca08097d",
+      "outer_table_index": 1199
+    },
+    {
+      "asset_index": 52,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "ec8a361072db25d2dc148eb178cfb0021fd86afe86cc26529f47310816ae76c3"
+      },
+      "outer_allocation": {
+        "sha256": "5db76f4f954518129aec6e2b2cf1130443de5524be00532e715f25361aa7d698",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_52.iff",
+      "outer_name_id": "0x8da873ad",
+      "outer_table_index": 853
+    },
+    {
+      "asset_index": 53,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "c484b27fae7c01746134498ffd8015fe368fbc9d131de3c96098c9419535016e"
+      },
+      "outer_allocation": {
+        "sha256": "6039b733368a916f940b99f18a51ea44da3f47f95731dc6a8ffa45ac7c47ee1d",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_53.iff",
+      "outer_name_id": "0xb0c85a1d",
+      "outer_table_index": 1056
+    },
+    {
+      "asset_index": 54,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "e983b4670798acf52498f0570cf054066a699879ab30b20d8d36f913e2194e7b"
+      },
+      "outer_allocation": {
+        "sha256": "ea7f8a8b9eb5ebf97d0ca60d4712d26f4bb9f394e622117762e54c1d24c7976b",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_54.iff",
+      "outer_name_id": "0x02e8860d",
+      "outer_table_index": 15
+    },
+    {
+      "asset_index": 55,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "b9596b0d8b1dd88b4898c88ae0e014dd82bb9d806010108205dc1cda8b03045e"
+      },
+      "outer_allocation": {
+        "sha256": "3b57e39974a5de294685a7655e3fdc963e776542b13709fb23ced353eadb5c91",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_55.iff",
+      "outer_name_id": "0x3f88afbd",
+      "outer_table_index": 385
+    },
+    {
+      "asset_index": 56,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "ce8341665e3319082090fbe1183bc800edb60e4e134c5d1ba5025008fe657bd2"
+      },
+      "outer_allocation": {
+        "sha256": "c5371c3bdc8b44362a229d9743bc8330c89d05654159080e87095f3fa02929c3",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_56.iff",
+      "outer_name_id": "0x7828d56d",
+      "outer_table_index": 732
+    },
+    {
+      "asset_index": 57,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "87ec6e281410096bdc95da3769ce6ae951962ca302ac9f169f5474a1a2cc4c54"
+      },
+      "outer_allocation": {
+        "sha256": "7f19e983f0ebba19a1e6a859b95aba54842d1eff309b624096c2481e5acf010f",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_57.iff",
+      "outer_name_id": "0x4548fcdd",
+      "outer_table_index": 415
+    },
+    {
+      "asset_index": 58,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "f07a700b675deae77b35f3a36b42baff2a6835766d4cb2cc61c6eeaa119d117f"
+      },
+      "outer_allocation": {
+        "sha256": "37329923d9b626d58a5ec4887fdafb9b64000017448d7d4877fb56ebc6d4473c",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_58.iff",
+      "outer_name_id": "0xc7186b0c",
+      "outer_table_index": 1184
+    },
+    {
+      "asset_index": 59,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "08b8c4111691daf6d5217d52f1edc9ce0215f5e039cd8de829c87789d6704c1c"
+      },
+      "outer_allocation": {
+        "sha256": "22997aba56f7bfb764f4181581ac8ead63545810905a684b620b98eca9cce736",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_59.iff",
+      "outer_name_id": "0xfa7842bc",
+      "outer_table_index": 1513
+    },
+    {
+      "asset_index": 60,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "002cfd032d81570f0e7ee08f019b712b6d9bb02349bac40823f635cff1e01648"
+      },
+      "outer_allocation": {
+        "sha256": "0752679c580cef15dd9e43334056891e3e6c5df72004a40ebb5b83cf59552f1a",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_60.iff",
+      "outer_name_id": "0x71fc5263",
+      "outer_table_index": 693
+    },
+    {
+      "asset_index": 61,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "82376123fd3729a648de7d1eaa7a6425068765387b3810a28541ee524ebb1d94"
+      },
+      "outer_allocation": {
+        "sha256": "94c9b4aa9d773c6c7d5604eacfe115146c4a0687278bf4b0443f629896a32040",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_61.iff",
+      "outer_name_id": "0x4c9c7bd3",
+      "outer_table_index": 457
+    },
+    {
+      "asset_index": 62,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "3bebb1074913e12a7e4007818f3cf3485b8582b2acfd22e97b78b3aa1d51a07a"
+      },
+      "outer_allocation": {
+        "sha256": "1d278411bb28fce466a2bacf30bf3d500824dea8d0a587eeed0adbd63ce6768d",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_62.iff",
+      "outer_name_id": "0x0b3c0103",
+      "outer_table_index": 65
+    },
+    {
+      "asset_index": 63,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "3a35f001afff04421a783878a259d5ac4d427ef1f10ebf710dc98ff2c9ccc893"
+      },
+      "outer_allocation": {
+        "sha256": "ab89b1bd00fa608ef9ea3c7a480895a8f7a1e3e340540ff2d942059b18bc4431",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_63.iff",
+      "outer_name_id": "0x365c28b3",
+      "outer_table_index": 331
+    },
+    {
+      "asset_index": 64,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "3ef216b33e3aba5877fdf9187b0f7202d499fdc8c6aac11a51faf2ee5dbbfa3e"
+      },
+      "outer_allocation": {
+        "sha256": "a8aa797ba363ba0389014a4e14d48653d46219fe98f06384b76f558bb061b7bc",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_64.iff",
+      "outer_name_id": "0x847cf4a3",
+      "outer_table_index": 808
+    },
+    {
+      "asset_index": 65,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "0438f4604919265d09e5162b093c5aca155bdc5ebb1d54d0cf1a61d2b9c5478b"
+      },
+      "outer_allocation": {
+        "sha256": "6e32129090038df19bd0190ddfbebc81634c972f9f36f5d53291a560bf6a8ede",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_65.iff",
+      "outer_name_id": "0xb91cdd13",
+      "outer_table_index": 1103
+    },
+    {
+      "asset_index": 66,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "9fc54f4bce63e8e0c22541dd877e9b9aca5e585097916f7b80dc9212c2b033cd"
+      },
+      "outer_allocation": {
+        "sha256": "f2e4086ee161a5feea4afef08d33532331f866347774900af6e3cdcb6f4c3d6d",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_66.iff",
+      "outer_name_id": "0xfebca7c3",
+      "outer_table_index": 1537
+    },
+    {
+      "asset_index": 67,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "acc9c926d83b3a80719434d04bcf0e6146b7290c1ea231370523cc0cd510880d"
+      },
+      "outer_allocation": {
+        "sha256": "96c2e305c6f455e5ed02d37bd9e9d5f7d309e843e1f2534682914c15c36ec41f",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_67.iff",
+      "outer_name_id": "0xc3dc8e73",
+      "outer_table_index": 1164
+    },
+    {
+      "asset_index": 68,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "463a010bd312284ca2c9b7d05eb306f138dce335adeb5f0286ed6b6b5610c6c2"
+      },
+      "outer_allocation": {
+        "sha256": "edb8e3f5236f9abfce62598b67b7100b5746bed388543a40a73bad6cf840de3c",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_68.iff",
+      "outer_name_id": "0x418c19a2",
+      "outer_table_index": 392
+    },
+    {
+      "asset_index": 69,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "33f1591b400a2c5cd3715e9d32fc12e5a939a9bf87a732c639371a717276a18e"
+      },
+      "outer_allocation": {
+        "sha256": "6105ca90f65d0e52139c000726ba865cbd28187fc118d305417503ea496c9e1f",
+        "size": 6144
+      },
+      "outer_name": "uniform_textlogo_69.iff",
+      "outer_name_id": "0x7cec3012",
+      "outer_table_index": 764
+    },
+    {
+      "asset_index": 70,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "6b880473cb9b32da8a8482150520f80f1ac24767cefb35d3f027974d22cd28d8"
+      },
+      "outer_allocation": {
+        "sha256": "5c92438454183869061f43f4a3ffb580a593f10a301ed9288cf766742a9369cf",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_70.iff",
+      "outer_name_id": "0xbaa081c6",
+      "outer_table_index": 1114
+    },
+    {
+      "asset_index": 71,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "2b27b41b0e788b70c4646bc150aa809ebfa5d6eb70e395af720558b424f8ba48"
+      },
+      "outer_allocation": {
+        "sha256": "26ebee9216a737dcc7a1e291c54c28c165aa2ec955da590fe4dd2605fb116726",
+        "size": 6144
+      },
+      "outer_name": "uniform_textlogo_71.iff",
+      "outer_name_id": "0x87c0a876",
+      "outer_table_index": 824
+    },
+    {
+      "asset_index": 72,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "ec3ae285ac82a1638112b51dcdd658daef7da39111d7e1fece1a87a707c3beb2"
+      },
+      "outer_allocation": {
+        "sha256": "a08039e0516b8235f0e55ed8cbd392ca4cede01c137feec0d341da1bd394ba9a",
+        "size": 6144
+      },
+      "outer_name": "uniform_textlogo_72.iff",
+      "outer_name_id": "0xc060d2a6",
+      "outer_table_index": 1149
+    },
+    {
+      "asset_index": 73,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "8eafc0fe71014a9ecbd7f12834eb2f707696ddf13928596c9ebfe1fac6dc9540"
+      },
+      "outer_allocation": {
+        "sha256": "ace2606697c23d0e89747b152a4f1c657ad9b5e3106b97f8e3ba92ab33118a8a",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_73.iff",
+      "outer_name_id": "0xfd00fb16",
+      "outer_table_index": 1528
+    },
+    {
+      "asset_index": 74,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "36ed08dfb282833dbe887ad8b08b6c8865de27b52749627925c6d3a2f572bd3d"
+      },
+      "outer_allocation": {
+        "sha256": "4c4fe14099c72d6727c50b8ea41ae847bad855fb411f49cf3189cfbe13d675e8",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_74.iff",
+      "outer_name_id": "0x4f202706",
+      "outer_table_index": 469
+    },
+    {
+      "asset_index": 75,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "68291e57391a1d775b724f34f6b4f27eb93a2f26ec893a60ba5483b31b41b5b9"
+      },
+      "outer_allocation": {
+        "sha256": "356a41631b39f99d377e48cea550435e8bed77ff3f0d1ac91daaaf8d5bea1847",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_75.iff",
+      "outer_name_id": "0x72400eb6",
+      "outer_table_index": 694
+    },
+    {
+      "asset_index": 76,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "0c473f5f30fefe3f8c543493803a579f58fa57d0e9edb2bd500dad938492baa3"
+      },
+      "outer_allocation": {
+        "sha256": "0d621d20d3589ce84243a80ebb9a56612b913821b6b4d1d3e16c1bb44646260f",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_76.iff",
+      "outer_name_id": "0x35e07466",
+      "outer_table_index": 330
+    },
+    {
+      "asset_index": 77,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "9e5b0854558bff6d8b63ac7c1d5f182bc070d65c541d5147fb799b88888c5b31"
+      },
+      "outer_allocation": {
+        "sha256": "683a0b87641750968e0995313fd3c4327995f809edc7c21f1a529cfb424416c5",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_77.iff",
+      "outer_name_id": "0x08805dd6",
+      "outer_table_index": 51
+    },
+    {
+      "asset_index": 78,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "1603308204d63ee8fe41992ac5c840c70c7ea62f9eff746519681bae8fb7f310"
+      },
+      "outer_allocation": {
+        "sha256": "f2b322b54898fc04689204fb1df48cf6bd93257bb557fb47a5397e5b60381a69",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_78.iff",
+      "outer_name_id": "0x8ad0ca07",
+      "outer_table_index": 835
+    },
+    {
+      "asset_index": 79,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "78da4b1c724e0a5cc27ade43a4654c283a889cc1d8baec4b2b90306fda38dbc3"
+      },
+      "outer_allocation": {
+        "sha256": "b9e69a71a8575828be7f5e39a993359265f80538447fce34bf6538628a47951d",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_79.iff",
+      "outer_name_id": "0xb7b0e3b7",
+      "outer_table_index": 1096
+    },
+    {
+      "asset_index": 80,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "49b1c635e31f2918e64478b6eae2952ba9ba7256bba473571aad2525f633ba99"
+      },
+      "outer_allocation": {
+        "sha256": "4ffec093b160e3b01df7dd626de01bf26d8beda3fed11621ea9d664be56ba45a",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_80.iff",
+      "outer_name_id": "0x4bf63313",
+      "outer_table_index": 454
+    },
+    {
+      "asset_index": 81,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "8cb2c4b6125a7b0ef8a2d82da97045d05db191fe3819db77c6f09731bc7a6458"
+      },
+      "outer_allocation": {
+        "sha256": "9e9caca8af335ebcefdbe64b395d8e683e2a8f2de38eb558cfacd397e5072ddb",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_81.iff",
+      "outer_name_id": "0x76961aa3",
+      "outer_table_index": 724
+    },
+    {
+      "asset_index": 82,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "7d5cfc0ce49712e078724e50c6b08c9bcf6fb780cf8f6b2aa39e404bb2e20d70"
+      },
+      "outer_allocation": {
+        "sha256": "057a3d2d2c6475d296c2d71a60086a6b6ef062b490406dbb522c788b7586375e",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_82.iff",
+      "outer_name_id": "0x31366073",
+      "outer_table_index": 304
+    },
+    {
+      "asset_index": 83,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "23e1199ea63f7e03b968d95a88879c415cd30ebb801a69767f5064a317f8d999"
+      },
+      "outer_allocation": {
+        "sha256": "d6a4d8cb119aa8ebb03b15c8b1875473ca429e98d2082a409d9cbdbebcb8174d",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_83.iff",
+      "outer_name_id": "0x0c5649c3",
+      "outer_table_index": 72
+    },
+    {
+      "asset_index": 84,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "5c778272b0fff25c5b457493e59df7cef5b78ee9912ce6ee2ed4d5c80932abc7"
+      },
+      "outer_allocation": {
+        "sha256": "13a7b8767b1a2032193b1f9006a8e1c91e39015ddcb46bf92a3eee5f0b815993",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_84.iff",
+      "outer_name_id": "0xbe7695d3",
+      "outer_table_index": 1138
+    },
+    {
+      "asset_index": 85,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "f4c23b131a5af0d04ee6022c5ad7f85311ce9b3222d96d306d740b7ecdf4c160"
+      },
+      "outer_allocation": {
+        "sha256": "892ea2de6af8bc585a5834d73fec15759495b562c988b6967f6e949112567e48",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_85.iff",
+      "outer_name_id": "0x8316bc63",
+      "outer_table_index": 798
+    },
+    {
+      "asset_index": 86,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "2c3077dcfb7dbb88938be821017c1b38fc569057c2ea3ecdb5195cafeaaa948a"
+      },
+      "outer_allocation": {
+        "sha256": "f7f7bde90dc9a5027b1a37a7e9881aa49c1d2d984c57983ffb2e18424791a8c8",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_86.iff",
+      "outer_name_id": "0xc4b6c6b3",
+      "outer_table_index": 1170
+    },
+    {
+      "asset_index": 87,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "1e1c6bbc3d442efaae47020ae562603baf8a8a1f08b6c6c9cf3ce8bb5a08e93b"
+      },
+      "outer_allocation": {
+        "sha256": "3458152fbc766f5a54d9f19e2e8e18d27cd7afa0c122d0c137f5c647ab2b3cef",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_87.iff",
+      "outer_name_id": "0xf9d6ef03",
+      "outer_table_index": 1508
+    },
+    {
+      "asset_index": 88,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "cd0025f9b363b49426d3c7c815d38dc80cf186d83ad57663f0c787a353f26f04"
+      },
+      "outer_allocation": {
+        "sha256": "8b81de9858eb48600009dac48bb2f6e04cca8e5d9bbd16530aa4376247276500",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_88.iff",
+      "outer_name_id": "0x7b8678d2",
+      "outer_table_index": 754
+    },
+    {
+      "asset_index": 89,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "7d43f8ded84cb61762c541cc9dce86f69b1cc27dfed7cd3754bc212b646fa51b"
+      },
+      "outer_allocation": {
+        "sha256": "638f55c34e2ee91963b2623ee4af75e064af82b00bf47cf24bb401c3ddca77b4",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_89.iff",
+      "outer_name_id": "0x46e65162",
+      "outer_table_index": 422
+    },
+    {
+      "asset_index": 90,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "1d33076e392bed59c30b325c3173930056d043ba604acac882d07db82d2fdd2b"
+      },
+      "outer_allocation": {
+        "sha256": "8d13bf97aca1f6ec6f0d2e150fc0202b07421e303c96d84763b7ac8017eeab0a",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_90.iff",
+      "outer_name_id": "0x80aae0b6",
+      "outer_table_index": 781
+    },
+    {
+      "asset_index": 91,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "aa8deb55e153586b41f3a5e8ed3e3c167846acdb7b97e1e7eff712d4d9bac172"
+      },
+      "outer_allocation": {
+        "sha256": "e235d4479b54b5502d68ad9f47a50d1f9143e70e0320dca46f1a2aab41f635c1",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_91.iff",
+      "outer_name_id": "0xbdcac906",
+      "outer_table_index": 1131
+    },
+    {
+      "asset_index": 92,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "e40a17889e061d133e8b9dd2214314b5ca476044db0de39b688fcd322d423a5f"
+      },
+      "outer_allocation": {
+        "sha256": "04c2337acd9e23517f97208576923362b9345d82ca6a23a4a4cfb56e22a69f3d",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_92.iff",
+      "outer_name_id": "0xfa6ab3d6",
+      "outer_table_index": 1512
+    },
+    {
+      "asset_index": 93,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "35e8917c91c3d7a7d214624486807134fc5acea159c195bc178b96a8183084b4"
+      },
+      "outer_allocation": {
+        "sha256": "f98cc772bf485355e66f33a0c3b48216f6795747aa3b9f90d1ffe1c9342d9b2c",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_93.iff",
+      "outer_name_id": "0xc70a9a66",
+      "outer_table_index": 1183
+    },
+    {
+      "asset_index": 94,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "37a9511d4191aee7a0a7d10b9bbd9423ee154479b9168babe988c89daad4160f"
+      },
+      "outer_allocation": {
+        "sha256": "ba48dd18c5125a322ffbe8d3d322f07a715e32d539d5dff6ccf1e2d151463356",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_94.iff",
+      "outer_name_id": "0x752a4676",
+      "outer_table_index": 713
+    },
+    {
+      "asset_index": 95,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "778a65d8fefa18bfe3219254e7953009e8b1c378b9d1455c431298603ef1d40e"
+      },
+      "outer_allocation": {
+        "sha256": "533abb348baad8d78f26923e61deef04114aa88ee5ba30b4062b8adb7c2c1de3",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_95.iff",
+      "outer_name_id": "0x484a6fc6",
+      "outer_table_index": 431
+    },
+    {
+      "asset_index": 96,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "0f89aa00d881153df1b5b0d8fbc713530d9b50391e0b3adcf038636ac76bb179"
+      },
+      "outer_allocation": {
+        "sha256": "701a17b871de8240b873ad249a0395777452c56a40e7fcd2ec6efb58de4bdfde",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_96.iff",
+      "outer_name_id": "0x0fea1516",
+      "outer_table_index": 95
+    },
+    {
+      "asset_index": 97,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "6da8b5ce93329df97bcbd9c0d0b81c9ab0260022359b0d01c25b1941b3094446"
+      },
+      "outer_allocation": {
+        "sha256": "ebda8f8a92ef1d58665c51a7808fdd5b44a82d7739a31bd989e6932721ac49b6",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_97.iff",
+      "outer_name_id": "0x328a3ca6",
+      "outer_table_index": 313
+    },
+    {
+      "asset_index": 98,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "b76fc1f68e02290dc11699dc119c6e146677eb1571e741e70f87f5f159d07c4b"
+      },
+      "outer_allocation": {
+        "sha256": "c0c10484c3bb55c8b9ac05b740d41e0b157d3147ab7a279a1fd7d8e504160ea5",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_98.iff",
+      "outer_name_id": "0xb0daab77",
+      "outer_table_index": 1057
+    },
+    {
+      "asset_index": 99,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "4dfe1f1f5dd0901b3fbaf92cbd378138b39cc3dd2a5a421dd5ac847052194e41"
+      },
+      "outer_allocation": {
+        "sha256": "780435a345e1a73a4ad7ddc8d78eace392a02d065832960c2d11014adaaae250",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_99.iff",
+      "outer_name_id": "0x8dba82c7",
+      "outer_table_index": 854
+    },
+    {
+      "asset_index": 100,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "8604a3f9e5df3375ca8360ae2ccb2b75cf04f1ff9a65c5cbd40cebf2e1cbbb82"
+      },
+      "outer_allocation": {
+        "sha256": "5efd4ff31171d911302bf50f0d52198bf3768537d16ce312a6ffac6d89e3bc56",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_100.iff",
+      "outer_name_id": "0x2ead5872",
+      "outer_table_index": 288
+    },
+    {
+      "asset_index": 101,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "6db9f7673523b8278d497aceebd4c8d2ad6f823dae79a8932600f62a280311f1"
+      },
+      "outer_allocation": {
+        "sha256": "e63132c0dd65d89734fb337c64e58bacbcc1fe053e1aabe22878e59883fc02b3",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_101.iff",
+      "outer_name_id": "0x13cd71c2",
+      "outer_table_index": 120
+    },
+    {
+      "asset_index": 102,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "3a37899f1f14a2ae35ed2d1fb7fc9b707465382c15046afba81b3203d21edfe7"
+      },
+      "outer_allocation": {
+        "sha256": "1a1b6afcac776b29ba4fca797977d789b1d6fd821931e2fee447aa2ffd6249c3",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_102.iff",
+      "outer_name_id": "0x546d0b12",
+      "outer_table_index": 503
+    },
+    {
+      "asset_index": 103,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "33aca68a08652e78dc174dfcc46b25c03449bef93f4ac24532ebc67eecbdb51e"
+      },
+      "outer_allocation": {
+        "sha256": "89d717c9d55154b5acf4025fdd2681b609070ff76bd1612b7ada1ffd7be8f1df",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_103.iff",
+      "outer_name_id": "0x690d22a2",
+      "outer_table_index": 635
+    },
+    {
+      "asset_index": 104,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "36d1acfac9b659e6f4c5c6ec8ef4474ea187541dcc3a56ab822835e346f335d5"
+      },
+      "outer_allocation": {
+        "sha256": "d5d05e055f4c80456d9b8bc6a7a053960552abf52b7e97aa67619c2854fdc3e2",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_104.iff",
+      "outer_name_id": "0xdb2dfeb2",
+      "outer_table_index": 1308
+    },
+    {
+      "asset_index": 105,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "0cc89db7c396d6f5329728aadfc2534cc3bf2aaf87472f0ab577376076a5161c"
+      },
+      "outer_allocation": {
+        "sha256": "9391661d306b18026858b71f7124ae2be4b153c6697619e442ea95b97195e290",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_105.iff",
+      "outer_name_id": "0xe64dd702",
+      "outer_table_index": 1380
+    },
+    {
+      "asset_index": 106,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "e0677d202b9ab6bdc923419fa632beb2522e8eda8acd2141dd5c2fc53a626ae5"
+      },
+      "outer_allocation": {
+        "sha256": "6cc7be2e5877c25c1110490e6d82ee2b4d80a6bb0dc6561660bfecb1a9cb3501",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_106.iff",
+      "outer_name_id": "0xa1edadd2",
+      "outer_table_index": 969
+    },
+    {
+      "asset_index": 107,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "37a4f83a69b1779549027f9d5bf98fd34aab6812c64380855fdfd02ad7fd347e"
+      },
+      "outer_allocation": {
+        "sha256": "45973066b87d6c22c3daddb9724619e0b7a1790931ab7a258b7227397e0661dc",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_107.iff",
+      "outer_name_id": "0x9c8d8462",
+      "outer_table_index": 938
+    },
+    {
+      "asset_index": 108,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "6d417a8103e632675604c9debc0b08716151dec6e8cbfcb6ae61339647e89555"
+      },
+      "outer_allocation": {
+        "sha256": "15a09d5e62cc7bd4c96cc6d718836d17fa0f3202d13e2a9c8d0f5174d52bf621",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_108.iff",
+      "outer_name_id": "0x1edd13b3",
+      "outer_table_index": 187
+    },
+    {
+      "asset_index": 109,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "97b8cec95fc12c5f793d994bdf73443eab7b357732a6a071103c93c6070940c5"
+      },
+      "outer_allocation": {
+        "sha256": "19e1dd9d85a9c8a1ec6c1bde74bc71485ce50cc29e39764fddbae0a6ba80a96c",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_109.iff",
+      "outer_name_id": "0x23bd3a03",
+      "outer_table_index": 214
+    },
+    {
+      "asset_index": 110,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "ff3b0f292a358036bbabc1dc36448cf24065a9c2722beda7d00a72f05c0deb71"
+      },
+      "outer_allocation": {
+        "sha256": "b44c28be11d4b0d84357883c3208874459cca2d03ea287ecaab4b6735cc7329b",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_110.iff",
+      "outer_name_id": "0xe5f18bd7",
+      "outer_table_index": 1377
+    },
+    {
+      "asset_index": 111,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "2c94f03f5972ab809ddd4d857bf721c875d795c055ae77b9fd1aa44190a32860"
+      },
+      "outer_allocation": {
+        "sha256": "861855e93f2ebc9132f8b4d9d3ccda2d7f160c0247715bc92a222923197d7085",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_111.iff",
+      "outer_name_id": "0xd891a267",
+      "outer_table_index": 1289
+    },
+    {
+      "asset_index": 112,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "ab9ee45c2f4512afd24d27e36ac2d3ce03e88b81ac358e83d639259695aa919f"
+      },
+      "outer_allocation": {
+        "sha256": "ebc3126df7bcc662b63e56ae802d1422566a6c063b767d4cbd2c821d05492aba",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_112.iff",
+      "outer_name_id": "0x9f31d8b7",
+      "outer_table_index": 953
+    },
+    {
+      "asset_index": 113,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "42e0ce945d4992e325be6e5916cabadd6061c94d4a6f9acc981fede5e255e766"
+      },
+      "outer_allocation": {
+        "sha256": "05b5bb18818a0a97728d73ee43f9e3fb658382bab57514c609097e86ff8f5fe4",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_113.iff",
+      "outer_name_id": "0xa251f107",
+      "outer_table_index": 971
+    },
+    {
+      "asset_index": 114,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "13a602c1a7c0d241c3d0ae5c4bde5b087ad43fae526fd136ed1a1c9ed2ea5697"
+      },
+      "outer_allocation": {
+        "sha256": "80db5942772b9e2f7fc698c7e00db31f968fa022eee87ef2f94b56eff8b2e7e0",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_114.iff",
+      "outer_name_id": "0x10712d17",
+      "outer_table_index": 96
+    },
+    {
+      "asset_index": 115,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "3526874f3c7fb938883dd5471eec778c0ef1e6f833bda0c5b251960eacd022cf"
+      },
+      "outer_allocation": {
+        "sha256": "6422178deb8dcbc1ac50a8b0aef63f8dd652541db48adb04fe2b3c2c7793377a",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_115.iff",
+      "outer_name_id": "0x2d1104a7",
+      "outer_table_index": 275
+    },
+    {
+      "asset_index": 116,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "2194c6449ff284d5d4f6ca0a9691b8b103d8268d67c9835960f0307fe3020c3b"
+      },
+      "outer_allocation": {
+        "sha256": "eb0bc26ed4e5af3da5951dcbd2cc82d05467dc735bd16913ac75dacb838c5325",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_116.iff",
+      "outer_name_id": "0x6ab17e77",
+      "outer_table_index": 649
+    },
+    {
+      "asset_index": 117,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "a12a8d4e13db83d2bdeafe72efc2e057e10e34ad0d59969042c067f0a59596db"
+      },
+      "outer_allocation": {
+        "sha256": "211835390a20073d01ab3861fd31138904cc7d693fe01243e45ad59956221598",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_117.iff",
+      "outer_name_id": "0x57d157c7",
+      "outer_table_index": 524
+    },
+    {
+      "asset_index": 118,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "5114974a18a71798005f08490938fc9db124da1298ae058d80e3c215727f0b2d"
+      },
+      "outer_allocation": {
+        "sha256": "da2c0e2e19dfe84f44ed8989ca2aaa26d0e793d3050b09fc0ff89097d5a43fef",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_118.iff",
+      "outer_name_id": "0xd581c016",
+      "outer_table_index": 1271
+    },
+    {
+      "asset_index": 119,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "27a9df0b8dbf63d76963d1b8bb910a159e8fdab6918345ffcb3c4c26f120d88a"
+      },
+      "outer_allocation": {
+        "sha256": "d27268b722393cfa3a96596a968bde249c42ac394ce91c55ee1903123bd9f9ea",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_119.iff",
+      "outer_name_id": "0xe8e1e9a6",
+      "outer_table_index": 1402
+    },
+    {
+      "asset_index": 120,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "9a128124a8a2c380a96d455cc4f6fb77eeb1bf8e87443c26d68606ddd7c75ad6"
+      },
+      "outer_allocation": {
+        "sha256": "a8ddcb37e27a0656a8dea5c8158a4c25064849ac890ac7bd2ea95a66ca17bae6",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_120.iff",
+      "outer_name_id": "0x6365f979",
+      "outer_table_index": 600
+    },
+    {
+      "asset_index": 121,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "81c94d82dd7e64e8232b0539538b1dc2c1d4a8a31cd449ba2d552bfd4561ec4c"
+      },
+      "outer_allocation": {
+        "sha256": "a79c38662def8e47b68475bd00dd08861bb073e8ac29c4954bdb38ff5c0d88e5",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_121.iff",
+      "outer_name_id": "0x5e05d0c9",
+      "outer_table_index": 570
+    },
+    {
+      "asset_index": 122,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "c97477bd41feb54769476872e306caab1773041010251ad02c2442e493573abc"
+      },
+      "outer_allocation": {
+        "sha256": "3745bb9294dfc65fd736366e6757f2b4137d7818b13153556cce21db789588ef",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_122.iff",
+      "outer_name_id": "0x19a5aa19",
+      "outer_table_index": 160
+    },
+    {
+      "asset_index": 123,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "3bc819e23fccc75662007a7745f27c7201c5c48e4c440eff4910319b0983af99"
+      },
+      "outer_allocation": {
+        "sha256": "1bf32f3b664281b3d6949ff1830969994fcf211f86045a084be3fac08c649e81",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_123.iff",
+      "outer_name_id": "0x24c583a9",
+      "outer_table_index": 220
+    },
+    {
+      "asset_index": 124,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "dc9ecd2fbe6e3c4030715807a2a5a9469ed4fce0f8210ad98fd17e5818db31e4"
+      },
+      "outer_allocation": {
+        "sha256": "7fb30eade13c34bc55bb4a9a44d90eeadc26990d0a1c0ccb91df4fda069bcab9",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_124.iff",
+      "outer_name_id": "0x96e55fb9",
+      "outer_table_index": 901
+    },
+    {
+      "asset_index": 125,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "817bf2acfc13e3e6d3cba7824bc591e4481618664335bee9d1e126220db3b789"
+      },
+      "outer_allocation": {
+        "sha256": "eff47872c136b7d78a757d3c6c323f90e17ec6e941760a75e027f5bfa39e8d9f",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_125.iff",
+      "outer_name_id": "0xab857609",
+      "outer_table_index": 1026
+    },
+    {
+      "asset_index": 126,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "ee54fd1abb183de1a5cf1f7a56ce3b9a2bb564191efe770d3e972e7e25ebe492"
+      },
+      "outer_allocation": {
+        "sha256": "e6851d814e943dad7254eb88a65912b75e93b8930ed29584c86ffa79b02453c9",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_126.iff",
+      "outer_name_id": "0xec250cd9",
+      "outer_table_index": 1429
+    },
+    {
+      "asset_index": 127,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "efbed02cbf8f32ea833f771f578354e788542ec5d211d11c1410834f15596941"
+      },
+      "outer_allocation": {
+        "sha256": "02842909ea9f32daa9858492a5ee46ea1adf892b9e4922174d80c52fba95fa2f",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_127.iff",
+      "outer_name_id": "0xd1452569",
+      "outer_table_index": 1239
+    },
+    {
+      "asset_index": 128,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "59ac627c612fd5f9d54140dd49ed88993ef17309ae70cdbe42758e1e255a077b"
+      },
+      "outer_allocation": {
+        "sha256": "3594ec697e2593e5feb1c997d3c78a105a8b22b686c4ea258d74b11e93d55d63",
+        "size": 6144
+      },
+      "outer_name": "uniform_textlogo_128.iff",
+      "outer_name_id": "0x5315b2b8",
+      "outer_table_index": 489
+    },
+    {
+      "asset_index": 129,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "bf2a7e44a4d69082cb44a80305a1bc96c4f2b1e9040a44186d81ba695e58ae58"
+      },
+      "outer_allocation": {
+        "sha256": "3fd470d158c419d2f3609a65cbbad2cc7bfa9f42475935246afc369f8665c841",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_129.iff",
+      "outer_name_id": "0x6e759b08",
+      "outer_table_index": 675
+    },
+    {
+      "asset_index": 130,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "377095ca6333db3a815139ab686c5d53268656c56892e4cbc46e8c7fa9892230"
+      },
+      "outer_allocation": {
+        "sha256": "88ebdd56802721524fe1129216e8176287dd670264b4e52b23a94d9acd345910",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_130.iff",
+      "outer_name_id": "0xa8392adc",
+      "outer_table_index": 1012
+    },
+    {
+      "asset_index": 131,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "63b0af862dec3bccea376d0d54692a6c9c4808c9788705c875fa50715715fbdc"
+      },
+      "outer_allocation": {
+        "sha256": "4f59248676e31cae6d496e17012429c02f97f250b4161039fb76733d55a74fd3",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_131.iff",
+      "outer_name_id": "0x9559036c",
+      "outer_table_index": 889
+    },
+    {
+      "asset_index": 132,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "cfeee7bc1777b1652bf4d5a2939e3a1b37cc910d7f42dfea1cb36ff6c0e88aef"
+      },
+      "outer_allocation": {
+        "sha256": "be03c29284810a289c621d63de2f1a430182528feda2b177668d194232d7d69e",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_132.iff",
+      "outer_name_id": "0xd2f979bc",
+      "outer_table_index": 1255
+    },
+    {
+      "asset_index": 133,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "9ba6c21e6b913db9b9e614ffbfb89953d0cb51b367611b2ce4e507823c3f73e6"
+      },
+      "outer_allocation": {
+        "sha256": "b9ff9c4869be63963b9a16c647a03c41a60f31e98363a59388229737706f0c70",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_133.iff",
+      "outer_name_id": "0xef99500c",
+      "outer_table_index": 1449
+    },
+    {
+      "asset_index": 134,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "c7eb67adb76872e523e83d7b8c3bf0a5c3e527aa50eeb1f1690e56530f2f70c3"
+      },
+      "outer_allocation": {
+        "sha256": "fee2ac2a5d2174657c44d54c6a4474563c66c9ffc1e7eae4f50cbbe32b6bb296",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_134.iff",
+      "outer_name_id": "0x5db98c1c",
+      "outer_table_index": 568
+    },
+    {
+      "asset_index": 135,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "7543f67c9916ea13c627d3d44474d59d91ea1692b136f5e68ed4a4bfb3301c0e"
+      },
+      "outer_allocation": {
+        "sha256": "b37c1382931e66db8cf9584a9d6a2d6c7d6bdc532389aca26ff9723b2052e0d4",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_135.iff",
+      "outer_name_id": "0x60d9a5ac",
+      "outer_table_index": 584
+    },
+    {
+      "asset_index": 136,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "7571870f3941fb655fea471d62385152584a9af53dc70b063913397ba278b26f"
+      },
+      "outer_allocation": {
+        "sha256": "0bb8c6ae4bc3ac784795d54ae04871321f90a8b19e6dd91b9dd9b5184a9071ec",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_136.iff",
+      "outer_name_id": "0x2779df7c",
+      "outer_table_index": 236
+    },
+    {
+      "asset_index": 137,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "774c8dfe5f9f6afa1207fd4b4716a8a150c3e8a38d0225a6b7e3b5eb6ac9480b"
+      },
+      "outer_allocation": {
+        "sha256": "bc9a8ff52177c9ed74295887144fd6df2495b33058eaec6f51d9c590e6fb910e",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_137.iff",
+      "outer_name_id": "0x1a19f6cc",
+      "outer_table_index": 162
+    },
+    {
+      "asset_index": 138,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "8852c217b264660be942c9e542c3a78e6d1d895cb6be44c593b63c182ccbbc25"
+      },
+      "outer_allocation": {
+        "sha256": "a9b7845c7c37637678f869118d91e4e29e7b0d8d086eb0ba73cde79692f5d4d6",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_138.iff",
+      "outer_name_id": "0x9849611d",
+      "outer_table_index": 910
+    },
+    {
+      "asset_index": 139,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "990ad37fd255d59c28aeed2e02de32caade0c5f9800a08bbb2df960870f98e52"
+      },
+      "outer_allocation": {
+        "sha256": "d7e076a3df82dabc02a8f7b3b39d5763b0e7945bd0f46669f6d8400ddd1ecc36",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_139.iff",
+      "outer_name_id": "0xa52948ad",
+      "outer_table_index": 992
+    },
+    {
+      "asset_index": 140,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "c66016ea49ad00a4fe15f66ca21934a459cefc46ca36daa0e5d98edac51ea2f8"
+      },
+      "outer_allocation": {
+        "sha256": "c2e3eb4356447caa388dcf69d3b358f588b18e2532b7cdff431b507ee5a32d58",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_140.iff",
+      "outer_name_id": "0xb53c1a64",
+      "outer_table_index": 1083
+    },
+    {
+      "asset_index": 141,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "a283e01f09cba1bec587afda9d782ed73a87dc27b3847cf741f3439659a1e458"
+      },
+      "outer_allocation": {
+        "sha256": "511bdb6c6781b82fb0fff3b28660260f12c24aa906638e83e3b2489d58fdff89",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_141.iff",
+      "outer_name_id": "0x885c33d4",
+      "outer_table_index": 825
+    },
+    {
+      "asset_index": 142,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "a75334b82e21056d880b1a7d58b25411a8fde882bc03825a6cb72f9af5ccbd2f"
+      },
+      "outer_allocation": {
+        "sha256": "2e352079e50f58f7edb640094271f8df9ea9f291a333739f359d7459ad36744b",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_142.iff",
+      "outer_name_id": "0xcffc4904",
+      "outer_table_index": 1230
+    },
+    {
+      "asset_index": 143,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "5abe86123f9372cb2c0968c3cec5f8c7cfd335c149ee401a95b88ab3beeac0aa"
+      },
+      "outer_allocation": {
+        "sha256": "5303ace2a5027b451df8e160e6d60d7d736670c858eed8a9ea565e62fa16482b",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_143.iff",
+      "outer_name_id": "0xf29c60b4",
+      "outer_table_index": 1465
+    },
+    {
+      "asset_index": 144,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "a9262c69eb2db5a23334133980d5ced7943c7620f9912a6d8860b99b281f2e62"
+      },
+      "outer_allocation": {
+        "sha256": "32dcde27dafb94ea3d2be32bb10ee85d017e6678dc22b41fd4f592475dcffddd",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_144.iff",
+      "outer_name_id": "0x40bcbca4",
+      "outer_table_index": 388
+    },
+    {
+      "asset_index": 145,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "5933d964f9bca32b68404fa320756b52eac746687da3e1e11567dc324976e79e"
+      },
+      "outer_allocation": {
+        "sha256": "f4e12667ce70c57f9663384d1a9c0f35ba94f019a1352f0f0fe2aa775f7e37ae",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_145.iff",
+      "outer_name_id": "0x7ddc9514",
+      "outer_table_index": 768
+    },
+    {
+      "asset_index": 146,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "c7a32dbae6156a96d86e31dafbf64d0a4951f60116966235909630d616ac3fc6"
+      },
+      "outer_allocation": {
+        "sha256": "e579789845426e214a64cac7540878e1b73536466c8c22701ad3ee0c8883e21d",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_146.iff",
+      "outer_name_id": "0x3a7cefc4",
+      "outer_table_index": 358
+    },
+    {
+      "asset_index": 147,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "719635917844e8020593e079c5f5521f698c3f5a28bb821e187f22c8bf39e60d"
+      },
+      "outer_allocation": {
+        "sha256": "80cbaf9bdd764740085203de179cd204c8c7538311c4374dd74f2118787239dc",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_147.iff",
+      "outer_name_id": "0x071cc674",
+      "outer_table_index": 42
+    },
+    {
+      "asset_index": 148,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "7acbe194e96f885ba8ec587710c931476b65548e07d8689e502c4d31cffa9355"
+      },
+      "outer_allocation": {
+        "sha256": "e4e23f659ea52aa9146e7c8879770a2b7d3febe4ecc998b9ba085d49827f778b",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_148.iff",
+      "outer_name_id": "0x854c51a5",
+      "outer_table_index": 811
+    },
+    {
+      "asset_index": 149,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "37743930778aabbf2b2859476020360aa93e96be294a2a7f87955b1eab3aece9"
+      },
+      "outer_allocation": {
+        "sha256": "5a4bf97e5f5a69650101e62c4989fbc451a6d99248d3a9a4bb7811302eae8387",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_149.iff",
+      "outer_name_id": "0xb82c7815",
+      "outer_table_index": 1098
+    },
+    {
+      "asset_index": 150,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "7e5eaed3d7b8bd0652f003b3d1c72740d975aa1dfd88d2136f98d205ba49de74"
+      },
+      "outer_allocation": {
+        "sha256": "43b26ecc20cfe0eadb3981f46ae170888af9d6a4647e4148c57685590a3f126d",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_150.iff",
+      "outer_name_id": "0x7e60c9c1",
+      "outer_table_index": 770
+    },
+    {
+      "asset_index": 151,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "aa8946555c20e4b001e505557e3a177496527efeef0c4b26298b1ffb01e1e89e"
+      },
+      "outer_allocation": {
+        "sha256": "6aed5cd71c44bef11474f8529f6c688958180469512ce97be03525540fce3d9e",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_151.iff",
+      "outer_name_id": "0x4300e071",
+      "outer_table_index": 401
+    },
+    {
+      "asset_index": 152,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "66afada5f0d1952ba05521f0e8dea5d762617b5cb07b5eca1e078dfa4916d6d2"
+      },
+      "outer_allocation": {
+        "sha256": "f2790a3e6f3456d9390157caffa7d167e9c9fefe1acfea4786cad8bf253848f6",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_152.iff",
+      "outer_name_id": "0x04a09aa1",
+      "outer_table_index": 27
+    },
+    {
+      "asset_index": 153,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "89df3a6d32e6c85f1cb80f436d522862341fd0fd8728a7c6f93b4a7fe134a28d"
+      },
+      "outer_allocation": {
+        "sha256": "28ef77291b353b5db58de0b430a98765d1e4ae5180f7f786bd0bd520d67d1b21",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_153.iff",
+      "outer_name_id": "0x39c0b311",
+      "outer_table_index": 353
+    },
+    {
+      "asset_index": 154,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "ad7a4cc8ed0977e2203b8b076b3e33c7e147d01c940fee6dda98e8f444106ab9"
+      },
+      "outer_allocation": {
+        "sha256": "7fb422324612243f7981a2f0792a5414c0d19b39078f360cdb18a35897aaf123",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_154.iff",
+      "outer_name_id": "0x8be06f01",
+      "outer_table_index": 841
+    },
+    {
+      "asset_index": 155,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "a0f91c37b4520c1aee0fe7fac91a82e67ce6058aca055b16061d85bab928fda0"
+      },
+      "outer_allocation": {
+        "sha256": "270b1795db845d93f142f1499a2a92a2d7d26f4bb28a4a3c65fe348f3ebe5d2b",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_155.iff",
+      "outer_name_id": "0xb68046b1",
+      "outer_table_index": 1089
+    },
+    {
+      "asset_index": 156,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "897522b3465581bef7dc04b12906aeb7c9a45996a0258bac55e71a45a6646eae"
+      },
+      "outer_allocation": {
+        "sha256": "39a83bad5fa22ab1b8ae486ec889bacdcf15827462fdaf427150a771863cfe95",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_156.iff",
+      "outer_name_id": "0xf1203c61",
+      "outer_table_index": 1457
+    },
+    {
+      "asset_index": 157,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "1efdf905634a75c88ae65823c0f54438307c3a793f62e2f6e908617f55235ee1"
+      },
+      "outer_allocation": {
+        "sha256": "5d3216597a10a452e0e4bb8deacb05bb5c1041e468480798dffa1f34f6ffc93a",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_157.iff",
+      "outer_name_id": "0xcc4015d1",
+      "outer_table_index": 1208
+    },
+    {
+      "asset_index": 158,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "d001e3b099af80f1975e2b609507be60aa4c45c11f431654d451302f5df49786"
+      },
+      "outer_allocation": {
+        "sha256": "2a2f982b8082e16dbec99097617870f52328ca77652e9129b01c4bce7dfab177",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_158.iff",
+      "outer_name_id": "0x4e108200",
+      "outer_table_index": 464
+    },
+    {
+      "asset_index": 159,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "34163d8e89b0f6bb1fba67ddad8728f9e81282aa0566aca50667889cfe346ab3"
+      },
+      "outer_allocation": {
+        "sha256": "c80f7ee0633af9890a3e6b0dc921ef5df8688d43395127f92c9e9b4d2010c13a",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_159.iff",
+      "outer_name_id": "0x7370abb0",
+      "outer_table_index": 699
+    },
+    {
+      "asset_index": 160,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "cb2117322f92fc0ba39d7d5e260859c7b91c403caba4697ea8fb028bb12612a0"
+      },
+      "outer_allocation": {
+        "sha256": "7f59a08ad38fdff9990e767685314cb09d20639142658ce73a503786c5518d99",
+        "size": 6144
+      },
+      "outer_name": "uniform_textlogo_160.iff",
+      "outer_name_id": "0xf8f4bb6f",
+      "outer_table_index": 1505
+    },
+    {
+      "asset_index": 161,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "995eb8ed50b35ce7a2f53d258edc4003e66bc29d73369349c979e33200f21a82"
+      },
+      "outer_allocation": {
+        "sha256": "5a9935871444f97a707b0977b118617ace559cd1aaa1bc1c06db67f5a9954754",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_161.iff",
+      "outer_name_id": "0xc59492df",
+      "outer_table_index": 1175
+    },
+    {
+      "asset_index": 162,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "5054b31edd8b4b0174fc7fe65e96c1f87f9c965b45db16a4a6ff81e3651477fa"
+      },
+      "outer_allocation": {
+        "sha256": "0f6c2ac7cf9a37b5a25e8d7dffc108640f6ee186a9bfa0a987f314da86ab12d3",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_162.iff",
+      "outer_name_id": "0x8234e80f",
+      "outer_table_index": 791
+    },
+    {
+      "asset_index": 163,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "122b2cd69fc4d29969a9de0f6c344fb1b45e0fb1d3d3536bbebe28588ff607a8"
+      },
+      "outer_allocation": {
+        "sha256": "9d96644a5881fb5d7e60031ae9f4e383400a16b67b6ed2d0e8428c8bb054085b",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_163.iff",
+      "outer_name_id": "0xbf54c1bf",
+      "outer_table_index": 1142
+    },
+    {
+      "asset_index": 164,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "4f8a82157f4ef25f601d2fc5d8f09066f4b4e652f678e4e1bc6ecebc8ad66775"
+      },
+      "outer_allocation": {
+        "sha256": "e27a221873602f7ec1944134faaae1cd9b8008a87a164b99065c4e8ba3be96b1",
+        "size": 6144
+      },
+      "outer_name": "uniform_textlogo_164.iff",
+      "outer_name_id": "0x0d741daf",
+      "outer_table_index": 80
+    },
+    {
+      "asset_index": 165,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "836677cc7ded71e9bbe30e39931c14f328f3d066391219d0ab896da23e8c8b5c"
+      },
+      "outer_allocation": {
+        "sha256": "66d26cc406cca99952c77512fc1170c2a28ba674eab58ebe43c0687710bc9ca1",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_165.iff",
+      "outer_name_id": "0x3014341f",
+      "outer_table_index": 295
+    },
+    {
+      "asset_index": 166,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "2eaab8d2e2addd5a0fd6e0f42734d2654894ec7b1fde67d18ae82b991b62064e"
+      },
+      "outer_allocation": {
+        "sha256": "2785b630e7eec84c629829d90e97e23751edb772bba06979e240fc25c73d98a1",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_166.iff",
+      "outer_name_id": "0x77b44ecf",
+      "outer_table_index": 731
+    },
+    {
+      "asset_index": 167,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "a3f00f25090c67450a3baeef9ca1d4b37b1e44350ff52c5cb332f4320e84f787"
+      },
+      "outer_allocation": {
+        "sha256": "dd54bec743329dbfdbf6ff8d183f327a93efe89cdf8e71f87b6cb89b314dbf6c",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_167.iff",
+      "outer_name_id": "0x4ad4677f",
+      "outer_table_index": 449
+    },
+    {
+      "asset_index": 168,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "b7caba3e13f68cd101bd2de0f92d3baaa473e0074e674633f86dcd868dcd5db5"
+      },
+      "outer_allocation": {
+        "sha256": "934e3ebcdd9b165fa07852d75f877ce0309a26c3326bbcf70062620f7a1056b0",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_168.iff",
+      "outer_name_id": "0xc884f0ae",
+      "outer_table_index": 1190
+    },
+    {
+      "asset_index": 169,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "2d6e7cfeaf047b1c0180a40b518183085bae772fe63a378a655865fa8823d026"
+      },
+      "outer_allocation": {
+        "sha256": "9fd1db7f4af9a209d7004f79ddf1fb5e98af899b0e759662140b4bc2325421d9",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_169.iff",
+      "outer_name_id": "0xf5e4d91e",
+      "outer_table_index": 1489
+    },
+    {
+      "asset_index": 170,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "875eac4bebcf89d07ba3f1a67f3f94dde4e22a53b872ad4a9797bfa8a7e1ac5e"
+      },
+      "outer_allocation": {
+        "sha256": "ef504d865869cd1a3e8173b114f3d076995f6f71b020e190eab6a8eaf1a36c52",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_170.iff",
+      "outer_name_id": "0x33a868ca",
+      "outer_table_index": 324
+    },
+    {
+      "asset_index": 171,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "70a47c27dff93e2984881fe9dda1ae7259f21b4ee07812899466ea0abdef1cf2"
+      },
+      "outer_allocation": {
+        "sha256": "1c8556426d0bf03ece1f24862a102ad1affd6d330db3d4fd676989ae41a79d0d",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_171.iff",
+      "outer_name_id": "0x0ec8417a",
+      "outer_table_index": 89
+    },
+    {
+      "asset_index": 172,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "88c95c21583ff7a3b20774a96d2ea595188b3b88f469975640bfee9b7f04a824"
+      },
+      "outer_allocation": {
+        "sha256": "f4fae5974a1cd24ceb46e35c38794b6f854d36b25cefc8ee2330dbe679433a62",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_172.iff",
+      "outer_name_id": "0x49683baa",
+      "outer_table_index": 441
+    },
+    {
+      "asset_index": 173,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "9689e2defc8ee8ffc91e606d9bea1d359e294f151ddc594b9590336e985512a2"
+      },
+      "outer_allocation": {
+        "sha256": "9a156f489ec9bf3ef54167891791f2a7571d9f304e0dce5a46d33532ab775305",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_173.iff",
+      "outer_name_id": "0x7408121a",
+      "outer_table_index": 702
+    },
+    {
+      "asset_index": 174,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "a2b66a8e524f9b5cace849e4bd5f8550cee2c206e88642a3eb6b3b2f2fcbe349"
+      },
+      "outer_allocation": {
+        "sha256": "fdf1998dc69c00c55a044400399270ca5ff85ede4404f982aba3592dc2fb0b0d",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_174.iff",
+      "outer_name_id": "0xc628ce0a",
+      "outer_table_index": 1178
+    },
+    {
+      "asset_index": 175,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "64bad9e0c21c293b78bd9e2ef4f315a1016db9dab482b1df887a626ad4b9befc"
+      },
+      "outer_allocation": {
+        "sha256": "844b7695be0364cffbfaccfd0af6657c3ebd85f6d7dbf118962f7804265aba6e",
+        "size": 12288
+      },
+      "outer_name": "uniform_textlogo_175.iff",
+      "outer_name_id": "0xfb48e7ba",
+      "outer_table_index": 1516
+    },
+    {
+      "asset_index": 176,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "922bf53bab453f2228e02ff53193db38bcba87fb018159fda1e53d7a9c9fca71"
+      },
+      "outer_allocation": {
+        "sha256": "6c810cfefc2a2f3b8c3ffa4f9e0996b99dffdf9d197fd8be17ef8e72743a9d95",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_176.iff",
+      "outer_name_id": "0xbce89d6a",
+      "outer_table_index": 1125
+    },
+    {
+      "asset_index": 177,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "8c0a7925d50aa84c3decb59a62d0975ba45407a63e66a743685442a48ee52108"
+      },
+      "outer_allocation": {
+        "sha256": "027df6a0ed5054ecf7a79aa8c53d5e7f835b45c7294280e89c4b2890ee8ca353",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_177.iff",
+      "outer_name_id": "0x8188b4da",
+      "outer_table_index": 788
+    },
+    {
+      "asset_index": 178,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "a0167a2c6702f17d107f0ea964898eaefdc2d5e4b0ad03ef1f194b71ddb60f5f"
+      },
+      "outer_allocation": {
+        "sha256": "3f60c1c0db8b9b22796e8b707d60c308a5767bfd415b6efadab8b84b07bd64d6",
+        "size": 6144
+      },
+      "outer_name": "uniform_textlogo_178.iff",
+      "outer_name_id": "0x03d8230b",
+      "outer_table_index": 20
+    },
+    {
+      "asset_index": 179,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "6254966217d452ae778199e57990756d7821972a1edda40f6be38dbd8d8b862a"
+      },
+      "outer_allocation": {
+        "sha256": "a83640d3c6fd4579d6482d2b45561ad61f8630a0a027f0c7e86b4de5e83f4786",
+        "size": 10240
+      },
+      "outer_name": "uniform_textlogo_179.iff",
+      "outer_name_id": "0x3eb80abb",
+      "outer_table_index": 380
+    },
+    {
+      "asset_index": 180,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_180.iff",
+      "outer_name_id": "0xc2feda1f",
+      "outer_table_index": 1159
+    },
+    {
+      "asset_index": 181,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_181.iff",
+      "outer_name_id": "0xff9ef3af",
+      "outer_table_index": 1542
+    },
+    {
+      "asset_index": 182,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_182.iff",
+      "outer_name_id": "0xb83e897f",
+      "outer_table_index": 1100
+    },
+    {
+      "asset_index": 183,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_183.iff",
+      "outer_name_id": "0x855ea0cf",
+      "outer_table_index": 812
+    },
+    {
+      "asset_index": 184,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_184.iff",
+      "outer_name_id": "0x377e7cdf",
+      "outer_table_index": 338
+    },
+    {
+      "asset_index": 185,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_185.iff",
+      "outer_name_id": "0x0a1e556f",
+      "outer_table_index": 57
+    },
+    {
+      "asset_index": 186,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_186.iff",
+      "outer_name_id": "0x4dbe2fbf",
+      "outer_table_index": 461
+    },
+    {
+      "asset_index": 187,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_187.iff",
+      "outer_name_id": "0x70de060f",
+      "outer_table_index": 688
+    },
+    {
+      "asset_index": 188,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_188.iff",
+      "outer_name_id": "0xf28e91de",
+      "outer_table_index": 1464
+    },
+    {
+      "asset_index": 189,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_189.iff",
+      "outer_name_id": "0xcfeeb86e",
+      "outer_table_index": 1228
+    },
+    {
+      "asset_index": 190,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_190.iff",
+      "outer_name_id": "0x09a209ba",
+      "outer_table_index": 55
+    },
+    {
+      "asset_index": 191,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_191.iff",
+      "outer_name_id": "0x34c2200a",
+      "outer_table_index": 326
+    },
+    {
+      "asset_index": 192,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_192.iff",
+      "outer_name_id": "0x73625ada",
+      "outer_table_index": 697
+    },
+    {
+      "asset_index": 193,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_193.iff",
+      "outer_name_id": "0x4e02736a",
+      "outer_table_index": 463
+    },
+    {
+      "asset_index": 194,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_194.iff",
+      "outer_name_id": "0xfc22af7a",
+      "outer_table_index": 1525
+    },
+    {
+      "asset_index": 195,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_195.iff",
+      "outer_name_id": "0xc14286ca",
+      "outer_table_index": 1154
+    },
+    {
+      "asset_index": 196,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_196.iff",
+      "outer_name_id": "0x86e2fc1a",
+      "outer_table_index": 818
+    },
+    {
+      "asset_index": 197,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_197.iff",
+      "outer_name_id": "0xbb82d5aa",
+      "outer_table_index": 1116
+    },
+    {
+      "asset_index": 198,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_198.iff",
+      "outer_name_id": "0x39d2427b",
+      "outer_table_index": 354
+    },
+    {
+      "asset_index": 199,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_199.iff",
+      "outer_name_id": "0x04b26bcb",
+      "outer_table_index": 28
+    },
+    {
+      "asset_index": 200,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_200.iff",
+      "outer_name_id": "0x1f4542ef",
+      "outer_table_index": 189
+    },
+    {
+      "asset_index": 201,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_201.iff",
+      "outer_name_id": "0x22256b5f",
+      "outer_table_index": 207
+    },
+    {
+      "asset_index": 202,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_202.iff",
+      "outer_name_id": "0x6585118f",
+      "outer_table_index": 615
+    },
+    {
+      "asset_index": 203,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_203.iff",
+      "outer_name_id": "0x58e5383f",
+      "outer_table_index": 533
+    },
+    {
+      "asset_index": 204,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_204.iff",
+      "outer_name_id": "0xeac5e42f",
+      "outer_table_index": 1415
+    },
+    {
+      "asset_index": 205,
+      "inner_file": {
+        "index": 0,
+        "name": "textlogo_color",
+        "texture_sha256": "09806682d2e6b319905d3a843bc38add1440b8bea4708042202d9ee595da9766"
+      },
+      "outer_allocation": {
+        "sha256": "9e06393056b937040b21d862a91feaaa829e0536371bc9d7e61c86a54a63b696",
+        "size": 8192
+      },
+      "outer_name": "uniform_textlogo_205.iff",
+      "outer_name_id": "0xd7a5cd9f",
+      "outer_table_index": 1285
+    }
+  ],
+  "texture_contract": {
+    "base_length": 32768,
+    "format": "DXT1",
+    "height": 128,
+    "inner_name": "textlogo_color",
+    "mip_length": 32768,
+    "mip_levels": 6,
+    "opaque_retail_alpha": true,
+    "pitch_pixels": 512,
+    "width": 512
+  }
+}

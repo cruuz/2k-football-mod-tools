@@ -57,6 +57,8 @@ class ProductStatus(str, Enum):
     PREVIEW = "Preview"
     EXPORT_ONLY = "Export-only"
     COMING_SOON = "Coming Soon"
+    EVIDENCE = "Proof boundary"
+    RESEARCH = "Research boundary"
 
 
 PRODUCT_CATEGORY_ORDER: tuple[ProductCategory, ...] = (
@@ -78,6 +80,8 @@ PRODUCT_STATUS_ORDER: tuple[ProductStatus, ...] = (
     ProductStatus.EDITABLE,
     ProductStatus.PREVIEW,
     ProductStatus.EXPORT_ONLY,
+    ProductStatus.EVIDENCE,
+    ProductStatus.RESEARCH,
     ProductStatus.COMING_SOON,
 )
 
@@ -171,6 +175,8 @@ class ProductCounts:
     preview: int
     export_only: int
     coming_soon: int
+    evidence: int
+    research: int
 
     @classmethod
     def from_statuses(cls, statuses: Iterable[ProductStatus]) -> "ProductCounts":
@@ -181,6 +187,8 @@ class ProductCounts:
             preview=values.count(ProductStatus.PREVIEW),
             export_only=values.count(ProductStatus.EXPORT_ONLY),
             coming_soon=values.count(ProductStatus.COMING_SOON),
+            evidence=values.count(ProductStatus.EVIDENCE),
+            research=values.count(ProductStatus.RESEARCH),
         )
 
     def for_status(self, status: ProductStatus) -> int:
@@ -189,6 +197,8 @@ class ProductCounts:
             ProductStatus.PREVIEW: self.preview,
             ProductStatus.EXPORT_ONLY: self.export_only,
             ProductStatus.COMING_SOON: self.coming_soon,
+            ProductStatus.EVIDENCE: self.evidence,
+            ProductStatus.RESEARCH: self.research,
         }[status]
 
 
@@ -309,7 +319,20 @@ def build_nfl2k5_product_catalog(
     bindings: list[ProductCapability] = []
     for capability in registry.for_game(GameId.NFL2K5):
         category = product_category(capability)
-        status = product_status(capability.classification)
+        gui = capability.raw.get("gui", {})
+        exposed = isinstance(gui, dict) and gui.get("expose") is True
+        if not exposed:
+            status = (
+                ProductStatus.EVIDENCE
+                if capability.classification
+                in {
+                    Classification.RUNTIME_PROVED,
+                    Classification.OFFLINE_WRITER_PROVED,
+                }
+                else ProductStatus.RESEARCH
+            )
+        else:
+            status = product_status(capability.classification)
         context = FindingsContext(capability, category, status)
         notes: list[str] = []
         for hook in findings_note_hooks:

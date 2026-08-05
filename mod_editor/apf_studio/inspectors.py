@@ -626,9 +626,11 @@ def export_player_rating_sheet(
     writer.writeheader()
     for expected_index, row in enumerate(players):
         raw_ratings = row.fields.get("base_ratings")
-        if not isinstance(raw_ratings, (tuple, list)) or len(raw_ratings) != 28:
+        rating_count = len(PLAYER_RATING_SCHEMA.fields)
+        if not isinstance(raw_ratings, (tuple, list)) or len(raw_ratings) != rating_count:
             raise InspectorError(
-                f"APF player {expected_index} does not expose all 28 base ratings"
+                f"APF player {expected_index} does not expose all {rating_count} "
+                "base ratings"
             )
         rating_values: dict[str, int] = {}
         observed_ids: list[str] = []
@@ -646,7 +648,7 @@ def export_player_rating_sheet(
             observed_ids.append(field_id)
             rating_values[field_id] = value
         expected_ids = [field.field_id for field in PLAYER_RATING_SCHEMA.fields]
-        if observed_ids != expected_ids or len(rating_values) != 28:
+        if observed_ids != expected_ids or len(rating_values) != rating_count:
             raise InspectorError(
                 f"APF player {expected_index} rating order or identity changed"
             )
@@ -1065,8 +1067,8 @@ def inspect_roster(source: ApfSource) -> RosterSnapshot:
                 "Editable: every player exposes 27 executable-named base ratings plus neutral Unknown Rating 24 as exact 0–99 values; an existing native source 100 stays visible and can be preserved or reverted without authoring a new 100.",
                 "Editable now: all 40 existing team display-name allocations and every pure player first/last-name allocation use exact UTF-16BE limits and the runtime-proved token-preserving ROST transport.",
                 "Shared player-name aliases remain editable and disclose how many first/last fields change together; mixed-owner, zero-capacity, unknown, and both team-abbreviation scopes remain runtime-locked.",
-                "Still unmapped: star tier, effective runtime modifiers, appearance, equipment, abilities, and behavior remain separate research lanes.",
-                "Jersey numbers remain read-only because no consumer-backed packed field has been identified.",
+                "This on-disc ROST project route does not author tier, appearance, equipment, abilities, depth, or membership. The separate Save Players tab exposes every exact APFe/raw-save packed field and count-preserving populated-slot swaps in a new raw payload.",
+                "Jersey number remains unavailable in this on-disc project row, but is authorable in Save Players with the exact packed save field and independent byte receipt.",
             ),
         ),
     )
@@ -1232,6 +1234,30 @@ def inspect_playbooks_directors(
                             ),
                         }
                     )
+                elif kind == "formation":
+                    fields.update(
+                        {
+                            "play_membership_count": item.get(
+                                "play_membership_count", 0
+                            ),
+                            "play_membership_indices": tuple(
+                                int(value)
+                                for value in item.get(
+                                    "play_membership_indices", ()
+                                )
+                            ),
+                            "play_membership_names": tuple(
+                                str(value)
+                                for value in item.get(
+                                    "play_membership_names", ()
+                                )
+                            ),
+                            "membership_mask_bit_order": (
+                                "MSB-first within each byte"
+                            ),
+                            "membership_tail_status": "Opaque; preserved exactly",
+                        }
+                    )
                 play_rows.append(
                     _row(
                         f"apf:playbook:{outer}:{kind}:{item['index']}",
@@ -1339,7 +1365,8 @@ def inspect_playbooks_directors(
         playbooks=PagedModel(
             tuple(play_rows),
             (
-                "Read-only: formations, plays, categories, slot references, and every route-node identity are browsable.",
+                "Inspectable: formations include their exact MSB-first play-membership set; plays expose all 11 assignment-chain identities.",
+                "Editable: copy or safely swap an exact stock assignment descriptor and existing chain pointer within MASTER PLAY; route-node opcodes and coordinates remain intentionally uninterpreted.",
                 "Route-node coordinate/action semantics are not decoded well enough for play authoring.",
             ),
         ),

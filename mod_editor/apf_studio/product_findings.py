@@ -183,7 +183,7 @@ def gameplay_snapshot(
         str(gameplay.get("warning", "APF gameplay settings are read-only.")),
         str(draft.get("warning", "APF draft lineage is read-only.")),
         "Human/CPU Catching controls are named, but the final catch/drop consumer and polarity are not proved; no catch-strength preset is enabled.",
-        "The 2,254 player records expose exact 0–99 editing for all 28 independent base ratings in Rosters & Players; this Gameplay view does not duplicate them or confuse player attributes with global sliders.",
+        "The 2,254 player records expose exact 0–99 editing for all 31 independent base ratings in Rosters & Players; this Gameplay view does not duplicate them or confuse player attributes with global sliders.",
     )
     return ProductInspectorSnapshot(
         summary={
@@ -231,6 +231,18 @@ def presentation_snapshot(
                     "runtime_behavior_writer_available": bool(
                         field.get("runtime_behavior_writer_available")
                     ),
+                    "embedded_texture_count": int(
+                        component.get("embedded_texture_count", 0)
+                    ),
+                    "dynamic_logo_sampler_count": int(
+                        component.get("dynamic_logo_sampler_count", 0)
+                    ),
+                    "draw_material_texture_ownership_proved": bool(
+                        component.get("draw_material_texture_ownership_proved")
+                    ),
+                    "runtime_source_texture_family_proved": bool(
+                        component.get("runtime_source_texture_family_proved")
+                    ),
                 },
             )
         )
@@ -259,6 +271,7 @@ def presentation_snapshot(
         ),
         "Season GameCast is a separate presentation system; it is not the seven-part field scorebug.",
         "digital_font is shared globally, so edits may affect UI outside the field scorebug; runtime visibility is not proved.",
+        "The team-logo scene has two exact dynamic logo samplers and no embedded TXTR. Team Logo updates both candidate reservoirs; the runtime cache resolver is still being traced.",
     )
     return ProductInspectorSnapshot(
         summary={

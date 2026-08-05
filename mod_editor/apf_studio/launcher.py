@@ -44,6 +44,12 @@ class XeniaSettings:
         if self.xenia_path is None or not self.xenia_path.is_file():
             return False
         if self.xenia_path.suffix.casefold() == ".exe":
+            # A ``.exe`` is the native direct mode on Windows, where Xenia
+            # Canary only ships as one; demanding a Wine loader there would
+            # make the emulator unconfigurable on its primary OS.  Wine stays
+            # mandatory for a ``.exe`` on every other platform.
+            if platform_compat.IS_WINDOWS:
+                return True
             return (
                 self.wine_path is not None
                 and self.wine_path.is_file()
@@ -54,7 +60,7 @@ class XeniaSettings:
     def configure(self, xenia_path: Path, wine_path: Path | None = None) -> None:
         xenia = self._regular(xenia_path, "Xenia Canary")
         wine: Path | None = None
-        if xenia.suffix.casefold() == ".exe":
+        if xenia.suffix.casefold() == ".exe" and not platform_compat.IS_WINDOWS:
             candidate = wine_path
             if candidate is None:
                 found = shutil.which("wine")
@@ -66,7 +72,9 @@ class XeniaSettings:
             wine = self._regular(candidate, "Wine")
             if not os.access(wine, os.X_OK):
                 raise LaunchError("The selected Wine file is not executable")
-        elif not os.access(xenia, os.X_OK):
+        elif not platform_compat.IS_WINDOWS and not os.access(xenia, os.X_OK):
+            # Windows has no executable permission bit to check; CreateProcess
+            # reports an unloadable image at launch time instead.
             raise LaunchError("The selected Xenia file is not executable")
         self.xenia_path = xenia
         self.wine_path = wine
@@ -85,12 +93,15 @@ class XeniaSettings:
                 return
             xenia_candidate = self._regular(Path(xenia), "Xenia Canary")
             if xenia_candidate.suffix.casefold() == ".exe":
-                if not isinstance(wine, str):
-                    return
-                wine_candidate = self._regular(Path(wine), "Wine")
-                if not os.access(wine_candidate, os.X_OK):
-                    return
-                self.wine_path = wine_candidate
+                # On Windows a ``.exe`` loads natively and no Wine loader is
+                # persisted; elsewhere the saved Wine path is mandatory.
+                if not platform_compat.IS_WINDOWS:
+                    if not isinstance(wine, str):
+                        return
+                    wine_candidate = self._regular(Path(wine), "Wine")
+                    if not os.access(wine_candidate, os.X_OK):
+                        return
+                    self.wine_path = wine_candidate
             elif not os.access(xenia_candidate, os.X_OK):
                 return
             self.xenia_path = xenia_candidate
@@ -184,7 +195,7 @@ class XeniaLauncher:
         environment = os.environ.copy()
         if extra_env:
             environment.update(extra_env)
-        if xenia.suffix.casefold() == ".exe":
+        if xenia.suffix.casefold() == ".exe" and not platform_compat.IS_WINDOWS:
             wine = self.settings.wine_path
             if wine is None:
                 raise LaunchError("Wine is not configured")

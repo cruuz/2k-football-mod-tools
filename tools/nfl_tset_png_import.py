@@ -20,6 +20,7 @@ from pathlib import Path
 import stat
 import struct
 import sys
+from typing import Callable
 import zlib
 
 # The shipped Windows runtime is an embeddable CPython whose ._pth file
@@ -34,6 +35,7 @@ if _here not in _sys.path:
 
 from nfl_outer import parse_archive
 from nfl_txtr import (
+    CompressInfo,
     HEADER,
     TxtrError,
     compress_vc_lz,
@@ -443,16 +445,26 @@ def median_cut_palette(histogram: Counter[tuple[int, int, int, int]],
     return palette
 
 
-def quantize_levels(levels: list[MipLevel]) -> tuple[
+def quantize_levels(levels: list[MipLevel], maximum: int = 256) -> tuple[
     list[tuple[int, int, int, int]], list[bytes], dict[str, int]
 ]:
+    """Quantize one mip chain into at most ``maximum`` shared RGBA entries.
+
+    The default remains 256 so existing proved importers are byte-for-byte
+    stable.  Small fixed VC-LZ allocations can ask for fewer entries when a
+    full palette does not fit; reducing the palette also reduces index entropy
+    and keeps the replacement inside the retail span.
+    """
+
+    require(1 <= maximum <= 256,
+            "quantizer maximum must be from 1 through 256 entries")
     histogram: Counter[tuple[int, int, int, int]] = Counter()
     level_colors: list[list[tuple[int, int, int, int]]] = []
     for level in levels:
         colors = rgba_tuples(level.rgba)
         level_colors.append(colors)
         histogram.update(colors)
-    palette = median_cut_palette(histogram, 256)
+    palette = median_cut_palette(histogram, maximum)
     color_to_index: dict[tuple[int, int, int, int], int] = {}
     total_squared_error = 0
     maximum_channel_error = 0
@@ -485,6 +497,116 @@ def quantize_levels(levels: list[MipLevel]) -> tuple[
         "differing_pixel_count": differing_pixels,
         "total_pixel_count": sum(histogram.values()),
     }
+
+
+@dataclass(frozen=True)
+class BoundedPaletteFit:
+    """Highest-quality deterministic palette tier that fits one VC-LZ span."""
+
+    palette: list[tuple[int, int, int, int]]
+    index_levels: list[bytes]
+    quantization: dict[str, int]
+    decoded: bytes
+    compressed: bytes
+    compression: CompressInfo
+    attempts: tuple[dict[str, object], ...]
+
+
+_BOUNDED_PALETTE_LIMITS = (256, 128, 64, 32, 16, 8, 4, 2)
+
+
+def _is_vc_lz_size_overflow(exc: TxtrError) -> bool:
+    message = str(exc)
+    return (
+        message.startswith("VC-LZ stream needs more than the ")
+        or (message.startswith("VC-LZ stream is ") and " exceeds " in message)
+    )
+
+
+def quantize_levels_to_vc_lz_bound(
+    levels: list[MipLevel],
+    build_decoded: Callable[
+        [list[tuple[int, int, int, int]], list[bytes]], bytes
+    ],
+    *,
+    stream_tag: int,
+    offset_bits: int,
+    max_encoded_size: int,
+) -> BoundedPaletteFit:
+    """Quantize art as richly as practical while honoring a retail VC-LZ cap.
+
+    NFL 2K5's small digit and sleeve resources have fixed compressed spans.
+    A perfectly valid P8 image can therefore be impossible to encode with a
+    256-entry palette even though a visually equivalent lower-color version
+    fits.  Try deterministic quality tiers from richest to smallest and return
+    the first complete stream that independently round-trips inside the cap.
+
+    Only an encoded-size overflow advances to the next tier.  A malformed
+    decoded layout, search guard, or any other codec error still fails closed.
+    """
+
+    require(bool(levels), "bounded quantizer needs at least one mip level")
+    require(max_encoded_size >= 10,
+            "bounded quantizer VC-LZ span is shorter than a usable stream")
+    attempts: list[dict[str, object]] = []
+    tried_entry_counts: set[int] = set()
+    last_overflow: TxtrError | None = None
+    for maximum in _BOUNDED_PALETTE_LIMITS:
+        palette, index_levels, quantization = quantize_levels(levels, maximum)
+        actual_entries = len(palette)
+        # If the input already contains fewer colours than this tier, the same
+        # palette was just tested at the preceding tier.  Do not recompress it.
+        if actual_entries in tried_entry_counts:
+            continue
+        tried_entry_counts.add(actual_entries)
+        decoded = build_decoded(palette, index_levels)
+        try:
+            compressed, compression = compress_vc_lz(
+                decoded,
+                stream_tag=stream_tag,
+                offset_bits=offset_bits,
+                max_encoded_size=max_encoded_size,
+            )
+        except TxtrError as exc:
+            if not _is_vc_lz_size_overflow(exc):
+                raise
+            last_overflow = exc
+            attempts.append({
+                "maximum_palette_entries": maximum,
+                "palette_entries": actual_entries,
+                "result": "vc_lz_overflow",
+            })
+            continue
+        attempts.append({
+            "maximum_palette_entries": maximum,
+            "palette_entries": actual_entries,
+            "result": "fit",
+            "encoded_bytes": len(compressed),
+        })
+        selected_quantization = dict(quantization)
+        if len(attempts) > 1:
+            selected_quantization["requested_palette_limit"] = maximum
+        return BoundedPaletteFit(
+            palette=palette,
+            index_levels=index_levels,
+            quantization=selected_quantization,
+            decoded=decoded,
+            compressed=compressed,
+            compression=compression,
+            attempts=tuple(attempts),
+        )
+
+    # Do not silently turn authored number art into one flat colour just to make
+    # a pathological allocation pass. A genuinely one-colour input was already
+    # attempted at the first tier (its actual palette has one entry); reaching
+    # here means even the minimally useful two-colour representation cannot fit.
+    if last_overflow is not None:
+        raise TxtrError(
+            f"VC-LZ target cannot fit a usable two-color version inside its "
+            f"{max_encoded_size}-byte bound; simplify the image by removing "
+            "texture, noise, or extra transparency detail"
+        ) from last_overflow
+    raise TxtrError("bounded palette quantizer did not produce a candidate")
 
 
 def palette_bytes(palette: list[tuple[int, int, int, int]]) -> bytes:

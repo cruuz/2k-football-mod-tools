@@ -25,6 +25,7 @@ import apf_helmet_color_transport  # type: ignore  # noqa: E402
 import apf_pants_color_transport  # type: ignore  # noqa: E402
 import apf_shoulder_color_transport  # type: ignore  # noqa: E402
 import apf_uniform_mip_patch  # type: ignore  # noqa: E402
+import apf_textlogo_patch  # type: ignore  # noqa: E402
 
 
 CATALOG = PRODUCT_ROOT / "mod_editor" / "data" / "apf2k8_uniform_targets.v1.json"
@@ -184,6 +185,17 @@ def compile_uniform_patch(
     index_0a: Path, png_path: Path, family: str, asset_index: int
 ):
     """Compile one replacement with the proved transport and sanitized pins."""
+
+    if family == "textlogo":
+        result = apf_textlogo_patch.build_patch(index_0a, png_path, asset_index)
+        target = result.manifest.get("family_target", {})
+        if (
+            not isinstance(target, dict)
+            or target.get("asset_index") != asset_index
+            or target.get("selector_slot") != apf_textlogo_patch.SELECTOR_SLOT
+        ):
+            raise UniformTargetError("The wordmark writer resolved another target")
+        return result
 
     row = target_record(family, asset_index)
     if family == "jersey":

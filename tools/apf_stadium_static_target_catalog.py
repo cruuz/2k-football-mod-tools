@@ -27,7 +27,7 @@ from apf_texture_patch import compress_h7a
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_GAME_DIR = ROOT / "extracted/All-Pro Football 2K8 (USA)"
-DEFAULT_REPORT = ROOT / "reports/assets/apf_stadium_static_position_target_catalog.json"
+DEFAULT_REPORT = ROOT / "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json"
 
 SCHEMA = "apf2k8_stadium_static_position_target_catalog/v1"
 SOURCE_PACKS = {

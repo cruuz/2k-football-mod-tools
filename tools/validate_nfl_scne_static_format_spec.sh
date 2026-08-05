@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 
 SPEC='reports/specs/nfl2k5_xbox_static_scne.v1.json'
 EXPECTED_SIZE=47126
-EXPECTED_SHA256='d1e684a0b86c3a933355217174938cb95c5192eb2680c8b9698f7eb15ac39884'
+EXPECTED_SHA256='5947b18a7f9fe4b4f6895ca4ea37e5aadd55edb5d365128f46561011fdf8a01e'
 
 test "$(stat -c %s "$SPEC")" = "$EXPECTED_SIZE"
 test "$(sha256sum "$SPEC" | cut -d' ' -f1)" = "$EXPECTED_SHA256"

@@ -22,50 +22,50 @@
     {
       "id": "jersey_layout",
       "path": "reports/assets/apf_jersey_family_layout.json",
-      "size": 366329,
-      "sha256": "f359a2ecd92e2305e29f2a34f1d0084ee8b2bb277a2f0bd43a1c76e12abb55dc",
+      "size": 366327,
+      "sha256": "b60783b9c47b57e9b9f545e95f5c17d3c850e263e0d7d453aa6c3be4a0f809e4",
       "schema": "apf_jersey_family_layout/v1"
     },
     {
       "id": "pants_layout",
       "path": "reports/assets/apf_pants_family_layout.json",
-      "size": 274896,
-      "sha256": "82241aefe6728a7426552663ee69ecffbdabca01f4359e8322edf75775adf293",
+      "size": 274895,
+      "sha256": "707d916213f04499608b492ce2ea37a0e33b770af0f69c57248755d71ef5c32a",
       "schema": "apf_pants_family_layout/v1"
     },
     {
       "id": "helmet_layout",
       "path": "reports/assets/apf_helmet_family_layout.json",
-      "size": 280394,
-      "sha256": "72bf3efd4495e03fb856e0fb776313c842ebfafeb8d20d19f91318d7161aba03",
+      "size": 280392,
+      "sha256": "29c3f097f63105f0ae2067d8f99f0ce8666e447d8bf13de4b1cb071e9638ed4c",
       "schema": "apf_helmet_family_layout/v1"
     },
     {
       "id": "jersey_roundtrip",
       "path": "reports/assets/apf_jersey_family_patch_roundtrip.json",
-      "size": 5199,
-      "sha256": "e46ca976517b736ffb7b181f1ea812d9146cc1ff660bf789cdb3454d9e179e68",
+      "size": 5198,
+      "sha256": "1273cb27f9869affa3fd4fb69b6ee2b3a3282dafc9e55e918159b6620ff4834a",
       "schema": "apf_jersey_family_patch_roundtrip/v1"
     },
     {
       "id": "pants_roundtrip",
       "path": "reports/assets/apf_pants_family_patch_roundtrip.json",
       "size": 4568,
-      "sha256": "28fa3fe162eea2eb11a152f96b045b324f816b5a512bedabdfc9735bba7c43ca",
+      "sha256": "57faf1c600a306d50c298dc6810640fe886078c789ea0d174df740e9b7b29d08",
       "schema": "apf_pants_family_patch_roundtrip/v1"
     },
     {
       "id": "helmet_roundtrip",
       "path": "reports/assets/apf_helmet_family_patch_roundtrip.json",
-      "size": 5225,
-      "sha256": "ee9980d8d163e247f12a658d570d6a10575ec9000d9e4ab802a4f16800fb1df5",
+      "size": 5224,
+      "sha256": "f85e37695b3b118f2a555e260dbfb6f207165677b68741a5b4c099fad811eb5c",
       "schema": "apf_helmet_family_patch_roundtrip/v1"
     },
     {
       "id": "selector_sharing",
       "path": "reports/assets/uniform_texture_sharing.json",
       "size": 414887,
-      "sha256": "eb37c92a2e2aeaf6d458028e5e5273110c80b3cdbaeb2b5925af99327f4cec6a",
+      "sha256": "4c6557f8e9732267a078ecf42f2d8e8696d7207c9ed6aacd9a76a3e1c67c9910",
       "schema": "uniform_texture_sharing_audit/v1"
     },
     {
@@ -85,22 +85,22 @@
     {
       "id": "shoulder_layout",
       "path": "reports/assets/apf_shoulder_family_layout.json",
-      "size": 345097,
-      "sha256": "a2ea45adb931677ef4d9d9a37530f2acc53013050793a47f41f69c65e8319875",
+      "size": 345091,
+      "sha256": "6899b356c6364fb6f315dcb7ef599572ca1cb5771735a5540fcc70ef202456b8",
       "schema": "apf_shoulder_family_layout/v1"
     },
     {
       "id": "shoulder_layout_tsv",
       "path": "reports/assets/apf_shoulder_family_layout.tsv",
-      "size": 7232,
-      "sha256": "b18408c379ebde4006f7d7cf20688d931820c25062a5b1a1d4ed1d9010ddbc2b",
+      "size": 7226,
+      "sha256": "b95a5342d4b7dd92ad3624aa62f811c743066c5b195d89db33387a7b2bc47dec",
       "schema": "apf_shoulder_family_layout_tsv/v1"
     },
     {
       "id": "shoulder_roundtrip",
       "path": "reports/assets/apf_shoulder_family_patch_roundtrip.json",
-      "size": 5060,
-      "sha256": "5a66993ffb350cb8ad79b677dd22e7b6298b1b83ff175778a0377713e13835f0",
+      "size": 5059,
+      "sha256": "b471dc33cb9f30be45dfbf057219e6f3b8dff9b5be969ef3e66602c229cef2ef",
       "schema": "apf_shoulder_family_patch_roundtrip/v1"
     }
   ],
@@ -2414,7 +2414,7 @@
         [22,"uniform_shoulder_normal_22.iff","0x56b2adc1",518,829440,"b1dd681c02d74b604e07c0570f23111bd3e86ee3d777a9b8325488c5d839597e"],
         [23,"uniform_shoulder_normal_23.iff","0x6bd28471",654,831488,"0f183237376ec907c1343b95a77f3592ad7f9369902159e230ef032929a4324e"]
       ],
-      "controlled_fit_proof": {"fixture_rgba":[255,0,255,255],"contains_retail_pixels":false,"all_24_fixed_allocations_fit_controlled_rebuild":true,"minimum_post_rebuild_slack_bytes":4723,"minimum_slack_asset_index":23,"copied_volume_asset_index":23,"arbitrary_png_fit_guaranteed":false},
+      "controlled_fit_proof": {"fixture_rgba":[255,0,255,255],"contains_retail_pixels":false,"all_24_fixed_allocations_fit_controlled_rebuild":true,"minimum_post_rebuild_slack_bytes":2128,"minimum_slack_asset_index":20,"copied_volume_asset_index":23,"arbitrary_png_fit_guaranteed":false},
       "write_contract": {"source_opened_read_only":true,"output_must_not_exist":true,"source_output_alias_rejected":true,"all_mips_regenerated":true,"inactive_bytes_preserved":true,"h7a_encode_decode_exact":true,"rebuilt_iff_reparsed":true,"footer_preserved_bit_exact":true,"related_parts_preserved_bit_exact":true,"fixed_allocation_overflow_rejected":true,"bytes_outside_selected_allocation_preserved":true,"independent_verifier_rederives_png_mips_and_archive_diff":true},
       "claim_flags": {"format_closed_for_declared_24_slot_family":true,"read_write_byte_roundtrip_proved_all_24":true,"copied_volume_write_proved":true,"arbitrary_png_guaranteed_to_fit":false,"xenia_runtime_visibility":{"proved_for_asset_indices":[],"generalized_all_24":false},"xbox_360_hardware_proved":false,"production_encoder_proved":false,"three_sibling_textures_preserved_all_24":true,"paired_normal_packages_preserved_all_24":true,"paired_normal_authoring_proved":false},
       "known_unknowns": ["No changed shoulder_color asset has a Xenia or Xbox 360 hardware runtime witness.","The deterministic encoder is not a production perceptual BC3 backend.","Arbitrary detailed images may exceed a slot's H7A-compressed fixed allocation and must be refused.","The paired shoulder-normal packages are preserved but their two DXN channel meanings and authoring contract are not mapped.","Selector rewriting and per-team de-aliasing are separate unproved formats.","Bank 0 and bank 1 are exact neutral identifiers; home/away labels are not proved."]

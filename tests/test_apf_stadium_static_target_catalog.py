@@ -7,7 +7,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "tools/apf_stadium_static_target_catalog.py"
-REPORT_PATH = ROOT / "reports/assets/apf_stadium_static_position_target_catalog.json"
+REPORT_PATH = ROOT / "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json"
 
 
 def _module():

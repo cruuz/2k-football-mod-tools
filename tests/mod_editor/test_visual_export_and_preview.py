@@ -49,6 +49,20 @@ class SuggestedFilenameTests(unittest.TestCase):
         self.assertEqual(name, "p8-386-endzone_north_left.png")
         self.assertFalse(_ILLEGAL & set(name))
 
+    def test_the_exact_dm_text_with_the_semicolon_typo_is_still_legal(self) -> None:
+        # The screenshot/report transcribed the final lowercase L as a
+        # semicolon. A semicolon is legal on Windows, so do not guess at the
+        # asset name; remove the genuinely illegal colons and prove the exact
+        # reported default can reach the save dialog.
+        name = _suggested_png_name("p8:386:endzone_north_;eft")
+        self.assertEqual(name, "p8-386-endzone_north_;eft.png")
+        self.assertFalse(_ILLEGAL & set(name))
+
+    def test_every_windows_invalid_punctuation_character_is_removed(self) -> None:
+        name = _suggested_png_name('p8:386:<north>"/south\\\\|?*')
+        self.assertFalse(_ILLEGAL & set(name))
+        self.assertTrue(name.endswith(".png"))
+
     def test_no_catalog_asset_suggests_an_illegal_name(self) -> None:
         catalog = load_nfl2k5_extended_visual_catalog()
         for asset in catalog.assets:
@@ -98,7 +112,7 @@ class DecoderCoverageTests(unittest.TestCase):
 
     def test_an_unknown_kind_still_fails_closed(self) -> None:
         self.assertIn(
-            "Export is not implemented for asset kind", _IO_SOURCE,
+            "No safe export route exists for asset kind", _IO_SOURCE,
             "a kind with no decoder must raise rather than return nothing",
         )
 

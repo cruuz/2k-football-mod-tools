@@ -188,7 +188,7 @@ class Nfl2k5CribProductionCatalogTests(unittest.TestCase):
             36,
         )
 
-    def test_bar_monitor_is_editable_but_other_electronics_stay_export_only(self) -> None:
+    def test_all_498_crib_textures_are_editable(self) -> None:
         bar_monitor = self.catalog.by_selector("crib_scene_texture:room:22")
         self.assertIn("bar_monitor", bar_monitor.material_names)
         self.assertEqual(bar_monitor.status, CribAssetStatus.EDITABLE)
@@ -199,10 +199,12 @@ class Nfl2k5CribProductionCatalogTests(unittest.TestCase):
             "selector": "crib_scene_texture:room:22",
         })
         self.assertIn("recompresses", bar_monitor.authoring_note)
-        self.assertEqual(sum(asset.editable for asset in self.catalog.assets), 129)
+        self.assertEqual(sum(asset.editable for asset in self.catalog.assets), 498)
+        self.assertEqual(sum(not asset.editable for asset in self.catalog.assets), 0)
         trivia = self.catalog.search("trivia machine")
         self.assertTrue(trivia)
-        self.assertTrue(all(not asset.editable for asset in trivia))
+        self.assertTrue(all(asset.editable for asset in trivia[:3]))
+        self.assertTrue(all(asset.editable for asset in trivia))
         ownership = json.loads(Path(
             "reports/experiments/nfl2k5_crib_electronics_ownership.json"
         ).read_text(encoding="utf-8"))
@@ -211,11 +213,15 @@ class Nfl2k5CribProductionCatalogTests(unittest.TestCase):
             for row in ownership["textures"]
         ]
         self.assertEqual(len(electronics), 25)
-        self.assertEqual(
-            [asset.selector for asset in electronics if asset.editable],
-            ["crib_scene_texture:room:22"],
-        )
-        self.assertEqual(sum(not asset.editable for asset in electronics), 24)
+        self.assertTrue(all(asset.editable for asset in electronics))
+        self.assertEqual(sum(not asset.editable for asset in electronics), 0)
+
+        item = self.catalog.by_selector("crib_item_texture:00_helmet")
+        self.assertEqual(item.provider_edit("mine.png")["kind"],
+                         "crib_standalone_texture")
+        external = self.catalog.by_selector("crib_external_texture:7:logo")
+        self.assertEqual(external.provider_edit("mine.png")["kind"],
+                         "crib_standalone_texture")
 
     def test_compact_release_catalog_exactly_matches_audited_reports(self) -> None:
         compact = Nfl2k5CribCatalog.from_compact_catalog(COMPACT_CATALOG_PATH)
@@ -286,8 +292,11 @@ class Nfl2k5CribSyntheticTests(unittest.TestCase):
         for forbidden in ("offset", "span", "sha256", "retail"):
             self.assertNotIn(forbidden, lowered)
         item = self.catalog.by_selector("crib_item_texture:00_helmet")
-        with self.assertRaisesRegex(CribCatalogError, "Coming Soon"):
-            item.provider_edit("replacement.png")
+        self.assertEqual(item.provider_edit("replacement.png"), {
+            "kind": "crib_standalone_texture",
+            "png": "replacement.png",
+            "selector": "crib_item_texture:00_helmet",
+        })
 
     def test_photo_export_and_five_mip_replacement_are_round_trip_safe(self) -> None:
         photo = self.catalog.by_selector("crib_team_photo:00_photo_00")

@@ -29,7 +29,7 @@ SCHEMA = "apf_jersey_family_patch/v1"
 WORKSPACE = Path(__file__).resolve().parents[1]
 CATALOG = WORKSPACE / "reports/assets/apf_jersey_family_layout.json"
 EXPECTED_CATALOG_SHA256 = (
-    "f359a2ecd92e2305e29f2a34f1d0084ee8b2bb277a2f0bd43a1c76e12abb55dc"
+    "b60783b9c47b57e9b9f545e95f5c17d3c850e263e0d7d453aa6c3be4a0f809e4"
 )
 EXPECTED_VOLUME_SHA256 = (
     "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"

@@ -1593,7 +1593,7 @@ all remain inside the 288 authorized POSITION0 bytes. The changed rebuild has
 the catalog target, IFF/H7A bytes, and complete manifest. Run
 `bash tools/validate_apf_stadium_static_target_catalog.sh`; see
 `docs/research/apf_stadium_static_target_catalog.md` and
-`reports/assets/apf_stadium_static_position_target_catalog.json`, then run
+`mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json`, then run
 `bash tools/validate_apf_stadium_catalog_position_patch.sh`; see
 `docs/research/apf_stadium_catalog_position_writeback.md` and
 `reports/assets/apf_scne_catalog_position_roundtrip.json`.

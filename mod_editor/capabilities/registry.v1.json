@@ -21,12 +21,12 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Every indexed AUSB substream has a packet-bounded exact-slot writer. Replace accepts user-supplied pre-encoded RIFF XMA1, or one exact PCM16 WAV encoded privately by a user-configured external tool, and leaves descriptor boundaries and the source game unchanged. No encoder ships with Mod Studio; final XMA1 validation is identical for both routes."
+        "reason": "Every indexed AUSB substream has a packet-bounded exact-slot writer. Replace accepts user-supplied pre-encoded RIFF XMA1, or ordinary decodable audio conformed privately to the exact target PCM shape before a user-configured external XMA1 encoder runs, and leaves descriptor boundaries and the source game unchanged. External-encoder output must decode back and pass an alignment-aware authored-signal artifact gate before the ordinary exact-slot gate; direct pre-encoded XMA remains byte-preserved. No encoder ships with Mod Studio."
       },
       "id": "apf2k8.audio.ausb_xma_export",
       "input_constraints": [
         "Use exact outer, inner, and substream indices from the pinned 20-descriptor AUSB inventory.",
-        "Final replacement must be RIFF XMA1 with the exact packet allocation, channel count, sample rate, and decoded sample count of the selected slot. A selected-sound PCM16 WAV may be passed through a user-configured external encoder, but its output receives no trust or relaxed gate.",
+        "Final replacement must be RIFF XMA1 with the exact packet allocation, channel count, sample rate, and decoded sample count of the selected slot. A selected ordinary audio file (including WAV, MP3, FLAC, OGG or M4A) is conformed to target PCM before the user-configured encoder runs; its output must decode back and pass silence, channel, alignment/rate/pitch, level, clipping, DC, and tail checks before the unchanged exact-slot gate.",
         "All 45,514 semantic rows and 45,513 canonical physical ranges are bounded; the only cross-volume row is split transactionally and one cwdloop range has two disclosed owners.",
         "The conservative FFmpeg complete-decode gate rejects inputs it cannot decode; 12 of 30 retail jukebox sides expose current decoder limitations.",
         "Descriptor boundaries, duration values, routing, and source audio are never stored in a shareable project.",
@@ -36,7 +36,7 @@
         "Before another soundtrack runtime attempt, obtain a wholly independent unmistakable XMA1 replacement or trace the mixer/output route; do not repeat the inconclusive near-source capture loop.",
         "Runtime-spot-check one non-soundtrack bank family in Xenia without generalizing from soundtrack selection.",
         "Runtime-test one legally obtained external XMA1 encoder configuration without bundling it, then document only the exact argv form and slot shapes that pass; synthetic bridge tests are not encoder-compatibility proof.",
-        "Design an explicit replacement-pack v2 before allowing PCM batch input; Alpha 27 folder/ZIP batches remain pre-encoded XMA1 only, and FLAC/MP3 remain unsupported.",
+        "Keep folder/ZIP packs limited to pre-encoded XMA1 or exact PCM16 WAV; selected ordinary WAV/MP3/FLAC/OGG/M4A files use the separate conform-and-external-encoder route, while mixed-format ordinary-audio packs remain unsupported.",
         "Improve decoder coverage without weakening packet, allocation, duration, alias, or retail-byte gates.",
         "Recover friendly cue identities and routing where possible; exact-slot writing does not require bank repacking."
       ],
@@ -81,7 +81,7 @@
         "resource": "AUSB descriptors with indexed ranges in linked external .bin banks",
         "retail_file": "All-Pro Football 2K8 (USA)/0A"
       },
-      "summary": "Browse, play, export, replace, and revert any of 45,514 indexed AUSB soundtrack, commentary, speech, PA, music, and presentation substreams using strict exact-slot XMA1, with optional selected-sound PCM16 authoring through a user-configured external encoder.",
+      "summary": "Browse, play, export, replace, and revert any of 45,514 indexed AUSB soundtrack, commentary, speech, PA, music, and presentation substreams using strict exact-slot XMA1, with ordinary selected-sound audio conformed to target PCM before a user-configured external encoder runs.",
       "surface": "audio",
       "title": "APF AUSB exact-slot XMA1 editor",
       "validation_command": "bash tools/validate_apf_ausb_exact_slot.sh"
@@ -105,19 +105,19 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "All 2,261 standalone AUDO payloads are contiguous, uncompressed, non-overlapping 0A spans. Pre-encoded RIFF XMA1 or one exact PCM16 WAV passed through a user-configured external encoder can replace one exact-size slot after the same strict shape, packet, source-packet, and complete-decoder validation. No encoder ships with Mod Studio."
+        "reason": "All 2,261 standalone AUDO payloads are contiguous, uncompressed, non-overlapping 0A spans. Pre-encoded RIFF XMA1 or ordinary decodable audio conformed privately to the exact target PCM shape before a user-configured external encoder runs can replace one exact-size slot after strict shape, packet, source-packet, and complete-decoder validation. External-encoder output must also decode back and pass the alignment-aware authored-signal artifact gate; direct pre-encoded XMA remains byte-preserved. No encoder ships with Mod Studio."
       },
       "id": "apf2k8.audio.xma_export",
       "input_constraints": [
         "Use the pinned USA retail 0A archive with its sibling volumes present.",
         "AUDO export remains available as original .xma or decoder-verified WAV.",
-        "Final replacement input must be RIFF XMA1 with one stream, target-exact channels, sample rate, encoded byte length, and decoded sample count within the 127-sample XMA tail tolerance. A selected-sound PCM16 WAV may first be encoded by a user-configured external tool; the output crosses this identical final gate.",
+        "Final replacement input must be RIFF XMA1 with one stream, target-exact channels, sample rate, encoded byte length, and decoded sample count within the 127-sample XMA tail tolerance. A selected ordinary audio file may first be conformed to exact target PCM and encoded by a user-configured external tool; that route additionally decodes and compares the output with the authored PCM for gross artifact families before crossing the identical final gate.",
         "Every 0x800-byte packet must classify as XMA1 with metadata 2, sequence 0, and skip 0. The supplied wrapper is discarded; projects store only the user's validated raw packet payload.",
-        "Selected-sound PCM16 WAV authoring requires a separately installed external XMA1 encoder. Mod Studio ships none. FLAC/MP3 and batch PCM input remain unavailable; AUSB containers and physical external banks are not whole-bank editors."
+        "Selected-sound ordinary-audio authoring requires a separately installed external XMA1 encoder. Mod Studio ships none. WAV, MP3, FLAC, OGG, M4A and other supported files are conformed individually; batch packs remain pre-encoded XMA1 or exact PCM16 WAV. AUSB containers and physical external banks are not whole-bank editors."
       ],
       "portme": [
         "Runtime-test one legally obtained external XMA1 encoder configuration and document its exact argv/slot compatibility without redistributing the tool; synthetic bridge tests prove plumbing only.",
-        "Design a bounded replacement-pack v2 before adding batch PCM input, and keep FLAC/MP3 conversion outside the exact PCM16 admission boundary.",
+        "Keep folder/ZIP packs limited to pre-encoded XMA1 or exact PCM16 WAV; selected ordinary WAV/MP3/FLAC/OGG/M4A files use the separate conform-and-external-encoder route, while mixed-format ordinary-audio packs remain unsupported.",
         "For a future audible-consumption proof, use a quieter route or disabled soundtrack, 10-20 repeated triggers, and a sharply distinctive compatible cue; the completed five-trigger Schedule A/B was boot-compatible but acoustically inconclusive.",
         "Extend typed multi-pack overlays and exact substream validation to paired soundtrack and other AUSB banks without repacking or changing boundaries."
       ],
@@ -152,7 +152,7 @@
         "resource": "Standalone AUDO inner resources containing XMA1 packets",
         "retail_file": "All-Pro Football 2K8 (USA)/0A"
       },
-      "summary": "Browse/export all 2,261 standalone AUDO sounds and replace any one with target-exact XMA1, optionally authored from one exact PCM16 WAV through a user-configured external encoder, using a reversible replacement-only project and typed 0A span build.",
+      "summary": "Browse/export all 2,261 standalone AUDO sounds and replace any one with target-exact XMA1, optionally authored from ordinary audio conformed to target PCM before a user-configured external encoder runs, using a reversible replacement-only project and typed 0A span build.",
       "surface": "audio",
       "title": "APF standalone AUDO export + exact-slot XMA1 replacement",
       "validation_command": "bash tools/validate_apf_audo_exact_slot.sh"
@@ -308,6 +308,112 @@
     },
     {
       "backend": {
+        "command": "python3 tools/apf_custom_team_appearance_patch.py --index <0A> --recipe <appearance.json> --output-volume <new-0A> --manifest <manifest.json>",
+        "module": "tools/apf_custom_team_appearance_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/research/apf_custom_team_appearance.md",
+        "docs/product/APF_UNIFORM_EQUIPMENT_COLORS.md",
+        "tests/mod_editor/test_apf_custom_team_appearance_patch.py",
+        "tests/mod_editor/test_apf_custom_team_appearance_gui.py",
+        "tests/mod_editor/test_apf_uniform_equipment_colors.py",
+        "tests/mod_editor/test_apf_uniform_equipment_colors_gui.py",
+        "tests/test_apf_save_custom_team_appearance.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "The Uniforms & Equipment tab exposes independent HOME/AWAY facemask-bar and Team-turtleneck palette selectors for all 40 teams, with exact swatches and selector-only writes. Its neighboring Custom Team Appearance editor exposes the larger palette/helmet/crest record only for user slots 32 through 39 after re-resolving unique ROST pointer ownership. Both stage canonical replacement-only JSON through the same fixed-allocation ROST build. Raw Roster Save remains restricted to user-facing IDs 24 through 31 / save-local slots 32 through 39 and writes only a new payload plus independently verified receipt. When appearance is staged with the fixed full-shell Team Logo profile, the headless composite build owns outer 1126 alongside the crest package, cache pair, and outer-1310 carrier."
+      },
+      "id": "apf2k8.colors.uniform_selector_appearance_custom_team",
+      "input_constraints": [
+        "For every built-in or custom team 0 through 39, Equipment Colors may change only HOME/AWAY helmet selector slot 3 byte 6 (facemask bar) and selector slot 0 byte 2 (players whose turtleneck setting is Team), each to palette index 0..9. Both complete 0x30 palettes, metadata bytes +0x28..+0x2F, and every unselected selector byte remain exact.",
+        "APF visor appearance remains the separate per-player None, Clear, or Dark enum with hardcoded tint vectors; no per-uniform visor-color field is exposed.",
+        "Only custom-team slots 32 through 39 are accepted; team-to-config, config-to-palette, and config-to-selector pointers must resolve aligned inside the proved tables with unique ownership.",
+        "HOME and AWAY each contain exactly ten unsigned 32-bit ARGB values. The final eight bytes of each 0x30 palette record remain byte-exact metadata.",
+        "Helmet and crest selectors are exactly eight bytes. Helmet asset byte 0 is limited to 0..23, crest catalog byte 0 to 0..117, helmet byte 1 is the proved shell palette index, and all remaining selector bytes are preserved or explicitly authored as opaque values.",
+        "The 2017 Eagles preset preserves each selected helmet asset and complete helmet-selector tail, selects crest catalog 30, applies the previously observed crest-routing tail 00 01 00 09 00 00 00 without naming its individual bytes, and uses shell palette index 8 with FF004C54 midnight green in both banks.",
+        "The source volume is read-only, output allocation is fixed, H7A is token-preserving, projects carry no source bytes, and copied output must be independently reopened and redecoded.",
+        "A Team Logo build with a staged appearance composes crest package, custom-team ROST, and logo cache into one new copied 0A through one exclusively owned private intermediate.",
+        "A raw Roster.ROS must retain the root at +4, exact table counts, independently resolved tables 4/16/17/19, aligned bounds, unique selected-record ownership, and user-team category 2 for slots 32 through 39.",
+        "Raw-save edits authorize only ten HOME and ten AWAY ARGB dwords plus four exact eight-byte selectors: a 112-byte union per selected team. The inspected source SHA must still match, output and receipt must be new/non-aliasing, and an independent reopen must verify every changed byte.",
+        "CON, LIVE, and PIRS STFS packages are inspect-only because safe writeback also requires payload reinjection, STFS rehashing, and resigning."
+      ],
+      "portme": [
+        "Establish emulator consumption and gameplay visibility separately from the exact headless file build, then repeat on user-owned Xbox 360 hardware before claiming hardware parity.",
+        "Trace the remaining opaque selector bytes separately; slot 3 byte 6 is now proved as facemask-bar color and slot 0 byte 2 as Team-turtleneck color, while the Custom Team Appearance editor preserves or explicitly authors every other opaque byte."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Projects may distribute canonical replacement-only appearance JSON and user-authored crest art, never extracted ROST entries, raw saves, STFS packages, palettes, selector records, textures, or copied game volumes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/research/apf_custom_team_appearance.md",
+          "docs/mod_editor/apf2k8_full_shell_all_team_gate.json",
+          "docs/mod_editor/apf2k8_full_shell_visual_gate.json"
+        ],
+        "scope": "When composed with the v24 full-shell route, the headless build compiles all 118 source-resolved crest-package outers, cache outers 171/213, shell outer 1310, and this optional appearance outer 1126 before one publication. Every rebuilt package reparses; exact cache, appearance, and shell-route verifiers preserve the pristine source. The exact atomically published candidate passed an independent 118-package/236-layer reopen and a 10-view high/low static asset-space Eagles visual gate; Spark review of both hash-pinned contact sheets found coherent side/front/rear/crown coverage without visible UV artifacts or low-LOD breaks. No Xenia, Wine, emulator, controller, or FIFO participated. This static proof does not establish runtime consumption, gameplay visibility, package-versus-cache runtime ownership, other consumers, or Xbox 360 hardware behavior.",
+        "status": "partial"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "0..39 with independent HOME/AWAY values",
+            "name": "uniform_equipment_color_team",
+            "required": false
+          },
+          {
+            "allowed": "palette index 0..9 at helmet slot 3 byte 6 and turtleneck slot 0 byte 2",
+            "name": "facemask_and_team_turtleneck_colors",
+            "required": false
+          },
+          {
+            "allowed": "32..39",
+            "name": "custom_team_slot",
+            "required": false
+          },
+          {
+            "allowed": "HOME or AWAY",
+            "name": "uniform_bank",
+            "required": true
+          },
+          {
+            "allowed": "exactly 10 unsigned ARGB dwords",
+            "name": "palette",
+            "required": true
+          },
+          {
+            "allowed": "exactly 8 bytes with bounded asset byte 0",
+            "name": "helmet_and_crest_selectors",
+            "required": true
+          }
+        ],
+        "notes": "HOME/AWAY ownership is statically closed for all 40 teams. Helmet slot 3 byte 6 owns the facemask-bar palette index and slot 0 byte 2 owns the Team-turtleneck palette index. The larger custom-team editor additionally names helmet asset byte 0, helmet shell palette byte 1, and crest catalog byte 0; its other selector bytes remain opaque."
+      },
+      "source_container": {
+        "format": "APF ROST inside fixed IFF/H7A outer entry 1126 in 0A, or raw user-owned Roster.ROS; STFS packages are inspect-only",
+        "hash_pins": [
+          "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+          "e98dd07b38caa73ea2ce91eed19bef68896f9b63830a9169af4b7f22d8788cc7",
+          "e959d3067ebcdbeb4f08979fa74d9fa61cf90fd91b90793863e6a3313be7f7ff"
+        ],
+        "resource": "ROST root tables 4, 16, 17, and 19 for all 40 game teams; larger custom-team and raw-save authoring remains restricted to slots 32..39, with raw-save user IDs 24..31 mapped to that range",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A or a user-owned raw APF Roster.ROS"
+      },
+      "summary": "Edit independent HOME/AWAY facemask and Team-turtleneck colors for all 40 teams, plus the larger safe custom-team palette/helmet/crest records for slots 32..39, through the common verified 0A ROST build or the bounded raw Roster.ROS path.",
+      "surface": "uniforms",
+      "title": "APF uniform equipment colors and custom-team appearance",
+      "validation_command": "python3 tools/validate_apf_custom_team_appearance.py"
+    },
+    {
+      "backend": {
         "command": "python3 tools/apf_uniform_inventory.py <0A> --report <inventory.json> --packages-tsv <packages.tsv> --textures-tsv <textures.tsv> --team-assets-tsv <team-assets.tsv> --logo-cache-tsv <logo-cache.tsv> --sample-dir <sample-dir>",
         "module": "tools/apf_uniform_inventory.py",
         "operation": "inspect"
@@ -322,7 +428,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "view",
-        "reason": "The two uniform selector banks and byte-zero asset indices are mapped, but their remaining seven bytes are opaque."
+        "reason": "The two uniform selector banks and byte-zero asset indices are mapped. Bytes 1 through 4 are now known to be colour indices, observed in the emulator: setting byte 1 to 4 for all twenty-four teams recoloured the Americans helmet, jersey and number together. What each index VALUE selects is still unmapped and bytes 5 through 7 remain opaque, so this stays a viewer."
       },
       "id": "apf2k8.colors.uniform_selector_bytes",
       "input_constraints": [
@@ -330,7 +436,7 @@
         "Preserve all seven other bytes and both banks byte-exact."
       ],
       "portme": [
-        "Recover material color/style semantics for selector bytes 1 through 7.",
+        "Map what each colour index VALUE selects for selector bytes 1 through 4, and recover semantics for bytes 5 through 7.",
         "Prove which records are safe to change and how user-team saves override disc defaults."
       ],
       "public_distribution": {
@@ -669,7 +775,7 @@
       "summary": "Replace one proven APF field-art base texture (endzone, pc_field_goal, the practice overlays, or divots) with an exact-dimension RGBA PNG in a new copied 0A while byte-preserving the packed mip tail, every sibling part, and every unrelated archive entry.",
       "surface": "stadiums_fields",
       "title": "APF bounded field-art base-texture PNG writer",
-      "validation_command": "python3 tools/apf_field_art_verify.py"
+      "validation_command": "python3 tools/validate_apf_field_art_product.py"
     },
     {
       "backend": {
@@ -885,27 +991,40 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "reports/assets/apf_logo_roundtrip.json",
+        "docs/mod_editor/high_resolution_texture_authoring.md",
+        "docs/mod_editor/apf2k8_logo_surface_ownership.md",
+        "docs/mod_editor/apf2k8_retail_crest_channel_audit.json",
+        "tests/apf_helmet_crest_wrap_test.py",
+        "tests/apf_helmet_crest_independent_verify_test.py",
+        "tests/apf_helmet_shell_static_proof_test.py",
         "tests/apf_logo_patch_test.py",
-        "tests/mod_editor/test_apf_logo_patch.py"
+        "tests/apf_crest_box_patch_test.py",
+        "tests/mod_editor/test_apf_all_crest_slots.py",
+        "tests/mod_editor/test_apf_logo_patch.py",
+        "tests/mod_editor/test_texture_master.py",
+        "tests/mod_editor/test_texture_master_facades.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "The exact uniform_logo_01 team-logo TXTR, the shared texture that is the helmet crest, has a fail-closed copy-only writer that rewrites the logo_l0 base level and, when a second PNG is supplied, co-writes the sibling logo_l1 base level with the same retail Xenos 4_4_4_4 encoder (each a 512x512 RGBA PNG); each written layer's 0x2C000 packed mip tail is byte-preserved, and when the logo_l1 PNG is omitted the whole logo_l1 layer is byte-preserved. It is paired with an independent full-volume byte-diff verifier that confirms only the intended entry changed; source-derived preview, Revert, and a copied-0A build are exposed. Runtime visibility on the helmet is not claimed without a Xenia capture, and this writer does not cover the scorebug/logocache path (see apf2k8.logos_cards.team_logo_cache)."
+        "reason": "The Team Logo panel resolves all 118 uniform_logo_00..117 packages from the loaded archive. One staged 512x512 RGBA crest is mirrored into both logo_l0 and logo_l1 in the selected package and the matching two uniform_logocache layers. Crest selector slot 5 links package index N to the same index N in the statically mapped frontend LOGOS / Team Select cache. The independent rectangular uniform_textlogo family uses selector slot 6 and is edited only in Wordmarks; Team Logo never resizes or writes it. Both edited 0x2C000 packed mip tails are regenerated from the new base. The source stays read-only, package and cache writers publish a new copied 0A, and the cache stage is re-read by a separately implemented full-volume verifier. For front_crown_to_rear_v1, Normal logo (recommended) contains ordinary artwork, requires confirmation of rendered shell plus red-region/green-region detail anchors, shows a palette-mapped material preview and error, and converts to joint-quantized four-bit semantic weights; APF region mask (advanced) strictly requires the Xenos lattice, zero blue, a red/green unit simplex, no hidden transparent color, and nonempty art. Arbitrary source RGB is never passed through or claimed to render literally. Place on helmet then auto-fits the semantic mask on a labeled FRONT / CROWN to REAR canvas and exposes direct X/Y drag, independent Width/Height, Rotation, Reset, and Auto-fit controls. Nearest-neighbour transforms preserve region-mask values; clipped/off-canvas art fails closed. Reopening during the same editing session reuses the normalized original import plus the last transform instead of resampling flattened output; the superseded one-shot fit control is hidden and disconnected. After an external import, Save high-resolution authoring master creates a non-overwriting sidecar with the exact source, composed transform, semantic pipeline, staged native mask, and direct 2x/4x source render; later built-in pixel edits are explicit native raster layers. The profile routes the exact retail shell atlas to the existing crest material in outer 1310 and neutralizes the old bounded overlay with in-range degenerate indices. Before publication it migrates both l0/l1 layers of all 118 packages to that shell atlas, preserving every non-selected retail mask's RGBA values and physical side-logo placement; the selected package receives the full-shell atlas while its frontend cache keeps the undistorted semantic design. It creates no Xenia patch and does not edit default.xex. Exact all-package/cache/shell-route receipts and source-preservation checks pass headlessly; the exact v24 published candidate also passes its independent 236-layer reopen and 10-view high/low static Eagles visual gate. The frontend cache path is statically mapped, but changed-logo runtime consumption, gameplay visibility, the scorebug package-versus-cache resolver, Xbox 360 hardware behavior, and independent package-versus-cache consumption remain unproved."
       },
       "id": "apf2k8.logos_cards.team_logo",
       "input_constraints": [
-        "Input must be an exact 512x512 RGBA PNG for uniform_logo_01.iff outer 36, inner 1 logo_l0 (the shared team-logo/helmet-crest base level); an optional second 512x512 RGBA PNG co-writes inner 0 logo_l1, the byte-identical sibling layer.",
-        "The targets are tiled Xenos 4_4_4_4 textures (16-bit RGBA, one nibble per channel); PNG channels are quantized to 4 bits, so inspect the reported decode-back error before release. No other logo descriptor is authorized.",
+        "Input must be one exact 512x512 RGBA PNG for a source-resolved uniform_logo_00.iff through uniform_logo_117.iff package. The same selected crest is written to both named layers, logo_l0 and logo_l1.",
+        "Both targets are tiled Xenos 4_4_4_4 textures (16-bit RGBA, one nibble per channel); PNG channels are quantized to 4 bits, so inspect the reported decode-back error before release. Team-owned slots are named from the source selector graph; the other game-library slots retain index-only labels.",
         "The source 0A is read-only, output paths must be new and non-aliasing, and the rebuilt H7A/IFF must fit the original fixed outer allocation.",
-        "Each written layer's 0x2C000 packed mip tail is byte-preserved (not regenerated); when the optional logo_l1 PNG is omitted the entire sibling logo_l1 layer is byte-preserved. Every unrelated archive part and every byte outside the fixed replacement allocation must remain identical."
+        "Each written layer's complete 0x2C000 packed mip tail is regenerated from the replacement base. Every unrelated archive part and every byte outside the fixed replacement allocation must remain identical.",
+        "The fixed front_crown_to_rear_v1 profile routes the stock high/low helmet-shell UV atlas to the existing crest material in outer 1310. Normal-logo import high-quality-contains ordinary art, requires confirmed shell plus two detail anchors, and converts it to a previewed joint-quantized red/green APF mask. Advanced import accepts only exact Xenos four-bit red/green weights with zero blue and rejects a weight sum above one or hidden transparent RGB. Place on helmet auto-fits only that semantic output, then exposes direct X/Y drag, independent Width/Height, Rotation, Reset, and Auto-fit on a labeled FRONT / CROWN to REAR canvas. It stages only exact 512x512 semantic RGBA and refuses empty or clipped/off-canvas art. Every full-shell build first compiles all 118 uniform_logo packages in memory: the selected l0/l1 receive one fixed-coordinate bilateral shell atlas, every non-selected retail l0/l1 is RGBA-preserving migrated from its original draw-2 Y/Z placement, and only the selected uniform_logocache pair receives the undistorted semantic design. The old draw-2 overlay becomes zero-triangle degenerates; shell vertices, indices, UVs, and accessory draws stay exact. It creates no Xenia patch and never modifies default.xex.",
+        "The fixed-coordinate atlas compiler rejects a design, package migration, compression result, cache result, or shell route before publication unless every fixed allocation reparses and all independent invariants pass.",
+        "A .2ktexmaster is a separate user-authored sidecar, not a larger native game texture or RPCS3 pack. Existing project v1 archives retain native replacement PNGs only."
       ],
       "portme": [
-        "Validate the changed copied volume in Xenia and on user-owned hardware before describing any in-game/runtime effect as proved.",
-        "Resolve the uniform_logocache.iff runtime lifecycle before claiming scorebug visibility; the scorebug logo is not independently editable from the crest, and whether the runtime samples the package or the cache is the package-vs-cache-vs-both Xenia differential.",
-        "Implement 4_4_4_4 packed-MIP regeneration; the 0x2C000 mip tail is currently byte-preserved, not regenerated from the new base."
+        "Treat the current v24 static asset-space proof separately from any future runtime-consumption or gameplay-visibility experiment.",
+        "Run package-only and cache-only differentials before assigning independent ownership to helmet, scorebug, team-select, or uniform-preview surfaces.",
+        "Validate the copied volume on user-owned Xbox 360 hardware before claiming hardware parity; this editor creates no emulator patch."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -914,30 +1033,34 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "No APF team-logo replacement is runtime-proved; the offline writer and its full-volume verifier prove the exact logo_l0 (and, when supplied, logo_l1) bytes changed, but no Xenia or hardware capture shows the helmet crest or the scorebug in game.",
-        "status": "not-tested"
+        "evidence": [
+          "docs/research/apf_custom_team_appearance.md",
+          "docs/mod_editor/apf2k8_full_shell_all_team_gate.json",
+          "docs/mod_editor/apf2k8_full_shell_visual_gate.json"
+        ],
+        "scope": "The exact headless editor build and independent verifiers prove the source stayed unchanged, output publication was atomic, and only the authorized package/cache/appearance/geometry outers changed. The v24 route independently proves a fixed-coordinate bilateral semantic bake into the noncollapsed, consistently oriented, nonoverlapping stock high/low shell atlas; exact shell vertices, indices, UVs, accessory draws, and sibling blocks; and a zero-triangle neutralized overlay. All 118 package allocations recompressed and reparsed before publication. The exact published candidate passed an independent 118-package/236-layer reopen and a 10-view high/low static asset-space Eagles visual gate; Spark found coherent shell-spanning side/front/rear/crown coverage without visible UV artifacts or low-LOD breaks. Static XEX ownership maps uniform_logocache to the frontend LOGOS / Team Select path. No Xenia, Wine, emulator, controller, or FIFO participated. Changed-logo runtime consumption, gameplay visibility, package-versus-cache runtime ownership, the scorebug resolver, every catalog slot, and Xbox 360 hardware remain unproved.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "uniform_logo_01.iff outer 36 / inner 1 logo_l0 base (optional sibling inner 0 logo_l1 base)",
+            "allowed": "source-resolved uniform_logo_00.iff through uniform_logo_117.iff; mirrored logo_l0 + logo_l1 bases and regenerated packed mip tails",
             "name": "target",
             "required": true
           }
         ],
-        "notes": "The team logo is a single shared texture that also feeds the helmet crest; matching a logo name elsewhere does not authorize replacement, and per-team logo slots are not yet proved."
+        "notes": "All 118 package slots are writable through the same bounded route. Built-in team labels come from the source selector graph; unassigned/game-library slots are labeled only by index. One staged crest is mirrored into l0 and l1 and coupled to the same catalog index in uniform_logocache."
       },
       "source_container": {
-        "format": "APF uniform_logo_01.iff TXTR inside copied 0A volume",
+        "format": "APF uniform_logo_00..117.iff TXTR packages inside copied 0A volume",
         "hash_pins": [
           "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
           "5683eb73e670d9ece595f707f15d9302522a5243b7fb872f70e3cd31a5632287"
         ],
-        "resource": "outer 36 uniform_logo_01.iff, inner 1 logo_l0 and sibling inner 0 logo_l1, 512x512 tiled Xenos 4_4_4_4 base levels each with a packed mip tail",
+        "resource": "118 source-resolved uniform_logo_NN.iff packages, each carrying named logo_l0 and logo_l1 512x512 tiled Xenos 4_4_4_4 levels plus packed mip tails",
         "retail_file": "All-Pro Football 2K8 (USA)/0A"
       },
-      "summary": "Replace the exact APF team-logo crest (uniform_logo_01 logo_l0, the shared helmet-crest base level, with optional co-write of the sibling logo_l1 base) with 512x512 RGBA PNG(s) in a new copied 0A while byte-preserving each written layer's packed mip tail and every unrelated archive part.",
+      "summary": "Replace any APF selector-slot-5 team crest and co-write its linked statically mapped frontend/Team Select cache pair. The separate selector-slot-6 wordmark is unchanged. The full-shell profile converts and places ordinary art as a strict semantic region mask, bakes the selected design bilaterally into the exact retail high/low shell atlas, migrates all other retail packages before enabling the shared material route, neutralizes the bounded overlay, and publishes one new copied 0A only after every fixed package fits and reparses. It creates no Xenia patch and does not edit default.xex.",
       "surface": "logos_cards",
       "title": "APF bounded team-logo PNG writer",
       "validation_command": "bash tools/validate_apf_logo_patch.sh"
@@ -950,26 +1073,28 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
-        "reports/assets/apf_logocache_roundtrip.json"
+        "reports/assets/apf_logocache_roundtrip.json",
+        "tests/apf_logocache_patch_test.py",
+        "tests/mod_editor/test_apf_team_logo_gui.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "The prebuilt, runtime-resident uniform_logocache aggregate (outer 171 uniform_logocache.iff directory + outer 213 uniform_logocache.cdf payload) holds the same team-logo textures as the packages, so writing one catalog index here puts the edit wherever the runtime samples the cache. A fail-closed copy-only writer rewrites the logo_l0 base level (and, when a second PNG is supplied, logo_l1) of one catalog index inside a copied volume, byte-preserves every DRAM part, every packed mip tail, and every other catalog entry, updates only the affected auxiliary records, recompresses each edited VRAM part with that part's original H7A shift, and fails closed if the repacked payload would exceed its fixed 0x9E0800 allocation; an independent verifier (apf_logocache_verify.py) reproves the change with its own F0985030/H7A parse, and source-derived preview, Revert, and a copied-0A build are exposed. Whether the team-select grid, scorebug, or helmet crest samples this cache or a freshly package-loaded texture is unproved pending a Xenia capture; no in-game visibility is claimed."
+        "reason": "The prebuilt uniform_logocache aggregate contains 118 catalog indices x logo_l0/logo_l1 and is statically mapped by the XEX to the frontend LOGOS / Team Select path. Crest selector slot 5 links package index N to cache index N. The Team Logo build writes the same staged 512x512 crest into both cache layers at the selected index after writing both layers in its matching uniform_logo_NN package. The independent selector-slot-6 uniform_textlogo wordmark stays under Wordmarks and is never derived from the square crest. Both edited cache mip tails are regenerated; every DRAM part and every other catalog entry stays byte-identical. The cache writer preserves its fixed allocation and original H7A shift, then apf_logocache_verify.py independently reparses all 236 layers and re-derives the intended base/mip changes. The typed helmet-crest composite dispatches the raw directory/payload pair to this verifier instead of treating them as ordinary IFF entries. Exact offline verification does not prove changed-logo runtime consumption, package-versus-cache runtime ownership, gameplay visibility, or the scorebug resolver."
       },
       "id": "apf2k8.logos_cards.team_logo_cache",
       "input_constraints": [
-        "Input must be an exact 512x512 RGBA PNG for catalog index N's N_logo_l0 base level inside uniform_logocache (0 <= N <= 117); an optional second 512x512 RGBA PNG co-writes N_logo_l1. No other slot is authorized.",
+        "Input must be one exact 512x512 RGBA PNG for catalog index N (0 <= N <= 117); the Team Logo workflow mirrors it into both N_logo_l0 and N_logo_l1.",
         "The cache is a directory + payload pair: outer 171 uniform_logocache.iff (40,960 B, magic F0985030) and outer 213 uniform_logocache.cdf (10,356,736 B = 0x9E0800), 118 catalog indices x {logo_l0, logo_l1} Xenos 4_4_4_4 512x512 with packed mip tails; PNG channels are quantized to 4 bits, so inspect the reported decode-back error before release.",
         "The source 0A is read-only, output paths must be new and non-aliasing, and the recompressed payload must fit the fixed 0x9E0800 outer allocation or the writer fails closed.",
-        "Every DRAM part, every packed mip tail, and every other catalog entry are byte-preserved; only the affected auxiliary records and the edited VRAM base level(s) change, and every byte outside the two fixed extents (outer 171 and outer 213) remains identical."
+        "Every DRAM part and every other catalog entry are byte-preserved. The selected l0/l1 base levels, their regenerated packed mip tails, and required auxiliary records may change; every byte outside the two fixed extents (outer 171 and outer 213) remains identical."
       ],
       "portme": [
-        "Validate the changed copied volume in Xenia and on user-owned hardware before describing any in-game/runtime effect as proved.",
         "Run the package-only / cache-only / both Xenia differential to identify, per surface (frontend team-select grid, in-game scorebug, on-field helmet crest), whether the live source is the uniform_logo package or this cache aggregate.",
-        "Implement 4_4_4_4 packed-MIP regeneration; the 0x2C000 mip tail is byte-preserved/stale here, not regenerated from the new base.",
+        "Treat the passed static asset-space carrier proof separately from any future cache-consumption or gameplay-visibility experiment.",
+        "Validate the changed copied volume on user-owned Xbox 360 hardware before claiming hardware parity.",
         "The greedy H7A encoder does not reproduce retail compressed bytes; edited VRAM parts are proved by round-trip (decompress == intended) plus fixed-allocation fail-closed, not by matching retail's compressor output."
       ],
       "public_distribution": {
@@ -979,19 +1104,23 @@
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
-        "evidence": [],
-        "scope": "No APF logocache replacement is runtime-proved; the offline writer and its independent verifier prove the exact cache bytes changed inside the copied volume, but no Xenia or hardware capture shows the team-select grid, scorebug, or helmet crest in game.",
-        "status": "not-tested"
+        "evidence": [
+          "docs/research/apf_custom_team_appearance.md",
+          "docs/mod_editor/apf2k8_full_shell_all_team_gate.json",
+          "docs/mod_editor/apf2k8_full_shell_visual_gate.json"
+        ],
+        "scope": "The v24 headless full-shell compiler independently verifies the raw cache directory/payload pair and the bounded outer-1310 shell route; it also reparses the selected semantic frontend-cache layers, selected shell-atlas package l0/l1 layers, regenerated mip tails, all 117 RGBA-preserving retail package migrations, and every fixed allocation. Static XEX ownership maps uniform_logocache to the frontend LOGOS / Team Select path. The exact published candidate passed the independent 118-package/236-layer reopen and 10-view high/low static asset-space Eagles visual gate. No Xenia, Wine, emulator, controller, or FIFO participated. Changed-logo runtime consumption, independent cache consumption, gameplay visibility, the scorebug resolver, every catalog slot, and Xbox 360 hardware remain unproved.",
+        "status": "partial"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "uniform_logocache catalog index 0..117; per index N_logo_l0 base (optional N_logo_l1 base)",
+            "allowed": "uniform_logocache catalog index 0..117; mirrored N_logo_l0 + N_logo_l1 bases and regenerated packed mip tails",
             "name": "target",
             "required": true
           }
         ],
-        "notes": "The team logo is a single shared texture that also feeds the helmet crest and is sampled by the scorebug; whether a given runtime surface reads this cache aggregate or a freshly package-loaded texture is not statically recoverable and is unproved pending Xenia."
+        "notes": "The cache is not a separate user-facing editor: crest selector slot 5 links package index N to the same frontend/Team Select cache index N, and one Team Logo action couples and co-writes both. Selector slot 6 independently owns rectangular uniform_textlogo wordmarks. The catalog-30 Xenia witness proves the coupled output rendered in two helmet previews, not whether either preview read the package or cache independently or whether Team Select consumed the changed cache."
       },
       "source_container": {
         "format": "APF uniform_logocache.iff directory + uniform_logocache.cdf payload inside copied 0A volume",
@@ -1002,10 +1131,77 @@
         "resource": "outer 171 uniform_logocache.iff directory (F0985030, 40,960 B) + outer 213 uniform_logocache.cdf payload (10,356,736 B = 0x9E0800), 118 catalog indices x {logo_l0, logo_l1} Xenos 4_4_4_4 512x512 with packed mip tails",
         "retail_file": "All-Pro Football 2K8 (USA)/0A"
       },
-      "summary": "Replace one team's logo base level(s) (N_logo_l0, optional N_logo_l1) inside the APF uniform_logocache runtime aggregate in a new copied 0A while byte-preserving every DRAM part, packed mip tail, and every other catalog entry.",
+      "summary": "Mirror one staged selector-slot-5 crest into both layers of its linked statically mapped frontend/Team Select uniform_logocache index, regenerate both packed mip tails, preserve every other catalog entry, and independently verify the final copied 0A as the coupled companion to the selected uniform_logo_NN package write. The separate selector-slot-6 wordmark is unchanged.",
       "surface": "logos_cards",
       "title": "APF bounded team-logo logocache PNG writer",
-      "validation_command": "python3 tools/apf_logocache_verify.py"
+      "validation_command": "python3 tools/validate_apf_logocache_product.py"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/apf_textlogo_patch.py --index <0A> --asset-index <0..205> --png <512x128-rgba.png> --output-volume <new-0A> --manifest <patch.json>",
+        "module": "tools/apf_textlogo_patch.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/apf2k8_logo_surface_ownership.md",
+        "tests/mod_editor/test_apf_textlogo_writer.py",
+        "tests/mod_editor/test_apf_textlogo_gui.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Logos & Team Art has a dedicated Wordmarks tab for every typed selector-slot-6 asset index 0..205. It previews and exports the source-derived rectangular 512x128 texture, accepts ordinary image files through drag/drop or the file dialog, offers explicit Contain and Cover fitting, flattens transparency onto the retail opaque-black background, stages one replacement in the normal Undo/Revert/project transaction, and includes it in the complete-game Build. It never substitutes or receives a resized copy of the selector-slot-5 square uniform_logo helmet crest or its linked frontend/Team Select uniform_logocache index."
+      },
+      "id": "apf2k8.logos_cards.textlogo_wordmarks",
+      "input_constraints": [
+        "The typed target is exactly one source-resolved uniform_textlogo_00.iff through uniform_textlogo_205.iff package selected by asset index 0..205; every package owns one inner-0 TXTR named textlogo_color.",
+        "The native authoring payload is an opaque 512x128 RGBA PNG. The GUI may high-quality Contain-fit or Cover-fit ordinary source art and composites transparent pixels over black before staging; the writer rejects other sizes, modes, and residual alpha.",
+        "Every target is tiled Xenos DXT1/BC1 with a 0x8000 base, 0x8000 packed mip span, and levels 0..5. All six levels are regenerated and decoded back, while inactive packed-tail bytes and the 224-byte descriptor part stay exact.",
+        "The retail source is opened read-only. The selected H7A/IFF must fit its original 6,144..14,336-byte allocation or the operation fails before publication, and the independent verifier requires every byte outside that one fixed package range to match the source."
+      ],
+      "portme": [
+        "Capture a changed wordmark on each runtime menu/uniform surface before describing visual consumption as runtime-proved.",
+        "Keep uniform_textlogo, uniform_logo helmet crests, uniform_logocache, and menu-card descriptors as separate owners even if later runtime tracing finds a shared presentation screen."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute tooling, structural pins, and user-authored PNGs only; each user rebuilds a copied game from their own retail source.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "docs/mod_editor/apf2k8_logo_surface_ownership.md"
+        ],
+        "scope": "All 206 package identities, descriptors, source no-ops, changed fixed-allocation rebuilds, all six regenerated BC1 mips, independent entry reopen, and whole-volume source/outside-range preservation are offline-proved. No changed wordmark has been visually captured in Xenia or on hardware.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "0..205",
+            "name": "uniform_textlogo_asset_index",
+            "required": true
+          }
+        ],
+        "notes": "XEX selector slot 6 owns the uniform_textlogo family. The source selector graph names current team references; unassigned library slots stay index-labeled rather than guessed."
+      },
+      "source_container": {
+        "format": "APF uniform_textlogo_00..205.iff TXTR packages inside copied 0A volume",
+        "hash_pins": [
+          "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+          "39a1e0c944a846e24d7a11c52d6a0fbba4091959f01856d3a087efde01ba490c"
+        ],
+        "resource": "206 source-resolved uniform_textlogo_NN.iff packages, each carrying inner 0 textlogo_color: 512x128 tiled opaque DXT1/BC1 with six packed mip levels",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A"
+      },
+      "summary": "Preview, export, fit, replace, revert, save, reopen, and build any of APF's 206 rectangular selector-slot-6 team/menu wordmarks through a fixed-allocation BC1+mip+H7A writer and independent whole-volume verifier, without touching the selector-slot-5 square helmet crest or its linked frontend/Team Select cache pair.",
+      "surface": "logos_cards",
+      "title": "APF 206-slot team/menu wordmark editor",
+      "validation_command": "python3 tools/validate_apf_textlogo_product.py"
     },
     {
       "backend": {
@@ -1023,15 +1219,15 @@
         "default_enabled": true,
         "expose": true,
         "mode": "export",
-        "reason": "The logo/text-logo catalog and representative PNG decoding are mapped, while encoding and repacking remain incomplete."
+        "reason": "The generic logo catalog and representative PNG decoding remain an export surface. Team Logo separately owns all 118 square crest packages and their matching cache layers; Wordmarks separately owns all 206 uniform_textlogo packages. Unmapped menu-card descriptor families do not inherit either writer."
       },
       "id": "apf2k8.logos_cards.uniform_catalog",
       "input_constraints": [
         "Export only exact catalog entries from the pinned archive.",
-        "The Xenos 4_4_4_4 path is decoder-only and must not be presented as an importer."
+        "The generic catalog path is decoder-only and must not be presented as an importer. Use Team Logo for uniform_logo indices 0..117 and Wordmarks for uniform_textlogo indices 0..205; neither authorizes menu-card import."
       ],
       "portme": [
-        "Implement encoders and fixed-allocation writers per logo/text-logo descriptor class.",
+        "Implement descriptor-specific fixed-allocation writers for the remaining menu-card classes.",
         "Trace menu cards and team package preview owners separately from uniform material logos."
       ],
       "public_distribution": {
@@ -1042,7 +1238,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "No APF logo or menu-card replacement is runtime-proved.",
+        "scope": "The generic catalog remains export-only. Separate bounded editors own the square Team Logo package/cache path and all 206 rectangular Wordmark packages. Menu-card replacement and changed-wordmark runtime consumption remain unproved.",
         "status": "not-tested"
       },
       "selectors": {
@@ -1068,7 +1264,7 @@
         "resource": "uniform_logo_*.iff, uniform_textlogo_*.iff, and uniform_logocache.iff",
         "retail_file": "All-Pro Football 2K8 (USA)/0A"
       },
-      "summary": "Inspect and locally export APF uniform logo catalogs; no public logo writer exists yet.",
+      "summary": "Inspect and locally export APF logo catalogs; all 118 square crests route through Team Logo and all 206 rectangular text logos route through Wordmarks, while remaining menu-card import stays unavailable.",
       "surface": "logos_cards",
       "title": "APF logo and text-logo catalog",
       "validation_command": "bash tools/validate_apf_uniform_inventory.sh"
@@ -1215,11 +1411,11 @@
     },
     {
       "backend": {
-        "command": "python3 tools/apf_scene.py <0A> --output <inventory.json> --gltf-dir <output-dir> --max-decompressed 67108864",
-        "module": "tools/apf_scene.py",
-        "operation": "export"
+        "command": "PYTHONPATH=. python3 mod_editor/apf_studio/model_import.py --index <retail-0A> --target <helmet|player> --gltf <edited.gltf> --manifest <source.apf-model.json> --output-volume <new-dir/0A>",
+        "module": "mod_editor/apf_studio/model_import.py",
+        "operation": "write"
       },
-      "classification": "extract-only",
+      "classification": "offline-writer-proved",
       "evidence": [
         "docs/research/apf_scne_draw_topology_writeback.md",
         "docs/research/apf_scne_static_serializer_spec.md",
@@ -1227,51 +1423,57 @@
         "docs/research/apf_stadium_static_position_writeback.md",
         "docs/research/apf_stadium_static_target_catalog.md",
         "docs/research/apf_static_gltf.md",
+        "mod_editor/apf_studio/model_export.py",
+        "mod_editor/apf_studio/model_import.py",
         "reports/assets/apf_scne_catalog_position_roundtrip.json",
         "reports/assets/apf_stadium_node17_same_footprint_topology_roundtrip.json",
         "reports/assets/apf_scne_same_count_position_roundtrip.json",
         "reports/assets/apf_scene_inventory.json",
-        "reports/assets/apf_stadium_static_position_target_catalog.json",
-        "reports/specs/apf2k8_scne_catalog_position_recipe.schema.json",
+        "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json",
+        "mod_editor/data/apf2k8_stadium_position_recipe.v2.schema.json",
         "reports/specs/apf2k8_scne_draw_topology.v1.json",
-        "reports/specs/apf2k8_scne_static_serializer.v1.json"
+        "reports/specs/apf2k8_scne_static_serializer.v1.json",
+        "tests/mod_editor/test_apf_model_export_gui.py",
+        "tests/mod_editor/test_apf_model_import.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
-        "mode": "export",
-        "reason": "All nonempty SCNE static meshes can be exported to standard glTF; separate hidden writers cover 77 catalog-pinned POSITION0 targets and one exact node17 four-index strip permutation, but this is still not edited-glTF import."
+        "mode": "edit",
+        "reason": "All nonempty SCNE static meshes can be exported to standard glTF. Uniforms & Equipment provides complete source-bound round-trip cards for helmet_00 at outer 1310 / inner 128 (33 meshes) and player at outer 1310 / inner 273 (1 mesh): export .gltf/.bin plus a v2 .apf-model.json, edit POSITION only, and import to a new verified 0A. The importer reopens the current SCNE, requires the exact expanded source triangles and vertex counts, quantizes XYZ back into each source signed-normalized 16-bit lane, preserves POSITION W and every other byte, uses preservation-aware H7A encoding, and fails if the fixed outer allocation is exceeded."
       },
       "id": "apf2k8.models.scne_gltf",
       "input_constraints": [
-        "Exports preserve raw game coordinates and only proved position/topology semantics.",
-        "Materials, UVs, normals, transforms, skinning, morphs, animation, general topology changes, and edited-glTF reimport remain unavailable; separate write paths accept only exact-count POSITION0 recipes for 77 frozen outer14/inner8 stadium targets or one pinned node17 four-BE16 strip permutation."
+        "Exports preserve raw serialized SCNE object-space coordinates behind an exact 0.01 glTF root scale. Import requires that source/coordinate metadata and the companion source-system hash.",
+        "The dedicated helmet target is outer 1310 / inner 128 / helmet_00 with 33 meshes; the dedicated player target is outer 1310 / inner 273 / player with 1 mesh. The source 0A is read-only and import publishes only a new file named 0A plus a hash-only receipt.",
+        "Every imported mesh must retain its source node/mesh identity, vertex count, one POSITION accessor, and exact expanded triangle list. Extra attributes, primitives, meshes, transformed mesh nodes, sparse accessors, morphs, and topology/index changes are refused.",
+        "Only POSITION XYZ is authored in the existing snorm16x4 lanes. POSITION W, normals, packed tangent/UV data, blend indices, blend weights, matrices, existing skin/attachment data including helmet/head attachment, materials, textures, animation, collision, and every sibling part stay byte-exact. This does not import a new SpeedFlex/F7 topology or rig."
       ],
       "portme": [
-        "Complete vertex attributes, materials, transforms, skeletons, skin palettes, morph targets, collision, and animation.",
-        "Build a catalog-aware edited-glTF conformer only after proving coordinate conversion, complete active attributes, attachment/bounds semantics, topology serialization beyond the pinned node17 footprint, and per-target runtime behavior."
+        "Prove and independently serialize normals, packed UV/tangent lanes, materials, transforms, skeleton/skin palettes, helmet/head attachment, morph targets, collision, and animation before exposing those fields.",
+        "Add changed-count/topology model replacement (including SpeedFlex/F7 molds) only after allocation growth, draw/index serialization, attachment/skin ownership, and runtime acceptance are separately proved."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
         "mod_payload": "metadata-only",
-        "rule": "Ship the exporter and manifests, not glTF files derived from retail game models.",
+        "rule": "Ship the exporter/importer and format metadata, never glTF/bin files, manifests, receipts, or 0A volumes derived from a user's retail game. Model edits are rebuilt locally from that user's exact source-bound export.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
         "evidence": [],
-        "scope": "Exported glTF opens on Linux. Separate writers structurally bound 77 exact-count POSITION0 targets and one node17 four-index permutation, with independent copied-1A proofs, but no target has runtime or rigid-attachment evidence and no edited-glTF importer exists.",
-        "status": "not-applicable"
+        "scope": "Offline proof covers source-bound no-op and changed-position rebuilds for the pinned player target plus the common parser/writer used by both pinned cards. Independent reopen confirms fixed allocation, exact expanded triangles, preserved POSITION W and non-position bytes, and a new 0A publication contract. No emulator/hardware model-visibility, material/UV/normal/skin/attachment authoring, changed topology, or replacement helmet mold is runtime-proved.",
+        "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "1,303 canonical SCNE records",
+            "allowed": "1,303 canonical SCNE records; dedicated cards for outer 1310 / inner 128 helmet_00 and outer 1310 / inner 273 player",
             "name": "scene",
             "required": true
           }
         ],
-        "notes": "Ninety-five zero-mesh scenes remain explicit withheld records."
+        "notes": "Ninety-five zero-mesh scenes remain withheld. Only the two pinned stock targets have the same-topology POSITION importer; the other 1,301 SCNE records retain their existing export/research boundaries."
       },
       "source_container": {
         "format": "APF SCNE in IFF/H7A",
@@ -1281,15 +1483,15 @@
         "resource": "1,303 SCNE resources",
         "retail_file": "All-Pro Football 2K8 (USA)/0A"
       },
-      "summary": "Export APF static scene geometry to Blender-readable glTF; hidden writers cover 77 exact-count POSITION0 targets and one pinned node17 strip permutation, but no edited-glTF or general topology importer exists.",
+      "summary": "Export APF static scene geometry to Blender-readable glTF and safely round-trip same-topology POSITION-only edits for the pinned stock helmet/player targets into a new verified 0A; vertex/index counts and expanded triangles are locked, while materials, normals, packed UV/tangent data, skin/attachment data, animation, collision, and changed model topology remain uneditable.",
       "surface": "models_shap_scne",
-      "title": "APF SCNE glTF export",
+      "title": "APF SCNE glTF export + pinned POSITION round trip",
       "validation_command": "bash tools/validate_apf_static_gltf.sh"
     },
     {
       "backend": {
-        "command": "python3 tools/apf_stadium_catalog_position_patch.py --game-dir <retail-game-dir> --recipe <apf2k8-scne-catalog-position-recipe.json> --output-dir <new-output-dir>",
-        "module": "tools/apf_stadium_catalog_position_patch.py",
+        "command": "PYTHONPATH=. python3 -m mod_editor.apf_studio.stadium_model_import import --game-dir <retail-game-dir> --reference-gltf <private-source.gltf> --target <catalog-target-id> --edited-gltf <edited.gltf> --output-dir <new-output-dir>",
+        "module": "mod_editor/apf_studio/stadium_model_import.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
@@ -1297,17 +1499,20 @@
         "docs/research/apf_scne_static_serializer_spec.md",
         "docs/research/apf_stadium_catalog_position_writeback.md",
         "docs/research/apf_stadium_static_target_catalog.md",
+        "mod_editor/apf_studio/stadium_model_import.py",
         "reports/assets/apf_scne_catalog_position_roundtrip.json",
-        "reports/assets/apf_stadium_static_position_target_catalog.json",
-        "reports/specs/apf2k8_scne_catalog_position_recipe.schema.json",
-        "reports/specs/apf2k8_scne_static_serializer.v1.json"
+        "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json",
+        "mod_editor/data/apf2k8_stadium_position_recipe.v2.schema.json",
+        "reports/specs/apf2k8_scne_static_serializer.v1.json",
+        "tests/mod_editor/test_apf_stadium_model_import.py",
+        "tests/mod_editor/test_apf_stadium_studio_gui.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
-        "default_enabled": false,
-        "expose": false,
+        "default_enabled": true,
+        "expose": true,
         "mode": "edit",
-        "reason": "A copied-pack v2 CLI dispatches exact-count POSITION0 edits across 77 frozen targets and proves node3 as a second full byte witness, but it stays hidden because there is no typed provider, runtime or rigid-attachment witness, topology/material importer, or production claim."
+        "reason": "Stadium Studio now maps clicked outer-14/inner-8 surfaces to the 77-target catalog, exports a source-authenticated POSITION plus expanded-triangle glTF, and imports only when vertex count and topology remain exact. Node/object transforms, extra vertex attributes, materials, skins, morphs and animation fail closed. The app builds a new copied 1A through the catalog writer and requires the independent full-volume verifier before reporting success; the source game is never modified. Runtime visibility and semantic rigidity remain clearly unclaimed."
       },
       "id": "apf2k8.models.scne_same_count_position",
       "input_constraints": [
@@ -1315,11 +1520,11 @@
         "A canonical apf2k8_scne_catalog_position_recipe/v2 must contain the catalog identity and exactly the selected row's count of finite, exactly representable big-endian FLOAT32x3 POSITION0 values in retail stream order; count, stream start, stride, lane offset, declarations, matrix, hierarchy, draw records, indices, interleaved UV/normal bytes, and all other bytes are immutable.",
         "The writer emits only a copied 1A and hashes-only manifest in a new exclusive directory; fixed outer allocation, H7A/IFF bounds, all sibling and non-target parts, footer, zero tail, source/catalog identities, and hardlink/symlink/path-race refusals are mandatory.",
         "The node3/polySurface19821 proof covers 24 vertices, a 24-byte interleaved stream, and three draw records; it proves byte transport and fixed-allocation fit, not semantic rigidity or runtime ownership.",
-        "The dispatcher does not prove edited glTF, changed vertex count or topology, auto-decimation, materials, UVs, normals, skinning, collision, Xenia visibility, Xbox 360 hardware behavior, or production readiness."
+        "The typed hand-off accepts edited glTF POSITION values only after authenticating the private source reference and exact expanded topology. It does not prove changed vertex count or topology, auto-decimation, materials, UVs, normals, skinning, collision, runtime visibility, or Xbox 360 hardware behavior."
       ],
       "portme": [
         "Capture the node3/polySurface19821 proof and representative catalog targets in Xenia and on Xbox 360 hardware before making visibility, ownership, or rigid-attachment claims.",
-        "Establish per-target semantic attachment and bounds/culling behavior before exposing the catalog selector through a typed provider.",
+        "Establish per-target semantic attachment and bounds/culling behavior before claiming that every catalog surface is runtime-visible or rigidly attached.",
         "Recover bounds/culling, attachment, material/UV/normal, collision, LOD, and topology serialization before any external-mesh or stadium conformance importer."
       ],
       "public_distribution": {
@@ -1354,9 +1559,9 @@
         "resource": "outer 14 / inner 8 stadium SCNE; 77 frozen exact-count POSITION0 targets, with node3/polySurface19821 as the second full byte witness",
         "retail_file": "All-Pro Football 2K8 (USA)/0A, 0B, 1A, and 1B"
       },
-      "summary": "Replace exactly the existing big-endian POSITION0 lane for one of 77 catalog-pinned APF stadium targets in a copied 1A while independently preserving topology, allocation, and every unrelated part.",
+      "summary": "Export and safely re-import same-count POSITION-only glTF edits for 77 catalog-pinned APF stadium surfaces into an independently verified copied 1A, while preserving topology, UVs, normals, materials, allocation, attachments and every unrelated part.",
       "surface": "models_shap_scne",
-      "title": "APF catalog-backed SCNE same-count position writer",
+      "title": "APF stadium selected-mesh POSITION round trip",
       "validation_command": "bash tools/validate_apf_stadium_catalog_position_patch.sh"
     },
     {
@@ -1446,6 +1651,8 @@
         "docs/product/APF_TRUE_099_PLAYER_RATINGS.md",
         "docs/product/APF_ROSTER_IDENTITY_WRITER.md",
         "docs/research/apf_roster.md",
+        "mod_editor/apf_studio/save_roster_players.py",
+        "mod_editor/apf_studio/save_roster_players_qt.py",
         "mod_editor/data/apf2k8_player_ratings.v1.json",
         "mod_editor/data/apf2k8_player_positions.v1.json",
         "reports/assets/apf_roster_inventory.json",
@@ -1462,28 +1669,34 @@
         "tests/mod_editor/test_apf_player_positions.py",
         "tests/mod_editor/test_apf_player_position_patch.py",
         "tests/mod_editor/test_apf_player_position_product_backend.py",
+        "tests/mod_editor/test_apf_save_roster_players.py",
+        "tests/mod_editor/test_apf_save_roster_players_gui.py",
+        "tests/test_apf_roster_export_compare.py",
         "tools/apf_player_rating_patch.py",
         "tools/apf_player_position_patch.py",
-        "tools/apf_roster_composite_patch.py"
+        "tools/apf_roster_composite_patch.py",
+        "tools/apf_roster_export_compare.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "The roster inspector can replace and individually revert each of the 40 team display-name allocations, every nonempty pure player first/last-name allocation, every player's 28 independent native base ratings, and every player's exact position through a fixed 17-choice semantic dropdown. Exact source character limits are enforced, every shared allocation discloses its complete owner list, and one shared edit changes those owners together. Rating edits accept exact whole numbers 0\u201399; a source native 100 remains visible and individually revertible but cannot be applied as a new edit. The position editor accepts only codes 0\u201316 and atomically updates executable-consumed player +0x34 with its required opaque source mirror at +0x35. It shows Replace/Revert and modified state in the desktop UI, and every name/rating/position composite combination is offline-proved. The first changed-position Xenia spot check remains pending. The token-preserving H7A route visibly consumed CODEXTEAM and Dan CODEX, while a rating candidate booted and loaded Dan Marino in Xenia; that star-selection UI exposed no numeric byte readout. Zero-capacity names, both team-abbreviation fields, jersey numbers, Overall, abilities, tier, membership, and depth charts remain visibly locked. Position replacement does not synthesize ratings, membership, or depth-chart changes. All 2,254 players and their current 28 exact ratings can also be exported to one private wide CSV. The separate 53-row planner remains project-only. Stock code owns team +0x120..+0x126, so that proposed in-record extension start remains rejected. Safe extension storage is unresolved. The true-53 static inventory proves at least 25 direct roster-class consumers, 93 direct calls to the primary position count/getter helpers, two explicit count-42 append caps, and a separate 17-by-42 roster-layout workspace whose stock stack frame cannot hold 17-by-53. An emulator-owned side table and coordinated consumer shim remain plausible, but a one-byte or one-helper patch is ruled out. The reviewed slot-43 hook and headless runner are implemented and compile. A valid 180-second passive headless observe control preserved the source and completed path_not_reached because ordinary no-input boot did not enter the exact consumer. Modified mode remains locked until deliberate navigation records observe_path_proved."
+        "reason": "The on-disc roster inspector edits and individually reverts all 40 team display-name allocations, nonempty pure player first/last-name allocations, 31 independent native base ratings, and exact 0\u201316 positions through token-preserving ROST writers. It enforces allocation limits, discloses every alias owner, preserves source native rating 100 without allowing it as a new edit, and atomically updates position +0x34 with its required +0x35 mirror. On-disc jersey numbers, Overall, abilities, tier, membership, depth, zero-capacity/mixed-owner names, and abbreviations stay locked. The separate Save Players raw-save workspace exposes 149 exact packed/numeric fields per player, all 15 allocation-bounded text fields, and count-preserving populated membership swaps; it publishes a verified raw Roster.ROS handoff and does not claim signed-container reinjection or runtime consumption. All 2,254 on-disc players and current ratings can be privately exported, paired RPCS3/Xenia stock exports are classified, and the 53-row planner remains project-only. The token-preserving name route has bounded Xenia visibility, the rating route loaded successfully without a numeric readout, and the first changed-position spot check remains pending. True 53-active-player support still requires coordinated consumer and storage work; passive headless observation did not reach the exact consumer, so modified mode remains locked."
       },
       "id": "apf2k8.players.roster",
       "input_constraints": [
-        "Use only the pinned roster_english.iff resource.",
+        "The on-disc project lane uses only the pinned roster_english.iff resource. The separate Save Players lane accepts a raw Roster.ROS or verified CON/LIVE/PIRS extraction and publishes only a new raw payload handoff.",
         "Address an existing source-derived identity allocation by stable pool index; never store source text, preimages, source-derived absolute archive/string locations, or pointers in a project.",
         "Reviewed player-record-relative rating coordinates ship as retail-free schema metadata; each project edit addresses a semantic player index and stable rating ID and stores only the user-selected 0\u201399 value, never source bytes.",
         "Reviewed player-position codes and record-relative +0x34/+0x35 coordinates ship as retail-free schema metadata; each project edit stores only one user-selected code 0\u201316 and never the source code or record bytes.",
         "A complete ratings-sheet CSV is a private retail-derived local export from the user's copy; it must never enter a project or public release.",
+        "Paired APFe RPCS3/Xenia text exports are compared positionally: duplicated labels are disambiguated, trailing unlabeled fields stay explicitly unlabeled, and only the exact bounded TeamJerseyBytes RGBA-to-ARGB serialization transform is normalized. The audit is read-only and its report must stay private if it contains source-exported roster data.",
         "Only an existing team display-name allocation or nonempty positive-capacity allocation owned exclusively by player first/last-name fields is writable as identity text; its replacement must fit the exact original UTF-16BE character limit and every disclosed mapped alias changes together.",
         "Base-rating replacement accepts only exact whole numbers 0\u201399. Inspect and preserve an externally authored native 100 exactly, and allow individual Revert to restore it, but never silently clamp or accept 100 as a new public edit.",
         "Player-position replacement accepts only exact whole-number codes 0\u201316, refuses a source record whose semantic +0x34 and mirror +0x35 bytes differ, and always changes or reverts that pair together. It does not automatically change ratings, team membership, or depth charts.",
-        "Keep empty or zero-capacity player names, mixed-owner allocations, both team-abbreviation fields, jersey numbers, Overall, abilities, Gold/Silver/Bronze tier, membership, depth charts, and every other unnamed player/team field read-only.",
+        "In the on-disc 0A project lane, keep empty or zero-capacity player names, mixed-owner allocations, both team-abbreviation fields, jersey numbers, Overall, abilities, Gold/Silver/Bronze tier, membership, depth charts, and every other unnamed player/team field read-only.",
+        "In Save Players, expose only the 149 exact packed/numeric field IDs, 15 allocation-bounded text fields, and count-preserving populated membership swaps. Overall, insertion/capacity expansion, signed-container reinjection/rehash/resign, and runtime consumption remain unavailable or unproved.",
         "Never store reserve indices at team +0x120..+0x126; stock code owns those bytes. No in-record or other extension-storage location is authorized."
       ],
       "portme": [
@@ -1492,13 +1705,13 @@
         "Runtime-spot-check both team-abbreviation fields independently through the token-preserving transport before widening the product identity writer again.",
         "Runtime-spot-check one changed player position in selection, lineup/depth-chart presentation, and gameplay before upgrading the offline-proved position writer to runtime-proved.",
         "Find a consumer screen with a numeric attribute readout, or run a controlled gameplay A/B, to prove the semantic effect of exact rating values beyond transport/runtime-load acceptance.",
-        "Recover a consumer-backed APF jersey-number field from controlled one-variable save/profile pairs before exposing number edits.",
+        "Recover a consumer-backed on-disc APF jersey-number field before exposing number edits in the 0A project lane; the separate raw Save Players lane already authors the exact packed save field.",
         "Recover the label for rating byte +0xD4, effective runtime modifier semantics, position-specific Overall formulas, packed abilities, Gold/Silver/Bronze tier, appearance, equipment, behavior, and remaining pointer ownership as separate capabilities."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
         "mod_payload": "user-authored-inputs-and-recipes",
-        "rule": "Ship only the roster inventory/parser, reviewed record-relative field coordinates, token-preserving writers, and user-authored replacement text/rating/position values. Never distribute source strings, source player values, source position codes, preimages, rebuilt ROST bytes, source-derived absolute locations/pointers, or retail data. The complete ratings CSV is generated only as an owner-private local export and is structurally excluded from projects/packages.",
+        "rule": "Ship only roster parsers, reviewed field coordinates, token-preserving writers, and user-authored replacement values. Never distribute source strings, source player values, source codes, preimages, rebuilt on-disc ROST bytes, source-derived absolute locations/pointers, raw source saves, or retail data. Complete ratings CSV and raw-save exports remain owner-private local handoffs and are structurally excluded from shareable projects/packages.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
@@ -1507,7 +1720,7 @@
           "docs/product/APF_ROSTER_IDENTITY_TOKEN_PRESERVING_RUNTIME.md",
           "docs/product/APF_PLAYER_RATINGS_TOKEN_PRESERVING_RUNTIME.md"
         ],
-        "scope": "The earlier generic greedy H7A rebuild crashed at guest PC 0x84AB1D40 because the decoded ROST pointer graph was relocated twice. The token-preserving route retains every still-valid retail token and splits only affected tokens. It booted through first-run team construction and visibly rendered CODEXTEAM in Xenia. A bounded six-character Marino to CODEX edit changed only its exact 14-byte allocation, then visibly rendered Dan CODEX in player selection and the Star Card without a crash. A one-byte player-rating candidate also booted and loaded Dan Marino; that UI had no numeric rating readout, so exact numeric consumption/behavior remains without visual proof even though transport and runtime load are proved. The paired player-position writer changes only semantic +0x34 and mirror +0x35, reparses cleanly, and safely composes with identity and rating edits, but no changed position has been run in Xenia yet. Player first/last names and team display names are product-editable only under their exact allocation and alias-owner boundary. Empty/zero-capacity or mixed-owner names, abbreviations, jersey numbers, Overall, tier, abilities, membership, and save representation remain locked.",
+        "scope": "The earlier generic greedy H7A rebuild crashed after relocating the decoded ROST pointer graph twice. The token-preserving on-disc route retains valid retail tokens and splits only affected tokens: it visibly rendered CODEXTEAM and Dan CODEX in Xenia, while a one-byte rating candidate loaded without a numeric readout. The paired position writer reparses and composes cleanly but has no changed-position Xenia spot check. On-disc empty/zero-capacity or mixed-owner names, abbreviations, jersey numbers, Overall, tier, abilities, membership, depth, and unknown fields remain locked. The separate raw Save Players lane passes exact write/reopen verification for its 149 packed/numeric fields, 15 bounded text fields, and count-preserving membership swaps, but raw-save gameplay consumption and signed-container reinjection/rehash/resign remain unproved and external.",
         "status": "partial"
       },
       "selectors": {
@@ -1531,21 +1744,31 @@
             "allowed": "exact player-position codes 0..16 (QB, K, P, WR, CB, FS, SS, HB, FB, TE, OLB, ILB, C, G, T, DT, DE)",
             "name": "player_position",
             "required": false
+          },
+          {
+            "allowed": "one of 149 proved raw-save packed/numeric field IDs or 15 allocation-bounded player text field IDs",
+            "name": "raw_save_player_field",
+            "required": false
+          },
+          {
+            "allowed": "two populated counted raw-save membership slots whose player pointers are swapped",
+            "name": "raw_save_membership_swap",
+            "required": false
           }
         ],
-        "notes": "Team display-name rows and nonempty pure player first/last-name allocations expose Replace/Revert under their exact live character limits. The UI lists every alias owner and warns that one shared-allocation edit changes them together. Empty/zero-capacity and mixed-owner names plus both team abbreviations remain locked. Player rows expose Replace/Revert for all 28 independent native base-rating integers using stable semantic IDs. New values are exact 0..99; source native 100 is never clipped and remains revertible. Every player-position asset exposes a fixed 17-choice semantic dropdown with individual Replace/Revert and modified state; the writer preserves the required +0x34/+0x35 mirror pair. Its changed-position runtime spot-check remains pending, and position changes never imply rating, membership, or depth-chart edits. The complete 2,254-player private CSV uses the same stable rating IDs. Overall, jersey numbers, membership, tier, abilities, and depth charts stay visibly locked."
+        "notes": "The on-disc lane exposes bounded team/player identity allocations, all 31 base ratings, and exact mirrored positions; on-disc jersey numbers, Overall, abilities, tier, membership, depth, abbreviations, and unknown fields remain locked. Source native rating 100 stays visible/revertible but new values are 0..99. The separate raw Save Players lane exposes 149 exact packed/numeric fields, 15 allocation-bounded text fields, and count-preserving swaps only; Overall and roster insertion/capacity expansion are not inferred. Its output is a verified raw Roster.ROS handoff, not a re-signed container. The paired-stock audit classified all 1,344 RPCS3/Xenia rows after the exact color-byte normalization: 1,312 equivalent, Mike Haynes versus Mark Smith as the one stock identity variant, 31 randomized Atoms fillers, and zero unexplained rows."
       },
       "source_container": {
-        "format": "APF ROST in IFF/H7A",
+        "format": "APF ROST in IFF/H7A plus raw APF save payload",
         "hash_pins": [
           "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
         ],
-        "resource": "roster_english.iff outer 1126 inner 0 ROST",
-        "retail_file": "All-Pro Football 2K8 (USA)/0A"
+        "resource": "roster_english.iff outer 1126 inner 0 ROST plus player records in raw Roster.ROS",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A or owner-supplied raw Roster.ROS"
       },
-      "summary": "Replace and revert existing team display names, nonempty player first/last names, 28 exact native 0\u201399 base ratings, and exact 0\u201316 player positions with token-preserving ROST writers; preserve the +0x34/+0x35 position mirror, expose a fixed 17-choice desktop dropdown with modified state, disclose shared-allocation owners, keep the changed-position runtime spot-check pending, enforce exact name limits, preserve source native 100 without clamping, and export all 2,254 players to a private wide CSV.",
+      "summary": "Edit the bounded on-disc team/player names, 31 native base ratings, and exact mirrored positions through token-preserving ROST writers; separately edit 149 proved raw-save packed/numeric fields, 15 bounded text fields, and count-preserving populated memberships through Save Players into a verified raw Roster.ROS handoff. Preserve source native rating 100, export all 2,254 on-disc players privately, and audit paired RPCS3/Xenia stock exports without inventing labels or platform differences.",
       "surface": "players_rosters",
-      "title": "APF roster names, base ratings, and player-position editor",
+      "title": "APF on-disc roster and raw Save Players editor",
       "validation_command": "python3 tools/validate_apf_roster_identity_patch.py"
     },
     {
@@ -1859,45 +2082,56 @@
       "summary": "Inspect/export APF's field-scorebug, GameCast, replay, halftime, and overlay resources; the shared digital_font has a separate bounded writer while other import remains blocked.",
       "surface": "scorebug_presentation",
       "title": "APF scorebug/presentation inventory",
-      "validation_command": "bash tools/validate_scorebug_presentation_pipeline.sh"
+      "validation_command": "bash tools/validate_scorebug_products.sh"
     },
     {
       "backend": {
-        "command": "python3 tools/director_inventory.py --apf-index <0A> --nfl-index <nfl-pack-0> --json <director.json> --tsv <director.tsv>",
-        "module": "tools/director_inventory.py",
-        "operation": "inspect"
+        "command": "python3 -m mod_editor.core.apf2k8_playbook_route_writer --index <0A> --target-play <0..585> --target-slot <0..10> --donor-play <0..585> --donor-slot <0..10> --output-entry <new-entry.bin> --receipt <receipt.json>",
+        "module": "mod_editor/core/apf2k8_playbook_route_writer.py",
+        "operation": "write"
       },
-      "classification": "read-only-mapped",
+      "classification": "offline-writer-proved",
       "evidence": [
         "docs/research/director_format.md",
-        "docs/research/playbook_format.md"
+        "docs/research/playbook_format.md",
+        "tests/mod_editor/test_apf2k8_playbook_route_writer.py",
+        "tests/mod_editor/test_apf_playbook_route_gui.py",
+        "tests/mod_editor/test_apf_save_playbook_assignments_gui.py",
+        "tests/test_apf_save_playbook_assignments.py"
       ],
       "game": "apf2k8_xbox360",
       "gui": {
         "default_enabled": true,
         "expose": true,
-        "mode": "view",
-        "reason": "DRCT and PLAY graphs are structurally parsed with opaque instruction/node data retained."
+        "mode": "edit",
+        "reason": "The PLAY / DRCT Inspector remains non-mutating and now exposes each formation's exact MSB-first play-membership set. The neighboring Assignment Routes tab can copy one exact stock player-assignment descriptor and existing chain pointer or atomically swap two assignments across all 586 plays x 11 slots. Projects store logical selectors only; Build resolves private bytes from the user's source, preserves every node/name/formation/membership byte and chain start, token-preserves H7A inside fixed outer 180, and independently reparses. Save Assignments separately writes existing O/D choices for all 40 teams to a verified raw save or signed-package raw handoff. Freehand node/opcode, new-play/formation, membership, and DRCT authoring remain unavailable."
       },
       "id": "apf2k8.scripts.director_playbook",
       "input_constraints": [
-        "Director instructions and play assignment/route nodes remain opaque and must be shown as raw records.",
-        "No text compiler, opcode editor, or archive writer is available."
+        "Director instructions and PLAY route nodes remain opaque. The bounded writer copies only the donor's exact four-byte assignment descriptor and re-encodes the target-relative pointer to an existing same-resource chain; it does not interpret or write node opcodes/coordinates.",
+        "Only MASTER outer 180 / inner 0 is accepted. Target and donor play indices must be 0..585 and slots 0..10; duplicate targets and identity copies are refused.",
+        "The complete fixed 0x2C750 body, route-node blob, strings, formation records, MSB-first formation/play membership masks, opaque membership tails, capacity rows, and distinct assignment-chain start set must remain exact outside selected assignment fields.",
+        "Raw-save assignment edits address one of 40 team slots and select one of the parsed 36 offensive or 33 defensive named books for the matching side.",
+        "The raw source save is opened read-only, the output and manifest must be new and non-aliasing, the inspected source SHA-256 must still match at write time, and independent verification must account for every changed byte while preserving the playbook table and unrelated bytes.",
+        "Synthetic raw-save fixtures and one private raw-save parse/write/reopen/reverse witness pass. The private witness changed only two assignment fields / three bytes, preserved the 69-name table, and restored the byte-exact original on reverse patch.",
+        "CON, LIVE, and PIRS sources are hash-tree verified and may emit only a verified raw Roster.ROS handoff; external reinjection, STFS rehashing, and resigning with the owner's save manager/keyvault remain required."
       ],
       "portme": [
         "Decode DRCT opcodes, branches, operands, and fixed-record semantics.",
-        "Decode PLAY descriptors/nodes, capacities, hashes, and runtime consumers before implementing writers."
+        "Decode route-node waypoint coordinates, opcodes, operands, and runtime consumers before exposing freehand route drawing or node edits.",
+        "Recover count-changing play/formation allocation and membership consumers before allowing new plays, formations, or membership edits.",
+        "Runtime-test one new raw-save assignment after reinjection into a correctly rehashed/resigned user-owned container."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
         "mod_payload": "metadata-only",
-        "rule": "Ship parsers and schemas only; raw scripts/playbooks extracted from retail stay local.",
+        "rule": "Ship parsers, schemas, and user-authored assignment choices only. Raw saves, signed containers, extracted retail PLAY/DRCT data, and written save outputs stay local.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
         "evidence": [],
-        "scope": "Read-only structural interpretation; no APF script or playbook change is applied.",
-        "status": "not-applicable"
+        "scope": "Raw-save pointer writeback and exact on-disc stock assignment-route reuse are proved offline. The route writer was exercised against the private retail MASTER resource and rebuilt/reparsed fixed outer 180 while changing only the selected assignment field bytes. No edited assignment or route clone has been consumed in Xenia or on Xbox 360; freehand nodes and DRCT remain read-only.",
+        "status": "not-tested"
       },
       "selectors": {
         "fields": [
@@ -1905,22 +2139,32 @@
             "allowed": "five canonical DRCT resources or APF master PLAY resource",
             "name": "resource",
             "required": true
+          },
+          {
+            "allowed": "team 0..39; offense 0..35 and defense 0..32 from the save's 69 named-book table",
+            "name": "raw_save_assignment",
+            "required": false
+          },
+          {
+            "allowed": "MASTER play 0..585 and player-assignment slot 0..10 for both target and same-resource donor",
+            "name": "stock_assignment_route_clone",
+            "required": false
           }
         ],
-        "notes": "GUI must preserve unknown bytes and distinguish names from executable instruction semantics."
+        "notes": "PB means playbook here; PBP is the separate player play-by-play announcer identifier. Save Assignments selects books. Assignment Routes reuses exact stock descriptor/chain assignments and must not be described as waypoint/opcode or custom-play authoring."
       },
       "source_container": {
-        "format": "big-endian APF DRCT/PLAY inside IFF/H7A",
+        "format": "big-endian APF DRCT/PLAY inside IFF/H7A plus raw roster-save assignment pointers and verified signed-package raw handoff",
         "hash_pins": [
           "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
         ],
-        "resource": "five DRCT graphs and playbook_master.iff PLAY",
-        "retail_file": "All-Pro Football 2K8 (USA)/0A"
+        "resource": "five DRCT graphs, playbook_master.iff PLAY, and 40 team offense/defense assignment pairs into a 69-name save-local table",
+        "retail_file": "All-Pro Football 2K8 (USA)/0A or a user-owned APF roster save"
       },
-      "summary": "Inspect APF director/config and playbook structures; no safe compiler or writer exists.",
+      "summary": "Inspect APF PLAY/DRCT, copy or safely swap exact stock player-assignment routes in MASTER PLAY, and write existing O/D book choices for all 40 teams to a verified raw-save output or signed-package raw handoff.",
       "surface": "scripts_config",
-      "title": "APF director/playbook viewer",
-      "validation_command": "bash tools/validate_director_inventory.sh"
+      "title": "APF playbook inspector and stock assignment-route editor",
+      "validation_command": "python3 tools/validate_apf_playbook_route_writer.py"
     },
     {
       "backend": {
@@ -1940,7 +2184,7 @@
         "reports/assets/apf_scne_same_count_position_roundtrip.json",
         "reports/assets/apf_roster_stadiums.tsv",
         "reports/assets/apf_stadium_node17_same_footprint_topology_roundtrip.json",
-        "reports/assets/apf_stadium_static_position_target_catalog.json",
+        "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json",
         "reports/specs/apf2k8_scne_draw_topology.v1.json",
         "reports/specs/apf2k8_scne_static_serializer.v1.json"
       ],
@@ -1993,6 +2237,72 @@
       "surface": "stadiums_fields",
       "title": "APF stadium geometry export",
       "validation_command": "bash tools/validate_apf_static_gltf.sh"
+    },
+    {
+      "backend": {
+        "command": "PYTHONPATH=. python3 -m mod_editor.apf_studio.stadium_texture --game-dir <retail-game-dir> --texture-index <0..77> --png <replacement.png> --output-dir <new-output-dir>",
+        "module": "mod_editor/apf_studio/stadium_texture.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/APF2K8_STATUS.md",
+        "docs/mod_editor/apf2k8_mod_studio_getting_started.md",
+        "mod_editor/apf_studio/stadium_texture.py",
+        "tests/mod_editor/test_apf_stadium_texture.py",
+        "tests/mod_editor/test_apf_stadium_studio_gui.py"
+      ],
+      "game": "apf2k8_xbox360",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "edit",
+        "reason": "The authenticated retail outer-14/inner-8 stadium scene has a complete static draw-to-material-to-embedded-TXTR join. Stadium Studio exposes all 78 owned descriptors, stages a private native-size PNG with bounded Lanczos resizing, regenerates every declared mip through the proved Xenos transport for all eight retail format classes, and publishes only a new copied 1A plus a hashes-only receipt."
+      },
+      "id": "apf2k8.stadiums.textures",
+      "input_constraints": [
+        "Only the 78 exact embedded TXTR descriptors owned by retail outer 14 / inner 8 are selectable; arbitrary outer indices, offsets, payloads, and non-owned textures are refused.",
+        "Input must be a bounded regular non-symlink PNG. It is converted to RGBA and resized to the selected descriptor's native dimensions; DXT1 targets require fully opaque artwork.",
+        "The writer preserves descriptor bytes, DRAM/material ownership, every sibling inner part, footer, fixed outer allocation, and source 1A. A compression overflow fails closed instead of overwriting the source or expanding the pack."
+      ],
+      "portme": [
+        "Authenticate and expose embedded texture graphs for additional stadium packages, then validate changed output on Xbox 360 hardware before claiming runtime visibility or venue-wide coverage."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship the ownership parser/writer and user-authored PNGs only; every copied 1A is rebuilt locally from the user's own authenticated retail files.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "All 78 retail outer-14/inner-8 descriptors round-trip bit-exact through their full mip transports, representative changed writes reopen within the fixed H7A/IFF allocation, and exact no-op output preserves the outer entry. Runtime visibility and Xbox 360 hardware acceptance are not tested.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "outer14.inner8.texture000 through outer14.inner8.texture077, filtered by the selected surface's exact material ownership",
+            "name": "embedded_texture",
+            "required": true
+          }
+        ],
+        "notes": "The same embedded descriptor may feed multiple material slots or surfaces; the UI reports that ownership before staging the edit."
+      },
+      "source_container": {
+        "format": "APF embedded TXTR allocations in fixed IFF/H7A inside copied 1A",
+        "hash_pins": [
+          "347503ffdcd910b57425584869e1520238b1298e516f643936568b83d5a5a07a",
+          "b3028883de8d71d90850bab68ba29b91badd7107f8f9fbfab132a19a818379e4",
+          "5662f3866f83e33bab217f80ac8e9a6267ae94842c0727f77019355cc2cb3a95"
+        ],
+        "resource": "outer 14 / inner 8 stadium SCNE: 89 surfaces, 84 materials, and 78 embedded texture descriptors",
+        "retail_file": "All-Pro Football 2K8 (USA)/1A"
+      },
+      "summary": "Replace any of the 78 statically owned embedded textures in the authenticated APF stadium scene, regenerate its complete declared mip chain, and publish a separately verified copied 1A without modifying retail source data.",
+      "surface": "stadiums_fields",
+      "title": "APF stadium embedded texture editor",
+      "validation_command": "python3 tools/validate_apf_stadium_texture_product.py"
     },
     {
       "backend": {
@@ -2088,7 +2398,7 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "All 24 helmet-color assets have a strict raw-R/G typed recipe, fail-closed copy-only writer, and separate copied-volume verifier; B=0 and A=255 are enforced without naming channel semantics or claiming runtime visibility."
+        "reason": "All 24 helmet-color assets have a strict raw-R/G typed recipe, fail-closed copy-only writer, and separate copied-volume verifier. The channels are now measured rather than unnamed: this map is the helmet's centre stripe, R and G are region masks the game fills with team colours (R light, G dark), and only a narrow front-to-crown band of the 256x1024 reaches the shell."
       },
       "id": "apf2k8.uniforms.helmet_color_00_23",
       "input_constraints": [
@@ -2526,7 +2836,7 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_scene_texture, scorebug_texture, stadium_texture, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
+            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
             "name": "kind",
             "required": true
           },
@@ -2597,7 +2907,7 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_scene_texture, scorebug_texture, stadium_texture, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
+            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
             "name": "kind",
             "required": true
           },
@@ -2761,31 +3071,32 @@
     },
     {
       "backend": {
-        "command": "python3 tools/nfl_uniform_color_xiso_direct_patch.py --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json>",
-        "module": "tools/nfl_uniform_color_xiso_direct_patch.py",
+        "command": "python3 tools/nfl2k5_visual_mod_project.py build --project <project.json> --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --artifact-dir <artifact-dir>",
+        "module": "tools/nfl2k5_visual_mod_project.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/research/nfl_uniform_color_xiso.md",
-        "reports/assets/nfl2k5_unif_color_ownership.json"
+        "mod_editor/core/nfl2k5_unif_color_writer.py",
+        "reports/assets/nfl2k5_unif_color_ownership.json",
+        "tests/mod_editor/test_unif_color_control.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "Word 0 is the facemask/faceshield tint and word 1 is HI_turtleneck, both proved by executable trace; a controlled runtime capture is still open."
+        "reason": "The searchable selector exposes all 634 source-catalogued physical HOME/AWAY/alternate/throwback uniform sets independently. Word 0 is the facemask/faceshield tint and word 1 is HI_turtleneck. Fixed-size write/reopen is offline-proved; controlled runtime color visibility remains open."
       },
       "id": "nfl2k5.colors.unif_words",
       "input_constraints": [
-        "The current writer is a bounded Detroit current-home/current-away proof, not a generalized color picker.",
+        "Choose one of all 634 canonical physical HOME/AWAY/alternate/throwback selectors; each project edit changes exactly that selected 8-byte Unif record through the unified copied-XISO writer.",
         "Word 0 is the facemask/faceshield packed tint: it reaches the selected FACEMASK%02d player records and the LO_FACEMASK / HI_faceshield materials, and a dedicated facemask SCNE colors bar_01..bar_03 after a fixed darkening transform. Changing the helmet TEXTURE does not move it -- the facemask is a separate material fed by this value.",
         "Word 1 is the HI_turtleneck packed tint and is read only when a per-player two-bit selector is 3; selector 0 leaves the material alone, 1 forces white, 2 forces black.",
         "Ownership above is proved by static executable trace, not by a controlled runtime capture; the visual test is planned and not yet done."
       ],
       "portme": [
-        "Generalize target selection only after per-package ownership and validation.",
         "Capture controlled colors at runtime and map each packed word to exact material regions."
       ],
       "public_distribution": {
@@ -2802,12 +3113,12 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "current bounded writer targets only",
+            "allowed": "one of 634 source-catalogued physical uniform selectors",
             "name": "uniform_package",
             "required": true
           }
         ],
-        "notes": "Keep this GUI action advanced/experimental until generalized semantics exist."
+        "notes": "HOME, AWAY, alternate, and throwback packages are independent. There is no separately proved per-uniform visor word; runtime-visible color semantics remain unproved."
       },
       "source_container": {
         "format": "NFL uniform Unif resources inside XISO archive packs",
@@ -2817,7 +3128,7 @@
         "resource": "fixed-size Unif packed-color words",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Apply the proved packed-color edit to a copied NFL 2K5 XISO. The two Unif words are not jersey diffuse colors: word 0 is the facemask/faceshield tint and word 1 is the HI_turtleneck tint. Ownership is proved by executable trace; a controlled runtime capture is still outstanding.",
+      "summary": "Edit and independently revert the proved packed colors for any of all 634 physical NFL 2K5 uniform sets in a copied XISO. The two Unif words are not jersey diffuse colors: word 0 is the facemask/faceshield tint and word 1 is the HI_turtleneck tint. Fixed-size write/reopen is offline-proved; a controlled runtime capture is still outstanding.",
       "surface": "colors",
       "title": "NFL 2K5 facemask and turtleneck packed colors",
       "validation_command": "bash tools/validate_nfl_uniform_color_xiso_direct.sh"
@@ -2909,45 +3220,51 @@
         "docs/research/nfl2k5_crib_electronics_model_swap_spike.md",
         "docs/research/nfl2k5_unified_visual_mod_project.md",
         "mod_editor/data/nfl2k5_crib_catalog.v1.json",
+        "mod_editor/core/nfl2k5_crib_geometry_writer.py",
+        "mod_editor/core/nfl2k5_crib_scene_texture_writer.py",
+        "mod_editor/core/nfl2k5_crib_standalone_texture_writer.py",
         "reports/experiments/nfl2k5_crib_bar_monitor_private_xiso_experiment.json",
-        "reports/experiments/nfl2k5_crib_electronics_ownership.json"
+        "reports/experiments/nfl2k5_crib_electronics_ownership.json",
+        "reports/specs/nfl2k5_crib_static_position_targets.v1.json",
+        "tests/mod_editor/test_nfl2k5_crib_geometry_writer.py",
+        "tests/mod_editor/test_nfl2k5_crib_scene_texture_writer.py",
+        "tests/mod_editor/test_nfl2k5_crib_standalone_texture_writer.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "All 128 fixed-slot Team Photos plus the exact room:22 bar_monitor screen accept 128x128 PNG replacement through the unified copied-XISO writer; the other 369 assets remain browsable/exportable."
+        "reason": "All 498 catalogued Crib textures accept dimension-aware PNG replacement through fixed allocations, and the Models tab imports same-count position edits for ten exact meshes across seven scenes."
       },
       "id": "nfl2k5.crib.assets",
       "input_constraints": [
-        "Team Photo input must be an exact 128x128 non-interlaced RGBA8 PNG selected by one canonical crib_team_photo:##_photo_0# selector.",
-        "The writer regenerates one shared P8 palette and all five 128/64/32/16/8 mip levels inside the existing 23,008-byte span.",
-        "The resource wrapper, descriptor, system bytes, allocation, and following 32 bytes of zero slot padding cannot change.",
-        "The exact crib_scene_texture:room:22 selector accepts a 128x128 non-interlaced RGBA8 PNG, regenerates five P8 mips, and recompresses only its fixed room SCNE span while preserving geometry, other decoded allocations, and the user-source opaque tail.",
-        "A bar_monitor image that is extremely flat or heavily noisy/dithered is refused when it exceeds the proved fixed-compression or loader-scratch envelope; the error explains how to simplify it.",
-        "The other 24 exactly mapped electronics-like surfaces and all other unsupported Crib assets remain Preview/Export-only. Arbitrary model import is Coming Soon because UV/normal registers, inverse draw-command serialization, transforms, collision, and fixed-allocation relocation are not decoded."
+        "All 498 logical selectors resolve through the pinned catalog: 128 Team Photos, 114 other raw Team Item P8 allocations, 68 standalone P8 allocations, and 188 embedded P8 textures across 36 SCNE scenes.",
+        "PNG input must match the selected texture's authored dimensions; palette, mip chain, swizzle or linear layout, resource wrapper, and fixed allocation are independently reparsed after compilation.",
+        "The standalone writer preserves the exact 109,440-byte reflection pre-palette gap and the ticker's 1024x32 VC_P8_LINEAR layout instead of treating them as ordinary swizzled textures.",
+        "SCNE edits preserve geometry, unselected textures, decoded allocation boundaries, draw data, and the user-source opaque tail. Any image that cannot satisfy the original compression and loader-scratch bounds is refused.",
+        "Model import is limited to ten pinned meshes across seven scenes, may move existing positions only, and requires identical vertex count and triangle topology.",
+        "UVs, materials, collision, indices, normals and other registers, commands, transforms, opaque tails, topology growth, and arbitrary model replacement remain source bytes or unsupported."
       ],
       "portme": [
-        "Capture one changed Team Photo on the Crib wall in xemu.",
-        "Capture the changed room:22 bar_monitor screen in xemu.",
-        "Add bounded writers for the other 24 mapped electronics surfaces only after separate compression and runtime checks."
+        "Runtime-capture representative Team Photo, standalone, ordinary SCNE, reflection, ticker, and bounded-position changes before claiming on-screen coverage.",
+        "Decode allocation relocation, complete attributes, materials, transforms, collision, and topology serialization before offering arbitrary model replacement."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
         "mod_payload": "user-authored-inputs-and-recipes",
-        "rule": "A public project contains only canonical edit metadata and the user's replacement PNG; every user builds from their own pinned retail XISO.",
+        "rule": "A public project contains only canonical edit metadata, user-authored PNGs, and user-authored position recipes; every user builds from their own pinned retail XISO.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
         "evidence": [],
-        "scope": "Fixed-span Team Photo compilation plus room:22 bar_monitor SCNE recompression, source binding, copied-XISO transport, and independent verification are proved; in-game Crib visibility is not yet captured.",
+        "scope": "Fixed-allocation compilation, source binding, composed copied-XISO transport, and independent reconstruction are proved for all 498 textures and ten bounded-position meshes; in-game visibility of this broader coverage is not yet captured.",
         "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_scene_texture, scorebug_texture, stadium_texture, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
+            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
             "name": "kind",
             "required": true
           },
@@ -2957,19 +3274,19 @@
             "required": true
           }
         ],
-        "notes": "The public Crib edit is logical selector plus user PNG only; physical offsets and compiled retail spans are never accepted from a project."
+        "notes": "Crib projects use logical selectors plus user-authored PNGs or position recipes only; physical offsets and compiled retail spans are never accepted. Arbitrary topology is not implied."
       },
       "source_container": {
-        "format": "raw fixed-slot P8 Team Photo TXTRs plus one fixed compressed room SCNE span inside a layout-identical copied XISO",
+        "format": "raw and VC-LZ standalone P8 TXTRs plus fixed compressed SCNE spans inside a layout-identical copied XISO",
         "hash_pins": [
           "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
         ],
-        "resource": "128 canonical Crib Team Photo slots plus crib_scene_texture:room:22 / bar_monitor in vc_53450030/C",
+        "resource": "498 canonical Crib textures across Team Item, standalone, and 36 SCNE scenes, plus ten bounded-position meshes across seven scenes",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Replace any NFL 2K5 Crib Team Photo or the exact room:22 bar_monitor screen from a user PNG and build an independently verified copied XISO.",
+      "summary": "Replace all 498 catalogued NFL 2K5 Crib textures and import bounded same-topology position edits for ten exact meshes through an independently verified copied XISO build.",
       "surface": "crib_assets",
-      "title": "NFL 2K5 Crib Photos and Bar Monitor",
+      "title": "NFL 2K5 Crib texture and bounded-model editor",
       "validation_command": "bash tools/validate_nfl2k5_visual_mod_project.sh"
     },
     {
@@ -3392,11 +3709,11 @@
     },
     {
       "backend": {
-        "command": "python3 tools/nfl_static_gltf.py <pack-0> --output-dir <output-dir>",
-        "module": "tools/nfl_static_gltf.py",
-        "operation": "export"
+        "command": "python3 tools/nfl2k5_visual_mod_project.py build --project <project.json> --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --artifact-dir <artifact-dir>",
+        "module": "tools/nfl2k5_visual_mod_project.py",
+        "operation": "write"
       },
-      "classification": "extract-only",
+      "classification": "offline-writer-proved",
       "evidence": [
         "docs/research/nfl_group36_geometry_xiso_transport.md",
         "docs/research/nfl_group36_xemu_runtime_result_v2.md",
@@ -3416,19 +3733,24 @@
         "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json",
         "reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json",
         "reports/specs/nfl2k5_upper_deck_source_subset_writeback_closure.v1.json",
+        "reports/specs/nfl2k5_crib_static_position_targets.v1.json",
+        "mod_editor/core/nfl2k5_crib_geometry_writer.py",
+        "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+        "tests/mod_editor/test_nfl2k5_crib_geometry_writer.py",
         "reports/specs/nfl2k5_xbox_static_scne.v1.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
-        "mode": "export",
-        "reason": "All eligible static SCNE meshes can be exported to standard glTF; hidden writers cover 75 same-count FLOAT3 targets, one group36 footprint, and one upper_deck source-subset count path, but this is still not edited-glTF import."
+        "mode": "edit",
+        "reason": "All eligible static SCNE meshes remain exportable. Mod Studio additionally imports edited glTF positions for the pinned full Stadium scene and ten exact Crib electronics meshes across seven scenes, enforcing identical vertex counts and triangle topology before fixed-span XISO staging."
       },
       "id": "nfl2k5.models.scne_gltf",
       "input_constraints": [
-        "Exports contain proved positions/topology in raw Xbox coordinates.",
-        "Transforms, hierarchy, materials, textures, normals, UVs, skinning, morphs, animation, general topology changes, and edited-glTF reimport remain unavailable; separate write paths accept exact-count FLOAT3 recipes for 75 frozen targets, the pinned four-vertex/four-index group36 footprint, or source-derived 8/4-record subsets for upper_deck only."
+        "General SCNE export remains available; edited-glTF import is bounded to the pinned full Stadium scene and ten exact Crib electronics meshes across seven scenes.",
+        "Imports may move existing positions only. Vertex count and triangle topology must remain identical; UVs, materials, collision, indices, normals, all other vertex registers, commands, transforms, and opaque tails remain source bytes.",
+        "Every recipe is checked against the user's exact source and must recompress into the original fixed SCNE allocation before it can be staged. Arbitrary topology replacement remains unsupported."
       ],
       "portme": [
         "Complete SCNE attributes, material/texture graph, transforms, skinning, SHAP, skeletons, animation, collision, and LODs.",
@@ -3436,8 +3758,8 @@
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
-        "mod_payload": "metadata-only",
-        "rule": "Distribute the exporter and schema, not retail-derived glTF models.",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute exporter/writer code and user-authored position recipes, never source-derived glTF models or retail scene bytes.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
@@ -3445,18 +3767,18 @@
           "docs/research/nfl_group36_xemu_runtime_result_v2.md",
           "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json"
         ],
-        "scope": "Exported models open in standard tools. Hidden writers structurally bound 75 exact-count FLOAT3 targets, the group36 footprint, and one upper_deck source-subset count path. A separate exact s42nd.iff diagnostic visibly proved only the pinned four-vertex group36 payload in xemu 0.8.135; upper_deck changed-count runtime visibility, edited-glTF import, semantic ownership, original hardware, and general mesh writing remain unproved.",
-        "status": "not-applicable"
+        "scope": "Exported models open in standard tools. The product now compiles and stages bounded edited-glTF position recipes for one full Stadium scene and ten Crib meshes while preserving topology and non-position bytes. The older group36 diagnostic is visibly proved; runtime visibility of these broader product import targets and original-hardware acceptance remain untested.",
+        "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "4,616 canonical SCNE records; 4,007 nonempty exports",
+            "allowed": "4,616 canonical SCNE records / 4,007 nonempty exports; edited import for one pinned Stadium scene and seven pinned Crib scenes",
             "name": "scene",
             "required": true
           }
         ],
-        "notes": "Withheld scenes and semantics must remain explicit."
+        "notes": "Every other scene remains export-only; arbitrary model replacement is not implied."
       },
       "source_container": {
         "format": "NFL SCNE resources in VC archive",
@@ -3466,9 +3788,9 @@
         "resource": "4,616 SCNE resources",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Export NFL 2K5 static scene geometry to Blender-readable glTF; hidden writers cover 75 exact-count FLOAT3 targets, one pinned group36 native-quad footprint, and one upper_deck source-subset count path, but no edited-glTF or general topology importer exists.",
+      "summary": "Export NFL 2K5 static scene geometry and import bounded same-count, same-topology position edits for one full Stadium scene plus ten Crib electronics meshes across seven scenes.",
       "surface": "models_shap_scne",
-      "title": "NFL 2K5 SCNE glTF export",
+      "title": "NFL 2K5 bounded SCNE glTF editing",
       "validation_command": "bash tools/validate_nfl_static_gltf.sh"
     },
     {
@@ -3711,14 +4033,16 @@
     },
     {
       "backend": {
-        "command": "python3 tools/nfl_player_roster_xiso_workflow.py --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --audit <audit.json>",
-        "module": "tools/nfl_player_roster_xiso_workflow.py",
+        "command": "python3 tools/nfl_player_roster_general_workflow.py --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --plan <plan.json> --manifest <manifest.json> --audit <audit.json>",
+        "module": "tools/nfl_player_roster_general_workflow.py",
         "operation": "write"
       },
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/research/nfl_player_roster_modding.md",
         "reports/assets/nfl2k5_player_roster_audit.json",
+        "reports/assets/nfl2k5_unif_color_ownership_ghidra/pseudo_c.c",
+        "reports/assets/nfl_actual_jersey_binding_ghidra/nfl_actual_jersey_binding_trace.txt",
         "tools/nfl_player_roster_general_workflow.py",
         "tools/validate_nfl_player_roster_general.sh",
         "tests/test_nfl_player_roster_general_workflow.py"
@@ -3728,21 +4052,23 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "A generalized plan-format writer safely changes the masked jersey-number field for any primary or secondary player and same-allocation first/last names for uniquely-referenced primary players; secondary-pool names are zero-capacity and ratings/membership remain read-only."
+        "reason": "The editor safely changes masked jersey number and per-player face-shield type for any primary or secondary player, plus same-allocation first/last names for uniquely-referenced primary players. Face shield is exactly None, Clear, or Dark; it is not a HOME/AWAY tint. Secondary names are zero-capacity and ratings/membership remain read-only."
       },
       "id": "nfl2k5.players.disc_roster",
       "input_constraints": [
         "The pinned Joey Harrington-to-Noah CodexProof fixture remains the canonical hash-verified proof; the generalized plan-format writer (tools/nfl_player_roster_general_workflow.py) reproduces it and extends it.",
         "Jersey number (masked +0x20 bits 3..9, 0..99) is writable for any primary or secondary player; unrelated word bits are preserved.",
+        "Face shield is a per-player equipment type in +0x20 bits 15..16: 0 None, 1 Clear, or 2 Dark. Reserved value 3 is refused, every unrelated word bit is preserved, and simultaneous jersey/face-shield edits are composed into one four-byte replacement.",
+        "Face shield type is not a HOME/AWAY visor tint; this capability does not patch visor material colors or the executable.",
         "First/last names are writable for primary players whose name is uniquely referenced and only up to the current decoded name span (longer names need the full-allocation writer).",
         "Secondary-pool name allocations are zero-capacity (empty placeholder players) and are refused.",
-        "Team membership, face ID, position, and opaque ratings are not generalized writes.",
+        "Team membership, face/head ID, position, and opaque ratings are not generalized writes.",
         "A loaded roster/franchise save may override the disc seed."
       ],
       "portme": [
         "Generalize name writes to the full fixed allocation (derive per-name allocation spans) so longer replacement names fit.",
         "Promote stable rating bytes (speed/consistency/aggression) to writes after semantic/range/integrity proof.",
-        "Map depth charts, contracts, appearances, team membership, save precedence, and runtime visibility.",
+        "Map depth charts, contracts, other appearance fields, team membership, save precedence, and runtime visibility.",
         "Capture an edited primary and secondary player in game before any runtime-visible claim."
       ],
       "public_distribution": {
@@ -3769,12 +4095,12 @@
             "required": true
           },
           {
-            "allowed": "jersey_number (both pools); first_name/last_name (uniquely-referenced primary players, up to the current decoded span)",
+            "allowed": "jersey_number or face_shield (both pools); first_name/last_name (uniquely-referenced primary players, up to the current decoded span)",
             "name": "field",
             "required": true
           }
         ],
-        "notes": "The generalized plan-format writer covers jersey numbers for all 2,547 records and same-allocation names for uniquely-referenced primary players; secondary names are zero-capacity and ratings/membership stay read-only."
+        "notes": "The generalized plan-format writer covers jersey numbers and per-player None/Clear/Dark face-shield type for all 2,547 records, plus same-allocation names for uniquely-referenced primary players. Secondary names are zero-capacity and ratings/membership stay read-only. A loaded roster/franchise save may override this disc seed."
       },
       "source_container": {
         "format": "NFL main ROST resource inside layout-identical copied XISO",
@@ -3784,10 +4110,10 @@
         "resource": "outer 5 main ROST, 2,547 player records",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Apply a plan of fixed-size disc-roster edits in a copied XISO: masked jersey number for any primary or secondary player and same-allocation first/last names for uniquely-referenced primary players; the pinned Joey Harrington fixture is reproduced and extended.",
+      "summary": "Apply fixed-size disc-roster edits in a copied XISO: masked jersey number and per-player None/Clear/Dark face-shield type for any player, plus same-allocation first/last names for uniquely-referenced primary players. Simultaneous packed edits compose into one word and loaded saves may override the disc seed.",
       "surface": "players_rosters",
       "title": "NFL 2K5 disc roster editor",
-      "validation_command": "bash tools/validate_nfl_player_roster_audit.sh"
+      "validation_command": "bash tools/validate_nfl_player_roster_general.sh"
     },
     {
       "backend": {
@@ -3864,21 +4190,26 @@
       },
       "classification": "offline-writer-proved",
       "evidence": [
+        "docs/mod_editor/high_resolution_texture_authoring.md",
         "docs/research/nfl_player_portrait_pipeline.md",
-        "reports/assets/nfl2k5_player_portrait_compatibility.json"
+        "reports/assets/nfl2k5_player_portrait_compatibility.json",
+        "tests/mod_editor/test_2k5_import_offers_resize.py",
+        "tests/mod_editor/test_texture_master.py",
+        "tests/mod_editor/test_texture_master_facades.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "All 4,303 numeric roster portraits use one fixed P8 slot layout with segment-aware copied-XISO writing."
+        "reason": "All 4,303 numeric roster portraits use one fixed P8 slot layout with segment-aware copied-XISO writing. After a current-session external import, the shared Extended Visual panel can save a non-overwriting .2ktexmaster with the exact source, fit/crop metadata, exact staged native PNG, and direct 2x/4x source render; later built-in pixel edits remain explicit native raster layers."
       },
       "id": "nfl2k5.portraits_faces.roster_portraits",
       "input_constraints": [
         "Input must be exact 128x128 RGBA8 non-interlaced PNG.",
         "Numeric PORTRAIT IDs are menu/headshot assets, not f/h/n live face textures or Crib team photos.",
-        "Portrait 4070 crosses a physical pack boundary and must use the segment list."
+        "Portrait 4070 crosses a physical pack boundary and must use the segment list.",
+        "A .2ktexmaster is a separate user-authored sidecar, not a larger Xbox texture or emulator pack. Existing .2k5mod v1 projects retain native replacement PNGs only."
       ],
       "portme": [
         "Capture a changed portrait in roster or wrap-up UI.",
@@ -4136,7 +4467,7 @@
       "summary": "Replace the NFL field-scorebug frame atlas, ESPN strip, or global digital font in a verified copied XISO; scene structure and behavior remain read-only.",
       "surface": "scorebug_presentation",
       "title": "NFL 2K5 scorebug texture editor",
-      "validation_command": "bash tools/validate_nfl2k5_scorebug_mod_project.sh"
+      "validation_command": "bash tools/validate_scorebug_products.sh"
     },
     {
       "backend": {
@@ -4203,7 +4534,7 @@
       "summary": "Exact xemu proof that a copied-XISO score_buga replacement changes NFL 2K5's live field HUD.",
       "surface": "scorebug_presentation",
       "title": "NFL 2K5 score_buga runtime proof",
-      "validation_command": "bash tools/validate_nfl_scorebug_xemu_runtime.sh"
+      "validation_command": "bash tools/validate_nfl_scorebug_runtime_receipts.sh"
     },
     {
       "backend": {
@@ -4271,69 +4602,72 @@
       "summary": "Exact xemu proof that a copied-XISO shield_espn replacement changes NFL 2K5's upper-left field HUD.",
       "surface": "scorebug_presentation",
       "title": "NFL 2K5 shield_espn runtime proof",
-      "validation_command": "bash tools/validate_nfl_scorebug_shield_xemu_runtime.sh"
+      "validation_command": "bash tools/validate_nfl_scorebug_runtime_receipts.sh"
     },
     {
       "backend": {
-        "command": "python3 tools/director_inventory.py --apf-index <apf-0A> --nfl-index <pack-0> --json <director.json> --tsv <director.tsv>",
-        "module": "tools/director_inventory.py",
-        "operation": "inspect"
+        "command": "python3 tools/nfl2k5_visual_mod_project.py build --project <project.json> --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --artifact-dir <artifact-dir>",
+        "module": "tools/nfl2k5_visual_mod_project.py",
+        "operation": "write"
       },
-      "classification": "read-only-mapped",
+      "classification": "offline-writer-proved",
       "evidence": [
         "docs/research/director_format.md",
         "docs/research/playbook_format.md",
-        "docs/product/PLAY_EDITOR_FINDINGS.md"
+        "docs/product/PLAY_EDITOR_FINDINGS.md",
+        "mod_editor/core/nfl2k5_playbook_route_writer.py",
+        "tests/mod_editor/test_nfl2k5_playbook_route_writer.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
-        "mode": "view",
-        "reason": "The dedicated viewer parses all 37 private PLAY books into formations, linked plays, eight exact families, eleven assignment descriptors per play, complete node-chain extents, and raw node fields. Route drawing and write-back remain Coming Soon."
+        "mode": "edit",
+        "reason": "The dedicated viewer parses all 37 private PLAY books and can copy any stock assignment descriptor and existing node-chain pointer to another assignment in the same book, with Revert and project-build support."
       },
       "id": "nfl2k5.scripts.director_playbook",
       "input_constraints": [
-        "Every PLAY value is read from the user's private cache; stock names, records, nodes, and raw exports must never enter the release or a shareable project.",
-        "Player-slot roles, coordinate axes/scale, opcode and operand meanings, cross-record authoring rules, custom-play save ownership, and inverse compilation remain unknown.",
-        "No Replace, Import, route canvas, opcode editor, count-changing writer, or archive repacker is safe."
+        "Every PLAY value is read from the user's private cache; stock names, records, nodes, descriptor words, pointers, and raw exports never enter a shareable project or release.",
+        "A route edit may select only a donor and target assignment from the same canonical PLAY resource. The writer copies the donor descriptor word and repoints the target to the donor's existing stock chain.",
+        "The compiler reparses the complete replacement, changes only the target's two four-byte fields, refuses duplicate targets and orphaned source chains, and never authors, moves, or resizes node data.",
+        "Player-slot roles, coordinate axes and scale, opcode and operand meanings, freehand waypoints, cross-book chains, count changes, and custom-play save ownership remain unsupported."
       ],
       "portme": [
         "Create controlled game-authored X-only, Y-only, added-waypoint, and route-type-change fixtures and diff their private save containers.",
-        "Confirm coordinate, opcode, operand, slot-role, and save ownership with runtime read watchpoints before building an inverse compiler."
+        "Confirm coordinate, opcode, operand, slot-role, and save ownership with runtime read watchpoints before adding freehand route authoring."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
-        "mod_payload": "metadata-only",
-        "rule": "Distribute parsers and schemas only; extracted retail scripts/playbooks remain local.",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute parsers, schemas, and logical book/play/slot selectors only; extracted retail scripts, descriptor words, pointers, and nodes remain local.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
         "evidence": [],
-        "scope": "Read-only structural inventory; no script, config, or playbook edit is applied.",
-        "status": "not-applicable"
+        "scope": "Same-book stock assignment-route copying, source binding, exact write-mask enforcement, project reopen, copied-XISO transport, and independent PLAY reparse are offline-proved; runtime route behavior is not captured.",
+        "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "five canonical DRCT resources or 37 canonical PLAY books",
-            "name": "resource",
+            "allowed": "37 canonical PLAY books with target and donor play indices plus assignment slots 0 through 10",
+            "name": "assignment_route",
             "required": true
           }
         ],
-        "notes": "The GUI shows exact names, formation links, full play words, assignment descriptors, chain extents, and raw node fields; it never invents opcode meanings or exposes editing."
+        "notes": "The GUI exposes exact stock assignment copying and Revert without inventing opcode, waypoint, or player-role semantics. Freehand route drawing is explicitly unsupported."
       },
       "source_container": {
-        "format": "little-endian NFL DRCT/PLAY resources",
+        "format": "little-endian fixed-capacity NFL DRCT/PLAY resources inside a layout-identical copied XISO",
         "hash_pins": [
           "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
         ],
-        "resource": "five DRCT graphs and 37 fixed-capacity PLAY books",
+        "resource": "five inspected DRCT graphs and 37 fixed-capacity PLAY books; write-back changes descriptor/pointer fields only",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Browse and raw-export all 37 NFL PLAY books through a structured formation/play/assignment/node inspector; visual route authoring remains Coming Soon with exact blocking findings.",
+      "summary": "Browse and raw-export all 37 NFL PLAY books, copy exact stock assignment routes within one book, Revert them, and build a verified copied XISO; freehand route authoring remains unsupported.",
       "surface": "scripts_config",
-      "title": "NFL 2K5 structured playbook viewer",
+      "title": "NFL 2K5 stock route copier and playbook viewer",
       "validation_command": "bash tools/validate_director_inventory.sh"
     },
     {
@@ -4410,11 +4744,11 @@
     },
     {
       "backend": {
-        "command": "python3 tools/nfl_static_gltf.py <pack-0> --output-dir <output-dir> --only-outer <outer> --only-chunk <chunk>",
-        "module": "tools/nfl_static_gltf.py",
-        "operation": "export"
+        "command": "python3 tools/nfl2k5_visual_mod_project.py build --project <project.json> --source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> --manifest <manifest.json> --artifact-dir <artifact-dir>",
+        "module": "tools/nfl2k5_visual_mod_project.py",
+        "operation": "write"
       },
-      "classification": "extract-only",
+      "classification": "offline-writer-proved",
       "evidence": [
         "docs/research/nfl_group36_geometry_xiso_transport.md",
         "docs/research/nfl_group36_xemu_runtime_result_v2.md",
@@ -4430,19 +4764,22 @@
         "reports/specs/nfl2k5_group36_geometry_xiso_transport.v1.json",
         "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json",
         "reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json",
+        "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+        "tests/mod_editor/test_nfl2k5_stadium_geometry.py",
         "reports/specs/nfl2k5_xbox_static_scne.v1.json"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
-        "mode": "export",
-        "reason": "Stadium SCNE position/topology can be exported for Blender inspection; hidden writers cover 75 exact-count FLOAT3 targets and the pinned group36 native-quad footprint, including its exact one-span copied-XISO transport."
+        "mode": "edit",
+        "reason": "Stadium Studio exports its pinned full scene to glTF and imports same-count, same-topology position edits through the project builder. The exact source, all non-position bytes, fixed allocation, texture composition, Undo, and Revert are enforced before build."
       },
       "id": "nfl2k5.stadiums.geometry",
       "input_constraints": [
-        "Export is raw-coordinate position/topology only.",
-        "Materials, UVs, textures, transforms, collision, cameras, crowd, lighting, weather, LODs, and general import are not complete; catalog write-back changes only exact-count FLOAT3 lanes, while a separate group36 profile changes only four positions/four native-quad IDs and has exact one-span XISO transport."
+        "The pinned full Stadium scene may move existing vertex positions only; vertex counts and complete triangle topology must remain identical.",
+        "Materials, UVs, texture bindings, transforms, collision, indices, normals/other registers, cameras, crowd, lighting, weather, LODs, commands, and opaque tails remain the user's source bytes.",
+        "The edited scene and any staged same-SCNE textures are composed once and must fit the original compressed allocation. General stadium or topology replacement remains unsupported."
       ],
       "portme": [
         "Close all venue-package dependencies and material/texture binding.",
@@ -4450,8 +4787,8 @@
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
-        "mod_payload": "metadata-only",
-        "rule": "Distribute exporter code and metadata, not retail-derived stadium glTF files.",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Distribute exporter/writer code and user-authored position recipes, not retail-derived stadium glTF files or scene bytes.",
         "tooling": "source-and-schemas-only"
       },
       "runtime": {
@@ -4459,18 +4796,18 @@
           "docs/research/nfl_group36_xemu_runtime_result_v2.md",
           "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json"
         ],
-        "scope": "Stadium geometry export works, 75 exact-count FLOAT3 targets are catalog-dispatchable, and group36 has native geometry plus one-span XISO transport. A separate exact s42nd.iff diagnostic visibly proved the pinned four-vertex group36 payload in xemu 0.8.135; that does not establish semantic ownership, visibility for other targets, edited-glTF import, original hardware, or general venue replacement.",
-        "status": "not-applicable"
+        "scope": "Stadium glTF export, edited position compilation, fixed-span project staging, source-byte preservation, and same-SCNE texture composition are structurally proved. A separate exact s42nd.iff diagnostic is visibly proved; visibility of the full-scene product import and original-hardware acceptance remain untested.",
+        "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "canonical stadium-related SCNE outer/chunk records",
+            "allowed": "the pinned full Stadium Studio scene for edited import; canonical stadium-related SCNE records for export",
             "name": "scene",
             "required": true
           }
         ],
-        "notes": "This is a research export distinct from the create-team field-art writer."
+        "notes": "Same-count position editing is distinct from create-team field art and does not permit topology or arbitrary venue replacement."
       },
       "source_container": {
         "format": "NFL SCNE resources inside VC archive",
@@ -4480,9 +4817,9 @@
         "resource": "stadium-related SCNE collections",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Export NFL stadium geometry for research; hidden writers cover 75 exact-count FLOAT3 targets and one pinned group36 native-quad/XISO profile, but semantic venue and general replacement are not implemented.",
+      "summary": "Export the pinned NFL 2K5 Stadium scene to glTF and import source-bound same-count, same-topology position edits through fixed-span project builds.",
       "surface": "stadiums_fields",
-      "title": "NFL 2K5 stadium geometry export",
+      "title": "NFL 2K5 bounded Stadium geometry editing",
       "validation_command": "bash tools/validate_nfl_static_gltf.sh"
     },
     {
@@ -4494,27 +4831,33 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "docs/research/nfl2k5_all_texture_replacement.md",
-        "reports/assets/nfl2k5_all_txtr_inventory_v2.json"
+        "reports/assets/nfl2k5_all_txtr_inventory_v2.json",
+        "reports/assets/nfl2k5_p8_texture_inventory.json",
+        "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json",
+        "mod_editor/core/nfl2k5_uniform_equipment_writer.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "36,761 P8 textures have exact retail layouts and a plan-driven copied-XISO writer proved on three differently packed dumps."
+        "reason": "All 11,395 standalone textures have fixed-span composed-XISO writers: 7,315 P8 targets plus 4,080 explicit-size A1R5G5B5 player strips. The P8 set includes all 1,585 raw aggregate menu-logo/mini-card slots and all 170 franchise/draft logo surfaces. The retail p005 span crossing packs 0/1 is staged as one transactional two-piece logical edit. The separate 28,530 package-local socks, pads, gloves, long-sleeve, shoe, and wristband P8 palettes remain writable."
       },
       "id": "nfl2k5.textures.all_p8",
       "input_constraints": [
         "The PNG must match the retail texture's exact width and height.",
-        "Only compressed, swizzled P8 textures whose index chain starts at the video buffer and whose palette follows that chain are editable: 36,761 of 57,208. A1R5G5B5, A8R8G8B8, DXT1 and VC_P8_LINEAR are refused.",
-        "Replacements are recompressed into the original byte span, so an image that cannot be made to fit is refused rather than moving anything on the disc.",
-        "Targets are addressed by outer package index and texture name. Which package belongs to which stadium or team is not established, so a preview is the way to identify one.",
-        "Stock midfield logos are not in this corpus: center_logo exists only in the create-team packages."
+        "The catalog keeps all 11,395 standalone targets editable: 7,315 reviewed P8 targets and all 4,080 reviewed explicit-size A1R5G5B5 p001..p006/p011..p016 player strips. Outer 581 p005 is a proved transactional two-piece span across physical packs 0 and 1. A8R8G8B8, DXT1, VC_P8_LINEAR, crowdbase, seat, and unreviewed A1R5G5B5 layouts remain refused.",
+        "The 1,585 team-linked slots in logos.cdf, mini.cdf, and flipchip.cdf are raw P8 fixed-slot resources: imports preserve their wrapper, descriptor/system bytes, exact resource span, and 96-byte slot padding, regenerate only swizzled indices plus palette, and never invoke VC-LZ. The 170 franchise-office and draft/PDA logo resources retain their exact compressed P8 spans.",
+        "All Textures also edits 28,530 reviewed package-local socks, elbow-pad, glove, long-sleeve, shoe, and wristband P8 palettes. Each import preserves that TSET's shared retail index/mip chain and every unselected sibling palette and decoded image.",
+        "Package-local equipment imports are palette-constrained: they recolour the retail equipment shape rather than replacing its shared silhouette. Deterministic colour tiers are tried until the complete VC-LZ TSET fits its original allocation.",
+        "Compressed replacements are recompressed into the original byte span, while reviewed raw replacements retain the complete fixed-slot structure; an image that cannot satisfy its owning transport is refused rather than moving anything on the disc.",
+        "Targets are addressed by outer package index and texture name. Uniform and menu-presentation targets also carry typed team names, abbreviations, asset code, style, physical-set selectors, archive name, and consumer scope; unresolved stadium targets still use package indices and preview identification.",
+        "Franchise-office team logos are presentation assets, not midfield art. Stock midfield center_logo exists only in the create-team packages."
       ],
       "portme": [
         "Capture a changed texture in an emulator; transport is proved, on-screen visibility is not.",
-        "Extend past P8 once a fixed-span rebuild exists for the other Xbox formats.",
-        "Recover the team and stadium package filenames so targets can be named rather than indexed."
+        "Extend beyond P8 and the reviewed A1 player-strip layout once fixed-span rebuilds exist for other Xbox formats.",
+        "Recover the remaining stadium package filenames so non-uniform standalone targets can be named rather than indexed."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -4535,7 +4878,7 @@
             "required": true
           },
           {
-            "allowed": "any P8 texture name inside that package",
+            "allowed": "one catalogued P8 name or reviewed A1 player-strip name",
             "name": "texture",
             "required": true
           },
@@ -4545,19 +4888,19 @@
             "required": true
           }
         ],
-        "notes": "Every target is one named TXTR inside one outer package; a package that spans more than one pack segment is refused."
+        "notes": "Standalone targets use one named TXTR inside one outer package. Raw menu aggregates additionally resolve through their exact fixed slot and preserve its 96-byte post-resource padding. Package-local equipment uses tset:<outer>:<chunk>:<reference>:<name>; edits sharing a TSET are grouped into one non-overlapping physical span. The one TXTR crossing packs 0/1 is staged as two ordered pieces and verified again as one complete logical span; unproved formats remain refused."
       },
       "source_container": {
-        "format": "raw or VC-LZ P8 TXTR packages inside XISO",
+        "format": "raw or VC-LZ standalone P8 TXTR, reviewed explicit-size linear A1R5G5B5 player-strip TXTR, plus compressed package-local shared-index P8 TSET resources inside XISO",
         "hash_pins": [
           "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
         ],
-        "resource": "126 ct{logo}{weather}.iff packages with nine textures each",
+        "resource": "11,395 editable reviewed standalone TXTR targets, including 2,536 uniform-presentation variants, 1,585 raw aggregate menu-logo/mini-card slots, 170 franchise/draft logo surfaces, and 4,080 player strips with one transactional cross-pack span, plus 28,530 reviewed package-local uniform-equipment P8 palette references",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Replace any of 36,761 P8 textures -- goalpost pads, team end-zone art, divots, field marks, shared equipment -- in a copied NFL 2K5 XISO from a PNG.",
+      "summary": "Replace all 11,395 standalone textures, including every uniform package's four P8 presentation variants, all raw aggregate menu-logo/mini-card slots, every franchise/draft logo surface, and all 4,080 explicit-size A1 player strips through a transactional cross-pack route where needed; also replace 28,530 package-local uniform-equipment palettes while preserving fixed spans and all unselected siblings.",
       "surface": "textures",
-      "title": "NFL 2K5 all P8 textures",
+      "title": "NFL 2K5 All Textures \u2014 standalone and uniform-equipment editing",
       "validation_command": "bash tools/validate_nfl_all_texture_lane.sh"
     },
     {
@@ -4582,16 +4925,17 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "The unified writer composes proved visual, identity, roster, portrait, Crib, Stadium, fixed Menu Back, and 849 additional exact standalone-audio spans into one copied XISO."
+        "reason": "The unified writer composes proved visual, identity, roster, portrait, Crib, Stadium, package-local equipment palette, fixed Menu Back, and 849 additional exact standalone-audio spans into one copied XISO."
       },
       "id": "nfl2k5.uniforms.all_visual",
       "input_constraints": [
         "Torso and pants are exact 512x256 RGBA8 PNG; sleeves are 128x128; live helmets are 256x256.",
-        "Digits use the selected 32x32 or 64x64 layout; nameplate atlas is 32x1024; dimensions, mips, format, and fixed allocations cannot change.",
-        "Player-roster edits expose only same-allocation first/last names and masked jersey number; membership, position, face, ratings, and pointers remain unchanged.",
+        "Digits use each selected target's authored 32x32 or 64x64 layout; the nameplate atlas is the real horizontal 1024x32 strip. Dimensions, mips, format, and fixed allocations cannot change.",
+        "Player-roster edits expose only same-allocation first/last names, masked jersey number, and per-player None/Clear/Dark face-shield type. Face shield is not a HOME/AWAY tint; reserved value 3 is refused, loaded saves may override the disc seed, and membership, position, face/head ID, ratings, and pointers remain unchanged.",
         "Player portraits are exact 128x128 RGBA8 PNGs selected by a proved four-digit numeric portrait ID; cross-pack slots are reconstructed as bounded physical spans.",
         "Crib Team Photos are exact 128x128 RGBA8 PNGs selected by a canonical crib_team_photo:##_photo_0# selector; all five fixed P8 mips are regenerated.",
         "The Stadium texture route accepts an exact 64x64 RGBA8 PNG only for nfl2k5.stadium.o3280.c0005.scene2648.texture0002 (cement01); all 33 linked surfaces change together, and fixed-allocation compression overflow is refused.",
+        "Package-local uniform equipment accepts only the 28,530 reviewed swizzled P8 palette selectors. Shared shape/mip indices and every unselected sibling remain exact; grouped TSET compression overflow is refused.",
         "Menu Back accepts only mono PCM16LE at exactly 16,000 Hz and 5,696 frames; it is encoded into the one proved fixed AUDO payload while preserving its wrapper and metadata.",
         "Additional standalone audio accepts any of 849 non-Menu-Back catalog asset IDs plus a strict PCM16LE WAV matching that row's exact channel count, rate, and frame count; 697 alias-related rows carry a prominent warning because their runtime cue meaning remains unproved.",
         "Equal decoded uniform content across selectors is not shared storage: all 3,170 audited torso, pants, sleeve, and live-helmet targets have distinct non-overlapping XISO spans.",
@@ -4615,7 +4959,7 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_scene_texture, scorebug_texture, stadium_texture, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
+            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
             "name": "kind",
             "required": true
           },
@@ -4632,10 +4976,10 @@
         "hash_pins": [
           "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
         ],
-        "resource": "audited visual/data edit classes, bounded Stadium SCNE textures, one legacy fixed AUDO payload, and 849 additional standalone AUDO fixed allocations across VC archive packs",
+        "resource": "audited visual/data edit classes, bounded Stadium SCNE textures, 28,530 package-local equipment P8 palettes, one legacy fixed AUDO payload, and 849 additional standalone AUDO fixed allocations across VC archive packs",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Build one verified copied NFL 2K5 XISO containing a composed set of supported visual, text, roster, portrait, Crib, Stadium, Menu Back, and exact standalone-audio physical-slot edits.",
+      "summary": "Build one verified copied NFL 2K5 XISO containing a composed set of supported visual, text, roster, portrait, Crib, Stadium, package-local equipment, Menu Back, and exact standalone-audio physical-slot edits.",
       "surface": "uniforms",
       "title": "NFL 2K5 unified visual/data/audio mod project",
       "validation_command": "bash tools/validate_nfl2k5_visual_mod_project.sh"

@@ -159,9 +159,9 @@ assert typed["recipe"] == {
 }
 assert typed["contains_game_or_replacement_bytes"] is False
 
-assert hashlib.sha256(layout_path.read_bytes()).hexdigest() == "a2ea45adb931677ef4d9d9a37530f2acc53013050793a47f41f69c65e8319875"
-assert hashlib.sha256(tsv_path.read_bytes()).hexdigest() == "b18408c379ebde4006f7d7cf20688d931820c25062a5b1a1d4ed1d9010ddbc2b"
-assert hashlib.sha256(roundtrip_path.read_bytes()).hexdigest() == "5a66993ffb350cb8ad79b677dd22e7b6298b1b83ff175778a0377713e13835f0"
+assert hashlib.sha256(layout_path.read_bytes()).hexdigest() == "6899b356c6364fb6f315dcb7ef599572ca1cb5771735a5540fcc70ef202456b8"
+assert hashlib.sha256(tsv_path.read_bytes()).hexdigest() == "b95a5342d4b7dd92ad3624aa62f811c743066c5b195d89db33387a7b2bc47dec"
+assert hashlib.sha256(roundtrip_path.read_bytes()).hexdigest() == "b471dc33cb9f30be45dfbf057219e6f3b8dff9b5be969ef3e66602c229cef2ef"
 assert layout["schema"] == "apf_shoulder_family_layout/v1"
 assert layout["source"]["sha256_before"] == layout["source"]["sha256_after"] == "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
 assert layout["source"]["opened_for_write"] is False
@@ -178,7 +178,7 @@ for key in (
     "all_three_sibling_textures_preserved",
 ):
     assert eq[key] is True, key
-assert eq["minimum_controlled_allocation_slack"] == 4723
+assert eq["minimum_controlled_allocation_slack"] == 2128
 descriptor = eq["canonical_txtr_descriptor"]
 assert (descriptor["width"], descriptor["height"], descriptor["format"]) == (1024, 1024, 20)
 assert descriptor["vc_file_id"] == "0xb2f2b5ff"
@@ -229,7 +229,7 @@ assert roundtrip["schema"] == "apf_shoulder_family_patch_roundtrip/v1"
 assert roundtrip["target_selection"]["accepted"] == list(range(24))
 assert roundtrip["target_selection"]["rejected"] == [-1, 24]
 assert roundtrip["controlled_edit"]["representative_asset_indices"] == [5, 8, 23]
-assert [row["allocation_slack_after"] for row in roundtrip["controlled_edit"]["results"]] == [33727, 10865, 4723]
+assert [row["allocation_slack_after"] for row in roundtrip["controlled_edit"]["results"]] == [28470, 5845, 3462]
 assert roundtrip["copied_volume"]["outside_replacement"]["source_and_output_match"] is True
 assert roundtrip["conclusion"]["copy_only_all_24_target_cli_exposed"] is True
 assert roundtrip["conclusion"]["all_three_sibling_textures_preserved"] is True
@@ -259,7 +259,7 @@ doc = doc_path.read_text(encoding="utf-8")
 for phrase in (
     "## Worked", "## Failed or unproved", "## Blocking",
     "All 24 shoulder-color", "Exact selector sharing", "--asset-index",
-    "4,723", "jersey_regionmap", "paired shoulder-normal",
+    "2,128", "jersey_regionmap", "paired shoulder-normal",
     "not yet a production art pipeline", "Runtime visibility is not proved",
     "APF_SHOULDER_FAMILY_PATCH_VALIDATION_PASS",
 ):
@@ -269,4 +269,4 @@ PY
 test "$(sha256sum "$source_volume" | cut -d' ' -f1)" = \
   dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e
 
-echo 'APF_SHOULDER_FAMILY_PATCH_VALIDATION_PASS targets=24 paired_normals=24 levels=9 controlled=24 representative=3 copied_volume=true independent_verify=true typed_recipe=true typed_artifacts=hashes-metrics-only team_bank_uses=80 used_assets=14 siblings_preserved=3 min_slack=4723 production_bc3=false runtime_visibility=false retail_unchanged=true'
+echo 'APF_SHOULDER_FAMILY_PATCH_VALIDATION_PASS targets=24 paired_normals=24 levels=9 controlled=24 representative=3 copied_volume=true independent_verify=true typed_recipe=true typed_artifacts=hashes-metrics-only team_bank_uses=80 used_assets=14 siblings_preserved=3 min_slack=2128 production_bc3=false runtime_visibility=false retail_unchanged=true'

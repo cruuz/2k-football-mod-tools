@@ -144,11 +144,13 @@ class LogoWriterRoundTripTests(unittest.TestCase):
         mip_hi = vram_off + logo_patch.PAYLOAD_LEN
         original1, rebuilt1 = blocks[1], rebuilt_blocks[1]
         self.assertEqual(rebuilt1[:base_lo], original1[:base_lo])
-        self.assertEqual(rebuilt1[base_hi:mip_hi], original1[base_hi:mip_hi])  # mip tail
+        # The mip tail is regenerated from the new base rather than kept:
+        # preserving it left the RETAIL crest in every level below mip 0.
+        self.assertNotEqual(rebuilt1[base_hi:mip_hi], original1[base_hi:mip_hi])
         self.assertEqual(rebuilt1[mip_hi:], original1[mip_hi:])  # sibling logo_l1
         self.assertNotEqual(rebuilt1[base_lo:base_hi], original1[base_lo:base_hi])
 
-        self.assertTrue(manifest["mip_tail"]["bit_exact"])
+        self.assertFalse(manifest["mip_tail"]["bit_exact"])
         self.assertTrue(manifest["iff"]["footer_bit_exact"])
         self.assertTrue(manifest["validation"]["other_level_l1_preserved"])
         self.assertGreaterEqual(manifest["iff"]["allocation_slack_after"], 0)
@@ -200,24 +202,25 @@ class LogoWriterDualLayerTests(unittest.TestCase):
         # Both bases differ.
         self.assertNotEqual(rebuilt1[l0_base[0]:l0_base[1]], original1[l0_base[0]:l0_base[1]])
         self.assertNotEqual(rebuilt1[l1_base[0]:l1_base[1]], original1[l1_base[0]:l1_base[1]])
-        # Both mip tails preserved byte-for-byte.
-        self.assertEqual(rebuilt1[l0_mip[0]:l0_mip[1]], original1[l0_mip[0]:l0_mip[1]])
-        self.assertEqual(rebuilt1[l1_mip[0]:l1_mip[1]], original1[l1_mip[0]:l1_mip[1]])
+        # Both mip tails are regenerated from their new bases.
+        self.assertNotEqual(rebuilt1[l0_mip[0]:l0_mip[1]], original1[l0_mip[0]:l0_mip[1]])
+        self.assertNotEqual(rebuilt1[l1_mip[0]:l1_mip[1]], original1[l1_mip[0]:l1_mip[1]])
         # DRAM block 0 fully preserved.
         reader = logo_patch.BytesReader(result.entry_bytes)
         rebuilt_record = apf_inner.parse_iff(reader, entry)
         self.assertEqual(
             apf_inner.decode_block(reader, rebuilt_record, 0, 1 << 30), blocks[0]
         )
-        # The ONLY changed byte ranges in block1 are the two base sub-spans.
+        # The ONLY changed byte ranges in block1 are the two layers' own
+        # base+mip spans; nothing outside the edited layers moves.
         changed = [i for i in range(len(original1)) if original1[i] != rebuilt1[i]]
         self.assertTrue(changed)
-        in_l0_base = [i for i in changed if l0_base[0] <= i < l0_base[1]]
-        in_l1_base = [i for i in changed if l1_base[0] <= i < l1_base[1]]
-        self.assertEqual(len(changed), len(in_l0_base) + len(in_l1_base))
+        in_l0 = [i for i in changed if l0_base[0] <= i < l0_mip[1]]
+        in_l1 = [i for i in changed if l1_base[0] <= i < l1_mip[1]]
+        self.assertEqual(len(changed), len(in_l0) + len(in_l1))
 
         # Manifest invariants for the dual write.
-        self.assertTrue(manifest["validation"]["mip_tails_preserved"])
+        self.assertFalse(manifest["validation"]["mip_tails_preserved"])
         self.assertTrue(manifest["validation"]["dram_headers_preserved"])
         self.assertTrue(manifest["iff"]["footer_bit_exact"])
         self.assertGreaterEqual(manifest["iff"]["allocation_slack_after"], 0)
@@ -232,7 +235,7 @@ class LogoWriterDualLayerTests(unittest.TestCase):
         for name in ("logo_l0", "logo_l1"):
             layer = manifest["layers"][name]
             self.assertTrue(layer["changed"])
-            self.assertTrue(layer["mip_tail_preserved"])
+            self.assertFalse(layer["mip_tail_preserved"])
             self.assertEqual(layer["base_data"]["decode_back_metrics"]["maximum_absolute_error"], 0)
 
     def test_dual_call_with_retail_l1_touches_only_l0(self) -> None:
@@ -300,7 +303,13 @@ class LogoWriterFailClosedTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             png = Path(directory) / "any.png"
             Image.new("RGBA", (512, 512), (10, 20, 30, 40)).save(png)
-            with patch.object(logo_patch, "EXPECTED_ENTRY_SHA256", "0" * 64):
+            # The pin now lives per entry, so drift is simulated where the
+            # writer actually reads it.
+            drifted = {logo_patch.ENTRY_INDEX: {
+                **logo_patch.PINNED_ENTRIES[logo_patch.ENTRY_INDEX],
+                "entry": "0" * 64,
+            }}
+            with patch.object(logo_patch, "PINNED_ENTRIES", drifted):
                 with self.assertRaisesRegex(logo_patch.PatchError, "pinned retail"):
                     logo_patch.build_patch(INDEX_PATH, png)
 
@@ -308,7 +317,11 @@ class LogoWriterFailClosedTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             png = Path(directory) / "any.png"
             Image.new("RGBA", (512, 512), (10, 20, 30, 40)).save(png)
-            with patch.object(logo_patch, "EXPECTED_BASE_SHA256", "0" * 64):
+            drifted = {logo_patch.ENTRY_INDEX: {
+                **logo_patch.PINNED_ENTRIES[logo_patch.ENTRY_INDEX],
+                logo_patch.INNER_NAME: "0" * 64,
+            }}
+            with patch.object(logo_patch, "PINNED_ENTRIES", drifted):
                 with self.assertRaisesRegex(logo_patch.PatchError, "base"):
                     logo_patch.build_patch(INDEX_PATH, png)
 
@@ -347,6 +360,51 @@ class LogoWriterFailClosedTests(unittest.TestCase):
             summary["source_volume_sha256_after"],
         )
         self.assertTrue(summary["outside_replacement"]["source_and_output_match"])
+
+
+@unittest.skipUnless(DISC_AVAILABLE, "extracted APF 0A not present")
+class LogoWriterParallelBatchTests(unittest.TestCase):
+    ENTRIES = (1133, 712)
+
+    @staticmethod
+    def _identity(_entry_index: int, l0: bytes, l1: bytes) -> tuple[bytes, bytes]:
+        return l0, l1
+
+    def test_spawn_workers_match_sequential_and_preserve_input_order(self) -> None:
+        sequential = logo_patch.build_patch_rgba_batch(
+            INDEX_PATH, self.ENTRIES, self._identity, max_workers=1
+        )
+        parallel = logo_patch.build_patch_rgba_batch(
+            INDEX_PATH, self.ENTRIES, self._identity, max_workers=2
+        )
+        self.assertEqual(tuple(parallel), self.ENTRIES)
+        self.assertEqual(
+            {index: result.entry_bytes for index, result in parallel.items()},
+            {index: result.entry_bytes for index, result in sequential.items()},
+        )
+        self.assertTrue(
+            all(result.manifest["mode"] == "no_op" for result in parallel.values())
+        )
+
+    def test_worker_refusal_propagates_without_any_output_write(self) -> None:
+        def malformed(entry_index: int, l0: bytes, l1: bytes) -> tuple[bytes, bytes]:
+            return (l0, l1) if entry_index == self.ENTRIES[0] else (b"", l1)
+
+        with self.assertRaisesRegex(
+            logo_patch.PatchError, "RGBA inputs must both be exactly 512x512"
+        ):
+            logo_patch.build_patch_rgba_batch(
+                INDEX_PATH, self.ENTRIES, malformed, max_workers=2
+            )
+
+    def test_worker_count_is_strictly_bounded(self) -> None:
+        for value in (0, 5, True):
+            with self.subTest(value=value), self.assertRaisesRegex(
+                logo_patch.PatchError, "integer from 1 to 4"
+            ):
+                logo_patch.build_patch_rgba_batch(
+                    INDEX_PATH, self.ENTRIES, self._identity, max_workers=value
+                )
 
 
 if __name__ == "__main__":

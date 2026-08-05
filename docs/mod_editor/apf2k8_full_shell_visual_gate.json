@@ -1,0 +1,96 @@
+{
+  "schema": "apf2k8_full_shell_visual_gate/v1",
+  "observed_at": "2026-08-04",
+  "spark_reviewed_at": "2026-08-04T02:57:32-04:00",
+  "candidate": {
+    "output_0a_sha256": "0e9630348bf367032120f46d149cda7b8c3b490eaedb609fb67c0a12acf02122",
+    "output_0a_size": 1140850688,
+    "pristine_source_0a_sha256_before_and_after": "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+    "semantic_design_png_sha256": "3d7e10828af458c9ad13663f8031311b364fa56be5c852f6aa8f38574d9c3597",
+    "shell_atlas_rgba_sha256": "5a3e111098562aae86fc95f5830b920eed8173e6ff9880c2be9236b705ed2545",
+    "selected_asset_index": 30,
+    "selected_outer_entry_index": 1133
+  },
+  "publication": {
+    "all_118_packages_rebuilt_and_reparsed": true,
+    "compiled_outer_entry_count": 121,
+    "custom_team_appearance_slot": 32,
+    "home_and_away_crest_selectors_match_asset_30": true,
+    "private_stage_completed_before_final_name": true,
+    "atomic_no_replace_publish": true,
+    "package_rebuild_workers": 2,
+    "minimum_package_allocation_headroom_bytes": 23674,
+    "receipt_sha256": {
+      "appearance": "6612b818877f1a2fdabd20dfa5b4c682eb0cb0c4992a52077e68ae145fa54c10",
+      "crest_wrap": "359d1c38dcdecd6980d144e7d860bc3abcaa9bd471076a21ff13dda402b2e34b",
+      "package": "0bb9d3875e2cc6468d4cc8c3d52ff7642e9c9f01e4e53ed244723fd1eb9c2354"
+    }
+  },
+  "independent_catalog_gate": {
+    "passed": true,
+    "package_count": 118,
+    "package_layer_count": 236,
+    "nonselected_package_count": 117,
+    "all_nonselected_layers_exact_physical_migration": true,
+    "all_output_dram_descriptors_match_source": true,
+    "selected_cache_is_semantic_not_shell_atlas": true,
+    "standalone_output_reopened_in_clean_private_sibling_view": true,
+    "source_and_output_unchanged_around_verification": true,
+    "receipt_sha256": "13429d6e3fa1998d86210308ca2d434f9391a6b3bf7a3773792bbd489795b716"
+  },
+  "static_renderer_gate": {
+    "passed": true,
+    "renderer": "deterministic_numpy_orthographic_triangle_zbuffer_v1",
+    "view_count": 10,
+    "views_per_lod": [
+      "side-right",
+      "side-left",
+      "front",
+      "rear",
+      "crown"
+    ],
+    "all_views_nonempty": true,
+    "high_lod_active_span_fraction": {
+      "left_right": 0.9766956858193072,
+      "front_rear": 0.9359259389136303
+    },
+    "low_lod_active_span_fraction": {
+      "left_right": 0.9905455853910854,
+      "front_rear_minimum": 0.9147159181082368
+    },
+    "high_lod_seam_exact": true,
+    "low_lod_seam_exact": true,
+    "contact_sheet_sha256": {
+      "helmet_hi": "294eb885b8add058c99d81ce3e5723116b85f47d723dcec34a6e8ccf3d6df409",
+      "helmet_lo": "ea1dbc569efd7405bb84a4cd31291f3b873ac3efb17998c38b4378ef1a5b363e"
+    },
+    "contact_sheet_dimensions": [
+      1536,
+      1024
+    ],
+    "receipt_sha256": "4826c15d5fd95500ab1cdf5254e1073931974d6e0de3fe1ec83df270fc5d6d60"
+  },
+  "spark_visual_review": {
+    "method": "spark_hands_static_contact_sheet_inspection",
+    "passed": true,
+    "reviewed_exact_contact_sheet_hashes": true,
+    "high_lod": "Authentic shell-spanning Eagles wing with bilateral, front, rear, and crown coherence; no visible UV artifacts.",
+    "low_lod": "Wing silhouette retained with no smears, gaps, holes, or seam breaks."
+  },
+  "claim_boundary": {
+    "static_asset_space_eagles_visual_match_proved": true,
+    "runtime_consumption_proved": false,
+    "gameplay_visibility_proved": false,
+    "package_versus_cache_runtime_ownership_proved": false,
+    "xbox_360_hardware_proved": false,
+    "emulator_used": false,
+    "xenia_patch_created": false,
+    "default_xex_edited": false
+  },
+  "distribution": {
+    "contains_private_game_data": false,
+    "contains_decoded_texture_pixels": false,
+    "contains_absolute_local_paths": false,
+    "contains_contact_sheet_images": false
+  }
+}

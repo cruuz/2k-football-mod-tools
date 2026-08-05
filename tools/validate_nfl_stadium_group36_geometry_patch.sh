@@ -19,7 +19,7 @@ check_pin() {
 check_pin "$SCHEMA" 2691 98a3467b4ece8876f9e613a46aedbfbf5e98ed7d9ae6d913a637276d65051802
 check_pin "$SAMPLE" 1786 e940739abb9f901607ce2b3c35a629b2cf3ccbda0ba11c4d8963fccadad078fe
 check_pin "$REPORT" 5488 75e20ced325aa09f75ba0831a28eaee1436ae31b669985396f967d047d0aff20
-check_pin "$TOPOLOGY_SPEC" 37020 c25d577be8dc81fe1e0f569ed99ea9df03401663de5abc7e677ed471d211f882
+check_pin "$TOPOLOGY_SPEC" 41139 9412a862689ba2bddca3c934df1345c218c5a75080793b6bb1c92330132a49cd
 
 jq -e '
   .schema == "nfl2k5_group36_same_footprint_geometry_roundtrip/v1" and

@@ -33,6 +33,7 @@ class ApfProductAction(str, Enum):
     EXPORT = "export"
     REPLACE = "replace"
     REVERT = "revert"
+    BUILD_COPY = "build-copy"
 
 
 class ApfStatus(str, Enum):
@@ -40,14 +41,17 @@ class ApfStatus(str, Enum):
     PREVIEW = "Preview"
     EXPORT_ONLY = "Export-only"
     COMING_SOON = "Coming Soon"
+    EVIDENCE = "Proof boundary"
+    RESEARCH = "Research boundary"
 
 
 @dataclass(frozen=True)
 class CapabilityActionBinding:
     """One reviewed bridge from a capability row to a concrete product route.
 
-    A capability omitted from :data:`CAPABILITY_ACTION_BINDINGS` remains visible
-    as Coming Soon.  Registry classification alone never fabricates a button.
+    A capability omitted from :data:`CAPABILITY_ACTION_BINDINGS` remains a clearly
+    labeled research/proof boundary. Registry classification alone never fabricates
+    a button.
     """
 
     capability_id: str
@@ -57,6 +61,8 @@ class CapabilityActionBinding:
     revert_method: str | None = None
     product_note: str = ""
     additional_replace_methods: tuple[str, ...] = ()
+    one_shot_target: str | None = None
+    output_kind: str = ""
 
     @property
     def has_complete_editor(self) -> bool:
@@ -65,6 +71,21 @@ class CapabilityActionBinding:
             <= self.actions
             and bool(self.replace_method)
             and bool(self.revert_method)
+        )
+
+    @property
+    def has_verified_one_shot_writer(self) -> bool:
+        """Whether the action publishes a verified copy instead of staging Undo.
+
+        Source-bound model imports never mutate the loaded game or the project edit
+        map, so inventing a Revert action would be misleading.  They are complete
+        editors when their concrete callable and copied-volume output are named.
+        """
+
+        return (
+            ApfProductAction.BUILD_COPY in self.actions
+            and bool(self.one_shot_target)
+            and bool(self.output_kind)
         )
 
     @property
@@ -134,9 +155,10 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "without repacking their shared banks. Channels, sample rate, packet "
             "allocation, and decoded duration must match the selected slot exactly. "
             "One physical cwdloop row has two disclosed owners; both are affected "
-            "together. A selected sound can start from an exact PCM16 WAV through "
-            "a user-configured external XMA1 encoder; FLAC/MP3 and batch PCM input "
-            "remain unsupported. "
+            "together. A selected sound can start from ordinary decodable audio "
+            "(including WAV, MP3, FLAC, OGG and M4A): Mod Studio conforms it to the "
+            "target PCM shape before running a user-configured external XMA1 encoder. "
+            "Batch packs remain pre-encoded XMA1 or exact PCM16 WAV. "
             "Every accepted payload is checked against complete-packet fingerprints "
             "from both the loaded game's AUDO and AUSB audio families."
         ),
@@ -157,15 +179,50 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "XMA1 replacement when channels, sample rate, encoded length, "
             "packet framing, and decoded duration match exactly. Projects store "
             "only the user's raw replacement packets. A selected sound can start "
-            "from an exact PCM16 WAV through a user-configured external XMA1 "
-            "encoder; no encoder ships with Mod Studio, and FLAC/MP3 plus batch "
-            "PCM input remain unsupported."
+            "from ordinary decodable audio (including WAV, MP3, FLAC, OGG and M4A); "
+            "it is conformed to the target PCM shape before the user-configured "
+            "external XMA1 encoder runs. No encoder ships with Mod Studio, and "
+            "batch packs remain pre-encoded XMA1 or exact PCM16 WAV."
         ),
     ),
     "apf2k8.colors.uniform_selector_bytes": CapabilityActionBinding(
         "apf2k8.colors.uniform_selector_bytes",
         "team_identity.selector_inspector",
         _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT),
+    ),
+    "apf2k8.colors.uniform_selector_appearance_custom_team": CapabilityActionBinding(
+        "apf2k8.colors.uniform_selector_appearance_custom_team",
+        "uniforms.custom_team_appearance_editor",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.REPLACE,
+            ApfProductAction.REVERT,
+        ),
+        replace_method="replace_custom_team_appearance",
+        revert_method="revert",
+        product_note=(
+            "Equipment Colors independently selects each HOME/AWAY facemask-bar "
+            "and Team-turtleneck palette index for all 40 teams; it changes only "
+            "proved selector slot 3 byte 6 and slot 0 byte 2. Player visors remain "
+            "the separate None/Clear/Dark choice because APF has no per-uniform "
+            "visor tint. The Custom Team Appearance tab edits only user slots 32–39. HOME "
+            "and AWAY each expose ten ARGB colors, a bounded helmet asset and "
+            "proved shell-palette index, a bounded crest catalog asset, and "
+            "truthfully opaque selector bytes. The 2017 Eagles preset preserves "
+            "the helmet model and helmet tail, selects crest 30 with its complete "
+            "Xenia-proved routing tail, and composes through the common "
+            "ROST transaction. Team Logo builds can include the staged slot in "
+            "the same copied 0A as the crest package and logo cache."
+        ),
+    ),
+    "apf2k8.cross_title_model_conversion.nfl_to_apf": CapabilityActionBinding(
+        "apf2k8.cross_title_model_conversion.nfl_to_apf",
+        "stadium.cross_title_model_compatibility_inspector",
+        _actions(ApfProductAction.PREVIEW),
+        product_note=(
+            "The Stadium research surface presents the mapped cross-title geometry "
+            "compatibility findings. It does not claim a conversion writer."
+        ),
     ),
     "apf2k8.cpu_ai_draft.logic": CapabilityActionBinding(
         "apf2k8.cpu_ai_draft.logic",
@@ -214,6 +271,16 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         replace_method="replace_draft_logo",
         revert_method="revert",
     ),
+    "apf2k8.logos_cards.uniform_catalog": CapabilityActionBinding(
+        "apf2k8.logos_cards.uniform_catalog",
+        "logos.uniform_and_textlogo_catalog",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT),
+        product_note=(
+            "The universal logo browser previews and exports every decoded catalog "
+            "row. Team Logo owns the separate coupled package/cache writer; text "
+            "logos and menu-card descriptor families retain their exact export route."
+        ),
+    ),
     "apf2k8.logos_cards.team_logo": CapabilityActionBinding(
         "apf2k8.logos_cards.team_logo",
         "logos_cards.team_logo_png_editor",
@@ -223,21 +290,29 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             ApfProductAction.REPLACE,
             ApfProductAction.REVERT,
         ),
-        replace_method="replace_team_logo",
-        revert_method="revert_team_logo",
+        replace_method="replace_helmet_crest_design",
+        revert_method="revert",
         product_note=(
             "The Team Logo editor stages one exact 512x512 RGBA crest, and one "
-            "build writes it into both places the disc stores it: the "
-            "uniform_logo_01 package (logo_l0) through tools/apf_logo_patch.py "
-            "and the matching entry of the prebuilt uniform_logocache aggregate "
+            "build co-writes the two linked selector-slot-5 owners at crest index "
+            "N: the selected team's uniform_logo_NN package (logo_l0/logo_l1) through "
+            "tools/apf_logo_patch.py "
+            "and index N of the prebuilt uniform_logocache aggregate "
             "through tools/apf_logocache_patch.py, chained over one intermediate "
-            "copy. Each writer byte-diffs the whole copied volume so only its "
+            "copy. Static XEX ownership maps that aggregate to the frontend LOGOS / "
+            "Team Select path. The rectangular uniform_textlogo wordmark is a "
+            "separate selector-slot-6 owner in Wordmarks; Team Logo never resizes "
+            "or writes it. Each writer byte-diffs the whole copied volume so only its "
             "own fixed extents change, each is paired with an independent "
             "verifier, and the read-only source is never opened for writing. "
             "Colors are stored at 4 bits per channel and the build reports the "
-            "exact decode-back error. Which runtime surface reads which copy -- "
-            "helmet crest, team-select grid, or scorebug -- is not proved "
-            "without a Xenia capture."
+            "exact decode-back error. Both writers regenerate the packed mip "
+            "levels from the new base, so the crest is right at every "
+            "distance rather than only in close-up. Package/cache writeback and "
+            "static shell appearance are proved. The frontend cache path is "
+            "statically mapped, but changed-logo runtime consumption, the scorebug's "
+            "package-versus-cache resolver, and Xbox 360 hardware parity remain "
+            "unproved."
         ),
     ),
     "apf2k8.logos_cards.team_logo_cache": CapabilityActionBinding(
@@ -249,19 +324,85 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             ApfProductAction.REPLACE,
             ApfProductAction.REVERT,
         ),
-        replace_method="replace_team_logo",
-        revert_method="revert_team_logo",
+        replace_method="replace_helmet_crest_design",
+        revert_method="revert",
         product_note=(
-            "This runtime logo cache is a coupled companion of the team-logo "
+            "This statically mapped frontend/Team Select logo cache is a coupled "
+            "companion of the team-logo "
             "package: the single Team Logo build writes it from the same staged "
-            "512x512 crest through tools/apf_logocache_patch.py (catalog index "
-            "1), rewriting the matching entry of the prebuilt uniform_logocache "
+            "512x512 crest through tools/apf_logocache_patch.py at the "
+            "selected team's catalog index, rewriting the matching entry of "
+            "the prebuilt uniform_logocache "
             "aggregate and verifying every other byte unchanged. There is no "
             "cache-only editor -- staging or reverting the Team Logo crest "
             "stages or reverts this cache write with it -- so it shares the "
-            "team-logo replace/revert route. The writer re-checks its pinned "
-            "retail directory and payload and fails closed. In-game consumption "
-            "is not proved without a Xenia capture."
+            "team-logo replace/revert route. It is linked by the same selector-slot-5 "
+            "index; the independent selector-slot-6 uniform_textlogo wordmark stays "
+            "under Wordmarks and is never derived from this square crest. The writer re-checks its pinned "
+            "retail directory and payload and fails closed. Changed-cache gameplay "
+            "or frontend consumption, the scorebug resolver, and Xbox 360 hardware "
+            "parity remain unproved."
+        ),
+    ),
+    "apf2k8.logos_cards.textlogo_wordmarks": CapabilityActionBinding(
+        "apf2k8.logos_cards.textlogo_wordmarks",
+        "logos_cards.textlogo_wordmark_png_editor",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.EXPORT,
+            ApfProductAction.REPLACE,
+            ApfProductAction.REVERT,
+        ),
+        replace_method="replace_uniform",
+        revert_method="revert",
+        product_note=(
+            "The Wordmark editor owns all 206 selector-slot-6 "
+            "uniform_textlogo_00..205 packages. It prepares ordinary artwork "
+            "with explicit Contain or Cover fitting on the native 512x128 "
+            "canvas, flattens transparency onto the retail black background, "
+            "regenerates all six tiled BC1 mips, and rebuilds only the selected "
+            "fixed-allocation package in the normal shareable project/Build. "
+            "This rectangular selector-slot-6 menu/uniform wordmark is deliberately "
+            "separate from the selector-slot-5 square helmet crest and its linked "
+            "frontend/Team Select uniform_logocache index. Team Logo never squeezes "
+            "or copies a crest into this wordmark family."
+        ),
+    ),
+    "apf2k8.models.scne_gltf": CapabilityActionBinding(
+        "apf2k8.models.scne_gltf",
+        "uniforms.model_position_roundtrip",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.EXPORT,
+            ApfProductAction.BUILD_COPY,
+        ),
+        one_shot_target="mod_editor.apf_studio.model_import:import_model",
+        output_kind="verified copied 0A",
+        product_note=(
+            "Uniforms & Equipment exposes dedicated helmet/player glTF export and "
+            "same-topology POSITION-only import buttons. Import creates a new "
+            "source-bound 0A immediately rather than staging a shareable project "
+            "replacement; materials, topology, transforms, skin data, normals, "
+            "packed UV/tangent data, animation, and collision are rejected."
+        ),
+    ),
+    "apf2k8.models.scne_same_count_position": CapabilityActionBinding(
+        "apf2k8.models.scne_same_count_position",
+        "stadium.selected_mesh_position_roundtrip",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.EXPORT,
+            ApfProductAction.BUILD_COPY,
+        ),
+        one_shot_target=(
+            "mod_editor.apf_studio.stadium_model_import:import_edited_mesh"
+        ),
+        output_kind="verified copied 1A",
+        product_note=(
+            "Stadium Studio exports a clicked catalog-authorized mesh and imports "
+            "same-count POSITION edits into a separately verified copied 1A. The "
+            "loaded source and project edit map remain unchanged, so this complete "
+            "one-shot writer correctly has no staged Revert action."
         ),
     ),
     "apf2k8.menus.layouts": CapabilityActionBinding(
@@ -275,6 +416,15 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         ),
         replace_method="replace_localization_text",
         revert_method="revert",
+    ),
+    "apf2k8.mode_state_routing.state_graph": CapabilityActionBinding(
+        "apf2k8.mode_state_routing.state_graph",
+        "menus.mode_state_graph_inspector",
+        _actions(ApfProductAction.PREVIEW),
+        product_note=(
+            "The Menus research surface exposes the mapped state/transition graph "
+            "as an inspector; it does not claim layout or executable writeback."
+        ),
     ),
     "apf2k8.players.roster": CapabilityActionBinding(
         "apf2k8.players.roster",
@@ -292,7 +442,7 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "pure player first/last-name allocation support bounded Replace/Revert "
             "through the runtime-proved token-preserving ROST transport. Shared "
             "allocations disclose every owner and change those owners together. "
-            "Every player also exposes 28 independent native base ratings with "
+            "Every player also exposes 31 independent native base ratings with "
             "exact 0–99 Replace/Revert; a source native 100 remains visible and "
             "revertible but cannot be applied as a new edit. Every player position "
             "also has bounded 0–16 Replace/Revert through a 17-choice desktop "
@@ -302,13 +452,25 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
             "CODEXTEAM and Dan "
             "CODEX both rendered in Xenia. The rating candidate also booted and "
             "loaded Dan Marino, though its star-selection UI had no numeric byte "
-            "readout. Both abbreviation fields, zero-capacity names, jersey "
-            "numbers, Overall, abilities, tier, membership, and depth charts "
-            "remain separate and locked."
+            "readout. Both abbreviation fields and zero-capacity names in the "
+            "on-disc project route remain locked. The separate Save Players "
+            "workspace authors exact raw-save jersey, tier, abilities, depth, "
+            "appearance/equipment, all 15 fixed-allocation player text fields, "
+            "and safe membership swaps. Overall and active-capacity expansion "
+            "remain locked because their complete engine contracts are not proved."
         ),
         additional_replace_methods=(
             "replace_player_base_rating",
             "replace_player_position",
+        ),
+    ),
+    "apf2k8.portraits_faces.hi_head": CapabilityActionBinding(
+        "apf2k8.portraits_faces.hi_head",
+        "rosters.face_head_reference_export",
+        _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT),
+        product_note=(
+            "The Rosters asset browser previews supported rows and preserves the "
+            "exact source-bound head/face reference export route. No importer is claimed."
         ),
     ),
     "apf2k8.scorebug_presentation.digital_font": CapabilityActionBinding(
@@ -335,8 +497,29 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
     ),
     "apf2k8.scripts.director_playbook": CapabilityActionBinding(
         "apf2k8.scripts.director_playbook",
-        "playbook.inspector",
-        _actions(ApfProductAction.PREVIEW, ApfProductAction.EXPORT),
+        "playbook.stock_assignment_routes",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.EXPORT,
+            ApfProductAction.REPLACE,
+            ApfProductAction.REVERT,
+        ),
+        replace_method="replace_play_assignment_route",
+        revert_method="revert",
+        additional_replace_methods=("swap_play_assignment_routes",),
+        product_note=(
+            "Assignment Routes copies or atomically swaps exact stock descriptor/"
+            "chain assignments. Route-node waypoint/opcode authoring remains locked."
+        ),
+    ),
+    "apf2k8.schedules_franchise.retained": CapabilityActionBinding(
+        "apf2k8.schedules_franchise.retained",
+        "franchise.retained_structure_inspector",
+        _actions(ApfProductAction.PREVIEW),
+        product_note=(
+            "The Franchise page presents the retained season/schedule findings as "
+            "a bounded inspector; no franchise-mode writer is claimed."
+        ),
     ),
     "apf2k8.stadiums.geometry": CapabilityActionBinding(
         "apf2k8.stadiums.geometry",
@@ -345,6 +528,23 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         product_note=(
             "Semantic glTF preview/export is available only in Stadium Studio; "
             "package rows retain their exact raw export contract."
+        ),
+    ),
+    "apf2k8.stadiums.textures": CapabilityActionBinding(
+        "apf2k8.stadiums.textures",
+        "stadium.embedded_texture_editor",
+        _actions(
+            ApfProductAction.PREVIEW,
+            ApfProductAction.EXPORT,
+            ApfProductAction.REPLACE,
+            ApfProductAction.REVERT,
+        ),
+        replace_method="stage_stadium_texture",
+        revert_method="revert_stadium_texture",
+        product_note=(
+            "Stadium Studio owns this specialized route: clicked outer-14/inner-8 "
+            "surfaces expose only their statically joined embedded textures, stage "
+            "a native-size private PNG, and build a new copied 1A."
         ),
     ),
     "apf2k8.uniforms.catalog": CapabilityActionBinding(
@@ -429,6 +629,7 @@ UNIFORM_FAMILY_CAPABILITY_IDS: Mapping[str, str] = {
     "pants": "apf2k8.uniforms.pants_color_00_23",
     "helmet": "apf2k8.uniforms.helmet_color_00_23",
     "shoulder": "apf2k8.uniforms.shoulder_color_00_23",
+    "textlogo": "apf2k8.logos_cards.textlogo_wordmarks",
 }
 
 

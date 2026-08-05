@@ -10,10 +10,12 @@ APF 2K8 already stores independent base ratings as one byte per attribute.
 There is no need to invent a tier-to-number conversion or stretch a small
 bucket scale into 0–99:
 
-- 27 fields have exact executable UI labels, getters, setters, and record
-  offsets.
-- A 28th field has the same rating getter/setter and formula role, but its UI
-  label is unresolved. The product names it **Unknown Rating 24**.
+- 31 rating bytes span `+0xBA..+0xD8`, each with its own getter and setter.
+- 28 carry a name. 24 come from the executable's own attribute UI; four more
+  (`+0xBD`, `+0xC5`, `+0xC9`, `+0xD2`, `+0xD4`, `+0xD5`) were settled against
+  APFe's byte-order attribute list and its per-position default templates.
+- Three (`+0xD1`, `+0xD3`, `+0xD7`) hold a constant or a role code and carry no
+  supportable name, so the product labels them **Unknown Rating (0x..)**.
 - Native setters clamp values to `0..100`.
 - Populated stock records use `0..99`; no stock base-rating byte exceeds 99.
 - Gameplay-style getters normalize the stored value by multiplying it by
@@ -27,7 +29,7 @@ player record. It never rescales, buckets, clips, or guesses these values.
 Rosters & Players now gives every player a searchable **Base Ratings** panel.
 The panel shows:
 
-- all 28 fields;
+- all 31 fields;
 - each exact stored integer;
 - the byte's player-record-relative coordinate;
 - an exact 0..99 editor with per-field Apply/Revert and modified state; and
@@ -65,16 +67,16 @@ The rating neighborhood is `+0xBA..+0xD9`.
 | 5 | Pass Arm Strength | `+0xBC` | 6 | XEX UI named |
 | 6 | Stamina | `+0xBE` | 9 | XEX UI named |
 | 7 | Aggressiveness | `+0xD8` | 27 | XEX UI named |
-| 8 | Consistency | `+0xD7` | 22 | XEX UI named |
+| 8 | Unknown Rating (0xD7) | `+0xD7` | 22 | Neutral/unresolved |
 | 9 | Kick Power | `+0xBF` | 7 | XEX UI named |
-| 10 | Kicking Style | `+0xD1` | 26 | XEX UI named |
+| 10 | Unknown Rating (0xD1) | `+0xD1` | 26 | Neutral/unresolved |
 | 11 | Durability | `+0xC0` | 11 | XEX UI named |
 | 12 | Coverage | `+0xC3` | 20 | XEX UI named |
 | 13 | Run Route | `+0xC4` | 14 | XEX UI named |
 | 14 | Tackle | `+0xC6` | 17 | XEX UI named |
 | 15 | Break Tackle | `+0xC7` | 12 | XEX UI named |
 | 16 | Pass Accuracy | `+0xC8` | 5 | XEX UI named |
-| 17 | Pass Read Coverage | `+0xC9` | 13 | XEX UI named |
+| 17 | Composure | `+0xC9` | 13 | Roster-tool named |
 | 18 | Catch | `+0xCA` | 4 | XEX UI named |
 | 19 | Run Blocking | `+0xCB` | 15 | XEX UI named |
 | 20 | Pass Blocking | `+0xCC` | 16 | XEX UI named |
@@ -82,18 +84,26 @@ The rating neighborhood is `+0xBA..+0xD9`.
 | 22 | Pass Rush | `+0xCE` | 18 | XEX UI named |
 | 23 | Run Coverage | `+0xCF` | 19 | XEX UI named |
 | 24 | Kick Accuracy | `+0xD0` | 8 | XEX UI named |
-| 25 | Leadership | `+0xD3` | 23 | XEX UI named |
-| 26 | Unknown Rating 24 | `+0xD4` | 24 | Neutral/unresolved |
-| 27 | Composure | `+0xD5` | 21 | XEX UI named |
+| 25 | Unknown Rating (0xD3) | `+0xD3` | 23 | Neutral/unresolved |
+| 26 | Running Style | `+0xD4` | 24 | Roster-tool named |
+| 27 | Consistency | `+0xD5` | 21 | Roster-tool named |
 | 28 | Scramble | `+0xD6` | 25 | XEX UI named |
+| 29 | Pass Read Coverage | `+0xBD` | — | Roster-tool named |
+| 30 | Special Teams | `+0xC5` | — | Roster-tool named |
+| 31 | Kicking Style | `+0xD2` | — | Roster-tool named |
 
-Four neighboring bytes are deliberately excluded:
+Rows 29-31 have no formula-modifier index because the engine's attribute
+accessor family at `0x8473E698` covers `+0xBA..+0xD8` but skips exactly those
+three bytes. They are real, editable, and position-proved; they are simply not
+part of the engine's attribute interface. See
+`docs/research/apf_rating_slot_settlement.md` for the evidence behind every
+name, and for the two APFe labels this project rejects (`+0xD0` is Kick
+Accuracy, not KickCoverage; `+0xC5` is Special Teams, not Aggressiveness).
+
+One neighboring byte is deliberately excluded:
 
 | Relative byte | Status |
 |---:|---|
-| `+0xBD` | Unknown; no rating label/consumer assignment |
-| `+0xC5` | Unknown; no rating label/consumer assignment |
-| `+0xD2` | Unknown; no rating label/consumer assignment |
 | `+0xD9` | Height in inches, proved by the feet/inches formatter |
 
 A generic clamped byte accessor is not enough to call an unknown byte a
@@ -245,7 +255,7 @@ player identity, semantic rating ID, and user-authored integer. They never
 store retail preimages, original values, or copied records.
 
 Alpha 18 adds a private bulk-authoring layer without widening that public-data
-boundary. A source-bound v2 CSV locally carries all 2,254 × 28 current values;
+boundary. A source-bound v2 CSV locally carries all 2,254 × 31 current values;
 preview compares source, active project, and desired sheet values before one
 atomic batch Apply. The CSV is never copied into `.apf2k8mod`. Only the authored
 semantic deltas survive project save/share, and one Undo restores the complete
@@ -273,9 +283,11 @@ Still required for the strongest capability claim:
    render.
 3. Spot-check `0`, `50`, `99`, and native `100` if a numeric consumer screen is
    recovered.
-4. Decode ability bits and star tier as separate later capabilities.
-5. Map profile/save representation from legal one-variable before/after pairs;
-   never reuse the disc layout by assumption.
+4. Runtime-test the separately mapped Save Players ability/tier packed fields;
+   their offline APFe/raw-save read/write coordinates are now bounded, but this
+   on-disc rating writer does not consume them.
+5. Keep the raw-save representation in its separate verified handoff lane;
+   never reuse either transport by assumption.
 
 The honest conclusion is now stronger: arbitrary independent per-attribute
 0–99 authoring is mapped, bounded, and survives the game's repaired roster

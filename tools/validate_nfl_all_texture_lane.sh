@@ -12,3 +12,5 @@ root=$(cd "$(dirname "$0")/.." && pwd)
 cd "$root"
 
 python3 -m unittest tests.mod_editor.test_all_texture_lane -v
+python3 -m unittest tests.mod_editor.test_all_textures_workspace -v
+echo 'NFL_ALL_TEXTURE_LANE_VALIDATION_PASS standalone=11395 p8=7315 a1=4080 new_presentation=1755 raw_menu=1585 franchise_draft=170 source=unchanged runtime=false'

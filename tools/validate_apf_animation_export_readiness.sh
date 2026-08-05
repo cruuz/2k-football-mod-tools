@@ -122,7 +122,7 @@ assert "0x8463A594\t0x1400DB13\tvxor128\tv0,v0,v123" in vmx
 PY
 
 test "$(sha256sum "$report" | cut -d' ' -f1)" = \
-  57d91d88da33efa10e953de8fba77411951c74076ca1e401d93b462f730f2594
+  be6441224551409dc8481ddf0af9a7dbba94fab6deb79000f1ba6428b48ea103
 test "$(sha256sum "$bindings" | cut -d' ' -f1)" = \
   14e8850139cf3c7ddddad83a749fe5eae25400c819bc52fbffdc0bf1c48d6d13
 test "$(sha256sum "$trace" | cut -d' ' -f1)" = \

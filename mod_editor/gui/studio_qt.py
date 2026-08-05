@@ -14,16 +14,19 @@ uniform browser shows metadata-only monograms generated from catalog labels.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from pathlib import Path
 import tempfile
-from typing import Any, Callable, Iterable, Protocol, Sequence, runtime_checkable
+from typing import Any, Callable, Iterable, Mapping, Protocol, Sequence, runtime_checkable
+from uuid import uuid4
+import weakref
 
 from PyQt5.QtCore import (
-    QObject, QRunnable, QSize, Qt, QThreadPool, QTimer, pyqtSignal,
+    QObject, QRunnable, QSize, Qt, QThreadPool, QTimer, QUrl, pyqtSignal,
 )
 from PyQt5.QtGui import (
-    QColor, QCloseEvent, QFont, QIcon, QImageReader, QKeySequence, QPainter,
-    QPixmap,
+    QColor, QCloseEvent, QDesktopServices, QFont, QIcon, QImageReader,
+    QKeySequence, QPainter, QPixmap,
 )
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -36,6 +39,7 @@ from PyQt5.QtWidgets import (
     QFrame,
     QHeaderView,
     QHBoxLayout,
+    QInputDialog,
     QLabel,
     QListWidget,
     QListWidgetItem,
@@ -58,6 +62,14 @@ from PyQt5.QtWidgets import (
 
 from mod_editor import __version__
 from mod_editor.core.errors import ValidationError
+from mod_editor.core import update_check
+from mod_editor.core.texture_master import (
+    AuthoringTransform,
+    fit_transform as texture_master_fit_transform,
+    snapshot_texture_master_source,
+)
+from mod_editor.gui import crash_report
+from mod_editor.gui import update_ui
 from mod_editor.core.capabilities import CapabilityRegistryLoader
 from mod_editor.core.nfl2k5_uniform_catalog import (
     ASSETS_PER_SET,
@@ -66,6 +78,7 @@ from mod_editor.core.nfl2k5_uniform_catalog import (
     UniformSet,
     load_nfl2k5_uniform_catalog,
 )
+from mod_editor.core.nfl2k5_digit_sheet import split_digit_sheet
 from mod_editor.core.nfl2k5_extended_visual_catalog import (
     ExtendedVisualAsset,
     Nfl2k5ExtendedVisualCatalog,
@@ -100,6 +113,7 @@ from mod_editor.studio.project_archive import (
     ProjectTargetIdentity,
     project_target_identity,
 )
+from mod_editor.studio.uniform_bundle import TEAM_KIT_MANIFEST
 from mod_editor.studio.workspace_state import (
     RecoveryCandidate,
     WorkspaceStateStore,
@@ -125,6 +139,102 @@ EMBEDDED_OPERATION_TASK_CONTRACT = "audio_crib_mutually_exclusive_until_drain"
 # host keeps only a small vertical floor so the window can shrink well below any
 # single page's natural minimum height.
 PAGE_SCROLL_MIN_HEIGHT = 220
+
+#: Shown on the Build button whenever it is usable.
+BUILD_READY_MESSAGE = (
+    "Create a separate modded XISO. Your original game file is never changed."
+)
+
+# Pillow normalizes these formats to the exact RGBA PNG the disc writer needs.
+# Keep the file chooser and drag/drop admission on one list so neither path can
+# regress to accepting only already-perfect PNGs.
+IMAGE_IMPORT_EXTENSIONS = frozenset({
+    ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp", ".tga",
+})
+IMAGE_IMPORT_FILTER = (
+    "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.tga);;All files (*)"
+)
+
+
+# Plain-language "what to do next" for the writers' exact-slot refusals.  The
+# fail-closed behaviour never changes -- the same bytes are still refused --
+# but the GUI pairs each refusal with the fix a first-time modder should try.
+_FIX_HINTS: tuple[tuple[str, str], ...] = (
+    (
+        "needs a PNG that is exactly",
+        "Fix: use that asset's Replace button and drop any image — Mod Studio "
+        "resizes it to the slot's exact size for you.",
+    ),
+    (
+        "must stay",
+        "Fix: that image has the wrong dimensions for this slot. Import it "
+        "through its panel and let Mod Studio resize it to the exact slot size.",
+    ),
+    (
+        "needs a PNG file",
+        "Fix: choose an image file — PNG, JPEG, BMP, GIF, WebP or TGA. Any "
+        "size works; the editor resizes it for you.",
+    ),
+    (
+        "Live face/head textures must be fully opaque",
+        "Fix: this portrait slot stores opaque pixels. Flatten the image's "
+        "transparency, then try again.",
+    ),
+    (
+        "is not a RIFF/WAVE file",
+        "Fix: install FFmpeg and drop ordinary audio (MP3, FLAC, OGG, M4A) to "
+        "have it converted, or supply a PCM16 WAV that already matches this "
+        "slot's exact channels, sample rate and length.",
+    ),
+    (
+        "WAV must be canonical",
+        "Fix: this slot needs one exact shape. Install FFmpeg and drop ordinary "
+        "audio to have it converted, or re-export the PCM authoring template.",
+    ),
+    (
+        "WAV must contain exactly",
+        "Fix: this slot needs one exact shape. Install FFmpeg and drop ordinary "
+        "audio to have it converted, or re-export the PCM authoring template.",
+    ),
+)
+
+
+def friendly_fix_hint(message: str) -> str | None:
+    """Return the plain next-step for a known refusal, or None."""
+
+    lowered = message.casefold()
+    for needle, hint in _FIX_HINTS:
+        if needle.casefold() in lowered:
+            return hint
+    return None
+
+
+def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
+    """Explain why Build is unavailable, or describe it when it is.
+
+    Build is disabled until a disc is loaded and at least one edit exists, which
+    is correct -- but a disabled button with a fixed tooltip explains nothing, and
+    pressing it produces no dialog and no status change.  A modder reported being
+    unable to rebuild the XISO at all; the builder itself is fine (a real 6.3 GB
+    source rebuilds and independently verifies), so the failure being reported is
+    this silence.  Ordered most-blocking first, because that is the one the user
+    has to clear next.
+    """
+
+    if busy:
+        return (
+            "Wait for the current operation to finish, then Build. "
+            "Only one long operation runs at a time."
+        )
+    if not ready:
+        return "Load your NFL 2K5 XISO first — Build needs a source game to copy."
+    if edit_count <= 0:
+        return (
+            "Make at least one edit first. Build writes your pending edits to a "
+            "new XISO, so with none there would be nothing to change. Replace a "
+            "PNG, edit a string, or pick a colour, then Build."
+        )
+    return BUILD_READY_MESSAGE
 
 
 def _window_icon() -> QIcon | None:
@@ -190,6 +300,20 @@ class StudioFacade(Protocol):
         self, asset: UniformAsset, supplied_png: Path, progress: ProgressSink
     ) -> object: ...
 
+    def save_texture_authoring_master(
+        self,
+        asset: UniformAsset,
+        *,
+        source_image: Path,
+        source_sha256: str,
+        destination: Path,
+        transform: AuthoringTransform,
+        editor_transform: Mapping[str, object],
+        high_resolution_scale: int,
+        native_baseline_png: Path | None,
+        progress: ProgressSink,
+    ) -> Path: ...
+
     def revert_asset(self, asset: UniformAsset, progress: ProgressSink) -> object: ...
 
     def export_team_kit_sets(
@@ -215,6 +339,19 @@ class StudioFacade(Protocol):
     def import_team_kit(
         self, source: Path, progress: ProgressSink
     ) -> object: ...
+
+    def uniform_colors(
+        self, selector: str, progress: ProgressSink
+    ) -> tuple[str, str, bool]: ...
+
+    def set_uniform_colors(
+        self, selector: str, facemask: str, turtleneck: str,
+        progress: ProgressSink,
+    ) -> tuple[str, str, bool]: ...
+
+    def clear_uniform_colors(
+        self, selector: str, progress: ProgressSink
+    ) -> bool: ...
 
     def undo(self, progress: ProgressSink) -> object: ...
 
@@ -286,6 +423,14 @@ class StudioFacade(Protocol):
     def export_stadium_texture(
         self, texture_id: str, destination: Path, progress: ProgressSink,
     ) -> Path: ...
+
+    def export_stadium_scene_gltf(
+        self, scene_id: str, destination: Path, progress: ProgressSink,
+    ) -> tuple[Path, Path]: ...
+
+    def import_stadium_scene_gltf(
+        self, scene_id: str, source: Path, progress: ProgressSink,
+    ) -> object: ...
 
     def replace_stadium_texture(
         self, texture_id: str, supplied_png: Path, progress: ProgressSink,
@@ -418,6 +563,23 @@ class StudioFacade(Protocol):
         self, asset_id: str, progress: ProgressSink
     ) -> object: ...
 
+    @property
+    def modified_crib_model_scene_ids(self) -> Iterable[str]: ...
+
+    def list_crib_model_scenes(self) -> Iterable[dict[str, object]]: ...
+
+    def export_crib_model(
+        self, scene_id: str, destination: Path, progress: ProgressSink
+    ) -> tuple[Path, Path]: ...
+
+    def import_crib_model(
+        self, scene_id: str, edited_gltf: Path, progress: ProgressSink
+    ) -> object: ...
+
+    def revert_crib_model(
+        self, scene_id: str, progress: ProgressSink
+    ) -> object: ...
+
     def build_iso(self, destination: Path, progress: ProgressSink) -> object: ...
 
     def launch_xemu(self, progress: ProgressSink) -> object: ...
@@ -451,6 +613,10 @@ class _EmbeddedOperationGuardedHost:
     @property
     def modified_crib_asset_ids(self) -> Iterable[str]:
         return self._host.modified_crib_asset_ids
+
+    @property
+    def modified_crib_model_scene_ids(self) -> Iterable[str]:
+        return self._host.modified_crib_model_scene_ids
 
     def text_catalog_snapshot(
         self, progress: ProgressSink
@@ -517,6 +683,26 @@ class _EmbeddedOperationGuardedHost:
         self._require_mutation_admission(self._requester, "revert a Crib texture")
         return self._host.revert_crib_photo(asset_id, progress)
 
+    def list_crib_model_scenes(self) -> Iterable[dict[str, object]]:
+        return self._host.list_crib_model_scenes()
+
+    def export_crib_model(
+        self, scene_id: str, destination: Path, progress: ProgressSink
+    ) -> tuple[Path, Path]:
+        return self._host.export_crib_model(scene_id, destination, progress)
+
+    def import_crib_model(
+        self, scene_id: str, edited_gltf: Path, progress: ProgressSink
+    ) -> object:
+        self._require_mutation_admission(self._requester, "import a Crib model")
+        return self._host.import_crib_model(scene_id, edited_gltf, progress)
+
+    def revert_crib_model(
+        self, scene_id: str, progress: ProgressSink
+    ) -> object:
+        self._require_mutation_admission(self._requester, "revert a Crib model")
+        return self._host.revert_crib_model(scene_id, progress)
+
 
 class BrowseOnlyFacade:
     """Safe catalog-only fallback used before the product backend is wired."""
@@ -541,11 +727,15 @@ class BrowseOnlyFacade:
     load_source = _unavailable
     preview_asset = _unavailable
     export_asset = _unavailable
+    save_texture_authoring_master = _unavailable
     replace_asset = _unavailable
     revert_asset = _unavailable
     export_team_kit_sets = _unavailable
     export_team_kit = _unavailable
     import_team_kit = _unavailable
+    uniform_colors = _unavailable
+    set_uniform_colors = _unavailable
+    clear_uniform_colors = _unavailable
     undo = _unavailable
     revert_all = _unavailable
     save_project = _unavailable
@@ -558,10 +748,14 @@ class BrowseOnlyFacade:
     export_main_menu_inspection = _unavailable
     browse_playbooks = _unavailable
     export_playbook = _unavailable
+    copy_play_assignment_route = _unavailable
+    revert_play_assignment_route = _unavailable
     stadium_scenes = _unavailable
     stadium_details = _unavailable
     preview_stadium_texture = _unavailable
     export_stadium_texture = _unavailable
+    export_stadium_scene_gltf = _unavailable
+    import_stadium_scene_gltf = _unavailable
     replace_stadium_texture = _unavailable
     revert_stadium_texture = _unavailable
     stadium_scene_people_texture_ids = _unavailable
@@ -589,10 +783,14 @@ class BrowseOnlyFacade:
     export_text = _unavailable
     export_number = _unavailable
     modified_crib_asset_ids: frozenset[str] = frozenset()
+    modified_crib_model_scene_ids: frozenset[str] = frozenset()
     preview_crib_asset = _unavailable
     export_crib_asset = _unavailable
     replace_crib_photo = _unavailable
     revert_crib_photo = _unavailable
+    export_crib_model = _unavailable
+    import_crib_model = _unavailable
+    revert_crib_model = _unavailable
     modified_audio_asset_ids: frozenset[str] = frozenset()
     audio_editing_ready = False
     stadium_available = False
@@ -620,6 +818,10 @@ class BrowseOnlyFacade:
 
         return ()
 
+    @staticmethod
+    def list_crib_model_scenes() -> tuple[dict[str, object], ...]:
+        return ()
+
 
 @dataclass(frozen=True)
 class UniformFilter:
@@ -639,12 +841,25 @@ class _VisualBrowserState:
     count_label: QLabel
     title: QLabel
     metadata: QLabel
+    status_pill: "_StatusPill"
     preview: "_PngDropPreview"
     help_label: QLabel
     export_button: QPushButton
+    master_button: QPushButton
+    edit_button: QPushButton
     replace_button: QPushButton
     revert_button: QPushButton
     selected_asset_id: str | None = None
+
+
+@dataclass(frozen=True)
+class _TextureMasterDraft:
+    source_image: Path
+    source_sha256: str
+    native_baseline_png: Path
+    transform: AuthoringTransform
+    editor_transform: Mapping[str, object]
+    native_canvas_edited: bool = False
 
 
 @dataclass
@@ -685,6 +900,7 @@ class _StadiumBrowserState:
     scenes: tuple[StadiumScene, ...] = ()
     details: StadiumSceneDetails | None = None
     selected_texture_id: str | None = None
+    selected_scene_id: str | None = None
     scenes_loaded: bool = False
     scenes_loading: bool = False
     generation: int = 0
@@ -830,7 +1046,10 @@ def capability_findings(binding: ProductCapability) -> tuple[str, ...]:
     notes: list[str] = []
     if isinstance(reason, str) and reason.strip():
         notes.append(" ".join(reason.split()))
-    if binding.status == ProductStatus.COMING_SOON and isinstance(portme, list):
+    if binding.status in {
+        ProductStatus.COMING_SOON,
+        ProductStatus.RESEARCH,
+    } and isinstance(portme, list):
         for value in portme:
             if isinstance(value, str) and value.strip():
                 cleaned = " ".join(value.split())
@@ -846,6 +1065,8 @@ def _status_color(status: ProductStatus) -> str:
         ProductStatus.PREVIEW: "#69a7ff",
         ProductStatus.EXPORT_ONLY: "#b69cff",
         ProductStatus.COMING_SOON: "#91a0b5",
+        ProductStatus.EVIDENCE: "#9aa8bd",
+        ProductStatus.RESEARCH: "#91a0b5",
     }[status]
 
 
@@ -911,6 +1132,7 @@ class _PngDropPreview(QFrame):
         super().__init__()
         self.setObjectName("pngPreview")
         self.setAcceptDrops(True)
+        self._replacement_enabled = True
         self.setMinimumSize(250, 240)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._pixmap: QPixmap | None = None
@@ -946,10 +1168,22 @@ class _PngDropPreview(QFrame):
             return False
         self._pixmap = QPixmap.fromImage(image)
         self._render_pixmap()
-        self.hint.setText(
-            f"{image.width()} × {image.height()} PNG  •  drag an edited PNG here"
-        )
+        if self._replacement_enabled:
+            note = "drag an edited image here"
+        else:
+            note = "Preview / Export only"
+        self.hint.setText(f"{image.width()} × {image.height()} PNG  •  {note}")
         return True
+
+    def set_replacement_enabled(self, enabled: bool) -> None:
+        """Keep drag/drop behavior and its on-screen promise in sync."""
+
+        self._replacement_enabled = enabled
+        self.setAcceptDrops(enabled)
+        if enabled:
+            self.hint.setText("Image preview  •  drag an edited image here to replace")
+        else:
+            self.hint.setText("Preview / Export only")
 
     def _render_pixmap(self) -> None:
         if self._pixmap is None or self._pixmap.isNull():
@@ -967,23 +1201,58 @@ class _PngDropPreview(QFrame):
 
     def dragEnterEvent(self, event: object) -> None:  # type: ignore[override]
         mime = event.mimeData()  # type: ignore[attr-defined]
-        urls = mime.urls() if mime.hasUrls() else []
-        if len(urls) == 1 and urls[0].isLocalFile() and \
-                urls[0].toLocalFile().lower().endswith(".png"):
+        if mime.hasUrls() and mime.urls():
+            # Accept the drag so an unusable drop can explain itself with a
+            # plain message instead of silently bouncing off the preview.
             event.acceptProposedAction()  # type: ignore[attr-defined]
         else:
             event.ignore()  # type: ignore[attr-defined]
 
     def dropEvent(self, event: object) -> None:  # type: ignore[override]
-        path = Path(event.mimeData().urls()[0].toLocalFile())  # type: ignore[attr-defined]
+        urls = event.mimeData().urls()  # type: ignore[attr-defined]
+        if len(urls) != 1:
+            QMessageBox.information(
+                self,
+                "That drop can't be used yet",
+                "Drop one file at a time. Pick the single image you want to "
+                "use and drop it here again.",
+            )
+            event.ignore()  # type: ignore[attr-defined]
+            return
+        url = urls[0]
+        if not url.isLocalFile() or url.host():
+            QMessageBox.information(
+                self,
+                "That drop can't be used yet",
+                "That drop is a link or a web address, not a file on this "
+                "computer. Save or download the image first, then drop the "
+                "real file here.",
+            )
+            event.ignore()  # type: ignore[attr-defined]
+            return
+        path = Path(url.toLocalFile())
+        if path.suffix.casefold() not in IMAGE_IMPORT_EXTENSIONS:
+            QMessageBox.information(
+                self,
+                "That drop can't be used yet",
+                "That file is not an image this panel can read. Drop a PNG, "
+                "JPEG, BMP, GIF, WebP or TGA image — any size is fine, the "
+                "editor resizes it for you.",
+            )
+            event.ignore()  # type: ignore[attr-defined]
+            return
         self.png_dropped.emit(path)
         event.acceptProposedAction()  # type: ignore[attr-defined]
 
 
 class _StatusPill(QLabel):
     def __init__(self, text: str, color: str) -> None:
-        super().__init__(text)
+        super().__init__()
         self.setProperty("pill", True)
+        self.set_status(text, color)
+
+    def set_status(self, text: str, color: str) -> None:
+        self.setText(text)
         self.setStyleSheet(
             "QLabel {"
             f"color: {color}; background: {color}20; border: 1px solid {color}55;"
@@ -1034,6 +1303,23 @@ class StudioMainWindow(QMainWindow):
         # Where resized copies live for this session. Created lazily so a
         # user who never needs a resize never gets a temp directory.
         self._fit_dir: Path | None = None
+        # Full-resolution source snapshots are private, session-lifetime files.
+        # They are never embedded in .2k5mod v1 projects; an explicit export is
+        # the only route into a shareable .2ktexmaster archive.
+        self._texture_master_temp = tempfile.TemporaryDirectory(
+            prefix="2k5-texture-masters-"
+        )
+        # QMainWindow wrappers can participate in Qt/Python reference cycles,
+        # so relying on TemporaryDirectory.__del__ produces ResourceWarnings
+        # and may leave full-resolution authoring snapshots around until a GC
+        # pass.  This later-created finalizer runs first and calls the normal,
+        # idempotent cleanup path even when a test or host drops the window
+        # without delivering closeEvent.
+        self._texture_master_finalizer = weakref.finalize(
+            self, self._texture_master_temp.cleanup
+        )
+        self._texture_master_root = Path(self._texture_master_temp.name)
+        self._texture_master_drafts: dict[str, _TextureMasterDraft] = {}
         self._universal_browser: _UniversalBrowserState | None = None
         self._stadium_browser: _StadiumBrowserState | None = None
         self._audio_panel: AudioPanel | None = None
@@ -1084,6 +1370,11 @@ class StudioMainWindow(QMainWindow):
         self._populate_uniform_filters()
         self._filter_uniforms()
         self._refresh_edit_state()
+        if bool(getattr(self.facade, "source_ready", False)):
+            self._load_selected_unif_colors()
+        # After the window is up, never during construction: a slow network
+        # must not delay the app appearing.
+        QTimer.singleShot(1200, self._start_automatic_update_check)
         if offer_recovery and self.workspace_store is not None:
             QTimer.singleShot(0, self._offer_startup_recovery)
 
@@ -1119,6 +1410,53 @@ class StudioMainWindow(QMainWindow):
         quit_action.setShortcut("Ctrl+Q")
         quit_action.triggered.connect(self.close)
         self._refresh_recent_menus()
+        self._install_help_menu()
+
+    def _install_help_menu(self) -> None:
+        help_menu = self.menuBar().addMenu("&Help")
+        check_action = help_menu.addAction("Check for Updates…")
+        check_action.triggered.connect(self._check_for_updates_now)
+        self._auto_update_action = help_menu.addAction(
+            "Check for updates automatically"
+        )
+        self._auto_update_action.setCheckable(True)
+        self._auto_update_action.setChecked(
+            update_ui.automatic_checks_enabled()
+        )
+        self._auto_update_action.toggled.connect(
+            update_ui.set_automatic_checks_enabled
+        )
+        help_menu.addSeparator()
+        releases_action = help_menu.addAction("Downloads and release notes…")
+        releases_action.triggered.connect(
+            lambda: QDesktopServices.openUrl(
+                QUrl(update_check.RELEASES_PAGE)
+            )
+        )
+
+    def _check_for_updates_now(self) -> None:
+        """A manual check always answers, even to say nothing changed."""
+
+        self._set_status("Checking for updates…")
+        update_ui.start_check(
+            update_check.BUILD_RELEASE_TAG, self._manual_update_result
+        )
+
+    def _manual_update_result(self, status: object) -> None:
+        self._set_status("")
+        update_ui.report_manual_check(self, status)
+        if getattr(status, "available", False):
+            self._update_banner.show_status(status)
+
+    def _start_automatic_update_check(self) -> None:
+        """Quiet on startup: only a genuinely newer release shows anything."""
+
+        if not update_ui.automatic_checks_enabled():
+            return
+        update_ui.explain_automatic_checks_once(self)
+        update_ui.start_check(
+            update_check.BUILD_RELEASE_TAG, self._update_banner.show_status
+        )
 
     def _install_keyboard_shortcuts(self) -> None:
         """Keep the two most-used navigation targets one keystroke away."""
@@ -1522,7 +1860,16 @@ class StudioMainWindow(QMainWindow):
     def _build_ui(self) -> None:
         root = QWidget()
         self.setCentralWidget(root)
-        root_layout = QHBoxLayout(root)
+        # The update strip sits above everything and stays hidden unless a newer
+        # release exists, so the normal window is unchanged.
+        shell = QVBoxLayout(root)
+        shell.setContentsMargins(0, 0, 0, 0)
+        shell.setSpacing(0)
+        self._update_banner = update_ui.UpdateBanner()
+        shell.addWidget(self._update_banner)
+        body = QWidget()
+        shell.addWidget(body, 1)
+        root_layout = QHBoxLayout(body)
         root_layout.setContentsMargins(0, 0, 0, 0)
         root_layout.setSpacing(0)
 
@@ -1623,7 +1970,7 @@ class StudioMainWindow(QMainWindow):
                     "scorebug_texture",
                 }),
                 ProductCategory.TEXTURES: frozenset({
-                    "p8_texture",
+                    "p8_texture", "uniform_equipment_texture",
                 }),
             }.get(category)
             if category == ProductCategory.UNIFORMS_EQUIPMENT:
@@ -1960,7 +2307,9 @@ class StudioMainWindow(QMainWindow):
         detail_titles.setSpacing(1)
         self.uniform_title = QLabel("Choose a uniform set")
         self.uniform_title.setObjectName("panelTitle")
-        self.uniform_metadata = QLabel("39 components per set")
+        self.uniform_metadata = QLabel(
+            "39 Team Kit parts • 45 directly linked equipment palettes"
+        )
         self.uniform_metadata.setObjectName("mutedLabel")
         detail_titles.addWidget(self.uniform_title)
         detail_titles.addWidget(self.uniform_metadata)
@@ -1984,7 +2333,7 @@ class StudioMainWindow(QMainWindow):
         team_kit_layout.setSpacing(7)
         team_kit_header = QHBoxLayout()
         team_kit_header.setSpacing(8)
-        team_kit_title = QLabel("Complete Team Kit")
+        team_kit_title = QLabel("Supported Team Kit (39 editable parts)")
         team_kit_title.setObjectName("cardTitle")
         self.team_kit_warning = QLabel(
             "Private working export • may contain retail artwork • do not share it. "
@@ -1995,6 +2344,43 @@ class StudioMainWindow(QMainWindow):
         team_kit_header.addWidget(team_kit_title)
         team_kit_header.addWidget(self.team_kit_warning, 1)
         team_kit_layout.addLayout(team_kit_header)
+        team_kit_scope_note = QLabel(
+            "All 45 package-local socks, elbow pads, gloves, long sleeves, "
+            "shoes, and wristbands for the selected set use the same project "
+            "and Build path. Open the linked searchable list below."
+        )
+        team_kit_scope_note.setObjectName("findingsNote")
+        team_kit_scope_note.setWordWrap(True)
+        team_kit_layout.addWidget(team_kit_scope_note)
+
+        equipment_browser_row = QHBoxLayout()
+        equipment_browser_row.setSpacing(8)
+        equipment_families = QLabel(
+            "Socks • elbow pads • gloves • long sleeves • shoes • wristbands"
+        )
+        equipment_families.setObjectName("mutedLabel")
+        equipment_families.setWordWrap(True)
+        self.browse_uniform_equipment_button = QPushButton(
+            "Browse 45 Equipment Textures"
+        )
+        self.browse_uniform_equipment_button.setObjectName("secondaryButton")
+        self.browse_uniform_equipment_button.setProperty(
+            "teamKitAction", "browse-equipment"
+        )
+        self.browse_uniform_equipment_button.setAccessibleName(
+            "Browse selected uniform set equipment textures"
+        )
+        self.browse_uniform_equipment_button.setToolTip(
+            "Open the existing All Textures browser filtered to this physical "
+            "set's 45 equipment textures. Export, Edit, Replace, Revert, project "
+            "save/load, and Build keep using their canonical asset IDs."
+        )
+        self.browse_uniform_equipment_button.clicked.connect(
+            self._browse_selected_uniform_equipment
+        )
+        equipment_browser_row.addWidget(equipment_families, 1)
+        equipment_browser_row.addWidget(self.browse_uniform_equipment_button)
+        team_kit_layout.addLayout(equipment_browser_row)
 
         team_kit_controls = QHBoxLayout()
         team_kit_controls.setSpacing(8)
@@ -2021,7 +2407,7 @@ class StudioMainWindow(QMainWindow):
         self.export_team_kit_button = QPushButton("Export Team Kit")
         self.export_team_kit_button.setObjectName("secondaryButton")
         self.export_team_kit_button.setProperty("teamKitAction", "export")
-        self.export_team_kit_button.setAccessibleName("Export complete Team Kit")
+        self.export_team_kit_button.setAccessibleName("Export supported Team Kit")
         self.export_team_kit_button.setToolTip(
             "Export all 39 supported components per selected physical set."
         )
@@ -2032,11 +2418,26 @@ class StudioMainWindow(QMainWindow):
         self.import_team_kit_button.setToolTip(
             "Validate every PNG first, then stage only pixel changes as one Undo action."
         )
+        self.import_digit_sheet_button = QPushButton("Import 0–9 Sheet…")
+        self.import_digit_sheet_button.setObjectName("secondaryButton")
+        self.import_digit_sheet_button.setProperty("teamKitAction", "digit-sheet")
+        self.import_digit_sheet_button.setAccessibleName(
+            "Import a complete zero through nine digit sheet"
+        )
+        self.import_digit_sheet_button.setToolTip(
+            "Choose a horizontal or vertical 0–9 sheet at any resolution. "
+            "Each cell is resized to that exact set's proved jersey, helmet, "
+            "or arm-number dimensions before all ten digits are imported."
+        )
         self.export_team_kit_button.clicked.connect(self._choose_team_kit_export)
         self.import_team_kit_button.clicked.connect(self._choose_team_kit_import)
+        self.import_digit_sheet_button.clicked.connect(
+            self._choose_digit_sheet_import
+        )
         team_kit_controls.addWidget(self.team_kit_scope, 2)
         team_kit_controls.addWidget(self.team_kit_container, 1)
         team_kit_controls.addStretch(1)
+        team_kit_controls.addWidget(self.import_digit_sheet_button)
         team_kit_controls.addWidget(self.export_team_kit_button)
         team_kit_controls.addWidget(self.import_team_kit_button)
         team_kit_layout.addLayout(team_kit_controls)
@@ -2092,14 +2493,7 @@ class StudioMainWindow(QMainWindow):
         return page
 
     def _build_colors_page(self, section: ProductCategorySection) -> QWidget:
-        """The facemask/turtleneck colour control, above this section's cards.
-
-        These two words are the one edit modders kept asking for and could only
-        ever make from a terminal. Word 0 is the facemask/faceshield tint and
-        word 1 is HI_turtleneck; both reach the disc through the same composed
-        build as every other edit, so Undo, Revert All and project save treat
-        them like anything else.
-        """
+        """Per-uniform facemask/faceshield and HI_turtleneck controls."""
         page = QWidget()
         layout = QVBoxLayout(page)
         layout.setContentsMargins(30, 24, 30, 12)
@@ -2110,26 +2504,52 @@ class StudioMainWindow(QMainWindow):
         panel_layout = QVBoxLayout(panel)
         panel_layout.setContentsMargins(18, 16, 18, 16)
         panel_layout.setSpacing(10)
-        title = QLabel("Facemask & Turtleneck Colours")
+        title = QLabel(
+            "Per-Uniform Facemask / Faceshield & Turtleneck Colours"
+        )
         title.setObjectName("heroTitleSmall")
         blurb = QLabel(
-            "Word 0 of the Unif pair tints the facemask and faceshield. Word 1 "
-            "tints HI_turtleneck, which the game reads only when a player's "
-            "two-bit selector is 3. Repainting the coloured square on a helmet "
-            "texture will not move the facemask — it is a separate material fed "
-            "by this value. Ownership is proved by executable trace; a "
-            "controlled in-game capture is still outstanding."
+            "Every physical uniform set owns its own two-word Unif record. "
+            "Word 0 jointly controls the facemask and faceshield; the retail "
+            "record does not expose a proved, independent visor colour. Word 1 "
+            "controls HI_turtleneck. Choose the exact team and uniform set "
+            "before applying a colour."
         )
         blurb.setObjectName("mutedLabel")
         blurb.setWordWrap(True)
         panel_layout.addWidget(title)
         panel_layout.addWidget(blurb)
 
+        selector_row = QHBoxLayout()
+        selector_row.setSpacing(10)
+        self.unif_color_search = QLineEdit()
+        self.unif_color_search.setObjectName("uniformColourSearch")
+        _configure_search_field(
+            self.unif_color_search,
+            placeholder="Filter by team, set, or selector…",
+            accessible_name="Filter uniform colour sets",
+            tooltip="Filter the 634 physical uniform colour records by team or set.",
+        )
+        self.unif_color_set = QComboBox()
+        self.unif_color_set.setObjectName("uniformColourSet")
+        self.unif_color_set.setAccessibleName(
+            "Physical uniform set for facemask and turtleneck colours"
+        )
+        self.unif_color_set.setAccessibleDescription(
+            "Choose the exact HOME, AWAY, alternate, or throwback record to edit."
+        )
+        self.unif_color_set.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Fixed
+        )
+        selector_row.addWidget(self.unif_color_search, 2)
+        selector_row.addWidget(self.unif_color_set, 3)
+        panel_layout.addLayout(selector_row)
+
         row = QHBoxLayout()
         row.setSpacing(10)
-        self.facemask_button = QPushButton("Facemask colour…")
+        self.facemask_button = QPushButton("Facemask / faceshield colour…")
         self.facemask_button.setObjectName("secondaryButton")
-        self.turtleneck_button = QPushButton("Turtleneck colour…")
+        self.turtleneck_button = QPushButton("HI_turtleneck colour…")
         self.turtleneck_button.setObjectName("secondaryButton")
         self.unif_color_apply = QPushButton("Apply to project")
         self.unif_color_revert = QPushButton("Revert")
@@ -2141,7 +2561,9 @@ class StudioMainWindow(QMainWindow):
         row.addWidget(self.unif_color_revert)
         panel_layout.addLayout(row)
 
-        self.unif_color_status = QLabel("Using the retail colours.")
+        self.unif_color_status = QLabel(
+            "Load your XISO to read the selected uniform's retail colours."
+        )
         self.unif_color_status.setObjectName("mutedLabel")
         self.unif_color_status.setWordWrap(True)
         panel_layout.addWidget(self.unif_color_status)
@@ -2149,6 +2571,17 @@ class StudioMainWindow(QMainWindow):
 
         self._pending_facemask = "FF000000"
         self._pending_turtleneck = "FF385AAF"
+        self._unif_color_generation = 0
+        self._unif_color_loaded_selector: str | None = None
+        self._unif_color_loaded_pair: tuple[str, str] | None = None
+        self._selected_unif_color_modified = False
+        self._filter_unif_color_sets()
+        self.unif_color_search.textChanged.connect(
+            self._filter_unif_color_sets
+        )
+        self.unif_color_set.currentIndexChanged.connect(
+            self._unif_color_selection_changed
+        )
         self.facemask_button.clicked.connect(
             lambda: self._choose_unif_color("facemask")
         )
@@ -2161,6 +2594,107 @@ class StudioMainWindow(QMainWindow):
 
         layout.addWidget(self._build_capability_page(section), 1)
         return page
+
+    @staticmethod
+    def _unif_color_set_label(uniform_set: UniformSet) -> str:
+        owner = " / ".join(uniform_set.team_names) or (
+            f"Asset {uniform_set.asset_code}"
+        )
+        return (
+            f"{owner} — {uniform_set.style_label} "
+            f"{uniform_set.side_name.title()} [{uniform_set.selector}]"
+        )
+
+    def _filter_unif_color_sets(self, query: str = "") -> None:
+        """Filter the per-uniform selector without losing its current set."""
+        if not hasattr(self, "unif_color_set"):
+            return
+        previous = self._selected_unif_color_selector()
+        if previous is None and self._selected_set is not None:
+            previous = self._selected_set.selector
+        needle = query.strip().casefold()
+        matches = tuple(
+            uniform_set
+            for uniform_set in self.uniform_catalog.uniform_sets
+            if not needle or needle in uniform_search_text(uniform_set).casefold()
+        )
+        self.unif_color_set.blockSignals(True)
+        self.unif_color_set.clear()
+        for uniform_set in matches:
+            self.unif_color_set.addItem(
+                self._unif_color_set_label(uniform_set), uniform_set.selector
+            )
+        target = self.unif_color_set.findData(previous) if previous else -1
+        if target >= 0:
+            self.unif_color_set.setCurrentIndex(target)
+        self.unif_color_set.blockSignals(False)
+        # During page construction the footer actions do not exist yet.
+        # Initial population is data-only; the normal post-build refresh owns
+        # enablement, and a loaded facade is read explicitly after construction.
+        if hasattr(self, "undo_button"):
+            self._unif_color_selection_changed()
+
+    def _selected_unif_color_selector(self) -> str | None:
+        if not hasattr(self, "unif_color_set"):
+            return None
+        value = self.unif_color_set.currentData()
+        return str(value) if value else None
+
+    def _unif_color_selection_changed(self, _index: int = -1) -> None:
+        """Read the selected set, discarding results from stale selections."""
+        selector = self._selected_unif_color_selector()
+        self._unif_color_generation += 1
+        generation = self._unif_color_generation
+        self._unif_color_loaded_selector = None
+        self._unif_color_loaded_pair = None
+        self._selected_unif_color_modified = False
+        if selector is None:
+            self.unif_color_status.setText("No uniform set matches that filter.")
+            self._refresh_action_states()
+            return
+        if not bool(getattr(self.facade, "source_ready", False)):
+            self.unif_color_status.setText(
+                f"Load your XISO to read {selector}'s retail colours."
+            )
+            self._refresh_action_states()
+            return
+        self.unif_color_status.setText(f"Reading {selector}'s colours…")
+
+        def success(value: object) -> None:
+            if generation != self._unif_color_generation:
+                return
+            if not isinstance(value, tuple) or len(value) != 3:
+                self.unif_color_status.setText(
+                    f"Could not read {selector}'s two-word colour record."
+                )
+                return
+            facemask, turtleneck, modified = value
+            self._pending_facemask = str(facemask)
+            self._pending_turtleneck = str(turtleneck)
+            self._unif_color_loaded_selector = selector
+            self._unif_color_loaded_pair = (
+                self._pending_facemask, self._pending_turtleneck
+            )
+            self._selected_unif_color_modified = bool(modified)
+            self._refresh_unif_color_swatches()
+            state = "Staged project edit" if modified else "Retail source"
+            self.unif_color_status.setText(
+                f"{state} for {selector} — facemask/faceshield "
+                f"#{self._pending_facemask[2:]}, HI_turtleneck "
+                f"#{self._pending_turtleneck[2:]}."
+            )
+            self._refresh_action_states()
+
+        self._start_task(
+            lambda progress: self.facade.uniform_colors(selector, progress),
+            success,
+            label=f"Reading {selector} uniform colours",
+            blocking=False,
+        )
+
+    def _load_selected_unif_colors(self) -> None:
+        if hasattr(self, "unif_color_set"):
+            self._unif_color_selection_changed()
 
     def _refresh_unif_color_swatches(self) -> None:
         for button, value in (
@@ -2193,38 +2727,69 @@ class StudioMainWindow(QMainWindow):
         self._refresh_unif_color_swatches()
 
     def _apply_unif_colors(self) -> None:
+        selector = self._selected_unif_color_selector()
+        if selector is None:
+            return
         facemask = self._pending_facemask
         turtleneck = self._pending_turtleneck
+        if self._unif_color_loaded_selector != selector:
+            return
+        previous_pair = self._unif_color_loaded_pair
+        if previous_pair == (facemask, turtleneck):
+            self.unif_color_status.setText(
+                f"{selector} already uses those colours; nothing changed."
+            )
+            return
 
         def success(value: object) -> None:
-            chosen = value if isinstance(value, tuple) else (facemask, turtleneck)
-            self.unif_color_status.setText(
-                f"Staged — facemask #{chosen[0][2:]}, turtleneck #{chosen[1][2:]}. "
-                "Build Modded XISO to write them to a copy of your disc."
+            chosen = value if isinstance(value, tuple) else (
+                facemask, turtleneck, True
             )
-            self._mark_workspace_changed()
+            if bool(chosen[2]):
+                self.unif_color_status.setText(
+                    f"Staged for {selector} — facemask/faceshield "
+                    f"#{chosen[0][2:]}, HI_turtleneck #{chosen[1][2:]}. "
+                    "Build Modded XISO to write them to a copy of your disc."
+                )
+            else:
+                self.unif_color_status.setText(
+                    f"Restored {selector}'s retail facemask/faceshield and "
+                    "HI_turtleneck colours."
+                )
+            self._unif_color_loaded_pair = (str(chosen[0]), str(chosen[1]))
+            self._selected_unif_color_modified = bool(chosen[2])
+            if previous_pair != self._unif_color_loaded_pair:
+                self._mark_workspace_changed()
 
         self._start_task(
-            lambda progress: self.facade.set_unif_colors(
-                facemask, turtleneck, progress
+            lambda progress: self.facade.set_uniform_colors(
+                selector, facemask, turtleneck, progress
             ),
             success,
-            label="Setting uniform colours",
+            label=f"Setting {selector} uniform colours",
             blocking=True,
         )
 
     def _revert_unif_colors(self) -> None:
+        selector = self._selected_unif_color_selector()
+        if selector is None:
+            return
+
         def success(value: object) -> None:
             self.unif_color_status.setText(
-                "Using the retail colours." if value
-                else "Nothing to revert — already using the retail colours."
+                f"Reverted {selector} to its retail colours." if value
+                else f"{selector} was already using its retail colours."
             )
-            self._mark_workspace_changed()
+            if value:
+                self._mark_workspace_changed()
+            self._load_selected_unif_colors()
 
         self._start_task(
-            self.facade.clear_unif_colors,
+            lambda progress: self.facade.clear_uniform_colors(
+                selector, progress
+            ),
             success,
-            label="Reverting uniform colours",
+            label=f"Reverting {selector} uniform colours",
             blocking=True,
         )
 
@@ -2392,9 +2957,14 @@ class StudioMainWindow(QMainWindow):
             (ProductStatus.EDITABLE, section.counts.editable),
             (ProductStatus.PREVIEW, section.counts.preview),
             (ProductStatus.EXPORT_ONLY, section.counts.export_only),
+            (ProductStatus.EVIDENCE, section.counts.evidence),
+            (ProductStatus.RESEARCH, section.counts.research),
             (ProductStatus.COMING_SOON, section.counts.coming_soon),
         ):
-            counts.addWidget(_StatusPill(f"{count} {status.value}", _status_color(status)))
+            if count:
+                counts.addWidget(
+                    _StatusPill(f"{count} {status.value}", _status_color(status))
+                )
         counts.addStretch(1)
         layout.addLayout(counts)
 
@@ -2500,7 +3070,10 @@ class StudioMainWindow(QMainWindow):
         detail_titles.addWidget(metadata)
         title_row.addLayout(detail_titles)
         title_row.addStretch(1)
-        title_row.addWidget(_StatusPill("Editable", _status_color(ProductStatus.EDITABLE)))
+        status_pill = _StatusPill(
+            "Editable", _status_color(ProductStatus.EDITABLE)
+        )
+        title_row.addWidget(status_pill)
         detail_layout.addLayout(title_row)
         preview = _PngDropPreview()
         detail_layout.addWidget(preview, 1)
@@ -2514,6 +3087,15 @@ class StudioMainWindow(QMainWindow):
         actions.setSpacing(8)
         export_button = QPushButton("Export PNG")
         export_button.setObjectName("secondaryButton")
+        master_button = QPushButton("Save high-resolution authoring master…")
+        master_button.setObjectName("secondaryButton")
+        master_button.setEnabled(False)
+        master_button.setToolTip(
+            "Available after importing this asset in the current session. Saves "
+            "the exact full-resolution source, the exact native game PNG, the "
+            "fit transform, and a direct 2×/4× authoring preview. This is not an "
+            "RPCS3 texture pack and does not increase the game's native texture size."
+        )
         replace_button = QPushButton("Replace PNG")
         replace_button.setObjectName("primaryButton")
         revert_button = QPushButton("Revert")
@@ -2527,6 +3109,7 @@ class StudioMainWindow(QMainWindow):
             lambda _checked=False, category=section.category: self._edit_visual_asset(category)
         )
         actions.addWidget(export_button)
+        actions.addWidget(master_button)
         actions.addWidget(edit_button)
         actions.addWidget(replace_button)
         actions.addWidget(revert_button)
@@ -2535,8 +3118,9 @@ class StudioMainWindow(QMainWindow):
 
         state = _VisualBrowserState(
             section.category, kinds, assets, search, group_filter, asset_list,
-            count_label, title, metadata, preview, help_label, export_button,
-            replace_button, revert_button,
+            count_label, title, metadata, status_pill, preview, help_label, export_button,
+            master_button,
+            edit_button, replace_button, revert_button,
         )
         self._visual_browsers[section.category] = state
         search.textChanged.connect(
@@ -2556,6 +3140,10 @@ class StudioMainWindow(QMainWindow):
         export_button.clicked.connect(
             lambda _checked=False, category=section.category:
                 self._export_visual_asset(category)
+        )
+        master_button.clicked.connect(
+            lambda _checked=False, category=section.category:
+                self._save_visual_authoring_master(category)
         )
         replace_button.clicked.connect(
             lambda _checked=False, category=section.category:
@@ -2735,6 +3323,23 @@ class StudioMainWindow(QMainWindow):
         scene_list.setObjectName("assetList")
         scene_list.setSpacing(2)
         scenes_layout.addWidget(scene_list, 1)
+        export_scene_button = QPushButton("Export model (glTF)…")
+        export_scene_button.setObjectName("secondaryButton")
+        export_scene_button.setToolTip(
+            "Save the selected stadium as a glTF you can open in Blender. "
+            "The buffer is written beside it and is copied unchanged; the model "
+            "carries a root scale so it arrives in metres instead of the "
+            "centimetres the game authors in."
+        )
+        scenes_layout.addWidget(export_scene_button)
+        import_scene_button = QPushButton("Import edited model…")
+        import_scene_button.setObjectName("primaryButton")
+        import_scene_button.setToolTip(
+            "Import the matching glTF after moving vertices in Blender. Vertex "
+            "count and faces must stay unchanged; Mod Studio keeps the game's "
+            "original UV, material, collision, selector, and other stream bytes."
+        )
+        scenes_layout.addWidget(import_scene_button)
         scenes_note = QLabel(
             "Models are private glTF exports generated from the user's own game."
         )
@@ -2841,10 +3446,17 @@ class StudioMainWindow(QMainWindow):
         texture_list.currentItemChanged.connect(self._select_stadium_texture)
         texture_preview.png_dropped.connect(self._replace_stadium_texture_drop)
         export_button.clicked.connect(self._export_stadium_texture)
+        export_scene_button.clicked.connect(self._export_stadium_scene_gltf)
+        import_scene_button.clicked.connect(self._import_stadium_scene_gltf)
         replace_button.clicked.connect(self._choose_stadium_texture_replacement)
         revert_button.clicked.connect(self._revert_stadium_texture)
         for button in (export_button, replace_button, revert_button):
             button.setEnabled(False)
+        # The model export follows the scene selection, not the texture one.
+        export_scene_button.setEnabled(False)
+        import_scene_button.setEnabled(False)
+        self._stadium_export_scene_button = export_scene_button
+        self._stadium_import_scene_button = import_scene_button
         if not bool(getattr(self.facade, "stadium_available", False)):
             count_label.setText("Load XISO")
             scene_metadata.setText(
@@ -2944,9 +3556,7 @@ class StudioMainWindow(QMainWindow):
         self.revert_all_button.setObjectName("dangerQuietButton")
         self.build_button = QPushButton("Build Modded XISO")
         self.build_button.setObjectName("buildButton")
-        self.build_button.setToolTip(
-            "Create a separate modded XISO. Your original game file is never changed."
-        )
+        self.build_button.setToolTip(BUILD_READY_MESSAGE)
         self.launch_button = QPushButton("Launch Latest Build")
         self.launch_button.setObjectName("launchButton")
         self.launch_button.setToolTip(
@@ -3155,10 +3765,20 @@ class StudioMainWindow(QMainWindow):
         state.selected_asset_id = asset_id
         self._selected_asset = asset
         state.title.setText(asset.label)
-        route = "Unified visual/data build"
+        route = (
+            "Preview / Export only"
+            if asset.writer_route is VisualWriterRoute.EXPORT_ONLY
+            else "Unified visual/data build"
+        )
         state.metadata.setText(
             f"{asset.group} • {asset.width}×{asset.height} • {route}"
         )
+        if asset.writer_route is VisualWriterRoute.EXPORT_ONLY:
+            state.status_pill.set_status("Export only", "#91a0b5")
+        else:
+            state.status_pill.set_status(
+                "Editable", _status_color(ProductStatus.EDITABLE)
+            )
         route_note = ""
         if asset.writer_route is VisualWriterRoute.SCOREBUG:
             route_note = (
@@ -3266,15 +3886,24 @@ class StudioMainWindow(QMainWindow):
         except ValidationError as exc:
             self._show_error(f"That file could not be read as an image. {exc}")
             return None
-        if not probe.changed:
+        needs_png_conversion = (
+            probe.source_format != "PNG" or probe.source_mode != "RGBA"
+        )
+        if not probe.changed and not needs_png_conversion:
             return path
+
+        proposed_change = (
+            "convert that exact-size image to an 8-bit RGBA PNG"
+            if not probe.changed
+            else probe.describe()
+        )
 
         answer = QMessageBox.question(
             self,
-            "Resize this image?",
+            "Prepare this image?" if needs_png_conversion else "Resize this image?",
             f"{label} must be exactly {width}×{height}, and that image is "
             f"{probe.source_width}×{probe.source_height}.\n\n"
-            f"Mod Studio can {probe.describe()} for you.\n\n"
+            f"Mod Studio can {proposed_change} for you.\n\n"
             "Your original file is not modified — the resized copy is used for "
             "this edit only.",
             QMessageBox.Yes | QMessageBox.Cancel,
@@ -3290,14 +3919,185 @@ class StudioMainWindow(QMainWindow):
         except ValidationError as exc:
             self._show_error(f"Could not resize that image. {exc}")
             return None
-        self._set_status(f"Resized for {label} — {result.describe()}.")
+        verb = "Prepared" if needs_png_conversion else "Resized"
+        self._set_status(f"{verb} for {label} — {result.describe()}.")
         return staged
+
+    def _discard_texture_master_draft(self, asset_id: str) -> None:
+        draft = self._texture_master_drafts.pop(asset_id, None)
+        if draft is not None:
+            draft.source_image.unlink(missing_ok=True)
+            if draft.native_baseline_png != draft.source_image:
+                draft.native_baseline_png.unlink(missing_ok=True)
+
+    def _clear_texture_master_drafts(self) -> None:
+        for asset_id in tuple(self._texture_master_drafts):
+            self._discard_texture_master_draft(asset_id)
+
+    def _close_texture_master_workspace(self) -> None:
+        """Remove private full-resolution snapshots after an accepted close."""
+
+        self._clear_texture_master_drafts()
+        if self._texture_master_finalizer.alive:
+            self._texture_master_finalizer()
+
+    def _prepare_texture_master_draft(
+        self,
+        asset: ExtendedVisualAsset,
+        source: Path,
+        compiled_native: Path,
+    ) -> _TextureMasterDraft:
+        """Preserve the exact import before any native-size resampling."""
+
+        from mod_editor.core.image_fit import fit_image
+
+        snapshot, source_sha256 = snapshot_texture_master_source(
+            source,
+            self._texture_master_root / f"{uuid4().hex}.source",
+        )
+        probe = fit_image(snapshot, asset.width, asset.height, mode="auto")
+        fit_mode = "scale" if probe.action in {"exact", "scaled"} else "cover"
+        transform = texture_master_fit_transform(
+            probe.source_width,
+            probe.source_height,
+            asset.width,
+            asset.height,
+            mode=fit_mode,
+            resample="lanczos",
+        )
+        native_baseline = snapshot
+        try:
+            if Path(source).resolve(strict=True) == Path(compiled_native).resolve(
+                strict=True
+            ):
+                native_baseline = snapshot
+            else:
+                native_baseline, _native_sha256 = snapshot_texture_master_source(
+                    compiled_native,
+                    self._texture_master_root / f"{uuid4().hex}.native.png",
+                )
+            compiled_probe = fit_image(
+                native_baseline, asset.width, asset.height, mode="scale"
+            )
+            if probe.rgba != compiled_probe.rgba:
+                raise ValidationError(
+                    "The image changed while Mod Studio was preparing its native "
+                    "copy. Import it again; no replacement was staged."
+                )
+        except BaseException:
+            snapshot.unlink(missing_ok=True)
+            if native_baseline != snapshot:
+                native_baseline.unlink(missing_ok=True)
+            raise
+        editor_transform = {
+            "action": probe.action,
+            "canvas_height": asset.height,
+            "canvas_width": asset.width,
+            "center_x": transform.center_x,
+            "center_y": transform.center_y,
+            "coordinate_space": "native-texture-pixels",
+            "cropped_x": probe.cropped_x,
+            "cropped_y": probe.cropped_y,
+            "fit_mode": fit_mode,
+            "height": transform.height,
+            "operation": "nfl2k5-import-fit",
+            "padded_x": probe.padded_x,
+            "padded_y": probe.padded_y,
+            "resample": "lanczos",
+            "rotation_degrees": 0.0,
+            "source_height": probe.source_height,
+            "source_mode": probe.source_mode,
+            "source_format": probe.source_format,
+            "source_width": probe.source_width,
+            "width": transform.width,
+        }
+        return _TextureMasterDraft(
+            snapshot,
+            source_sha256,
+            native_baseline,
+            transform,
+            editor_transform,
+        )
+
+    def _save_visual_authoring_master(
+        self, category: ProductCategory
+    ) -> None:
+        selected = self._selected_visual(category)
+        if selected is None:
+            return
+        _state, asset = selected
+        draft = self._texture_master_drafts.get(asset.asset_id)
+        save = getattr(self.facade, "save_texture_authoring_master", None)
+        if draft is None or not callable(save):
+            self._show_error(
+                "Import this texture in the current session before saving its "
+                "full-resolution authoring master. Projects currently retain "
+                "the exact native PNG only."
+            )
+            return
+        choice, accepted = QInputDialog.getItem(
+            self,
+            "Authoring preview size",
+            "Render the authoring preview directly from the preserved source at:",
+            ("4× (recommended)", "2×"),
+            0,
+            False,
+        )
+        if not accepted:
+            return
+        scale = 4 if str(choice).startswith("4") else 2
+        suggested = _suggested_png_name(asset.asset_id).removesuffix(".png")
+        filename, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save high-resolution authoring master",
+            str(Path.home() / f"{suggested}.2ktexmaster"),
+            "2K texture authoring master (*.2ktexmaster)",
+        )
+        if not filename:
+            return
+        destination = Path(filename)
+        if destination.suffix.casefold() != ".2ktexmaster":
+            destination = destination.with_suffix(".2ktexmaster")
+
+        def success(result: object) -> None:
+            self._set_status(
+                f"Saved {asset.label} authoring master to {Path(result).name}. "
+                "The game build still uses its exact native-size PNG."
+            )
+
+        self._start_task(
+            lambda progress: save(
+                asset,
+                source_image=draft.source_image,
+                source_sha256=draft.source_sha256,
+                destination=destination,
+                transform=draft.transform,
+                editor_transform=draft.editor_transform,
+                high_resolution_scale=scale,
+                native_baseline_png=(
+                    draft.native_baseline_png
+                    if draft.native_canvas_edited
+                    else None
+                ),
+                progress=progress,
+            ),
+            success,
+            label=f"Saving {asset.label} authoring master",
+            blocking=True,
+        )
 
     def _edit_visual_asset(self, category: ProductCategory) -> None:
         """Open the built-in editor on the selected slot's current pixels."""
         selected = self._selected_visual(category)
         if selected is None:
             self._show_error("Choose an asset to edit.")
+            return
+        _state, selected_asset = selected
+        if not selected_asset.editable:
+            self._show_error(
+                "This texture is preview/export-only because its format has no "
+                "proved fixed-span importer."
+            )
             return
         if not bool(getattr(self.facade, "source_ready", False)):
             self._show_error("Load your NFL 2K5 XISO before editing an asset.")
@@ -3328,13 +4128,38 @@ class StudioMainWindow(QMainWindow):
             self._fit_dir = Path(tempfile.mkdtemp(prefix="2k5-fitted-"))
         staged = self._fit_dir / _suggested_png_name(f"{asset.asset_id}-edited")
         staged.write_bytes(encode_rgba_png(edited.width, edited.height, edited.rgba))
-        self._replace_visual_asset(state, asset, staged)
+        changed_pixels = sum(
+            pixels[offset:offset + 4] != edited.rgba[offset:offset + 4]
+            for offset in range(0, len(pixels), 4)
+        )
+        # If this session already owns an external full-resolution import, keep
+        # it and record this exact native-canvas raster edit as a composited
+        # authoring layer. A retail-only Edit still cannot become a shareable
+        # master because that would package source-derived game pixels.
+        self._replace_visual_asset(
+            state,
+            asset,
+            staged,
+            native_canvas_edit={
+                "changed_pixel_count_from_previous_canvas": changed_pixels,
+                "operation": "native-canvas-raster-edit-after-import",
+                "preview_composition": (
+                    "nearest-native-pixel-edits-over-direct-master-render"
+                ),
+            },
+        )
 
     def _choose_visual_replacement(self, category: ProductCategory) -> None:
         selected = self._selected_visual(category)
         if selected is None:
             return
         state, asset = selected
+        if not asset.editable:
+            self._show_error(
+                "This texture is preview/export-only because its format has no "
+                "proved fixed-span importer."
+            )
+            return
         filename, _ = QFileDialog.getOpenFileName(
             self, f"Replace {asset.label}", str(Path.home()),
             "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.tga);;All files (*)",
@@ -3353,6 +4178,12 @@ class StudioMainWindow(QMainWindow):
             self._show_error("Load your NFL 2K5 XISO before replacing an asset.")
             return
         state, asset = selected
+        if not asset.editable:
+            self._show_error(
+                "This texture is preview/export-only because its format has no "
+                "proved fixed-span importer."
+            )
+            return
         self._replace_visual_asset(state, asset, Path(supplied))
 
     def _replace_visual_asset(
@@ -3360,24 +4191,86 @@ class StudioMainWindow(QMainWindow):
         state: _VisualBrowserState,
         asset: ExtendedVisualAsset,
         path: Path,
+        *,
+        native_canvas_edit: Mapping[str, object] | None = None,
     ) -> None:
+        if not asset.editable:
+            self._show_error(
+                "This texture is preview/export-only because its format has no "
+                "proved fixed-span importer."
+            )
+            return
         fitted = self._fit_for_slot(path, asset.width, asset.height, asset.label)
         if fitted is None:
             return
+        existing_master = self._texture_master_drafts.get(asset.asset_id)
+        pending_master: _TextureMasterDraft | None = None
+        if native_canvas_edit is None:
+            try:
+                pending_master = self._prepare_texture_master_draft(
+                    asset, path, fitted
+                )
+            except ValidationError as exc:
+                self._show_error(
+                    "The native import was not started because its full-resolution "
+                    f"authoring source could not be preserved safely. {exc}"
+                )
+                return
         path = fitted
 
         def success(result: object) -> None:
+            modified = bool(getattr(result, "modified", True))
+            if native_canvas_edit is not None:
+                if modified and existing_master is not None:
+                    revision = int(
+                        existing_master.editor_transform.get(
+                            "native_canvas_edit_revision", 0
+                        )
+                    ) + 1
+                    updated_editor_transform = dict(
+                        existing_master.editor_transform
+                    )
+                    updated_editor_transform.update({
+                        "native_canvas_edit": dict(native_canvas_edit),
+                        "native_canvas_edit_revision": revision,
+                    })
+                    self._texture_master_drafts[asset.asset_id] = (
+                        _TextureMasterDraft(
+                            existing_master.source_image,
+                            existing_master.source_sha256,
+                            existing_master.native_baseline_png,
+                            existing_master.transform,
+                            updated_editor_transform,
+                            True,
+                        )
+                    )
+                elif not modified:
+                    self._discard_texture_master_draft(asset.asset_id)
+            elif modified and pending_master is not None:
+                self._discard_texture_master_draft(asset.asset_id)
+                self._texture_master_drafts[asset.asset_id] = pending_master
+            else:
+                if pending_master is not None:
+                    pending_master.source_image.unlink(missing_ok=True)
+                    pending_master.native_baseline_png.unlink(missing_ok=True)
+                self._discard_texture_master_draft(asset.asset_id)
             self._set_status(_result_message(result, f"{asset.label} is ready to build."))
             state.selected_asset_id = asset.asset_id
             self._filter_visual_assets(state.category)
             self._mark_workspace_changed()
             self._load_visual_preview(asset, state.preview)
 
+        def failed(_message: str) -> None:
+            if pending_master is not None:
+                pending_master.source_image.unlink(missing_ok=True)
+                pending_master.native_baseline_png.unlink(missing_ok=True)
+
         self._start_task(
             lambda progress: self.facade.replace_asset(asset, path, progress),
             success,
             label=f"Checking and replacing {asset.label}",
             blocking=True,
+            on_error=failed if pending_master is not None else None,
         )
 
     def _revert_visual_asset(self, category: ProductCategory) -> None:
@@ -3385,8 +4278,15 @@ class StudioMainWindow(QMainWindow):
         if selected is None:
             return
         state, asset = selected
+        if not asset.editable:
+            self._show_error(
+                "This texture is preview/export-only because its format has no "
+                "proved fixed-span importer."
+            )
+            return
 
         def success(result: object) -> None:
+            self._discard_texture_master_draft(asset.asset_id)
             self._set_status(_result_message(result, f"Reverted {asset.label}."))
             state.selected_asset_id = asset.asset_id
             self._filter_visual_assets(category)
@@ -3411,10 +4311,23 @@ class StudioMainWindow(QMainWindow):
             and not self._embedded_operation_is_busy()
         )
         state.export_button.setEnabled(enabled)
-        state.replace_button.setEnabled(enabled)
-        state.revert_button.setEnabled(
-            enabled and state.selected_asset_id in modified
+        asset = (
+            self.extended_visual_catalog.get_asset(state.selected_asset_id)
+            if state.selected_asset_id is not None
+            else None
         )
+        edit_enabled = enabled and asset is not None and asset.editable
+        state.master_button.setEnabled(
+            edit_enabled
+            and state.selected_asset_id in self._texture_master_drafts
+            and callable(getattr(self.facade, "save_texture_authoring_master", None))
+        )
+        state.edit_button.setEnabled(edit_enabled)
+        state.replace_button.setEnabled(edit_enabled)
+        state.revert_button.setEnabled(
+            edit_enabled and state.selected_asset_id in modified
+        )
+        state.preview.set_replacement_enabled(edit_enabled)
 
     def _preview_selected_asset(self) -> None:
         asset = self._selected_asset
@@ -3662,6 +4575,13 @@ class StudioMainWindow(QMainWindow):
             return
         state.generation += 1
         generation = state.generation
+        state.selected_scene_id = scene_id
+        button = getattr(self, "_stadium_export_scene_button", None)
+        if button is not None:
+            button.setEnabled(True)
+        import_button = getattr(self, "_stadium_import_scene_button", None)
+        if import_button is not None:
+            import_button.setEnabled(bool(scene.geometry_targets))
         state.scene_label.setText(f"Outer {scene.outer_index} • Stadium scene")
         state.scene_metadata.setText("Preparing 3D geometry and surface ownership…")
         state.viewport.set_model(None)
@@ -3812,6 +4732,18 @@ class StudioMainWindow(QMainWindow):
             and not self._blocking
             and not self._embedded_operation_is_busy()
         )
+        scene = next((
+            row for row in state.scenes
+            if row.scene_id == state.selected_scene_id
+        ), None)
+        export_scene = getattr(self, "_stadium_export_scene_button", None)
+        if export_scene is not None:
+            export_scene.setEnabled(ready and scene is not None)
+        import_scene = getattr(self, "_stadium_import_scene_button", None)
+        if import_scene is not None:
+            import_scene.setEnabled(
+                ready and scene is not None and bool(scene.geometry_targets)
+            )
         state.export_button.setEnabled(ready and texture is not None)
         editable = texture is not None and texture.access_status == STADIUM_EDITABLE
         state.replace_button.setEnabled(ready and editable)
@@ -3858,6 +4790,127 @@ class StudioMainWindow(QMainWindow):
             blocking=True,
         )
 
+    def _export_stadium_scene_gltf(self) -> None:
+        """Save the selected stadium model so it can be opened in Blender."""
+
+        state = self._stadium_browser
+        if state is None or state.selected_scene_id is None:
+            return
+        scene_id = state.selected_scene_id
+        scene = next(
+            (row for row in state.scenes if row.scene_id == scene_id), None
+        )
+        if scene is None:
+            return
+
+        suggested = f"stadium-{scene.outer_index}-{scene.chunk_index}.gltf"
+        filename, _ = QFileDialog.getSaveFileName(
+            self,
+            "Export stadium model",
+            str(Path.home() / suggested),
+            "glTF model (*.gltf)",
+        )
+        if not filename:
+            return
+        destination = Path(filename)
+        if destination.suffix.casefold() != ".gltf":
+            destination = destination.with_suffix(".gltf")
+
+        def success(result: object) -> None:
+            # Two files land, not one, and the second is the one people lose.
+            # An export is an explicit action, so it gets an explicit answer
+            # saying where both went and what to open.
+            try:
+                gltf_path, bin_path = result  # type: ignore[misc]
+            except (TypeError, ValueError):
+                self._set_status("Exported stadium model")
+                return
+            gltf_path = Path(gltf_path)
+            bin_path = Path(bin_path)
+            self._set_status(f"Exported {gltf_path.name}")
+            box = QMessageBox(self)
+            box.setWindowTitle("Stadium model exported")
+            box.setIcon(QMessageBox.Information)
+            box.setText(f"Saved to {gltf_path.parent}")
+            box.setInformativeText(
+                f"Open {gltf_path.name} in Blender.\n\n"
+                f"{bin_path.name} holds the geometry and must stay in the same "
+                "folder. Move or copy both together.\n\n"
+                "The model is scaled to metres so it opens at a normal size. "
+                "The game stores it in centimetres, which is why an unscaled "
+                "export looks about a hundred times too big."
+            )
+            open_button = box.addButton("Open folder", QMessageBox.ActionRole)
+            box.addButton("Close", QMessageBox.RejectRole)
+            box.exec_()
+            if box.clickedButton() is open_button:
+                QDesktopServices.openUrl(
+                    QUrl.fromLocalFile(str(gltf_path.parent))
+                )
+
+        self._start_task(
+            lambda progress: self.facade.export_stadium_scene_gltf(
+                scene_id, destination, progress
+            ),
+            success,
+            label="Exporting stadium model",
+            blocking=True,
+        )
+
+    def _import_stadium_scene_gltf(self) -> None:
+        """Stage a bounded vertex-only edit from the selected scene's glTF."""
+
+        state = self._stadium_browser
+        if state is None or state.selected_scene_id is None:
+            return
+        scene = next((
+            row for row in state.scenes
+            if row.scene_id == state.selected_scene_id
+        ), None)
+        if scene is None or not scene.geometry_targets:
+            self._show_error(
+                "That Stadium model is export-only. Choose the full scene whose "
+                "fixed position lanes are marked importable."
+            )
+            return
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            "Import edited stadium model",
+            str(Path.home()),
+            "glTF model (*.gltf)",
+        )
+        if not filename:
+            return
+        supplied = Path(filename)
+        answer = QMessageBox.question(
+            self,
+            "Import edited stadium model?",
+            "Mod Studio will accept moved vertices only. The model must keep the "
+            "same meshes, vertex counts, and faces as the exported scene.\n\n"
+            "UVs, materials, collision data, and all non-position game streams "
+            "will stay byte-for-byte from your source copy.",
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Yes,
+        )
+        if answer != QMessageBox.Yes:
+            return
+
+        def success(result: object) -> None:
+            self._set_status(_result_message(
+                result, "Edited Stadium model staged."
+            ))
+            self._mark_workspace_changed()
+            self._refresh_action_states()
+
+        self._start_task(
+            lambda progress: self.facade.import_stadium_scene_gltf(
+                scene.scene_id, supplied, progress
+            ),
+            success,
+            label="Importing edited stadium model",
+            blocking=True,
+        )
+
     def _choose_stadium_texture_replacement(self) -> None:
         state = self._stadium_browser
         if state is None:
@@ -3867,9 +4920,9 @@ class StudioMainWindow(QMainWindow):
             return
         filename, _ = QFileDialog.getOpenFileName(
             self,
-            "Replace stadium surface texture",
+            "Choose an image for this stadium texture (any size or format)",
             str(Path.home()),
-            "PNG image (*.png)",
+            IMAGE_IMPORT_FILTER,
         )
         if filename:
             self._replace_stadium_texture(texture, Path(filename))
@@ -3883,7 +4936,8 @@ class StudioMainWindow(QMainWindow):
             self._show_error(
                 "That stadium texture can be previewed and exported, but it cannot "
                 "be replaced yet. Mod Studio can locate it, but cannot safely write "
-                "that texture format back into the game."
+                "that texture format back into the game. Fix: choose a texture "
+                "listed as Editable and drop your image there instead."
             )
             return
         self._replace_stadium_texture(texture, Path(supplied))
@@ -3893,6 +4947,17 @@ class StudioMainWindow(QMainWindow):
     ) -> None:
         state = self._stadium_browser
         assert state is not None
+        # Stadium textures are exact-size too, so offer the same resize rather
+        # than refusing an off-size PNG.
+        width = getattr(texture, "width", None)
+        height = getattr(texture, "height", None)
+        if isinstance(width, int) and isinstance(height, int) and width and height:
+            fitted = self._fit_for_slot(
+                supplied, width, height, "This stadium texture"
+            )
+            if fitted is None:
+                return
+            supplied = fitted
 
         def success(result: object) -> None:
             self._set_status(_result_message(result, "Stadium texture replaced."))
@@ -3942,10 +5007,16 @@ class StudioMainWindow(QMainWindow):
         self.uniform_title.setText(owner)
         self.uniform_metadata.setText(
             f"{uniform_set.style_label} • {uniform_set.side_name.title()} • "
-            f"set {uniform_set.selector} • 39 components"
+            f"set {uniform_set.selector} • 39 editable components • "
+            "45 directly linked equipment palettes"
         )
         self._refresh_team_kit_scope_labels()
         self._populate_components(uniform_set)
+        if hasattr(self, "unif_color_set"):
+            self.unif_color_search.clear()
+            index = self.unif_color_set.findData(uniform_set.selector)
+            if index >= 0:
+                self.unif_color_set.setCurrentIndex(index)
 
     def _selected_uniform_set_selectors(self) -> tuple[str, ...]:
         if not hasattr(self, "uniform_list"):
@@ -3958,6 +5029,39 @@ class StudioMainWindow(QMainWindow):
         if selectors:
             return selectors
         return (self._selected_set.selector,) if self._selected_set is not None else ()
+
+    def _browse_selected_uniform_equipment(self) -> None:
+        """Open the canonical visual browser on one set's equipment records."""
+
+        uniform_set = self._selected_set
+        if uniform_set is None:
+            self._show_error(
+                "Choose a physical uniform set before browsing its equipment."
+            )
+            return
+        state = self._visual_browsers.get(ProductCategory.TEXTURES)
+        if state is None:
+            self._show_error("The All Textures browser is unavailable.")
+            return
+
+        state.group_filter.setCurrentIndex(0)
+        state.search.setText(f"{uniform_set.selector} equipment")
+        self._filter_visual_assets(ProductCategory.TEXTURES)
+        if state.asset_list.count() != 45:
+            self._show_error(
+                f"Expected 45 equipment textures for {uniform_set.selector}, "
+                f"but found {state.asset_list.count()}."
+            )
+            return
+
+        row = PRODUCT_CATEGORY_ORDER.index(ProductCategory.TEXTURES) + 1
+        self.navigation.setCurrentRow(row)
+        self._set_status(
+            f"Showing all 45 package-local equipment textures for "
+            f"{uniform_set.selector}. Refine the search with socks, gloves, "
+            "shoes, sleeves, pads, or wristbands; the existing Export, Edit, "
+            "Replace, Revert, project, and Build paths remain in use."
+        )
 
     def _uniform_set_selection_changed(self) -> None:
         self._refresh_team_kit_scope_labels()
@@ -4039,8 +5143,9 @@ class StudioMainWindow(QMainWindow):
         self._selected_asset = self.uniform_catalog.get_asset(str(asset_id))
         asset = self._selected_asset
         self.component_help.setText(
-            f"{asset.label}: use an RGBA PNG exactly {asset.width} × {asset.height}. "
-            "The app rejects the wrong dimensions before it can enter your project."
+            f"{asset.label}: this slot holds an exact {asset.width} × {asset.height} "
+            "image. Drop or choose any image, in any size or format — Mod Studio "
+            "resizes it to the slot for you before anything enters your project."
         )
         self._refresh_action_states()
         if bool(getattr(self.facade, "source_ready", False)):
@@ -4121,6 +5226,7 @@ class StudioMainWindow(QMainWindow):
                 self._audio_panel.recover_after_source_change_failure()
 
         def success(result: object) -> None:
+            self._clear_texture_master_drafts()
             display = str(getattr(self.facade, "source_display_name", "") or source.name)
             self.source_pill.setText(f"●  Ready • {display}")
             self.source_pill.setProperty("ready", True)
@@ -4167,6 +5273,7 @@ class StudioMainWindow(QMainWindow):
                 self._refresh_recent_menus()
                 if self._crib_panel is not None:
                     self._crib_panel.refresh(keep_selection=False)
+                self._load_selected_unif_colors()
 
             if recovery is not None:
                 if (
@@ -4383,6 +5490,132 @@ class StudioMainWindow(QMainWindow):
             blocking=True,
         )
 
+    def _choose_digit_sheet_import(self) -> None:
+        """Split a 0–9 font sheet and import all ten exact slots atomically."""
+
+        uniform_set = self._selected_set
+        if uniform_set is None:
+            self._show_error("Choose a physical uniform set before importing digits.")
+            return
+        if not bool(getattr(self.facade, "source_ready", False)):
+            self._show_error("Load your NFL 2K5 XISO before importing digits.")
+            return
+        choices = (
+            ("Jersey numbers", "jersey"),
+            ("Helmet numbers", "helmet"),
+            ("Arm / shoulder numbers", "arm"),
+        )
+        current_family = getattr(self._selected_asset, "family", None)
+        current = next(
+            (index for index, (_label, family) in enumerate(choices)
+             if family == current_family),
+            0,
+        )
+        label, accepted = QInputDialog.getItem(
+            self,
+            "Import a complete 0–9 digit sheet",
+            "Which digit family should this sheet replace?",
+            [row[0] for row in choices],
+            current,
+            False,
+        )
+        if not accepted:
+            return
+        family = dict(choices).get(str(label))
+        if family is None:
+            return
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            f"Choose the {label.lower()} 0–9 sheet",
+            str(Path.home()),
+            IMAGE_IMPORT_FILTER,
+        )
+        if not filename:
+            return
+        targets = tuple(
+            asset
+            for asset in self.uniform_catalog.assets_for_set(uniform_set.selector)
+            if asset.kind == "live_number_nameplate"
+            and asset.family == family
+            and asset.digit is not None
+        )
+        source = Path(filename)
+
+        def operation(progress: ProgressSink) -> object:
+            progress("Splitting the 0–9 sheet", 0, 12)
+            outputs = split_digit_sheet(source, targets)
+            with tempfile.TemporaryDirectory(prefix="2k5-digit-sheet-") as temporary:
+                root = Path(temporary)
+                kit = root / "team-kit"
+                self.facade.export_team_kit_sets(
+                    (uniform_set.selector,),
+                    destination=kit,
+                    container="folder",
+                    progress=lambda _label, _completed, _total: None,
+                )
+                manifest_path = kit / TEAM_KIT_MANIFEST
+                manifest = json.loads(
+                    manifest_path.read_text(encoding="utf-8")
+                )
+                rows = manifest.get("assets")
+                if not isinstance(rows, list):
+                    raise ValidationError("The private Team Kit manifest is incomplete.")
+                files = {
+                    str(row.get("asset_id")): str(row.get("path"))
+                    for row in rows if isinstance(row, dict)
+                }
+                for index, output in enumerate(outputs, 1):
+                    relative = files.get(output.asset_id)
+                    if not relative:
+                        raise ValidationError(
+                            f"The Team Kit omitted digit {output.digit}."
+                        )
+                    destination = (kit / relative).resolve(strict=True)
+                    try:
+                        destination.relative_to(kit.resolve(strict=True))
+                    except ValueError as exc:
+                        raise ValidationError(
+                            "The Team Kit digit path escapes its private folder."
+                        ) from exc
+                    destination.write_bytes(output.png)
+                    progress(
+                        f"Prepared {label} {output.digit} at "
+                        f"{output.width}×{output.height}",
+                        index,
+                        12,
+                    )
+                progress("Validating all ten digits as one import", 11, 12)
+                result = self.facade.import_team_kit(
+                    kit, lambda _label, _completed, _total: None
+                )
+            progress("Digit sheet imported", 12, 12)
+            return result
+
+        def success(result: object) -> None:
+            changed = int(getattr(result, "changed_count", 0))
+            if changed:
+                self._mark_workspace_changed(rebuild_components=True)
+                if self._selected_asset is not None:
+                    self._preview_selected_asset()
+            else:
+                self._refresh_edit_state(rebuild_components=True)
+            self.team_kit_imported.emit(changed)
+            QMessageBox.information(
+                self,
+                "Digit sheet import complete",
+                f"{label} for {uniform_set.selector} were split into ten exact "
+                f"game slots. {changed} changed digit"
+                f"{'s were' if changed != 1 else ' was'} staged as one Undo action.\n\n"
+                "The source XISO was not changed.",
+            )
+
+        self._start_task(
+            operation,
+            success,
+            label=f"Importing {label.lower()} 0–9 sheet",
+            blocking=True,
+        )
+
     def _save_project(
         self,
         _checked: bool = False,
@@ -4533,6 +5766,10 @@ class StudioMainWindow(QMainWindow):
             self._audio_panel.invalidate_audio_content()
 
         def success(result: object) -> None:
+            # v1 projects intentionally contain compiled native PNGs only. A
+            # loaded project therefore cannot honestly recreate an import-time
+            # full-resolution master or transform.
+            self._clear_texture_master_drafts()
             if recovery:
                 self._active_project_path = None
                 self._active_project_identity = None
@@ -4577,6 +5814,7 @@ class StudioMainWindow(QMainWindow):
                 self._refresh_recent_menus()
                 if self._crib_panel is not None:
                     self._crib_panel.refresh(keep_selection=True)
+                self._load_selected_unif_colors()
 
             self._defer_until_blocking_task_finished(refresh_loaded_project)
 
@@ -4595,7 +5833,7 @@ class StudioMainWindow(QMainWindow):
             self,
             f"Replace {asset.label}",
             str(Path.home()),
-            "PNG image (*.png)",
+            IMAGE_IMPORT_FILTER,
         )
         if filename:
             self._replace_asset(Path(filename))
@@ -4613,6 +5851,20 @@ class StudioMainWindow(QMainWindow):
         asset = self._selected_asset
         if asset is None:
             return
+        # Offer to resize here too.  _fit_for_slot was only wired into the
+        # visual browser, so every import through this path -- the file dialog
+        # and drag-and-drop both land here -- refused an off-size PNG outright
+        # instead of offering to fit it, which is the one thing the resizer
+        # exists to prevent.
+        width = getattr(asset, "width", None)
+        height = getattr(asset, "height", None)
+        if isinstance(width, int) and isinstance(height, int) and width and height:
+            fitted = self._fit_for_slot(
+                path, width, height, getattr(asset, "label", "This asset")
+            )
+            if fitted is None:
+                return
+            path = fitted
 
         def success(result: object) -> None:
             self._set_status(_result_message(result, f"{asset.label} is ready to build."))
@@ -5040,6 +6292,7 @@ class StudioMainWindow(QMainWindow):
             event.ignore()
             return
         if self._allow_close:
+            self._close_texture_master_workspace()
             event.accept()
             return
         if self._blocking:
@@ -5052,6 +6305,7 @@ class StudioMainWindow(QMainWindow):
             event.ignore()
             return
         if not self._workspace_dirty:
+            self._close_texture_master_workspace()
             event.accept()
             return
         decision = self._prompt_unsaved_decision("Closing Mod Studio")
@@ -5066,6 +6320,7 @@ class StudioMainWindow(QMainWindow):
             else:
                 self._clear_recovery_safely(only_for_active_source=True)
                 self._allow_close = True
+                self._close_texture_master_workspace()
                 event.accept()
         elif decision == "save":
             event.ignore()
@@ -5074,10 +6329,12 @@ class StudioMainWindow(QMainWindow):
             event.ignore()
 
     def _show_error(self, message: str) -> None:
+        hint = friendly_fix_hint(message)
+        body = message if hint is None else f"{message}\n\n{hint}"
         QMessageBox.warning(
             self,
             "2K5 Mod Studio could not finish that",
-            message + "\n\nNothing was changed in your source XISO.",
+            body + "\n\nNothing was changed in your source XISO.",
         )
 
     def _refresh_project_document_state(self) -> None:
@@ -5158,10 +6415,32 @@ class StudioMainWindow(QMainWindow):
                 ready and self._selected_set is not None and not global_busy
             )
             self.import_team_kit_button.setEnabled(ready and not global_busy)
+            self.import_digit_sheet_button.setEnabled(
+                ready and self._selected_set is not None and not global_busy
+            )
             self.team_kit_scope.setEnabled(
                 self._selected_set is not None and not global_busy
             )
             self.team_kit_container.setEnabled(not global_busy)
+            self.browse_uniform_equipment_button.setEnabled(
+                self._selected_set is not None and not global_busy
+            )
+        if hasattr(self, "unif_color_set"):
+            has_colour_set = self._selected_unif_color_selector() is not None
+            loaded_colour_set = (
+                has_colour_set
+                and self._unif_color_loaded_selector
+                == self._selected_unif_color_selector()
+            )
+            colour_enabled = ready and loaded_colour_set and not global_busy
+            self.unif_color_search.setEnabled(not global_busy)
+            self.unif_color_set.setEnabled(not global_busy)
+            self.facemask_button.setEnabled(colour_enabled)
+            self.turtleneck_button.setEnabled(colour_enabled)
+            self.unif_color_apply.setEnabled(colour_enabled)
+            self.unif_color_revert.setEnabled(
+                colour_enabled and self._selected_unif_color_modified
+            )
         self.open_source_button.setEnabled(not global_busy)
         self.open_project_button.setEnabled(ready and not global_busy)
         if self._open_source_action is not None:
@@ -5189,6 +6468,19 @@ class StudioMainWindow(QMainWindow):
             ready and count + metadata_count > 0 and not global_busy
         )
         self.build_button.setEnabled(ready and count > 0 and not global_busy)
+        # A disabled button that gives no reason reads as a broken one.  A modder
+        # reported being unable to rebuild the XISO, and loading a disc then
+        # pressing Build before making an edit does exactly nothing: no dialog, no
+        # status change, and the only clue is a small edit-count chip several
+        # widgets away.  Name the actual blocker instead.  Qt shows tooltips on
+        # disabled widgets, and the launch button below already varies its own
+        # text the same way.
+        self.build_button.setToolTip(
+            _build_blocker_message(
+                ready=ready, edit_count=count, busy=global_busy
+            )
+        )
+        self.build_button.setAccessibleDescription(self.build_button.toolTip())
         can_launch = bool(getattr(self.facade, "can_launch_xemu", False))
         self.launch_button.setEnabled(can_launch and not global_busy)
         self.launch_button.setToolTip(
@@ -5740,6 +7032,11 @@ def launch_studio(
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
         QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
         app = QApplication([])
+        # Only when this call owns the application: an embedded caller has its
+        # own error handling and should not have it replaced. Installing the
+        # hook is also what stops PyQt5 aborting the process, so an unexpected
+        # error becomes a dialog instead of a window that simply disappears.
+        crash_report.install("2K5 Mod Studio")
     app.setApplicationName("2K5 Mod Studio")
     app.setOrganizationName("2K5 Mod Studio")
     window = StudioMainWindow(

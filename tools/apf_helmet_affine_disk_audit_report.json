@@ -1,0 +1,683 @@
+{
+  "affine": {
+    "guard": {
+      "formula": "u_guarded = 0.125 + 0.75 * u_raw; v_guarded = v_raw",
+      "u_offset": 0.125,
+      "u_scale": 0.75
+    },
+    "guarded_global_affine_condition": 1.30192922774191,
+    "guarded_texture_uv_to_world_zy_matrix": [
+      [
+        -25.199999999999996,
+        6.0596254681647945
+      ],
+      [
+        -5.866666666666667,
+        -19.176029962546817
+      ]
+    ],
+    "guarded_texture_uv_to_world_zy_offset": [
+      11.770187265917603,
+      23.871348314606742
+    ],
+    "raw_texture_uv_to_world_zy_matrix": [
+      [
+        -18.9,
+        6.0596254681647945
+      ],
+      [
+        -4.4,
+        -19.176029962546817
+      ]
+    ],
+    "raw_texture_uv_to_world_zy_offset": [
+      8.620187265917604,
+      23.138014981273407
+    ],
+    "world_to_texture_formula": "guarded_uv = matrix @ [z_cm,y_cm] + offset, then SNORM16 quantize each carrier vertex",
+    "world_zy_to_guarded_texture_uv_matrix": [
+      [
+        -0.036963292985845525,
+        -0.011680400583527185
+      ],
+      [
+        0.011308457447857115,
+        -0.048574964946477145
+      ]
+    ],
+    "world_zy_to_guarded_texture_uv_offset": [
+      0.7138917911918936,
+      1.0264472457572298
+    ],
+    "world_zy_to_raw_texture_uv_matrix": [
+      [
+        -0.04928439064779403,
+        -0.015573867444702913
+      ],
+      [
+        0.011308457447857115,
+        -0.048574964946477145
+      ]
+    ],
+    "world_zy_to_raw_texture_uv_offset": [
+      0.7851890549225249,
+      1.0264472457572298
+    ]
+  },
+  "all_hard_constraints_passed": true,
+  "claim": "headless fixed-allocation guarded shared-affine high/low shell-disk proof; no Blender, GUI, emulator, Xenia, or APF/XISO write",
+  "inputs": {
+    "guarded_runtime_mask_v4": {
+      "active_bbox": [
+        64,
+        122,
+        447,
+        389
+      ],
+      "active_texels": 42800,
+      "path": "/media/noah/Storage/.codex-tmp/apf-eagles-clean-source-region-mask-v4-guarded.png",
+      "png_sha256": "4913aa6cf62fe6f96a913001ed5ad9d0356a109412e3f1b432fc0fd81eb5750a",
+      "rgba_sha256": "cf937ff797e4e5ae94b5c456babf298fa20436716b6ef2b708faac70b293d40e"
+    },
+    "selection_mask_v3": {
+      "active_texels": 57066,
+      "path": "/media/noah/Storage/.codex-tmp/apf-eagles-clean-source-region-mask-v3.png",
+      "png_sha256": "3d7e10828af458c9ad13663f8031311b364fa56be5c852f6aa8f38574d9c3597",
+      "rgba_sha256": "c9a915df7f66dae85a5f620ad4907aadc2cf3f4941fcfc86a074c68a34362d6c"
+    },
+    "source_outer": "/media/noah/Storage/.codex-tmp/apf-eagles-editor-proof-v17-full-u-pregeometry/0A"
+  },
+  "lods": {
+    "helmet_hi": {
+      "active_coverage": {
+        "first_missing_xy": [],
+        "guarded_v4_active_bbox": [
+          64,
+          122,
+          447,
+          389
+        ],
+        "guarded_v4_active_texels": 42800,
+        "mapped_exactly_once": 42800,
+        "missing": 0,
+        "multiple": 0
+      },
+      "painted": {
+        "bounds_cm": {
+          "maximum": [
+            10.892424571875786,
+            15.87617562344211,
+            12.934336607547102
+          ],
+          "minimum": [
+            0.26799907168693266,
+            7.355394038335924,
+            -8.866226038946072
+          ]
+        },
+        "dominant_component_triangle_fraction": 1.0,
+        "maximum_all_triangle_condition": 10.730098888722734,
+        "maximum_painted_triangle_condition": 10.730098888722734,
+        "painted_texels_mapped_exactly_once": 42800,
+        "painted_triangle_count": 241,
+        "rear_percentile_z_cm": -7.667448329157326,
+        "seam_percentile_abs_x_cm": 2.6805092701444946,
+        "side_projection_height_cm": 8.520781585106185,
+        "side_projection_length_cm": 21.800562646493177
+      },
+      "post_quantized_affine_fit": {
+        "maximum_normalized_error_z_y": [
+          0.0006019205048156593,
+          0.0010117597915384339
+        ],
+        "normalized_rmse_z_y": [
+          0.00023023674999975285,
+          0.000322000650317198
+        ],
+        "r_squared_z_y": [
+          0.9999990078734519,
+          0.9999977762045258
+        ]
+      },
+      "projection_injectivity": {
+        "biased_carrier_projected_interior_overlap_pairs": 0,
+        "biased_carrier_yz_area2_maximum": -0.2824316499628747,
+        "biased_carrier_yz_area2_minimum": -1.8383739343130288,
+        "post_quantized_uv_determinant_maximum": -0.0005289713536739966,
+        "post_quantized_uv_determinant_minimum": -0.003452034880505778,
+        "same_negative_orientation_no_collapse": true,
+        "source_projected_interior_overlap_pairs": 0,
+        "source_yz_area2_maximum": -0.27449061640447103,
+        "source_yz_area2_minimum": -1.7908787501352346
+      },
+      "root": {
+        "maximum_abs_x_cm": 2.299775870795136,
+        "median_abs_x_cm": 1.8268380551453391,
+        "minimum_abs_x_cm": 0.8524383580056674,
+        "minimum_all_active_abs_x_cm": 0.26799907168693266
+      },
+      "selector": {
+        "exact_position_and_normal_welded_duplicate_vertices": 4,
+        "face_id_basis": "shell strip order; outward radial about LodSpec.center; all three source vertices x>=-1e-6; includes leading diagnostic face",
+        "face_id_csv_sha256": "47307c2d1dbb7ec599c9da26ee78bc22aa3f827fa775b84f5dfb580fb67c609e",
+        "rejected_harmonic_selector_comparison": {
+          "equal": false,
+          "intersection_faces": 188,
+          "jaccard": 0.5562130177514792,
+          "removed_unused_guard_face_id": 132,
+          "symmetric_difference_faces": 150
+        },
+        "right_outer_face_count": 1107,
+        "right_outer_face_ids": [
+          21,
+          22,
+          24,
+          25,
+          30,
+          31,
+          32,
+          35,
+          38,
+          39,
+          40,
+          41,
+          99,
+          100,
+          118,
+          119,
+          129,
+          130,
+          131,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232,
+          233,
+          234,
+          235,
+          236,
+          237,
+          238,
+          239,
+          240,
+          241,
+          242,
+          243,
+          247,
+          248,
+          249,
+          250,
+          251,
+          332,
+          333,
+          334,
+          343,
+          344,
+          345,
+          346,
+          347,
+          348,
+          353,
+          354,
+          355,
+          359,
+          360,
+          361,
+          389,
+          390,
+          391,
+          392,
+          395,
+          396,
+          397,
+          398,
+          399,
+          400,
+          401,
+          402,
+          404,
+          405,
+          406,
+          407,
+          408,
+          410,
+          411,
+          412,
+          413,
+          414,
+          415,
+          416,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          431,
+          432,
+          433,
+          434,
+          435,
+          436,
+          437,
+          438,
+          439,
+          440,
+          452,
+          453,
+          457,
+          458,
+          459,
+          460,
+          461,
+          462,
+          465,
+          466,
+          467,
+          468,
+          481,
+          482,
+          483,
+          484,
+          485,
+          486,
+          487,
+          488,
+          489,
+          490,
+          491,
+          492,
+          493,
+          495,
+          496,
+          501,
+          502,
+          503,
+          653,
+          664,
+          665,
+          666,
+          668,
+          669,
+          670,
+          671,
+          672,
+          673,
+          674,
+          677,
+          678,
+          679,
+          680,
+          681,
+          682,
+          683,
+          684,
+          685,
+          686,
+          687,
+          688,
+          689,
+          690,
+          691,
+          692,
+          693,
+          722,
+          723,
+          724,
+          725,
+          726,
+          727,
+          728,
+          729,
+          730,
+          731,
+          732,
+          733,
+          734,
+          735
+        ]
+      },
+      "strip_allocation": {
+        "decoded_exact_oriented_mirrored_face_set": true,
+        "decoded_non_degenerate_triangles": 516,
+        "fixed_index_word_capacity": 1046,
+        "left_strip_count": 53,
+        "padded_index_stream_sha256": "ffcc9d4969fe849d4150ccec5514fbac20e54de5baead45f2af0dc2fc6eecd9c",
+        "padding_words": 213,
+        "restart_count": 105,
+        "right_strip_count": 53,
+        "unpadded_index_words": 833
+      },
+      "topology": {
+        "boundary_components": 1,
+        "boundary_edges": 62,
+        "boundary_is_simple": true,
+        "edges": 418,
+        "euler_characteristic": 1,
+        "face_components": 1,
+        "manifold_disk": true,
+        "triangles": 258,
+        "vertices": 161
+      },
+      "uv_domain": {
+        "all_used_guarded_vertices_inside_closed_unit_square": true,
+        "counterfactual_raw_post_snorm16_maximum": [
+          1.0727256080813012,
+          0.8166753135776849
+        ],
+        "counterfactual_raw_post_snorm16_minimum": [
+          -0.012024292733542894,
+          0.18341624195074313
+        ],
+        "guarded_post_snorm16_maximum": [
+          0.9295327616199225,
+          0.8166753135776849
+        ],
+        "guarded_post_snorm16_minimum": [
+          0.11597033600878934,
+          0.18341624195074313
+        ],
+        "sampler_wrap_or_clamp_assumption": false
+      }
+    },
+    "helmet_lo": {
+      "active_coverage": {
+        "first_missing_xy": [],
+        "guarded_v4_active_bbox": [
+          64,
+          122,
+          447,
+          389
+        ],
+        "guarded_v4_active_texels": 42800,
+        "mapped_exactly_once": 42800,
+        "missing": 0,
+        "multiple": 0
+      },
+      "painted": {
+        "bounds_cm": {
+          "maximum": [
+            10.901510949693378,
+            15.870800567008704,
+            12.934422702848003
+          ],
+          "minimum": [
+            0.5187346238061297,
+            7.356978941106292,
+            -8.866965686945
+          ]
+        },
+        "dominant_component_triangle_fraction": 1.0,
+        "maximum_all_triangle_condition": 17.419468214053843,
+        "maximum_painted_triangle_condition": 17.419468214053843,
+        "painted_texels_mapped_exactly_once": 42800,
+        "painted_triangle_count": 73,
+        "rear_percentile_z_cm": -7.665072829232877,
+        "seam_percentile_abs_x_cm": 3.1077838920662506,
+        "side_projection_height_cm": 8.513821625902413,
+        "side_projection_length_cm": 21.801388389793004
+      },
+      "post_quantized_affine_fit": {
+        "maximum_normalized_error_z_y": [
+          0.0004958415602531171,
+          0.0011435210486188394
+        ],
+        "normalized_rmse_z_y": [
+          0.00018932739501957837,
+          0.0003550665929189624
+        ],
+        "r_squared_z_y": [
+          0.9999993285665069,
+          0.9999972936134005
+        ]
+      },
+      "projection_injectivity": {
+        "biased_carrier_projected_interior_overlap_pairs": 0,
+        "biased_carrier_yz_area2_maximum": -0.6187709455138609,
+        "biased_carrier_yz_area2_minimum": -8.981955440558213,
+        "post_quantized_uv_determinant_maximum": -0.0011575183439670818,
+        "post_quantized_uv_determinant_minimum": -0.017008973921747828,
+        "same_negative_orientation_no_collapse": true,
+        "source_projected_interior_overlap_pairs": 0,
+        "source_yz_area2_maximum": -0.6021727847325332,
+        "source_yz_area2_minimum": -8.824005246319073
+      },
+      "root": {
+        "maximum_abs_x_cm": 2.7237455957122476,
+        "median_abs_x_cm": 2.4065328982090253,
+        "minimum_abs_x_cm": 1.0041392078890794,
+        "minimum_all_active_abs_x_cm": 0.5187346238061297
+      },
+      "selector": {
+        "exact_position_and_normal_welded_duplicate_vertices": 4,
+        "face_id_basis": "shell strip order; outward radial about LodSpec.center; all three source vertices x>=-1e-6; includes leading diagnostic face",
+        "face_id_csv_sha256": "152b346784a1d88268f8e2855c801681a84b8fe91ce14298e542ab6b19fa08d8",
+        "right_outer_face_count": 216,
+        "right_outer_face_ids": [
+          6,
+          7,
+          8,
+          21,
+          22,
+          31,
+          32,
+          33,
+          34,
+          45,
+          46,
+          47,
+          48,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          111,
+          112,
+          113,
+          114,
+          115,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195
+        ]
+      },
+      "strip_allocation": {
+        "decoded_exact_oriented_mirrored_face_set": true,
+        "decoded_non_degenerate_triangles": 156,
+        "fixed_index_word_capacity": 231,
+        "left_strip_count": 12,
+        "padded_index_stream_sha256": "1e9f6dc72f873876b6c09cb68a41f855d33b2ff6fd23311a0eaa562bacc60322",
+        "padding_words": 10,
+        "restart_count": 21,
+        "right_strip_count": 10,
+        "unpadded_index_words": 221
+      },
+      "topology": {
+        "boundary_components": 1,
+        "boundary_edges": 32,
+        "boundary_is_simple": true,
+        "edges": 133,
+        "euler_characteristic": 1,
+        "face_components": 1,
+        "manifold_disk": true,
+        "triangles": 78,
+        "vertices": 56
+      },
+      "uv_domain": {
+        "all_used_guarded_vertices_inside_closed_unit_square": true,
+        "counterfactual_raw_post_snorm16_maximum": [
+          1.1376689962462234,
+          0.870326853236488
+        ],
+        "counterfactual_raw_post_snorm16_minimum": [
+          -0.007568590350047304,
+          0.14203314310129092
+        ],
+        "guarded_post_snorm16_maximum": [
+          0.978240302743614,
+          0.870326853236488
+        ],
+        "guarded_post_snorm16_minimum": [
+          0.11932737205114902,
+          0.14203314310129092
+        ],
+        "sampler_wrap_or_clamp_assumption": false
+      }
+    }
+  },
+  "parameters": {
+    "front_z": 10.07,
+    "height": 10.0,
+    "length": 18.9,
+    "selection_margin": 1.0,
+    "slope": -4.4,
+    "top_y": 16.35,
+    "z_v_slope": 3.16
+  },
+  "schema": "apf2k8_helmet_affine_disk_audit/v1"
+}

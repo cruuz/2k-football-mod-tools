@@ -68,6 +68,7 @@ EXPECTED_EDITABLE_AUDIO_COUNT = 153
 EXPECTED_FIXED_AUDO_COUNT = 152
 EXPECTED_MENU_BACK_COUNT = 1
 EXPECTED_COMPLETE_STANDALONE_COUNT = 850
+FAMILY_REVIEWED_MEANING_STATUS = "family_reviewed_label_runtime_meaning_unproved"
 MAX_SELECTED_AUDIO_COUNT = 256
 MAX_MANIFEST_BYTES = 4 * 1024 * 1024
 MAX_AUDIO_CUE_MAP_BYTES = 1024 * 1024
@@ -752,7 +753,7 @@ def _asset_static_document(
             "sample_format": contract.sample_format,
             "sample_rate_hz": contract.sample_rate,
         },
-        "display_name": _display_text(asset.name, fallback=asset.asset_id),
+        "display_name": _display_text(asset.label_text, fallback=asset.asset_id),
         "family": {
             "id": asset.family_id,
             "label": _display_text(asset.family_label, fallback=asset.family_id),
@@ -1041,6 +1042,8 @@ def standalone_runtime_meaning_status(asset: Nfl2k5AudioAsset) -> str:
         return "menu_back_route_runtime_unproved"
     if asset.legacy_complete_pack_editable:
         return "reviewed_label_runtime_meaning_unproved"
+    if asset.family_label_promotion is not None:
+        return FAMILY_REVIEWED_MEANING_STATUS
     return "provisional_label_runtime_meaning_unproved"
 
 
@@ -1070,7 +1073,7 @@ def _v4_cue_map(assets: Sequence[Nfl2k5AudioAsset]) -> bytes:
                 _v2_replacement_path(ordinal),
                 fallback=f"{REPLACEMENTS_DIRECTORY}/{ordinal:03d}.wav",
             ),
-            _spreadsheet_safe_text(asset.name, fallback=f"Audio cue {ordinal}"),
+            _spreadsheet_safe_text(asset.label_text, fallback=f"Audio cue {ordinal}"),
             _spreadsheet_safe_text(asset.family_id, fallback="unknown"),
             _spreadsheet_safe_text(asset.family_label, fallback="Unknown family"),
             contract.channels,
@@ -1108,8 +1111,11 @@ def _v4_guide(asset_count: int) -> bytes:
         "copied build before publishing what a sound means.\n\n"
         "1. Open `AUDIO-CUE-MAP.csv` in a spreadsheet for the friendly name, "
         "family, exact WAV shape, duration, confidence note, and replacement path "
-        f"for all {asset_count} cues. The CSV is reference-only; filter it in "
-        "place, but copy it outside this pack before saving notes or annotations.\n"
+        f"for all {asset_count} cues. A friendly name beginning with `family: ` "
+        "is a disclosed family inference: the cue decodes byte-identical to a "
+        "reviewed cue, so it sounds the same, but its own runtime trigger is "
+        "still unproved. The CSV is reference-only; filter it in place, but copy "
+        "it outside this pack before saving notes or annotations.\n"
         "2. Export or create each replacement in Audacity, Reaper, or another "
         "audio editor as strict RIFF PCM16 little-endian WAV. Do not add metadata "
         "chunks.\n"
@@ -2151,6 +2157,7 @@ __all__ = [
     "standalone_runtime_meaning_status",
     "EXPECTED_COMPLETE_STANDALONE_COUNT",
     "EXPECTED_EDITABLE_AUDIO_COUNT",
+    "FAMILY_REVIEWED_MEANING_STATUS",
     "MAX_AUDIO_CUE_MAP_BYTES",
     "MAX_ARCHIVE_MEMBERS",
     "MAX_PREFLIGHT_CHANGED_ROWS",

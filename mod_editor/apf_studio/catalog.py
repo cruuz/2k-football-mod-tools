@@ -38,6 +38,7 @@ ensure_tools_importable()
 import apf_inner  # type: ignore  # noqa: E402
 import apf_outer  # type: ignore  # noqa: E402
 import apf_uniform_inventory  # type: ignore  # noqa: E402
+import apf_textlogo_patch  # type: ignore  # noqa: E402
 
 from .uniform_targets import load_targets
 
@@ -552,7 +553,7 @@ class CatalogBuilder:
 
 
 def build_uniform_assets(index_0a: Path) -> tuple[UniformAsset, ...]:
-    """Return all 96 publicly editable physical uniform color assets."""
+    """Return the uniform-material assets plus all rectangular wordmarks."""
 
     _source, team_rows = apf_uniform_inventory._load_team_selectors(index_0a)  # type: ignore[attr-defined]
     team_uses: dict[tuple[str, int], set[str]] = {}
@@ -596,7 +597,17 @@ def build_uniform_assets(index_0a: Path) -> tuple[UniformAsset, ...]:
             256,
             1024,
             "256x1024 RGBA PNG. R and G are the two stored DXN channels; B must be 0 and A must be 255.",
-            ("R/G shader meanings are not yet named; edit them as two numeric mask planes.",),
+            (
+                "This is the helmet's centre stripe, not the shell. R and G are "
+                "region masks the game fills with team colours -- R renders "
+                "light, G renders dark -- the same scheme the team crest uses.",
+                "Only a narrow front-to-crown band of this map reaches the "
+                "helmet. A full-coverage probe showed the rest is off-model "
+                "padding, so art painted outside the lit column renders nowhere.",
+                "APF helmets have no shell texture at all: the package holds "
+                "only this stripe and a normal map, both DXN (two channels, so "
+                "no RGB is possible). Shell colour comes from the team palette.",
+            ),
         ),
         (
             "shoulder",
@@ -606,11 +617,25 @@ def build_uniform_assets(index_0a: Path) -> tuple[UniformAsset, ...]:
             "1024x1024 RGBA PNG. This changes shoulder_color only and preserves the paired normal package.",
             ("Material-mask behavior may differ from a normal color texture.",),
         ),
+        (
+            "textlogo",
+            apf_textlogo_patch.load_targets(),
+            512,
+            128,
+            "512x128 opaque RGBA PNG. The Logos → Wordmarks importer can contain or cover-fit ordinary art and flattens transparency onto black.",
+            (
+                "Selector slot 6: rectangular team/menu wordmark, not the square helmet crest.",
+                "All six tiled BC1 mip levels are regenerated inside the selected fixed package allocation.",
+            ),
+        ),
     )
     result: list[UniformAsset] = []
     for family, rows, width, height, contract, notes in definitions:
-        if len(rows) != 24:
-            raise CatalogError(f"{family} catalog no longer contains 24 assets")
+        expected_count = 206 if family == "textlogo" else 24
+        if len(rows) != expected_count:
+            raise CatalogError(
+                f"{family} catalog no longer contains {expected_count} assets"
+            )
         capability_id = UNIFORM_FAMILY_CAPABILITY_IDS[family]
         action = capability_action_binding(capability_id)
         product_status = (
@@ -641,6 +666,10 @@ def build_uniform_assets(index_0a: Path) -> tuple[UniformAsset, ...]:
 
 
 def _capability_category(surface: str, capability_id: str) -> ApfCategory:
+    if capability_id == "apf2k8.models.scne_gltf":
+        return ApfCategory.UNIFORMS
+    if capability_id == "apf2k8.colors.uniform_selector_appearance_custom_team":
+        return ApfCategory.UNIFORMS
     if capability_id.startswith("apf2k8.colors.uniform_selector"):
         return ApfCategory.TEAM_IDENTITY
     if surface == "uniforms":
@@ -676,11 +705,25 @@ def build_capability_cards() -> tuple[CapabilityCard, ...]:
         gui = capability.raw.get("gui", {})
         action = capability_action_binding(capability.capability_id)
         status = ApfStatus.COMING_SOON
-        if action is not None and gui.get("expose") is True:
+        exposed = gui.get("expose") is True
+        if not exposed:
+            status = (
+                ApfStatus.EVIDENCE
+                if capability.classification
+                in {
+                    Classification.RUNTIME_PROVED,
+                    Classification.OFFLINE_WRITER_PROVED,
+                }
+                else ApfStatus.RESEARCH
+            )
+        elif action is not None:
             mode = gui.get("mode")
             if (
                 mode == "edit"
-                and action.has_complete_editor
+                and (
+                    action.has_complete_editor
+                    or action.has_verified_one_shot_writer
+                )
                 and capability.classification
                 in {
                     Classification.RUNTIME_PROVED,
@@ -709,7 +752,7 @@ def build_capability_cards() -> tuple[CapabilityCard, ...]:
             findings.append(runtime.strip())
         for item in capability.raw.get("portme", ())[:2]:
             if isinstance(item, str):
-                findings.append(f"Next: {item}")
+                findings.append(f"Boundary: {item}")
         cards.append(
             CapabilityCard(
                 capability_id=capability.capability_id,

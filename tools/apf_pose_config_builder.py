@@ -43,7 +43,7 @@ EXPECTED_PSEUDO_SHA256 = (
 )
 EXPECTED_UPSTREAM_SHA256 = {
     "pose_binding_inventory": (
-        "0ccab8212bf99a1a1b0ba20fb146b2aa9575716be1ade3f493e6d7a5bda30b64"
+        "c53411ba4a46f3c0e721dff696b382e06c47d5f96d72165a56b12e1026d66a51"
     ),
     "pose_binding_logical_tsv": (
         "226a8d4247d5b437b0eef3aaa7a4ed2754e457f19892bef9a0b3f66b395b6fbe"
@@ -52,7 +52,7 @@ EXPECTED_UPSTREAM_SHA256 = {
         "ba7f9201c00f6025fd8b89f72435bc2eea230132c8c3bfe6ba51bf86928ac113"
     ),
     "scene_inventory": (
-        "2243b5a3eb4dfcdebdda055e1a6fd9399b12b2704338f80ae4529d8476e85a17"
+        "93269dbc2fbace97890af389cd97a35e5291fec39bdfd1ed411639550e4dac36"
     ),
     "function_manifest": (
         "9c5186fc9345d2079eebd9f7f3612043a9aa3a8d7a09a6950d3a37573b78de9e"

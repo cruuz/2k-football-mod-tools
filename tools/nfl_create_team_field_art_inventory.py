@@ -40,6 +40,8 @@ DEFAULT_INDEX = ROOT / "extracted/ESPN NFL 2K5 (USA)/vc_53450030/0"
 DEFAULT_XBE = ROOT / "extracted/ESPN NFL 2K5 (USA)/default.xbe"
 DEFAULT_JSON = ROOT / "reports/assets/nfl2k5_create_team_field_art_inventory.json"
 DEFAULT_TSV = ROOT / "reports/assets/nfl2k5_create_team_field_art_inventory.tsv"
+INDEX_SOURCE_LABEL = "user-source/vc_53450030/0"
+XBE_SOURCE_LABEL = "user-source/default.xbe"
 INDEX_SIZE = 193_710_080
 INDEX_SHA256 = "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d"
 XBE_SIZE = 11_948_032
@@ -196,7 +198,7 @@ def xbe_evidence(path: Path) -> dict[str, object]:
                        "sha256": digest(body)})
 
     return {
-        "path": str(path.resolve()), "size": path.stat().st_size,
+        "path": XBE_SOURCE_LABEL, "size": path.stat().st_size,
         "sha256": XBE_SHA256, "anchors": anchor_rows,
         "function_ranges": ranges,
         "selector": {
@@ -389,7 +391,7 @@ def build(index_path: Path, xbe_path: Path) -> tuple[dict[str, object], list[dic
     }
     result = {
         "schema": SCHEMA,
-        "source": {"index_path": str(index_path.resolve()), "index_size": INDEX_SIZE,
+        "source": {"index_path": INDEX_SOURCE_LABEL, "index_size": INDEX_SIZE,
                    "index_sha256": INDEX_SHA256, "pack_path": "vc_53450030/0",
                    "pack_size": PACK0_SIZE, "pack_sha256": PACK0_SHA256},
         "name_id_algorithm": "CRC32(uppercase UTF-16LE filename)",

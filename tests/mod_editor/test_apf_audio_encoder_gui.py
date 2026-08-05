@@ -275,7 +275,11 @@ class ApfAudioEncoderGuiTests(unittest.TestCase):
             "Export PCM authoring template…",
         )
         self.assertEqual(
-            browser.replace_pcm_audio_button.text(), "Replace from PCM WAV…"
+            browser.replace_pcm_audio_button.text(), "Replace from audio…"
+        )
+        self.assertIn(
+            "WAV, MP3, FLAC, OGG, M4A",
+            browser.replace_pcm_audio_button.toolTip(),
         )
         self.assertEqual(
             browser.configure_audio_encoder_button.text(),

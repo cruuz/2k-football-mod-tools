@@ -45,7 +45,7 @@ report = json.loads(report_path.read_text(encoding="utf-8"))
 assert report["schema"] == "apf_jersey_family_patch_roundtrip/v1"
 assert report["catalog"] == {
     "schema": "apf_jersey_family_layout/v1",
-    "sha256": "f359a2ecd92e2305e29f2a34f1d0084ee8b2bb277a2f0bd43a1c76e12abb55dc",
+    "sha256": "b60783b9c47b57e9b9f545e95f5c17d3c850e263e0d7d453aa6c3be4a0f809e4",
     "target_count": 24,
     "all_targets_have_independent_retail_hash_pins": True,
 }
@@ -62,7 +62,7 @@ assert controlled["replacement_pixels_embedded"] is False
 assert controlled["representative_asset_indices"] == [6, 14, 23]
 assert [row["outer_table_index"] for row in controlled["results"]] == [875, 196, 128]
 assert [row["allocation_size"] for row in controlled["results"]] == [32768, 34816, 14336]
-assert [row["allocation_slack_after"] for row in controlled["results"]] == [20207, 22255, 1775]
+assert [row["allocation_slack_after"] for row in controlled["results"]] == [19287, 21335, 855]
 for row in controlled["results"]:
     assert row["all_nine_levels_zero_error_decode_back"] is True
     assert row["inactive_padding_bit_exact"] is True

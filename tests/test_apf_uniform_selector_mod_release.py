@@ -9,6 +9,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -123,6 +124,38 @@ class APFUniformSelectorModReleaseTests(unittest.TestCase):
             path.write_text('{"schema":"one","schema":"two"}\n', encoding="utf-8")
             with self.assertRaisesRegex(release_verify.ReleaseVerifyError, "duplicate key"):
                 release_verify.load_json(path, "fixture")
+
+    def test_metadata_gate_does_not_stat_cleaned_replay_inputs(self) -> None:
+        queue = release_verify._validate_replay_queue(ROOT, self.report)
+        self.assertEqual(queue["status"], "queued_not_executed")
+        self.assertFalse(Path(queue["runs"][0]["game_0a"]).exists())
+        self.assertFalse(Path(queue["runs"][1]["game_0a"]).exists())
+
+    def test_metadata_gate_never_calls_the_full_volume_verifier(self) -> None:
+        with mock.patch.object(
+            release_verify.selector_verify,
+            "verify",
+            side_effect=AssertionError("full-volume verifier was called"),
+        ) as deep:
+            result = release_verify.verify(
+                ROOT,
+                REPORT,
+                full_volume=False,
+            )
+        self.assertFalse(result["full_volume_verified"])
+        deep.assert_not_called()
+
+    def test_full_volume_mode_requires_both_explicit_volumes(self) -> None:
+        with self.assertRaisesRegex(
+            release_verify.ReleaseVerifyError, "--source-volume is required"
+        ):
+            release_verify.verify(ROOT, REPORT, full_volume=True)
+
+    def test_registered_shell_is_metadata_only(self) -> None:
+        shell = (ROOT / "tools/validate_apf_uniform_selector_mod_release.sh").read_text()
+        self.assertIn("--metadata-only", shell)
+        self.assertNotIn("tests.test_apf_uniform_selector_xenia_runtime_verify", shell)
+        self.assertNotIn("apf-selector-release-validation-unused", shell)
 
 
 if __name__ == "__main__":
