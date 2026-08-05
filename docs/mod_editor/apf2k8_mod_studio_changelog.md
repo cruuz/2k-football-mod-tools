@@ -153,6 +153,30 @@
   asset-space proof only; runtime/gameplay consumption and Xbox 360 hardware
   behavior remain unproved.
 
+### Native-material full-shell bake (literal BC1 lane)
+
+- The v24 palette-mask route renders through crest material 2, which lacks the
+  shell's DXN normal + specular-lightmap path, so whole-shell designs read
+  matte. A second import mode, **native material**, instead repaints the
+  helmet package's `helmet_color` texture with literal RGB (BC1, full mip
+  chain, deterministic opaque encoder) while the shell stays on material 1 —
+  one material and one shading path for body and crest, so the design inherits
+  the retail metallic response.
+- The semantic 512×512 weight mask is composited over the team shell colour
+  (midnight green by default, white/silver inks, same AA fringe) into a fully
+  opaque literal canvas; the writer refuses any non-255 alpha because the
+  retail shell material has no alpha lane. Shell vertices, UVs, the DXN
+  normal, and every unrelated texture byte remain retail.
+- The lane is fail-closed on the pinned retail helmet entry and texture
+  hashes, rebuilds the H7A transport token-preserving, and publishes one new
+  copied `0A` per the archive patch contract. Focused gates pin the opaque
+  body contract, the weight-to-literal compositing, and source/structure
+  refusals.
+- Evidence boundary: static and headless receipts only so far; an in-game
+  Xenia witness of the literal lane is in flight and will be recorded here
+  once captured. The palette-mask lane remains the bounded decal route;
+  neither mode claims arbitrary source RGB survives literally.
+
 ## 0.1.0-alpha.53 candidate — headless crest pipeline, save assignments, roster parity, and model export 2026-08-03
 
 ### Team crests and helmet coverage
