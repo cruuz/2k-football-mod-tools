@@ -172,10 +172,13 @@
   copied `0A` per the archive patch contract. Focused gates pin the opaque
   body contract, the weight-to-literal compositing, and source/structure
   refusals.
-- Evidence boundary: static and headless receipts only so far; an in-game
-  Xenia witness of the literal lane is in flight and will be recorded here
-  once captured. The palette-mask lane remains the bounded decal route;
-  neither mode claims arbitrary source RGB survives literally.
+- Evidence boundary: the literal lane now has a headless in-game Xenia
+  witness (kickoff-lineup frame, PHI huddle: opaque midnight-green shells,
+  no translucency; interim sideline crops on the Desktop as
+  eagles-helmet-ingame-full/-zoom). A replay-cam or 3D-preview close-up is
+  pending an interactive session and will be recorded here once captured.
+  The palette-mask lane remains the bounded decal route; neither mode claims
+  arbitrary source RGB survives literally.
 
 ## 0.1.0-alpha.53 candidate — headless crest pipeline, save assignments, roster parity, and model export 2026-08-03
 
