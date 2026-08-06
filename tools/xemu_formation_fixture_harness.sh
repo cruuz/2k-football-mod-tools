@@ -21,9 +21,10 @@ usage() {
 
 check() {
   echo "=== check ==="
-  if ! command -v xemu >/dev/null 2>&1; then
-    echo "xemu not found in PATH — install via https://xemu.app/docs/build/ (AppImage) or apt if available"
-    echo "  AppImage: curl -L https://github.com/mborgerson/xemu/releases/latest/download/xemu.appimage -o /tmp/xemu.appimage && chmod +x /tmp/xemu.appimage && sudo mv /tmp/xemu.appimage /usr/local/bin/xemu"
+  if ! command -v xemu >/dev/null 2>&1 && [ ! -x /tmp/xemu.appimage ]; then
+    echo "xemu not found in PATH — install via https://xemu.app/docs/build/ (AppImage) or direct:"
+    echo "  curl -L https://github.com/mborgerson/xemu/releases/download/v0.8.132/xemu-0.8.132-x86_64.AppImage -o /tmp/xemu.appimage && chmod +x /tmp/xemu.appimage && /tmp/xemu.appimage --version"
+    echo "  (also: xemu-project/xemu v0.8.136 at https://github.com/xemu-project/xemu/releases/download/v0.8.136/xemu-0.8.136-x86_64.AppImage)"
     exit 1
   fi
   xemu --version 2>&1 | head -5 || true
