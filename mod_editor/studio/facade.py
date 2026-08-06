@@ -872,7 +872,7 @@ class Nfl2k5StudioFacade:
         cache = self.source_cache.index(source_xiso, progress)
         progress("Preparing the complete asset browser", 0, 1)
         universal_index = self._universal_index_factory(cache)
-        session = self.session_factory(cache, self.visual_catalog)
+        session = self.session_factory(cache, self.uniform_catalog)
         text_catalog = None
         attach_text = getattr(session, "attach_text_catalog", None)
         if callable(attach_text):
@@ -2517,7 +2517,7 @@ class Nfl2k5StudioFacade:
             raise ValidationError(
                 "Load your own NFL 2K5 XISO before opening a shared project."
             )
-        candidate = self.session_factory(cache, self.visual_catalog)
+        candidate = self.session_factory(cache, self.uniform_catalog)
         try:
             return self._load_project_candidate(
                 source=source,

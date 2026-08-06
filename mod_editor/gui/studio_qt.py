@@ -4605,7 +4605,7 @@ class StudioMainWindow(QMainWindow):
             button.setEnabled(True)
         import_button = getattr(self, "_stadium_import_scene_button", None)
         if import_button is not None:
-            import_button.setEnabled(bool(scene.geometry_targets))
+            import_button.setEnabled(True)
         state.scene_label.setText(f"Outer {scene.outer_index} • Stadium scene")
         state.scene_metadata.setText("Preparing 3D geometry and surface ownership…")
         state.viewport.set_model(None)
@@ -4765,9 +4765,7 @@ class StudioMainWindow(QMainWindow):
             export_scene.setEnabled(ready and scene is not None)
         import_scene = getattr(self, "_stadium_import_scene_button", None)
         if import_scene is not None:
-            import_scene.setEnabled(
-                ready and scene is not None and bool(scene.geometry_targets)
-            )
+            import_scene.setEnabled(ready and scene is not None)
         state.export_button.setEnabled(ready and texture is not None)
         editable = texture is not None and texture.access_status == STADIUM_EDITABLE
         state.replace_button.setEnabled(ready and editable)
