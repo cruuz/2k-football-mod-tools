@@ -54,6 +54,10 @@ from mod_editor.core.nfl2k5_playbook_route_writer import (
     PlayRouteCloneRequest,
     route_selector as play_route_selector,
 )
+from mod_editor.core.nfl2k5_formation_play_writer import (
+    FormationCreateRequest,
+    PlayCreateRequest,
+)
 from mod_editor.core.nfl2k5_stadium_studio import (
     Nfl2k5StadiumStudio,
     StadiumScene,
@@ -2018,6 +2022,58 @@ class Nfl2k5StudioFacade:
             "Assignment route reverted."
             if changed else "That assignment route is already original."
         )
+
+    def create_formation(
+        self,
+        asset_id: str,
+        donor_formation_index: int,
+        progress: ProgressSink = _quiet_progress,
+    ) -> object:
+        progress("Creating formation", 0, 2)
+        request = FormationCreateRequest(asset_id, donor_formation_index)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            session.attach_playbook_inspector(inspector)
+            changed = session.create_formation(request)
+        progress("Formation created", 2, 2)
+        return StudioOperationResult(
+            "Formation created as clone — new formation appears at end of book."
+            if changed else "That formation clone is already staged."
+        )
+
+    def create_play(
+        self,
+        asset_id: str,
+        donor_play_index: int,
+        progress: ProgressSink = _quiet_progress,
+    ) -> object:
+        progress("Creating play", 0, 2)
+        request = PlayCreateRequest(asset_id, donor_play_index)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            session.attach_playbook_inspector(inspector)
+            changed = session.create_play(request)
+        progress("Play created", 2, 2)
+        return StudioOperationResult(
+            "Play created as clone — new play appears at end of book."
+            if changed else "That play clone is already staged."
+        )
+
+    def revert_formation_create(self, selector: str, progress: ProgressSink = _quiet_progress) -> object:
+        progress("Reverting formation", 0, 1)
+        with self._lock:
+            changed = self._require_session().revert_formation_create(selector)
+        progress("Formation reverted", 1, 1)
+        return StudioOperationResult("Formation reverted." if changed else "Already original.")
+
+    def revert_play_create(self, selector: str, progress: ProgressSink = _quiet_progress) -> object:
+        progress("Reverting play", 0, 1)
+        with self._lock:
+            changed = self._require_session().revert_play_create(selector)
+        progress("Play reverted", 1, 1)
+        return StudioOperationResult("Play reverted." if changed else "Already original.")
 
     @property
     def stadium_available(self) -> bool:
