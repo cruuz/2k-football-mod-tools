@@ -72,6 +72,8 @@ def dump_formations(index_path: pathlib.Path, inventory_path: pathlib.Path, asse
 
 
 def dump_play_slot(index_path: pathlib.Path, inventory_path: pathlib.Path, asset_id: str, play: int, slot: int) -> None:
+    from mod_editor.core.nfl2k5_playbook_inspector import NODE_BASE, NODE_SIZE
+
     sidecar = inventory_path.parent / "universal-assets-v1.sqlite3"
     idx = Nfl2k5UniversalAssetIndex(inventory_path, index_path, sidecar)
     rec = idx.get(asset_id)
@@ -79,23 +81,34 @@ def dump_play_slot(index_path: pathlib.Path, inventory_path: pathlib.Path, asset
     raw = read_entry_range(idx.archive, entry, rec.chunk_offset, rec.raw_size)
     book = parse_playbook_resource(raw, asset_id=asset_id)
     p = book.plays[play]
-    print(f"# {asset_id} play {play}={p.name!r} slot {slot} descriptor={p.assignments[slot].descriptor_word:#x} chain_start={p.assignments[slot].chain_start_index}")
+    ass = p.assignments[slot]
+    print(f"# {asset_id} play {play}={p.name!r} slot {slot} descriptor={ass.descriptor_word:#x} chain_start={ass.chain_start_index}")
     # dump raw play bytes with pointer fields highlighted
     body_off = RESOURCE_HEADER_SIZE
     po = PLAY_BASE + play * PLAY_SIZE
     rp = raw[body_off + po : body_off + po + PLAY_SIZE]
     print(f"# play raw @ {po:#x} size {PLAY_SIZE:#x}")
     print(_hexdump(rp, base=po))
-    # decode chain nodes raw-ish via inspector's parsed chain if available
+    # walk NODE pool 8-byte nodes from chain_start until terminal bit (byte1 & 0x02)
     try:
-        # inspector already parsed chain nodes per assignment — print their raw bytes lengths
-        chain = p.assignments[slot].chain_nodes if hasattr(p.assignments[slot], 'chain_nodes') else None
-        if chain:
-            print(f"# chain nodes {len(chain)}")
-            for n in chain:
-                print(n)
+        start = ass.chain_start_index
+        print(f"# chain walk from node {start} at NODE_BASE {NODE_BASE:#x} (NODE_SIZE {NODE_SIZE})")
+        for step in range(32):  # cap to avoid runaway
+            off = NODE_BASE + (start + step) * NODE_SIZE
+            node = raw[body_off + off : body_off + off + NODE_SIZE]
+            if len(node) < NODE_SIZE:
+                print(f"#  truncated at step {step}")
+                break
+            b0, b1 = node[0], node[1]
+            term = " TERM" if (b1 & 0x02) else ""
+            print(f"  node {start+step:4d} @ {off:#06x}: {node.hex(' ')}  b0={b0:#04x} b1={b1:#04x}{term}")
+            if b1 & 0x02:
+                break
+        else:
+            print("#  chain hit 32-step cap without terminal")
     except Exception as e:
-        print(f"# chain dump skipped: {e}")
+        print(f"# chain dump failed: {e}")
+        import traceback; traceback.print_exc()
 
 
 def main() -> int:
