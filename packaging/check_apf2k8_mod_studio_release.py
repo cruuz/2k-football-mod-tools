@@ -96,7 +96,7 @@ INSTALL_EXECUTABLES = frozenset(
 # private paths are embedded in the release checker.
 REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
     "mod_editor/apf_studio/__init__.py": (
-        '__version__ = "0.1.0-alpha.55"',
+        '__version__ = "0.1.0-alpha.56"',
     ),
     "mod_editor/apf_studio/audio_annotations.py": (
         'AUDIO_ANNOTATIONS_SCHEMA = "apf2k8_audio_annotations/v1"',
@@ -246,7 +246,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "confirmation_token",
     ),
     "APF2K8-README.md": (
-        "0.1.0-alpha.55",
+        "0.1.0-alpha.56",
         "Normal logo — convert to APF regions (recommended)",
         "APF region mask (advanced)",
         "Your cue label & notes",
@@ -271,7 +271,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "normalized original import plus the last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_getting_started.md": (
-        "0.1.0-alpha.55",
+        "0.1.0-alpha.56",
         "Your cue label & notes",
         "Labeled only",
         "audio-annotations.json",
@@ -291,7 +291,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "normalized original import and last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_changelog.md": (
-        "0.1.0-alpha.55",
+        "0.1.0-alpha.56",
         "project_metadata_only_stable_logical_cue_id",
         "audio-annotations.json",
         "selected_exact_slot_xma1_or_conformed_audio",
@@ -309,7 +309,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "original import plus its last transform",
     ),
     "docs/mod_editor/APF2K8_STATUS.md": (
-        "0.1.0-alpha.55",
+        "0.1.0-alpha.56",
         "0.1.0-alpha.51 candidate boundary",
         "project_metadata_only_stable_logical_cue_id",
         "47,775 playable cues",
