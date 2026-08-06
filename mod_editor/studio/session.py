@@ -31,6 +31,12 @@ from mod_editor.core.nfl2k5_playbook_route_writer import (
     PlayRouteCloneRequest,
     request_from_mapping as play_route_request_from_mapping,
 )
+from mod_editor.core.nfl2k5_formation_play_writer import (
+    FormationCreateRequest,
+    PlayCreateRequest,
+    formation_request_from_mapping,
+    play_request_from_mapping as formation_play_request_from_mapping,
+)
 from mod_editor.core.nfl2k5_audio_catalog import (
     AudioReplacementSnapshot,
     MENU_BACK_SELECTOR,
@@ -381,6 +387,8 @@ class StudioSession:
         self._crib_geometry_edits: dict[str, CribGeometrySessionEdit] = {}
         self.playbook_inspector: Nfl2k5PlaybookInspector | None = None
         self._play_route_edits: dict[str, PlayRouteCloneRequest] = {}
+        self._formation_creates: dict[str, FormationCreateRequest] = {}
+        self._play_creates: dict[str, PlayCreateRequest] = {}
         self.stadium_writer: Nfl2k5StadiumTextureWriter | None = None
         self.stadium_texture: StadiumTexture | None = None
         self._stadium_textures: dict[str, StadiumTexture] = {}
@@ -463,6 +471,8 @@ class StudioSession:
             + len(self._audio_edits)
             + len(self._unif_colors)
             + len(self._play_route_edits)
+            + len(self._formation_creates)
+            + len(self._play_creates)
             + (self.text_edits.modified_count if self.text_edits is not None else 0)
         )
 
@@ -789,6 +799,121 @@ class StudioSession:
         except BaseException:
             self._undo_order.pop()
             self._play_route_edits[selector] = previous
+            raise
+        return True
+
+    @property
+    def formation_creates(self) -> tuple[FormationCreateRequest, ...]:
+        return tuple(self._formation_creates[key] for key in sorted(self._formation_creates))
+
+    @property
+    def play_creates(self) -> tuple[PlayCreateRequest, ...]:
+        return tuple(self._play_creates[key] for key in sorted(self._play_creates))
+
+    def create_formation(self, request: FormationCreateRequest) -> bool:
+        inspector = self.playbook_inspector
+        if inspector is None:
+            raise ValidationError("Open the Playbooks & Plays editor first.")
+        book = inspector.load(request.asset_id)
+        # Use donor index as key until compiled new index known; deduplicate per donor
+        key = request.selector
+        previous = self._formation_creates.get(key)
+        if previous == request:
+            return False
+        candidate = dict(self._formation_creates)
+        candidate[key] = request
+        # Validate via writer on donor book raw (lightweight, checks capacity via writer)
+        from nfl_outer import read_entry_range
+
+        raw = read_entry_range(
+            inspector.index.archive,
+            inspector.index.archive.entries[inspector.index.get(request.asset_id).outer_index],
+            inspector.index.get(request.asset_id).chunk_offset,
+            inspector.index.get(request.asset_id).raw_size,
+        )
+        from mod_editor.core.nfl2k5_formation_play_writer import compile_formation_play_creations
+
+        compile_formation_play_creations(
+            raw,
+            formation_requests=list(candidate.values()),
+            play_requests=list(self._play_creates.values()),
+        )
+        self._formation_creates = candidate
+        self._undo_order.append(_SessionUndo("formation_create", f"Create formation from {request.donor_formation_index}", (key, previous)))
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._undo_order.pop()
+            if previous is None:
+                self._formation_creates.pop(key, None)
+            else:
+                self._formation_creates[key] = previous
+            raise
+        return True
+
+    def create_play(self, request: PlayCreateRequest) -> bool:
+        inspector = self.playbook_inspector
+        if inspector is None:
+            raise ValidationError("Open the Playbooks & Plays editor first.")
+        key = request.selector
+        previous = self._play_creates.get(key)
+        if previous == request:
+            return False
+        candidate = dict(self._play_creates)
+        candidate[key] = request
+        from nfl_outer import read_entry_range
+
+        raw = read_entry_range(
+            inspector.index.archive,
+            inspector.index.archive.entries[inspector.index.get(request.asset_id).outer_index],
+            inspector.index.get(request.asset_id).chunk_offset,
+            inspector.index.get(request.asset_id).raw_size,
+        )
+        from mod_editor.core.nfl2k5_formation_play_writer import compile_formation_play_creations
+
+        compile_formation_play_creations(
+            raw,
+            formation_requests=list(self._formation_creates.values()),
+            play_requests=list(candidate.values()),
+        )
+        self._play_creates = candidate
+        self._undo_order.append(_SessionUndo("play_create", f"Create play from {request.donor_play_index}", (key, previous)))
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._undo_order.pop()
+            if previous is None:
+                self._play_creates.pop(key, None)
+            else:
+                self._play_creates[key] = previous
+            raise
+        return True
+
+    def revert_formation_create(self, selector: str) -> bool:
+        previous = self._formation_creates.get(selector)
+        if previous is None:
+            return False
+        del self._formation_creates[selector]
+        self._undo_order.append(_SessionUndo("formation_create", f"Revert formation {selector}", (selector, previous)))
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._undo_order.pop()
+            self._formation_creates[selector] = previous
+            raise
+        return True
+
+    def revert_play_create(self, selector: str) -> bool:
+        previous = self._play_creates.get(selector)
+        if previous is None:
+            return False
+        del self._play_creates[selector]
+        self._undo_order.append(_SessionUndo("play_create", f"Revert play {selector}", (selector, previous)))
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._undo_order.pop()
+            self._play_creates[selector] = previous
             raise
         return True
 
@@ -1563,6 +1688,40 @@ class StudioSession:
                     self._play_route_edits.pop(selector, None)
                 else:
                     self._play_route_edits[selector] = current
+                raise
+            self._undo_order.pop()
+            return record.label
+        if record.source == "formation_create":
+            selector, previous = record.payload  # type: ignore[misc]
+            current = self._formation_creates.get(selector)
+            if previous is None:
+                self._formation_creates.pop(selector, None)
+            else:
+                self._formation_creates[selector] = previous
+            try:
+                self._write_manifest()
+            except BaseException:
+                if current is None:
+                    self._formation_creates.pop(selector, None)
+                else:
+                    self._formation_creates[selector] = current
+                raise
+            self._undo_order.pop()
+            return record.label
+        if record.source == "play_create":
+            selector, previous = record.payload  # type: ignore[misc]
+            current = self._play_creates.get(selector)
+            if previous is None:
+                self._play_creates.pop(selector, None)
+            else:
+                self._play_creates[selector] = previous
+            try:
+                self._write_manifest()
+            except BaseException:
+                if current is None:
+                    self._play_creates.pop(selector, None)
+                else:
+                    self._play_creates[selector] = current
                 raise
             self._undo_order.pop()
             return record.label
