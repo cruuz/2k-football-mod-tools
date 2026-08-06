@@ -207,6 +207,8 @@ class LoadedProject:
     audio_annotations: tuple[AudioCueAnnotation, ...] = ()
     uniform_colors: tuple[Mapping[str, str], ...] = ()
     play_route_edits: tuple[Mapping[str, object], ...] = ()
+    formation_creates: tuple[Mapping[str, object], ...] = ()
+    play_creates: tuple[Mapping[str, object], ...] = ()
 
     def cleanup(self) -> None:
         shutil.rmtree(self.staging_root, ignore_errors=True)
