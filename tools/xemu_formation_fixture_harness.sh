@@ -27,13 +27,15 @@ check() {
     echo "  (also: xemu-project/xemu v0.8.136 at https://github.com/xemu-project/xemu/releases/download/v0.8.136/xemu-0.8.136-x86_64.AppImage)"
     exit 1
   fi
-  xemu --version 2>&1 | head -5 || true
+  XEMU_BIN="$(command -v xemu 2>/dev/null || echo /tmp/xemu.appimage)"
+  "$XEMU_BIN" --version 2>&1 | head -5 || true
   ls -lh /home/noah/.cache/2k5-mod-studio/*/extracted/ESPN\ NFL\ 2K5\ \(USA\)/vc_53450030/0 2>&1 | head -3
   ls -lh /home/noah/.cache/2k5-mod-studio/*/indexes/nfl2k5_resource_chunks_v2.json 2>&1 | head -3
   echo "--- probe dry-run (offline) ---"
-  PYTHONPATH=. python3 tools/nfl2k5_formation_coordinate_probe.py --book "$FIXTURE_BOOK" --formation 0 --compare 1 --play "$PLAY" --slot "$SLOT" --dump-nodes 2>&1 | head -80
+  REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+  PYTHONPATH="$REPO_ROOT" python3 "$REPO_ROOT/tools/nfl2k5_formation_coordinate_probe.py" --book "$FIXTURE_BOOK" --formation 0 --compare 1 --play "$PLAY" --slot "$SLOT" --dump-nodes 2>&1 | head -80
   echo "--- pack-0 proof (offline) ---"
-  PYTHONPATH=. python3 -m pytest tests/mod_editor/test_nfl2k5_formation_play_writer.py -q 2>&1 | tail -5
+  PYTHONPATH="$REPO_ROOT" python3 -m pytest "$REPO_ROOT/tests/mod_editor/test_nfl2k5_formation_play_writer.py" -q 2>&1 | tail -5
 }
 
 run() {
