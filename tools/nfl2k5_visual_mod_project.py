@@ -64,6 +64,7 @@ from mod_editor.core.nfl2k5_source_cache import (  # noqa: E402
     SourceCache,
 )
 from mod_editor.core import nfl2k5_playbook_route_writer as play_route_adapter  # noqa: E402
+from mod_editor.core import nfl2k5_formation_play_writer as formation_play_adapter  # noqa: E402
 from mod_editor.core import nfl2k5_crib_scene_texture_writer as crib_scene_adapter  # noqa: E402
 from mod_editor.core import nfl2k5_crib_standalone_texture_writer as crib_standalone_adapter  # noqa: E402
 from mod_editor.core import nfl2k5_crib_geometry_writer as crib_geometry_adapter  # noqa: E402
@@ -292,6 +293,8 @@ PLAY_ROUTE_FIELDS = {
     "kind", "asset_id", "target_play_index", "target_slot_index",
     "donor_play_index", "donor_slot_index",
 }
+FORMATION_CREATE_FIELDS = {"kind", "asset_id", "donor_formation_index"}
+PLAY_CREATE_FIELDS = {"kind", "asset_id", "donor_play_index"}
 SCOREBUG_TEXTURE_FIELDS = {"kind", "target", "png"}
 STADIUM_TEXTURE_FIELDS = {"kind", "target", "png"}
 STADIUM_GEOMETRY_FIELDS = {"kind", "target", "recipe"}
@@ -330,6 +333,8 @@ CRIB_STANDALONE_TEXTURE_KIND = "crib_standalone_texture"
 CRIB_SCENE_TEXTURE_KIND = "crib_scene_texture"
 CRIB_SCENE_GEOMETRY_KIND = "crib_scene_geometry"
 PLAY_ROUTE_KIND = play_route_adapter.PROVIDER_KIND
+FORMATION_CREATE_KIND = formation_play_adapter.PROVIDER_KIND_FORMATION
+PLAY_CREATE_KIND = formation_play_adapter.PROVIDER_KIND_PLAY
 SCOREBUG_TEXTURE_KIND = scorebug_adapter.SCOREBUG_TEXTURE_KIND
 UNIF_COLOR_KIND = "unif_color"
 P8_TEXTURE_KIND = "p8_texture"
@@ -356,6 +361,8 @@ REPORT_FREE_KINDS = ROSTER_REPORT_FREE_KINDS | {
     CRIB_SCENE_TEXTURE_KIND,
     CRIB_SCENE_GEOMETRY_KIND,
     PLAY_ROUTE_KIND,
+    FORMATION_CREATE_KIND,
+    PLAY_CREATE_KIND,
     UNIVERSAL_FIXED_TEXT_KIND,
 }
 AUDIO_KINDS = frozenset({
@@ -899,6 +906,34 @@ def validate_edit_shape(record: object, order: int) -> dict[str, Any]:
                 for field in ("target_slot_index", "donor_slot_index")
             ),
             f"edit {order} has invalid play_assignment_route fields/types",
+        )
+    elif kind == FORMATION_CREATE_KIND:
+        require(
+            set(record) == FORMATION_CREATE_FIELDS
+            and type(record.get("asset_id")) is str
+            and re.fullmatch(
+                r"nfl2k5\.resource\.o(?:030[7-9]|03[1-3][0-9]|034[0-3])\."
+                r"c0000\.k504c4159",
+                record["asset_id"],
+                re.ASCII,
+            ) is not None
+            and type(record.get("donor_formation_index")) is int
+            and record["donor_formation_index"] >= 0,
+            f"edit {order} has invalid play_formation_create fields/types",
+        )
+    elif kind == PLAY_CREATE_KIND:
+        require(
+            set(record) == PLAY_CREATE_FIELDS
+            and type(record.get("asset_id")) is str
+            and re.fullmatch(
+                r"nfl2k5\.resource\.o(?:030[7-9]|03[1-3][0-9]|034[0-3])\."
+                r"c0000\.k504c4159",
+                record["asset_id"],
+                re.ASCII,
+            ) is not None
+            and type(record.get("donor_play_index")) is int
+            and record["donor_play_index"] >= 0,
+            f"edit {order} has invalid play_create fields/types",
         )
     elif kind == SCOREBUG_TEXTURE_KIND:
         require(
@@ -3101,6 +3136,15 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
             if row["kind"] == PLAY_ROUTE_KIND:
                 play_route_groups.setdefault(str(row["asset_id"]), []).append(row)
         handled_play_route_books: set[str] = set()
+        formation_create_groups: dict[str, list[dict[str, Any]]] = {}
+        for row in project.value["edits"]:
+            if row["kind"] == FORMATION_CREATE_KIND:
+                formation_create_groups.setdefault(str(row["asset_id"]), []).append(row)
+        play_create_groups: dict[str, list[dict[str, Any]]] = {}
+        for row in project.value["edits"]:
+            if row["kind"] == PLAY_CREATE_KIND:
+                play_create_groups.setdefault(str(row["asset_id"]), []).append(row)
+        handled_formation_play_books: set[str] = set()
         crib_scene_edits = [
             row for row in project.value["edits"]
             if row["kind"] == CRIB_SCENE_TEXTURE_KIND
@@ -3265,6 +3309,26 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                         }
                         for row in rows
                     ],
+                }
+                effective_input_hashes = {}
+            elif kind in (FORMATION_CREATE_KIND, PLAY_CREATE_KIND):
+                asset_id = str(edit["asset_id"])
+                if asset_id in handled_formation_play_books:
+                    continue
+                handled_formation_play_books.add(asset_id)
+                f_rows = formation_create_groups.get(asset_id, [])
+                p_rows = play_create_groups.get(asset_id, [])
+                try:
+                    built = [formation_play_adapter.build_unified_formation_play_import(
+                        index_pin.path, inventory_pin.path, asset_id, f_rows, p_rows
+                    )]
+                except formation_play_adapter.ValidationError as exc:
+                    raise ProjectError(str(exc)) from exc
+                effective_edit = {
+                    "kind": "formation_play_create",
+                    "asset_id": asset_id,
+                    "formation_donors": [int(r["donor_formation_index"]) for r in f_rows],
+                    "play_donors": [int(r["donor_play_index"]) for r in p_rows],
                 }
                 effective_input_hashes = {}
             elif kind == UNIF_COLOR_KIND:

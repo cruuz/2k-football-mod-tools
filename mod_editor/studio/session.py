@@ -3667,6 +3667,8 @@ class StudioSession:
             and not self._audio_edits
             and not self._unif_colors
             and not self._play_route_edits
+            and not self._formation_creates
+            and not self._play_creates
         ):
             raise ValidationError("Replace at least one asset before building a modded XISO.")
         edits: list[dict[str, object]] = []
@@ -3711,6 +3713,12 @@ class StudioSession:
         edits.extend(text_provider_edits)
         edits.extend(
             request.provider_edit() for request in self.play_route_edits
+        )
+        edits.extend(
+            request.provider_edit() for request in self.formation_creates
+        )
+        edits.extend(
+            request.provider_edit() for request in self.play_creates
         )
         if self._audio_edits:
             audio_service = self._require_audio_service()

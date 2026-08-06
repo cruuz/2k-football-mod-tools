@@ -43,6 +43,13 @@ from .nfl2k5_playbook_inspector import (
     RESOURCE_HEADER_SIZE,
     parse_playbook_resource,
 )
+from .nfl2k5_source_cache import PACK0_SHA256, PACK0_SIZE
+from .nfl2k5_universal_asset_index import Nfl2k5UniversalAssetIndex
+
+try:
+    from nfl_outer import FormatError, read_entry_range
+except ImportError as exc:  # pragma: no cover - installation boundary
+    raise RuntimeError("The NFL archive reader is unavailable") from exc
 
 PROVIDER_KIND_FORMATION = "play_formation_create"
 PROVIDER_KIND_PLAY = "play_create"
@@ -349,11 +356,61 @@ def compile_formation_play_creations(
     )
 
 
+def build_unified_formation_play_import(
+    index_path: Path,
+    inventory_path: Path,
+    asset_id: str,
+    formation_requests: Iterable[FormationCreateRequest | Mapping[str, object]] = (),
+    play_requests: Iterable[PlayCreateRequest | Mapping[str, object]] = (),
+) -> tuple[bytes, list[tuple[str, bytes]], dict[str, Any], str, dict[str, Any]]:
+    """Resolve, compile, and locate one fixed PLAY resource for formation/play creates."""
+
+    sidecar = inventory_path.parent / "universal-assets-v1.sqlite3"
+    index = Nfl2k5UniversalAssetIndex(inventory_path, index_path, sidecar)
+    record = index.get(asset_id)
+    if record.kind != "PLAY" or record.raw_size != 0x20 + 0x13390:
+        raise ValidationError("That logical selector is not a fixed NFL 2K5 PLAY resource.")
+    entry = index.archive.entries[record.outer_index]
+    try:
+        raw = read_entry_range(index.archive, entry, record.chunk_offset, record.raw_size)
+    except (OSError, FormatError) as exc:
+        raise ValidationError(f"Could not read the selected PLAY resource: {exc}") from exc
+    compiled = compile_formation_play_creations(raw, formation_requests, play_requests)
+    absolute_archive = entry.virtual_offset + record.chunk_offset
+    pack = next(
+        (row for row in index.archive.packs
+         if row.virtual_start <= absolute_archive
+         and absolute_archive + record.raw_size <= row.virtual_end),
+        None,
+    )
+    if pack is None or pack.name != "0":
+        raise ValidationError("The selected PLAY resource no longer belongs to archive pack 0.")
+    pack_offset = absolute_archive - pack.virtual_start
+    target = {
+        "selector": compiled.selector,
+        "asset_id": asset_id,
+        "outer_index": record.outer_index,
+        "chunk_index": record.chunk_index,
+        "resource_size": record.raw_size,
+        "xiso_pack_path": "vc_53450030/0",
+        "xiso_pack_sector": 796_479,
+        "xiso_pack_size": PACK0_SIZE,
+        "xiso_pack_sha256": PACK0_SHA256,
+        "pack_offset": pack_offset,
+        "xiso_absolute_span_offset": 1_631_188_992 + pack_offset,
+        "span_sha256": compiled.source_sha256,
+    }
+    report = dict(compiled.report)
+    report["target"] = target
+    return compiled.replacement, [], report, compiled.selector, target
+
+
 __all__ = [
     "FormationCreateRequest",
     "PlayCreateRequest",
     "CompiledFormationPlayResource",
     "compile_formation_play_creations",
+    "build_unified_formation_play_import",
     "formation_request_from_mapping",
     "play_request_from_mapping",
 ]
