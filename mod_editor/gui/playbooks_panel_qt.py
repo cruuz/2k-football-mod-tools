@@ -250,6 +250,17 @@ class PlaybooksPanelHost(Protocol):
         progress: ProgressSink,
     ) -> object: ...
 
+    def create_formation(
+        self, asset_id: str, donor_formation_index: int, progress: ProgressSink,
+    ) -> object: ...
+
+    def create_play(
+        self, asset_id: str, donor_play_index: int, progress: ProgressSink,
+    ) -> object: ...
+
+    def revert_formation_create(self, selector: str, progress: ProgressSink) -> object: ...
+    def revert_play_create(self, selector: str, progress: ProgressSink) -> object: ...
+
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, pyqtSignal
 from PyQt5.QtWidgets import (
@@ -458,6 +469,19 @@ class PlaybooksPanel(QWidget):
         route_row.addWidget(self.revert_route_button)
         inspector_layout.addLayout(route_row)
 
+        create_row = QHBoxLayout()
+        create_label = QLabel("Create new as clone:")
+        create_label.setObjectName("playFieldLabel")
+        self.create_formation_button = QPushButton("Create Formation")
+        self.create_play_button = QPushButton("Create Play")
+        self.create_formation_button.setToolTip("Clone the selected formation into a new slot (reuses name, bumps count).")
+        self.create_play_button.setToolTip("Clone the selected play into a new slot (reuses name, 11 assignments, bumps count).")
+        create_row.addWidget(create_label)
+        create_row.addWidget(self.create_formation_button)
+        create_row.addWidget(self.create_play_button)
+        create_row.addStretch(1)
+        inspector_layout.addLayout(create_row)
+
         raw_split = QSplitter(Qt.Horizontal)
         self.assignment_table = QTableWidget(0, 5)
         self.assignment_table.setHorizontalHeaderLabels(
@@ -529,8 +553,11 @@ class PlaybooksPanel(QWidget):
         self.export_button.clicked.connect(self._export_selected)
         self.copy_route_button.clicked.connect(self._copy_selected_route)
         self.revert_route_button.clicked.connect(self._revert_selected_route)
+        self.create_formation_button.clicked.connect(self._create_formation)
+        self.create_play_button.clicked.connect(self._create_play)
         self.donor_play_combo.currentIndexChanged.connect(self._refresh_controls)
         self.donor_slot_combo.currentIndexChanged.connect(self._refresh_controls)
+        self.formation_combo.currentIndexChanged.connect(lambda _i: self._refresh_controls())
         self.error_raised.connect(
             lambda message: QMessageBox.warning(self, "Playbooks & Plays", message)
         )
@@ -840,6 +867,21 @@ class PlaybooksPanel(QWidget):
         self.revert_route_button.setEnabled(
             state.can_revert_route and linked is not None and target_slot is not None
         )
+        # Formation/play creation: enabled when a book is selected, source ready, not busy, and capacity not full
+        book = self._selected_book()
+        can_create = bool(book is not None and self.host.source_ready and not self._busy)
+        formation_full = bool(book is not None and len(book.formations) >= 50)
+        play_full = bool(book is not None and len(book.plays) >= 270)
+        self.create_formation_button.setEnabled(can_create and not formation_full and self.formation_combo.currentData() is not None)
+        self.create_play_button.setEnabled(can_create and not play_full and linked is not None)
+        if formation_full:
+            self.create_formation_button.setToolTip("Formation capacity 50 reached — cannot create more in this book.")
+        else:
+            self.create_formation_button.setToolTip("Clone the selected formation into a new slot (reuses name, bumps count).")
+        if play_full:
+            self.create_play_button.setToolTip("Play capacity 270 reached — cannot create more in this book.")
+        else:
+            self.create_play_button.setToolTip("Clone the selected play into a new slot (reuses name, 11 assignments, bumps count).")
         self.book_table.setEnabled(not self._busy)
         self.search.setEnabled(not self._busy)
         self.family_filter.setEnabled(not self._busy)
@@ -890,6 +932,37 @@ class PlaybooksPanel(QWidget):
             lambda progress: self.host.revert_play_assignment_route(
                 book.asset_id, target_play, target_slot, progress,
             ),
+            ready,
+        )
+
+    def _create_formation(self) -> None:
+        book = self._selected_book()
+        donor_idx = self.formation_combo.currentData()
+        if book is None or donor_idx is None:
+            return
+
+        def ready(_value: object) -> None:
+            self.progress_label.setText(f"Created formation from {book.formations[donor_idx].name} — refresh to see new slot {len(book.formations)}")
+            self._refresh_after_task = True
+
+        self._run(
+            lambda progress: self.host.create_formation(book.asset_id, int(donor_idx), progress),
+            ready,
+        )
+
+    def _create_play(self) -> None:
+        book = self._selected_book()
+        linked = self._selected_linked_play()
+        if book is None or linked is None:
+            return
+        donor_idx = linked.play.index
+
+        def ready(_value: object) -> None:
+            self.progress_label.setText(f"Created play from {linked.play.name} — new index {len(book.plays)}")
+            self._refresh_after_task = True
+
+        self._run(
+            lambda progress: self.host.create_play(book.asset_id, int(donor_idx), progress),
             ready,
         )
 
