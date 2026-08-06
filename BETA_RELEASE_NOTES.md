@@ -6,24 +6,24 @@
 > [**Beta 2**](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-2),
 > which runs on Windows, macOS and Linux; its notes live on that release page.
 
-> **Current candidate (unreleased) — 2026-08-04.** The working tree is
-> **2K5 Mod Studio v1.0 RC49** + **APF 2K8 Mod Studio 0.1.0-alpha.54**. It is
+> **Current candidate (unreleased) — 2026-08-06.** The working tree is
+> **2K5 Mod Studio v1.0 RC50** + **APF 2K8 Mod Studio 0.1.0-alpha.55**. It is
 > a release candidate, not a release: nothing here has been committed,
 > packaged, or published. The latest published release remains
-> [**beta-22**](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-22)
-> (2K5 v1.0 RC47 + APF 0.1.0-alpha.50, 2026-07-28), which supersedes the
+> [**beta-23**](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-23)
+> (2K5 v1.0 RC49 + APF 0.1.0-alpha.54, 2026-08-05), which supersedes the
 > Beta 2 pointer above. The changelogs are the candidate's source of truth:
 > [`docs/mod_editor/2k5_mod_studio_changelog.md`](docs/mod_editor/2k5_mod_studio_changelog.md)
 > and [`docs/mod_editor/apf2k8_mod_studio_changelog.md`](docs/mod_editor/apf2k8_mod_studio_changelog.md).
 >
-> Headlines since beta-22:
+> Headlines since beta-23:
 >
 > - **2K5 RC48:** drop-in ordinary-audio replacement (849/849 authorable slots
 >   converted and re-verified), per-uniform facemask/faceshield/turtleneck
 >   colours across all 634 sets, 28,530 package-local equipment textures
 >   editable in All Textures, stadium glTF export scaled to metres, update
 >   check.
-> - **2K5 RC49:** standalone editable inventory raised from 9,640 to 11,395
+> - **2K5 RC50:** standalone editable inventory raised from 9,640 to 11,395
 >   (+1,755 menu/mini-card/franchise/draft presentation surfaces); the 4,080
 >   explicit-size A1 player strips no longer blanket-refused; all 2,547
 >   current jersey numbers editable including 68 secondary-pool rows;
@@ -45,7 +45,7 @@
 >   handoff; Save Assignments for all 40 teams / 69 books; paired RPCS3/Xenia
 >   roster audit (zero unexplained rows); helmet/player same-topology POSITION
 >   import.
-> - **APF alpha.54:** whole-shell atlas v24 (all 118 packages / 236 layers
+> - **APF alpha.55:** whole-shell atlas v24 (all 118 packages / 236 layers
 >   compile; 10-view static visual gate passed); complete 206-slot wordmark
 >   editor; verified stock assignment-route copy/swap across 586 MASTER plays;
 >   complete 149-field Save Players editor with verified STFS handoff; stadium

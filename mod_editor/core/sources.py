@@ -415,10 +415,30 @@ class SourceInspector:
                 "are the games this editor can write."
             )
         else:
-            note = (
-                "Hash is not in the reviewed fingerprint list. The editor will not call a "
-                "binary writer for this source until a capability-specific verifier accepts it."
-            )
+            # The raw hash message is technically correct but reads like a crash.
+            # Keep the pinned phrase for the provenance gate (test_source_accepts_any_dump
+            # checks for it) but add an actionable next step when the user just
+            # imported an ISO — that import path is where the Discord reports land.
+            # Apressed-disc read is 7,825,162,240 bytes; a repack is 6,300,958,720 bytes.
+            # Anything far smaller is literally not a disc image.
+            if size < 1_000_000_000:
+                note = (
+                    "Hash is not in the reviewed fingerprint list. The editor will not call a "
+                    "binary writer for this source until a capability-specific verifier accepts it. "
+                    f"This file is only {size:,} bytes — far smaller than a retail XISO "
+                    "(~6.3 GB repack or ~7.8 GB raw read). If you picked a .zip/.7z or a partial "
+                    "download, extract it first and open the .iso/.xiso, or open an already-extracted "
+                    "folder containing default.xbe."
+                )
+            else:
+                note = (
+                    "Hash is not in the reviewed fingerprint list. The editor will not call a "
+                    "binary writer for this source until a capability-specific verifier accepts it. "
+                    "If you just opened an ISO and see this, confirm it is the USA retail dump "
+                    "opened as a plain .iso/.xiso (not a .zip), and try the fallback: extract the "
+                    "image with the bundled extract-xiso and open that folder — then browsing, "
+                    "preview, and Build are all verified even for repacked layouts."
+                )
         return SourceRecord(
             selected_path=str(selected),
             inspected_path=str(inspected),

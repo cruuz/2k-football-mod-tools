@@ -2082,6 +2082,8 @@ class StudioMainWindow(QMainWindow):
                 self._audio_panel.audio_annotation_changed.connect(
                     lambda _asset_id: self._mark_workspace_changed()
                 )
+                self._audio_panel.setToolTip("Browse, preview, export and replace supported audio — drop any common file (MP3, WAV, FLAC, OGG, M4A); it is converted to the slot's exact shape when FFmpeg is available.")
+                self._audio_panel.setAccessibleDescription("Audio workspace: searchable playable cues and ranges with replace support for exact-slot standalone and streaming-range sounds.")
                 page = self._audio_panel
             elif category == ProductCategory.PLAYBOOKS_PLAYS:
                 self._playbooks_panel = PlaybooksPanel(self.facade)
@@ -2562,10 +2564,11 @@ class StudioMainWindow(QMainWindow):
         panel_layout.addLayout(row)
 
         self.unif_color_status = QLabel(
-            "Load your XISO to read the selected uniform's retail colours."
+            "Load your NFL 2K5 XISO to read this uniform's original colours — then pick facemask and turtleneck colours below."
         )
         self.unif_color_status.setObjectName("mutedLabel")
         self.unif_color_status.setWordWrap(True)
+        self.unif_color_status.setToolTip("Status for the selected uniform's facemask/faceshield and HI_turtleneck colours; updates after each read, stage, or revert.")
         panel_layout.addWidget(self.unif_color_status)
         layout.addWidget(panel)
 
@@ -2685,11 +2688,30 @@ class StudioMainWindow(QMainWindow):
             )
             self._refresh_action_states()
 
+        def error(message: str) -> None:
+            if generation != self._unif_color_generation:
+                return
+            # Keep the failure inline on the colour panel — the Discord report
+            # was a blocking popup that appeared as soon as the team was
+            # selected. An inline status lets the user try another set or
+            # reload without dismissing a modal.
+            hint = friendly_fix_hint(message)
+            detail = message.strip()
+            if hint is not None:
+                detail = f"{detail} — {hint}"
+            self.unif_color_status.setText(
+                f"Could not read {selector}: {detail} "
+                f"Nothing was staged. Pick another set or reload your XISO."
+            )
+            self._refresh_action_states()
+
         self._start_task(
             lambda progress: self.facade.uniform_colors(selector, progress),
             success,
             label=f"Reading {selector} uniform colours",
             blocking=False,
+            show_errors=False,
+            on_error=error,
         )
 
     def _load_selected_unif_colors(self) -> None:
@@ -2972,6 +2994,8 @@ class StudioMainWindow(QMainWindow):
             notice = QLabel(note)
             notice.setObjectName("findingsBanner")
             notice.setWordWrap(True)
+            notice.setToolTip("Why this section has its current status — from the registry's finding notes. Hover to keep it visible while reading capabilities below.")
+            notice.setAccessibleDescription("Registry finding explaining the status shown for these field-art entries.")
             layout.addWidget(notice)
 
         if section.capabilities:
@@ -3385,9 +3409,9 @@ class StudioMainWindow(QMainWindow):
         texture_layout.addWidget(texture_heading)
         self._stadium_people_filter = QCheckBox("People & sideline only")
         self._stadium_people_filter.setObjectName("codeLabel")
+        self._stadium_people_filter.setAccessibleName("Filter to people and sideline textures")
         self._stadium_people_filter.setToolTip(
-            "Show only fan, cheerleader, coach, official, chain-crew, "
-            "camera, usher, and sideline textures in this scene."
+            "Filter the texture list to people and sideline elements (fans, cheerleaders, coaches, officials, chain crew, cameras, ushers). Uncheck to show all surfaces."
         )
         texture_layout.addWidget(self._stadium_people_filter)
         texture_list = QListWidget()

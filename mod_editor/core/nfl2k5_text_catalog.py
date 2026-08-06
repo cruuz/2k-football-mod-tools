@@ -1239,7 +1239,7 @@ def _append_roster_catalog(
             face_shield_reason, view.outer_index, player_index, group,
             field="face_shield", choices=FACE_SHIELD_CHOICES,
         ))
-        # RC49 enables each field from its own proved contract instead of
+        # RC50 enables each field from its own proved contract instead of
         # locking the whole row, so a player row is writable when any bounded
         # target is writable.  This keeps the published writable-player count
         # truthful for the 68 secondary-pool players whose zero-capacity names

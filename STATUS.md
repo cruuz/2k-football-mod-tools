@@ -1,8 +1,8 @@
-# 2K5 Mod Studio — v1.0 RC49 Release Status
+# 2K5 Mod Studio — v1.0 RC50 Release Status
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The
-> source code and UI identify as the retail-free **`0.1.0-alpha.54` release
+> source code and UI identify as the retail-free **`0.1.0-alpha.55` release
 > candidate**. This status does not claim that the candidate has been committed,
 > pushed, or published; the immutable archive receipts below are retained as
 > release history.
@@ -157,7 +157,7 @@
 
 Last updated: 2026-08-04 (America/New_York)
 
-## Unreleased RC49 closure
+## Unreleased RC50 closure
 
 - The standalone browser inventory rises from 9,640 to **11,395 editable
   targets**: the existing catalog of standalone P8 targets plus the 4,080
@@ -271,7 +271,7 @@ The registry is deliberately not rewritten until a save-diff confirms it.
 > confirms the mapping this project already shipped. See
 > `docs/research/apf_rating_slot_settlement.md`.
 
-> **RC49 correction candidate (under test):** package-local socks, elbow
+> **RC50 correction candidate (under test):** package-local socks, elbow
 > pads, gloves, long sleeves, shoes, and wristbands are no longer hidden. All
 > 28,530 reviewed P8 equipment occurrences are searchable, PNG-exportable, and
 > palette-editable from All Textures. The composed writer groups edits sharing a
@@ -2316,7 +2316,7 @@ items did not block v1.0.
 
 ## Five-line current 2K5 status
 
-- **Current candidate:** RC49 source and UI, with the complete product surface represented as Editable, Preview, Export-only, Proof, or Research—never a placeholder promise.
+- **Current candidate:** RC50 source and UI, with the complete product surface represented as Editable, Preview, Export-only, Proof, or Research—never a placeholder promise.
 - **Headless result:** the exact allowlist, retail/private-data release gate, staged runtime closure, desktop-entry validation, launcher syntax, and repeated post-runtime release gate pass from a clean stage.
 - **Runtime evidence:** boot-level proofs remain separate from causal feature proofs; a successful launch never gets relabeled as proof that a changed texture, model, or cue was consumed.
 - **Release boundary:** this working tree is a candidate only until its owner explicitly authorizes commit, push, packaging, or publication.

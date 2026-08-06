@@ -5289,8 +5289,8 @@ if PYQT5_AVAILABLE:
             shape = f"{layout}, {sample_rate:,} Hz, {seconds:.2f} seconds"
             if audio_conform.conversion_available():
                 lead = (
-                    f"Drop any audio file here (MP3, WAV, FLAC, OGG, M4A and "
-                    f"more). It is converted to fit this sound: {shape}. "
+                    f"Drop any common audio file here (MP3, WAV, FLAC, OGG, M4A) — "
+                    f"it is converted automatically to fit this sound: {shape}. "
                     f"Longer audio is trimmed, shorter is padded with silence."
                 )
             else:

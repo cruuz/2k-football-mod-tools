@@ -16774,7 +16774,7 @@ class ApfStudioMainWindow(QMainWindow):
         label: str,
         operation: Callable[[Callable[[str, int, int], None]], Any],
         on_success: Callable[[Any], None] | None = None,
-        blocking: bool = True,
+        blocking: bool = True, show_errors: bool = True, on_error: Callable[[str], None] | None = None,
     ) -> bool:
         if blocking and self._workers:
             self.operation_status.setText("Let the current operation finish, then try again.")
@@ -16785,7 +16785,7 @@ class ApfStudioMainWindow(QMainWindow):
             self._blocking_workers.add(worker)
         worker.signals.progress.connect(self._task_progress)
         worker.signals.failed.connect(
-            lambda message, detail, task=worker: self._task_failed(task, message, detail)
+            lambda message, detail, task=worker: self._task_failed(task, message, detail, show_errors, on_error)
         )
 
         def dispatch(result: object) -> None:
@@ -16818,9 +16818,9 @@ class ApfStudioMainWindow(QMainWindow):
         else:
             self.progress.setRange(0, 0)
 
-    def _task_failed(self, _worker: _BackgroundTask, message: str, detail: str) -> None:
-        self._last_detail = message
-        self._show_error(message, detail)
+    def _task_failed(self, _worker: _BackgroundTask, message: str, detail: str, show_errors: bool = True, on_error: Callable[[str], None] | None = None) -> None:
+        on_error(message) if on_error is not None else None; hint = friendly_fix_hint(message); self._last_detail = f"{message} — {hint}" if hint else message; self.operation_status.setText(self._last_detail) if hasattr(self, "operation_status") else None
+        if show_errors: self._show_error(message, detail)
 
     def _task_finished(self, worker: _BackgroundTask) -> None:
         was_blocking = worker in self._blocking_workers

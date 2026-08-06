@@ -147,6 +147,17 @@ _CATEGORY_FINDINGS: dict[ProductCategory, tuple[str, ...]] = {
         "nfl2k5.uniforms.all_visual; the v1 registry has no standalone Team "
         "Identity capability row.",
     ),
+    ProductCategory.FIELD_ART_CREATE_TEAM: (
+        "Create-Team field art is the only proved field-art writer: 1,134 targets "
+        "(center_logo + six end-zone panels + pad_north/pad_south) inside the "
+        "create-team packages. Stock NFL midfield art is not a separate 'field art' "
+        "file — it is baked into each stadium's texture set. Browse that team's "
+        "midfield and end-zone in Stadium Studio (477 scenes, People & sideline "
+        "filter) or search 'field'/'midfield'/'endzone' in All Textures — those "
+        "1,134 create-team targets plus the 28,530 equipment palettes are the "
+        "11,395 All Textures targets, and NFL stadium field pieces are also there "
+        "under their stadium packages.",
+    ),
     ProductCategory.CRIB: (
         "Crib photos and object textures are surfaced by a dedicated ownership "
         "catalog. Model swapping remains a bounded research spike.",

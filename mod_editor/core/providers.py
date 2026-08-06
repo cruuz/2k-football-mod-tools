@@ -529,7 +529,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_stadium_studio.py": "54fc34b0f72b0f8d98d5599e49bd4735a0e51a3d6067963e188190f9a5bb6430",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "5e205827d9fcec50ef9999cd508469481a718816947ecb42c346182325c5ed6b",
-        "mod_editor/core/sources.py": "eb6e4d030f757dee05123b1319fb75607ebf219aaadcf3c4eeaaede7529acdca",
+        "mod_editor/core/sources.py": "d47ef48a21d0cb4bb47e2b0f5ace029e68c3dc8906caa7d48e19e6dea4341375",
         "tools/apf_inner.py": "4f6fb5ca21f48f96d498f976350f88c1f060569abc52d44a3742d2071e2f41cc",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
         "tools/nfl2k5_jersey_png_workflow.py": "e7af6773a07085da33745e62bfccc59c2f013e833f2aa1ae9009c965938f5832",

@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio Changelog
 
-## 0.1.0-alpha.54 candidate — whole-shell v24, complete wordmarks/save players, roster truth, and release hardening — 2026-08-04
+## 0.1.0-alpha.55 candidate — whole-shell v24, complete wordmarks/save players, roster truth, and release hardening — 2026-08-04
 
 ### Team Logo ownership is explicit in the editor
 

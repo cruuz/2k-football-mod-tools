@@ -5,7 +5,7 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
-## v1.0 RC49 — complete uniform fixes, menu/presentation logos, model tools, and release hardening — 2026-08-04
+## v1.0 RC50 — complete uniform fixes, menu/presentation logos, model tools, and release hardening — 2026-08-04
 
 ### Uniform-equipment discoverability
 
