@@ -1143,6 +1143,9 @@ def decode_txtr_base_rgba(
     elif format_value == 6:
         block_width, block_height, block_size = 1, 1, 4
         decoder = None
+    elif format_value == 15:
+        block_width, block_height, block_size = 1, 1, 2
+        decoder = None
     else:
         raise FormatError(
             f"PORTME: Xenos format {format_value} "
@@ -1161,10 +1164,27 @@ def decode_txtr_base_rgba(
     linear = _endian_swap(linear, endian)
     rgba = bytearray(width * height * 4)
     if decoder is None:
-        for pixel_index in range(width * height):
-            raw = linear[pixel_index * 4 : pixel_index * 4 + 4]
-            pixel = _swizzle_pixel(tuple(raw), selectors)
-            rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        if format_value == 15:
+            for pixel_index in range(width * height):
+                raw = linear[pixel_index * 2 : pixel_index * 2 + 2]
+                if len(raw) != 2:
+                    raise FormatError("truncated 4_4_4_4 texel")
+                value = int.from_bytes(raw, "little")
+                a = (value >> 12) & 0xF
+                r = (value >> 8) & 0xF
+                g = (value >> 4) & 0xF
+                b = value & 0xF
+                a8 = (a << 4) | a
+                r8 = (r << 4) | r
+                g8 = (g << 4) | g
+                b8 = (b << 4) | b
+                pixel = _swizzle_pixel((r8, g8, b8, a8), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        else:
+            for pixel_index in range(width * height):
+                raw = linear[pixel_index * 4 : pixel_index * 4 + 4]
+                pixel = _swizzle_pixel(tuple(raw), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
     else:
         width_blocks = (width + 3) // 4
         height_blocks = (height + 3) // 4
