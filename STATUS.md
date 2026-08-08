@@ -3,9 +3,10 @@
 ## Continuation marathon note (2026-08-08)
 
 Source/UI versions: **2K5 RC55** / **APF alpha.60**. Community-named work this
-marathon includes nameplate DXN (font_albedo), linear TXTR rain shirts, G1
-package-map offline writer, playbook annotations, keyboard/search polish, and
-click-to-explain model import. Living WORKLOG:
+marathon includes nameplate DXN (font_albedo), linear TXTR (uncompressed + DXT),
+G1 package-map + G2 link-table offline writers, playbook annotations,
+keyboard/search polish, shell recommended path, equipment Stage explain, and
+click-to-explain model import (APF + 2K5 Crib + Stadium). Living WORKLOG:
 `docs/product/WORKLOG_20260807.md`. **≥10h hour-gate still accumulating** —
 do not treat this note as a sealed public release.
 

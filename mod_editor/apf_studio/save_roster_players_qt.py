@@ -64,9 +64,11 @@ class SaveRosterPlayersPanel(QWidget):
             "Edit all exact packed player fields in a raw APF Roster.ROS or a "
             "hash-verified Xbox 360 STFS save: 31 base ratings, 77 boolean "
             "abilities, five motion/style fields, tier, number, mirrored position, "
-            "depth, appearance/equipment, IDs, fixed-allocation identity text, and "
-            "safe existing roster-slot swaps. Overall is display-only until its "
-            "complete engine formula is proved."
+            "depth, appearance/equipment (Face shield / visor is per-player here), "
+            "IDs, fixed-allocation identity text, and safe existing roster-slot "
+            "swaps. Play-by-play ID (VO name table) selects the announcer name cue "
+            "— wrong IDs make legends say “Number 68…” (G6 research). Overall is "
+            "display-only until its complete engine formula is proved."
         )
         note.setObjectName("mutedLabel")
         note.setWordWrap(True)
