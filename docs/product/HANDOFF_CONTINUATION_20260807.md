@@ -59,3 +59,18 @@
 - df96490 Crib fit chooser
 - 211f218 WORKLOG
 - 69e914b Cubemap PORTME
+
+## Session product (2026-08-08 ~00:16) packaging + link UI
+
+### Packaging (real evidence)
+- 2K5 stage 195 files → `2K5_MOD_STUDIO_RELEASE_PASS` retail=false
+- APF stage 189 files → `APF2K8_MOD_STUDIO_RELEASE_PASS` retail=false
+- Scratch evidence under `/tmp/grok-goal-d84b62e44b40/implementer/check_*_release.txt`
+
+### Experimental link-table export UI
+- Playbooks banner + Export Link-Table Copy… (offline private PLAY only)
+- Facade `export_playbook_link_table_copy` with independent verifier
+- **Not** project Editable; **not** runtime G2
+
+### Hour gate
+- Still multi-session accumulation; do not claim ≥10h yet
