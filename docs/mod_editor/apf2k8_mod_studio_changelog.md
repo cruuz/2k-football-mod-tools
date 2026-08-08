@@ -16,6 +16,7 @@
   - **digital_font** Export/Replace/Revert when unloaded
   - **Field Art** focused editor Export/Replace/Build/Revert (stage wall)
   - **Team Logo** Export/Replace/Build/Revert/Master (load/stage/profile walls)
+  - **Custom Team Appearance** Stage/Revert when unloaded
 - **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
   Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
   embedded TXTR fail closed after **45s** with re-select / Export-raw guidance
