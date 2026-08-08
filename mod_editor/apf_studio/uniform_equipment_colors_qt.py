@@ -134,10 +134,10 @@ class UniformEquipmentColorsPanel(QFrame):
         title = QLabel("Uniform Equipment Colors · all 40 teams")
         title.setObjectName("panelTitle")
         description = QLabel(
-            "Per-uniform-set colors (not global): pick a team, then set HOME and "
-            "AWAY independently for the facemask bar and Team turtleneck. "
-            "Eagles home facemask ≠ Eagles away. Player visors remain None/Clear/Dark "
-            "in Save Players — there is no verified per-uniform visor-tint field."
+            "Per-uniform-set colors (not global): pick a team slot, then set HOME "
+            "and AWAY independently for the facemask bar and Team turtleneck. "
+            "HOME facemask ≠ AWAY for the same team. Player visors remain "
+            "None/Clear/Dark in Save Players — no verified per-uniform visor-tint field."
         )
         description.setObjectName("cardBody")
         description.setWordWrap(True)
@@ -147,13 +147,13 @@ class UniformEquipmentColorsPanel(QFrame):
         team_row = QHBoxLayout()
         team_row.addWidget(QLabel("Team:"))
         self.team_filter = QLineEdit()
-        self.team_filter.setPlaceholderText("Filter teams… (e.g. Eagles)")
+        self.team_filter.setPlaceholderText("Filter teams… (e.g. Sharks, Cobras)")
         self.team_filter.setClearButtonEnabled(True)
         self.team_filter.setAccessibleName("Filter equipment-color teams")
         self.team_filter.setProperty("studioSearch", True)
         self.team_filter.setToolTip(
-            "Type to filter the team list. HOME/AWAY facemask and turtleneck "
-            "remain independent per team."
+            "Type to filter the 40 APF team slots (fictional names, not NFL "
+            "city labels). HOME/AWAY facemask and turtleneck stay independent per team."
         )
         self.team = QComboBox()
         self.team.setAccessibleName("Uniform equipment-color team")
