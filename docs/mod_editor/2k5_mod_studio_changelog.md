@@ -50,6 +50,10 @@ build path.
 - **All Resources Previous/Next** never silent-gray (first/last/busy/Load walls).
 - **Playbooks “G1: Use Nickel donor”** — one-click set package-map donor to
   a Nickel formation when present (offline G1 helper; runtime unproved).
+- **Playbooks “Export G1 multi-Dime pack…”** — offline experimental: copy the
+  Nickel package map onto **every** Dime-named formation in the selected PLAY
+  book; private PLAY + honesty JSON sidecar; multi-region byte-diff verifier;
+  runtime G1 still unproved; source ISO never mutated.
 - **Audio Previous/Next** never silent-gray — first/last page, pending search,
   busy, and unloaded walls teach via disableReason + progress_label (clicks no
   longer look dead).

@@ -388,6 +388,13 @@ class PlaybooksPanelHost(Protocol):
         progress: ProgressSink,
     ) -> Path: ...
 
+    def export_g1_dime_from_nickel_package_map_pack(
+        self,
+        asset_id: str,
+        destination: Path,
+        progress: ProgressSink,
+    ) -> Path: ...
+
     def copy_play_assignment_route(
         self, asset_id: str, target_play_index: int, target_slot_index: int,
         donor_play_index: int, donor_slot_index: int, progress: ProgressSink,
@@ -718,11 +725,26 @@ class PlaybooksPanel(QWidget):
             "donor formation in this book.",
         )
         self.g1_nickel_donor_button.clicked.connect(self._select_g1_nickel_donor)
+        self.export_g1_pack_button = QPushButton("Export G1 multi-Dime pack…")
+        self.export_g1_pack_button.setObjectName("secondaryButton")
+        self.export_g1_pack_button.setToolTip(
+            "Offline experimental: copy the Nickel package map onto every "
+            "Dime-named formation in this PLAY book. Writes a private PLAY + "
+            "honesty JSON sidecar. Runtime G1 (ILB→OLB) remains unproved. "
+            "Source ISO is never modified."
+        )
+        self.export_g1_pack_button.setProperty(
+            "disableReason",
+            "Load your NFL 2K5 XISO and select a playbook book that contains "
+            "both Nickel and Dime formations.",
+        )
+        self.export_g1_pack_button.clicked.connect(self._export_g1_dime_pack)
         link_copy_row.addWidget(link_copy_label)
         link_copy_row.addWidget(self.link_donor_combo, 1)
         link_copy_row.addWidget(self.g1_nickel_donor_button)
         link_copy_row.addWidget(self.export_link_copy_button)
         link_copy_row.addWidget(self.export_pkgmap_copy_button)
+        link_copy_row.addWidget(self.export_g1_pack_button)
         inspector_layout.addLayout(link_copy_row)
 
         raw_split = QSplitter(Qt.Horizontal)
@@ -1369,6 +1391,45 @@ class PlaybooksPanel(QWidget):
         self.export_pkgmap_copy_button.setToolTip(pkg_tip)
         self.export_link_copy_button.setProperty("disableReason", block)
         self.export_pkgmap_copy_button.setProperty("disableReason", block)
+        # Multi-Dime G1 pack: needs book with Nickel + at least one Dime.
+        dime_idx = None
+        if book is not None:
+            for index, formation in enumerate(book.formations):
+                name = str(getattr(formation, "name", "") or "").casefold()
+                if "dime" in name:
+                    dime_idx = index
+                    break
+        if (
+            self.host.source_ready
+            and book is not None
+            and not self._busy
+            and nickel_idx is not None
+            and dime_idx is not None
+        ):
+            g1_pack_tip = (
+                "Export private PLAY where every Dime-named formation gets the "
+                "Nickel package map (+0x0D). Offline multi-formation G1 pack; "
+                "runtime ILB fix unproved. Sidecar honesty JSON is written beside it."
+            )
+            g1_pack_block = ""
+        elif not self.host.source_ready:
+            g1_pack_tip = g1_pack_block = (
+                "Load your NFL 2K5 XISO first. G1 multi-Dime pack needs a source."
+            )
+        elif book is None:
+            g1_pack_tip = g1_pack_block = (
+                "Select a playbook book that contains Nickel and Dime formations."
+            )
+        elif nickel_idx is None or dime_idx is None:
+            g1_pack_tip = g1_pack_block = (
+                "This book needs both a Nickel and a Dime formation name for the "
+                "multi-Dime G1 package-map pack."
+            )
+        else:
+            g1_pack_tip = g1_pack_block = "Wait for the current operation to finish."
+        self.export_g1_pack_button.setEnabled(True)
+        self.export_g1_pack_button.setToolTip(g1_pack_tip)
+        self.export_g1_pack_button.setProperty("disableReason", g1_pack_block)
         self.link_donor_combo.setEnabled(can_create)
         self.book_table.setEnabled(not self._busy)
         self.search.setEnabled(not self._busy)
@@ -1645,6 +1706,64 @@ class PlaybooksPanel(QWidget):
                 book.asset_id,
                 int(target_idx),
                 int(donor_idx),
+                Path(path),
+                progress,
+            ),
+            ready,
+        )
+
+    def _export_g1_dime_pack(self) -> None:
+        reason = str(
+            self.export_g1_pack_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export G1 multi-Dime pack yet",
+                reason
+                + "\n\nOffline package-map bytes only; runtime G1 (ILB→OLB) unproved.",
+            )
+            return
+        book = self._selected_book()
+        if book is None:
+            return
+        answer = QMessageBox.warning(
+            self,
+            "Experimental offline G1 multi-Dime pack",
+            "This writes a private PLAY where **every Dime-named formation** "
+            "gets the Nickel package map (+0x0D), plus an honesty JSON sidecar.\n\n"
+            "• Offline-writer-proved for map bytes only\n"
+            "• Runtime G1 (Dime ILB→OLB) remains unproved\n"
+            "• Not a project edit — nothing is staged for Build\n"
+            "• Your loaded source / ISO is never modified\n\n"
+            "Continue to choose a save location?",
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Cancel,
+        )
+        if answer != QMessageBox.Yes:
+            return
+        suggested = (
+            f"{book.outer_index:04d}_{book.book_name}_G1_all_Dime_from_Nickel_PLAY.bin"
+        )
+        suggested = re.sub(r"[^A-Za-z0-9._-]+", "_", suggested)
+        path, _filter = QFileDialog.getSaveFileName(
+            self,
+            "Export experimental G1 multi-Dime package-map PLAY",
+            suggested,
+            "PLAY resource (*.bin);;All files (*)",
+        )
+        if not path:
+            return
+
+        def ready(value: object) -> None:
+            self.progress_label.setText(
+                f"Exported G1 multi-Dime pack → {value} "
+                "(runtime unproved; honesty JSON beside PLAY)"
+            )
+
+        self._run(
+            lambda progress: self.host.export_g1_dime_from_nickel_package_map_pack(
+                book.asset_id,
                 Path(path),
                 progress,
             ),

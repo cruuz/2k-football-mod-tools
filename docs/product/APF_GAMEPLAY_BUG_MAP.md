@@ -60,9 +60,10 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 | Role-4 delta | Nickel slot-index **0** → Dime slot-index **8** |
 | Assignment-only gate | **FAILED** — 18 shared play indices are the same records (byte-identical); 8 only-Dime / 8 only-Nickel plays have different names; link table differs 16/26 |
 | Formation aux | `FORMATION_AUX_BASE 0x245C`, size `0x50` = play-link table (not separate membership) |
-| Shipped API | `census_g1_dime_vs_nickel`, `read_formation_package_map`, `build_formation_package_map_patch`, `verify_formation_package_map_patch`, `spike_g1_dime_ilb` |
+| Shipped API | `census_g1_dime_vs_nickel`, `read_formation_package_map`, `build_formation_package_map_patch`, `verify_formation_package_map_patch`, **`build_g1_dime_from_nickel_package_map_pack` / `verify_g1_dime_from_nickel_package_map_pack`**, `spike_g1_dime_ilb` |
 | Offline writer | **proved** for the 11 map bytes (copy Nickel→Dime or any perm of 0..10); independent full-resource byte-diff |
-| Runtime G1 fix | **unproved** — do not ship as community one-click fix pack until emulator witness |
+| Multi-Dime pack (2026-08-08) | **`build_g1_dime_from_nickel_package_map_pack`** copies Nickel map onto **every** Dime-named formation in a PLAY book; multi-region independent verifier; facade `export_g1_dime_from_nickel_package_map_pack` + UI **Export G1 multi-Dime pack…** + honesty JSON sidecar. Still offline-bytes only. |
+| Runtime G1 fix | **unproved** — do not ship as community one-click runtime fix pack until emulator witness |
 
 ### G2 precise spike — Ace TE→WR
 

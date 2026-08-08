@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import unittest
 
 from mod_editor.core.errors import ValidationError
@@ -31,6 +32,7 @@ from mod_editor.core.playbook_package_rule_spike import (
     assignment_body_offset,
     build_formation_link_table_copy_patch,
     build_formation_package_map_patch,
+    build_g1_dime_from_nickel_package_map_pack,
     census_g1_dime_vs_nickel,
     descriptor_body_offset,
     formation_package_map_body_offset,
@@ -40,6 +42,7 @@ from mod_editor.core.playbook_package_rule_spike import (
     spike_g2_ace_te,
     verify_formation_link_table_copy_patch,
     verify_formation_package_map_patch,
+    verify_g1_dime_from_nickel_package_map_pack,
 )
 
 _O0308_PACK = Path(
@@ -267,6 +270,58 @@ class RealO0308PackageMapTests(unittest.TestCase):
         # Other formations untouched
         self.assertEqual(
             read_formation_package_map(patch.raw_resource, 23), nickel
+        )
+
+    def test_g1_multi_dime_from_nickel_pack_offline_proved(self) -> None:
+        """Multi-formation G1 pack: every Dime gets Nickel package map."""
+
+        from mod_editor.core.nfl2k5_playbook_inspector import parse_playbook_resource
+
+        book = parse_playbook_resource(self.raw)
+        dime_indices = [
+            f.index for f in book.formations if re.search(r"\bdime\b", f.name or "", re.I)
+        ]
+        nickel_i = next(
+            f.index for f in book.formations if re.search(r"\bnickel\b", f.name or "", re.I)
+        )
+        self.assertGreaterEqual(len(dime_indices), 1)
+        nickel_map = read_formation_package_map(self.raw, nickel_i)
+
+        pack = build_g1_dime_from_nickel_package_map_pack(self.raw)
+        self.assertEqual(pack.status, "offline_writer_proved")
+        self.assertFalse(pack.manifest["runtime_proved"])
+        self.assertEqual(pack.nickel_formation_index, nickel_i)
+        self.assertEqual(pack.nickel_package_map, nickel_map)
+        self.assertGreaterEqual(len(pack.targets), len(dime_indices))
+        self.assertGreater(pack.total_changed_byte_count, 0)
+        self.assertIn("runtime", pack.honesty.casefold())
+        self.assertIn("unproved", pack.honesty.casefold())
+
+        verify_g1_dime_from_nickel_package_map_pack(
+            self.raw,
+            pack.raw_resource,
+            nickel_index=nickel_i,
+            dime_indices=tuple(t.formation_index for t in pack.targets),
+            expected_map=nickel_map,
+        )
+        for fi in dime_indices:
+            self.assertEqual(
+                read_formation_package_map(pack.raw_resource, fi),
+                nickel_map,
+                msg=f"Dime formation {fi}",
+            )
+        # Nickel donor unchanged; source PLAY identity preserved.
+        self.assertEqual(
+            read_formation_package_map(pack.raw_resource, nickel_i), nickel_map
+        )
+        self.assertEqual(
+            read_formation_package_map(self.raw, nickel_i), nickel_map
+        )
+        # Ace package map untouched (offense surface).
+        ace_i = next(f.index for f in book.formations if f.name == "Ace")
+        self.assertEqual(
+            read_formation_package_map(pack.raw_resource, ace_i),
+            read_formation_package_map(self.raw, ace_i),
         )
 
     def test_g2_link_table_copy_ace_from_quads_offline_proved(self) -> None:

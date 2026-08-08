@@ -2110,6 +2110,61 @@ class Nfl2k5StudioFacade:
         )
         return dest
 
+    def export_g1_dime_from_nickel_package_map_pack(
+        self,
+        asset_id: str,
+        destination: Path,
+        progress: ProgressSink = _quiet_progress,
+    ) -> Path:
+        """Export a PLAY with every Dime package map copied from Nickel.
+
+        **Experimental / offline-only multi-formation G1 pack.** Private PLAY
+        + honesty JSON sidecar. Does not stage a project edit. Does not claim a
+        runtime G1 fix. Source archive never mutated.
+        """
+
+        import json
+        import tempfile
+
+        from mod_editor.core.playbook_package_rule_spike import (
+            build_g1_dime_from_nickel_package_map_pack,
+        )
+
+        progress("Reading stock PLAY for G1 multi-Dime package-map pack", 0, 3)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            index = self._require_universal_index()
+        # Ensure the book is loadable (raises if missing).
+        inspector.load(asset_id)
+
+        progress(
+            "Building offline G1 pack (all Dime ← Nickel map; runtime unproved)",
+            1,
+            3,
+        )
+        dest = Path(destination)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="2k5-g1-dime-pack-") as tmpdir:
+            src_path = Path(tmpdir) / "source.PLAY.bin"
+            index.export_raw(asset_id, src_path)
+            source_bytes = src_path.read_bytes()
+            pack = build_g1_dime_from_nickel_package_map_pack(source_bytes)
+            dest.write_bytes(pack.raw_resource)
+            sidecar = dest.with_suffix(dest.suffix + ".g1_manifest.json")
+            if not sidecar.suffix.endswith(".json"):
+                sidecar = Path(str(dest) + ".g1_manifest.json")
+            sidecar.write_text(
+                json.dumps(pack.manifest, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+        progress(
+            "Experimental G1 multi-Dime package-map PLAY exported "
+            f"({len(pack.targets)} Dime target(s); runtime unproved)",
+            3,
+            3,
+        )
+        return dest
+
     def copy_play_assignment_route(
         self,
         asset_id: str,

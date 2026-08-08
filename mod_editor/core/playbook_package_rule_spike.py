@@ -714,8 +714,234 @@ def verify_formation_link_table_copy_patch(
     parse_playbook_resource(patched)
 
 
+_NICKEL_RE = re.compile(r"\bnickel\b", re.IGNORECASE)
+
+
+@dataclass(frozen=True, slots=True)
+class G1DimeFromNickelTarget:
+    """One Dime-named formation that received the Nickel package map."""
+
+    formation_index: int
+    formation_name: str
+    old_map: tuple[int, ...]
+    new_map: tuple[int, ...]
+    resource_offset: int
+    changed_byte_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class G1DimeFromNickelPackResult:
+    """Multi-formation offline G1 package-map pack (bytes only; runtime unproved)."""
+
+    raw_resource: bytes
+    nickel_formation_index: int
+    nickel_formation_name: str
+    nickel_package_map: tuple[int, ...]
+    targets: tuple[G1DimeFromNickelTarget, ...]
+    total_changed_byte_count: int
+    source_sha256: str
+    result_sha256: str
+    status: str
+    honesty: str
+    manifest: dict[str, object]
+
+
+def build_g1_dime_from_nickel_package_map_pack(
+    raw_resource: bytes,
+) -> G1DimeFromNickelPackResult:
+    """Copy the first Nickel package map onto **every** Dime-named formation.
+
+    Fail-closed offline writer for the G1 package-map surface across the whole
+    PLAY book (not just one formation pair). Touches only 11-byte package-map
+    regions. Independent verifier:
+    :func:`verify_g1_dime_from_nickel_package_map_pack`.
+
+    Capability: **offline_writer_proved** for map bytes. **Not** a runtime G1
+    fix pack — do not ship as community one-click runtime proof.
+    """
+
+    _require_play_resource(raw_resource)
+    book = parse_playbook_resource(raw_resource)
+
+    nickel = next(
+        (f for f in book.formations if _NICKEL_RE.search(f.name or "")),
+        None,
+    )
+    if nickel is None:
+        raise ValidationError(
+            "G1 multi-Dime pack needs a formation whose name contains Nickel."
+        )
+    dime_forms = tuple(
+        f for f in book.formations if _DIME_RE.search(f.name or "")
+    )
+    if not dime_forms:
+        raise ValidationError(
+            "G1 multi-Dime pack needs at least one formation whose name "
+            "contains Dime."
+        )
+
+    nickel_map = read_formation_package_map(raw_resource, nickel.index)
+    working = raw_resource
+    targets: list[G1DimeFromNickelTarget] = []
+    allowed_regions: list[tuple[int, int]] = []
+
+    for form in dime_forms:
+        old = read_formation_package_map(working, form.index)
+        if old == nickel_map:
+            # Still record identity (no-op) so the manifest lists every Dime.
+            res_off = (
+                RESOURCE_HEADER_SIZE
+                + formation_package_map_body_offset(form.index)
+            )
+            targets.append(
+                G1DimeFromNickelTarget(
+                    formation_index=form.index,
+                    formation_name=str(form.name or ""),
+                    old_map=old,
+                    new_map=nickel_map,
+                    resource_offset=res_off,
+                    changed_byte_count=0,
+                )
+            )
+            continue
+        patch = build_formation_package_map_patch(
+            working, form.index, nickel_map
+        )
+        verify_formation_package_map_patch(
+            working, patch.raw_resource, form.index, nickel_map
+        )
+        working = patch.raw_resource
+        targets.append(
+            G1DimeFromNickelTarget(
+                formation_index=form.index,
+                formation_name=str(form.name or ""),
+                old_map=old,
+                new_map=patch.new_map,
+                resource_offset=patch.resource_offset,
+                changed_byte_count=patch.changed_byte_count,
+            )
+        )
+        allowed_regions.append(
+            (patch.resource_offset, patch.resource_offset + PACKAGE_MAP_SIZE)
+        )
+
+    # Independent multi-region verify against original source.
+    verify_g1_dime_from_nickel_package_map_pack(
+        raw_resource,
+        working,
+        nickel_index=nickel.index,
+        dime_indices=tuple(t.formation_index for t in targets),
+        expected_map=nickel_map,
+    )
+
+    total_changed = sum(t.changed_byte_count for t in targets)
+    honesty = (
+        "offline_writer_proved for formation package-map bytes only. "
+        "Runtime G1 (Dime ILB→OLB) is unproved. Not a project edit. "
+        "Source ISO is never mutated. Private PLAY export only."
+    )
+    manifest: dict[str, object] = {
+        "kind": "g1_dime_from_nickel_package_map_pack",
+        "capability": "offline_writer_proved",
+        "runtime_proved": False,
+        "bug_id": "G1",
+        "nickel_formation_index": nickel.index,
+        "nickel_formation_name": str(nickel.name or ""),
+        "nickel_package_map": list(nickel_map),
+        "dime_targets": [
+            {
+                "formation_index": t.formation_index,
+                "formation_name": t.formation_name,
+                "old_map": list(t.old_map),
+                "new_map": list(t.new_map),
+                "resource_offset": t.resource_offset,
+                "changed_byte_count": t.changed_byte_count,
+            }
+            for t in targets
+        ],
+        "total_changed_byte_count": total_changed,
+        "source_sha256": hashlib.sha256(raw_resource).hexdigest(),
+        "result_sha256": hashlib.sha256(working).hexdigest(),
+        "honesty": honesty,
+        "layout": {
+            "package_map_offset_in_formation": PACKAGE_MAP_OFFSET_IN_FORMATION,
+            "package_map_size": PACKAGE_MAP_SIZE,
+            "package_map_offset_formula": G1_G2_LAYOUT[
+                "package_map_offset_formula"
+            ],
+        },
+    }
+    return G1DimeFromNickelPackResult(
+        raw_resource=working,
+        nickel_formation_index=nickel.index,
+        nickel_formation_name=str(nickel.name or ""),
+        nickel_package_map=nickel_map,
+        targets=tuple(targets),
+        total_changed_byte_count=total_changed,
+        source_sha256=hashlib.sha256(raw_resource).hexdigest(),
+        result_sha256=hashlib.sha256(working).hexdigest(),
+        status="offline_writer_proved",
+        honesty=honesty,
+        manifest=manifest,
+    )
+
+
+def verify_g1_dime_from_nickel_package_map_pack(
+    source: bytes,
+    patched: bytes,
+    *,
+    nickel_index: int,
+    dime_indices: Sequence[int],
+    expected_map: Sequence[int],
+) -> None:
+    """Independent multi-region byte-diff verifier for the G1 multi-Dime pack."""
+
+    _require_play_resource(source)
+    _require_play_resource(patched)
+    expected = _validate_package_map(expected_map)
+    if len(source) != len(patched):
+        raise ValidationError(
+            f"Patched resource length {len(patched)} != source {len(source)}."
+        )
+
+    allowed: set[int] = set()
+    for fi in dime_indices:
+        res_off = RESOURCE_HEADER_SIZE + formation_package_map_body_offset(
+            int(fi)
+        )
+        for i in range(res_off, res_off + PACKAGE_MAP_SIZE):
+            allowed.add(i)
+        actual = patched[res_off : res_off + PACKAGE_MAP_SIZE]
+        if actual != expected:
+            raise ValidationError(
+                f"Dime formation {fi} map {list(actual)} != expected "
+                f"Nickel map {list(expected)}."
+            )
+
+    for i, (a, b) in enumerate(zip(source, patched, strict=True)):
+        if i in allowed:
+            continue
+        if a != b:
+            raise ValidationError(
+                f"Byte {i} changed outside Dime package-map regions "
+                f"(source 0x{a:02x} → 0x{b:02x})."
+            )
+
+    # Nickel map itself must be unchanged (donor is read-only in the pack).
+    nickel_read = read_formation_package_map(patched, nickel_index)
+    if nickel_read != tuple(expected):
+        raise ValidationError(
+            "Nickel donor package map was mutated; pack must leave Nickel intact."
+        )
+
+    parse_playbook_resource(source)
+    parse_playbook_resource(patched)
+
+
 __all__ = [
     "G1_G2_LAYOUT",
+    "G1DimeFromNickelPackResult",
+    "G1DimeFromNickelTarget",
     "G1DimeNickelCensus",
     "LinkTablePatchResult",
     "O0308_ASSET_ID",
@@ -728,6 +954,7 @@ __all__ = [
     "assignment_body_offset",
     "build_formation_link_table_copy_patch",
     "build_formation_package_map_patch",
+    "build_g1_dime_from_nickel_package_map_pack",
     "census_g1_dime_vs_nickel",
     "descriptor_body_offset",
     "formation_link_table_body_offset",
@@ -739,4 +966,5 @@ __all__ = [
     "spike_g2_ace_te",
     "verify_formation_link_table_copy_patch",
     "verify_formation_package_map_patch",
+    "verify_g1_dime_from_nickel_package_map_pack",
 ]
