@@ -368,6 +368,15 @@ class PlaybooksPanelHost(Protocol):
         progress: ProgressSink,
     ) -> Path: ...
 
+    def export_playbook_package_map_copy(
+        self,
+        asset_id: str,
+        target_formation_index: int,
+        donor_formation_index: int,
+        destination: Path,
+        progress: ProgressSink,
+    ) -> Path: ...
+
     def copy_play_assignment_route(
         self, asset_id: str, target_play_index: int, target_slot_index: int,
         donor_play_index: int, donor_slot_index: int, progress: ProgressSink,
@@ -661,9 +670,16 @@ class PlaybooksPanel(QWidget):
             "Build a private PLAY with the selected formation’s menu replaced "
             "by the donor’s. Offline-writer-proved bytes only; runtime unproved."
         )
+        self.export_pkgmap_copy_button = QPushButton("Export Package-Map Copy…")
+        self.export_pkgmap_copy_button.setToolTip(
+            "Build a private PLAY with the selected formation’s +0x0D package "
+            "map replaced by the donor’s (G1 Dime/Nickel surface). Offline only; "
+            "runtime unproved."
+        )
         link_copy_row.addWidget(link_copy_label)
         link_copy_row.addWidget(self.link_donor_combo, 1)
         link_copy_row.addWidget(self.export_link_copy_button)
+        link_copy_row.addWidget(self.export_pkgmap_copy_button)
         inspector_layout.addLayout(link_copy_row)
 
         raw_split = QSplitter(Qt.Horizontal)
@@ -740,6 +756,7 @@ class PlaybooksPanel(QWidget):
         self.revert_route_button.clicked.connect(self._revert_selected_route)
         self.create_formation_button.clicked.connect(self._create_formation)
         self.export_link_copy_button.clicked.connect(self._export_link_table_copy)
+        self.export_pkgmap_copy_button.clicked.connect(self._export_package_map_copy)
         self.link_donor_combo.currentIndexChanged.connect(
             lambda _i: self._refresh_controls()
         )
@@ -1111,20 +1128,25 @@ class PlaybooksPanel(QWidget):
             and int(target_form) != int(donor_form)
         )
         self.export_link_copy_button.setEnabled(can_link_export)
+        self.export_pkgmap_copy_button.setEnabled(can_link_export)
         self.link_donor_combo.setEnabled(can_create)
         if can_link_export:
             self.export_link_copy_button.setToolTip(
                 "Export a private PLAY where the selected formation’s play-link "
                 "menu is replaced by the donor’s. Offline only; runtime unproved."
             )
+            self.export_pkgmap_copy_button.setToolTip(
+                "Export a private PLAY where the selected formation’s package map "
+                "(+0x0D) is replaced by the donor’s. G1 surface; runtime unproved."
+            )
         elif target_form is not None and donor_form is not None:
-            self.export_link_copy_button.setToolTip(
-                "Pick a donor formation different from the selected target."
-            )
+            tip = "Pick a donor formation different from the selected target."
+            self.export_link_copy_button.setToolTip(tip)
+            self.export_pkgmap_copy_button.setToolTip(tip)
         else:
-            self.export_link_copy_button.setToolTip(
-                "Select a book and two different formations to export a menu copy."
-            )
+            tip = "Select a book and two different formations to export a copy."
+            self.export_link_copy_button.setToolTip(tip)
+            self.export_pkgmap_copy_button.setToolTip(tip)
         self.book_table.setEnabled(not self._busy)
         self.search.setEnabled(not self._busy)
         self.family_filter.setEnabled(not self._busy)
@@ -1245,6 +1267,67 @@ class PlaybooksPanel(QWidget):
 
         self._run(
             lambda progress: self.host.export_playbook_link_table_copy(
+                book.asset_id,
+                int(target_idx),
+                int(donor_idx),
+                Path(path),
+                progress,
+            ),
+            ready,
+        )
+
+    def _export_package_map_copy(self) -> None:
+        book = self._selected_book()
+        target_idx = self.formation_combo.currentData()
+        donor_idx = self.link_donor_combo.currentData()
+        if book is None or target_idx is None or donor_idx is None:
+            return
+        if int(target_idx) == int(donor_idx):
+            QMessageBox.information(
+                self,
+                "Pick a different donor",
+                "The donor formation must differ from the selected target "
+                "formation. No file was written.",
+            )
+            return
+        target_name = book.formations[int(target_idx)].name
+        donor_name = book.formations[int(donor_idx)].name
+        answer = QMessageBox.warning(
+            self,
+            "Experimental offline export only",
+            f"This will write a private PLAY file where formation "
+            f"“{target_name}” gets the package map (+0x0D) from “{donor_name}”.\n\n"
+            "• G1 offline surface (Dime/Nickel class) — runtime ILB fix unproved.\n"
+            "• Not a project edit — nothing is staged for Build.\n"
+            "• Your loaded source / ISO is never modified.\n\n"
+            "Continue to choose a save location?",
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Cancel,
+        )
+        if answer != QMessageBox.Yes:
+            return
+        suggested = (
+            f"{book.outer_index:04d}_{book.book_name}_"
+            f"{target_name}_pkgmap_from_{donor_name}_PLAY.bin"
+        )
+        suggested = re.sub(r"[^A-Za-z0-9._-]+", "_", suggested)
+        path, _filter = QFileDialog.getSaveFileName(
+            self,
+            "Export experimental package-map PLAY",
+            suggested,
+            "PLAY resource (*.bin);;All files (*)",
+        )
+        if not path:
+            return
+
+        def ready(value: object) -> None:
+            self.progress_label.setText(
+                f"Exported experimental package-map copy → {value} "
+                f"({target_name} ← {donor_name}; runtime unproved)"
+            )
+
+        self._run(
+            lambda progress: self.host.export_playbook_package_map_copy(
                 book.asset_id,
                 int(target_idx),
                 int(donor_idx),

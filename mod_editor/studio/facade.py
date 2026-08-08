@@ -2042,6 +2042,74 @@ class Nfl2k5StudioFacade:
         )
         return dest
 
+    def export_playbook_package_map_copy(
+        self,
+        asset_id: str,
+        target_formation_index: int,
+        donor_formation_index: int,
+        destination: Path,
+        progress: ProgressSink = _quiet_progress,
+    ) -> Path:
+        """Export a PLAY with one formation package map copied from a donor.
+
+        **Experimental / offline-only.** Private file only. Does not stage a
+        project edit. Does not claim a runtime G1 (Dime ILB→OLB) fix. Source
+        archive never mutated. Independent verifier inside the patch path.
+        """
+
+        from mod_editor.core.playbook_package_rule_spike import (
+            build_formation_package_map_patch,
+            read_formation_package_map,
+            verify_formation_package_map_patch,
+        )
+
+        progress("Reading stock PLAY for experimental package-map copy", 0, 3)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            index = self._require_universal_index()
+        book = inspector.load(asset_id)
+        if not 0 <= target_formation_index < len(book.formations):
+            raise ValidationError(
+                f"Target formation {target_formation_index} is outside this book."
+            )
+        if not 0 <= donor_formation_index < len(book.formations):
+            raise ValidationError(
+                f"Donor formation {donor_formation_index} is outside this book."
+            )
+        if target_formation_index == donor_formation_index:
+            raise ValidationError("Donor and target formations must differ.")
+
+        progress("Building offline package-map copy (G1 surface; runtime unproved)", 1, 3)
+        import tempfile
+
+        dest = Path(destination)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="2k5-play-pkgmap-copy-") as tmpdir:
+            src_path = Path(tmpdir) / "source.PLAY.bin"
+            index.export_raw(asset_id, src_path)
+            source_bytes = src_path.read_bytes()
+            donor_map = read_formation_package_map(
+                source_bytes, donor_formation_index
+            )
+            patch = build_formation_package_map_patch(
+                source_bytes, target_formation_index, donor_map
+            )
+            verify_formation_package_map_patch(
+                source_bytes,
+                patch.raw_resource,
+                target_formation_index,
+                donor_map,
+            )
+            dest.write_bytes(patch.raw_resource)
+        progress(
+            "Experimental package-map PLAY exported "
+            f"(formation {target_formation_index} ← {donor_formation_index}; "
+            "runtime unproved)",
+            3,
+            3,
+        )
+        return dest
+
     def copy_play_assignment_route(
         self,
         asset_id: str,
