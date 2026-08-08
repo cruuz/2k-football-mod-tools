@@ -621,3 +621,10 @@ Wall **9.93h** from 21:48 — **still OPEN**.
 - E2: fixed 2K5 release allowlist gap — G1 package-rule + formation-play writer now stage (197 files, runtime PASS).
 - Residual: G1/G2 runtime unproved; freehand not Editable; monorepo hang; no push/release without Noah.
 - Hour gate MET (~11.4h wall from 21:48). Continue residual DoD walls, not re-smoke only.
+
+## Latest (2026-08-08T09:16:50-04:00)
+
+- G2 multi-Ace offline pack shipped (Quads→all Ace link tables) + UI button; runtime still unproved.
+- Prior: G1 multi-Dime + allowlist ship for G1/formation (stage 197, runtime PASS).
+- E1 evidence table in WORKLOG; hour gate MET (~11.5h).
+- Residual: G1/G2 runtime, freehand Editable, monorepo hang; no push/release without Noah.

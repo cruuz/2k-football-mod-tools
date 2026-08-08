@@ -63,6 +63,7 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 | Shipped API | `census_g1_dime_vs_nickel`, `read_formation_package_map`, `build_formation_package_map_patch`, `verify_formation_package_map_patch`, **`build_g1_dime_from_nickel_package_map_pack` / `verify_g1_dime_from_nickel_package_map_pack`**, `spike_g1_dime_ilb` |
 | Offline writer | **proved** for the 11 map bytes (copy Nickel→Dime or any perm of 0..10); independent full-resource byte-diff |
 | Multi-Dime pack (2026-08-08) | **`build_g1_dime_from_nickel_package_map_pack`** copies Nickel map onto **every** Dime-named formation in a PLAY book; multi-region independent verifier; facade `export_g1_dime_from_nickel_package_map_pack` + UI **Export G1 multi-Dime pack…** + honesty JSON sidecar. Still offline-bytes only. |
+| Multi-Ace pack (2026-08-08) | **`build_g2_ace_from_quads_link_table_pack`** copies Quads play-link (menu) table onto every Ace-named formation; facade `export_g2_ace_from_quads_link_table_pack` + UI **Export G2 multi-Ace pack…** + honesty JSON sidecar. Offline menu bytes only; runtime G2 unproved. |
 | Runtime G1 fix | **unproved** — do not ship as community one-click runtime fix pack until emulator witness |
 
 ### G2 precise spike — Ace TE→WR
