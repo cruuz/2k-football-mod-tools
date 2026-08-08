@@ -5113,8 +5113,8 @@ class ApfTextLogoPanel(QFrame):
         self.fit_mode.addItem("Stretch — force 512×128 (may distort)", "stretch")
         self.fit_mode.setToolTip(
             "Contain is the safe default for long logos. Cover fills all 512×128 "
-            "pixels and trims overflow. Transparent pixels are flattened onto "
-            "the retail opaque-black background."
+            "pixels and trims overflow. Stretch forces exact size and may distort. "
+            "Transparent pixels are flattened onto the retail opaque-black background."
         )
         selector.addWidget(self.slot)
         selector.addSpacing(8)

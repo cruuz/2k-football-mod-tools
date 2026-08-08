@@ -18,7 +18,8 @@ from nfl_txtr import encode_rgba_png  # type: ignore  # noqa: E402
 
 WORDMARK_WIDTH = 512
 WORDMARK_HEIGHT = 128
-WORDMARK_FIT_MODES = ("contain", "cover")
+# Must match the Import-fit combo in gui.py (Contain / Cover / Stretch).
+WORDMARK_FIT_MODES = ("contain", "cover", "stretch")
 
 
 @dataclass(frozen=True)
@@ -60,7 +61,9 @@ def prepare_wordmark_png(
     """Fit ordinary art, flatten transparency, and publish one exact PNG."""
 
     if fit_mode not in WORDMARK_FIT_MODES:
-        raise ValidationError("wordmark fit mode must be contain or cover")
+        raise ValidationError(
+            "wordmark fit mode must be contain, cover, or stretch"
+        )
     result = fit_image(
         Path(source), WORDMARK_WIDTH, WORDMARK_HEIGHT, mode=fit_mode
     )

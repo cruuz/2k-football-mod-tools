@@ -14,7 +14,10 @@ from PIL import Image, ImageDraw
 
 from mod_editor.apf_studio import build, project
 from mod_editor.apf_studio.models import Modification
-from mod_editor.apf_studio.textlogo_authoring import prepare_wordmark_png
+from mod_editor.apf_studio.textlogo_authoring import (
+    WORDMARK_FIT_MODES,
+    prepare_wordmark_png,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -96,6 +99,39 @@ class ApfTextLogoCatalogTests(unittest.TestCase):
             with Image.open(contained.output_path) as prepared:
                 self.assertEqual(prepared.getpixel((0, 0)), (0, 0, 0, 255))
             self.assertGreater(contained.transparent_source_pixels, 0)
+
+    def test_stretch_mode_is_accepted_by_prepare_wordmark_png(self) -> None:
+        """GUI combo data=stretch must reach the shipped authoring path."""
+        self.assertIn("stretch", WORDMARK_FIT_MODES)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "wide.png"
+            Image.new("RGBA", (900, 100), (200, 40, 40, 200)).save(source)
+            prepared = prepare_wordmark_png(
+                source, root / "stretch.png", fit_mode="stretch"
+            )
+            self.assertEqual(prepared.fit_mode, "stretch")
+            self.assertEqual(prepared.fit_action, "stretched")
+            self.assertEqual(
+                (prepared.source_width, prepared.source_height), (900, 100)
+            )
+            with Image.open(prepared.output_path) as image:
+                image.load()
+                self.assertEqual(image.size, (512, 128))
+                self.assertEqual(image.mode, "RGBA")
+                # Flattened retail black background — full alpha
+                self.assertEqual(image.getchannel("A").getextrema(), (255, 255))
+
+    def test_gui_wordmark_fit_combo_data_matches_wordmark_fit_modes(self) -> None:
+        """Combo items must not offer a mode prepare_wordmark_png rejects."""
+        gui = (ROOT / "mod_editor" / "apf_studio" / "gui.py").read_text(
+            encoding="utf-8"
+        )
+        # Extract the Wordmark panel's addItem data values for fit_mode.
+        start = gui.index('self.fit_mode.addItem("Contain')
+        block = gui[start : start + 500]
+        for mode in WORDMARK_FIT_MODES:
+            self.assertIn(f'"{mode}"', block, f"GUI missing fit mode {mode}")
 
     def test_project_and_build_accept_typed_index_205(self) -> None:
         metadata = {
