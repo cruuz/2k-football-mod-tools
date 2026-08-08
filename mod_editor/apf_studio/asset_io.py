@@ -238,9 +238,12 @@ class ApfAssetIO:
         try:
             width, height, rgba = self._decode_texture_rgba(item)
         except (apf_inner.FormatError, ValueError) as exc:
+            detail = str(exc).strip() or exc.__class__.__name__
             raise AssetIoError(
-                f"{item.name} uses a texture format whose PNG preview is not decoded yet. "
-                "Its exact raw parts can still be exported."
+                f"{item.name}: PNG preview failed ({detail}). "
+                "Export the exact raw TXTR parts instead, or pick a format "
+                "already supported for PNG (8, 1_5_5_5, 5_6_5, 8_8_8_8, 8_8, "
+                "4_4_4_4, DXT1/2_3/4_5)."
             ) from exc
         self._write_png_cache(destination, width, height, rgba)
         return destination

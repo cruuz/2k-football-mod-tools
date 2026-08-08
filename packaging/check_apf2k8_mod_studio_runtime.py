@@ -1174,7 +1174,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
     require(
         textlogo_authoring.WORDMARK_WIDTH == 512
         and textlogo_authoring.WORDMARK_HEIGHT == 128
-        and textlogo_authoring.WORDMARK_FIT_MODES == ("contain", "cover")
+        and textlogo_authoring.WORDMARK_FIT_MODES == ("contain", "cover", "stretch")
         and len(textlogo_targets) == 206
         and textlogo_targets[0]["asset_index"] == 0
         and textlogo_targets[-1]["asset_index"] == 205

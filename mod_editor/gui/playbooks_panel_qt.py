@@ -147,11 +147,20 @@ def playbook_search_text(book: Nfl2k5Playbook) -> str:
     )).replace("_", " ").casefold()
 
 
+def book_has_community_flags(book: Nfl2k5Playbook) -> bool:
+    """True when any formation or play name matches Ace/Dime/Bear annotations."""
+
+    names = [formation.name for formation in book.formations]
+    names.extend(play.name for play in book.plays)
+    return bool(broken_play_annotations(*names))
+
+
 def filter_playbooks(
     books: Iterable[Nfl2k5Playbook],
     *,
     search: str = "",
     family_id: int | None = None,
+    community_flagged_only: bool = False,
 ) -> PlaybookBrowserResult:
     """Filter decoded books without importing Qt or touching private files."""
 
@@ -172,6 +181,10 @@ def filter_playbooks(
         and (
             not words
             or all(word in playbook_search_text(book) for word in words)
+        )
+        and (
+            not community_flagged_only
+            or book_has_community_flags(book)
         )
     )
     counts = corpus_counts(rows)
@@ -444,13 +457,27 @@ class PlaybooksPanel(QWidget):
         browser_layout.setSpacing(9)
         self.search = QLineEdit()
         self.search.setClearButtonEnabled(True)
-        self.search.setPlaceholderText("Search book, formation, play, category, family…")
+        self.search.setPlaceholderText(
+            "Search book, formation, play… (try Ace, Dime, Bear for community flags)"
+        )
+        self.search.setToolTip(
+            "Filters stock books by name metadata. Formations named Ace/Dime/Bear "
+            "show ⚠ community annotations in the inspector (discovery only)."
+        )
         self.family_filter = QComboBox()
         self.family_filter.addItem("All eight play families", None)
         for family_id, label in enumerate(PLAY_FAMILY_LABELS):
             self.family_filter.addItem(label, family_id)
+        self.warning_filter = QComboBox()
+        self.warning_filter.addItem("All formations", "all")
+        self.warning_filter.addItem("⚠ Community-flagged only (Ace/Dime/Bear)", "flagged")
+        self.warning_filter.setToolTip(
+            "Show only books that contain Ace, Dime, or Bear package names "
+            "flagged by community reports (G1/G2/G13). Does not rewrite PLAY bytes."
+        )
         browser_layout.addWidget(self.search)
         browser_layout.addWidget(self.family_filter)
+        browser_layout.addWidget(self.warning_filter)
         self.book_table = QTableWidget(0, 3)
         self.book_table.setHorizontalHeaderLabels(("Book", "Formations", "Plays"))
         self.book_table.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -611,6 +638,7 @@ class PlaybooksPanel(QWidget):
     def _connect(self) -> None:
         self.search.textChanged.connect(lambda _text: self._search_timer.start())
         self.family_filter.currentIndexChanged.connect(self._apply_filters)
+        self.warning_filter.currentIndexChanged.connect(self._apply_filters)
         self.book_table.itemSelectionChanged.connect(self._book_selected)
         self.formation_combo.currentIndexChanged.connect(self._formation_selected)
         self.play_table.itemSelectionChanged.connect(self._play_selected)
@@ -693,6 +721,9 @@ class PlaybooksPanel(QWidget):
                 self._all_books,
                 search=self.search.text(),
                 family_id=self.family_filter.currentData(),
+                community_flagged_only=(
+                    self.warning_filter.currentData() == "flagged"
+                ),
             )
         except Exception as exc:
             self.error_raised.emit(str(exc).strip() or exc.__class__.__name__)
@@ -1181,6 +1212,7 @@ __all__ = [
     "PlaybooksPanel",
     "PlaybooksPanelHost",
     "broken_play_annotations",
+    "book_has_community_flags",
     "filter_playbooks",
     "format_play_name_with_warnings",
     "formation_play_rows",

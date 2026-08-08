@@ -6,6 +6,10 @@
 
 - **Import fit chooser** — `fit_slot_image` offers Contain/Cover/Stretch; wordmark combo includes Stretch.
 - **G1/G2 RE spike** — shared `playbook_package_rule_spike` + gameplay map addresses (no fake fix pack).
+- **Continuation re-verify** — real `extracted/.../0A` logo_l0/l1 format-15 decode+PNG export; logo patch source-read-only with decode-back max error 0.
+- **More Xenos PNG previews** — 8, 1_5_5_5, 5_6_5, 8_8 (plus prior 8888 / 4_4_4_4 / DXT family); PORTME lists supported formats.
+- **Playbooks** — filter for ⚠ Ace/Dime/Bear community-flagged books only.
+- **Field Art blurb** — names ~118 stock NFL endzones vs six writable proved slots.
 
 - **logo_l0 / logo_l1 format 15 (`4_4_4_4`)** — re-verified; regression tests drive
   shipped `apf_inner.decode_txtr_base_rgba` + PNG write without retail bytes

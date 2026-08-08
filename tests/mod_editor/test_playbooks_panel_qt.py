@@ -17,6 +17,7 @@ from mod_editor.core.nfl2k5_playbook_inspector import (
 )
 from mod_editor.gui.playbooks_panel_qt import (
     PLAY_EDITOR_FINDINGS_PLAIN_TEXT,
+    book_has_community_flags,
     broken_play_annotations,
     filter_playbooks,
     format_play_name_with_warnings,
@@ -138,6 +139,23 @@ class PlaybooksPanelModelTests(unittest.TestCase):
         self.assertIn("shareable Mod Studio projects never contain PLAY data", note)
         self.assertIn("only along X", note)
         self.assertIn("only along Y", note)
+
+    def test_community_flagged_filter_keeps_dime_ace_books(self) -> None:
+        dime = _book(
+            asset_id="private.play.dime",
+            name="Defense Book",
+            formation_name="Dime",
+            play_name="Cover 2",
+            family_id=1,
+            outer_index=12,
+        )
+        quiet = self.offense
+        result = filter_playbooks(
+            (quiet, dime), community_flagged_only=True
+        )
+        self.assertEqual(result.books, (dime,))
+        self.assertTrue(book_has_community_flags(dime))
+        self.assertFalse(book_has_community_flags(quiet))
 
 
 if __name__ == "__main__":

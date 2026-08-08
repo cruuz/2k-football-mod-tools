@@ -1141,15 +1141,27 @@ def decode_txtr_base_rgba(
         block_width, block_height, block_size = 4, 4, 16
         decoder = _decode_bc3
     elif format_value == 6:
+        # 8_8_8_8 — 4 bytes/texel
         block_width, block_height, block_size = 1, 1, 4
         decoder = None
-    elif format_value == 15:
+    elif format_value in (3, 4, 15):
+        # 1_5_5_5, 5_6_5, 4_4_4_4 — 2 bytes/texel
+        block_width, block_height, block_size = 1, 1, 2
+        decoder = None
+    elif format_value == 2:
+        # 8 — single 8-bit luminance/alpha channel
+        block_width, block_height, block_size = 1, 1, 1
+        decoder = None
+    elif format_value == 10:
+        # 8_8 — two 8-bit channels
         block_width, block_height, block_size = 1, 1, 2
         decoder = None
     else:
         raise FormatError(
             f"PORTME: Xenos format {format_value} "
-            f"({metadata['format_name']}) is not implemented for PNG"
+            f"({metadata['format_name']}) is not implemented for PNG. "
+            f"Supported PNG previews: 8, 1_5_5_5, 5_6_5, 8_8_8_8, 8_8, "
+            f"4_4_4_4, DXT1, DXT2_3, DXT4_5. Export raw TXTR parts instead."
         )
 
     linear = _untile_2d(
@@ -1180,7 +1192,56 @@ def decode_txtr_base_rgba(
                 b8 = (b << 4) | b
                 pixel = _swizzle_pixel((r8, g8, b8, a8), selectors)
                 rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        elif format_value == 4:
+            # 5_6_5 RGB, opaque alpha
+            for pixel_index in range(width * height):
+                raw = linear[pixel_index * 2 : pixel_index * 2 + 2]
+                if len(raw) != 2:
+                    raise FormatError("truncated 5_6_5 texel")
+                value = int.from_bytes(raw, "little")
+                r5 = (value >> 11) & 0x1F
+                g6 = (value >> 5) & 0x3F
+                b5 = value & 0x1F
+                r8 = (r5 << 3) | (r5 >> 2)
+                g8 = (g6 << 2) | (g6 >> 4)
+                b8 = (b5 << 3) | (b5 >> 2)
+                pixel = _swizzle_pixel((r8, g8, b8, 255), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        elif format_value == 3:
+            # 1_5_5_5 ARGB
+            for pixel_index in range(width * height):
+                raw = linear[pixel_index * 2 : pixel_index * 2 + 2]
+                if len(raw) != 2:
+                    raise FormatError("truncated 1_5_5_5 texel")
+                value = int.from_bytes(raw, "little")
+                a1 = (value >> 15) & 0x1
+                r5 = (value >> 10) & 0x1F
+                g5 = (value >> 5) & 0x1F
+                b5 = value & 0x1F
+                a8 = 255 if a1 else 0
+                r8 = (r5 << 3) | (r5 >> 2)
+                g8 = (g5 << 3) | (g5 >> 2)
+                b8 = (b5 << 3) | (b5 >> 2)
+                pixel = _swizzle_pixel((r8, g8, b8, a8), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        elif format_value == 2:
+            for pixel_index in range(width * height):
+                if pixel_index >= len(linear):
+                    raise FormatError("truncated 8-bit texel")
+                v = linear[pixel_index]
+                pixel = _swizzle_pixel((v, v, v, 255), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        elif format_value == 10:
+            for pixel_index in range(width * height):
+                raw = linear[pixel_index * 2 : pixel_index * 2 + 2]
+                if len(raw) != 2:
+                    raise FormatError("truncated 8_8 texel")
+                # Common: R=first, G=second, B=0, A=255 (normal/gloss pairs vary)
+                r8, g8 = raw[0], raw[1]
+                pixel = _swizzle_pixel((r8, g8, 0, 255), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
         else:
+            # format 6 8_8_8_8
             for pixel_index in range(width * height):
                 raw = linear[pixel_index * 4 : pixel_index * 4 + 4]
                 pixel = _swizzle_pixel(tuple(raw), selectors)

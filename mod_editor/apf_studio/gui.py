@@ -230,7 +230,7 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.TEAM_IDENTITY: "Browse team-facing resources; more identity editing unlocks here as each field is proven safe.",
     ApfCategory.LOGOS: "Replace the shared 512×512 team-logo crest and the 128×128 draft logo, and browse every indexed logo and team-art record.",
     ApfCategory.SCOREBUG: "Edit the proved digital_font mask and inspect the rest of the broadcast presentation inventory.",
-    ApfCategory.FIELD_ART: "Replace the six proven field textures — endzone layers, practice overlays, and the divot base — and browse the complete field-art inventory.",
+    ApfCategory.FIELD_ART: "Browse ~118 stock NFL endzone packages + practice/divot inventory. The focused editor writes six offline-proved base slots; other rows stay export-only until proved.",
     ApfCategory.STADIUMS: "Explore stadium geometry in 3D, edit any of the 78 statically owned embedded textures, and round-trip same-topology POSITION edits for 77 catalog-authorized surfaces into a separately verified copied 1A.",
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",

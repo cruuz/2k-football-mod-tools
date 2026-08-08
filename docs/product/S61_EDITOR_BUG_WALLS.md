@@ -21,7 +21,7 @@ offline-writer-proved or better.
 | 12 | PS3 ISO mis-ID | **Fixed class** | structural ID + clear refuse; keep probes |
 | 13 | Helmet shell default path | **Partial** | v25 opaque + v30 native-material; recommend path in shell UI; runtime witness partial |
 | 14 | Eagles shell accuracy | **Partial** | v30 volume; close-up witness pending (handoff) |
-| 15 | Remaining PORTME formats | **Ongoing** | PORTME message includes format id/name in `apf_inner` |
+| 15 | Remaining PORTME formats | **Improved** | PNG preview now: 8, 1_5_5_5, 5_6_5, 8_8_8_8, 8_8, 4_4_4_4, DXT1/2_3/4_5; other IDs PORTME with supported list (`test_apf_xenos_extra_formats_png`) |
 | 16–20 | 2K5 community discoverability | **Partial** | Equipment browse, menu logos labeled in README/changelog; continue polish |
 | GH#2 | Stock playbooks | **Partial** | Browser + route copy + clone + **broken-play annotations**; freehand wall |
 

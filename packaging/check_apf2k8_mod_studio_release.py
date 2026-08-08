@@ -144,7 +144,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
     "mod_editor/apf_studio/textlogo_authoring.py": (
         "WORDMARK_WIDTH = 512",
         "WORDMARK_HEIGHT = 128",
-        'WORDMARK_FIT_MODES = ("contain", "cover")',
+        'WORDMARK_FIT_MODES = ("contain", "cover", "stretch")',
         "def prepare_wordmark_png(",
         "Composite straight-alpha RGBA onto the retail opaque-black background.",
     ),
