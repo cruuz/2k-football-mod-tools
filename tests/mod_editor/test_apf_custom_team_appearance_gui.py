@@ -118,9 +118,19 @@ class CustomTeamAppearanceGuiTests(unittest.TestCase):
         facade.source_ready = False
         panel = CustomTeamAppearancePanel(facade, _run_task)
         try:
+            # Slot/preset stay disabled without a source; Stage/Revert never
+            # silent-gray — clickable with disableReason teaching Load.
             self.assertFalse(panel.preset_button.isEnabled())
-            self.assertFalse(panel.stage_button.isEnabled())
-            self.assertFalse(panel.revert_button.isEnabled())
+            self.assertTrue(panel.stage_button.isEnabled())
+            self.assertTrue(panel.revert_button.isEnabled())
+            self.assertIn(
+                "Load",
+                str(panel.stage_button.property("disableReason") or ""),
+            )
+            self.assertIn(
+                "Load",
+                str(panel.revert_button.property("disableReason") or ""),
+            )
         finally:
             panel.deleteLater()
 

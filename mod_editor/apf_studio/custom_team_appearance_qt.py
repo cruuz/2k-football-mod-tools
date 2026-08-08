@@ -350,16 +350,25 @@ class CustomTeamAppearancePanel(QFrame):
             self._set_raw_context()
             return
         ready = bool(self.facade.source_ready)
+        load_tip = (
+            "Load your APF game first. Custom Team Appearance Stage needs a source. "
+            "Click still explains — buttons stay clickable."
+        )
         for widget in (
             self.slot,
             self.banks,
             self.preset_button,
-            self.stage_button,
         ):
             widget.setEnabled(ready)
+        # Never silent-gray Stage/Revert
+        self.stage_button.setEnabled(True)
+        self.revert_button.setEnabled(True)
         self.write_raw_button.setEnabled(False)
         if not ready:
-            self.revert_button.setEnabled(False)
+            self.stage_button.setToolTip(load_tip)
+            self.stage_button.setProperty("disableReason", load_tip)
+            self.revert_button.setToolTip(load_tip)
+            self.revert_button.setProperty("disableReason", load_tip)
             self.status.setText("Load your game to read the safe custom-team records.")
             return
         try:
@@ -372,7 +381,21 @@ class CustomTeamAppearancePanel(QFrame):
         self.away.set_bank(appearance.away)
         target_id = apf_custom_team_appearance_patch.asset_id(appearance.slot)
         modified = target_id in self.facade.modified_asset_ids
-        self.revert_button.setEnabled(modified)
+        stage_tip = (
+            "Stage HOME/AWAY appearance into the project. Build composes with names, "
+            "ratings, and positions. Never mutates your original dump."
+        )
+        revert_tip = (
+            "Remove the staged custom-team appearance from the project."
+            if modified
+            else "Nothing to revert—no staged appearance for this slot."
+        )
+        self.stage_button.setToolTip(stage_tip)
+        self.stage_button.setProperty("disableReason", "")
+        self.revert_button.setToolTip(revert_tip)
+        self.revert_button.setProperty(
+            "disableReason", "" if modified else revert_tip
+        )
         self.status.setText(
             ("● Staged in this project. " if modified else "○ Source values (read-only). ")
             + "The normal Build path composes this safely with names, ratings, and positions."
@@ -532,6 +555,18 @@ class CustomTeamAppearancePanel(QFrame):
         )
 
     def _stage(self) -> None:
+        reason = str(self.stage_button.property("disableReason") or "").strip()
+        if reason:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(
+                self,
+                "Cannot stage appearance yet",
+                reason
+                + "\n\nFix: File → Load game, edit HOME/AWAY, then Stage. "
+                "Never mutates your original dump.",
+            )
+            return
         try:
             appearance = self._appearance_from_controls()
         except Exception as exc:
@@ -547,6 +582,16 @@ class CustomTeamAppearancePanel(QFrame):
         )
 
     def _revert(self) -> None:
+        reason = str(self.revert_button.property("disableReason") or "").strip()
+        if reason:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(
+                self,
+                "Nothing to revert",
+                reason + "\n\nStage a custom-team appearance first.",
+            )
+            return
         target_id = apf_custom_team_appearance_patch.asset_id(self._slot_value())
         self.run_task(
             "Reverting custom-team appearance",
