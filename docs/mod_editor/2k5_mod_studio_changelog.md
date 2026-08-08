@@ -19,7 +19,9 @@ build path.
   Link-Table Copy stay clickable with disableReason + click-to-explain when the
   XISO/book/formations are not ready (runtime still unproved).
 - **Playbooks community legend**
-- **Extended visual browsers** — Export/Edit/Replace/Master/Revert never silent-gray (export-only assets explain).
+- **Extended visual browsers**
+- **Stadium surface textures** — Export/Replace/Revert never silent-gray.
+- **Universal inventory raw Export** never silent-gray. — Export/Edit/Replace/Master/Revert never silent-gray (export-only assets explain).
 - **Unif colour filter-empty** — facemask/turtleneck/Apply/Revert stay clickable. — G1/G2/G13 one-liners under the ⚠ filter;
   empty-state text when Community-flagged matches zero books.
 
