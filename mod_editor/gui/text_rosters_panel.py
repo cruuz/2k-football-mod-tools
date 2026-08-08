@@ -1266,8 +1266,16 @@ class TextRosterPanel(QWidget):
         layout.addWidget(self.revert_team_button, button_row, 2)
         self.apply_team_button.clicked.connect(self._apply_historical_team)
         self.revert_team_button.clicked.connect(self._revert_historical_team)
-        self.apply_team_button.setEnabled(False)
-        self.revert_team_button.setEnabled(False)
+        # Never silent-gray at construction.
+        _hist_boot = (
+            "Select a historical team first. Apply/Revert stay clickable."
+        )
+        self.apply_team_button.setEnabled(True)
+        self.apply_team_button.setToolTip(_hist_boot)
+        self.apply_team_button.setProperty("disableReason", _hist_boot)
+        self.revert_team_button.setEnabled(True)
+        self.revert_team_button.setToolTip(_hist_boot)
+        self.revert_team_button.setProperty("disableReason", _hist_boot)
         return group
 
     def _build_historical_player_editor(self) -> QWidget:
@@ -1327,8 +1335,15 @@ class TextRosterPanel(QWidget):
         self.player_face_shield.currentIndexChanged.connect(
             self._update_player_controls
         )
-        self.apply_player_button.setEnabled(False)
-        self.revert_player_button.setEnabled(False)
+        _hist_player_boot = (
+            "Select a historical player first. Apply/Revert stay clickable."
+        )
+        self.apply_player_button.setEnabled(True)
+        self.apply_player_button.setToolTip(_hist_player_boot)
+        self.apply_player_button.setProperty("disableReason", _hist_player_boot)
+        self.revert_player_button.setEnabled(True)
+        self.revert_player_button.setToolTip(_hist_player_boot)
+        self.revert_player_button.setProperty("disableReason", _hist_player_boot)
         return group
 
     def reload(self) -> None:
