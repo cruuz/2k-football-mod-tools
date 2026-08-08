@@ -2325,6 +2325,12 @@ if PYQT5_AVAILABLE:
         def _show_soundtrack(self) -> None:
             """Open the complete, truthfully named soundtrack/music collection."""
 
+            reason = str(
+                self.soundtrack_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy or self._shortlist_reviewing:
                 return
             self._search_timer.stop()
@@ -2795,8 +2801,15 @@ if PYQT5_AVAILABLE:
             # Never silent-gray: Export matching stays clickable; disableReason
             # + click-to-explain teach shortlist/raw/count walls.
             if self._shortlist_reviewing:
-                self.soundtrack_button.setEnabled(False)
                 tip = "Return to the audio browser to export its filtered results."
+                self.soundtrack_button.setEnabled(True)
+                self.soundtrack_button.setToolTip(
+                    "Return to the audio browser first (exit shortlist review)."
+                )
+                self.soundtrack_button.setProperty(
+                    "disableReason",
+                    "Return to the audio browser first (exit shortlist review).",
+                )
                 self.export_matching_button.setEnabled(True)
                 self.export_matching_button.setText("Export matching audio…")
                 self.export_matching_button.setToolTip(tip)
@@ -2804,8 +2817,20 @@ if PYQT5_AVAILABLE:
                 self._update_audio_shortlist_actions()
                 return
             if self.scope_filter.currentData() == "raw_containers":
-                self.soundtrack_button.setEnabled(
-                    self.host.source_ready and not self._busy
+                ready = self.host.source_ready and not self._busy
+                tip = (
+                    "Show all soundtrack and music ranges."
+                    if ready
+                    else (
+                        "Load your NFL 2K5 XISO first."
+                        if not self.host.source_ready
+                        else "Wait for the current audio operation to finish."
+                    )
+                )
+                self.soundtrack_button.setEnabled(True)
+                self.soundtrack_button.setToolTip(tip)
+                self.soundtrack_button.setProperty(
+                    "disableReason", "" if ready else tip
                 )
                 tip = (
                     "Raw BANK/ABNK/WBNK wrappers export one at a time through "
@@ -2817,8 +2842,20 @@ if PYQT5_AVAILABLE:
                 self.export_matching_button.setProperty("disableReason", tip)
                 self._update_audio_shortlist_actions()
                 return
-            self.soundtrack_button.setEnabled(
-                self.host.source_ready and not self._busy
+            ready = self.host.source_ready and not self._busy
+            tip = (
+                "Show all soundtrack and music ranges."
+                if ready
+                else (
+                    "Load your NFL 2K5 XISO first."
+                    if not self.host.source_ready
+                    else "Wait for the current audio operation to finish."
+                )
+            )
+            self.soundtrack_button.setEnabled(True)
+            self.soundtrack_button.setToolTip(tip)
+            self.soundtrack_button.setProperty(
+                "disableReason", "" if ready else tip
             )
             count = self.page.total if self.host.source_ready else 0
             query_current = self._catalog_query_is_current()
