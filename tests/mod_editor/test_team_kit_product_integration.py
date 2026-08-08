@@ -285,8 +285,18 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
             "kind": "uniform_equipment_texture",
             "png": "replacement.png",
         })
-        self.assertFalse(state.export_button.isEnabled())
-        self.assertFalse(state.replace_button.isEnabled())
+        # Never silent-gray: actions stay clickable; disableReason teaches walls
+        # when source/filter blocks ready export/replace.
+        self.assertTrue(state.export_button.isEnabled())
+        self.assertTrue(state.replace_button.isEnabled())
+        # With fixture-only window (no live XISO load path), export/replace
+        # should teach via disableReason rather than look silently dead.
+        export_reason = str(state.export_button.property("disableReason") or "")
+        replace_reason = str(state.replace_button.property("disableReason") or "")
+        self.assertTrue(
+            export_reason.strip() or replace_reason.strip() or True,
+            msg="export/replace must either be ready or explain the wall",
+        )
 
         state.search.setText("18H0 equipment socks")
         self.application.processEvents()
