@@ -2744,10 +2744,15 @@ class StudioMainWindow(QMainWindow):
                 "No uniform set matches that filter. Clear the filter box to "
                 "see every physical HOME/AWAY/alternate/throwback record."
             )
-            self.facemask_button.setEnabled(False)
-            self.turtleneck_button.setEnabled(False)
-            self.unif_color_apply.setEnabled(False)
-            self.unif_color_revert.setEnabled(False)
+            # Never silent-gray: keep buttons clickable; refresh_action_states
+            # sets disableReason (Load / clear filter / wait).
+            for button in (
+                self.facemask_button,
+                self.turtleneck_button,
+                self.unif_color_apply,
+                self.unif_color_revert,
+            ):
+                button.setEnabled(True)
             self._refresh_action_states()
             return
         self.facemask_button.setEnabled(True)
@@ -2923,6 +2928,12 @@ class StudioMainWindow(QMainWindow):
         )
 
     def _revert_unif_colors(self) -> None:
+        reason = str(
+            self.unif_color_revert.property("disableReason") or ""
+        ).strip()
+        if reason:
+            self.unif_color_status.setText(reason)
+            return
         selector = self._selected_unif_color_selector()
         if selector is None:
             return
@@ -6702,9 +6713,21 @@ class StudioMainWindow(QMainWindow):
                 if colour_reason:
                     button.setToolTip(colour_reason)
                 button.setProperty("disableReason", colour_reason)
-            self.unif_color_revert.setEnabled(
-                colour_enabled and self._selected_unif_color_modified
+            # Revert: never silent-gray; explain when nothing staged.
+            self.unif_color_revert.setEnabled(True)
+            if colour_reason:
+                revert_reason = colour_reason
+            elif not self._selected_unif_color_modified:
+                revert_reason = (
+                    "Nothing to revert—this uniform set's colours are still original."
+                )
+            else:
+                revert_reason = ""
+            self.unif_color_revert.setToolTip(
+                revert_reason
+                or "Restore original facemask and turtleneck for this physical set."
             )
+            self.unif_color_revert.setProperty("disableReason", revert_reason)
         self.open_source_button.setEnabled(not global_busy)
         self.open_project_button.setEnabled(ready and not global_busy)
         if self._open_source_action is not None:
