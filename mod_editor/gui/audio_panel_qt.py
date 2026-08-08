@@ -1493,10 +1493,11 @@ if PYQT5_AVAILABLE:
             self.export_matching_button.setAccessibleName(
                 "Export all matching audio as a ZIP"
             )
-            self.export_matching_button.setEnabled(False)
-            self.export_matching_button.setToolTip(
-                "Narrow the current filters to 1–256 audio rows."
-            )
+            # Never silent-gray: stay clickable; disableReason teaches 1–256 wall.
+            export_tip = "Narrow the current filters to 1–256 audio rows."
+            self.export_matching_button.setEnabled(True)
+            self.export_matching_button.setToolTip(export_tip)
+            self.export_matching_button.setProperty("disableReason", export_tip)
             collection_actions.addWidget(self.soundtrack_button)
             collection_actions.addWidget(self.labeled_only_filter)
             collection_actions.addStretch(1)
@@ -2775,25 +2776,29 @@ if PYQT5_AVAILABLE:
             self._mark_catalog_query_pending()
 
         def _update_collection_actions(self) -> None:
+            # Never silent-gray: Export matching stays clickable; disableReason
+            # + click-to-explain teach shortlist/raw/count walls.
             if self._shortlist_reviewing:
                 self.soundtrack_button.setEnabled(False)
-                self.export_matching_button.setEnabled(False)
+                tip = "Return to the audio browser to export its filtered results."
+                self.export_matching_button.setEnabled(True)
                 self.export_matching_button.setText("Export matching audio…")
-                self.export_matching_button.setToolTip(
-                    "Return to the audio browser to export its filtered results."
-                )
+                self.export_matching_button.setToolTip(tip)
+                self.export_matching_button.setProperty("disableReason", tip)
                 self._update_audio_shortlist_actions()
                 return
             if self.scope_filter.currentData() == "raw_containers":
                 self.soundtrack_button.setEnabled(
                     self.host.source_ready and not self._busy
                 )
-                self.export_matching_button.setEnabled(False)
-                self.export_matching_button.setText("Export matching audio…")
-                self.export_matching_button.setToolTip(
+                tip = (
                     "Raw BANK/ABNK/WBNK wrappers export one at a time through "
                     "the verified universal-resource path."
                 )
+                self.export_matching_button.setEnabled(True)
+                self.export_matching_button.setText("Export matching audio…")
+                self.export_matching_button.setToolTip(tip)
+                self.export_matching_button.setProperty("disableReason", tip)
                 self._update_audio_shortlist_actions()
                 return
             self.soundtrack_button.setEnabled(
@@ -2802,7 +2807,6 @@ if PYQT5_AVAILABLE:
             count = self.page.total if self.host.source_ready else 0
             query_current = self._catalog_query_is_current()
             enabled = self._catalog_page_actions_ready() and 1 <= count <= 256
-            self.export_matching_button.setEnabled(enabled)
             soundtrack = (
                 self.scope_filter.currentData() == "streaming_ranges"
                 and self.family_filter.currentData() == "music"
@@ -2814,8 +2818,7 @@ if PYQT5_AVAILABLE:
                     "Export soundtrack && music"
                     if soundtrack else "Export matching audio"
                 )
-                self.export_matching_button.setText(f"{label} ({count:,})…")
-                self.export_matching_button.setToolTip(
+                tip = (
                     f"Export all {count:,} filtered rows as one all-or-nothing ZIP. "
                     "The manifest distinguishes staged user WAVs from audio "
                     "derived from your own game copy."
@@ -2826,9 +2829,12 @@ if PYQT5_AVAILABLE:
                         if soundtrack else ""
                     )
                 )
+                self.export_matching_button.setText(f"{label} ({count:,})…")
+                self.export_matching_button.setEnabled(True)
+                self.export_matching_button.setToolTip(tip)
+                self.export_matching_button.setProperty("disableReason", "")
             else:
-                self.export_matching_button.setText("Export matching audio…")
-                self.export_matching_button.setToolTip(
+                tip = (
                     "Load your NFL 2K5 XISO first."
                     if not self.host.source_ready else
                     "Updating results. This action will unlock when the visible page "
@@ -2839,6 +2845,10 @@ if PYQT5_AVAILABLE:
                     f"{count:,} rows match; narrow search, family, or status to "
                     "256 or fewer before exporting."
                 )
+                self.export_matching_button.setText("Export matching audio…")
+                self.export_matching_button.setEnabled(True)
+                self.export_matching_button.setToolTip(tip)
+                self.export_matching_button.setProperty("disableReason", tip)
             self._update_audio_shortlist_actions()
 
         def _audio_status_texts(
@@ -4762,6 +4772,16 @@ if PYQT5_AVAILABLE:
             )
 
         def _export_matching_audio(self) -> None:
+            reason = str(
+                self.export_matching_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                QMessageBox.information(
+                    self,
+                    "Cannot export matching audio yet",
+                    reason,
+                )
+                return
             if self._busy:
                 return
             if not self._catalog_page_actions_ready():

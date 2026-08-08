@@ -25,6 +25,7 @@ from PyQt5.QtWidgets import (
     QHeaderView,
     QLabel,
     QLineEdit,
+    QMessageBox,
     QPlainTextEdit,
     QPushButton,
     QScrollArea,
@@ -1510,8 +1511,27 @@ class TextRosterPanel(QWidget):
         self.current_text.blockSignals(False)
         self.current_text.setReadOnly(not asset.editable)
         self.text_reason.setText(asset.reason)
+        # Never silent-gray: Export always available once a string is selected.
         self.export_text_button.setEnabled(True)
+        self.export_text_button.setToolTip("Export this string to a private .txt file.")
+        self.export_text_button.setProperty("disableReason", "")
         self._update_text_usage()
+
+    def _lock_text_action(
+        self, button: QPushButton, tip: str, block: str = ""
+    ) -> None:
+        """Keep action clickable; empty block means ready, non-empty teaches wall."""
+        button.setEnabled(True)
+        button.setToolTip(tip if tip else block)
+        button.setProperty("disableReason", block)
+
+    def _explain_text_action(self, button: QPushButton, title: str) -> bool:
+        """If action is blocked, show why and return True (caller should stop)."""
+        reason = str(button.property("disableReason") or "").strip()
+        if not reason:
+            return False
+        QMessageBox.information(self, title, reason)
+        return True
 
     def _clear_text_editor(self) -> None:
         self.selected_asset = None
@@ -1524,9 +1544,14 @@ class TextRosterPanel(QWidget):
         self.current_text.setReadOnly(True)
         self.text_limit.setText("No allocation selected")
         self.text_reason.clear()
-        self.apply_text_button.setEnabled(False)
-        self.revert_text_button.setEnabled(False)
-        self.export_text_button.setEnabled(False)
+        # Never silent-gray: stay clickable with select-string teaching tip.
+        tip = (
+            "Select a string in the table first. Apply/Revert/Export stay "
+            "clickable so blocked states explain themselves."
+        )
+        self._lock_text_action(self.apply_text_button, tip, tip)
+        self._lock_text_action(self.revert_text_button, tip, tip)
+        self._lock_text_action(self.export_text_button, tip, tip)
 
     def _update_text_usage(self) -> None:
         asset = self.selected_asset
@@ -1537,14 +1562,41 @@ class TextRosterPanel(QWidget):
         self.text_limit.setText(usage.message)
         self.text_limit.setStyleSheet("" if usage.valid else "color: #ff7b84;")
         original_current = _safe_text(asset, self.host.text_value)
-        self.apply_text_button.setEnabled(
+        can_apply = (
             asset.editable and usage.valid and current != original_current
         )
-        self.revert_text_button.setEnabled(
-            asset.editable and original_current != asset.value
-        )
+        if can_apply:
+            apply_tip = "Apply this text edit to the staged volume."
+            apply_block = ""
+        elif not asset.editable:
+            apply_tip = apply_block = (
+                asset.reason
+                or "This allocation is read-only / Preview-Export only."
+            )
+        elif not usage.valid:
+            apply_tip = apply_block = usage.message
+        else:
+            apply_tip = apply_block = "No change from the current staged/source text."
+        self._lock_text_action(self.apply_text_button, apply_tip, apply_block)
+
+        can_revert = asset.editable and original_current != asset.value
+        if can_revert:
+            revert_tip = "Restore this string to the source disc value."
+            revert_block = ""
+        elif not asset.editable:
+            revert_tip = revert_block = (
+                asset.reason
+                or "This allocation is read-only; nothing can be reverted."
+            )
+        else:
+            revert_tip = revert_block = (
+                "This string is still original — nothing staged to revert."
+            )
+        self._lock_text_action(self.revert_text_button, revert_tip, revert_block)
 
     def _apply_selected_text(self) -> None:
+        if self._explain_text_action(self.apply_text_button, "Cannot apply text yet"):
+            return
         asset = self.selected_asset
         if asset is None:
             return
@@ -1561,6 +1613,8 @@ class TextRosterPanel(QWidget):
         self._changed(f"Applied {asset.label}.", asset_id=asset.asset_id)
 
     def _revert_selected_text(self) -> None:
+        if self._explain_text_action(self.revert_text_button, "Nothing to revert"):
+            return
         asset = self.selected_asset
         if asset is None:
             return
@@ -1572,6 +1626,8 @@ class TextRosterPanel(QWidget):
         self._changed(f"Reverted {asset.label}.", asset_id=asset.asset_id)
 
     def _export_selected_text(self) -> None:
+        if self._explain_text_action(self.export_text_button, "Cannot export yet"):
+            return
         asset = self.selected_asset
         if asset is None:
             return
@@ -1703,8 +1759,12 @@ class TextRosterPanel(QWidget):
         self.current_first_limit.clear()
         self.current_last_limit.clear()
         self.current_face_shield.setEnabled(False)
-        self.apply_current_button.setEnabled(False)
-        self.revert_current_button.setEnabled(False)
+        tip = (
+            "Select a current-roster player first. Apply/Revert stay clickable "
+            "so blocked states explain themselves."
+        )
+        self._lock_text_action(self.apply_current_button, tip, tip)
+        self._lock_text_action(self.revert_current_button, tip, tip)
         self.export_current_number_button.setEnabled(False)
 
     def _update_current_controls(self) -> None:
@@ -1753,7 +1813,7 @@ class TextRosterPanel(QWidget):
             or current_number != number.value
             or current_shield != shield.value
         )
-        self.apply_current_button.setEnabled(
+        can_apply = (
             changed
             and (not first_changed or first.editable and first_usage.valid)
             and (not last_changed or last.editable and last_usage.valid)
@@ -1763,12 +1823,57 @@ class TextRosterPanel(QWidget):
                 or shield.editable and selected_shield in {0, 1, 2}
             )
         )
-        self.revert_current_button.setEnabled(modified)
+        if can_apply:
+            apply_tip = "Apply name / jersey / face-shield edits for this player."
+            apply_block = ""
+        elif not changed:
+            apply_tip = apply_block = (
+                "No change from the current staged/source player fields."
+            )
+        elif first_changed and not (first.editable and first_usage.valid):
+            apply_tip = apply_block = (
+                first.reason
+                if not first.editable
+                else first_usage.message
+            )
+        elif last_changed and not (last.editable and last_usage.valid):
+            apply_tip = apply_block = (
+                last.reason if not last.editable else last_usage.message
+            )
+        elif number_changed and not (number.editable and jersey_valid):
+            apply_tip = apply_block = (
+                number.reason
+                if not number.editable
+                else f"Jersey number must be {number.minimum}–{number.maximum}."
+            )
+        elif shield_changed and not (
+            shield.editable and selected_shield in {0, 1, 2}
+        ):
+            apply_tip = apply_block = (
+                shield.reason
+                if not shield.editable
+                else "Pick a valid face-shield option."
+            )
+        else:
+            apply_tip = apply_block = "Player fields are not ready to apply."
+        self._lock_text_action(self.apply_current_button, apply_tip, apply_block)
+        if modified:
+            revert_tip = "Restore this player's fields to source disc values."
+            revert_block = ""
+        else:
+            revert_tip = revert_block = (
+                "This player is still original — nothing staged to revert."
+            )
+        self._lock_text_action(self.revert_current_button, revert_tip, revert_block)
         self.current_number.setStyleSheet(
             "" if jersey_valid else "border: 1px solid #ff7b84;"
         )
 
     def _apply_current_player(self) -> None:
+        if self._explain_text_action(
+            self.apply_current_button, "Cannot apply player yet"
+        ):
+            return
         row = self.selected_current_row
         if row is None or self.catalog is None:
             return
@@ -1843,6 +1948,10 @@ class TextRosterPanel(QWidget):
         )
 
     def _revert_current_player(self) -> None:
+        if self._explain_text_action(
+            self.revert_current_button, "Nothing to revert"
+        ):
+            return
         row = self.selected_current_row
         if row is None:
             return

@@ -13879,14 +13879,19 @@ class InspectorBrowser(QFrame):
         else:
             self.text_limit.setText("Protected allocation; this value is read-only.")
         self.text_limit.setToolTip(str(getattr(allocation, "note")))
-        self.revert_text_button.setEnabled(
-            row.row_id in self.facade.modified_asset_ids
-        )
-        self.revert_text_button.setToolTip(
-            "Restore this one string allocation to the source value."
-            if self.revert_text_button.isEnabled()
-            else "This allocation is still original."
-        )
+        # Never silent-gray: Revert stays clickable; disableReason teaches
+        # "still original" vs restore-one-allocation.
+        staged = row.row_id in self.facade.modified_asset_ids
+        if staged:
+            revert_tip = "Restore this one string allocation to the source value."
+            revert_block = ""
+        else:
+            revert_tip = revert_block = (
+                "This allocation is still original — nothing staged to revert."
+            )
+        self.revert_text_button.setEnabled(True)
+        self.revert_text_button.setToolTip(revert_tip)
+        self.revert_text_button.setProperty("disableReason", revert_block)
         self._text_editor_changed()
 
     def _clear_text_editor(self, message: str) -> None:
@@ -13897,8 +13902,16 @@ class InspectorBrowser(QFrame):
         self.text_editor.blockSignals(False)
         self.text_editor.setEnabled(False)
         self.text_limit.setText(message)
-        self.apply_text_button.setEnabled(False)
-        self.revert_text_button.setEnabled(False)
+        tip = (
+            "Select an editable string allocation first. Click still explains — "
+            "Apply/Revert stay clickable."
+        )
+        self.apply_text_button.setEnabled(True)
+        self.revert_text_button.setEnabled(True)
+        self.apply_text_button.setToolTip(tip)
+        self.revert_text_button.setToolTip(tip)
+        self.apply_text_button.setProperty("disableReason", tip)
+        self.revert_text_button.setProperty("disableReason", tip)
 
     def _text_editor_changed(self) -> None:
         if not self.text_mode:
@@ -13906,24 +13919,51 @@ class InspectorBrowser(QFrame):
         row = self._selected_row()
         allocation = self._text_allocations.get(row.row_id) if row else None
         if allocation is None or not bool(getattr(allocation, "editable")):
-            self.apply_text_button.setEnabled(False)
+            tip = (
+                "Select an editable string allocation first. Non-editable rows "
+                "are export/browse only."
+            )
+            self.apply_text_button.setEnabled(True)
+            self.apply_text_button.setToolTip(tip)
+            self.apply_text_button.setProperty("disableReason", tip)
             return
         value = self.text_editor.toPlainText()
         units = len(value.encode("utf-16be")) // 2
         limit = int(getattr(allocation, "maximum_utf16_units"))
         current = self.facade.localization_text_value(row.row_id)
         valid = "\0" not in value and units <= limit
-        self.apply_text_button.setEnabled(valid and value != current)
+        changed = value != current
+        if valid and changed:
+            tip = f"Apply {units} of {limit} UTF-16 units to this allocation."
+            block = ""
+        elif not valid:
+            tip = block = (
+                f"This text needs {units} UTF-16 units; the limit is {limit}."
+                if units > limit
+                else "Null characters are not allowed in this allocation."
+            )
+        else:
+            tip = block = "No change from the current staged/source text."
+        self.apply_text_button.setEnabled(True)
+        self.apply_text_button.setToolTip(tip)
+        self.apply_text_button.setProperty("disableReason", block)
         color = "#39d98a" if valid else "#ff6b7a"
-        self.apply_text_button.setToolTip(
-            f"Apply {units} of {limit} UTF-16 units to this allocation."
-            if valid
-            else f"This text needs {units} UTF-16 units; the limit is {limit}."
-        )
         self.text_editor_label.setText(f"Replacement  •  {units}/{limit} UTF-16 units")
         self.text_editor_label.setStyleSheet(f"color: {color};")
 
     def _apply_text(self) -> None:
+        reason = str(self.apply_text_button.property("disableReason") or "").strip()
+        if reason:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(
+                self,
+                "Cannot apply text yet",
+                reason
+                + "\n\nFix: select an editable string, stay under the UTF-16 unit "
+                "limit, then Apply.",
+            )
+            return
         row = self._selected_row()
         if row is None or row.row_id not in self._text_allocations:
             return
@@ -13938,6 +13978,16 @@ class InspectorBrowser(QFrame):
         )
 
     def _revert_text(self) -> None:
+        reason = str(self.revert_text_button.property("disableReason") or "").strip()
+        if reason:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(
+                self,
+                "Nothing to revert",
+                reason,
+            )
+            return
         row = self._selected_row()
         if row is None or row.row_id not in self._text_allocations:
             return

@@ -540,7 +540,11 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
 
         panel.current_table.selectRow(0)
         application.processEvents()
-        self.assertFalse(panel.apply_current_button.isEnabled())
+        # Never silent-gray: Apply stays clickable; disableReason teaches "no change".
+        self.assertTrue(panel.apply_current_button.isEnabled())
+        self.assertTrue(
+            str(panel.apply_current_button.property("disableReason") or "").strip()
+        )
         self.assertTrue(panel.export_current_number_button.isEnabled())
         self.assertEqual(panel.current_face_shield.currentText(), "None")
         self.assertIn("not a HOME/AWAY tint", panel.current_note.text())
@@ -549,6 +553,9 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
             panel.current_face_shield.findData(1)
         )
         self.assertTrue(panel.apply_current_button.isEnabled())
+        self.assertFalse(
+            str(panel.apply_current_button.property("disableReason") or "").strip()
+        )
         panel._apply_current_player()
         self.assertEqual(host.number_value("number.5.primary_players.0"), 88)
         self.assertEqual(host.number_value("face-shield.5.primary_players.0"), 1)
@@ -559,13 +566,19 @@ class TextRosterPanelOffscreenTests(unittest.TestCase):
         self.assertFalse(panel.current_last.isEnabled())
         self.assertTrue(panel.current_number.isEnabled())
         self.assertTrue(panel.current_face_shield.isEnabled())
-        self.assertFalse(panel.apply_current_button.isEnabled())
+        self.assertTrue(panel.apply_current_button.isEnabled())
+        self.assertTrue(
+            str(panel.apply_current_button.property("disableReason") or "").strip()
+        )
         self.assertTrue(panel.export_current_number_button.isEnabled())
         panel.current_number.setText("66")
         panel.current_face_shield.setCurrentIndex(
             panel.current_face_shield.findData(2)
         )
         self.assertTrue(panel.apply_current_button.isEnabled())
+        self.assertFalse(
+            str(panel.apply_current_button.property("disableReason") or "").strip()
+        )
         panel._apply_current_player()
         self.assertEqual(
             host.number_value("number.5.secondary_players.0"), 66

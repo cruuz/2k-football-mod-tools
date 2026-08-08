@@ -2579,8 +2579,13 @@ class AudioPanelOffscreenTests(unittest.TestCase):
 
             panel.page = AudioPage((), 257, 0, 1)
             panel._update_collection_actions()
-            self.assertFalse(panel.export_matching_button.isEnabled())
+            # Never silent-gray: button stays clickable; disableReason teaches 256 wall.
+            self.assertTrue(panel.export_matching_button.isEnabled())
             self.assertIn("256 or fewer", panel.export_matching_button.toolTip())
+            self.assertIn(
+                "256 or fewer",
+                str(panel.export_matching_button.property("disableReason") or ""),
+            )
             panel.deleteLater()
             application.processEvents()
 
@@ -2613,7 +2618,11 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel.count_label.text(), "Updating audio results…")
             self.assertFalse(panel.previous_button.isEnabled())
             self.assertFalse(panel.next_button.isEnabled())
-            self.assertFalse(panel.export_matching_button.isEnabled())
+            # Never silent-gray: Export matching stays clickable while query pending.
+            self.assertTrue(panel.export_matching_button.isEnabled())
+            self.assertTrue(
+                str(panel.export_matching_button.property("disableReason") or "").strip()
+            )
             self.assertFalse(panel.shortlist_page_button.isEnabled())
             self.assertFalse(panel.shortlist_matching_button.isEnabled())
             self.assertTrue(panel.play_button.isEnabled())
@@ -2626,6 +2635,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel.page.total, 1)
             self.assertTrue(panel._catalog_query_is_current())
             self.assertTrue(panel.export_matching_button.isEnabled())
+            self.assertFalse(
+                str(panel.export_matching_button.property("disableReason") or "").strip()
+            )
             self.assertTrue(panel.shortlist_page_button.isEnabled())
             self.assertTrue(panel.shortlist_matching_button.isEnabled())
             panel.deleteLater()
@@ -2774,9 +2786,17 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             panel.search.setText("c0101")
             with patch(
                 "mod_editor.gui.audio_panel_qt.QFileDialog.getSaveFileName"
-            ) as stale_dialog:
+            ) as stale_dialog, patch(
+                "mod_editor.gui.audio_panel_qt.QMessageBox.information"
+            ) as blocked_info:
                 panel._export_matching_audio()
             stale_dialog.assert_not_called()
+            # Never silent-gray: stale query surfaces disableReason via click-to-explain.
+            blocked_info.assert_called_once()
+            self.assertIn(
+                "Updating results",
+                str(blocked_info.call_args.args[2]),
+            )
             self.assertEqual(captured, {})
 
             panel._filters_changed()
