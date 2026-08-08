@@ -3321,10 +3321,10 @@ if PYQT5_AVAILABLE:
             self.shortlist_toggle_button.setText(
                 "Remove selected sound" if selected_added else "Add selected sound"
             )
-            self.shortlist_toggle_button.setEnabled(
+            toggle_ready = (
                 ready and selected_playable and (selected_added or count < 256)
             )
-            self.shortlist_toggle_button.setToolTip(
+            toggle_tip = (
                 "Remove this sound from the session-only shortlist."
                 if selected_added else
                 "The shortlist is full. Remove a sound before adding another."
@@ -3338,7 +3338,16 @@ if PYQT5_AVAILABLE:
                 "Complete streaming banks are excluded; choose a standalone sound "
                 "or an indexed streaming range."
                 if isinstance(selected, Nfl2k5StreamingAudioBank) else
+                "Load your NFL 2K5 XISO first."
+                if not self.host.source_ready else
+                "Wait for the current audio task to finish."
+                if self._busy else
                 "Choose a playable sound first."
+            )
+            self.shortlist_toggle_button.setEnabled(True)
+            self.shortlist_toggle_button.setToolTip(toggle_tip)
+            self.shortlist_toggle_button.setProperty(
+                "disableReason", "" if toggle_ready else toggle_tip
             )
             additions = tuple(
                 asset for asset in self._visible_playable_audio_assets()
@@ -4518,6 +4527,12 @@ if PYQT5_AVAILABLE:
             self.refresh(keep_selection=False)
 
         def _toggle_audio_shortlist(self) -> None:
+            reason = str(
+                self.shortlist_toggle_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             asset = self._selected_asset()

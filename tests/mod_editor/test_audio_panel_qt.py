@@ -2413,7 +2413,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertFalse(panel.replace_button.isEnabled())
             self.assertTrue(panel.pack_path_card.isHidden())
             self.assertFalse(panel.copy_pack_path_button.isEnabled())
-            self.assertFalse(panel.shortlist_toggle_button.isEnabled())
+            self.assertTrue(panel.shortlist_toggle_button.isEnabled())
+
+            self.assertTrue(str(panel.shortlist_toggle_button.property("disableReason") or "").strip())
             self.assertTrue(panel.shortlist_page_button.isEnabled())
             self.assertTrue(str(panel.shortlist_page_button.property("disableReason") or "").strip())
             self.assertEqual(panel.export_button.text(), "Export Raw Container")
@@ -2942,7 +2944,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
                 panel.scope_filter.findData("streaming")
             )
             application.processEvents()
-            self.assertFalse(panel.shortlist_toggle_button.isEnabled())
+            self.assertTrue(panel.shortlist_toggle_button.isEnabled())
+
+            self.assertTrue(str(panel.shortlist_toggle_button.property("disableReason") or "").strip())
             self.assertTrue(panel.shortlist_page_button.isEnabled())
             self.assertTrue(str(panel.shortlist_page_button.property("disableReason") or "").strip())
             self.assertIn("Complete banks", panel.shortlist_page_button.toolTip())
