@@ -1,5 +1,34 @@
 # APF 2K8 Mod Studio Changelog
 
+## Unreleased (post-alpha.60 continuation) — never-silent-gray + blank-preview fail-closed — 2026-08-08
+
+### Community issues closed or honesty-labeled
+
+- **Import / Replace gray with no explanation (Discord class)** — expanded
+  never-silent-gray across:
+  - Stadium Studio **mesh** Import/Export (disableReason + click-to-explain)
+  - Stadium Studio **package** Replace/Export/Revert/Build (locked embeds teach
+    surface-ownership wall; POSITION-only mesh lane named in tips)
+  - **Wordmarks** Import/Export when game not loaded
+  - **AssetBrowser / All Textures** Replace (non-editable rows + Field Art
+    browse-export-only locks stay clickable and explain)
+  - **UniformStudio** Export/Replace empty state (load/select tip)
+- **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
+  and Wordmark panels fail closed after **45s** with re-select / Export-raw
+  guidance (token-scoped so a newer selection cancels the watchdog).
+- **Crib drop-parity hang under offscreen tests** — fit-mode `QInputDialog`
+  must be mocked; production drop path already offers Contain/Cover/Stretch.
+- **PORTME preview errors** — list full supported PNG format set (incl. DXN
+  namefont, format-32 cubemap face-0, linear DXT) + re-select guidance.
+
+### Honesty
+
+- Locked Field Art browse rows still **cannot write** stock NFL endzones;
+  they only teach the six proved slots wall.
+- Stadium package related-outer rows are not surface-owned; only catalog-
+  authorized embedded TXTRs are writable offline.
+- Freehand routes still not Editable; G1/G2 still offline-bytes only.
+
 ## 0.1.0-alpha.60 — nameplate DXN, linear TXTR, package maps, keyboard/UX — 2026-08-08
 
 ### Community issues closed or honesty-labeled

@@ -6,6 +6,20 @@ writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
 
+## Unreleased (post-RC55 continuation) — crib drop-parity + test harness — 2026-08-08
+
+### Community / product
+
+- **Crib drag/drop fit** — off-size JPEG/PNG drops open the same Contain/Cover/
+  Stretch chooser as the Replace dialog (shared `_fit_crib_image` path). Drop-
+  parity tests mock the chooser under offscreen Qt so the modal never hangs CI.
+- **pytest offscreen default** — `tests/conftest.py` sets `QT_QPA_PLATFORM=offscreen`
+  so monorepo GUI tests do not hang waiting on a display/modal.
+
+### Honesty
+
+- Freehand routes still not Editable; G1/G2 still offline-bytes only.
+
 ## v1.0 RC55 — package-map writer, playbooks inspector map, crib UX — 2026-08-08
 
 ### Community / product
