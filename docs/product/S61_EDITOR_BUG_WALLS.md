@@ -25,5 +25,7 @@ offline-writer-proved or better.
 | 16–20 | 2K5 community discoverability | **Partial** | Equipment browse, menu logos labeled in README/changelog; continue polish |
 | GH#2 | Stock playbooks | **Partial** | Browser + route copy + clone + **broken-play annotations**; freehand wall |
 
-Residual risks: G-series offline package writers unproved; freehand inverse
-compiler not Editable; STFS resign external; no interactive Xenia in this run.
+Residual risks: G1/G2 **runtime** unproved (offline writers proved for bytes);
+freehand inverse compiler not Editable; STFS resign external; monorepo pytest
+order-dependent hang residual (use batched suites); hour gate multi-session;
+no interactive Xenia in this run.
