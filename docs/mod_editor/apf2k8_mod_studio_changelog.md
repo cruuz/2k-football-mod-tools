@@ -26,6 +26,10 @@
   - **Text Sheet Export/Import** never silent-gray (load/loading walls)
   - **Ratings sheet Export/Import** never silent-gray (load/workspace walls)
   - **Custom Team Appearance Write-raw** never silent-gray (project-vs-raw wall)
+  - **Player rating / position Apply/Revert** never silent-gray
+  - **Bulk audio complete catalog + original banks** never silent-gray (busy/load)
+  - **Export matching sounds / Export decoded rows** never silent-gray
+  - **Stadium Reset View + Export scene ZIP** never silent-gray
 - **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
   Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
   embedded TXTR fail closed after **45s** with re-select / Export-raw guidance
