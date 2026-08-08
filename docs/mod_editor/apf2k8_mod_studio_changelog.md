@@ -13,6 +13,8 @@
   - **AssetBrowser / All Textures** Replace (non-editable rows + Field Art
     browse-export-only locks stay clickable and explain)
   - **UniformStudio** Export/Replace empty state (load/select tip)
+  - **digital_font** Export/Replace/Revert when unloaded
+  - **Field Art** focused editor Export/Replace/Build/Revert (stage wall)
 - **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
   Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
   embedded TXTR fail closed after **45s** with re-select / Export-raw guidance
