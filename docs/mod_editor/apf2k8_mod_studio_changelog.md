@@ -33,6 +33,7 @@
   - **Roster Replace Name / Revert Name** never silent-gray
   - **Audio Play** never silent-gray (bank/unsupported rows explain)
   - **Audio PCM template / Replace from audio / XMA Replace / Revert** never silent-gray
+  - **Audio shortlist construction** never silent-gray (toggle/page/match/clear/review/move/export)
 - **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
   Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
   embedded TXTR fail closed after **45s** with re-select / Export-raw guidance
