@@ -1125,8 +1125,20 @@ def decode_txtr_base_rgba(
     endian = int(metadata["endianness"])
     selectors = list(metadata["swizzle_components"])
     if metadata["dimension"] != 1 or metadata["stacked"]:
+        dim = int(metadata["dimension"])
+        dim_hint = {
+            0: "1D",
+            1: "2D",
+            2: "3D",
+            3: "cubemap",
+        }.get(dim, f"dimension={dim}")
         raise FormatError(
-            "PORTME: PNG conversion currently supports only non-stacked 2D TXTR"
+            "PORTME: PNG conversion currently supports only non-stacked 2D TXTR "
+            f"(this asset is {dim_hint}"
+            f"{', stacked' if metadata['stacked'] else ''}; "
+            f"format {format_value} {metadata.get('format_name', '')}). "
+            "Cubemap/3D lightmaps (e.g. SpecularLightBox format 32) remain "
+            "raw-export only until a face-preview path ships."
         )
     if not metadata["tiled"]:
         raise FormatError("PORTME: linear TXTR base-level routing is unverified")
