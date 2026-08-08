@@ -10336,12 +10336,13 @@ class InspectorBrowser(QFrame):
         )
         self.export_ratings_sheet_button.setObjectName("secondaryButton")
         self.export_ratings_sheet_button.setVisible(roster_mode)
-        self.export_ratings_sheet_button.setEnabled(False)
-        self.export_ratings_sheet_button.setToolTip(
-            "Export all 2,254 players and all 31 exact base ratings as one "
-            "private CSV. It contains data derived from your game copy and "
-            "never enters a shareable project."
+        # Never silent-gray: stay clickable; disableReason teaches Load game.
+        _ratings_boot = (
+            "Load a supported APF game first, then Export/Import ratings sheet."
         )
+        self.export_ratings_sheet_button.setEnabled(True)
+        self.export_ratings_sheet_button.setToolTip(_ratings_boot)
+        self.export_ratings_sheet_button.setProperty("disableReason", _ratings_boot)
         self.export_ratings_sheet_button.clicked.connect(
             self._export_player_rating_sheet
         )
@@ -10354,12 +10355,9 @@ class InspectorBrowser(QFrame):
             "Import complete APF player ratings sheet"
         )
         self.import_ratings_sheet_button.setVisible(roster_mode)
-        self.import_ratings_sheet_button.setEnabled(False)
-        self.import_ratings_sheet_button.setToolTip(
-            "Ctrl+Shift+I · Choose a private Mod Studio ratings CSV, validate every row without "
-            "changing the project, then review replacements, source reverts, "
-            "unchanged cells, conflicts, and errors before an explicit Apply."
-        )
+        self.import_ratings_sheet_button.setEnabled(True)
+        self.import_ratings_sheet_button.setToolTip(_ratings_boot)
+        self.import_ratings_sheet_button.setProperty("disableReason", _ratings_boot)
         self.import_ratings_sheet_button.clicked.connect(
             self._import_player_rating_sheet
         )
@@ -12457,8 +12455,32 @@ class InspectorBrowser(QFrame):
         self.source_filter.blockSignals(False)
         self.findings.setText("  •  ".join(model.findings))
         self.export_rows_button.setEnabled(True)
-        self.export_ratings_sheet_button.setEnabled(self.roster_mode)
-        self.import_ratings_sheet_button.setEnabled(self.roster_mode)
+        if self.roster_mode:
+            export_rtip = (
+                "Export all 2,254 players and all 31 exact base ratings as one "
+                "private CSV. It contains data derived from your game copy and "
+                "never enters a shareable project."
+            )
+            import_rtip = (
+                "Ctrl+Shift+I · Choose a private Mod Studio ratings CSV, validate "
+                "every row without changing the project, then review replacements, "
+                "source reverts, unchanged cells, conflicts, and errors before an "
+                "explicit Apply."
+            )
+            self.export_ratings_sheet_button.setEnabled(True)
+            self.export_ratings_sheet_button.setToolTip(export_rtip)
+            self.export_ratings_sheet_button.setProperty("disableReason", "")
+            self.import_ratings_sheet_button.setEnabled(True)
+            self.import_ratings_sheet_button.setToolTip(import_rtip)
+            self.import_ratings_sheet_button.setProperty("disableReason", "")
+        else:
+            rtip = "Ratings sheet actions are only available in the Roster workspace."
+            self.export_ratings_sheet_button.setEnabled(True)
+            self.export_ratings_sheet_button.setToolTip(rtip)
+            self.export_ratings_sheet_button.setProperty("disableReason", rtip)
+            self.import_ratings_sheet_button.setEnabled(True)
+            self.import_ratings_sheet_button.setToolTip(rtip)
+            self.import_ratings_sheet_button.setProperty("disableReason", rtip)
         self._update_bulk_audio_export_controls()
         if self.text_mode:
             export_tip = (
@@ -16264,6 +16286,16 @@ class InspectorBrowser(QFrame):
         )
 
     def _export_player_rating_sheet(self) -> None:
+        reason = str(
+            self.export_ratings_sheet_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export ratings sheet yet",
+                reason,
+            )
+            return
         model = self.model
         if not self.roster_mode or model is None:
             return
@@ -16312,6 +16344,16 @@ class InspectorBrowser(QFrame):
     def _import_player_rating_sheet(self) -> None:
         """Validate a private CSV first; never mutate from the file chooser."""
 
+        reason = str(
+            self.import_ratings_sheet_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot import ratings sheet yet",
+                reason,
+            )
+            return
         if not self.roster_mode or self.model is None:
             return
         source, _selected_filter = QFileDialog.getOpenFileName(
@@ -16431,12 +16473,37 @@ class InspectorBrowser(QFrame):
         self.next.setEnabled(False)
         self.page.setText("Page 0 of 0")
         self.export_rows_button.setEnabled(self.model is not None)
-        self.export_ratings_sheet_button.setEnabled(
-            self.roster_mode and self.model is not None
-        )
-        self.import_ratings_sheet_button.setEnabled(
-            self.roster_mode and self.model is not None
-        )
+        ratings_ready = self.roster_mode and self.model is not None
+        if ratings_ready:
+            export_rtip = (
+                "Export all 2,254 players and all 31 exact base ratings as one "
+                "private CSV. It contains data derived from your game copy and "
+                "never enters a shareable project."
+            )
+            import_rtip = (
+                "Ctrl+Shift+I · Choose a private Mod Studio ratings CSV, validate "
+                "every row without changing the project, then review replacements, "
+                "source reverts, unchanged cells, conflicts, and errors before an "
+                "explicit Apply."
+            )
+            self.export_ratings_sheet_button.setEnabled(True)
+            self.export_ratings_sheet_button.setToolTip(export_rtip)
+            self.export_ratings_sheet_button.setProperty("disableReason", "")
+            self.import_ratings_sheet_button.setEnabled(True)
+            self.import_ratings_sheet_button.setToolTip(import_rtip)
+            self.import_ratings_sheet_button.setProperty("disableReason", "")
+        else:
+            rtip = (
+                "Load a supported APF game first, then Export/Import ratings sheet."
+                if self.roster_mode
+                else "Ratings sheet actions are only available in the Roster workspace."
+            )
+            self.export_ratings_sheet_button.setEnabled(True)
+            self.export_ratings_sheet_button.setToolTip(rtip)
+            self.export_ratings_sheet_button.setProperty("disableReason", rtip)
+            self.import_ratings_sheet_button.setEnabled(True)
+            self.import_ratings_sheet_button.setToolTip(rtip)
+            self.import_ratings_sheet_button.setProperty("disableReason", rtip)
         self._update_bulk_audio_export_controls()
         if self.model is None:
             self.play_audio_button.setEnabled(False)
