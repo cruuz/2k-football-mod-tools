@@ -1116,6 +1116,76 @@ def _swizzle_pixel(
     return tuple(values[selector] for selector in selectors)  # type: ignore[return-value]
 
 
+def _half_float_to_u8(bits: int) -> int:
+    """IEEE-754 binary16 → 8-bit using 0..1 float range (clamped)."""
+
+    import struct
+
+    value = struct.unpack("<e", struct.pack("<H", bits & 0xFFFF))[0]
+    if value != value or value in (float("inf"), float("-inf")):  # NaN/Inf
+        return 0
+    if value <= 0.0:
+        return 0
+    if value >= 1.0:
+        return 255
+    return int(value * 255.0 + 0.5)
+
+
+def decode_txtr_cubemap_face0_rgba(
+    metadata: dict[str, object], base_data: bytes
+) -> tuple[int, int, bytes]:
+    """Preview face 0 of a format-32 (16_16_16_16) cubemap lightmap.
+
+    Real APF pins (SpecularLightBox class): dimension=3, format=32, tiled,
+    6 faces × width×height×8 bytes in the base allocation. Only face 0 is
+    decoded for PNG preview; other faces and mips stay raw-export only.
+    """
+
+    import struct
+
+    if int(metadata.get("dimension", -1)) != 3:
+        raise FormatError("PORTME: cubemap face0 decode requires dimension=3")
+    if metadata.get("stacked"):
+        raise FormatError("PORTME: stacked cubemap face0 is unsupported")
+    if not metadata.get("tiled"):
+        raise FormatError("PORTME: linear cubemap face0 routing is unverified")
+    format_value = int(metadata["format"])
+    if format_value != 32:
+        raise FormatError(
+            f"PORTME: cubemap face0 PNG only for format 32 (16_16_16_16); "
+            f"got {format_value} ({metadata.get('format_name', '')})"
+        )
+    width = int(metadata["width"])
+    height = int(metadata["height"])
+    pitch = int(metadata["pitch_pixels"])
+    endian = int(metadata["endianness"])
+    selectors = list(metadata["swizzle_components"])
+    if width <= 0 or height <= 0 or pitch < width:
+        raise FormatError("PORTME: cubemap face0 has invalid dimensions")
+    face_bytes = width * height * 8
+    if len(base_data) < face_bytes:
+        raise FormatError(
+            f"PORTME: cubemap base is {len(base_data)} bytes; "
+            f"face0 needs {face_bytes}"
+        )
+    # Face 0 is the first w×h×8 tiled region (proved on SpecularLightBox).
+    face0 = base_data[:face_bytes]
+    linear = _untile_2d(face0, width, height, pitch, 1, 1, 8)
+    linear = _endian_swap(linear, endian)
+    rgba = bytearray(width * height * 4)
+    for pixel_index in range(width * height):
+        r16, g16, b16, a16 = struct.unpack_from("<HHHH", linear, pixel_index * 8)
+        r8 = _half_float_to_u8(r16)
+        g8 = _half_float_to_u8(g16)
+        b8 = _half_float_to_u8(b16)
+        a8 = _half_float_to_u8(a16)
+        if a16 == 0:
+            a8 = 255  # APF lightboxes store A=0; force opaque preview
+        pixel = _swizzle_pixel((r8, g8, b8, a8), selectors)
+        rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+    return width, height, bytes(rgba)
+
+
 def decode_txtr_base_rgba(
     metadata: dict[str, object], base_data: bytes
 ) -> tuple[int, int, bytes]:
@@ -1126,6 +1196,13 @@ def decode_txtr_base_rgba(
     endian = int(metadata["endianness"])
     selectors = list(metadata["swizzle_components"])
     if metadata["dimension"] != 1 or metadata["stacked"]:
+        # Face-0 preview for APF format-32 cubemap lightmaps.
+        if (
+            int(metadata["dimension"]) == 3
+            and not metadata["stacked"]
+            and format_value == 32
+        ):
+            return decode_txtr_cubemap_face0_rgba(metadata, base_data)
         dim = int(metadata["dimension"])
         dim_hint = {
             0: "1D",
@@ -1138,8 +1215,8 @@ def decode_txtr_base_rgba(
             f"(this asset is {dim_hint}"
             f"{', stacked' if metadata['stacked'] else ''}; "
             f"format {format_value} {metadata.get('format_name', '')}). "
-            "Cubemap/3D lightmaps (e.g. SpecularLightBox format 32) remain "
-            "raw-export only until a face-preview path ships."
+            "Cubemap face-0 preview ships for format 32 only; other cubemap/"
+            "3D formats remain raw-export."
         )
     if not metadata["tiled"]:
         raise FormatError("PORTME: linear TXTR base-level routing is unverified")
