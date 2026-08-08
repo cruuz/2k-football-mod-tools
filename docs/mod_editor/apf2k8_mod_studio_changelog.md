@@ -14,8 +14,9 @@
     browse-export-only locks stay clickable and explain)
   - **UniformStudio** Export/Replace empty state (load/select tip)
 - **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
-  and Wordmark panels fail closed after **45s** with re-select / Export-raw
-  guidance (token-scoped so a newer selection cancels the watchdog).
+  Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
+  embedded TXTR fail closed after **45s** with re-select / Export-raw guidance
+  (token/generation-scoped so a newer selection cancels the watchdog).
 - **Crib drop-parity hang under offscreen tests** — fit-mode `QInputDialog`
   must be mocked; production drop path already offers Contain/Cover/Stretch.
 - **PORTME preview errors** — list full supported PNG format set (incl. DXN
