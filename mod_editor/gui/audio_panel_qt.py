@@ -4497,9 +4497,33 @@ if PYQT5_AVAILABLE:
                 and asset is not None
                 and asset.asset_id == self._waveform_selected_asset_id
             ):
-                self.load_waveform_button.setEnabled(ready)
+                tip = (
+                    "Reload this sound's private waveform."
+                    if ready
+                    else "Load your NFL 2K5 XISO first."
+                    if not self.host.source_ready
+                    else "Wait for the current audio operation to finish."
+                )
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty(
+                    "disableReason", "" if ready else tip
+                )
             else:
-                self.load_waveform_button.setEnabled(False)
+                # configure path already never-gray for most walls; keep clickable
+                tip = (
+                    "Choose a standalone sound or playable streaming range."
+                    if asset is None or not playable
+                    else "Load your NFL 2K5 XISO first."
+                    if not ready
+                    else "Load waveform for this sound."
+                )
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty(
+                    "disableReason",
+                    "" if (ready and playable) else tip,
+                )
             audio_editing_ready = bool(
                 getattr(self.host, "audio_editing_ready", True)
             )
