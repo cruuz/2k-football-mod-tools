@@ -58,7 +58,7 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
   (`packaging_apf_check.txt`, `packaging_2k5_check.txt` under implementer scratch)
 
 ## Open / residual walls
-0. **Full suite hang classes** — logo ProcessPool (context-manager cleanup shipped); monorepo order-dependent hang; `test_gui_drop_parity` hangs alone. Use batched pytest evidence.
+0. **Full suite hang classes** — logo ProcessPool (context-manager cleanup shipped); monorepo order-dependent hang residual. **`test_gui_drop_parity` FIXED** (unmocked Crib `QInputDialog.getItem` + pool idle pump). Use batched pytest evidence for monorepo.
 1. G1/G2 **runtime** fix packs (emulator witness) — offline only so far
 2. Freehand routes Editable
 3. Per-team stock endzone write wall
@@ -80,3 +80,11 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 
 ## Evidence scratch
 `/tmp/grok-goal-d84b62e44b40/implementer/` — e1_reverify*, logo_export/, packaging_*, pytest_critical_product_batch.txt (168p), nameplate_real_0a.txt, etc.
+
+
+## Session update 2026-08-08T04:08:20-04:00
+- Crib drop-parity hang **fixed** (7/7)
+- Never silent-gray expanded: APF stadium mesh, wordmark, AssetBrowser Replace, UniformStudio, Field Art locked explain
+- Packaging dual RELEASE_PASS (APF 189 / 2K5 195) post-changes
+- Registry 70/70
+- Hour gate ≥10h: **still open** (multi-session continue)
