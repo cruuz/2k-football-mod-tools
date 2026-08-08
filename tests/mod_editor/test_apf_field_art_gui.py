@@ -265,15 +265,25 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             page.deleteLater()
             self.application.processEvents()
 
+    def _assert_replace_locked_explainable(self, page) -> None:
+        """Lock is honest: buttons stay clickable, but disableReason blocks write."""
+
+        self.assertFalse(page.browser.replace_button.isHidden())
+        self.assertFalse(page.browser.revert_button.isHidden())
+        # Never silent-gray: enabled + tooltip + disableReason teach the wall.
+        self.assertTrue(page.browser.replace_button.isEnabled())
+        self.assertTrue(page.browser.revert_button.isEnabled())
+        self.assertEqual(page.browser.replace_button.text(), "Replace locked")
+        self.assertEqual(page.browser.revert_button.text(), "Revert locked")
+        tip = page.browser.replace_button.toolTip()
+        reason = str(page.browser.replace_button.property("disableReason") or "")
+        self.assertTrue(tip.strip(), "locked replace must explain itself")
+        self.assertTrue(reason.strip(), "disableReason required for click-to-explain")
+
     def test_replace_and_revert_are_visible_but_explicitly_locked(self) -> None:
         page = self._page()
         try:
-            self.assertFalse(page.browser.replace_button.isHidden())
-            self.assertFalse(page.browser.revert_button.isHidden())
-            self.assertFalse(page.browser.replace_button.isEnabled())
-            self.assertFalse(page.browser.revert_button.isEnabled())
-            self.assertEqual(page.browser.replace_button.text(), "Replace locked")
-            self.assertEqual(page.browser.revert_button.text(), "Revert locked")
+            self._assert_replace_locked_explainable(page)
             self.assertIn("runtime field material", page.browser.detail_notes.text())
             self.assertIn(
                 "browse and export-only", page.browser.replace_button.toolTip()
@@ -296,9 +306,7 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 self.assertGreater(index, 0)
                 page.group_filter.setCurrentIndex(index)
                 self.application.processEvents()
-                self.assertFalse(page.browser.replace_button.isEnabled())
-                self.assertFalse(page.browser.revert_button.isEnabled())
-                self.assertEqual(page.browser.replace_button.text(), "Replace locked")
+                self._assert_replace_locked_explainable(page)
         finally:
             page.deleteLater()
             self.application.processEvents()
@@ -312,8 +320,7 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             self.assertEqual(page.group_table.rowCount(), 0)
             self.assertIn("Semantic map needs review", page.summary_label.text())
             self.assertEqual(len(page.browser._matches), 257)
-            self.assertFalse(page.browser.replace_button.isEnabled())
-            self.assertFalse(page.browser.revert_button.isEnabled())
+            self._assert_replace_locked_explainable(page)
         finally:
             page.deleteLater()
             self.application.processEvents()
@@ -331,8 +338,7 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 msg=summary,
             )
             self.assertEqual(page.browser.table.rowCount(), 0)
-            self.assertFalse(page.browser.replace_button.isEnabled())
-            self.assertFalse(page.browser.revert_button.isEnabled())
+            self._assert_replace_locked_explainable(page)
         finally:
             page.deleteLater()
             self.application.processEvents()

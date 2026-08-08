@@ -2201,6 +2201,8 @@ class AssetBrowser(QWidget):
         notes.append(f"Export action: {asset.export_label}.")
         self.detail_notes.setText("\n".join(notes) or "This exact record can be exported from your own game.")
         self.export_button.setEnabled(True)
+        self.export_button.setProperty("disableReason", "")
+        self.export_button.setToolTip(f"Export {asset.name} ({asset.export_label}).")
         editable_png = _is_editable_png_asset(asset) and not self.browse_export_only
         # Drop parity with the Replace button: a drop is admitted exactly when
         # the Replace action is available for this row.
@@ -2209,20 +2211,41 @@ class AssetBrowser(QWidget):
             self.replace_button.setText("Replace locked")
             self.revert_button.setText("Revert locked")
             self.replace_button.setVisible(True)
-            self.replace_button.setEnabled(False)
+            # Stay clickable: Field Art stock rows teach the wall instead of silent gray.
+            self.replace_button.setEnabled(True)
             self.revert_button.setVisible(True)
-            self.revert_button.setEnabled(False)
-            self.replace_button.setToolTip(self.action_lock_reason)
+            self.revert_button.setEnabled(True)
+            lock = self.action_lock_reason or (
+                "Replacement is locked for this browse surface. Click explains why."
+            )
+            self.replace_button.setToolTip(lock)
+            self.replace_button.setProperty("disableReason", lock)
             self.revert_button.setToolTip(
                 "There is no staged Field Art replacement to revert because replacement is locked."
             )
+            self.revert_button.setProperty("disableReason", lock)
         else:
             self.replace_button.setText("Replace PNG…")
             self.revert_button.setText("Revert")
-            self.replace_button.setVisible(editable_png)
-            self.replace_button.setEnabled(editable_png)
+            # Always visible+enabled when a row is selected; non-editable rows explain.
+            self.replace_button.setVisible(True)
+            self.replace_button.setEnabled(True)
+            if editable_png:
+                self.replace_button.setProperty("disableReason", "")
+                self.replace_button.setToolTip(
+                    f"Replace {asset.name} with any image (auto-resized to the slot)."
+                )
+            else:
+                tip = (
+                    f"{asset.name} is not an editable PNG slot in this browser. "
+                    "Export raw/parts instead, or open the dedicated workspace "
+                    "(Uniforms, Logos, Field Art writers) for proved writers."
+                )
+                self.replace_button.setToolTip(tip)
+                self.replace_button.setProperty("disableReason", tip)
             self.revert_button.setVisible(editable_png)
             self.revert_button.setEnabled(editable_png and modified)
+            self.revert_button.setProperty("disableReason", "")
         if not self.browse_export_only:
             self.revert_button.setToolTip(
                 f"Restore the original {asset.name} texture."
@@ -2276,24 +2299,44 @@ class AssetBrowser(QWidget):
         self.preview.setAcceptDrops(False)
         self.detail_metadata.setText("")
         self.detail_notes.setText("")
-        self.export_button.setEnabled(False)
+        choose_tip = (
+            "Choose an asset on the left first. Export/Replace stay clickable so "
+            "a gray control is never a dead no-op."
+        )
+        self.export_button.setEnabled(True)
+        self.export_button.setToolTip(choose_tip)
+        self.export_button.setProperty("disableReason", choose_tip)
         if self.browse_export_only:
             self.replace_button.setText("Replace locked")
             self.revert_button.setText("Revert locked")
             self.replace_button.setVisible(True)
-            self.replace_button.setEnabled(False)
+            self.replace_button.setEnabled(True)
             self.revert_button.setVisible(True)
-            self.revert_button.setEnabled(False)
-            self.replace_button.setToolTip(self.action_lock_reason)
+            self.revert_button.setEnabled(True)
+            lock = self.action_lock_reason or choose_tip
+            self.replace_button.setToolTip(lock)
+            self.replace_button.setProperty("disableReason", lock)
             self.revert_button.setToolTip(
                 "There is no staged Field Art replacement to revert because replacement is locked."
             )
+            self.revert_button.setProperty("disableReason", lock)
         else:
-            self.replace_button.setVisible(False)
+            self.replace_button.setVisible(True)
+            self.replace_button.setEnabled(True)
+            self.replace_button.setToolTip(choose_tip)
+            self.replace_button.setProperty("disableReason", choose_tip)
             self.revert_button.setVisible(False)
             self.revert_button.setToolTip("Nothing to revert—choose a modified editable asset first.")
 
     def _export_selected(self) -> None:
+        reason = str(self.export_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export yet",
+                reason + "\n\nFix: select a row in the list, then Export.",
+            )
+            return
         asset = self._selected_asset()
         if asset is None:
             return
@@ -2378,6 +2421,17 @@ class AssetBrowser(QWidget):
         return self._fit_dir / f"{name}-{uuid4().hex}.png"
 
     def _replace_selected(self) -> None:
+        reason = str(self.replace_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot replace this texture yet",
+                reason
+                + "\n\nFix: choose an Editable PNG row, or use the dedicated "
+                "workspace for proved writers. Replacement never mutates your "
+                "original dump.",
+            )
+            return
         asset = self._selected_asset()
         if asset is None:
             return
@@ -2851,6 +2905,15 @@ class UniformStudioPage(QWidget):
         self.notes.setVisible(bool(asset.notes))
         self.export_button.setEnabled(True)
         self.replace_button.setEnabled(True)
+        self.export_button.setProperty("disableReason", "")
+        self.replace_button.setProperty("disableReason", "")
+        self.export_button.setToolTip(
+            f"Export {asset.title} as {asset.width}×{asset.height} RGBA PNG."
+        )
+        self.replace_button.setToolTip(
+            f"Replace {asset.title} with any image — resized to "
+            f"{asset.width}×{asset.height} (Contain/Cover/Stretch)."
+        )
         self.revert_button.setEnabled(modified)
         self.revert_button.setToolTip(
             "Restore the original texture for this slot."
@@ -2899,12 +2962,31 @@ class UniformStudioPage(QWidget):
         self.teams.setVisible(False)
         self.notes.setText("")
         self.notes.setVisible(False)
-        self.export_button.setEnabled(False)
-        self.replace_button.setEnabled(False)
+        # Never silent-gray: stay clickable; explain load/select next step.
+        load_tip = (
+            "Load your APF game and select a uniform texture row first. "
+            "Export/Replace stay clickable so a gray control is never a dead no-op."
+        )
+        self.export_button.setEnabled(True)
+        self.replace_button.setEnabled(True)
+        self.export_button.setToolTip(load_tip)
+        self.replace_button.setToolTip(load_tip)
+        self.export_button.setProperty("disableReason", load_tip)
+        self.replace_button.setProperty("disableReason", load_tip)
         self.revert_button.setEnabled(False)
         self.revert_button.setToolTip("Nothing to revert—choose a modified texture first.")
 
     def _export_selected(self) -> None:
+        reason = str(self.export_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export uniform yet",
+                reason
+                + "\n\nFix: File → Load game, open Uniforms, select a jersey/helmet "
+                "slot, then Export.",
+            )
+            return
         asset = self._selected_asset()
         if asset is None:
             return
@@ -2944,6 +3026,16 @@ class UniformStudioPage(QWidget):
         )
 
     def _choose_replacement(self) -> None:
+        reason = str(self.replace_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot replace uniform yet",
+                reason
+                + "\n\nFix: File → Load game, open Uniforms, select a slot, then "
+                "Replace. Import stages a project copy — never mutates your original.",
+            )
+            return
         asset = self._selected_asset()
         if asset is None:
             return
