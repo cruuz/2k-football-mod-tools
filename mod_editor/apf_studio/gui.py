@@ -10570,7 +10570,9 @@ class InspectorBrowser(QFrame):
         )
         self.export_complete_audio_catalog_button.setObjectName("primaryButton")
         self.export_complete_audio_catalog_button.setVisible(audio_mode)
-        self.export_complete_audio_catalog_button.setEnabled(False)
+        self.export_complete_audio_catalog_button.setEnabled(True)
+        self.export_complete_audio_catalog_button.setToolTip('Load a supported APF game first, then export the complete audio catalog.')
+        self.export_complete_audio_catalog_button.setProperty("disableReason", 'Load a supported APF game first, then export the complete audio catalog.')
         self.export_complete_audio_catalog_button.setAccessibleName(
             "Export complete APF audio catalog"
         )
@@ -10589,7 +10591,9 @@ class InspectorBrowser(QFrame):
         )
         self.export_original_audio_banks_button.setObjectName("secondaryButton")
         self.export_original_audio_banks_button.setVisible(audio_mode)
-        self.export_original_audio_banks_button.setEnabled(False)
+        self.export_original_audio_banks_button.setEnabled(True)
+        self.export_original_audio_banks_button.setToolTip('Load a supported APF game first, then export original banks.')
+        self.export_original_audio_banks_button.setProperty("disableReason", 'Load a supported APF game first, then export original banks.')
         self.export_original_audio_banks_button.setAccessibleName(
             "Export all original APF external audio banks"
         )
@@ -10955,7 +10959,9 @@ class InspectorBrowser(QFrame):
         self.export_matching_button = QPushButton("Export matching sounds…")
         self.export_matching_button.setObjectName("secondaryButton")
         self.export_matching_button.setVisible(audio_mode)
-        self.export_matching_button.setEnabled(False)
+        self.export_matching_button.setEnabled(True)
+        self.export_matching_button.setToolTip('Load a supported APF game first, then export matching sounds.')
+        self.export_matching_button.setProperty("disableReason", 'Load a supported APF game first, then export matching sounds.')
         self.export_matching_button.setToolTip(
             "Narrow search, kind, role, and source to 1–256 playable sounds."
         )
@@ -12562,13 +12568,19 @@ class InspectorBrowser(QFrame):
         self.export_rows_button.setToolTip(tip)
 
         self.export_rows_button.setProperty("disableReason", tip)
-        self.export_complete_audio_catalog_button.setEnabled(False)
-        self.export_original_audio_banks_button.setEnabled(False)
+        self.export_complete_audio_catalog_button.setEnabled(True)
+        self.export_complete_audio_catalog_button.setToolTip('Load a supported APF game first, then export the complete audio catalog.')
+        self.export_complete_audio_catalog_button.setProperty("disableReason", 'Load a supported APF game first, then export the complete audio catalog.')
+        self.export_original_audio_banks_button.setEnabled(True)
+        self.export_original_audio_banks_button.setToolTip('Load a supported APF game first, then export original banks.')
+        self.export_original_audio_banks_button.setProperty("disableReason", 'Load a supported APF game first, then export original banks.')
         self.export_audio_replacement_template_button.setEnabled(False)
         self.import_audio_replacement_pack_button.setEnabled(False)
         self.cancel_audio_import_button.setEnabled(False)
         self.cancel_audio_export_button.setEnabled(False)
-        self.export_matching_button.setEnabled(False)
+        self.export_matching_button.setEnabled(True)
+        self.export_matching_button.setToolTip('Load a supported APF game first, then export matching sounds.')
+        self.export_matching_button.setProperty("disableReason", 'Load a supported APF game first, then export matching sounds.')
         loading_tip = (
             "Text allocations are still loading. Wait for the text catalog, "
             "then Export/Import Text Sheet."
@@ -12614,13 +12626,19 @@ class InspectorBrowser(QFrame):
         self.export_rows_button.setToolTip(tip)
 
         self.export_rows_button.setProperty("disableReason", tip)
-        self.export_complete_audio_catalog_button.setEnabled(False)
-        self.export_original_audio_banks_button.setEnabled(False)
+        self.export_complete_audio_catalog_button.setEnabled(True)
+        self.export_complete_audio_catalog_button.setToolTip('Load a supported APF game first, then export the complete audio catalog.')
+        self.export_complete_audio_catalog_button.setProperty("disableReason", 'Load a supported APF game first, then export the complete audio catalog.')
+        self.export_original_audio_banks_button.setEnabled(True)
+        self.export_original_audio_banks_button.setToolTip('Load a supported APF game first, then export original banks.')
+        self.export_original_audio_banks_button.setProperty("disableReason", 'Load a supported APF game first, then export original banks.')
         self.export_audio_replacement_template_button.setEnabled(False)
         self.import_audio_replacement_pack_button.setEnabled(False)
         self.cancel_audio_import_button.setEnabled(False)
         self.cancel_audio_export_button.setEnabled(False)
-        self.export_matching_button.setEnabled(False)
+        self.export_matching_button.setEnabled(True)
+        self.export_matching_button.setToolTip('Load a supported APF game first, then export matching sounds.')
+        self.export_matching_button.setProperty("disableReason", 'Load a supported APF game first, then export matching sounds.')
         load_tip = (
             "Load a supported APF game first. Text Sheet export/import needs a "
             "loaded text catalog. Click still explains."
@@ -16970,7 +16988,9 @@ class InspectorBrowser(QFrame):
             self.export_bank_button.setVisible(False)
             self.export_external_bank_button.setVisible(False)
             self.export_external_bank_button.setEnabled(False)
-            self.export_matching_button.setEnabled(False)
+            self.export_matching_button.setEnabled(True)
+            self.export_matching_button.setToolTip('Load a supported APF game first, then export matching sounds.')
+            self.export_matching_button.setProperty("disableReason", 'Load a supported APF game first, then export matching sounds.')
 
 
 InspectorLoader = Callable[[ApfInspectorService], tuple[str, PagedModel]]
