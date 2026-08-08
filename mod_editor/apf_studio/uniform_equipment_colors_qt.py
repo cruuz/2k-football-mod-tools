@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QPushButton,
     QTabWidget,
     QVBoxLayout,
@@ -133,10 +134,10 @@ class UniformEquipmentColorsPanel(QFrame):
         title = QLabel("Uniform Equipment Colors · all 40 teams")
         title.setObjectName("panelTitle")
         description = QLabel(
-            "Choose independent HOME and AWAY palette colors for the facemask bar "
-            "and for players whose turtleneck setting is Team. Player visors remain "
-            "None, Clear, or Dark in Save Players; there is no verified per-uniform "
-            "visor-tint field."
+            "Per-uniform-set colors (not global): pick a team, then set HOME and "
+            "AWAY independently for the facemask bar and Team turtleneck. "
+            "Eagles home facemask ≠ Eagles away. Player visors remain None/Clear/Dark "
+            "in Save Players — there is no verified per-uniform visor-tint field."
         )
         description.setObjectName("cardBody")
         description.setWordWrap(True)
@@ -145,18 +146,31 @@ class UniformEquipmentColorsPanel(QFrame):
 
         team_row = QHBoxLayout()
         team_row.addWidget(QLabel("Team:"))
+        self.team_filter = QLineEdit()
+        self.team_filter.setPlaceholderText("Filter teams… (e.g. Eagles)")
+        self.team_filter.setClearButtonEnabled(True)
+        self.team_filter.setAccessibleName("Filter equipment-color teams")
+        self.team_filter.setProperty("studioSearch", True)
+        self.team_filter.setToolTip(
+            "Type to filter the team list. HOME/AWAY facemask and turtleneck "
+            "remain independent per team."
+        )
         self.team = QComboBox()
         self.team.setAccessibleName("Uniform equipment-color team")
+        self._all_team_items: list[tuple[int, str]] = []
         for team_index in range(equipment_colors.TEAM_COUNT):
-            self.team.addItem(equipment_colors.team_label(team_index), team_index)
-        team_row.addWidget(self.team, 1)
+            label = equipment_colors.team_label(team_index)
+            self._all_team_items.append((team_index, label))
+            self.team.addItem(label, team_index)
+        team_row.addWidget(self.team_filter, 1)
+        team_row.addWidget(self.team, 2)
         outer.addLayout(team_row)
 
         self.banks = QTabWidget()
         self.home = _ColorBankEditor("HOME")
         self.away = _ColorBankEditor("AWAY")
-        self.banks.addTab(self.home, "HOME")
-        self.banks.addTab(self.away, "AWAY")
+        self.banks.addTab(self.home, "HOME kit only")
+        self.banks.addTab(self.away, "AWAY kit only")
         outer.addWidget(self.banks)
 
         boundary = QLabel(
@@ -182,12 +196,37 @@ class UniformEquipmentColorsPanel(QFrame):
         outer.addWidget(self.status)
 
         self.team.currentIndexChanged.connect(self.set_context)
+        self.team_filter.textChanged.connect(self._filter_teams)
         self.stage_button.clicked.connect(self._stage)
         self.revert_button.clicked.connect(self._revert)
         self.set_context()
 
+    def _filter_teams(self, needle: str) -> None:
+        """Filter the team combo without changing staged colors mid-type."""
+
+        needle_cf = needle.strip().casefold()
+        current = self.team.currentData()
+        self.team.blockSignals(True)
+        self.team.clear()
+        for team_index, label in self._all_team_items:
+            if needle_cf and needle_cf not in label.casefold():
+                continue
+            self.team.addItem(label, team_index)
+        self.team.blockSignals(False)
+        if self.team.count() == 0:
+            self.status.setText(
+                "No teams match that filter. Clear the filter box to see all 40."
+            )
+            return
+        found = self.team.findData(current)
+        self.team.setCurrentIndex(found if found >= 0 else 0)
+        self.set_context()
+
     def _team_index(self) -> int:
-        return int(self.team.currentData())
+        data = self.team.currentData()
+        if data is None:
+            raise RuntimeError("No team selected — clear the team filter.")
+        return int(data)
 
     def _value(self) -> equipment_colors.UniformEquipmentColors:
         return equipment_colors.validate_colors(
