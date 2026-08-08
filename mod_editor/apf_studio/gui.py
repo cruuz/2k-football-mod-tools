@@ -4132,6 +4132,16 @@ class ApfTeamLogoPanel(QFrame):
         )
 
     def _save_authoring_master(self) -> None:
+        reason = str(self.master_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot save authoring master yet",
+                reason
+                + "\n\nFix: load APF → import/place a crest with an authoring "
+                "draft → Save master.",
+            )
+            return
         draft = self._texture_master_draft
         save = getattr(self.facade, "save_helmet_crest_authoring_master", None)
         if draft is None or not callable(save):
@@ -4211,18 +4221,9 @@ class ApfTeamLogoPanel(QFrame):
             self.fit_visible_mask.setChecked(False)
             self.fit_visible_mask.blockSignals(False)
         if self._staged_png is not None:
+            # Keep tooltips/disableReason in sync via set_context (never silent-gray).
+            self.set_context()
             profile_ready = self._staged_profile == self._selected_profile()
-            self.build_button.setEnabled(self.facade.source_ready and profile_ready)
-            self.master_button.setEnabled(
-                self.facade.source_ready
-                and profile_ready
-                and self._texture_master_draft is not None
-                and callable(
-                    getattr(
-                        self.facade, "save_helmet_crest_authoring_master", None
-                    )
-                )
-            )
             if not profile_ready:
                 self.path_note.setText(
                     "Helmet coverage changed. Import or drop the logo again so "
@@ -4363,18 +4364,71 @@ class ApfTeamLogoPanel(QFrame):
         self.import_mode.setVisible(full_shell)
         self.import_mode.setEnabled(ready and full_shell)
         self.place_button.setEnabled(ready and full_shell)
-        self.export_button.setEnabled(ready)
-        self.replace_button.setEnabled(ready)
-        self.replace_button.setToolTip(
+        # Never silent-gray: Export/Replace/Build/Revert stay clickable + explain.
+        load_tip = (
+            "Load your APF game first (0A). Team Logo export/replace needs a "
+            "source. Click still explains — buttons stay clickable."
+        )
+        replace_tip = (
             "Choose ordinary artwork or an advanced APF weight mask according "
             "to Full-shell import. Normal artwork is palette-converted and "
             "previewed before the front/crown/rear placement canvas opens."
-            if full_shell
-            else "Choose an edited image; Retail keeps the normal contain/resize flow."
+            if full_shell and ready
+            else (
+                "Choose an edited image; Retail keeps the normal contain/resize flow."
+                if ready
+                else load_tip
+            )
         )
         profile_ready = self._staged_profile == self._selected_profile()
-        self.build_button.setEnabled(ready and staged and profile_ready)
-        self.master_button.setEnabled(
+        can_build = bool(ready and staged and profile_ready)
+        if can_build:
+            build_tip = (
+                "Copy your 0A and write this crest into the selected uniform_logo_NN "
+                "package and its linked frontend/Team Select logo-cache index through "
+                "the offline-proved writers. The separate selector-slot-6 wordmark "
+                "is not changed. Full-shell also writes the shared shell-atlas route; "
+                "no Xenia patch or default.xex edit is created. Changed-logo runtime "
+                "consumption remains unproved."
+            )
+            build_block = ""
+        elif not ready:
+            build_tip = build_block = load_tip
+        elif not staged:
+            build_tip = build_block = (
+                "Stage a crest first (Replace or drop a PNG), then Build a "
+                "verified copied 0A. Click still explains this."
+            )
+        else:
+            build_tip = build_block = (
+                "Helmet coverage/profile changed. Re-import or drop the logo "
+                "again so it matches the selected profile before Build."
+            )
+        export_tip = (
+            "Export the current source-derived 512×512 RGBA crest PNG from your game."
+            if ready
+            else load_tip
+        )
+        revert_tip = (
+            "Discard the staged replacement PNG and show your original crest again."
+            if staged
+            else "Nothing to revert—no replacement is staged."
+        )
+        self.export_button.setEnabled(True)
+        self.replace_button.setEnabled(True)
+        self.build_button.setEnabled(True)
+        self.revert_button.setEnabled(True)
+        self.export_button.setToolTip(export_tip)
+        self.replace_button.setToolTip(replace_tip)
+        self.build_button.setToolTip(build_tip)
+        self.revert_button.setToolTip(revert_tip)
+        self.export_button.setProperty("disableReason", "" if ready else load_tip)
+        self.replace_button.setProperty("disableReason", "" if ready else load_tip)
+        self.build_button.setProperty("disableReason", build_block)
+        self.revert_button.setProperty(
+            "disableReason", "" if staged else revert_tip
+        )
+        can_master = bool(
             ready
             and staged
             and profile_ready
@@ -4383,21 +4437,24 @@ class ApfTeamLogoPanel(QFrame):
                 getattr(self.facade, "save_helmet_crest_authoring_master", None)
             )
         )
-        self.revert_button.setEnabled(staged)
-        self.revert_button.setToolTip(
-            "Discard the staged replacement PNG and show your original crest again."
-            if staged
-            else "Nothing to revert—no replacement is staged."
+        self.master_button.setEnabled(True)
+        master_tip = (
+            "After an external logo import, save the exact original artwork, "
+            "the final X/Y, independent width/height, rotation and palette/region "
+            "pipeline, the exact 512×512 native semantic mask, and a direct 2×/4× "
+            "master render. This is not an RPCS3 pack and does not change the "
+            "game's native texture resolution."
+            if can_master
+            else (
+                "Stage a crest with an authoring master draft first, then save. "
+                "Click still explains — button stays clickable."
+                if ready
+                else load_tip
+            )
         )
-        self.build_button.setToolTip(
-            "Copy your 0A and write this crest into the selected uniform_logo_NN "
-            "package and its linked frontend/Team Select logo-cache index through "
-            "the offline-proved writers. The separate selector-slot-6 wordmark "
-            "is not changed. Full-shell also writes the shared shell-atlas route; "
-            "no Xenia patch or default.xex edit is created. Changed-logo runtime "
-            "consumption remains unproved."
-            if (ready and staged and profile_ready)
-            else "Load your game and stage a 512×512 RGBA PNG to build."
+        self.master_button.setToolTip(master_tip)
+        self.master_button.setProperty(
+            "disableReason", "" if can_master else master_tip
         )
         self.preview.setAcceptDrops(ready)
         if staged and ready:
@@ -4534,6 +4591,14 @@ class ApfTeamLogoPanel(QFrame):
         self.preview.set_image(Path(str(result)))
 
     def _export_original(self) -> None:
+        reason = str(self.export_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export team logo yet",
+                reason + "\n\nFix: File → Load game, then Export original PNG.",
+            )
+            return
         destination, _filter = QFileDialog.getSaveFileName(
             self,
             "Export source-derived team-logo PNG",
@@ -4567,6 +4632,16 @@ class ApfTeamLogoPanel(QFrame):
         )
 
     def _choose_replacement(self) -> None:
+        reason = str(self.replace_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot replace team logo yet",
+                reason
+                + "\n\nFix: File → Load game, then Replace or drop a crest PNG. "
+                "Build writes a copied 0A — never mutates your original.",
+            )
+            return
         path, _filter = QFileDialog.getOpenFileName(
             self,
             f"Choose a team-logo image (any size — {self._WIDTH}×{self._HEIGHT} exact, "
@@ -5025,6 +5100,14 @@ class ApfTeamLogoPanel(QFrame):
         self.set_context()
 
     def _revert(self) -> None:
+        reason = str(self.revert_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Nothing to revert",
+                reason + "\n\nStage a team crest first, then Revert clears it.",
+            )
+            return
         revert = getattr(self.facade, "revert", None)
         if callable(revert):
             revert(HELMET_CREST_DESIGN_EDIT_ID)
@@ -5037,6 +5120,16 @@ class ApfTeamLogoPanel(QFrame):
         self.modifiedChanged.emit()
 
     def _build_copied_volume(self) -> None:
+        reason = str(self.build_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot build team logo copy yet",
+                reason
+                + "\n\nFix: load APF → Replace/stage a crest → Build a verified "
+                "copied 0A. Never mutates your original dump.",
+            )
+            return
         source = self.facade.source
         if not self.facade.source_ready or source is None or self._staged_png is None:
             return

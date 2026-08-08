@@ -154,8 +154,17 @@ class ApfTeamLogoGuiTests(unittest.TestCase):
     def test_build_is_read_only_safe_until_a_game_and_a_png_are_present(self) -> None:
         panel, _runner = self._panel(ready=False)
         try:
-            self.assertFalse(panel.build_button.isEnabled())
-            self.assertFalse(panel.replace_button.isEnabled())
+            # Never silent-gray: buttons stay clickable; disableReason teaches Load.
+            self.assertTrue(panel.build_button.isEnabled())
+            self.assertTrue(panel.replace_button.isEnabled())
+            self.assertIn(
+                "Load",
+                str(panel.build_button.property("disableReason") or ""),
+            )
+            self.assertIn(
+                "Load",
+                str(panel.replace_button.property("disableReason") or ""),
+            )
         finally:
             panel.deleteLater()
             self.application.processEvents()
@@ -164,7 +173,14 @@ class ApfTeamLogoGuiTests(unittest.TestCase):
         try:
             self.assertTrue(panel.replace_button.isEnabled())
             # A loaded game alone is not enough: nothing is staged yet.
-            self.assertFalse(panel.build_button.isEnabled())
+            self.assertTrue(panel.build_button.isEnabled())
+            self.assertTrue(
+                str(panel.build_button.property("disableReason") or "").strip()
+            )
+            self.assertIn(
+                "Stage",
+                str(panel.build_button.property("disableReason") or ""),
+            )
         finally:
             panel.deleteLater()
             self.application.processEvents()
@@ -344,7 +360,10 @@ class ApfTeamLogoGuiTests(unittest.TestCase):
                 ), mock.patch.object(gui.QMessageBox, "information"):
                     panel._stage_path(source)
                 self.assertIsNone(panel._staged_png)
-                self.assertFalse(panel.build_button.isEnabled())
+                self.assertTrue(panel.build_button.isEnabled())
+                self.assertTrue(
+                    str(panel.build_button.property("disableReason") or "").strip()
+                )
             finally:
                 panel.deleteLater()
                 self.application.processEvents()
@@ -354,14 +373,36 @@ class ApfTeamLogoGuiTests(unittest.TestCase):
             panel, runner, _staged, _index = self._staged_panel(Path(directory))
             try:
                 self.assertTrue(panel.build_button.isEnabled())
+                self.assertEqual(
+                    str(panel.build_button.property("disableReason") or "").strip(),
+                    "",
+                )
                 panel.coverage.setCurrentIndex(
                     panel.coverage.findData(gui.FULL_SHELL_CREST_PROFILE)
                 )
-                self.assertFalse(panel.build_button.isEnabled())
+                self.application.processEvents()
+                # Never silent-gray: still enabled, but disableReason blocks Build.
+                self.assertTrue(panel.build_button.isEnabled())
+                reason = str(panel.build_button.property("disableReason") or "")
+                self.assertTrue(reason.strip())
+                self.assertTrue(
+                    "coverage" in reason.casefold()
+                    or "profile" in reason.casefold()
+                    or "import" in reason.casefold(),
+                    msg=reason,
+                )
                 self.assertIn("Import or drop", panel.path_note.text())
                 with mock.patch.object(gui.QMessageBox, "information") as message:
                     panel._build_copied_volume()
-                self.assertIn("other helmet coverage", message.call_args.args[2])
+                self.assertTrue(message.called)
+                shown = " ".join(str(a) for a in message.call_args.args)
+                self.assertTrue(
+                    "coverage" in shown.casefold()
+                    or "profile" in shown.casefold()
+                    or "import" in shown.casefold()
+                    or "stage" in shown.casefold(),
+                    msg=shown,
+                )
                 self.assertFalse(
                     any(label.startswith("Building copied 0A") for label, *_ in runner.calls)
                 )
