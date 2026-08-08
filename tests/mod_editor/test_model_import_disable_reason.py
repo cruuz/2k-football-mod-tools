@@ -65,5 +65,25 @@ class ModelImportDisableReasonTests(unittest.TestCase):
             self.application.processEvents()
 
 
+class TwoK5StadiumImportExplainContractTests(unittest.TestCase):
+    """2K5 Stadium model Import/Export must never be silent-gray (shipped source)."""
+
+    def test_stadium_import_export_use_disable_reason_and_stay_enabled(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        source = (root / "mod_editor/gui/studio_qt.py").read_text(encoding="utf-8")
+        # Construction: buttons start enabled (not permanently gray).
+        self.assertIn("import_scene_button.setEnabled(True)", source)
+        self.assertIn("export_scene_button.setEnabled(True)", source)
+        # Refresh path sets disableReason for click-to-explain.
+        self.assertIn('_stadium_import_scene_button', source)
+        self.assertIn('"disableReason"', source)
+        self.assertIn("Import edited model", source)
+        # Click handler reads disableReason before dialog.
+        self.assertIn(
+            'str(import_scene.property("disableReason") or "").strip()',
+            source,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
