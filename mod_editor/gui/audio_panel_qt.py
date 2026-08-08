@@ -4348,8 +4348,14 @@ if PYQT5_AVAILABLE:
         def _copy_selected_pack_path(self) -> None:
             """Copy on explicit activation; selection changes never touch clipboard."""
 
+            reason = str(
+                self.copy_pack_path_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             path = self._selected_complete_pack_path()
-            if path is None or not self.copy_pack_path_button.isEnabled():
+            if path is None:
                 return
             QApplication.clipboard().setText(path)
             self.progress_label.setText("Copied all-850 replacement pack path")
@@ -4505,14 +4511,33 @@ if PYQT5_AVAILABLE:
             if pack_path is None:
                 self.pack_path_label.clear()
                 self.pack_path_card.hide()
-                self.copy_pack_path_button.setEnabled(False)
+                tip = (
+                    "Export a v4 all-850 replacement template first so its path "
+                    "can be copied."
+                )
+                self.copy_pack_path_button.setEnabled(True)
+                self.copy_pack_path_button.setToolTip(tip)
+                self.copy_pack_path_button.setProperty("disableReason", tip)
             else:
                 self.pack_path_label.setText(pack_path)
                 self.pack_path_label.setAccessibleDescription(
                     f"Exact v4 all-850 template path: {pack_path}"
                 )
                 self.pack_path_card.show()
-                self.copy_pack_path_button.setEnabled(ready)
+                tip = (
+                    "Copy the exact v4 all-850 template path."
+                    if ready
+                    else (
+                        "Load your NFL 2K5 XISO first."
+                        if not self.host.source_ready
+                        else "Wait for the current audio operation to finish."
+                    )
+                )
+                self.copy_pack_path_button.setEnabled(True)
+                self.copy_pack_path_button.setToolTip(tip)
+                self.copy_pack_path_button.setProperty(
+                    "disableReason", "" if ready else tip
+                )
             modified = bool(
                 asset and asset.asset_id in set(self.host.modified_audio_asset_ids)
             )

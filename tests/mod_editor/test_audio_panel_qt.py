@@ -1755,7 +1755,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
 
             self.assertTrue(str(panel.replace_button.property("disableReason") or "").strip())
             self.assertTrue(panel.pack_path_card.isHidden())
-            self.assertFalse(panel.copy_pack_path_button.isEnabled())
+            self.assertTrue(panel.copy_pack_path_button.isEnabled())
+
+            self.assertTrue(str(panel.copy_pack_path_button.property("disableReason") or "").strip())
             self.assertNotEqual(panel.note_label.text(), bank.action_note)
             self.assertEqual(panel.note_label.toolTip(), bank.action_note)
 
@@ -1770,7 +1772,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertIn("Hz", panel.table.item(0, 2).toolTip())
             self.assertTrue(panel.replace_button.isEnabled())
             self.assertTrue(panel.pack_path_card.isHidden())
-            self.assertFalse(panel.copy_pack_path_button.isEnabled())
+            self.assertTrue(panel.copy_pack_path_button.isEnabled())
+
+            self.assertTrue(str(panel.copy_pack_path_button.property("disableReason") or "").strip())
             self.assertEqual(panel.note_label.text(), audio_range.action_note)
             self.assertEqual(panel.note_label.toolTip(), audio_range.action_note)
             self.assertEqual(panel.table.item(0, 5).text(), "Editable")
@@ -2421,7 +2425,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertTrue(panel.replace_button.isEnabled())
             self.assertTrue(str(panel.replace_button.property("disableReason") or "").strip())
             self.assertTrue(panel.pack_path_card.isHidden())
-            self.assertFalse(panel.copy_pack_path_button.isEnabled())
+            self.assertTrue(panel.copy_pack_path_button.isEnabled())
+
+            self.assertTrue(str(panel.copy_pack_path_button.property("disableReason") or "").strip())
             self.assertTrue(panel.shortlist_toggle_button.isEnabled())
 
             self.assertTrue(str(panel.shortlist_toggle_button.property("disableReason") or "").strip())
