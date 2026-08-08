@@ -67,7 +67,9 @@ class SaveRosterPlayersPanel(QWidget):
             "depth, appearance/equipment (Face shield / visor is per-player here), "
             "IDs, fixed-allocation identity text, and safe existing roster-slot "
             "swaps. Play-by-play ID (VO name table) selects the announcer name cue "
-            "— wrong IDs make legends say “Number 68…” (G6 research). Overall is "
+            "— wrong IDs make legends say “Number 68…” (G6 research). Star tier + "
+            "ability bits are editable offline; in-game 2nd-level charge gating "
+            "(G10/G11) is still XEX research, not a proved runtime fix. Overall is "
             "display-only until its complete engine formula is proved."
         )
         note.setObjectName("mutedLabel")
