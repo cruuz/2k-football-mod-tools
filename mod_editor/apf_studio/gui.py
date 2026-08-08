@@ -11985,15 +11985,13 @@ class InspectorBrowser(QFrame):
         self._refresh_annotation_controls()
         self._update_audio_workspace_controls()
         drop_available = editable and not mutation_busy
-        self.export_pcm_template_button.setEnabled(
-            editable and not mutation_busy
-        )
+        # Never silent-gray PCM/XMA replace actions — teach walls via disableReason.
+        pcm_ready = editable and not mutation_busy
+        self.export_pcm_template_button.setEnabled(True)
         self.export_pcm_template_button.setVisible(
             self.audio_mode and not self._pcm_encoding_running
         )
-        self.replace_pcm_audio_button.setEnabled(
-            editable and not mutation_busy
-        )
+        self.replace_pcm_audio_button.setEnabled(True)
         self.replace_pcm_audio_button.setVisible(
             self.audio_mode and not self._pcm_encoding_running
         )
@@ -12020,15 +12018,11 @@ class InspectorBrowser(QFrame):
         self.configure_audio_encoder_button.setEnabled(
             not mutation_busy
         )
-        self.replace_audio_button.setEnabled(
-            editable and not mutation_busy
-        )
+        self.replace_audio_button.setEnabled(True)
         self.replace_audio_button.setText(
             "Replace XMA1 again…" if editable and modified else "Replace with XMA1…"
         )
-        self.revert_audio_button.setEnabled(
-            editable and modified and not mutation_busy
-        )
+        self.revert_audio_button.setEnabled(True)
         self._update_audio_replacement_pack_actions()
         if editable and row is not None:
             banked = row.kind == "ausb_substream"
@@ -12071,38 +12065,74 @@ class InspectorBrowser(QFrame):
                 "source-packet backup—"
                 f"and leaves the source game untouched.{shared_note}{decoder_note}"
             )
-            self.export_pcm_template_button.setToolTip(
+            busy_tip = "Wait for the current audio mutation to finish."
+            pcm_tip = (
                 f"Export an exact {rate:,} Hz {channel_label} PCM16 silence WAV for "
                 "this slot. The template contains no retail audio."
             )
-            self.replace_pcm_audio_button.setToolTip(
+            replace_pcm_tip = (
                 "Choose WAV, MP3, FLAC, OGG, M4A, or another supported audio file. "
                 f"Mod Studio conforms it privately to {rate:,} Hz {channel_label} "
                 "PCM16 before your external encoder runs; the final output must fit exactly "
                 f"{size:,} encoded bytes and pass every slot gate."
             )
-            self.replace_audio_button.setToolTip(
+            replace_xma_tip = (
                 f"Import pre-encoded RIFF XMA1 with exactly {size:,} encoded bytes, "
                 f"{rate:,} Hz, and {channel_label}; the same exact-slot gates still apply."
             )
-            self.revert_audio_button.setToolTip(
-                "Remove this one staged sound replacement and use the untouched source audio."
-                if modified
-                else "This sound has no staged replacement."
-            )
+            if mutation_busy:
+                self.export_pcm_template_button.setToolTip(busy_tip)
+                self.export_pcm_template_button.setProperty("disableReason", busy_tip)
+                self.replace_pcm_audio_button.setToolTip(busy_tip)
+                self.replace_pcm_audio_button.setProperty("disableReason", busy_tip)
+                self.replace_audio_button.setToolTip(busy_tip)
+                self.replace_audio_button.setProperty("disableReason", busy_tip)
+                self.revert_audio_button.setToolTip(busy_tip)
+                self.revert_audio_button.setProperty("disableReason", busy_tip)
+            else:
+                self.export_pcm_template_button.setToolTip(pcm_tip)
+                self.export_pcm_template_button.setProperty("disableReason", "")
+                self.replace_pcm_audio_button.setToolTip(replace_pcm_tip)
+                self.replace_pcm_audio_button.setProperty("disableReason", "")
+                self.replace_audio_button.setToolTip(replace_xma_tip)
+                self.replace_audio_button.setProperty("disableReason", "")
+                if modified:
+                    self.revert_audio_button.setToolTip(
+                        "Remove this one staged sound replacement and use the "
+                        "untouched source audio."
+                    )
+                    self.revert_audio_button.setProperty("disableReason", "")
+                else:
+                    tip = "This sound has no staged replacement."
+                    self.revert_audio_button.setToolTip(tip)
+                    self.revert_audio_button.setProperty("disableReason", tip)
             return
-        self.replace_audio_button.setToolTip(
+        pick_tip = (
             "Choose one individual AUDO or AUSB sound. AUSB index rows and complete "
             "physical banks are containers, so they remain export-only."
         )
+        self.replace_audio_button.setToolTip(pick_tip)
+        self.replace_audio_button.setProperty("disableReason", pick_tip)
         self.export_pcm_template_button.setToolTip(
             "Choose one individual AUDO or AUSB sound before exporting its exact PCM template."
+        )
+        self.export_pcm_template_button.setProperty(
+            "disableReason",
+            "Choose one individual AUDO or AUSB sound before exporting its exact PCM template.",
         )
         self.replace_pcm_audio_button.setToolTip(
             "Choose one individual AUDO or AUSB sound before importing ordinary audio."
         )
+        self.replace_pcm_audio_button.setProperty(
+            "disableReason",
+            "Choose one individual AUDO or AUSB sound before importing ordinary audio.",
+        )
         self.revert_audio_button.setToolTip(
             "Choose a modified individual AUDO or AUSB sound first."
+        )
+        self.revert_audio_button.setProperty(
+            "disableReason",
+            "Choose a modified individual AUDO or AUSB sound first.",
         )
         self.audio_replace_note.setText(
             "Choose one individual sound row to replace it. All 2,261 standalone AUDO "
@@ -15834,6 +15864,12 @@ class InspectorBrowser(QFrame):
         )
 
     def _export_audio_pcm_template(self) -> None:
+        reason = str(
+            self.export_pcm_template_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            self.audio_replace_note.setText(reason)
+            return
         row = self._selected_row()
         if (
             self._audio_mutation_busy()
@@ -16052,6 +16088,12 @@ class InspectorBrowser(QFrame):
         return encoder
 
     def _replace_audio_from_pcm(self) -> None:
+        reason = str(
+            self.replace_pcm_audio_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            self.audio_replace_note.setText(reason)
+            return
         row = self._selected_row()
         if (
             self._audio_mutation_busy()
@@ -16161,6 +16203,12 @@ class InspectorBrowser(QFrame):
         )
 
     def _replace_audio(self) -> None:
+        reason = str(
+            self.replace_audio_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            self.audio_replace_note.setText(reason)
+            return
         row = self._selected_row()
         if (
             self._audio_mutation_busy()
@@ -16216,6 +16264,12 @@ class InspectorBrowser(QFrame):
         )
 
     def _revert_audio(self) -> None:
+        reason = str(
+            self.revert_audio_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            self.audio_replace_note.setText(reason)
+            return
         row = self._selected_row()
         if (
             self._audio_mutation_busy()
