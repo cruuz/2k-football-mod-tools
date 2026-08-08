@@ -585,3 +585,29 @@ main **462** ahead. Wall **8.69h**. Full gates green. Hour gate OPEN.
 ### Residual
 - G1/G2 runtime unproved; freehand not Editable; monorepo hang residual (use batches)
 - No push/release without Noah
+
+## Session update 2026-08-08T07:24:09-04:00 (this Grok Build continuation)
+
+### Product shipped (this turn)
+1. 2K5 Menus Export / Export Number / Stadium texture boot never-gray
+2. 2K5 Audio + All Resources pagination never-gray
+3. APF Field Art **Stock NFL endzones** button
+4. APF Place on helmet + placement Save never-gray
+5. APF All Textures + Complete audio pagination; export_rows disableReason clear
+6. Playbooks **G1: Use Nickel donor** + legend tip + unit test
+7. XMA1 wizard Save/Test never-gray
+8. pytest_sessionfinish ProcessPool cleanup
+9. Equipment never-gray test alignment; dual packaging green throughout
+
+### Gates
+- Registry 70/70; dual RELEASE_PASS 195/189 repeatedly
+- Batched APF audio 32p; logo 21p + 0A immutable; equipment 16p; model import 13p
+
+### Hour gate
+- Wall stamp span 2026-08-07T21:48 → now: **9.60h** — still OPEN until ≥10h
+- main ~472+ ahead origin; **no push/release** without Noah
+
+### Residual (honest)
+- G1/G2 runtime unproved; freehand not Editable
+- Monorepo full suite hang residual (use batches)
+- Intentional locks: cancel-in-flight, busy, form fields, empty shortlist export
