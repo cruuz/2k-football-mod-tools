@@ -33,6 +33,9 @@ build path.
   (cancel-in-flight may briefly lock while finishing).
 - **Audio shortlist bulk** — Add all matching / Add this page / Review / Export
   selected WAVs never silent-gray; blocked clicks teach via progress_label.
+- **Audio shortlist Add/Remove selected** never silent-gray.
+- **Audio replacement template Export/Import** never silent-gray (busy/Load/
+  shortlist walls).
 - **Gameplay Inspector Export JSON/CSV** never silent-gray on inspection failure.
 
 ### Honesty
