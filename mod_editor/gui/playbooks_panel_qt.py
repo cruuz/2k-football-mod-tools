@@ -1180,21 +1180,63 @@ class PlaybooksPanel(QWidget):
         self.revert_route_button.setEnabled(
             state.can_revert_route and linked is not None and target_slot is not None
         )
-        # Formation/play creation: enabled when a book is selected, source ready, not busy, and capacity not full
+        # Formation/play creation: never silent-gray; disableReason explains walls.
         book = self._selected_book()
         can_create = bool(book is not None and self.host.source_ready and not self._busy)
         formation_full = bool(book is not None and len(book.formations) >= 50)
         play_full = bool(book is not None and len(book.plays) >= 270)
-        self.create_formation_button.setEnabled(can_create and not formation_full and self.formation_combo.currentData() is not None)
-        self.create_play_button.setEnabled(can_create and not play_full and linked is not None)
-        if formation_full:
-            self.create_formation_button.setToolTip("Formation capacity 50 reached — cannot create more in this book.")
+        form_ok = bool(
+            can_create
+            and not formation_full
+            and self.formation_combo.currentData() is not None
+        )
+        play_ok = bool(can_create and not play_full and linked is not None)
+        if form_ok:
+            form_tip = (
+                "Clone the selected formation into a new slot (reuses name, bumps count)."
+            )
+            form_block = ""
+        elif not self.host.source_ready:
+            form_tip = form_block = (
+                "Load your NFL 2K5 XISO first. Formation clone needs a source."
+            )
+        elif book is None:
+            form_tip = form_block = "Select a playbook book first, then clone a formation."
+        elif formation_full:
+            form_tip = form_block = (
+                "Formation capacity 50 reached — cannot create more in this book."
+            )
+        elif self.formation_combo.currentData() is None:
+            form_tip = form_block = "Select a formation to clone first."
         else:
-            self.create_formation_button.setToolTip("Clone the selected formation into a new slot (reuses name, bumps count).")
-        if play_full:
-            self.create_play_button.setToolTip("Play capacity 270 reached — cannot create more in this book.")
+            form_tip = form_block = "Wait for the current operation to finish."
+        if play_ok:
+            play_tip = (
+                "Clone the selected play into a new slot (reuses name, 11 assignments, bumps count)."
+            )
+            play_block = ""
+        elif not self.host.source_ready:
+            play_tip = play_block = (
+                "Load your NFL 2K5 XISO first. Play clone needs a source."
+            )
+        elif book is None:
+            play_tip = play_block = "Select a playbook book first, then clone a play."
+        elif play_full:
+            play_tip = play_block = (
+                "Play capacity 270 reached — cannot create more in this book."
+            )
+        elif linked is None:
+            play_tip = play_block = (
+                "Select a formation play row first, then clone that play."
+            )
         else:
-            self.create_play_button.setToolTip("Clone the selected play into a new slot (reuses name, 11 assignments, bumps count).")
+            play_tip = play_block = "Wait for the current operation to finish."
+        self.create_formation_button.setEnabled(True)
+        self.create_play_button.setEnabled(True)
+        self.create_formation_button.setToolTip(form_tip)
+        self.create_play_button.setToolTip(play_tip)
+        self.create_formation_button.setProperty("disableReason", form_block)
+        self.create_play_button.setProperty("disableReason", play_block)
         target_form = self.formation_combo.currentData()
         donor_form = self.link_donor_combo.currentData()
         can_link_export = bool(
@@ -1290,6 +1332,17 @@ class PlaybooksPanel(QWidget):
         )
 
     def _create_formation(self) -> None:
+        reason = str(
+            self.create_formation_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot clone formation yet",
+                reason
+                + "\n\nFix: load XISO → select book → select formation → clone.",
+            )
+            return
         book = self._selected_book()
         donor_idx = self.formation_combo.currentData()
         if book is None or donor_idx is None:
@@ -1453,6 +1506,17 @@ class PlaybooksPanel(QWidget):
         )
 
     def _create_play(self) -> None:
+        reason = str(
+            self.create_play_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot clone play yet",
+                reason
+                + "\n\nFix: load XISO → select book → select a formation play → clone.",
+            )
+            return
         book = self._selected_book()
         linked = self._selected_linked_play()
         if book is None or linked is None:
