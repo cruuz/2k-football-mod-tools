@@ -6,7 +6,7 @@ writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
 
-## Unreleased (post-RC55 continuation) — crib drop-parity + test harness — 2026-08-08
+## Unreleased (post-RC55 continuation) — crib drop-parity + never-gray G1/G2 — 2026-08-08
 
 ### Community / product
 
@@ -15,6 +15,9 @@ build path.
   parity tests mock the chooser under offscreen Qt so the modal never hangs CI.
 - **pytest offscreen default** — `tests/conftest.py` sets `QT_QPA_PLATFORM=offscreen`
   so monorepo GUI tests do not hang waiting on a display/modal.
+- **G1/G2 experimental exports never silent-gray** — Export Package-Map Copy /
+  Link-Table Copy stay clickable with disableReason + click-to-explain when the
+  XISO/book/formations are not ready (runtime still unproved).
 
 ### Honesty
 
