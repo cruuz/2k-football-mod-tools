@@ -191,3 +191,8 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 - Roster Replace/Revert + Play never-gray shipped
 - Dual packaging still green; main **295** ahead origin
 - Hour gate still open (~8.8h wall stamp span)
+
+
+## Update [2026-08-08T05:49:23-04:00]
+- APF audio PCM/XMA replace never-gray; dual packaging green; **301** ahead origin
+- Hour gate still open (~9.0h wall)
