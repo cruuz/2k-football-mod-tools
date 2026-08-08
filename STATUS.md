@@ -10,12 +10,14 @@ shell recommended path, equipment Stage explain, click-to-explain model import
 (APF + 2K5 Crib + Stadium), **expanded never-silent-gray** (stadium mesh/package,
 wordmark, AssetBrowser, Uniform, Field Art locks, text/roster Apply/Revert,
 audio bulk+shortlist+replace, ratings sheet, player rating/position, Play,
-soundtrack album, Team Logo master, reserve Assign), **45s preview watchdogs**
+soundtrack album, Team Logo master, reserve Assign, **Menus Export**, **Export Number**,
+**pagination** (2K5 audio/All Resources, APF All Textures + Complete audio),
+**Field Art Stock NFL endzones button**, helmet Place/Save), **45s preview watchdogs**
 (AssetBrowser/Uniform/Wordmark/stadium package), Crib drop-parity hang fixed.
 Living WORKLOG: `docs/product/WORKLOG_20260807.md`. E2 depth includes
-playbook community legend + G1 donor tip + empty search teaching. **≥10h hour-gate still accumulating** (~8.5h multi-session wall stamp span; not claimed). Broader
-suite evidence is **batched** (monorepo single-run hang residual). — do not treat
-this note as a sealed public release.
+playbook community legend + G1 donor tip + empty search teaching. **≥10h hour-gate still accumulating** (~9.4h multi-session wall stamp span; not claimed). Broader
+suite evidence is **batched** (monorepo single-run hang residual; APF audio GUI 32p
+in 8-at-a-time batches). — do not treat this note as a sealed public release.
 
 
 > **APF 2K8 parallel product status:** read

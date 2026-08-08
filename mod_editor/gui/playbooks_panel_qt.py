@@ -704,8 +704,23 @@ class PlaybooksPanel(QWidget):
             "map replaced by the donor’s (G1 Dime/Nickel surface). Offline only; "
             "runtime unproved."
         )
+        self.g1_nickel_donor_button = QPushButton("G1: Use Nickel donor")
+        self.g1_nickel_donor_button.setObjectName("secondaryButton")
+        self.g1_nickel_donor_button.setToolTip(
+            "Community G1 (Dime ILB→OLB): when the selected formation looks like "
+            "Dime, pick a Nickel donor for Export Package-Map Copy. Offline "
+            "bytes only — runtime G1 fix remains unproved. Stays clickable so "
+            "missing Nickel/Dime names explain themselves."
+        )
+        self.g1_nickel_donor_button.setProperty(
+            "disableReason",
+            "Load a playbook and select a formation first. G1 needs a Nickel "
+            "donor formation in this book.",
+        )
+        self.g1_nickel_donor_button.clicked.connect(self._select_g1_nickel_donor)
         link_copy_row.addWidget(link_copy_label)
         link_copy_row.addWidget(self.link_donor_combo, 1)
+        link_copy_row.addWidget(self.g1_nickel_donor_button)
         link_copy_row.addWidget(self.export_link_copy_button)
         link_copy_row.addWidget(self.export_pkgmap_copy_button)
         inspector_layout.addLayout(link_copy_row)
@@ -1228,6 +1243,35 @@ class PlaybooksPanel(QWidget):
         self.revert_route_button.setToolTip(revert_tip)
         self.copy_route_button.setProperty("disableReason", copy_block)
         self.revert_route_button.setProperty("disableReason", revert_block)
+        # G1 helper: never silent-gray; teach when Nickel/Dime not in this book.
+        book = self._selected_book()
+        nickel_idx = None
+        if book is not None:
+            for index, formation in enumerate(book.formations):
+                name = str(getattr(formation, "name", "") or "").casefold()
+                if "nickel" in name:
+                    nickel_idx = index
+                    break
+        if not self.host.source_ready:
+            g1_tip = g1_block = (
+                "Load your NFL 2K5 XISO first. G1 needs a Nickel donor in the book."
+            )
+        elif book is None:
+            g1_tip = g1_block = "Select a playbook book first, then pick Nickel as donor."
+        elif nickel_idx is None:
+            g1_tip = g1_block = (
+                "No formation name containing “Nickel” in this book. "
+                "Pick a donor manually or open a stock defensive book."
+            )
+        else:
+            g1_tip = (
+                f"Set donor to “{book.formations[nickel_idx].name}” for G1 "
+                "package-map export (Dime target ← Nickel map). Runtime unproved."
+            )
+            g1_block = ""
+        self.g1_nickel_donor_button.setEnabled(True)
+        self.g1_nickel_donor_button.setToolTip(g1_tip)
+        self.g1_nickel_donor_button.setProperty("disableReason", g1_block)
         # Formation/play creation: never silent-gray; disableReason explains walls.
         book = self._selected_book()
         can_create = bool(book is not None and self.host.source_ready and not self._busy)
@@ -1498,6 +1542,39 @@ class PlaybooksPanel(QWidget):
                 progress,
             ),
             ready,
+        )
+
+    def _select_g1_nickel_donor(self) -> None:
+        """Community G1 helper: select Nickel as package-map / link donor."""
+
+        reason = str(self.g1_nickel_donor_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "G1 Nickel donor", reason)
+            return
+        book = self._selected_book()
+        if book is None:
+            return
+        nickel_idx = None
+        for index, formation in enumerate(book.formations):
+            name = str(getattr(formation, "name", "") or "").casefold()
+            if "nickel" in name:
+                nickel_idx = index
+                break
+        if nickel_idx is None:
+            return
+        donor_pos = self.link_donor_combo.findData(nickel_idx)
+        if donor_pos < 0:
+            QMessageBox.information(
+                self,
+                "G1 Nickel donor",
+                "Nickel is not listed as a donor for this selection.",
+            )
+            return
+        self.link_donor_combo.setCurrentIndex(donor_pos)
+        self.progress_label.setText(
+            f"G1 donor set to “{book.formations[nickel_idx].name}”. "
+            "Select Dime as the formation, then Export Package-Map Copy "
+            "(offline only; runtime unproved)."
         )
 
     def _export_package_map_copy(self) -> None:

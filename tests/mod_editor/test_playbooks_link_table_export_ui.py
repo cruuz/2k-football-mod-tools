@@ -55,6 +55,7 @@ class LinkTableExportUiTests(unittest.TestCase):
         self.assertTrue(hasattr(panel, "export_link_copy_button"))
         self.assertTrue(hasattr(panel, "export_pkgmap_copy_button"))
         self.assertTrue(hasattr(panel, "link_donor_combo"))
+        self.assertTrue(hasattr(panel, "g1_nickel_donor_button"))
         banner = panel.link_copy_banner.text()
         self.assertIn("Experimental offline", banner)
         self.assertIn("runtime", banner.casefold())
@@ -62,11 +63,22 @@ class LinkTableExportUiTests(unittest.TestCase):
         # Never silent-gray: stay clickable; disableReason teaches load/select.
         self.assertTrue(panel.export_link_copy_button.isEnabled())
         self.assertTrue(panel.export_pkgmap_copy_button.isEnabled())
+        self.assertTrue(panel.g1_nickel_donor_button.isEnabled())
         reason = str(panel.export_pkgmap_copy_button.property("disableReason") or "")
         self.assertTrue(reason.strip())
         self.assertTrue(
             "formation" in reason.casefold() or "load" in reason.casefold(),
             msg=reason,
+        )
+        g1_reason = str(
+            panel.g1_nickel_donor_button.property("disableReason") or ""
+        ).strip()
+        self.assertTrue(g1_reason)
+        self.assertTrue(
+            "nickel" in g1_reason.casefold()
+            or "book" in g1_reason.casefold()
+            or "load" in g1_reason.casefold(),
+            msg=g1_reason,
         )
 
     def test_facade_ships_export_playbook_link_table_copy(self) -> None:

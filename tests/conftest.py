@@ -172,3 +172,30 @@ def pytest_runtest_makereport(item, call):
     report.outcome = "skipped"
     report.longrepr = (str(item.fspath), item.location[1],
                        f"Skipped: game data not present: {shown}")
+
+
+def pytest_sessionfinish(session, exitstatus) -> None:
+    """Best-effort cleanup so leftover ProcessPool/Qt workers do not hang the suite.
+
+    Product writers already use ProcessPoolExecutor context managers; this is a
+    belt-and-suspenders exit path for monorepo order-dependent hangs.
+    """
+
+    try:
+        import multiprocessing as mp
+
+        for child in mp.active_children():
+            try:
+                child.terminate()
+            except Exception:
+                pass
+    except Exception:
+        pass
+    try:
+        from PyQt5.QtWidgets import QApplication
+
+        app = QApplication.instance()
+        if app is not None:
+            app.processEvents()
+    except Exception:
+        pass
