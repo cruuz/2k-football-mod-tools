@@ -59,3 +59,8 @@ Inspector exports, visual master construction.
 Residual intentional locks: cancel-in-flight, busy workers, pagination, form
 fields (inputs), ratings-sheet import dialog Apply until conflicts cleared.
 
+### Hour gate (process)
+Multi-session WORKLOG wall stamp span tracked honestly in
+`docs/product/WORKLOG_20260807.md`. As of late continuation: ~8.3h wall; ≥10h
+still open. Packaging dual RELEASE_PASS + registry 70/70 are green independently.
+
