@@ -6781,18 +6781,36 @@ class StadiumStudioPage(QWidget):
         self.revert_package_button.setObjectName("dangerQuietButton")
         self.build_package_button = QPushButton("Build copied 1A…")
         self.build_package_button.setObjectName("secondaryButton")
-        self.export_package_button.setEnabled(False)
-        self.replace_package_button.setEnabled(False)
-        self.revert_package_button.setEnabled(False)
-        self.build_package_button.setEnabled(False)
-        self.build_package_button.setVisible(False)
+        # Never silent-gray at construction either.
+        self.export_package_button.setEnabled(True)
+        self.replace_package_button.setEnabled(True)
+        self.revert_package_button.setEnabled(True)
+        self.build_package_button.setEnabled(True)
+        self.build_package_button.setVisible(True)
         unresolved = (
-            "Package texture replacement remains unavailable because surface/material/TXTR "
-            "ownership is not proved. Use the selected-mesh controls for the separate "
-            "same-count POSITION-only geometry lane."
+            "Package texture replacement remains unavailable until a surface owns "
+            "an editable embedded TXTR. Related package rows are not surface-owned. "
+            "Use selected-mesh controls for the separate same-count POSITION-only "
+            "geometry lane. Click still explains — buttons stay clickable."
         )
         self.replace_package_button.setToolTip(unresolved)
+        self.replace_package_button.setProperty("disableReason", unresolved)
         self.revert_package_button.setToolTip(unresolved)
+        self.revert_package_button.setProperty("disableReason", unresolved)
+        self.export_package_button.setToolTip(
+            "Export after a package record or editable embedded texture is selected."
+        )
+        self.export_package_button.setProperty(
+            "disableReason",
+            "Select a stadium scene and package record (or surface texture) first.",
+        )
+        self.build_package_button.setToolTip(
+            "Stage an editable embedded texture first, then Build a copied 1A."
+        )
+        self.build_package_button.setProperty(
+            "disableReason",
+            "Stage an editable embedded texture first, then Build a copied 1A.",
+        )
         package_actions.addWidget(self.export_package_button)
         package_actions.addWidget(self.replace_package_button)
         package_actions.addWidget(self.revert_package_button)
@@ -7299,10 +7317,22 @@ class StadiumStudioPage(QWidget):
                 "textures that surface owns."
             )
             self.package_preview.set_message("No surface texture selected.")
-            self.export_package_button.setEnabled(False)
-            self.replace_package_button.setEnabled(False)
-            self.revert_package_button.setEnabled(False)
-            self.build_package_button.setEnabled(False)
+            surface_tip = (
+                "Click a stadium surface first so exact embedded textures appear. "
+                "Buttons stay clickable to explain this."
+            )
+            self.export_package_button.setEnabled(True)
+            self.replace_package_button.setEnabled(True)
+            self.revert_package_button.setEnabled(True)
+            self.build_package_button.setEnabled(True)
+            for button in (
+                self.export_package_button,
+                self.replace_package_button,
+                self.revert_package_button,
+                self.build_package_button,
+            ):
+                button.setToolTip(surface_tip)
+                button.setProperty("disableReason", surface_tip)
 
     def _selected_embedded_texture(
         self,
@@ -7318,10 +7348,32 @@ class StadiumStudioPage(QWidget):
         values = tuple(assets)
         self._embedded_textures = {}
         self.revert_package_button.setVisible(True)
-        self.build_package_button.setVisible(False)
-        self.build_package_button.setEnabled(False)
+        self.build_package_button.setVisible(True)
+        package_lock = (
+            "Related package records share the scene outer; they are not "
+            "surface-owned. Click a rendered surface for editable embedded "
+            "TXTRs. Use selected-mesh controls for the separate same-count "
+            "POSITION-only geometry lane. Buttons stay clickable to explain."
+        )
         self.replace_package_button.setText("Replace (locked)")
-        self.replace_package_button.setEnabled(False)
+        self.replace_package_button.setEnabled(True)
+        self.replace_package_button.setToolTip(package_lock)
+        self.replace_package_button.setProperty("disableReason", package_lock)
+        self.export_package_button.setEnabled(True)
+        self.export_package_button.setToolTip(
+            "Export package records when selected (TXTR PNG or raw). "
+            "Surface-owned editable embeds use the exact embedded path."
+        )
+        self.export_package_button.setProperty("disableReason", "")
+        self.revert_package_button.setEnabled(True)
+        self.revert_package_button.setProperty(
+            "disableReason", "Nothing staged on this package-level path."
+        )
+        self.build_package_button.setEnabled(True)
+        self.build_package_button.setProperty(
+            "disableReason",
+            "Stage an editable embedded surface texture first, then Build.",
+        )
         self._package_assets = {asset.asset_id: asset for asset in values}
         self.package_list.blockSignals(True)
         self.package_list.clear()
@@ -7352,7 +7404,12 @@ class StadiumStudioPage(QWidget):
                 "Related package assets appear after a stadium scene is selected."
             )
             self.package_preview.set_message("No package record selected.")
-            self.export_package_button.setEnabled(False)
+            empty_tip = (
+                "Select a stadium scene first, then a package record or surface."
+            )
+            self.export_package_button.setEnabled(True)
+            self.export_package_button.setToolTip(empty_tip)
+            self.export_package_button.setProperty("disableReason", empty_tip)
 
     def _selected_package_asset(self) -> ApfAsset | None:
         item = self.package_list.currentItem()
@@ -7383,9 +7440,31 @@ class StadiumStudioPage(QWidget):
             f"{_asset_status_text(asset)} • {_human_bytes(asset.decoded_size)} decoded.\n"
             "This record shares the scene's outer package; that does not prove it belongs to a clicked surface."
         )
-        self.export_package_button.setEnabled(self.facade.source_ready)
-        self.replace_package_button.setEnabled(False)
-        self.revert_package_button.setEnabled(False)
+        ready = bool(getattr(self.facade, "source_ready", False))
+        export_tip = (
+            f"Export {asset.name} ({asset.type_name}) from the related package."
+            if ready
+            else "Load your APF game first to export package records."
+        )
+        replace_tip = (
+            "Related package records are not surface-owned. Click a rendered "
+            "surface for editable embedded TXTRs with proved writers. Use "
+            "selected-mesh controls for the separate same-count POSITION-only "
+            "geometry lane. Click still explains this wall."
+        )
+        self.export_package_button.setEnabled(True)
+        self.export_package_button.setToolTip(export_tip)
+        self.export_package_button.setProperty(
+            "disableReason", "" if ready else export_tip
+        )
+        self.replace_package_button.setText("Replace (locked)")
+        self.replace_package_button.setEnabled(True)
+        self.replace_package_button.setToolTip(replace_tip)
+        self.replace_package_button.setProperty("disableReason", replace_tip)
+        self.revert_package_button.setEnabled(True)
+        self.revert_package_button.setProperty(
+            "disableReason", "Nothing staged on this package-level path."
+        )
         if asset.type_name != "TXTR":
             self.package_preview.set_message(
                 "Exact raw export is available. This record has no PNG preview."
@@ -7433,28 +7512,69 @@ class StadiumStudioPage(QWidget):
         )
         available = source is not None and texture.editable
         staged = self._staged_embedded_textures.get(texture.index)
-        self.export_package_button.setEnabled(available)
-        self.replace_package_button.setText(
-            "Replace image…" if available else "Replace (locked)"
+        # Never silent-gray: stay clickable; disableReason + click-to-explain when locked.
+        export_tip = (
+            f"Export {texture.selector} as PNG from the exact embedded TXTR."
+            if available
+            else (
+                "This embedded texture descriptor has no proved bounded writer "
+                "(or no game is loaded). Click still explains — buttons stay "
+                "clickable so gray never means a silent no-op."
+            )
         )
-        self.replace_package_button.setEnabled(available)
-        self.replace_package_button.setToolTip(
+        replace_tip = (
             "Choose any image — any size or format works; Mod Studio resizes it "
             "to this slot and snapshots it inside this private session. Build "
             "then regenerates the complete mip chain in a copied 1A; your source "
             "remains read-only."
             if available
-            else "This embedded texture descriptor has no proved bounded writer."
+            else (
+                "This embedded texture descriptor has no proved bounded writer. "
+                "Click still explains this. Export raw/scene instead, or pick a "
+                "surface whose material owns an editable embedded TXTR."
+            )
         )
-        # Drop parity with the Replace button.
+        self.export_package_button.setEnabled(True)
+        self.export_package_button.setToolTip(export_tip)
+        self.export_package_button.setProperty(
+            "disableReason", "" if available else export_tip
+        )
+        self.replace_package_button.setText(
+            "Replace image…" if available else "Replace (locked)"
+        )
+        self.replace_package_button.setEnabled(True)
+        self.replace_package_button.setToolTip(replace_tip)
+        self.replace_package_button.setProperty(
+            "disableReason", "" if available else replace_tip
+        )
+        # Drop parity with the Replace button (drops only when writable).
         self.package_preview.setAcceptDrops(available)
         self.revert_package_button.setVisible(True)
-        self.revert_package_button.setEnabled(staged is not None)
-        self.build_package_button.setVisible(available)
-        self.build_package_button.setEnabled(staged is not None)
+        self.revert_package_button.setEnabled(True)
+        self.revert_package_button.setToolTip(
+            "Clear the staged embedded texture snapshot."
+            if staged is not None
+            else "Nothing staged to revert for this embedded texture."
+        )
+        self.revert_package_button.setProperty(
+            "disableReason",
+            "" if staged is not None else "Nothing staged to revert for this texture.",
+        )
+        self.build_package_button.setVisible(True)
+        self.build_package_button.setEnabled(True)
+        self.build_package_button.setToolTip(
+            "Build a verified copied 1A with staged embedded textures."
+            if staged is not None
+            else "Stage a replacement image first, then Build."
+        )
+        self.build_package_button.setProperty(
+            "disableReason",
+            "" if staged is not None else "Stage a replacement image first, then Build.",
+        )
         if not available:
             self.package_preview.set_message(
-                "PNG preview/export is unavailable for this locked descriptor."
+                "PNG preview/export is unavailable for this locked descriptor. "
+                "Replace stays clickable to explain the wall."
             )
             return
         if staged is not None:
@@ -7530,6 +7650,18 @@ class StadiumStudioPage(QWidget):
         )
 
     def _export_package_asset(self) -> None:
+        reason = str(
+            self.export_package_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export stadium package texture yet",
+                reason
+                + "\n\nFix: open a scene, click a surface that owns an editable "
+                "embedded TXTR, then Export.",
+            )
+            return
         embedded = self._selected_embedded_texture()
         if embedded is not None:
             self._export_embedded_texture(embedded)
@@ -7619,6 +7751,18 @@ class StadiumStudioPage(QWidget):
         )
 
     def _replace_embedded_texture(self) -> None:
+        reason = str(
+            self.replace_package_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot replace stadium texture yet",
+                reason
+                + "\n\nFix: click a surface that owns an editable embedded TXTR, "
+                "then Replace. Build writes a copied 1A — never mutates your original.",
+            )
+            return
         texture = self._selected_embedded_texture()
         source = self.facade.source
         if texture is None or source is None or not texture.editable:
@@ -7706,6 +7850,16 @@ class StadiumStudioPage(QWidget):
         self._replace_embedded_texture_path(texture, Path(supplied))
 
     def _revert_embedded_texture(self) -> None:
+        reason = str(
+            self.revert_package_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Nothing to revert",
+                reason + "\n\nStage a replacement first, then Revert clears it.",
+            )
+            return
         texture = self._selected_embedded_texture()
         if texture is None:
             return
@@ -7717,6 +7871,18 @@ class StadiumStudioPage(QWidget):
         self.modifiedChanged.emit()
 
     def _build_embedded_texture_output(self) -> None:
+        reason = str(
+            self.build_package_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot build stadium texture output yet",
+                reason
+                + "\n\nFix: Replace/stage an editable embedded texture, then Build "
+                "a verified copied 1A.",
+            )
+            return
         texture = self._selected_embedded_texture()
         source = self.facade.source
         staged = (

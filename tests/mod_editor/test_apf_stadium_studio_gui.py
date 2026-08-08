@@ -126,13 +126,28 @@ class ApfStadiumStudioGuiTests(unittest.TestCase):
             self.assertEqual(page.package_count.text(), "3 records")
             self.assertTrue(page.export_scene_button.isEnabled())
             self.assertTrue(page.export_package_button.isEnabled())
-            self.assertFalse(page.replace_package_button.isEnabled())
+            # Never silent-gray: locked package replace stays clickable + explains.
+            self.assertTrue(page.replace_package_button.isEnabled())
             self.assertEqual(page.replace_package_button.text(), "Replace (locked)")
-            self.assertFalse(page.revert_package_button.isEnabled())
+            self.assertTrue(page.revert_package_button.isEnabled())
+            self.assertTrue(
+                str(page.replace_package_button.property("disableReason") or "").strip()
+            )
             self.assertNotIn("Coming Soon", page.replace_package_button.toolTip())
             self.assertIn("POSITION-only", page.replace_package_button.toolTip())
-            self.assertFalse(page.export_model_button.isEnabled())
-            self.assertFalse(page.import_model_button.isEnabled())
+            # Never silent-gray: mesh import/export stay clickable and explain.
+            self.assertTrue(page.export_model_button.isEnabled())
+            self.assertTrue(page.import_model_button.isEnabled())
+            mesh_reason = str(
+                page.import_model_button.property("disableReason") or ""
+            )
+            self.assertTrue(mesh_reason.strip())
+            self.assertTrue(
+                "surface" in mesh_reason.casefold()
+                or "scene" in mesh_reason.casefold()
+                or "load" in mesh_reason.casefold(),
+                msg=mesh_reason,
+            )
             self.assertIn("ownership", page.surface_boundary.text())
             self.assertIn("89 exact scene surfaces", page.material_findings_note.text())
             self.assertIn("84 material records", page.material_findings_note.text())
@@ -178,8 +193,16 @@ class ApfStadiumStudioGuiTests(unittest.TestCase):
             self.assertIn("UVs, normals, materials", page.surface_boundary.text())
             self.assertTrue(page.export_model_button.isEnabled())
             self.assertTrue(page.import_model_button.isEnabled())
-            self.assertFalse(page.replace_package_button.isEnabled())
-            self.assertFalse(page.revert_package_button.isEnabled())
+            # Authorized surface selected: disableReason must clear for mesh actions.
+            self.assertEqual(
+                str(page.import_model_button.property("disableReason") or "").strip(),
+                "",
+            )
+            # Package replace remains explainable (locked) when no editable embed.
+            self.assertTrue(page.replace_package_button.isEnabled())
+            self.assertTrue(
+                str(page.replace_package_button.property("disableReason") or "").strip()
+            )
         finally:
             page.close()
             sip.delete(page)
