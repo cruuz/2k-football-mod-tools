@@ -162,11 +162,19 @@ class RosterReservePlanner(QWidget):
         self.player.setEnabled(False)
         self.assign_button = QPushButton("Assign reserve")
         self.assign_button.setObjectName("primaryButton")
-        self.assign_button.setEnabled(False)
+        # Never silent-gray at construction.
+        _reserve_boot = (
+            "Select a reserve slot (43–53) first. Assign/Clear stay clickable."
+        )
+        self.assign_button.setEnabled(True)
+        self.assign_button.setToolTip(_reserve_boot)
+        self.assign_button.setProperty("disableReason", _reserve_boot)
         self.assign_button.clicked.connect(self._assign)
         self.clear_button = QPushButton("Clear slot")
         self.clear_button.setObjectName("dangerQuietButton")
-        self.clear_button.setEnabled(False)
+        self.clear_button.setEnabled(True)
+        self.clear_button.setToolTip(_reserve_boot)
+        self.clear_button.setProperty("disableReason", _reserve_boot)
         self.clear_button.clicked.connect(self._clear)
         authoring.addWidget(self.selected_slot)
         authoring.addWidget(self.player, 1)
