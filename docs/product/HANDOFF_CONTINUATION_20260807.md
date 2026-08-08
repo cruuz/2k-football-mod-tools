@@ -117,3 +117,15 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 - APF playbook route Copy/Swap never-gray; roster Assign/Clear; equipment Revert
 - E2 playbook legend + G1 donor tip + empty search; freehand findings name G1/G2 exports
 - Packaging dual PASS; main ~237 ahead; hour gate open
+
+
+## Session update 2026-08-08T04:54:00-04:00 (E2 + never-gray wave)
+### Product
+- Playbook: community legend, empty-flagged teaching, G1 Dime→Nickel tip, clone/copy/export never-gray, freehand findings HTML/plain G1/G2 honesty
+- All Textures empty search teaching
+- Never-gray: audio waveform, helmet region Save, APF routes, roster assign/clear, equipment Revert
+- BATCHED_PYTEST.md for monorepo hang residual
+### Gates
+- Dual packaging PASS; registry 70/70; targeted suites green
+- Hour gate ≥10h: **NO**
+- No push/release without Noah
