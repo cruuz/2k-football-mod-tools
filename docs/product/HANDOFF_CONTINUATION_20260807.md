@@ -16,6 +16,7 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reproof_003940.txt`
 | Claim | Result |
 | --- | --- |
 | logo_l0/l1 preview+export | PASS real 0A 512×512 PNG export |
+| logo_l0 offline build_patch | PASS magenta; decode_back max_error 0; source RO |
 | Contain/Cover/Stretch | PASS image_fit |
 | Facemask per-set HOME/AWAY | PASS Equipment Colors tabs + filter |
 | Model import not silent gray | PASS clickable + Load tooltip (APF); Crib click-to-explain (2K5) |
