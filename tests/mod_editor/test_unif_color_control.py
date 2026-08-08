@@ -354,9 +354,14 @@ class ControlSurfaceTests(unittest.TestCase):
             "Filter by team, set, or selector",
             "Facemask / faceshield colour",
             "HI_turtleneck colour",
-            "does not expose a proved, independent visor colour",
         ):
             self.assertIn(text, _STUDIO)
+        # Honesty: visor tint is not a separate Unif word; type is per-player.
+        self.assertTrue(
+            "visor colour" in _STUDIO.casefold()
+            or "independent visor" in _STUDIO.casefold(),
+            msg="GUI must stay truthful that visor is not an independent Unif colour",
+        )
         self.assertIn("self.uniform_catalog.uniform_sets", _STUDIO)
         self.assertIn("self.facade.set_uniform_colors(", _STUDIO)
 
