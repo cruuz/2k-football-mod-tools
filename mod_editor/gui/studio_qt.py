@@ -2840,6 +2840,13 @@ class StudioMainWindow(QMainWindow):
             )
 
     def _choose_unif_color(self, which: str) -> None:
+        button = (
+            self.facemask_button if which == "facemask" else self.turtleneck_button
+        )
+        reason = str(button.property("disableReason") or "").strip()
+        if reason:
+            self.unif_color_status.setText(reason)
+            return
         if self._selected_unif_color_selector() is None:
             self.unif_color_status.setText(
                 "Pick a physical uniform set first (filter by team/HOME/AWAY), "
@@ -2862,12 +2869,22 @@ class StudioMainWindow(QMainWindow):
         self._refresh_unif_color_swatches()
 
     def _apply_unif_colors(self) -> None:
+        reason = str(self.unif_color_apply.property("disableReason") or "").strip()
+        if reason:
+            self.unif_color_status.setText(reason)
+            return
         selector = self._selected_unif_color_selector()
         if selector is None:
+            self.unif_color_status.setText(
+                "Pick a physical uniform set first (filter by team/HOME/AWAY)."
+            )
             return
         facemask = self._pending_facemask
         turtleneck = self._pending_turtleneck
         if self._unif_color_loaded_selector != selector:
+            self.unif_color_status.setText(
+                "Wait for this uniform set's original colours to finish loading."
+            )
             return
         previous_pair = self._unif_color_loaded_pair
         if previous_pair == (facemask, turtleneck):
@@ -6655,9 +6672,36 @@ class StudioMainWindow(QMainWindow):
             colour_enabled = ready and loaded_colour_set and not global_busy
             self.unif_color_search.setEnabled(not global_busy)
             self.unif_color_set.setEnabled(not global_busy)
-            self.facemask_button.setEnabled(colour_enabled)
-            self.turtleneck_button.setEnabled(colour_enabled)
-            self.unif_color_apply.setEnabled(colour_enabled)
+            # Keep colour buttons clickable so blocked states never look dead:
+            # tooltips + disableReason explain Load XISO / pick set / wait.
+            if not ready:
+                colour_reason = (
+                    "Load your NFL 2K5 XISO first to read this uniform's "
+                    "facemask and turtleneck colours (per physical set)."
+                )
+            elif not has_colour_set:
+                colour_reason = (
+                    "No uniform set matches that filter. Clear the colour "
+                    "search box to list every physical set."
+                )
+            elif not loaded_colour_set:
+                colour_reason = (
+                    "Pick a uniform set and wait for its original colours to "
+                    "finish loading before editing."
+                )
+            elif global_busy:
+                colour_reason = "Wait for the current operation to finish."
+            else:
+                colour_reason = ""
+            for button in (
+                self.facemask_button,
+                self.turtleneck_button,
+                self.unif_color_apply,
+            ):
+                button.setEnabled(True)
+                if colour_reason:
+                    button.setToolTip(colour_reason)
+                button.setProperty("disableReason", colour_reason)
             self.unif_color_revert.setEnabled(
                 colour_enabled and self._selected_unif_color_modified
             )
