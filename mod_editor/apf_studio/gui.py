@@ -3327,9 +3327,31 @@ class DigitalFontPanel(QFrame):
     def set_context(self) -> None:
         ready = self.facade.source_ready
         modified = ready and DIGITAL_FONT_EDIT_ID in self.facade.modified_asset_ids
-        self.export_button.setEnabled(ready)
-        self.replace_button.setEnabled(ready)
-        self.revert_button.setEnabled(bool(modified))
+        # Never silent-gray: stay clickable; explain when game not loaded.
+        load_tip = (
+            "Load your APF game first (0A). digital_font export/replace needs the "
+            "score-digit mask outer. Click still explains — buttons stay clickable."
+        )
+        self.export_button.setEnabled(True)
+        self.replace_button.setEnabled(True)
+        if ready:
+            self.export_button.setProperty("disableReason", "")
+            self.replace_button.setProperty("disableReason", "")
+            self.export_button.setToolTip("Export the current score-digit mask PNG.")
+            self.replace_button.setToolTip(
+                "Choose any image (any size or format) or drop it onto the "
+                "preview — it is resized and converted to the digit mask for you."
+            )
+        else:
+            self.export_button.setProperty("disableReason", load_tip)
+            self.replace_button.setProperty("disableReason", load_tip)
+            self.export_button.setToolTip(load_tip)
+            self.replace_button.setToolTip(load_tip)
+        self.revert_button.setEnabled(True)
+        self.revert_button.setProperty(
+            "disableReason",
+            "" if modified else "Nothing to revert—digital_font is still original.",
+        )
         self.revert_button.setToolTip(
             "Restore the original digital_font texture."
             if modified
@@ -3381,6 +3403,14 @@ class DigitalFontPanel(QFrame):
         )
 
     def _export(self) -> None:
+        reason = str(self.export_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export digital_font yet",
+                reason + "\n\nFix: File → Load game, then Export the score-digit mask.",
+            )
+            return
         destination, _filter = QFileDialog.getSaveFileName(
             self,
             "Export current digital_font PNG",
@@ -3417,6 +3447,16 @@ class DigitalFontPanel(QFrame):
         )
 
     def _choose_replacement(self) -> None:
+        reason = str(self.replace_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot replace digital_font yet",
+                reason
+                + "\n\nFix: File → Load game, then Replace or drop an image. "
+                "Never mutates your original dump.",
+            )
+            return
         path, _filter = QFileDialog.getOpenFileName(
             self,
             "Choose an image for digital_font (any size or format)",
@@ -3458,6 +3498,14 @@ class DigitalFontPanel(QFrame):
         )
 
     def _revert(self) -> None:
+        reason = str(self.revert_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Nothing to revert",
+                reason + "\n\nStage a digital_font replacement first.",
+            )
+            return
         self.run_task(
             "Reverting digital_font",
             lambda progress: self.facade.revert(DIGITAL_FONT_EDIT_ID, progress),
