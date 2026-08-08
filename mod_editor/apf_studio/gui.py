@@ -12031,39 +12031,65 @@ class InspectorBrowser(QFrame):
                 "Browsing remains available."
             )
             self.load_waveform_button.setText("Canceling previous…")
-            self.load_waveform_button.setEnabled(False)
+            # Stay clickable so Cancel is never a silent gray no-op mid-cancel.
+            self.load_waveform_button.setEnabled(True)
+            tip = "Wait for the previous private decode cancel to finish."
+            self.load_waveform_button.setToolTip(tip)
+            self.load_waveform_button.setProperty("disableReason", tip)
             return
         self.load_waveform_button.setText("Load waveform")
+        # Never silent-gray: button stays enabled; disableReason explains block.
+        self.load_waveform_button.setEnabled(True)
         if row is None:
             self.waveform_preview.set_unavailable(
                 "Choose an individual AUDO or AUSB sound."
             )
-            self.load_waveform_button.setEnabled(False)
+            tip = (
+                "Select an individual AUDO/AUSB sound row first, then Load waveform. "
+                "Click still explains this."
+            )
+            self.load_waveform_button.setToolTip(tip)
+            self.load_waveform_button.setProperty("disableReason", tip)
             return
         if row.kind == "external_bank" or row.external_bank_identity is not None:
             self.waveform_preview.set_unavailable(
                 "A physical external bank contains many packetized sounds and is not "
                 "one playable waveform. Choose one of its AUSB substream rows."
             )
-            self.load_waveform_button.setEnabled(False)
+            tip = (
+                "External banks are multi-sound packages. Expand and select one AUSB "
+                "substream, then Load waveform."
+            )
+            self.load_waveform_button.setToolTip(tip)
+            self.load_waveform_button.setProperty("disableReason", tip)
             return
         if row.kind == "ausb_bank":
             self.waveform_preview.set_unavailable(
                 "This is a bank index, not one sound. Choose an individual substream."
             )
-            self.load_waveform_button.setEnabled(False)
+            tip = (
+                "This row is a bank index. Choose an individual substream sound, "
+                "then Load waveform."
+            )
+            self.load_waveform_button.setToolTip(tip)
+            self.load_waveform_button.setProperty("disableReason", tip)
             return
         if not self._waveform_row_is_playable(row):
             self.waveform_preview.set_unavailable(
                 "This decoded row has no verified playable WAV route."
             )
-            self.load_waveform_button.setEnabled(False)
+            tip = (
+                "This row has no verified playable WAV route. Pick another sound "
+                "or export raw for offline decode."
+            )
+            self.load_waveform_button.setToolTip(tip)
+            self.load_waveform_button.setProperty("disableReason", tip)
             return
         self.waveform_preview.set_empty(
             "Waveforms are not loaded automatically. Click Load waveform to decode "
             "this sound privately; playback will not start."
         )
-        self.load_waveform_button.setEnabled(True)
+        self.load_waveform_button.setProperty("disableReason", "")
         self.load_waveform_button.setToolTip(
             "Read this sound through the verified session-private WAV path and draw a "
             "bounded waveform. This does not play, replace, or add audio to the project."
@@ -12078,7 +12104,14 @@ class InspectorBrowser(QFrame):
                 "Cancelling the private waveform decode. No audio will be published."
             )
             self.load_waveform_button.setText("Cancelling…")
-            self.load_waveform_button.setEnabled(False)
+            self.load_waveform_button.setEnabled(True)
+            tip = "Cancel already requested — wait for the private decode to stop."
+            self.load_waveform_button.setToolTip(tip)
+            self.load_waveform_button.setProperty("disableReason", tip)
+            return
+        reason = str(self.load_waveform_button.property("disableReason") or "").strip()
+        if reason and "Cancel" not in self.load_waveform_button.text():
+            self.waveform_preview.set_unavailable(reason)
             return
         row = self._selected_row()
         if not self._waveform_row_is_playable(row):

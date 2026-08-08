@@ -283,7 +283,11 @@ class WaveformWidgetTests(unittest.TestCase):
 
             browser.load_waveform_button.click()
             self.assertEqual(browser.load_waveform_button.text(), "Cancelling…")
-            self.assertFalse(browser.load_waveform_button.isEnabled())
+            # Never silent-gray during cancel: stay enabled with explain tip.
+            self.assertTrue(browser.load_waveform_button.isEnabled())
+            self.assertTrue(
+                str(browser.load_waveform_button.property("disableReason") or "").strip()
+            )
             result = queued["operation"](lambda *_args: None)  # type: ignore[operator]
             self.assertEqual(result, ("cancelled", None))
             queued["complete"](result)  # type: ignore[operator]
@@ -366,7 +370,12 @@ class WaveformWidgetTests(unittest.TestCase):
         )
         try:
             browser.set_model(PagedModel((external,)), "fixture")
-            self.assertFalse(browser.load_waveform_button.isEnabled())
+            # Never silent-gray: clickable + disableReason teaches substream pick.
+            self.assertTrue(browser.load_waveform_button.isEnabled())
+            self.assertIn(
+                "substream",
+                str(browser.load_waveform_button.property("disableReason") or "").casefold(),
+            )
             self.assertEqual(browser.waveform_preview.state, "unavailable")
             self.assertIn("physical external bank", browser.waveform_preview.toolTip())
             self.assertFalse(browser.play_audio_button.isVisibleTo(browser))
