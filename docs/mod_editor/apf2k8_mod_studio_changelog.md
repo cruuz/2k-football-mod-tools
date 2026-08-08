@@ -11,6 +11,10 @@
   All Textures search teaches these names (Titans-style “missing” often catalog).
 - **Linear / rain textures** — untiled uncompressed TXTR (e.g.
   `crowd_shirt_stripe_color_rain`) PNG-preview instead of linear PORTME.
+- **Linear DXT** — untiled DXT1/2_3/4_5 TXTR bases PNG-preview (pitch-padded
+  block rows); same BC decoders as tiled path.
+- **Helmet shell recommended path** — Team Logos UI teaches Full-shell +
+  Normal logo with **opaque shell body α255** (names 0x88 translucency defect).
 - **General DXT5A** — coach_hair_occlusion / field_radiance / digit atlases
   beyond digital_font 128×128.
 - **Cubemap lightmaps** — format-32 face-0 preview (SpecularLightBox class).

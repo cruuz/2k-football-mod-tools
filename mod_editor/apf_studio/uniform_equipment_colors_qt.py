@@ -239,17 +239,24 @@ class UniformEquipmentColorsPanel(QFrame):
     def set_context(self) -> None:
         ready = bool(self.facade.source_ready)
         has_team = self.team.count() > 0 and self.team.currentData() is not None
-        for widget in (self.team, self.banks, self.stage_button):
-            widget.setEnabled(ready and has_team)
+        # Keep Stage clickable when blocked so it is never a silent gray button —
+        # click / tooltip explain the next step (Load game / clear filter).
+        self.team.setEnabled(ready)
+        self.banks.setEnabled(ready and has_team)
+        self.stage_button.setEnabled(True)
         if not ready:
+            reason = "Load your APF game (0A / extracted folder / ISO) first."
+            self.stage_button.setToolTip(reason)
+            self.stage_button.setProperty("disableReason", reason)
             self.revert_button.setEnabled(False)
             self.status.setText("Load your game to read uniform equipment colors.")
             return
         if not has_team:
+            reason = "No teams match that filter. Clear the filter box to see all 40."
+            self.stage_button.setToolTip(reason)
+            self.stage_button.setProperty("disableReason", reason)
             self.revert_button.setEnabled(False)
-            self.status.setText(
-                "No teams match that filter. Clear the filter box to see all 40."
-            )
+            self.status.setText(reason)
             return
         try:
             inspection = self.facade.uniform_equipment_color_inspection(
@@ -258,11 +265,13 @@ class UniformEquipmentColorsPanel(QFrame):
             value = self.facade.uniform_equipment_color_value(self._team_index())
         except Exception as exc:
             # Inline status only — never a blocking popup on team select.
-            self.status.setText(
+            reason = (
                 f"Could not read uniform equipment colors: {exc}. "
                 "Nothing was staged. Pick another team or reload your game."
             )
-            self.stage_button.setEnabled(False)
+            self.status.setText(reason)
+            self.stage_button.setToolTip(reason)
+            self.stage_button.setProperty("disableReason", reason)
             self.revert_button.setEnabled(False)
             return
         self.home.set_palette(inspection.home_palette)
@@ -272,12 +281,26 @@ class UniformEquipmentColorsPanel(QFrame):
         target_id = equipment_colors.asset_id(value.team_index)
         modified = target_id in self.facade.modified_asset_ids
         self.revert_button.setEnabled(modified)
+        self.stage_button.setToolTip(
+            "Stage HOME/AWAY facemask + turtleneck bank picks for this team only "
+            "(per kit). Player visors stay under Rosters → Save Players."
+        )
+        self.stage_button.setProperty("disableReason", "")
         self.status.setText(
             ("● Staged in this project. " if modified else "○ Source values (read-only). ")
             + "Build preserves both palettes and every nonselected selector byte."
         )
 
     def _stage(self) -> None:
+        reason = str(self.stage_button.property("disableReason") or "").strip()
+        if reason:
+            self.status.setText(reason)
+            return
+        if not self.facade.source_ready:
+            self.status.setText(
+                "Load your APF game (0A / extracted folder / ISO) first."
+            )
+            return
         try:
             value = self._value()
         except Exception as exc:
