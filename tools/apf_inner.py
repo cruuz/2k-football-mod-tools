@@ -1218,9 +1218,6 @@ def decode_txtr_base_rgba(
             "Cubemap face-0 preview ships for format 32 only; other cubemap/"
             "3D formats remain raw-export."
         )
-    if not metadata["tiled"]:
-        raise FormatError("PORTME: linear TXTR base-level routing is unverified")
-
     if format_value == 18:
         block_width, block_height, block_size = 4, 4, 8
         decoder = _decode_bc1
@@ -1251,18 +1248,44 @@ def decode_txtr_base_rgba(
             f"PORTME: Xenos format {format_value} "
             f"({metadata['format_name']}) is not implemented for PNG. "
             f"Supported PNG previews: 8, 1_5_5_5, 5_6_5, 8_8_8_8, 8_8, "
-            f"4_4_4_4, DXT1, DXT2_3, DXT4_5. Export raw TXTR parts instead."
+            f"4_4_4_4, DXT1, DXT2_3, DXT4_5, DXN, format-32 cubemap face0. "
+            f"Export raw TXTR parts instead."
         )
 
-    linear = _untile_2d(
-        base_data,
-        width,
-        height,
-        pitch,
-        block_width,
-        block_height,
-        block_size,
-    )
+    if metadata["tiled"]:
+        linear = _untile_2d(
+            base_data,
+            width,
+            height,
+            pitch,
+            block_width,
+            block_height,
+            block_size,
+        )
+    else:
+        # Linear (untiled) 2D base: only uncompressed texel layouts (1×1
+        # "blocks") are proved. Compressed DXT linear remains PORTME.
+        if block_width != 1 or block_height != 1:
+            raise FormatError(
+                "PORTME: linear TXTR routing for compressed DXT formats is "
+                "unverified; export raw TXTR parts instead."
+            )
+        row_bytes = pitch * block_size
+        need = row_bytes * height
+        if len(base_data) < need:
+            raise FormatError(
+                f"PORTME: linear TXTR base is {len(base_data)} bytes; "
+                f"need {need} for {width}×{height} pitch {pitch}"
+            )
+        # Pack tight rows of width*texel_size from pitched source.
+        tight = bytearray(width * height * block_size)
+        src_stride = row_bytes
+        dst_stride = width * block_size
+        for y in range(height):
+            src = y * src_stride
+            dst = y * dst_stride
+            tight[dst : dst + dst_stride] = base_data[src : src + dst_stride]
+        linear = bytes(tight)
     linear = _endian_swap(linear, endian)
     rgba = bytearray(width * height * 4)
     if decoder is None:

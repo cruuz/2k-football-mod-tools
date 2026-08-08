@@ -1895,13 +1895,16 @@ class AssetBrowser(QWidget):
         controls.setSpacing(8)
         self.search = QLineEdit()
         self.search.setPlaceholderText(
-            "Search… e.g. logo_l0, number_0_color, font_albedo, shoulder_color"
+            "Search… e.g. logo_l0, number_0_color, font_albedo, shoulder_color  (Ctrl+F)"
         )
         self.search.setClearButtonEnabled(True)
+        self.search.setAccessibleName("Search assets in this category")
+        self.search.setProperty("studioSearch", True)
         self.search.setToolTip(
             "Search the current category by name, type, class, or archive index. "
             "Jersey digits are number_0_color…number_9_color; nameplate glyphs are "
-            "font_albedo / font_normal (NameFont packages). Use × to clear."
+            "font_albedo / font_normal (NameFont packages). "
+            "Press Ctrl+F from anywhere to focus this box; × to clear."
         )
         self.type_filter = QComboBox()
         self.type_filter.setMinimumWidth(145)
@@ -2499,9 +2502,13 @@ class UniformStudioPage(QWidget):
         heading.addStretch(1)
         heading.addWidget(self.count)
         self.search = QLineEdit()
-        self.search.setPlaceholderText("Search slots or linked teams…")
+        self.search.setPlaceholderText("Search slots or linked teams… (Ctrl+F)")
         self.search.setClearButtonEnabled(True)
-        self.search.setToolTip("Search uniform slots. Use Clear or the × inside this field to reset it.")
+        self.search.setAccessibleName("Search uniform slots")
+        self.search.setProperty("studioSearch", True)
+        self.search.setToolTip(
+            "Search uniform slots. Press Ctrl+F to focus; Clear or × to reset."
+        )
         self.clear_search_button = QToolButton()
         self.clear_search_button.setObjectName("clearSearchButton")
         self.clear_search_button.setText("×")
@@ -16332,9 +16339,20 @@ class ApfStudioMainWindow(QMainWindow):
         self.sidebar_shortcut = QShortcut(QKeySequence("Ctrl+1"), self)
         self.sidebar_shortcut.setContext(Qt.WindowShortcut)
         self.sidebar_shortcut.activated.connect(self._focus_category_navigation)
+        # Escape clears the focused search box (or the page's studioSearch field).
+        self.clear_search_shortcut = QShortcut(QKeySequence(Qt.Key_Escape), self)
+        self.clear_search_shortcut.setContext(Qt.WindowShortcut)
+        self.clear_search_shortcut.activated.connect(self._clear_current_search)
+        # Ctrl+/ shows a short keyboard cheat sheet in the status line.
+        self.help_shortcut = QShortcut(QKeySequence("Ctrl+/"), self)
+        self.help_shortcut.setContext(Qt.WindowShortcut)
+        self.help_shortcut.activated.connect(self._show_keyboard_hints)
 
     def _focus_category_navigation(self) -> None:
         self.navigation.setFocus(Qt.ShortcutFocusReason)
+        self.operation_status.setText(
+            "Categories focused • ↑↓ to move • Enter to open • Ctrl+F for search"
+        )
 
     def _current_search_field(self) -> QLineEdit | None:
         page = self.pages.currentWidget()
@@ -16371,7 +16389,27 @@ class ApfStudioMainWindow(QMainWindow):
         field.setFocus(Qt.ShortcutFocusReason)
         field.selectAll()
         self.operation_status.setText(
-            "Search ready • type to filter this workspace"
+            "Search ready • type to filter • Esc clears • tips: logo_l0, number_0_color, font_albedo"
+        )
+
+    def _clear_current_search(self) -> None:
+        """Clear the workspace search when Escape is pressed on a search field."""
+
+        focused = self.focusWidget()
+        field = self._current_search_field()
+        if isinstance(focused, QLineEdit) and focused.text():
+            focused.clear()
+            self.operation_status.setText("Search cleared")
+            return
+        if field is not None and field.text():
+            field.clear()
+            field.setFocus(Qt.ShortcutFocusReason)
+            self.operation_status.setText("Search cleared")
+
+    def _show_keyboard_hints(self) -> None:
+        self.operation_status.setText(
+            "Keys: Ctrl+F search · Esc clear search · Ctrl+1 categories · "
+            "Ctrl+O load game · Ctrl+S save project · Ctrl+/ this help"
         )
 
     def _workspace_state(self) -> object | None:

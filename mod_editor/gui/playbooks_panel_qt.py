@@ -516,8 +516,10 @@ class PlaybooksPanel(QWidget):
         browser_layout.setSpacing(9)
         self.search = QLineEdit()
         self.search.setClearButtonEnabled(True)
+        self.search.setAccessibleName("Search playbooks")
+        self.search.setProperty("studioSearch", True)
         self.search.setPlaceholderText(
-            "Search book, formation, play… (try Ace, Dime, Bear for community flags)"
+            "Search book, formation, play… (try Ace, Dime, Bear)  · Ctrl+F"
         )
         self.search.setToolTip(
             "Filters stock books by name metadata. Formations named Ace/Dime/Bear "

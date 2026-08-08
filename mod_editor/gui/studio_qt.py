@@ -1525,6 +1525,12 @@ class StudioMainWindow(QMainWindow):
         self.sidebar_shortcut = QShortcut(QKeySequence("Ctrl+1"), self)
         self.sidebar_shortcut.setContext(Qt.WindowShortcut)
         self.sidebar_shortcut.activated.connect(self._focus_category_navigation)
+        self.clear_search_shortcut = QShortcut(QKeySequence(Qt.Key_Escape), self)
+        self.clear_search_shortcut.setContext(Qt.WindowShortcut)
+        self.clear_search_shortcut.activated.connect(self._clear_current_search)
+        self.help_shortcut = QShortcut(QKeySequence("Ctrl+/"), self)
+        self.help_shortcut.setContext(Qt.WindowShortcut)
+        self.help_shortcut.activated.connect(self._show_keyboard_hints)
 
     def _focus_category_navigation(self) -> None:
         self.navigation.setFocus(Qt.ShortcutFocusReason)
@@ -1674,7 +1680,29 @@ class StudioMainWindow(QMainWindow):
             return
         field.setFocus(Qt.ShortcutFocusReason)
         field.selectAll()
-        self._set_status("Search ready • type to filter this page")
+        self._set_status(
+            "Search ready • type to filter • Esc clears • Ctrl+/ keyboard help"
+        )
+
+    def _clear_current_search(self) -> None:
+        """Clear the focused or page search field on Escape."""
+
+        focused = self.focusWidget()
+        field = self._current_search_field()
+        if isinstance(focused, QLineEdit) and focused.text():
+            focused.clear()
+            self._set_status("Search cleared")
+            return
+        if field is not None and field.text():
+            field.clear()
+            field.setFocus(Qt.ShortcutFocusReason)
+            self._set_status("Search cleared")
+
+    def _show_keyboard_hints(self) -> None:
+        self._set_status(
+            "Keys: Ctrl+F search · Esc clear · Ctrl+1 categories · "
+            "Ctrl+O open XISO · Ctrl+S save project · Ctrl+/ this help"
+        )
 
     def _workspace_state(self) -> object | None:
         if self.workspace_store is None:
