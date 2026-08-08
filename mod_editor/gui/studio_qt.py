@@ -3424,7 +3424,14 @@ class StudioMainWindow(QMainWindow):
         detail_layout.addStretch(1)
         export_button = QPushButton("Export Raw Resource")
         export_button.setObjectName("primaryButton")
-        export_button.setEnabled(False)
+        export_button.setEnabled(True)
+        export_button.setToolTip(
+            "Load your XISO and select a resource first. Click still explains."
+        )
+        export_button.setProperty(
+            "disableReason",
+            "Load your XISO and select a resource first.",
+        )
         detail_layout.addWidget(export_button, 0, Qt.AlignRight)
         outer.addWidget(detail, 1)
 
@@ -4725,18 +4732,33 @@ class StudioMainWindow(QMainWindow):
             "Status: browsable and raw-exportable. Replacement remains disabled "
             "unless a named capability provides a bounded writer."
         )
-        state.export_button.setEnabled(
-            bool(getattr(self.facade, "source_ready", False))
-            and not self._blocking
-            and not self._embedded_operation_is_busy()
+        ready = bool(getattr(self.facade, "source_ready", False))
+        busy = self._blocking or self._embedded_operation_is_busy()
+        if not ready:
+            block = "Load your NFL 2K5 XISO first to export a raw resource."
+        elif busy:
+            block = "Wait for the current operation to finish."
+        else:
+            block = ""
+        state.export_button.setEnabled(True)
+        state.export_button.setToolTip(
+            block or "Export the exact raw game resource (wrapper + body) to a new file."
         )
+        state.export_button.setProperty("disableReason", block)
 
     def _export_universal_asset(self) -> None:
         state = self._universal_browser
         if state is None:
             return
+        reason = str(state.export_button.property("disableReason") or "").strip()
+        if reason:
+            self._show_error(reason)
+            return
         current = state.asset_list.currentItem()
         if current is None:
+            self._show_error(
+                "Select a resource in the complete inventory list first, then Export."
+            )
             return
         asset_id = str(current.data(Qt.UserRole))
         record = next((row for row in state.rows if row.asset_id == asset_id), None)
