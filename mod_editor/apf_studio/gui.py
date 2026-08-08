@@ -7523,6 +7523,17 @@ class StadiumStudioPage(QWidget):
             else:
                 self.package_preview.set_error(str(value))
 
+        def _package_preview_watchdog() -> None:
+            if generation != self._texture_generation:
+                return
+            if str(self.package_preview.property("previewState") or "") != "loading":
+                return
+            self.package_preview.set_error(
+                f"{asset.name}: package preview still preparing after 45s. "
+                "Re-select the record or Export raw."
+            )
+
+        QTimer.singleShot(45_000, _package_preview_watchdog)
         self.run_task("Preparing stadium package texture", operation, complete, False)
 
     def _embedded_texture_selected(
