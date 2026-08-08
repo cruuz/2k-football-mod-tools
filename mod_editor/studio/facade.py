@@ -2156,6 +2156,7 @@ class Nfl2k5StudioFacade:
             sidecar.write_text(
                 json.dumps(pack.manifest, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
+                newline="\n",
             )
         progress(
             "Experimental G1 multi-Dime package-map PLAY exported "

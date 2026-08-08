@@ -78,6 +78,9 @@ class KeyboardSearchPolishTests(unittest.TestCase):
             def export_playbook_package_map_copy(self, *a, **k):
                 raise RuntimeError
 
+            def export_g1_dime_from_nickel_package_map_pack(self, *a, **k):
+                raise RuntimeError
+
             def copy_play_assignment_route(self, *a, **k):
                 raise RuntimeError
 

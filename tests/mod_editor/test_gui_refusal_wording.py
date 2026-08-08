@@ -89,8 +89,10 @@ class NoDeadEndCopyTests(unittest.TestCase):
     def test_stadium_chooser_accepts_every_ordinary_format(self) -> None:
         source = _APF_GUI.read_text(encoding="utf-8")
         start = source.index("    def _replace_embedded_texture(self) -> None:")
-        block = source[start:start + 700]
+        # Window must cover never-gray disableReason preamble + getOpenFileName.
+        block = source[start:start + 1400]
         self.assertIn("IMAGE_IMPORT_FILTER", block)
+        self.assertIn("resized to", block)
 
     def test_crest_pill_promises_conversion_instead_of_refusal(self) -> None:
         source = _APF_GUI.read_text(encoding="utf-8")
