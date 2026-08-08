@@ -332,13 +332,16 @@ class EquipmentResizeOffscreenTests(unittest.TestCase):
                 return_value=(str(self.source), "PNG image (*.png)"),
             ),
             patch(
-                "mod_editor.gui.studio_qt.QMessageBox.question",
-                return_value=QMessageBox.Yes,
-            ) as question,
+                "mod_editor.gui.studio_qt.QInputDialog.getItem",
+                return_value=(
+                    "Cover — fill the slot, crop overflow",
+                    True,
+                ),
+            ) as chooser,
         ):
             QTest.mouseClick(self.state.replace_button, Qt.LeftButton)
             self.application.processEvents()
-        question.assert_called_once()
+        chooser.assert_called_once()
         self._assert_resized()
 
     def test_drag_drop_resizes_equipment_before_session_replace(self) -> None:
@@ -351,15 +354,18 @@ class EquipmentResizeOffscreenTests(unittest.TestCase):
             QPointF(6, 6), Qt.CopyAction, mime, Qt.LeftButton, Qt.NoModifier
         )
         with patch(
-            "mod_editor.gui.studio_qt.QMessageBox.question",
-            return_value=QMessageBox.Yes,
-        ) as question:
+            "mod_editor.gui.studio_qt.QInputDialog.getItem",
+            return_value=(
+                "Cover — fill the slot, crop overflow",
+                True,
+            ),
+        ) as chooser:
             QApplication.sendEvent(self.state.preview, enter)
             QApplication.sendEvent(self.state.preview, dropped)
             self.application.processEvents()
         self.assertTrue(enter.isAccepted())
         self.assertTrue(dropped.isAccepted())
-        question.assert_called_once()
+        chooser.assert_called_once()
         self._assert_resized()
 
 
