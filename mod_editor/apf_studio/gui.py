@@ -3360,6 +3360,19 @@ class DigitalFontPanel(QFrame):
             return
         self.preview.set_loading("Generating the original mask from your game…")
         self.path_note.setText("Current preview: original texture from your own game.")
+        started = id(self.preview)
+
+        def _digital_font_watchdog() -> None:
+            if id(self.preview) != started:
+                return
+            if str(self.preview.property("previewState") or "") != "loading":
+                return
+            self.preview.set_error(
+                "digital_font: preview still preparing after 45s. "
+                "Re-open Score digits or Export the mask PNG."
+            )
+
+        QTimer.singleShot(45_000, _digital_font_watchdog)
         self.run_task(
             "Preparing digital_font preview",
             lambda progress: self.facade.preview_digital_font(progress),
@@ -4385,6 +4398,19 @@ class ApfTeamLogoPanel(QFrame):
         self.path_note.setText(
             "Current preview: original crest decoded from your own game (read-only)."
         )
+        crest_token = getattr(self, "_preview_token", 0)
+
+        def _crest_preview_watchdog() -> None:
+            if getattr(self, "_preview_token", 0) != crest_token:
+                return
+            if str(self.preview.property("previewState") or "") != "loading":
+                return
+            self.preview.set_error(
+                "Team crest: preview still preparing after 45s. "
+                "Re-select the logo slot or Export original PNG."
+            )
+
+        QTimer.singleShot(45_000, _crest_preview_watchdog)
         self.run_task(
             "Decoding team-logo crest",
             self._decode_source_operation,
@@ -6068,6 +6094,18 @@ class ApfFieldArtPanel(QFrame):
             "(read-only)."
         )
         token = self._preview_token
+
+        def _field_art_preview_watchdog() -> None:
+            if token != self._preview_token:
+                return
+            if str(self.preview.property("previewState") or "") != "loading":
+                return
+            self.preview.set_error(
+                f"{target.name}: preview still preparing after 45s. "
+                "Re-select the Field Art slot or Export original."
+            )
+
+        QTimer.singleShot(45_000, _field_art_preview_watchdog)
         self.run_task(
             f"Decoding {target.name}",
             lambda progress: self._decode_source_operation(target, progress),
@@ -7651,6 +7689,17 @@ class StadiumStudioPage(QWidget):
                 return
             self.package_preview.set_image(Path(result))
 
+        def _embed_preview_watchdog() -> None:
+            if generation != self._texture_generation:
+                return
+            if str(self.package_preview.property("previewState") or "") != "loading":
+                return
+            self.package_preview.set_error(
+                f"{texture.selector}: embedded texture still preparing after 45s. "
+                "Re-click the surface or Export."
+            )
+
+        QTimer.singleShot(45_000, _embed_preview_watchdog)
         self.run_task("Preparing exact stadium surface texture", operation, complete, False)
 
     def _export_scene(self) -> None:
