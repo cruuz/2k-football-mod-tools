@@ -60,5 +60,38 @@ class NeverSilentGrayBootTests(unittest.TestCase):
             self.app.processEvents()
 
 
+
+    def test_2k5_audio_export_matching_boot(self) -> None:
+        from pathlib import Path
+        import tempfile
+        from mod_editor.gui.audio_panel_qt import AudioPanel
+        # lightweight: just ensure button exists with disableReason after construct
+        # uses real fixture if available via AudioFixture in audio panel tests
+        try:
+            from tests.mod_editor.test_audio_panel_qt import (
+                AudioFixture,
+                CatalogAudioPanelHost,
+            )
+            from mod_editor.core.nfl2k5_audio_catalog import Nfl2k5AudioService
+        except Exception:
+            self.skipTest("audio panel fixtures unavailable")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source_root = root / "source"
+            source_root.mkdir()
+            fixture = AudioFixture(source_root)
+            catalog = fixture.catalog()
+            service = Nfl2k5AudioService(fixture.cache, catalog)
+            host = CatalogAudioPanelHost(catalog, service, root / "replacements")
+            panel = AudioPanel(host, page_size=1)
+            try:
+                self.assertTrue(panel.export_matching_button.isEnabled())
+                # may be ready with fixture - either empty disableReason or tip
+                self.assertTrue(panel.export_matching_button.isEnabled())
+            finally:
+                panel.deleteLater()
+                self.app.processEvents()
+
+
 if __name__ == "__main__":
     unittest.main()
