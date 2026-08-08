@@ -8481,8 +8481,16 @@ class BaseRatingsPanel(QFrame):
         self.status.setText("EDITABLE · EXACT 0–99")
         self.selected_rating.setText("Choose a rating to edit its exact byte value.")
         self.value_editor.setEnabled(False)
-        self.apply_button.setEnabled(False)
-        self.revert_button.setEnabled(False)
+        tip = (
+            "Select a player and a base rating first. Apply/Revert stay "
+            "clickable so blocked states explain themselves."
+        )
+        self.apply_button.setEnabled(True)
+        self.apply_button.setToolTip(tip)
+        self.apply_button.setProperty("disableReason", tip)
+        self.revert_button.setEnabled(True)
+        self.revert_button.setToolTip(tip)
+        self.revert_button.setProperty("disableReason", tip)
         self.setVisible(False)
 
     @staticmethod
@@ -8586,8 +8594,13 @@ class BaseRatingsPanel(QFrame):
             self._selected_field_id = None
             self.selected_rating.setText("No ratings match this search.")
             self.value_editor.setEnabled(False)
-            self.apply_button.setEnabled(False)
-            self.revert_button.setEnabled(False)
+            tip = "No ratings match this search. Clear the filter, then select a rating."
+            self.apply_button.setEnabled(True)
+            self.apply_button.setToolTip(tip)
+            self.apply_button.setProperty("disableReason", tip)
+            self.revert_button.setEnabled(True)
+            self.revert_button.setToolTip(tip)
+            self.revert_button.setProperty("disableReason", tip)
 
     def _selected_rating(self) -> dict[str, object] | None:
         selected = (
@@ -8611,8 +8624,13 @@ class BaseRatingsPanel(QFrame):
         if rating is None or self._player_index is None:
             self._selected_field_id = None
             self.value_editor.setEnabled(False)
-            self.apply_button.setEnabled(False)
-            self.revert_button.setEnabled(False)
+            tip = "Select a base rating row first."
+            self.apply_button.setEnabled(True)
+            self.apply_button.setToolTip(tip)
+            self.apply_button.setProperty("disableReason", tip)
+            self.revert_button.setEnabled(True)
+            self.revert_button.setToolTip(tip)
+            self.revert_button.setProperty("disableReason", tip)
             return
         field_id = str(rating["id"])
         label = str(rating["label"])
@@ -8627,53 +8645,64 @@ class BaseRatingsPanel(QFrame):
         self.value_editor.setValue(value)
         self.value_editor.blockSignals(False)
         self.value_editor.setEnabled(True)
+        staged = (
+            self._asset_id(self._player_index, field_id)
+            in self.facade.modified_asset_ids
+        )
         state = (
             "modified in this project"
-            if self._asset_id(self._player_index, field_id)
-            in self.facade.modified_asset_ids
+            if staged
             else "original source value"
         )
         self.selected_rating.setText(
             f"{label} · {field_id} · player byte {offset} · exact current "
             f"value {value} · {state}"
         )
-        self.revert_button.setEnabled(
-            self._asset_id(self._player_index, field_id)
-            in self.facade.modified_asset_ids
-        )
-        self.revert_button.setToolTip(
-            "Restore this one rating to the exact value in the loaded source."
-            if self.revert_button.isEnabled()
-            else "This rating still matches the loaded source."
-        )
+        if staged:
+            revert_tip = "Restore this one rating to the exact value in the loaded source."
+            revert_block = ""
+        else:
+            revert_tip = revert_block = "This rating still matches the loaded source."
+        self.revert_button.setEnabled(True)
+        self.revert_button.setToolTip(revert_tip)
+        self.revert_button.setProperty("disableReason", revert_block)
         self._editor_changed()
 
     def _editor_changed(self, _value: int = 0) -> None:
         rating = self._selected_rating()
         if rating is None:
-            self.apply_button.setEnabled(False)
+            tip = "Select a base rating row first."
+            self.apply_button.setEnabled(True)
+            self.apply_button.setToolTip(tip)
+            self.apply_button.setProperty("disableReason", tip)
             return
         field_id = str(rating["id"])
         current = self._current_value(field_id)
         value = self.value_editor.value()
         valid = 0 <= value <= 99
-        self.apply_button.setEnabled(valid and value != current)
-        self.apply_button.setToolTip(
-            "Choose a deliberate value from 0 to 99; native 100 is shown "
-            "exactly but is source/revert-only."
-            if not valid
-            else "This exact value is already active."
-            if value == current
-            else f"Write exact native value {value} as one reversible project edit."
-        )
+        if valid and value != current:
+            tip = f"Write exact native value {value} as one reversible project edit."
+            block = ""
+        elif not valid:
+            tip = block = (
+                "Choose a deliberate value from 0 to 99; native 100 is shown "
+                "exactly but is source/revert-only."
+            )
+        else:
+            tip = block = "This exact value is already active."
+        self.apply_button.setEnabled(True)
+        self.apply_button.setToolTip(tip)
+        self.apply_button.setProperty("disableReason", block)
 
     def _apply_rating(self) -> None:
+        reason = str(self.apply_button.property("disableReason") or "").strip()
+        if reason:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(self, "Cannot apply rating yet", reason)
+            return
         rating = self._selected_rating()
-        if (
-            rating is None
-            or self._player_index is None
-            or not self.apply_button.isEnabled()
-        ):
+        if rating is None or self._player_index is None:
             return
         self.applyRequested.emit(
             self._player_index,
@@ -8682,12 +8711,14 @@ class BaseRatingsPanel(QFrame):
         )
 
     def _revert_rating(self) -> None:
+        reason = str(self.revert_button.property("disableReason") or "").strip()
+        if reason:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(self, "Nothing to revert", reason)
+            return
         rating = self._selected_rating()
-        if (
-            rating is None
-            or self._player_index is None
-            or not self.revert_button.isEnabled()
-        ):
+        if rating is None or self._player_index is None:
             return
         self.revertRequested.emit(self._player_index, str(rating["id"]))
 
@@ -8848,8 +8879,16 @@ class PlayerPositionPanel(QFrame):
         self.current_state.setText(
             "Choose a player to edit the position stored in that player's record."
         )
-        self.apply_button.setEnabled(False)
-        self.revert_button.setEnabled(False)
+        tip = (
+            "Select a player first. Apply/Revert stay clickable so blocked "
+            "states explain themselves."
+        )
+        self.apply_button.setEnabled(True)
+        self.apply_button.setToolTip(tip)
+        self.apply_button.setProperty("disableReason", tip)
+        self.revert_button.setEnabled(True)
+        self.revert_button.setToolTip(tip)
+        self.revert_button.setProperty("disableReason", tip)
         self.setVisible(False)
 
     def _current_value(self) -> int:
@@ -8877,15 +8916,22 @@ class PlayerPositionPanel(QFrame):
 
     def _editor_changed(self, _index: int = -1) -> None:
         if self._player_index is None:
-            self.apply_button.setEnabled(False)
-            self.revert_button.setEnabled(False)
+            tip = "Select a player first."
+            self.apply_button.setEnabled(True)
+            self.apply_button.setToolTip(tip)
+            self.apply_button.setProperty("disableReason", tip)
+            self.revert_button.setEnabled(True)
+            self.revert_button.setToolTip(tip)
+            self.revert_button.setProperty("disableReason", tip)
             return
         selected = self.position.currentData()
         if isinstance(selected, bool) or not isinstance(selected, int):
-            self.apply_button.setEnabled(False)
-            self.apply_button.setToolTip(
+            tip = (
                 "Choose one of the 17 named positions; free-form codes are not accepted."
             )
+            self.apply_button.setEnabled(True)
+            self.apply_button.setToolTip(tip)
+            self.apply_button.setProperty("disableReason", tip)
             return
         current = self._current_value()
         modified = self._asset_id(self._player_index) in self.facade.modified_asset_ids
@@ -8898,35 +8944,52 @@ class PlayerPositionPanel(QFrame):
             f"(exact code {current}) · "
             + ("modified in this project" if modified else "original source value")
         )
-        self.apply_button.setEnabled(selected != current)
-        self.apply_button.setToolTip(
-            "This position is already active."
-            if selected == current
-            else (
+        if selected != current:
+            apply_tip = (
                 f"Change only this player's position to code {selected} as one "
                 "reversible project edit."
             )
-        )
-        self.revert_button.setEnabled(modified)
-        self.revert_button.setToolTip(
-            "Restore this player's exact source position."
-            if modified
-            else "This position still matches the loaded source."
-        )
+            apply_block = ""
+        else:
+            apply_tip = apply_block = "This position is already active."
+        self.apply_button.setEnabled(True)
+        self.apply_button.setToolTip(apply_tip)
+        self.apply_button.setProperty("disableReason", apply_block)
+        if modified:
+            revert_tip = "Restore this player's exact source position."
+            revert_block = ""
+        else:
+            revert_tip = revert_block = (
+                "This player's position still matches the loaded source."
+            )
+        self.revert_button.setEnabled(True)
+        self.revert_button.setToolTip(revert_tip)
+        self.revert_button.setProperty("disableReason", revert_block)
 
     def _apply_position(self) -> None:
+        reason = str(self.apply_button.property("disableReason") or "").strip()
+        if reason:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(self, "Cannot apply position yet", reason)
+            return
         selected = self.position.currentData()
         if (
             self._player_index is None
             or isinstance(selected, bool)
             or not isinstance(selected, int)
-            or not self.apply_button.isEnabled()
         ):
             return
         self.applyRequested.emit(self._player_index, selected)
 
     def _revert_position(self) -> None:
-        if self._player_index is None or not self.revert_button.isEnabled():
+        reason = str(self.revert_button.property("disableReason") or "").strip()
+        if reason:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(self, "Nothing to revert", reason)
+            return
+        if self._player_index is None:
             return
         self.revertRequested.emit(self._player_index)
 
