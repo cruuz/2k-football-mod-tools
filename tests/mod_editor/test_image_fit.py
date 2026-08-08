@@ -208,8 +208,10 @@ class WiringTests(unittest.TestCase):
             _REPO_ROOT / "mod_editor" / "gui" / "studio_qt.py"
         ).read_text(encoding="utf-8")
         start = source.index("    def _choose_visual_replacement(")
-        block = source[start:start + 600]
+        # Window must cover disableReason gate + multi-format open filter.
+        block = source[start:start + 1200]
         self.assertIn("*.jpg", block)
+        self.assertIn("disableReason", block)
 
     def test_an_already_correct_image_is_never_resampled(self) -> None:
         """The rule that keeps a good file byte-identical through the GUI."""
