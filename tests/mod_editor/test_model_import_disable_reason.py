@@ -162,5 +162,16 @@ class ApfWordmarkImportExplainContractTests(unittest.TestCase):
             self.application.processEvents()
 
 
+class AssetBrowserPreviewWatchdogContractTests(unittest.TestCase):
+    """Blank-preview residual: AssetBrowser must fail closed after hang."""
+
+    def test_preview_watchdog_is_wired_in_shipped_gui(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        source = (root / "mod_editor/apf_studio/gui.py").read_text(encoding="utf-8")
+        self.assertIn("_preview_watchdog", source)
+        self.assertIn("45_000", source)
+        self.assertIn("preview still preparing after 45s", source)
+
+
 if __name__ == "__main__":
     unittest.main()

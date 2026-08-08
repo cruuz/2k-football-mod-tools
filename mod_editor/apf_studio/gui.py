@@ -2284,6 +2284,20 @@ class AssetBrowser(QWidget):
             else:
                 self.preview.set_error(str(value))
 
+        # Fail closed after 45s so "Preparing preview…" never means blank forever.
+        # Token must still match: a newer selection cancels this watchdog silently.
+        def _preview_watchdog() -> None:
+            if token != self._preview_token:
+                return
+            if str(self.preview.property("previewState") or "") != "loading":
+                return
+            self.preview.set_error(
+                f"{asset.name}: preview still preparing after 45s. "
+                "Re-select the row, Export raw TXTR parts, or search another asset. "
+                "PORTME formats show an explicit error instead of hanging blank."
+            )
+
+        QTimer.singleShot(45_000, _preview_watchdog)
         self.run_task("Preparing asset preview", operation, complete, False)
 
     def _clear_detail(
