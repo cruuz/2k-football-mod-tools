@@ -100,11 +100,25 @@ class RosterReservePlanner(QWidget):
         controls.addStretch(1)
         self.open_button = QPushButton("Open reserve plan…")
         self.open_button.setObjectName("secondaryButton")
-        self.open_button.setEnabled(False)
+        self.open_button.setEnabled(True)
+        self.open_button.setToolTip(
+            "Load your APF game first — Open needs a source. Click still explains."
+        )
+        self.open_button.setProperty(
+            "disableReason",
+            "Load your APF game first — Open needs a source.",
+        )
         self.open_button.clicked.connect(self._open_plan)
         self.save_button = QPushButton("Save reserve plan…")
         self.save_button.setObjectName("primaryButton")
-        self.save_button.setEnabled(False)
+        self.save_button.setEnabled(True)
+        self.save_button.setToolTip(
+            "Load your APF game first — Save needs a source. Click still explains."
+        )
+        self.save_button.setProperty(
+            "disableReason",
+            "Load your APF game first — Save needs a source.",
+        )
         self.save_button.clicked.connect(self._save_plan)
         controls.addWidget(self.open_button)
         controls.addWidget(self.save_button)
@@ -169,8 +183,16 @@ class RosterReservePlanner(QWidget):
             self._team_labels = {}
             self.team.clear()
             self.team.setEnabled(False)
-            self.open_button.setEnabled(False)
-            self.save_button.setEnabled(False)
+            load_tip = (
+                "Load your APF game first. Reserve planner Open/Save needs a "
+                "source. Click still explains — buttons stay clickable."
+            )
+            self.open_button.setEnabled(True)
+            self.save_button.setEnabled(True)
+            self.open_button.setToolTip(load_tip)
+            self.save_button.setToolTip(load_tip)
+            self.open_button.setProperty("disableReason", load_tip)
+            self.save_button.setProperty("disableReason", load_tip)
             self.table.setRowCount(0)
             self.summary.setText("Load your APF game to open the planner")
             self.team_note.setText("")
@@ -213,6 +235,14 @@ class RosterReservePlanner(QWidget):
         self.team.setEnabled(True)
         self.open_button.setEnabled(True)
         self.save_button.setEnabled(True)
+        self.open_button.setToolTip(
+            "Open a previously saved 32-team reserve roster plan (.json)."
+        )
+        self.save_button.setToolTip(
+            "Save reserve player indices only (no retail game bytes)."
+        )
+        self.open_button.setProperty("disableReason", "")
+        self.save_button.setProperty("disableReason", "")
         self._render()
 
     def _current_team(self) -> int:
@@ -365,6 +395,14 @@ class RosterReservePlanner(QWidget):
         self._render(select_master_slot=STOCK_ACTIVE_SLOTS + reserve_slot)
 
     def _open_plan(self) -> None:
+        reason = str(self.open_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot open reserve plan yet",
+                reason + "\n\nFix: File → Load game, then Open reserve plan.",
+            )
+            return
         source, _selected_filter = QFileDialog.getOpenFileName(
             self,
             "Open APF 32-team reserve roster plan",
@@ -381,6 +419,14 @@ class RosterReservePlanner(QWidget):
         self._render()
 
     def _save_plan(self) -> None:
+        reason = str(self.save_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot save reserve plan yet",
+                reason + "\n\nFix: File → Load game, edit reserves, then Save.",
+            )
+            return
         destination, _selected_filter = QFileDialog.getSaveFileName(
             self,
             "Save APF 32-team reserve roster plan",
