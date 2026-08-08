@@ -4362,8 +4362,25 @@ class ApfTeamLogoPanel(QFrame):
         self.coverage_warning.setVisible(full_shell)
         self.import_mode_label.setVisible(full_shell)
         self.import_mode.setVisible(full_shell)
-        self.import_mode.setEnabled(ready and full_shell)
-        self.place_button.setEnabled(ready and full_shell)
+        # Place/import-mode: stay clickable; explain when not full-shell or unloaded.
+        place_tip = (
+            "For Full-shell coverage: drag the logo on a labeled front/crown/rear "
+            "canvas, then adjust width, height, and rotation before staging."
+            if ready and full_shell
+            else (
+                "Select Full-shell coverage first, then Place on helmet. "
+                "Retail side-decal profile does not use placement."
+                if ready
+                else "Load your APF game first, then choose Full-shell and Place."
+            )
+        )
+        self.import_mode.setEnabled(ready)
+        self.place_button.setEnabled(True)
+        self.place_button.setToolTip(place_tip)
+        self.place_button.setProperty(
+            "disableReason",
+            "" if (ready and full_shell) else place_tip,
+        )
         # Never silent-gray: Export/Replace/Build/Revert stay clickable + explain.
         load_tip = (
             "Load your APF game first (0A). Team Logo export/replace needs a "
@@ -4952,6 +4969,15 @@ class ApfTeamLogoPanel(QFrame):
     def _place_current_logo(self) -> None:
         """Reposition the staged design, or start from the decoded retail crest."""
 
+        reason = str(self.place_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot place logo yet",
+                reason
+                + "\n\nFix: load APF → set coverage to Full-shell → Place on helmet.",
+            )
+            return
         if (
             not self.facade.source_ready
             or self._selected_profile() != FULL_SHELL_CREST_PROFILE
