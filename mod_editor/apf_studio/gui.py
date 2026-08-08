@@ -12474,7 +12474,13 @@ class InspectorBrowser(QFrame):
         self.play_audio_button.setEnabled(False)
         self._configure_audio_waveform(None)
         self._configure_audio_replacement(None)
-        self.export_rows_button.setEnabled(False)
+        tip = "Load a supported APF game first, then export decoded inspector rows."
+
+        self.export_rows_button.setEnabled(True)
+
+        self.export_rows_button.setToolTip(tip)
+
+        self.export_rows_button.setProperty("disableReason", tip)
         self.export_complete_audio_catalog_button.setEnabled(False)
         self.export_original_audio_banks_button.setEnabled(False)
         self.export_audio_replacement_template_button.setEnabled(False)
@@ -12517,7 +12523,13 @@ class InspectorBrowser(QFrame):
         self.play_audio_button.setEnabled(False)
         self._configure_audio_waveform(None)
         self._configure_audio_replacement(None)
-        self.export_rows_button.setEnabled(False)
+        tip = "Load a supported APF game first, then export decoded inspector rows."
+
+        self.export_rows_button.setEnabled(True)
+
+        self.export_rows_button.setToolTip(tip)
+
+        self.export_rows_button.setProperty("disableReason", tip)
         self.export_complete_audio_catalog_button.setEnabled(False)
         self.export_original_audio_banks_button.setEnabled(False)
         self.export_audio_replacement_template_button.setEnabled(False)
@@ -12780,7 +12792,13 @@ class InspectorBrowser(QFrame):
         self.page.setText("Waiting for the new search and filters…")
         self.previous.setEnabled(False)
         self.next.setEnabled(False)
-        self.export_rows_button.setEnabled(False)
+        tip = "Load a supported APF game first, then export decoded inspector rows."
+
+        self.export_rows_button.setEnabled(True)
+
+        self.export_rows_button.setToolTip(tip)
+
+        self.export_rows_button.setProperty("disableReason", tip)
         self._update_matching_audio_action()
         self._update_audio_shortlist_actions()
 
