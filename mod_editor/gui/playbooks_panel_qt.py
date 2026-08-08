@@ -555,8 +555,8 @@ class PlaybooksPanel(QWidget):
             "⚠ Ace = G2 TE→WR on long downs · "
             "⚠ Dime = G1 ILB→OLB role map · "
             "⚠ Bear = G13 DE/RLB leftovers. "
-            "Use Export Package-Map / Link-Table Copy for offline experimental "
-            "PLAY bytes (runtime unproved)."
+            "G1: Use Nickel donor, then Export Package-Map / Link-Table Copy "
+            "for offline experimental PLAY bytes (runtime unproved)."
         )
         self.community_legend.setObjectName("playMuted")
         self.community_legend.setWordWrap(True)
