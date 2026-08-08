@@ -141,7 +141,15 @@ class NormalLogoRegionDialog(QDialog):
 
         self.buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
         self.buttons.button(QDialogButtonBox.Save).setText("Use palette-mapped mask")
-        self.buttons.button(QDialogButtonBox.Save).setEnabled(False)
+        # Never silent-gray: stay clickable; accept path explains when invalid.
+        self.buttons.button(QDialogButtonBox.Save).setEnabled(True)
+        self.buttons.button(QDialogButtonBox.Save).setToolTip(
+            "Update the material preview first so the palette-mapped mask is valid."
+        )
+        self.buttons.button(QDialogButtonBox.Save).setProperty(
+            "disableReason",
+            "Update the material preview first so the palette-mapped mask is valid.",
+        )
         self.buttons.accepted.connect(self._accept_if_valid)
         self.buttons.rejected.connect(self.reject)
         root.addWidget(self.buttons)
@@ -188,7 +196,10 @@ class NormalLogoRegionDialog(QDialog):
             self.material_preview.clear()
             self.material_preview.setText(str(exc))
             self.status.setText(str(exc))
-            self.buttons.button(QDialogButtonBox.Save).setEnabled(False)
+            save = self.buttons.button(QDialogButtonBox.Save)
+            save.setEnabled(True)
+            save.setToolTip(str(exc))
+            save.setProperty("disableReason", str(exc))
             return False
         self._conversion = conversion
         self.material_preview.setPixmap(_pixmap(conversion.material_preview_rgba))
@@ -198,7 +209,10 @@ class NormalLogoRegionDialog(QDialog):
             f"palette-preview RGB error max {conversion.maximum_rgb_error}, "
             f"RMSE {rmse:.2f}. Confirm these colors before continuing."
         )
-        self.buttons.button(QDialogButtonBox.Save).setEnabled(True)
+        save = self.buttons.button(QDialogButtonBox.Save)
+        save.setEnabled(True)
+        save.setToolTip("Use this palette-mapped region mask.")
+        save.setProperty("disableReason", "")
         return True
 
     def _mapping_changed(self, _text: str) -> None:
@@ -210,9 +224,25 @@ class NormalLogoRegionDialog(QDialog):
         self.status.setText(
             "Confirm the edited rendered colors by updating the palette-mapped preview."
         )
-        self.buttons.button(QDialogButtonBox.Save).setEnabled(False)
+        save = self.buttons.button(QDialogButtonBox.Save)
+        save.setEnabled(True)
+        tip = "Update the material preview first so the palette-mapped mask is valid."
+        save.setToolTip(tip)
+        save.setProperty("disableReason", tip)
 
     def _accept_if_valid(self) -> None:
+        reason = str(
+            self.buttons.button(QDialogButtonBox.Save).property("disableReason") or ""
+        ).strip()
+        if reason:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(
+                self,
+                "Preview first",
+                reason + "\n\nClick “Update material preview”, then Use mask.",
+            )
+            return
         if self._conversion is not None:
             self.accept()
 

@@ -51,9 +51,10 @@ class NormalLogoRegionDialogTests(unittest.TestCase):
             )
             self.assertIn("Confirm", dialog.status.text())
             dialog.shell.setText("#001122")
-            self.assertFalse(
-                dialog.buttons.button(QDialogButtonBox.Save).isEnabled()
-            )
+            # Never silent-gray: Save stays enabled; disableReason requires preview.
+            save = dialog.buttons.button(QDialogButtonBox.Save)
+            self.assertTrue(save.isEnabled())
+            self.assertTrue(str(save.property("disableReason") or "").strip())
             self.assertIn("Update", dialog.material_preview.text())
         finally:
             dialog.deleteLater()
@@ -69,9 +70,9 @@ class NormalLogoRegionDialogTests(unittest.TestCase):
         try:
             self.assertIn("manually", dialog.suggestion_note.text())
             self.assertEqual(dialog.shell.text(), "")
-            self.assertFalse(
-                dialog.buttons.button(QDialogButtonBox.Save).isEnabled()
-            )
+            save = dialog.buttons.button(QDialogButtonBox.Save)
+            self.assertTrue(save.isEnabled())
+            self.assertTrue(str(save.property("disableReason") or "").strip())
             dialog.set_palette(
                 TwoRegionPalette(
                     shell=(0, 53, 98),
