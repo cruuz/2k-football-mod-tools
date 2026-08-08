@@ -1549,29 +1549,31 @@ def build_patch_rgba_batch(
                 raise PatchError("parallel crest worker returned the wrong package")
             results[rebuilt_index] = result
 
-        executor = ProcessPoolExecutor(max_workers=max_workers, mp_context=context)
-        try:
-            for entry_index in wanted_indices:
-                pending.append(
-                    (
-                        entry_index,
-                        executor.submit(
-                            _build_prepared_batch_package,
-                            prepare(reader, entry_index),
-                        ),
+        # Context manager + explicit cancel on error so worker processes never
+        # outlive the batch (monorepo suite hangs were contaminated by leftover
+        # ProcessPool workers after parallel crest builds).
+        with ProcessPoolExecutor(
+            max_workers=max_workers, mp_context=context
+        ) as executor:
+            try:
+                for entry_index in wanted_indices:
+                    pending.append(
+                        (
+                            entry_index,
+                            executor.submit(
+                                _build_prepared_batch_package,
+                                prepare(reader, entry_index),
+                            ),
+                        )
                     )
-                )
-                if len(pending) >= max_workers * 2:
+                    if len(pending) >= max_workers * 2:
+                        collect_oldest()
+                while pending:
                     collect_oldest()
-            while pending:
-                collect_oldest()
-        except BaseException:
-            for _entry_index, future in pending:
-                future.cancel()
-            executor.shutdown(wait=True, cancel_futures=True)
-            raise
-        else:
-            executor.shutdown(wait=True)
+            except BaseException:
+                for _entry_index, future in pending:
+                    future.cancel()
+                raise
     return {entry_index: results[entry_index] for entry_index in wanted_indices}
 
 # ---------------------------------------------------------------------------
