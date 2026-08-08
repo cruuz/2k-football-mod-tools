@@ -2,13 +2,18 @@
 
 ## Continuation marathon note (2026-08-08)
 
-Source/UI versions: **2K5 RC55** / **APF alpha.60**. Community-named work this
-marathon includes nameplate DXN (font_albedo), linear TXTR (uncompressed + DXT),
-G1 package-map + G2 link-table offline writers, playbook annotations,
-keyboard/search polish, shell recommended path, equipment Stage explain, and
-click-to-explain model import (APF + 2K5 Crib + Stadium). Living WORKLOG:
-`docs/product/WORKLOG_20260807.md`. **≥10h hour-gate still accumulating** (wall WORKLOG ~5.5h this marathon segment; multi-session). Broader suite evidence is **batched** (monorepo single-run hang residual). —
-do not treat this note as a sealed public release.
+Source/UI versions: **2K5 RC55** / **APF alpha.60** (+ unreleased never-silent-gray /
+blank-preview fail-closed on main). Community-named work this marathon includes
+nameplate DXN (font_albedo), linear TXTR (uncompressed + DXT), G1 package-map +
+G2 link-table offline writers, playbook annotations, keyboard/search polish,
+shell recommended path, equipment Stage explain, click-to-explain model import
+(APF + 2K5 Crib + Stadium), **expanded never-silent-gray** (stadium mesh/package,
+wordmark, AssetBrowser, Uniform, Field Art locks), **45s preview watchdogs**
+(AssetBrowser/Uniform/Wordmark/stadium package), Crib drop-parity hang fixed.
+Living WORKLOG: `docs/product/WORKLOG_20260807.md`. **≥10h hour-gate still
+accumulating** (multi-session; not claimed). Broader suite evidence is
+**batched** (monorepo single-run hang residual). — do not treat this note as a
+sealed public release.
 
 
 > **APF 2K8 parallel product status:** read
