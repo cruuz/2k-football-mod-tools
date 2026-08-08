@@ -2051,8 +2051,12 @@ class TextRosterPanel(QWidget):
                 widget.setEnabled(False)
                 self.team_originals[field].setText("—")
                 self.team_limits[field].clear()
-            self.apply_team_button.setEnabled(False)
-            self.revert_team_button.setEnabled(False)
+            tip = (
+                "Select a historical team resource first. Apply/Revert stay "
+                "clickable so blocked states explain themselves."
+            )
+            self._lock_text_action(self.apply_team_button, tip, tip)
+            self._lock_text_action(self.revert_team_button, tip, tip)
             return
         self.historical_team_title.setText(
             f"{_current_team_name(self.catalog, team, self.host.text_value)} · "
@@ -2075,6 +2079,7 @@ class TextRosterPanel(QWidget):
         valid = team.editable
         changed = False
         modified = False
+        block_reason = ""
         for field, widget in self.team_inputs.items():
             asset = self.catalog.get_asset(team.asset_id_for(field))
             usage = text_usage(asset, widget.text())
@@ -2083,13 +2088,44 @@ class TextRosterPanel(QWidget):
                 "" if usage.valid else "color: #ff7b84;"
             )
             current = _safe_text(asset, self.host.text_value)
-            valid = valid and asset.editable and usage.valid
+            if not asset.editable or not usage.valid:
+                valid = False
+                if not block_reason:
+                    block_reason = (
+                        asset.reason
+                        if not asset.editable
+                        else usage.message
+                    )
             changed = changed or widget.text() != current
             modified = modified or current != asset.value
-        self.apply_team_button.setEnabled(valid and changed)
-        self.revert_team_button.setEnabled(modified)
+        if not team.editable and not block_reason:
+            block_reason = "This historical team identity is not editable."
+        if valid and changed:
+            apply_tip = "Apply team identity field edits."
+            apply_block = ""
+        elif not changed:
+            apply_tip = apply_block = (
+                "No change from the current staged/source team identity."
+            )
+        else:
+            apply_tip = apply_block = (
+                block_reason or "Team identity fields are not ready to apply."
+            )
+        self._lock_text_action(self.apply_team_button, apply_tip, apply_block)
+        if modified:
+            revert_tip = "Restore this team identity to source disc values."
+            revert_block = ""
+        else:
+            revert_tip = revert_block = (
+                "This team identity is still original — nothing staged to revert."
+            )
+        self._lock_text_action(self.revert_team_button, revert_tip, revert_block)
 
     def _apply_historical_team(self) -> None:
+        if self._explain_text_action(
+            self.apply_team_button, "Cannot apply team identity yet"
+        ):
+            return
         team = self.selected_historical_team
         if team is None or self.catalog is None:
             return
@@ -2122,6 +2158,10 @@ class TextRosterPanel(QWidget):
         )
 
     def _revert_historical_team(self) -> None:
+        if self._explain_text_action(
+            self.revert_team_button, "Nothing to revert"
+        ):
+            return
         team = self.selected_historical_team
         if team is None:
             return
@@ -2193,8 +2233,12 @@ class TextRosterPanel(QWidget):
         self.player_first_limit.clear()
         self.player_last_limit.clear()
         self.player_face_shield.setEnabled(False)
-        self.apply_player_button.setEnabled(False)
-        self.revert_player_button.setEnabled(False)
+        tip = (
+            "Select a historical player first. Apply/Revert stay clickable so "
+            "blocked states explain themselves."
+        )
+        self._lock_text_action(self.apply_player_button, tip, tip)
+        self._lock_text_action(self.revert_player_button, tip, tip)
         self.export_historical_number_button.setEnabled(False)
 
     def _update_player_controls(self) -> None:
@@ -2243,7 +2287,7 @@ class TextRosterPanel(QWidget):
             or current_number != number.value
             or current_shield != shield.value
         )
-        self.apply_player_button.setEnabled(
+        can_apply = (
             changed
             and (not first_changed or first.editable and first_usage.valid)
             and (not last_changed or last.editable and last_usage.valid)
@@ -2253,12 +2297,55 @@ class TextRosterPanel(QWidget):
                 or shield.editable and selected_shield in {0, 1, 2}
             )
         )
-        self.revert_player_button.setEnabled(modified)
+        if can_apply:
+            apply_tip = "Apply historical player name / jersey / face-shield edits."
+            apply_block = ""
+        elif not changed:
+            apply_tip = apply_block = (
+                "No change from the current staged/source player fields."
+            )
+        elif first_changed and not (first.editable and first_usage.valid):
+            apply_tip = apply_block = (
+                first.reason if not first.editable else first_usage.message
+            )
+        elif last_changed and not (last.editable and last_usage.valid):
+            apply_tip = apply_block = (
+                last.reason if not last.editable else last_usage.message
+            )
+        elif number_changed and not (number.editable and jersey_valid):
+            apply_tip = apply_block = (
+                number.reason
+                if not number.editable
+                else f"Jersey number must be {number.minimum}–{number.maximum}."
+            )
+        elif shield_changed and not (
+            shield.editable and selected_shield in {0, 1, 2}
+        ):
+            apply_tip = apply_block = (
+                shield.reason
+                if not shield.editable
+                else "Pick a valid face-shield option."
+            )
+        else:
+            apply_tip = apply_block = "Historical player fields are not ready to apply."
+        self._lock_text_action(self.apply_player_button, apply_tip, apply_block)
+        if modified:
+            revert_tip = "Restore this historical player to source disc values."
+            revert_block = ""
+        else:
+            revert_tip = revert_block = (
+                "This historical player is still original — nothing staged to revert."
+            )
+        self._lock_text_action(self.revert_player_button, revert_tip, revert_block)
         self.player_number.setStyleSheet(
             "" if jersey_valid else "border: 1px solid #ff7b84;"
         )
 
     def _apply_historical_player(self) -> None:
+        if self._explain_text_action(
+            self.apply_player_button, "Cannot apply historical player yet"
+        ):
+            return
         row = self.selected_historical_row
         if row is None or self.catalog is None:
             return
@@ -2333,6 +2420,10 @@ class TextRosterPanel(QWidget):
         )
 
     def _revert_historical_player(self) -> None:
+        if self._explain_text_action(
+            self.revert_player_button, "Nothing to revert"
+        ):
+            return
         row = self.selected_historical_row
         if row is None:
             return

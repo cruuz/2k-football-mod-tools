@@ -1938,7 +1938,16 @@ if PYQT5_AVAILABLE:
                 "route and draws a bounded waveform. It never starts playback or "
                 "changes the mod project."
             )
-            self.load_waveform_button.setEnabled(False)
+            # Never silent-gray at construction: click teaches Load/select walls.
+            _waveform_boot_tip = (
+                "Load your NFL 2K5 XISO and choose a standalone sound or playable "
+                "streaming range first."
+            )
+            self.load_waveform_button.setEnabled(True)
+            self.load_waveform_button.setToolTip(_waveform_boot_tip)
+            self.load_waveform_button.setProperty(
+                "disableReason", _waveform_boot_tip
+            )
             detail_content_layout.addWidget(self.waveform_heading)
             detail_content_layout.addWidget(self.waveform_preview)
             detail_content_layout.addWidget(
@@ -3585,8 +3594,20 @@ if PYQT5_AVAILABLE:
                 and self.waveform_preview.state == "ready"
             ):
                 self.load_waveform_button.setText("Reload waveform")
-                self.load_waveform_button.setEnabled(
-                    bool(self.host.source_ready and not self._busy)
+                ready = bool(self.host.source_ready and not self._busy)
+                tip = (
+                    "Reload this sound's private waveform."
+                    if ready
+                    else (
+                        "Wait for the current audio operation to finish."
+                        if self._busy
+                        else "Load your NFL 2K5 XISO before preparing a waveform."
+                    )
+                )
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty(
+                    "disableReason", "" if ready else tip
                 )
                 return
             self._waveform_selected_asset_id = asset_id
@@ -3595,46 +3616,64 @@ if PYQT5_AVAILABLE:
                     "The previous private request was cancelled and is finishing. "
                     "You can keep browsing; its result will be discarded."
                 )
+                # Cancel-in-flight may briefly lock; not a silent "pick a sound" gray.
                 self.load_waveform_button.setText("Cancelling previous…")
                 self.load_waveform_button.setEnabled(False)
+                self.load_waveform_button.setProperty("disableReason", "")
                 return
             self.load_waveform_button.setText("Load waveform")
             if not self.host.source_ready:
-                self.waveform_preview.set_unavailable(
-                    "Load your NFL 2K5 XISO before preparing a waveform."
-                )
-                self.load_waveform_button.setEnabled(False)
+                tip = "Load your NFL 2K5 XISO before preparing a waveform."
+                self.waveform_preview.set_unavailable(tip)
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty("disableReason", tip)
                 return
             if asset is None:
-                self.waveform_preview.set_unavailable(
-                    "Choose a standalone sound or playable streaming range."
-                )
-                self.load_waveform_button.setEnabled(False)
+                tip = "Choose a standalone sound or playable streaming range."
+                self.waveform_preview.set_unavailable(tip)
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty("disableReason", tip)
                 return
             if isinstance(asset, UniversalAssetRecord):
-                self.waveform_preview.set_unavailable(
+                tip = (
                     "This opaque raw container has no decoded playable-sound route."
                 )
-                self.load_waveform_button.setEnabled(False)
+                self.waveform_preview.set_unavailable(tip)
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty("disableReason", tip)
                 return
             if isinstance(asset, Nfl2k5StreamingAudioBank):
-                self.waveform_preview.set_unavailable(
+                tip = (
                     "A complete streaming bank contains many sounds and is not one "
                     "waveform. Choose one of its Playable Streaming Ranges."
                 )
-                self.load_waveform_button.setEnabled(False)
+                self.waveform_preview.set_unavailable(tip)
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty("disableReason", tip)
                 return
             self.waveform_preview.set_empty(
                 "Waveforms are never loaded automatically. Click Load waveform to "
                 "read this sound through the private current-WAV route; playback "
                 "will not start and your project will not change."
             )
-            self.load_waveform_button.setToolTip(
+            ready_tip = (
                 "Draw a bounded, read-only waveform from this sound's private current "
                 "PCM16 WAV. Source decoding runs in-process and cannot be interrupted; "
                 "Cancel discards the result at the next safe boundary."
             )
-            self.load_waveform_button.setEnabled(not self._busy)
+            busy_tip = "Wait for the current audio operation to finish."
+            ready = not self._busy
+            self.load_waveform_button.setEnabled(True)
+            self.load_waveform_button.setToolTip(
+                ready_tip if ready else busy_tip
+            )
+            self.load_waveform_button.setProperty(
+                "disableReason", "" if ready else busy_tip
+            )
 
         def _load_audio_waveform(self) -> None:
             """Start or cancel one explicit, selection-owned waveform request."""
@@ -3647,6 +3686,17 @@ if PYQT5_AVAILABLE:
                 )
                 self.load_waveform_button.setText("Cancelling…")
                 self.load_waveform_button.setEnabled(False)
+                self.load_waveform_button.setProperty("disableReason", "")
+                return
+            reason = str(
+                self.load_waveform_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                QMessageBox.information(
+                    self,
+                    "Cannot load waveform yet",
+                    reason,
+                )
                 return
             asset = self._selected_asset()
             if (
