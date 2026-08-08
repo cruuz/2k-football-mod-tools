@@ -244,18 +244,22 @@ class UniformEquipmentColorsPanel(QFrame):
         self.team.setEnabled(ready)
         self.banks.setEnabled(ready and has_team)
         self.stage_button.setEnabled(True)
+        # Never silent-gray: Stage and Revert stay clickable; disableReason explains.
+        self.revert_button.setEnabled(True)
         if not ready:
             reason = "Load your APF game (0A / extracted folder / ISO) first."
             self.stage_button.setToolTip(reason)
             self.stage_button.setProperty("disableReason", reason)
-            self.revert_button.setEnabled(False)
+            self.revert_button.setToolTip(reason)
+            self.revert_button.setProperty("disableReason", reason)
             self.status.setText("Load your game to read uniform equipment colors.")
             return
         if not has_team:
             reason = "No teams match that filter. Clear the filter box to see all 40."
             self.stage_button.setToolTip(reason)
             self.stage_button.setProperty("disableReason", reason)
-            self.revert_button.setEnabled(False)
+            self.revert_button.setToolTip(reason)
+            self.revert_button.setProperty("disableReason", reason)
             self.status.setText(reason)
             return
         try:
@@ -272,7 +276,8 @@ class UniformEquipmentColorsPanel(QFrame):
             self.status.setText(reason)
             self.stage_button.setToolTip(reason)
             self.stage_button.setProperty("disableReason", reason)
-            self.revert_button.setEnabled(False)
+            self.revert_button.setToolTip(reason)
+            self.revert_button.setProperty("disableReason", reason)
             return
         self.home.set_palette(inspection.home_palette)
         self.away.set_palette(inspection.away_palette)
@@ -280,7 +285,15 @@ class UniformEquipmentColorsPanel(QFrame):
         self.away.set_bank(value.away)
         target_id = equipment_colors.asset_id(value.team_index)
         modified = target_id in self.facade.modified_asset_ids
-        self.revert_button.setEnabled(modified)
+        revert_tip = (
+            "Remove staged equipment colors for this team from the project."
+            if modified
+            else "Nothing to revert—equipment colors for this team are still original."
+        )
+        self.revert_button.setToolTip(revert_tip)
+        self.revert_button.setProperty(
+            "disableReason", "" if modified else revert_tip
+        )
         self.stage_button.setToolTip(
             "Stage HOME/AWAY facemask + turtleneck bank picks for this team only "
             "(per kit). Player visors stay under Rosters → Save Players."
@@ -316,6 +329,10 @@ class UniformEquipmentColorsPanel(QFrame):
         )
 
     def _revert(self) -> None:
+        reason = str(self.revert_button.property("disableReason") or "").strip()
+        if reason:
+            self.status.setText(reason)
+            return
         target_id = equipment_colors.asset_id(self._team_index())
         self.run_task(
             "Reverting uniform equipment colors",
