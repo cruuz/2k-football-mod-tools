@@ -19,6 +19,9 @@ build path.
 - **Playbooks inspector** — read-only package-map line under Formation; Dime/Nickel/Ace honesty tags.
 - **Crib import fit** — Contain/Cover/Stretch chooser on dialog + drop.
 - **Crib model import/export** — click-to-explain when XISO or scene missing (no silent gray).
+- **Stadium model Import/Export** — never silent-gray; `disableReason` + click explain.
+- **Unif facemask/turtleneck/Apply** — never silent-gray; status teaches Load XISO /
+  clear filter / wait for set load (per physical set).
 - **Keyboard** — Esc clears search; Ctrl+/ keyboard hints (parity with APF shell).
 - **Broken-play ⚠ Ace/Dime/Bear** — still annotations only; G1 map text updated.
 
