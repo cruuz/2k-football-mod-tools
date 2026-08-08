@@ -341,3 +341,13 @@ main **403** ahead. Wall **8.48h**. Packaging green. Hour gate OPEN.
 
 ## [2026-08-08T06:17:40-04:00]
 main **407** ahead. Wall **8.49h**. Packaging green. Hour gate OPEN.
+
+
+## [2026-08-08T06:17:48-04:00] Mid-flight tally
+| Metric | Value |
+| --- | --- |
+| Ahead origin | 408 |
+| Wall hours | 8.50 |
+| Hour gate | OPEN |
+| Dual packaging | green |
+| Registry | 70/70 |
