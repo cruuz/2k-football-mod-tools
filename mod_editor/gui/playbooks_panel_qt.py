@@ -235,6 +235,46 @@ def suggested_playbook_filename(book: Nfl2k5Playbook) -> str:
     return f"{book.outer_index:04d}_{stem or 'playbook'}_PLAY.bin"
 
 
+def format_formation_package_map_line(
+    formation_name: str, package_map: tuple[int, ...] | list[int]
+) -> str:
+    """Read-only one-line summary of the formation package role map for the UI.
+
+    Package map is the 11-byte permutation at formation body ``+0x0D`` (role id
+    per assignment slot). G1 offline surface; runtime package fix unproved.
+    """
+
+    if not package_map:
+        return (
+            "Package map: not present on this book parse "
+            "(synthetic/legacy books omit +0x0D)."
+        )
+    if len(package_map) != 11:
+        return (
+            f"Package map: unexpected length {len(package_map)} "
+            "(expected 11 role ids 0..10)."
+        )
+    values = ", ".join(str(int(v)) for v in package_map)
+    line = (
+        f"Package map (+0x0D): [{values}] — "
+        "11 role ids (assignment slot membership). "
+        "Read-only here; offline writer can patch these 11 bytes."
+    )
+    lowered = (formation_name or "").casefold()
+    if "dime" in lowered:
+        line += (
+            "  ⚠ Dime: community G1 (ILB→OLB) — compare to Nickel map; "
+            "runtime fix unproved."
+        )
+    elif "nickel" in lowered:
+        line += "  Nickel reference map for G1 Dime comparisons."
+    elif "ace" in lowered:
+        line += (
+            "  Ace: G2 TE→WR is not this map (offense packages share one map)."
+        )
+    return line
+
+
 # Community-reported formation/package issues (APF Discord + GitHub #2).
 # These are annotations only — they do not rewrite PLAY bytes. Auto-fix packs
 # require offline-proved package-rule writers (see docs/product/APF_GAMEPLAY_BUG_MAP.md).
@@ -243,13 +283,14 @@ _BROKEN_PLAY_RULES: tuple[tuple[str, str, str], ...] = (
         r"\bace\b",
         "Ace package",
         "Community: TE may convert to WR on long downs in game (works in practice). "
-        "See APF gameplay map G2/G12 — package membership RE pending offline fix pack.",
+        "See APF gameplay map G2/G12 — play-link menu composition, not package map.",
     ),
     (
         r"\bdime\b",
         "Dime package",
         "Community: star ILB can be benched / treated as OLB in Dime. "
-        "See APF gameplay map G1 — defensive package sub rules RE pending.",
+        "G1 offline surface: formation package map at +0x0D (see inspector). "
+        "Runtime fix unproved — no one-click pack.",
     ),
     (
         r"\bbear\b",
@@ -525,6 +566,19 @@ class PlaybooksPanel(QWidget):
         formation_row.addWidget(formation_label)
         formation_row.addWidget(self.formation_combo, 1)
         inspector_layout.addLayout(formation_row)
+
+        self.package_map_label = QLabel(
+            "Package map: select a formation to show the 11-byte role map (+0x0D)."
+        )
+        self.package_map_label.setObjectName("playMuted")
+        self.package_map_label.setWordWrap(True)
+        self.package_map_label.setToolTip(
+            "Formation body offset +0x0D holds an 11-byte package role map "
+            "(permutation of 0..10). Dime vs Nickel differ here (G1 offline "
+            "surface). Read-only in this panel; offline writer is separate. "
+            "Runtime G1 fix is unproved."
+        )
+        inspector_layout.addWidget(self.package_map_label)
 
         self.play_table = QTableWidget(0, 6)
         self.play_table.setHorizontalHeaderLabels(
@@ -829,6 +883,9 @@ class PlaybooksPanel(QWidget):
         self.play_meta.setText(
             "Choose a formation play to expose all eleven assignment descriptors."
         )
+        self.package_map_label.setText(
+            "Package map: select a formation to show the 11-byte role map (+0x0D)."
+        )
 
     def _formation_selected(self, *_args: object) -> None:
         book = self._selected_book()
@@ -836,6 +893,12 @@ class PlaybooksPanel(QWidget):
         if book is None or formation_index is None:
             self._clear_structure()
             return
+        formation = book.formations[int(formation_index)]
+        self.package_map_label.setText(
+            format_formation_package_map_line(
+                formation.name, formation.package_map
+            )
+        )
         self._visible_play_rows = formation_play_rows(book, int(formation_index))
         self.play_table.blockSignals(True)
         self.play_table.clearContents()
@@ -1214,6 +1277,7 @@ __all__ = [
     "broken_play_annotations",
     "book_has_community_flags",
     "filter_playbooks",
+    "format_formation_package_map_line",
     "format_play_name_with_warnings",
     "formation_play_rows",
     "playbook_action_state",
