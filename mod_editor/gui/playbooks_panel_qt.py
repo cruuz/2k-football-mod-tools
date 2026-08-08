@@ -42,6 +42,12 @@ non-target bytes are preserved and the complete result is reparsed. Undo,
 Revert, Build, and retail-free shareable projects are supported. This is not
 freehand waypoint drawing and does not invent slot roles or opcode meanings.
 
+Offline experimental package-map / link-table exports (G1/G2 research)
+Export Package-Map Copy and Export Link-Table Copy write a private PLAY file
+with formation package-map or menu link-table bytes swapped from a donor. Those
+bytes are offline-writer-proved; runtime G1/G2 gameplay fixes remain unproved.
+They are not freehand routes and are not project-staged Editable gameplay packs.
+
 What is exact now
 All 37 PLAY books are parsed from the user's private cache. The viewer exposes
 1,533 formations, 9,251 plays, eight exact play-family values, 101,761 player
