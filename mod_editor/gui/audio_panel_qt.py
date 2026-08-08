@@ -3034,6 +3034,15 @@ if PYQT5_AVAILABLE:
             self.refresh(keep_selection=True)
 
         def _move_shortlisted_audio(self, delta: int) -> None:
+            button = (
+                self.shortlist_move_up_button
+                if delta < 0
+                else self.shortlist_move_down_button
+            )
+            reason = str(button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy or not self._shortlist_reviewing or delta not in {-1, 1}:
                 return
             selected = self._selected_asset()
@@ -3448,12 +3457,43 @@ if PYQT5_AVAILABLE:
                 tuple(self._audio_shortlist).index(selected.asset_id)
                 if selected_added and selected is not None else -1
             )
-            self.shortlist_move_up_button.setEnabled(
-                ready and self._shortlist_reviewing and selected_index > 0
-            )
-            self.shortlist_move_down_button.setEnabled(
-                ready and self._shortlist_reviewing
+            can_up = ready and self._shortlist_reviewing and selected_index > 0
+            can_down = (
+                ready
+                and self._shortlist_reviewing
                 and 0 <= selected_index < count - 1
+            )
+            up_tip = (
+                "Move the selected shortlist sound earlier in export order."
+                if can_up
+                else (
+                    "Enter Review selected first, then pick a sound to reorder."
+                    if not self._shortlist_reviewing
+                    else "Already at the top of the shortlist."
+                    if selected_index == 0
+                    else "Select a shortlisted sound first."
+                )
+            )
+            down_tip = (
+                "Move the selected shortlist sound later in export order."
+                if can_down
+                else (
+                    "Enter Review selected first, then pick a sound to reorder."
+                    if not self._shortlist_reviewing
+                    else "Already at the bottom of the shortlist."
+                    if selected_index == count - 1 and count > 0
+                    else "Select a shortlisted sound first."
+                )
+            )
+            self.shortlist_move_up_button.setEnabled(True)
+            self.shortlist_move_up_button.setToolTip(up_tip)
+            self.shortlist_move_up_button.setProperty(
+                "disableReason", "" if can_up else up_tip
+            )
+            self.shortlist_move_down_button.setEnabled(True)
+            self.shortlist_move_down_button.setToolTip(down_tip)
+            self.shortlist_move_down_button.setProperty(
+                "disableReason", "" if can_down else down_tip
             )
             self._update_replacement_pack_actions()
 

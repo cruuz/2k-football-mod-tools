@@ -3278,8 +3278,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel.count_label.text(), "Reviewing 4 selected sounds")
             self.assertEqual(panel.shortlist_review_button.text(), "Back to browser")
             self.assertTrue(panel.shortlist_move_down_button.isEnabled())
-            self.assertFalse(panel.shortlist_move_up_button.isEnabled())
+            self.assertTrue(panel.shortlist_move_up_button.isEnabled())
 
+            self.assertTrue(str(panel.shortlist_move_up_button.property("disableReason") or "").strip())
             panel._move_shortlisted_audio(1)
             reordered = (
                 second_standalone,
