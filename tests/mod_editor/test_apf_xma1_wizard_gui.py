@@ -207,23 +207,42 @@ class WizardDialogTests(unittest.TestCase):
     def test_save_is_locked_until_the_tone_test_passes(self) -> None:
         encoder = _make_script(self.root, "ui-encoder", 'cp "$1" "$2"\n')
         wizard = self._wizard()
-        self.assertFalse(wizard.save_button.isEnabled())
-        self.assertFalse(wizard.test_button.isEnabled())
+        # Never silent-gray: buttons stay clickable with disableReason walls.
+        self.assertTrue(wizard.save_button.isEnabled())
+        self.assertTrue(
+            str(wizard.save_button.property("disableReason") or "").strip()
+        )
+        self.assertTrue(wizard.test_button.isEnabled())
+        self.assertTrue(
+            str(wizard.test_button.property("disableReason") or "").strip()
+        )
 
         wizard.encoder_path.setText(str(encoder))
         self.assertTrue(wizard.test_button.isEnabled())
-        # Still locked: no test run yet.
-        self.assertFalse(wizard.save_button.isEnabled())
+        self.assertFalse(
+            str(wizard.test_button.property("disableReason") or "").strip()
+        )
+        # Still blocked for Save: no test run yet (disableReason, not gray).
+        self.assertTrue(wizard.save_button.isEnabled())
+        self.assertTrue(
+            str(wizard.save_button.property("disableReason") or "").strip()
+        )
 
         wizard._run_smoke_test()
         self.assertIn("Success", wizard.test_result.text())
         self.assertTrue(wizard._smoke_passed)
         self.assertTrue(wizard.save_button.isEnabled())
+        self.assertFalse(
+            str(wizard.save_button.property("disableReason") or "").strip()
+        )
 
         # Changing the arguments voids the passed test.
         wizard.arguments_editor.setPlainText("{input}")
         self.assertFalse(wizard._smoke_passed)
-        self.assertFalse(wizard.save_button.isEnabled())
+        self.assertTrue(wizard.save_button.isEnabled())
+        self.assertTrue(
+            str(wizard.save_button.property("disableReason") or "").strip()
+        )
 
     def test_accepting_builds_a_validated_encoder(self) -> None:
         encoder = _make_script(self.root, "accept-encoder", 'cp "$1" "$2"\n')

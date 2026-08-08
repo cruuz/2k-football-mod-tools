@@ -9795,18 +9795,36 @@ class ExternalXma1EncoderDialog(QDialog):
         wine_enabled = windows_encoder and self.use_wine_checkbox.isChecked()
         self.wine_path.setEnabled(wine_enabled)
         self.wine_browse_button.setEnabled(wine_enabled)
-        self.save_button.setEnabled(
-            bool(encoder_value)
-            and (
-                not windows_encoder
-                or (
-                    self.use_wine_checkbox.isChecked()
-                    and bool(self.wine_path.text().strip())
-                )
+        save_ready = bool(encoder_value) and (
+            not windows_encoder
+            or (
+                self.use_wine_checkbox.isChecked()
+                and bool(self.wine_path.text().strip())
             )
         )
+        # Never silent-gray: Save stays clickable; disableReason teaches walls.
+        self.save_button.setEnabled(True)
+        if save_ready:
+            self.save_button.setToolTip("Save encoder settings.")
+            self.save_button.setProperty("disableReason", "")
+        else:
+            tip = (
+                "Choose a valid encoder path"
+                + (
+                    " and Wine when using a Windows .exe"
+                    if windows_encoder
+                    else ""
+                )
+                + " before saving."
+            )
+            self.save_button.setToolTip(tip)
+            self.save_button.setProperty("disableReason", tip)
 
     def _accept_configuration(self) -> None:
+        reason = str(self.save_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Cannot save encoder yet", reason)
+            return
         encoder_value = self.encoder_path.text().strip()
         if not encoder_value:
             return
@@ -10174,7 +10192,12 @@ class Xma1EncoderSetupWizard(QDialog):
         self.save_button = self.buttons.button(QDialogButtonBox.Save)
         self.save_button.setText("Save encoder settings")
         self.save_button.setObjectName("primaryButton")
-        self.save_button.setEnabled(False)
+        # Never silent-gray at construction; _update_state teaches walls.
+        self.save_button.setEnabled(True)
+        self.save_button.setProperty(
+            "disableReason",
+            "Choose an encoder path and pass the 1-second tone test first.",
+        )
         self.buttons.accepted.connect(self._accept_configuration)
         self.buttons.rejected.connect(self.reject)
         root.addWidget(self.buttons)
@@ -10303,11 +10326,48 @@ class Xma1EncoderSetupWizard(QDialog):
             not windows_encoder
             or (self.use_wine_checkbox.isChecked() and bool(self.wine_path.text().strip()))
         )
-        self.test_button.setEnabled(configuration_complete)
-        self.save_button.setEnabled(
+        # Never silent-gray: Test/Save stay clickable; disableReason teaches walls.
+        if configuration_complete:
+            self.test_button.setEnabled(True)
+            self.test_button.setToolTip(
+                "Run a 1-second tone through the configured encoder (smoke test)."
+            )
+            self.test_button.setProperty("disableReason", "")
+        else:
+            tip = (
+                "Choose a valid encoder path first"
+                + (
+                    " (and Wine when using a Windows .exe)."
+                    if windows_encoder
+                    else "."
+                )
+            )
+            self.test_button.setEnabled(True)
+            self.test_button.setToolTip(tip)
+            self.test_button.setProperty("disableReason", tip)
+        save_ready = bool(
             configuration_complete
             and (self._smoke_passed or not self._smoke_testable)
         )
+        if save_ready:
+            self.save_button.setEnabled(True)
+            self.save_button.setToolTip("Save encoder settings for APF audio replace.")
+            self.save_button.setProperty("disableReason", "")
+        else:
+            tip = (
+                "Pass the 1-second tone test first, then Save encoder settings."
+                if configuration_complete
+                else "Choose an encoder path"
+                + (
+                    " (and Wine for Windows encoders)"
+                    if windows_encoder
+                    else ""
+                )
+                + ", run the tone test, then Save."
+            )
+            self.save_button.setEnabled(True)
+            self.save_button.setToolTip(tip)
+            self.save_button.setProperty("disableReason", tip)
 
     def _spec_from_fields(self) -> tuple[Path, tuple[str, ...], Path | None] | None:
         encoder_value = self.encoder_path.text().strip()
@@ -10331,6 +10391,10 @@ class Xma1EncoderSetupWizard(QDialog):
         return executable, self._current_arguments(), wine_executable
 
     def _run_smoke_test(self) -> None:
+        reason = str(self.test_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Cannot test encoder yet", reason)
+            return
         spec = self._spec_from_fields()
         if spec is None:
             return
@@ -10353,6 +10417,10 @@ class Xma1EncoderSetupWizard(QDialog):
         self._update_state()
 
     def _accept_configuration(self) -> None:
+        reason = str(self.save_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Cannot save encoder yet", reason)
+            return
         spec = self._spec_from_fields()
         if spec is None:
             return
