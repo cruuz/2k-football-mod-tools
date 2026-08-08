@@ -100,16 +100,32 @@ class ApfTextSheetGuiTests(unittest.TestCase):
             text_mode=True,
         )
         try:
-            self.assertFalse(browser.export_text_sheet_button.isEnabled())
-            self.assertFalse(browser.import_text_sheet_button.isEnabled())
+            # Never silent-gray: unload state stays clickable with disableReason.
+            self.assertTrue(browser.export_text_sheet_button.isEnabled())
+            self.assertTrue(browser.import_text_sheet_button.isEnabled())
+            self.assertTrue(
+                str(browser.export_text_sheet_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(
+                str(browser.import_text_sheet_button.property("disableReason") or "").strip()
+            )
             browser.set_model(self._model(), "fixture")
             self.assertTrue(browser.export_text_sheet_button.isEnabled())
             self.assertTrue(browser.import_text_sheet_button.isEnabled())
+            self.assertFalse(
+                str(browser.export_text_sheet_button.property("disableReason") or "").strip()
+            )
             self.assertIn("every owned", browser.export_text_sheet_button.toolTip())
             self.assertIn("one Undo", browser.import_text_sheet_button.toolTip())
             browser.set_unavailable("unavailable")
-            self.assertFalse(browser.export_text_sheet_button.isEnabled())
-            self.assertFalse(browser.import_text_sheet_button.isEnabled())
+            self.assertTrue(browser.export_text_sheet_button.isEnabled())
+            self.assertTrue(browser.import_text_sheet_button.isEnabled())
+            self.assertTrue(
+                str(browser.export_text_sheet_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(
+                str(browser.import_text_sheet_button.property("disableReason") or "").strip()
+            )
         finally:
             browser.deleteLater()
             self.application.processEvents()

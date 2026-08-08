@@ -11049,17 +11049,19 @@ class InspectorBrowser(QFrame):
         self.export_text_sheet_button = QPushButton("Export Text Sheet…")
         self.export_text_sheet_button.setObjectName("secondaryButton")
         self.export_text_sheet_button.setVisible(text_mode)
-        self.export_text_sheet_button.setEnabled(False)
-        self.export_text_sheet_button.setToolTip(
-            "Create a private CSV containing every owned TXT/STRG allocation from your loaded game."
+        # Never silent-gray: stay clickable; disableReason teaches Load game.
+        _sheet_boot = (
+            "Load a supported APF game first, then Export/Import Text Sheet."
         )
+        self.export_text_sheet_button.setEnabled(True)
+        self.export_text_sheet_button.setToolTip(_sheet_boot)
+        self.export_text_sheet_button.setProperty("disableReason", _sheet_boot)
         self.import_text_sheet_button = QPushButton("Import Text Sheet…")
         self.import_text_sheet_button.setObjectName("secondaryButton")
         self.import_text_sheet_button.setVisible(text_mode)
-        self.import_text_sheet_button.setEnabled(False)
-        self.import_text_sheet_button.setToolTip(
-            "Validate an APF Text Sheet completely, then apply every requested row as one Undo action."
-        )
+        self.import_text_sheet_button.setEnabled(True)
+        self.import_text_sheet_button.setToolTip(_sheet_boot)
+        self.import_text_sheet_button.setProperty("disableReason", _sheet_boot)
         self.apply_text_button.clicked.connect(self._apply_text)
         self.revert_text_button.clicked.connect(self._revert_text)
         self.export_text_sheet_button.clicked.connect(self._export_text_sheet)
@@ -12341,8 +12343,16 @@ class InspectorBrowser(QFrame):
         self.cancel_audio_import_button.setEnabled(False)
         self.cancel_audio_export_button.setEnabled(False)
         self.export_matching_button.setEnabled(False)
-        self.export_text_sheet_button.setEnabled(False)
-        self.import_text_sheet_button.setEnabled(False)
+        loading_tip = (
+            "Text allocations are still loading. Wait for the text catalog, "
+            "then Export/Import Text Sheet."
+        )
+        self.export_text_sheet_button.setEnabled(True)
+        self.export_text_sheet_button.setToolTip(loading_tip)
+        self.export_text_sheet_button.setProperty("disableReason", loading_tip)
+        self.import_text_sheet_button.setEnabled(True)
+        self.import_text_sheet_button.setToolTip(loading_tip)
+        self.import_text_sheet_button.setProperty("disableReason", loading_tip)
         self._clear_text_editor("Loading text allocations…")
         self._roster_allocations = {}
         self._clear_roster_editor("Loading roster identity allocations…")
@@ -12376,8 +12386,16 @@ class InspectorBrowser(QFrame):
         self.cancel_audio_import_button.setEnabled(False)
         self.cancel_audio_export_button.setEnabled(False)
         self.export_matching_button.setEnabled(False)
-        self.export_text_sheet_button.setEnabled(False)
-        self.import_text_sheet_button.setEnabled(False)
+        load_tip = (
+            "Load a supported APF game first. Text Sheet export/import needs a "
+            "loaded text catalog. Click still explains."
+        )
+        self.export_text_sheet_button.setEnabled(True)
+        self.export_text_sheet_button.setToolTip(load_tip)
+        self.export_text_sheet_button.setProperty("disableReason", load_tip)
+        self.import_text_sheet_button.setEnabled(True)
+        self.import_text_sheet_button.setToolTip(load_tip)
+        self.import_text_sheet_button.setProperty("disableReason", load_tip)
         self._clear_text_editor("Load a supported game to edit text.")
         self._roster_allocations = {}
         self._clear_roster_editor("Load a supported game to edit roster names.")
@@ -12442,8 +12460,29 @@ class InspectorBrowser(QFrame):
         self.export_ratings_sheet_button.setEnabled(self.roster_mode)
         self.import_ratings_sheet_button.setEnabled(self.roster_mode)
         self._update_bulk_audio_export_controls()
-        self.export_text_sheet_button.setEnabled(self.text_mode)
-        self.import_text_sheet_button.setEnabled(self.text_mode)
+        if self.text_mode:
+            export_tip = (
+                "Create a private CSV containing every owned TXT/STRG allocation "
+                "from your loaded game."
+            )
+            import_tip = (
+                "Validate an APF Text Sheet completely, then apply every requested "
+                "row as one Undo action."
+            )
+            self.export_text_sheet_button.setEnabled(True)
+            self.export_text_sheet_button.setToolTip(export_tip)
+            self.export_text_sheet_button.setProperty("disableReason", "")
+            self.import_text_sheet_button.setEnabled(True)
+            self.import_text_sheet_button.setToolTip(import_tip)
+            self.import_text_sheet_button.setProperty("disableReason", "")
+        else:
+            tip = "Text Sheet actions are only available in the Text workspace."
+            self.export_text_sheet_button.setEnabled(True)
+            self.export_text_sheet_button.setToolTip(tip)
+            self.export_text_sheet_button.setProperty("disableReason", tip)
+            self.import_text_sheet_button.setEnabled(True)
+            self.import_text_sheet_button.setToolTip(tip)
+            self.import_text_sheet_button.setProperty("disableReason", tip)
         self.refresh()
 
     def _restart_filter(self) -> None:
@@ -13999,6 +14038,16 @@ class InspectorBrowser(QFrame):
         )
 
     def _export_text_sheet(self) -> None:
+        reason = str(
+            self.export_text_sheet_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export Text Sheet yet",
+                reason,
+            )
+            return
         if not self.text_mode or self.model is None:
             return
         destination, _selected_filter = QFileDialog.getSaveFileName(
@@ -14049,6 +14098,16 @@ class InspectorBrowser(QFrame):
         )
 
     def _import_text_sheet(self) -> None:
+        reason = str(
+            self.import_text_sheet_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot import Text Sheet yet",
+                reason,
+            )
+            return
         if not self.text_mode or self.model is None:
             return
         source, _selected_filter = QFileDialog.getOpenFileName(
