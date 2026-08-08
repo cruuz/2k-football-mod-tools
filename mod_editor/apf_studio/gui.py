@@ -7006,14 +7006,19 @@ class StadiumStudioPage(QWidget):
         self.export_model_button.setObjectName("secondaryButton")
         self.import_model_button = QPushButton("Import edited mesh…")
         self.import_model_button.setObjectName("primaryButton")
-        self.reset_view_button.setEnabled(False)
-        self.export_scene_button.setEnabled(False)
+        # Never silent-gray scene/view actions: teach select-scene wall.
+        _scene_boot = (
+            "Select a stadium scene first. Reset View / Export scene stay clickable."
+        )
+        self.reset_view_button.setEnabled(True)
+        self.reset_view_button.setToolTip(_scene_boot)
+        self.reset_view_button.setProperty("disableReason", _scene_boot)
+        self.export_scene_button.setEnabled(True)
+        self.export_scene_button.setToolTip(_scene_boot)
+        self.export_scene_button.setProperty("disableReason", _scene_boot)
         # Never silent-gray: mesh import/export stay clickable and explain.
         self.export_model_button.setEnabled(True)
         self.import_model_button.setEnabled(True)
-        self.export_scene_button.setToolTip(
-            "Export the private glTF, binary buffer, and evidence manifest. Geometry is raw game data; a root node scales it from centimetres to metres so it opens at a sane size."
-        )
         self._refresh_mesh_action_buttons()
         view_heading.addLayout(view_titles, 1)
         view_heading.addWidget(self.reset_view_button)
@@ -7298,8 +7303,18 @@ class StadiumStudioPage(QWidget):
         self.surface_boundary.setText(
             "Texture ownership unresolved. Related package textures are candidates, not surface owners."
         )
-        self.reset_view_button.setEnabled(False)
+        prep_tip = "Stadium geometry is still preparing — wait for the private view."
+        self.reset_view_button.setEnabled(True)
+        self.reset_view_button.setToolTip(prep_tip)
+        self.reset_view_button.setProperty("disableReason", prep_tip)
+        export_ready = (
+            "Export the private glTF, binary buffer, and evidence manifest. "
+            "Geometry is raw game data; a root node scales it from centimetres "
+            "to metres so it opens at a sane size."
+        )
         self.export_scene_button.setEnabled(True)
+        self.export_scene_button.setToolTip(export_ready)
+        self.export_scene_button.setProperty("disableReason", "")
         self._selected_model_target = None
         self._refresh_mesh_action_buttons()
         self._populate_package(self.facade.stadium_package_assets(scene))
@@ -7335,6 +7350,8 @@ class StadiumStudioPage(QWidget):
             self._texture_catalog = texture_catalog
             self.viewport.set_model(model)
             self.reset_view_button.setEnabled(True)
+            self.reset_view_button.setToolTip("Reset the stadium viewport camera.")
+            self.reset_view_button.setProperty("disableReason", "")
             self.scene_metadata.setText(
                 f"{preview.mesh_count:,} meshes • {preview.vertex_count:,} vertices • "
                 f"{preview.triangle_count:,} source triangles • "
@@ -7372,8 +7389,15 @@ class StadiumStudioPage(QWidget):
         self.scene_title.setText("Choose a stadium scene")
         self.scene_metadata.setText(message)
         self.surface_identity.setText("No surface selected")
-        self.reset_view_button.setEnabled(False)
-        self.export_scene_button.setEnabled(False)
+        tip = (
+            "Select a stadium scene first. Reset View / Export scene stay clickable."
+        )
+        self.reset_view_button.setEnabled(True)
+        self.reset_view_button.setToolTip(tip)
+        self.reset_view_button.setProperty("disableReason", tip)
+        self.export_scene_button.setEnabled(True)
+        self.export_scene_button.setToolTip(tip)
+        self.export_scene_button.setProperty("disableReason", tip)
         self._selected_model_target = None
         self._refresh_mesh_action_buttons()
         self.package_panel_title.setText("Owning outer package")
@@ -7941,6 +7965,16 @@ class StadiumStudioPage(QWidget):
         self.run_task("Preparing exact stadium surface texture", operation, complete, False)
 
     def _export_scene(self) -> None:
+        reason = str(
+            self.export_scene_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export stadium scene yet",
+                reason,
+            )
+            return
         scene = self._selected_scene()
         if scene is None:
             return
