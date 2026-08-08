@@ -265,6 +265,41 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             page.deleteLater()
             self.application.processEvents()
 
+    def test_stock_nfl_endzones_button_filters_inventory(self) -> None:
+        page = self._page()
+        try:
+            self.assertTrue(page.stock_endzone_button.isEnabled())
+            self.assertFalse(
+                str(page.stock_endzone_button.property("disableReason") or "").strip()
+            )
+            page._show_stock_endzones()
+            self.application.processEvents()
+            self.assertEqual(
+                page.group_filter.currentData(), FieldArtKind.ENDZONE_TEXTURE.value
+            )
+            self.assertEqual(len(page.browser._matches), 235)
+            self.assertTrue(
+                all(
+                    asset.name.startswith("endzone_l")
+                    for asset in page.browser._matches
+                )
+            )
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_stock_nfl_endzones_button_teaches_when_unloaded(self) -> None:
+        page = self._page(ready=False)
+        try:
+            self.assertTrue(page.stock_endzone_button.isEnabled())
+            self.assertTrue(
+                str(page.stock_endzone_button.property("disableReason") or "").strip()
+            )
+            self.assertIn("Load", page.stock_endzone_button.toolTip())
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
     def _assert_replace_locked_explainable(self, page) -> None:
         """Lock is honest: buttons stay clickable, but disableReason blocks write."""
 

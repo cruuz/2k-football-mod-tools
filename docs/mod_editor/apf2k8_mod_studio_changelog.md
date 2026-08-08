@@ -38,6 +38,10 @@
     disableReason teaches Full-shell-only placement (coverage-changed path matched)
   - **Helmet logo placement Save** never silent-gray when art is out of canvas —
     status + accept re-validation teach the wall
+- **Field Art “Stock NFL endzones” button** — one-click jump to the ≈118 stock
+  endzone family in the ownership map + inventory (browse/export only; focused
+  editor still owns the six writable base slots). Unloaded state stays clickable
+  and teaches Load first.
 - **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
   Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
   embedded TXTR fail closed after **45s** with re-select / Export-raw guidance

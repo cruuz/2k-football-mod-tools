@@ -2504,8 +2504,14 @@ if PYQT5_AVAILABLE:
                     self._show_asset(None)
                     self.count_label.setText("Raw bank inventory unavailable")
                     self.range_label.setText("No raw containers were assumed")
-                    self.previous_button.setEnabled(False)
-                    self.next_button.setEnabled(False)
+                    tip = (
+                        "Raw bank inventory is unavailable for this source. "
+                        "Switch scope or reload the XISO, then page results."
+                    )
+                    for button in (self.previous_button, self.next_button):
+                        button.setEnabled(True)
+                        button.setToolTip(tip)
+                        button.setProperty("disableReason", tip)
                     self._update_collection_actions()
                     self.error_raised.emit(str(exc).strip() or exc.__class__.__name__)
                     return
@@ -2721,10 +2727,45 @@ if PYQT5_AVAILABLE:
                 f"{self.page.first_number:,}–{self.page.last_number:,} "
                 f"of {self.page.total:,}" if self.page.total else "No matching audio"
             )
-            pagination_ready = self._pagination_query_ready()
-            self.previous_button.setEnabled(self.page.has_previous and pagination_ready)
-            self.next_button.setEnabled(self.page.has_next and pagination_ready)
+            self._sync_pagination_buttons()
             self._update_collection_actions()
+
+        def _sync_pagination_buttons(self) -> None:
+            """Never silent-gray Previous/Next — teach first-page / last-page walls."""
+
+            pagination_ready = self._pagination_query_ready()
+            if not pagination_ready:
+                if self._busy:
+                    tip = "Wait for the current audio worker to finish, then page."
+                elif not self.host.source_ready:
+                    tip = "Load your NFL 2K5 XISO first, then browse audio pages."
+                else:
+                    tip = (
+                        "Wait for search/filters to finish updating results, then page."
+                    )
+                for button in (self.previous_button, self.next_button):
+                    button.setEnabled(True)
+                    button.setToolTip(tip)
+                    button.setProperty("disableReason", tip)
+                return
+            if self.page.has_previous:
+                self.previous_button.setEnabled(True)
+                self.previous_button.setToolTip("Show the previous page of results.")
+                self.previous_button.setProperty("disableReason", "")
+            else:
+                tip = "Already on the first page of matching audio."
+                self.previous_button.setEnabled(True)
+                self.previous_button.setToolTip(tip)
+                self.previous_button.setProperty("disableReason", tip)
+            if self.page.has_next:
+                self.next_button.setEnabled(True)
+                self.next_button.setToolTip("Show the next page of results.")
+                self.next_button.setProperty("disableReason", "")
+            else:
+                tip = "Already on the last page of matching audio."
+                self.next_button.setEnabled(True)
+                self.next_button.setToolTip(tip)
+                self.next_button.setProperty("disableReason", tip)
 
         def _current_audio_query_token(
             self,
@@ -2778,8 +2819,11 @@ if PYQT5_AVAILABLE:
                 return
             self.count_label.setText("Updating audio results…")
             self.range_label.setText("Waiting for the new search and filters…")
-            self.previous_button.setEnabled(False)
-            self.next_button.setEnabled(False)
+            tip = "Wait for search/filters to finish updating results, then page."
+            for button in (self.previous_button, self.next_button):
+                button.setEnabled(True)
+                button.setToolTip(tip)
+                button.setProperty("disableReason", tip)
             self._update_collection_actions()
 
         def _search_text_changed(self, _text: str) -> None:
@@ -4684,9 +4728,7 @@ if PYQT5_AVAILABLE:
             )
             self.drop_zone.set_accepting(editable, hint)
             self._update_replacement_pack_actions()
-            pagination_ready = self._pagination_query_ready()
-            self.previous_button.setEnabled(self.page.has_previous and pagination_ready)
-            self.next_button.setEnabled(self.page.has_next and pagination_ready)
+            self._sync_pagination_buttons()
             self._update_collection_actions()
             self._apply_operation_interlock()
 
@@ -4715,13 +4757,23 @@ if PYQT5_AVAILABLE:
             self.refresh(keep_selection=False)
 
         def _previous_page(self) -> None:
-            if not self._pagination_query_ready():
+            reason = str(self.previous_button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                self.progress_label.setToolTip(reason)
+                return
+            if not self._pagination_query_ready() or not self.page.has_previous:
                 return
             self.offset = max(0, self.offset - self.page_size)
             self.refresh(keep_selection=False)
 
         def _next_page(self) -> None:
-            if not self._pagination_query_ready():
+            reason = str(self.next_button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                self.progress_label.setToolTip(reason)
+                return
+            if not self._pagination_query_ready() or not self.page.has_next:
                 return
             self.offset += self.page_size
             self.refresh(keep_selection=False)

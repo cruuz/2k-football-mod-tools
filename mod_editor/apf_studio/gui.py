@@ -6751,9 +6751,22 @@ class FieldArtStudioPage(QWidget):
         self.group_filter.setToolTip(
             "Filter the exact catalog rows by a reviewed semantic family."
         )
+        self.stock_endzone_button = QPushButton("Stock NFL endzones")
+        self.stock_endzone_button.setObjectName("secondaryButton")
+        self.stock_endzone_button.setToolTip(
+            "Jump the ownership map + inventory to the stock NFL endzone family "
+            "(≈118 package pairs). Browse/export only — writable base slots stay "
+            "in the focused editor above. Per-team endzone writers are not proved."
+        )
+        self.stock_endzone_button.setProperty(
+            "disableReason",
+            "Load your APF game first, then Stock NFL endzones filters the inventory.",
+        )
+        self.stock_endzone_button.clicked.connect(self._show_stock_endzones)
         semantic_header.addWidget(semantic_title)
         semantic_header.addWidget(self.summary_label)
         semantic_header.addStretch(1)
+        semantic_header.addWidget(self.stock_endzone_button)
         semantic_header.addWidget(QLabel("Show"))
         semantic_header.addWidget(self.group_filter)
         semantic_layout.addLayout(semantic_header)
@@ -6828,6 +6841,33 @@ class FieldArtStudioPage(QWidget):
             "base textures in the Field Art editor above are writable."
         )
         self.browser.set_included_asset_ids(None)
+        load_tip = (
+            "Load your APF game first, then Stock NFL endzones filters the inventory "
+            "to ≈118 package pairs (browse/export only)."
+        )
+        self.stock_endzone_button.setEnabled(True)
+        self.stock_endzone_button.setToolTip(load_tip)
+        self.stock_endzone_button.setProperty("disableReason", load_tip)
+
+    def _show_stock_endzones(self) -> None:
+        """Community path: surface stock NFL endzone packages without Discord help."""
+
+        reason = str(self.stock_endzone_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Stock NFL endzones", reason)
+            return
+        if self.inventory is None:
+            return
+        index = self.group_filter.findData(FieldArtKind.ENDZONE_TEXTURE.value)
+        if index < 0:
+            QMessageBox.information(
+                self,
+                "Stock NFL endzones",
+                "No endzone semantic family is in this inventory map. "
+                "Reload the game or open All Textures and search endzone_l0.",
+            )
+            return
+        self.group_filter.setCurrentIndex(index)
 
     def _populate_semantic_view(self, inventory: FieldArtInventory) -> None:
         self.inventory = inventory
@@ -6870,6 +6910,15 @@ class FieldArtStudioPage(QWidget):
             f"Package note: {package_note} Exact asset IDs below remain the "
             "source of truth for preview and export."
         )
+        # Never silent-gray stock jump: ready once inventory maps endzone family.
+        stock_tip = (
+            "Filter to stock NFL endzone packages (≈118 l0/l1 pairs). "
+            "Browse and Export original PNG only — focused editor above still "
+            "owns the six writable base slots."
+        )
+        self.stock_endzone_button.setEnabled(True)
+        self.stock_endzone_button.setToolTip(stock_tip)
+        self.stock_endzone_button.setProperty("disableReason", "")
 
     def _selected_group(self):
         if self.inventory is None:

@@ -2639,8 +2639,15 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertTrue(panel._search_timer.isActive())
             self.assertEqual(panel._selected_asset().asset_id, old_selected)
             self.assertEqual(panel.count_label.text(), "Updating audio results…")
-            self.assertFalse(panel.previous_button.isEnabled())
-            self.assertFalse(panel.next_button.isEnabled())
+            # Never silent-gray: pagination stays clickable while query pending.
+            self.assertTrue(panel.previous_button.isEnabled())
+            self.assertTrue(panel.next_button.isEnabled())
+            self.assertTrue(
+                str(panel.previous_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(
+                str(panel.next_button.property("disableReason") or "").strip()
+            )
             # Never silent-gray: Export matching stays clickable while query pending.
             self.assertTrue(panel.export_matching_button.isEnabled())
             self.assertTrue(
@@ -2720,7 +2727,10 @@ class AudioPanelOffscreenTests(unittest.TestCase):
 
             panel.search.setText("c0101")
             self.assertTrue(panel._search_timer.isActive())
-            self.assertFalse(panel.next_button.isEnabled())
+            self.assertTrue(panel.next_button.isEnabled())
+            self.assertTrue(
+                str(panel.next_button.property("disableReason") or "").strip()
+            )
             panel.search.clear()
 
             self.assertFalse(panel._search_timer.isActive())
@@ -2728,6 +2738,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel.count_label.text(), original_count)
             self.assertEqual(panel.range_label.text(), original_range)
             self.assertTrue(panel.next_button.isEnabled())
+            self.assertFalse(
+                str(panel.next_button.property("disableReason") or "").strip()
+            )
             self.assertTrue(panel.export_matching_button.isEnabled())
             self.assertTrue(panel.shortlist_page_button.isEnabled())
             self.assertTrue(panel.shortlist_matching_button.isEnabled())

@@ -33,3 +33,7 @@ under All Textures.
 
 Wall documented 2026-08-07. Focused panel copy now states stock endzones live
 in the inventory browser; no overclaim of per-team Editable endzone writes.
+
+**UI (2026-08-08):** Field Art ownership map includes a **Stock NFL endzones**
+button that selects the endzone semantic family (≈235 TXTR rows / 118 packages)
+without Discord help. Still browse/export-only.
