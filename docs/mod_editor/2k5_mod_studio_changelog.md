@@ -31,6 +31,9 @@ build path.
   walls teach on click (1–256 row bound still enforced).
 - **Audio Load waveform** never silent-gray for Load/select/raw/bank walls
   (cancel-in-flight may briefly lock while finishing).
+- **Audio shortlist bulk** — Add all matching / Add this page / Review / Export
+  selected WAVs never silent-gray; blocked clicks teach via progress_label.
+- **Gameplay Inspector Export JSON/CSV** never silent-gray on inspection failure.
 
 ### Honesty
 

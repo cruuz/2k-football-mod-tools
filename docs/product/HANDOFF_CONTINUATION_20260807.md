@@ -138,3 +138,20 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 - unif colour filter-empty; extended visual browsers; universal raw Export; stadium surface textures
 ### Hour gate
 ≥10h: **NO** — continue
+
+
+## Continuation block [2026-08-08T05:29:14-04:00]
+
+**Shipped this session (post RC55/alpha.60 never-gray wave):**
+- APF: text Apply/Revert, Text Sheet Export/Import, ratings sheet Export/Import,
+  Custom Team Write-raw (project-vs-raw teaching)
+- 2K5: Text & Rosters all Apply/Revert paths, Audio Export matching, Load waveform,
+  shortlist bulk actions, Gameplay Inspector exports
+- Dual packaging RELEASE_PASS repeatedly; registry 70/70; E1 logo/fit/field art green
+- main ~270 ahead origin; **no push/release** without Noah
+
+**Still open:**
+- Hour gate ≥10h effective product (multi-session wall ~7.7h stamp span)
+- G1/G2 runtime unproved; freehand not Editable
+- monorepo full pytest hang residual (use batched suites)
+- residual silent-gray edges (pagination, some audio replace pack busy locks)

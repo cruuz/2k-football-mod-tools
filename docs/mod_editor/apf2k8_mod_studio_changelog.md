@@ -23,6 +23,9 @@
   - **Audio Load waveform** never silent-gray (bank/unavailable rows explain)
   - **Text workspace Apply/Revert** never silent-gray — empty selection, UTF-16
     unit limit, no-change, and nothing-staged walls explain on click
+  - **Text Sheet Export/Import** never silent-gray (load/loading walls)
+  - **Ratings sheet Export/Import** never silent-gray (load/workspace walls)
+  - **Custom Team Appearance Write-raw** never silent-gray (project-vs-raw wall)
 - **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
   Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
   embedded TXTR fail closed after **45s** with re-select / Export-raw guidance
