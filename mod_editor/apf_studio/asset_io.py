@@ -831,10 +831,23 @@ class ApfAssetIO:
             rgba = apf_helmet_color_transport.decode_linear_dxn(linear, locations[0])
             return locations[0].width, locations[0].height, rgba
         if int(metadata.get("format", -1)) == 59:
-            linear = apf_xenos_dxt5a.extract_linear(parts[-1])
-            alpha = apf_xenos_dxt5a.decode_linear_alpha(linear)
-            rgba = apf_xenos_dxt5a.alpha_to_rgba(alpha)
-            return int(metadata["width"]), int(metadata["height"]), rgba
+            # General DXT5A (not only digital_font 128×128 fixed allocation).
+            width = int(metadata["width"])
+            height = int(metadata["height"])
+            pitch = int(metadata.get("pitch_pixels", width))
+            endian = int(metadata.get("endianness", 1))
+            if not metadata.get("tiled", True):
+                raise AssetIoError(
+                    "PORTME: linear DXT5A base-level routing is unverified"
+                )
+            linear = apf_xenos_dxt5a.extract_linear_general(
+                parts[-1], width, height, pitch, endian_mode=endian
+            )
+            alpha = apf_xenos_dxt5a.decode_linear_alpha_general(
+                linear, width, height
+            )
+            rgba = apf_xenos_dxt5a.alpha_to_rgba_general(alpha, width, height)
+            return width, height, rgba
         return apf_inner.decode_txtr_base_rgba(metadata, parts[-1])
 
     def _read_inner_parts(
