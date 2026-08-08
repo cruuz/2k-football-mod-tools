@@ -349,6 +349,7 @@ from PyQt5.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QHeaderView,
+    QInputDialog,
     QLabel,
     QLineEdit,
     QMessageBox,
@@ -1097,17 +1098,22 @@ class CribPanel(QWidget):
             self._replace_with_path(Path(selected))
 
     def _fit_crib_image(self, asset: CribAsset, supplied: Path) -> Path | None:
-        """Return an exact-size PNG for this slot, offering to convert.
+        """Return an exact-size PNG for this slot with Contain/Cover/Stretch.
 
+        Dialog and drag/drop both call this path (same code as kit import).
         Any ordinary image is accepted: the fit layer resizes it to the slot's
-        exact dimensions and writes an RGBA PNG, which is what the Crib writer
-        reads.  An already-exact image is returned untouched.  Returns ``None``
-        when the file cannot be read or the user declines -- never a dead-end
-        refusal, because the prepared copy is offered first.
+        exact dimensions and writes an RGBA PNG. An already-exact image is
+        returned untouched. Returns ``None`` when the file cannot be read or
+        the user declines.
         """
 
         from mod_editor.core.errors import ValidationError as _ValidationError
-        from mod_editor.core.image_fit import fit_image, fit_to_png
+        from mod_editor.core.image_fit import (
+            fit_image,
+            fit_mode_from_label,
+            fit_mode_labels,
+            fit_to_png,
+        )
 
         try:
             probe = fit_image(supplied, asset.width, asset.height, mode="auto")
@@ -1126,30 +1132,37 @@ class CribPanel(QWidget):
         if not probe.changed and not needs_png_conversion:
             return supplied
 
-        proposed_change = (
-            "convert that exact-size image to an 8-bit RGBA PNG"
-            if not probe.changed
-            else probe.describe()
-        )
-        answer = QMessageBox.question(
-            self,
-            "Prepare this image?",
-            f"This Crib texture must be exactly {asset.width}×{asset.height}, "
-            f"and that image is {probe.source_width}×{probe.source_height}.\n\n"
-            f"Mod Studio can {proposed_change} for you.\n\n"
-            "Your original file is not modified -- the prepared copy is used "
-            "for this edit only.",
-            QMessageBox.Yes | QMessageBox.Cancel,
-            QMessageBox.Yes,
-        )
-        if answer != QMessageBox.Yes:
-            return None
+        if probe.changed:
+            labels = fit_mode_labels()
+            choice, accepted = QInputDialog.getItem(
+                self,
+                "How should this image fit the slot?",
+                f"This Crib texture must be exactly {asset.width}×{asset.height}, "
+                f"and that image is {probe.source_width}×{probe.source_height}.\n\n"
+                "Choose Contain, Cover, or Stretch. Dialog and drag/drop share "
+                "this path. Your original file is not modified.",
+                labels,
+                0,
+                False,
+            )
+            if not accepted:
+                return None
+            try:
+                chosen_mode = fit_mode_from_label(str(choice))
+            except _ValidationError as exc:
+                QMessageBox.information(
+                    self, "Invalid fit mode", f"{exc}\n\nNo edit was staged."
+                )
+                return None
+        else:
+            chosen_mode = "contain"  # exact size; PNG conversion only
+
         if self._fit_dir is None:
             self._fit_dir = Path(tempfile.mkdtemp(prefix="2k5-crib-fitted-"))
         staged = self._fit_dir / f"crib-{uuid4().hex}.png"
         try:
             result = fit_to_png(
-                supplied, asset.width, asset.height, staged, mode="auto"
+                supplied, asset.width, asset.height, staged, mode=chosen_mode
             )
         except _ValidationError as exc:
             QMessageBox.information(
@@ -1159,7 +1172,8 @@ class CribPanel(QWidget):
             )
             return None
         self.progress_label.setText(
-            f"Prepared image for {asset.label} -- {result.describe()}."
+            f"Prepared image for {asset.label} -- {result.describe()} "
+            f"({chosen_mode})."
         )
         return staged
 
