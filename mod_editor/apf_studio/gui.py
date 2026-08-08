@@ -3811,14 +3811,13 @@ class ApfTeamLogoPanel(QFrame):
             "Save high-resolution authoring master…"
         )
         self.master_button.setObjectName("secondaryButton")
-        self.master_button.setEnabled(False)
-        self.master_button.setToolTip(
-            "After an external logo import, save the exact original artwork, "
-            "the final X/Y, independent width/height, rotation and palette/region "
-            "pipeline, the exact 512×512 native semantic mask, and a direct 2×/4× "
-            "master render. This is not an RPCS3 pack and does not change the "
-            "game's native texture resolution."
+        master_tip = (
+            "Load a team logo first, then import external artwork before saving "
+            "a high-resolution authoring master."
         )
+        self.master_button.setEnabled(True)
+        self.master_button.setToolTip(master_tip)
+        self.master_button.setProperty("disableReason", master_tip)
         self.replace_button = QPushButton("Replace PNG…")
         self.replace_button.setObjectName("primaryButton")
         self.revert_button = QPushButton("Revert")
@@ -3923,7 +3922,13 @@ class ApfTeamLogoPanel(QFrame):
         self._texture_master_game_source = None
         self._delete_texture_master_files(draft)
         if hasattr(self, "master_button"):
-            self.master_button.setEnabled(False)
+            tip = (
+                "Stage a crest with an authoring master draft first, then save. "
+                "Click still explains — button stays clickable."
+            )
+            self.master_button.setEnabled(True)
+            self.master_button.setToolTip(tip)
+            self.master_button.setProperty("disableReason", tip)
 
     def _cleanup_private_preview_files(self, *_args: object) -> None:
         """Remove only this panel's exact session-temporary workspace."""
