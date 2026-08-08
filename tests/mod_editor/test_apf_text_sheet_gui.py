@@ -186,5 +186,28 @@ class ApfTextSheetGuiTests(unittest.TestCase):
             self.application.processEvents()
 
 
+
+    def test_text_apply_and_sheet_buttons_never_silent_gray_at_construction(self) -> None:
+        facade = _TextFacade()
+        browser = InspectorBrowser(
+            "Universal text",
+            facade,  # type: ignore[arg-type]
+            lambda *_args, **_kwargs: None,
+            text_mode=True,
+        )
+        try:
+            self.assertTrue(browser.apply_text_button.isEnabled())
+            self.assertTrue(
+                str(browser.apply_text_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(browser.export_text_sheet_button.isEnabled())
+            self.assertTrue(
+                str(browser.export_text_sheet_button.property("disableReason") or "").strip()
+            )
+        finally:
+            browser.deleteLater()
+            self.application.processEvents()
+
+
 if __name__ == "__main__":
     unittest.main()
