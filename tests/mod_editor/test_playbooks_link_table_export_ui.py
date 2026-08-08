@@ -59,9 +59,15 @@ class LinkTableExportUiTests(unittest.TestCase):
         self.assertIn("Experimental offline", banner)
         self.assertIn("runtime", banner.casefold())
         self.assertIn("ISO is never modified", banner)
-        # Disabled until two different formations selected
-        self.assertFalse(panel.export_link_copy_button.isEnabled())
-        self.assertFalse(panel.export_pkgmap_copy_button.isEnabled())
+        # Never silent-gray: stay clickable; disableReason teaches load/select.
+        self.assertTrue(panel.export_link_copy_button.isEnabled())
+        self.assertTrue(panel.export_pkgmap_copy_button.isEnabled())
+        reason = str(panel.export_pkgmap_copy_button.property("disableReason") or "")
+        self.assertTrue(reason.strip())
+        self.assertTrue(
+            "formation" in reason.casefold() or "load" in reason.casefold(),
+            msg=reason,
+        )
 
     def test_facade_ships_export_playbook_link_table_copy(self) -> None:
         from mod_editor.studio.facade import Nfl2k5StudioFacade

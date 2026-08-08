@@ -1129,26 +1129,39 @@ class PlaybooksPanel(QWidget):
             and donor_form is not None
             and int(target_form) != int(donor_form)
         )
-        self.export_link_copy_button.setEnabled(can_link_export)
-        self.export_pkgmap_copy_button.setEnabled(can_link_export)
-        self.link_donor_combo.setEnabled(can_create)
+        # Never silent-gray: G1/G2 experimental exports stay clickable and explain.
         if can_link_export:
-            self.export_link_copy_button.setToolTip(
+            link_tip = (
                 "Export a private PLAY where the selected formation’s play-link "
                 "menu is replaced by the donor’s. Offline only; runtime unproved."
             )
-            self.export_pkgmap_copy_button.setToolTip(
+            pkg_tip = (
                 "Export a private PLAY where the selected formation’s package map "
                 "(+0x0D) is replaced by the donor’s. G1 surface; runtime unproved."
             )
+            block = ""
+        elif not self.host.source_ready:
+            block = (
+                "Load your NFL 2K5 XISO first. Experimental G1/G2 exports need a "
+                "source. Click still explains — buttons stay clickable."
+            )
+            link_tip = pkg_tip = block
         elif target_form is not None and donor_form is not None:
-            tip = "Pick a donor formation different from the selected target."
-            self.export_link_copy_button.setToolTip(tip)
-            self.export_pkgmap_copy_button.setToolTip(tip)
+            block = "Pick a donor formation different from the selected target."
+            link_tip = pkg_tip = block
         else:
-            tip = "Select a book and two different formations to export a copy."
-            self.export_link_copy_button.setToolTip(tip)
-            self.export_pkgmap_copy_button.setToolTip(tip)
+            block = (
+                "Select a book and two different formations (target + donor) to "
+                "export an experimental offline PLAY copy. Runtime G1/G2 unproved."
+            )
+            link_tip = pkg_tip = block
+        self.export_link_copy_button.setEnabled(True)
+        self.export_pkgmap_copy_button.setEnabled(True)
+        self.export_link_copy_button.setToolTip(link_tip)
+        self.export_pkgmap_copy_button.setToolTip(pkg_tip)
+        self.export_link_copy_button.setProperty("disableReason", block)
+        self.export_pkgmap_copy_button.setProperty("disableReason", block)
+        self.link_donor_combo.setEnabled(can_create)
         self.book_table.setEnabled(not self._busy)
         self.search.setEnabled(not self._busy)
         self.family_filter.setEnabled(not self._busy)
@@ -1218,6 +1231,19 @@ class PlaybooksPanel(QWidget):
         )
 
     def _export_link_table_copy(self) -> None:
+        reason = str(
+            self.export_link_copy_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export link-table copy yet",
+                reason
+                + "\n\nFix: load XISO → open a playbook → pick two different "
+                "formations (target + donor). Export is offline-only; runtime G2 "
+                "unproved.",
+            )
+            return
         book = self._selected_book()
         target_idx = self.formation_combo.currentData()
         donor_idx = self.link_donor_combo.currentData()
@@ -1279,6 +1305,19 @@ class PlaybooksPanel(QWidget):
         )
 
     def _export_package_map_copy(self) -> None:
+        reason = str(
+            self.export_pkgmap_copy_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export package-map copy yet",
+                reason
+                + "\n\nFix: load XISO → open a playbook → pick two different "
+                "formations (target + donor). G1 offline surface only; runtime "
+                "ILB fix unproved.",
+            )
+            return
         book = self._selected_book()
         target_idx = self.formation_combo.currentData()
         donor_idx = self.link_donor_combo.currentData()
