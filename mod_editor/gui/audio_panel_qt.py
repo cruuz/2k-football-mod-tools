@@ -1645,19 +1645,26 @@ if PYQT5_AVAILABLE:
                 "matching the current search, family, edit-status, and meaning-"
                 "confidence filters. Existing shortlist sounds are kept once."
             )
-            self.shortlist_matching_button.setEnabled(False)
-            self.shortlist_matching_button.setToolTip(
+            # Never silent-gray shortlist bulk actions — disableReason teaches walls.
+            _shortlist_boot = (
                 "Narrow the current filters to 1–256 standalone sounds or playable "
                 "streaming ranges."
+            )
+            self.shortlist_matching_button.setEnabled(True)
+            self.shortlist_matching_button.setToolTip(_shortlist_boot)
+            self.shortlist_matching_button.setProperty(
+                "disableReason", _shortlist_boot
             )
             self.shortlist_review_button = QPushButton("Review selected")
             self.shortlist_review_button.setAccessibleName(
                 "Review selected audio sounds or return to the audio browser"
             )
-            self.shortlist_review_button.setEnabled(False)
-            self.shortlist_review_button.setToolTip(
+            _review_boot = (
                 "Add sounds first, then review the complete ordered shortlist."
             )
+            self.shortlist_review_button.setEnabled(True)
+            self.shortlist_review_button.setToolTip(_review_boot)
+            self.shortlist_review_button.setProperty("disableReason", _review_boot)
             self.shortlist_count_label = QLabel("Selected 0 / 256")
             self.shortlist_count_label.setObjectName("audioCountPill")
             self.shortlist_count_label.setAccessibleName("Audio shortlist count")
@@ -2994,6 +3001,14 @@ if PYQT5_AVAILABLE:
             )
 
         def _toggle_audio_shortlist_review(self) -> None:
+            reason = str(
+                self.shortlist_review_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                # Status-line teach (avoid modal hang under headless tests).
+                self.progress_label.setText(reason)
+                return
+
             if self._busy:
                 return
             if self._shortlist_reviewing:
@@ -3258,33 +3273,51 @@ if PYQT5_AVAILABLE:
                 if cleared_count else
                 "Add sounds before clearing the shortlist."
             )
-            self.shortlist_review_button.setEnabled(
-                ready and (count > 0 or self._shortlist_reviewing)
-            )
             self.shortlist_review_button.setText(
                 "Back to browser"
                 if self._shortlist_reviewing else
                 f"Review selected ({count})" if count else
                 "Review selected"
             )
-            self.shortlist_review_button.setToolTip(
-                "Return to the catalog with its search, filters, page, and selection restored."
-                if self._shortlist_reviewing else
-                f"Review, play, remove, and reorder these {count} selected sounds."
-                if count else
-                "Add sounds first, then review the complete ordered shortlist."
-            )
-            self.export_shortlist_button.setEnabled(ready and count > 0)
+            if ready and (count > 0 or self._shortlist_reviewing):
+                review_tip = (
+                    "Return to the catalog with its search, filters, page, and selection restored."
+                    if self._shortlist_reviewing else
+                    f"Review, play, remove, and reorder these {count} selected sounds."
+                )
+                review_block = ""
+            else:
+                review_tip = review_block = (
+                    "Load your NFL 2K5 XISO first."
+                    if not self.host.source_ready else
+                    "Wait for the current audio task to finish."
+                    if self._busy else
+                    "Add sounds first, then review the complete ordered shortlist."
+                )
+            self.shortlist_review_button.setEnabled(True)
+            self.shortlist_review_button.setToolTip(review_tip)
+            self.shortlist_review_button.setProperty("disableReason", review_block)
             self.export_shortlist_button.setText(
                 f"Export selected WAVs ({count})…"
                 if count else "Export selected WAVs…"
             )
-            self.export_shortlist_button.setToolTip(
-                f"Export these {count} hand-picked sounds as one transactional "
-                "WAV ZIP."
-                if count else
-                "Add up to 256 standalone sounds or playable streaming ranges first."
-            )
+            if ready and count > 0:
+                export_tip = (
+                    f"Export these {count} hand-picked sounds as one transactional "
+                    "WAV ZIP."
+                )
+                export_block = ""
+            else:
+                export_tip = export_block = (
+                    "Load your NFL 2K5 XISO first."
+                    if not self.host.source_ready else
+                    "Wait for the current audio task to finish."
+                    if self._busy else
+                    "Add up to 256 standalone sounds or playable streaming ranges first."
+                )
+            self.export_shortlist_button.setEnabled(True)
+            self.export_shortlist_button.setToolTip(export_tip)
+            self.export_shortlist_button.setProperty("disableReason", export_block)
             self.shortlist_toggle_button.setText(
                 "Remove selected sound" if selected_added else "Add selected sound"
             )
@@ -3319,11 +3352,10 @@ if PYQT5_AVAILABLE:
                 f"Add this page ({len(additions)})"
                 if additions else "Add this page"
             )
-            self.shortlist_page_button.setEnabled(
-                catalog_ready
-                and bool(additions) and count < 256
+            page_ready = (
+                catalog_ready and bool(additions) and count < 256
             )
-            self.shortlist_page_button.setToolTip(
+            page_tip = (
                 "Return to the audio browser to add another page."
                 if self._shortlist_reviewing else
                 "Updating results. This action will unlock when the visible page "
@@ -3341,24 +3373,29 @@ if PYQT5_AVAILABLE:
                 if self.page.assets else
                 "No playable sounds are visible on this page."
             )
+            self.shortlist_page_button.setEnabled(True)
+            self.shortlist_page_button.setToolTip(page_tip)
+            self.shortlist_page_button.setProperty(
+                "disableReason", "" if page_ready else page_tip
+            )
             scope = str(self.scope_filter.currentData())
             matching_count = self.page.total if self.host.source_ready else 0
             matching_scope = scope in {
                 PLAYABLE_AUDIO_SCOPE_ID, "standalone", "streaming_ranges",
             }
+            matching_ready = (
+                catalog_ready
+                and matching_scope
+                and 1 <= matching_count <= MAX_SHORTLIST_SIZE
+                and count < MAX_SHORTLIST_SIZE
+            )
             self.shortlist_matching_button.setText(
                 f"Add all matching ({matching_count:,})"
                 if self._catalog_query_is_current()
                 and matching_scope and 1 <= matching_count <= MAX_SHORTLIST_SIZE
                 else "Add all matching"
             )
-            self.shortlist_matching_button.setEnabled(
-                catalog_ready
-                and matching_scope
-                and 1 <= matching_count <= MAX_SHORTLIST_SIZE
-                and count < MAX_SHORTLIST_SIZE
-            )
-            self.shortlist_matching_button.setToolTip(
+            matching_tip = (
                 "Return to the audio browser to add its filtered results."
                 if self._shortlist_reviewing else
                 "Load your NFL 2K5 XISO first."
@@ -3383,6 +3420,11 @@ if PYQT5_AVAILABLE:
                 if count >= MAX_SHORTLIST_SIZE else
                 f"Add all {matching_count:,} matching sounds in canonical filtered "
                 "order. Sounds already selected stay selected once."
+            )
+            self.shortlist_matching_button.setEnabled(True)
+            self.shortlist_matching_button.setToolTip(matching_tip)
+            self.shortlist_matching_button.setProperty(
+                "disableReason", "" if matching_ready else matching_tip
             )
             self.shortlist_move_up_button.setVisible(self._shortlist_reviewing)
             self.shortlist_move_down_button.setVisible(self._shortlist_reviewing)
@@ -4517,6 +4559,12 @@ if PYQT5_AVAILABLE:
             self._update_audio_shortlist_actions()
 
         def _add_visible_audio_to_shortlist(self) -> None:
+            reason = str(
+                self.shortlist_page_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if not self._catalog_page_actions_ready():
                 return
             additions = tuple(
@@ -4545,6 +4593,12 @@ if PYQT5_AVAILABLE:
         def _add_all_matching_audio_to_shortlist(self) -> None:
             """Append one complete, safely revalidated filtered result set."""
 
+            reason = str(
+                self.shortlist_matching_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if (
                 self._shortlist_reviewing
                 or self._busy
@@ -4779,6 +4833,12 @@ if PYQT5_AVAILABLE:
                 )
 
         def _export_shortlisted_audio(self) -> None:
+            reason = str(
+                self.export_shortlist_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             asset_ids = self._shortlisted_audio_ids()
