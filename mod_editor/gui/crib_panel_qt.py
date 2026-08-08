@@ -1032,8 +1032,39 @@ class CribPanel(QWidget):
         scene_id = str(model["scene_id"]) if model is not None else ""
         model_available = bool(model and self.host.source_ready and not self._busy)
         self.model_scene.setEnabled(not self._busy and bool(self._model_scenes))
-        self.model_export_button.setEnabled(model_available)
-        self.model_import_button.setEnabled(model_available)
+        # Keep export/import clickable so gray never means silent no-op:
+        # click always works or explains the next step.
+        export_tip = (
+            "Export this Crib electronics scene as glTF (same-topology positions)."
+            if model_available
+            else (
+                "Load your NFL 2K5 XISO and select a proved electronics scene first. "
+                "Click still explains this — export needs a loaded source + scene."
+                if not self.host.source_ready
+                else "Select one of the proved electronics scenes in the Model list first."
+            )
+        )
+        import_tip = (
+            "Import a same-topology POSITION-only glTF for this scene "
+            "(vertex count and triangles must match the export)."
+            if model_available
+            else (
+                "Load your NFL 2K5 XISO and select a proved electronics scene first. "
+                "Click still explains this. Import never mutates your original XISO."
+                if not self.host.source_ready
+                else "Select a proved electronics scene first, then import a same-topology glTF."
+            )
+        )
+        self.model_export_button.setEnabled(not self._busy)
+        self.model_import_button.setEnabled(not self._busy)
+        self.model_export_button.setToolTip(export_tip)
+        self.model_import_button.setToolTip(import_tip)
+        self.model_export_button.setProperty(
+            "disableReason", "" if model_available else export_tip
+        )
+        self.model_import_button.setProperty(
+            "disableReason", "" if model_available else import_tip
+        )
         self.model_revert_button.setEnabled(
             model_available
             and scene_id in set(self.host.modified_crib_model_scene_ids)
@@ -1226,8 +1257,23 @@ class CribPanel(QWidget):
         )
 
     def _export_model(self) -> None:
+        if not self.host.source_ready:
+            QMessageBox.information(
+                self,
+                "Load a game first",
+                "Crib model export needs your NFL 2K5 XISO loaded.\n\n"
+                "Fix: load the XISO, open The Crib, pick a proved electronics "
+                "scene, then export glTF.",
+            )
+            return
         row = self._selected_model_scene()
         if row is None:
+            QMessageBox.information(
+                self,
+                "Select a proved electronics scene",
+                "Choose one of the proved Crib electronics scenes in the Model "
+                "list first, then export glTF.",
+            )
             return
         scene_id = str(row["scene_id"])
         scene_name = str(row.get("scene_name", "crib_scene"))
@@ -1250,8 +1296,24 @@ class CribPanel(QWidget):
         )
 
     def _import_model(self) -> None:
+        if not self.host.source_ready:
+            QMessageBox.information(
+                self,
+                "Load a game first",
+                "Crib model import needs your NFL 2K5 XISO loaded.\n\n"
+                "Fix: load the XISO, open The Crib, pick a proved electronics "
+                "scene, export glTF, edit POSITION only, then import again.\n\n"
+                "Import stages a copy — it never mutates your original disc/ISO.",
+            )
+            return
         row = self._selected_model_scene()
         if row is None:
+            QMessageBox.information(
+                self,
+                "Select a proved electronics scene",
+                "Choose one of the proved Crib electronics scenes in the Model "
+                "list first, then import a same-topology POSITION-only glTF.",
+            )
             return
         scene_id = str(row["scene_id"])
         selected, _filter = QFileDialog.getOpenFileName(
