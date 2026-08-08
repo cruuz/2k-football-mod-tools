@@ -73,7 +73,7 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 | Descriptor word | play-level at `PLAY_BASE + play*0x60 + 0x04` |
 | Shipped API | `spike_g2_ace_te(book)` |
 | o0308 Ace vs Quads census (2026-08-07) | 5 shared play indices are **same records** (zero assignment XOR). Only-Ace plays: 58 Strong Toss, 139 PA X Stop-n-Go, 140 RO X Post-Corner, 141 50 TE/Y Outs. Package map identical to all offense. **G2 offline delta is formation play-link menu composition**, not per-play assignment bytes. |
-| Offline writer gate | Optional: rewrite Ace link table to include more TE-named plays (clone of Quads/I-Form links) — menu-only, still not a runtime TE→WR package-rule fix. Save Assignments / director remain candidates. **No one-click fix pack.** |
+| Offline writer | **Menu link-table copy shipped** (`build_formation_link_table_copy_patch` / `verify_formation_link_table_copy_patch`) — copies donor formation aux 0x50 play-link table onto target (e.g. Ace←Quads). Offline-writer-proved for **menu bytes only**. **Not** a runtime TE→WR package-rule fix pack. Save Assignments / director remain candidates. |
 
 ### APF parallel surface
 

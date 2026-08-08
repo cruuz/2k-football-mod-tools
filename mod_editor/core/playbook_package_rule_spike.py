@@ -589,9 +589,135 @@ def _require_play_resource(raw: bytes) -> None:
         raise ValidationError("Resource does not start with PLAY magic.")
 
 
+def formation_link_table_body_offset(formation_index: int) -> int:
+    """Body offset of the 0x50 formation play-link (aux) table."""
+
+    if not 0 <= formation_index < FORMATION_CAPACITY:
+        raise ValidationError(
+            f"formation_index must be 0..{FORMATION_CAPACITY - 1}; "
+            f"got {formation_index}."
+        )
+    return FORMATION_AUX_BASE + formation_index * FORMATION_AUX_SIZE
+
+
+@dataclass(frozen=True, slots=True)
+class LinkTablePatchResult:
+    """Copy of one formation's play-link aux table onto another (G2 menu)."""
+
+    raw_resource: bytes
+    target_formation_index: int
+    donor_formation_index: int
+    body_offset: int
+    resource_offset: int
+    changed_byte_count: int
+    target_link_count_before: int
+    target_link_count_after: int
+    donor_link_count: int
+    source_sha256: str
+    result_sha256: str
+    status: str
+
+
+def build_formation_link_table_copy_patch(
+    raw_resource: bytes,
+    target_formation_index: int,
+    donor_formation_index: int,
+) -> LinkTablePatchResult:
+    """Copy donor formation play-link table (aux 0x50) onto target.
+
+    Fail-closed offline writer for **menu composition** (G2 class). Does not
+    change package maps or play assignment records. Independent verifier:
+    :func:`verify_formation_link_table_copy_patch`.
+
+    Capability: offline-writer-proved for the 80 aux bytes. **Not** a runtime
+    TE→WR package-rule fix.
+    """
+
+    _require_play_resource(raw_resource)
+    if target_formation_index == donor_formation_index:
+        raise ValidationError("Donor and target formation indices must differ.")
+    book = parse_playbook_resource(raw_resource)
+    if not 0 <= target_formation_index < len(book.formations):
+        raise ValidationError(
+            f"Target formation {target_formation_index} is outside the book."
+        )
+    if not 0 <= donor_formation_index < len(book.formations):
+        raise ValidationError(
+            f"Donor formation {donor_formation_index} is outside the book."
+        )
+
+    body_off = formation_link_table_body_offset(target_formation_index)
+    donor_off = formation_link_table_body_offset(donor_formation_index)
+    res_off = RESOURCE_HEADER_SIZE + body_off
+    donor_res = RESOURCE_HEADER_SIZE + donor_off
+    donor_bytes = raw_resource[donor_res : donor_res + FORMATION_AUX_SIZE]
+    if len(donor_bytes) != FORMATION_AUX_SIZE:
+        raise ValidationError("Donor link table is truncated.")
+
+    out = bytearray(raw_resource)
+    out[res_off : res_off + FORMATION_AUX_SIZE] = donor_bytes
+    result = bytes(out)
+    patched_book = parse_playbook_resource(result)
+
+    changed = sum(
+        1 for a, b in zip(raw_resource, result, strict=True) if a != b
+    )
+    return LinkTablePatchResult(
+        raw_resource=result,
+        target_formation_index=target_formation_index,
+        donor_formation_index=donor_formation_index,
+        body_offset=body_off,
+        resource_offset=res_off,
+        changed_byte_count=changed,
+        target_link_count_before=len(book.formations[target_formation_index].play_links),
+        target_link_count_after=len(
+            patched_book.formations[target_formation_index].play_links
+        ),
+        donor_link_count=len(book.formations[donor_formation_index].play_links),
+        source_sha256=hashlib.sha256(raw_resource).hexdigest(),
+        result_sha256=hashlib.sha256(result).hexdigest(),
+        status="offline_writer_proved",
+    )
+
+
+def verify_formation_link_table_copy_patch(
+    source: bytes,
+    patched: bytes,
+    target_formation_index: int,
+    donor_formation_index: int,
+) -> None:
+    """Independent byte-diff verifier for a formation link-table copy."""
+
+    _require_play_resource(source)
+    _require_play_resource(patched)
+    if len(source) != len(patched):
+        raise ValidationError("Patched resource length differs from source.")
+
+    body_off = formation_link_table_body_offset(target_formation_index)
+    res_off = RESOURCE_HEADER_SIZE + body_off
+    donor_off = formation_link_table_body_offset(donor_formation_index)
+    donor_res = RESOURCE_HEADER_SIZE + donor_off
+    expected = source[donor_res : donor_res + FORMATION_AUX_SIZE]
+    actual = patched[res_off : res_off + FORMATION_AUX_SIZE]
+    if actual != expected:
+        raise ValidationError("Patched link table does not match donor table.")
+
+    for i, (a, b) in enumerate(zip(source, patched, strict=True)):
+        if res_off <= i < res_off + FORMATION_AUX_SIZE:
+            continue
+        if a != b:
+            raise ValidationError(
+                f"Byte {i} changed outside formation link table."
+            )
+
+    parse_playbook_resource(source)
+    parse_playbook_resource(patched)
+
+
 __all__ = [
     "G1_G2_LAYOUT",
     "G1DimeNickelCensus",
+    "LinkTablePatchResult",
     "O0308_ASSET_ID",
     "O0308_PACK_OFFSET",
     "PACKAGE_MAP_OFFSET_IN_FORMATION",
@@ -600,14 +726,17 @@ __all__ = [
     "PackageRuleSpikeResult",
     "SlotRoleSnapshot",
     "assignment_body_offset",
+    "build_formation_link_table_copy_patch",
     "build_formation_package_map_patch",
     "census_g1_dime_vs_nickel",
     "descriptor_body_offset",
+    "formation_link_table_body_offset",
     "formation_package_map_body_offset",
     "layout_pins",
     "read_all_formation_package_maps",
     "read_formation_package_map",
     "spike_g1_dime_ilb",
     "spike_g2_ace_te",
+    "verify_formation_link_table_copy_patch",
     "verify_formation_package_map_patch",
 ]
