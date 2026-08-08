@@ -163,6 +163,16 @@ class PlayAssignmentRoutePanel(QWidget):
         return values  # type: ignore[return-value]
 
     def _copy(self) -> None:
+        reason = str(self.copy_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot copy route yet",
+                reason
+                + "\n\nStock copy only — not freehand. Load APF, pick different "
+                "target/donor play·slot, then Copy.",
+            )
+            return
         coordinates = self._coordinates()
         if coordinates is None:
             return
@@ -181,6 +191,16 @@ class PlayAssignmentRoutePanel(QWidget):
         )
 
     def _swap(self) -> None:
+        reason = str(self.swap_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot swap routes yet",
+                reason
+                + "\n\nStock swap only — not freehand. Load APF, pick different "
+                "target/donor, then Swap.",
+            )
+            return
         coordinates = self._coordinates()
         if coordinates is None:
             return
@@ -199,6 +219,14 @@ class PlayAssignmentRoutePanel(QWidget):
         )
 
     def _revert(self) -> None:
+        reason = str(self.revert_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Nothing to revert",
+                reason,
+            )
+            return
         selected = self.table.selectedItems()
         if not selected:
             return
@@ -256,9 +284,54 @@ class PlayAssignmentRoutePanel(QWidget):
         ready = bool(self._plays) and bool(getattr(self.facade, "source_ready", False))
         coordinates = self._coordinates()
         differs = coordinates is not None and coordinates[:2] != coordinates[2:]
-        self.copy_button.setEnabled(ready and differs)
-        self.swap_button.setEnabled(ready and differs)
-        self.revert_button.setEnabled(bool(self.table.selectedItems()))
+        # Never silent-gray: stay clickable; disableReason explains load/selection walls.
+        if not getattr(self.facade, "source_ready", False):
+            block = (
+                "Load your APF game first. Stock assignment copy/swap needs MASTER "
+                "PLAY data. Click still explains — buttons stay clickable."
+            )
+        elif not self._plays:
+            block = (
+                "No stock plays loaded yet. Load APF, wait for the play catalog, "
+                "then pick target and donor."
+            )
+        elif not differs:
+            block = (
+                "Target and donor must be different play/slot pairs. Change one "
+                "side, then Copy or Swap."
+            )
+        else:
+            block = ""
+        copy_tip = (
+            block
+            if block
+            else (
+                "Safe when the target's current chain is still used by another stock "
+                "assignment. Otherwise use Swap so no game-authored chain is orphaned."
+            )
+        )
+        swap_tip = (
+            block
+            if block
+            else "Stage both reciprocal route copies as one verified Undo action."
+        )
+        self.copy_button.setEnabled(True)
+        self.swap_button.setEnabled(True)
+        self.copy_button.setToolTip(copy_tip)
+        self.swap_button.setToolTip(swap_tip)
+        self.copy_button.setProperty("disableReason", block)
+        self.swap_button.setProperty("disableReason", block)
+        has_row = bool(self.table.selectedItems())
+        revert_tip = (
+            "Revert the selected staged assignment route from the project."
+            if has_row
+            else "Select a staged route row first, then Revert."
+        )
+        self.revert_button.setEnabled(True)
+        self.revert_button.setToolTip(revert_tip)
+        self.revert_button.setProperty(
+            "disableReason", "" if has_row else revert_tip
+        )
 
 
 __all__ = ["PlayAssignmentRoutePanel"]

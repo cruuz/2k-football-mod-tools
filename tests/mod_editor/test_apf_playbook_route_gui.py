@@ -86,8 +86,17 @@ class PlayAssignmentRoutePanelTests(unittest.TestCase):
         facade.source_ready = False
         panel = PlayAssignmentRoutePanel(facade, _run_task)
         panel.set_model(_model())
-        self.assertFalse(panel.copy_button.isEnabled())
-        self.assertFalse(panel.swap_button.isEnabled())
+        # Never silent-gray: clickable + disableReason teaches Load.
+        self.assertTrue(panel.copy_button.isEnabled())
+        self.assertTrue(panel.swap_button.isEnabled())
+        self.assertIn(
+            "Load",
+            str(panel.copy_button.property("disableReason") or ""),
+        )
+        self.assertIn(
+            "Load",
+            str(panel.swap_button.property("disableReason") or ""),
+        )
 
 
 if __name__ == "__main__":
