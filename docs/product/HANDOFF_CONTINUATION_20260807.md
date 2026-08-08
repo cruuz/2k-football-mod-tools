@@ -62,7 +62,7 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 3. Per-team stock endzone write wall
 4. Cubemap non-face0 / exotic Xenos formats / DXT3A if any
 5. G10 XEX user-input charge path
-6. Titans “missing numbers” as discoverability residual (APF numbers decode fine)
+6. Titans “missing numbers” discoverability mitigated (All Textures tip); blank decode still needs asset_id
 7. Full `tests/mod_editor` in flight (slow H7A optimal sections ~25% at ~12m)
 
 ## Do not claim
@@ -77,4 +77,4 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 5. Only then consider `git push` + beta release (ask Noah once before `gh release create`)
 
 ## Evidence scratch
-`/tmp/grok-goal-d84b62e44b40/implementer/` — e1_reverify*, packaging_*, texture_slice.txt, nameplate_real_0a.txt, etc.
+`/tmp/grok-goal-d84b62e44b40/implementer/` — e1_reverify*, logo_export/, packaging_*, pytest_critical_product_batch.txt (168p), nameplate_real_0a.txt, etc.
