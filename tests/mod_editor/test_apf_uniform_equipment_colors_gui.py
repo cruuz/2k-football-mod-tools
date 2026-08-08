@@ -136,6 +136,34 @@ class UniformEquipmentColorsPanelTests(unittest.TestCase):
         self.assertFalse(facade.modified_asset_ids)
         panel.deleteLater()
 
+    def test_stage_stays_clickable_without_source_and_explains(self) -> None:
+        """Never silent-gray: Stage enabled + disableReason when game not loaded."""
+
+        class _Unloaded:
+            source_ready = False
+            modified_asset_ids: set[str] = set()
+
+            def uniform_equipment_color_inspection(self, team_index: int):  # noqa: ARG002
+                raise AssertionError("should not read without source")
+
+            def uniform_equipment_color_value(self, team_index: int):  # noqa: ARG002
+                raise AssertionError("should not read without source")
+
+        panel = UniformEquipmentColorsPanel(_Unloaded(), _run_task)
+        try:
+            panel.set_context()
+            self.assertTrue(panel.stage_button.isEnabled())
+            reason = str(panel.stage_button.property("disableReason") or "")
+            self.assertTrue(reason.strip())
+            self.assertIn("Load", reason)
+            tip = panel.stage_button.toolTip()
+            self.assertIn("Load", tip)
+            # Click should teach, not crash / not call writer
+            panel._stage()
+            self.assertIn("Load", panel.status.text())
+        finally:
+            panel.deleteLater()
+
 
 if __name__ == "__main__":
     unittest.main()
