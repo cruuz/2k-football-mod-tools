@@ -205,15 +205,12 @@ class StudioTruthfulEquipmentBoundaryTests(unittest.TestCase):
             "if asset.writer_route is VisualWriterRoute.EXPORT_ONLY", self.source
         )
         self.assertIn("\"Preview / Export only\"", self.source)
-        self.assertIn("state.export_button.setEnabled(enabled)", self.source)
-        self.assertIn("edit_enabled = enabled and asset is not None and asset.editable",
-                      self.source)
-        self.assertIn("state.edit_button.setEnabled(edit_enabled)", self.source)
-        self.assertIn("state.replace_button.setEnabled(edit_enabled)", self.source)
-        self.assertIn("edit_enabled and state.selected_asset_id in modified",
-                      self.source)
-        self.assertIn("state.preview.set_replacement_enabled(edit_enabled)",
-                      self.source)
+        # Never silent-gray: export/edit/replace stay clickable with disableReason.
+        self.assertIn("state.export_button.setEnabled(True)", self.source)
+        self.assertIn('setProperty("disableReason"', self.source)
+        self.assertIn("edit_ok = bool(", self.source)
+        self.assertIn("edit_block", self.source)
+        self.assertIn("state.preview.set_replacement_enabled(edit_ok)", self.source)
         self.assertIn(
             'state.status_pill.set_status("Export only", "#91a0b5")',
             self.source,
@@ -305,7 +302,10 @@ class EquipmentResizeOffscreenTests(unittest.TestCase):
         self.state = self.window._visual_browsers[ProductCategory.TEXTURES]
         self.state.selected_asset_id = self.asset.asset_id
         self.window._selected_asset = self.asset
+        # Never-silent-gray paths check disableReason before opening the dialog.
         self.state.replace_button.setEnabled(True)
+        self.state.replace_button.setProperty("disableReason", "")
+        self.state.replace_button.setToolTip("Replace this equipment texture.")
         self.state.preview.set_replacement_enabled(True)
         self.application.processEvents()
 
