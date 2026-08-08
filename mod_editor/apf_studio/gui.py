@@ -11066,20 +11066,29 @@ class InspectorBrowser(QFrame):
         self.shortlist_hint.setObjectName("mutedLabel")
         self.shortlist_hint.setWordWrap(True)
         self.shortlist_hint.setVisible(audio_mode)
+        # Never silent-gray shortlist actions at construction.
+        _sl_boot = (
+            "Load a supported APF game and select playable sounds first. "
+            "Shortlist actions stay clickable so walls explain themselves."
+        )
         self.shortlist_toggle_button = QPushButton("Add selected sound")
         self.shortlist_toggle_button.setObjectName("secondaryButton")
         self.shortlist_toggle_button.setVisible(audio_mode)
-        self.shortlist_toggle_button.setEnabled(False)
+        self.shortlist_toggle_button.setEnabled(True)
+        self.shortlist_toggle_button.setToolTip(_sl_boot)
+        self.shortlist_toggle_button.setProperty("disableReason", _sl_boot)
         self.shortlist_toggle_button.clicked.connect(self._toggle_audio_shortlist)
         self.shortlist_page_button = QPushButton("Add this page")
         self.shortlist_page_button.setObjectName("secondaryButton")
         self.shortlist_page_button.setVisible(audio_mode)
-        self.shortlist_page_button.setEnabled(False)
+        self.shortlist_page_button.setEnabled(True)
+        self.shortlist_page_button.setToolTip(_sl_boot)
+        self.shortlist_page_button.setProperty("disableReason", _sl_boot)
         self.shortlist_page_button.clicked.connect(self._add_visible_audio_to_shortlist)
         self.shortlist_matching_button = QPushButton("Add all matching")
         self.shortlist_matching_button.setObjectName("secondaryButton")
         self.shortlist_matching_button.setVisible(audio_mode)
-        self.shortlist_matching_button.setEnabled(False)
+        self.shortlist_matching_button.setEnabled(True)
         self.shortlist_matching_button.setAccessibleName(
             "Add every matching playable sound to the audio shortlist"
         )
@@ -11087,9 +11096,8 @@ class InspectorBrowser(QFrame):
             "Adds every playable sound matching the applied search and filters, "
             "in game catalog order. Sounds already selected are kept once."
         )
-        self.shortlist_matching_button.setToolTip(
-            "Apply a search or filter to add all of its playable sounds at once."
-        )
+        self.shortlist_matching_button.setToolTip(_sl_boot)
+        self.shortlist_matching_button.setProperty("disableReason", _sl_boot)
         self.shortlist_matching_button.clicked.connect(
             self._add_matching_audio_to_shortlist
         )
@@ -11097,7 +11105,9 @@ class InspectorBrowser(QFrame):
         self.shortlist_clear_button.setObjectName("dangerQuietButton")
         self.shortlist_clear_button.setAccessibleName("Clear audio shortlist")
         self.shortlist_clear_button.setVisible(audio_mode)
-        self.shortlist_clear_button.setEnabled(False)
+        self.shortlist_clear_button.setEnabled(True)
+        self.shortlist_clear_button.setToolTip(_sl_boot)
+        self.shortlist_clear_button.setProperty("disableReason", _sl_boot)
         self.shortlist_clear_button.clicked.connect(self._clear_audio_shortlist)
         self.shortlist_count = QLabel("Selected 0 / 256")
         self.shortlist_count.setObjectName("countPill")
@@ -11105,28 +11115,38 @@ class InspectorBrowser(QFrame):
         self.shortlist_review_button = QPushButton("Review selected")
         self.shortlist_review_button.setObjectName("secondaryButton")
         self.shortlist_review_button.setVisible(audio_mode)
-        self.shortlist_review_button.setEnabled(False)
+        self.shortlist_review_button.setEnabled(True)
+        self.shortlist_review_button.setToolTip(_sl_boot)
+        self.shortlist_review_button.setProperty("disableReason", _sl_boot)
         self.shortlist_review_button.clicked.connect(self._toggle_audio_review)
         self.shortlist_move_up_button = QPushButton("Move up")
         self.shortlist_move_up_button.setObjectName("secondaryButton")
         self.shortlist_move_up_button.setVisible(audio_mode)
-        self.shortlist_move_up_button.setEnabled(False)
+        self.shortlist_move_up_button.setEnabled(True)
+        self.shortlist_move_up_button.setToolTip(_sl_boot)
+        self.shortlist_move_up_button.setProperty("disableReason", _sl_boot)
         self.shortlist_move_up_button.clicked.connect(
             lambda: self._move_shortlisted_audio(-1)
         )
         self.shortlist_move_down_button = QPushButton("Move down")
         self.shortlist_move_down_button.setObjectName("secondaryButton")
         self.shortlist_move_down_button.setVisible(audio_mode)
-        self.shortlist_move_down_button.setEnabled(False)
+        self.shortlist_move_down_button.setEnabled(True)
+        self.shortlist_move_down_button.setToolTip(_sl_boot)
+        self.shortlist_move_down_button.setProperty("disableReason", _sl_boot)
         self.shortlist_move_down_button.clicked.connect(
             lambda: self._move_shortlisted_audio(1)
         )
         self.export_shortlist_button = QPushButton("Export selected sounds…")
         self.export_shortlist_button.setObjectName("primaryButton")
         self.export_shortlist_button.setVisible(audio_mode)
-        self.export_shortlist_button.setEnabled(False)
+        self.export_shortlist_button.setEnabled(True)
         self.export_shortlist_button.setToolTip(
             "Add up to 256 sounds from any search, page, or bank first."
+        )
+        self.export_shortlist_button.setProperty(
+            "disableReason",
+            "Add up to 256 sounds from any search, page, or bank first.",
         )
         self.export_shortlist_button.clicked.connect(self._export_shortlisted_audio)
         audio_actions = QHBoxLayout()
