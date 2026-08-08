@@ -77,3 +77,17 @@ lineage) or an APF-named play census.
 No community fix pack is offered as a one-click writer until package rules are
 offline-proved. Editor ⚠ tags are discovery aids. The RE spike is precise enough
 to start the offline writer without re-discovering layout constants.
+
+
+### G10/G11 precise spike — ability charge gates (continuation)
+
+| Pin | Value |
+| --- | --- |
+| Surface | Save Players packed fields (`mod_editor/apf_studio/save_roster_players.py`) |
+| **Star tier** | `field_id=tier`, byte_offset **18**, storage_shift **0**, width **3**; choices `0=None, 2=Gold, 4=Silver, 6=Bronze` |
+| Ability booleans | category `ability` e.g. `get_low` @ byte 44 bit0; `head_slap` @ byte 42 bit7; full 77-bit set in `FIELDS` |
+| Status | **re_spike** — offline writers for tier + ability bits already ship; **runtime gate** (user input vs AI path) not located in XEX |
+| Offline proved | Save Players Apply/Revert/raw handoff for tier + ability bits |
+| Unproved | Code that checks tier/ability on user-controlled 2nd-level charge (G10 bronze/silver block; G11 gold always-on) |
+| Next | Controlled Roster.ROS: set bronze+skills vs gold-no-skills; capture Xenia input-path failure; XEX cross-ref |
+| Updated | 2026-08-07T21:48:59 |
