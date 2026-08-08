@@ -1166,7 +1166,20 @@ class PlaybooksPanel(QWidget):
             source_ready=self.host.source_ready,
             busy=self._busy,
         )
-        self.export_button.setEnabled(state.can_export)
+        if state.can_export:
+            export_tip = "Export the exact raw PLAY resource for this book (private file)."
+            export_block = ""
+        elif not self.host.source_ready:
+            export_tip = export_block = (
+                "Load your NFL 2K5 XISO first to export a raw PLAY resource."
+            )
+        else:
+            export_tip = export_block = (
+                "Select a playbook book first, then Export raw PLAY."
+            )
+        self.export_button.setEnabled(True)
+        self.export_button.setToolTip(export_tip)
+        self.export_button.setProperty("disableReason", export_block)
         linked = self._selected_linked_play()
         assignment_rows = self.assignment_table.selectionModel().selectedRows()
         target_slot = assignment_rows[0].row() if assignment_rows else None
@@ -1589,6 +1602,14 @@ class PlaybooksPanel(QWidget):
         )
 
     def _export_selected(self) -> None:
+        reason = str(self.export_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export PLAY yet",
+                reason + "\n\nFix: load XISO → select a book → Export raw PLAY.",
+            )
+            return
         book = self._selected_book()
         if book is None:
             return
