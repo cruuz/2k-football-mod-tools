@@ -7,7 +7,7 @@ marathon includes nameplate DXN (font_albedo), linear TXTR (uncompressed + DXT),
 G1 package-map + G2 link-table offline writers, playbook annotations,
 keyboard/search polish, shell recommended path, equipment Stage explain, and
 click-to-explain model import (APF + 2K5 Crib + Stadium). Living WORKLOG:
-`docs/product/WORKLOG_20260807.md`. **≥10h hour-gate still accumulating** —
+`docs/product/WORKLOG_20260807.md`. **≥10h hour-gate still accumulating** (wall WORKLOG ~5.5h this marathon segment; multi-session). Broader suite evidence is **batched** (monorepo single-run hang residual). —
 do not treat this note as a sealed public release.
 
 
