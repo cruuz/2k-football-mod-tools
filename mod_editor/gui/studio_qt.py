@@ -4008,7 +4008,11 @@ class StudioMainWindow(QMainWindow):
         selected = self._selected_visual(category)
         if selected is None:
             return
-        _state, asset = selected
+        state, asset = selected
+        reason = str(state.export_button.property("disableReason") or "").strip()
+        if reason:
+            self._show_error(reason)
+            return
         suggested = _suggested_png_name(asset.asset_id)
         filename, _ = QFileDialog.getSaveFileName(
             self, "Export PNG", str(Path.home() / suggested), "PNG image (*.png)"
@@ -4277,7 +4281,11 @@ class StudioMainWindow(QMainWindow):
         if selected is None:
             self._show_error("Choose an asset to edit.")
             return
-        _state, selected_asset = selected
+        state, selected_asset = selected
+        reason = str(state.edit_button.property("disableReason") or "").strip()
+        if reason:
+            self._show_error(reason)
+            return
         if not selected_asset.editable:
             self._show_error(
                 "This texture is preview/export-only because its format has no "
@@ -4287,7 +4295,7 @@ class StudioMainWindow(QMainWindow):
         if not bool(getattr(self.facade, "source_ready", False)):
             self._show_error("Load your NFL 2K5 XISO before editing an asset.")
             return
-        state, asset = selected
+        asset = selected_asset
         from mod_editor.core.errors import ValidationError
         from mod_editor.core.image_fit import fit_image
         from mod_editor.gui.texture_editor import edit_texture
@@ -4339,6 +4347,10 @@ class StudioMainWindow(QMainWindow):
         if selected is None:
             return
         state, asset = selected
+        reason = str(state.replace_button.property("disableReason") or "").strip()
+        if reason:
+            self._show_error(reason)
+            return
         if not asset.editable:
             self._show_error(
                 "This texture is preview/export-only because its format has no "
@@ -4463,6 +4475,10 @@ class StudioMainWindow(QMainWindow):
         if selected is None:
             return
         state, asset = selected
+        reason = str(state.revert_button.property("disableReason") or "").strip()
+        if reason:
+            self._show_error(reason)
+            return
         if not asset.editable:
             self._show_error(
                 "This texture is preview/export-only because its format has no "
@@ -4489,30 +4505,78 @@ class StudioMainWindow(QMainWindow):
         ready = bool(getattr(self.facade, "source_ready", False))
         modified = set(getattr(self.facade, "modified_asset_ids", ()))
         selected = state.selected_asset_id is not None
-        enabled = (
-            ready
-            and selected
-            and not self._blocking
-            and not self._embedded_operation_is_busy()
-        )
-        state.export_button.setEnabled(enabled)
+        busy = self._blocking or self._embedded_operation_is_busy()
         asset = (
             self.extended_visual_catalog.get_asset(state.selected_asset_id)
             if state.selected_asset_id is not None
             else None
         )
-        edit_enabled = enabled and asset is not None and asset.editable
-        state.master_button.setEnabled(
-            edit_enabled
+        # Never silent-gray: keep actions clickable; disableReason teaches walls.
+        if not ready:
+            block = "Load your NFL 2K5 XISO first to export or edit this visual asset."
+        elif not selected:
+            block = "Select a visual asset from the list first."
+        elif busy:
+            block = "Wait for the current operation to finish."
+        else:
+            block = ""
+        export_tip = block or "Export this visual asset as PNG from your private cache."
+        state.export_button.setEnabled(True)
+        state.export_button.setToolTip(export_tip)
+        state.export_button.setProperty("disableReason", block)
+        edit_ok = bool(
+            ready and selected and not busy and asset is not None and asset.editable
+        )
+        if edit_ok:
+            edit_block = ""
+            edit_tip = "Edit or replace this editable visual texture (auto-resize on import)."
+        elif block:
+            edit_block = edit_tip = block
+        elif asset is not None and not asset.editable:
+            edit_block = edit_tip = (
+                f"{asset.label} is export-only / not editable in this catalog. "
+                "Use Export, or open a named writer workspace if one exists."
+            )
+        else:
+            edit_block = edit_tip = "Select an editable visual asset first."
+        for button, tip in (
+            (state.edit_button, edit_tip),
+            (state.replace_button, edit_tip),
+        ):
+            button.setEnabled(True)
+            button.setToolTip(tip)
+            button.setProperty("disableReason", edit_block)
+        master_ok = bool(
+            edit_ok
             and state.selected_asset_id in self._texture_master_drafts
             and callable(getattr(self.facade, "save_texture_authoring_master", None))
         )
-        state.edit_button.setEnabled(edit_enabled)
-        state.replace_button.setEnabled(edit_enabled)
-        state.revert_button.setEnabled(
-            edit_enabled and state.selected_asset_id in modified
-        )
-        state.preview.set_replacement_enabled(edit_enabled)
+        if master_ok:
+            master_block = ""
+            master_tip = "Save high-resolution authoring master for this texture."
+        elif edit_block:
+            master_block = master_tip = edit_block
+        else:
+            master_block = master_tip = (
+                "Import/replace artwork first so an authoring master draft exists."
+            )
+        state.master_button.setEnabled(True)
+        state.master_button.setToolTip(master_tip)
+        state.master_button.setProperty("disableReason", master_block)
+        can_revert = bool(edit_ok and state.selected_asset_id in modified)
+        if can_revert:
+            revert_block = ""
+            revert_tip = "Revert staged replacement for this visual asset."
+        elif edit_block:
+            revert_block = revert_tip = edit_block
+        else:
+            revert_block = revert_tip = (
+                "Nothing to revert—this visual asset is still original."
+            )
+        state.revert_button.setEnabled(True)
+        state.revert_button.setToolTip(revert_tip)
+        state.revert_button.setProperty("disableReason", revert_block)
+        state.preview.set_replacement_enabled(edit_ok)
 
     def _preview_selected_asset(self) -> None:
         asset = self._selected_asset
