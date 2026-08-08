@@ -3254,13 +3254,14 @@ class StudioMainWindow(QMainWindow):
         export_button.setObjectName("secondaryButton")
         master_button = QPushButton("Save high-resolution authoring master…")
         master_button.setObjectName("secondaryButton")
-        master_button.setEnabled(False)
-        master_button.setToolTip(
-            "Available after importing this asset in the current session. Saves "
-            "the exact full-resolution source, the exact native game PNG, the "
-            "fit transform, and a direct 2×/4× authoring preview. This is not an "
-            "RPCS3 texture pack and does not increase the game's native texture size."
+        # Never silent-gray at construction: teach Load/import walls.
+        master_boot = (
+            "Load your game and import/replace artwork first so an authoring "
+            "master draft exists. Click still explains — button stays clickable."
         )
+        master_button.setEnabled(True)
+        master_button.setToolTip(master_boot)
+        master_button.setProperty("disableReason", master_boot)
         replace_button = QPushButton("Replace PNG")
         replace_button.setObjectName("primaryButton")
         revert_button = QPushButton("Revert")
