@@ -1292,7 +1292,8 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.assertTrue(str(browser.apply_roster_name_button.property("disableReason") or "").strip())
             self.assertTrue(browser.revert_roster_name_button.isEnabled())
             self.assertTrue(str(browser.revert_roster_name_button.property("disableReason") or "").strip())
-            self.assertFalse(browser.roster_aliases_button.isEnabled())
+            self.assertTrue(browser.roster_aliases_button.isEnabled())
+            self.assertTrue(str(browser.roster_aliases_button.property("disableReason") or "").strip())
             assert browser.roster_detail_tabs is not None
             self.assertEqual(browser.roster_detail_tabs.currentIndex(), 0)
             self.assertFalse(browser.roster_detail_tabs.isTabEnabled(1))

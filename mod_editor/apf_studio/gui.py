@@ -10519,7 +10519,9 @@ class InspectorBrowser(QFrame):
             audio_filter_label.setObjectName("fieldLabel")
             self.soundtrack_album_button = QPushButton("Soundtrack album")
             self.soundtrack_album_button.setObjectName("secondaryButton")
-            self.soundtrack_album_button.setEnabled(False)
+            self.soundtrack_album_button.setEnabled(True)
+            self.soundtrack_album_button.setToolTip('Load a supported APF game first for the soundtrack album.')
+            self.soundtrack_album_button.setProperty("disableReason", 'Load a supported APF game first for the soundtrack album.')
             self.soundtrack_album_button.setToolTip(
                 "Available when the exact 15-track jukeboxmusic/jukebox22 pair is present."
             )
@@ -10680,7 +10682,9 @@ class InspectorBrowser(QFrame):
             "secondaryButton"
         )
         self.export_audio_replacement_template_button.setVisible(audio_mode)
-        self.export_audio_replacement_template_button.setEnabled(False)
+        self.export_audio_replacement_template_button.setEnabled(True)
+        self.export_audio_replacement_template_button.setToolTip('Load a supported APF game first for replacement templates.')
+        self.export_audio_replacement_template_button.setProperty("disableReason", 'Load a supported APF game first for replacement templates.')
         self.export_audio_replacement_template_button.setAccessibleName(
             "Create APF audio replacement template"
         )
@@ -10697,7 +10701,9 @@ class InspectorBrowser(QFrame):
         )
         self.import_audio_replacement_pack_button.setObjectName("primaryButton")
         self.import_audio_replacement_pack_button.setVisible(audio_mode)
-        self.import_audio_replacement_pack_button.setEnabled(False)
+        self.import_audio_replacement_pack_button.setEnabled(True)
+        self.import_audio_replacement_pack_button.setToolTip('Load a supported APF game first for replacement packs.')
+        self.import_audio_replacement_pack_button.setProperty("disableReason", 'Load a supported APF game first for replacement packs.')
         self.import_audio_replacement_pack_button.setAccessibleName(
             "Review APF audio replacement pack before applying it"
         )
@@ -10949,7 +10955,9 @@ class InspectorBrowser(QFrame):
         self.export_external_bank_button = QPushButton("Export original bank .bin…")
         self.export_external_bank_button.setObjectName("secondaryButton")
         self.export_external_bank_button.setVisible(False)
-        self.export_external_bank_button.setEnabled(False)
+        self.export_external_bank_button.setEnabled(True)
+        self.export_external_bank_button.setToolTip('Select an external bank row first.')
+        self.export_external_bank_button.setProperty("disableReason", 'Select an external bank row first.')
         self.export_external_bank_button.setToolTip(
             "Copy this exact physical multi-cue XMA1 packet bank. It is not one playable sound."
         )
@@ -11286,7 +11294,9 @@ class InspectorBrowser(QFrame):
         self.roster_aliases_button = QPushButton("View affected fields…")
         self.roster_aliases_button.setObjectName("secondaryButton")
         self.roster_aliases_button.setVisible(roster_mode)
-        self.roster_aliases_button.setEnabled(False)
+        self.roster_aliases_button.setEnabled(True)
+        self.roster_aliases_button.setToolTip('Select a roster identity field first.')
+        self.roster_aliases_button.setProperty("disableReason", 'Select a roster identity field first.')
         self.roster_aliases_button.setAccessibleName(
             "Review every roster field affected by this shared name allocation"
         )
@@ -12562,7 +12572,9 @@ class InspectorBrowser(QFrame):
         self.export_audio_button.setVisible(False)
         self.export_bank_button.setVisible(False)
         self.export_external_bank_button.setVisible(False)
-        self.export_external_bank_button.setEnabled(False)
+        self.export_external_bank_button.setEnabled(True)
+        self.export_external_bank_button.setToolTip('Select an external bank row first.')
+        self.export_external_bank_button.setProperty("disableReason", 'Select an external bank row first.')
         tip = "Select a playable sound row first."
         self.play_audio_button.setEnabled(True)
         self.play_audio_button.setToolTip(tip)
@@ -12582,8 +12594,12 @@ class InspectorBrowser(QFrame):
         self.export_original_audio_banks_button.setEnabled(True)
         self.export_original_audio_banks_button.setToolTip('Load a supported APF game first, then export original banks.')
         self.export_original_audio_banks_button.setProperty("disableReason", 'Load a supported APF game first, then export original banks.')
-        self.export_audio_replacement_template_button.setEnabled(False)
-        self.import_audio_replacement_pack_button.setEnabled(False)
+        self.export_audio_replacement_template_button.setEnabled(True)
+        self.export_audio_replacement_template_button.setToolTip('Load a supported APF game first for replacement templates.')
+        self.export_audio_replacement_template_button.setProperty("disableReason", 'Load a supported APF game first for replacement templates.')
+        self.import_audio_replacement_pack_button.setEnabled(True)
+        self.import_audio_replacement_pack_button.setToolTip('Load a supported APF game first for replacement packs.')
+        self.import_audio_replacement_pack_button.setProperty("disableReason", 'Load a supported APF game first for replacement packs.')
         self.cancel_audio_import_button.setEnabled(False)
         self.cancel_audio_export_button.setEnabled(False)
         self.export_matching_button.setEnabled(True)
@@ -12620,7 +12636,9 @@ class InspectorBrowser(QFrame):
         self.export_audio_button.setVisible(False)
         self.export_bank_button.setVisible(False)
         self.export_external_bank_button.setVisible(False)
-        self.export_external_bank_button.setEnabled(False)
+        self.export_external_bank_button.setEnabled(True)
+        self.export_external_bank_button.setToolTip('Select an external bank row first.')
+        self.export_external_bank_button.setProperty("disableReason", 'Select an external bank row first.')
         tip = "Select a playable sound row first."
         self.play_audio_button.setEnabled(True)
         self.play_audio_button.setToolTip(tip)
@@ -12640,8 +12658,12 @@ class InspectorBrowser(QFrame):
         self.export_original_audio_banks_button.setEnabled(True)
         self.export_original_audio_banks_button.setToolTip('Load a supported APF game first, then export original banks.')
         self.export_original_audio_banks_button.setProperty("disableReason", 'Load a supported APF game first, then export original banks.')
-        self.export_audio_replacement_template_button.setEnabled(False)
-        self.import_audio_replacement_pack_button.setEnabled(False)
+        self.export_audio_replacement_template_button.setEnabled(True)
+        self.export_audio_replacement_template_button.setToolTip('Load a supported APF game first for replacement templates.')
+        self.export_audio_replacement_template_button.setProperty("disableReason", 'Load a supported APF game first for replacement templates.')
+        self.import_audio_replacement_pack_button.setEnabled(True)
+        self.import_audio_replacement_pack_button.setToolTip('Load a supported APF game first for replacement packs.')
+        self.import_audio_replacement_pack_button.setProperty("disableReason", 'Load a supported APF game first for replacement packs.')
         self.cancel_audio_import_button.setEnabled(False)
         self.cancel_audio_export_button.setEnabled(False)
         self.export_matching_button.setEnabled(True)
@@ -13243,7 +13265,9 @@ class InspectorBrowser(QFrame):
             self.export_audio_button.setVisible(False)
             self.export_bank_button.setVisible(False)
             self.export_external_bank_button.setVisible(False)
-            self.export_external_bank_button.setEnabled(False)
+            self.export_external_bank_button.setEnabled(True)
+            self.export_external_bank_button.setToolTip('Select an external bank row first.')
+            self.export_external_bank_button.setProperty("disableReason", 'Select an external bank row first.')
             tip = "Select a playable sound row first."
             self.play_audio_button.setEnabled(True)
             self.play_audio_button.setToolTip(tip)
@@ -13727,7 +13751,9 @@ class InspectorBrowser(QFrame):
             self.revert_roster_name_button.setProperty("disableReason", tip)
             self.roster_aliases_button.setText("View affected fields…")
             self.roster_aliases_button.setToolTip("")
-            self.roster_aliases_button.setEnabled(False)
+            self.roster_aliases_button.setEnabled(True)
+            self.roster_aliases_button.setToolTip('Select a roster identity field first.')
+            self.roster_aliases_button.setProperty("disableReason", 'Select a roster identity field first.')
 
     def _selected_roster_field(
         self,
@@ -13823,7 +13849,9 @@ class InspectorBrowser(QFrame):
             self.revert_roster_name_button.setProperty("disableReason", tip)
             self.roster_aliases_button.setText("View affected fields…")
             self.roster_aliases_button.setToolTip("")
-            self.roster_aliases_button.setEnabled(False)
+            self.roster_aliases_button.setEnabled(True)
+            self.roster_aliases_button.setToolTip('Select a roster identity field first.')
+            self.roster_aliases_button.setProperty("disableReason", 'Select a roster identity field first.')
             return
         row, field_name, asset_id, allocation, metadata = selected
         current = self.facade.roster_identity_value(asset_id)
@@ -13996,7 +14024,9 @@ class InspectorBrowser(QFrame):
         self.revert_roster_name_button.setProperty("disableReason", tip)
         self.roster_aliases_button.setText("View affected fields…")
         self.roster_aliases_button.setToolTip("")
-        self.roster_aliases_button.setEnabled(False)
+        self.roster_aliases_button.setEnabled(True)
+        self.roster_aliases_button.setToolTip('Select a roster identity field first.')
+        self.roster_aliases_button.setProperty("disableReason", 'Select a roster identity field first.')
         if self.roster_detail_tabs is not None:
             self.roster_detail_tabs.setCurrentIndex(0)
             self.roster_detail_tabs.setTabEnabled(1, False)
@@ -16995,7 +17025,9 @@ class InspectorBrowser(QFrame):
             self.play_audio_button.setProperty("disableReason", tip)
             self.export_bank_button.setVisible(False)
             self.export_external_bank_button.setVisible(False)
-            self.export_external_bank_button.setEnabled(False)
+            self.export_external_bank_button.setEnabled(True)
+            self.export_external_bank_button.setToolTip('Select an external bank row first.')
+            self.export_external_bank_button.setProperty("disableReason", 'Select an external bank row first.')
             self.export_matching_button.setEnabled(True)
             self.export_matching_button.setToolTip('Load a supported APF game first, then export matching sounds.')
             self.export_matching_button.setProperty("disableReason", 'Load a supported APF game first, then export matching sounds.')
