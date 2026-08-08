@@ -4,68 +4,77 @@
 - Path: `/media/noah/Storage/for codex 1.0`
 - Branch: `main` (ahead of origin; do not force-push)
 - Versions: 2K5 **RC55** (`1.0.0rc55`) / APF **alpha.60** (`0.1.0-alpha.60`)
+- Recent: linear DXT preview; shell recommended path; equipment Stage explain;
+  2K5 stadium Import/Export never silent-gray; pin cascade digital_font/SCNE
 
 ## Hour gate (honest)
-- Living WORKLOG: `docs/product/WORKLOG_20260807.md` (25+ timestamped product blocks)
-- Deep-run wall ~2026-08-07T21:41 → 2026-08-08T00:40 local (~3h this segment) + prior session work
+- Living WORKLOG: `docs/product/WORKLOG_20260807.md` (30+ timestamped product blocks)
+- Deep-run wall ~2026-08-07T21:41 → 2026-08-08T02:01 local + prior segments
 - **Formal ≥10h effective product work NOT yet claimed** — continue timestamps; no early E3 exit
 
-## E1 real-path re-proof (latest)
-Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reproof_003940.txt`
+## E1 real-path re-proof (latest 2026-08-08T02:00)
+Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverify_final.txt`
 
 | Claim | Result |
 | --- | --- |
-| logo_l0/l1 preview+export | PASS real 0A 512×512 PNG export |
-| logo_l0 offline build_patch | PASS magenta; decode_back max_error 0; source RO |
-| Contain/Cover/Stretch | PASS image_fit |
-| Facemask per-set HOME/AWAY | PASS Equipment Colors tabs + filter |
-| Model import not silent gray | PASS clickable + Load tooltip (APF); Crib click-to-explain (2K5) |
-| Field Art stock teaching | PASS empty/load path + stock endzone blurb |
+| logo_l0 build_patch magenta | PASS entry 83968; decode_back max_error **0**; source_opened_read_only **True**; 0A immutable |
+| Contain/Cover/Stretch | PASS `image_fit.fit_image` |
+| Facemask per-set HOME/AWAY | PASS Equipment Colors kit-only labels |
+| Model import not silent gray | PASS APF disableReason; 2K5 Crib + **Stadium** click-to-explain |
+| Equipment Stage not silent gray | PASS always enabled + disableReason |
+| Field Art stock teaching | PASS |
+| Nameplate base-only DXN | PASS namefont suite 4/4 real-path |
+| Linear DXT (untiled compressed) | PASS unit + PORTME removed |
 | Registry 70/70 | PASS |
-| Broader suite slice | 62 passed (earlier block); re-run this block |
+| Broken-play annotations | PASS Ace/Dime/Bear |
+| Texture product slice | 41 passed (`texture_slice.txt`) |
 
 ## Shipped this marathon (depth)
 
 ### G1 / G2 playbooks
 - Package map at formation `+0x0D` (11-byte perm); o0308 Dime/Nickel census
 - Writers: `build_formation_package_map_patch`, `build_formation_link_table_copy_patch` + verifiers
-- UI: package-map inspector line; experimental Export Package-Map / Link-Table Copy (offline private PLAY only)
+- UI: package-map inspector; experimental Export Package-Map / Link-Table Copy
 - Broken-play Ace/Dime/Bear annotations; community-flagged filter
 - Runtime G1/G2 still **unproved**
 
 ### Textures
 - Nameplate font_albedo/font_normal base-only DXN
-- Linear untiled uncompressed TXTR (crowd_shirt_stripe_color_rain proved)
+- Linear untiled **uncompressed + DXT1/2_3/4_5** TXTR PNG preview
 - General DXT5A; format-32 cubemap face-0
-- Extra Xenos 8 / 1_5_5_5 / 5_6_5 / 8_8
+- Extra Xenos 8 / 1_5_5_5 / 5_6_5 / 8_8 / 4_4_4_4
 
 ### UX
 - Keyboard Ctrl+F / Esc / Ctrl+/
 - All Textures search tips; empty states
-- Equipment Colors team filter (APF fictional names)
+- Equipment Colors team filter (APF fictional names); Stage never silent-gray
+- Team Logos recommended path: Full-shell + Normal logo; opaque shell α255 vs 0x88 defect
+- 2K5 Stadium model Import/Export click-to-explain
 - Import fit Contain/Cover/Stretch everywhere critical
 
 ### Packaging
-- Retail-free stage PASS both products on latest tree (re-stage after each major commit cluster)
+- Retail-free stage+check PASS both products post-stadium commit
+  (`packaging_apf_check.txt`, `packaging_2k5_check.txt` under implementer scratch)
 
 ## Open / residual walls
 1. G1/G2 **runtime** fix packs (emulator witness) — offline only so far
 2. Freehand routes Editable
 3. Per-team stock endzone write wall
-4. Linear **compressed** DXT still PORTME
-5. Some cubemap non-face0 / other formats
-6. G10 XEX user-input charge path
-7. Titans “missing numbers” as discoverability residual (APF numbers decode fine)
+4. Cubemap non-face0 / exotic Xenos formats / DXT3A if any
+5. G10 XEX user-input charge path
+6. Titans “missing numbers” as discoverability residual (APF numbers decode fine)
+7. Full `tests/mod_editor` in flight (slow H7A optimal sections ~25% at ~12m)
 
 ## Do not claim
 - Freehand Editable; runtime hardware parity; community one-click Ace/Dime fix packs as runtime-proved
+- ≥10h hour gate met (not yet)
 
 ## Next session (priority)
 1. Keep WORKLOG timestamps until ≥10h effective product work
-2. Emulator/runtime spike only if Noah asks (headless preferred)
-3. Remaining PORTME community-critical if repro’d with asset_id
-4. Full `tests/mod_editor` green run
+2. Finish / re-green full `tests/mod_editor` (watch H7A-bound tests)
+3. Emulator/runtime spike only if Noah asks (headless preferred)
+4. Remaining PORTME if repro’d with asset_id
 5. Only then consider `git push` + beta release (ask Noah once before `gh release create`)
 
 ## Evidence scratch
-`/tmp/grok-goal-d84b62e44b40/implementer/` — e1_reproof_*, broader_product_slice.txt, packaging checks, etc.
+`/tmp/grok-goal-d84b62e44b40/implementer/` — e1_reverify*, packaging_*, texture_slice.txt, nameplate_real_0a.txt, etc.
