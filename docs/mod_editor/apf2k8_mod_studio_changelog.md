@@ -30,6 +30,8 @@
   - **Bulk audio complete catalog + original banks** never silent-gray (busy/load)
   - **Export matching sounds / Export decoded rows** never silent-gray
   - **Stadium Reset View + Export scene ZIP** never silent-gray
+  - **Roster Replace Name / Revert Name** never silent-gray
+  - **Audio Play** never silent-gray (bank/unsupported rows explain)
 - **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
   Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
   embedded TXTR fail closed after **45s** with re-select / Export-raw guidance

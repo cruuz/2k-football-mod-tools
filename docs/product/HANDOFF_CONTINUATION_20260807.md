@@ -185,3 +185,9 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 - G1/G2 runtime unproved; freehand not Editable
 - monorepo full pytest hang residual (batched suites)
 - residual intentional grays: cancel-in-flight, busy workers, some form inputs
+
+
+## Update [2026-08-08T05:47:03-04:00]
+- Roster Replace/Revert + Play never-gray shipped
+- Dual packaging still green; main **295** ahead origin
+- Hour gate still open (~8.8h wall stamp span)
