@@ -3589,9 +3589,10 @@ class StudioMainWindow(QMainWindow):
         revert_button.clicked.connect(self._revert_stadium_texture)
         for button in (export_button, replace_button, revert_button):
             button.setEnabled(False)
-        # The model export follows the scene selection, not the texture one.
-        export_scene_button.setEnabled(False)
-        import_scene_button.setEnabled(False)
+        # Model export/import stay clickable so blocked states are never silent gray;
+        # tooltips + disableReason + click explain Load XISO / pick scene.
+        export_scene_button.setEnabled(True)
+        import_scene_button.setEnabled(True)
         self._stadium_export_scene_button = export_scene_button
         self._stadium_import_scene_button = import_scene_button
         if not bool(getattr(self.facade, "stadium_available", False)):
@@ -4894,41 +4895,46 @@ class StudioMainWindow(QMainWindow):
         ), None)
         export_scene = getattr(self, "_stadium_export_scene_button", None)
         if export_scene is not None:
-            can_export = ready and scene is not None
-            export_scene.setEnabled(can_export)
+            # Stay clickable when blocked — never a silent gray Import/Export.
+            export_scene.setEnabled(True)
             if not ready:
-                export_scene.setToolTip(
+                tip = (
                     "Load your NFL 2K5 XISO and open Stadium Studio before exporting a model."
                 )
             elif scene is None:
-                export_scene.setToolTip(
-                    "Select a stadium scene in the list first, then export its glTF."
-                )
+                tip = "Select a stadium scene in the list first, then export its glTF."
             else:
-                export_scene.setToolTip(
+                tip = (
                     "Save the selected stadium as a glTF you can open in Blender. "
                     "The buffer is written beside it; edit positions only for re-import."
                 )
+            export_scene.setToolTip(tip)
+            export_scene.setProperty(
+                "disableReason", "" if (ready and scene is not None) else tip
+            )
         import_scene = getattr(self, "_stadium_import_scene_button", None)
         if import_scene is not None:
-            can_import = ready and scene is not None
-            import_scene.setEnabled(can_import)
+            import_scene.setEnabled(True)
             if not ready:
-                import_scene.setToolTip(
+                tip = (
                     "Load your NFL 2K5 XISO first — Import edited model needs a prepared "
                     "Stadium Studio scene. Topology must match the export."
                 )
             elif scene is None:
-                import_scene.setToolTip(
+                tip = (
                     "Select a stadium scene first. Import is same-topology position-only; "
                     "vertex count and faces must match the export."
                 )
             else:
-                import_scene.setToolTip(
+                tip = (
                     "Import the matching glTF after moving vertices in Blender. Vertex "
                     "count and faces must stay unchanged; Mod Studio keeps the game's "
                     "original UV, material, collision, selector, and other stream bytes."
                 )
+            import_scene.setToolTip(tip)
+            import_scene.setProperty(
+                "disableReason", "" if (ready and scene is not None) else tip
+            )
         state.export_button.setEnabled(ready and texture is not None)
         editable = texture is not None and texture.access_status == STADIUM_EDITABLE
         state.replace_button.setEnabled(ready and editable)
@@ -4978,14 +4984,31 @@ class StudioMainWindow(QMainWindow):
     def _export_stadium_scene_gltf(self) -> None:
         """Save the selected stadium model so it can be opened in Blender."""
 
+        export_scene = getattr(self, "_stadium_export_scene_button", None)
+        reason = ""
+        if export_scene is not None:
+            reason = str(export_scene.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Export stadium model", reason)
+            return
         state = self._stadium_browser
         if state is None or state.selected_scene_id is None:
+            QMessageBox.information(
+                self,
+                "Export stadium model",
+                "Select a stadium scene in the list first, then export its glTF.",
+            )
             return
         scene_id = state.selected_scene_id
         scene = next(
             (row for row in state.scenes if row.scene_id == scene_id), None
         )
         if scene is None:
+            QMessageBox.information(
+                self,
+                "Export stadium model",
+                "Select a stadium scene in the list first, then export its glTF.",
+            )
             return
 
         suggested = f"stadium-{scene.outer_index}-{scene.chunk_index}.gltf"
@@ -5045,8 +5068,20 @@ class StudioMainWindow(QMainWindow):
     def _import_stadium_scene_gltf(self) -> None:
         """Stage a bounded vertex-only edit from the selected scene's glTF."""
 
+        import_scene = getattr(self, "_stadium_import_scene_button", None)
+        reason = ""
+        if import_scene is not None:
+            reason = str(import_scene.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Import edited model", reason)
+            return
         state = self._stadium_browser
         if state is None or state.selected_scene_id is None:
+            QMessageBox.information(
+                self,
+                "Import edited model",
+                "Select a stadium scene first (same-topology position import).",
+            )
             return
         scene = next((
             row for row in state.scenes
