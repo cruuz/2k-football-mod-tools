@@ -360,10 +360,16 @@ class CustomTeamAppearancePanel(QFrame):
             self.preset_button,
         ):
             widget.setEnabled(ready)
-        # Never silent-gray Stage/Revert
+        # Never silent-gray Stage/Revert/Write-raw
         self.stage_button.setEnabled(True)
         self.revert_button.setEnabled(True)
-        self.write_raw_button.setEnabled(False)
+        project_write_tip = (
+            "Write verified raw save is for raw Roster.ROS mode. "
+            "In project mode use Stage appearance + Build instead."
+        )
+        self.write_raw_button.setEnabled(True)
+        self.write_raw_button.setToolTip(project_write_tip)
+        self.write_raw_button.setProperty("disableReason", project_write_tip)
         if not ready:
             self.stage_button.setToolTip(load_tip)
             self.stage_button.setProperty("disableReason", load_tip)
@@ -406,9 +412,32 @@ class CustomTeamAppearancePanel(QFrame):
         writable = bool(document is not None and document.write_supported and document.slots)
         for widget in (self.slot, self.banks, self.preset_button):
             widget.setEnabled(writable)
-        self.stage_button.setEnabled(False)
-        self.revert_button.setEnabled(False)
-        self.write_raw_button.setEnabled(writable)
+        # Never silent-gray: Stage/Revert in raw mode teach project-vs-raw walls.
+        raw_stage_tip = (
+            "Raw Roster.ROS mode uses Write verified raw save (or patched handoff), "
+            "not project Stage. Switch to project Custom Team Appearance for Stage/Build."
+        )
+        self.stage_button.setEnabled(True)
+        self.stage_button.setToolTip(raw_stage_tip)
+        self.stage_button.setProperty("disableReason", raw_stage_tip)
+        self.revert_button.setEnabled(True)
+        self.revert_button.setToolTip(raw_stage_tip)
+        self.revert_button.setProperty("disableReason", raw_stage_tip)
+        write_tip = (
+            "Write a verified private raw save copy (never mutates the opened file)."
+            if writable
+            else (
+                "Choose a raw Roster.ROS after accepting/saving a custom team. "
+                "New/Create Team is a scratch editor and is not the runtime proof route."
+                if document is None
+                else "This raw document has no writable user-team slots 32–39."
+            )
+        )
+        self.write_raw_button.setEnabled(True)
+        self.write_raw_button.setToolTip(write_tip)
+        self.write_raw_button.setProperty(
+            "disableReason", "" if writable else write_tip
+        )
         self.extract_raw_button.setEnabled(
             bool(document is not None and document.signed_container)
         )
@@ -601,6 +630,16 @@ class CustomTeamAppearancePanel(QFrame):
         )
 
     def _write_raw_save(self) -> None:
+        reason = str(self.write_raw_button.property("disableReason") or "").strip()
+        if reason:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(
+                self,
+                "Cannot write raw save yet",
+                reason,
+            )
+            return
         document = self.raw_document
         if document is None or not document.write_supported:
             return

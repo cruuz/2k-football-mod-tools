@@ -396,8 +396,15 @@ class GameplayPanel(QWidget):
         except BaseException as exc:
             message = str(exc).strip() or exc.__class__.__name__
             self.status_label.setText(f"Gameplay findings unavailable: {message}")
-            self.export_json_button.setEnabled(False)
-            self.export_csv_button.setEnabled(False)
+            # Never silent-gray: exports stay clickable and teach the reload wall.
+            tip = (
+                f"Gameplay findings unavailable: {message}. "
+                "Reload after Load XISO succeeds, then export."
+            )
+            for button in (self.export_json_button, self.export_csv_button):
+                button.setEnabled(True)
+                button.setToolTip(tip)
+                button.setProperty("disableReason", tip)
             self.error_raised.emit(message)
 
     def _set_progress(self, stage: str, _completed: int, _total: int) -> None:
@@ -470,8 +477,12 @@ class GameplayPanel(QWidget):
             "Read-only map ready • 21 sliders • 17 Fantasy Draft weights • "
             f"{len(model.save_containers)} observed save containers • 5 franchise findings"
         )
-        self.export_json_button.setEnabled(True)
-        self.export_csv_button.setEnabled(True)
+        for button in (self.export_json_button, self.export_csv_button):
+            button.setEnabled(True)
+            button.setToolTip(
+                "Export the private, read-only gameplay inspection report."
+            )
+            button.setProperty("disableReason", "")
 
     def _show_franchise_details(self, row_index: int) -> None:
         if self.model is None or not 0 <= row_index < len(self.model.franchise_findings):
@@ -487,6 +498,15 @@ class GameplayPanel(QWidget):
         )
 
     def _choose_export(self, export_format: str) -> None:
+        button = (
+            self.export_json_button
+            if export_format == "json"
+            else self.export_csv_button
+        )
+        reason = str(button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Cannot export gameplay report yet", reason)
+            return
         suffix = ".json" if export_format == "json" else ".csv"
         label = "JSON document (*.json)" if export_format == "json" else "CSV table (*.csv)"
         filename, _ = QFileDialog.getSaveFileName(
