@@ -59,6 +59,14 @@ Inspector exports, visual master construction.
 Residual intentional locks: cancel-in-flight, busy workers, pagination, form
 fields (inputs), ratings-sheet import dialog Apply until conflicts cleared.
 
+### Never-silent-gray expansion wave (2026-08-08 late continuation)
+
+- **2K5 Menus Export JSON/CSV** — never silent-gray when named map fails
+- **2K5 Export Number** (current + historical roster) — never silent-gray
+- **2K5 Stadium texture** Export/Replace/Revert — never silent-gray at construction
+- **APF Place on helmet** — retail coverage teaches Full-shell-only (no silent gray)
+- **APF helmet placement Save** — out-of-canvas stays clickable; accept re-validates
+
 ### Hour gate (process)
 Multi-session WORKLOG wall stamp span tracked honestly in
 `docs/product/WORKLOG_20260807.md`. As of late continuation: ~8.3h wall; ≥10h

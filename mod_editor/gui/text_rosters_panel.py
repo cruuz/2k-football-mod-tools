@@ -1753,7 +1753,11 @@ class TextRosterPanel(QWidget):
         self.current_first.setEnabled(first.editable)
         self.current_last.setEnabled(last.editable)
         self.current_number.setEnabled(number.editable)
-        self.export_current_number_button.setEnabled(True)
+        self._lock_text_action(
+            self.export_current_number_button,
+            "Export this player's jersey number to a private .txt file.",
+            "",
+        )
         self._update_current_controls()
 
     def _clear_current_player(self) -> None:
@@ -1780,7 +1784,11 @@ class TextRosterPanel(QWidget):
         )
         self._lock_text_action(self.apply_current_button, tip, tip)
         self._lock_text_action(self.revert_current_button, tip, tip)
-        self.export_current_number_button.setEnabled(False)
+        export_tip = (
+            "Select a current-roster player first, then Export Number writes "
+            "the jersey number to a private .txt file."
+        )
+        self._lock_text_action(self.export_current_number_button, export_tip, export_tip)
 
     def _update_current_controls(self) -> None:
         row = self.selected_current_row
@@ -2002,6 +2010,10 @@ class TextRosterPanel(QWidget):
         self._status(f"Exported {asset.label} to {destination}.")
 
     def _export_current_number(self) -> None:
+        if self._explain_text_action(
+            self.export_current_number_button, "Export Number"
+        ):
+            return
         row = self.selected_current_row
         if row is None or self.catalog is None:
             return
@@ -2229,7 +2241,11 @@ class TextRosterPanel(QWidget):
         self.player_first.setEnabled(first.editable)
         self.player_last.setEnabled(last.editable)
         self.player_number.setEnabled(number.editable)
-        self.export_historical_number_button.setEnabled(True)
+        self._lock_text_action(
+            self.export_historical_number_button,
+            "Export this player's jersey number to a private .txt file.",
+            "",
+        )
         self._update_player_controls()
 
     def _clear_historical_player(self) -> None:
@@ -2254,7 +2270,13 @@ class TextRosterPanel(QWidget):
         )
         self._lock_text_action(self.apply_player_button, tip, tip)
         self._lock_text_action(self.revert_player_button, tip, tip)
-        self.export_historical_number_button.setEnabled(False)
+        export_tip = (
+            "Select a historical player first, then Export Number writes the "
+            "jersey number to a private .txt file."
+        )
+        self._lock_text_action(
+            self.export_historical_number_button, export_tip, export_tip
+        )
 
     def _update_player_controls(self) -> None:
         row = self.selected_historical_row
@@ -2458,6 +2480,10 @@ class TextRosterPanel(QWidget):
         )
 
     def _export_historical_number(self) -> None:
+        if self._explain_text_action(
+            self.export_historical_number_button, "Export Number"
+        ):
+            return
         row = self.selected_historical_row
         if row is None or self.catalog is None:
             return

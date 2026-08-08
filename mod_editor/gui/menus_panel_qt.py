@@ -226,6 +226,14 @@ class MenusPanel(QWidget):
         header.addLayout(titles, 1)
         self.export_json_button = QPushButton("Export JSON")
         self.export_csv_button = QPushButton("Export CSV")
+        # Never silent-gray: exports stay clickable; disableReason teaches walls.
+        boot_tip = (
+            "Named Main Menu findings are still loading. Wait for the map, then export."
+        )
+        for button in (self.export_json_button, self.export_csv_button):
+            button.setEnabled(True)
+            button.setToolTip(boot_tip)
+            button.setProperty("disableReason", boot_tip)
         header.addWidget(self.export_json_button)
         header.addWidget(self.export_csv_button)
         root.addLayout(header)
@@ -255,6 +263,19 @@ class MenusPanel(QWidget):
         root.addWidget(self.status_label)
         self.export_json_button.clicked.connect(lambda: self._choose_export("json"))
         self.export_csv_button.clicked.connect(lambda: self._choose_export("csv"))
+
+    def _lock_export(self, button: QPushButton, tip: str, block: str = "") -> None:
+        """Keep export clickable; non-empty block teaches why export is blocked."""
+        button.setEnabled(True)
+        button.setToolTip(tip if tip else block)
+        button.setProperty("disableReason", block)
+
+    def _export_blocked(self, button: QPushButton, title: str) -> bool:
+        reason = str(button.property("disableReason") or "").strip()
+        if not reason:
+            return False
+        QMessageBox.information(self, title, reason)
+        return True
 
     def _build_named_page(self) -> QWidget:
         page = QWidget()
@@ -306,8 +327,12 @@ class MenusPanel(QWidget):
         except BaseException as exc:
             message = str(exc).strip() or exc.__class__.__name__
             self._set_status(f"Named Main Menu findings unavailable: {message}")
-            self.export_json_button.setEnabled(False)
-            self.export_csv_button.setEnabled(False)
+            tip = (
+                f"Named Main Menu findings are unavailable: {message}. "
+                "Load a retail-free dump that exposes the named menu map, then retry."
+            )
+            self._lock_export(self.export_json_button, tip, tip)
+            self._lock_export(self.export_csv_button, tip, tip)
             self.error_raised.emit(message)
 
     def _set_progress(self, stage: str, _completed: int, _total: int) -> None:
@@ -379,10 +404,23 @@ class MenusPanel(QWidget):
             f"Named map ready • {len(model.transitions)} transitions • "
             f"{len(model.layouts)} layout relationships • {len(model.blockers)} limitations"
         )
-        self.export_json_button.setEnabled(True)
-        self.export_csv_button.setEnabled(True)
+        ready_tip = (
+            "Export the named Main Menu inspection (read-only report). "
+            "Menu replacement remains disabled until layout/write semantics are bounded."
+        )
+        self._lock_export(self.export_json_button, ready_tip, "")
+        self._lock_export(self.export_csv_button, ready_tip, "")
 
     def _choose_export(self, export_format: str) -> None:
+        button = (
+            self.export_json_button
+            if export_format == "json"
+            else self.export_csv_button
+        )
+        if self._export_blocked(
+            button, f"Export Named Main Menu {export_format.upper()}"
+        ):
+            return
         suffix = ".json" if export_format == "json" else ".csv"
         label = "JSON document (*.json)" if export_format == "json" else "CSV table (*.csv)"
         filename, _ = QFileDialog.getSaveFileName(

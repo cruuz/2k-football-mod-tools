@@ -3623,12 +3623,27 @@ class StudioMainWindow(QMainWindow):
         import_scene_button.clicked.connect(self._import_stadium_scene_gltf)
         replace_button.clicked.connect(self._choose_stadium_texture_replacement)
         revert_button.clicked.connect(self._revert_stadium_texture)
+        # Never silent-gray texture export/replace/revert at construction either.
+        tex_boot = (
+            "Load your NFL 2K5 XISO, open Stadium Studio, and select a surface "
+            "texture first. Buttons stay clickable so blocked states explain themselves."
+        )
         for button in (export_button, replace_button, revert_button):
-            button.setEnabled(False)
+            button.setEnabled(True)
+            button.setToolTip(tex_boot)
+            button.setProperty("disableReason", tex_boot)
         # Model export/import stay clickable so blocked states are never silent gray;
         # tooltips + disableReason + click explain Load XISO / pick scene.
+        model_boot = (
+            "Load your NFL 2K5 XISO and select a stadium scene first. "
+            "Import/Export stay clickable so blocked states explain themselves."
+        )
         export_scene_button.setEnabled(True)
+        export_scene_button.setToolTip(model_boot)
+        export_scene_button.setProperty("disableReason", model_boot)
         import_scene_button.setEnabled(True)
+        import_scene_button.setToolTip(model_boot)
+        import_scene_button.setProperty("disableReason", model_boot)
         self._stadium_export_scene_button = export_scene_button
         self._stadium_import_scene_button = import_scene_button
         if not bool(getattr(self.facade, "stadium_available", False)):

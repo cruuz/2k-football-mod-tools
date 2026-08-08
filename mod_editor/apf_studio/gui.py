@@ -4255,8 +4255,26 @@ class ApfTeamLogoPanel(QFrame):
         self.coverage_warning.setVisible(full_shell)
         self.import_mode_label.setVisible(full_shell)
         self.import_mode.setVisible(full_shell)
-        self.import_mode.setEnabled(self.facade.source_ready and full_shell)
-        self.place_button.setEnabled(self.facade.source_ready and full_shell)
+        ready = bool(self.facade.source_ready)
+        self.import_mode.setEnabled(ready and full_shell)
+        # Never silent-gray: Place stays clickable; disableReason teaches retail wall.
+        place_tip = (
+            "For Full-shell coverage: drag the logo on a labeled front/crown/rear "
+            "canvas, then adjust width, height, and rotation before staging."
+            if ready and full_shell
+            else (
+                "Select Full-shell coverage first, then Place on helmet. "
+                "Retail side-decal profile does not use placement."
+                if ready
+                else "Load your APF game first, then choose Full-shell and Place."
+            )
+        )
+        self.place_button.setEnabled(True)
+        self.place_button.setToolTip(place_tip)
+        self.place_button.setProperty(
+            "disableReason",
+            "" if (ready and full_shell) else place_tip,
+        )
         if not full_shell and self.fit_visible_mask.isChecked():
             self.fit_visible_mask.blockSignals(True)
             self.fit_visible_mask.setChecked(False)

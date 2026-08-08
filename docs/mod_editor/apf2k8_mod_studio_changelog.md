@@ -34,6 +34,10 @@
   - **Audio Play** never silent-gray (bank/unsupported rows explain)
   - **Audio PCM template / Replace from audio / XMA Replace / Revert** never silent-gray
   - **Audio shortlist construction** never silent-gray (toggle/page/match/clear/review/move/export)
+  - **Team Logo Place on helmet** never silent-gray under Retail coverage —
+    disableReason teaches Full-shell-only placement (coverage-changed path matched)
+  - **Helmet logo placement Save** never silent-gray when art is out of canvas —
+    status + accept re-validation teach the wall
 - **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
   Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
   embedded TXTR fail closed after **45s** with re-select / Export-raw guidance

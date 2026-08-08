@@ -41,6 +41,12 @@ build path.
 - **Audio soundtrack quick-view** never silent-gray.
 - **Audio copy pack path** never silent-gray.
 - **Gameplay Inspector Export JSON/CSV** never silent-gray on inspection failure.
+- **Menus & UI Export JSON/CSV** never silent-gray when the named Main Menu map
+  fails to load — click teaches the wall (read-only inspector; no menu rewrite).
+- **Text & Rosters Export Number** (current + historical) never silent-gray —
+  empty selection teaches “select a player first.”
+- **Stadium Studio surface Export/Replace/Revert** never silent-gray at
+  construction (boot disableReason before first texture selection).
 
 ### Honesty
 

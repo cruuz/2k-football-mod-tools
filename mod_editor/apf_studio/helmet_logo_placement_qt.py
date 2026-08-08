@@ -346,26 +346,40 @@ class HelmetLogoPlacementDialog(QDialog):
             result = render_placement(self._source_rgba, placement)
         except HelmetLogoPlacementError as exc:
             self._result = None
-            self.status.setText(f"Move art inside the canvas before staging: {exc}")
+            tip = f"Move art inside the canvas before staging: {exc}"
+            self.status.setText(tip)
             self.status.setStyleSheet("color: #ff8f8f;")
-            self.buttons.button(QDialogButtonBox.Save).setEnabled(False)
+            # Never silent-gray: Save stays clickable; accept() re-validates and teaches.
+            save = self.buttons.button(QDialogButtonBox.Save)
+            save.setEnabled(True)
+            save.setToolTip(tip)
+            save.setProperty("disableReason", tip)
             return
         self._result = result
         x_min, y_min, x_max, y_max = result.active_bbox
-        self.status.setText(
+        ready = (
             f"Ready • exact 512×512 • active bounds x {x_min}–{x_max}, "
             f"y {y_min}–{y_max} • {result.active_texels:,} mask texels"
         )
+        self.status.setText(ready)
         self.status.setStyleSheet("color: #70d6a2;")
-        self.buttons.button(QDialogButtonBox.Save).setEnabled(True)
+        save = self.buttons.button(QDialogButtonBox.Save)
+        save.setEnabled(True)
+        save.setToolTip("Stage this exact 512×512 helmet logo placement.")
+        save.setProperty("disableReason", "")
 
     def accept(self) -> None:
         try:
             self._result = render_placement(self._source_rgba, self.placement)
         except HelmetLogoPlacementError as exc:
             self._result = None
-            self.status.setText(str(exc))
+            tip = str(exc)
+            self.status.setText(tip)
             self.status.setStyleSheet("color: #ff8f8f;")
+            save = self.buttons.button(QDialogButtonBox.Save)
+            save.setEnabled(True)
+            save.setToolTip(tip)
+            save.setProperty("disableReason", tip)
             return
         super().accept()
 

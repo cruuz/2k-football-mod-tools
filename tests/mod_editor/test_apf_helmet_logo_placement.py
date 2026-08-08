@@ -357,7 +357,12 @@ class HelmetLogoPlacementPanelTests(unittest.TestCase):
             panel = self._panel()
             try:
                 self.assertEqual(panel.coverage.currentData(), gui.RETAIL_CREST_PROFILE)
-                self.assertFalse(panel.place_button.isEnabled())
+                # Never silent-gray: Place stays clickable; disableReason teaches retail.
+                self.assertTrue(panel.place_button.isEnabled())
+                self.assertTrue(
+                    str(panel.place_button.property("disableReason") or "").strip()
+                )
+                self.assertIn("Retail", panel.place_button.toolTip())
                 with mock.patch.object(gui, "place_helmet_logo") as place:
                     panel._stage_path(source)
                 place.assert_not_called()

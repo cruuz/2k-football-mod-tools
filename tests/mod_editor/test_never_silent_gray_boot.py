@@ -55,6 +55,53 @@ class NeverSilentGrayBootTests(unittest.TestCase):
             self.assertTrue(
                 str(panel.apply_team_button.property("disableReason") or "").strip()
             )
+            # Fixture may auto-select players (export ready). Clear → teach wall.
+            self.assertTrue(panel.export_current_number_button.isEnabled())
+            self.assertTrue(panel.export_historical_number_button.isEnabled())
+            panel._clear_current_player()
+            panel._clear_historical_player()
+            self.assertTrue(panel.export_current_number_button.isEnabled())
+            self.assertTrue(
+                str(
+                    panel.export_current_number_button.property("disableReason") or ""
+                ).strip()
+            )
+            self.assertTrue(panel.export_historical_number_button.isEnabled())
+            self.assertTrue(
+                str(
+                    panel.export_historical_number_button.property("disableReason")
+                    or ""
+                ).strip()
+            )
+        finally:
+            panel.deleteLater()
+            self.app.processEvents()
+
+    def test_2k5_menus_export_never_gray(self) -> None:
+        from pathlib import Path
+        from PyQt5.QtWidgets import QWidget
+        from mod_editor.gui.menus_panel_qt import MenusPanel
+
+        class _FailingMenuHost:
+            def inspect_main_menu(self, progress: object) -> object:
+                raise RuntimeError("no map")
+
+            def export_main_menu_inspection(
+                self, destination: Path, export_format: str, progress: object
+            ) -> Path:
+                raise RuntimeError("no map")
+
+        panel = MenusPanel(_FailingMenuHost(), raw_fallback=QWidget())
+        try:
+            self.assertTrue(panel.export_json_button.isEnabled())
+            self.assertTrue(panel.export_csv_button.isEnabled())
+            self.assertTrue(
+                str(panel.export_json_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(
+                str(panel.export_csv_button.property("disableReason") or "").strip()
+            )
+            self.assertIn("unavailable", panel.export_json_button.toolTip().lower())
         finally:
             panel.deleteLater()
             self.app.processEvents()
