@@ -2258,15 +2258,22 @@ class AssetBrowser(QWidget):
                 )
                 self.replace_button.setToolTip(tip)
                 self.replace_button.setProperty("disableReason", tip)
-            self.revert_button.setVisible(editable_png)
-            self.revert_button.setEnabled(editable_png and modified)
-            self.revert_button.setProperty("disableReason", "")
-        if not self.browse_export_only:
-            self.revert_button.setToolTip(
-                f"Restore the original {asset.name} texture."
-                if modified
-                else f"Nothing to revert—{asset.name} is still original."
-            )
+            self.revert_button.setVisible(True)
+            # Never silent-gray: stay clickable; non-editable/unmodified teach.
+            if editable_png and modified:
+                rev_tip = f"Restore the original {asset.name} texture."
+                rev_block = ""
+            elif not editable_png:
+                rev_tip = rev_block = (
+                    f"{asset.name} is not an editable PNG slot in this browser."
+                )
+            else:
+                rev_tip = rev_block = (
+                    f"Nothing to revert—{asset.name} is still original."
+                )
+            self.revert_button.setEnabled(True)
+            self.revert_button.setToolTip(rev_tip)
+            self.revert_button.setProperty("disableReason", rev_block)
         self._preview_token += 1
         token = self._preview_token
         if modified and editable_png:
@@ -2528,6 +2535,10 @@ class AssetBrowser(QWidget):
         )
 
     def _revert_selected(self) -> None:
+        reason = str(self.revert_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Nothing to revert", reason)
+            return
         asset = self._selected_asset()
         action = _asset_product_action(asset) if asset is not None else None
         if asset is None or action is None:
@@ -2943,12 +2954,16 @@ class UniformStudioPage(QWidget):
             f"Replace {asset.title} with any image — resized to "
             f"{asset.width}×{asset.height} (Contain/Cover/Stretch)."
         )
-        self.revert_button.setEnabled(modified)
-        self.revert_button.setToolTip(
-            "Restore the original texture for this slot."
-            if modified
-            else "Nothing to revert—this texture is still original."
-        )
+        if modified:
+            rev_tip = "Restore the original texture for this slot."
+            rev_block = ""
+        else:
+            rev_tip = rev_block = (
+                "Nothing to revert—this texture is still original."
+            )
+        self.revert_button.setEnabled(True)
+        self.revert_button.setToolTip(rev_tip)
+        self.revert_button.setProperty("disableReason", rev_block)
         self.preview.setAcceptDrops(True)
         self._preview_token += 1
         token = self._preview_token
@@ -3013,8 +3028,10 @@ class UniformStudioPage(QWidget):
         self.replace_button.setToolTip(load_tip)
         self.export_button.setProperty("disableReason", load_tip)
         self.replace_button.setProperty("disableReason", load_tip)
-        self.revert_button.setEnabled(False)
-        self.revert_button.setToolTip("Nothing to revert—choose a modified texture first.")
+        revert_tip = "Nothing to revert—choose a modified texture first."
+        self.revert_button.setEnabled(True)
+        self.revert_button.setToolTip(revert_tip)
+        self.revert_button.setProperty("disableReason", revert_tip)
 
     def _export_selected(self) -> None:
         reason = str(self.export_button.property("disableReason") or "").strip()
@@ -3129,6 +3146,10 @@ class UniformStudioPage(QWidget):
         )
 
     def _revert_selected(self) -> None:
+        reason = str(self.revert_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Nothing to revert", reason)
+            return
         asset = self._selected_asset()
         if asset is None:
             return
@@ -5574,7 +5595,9 @@ class ApfTextLogoPanel(QFrame):
             self.import_button.setToolTip(load_tip)
             self.export_button.setProperty("disableReason", load_tip)
             self.import_button.setProperty("disableReason", load_tip)
-            self.revert_button.setEnabled(False)
+            self.revert_button.setEnabled(True)
+            self.revert_button.setToolTip(load_tip)
+            self.revert_button.setProperty("disableReason", load_tip)
             return
         assets = self.facade.uniform_assets("textlogo")
         if len(assets) != 206 or [asset.asset_index for asset in assets] != list(range(206)):
@@ -5591,7 +5614,9 @@ class ApfTextLogoPanel(QFrame):
             self.import_button.setToolTip(catalog_tip)
             self.export_button.setProperty("disableReason", catalog_tip)
             self.import_button.setProperty("disableReason", catalog_tip)
-            self.revert_button.setEnabled(False)
+            self.revert_button.setEnabled(True)
+            self.revert_button.setToolTip(catalog_tip)
+            self.revert_button.setProperty("disableReason", catalog_tip)
             return
         self._assets = {asset.asset_index: asset for asset in assets}
         self.preview.setAcceptDrops(True)
@@ -5627,12 +5652,14 @@ class ApfTextLogoPanel(QFrame):
             f"{asset.outer_index} / inner {asset.inner_index} · selector owners: "
             f"{owner_text}"
         )
-        self.revert_button.setEnabled(modified)
-        self.revert_button.setToolTip(
-            "Remove this staged wordmark from the project."
-            if modified
-            else "Nothing to revert for this wordmark."
-        )
+        if modified:
+            rev_tip = "Remove this staged wordmark from the project."
+            rev_block = ""
+        else:
+            rev_tip = rev_block = "Nothing to revert for this wordmark."
+        self.revert_button.setEnabled(True)
+        self.revert_button.setToolTip(rev_tip)
+        self.revert_button.setProperty("disableReason", rev_block)
         modification = self.facade.require_session().modification(asset.asset_id)
         if modification is not None:
             self.preview.set_image(modification.replacement_path)
@@ -5823,6 +5850,10 @@ class ApfTextLogoPanel(QFrame):
         )
 
     def _revert(self) -> None:
+        reason = str(self.revert_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Nothing to revert", reason)
+            return
         asset = self.current_asset()
         if asset is None:
             return
