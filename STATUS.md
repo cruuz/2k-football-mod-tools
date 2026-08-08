@@ -15,7 +15,7 @@ soundtrack album, Team Logo master, reserve Assign, **Menus Export**, **Export N
 **Field Art Stock NFL endzones button**, helmet Place/Save), **45s preview watchdogs**
 (AssetBrowser/Uniform/Wordmark/stadium package), Crib drop-parity hang fixed.
 Living WORKLOG: `docs/product/WORKLOG_20260807.md`. E2 depth includes
-playbook community legend + G1 donor tip + empty search teaching. **≥10h hour-gate still accumulating** (~9.4h multi-session wall stamp span; not claimed). Broader
+playbook community legend + G1 donor tip + empty search teaching. **≥10h hour-gate still accumulating** (~9.7h multi-session wall stamp span; not claimed). Broader
 suite evidence is **batched** (monorepo single-run hang residual; APF audio GUI 32p
 in 8-at-a-time batches). — do not treat this note as a sealed public release.
 
