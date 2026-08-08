@@ -12424,15 +12424,24 @@ class InspectorBrowser(QFrame):
             if album_available
             else "Soundtrack album"
         )
-        self.soundtrack_album_button.setEnabled(
-            loaded and album_available and not self._audio_review_mode
-        )
-        self.soundtrack_album_button.setToolTip(
+        album_ready = loaded and album_available and not self._audio_review_mode
+        album_tip = (
             "Return to the complete audio browser with its filters, page, and selection intact."
             if self._soundtrack_album_mode
             else "Open the 15 bank-indexed soundtrack tracks; stereo masters are the default and mono companions remain one selector away."
             if album_available
-            else "This source does not expose the exact proved pair: 15 jukeboxmusic stereo streams and 15 jukebox22 mono companions."
+            else (
+                "Return to the audio browser first (exit shortlist review)."
+                if self._audio_review_mode
+                else "Load a supported APF game first."
+                if not loaded
+                else "This source does not expose the exact proved pair: 15 jukeboxmusic stereo streams and 15 jukebox22 mono companions."
+            )
+        )
+        self.soundtrack_album_button.setEnabled(True)
+        self.soundtrack_album_button.setToolTip(album_tip)
+        self.soundtrack_album_button.setProperty(
+            "disableReason", "" if album_ready else album_tip
         )
         show_album_context = self._soundtrack_album_mode and not self._audio_review_mode
         self.soundtrack_version.setVisible(show_album_context)
@@ -12804,6 +12813,16 @@ class InspectorBrowser(QFrame):
         self.source_filter.showPopup()
 
     def _toggle_soundtrack_album(self) -> None:
+        reason = str(
+            self.soundtrack_album_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot open soundtrack album yet",
+                reason,
+            )
+            return
         if not self.audio_mode or self.model is None:
             return
         if self._soundtrack_album_mode:
