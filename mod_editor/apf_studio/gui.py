@@ -5434,6 +5434,17 @@ class ApfTextLogoPanel(QFrame):
             if token == self._preview_token and self.current_asset() == asset:
                 self.preview.set_image(Path(str(result)))
 
+        def _wordmark_preview_watchdog() -> None:
+            if token != self._preview_token:
+                return
+            if str(self.preview.property("previewState") or "") != "loading":
+                return
+            self.preview.set_error(
+                f"Wordmark {asset.asset_index}: preview still preparing after 45s. "
+                "Re-select the slot or Export current PNG."
+            )
+
+        QTimer.singleShot(45_000, _wordmark_preview_watchdog)
         self.run_task(
             f"Preparing wordmark {asset.asset_index}",
             lambda progress: self.facade.preview_uniform(asset.asset_id, progress),
