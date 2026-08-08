@@ -22,7 +22,13 @@ the maintainer's and CI, runs exactly what it ran before.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
+
+# Headless CI / monorepo GUI tests: offscreen Qt avoids modal dialogs and
+# display-server hangs. Individual modules may still set this; setdefault keeps
+# an explicit QT_QPA_PLATFORM from the invoker.
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 try:
     import pytest

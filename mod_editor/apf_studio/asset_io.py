@@ -243,7 +243,11 @@ class ApfAssetIO:
                 f"{item.name}: PNG preview failed ({detail}). "
                 "Export the exact raw TXTR parts instead, or pick a format "
                 "already supported for PNG (8, 1_5_5_5, 5_6_5, 8_8_8_8, 8_8, "
-                "4_4_4_4, DXT1/2_3/4_5)."
+                "4_4_4_4, DXT1/2_3/4_5, DXN helmet+namefont base-only, "
+                "format-32 cubemap face-0, linear untiled uncompressed + DXT). "
+                "If this stays on “Preparing preview…”, re-select the row or "
+                "search by asset name — a PORTME format will show this error "
+                "instead of hanging blank."
             ) from exc
         self._write_png_cache(destination, width, height, rgba)
         return destination
