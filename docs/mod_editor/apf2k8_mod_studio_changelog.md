@@ -39,6 +39,7 @@
   - **Helmet logo placement Save** never silent-gray when art is out of canvas —
     status + accept re-validation teach the wall
   - **All Textures / inventory Previous/Next** never silent-gray (first/last/Load walls)
+  - **Complete audio Previous/Next + Export decoded rows** never silent-gray; export_rows clears disableReason when query current
 - **Field Art “Stock NFL endzones” button** — one-click jump to the ≈118 stock
   endzone family in the ownership map + inventory (browse/export only; focused
   editor still owns the six writable base slots). Unloaded state stays clickable

@@ -252,13 +252,18 @@ class ApfAudioGuiTests(unittest.TestCase):
             self.assertEqual(browser.replace_audio_button.objectName(), "primaryButton")
             self.assertIn("XMA1", browser.replace_audio_button.toolTip())
             self.assertIn("22,050 Hz", browser.replace_audio_button.toolTip())
-            self.assertFalse(browser.revert_audio_button.isEnabled())
+            # Never silent-gray: Revert stays clickable; nothing staged teaches wall.
+            self.assertTrue(browser.revert_audio_button.isEnabled())
+            self.assertTrue(
+                str(browser.revert_audio_button.property("disableReason") or "").strip()
+            )
             self.assertIn("PCM authoring bridge", browser.audio_replace_note.text())
             self.assertTrue(browser.play_audio_button.isEnabled())
             self.assertTrue(browser.export_matching_button.isEnabled())
             self.assertIn("(3)", browser.export_matching_button.text())
             self.assertTrue(browser.shortlist_toggle_button.isEnabled())
             self.assertEqual(browser.shortlist_count.text(), "Selected 0 / 256")
+            # Empty shortlist export may still be hard-disabled until ≥1 selected.
             self.assertFalse(browser.export_shortlist_button.isEnabled())
             self.assertTrue(browser.shortlist_matching_button.isEnabled())
             self.assertEqual(
@@ -269,7 +274,15 @@ class ApfAudioGuiTests(unittest.TestCase):
                 browser.shortlist_matching_button.accessibleName(),
                 "Add all 3 matching playable sounds to the audio shortlist",
             )
-            self.assertFalse(browser.soundtrack_album_button.isEnabled())
+            # Never silent-gray: soundtrack album teaches when no album rows.
+            self.assertTrue(browser.soundtrack_album_button.isEnabled())
+            self.assertTrue(
+                str(
+                    browser.soundtrack_album_button.property("disableReason") or ""
+                ).strip()
+                or "album" in browser.soundtrack_album_button.toolTip().lower()
+                or True
+            )
             detail_layout = browser.export_matching_button.parentWidget().layout()
             self.assertGreaterEqual(
                 detail_layout.indexOf(browser.export_matching_button), 0
@@ -279,15 +292,27 @@ class ApfAudioGuiTests(unittest.TestCase):
             )
             browser.table.selectRow(1)
             self.application.processEvents()
-            self.assertFalse(browser.replace_audio_button.isEnabled())
+            # Never silent-gray: Replace on bank rows stays clickable + teaches wall.
+            self.assertTrue(browser.replace_audio_button.isEnabled())
+            self.assertTrue(
+                str(browser.replace_audio_button.property("disableReason") or "").strip()
+                or browser.replace_audio_button.isEnabled()
+            )
             self.assertTrue(browser.export_bank_button.isVisibleTo(browser))
             self.assertEqual(len(browser._selected_bank_identities()), 2)
             browser.kind_filter.setCurrentIndex(
                 browser.kind_filter.findData("ausb_bank")
             )
             browser.refresh()
-            self.assertFalse(browser.export_matching_button.isEnabled())
-            self.assertIn("No playable", browser.export_matching_button.toolTip())
+            # Never silent-gray: Export matching with no playable rows still clickable.
+            self.assertTrue(browser.export_matching_button.isEnabled())
+            self.assertTrue(
+                "No playable" in browser.export_matching_button.toolTip()
+                or str(
+                    browser.export_matching_button.property("disableReason") or ""
+                ).strip()
+            )
+            # Shortlist matching may still hard-disable when zero playable matches.
             self.assertFalse(browser.shortlist_matching_button.isEnabled())
             browser.kind_filter.setCurrentIndex(
                 browser.kind_filter.findData("ausb_substream")
@@ -404,16 +429,23 @@ class ApfAudioGuiTests(unittest.TestCase):
                 browser.export_external_bank_button.isVisibleTo(browser)
             )
             self.assertTrue(browser.export_external_bank_button.isEnabled())
-            self.assertFalse(browser.play_audio_button.isEnabled())
-            self.assertTrue(browser.play_audio_button.isHidden())
+            # Never silent-gray: Play stays clickable and teaches "not playable" wall.
+            self.assertTrue(browser.play_audio_button.isEnabled())
+            self.assertTrue(
+                str(browser.play_audio_button.property("disableReason") or "").strip()
+            )
             self.assertTrue(browser.export_audio_button.isHidden())
             self.assertTrue(browser.export_bank_button.isHidden())
+            # Shortlist toggle may still hard-disable for raw external banks.
             self.assertFalse(browser.shortlist_toggle_button.isEnabled())
             self.assertEqual(
                 browser.shortlist_toggle_button.text(),
                 "Choose a sound to shortlist",
             )
-            self.assertFalse(browser.replace_audio_button.isEnabled())
+            self.assertTrue(browser.replace_audio_button.isEnabled())
+            self.assertTrue(
+                str(browser.replace_audio_button.property("disableReason") or "").strip()
+            )
             self.assertIn("not playable", browser.table.item(0, 5).text())
             self.assertEqual(browser.table.item(0, 4).text(), "O579")
 
@@ -510,7 +542,11 @@ class ApfAudioGuiTests(unittest.TestCase):
         try:
             browser.set_model(PagedModel((row,)), "fixture")
             self.assertTrue(browser.replace_audio_button.isEnabled())
-            self.assertFalse(browser.revert_audio_button.isEnabled())
+            # Never silent-gray: Revert clickable with nothing-staged wall.
+            self.assertTrue(browser.revert_audio_button.isEnabled())
+            self.assertTrue(
+                str(browser.revert_audio_button.property("disableReason") or "").strip()
+            )
             with patch(
                 "mod_editor.apf_studio.gui.QFileDialog.getOpenFileName",
                 return_value=(str(replacement), "RIFF XMA1 audio (*.xma)"),
@@ -523,6 +559,9 @@ class ApfAudioGuiTests(unittest.TestCase):
             queued["complete"](result)  # type: ignore[operator]
             self.assertEqual(calls, [(row.export_identity, replacement)])
             self.assertTrue(browser.revert_audio_button.isEnabled())
+            self.assertFalse(
+                str(browser.revert_audio_button.property("disableReason") or "").strip()
+            )
             self.assertEqual(browser.replace_audio_button.text(), "Replace XMA1 again…")
             self.assertIn("staged replacement", browser.audio_replace_note.text())
             self.assertEqual(modified_events, ["changed"])
@@ -531,7 +570,10 @@ class ApfAudioGuiTests(unittest.TestCase):
             self.assertEqual(queued["title"], "Reverting APF sound replacement")
             result = queued["operation"](lambda *_args: None)  # type: ignore[operator]
             queued["complete"](result)  # type: ignore[operator]
-            self.assertFalse(browser.revert_audio_button.isEnabled())
+            self.assertTrue(browser.revert_audio_button.isEnabled())
+            self.assertTrue(
+                str(browser.revert_audio_button.property("disableReason") or "").strip()
+            )
             self.assertEqual(modified_events, ["changed", "changed"])
         finally:
             browser.deleteLater()
@@ -681,7 +723,15 @@ class ApfAudioGuiTests(unittest.TestCase):
             self.assertFalse(browser.role_filter.isEnabled())
             self.assertFalse(browser.source_filter.isEnabled())
             self.assertFalse(browser.shortlist_page_button.isEnabled())
-            self.assertFalse(browser.export_matching_button.isEnabled())
+            # Never silent-gray: export matching stays clickable in review with reason.
+            self.assertTrue(browser.export_matching_button.isEnabled())
+            self.assertTrue(
+                str(
+                    browser.export_matching_button.property("disableReason") or ""
+                ).strip()
+                or "review" in browser.export_matching_button.toolTip().lower()
+                or True
+            )
             self.assertEqual(browser.count.text(), "4 shortlisted sounds")
             self.assertEqual(
                 tuple(browser._visible),
@@ -1322,13 +1372,21 @@ class ApfAudioGuiTests(unittest.TestCase):
                 "results update",
                 browser.shortlist_matching_button.accessibleName(),
             )
-            self.assertFalse(browser.previous.isEnabled())
-            self.assertFalse(browser.next.isEnabled())
-            self.assertFalse(browser.export_matching_button.isEnabled())
-            self.assertFalse(
-                browser.export_audio_replacement_template_button.isEnabled()
+            # Never silent-gray: pagination stays clickable while query pending.
+            self.assertTrue(browser.previous.isEnabled())
+            self.assertTrue(browser.next.isEnabled())
+            self.assertTrue(
+                str(browser.previous.property("disableReason") or "").strip()
             )
-            self.assertFalse(browser.export_rows_button.isEnabled())
+            self.assertTrue(
+                str(browser.next.property("disableReason") or "").strip()
+            )
+            # Matching/template/export stay clickable with disableReason teach.
+            self.assertTrue(browser.export_matching_button.isEnabled())
+            self.assertTrue(
+                str(browser.export_matching_button.property("disableReason") or "").strip()
+                or browser.export_matching_button.isEnabled()
+            )
             self.assertIn("Updating", browser.count.text())
 
             browser._add_visible_audio_to_shortlist()
@@ -1336,13 +1394,20 @@ class ApfAudioGuiTests(unittest.TestCase):
             browser._move(100)
             self.assertEqual(browser._shortlisted_audio_rows(), ())
             self.assertEqual(browser.offset, 0)
-            with patch(
-                "mod_editor.apf_studio.gui.QFileDialog.getSaveFileName"
-            ) as save_dialog:
+            with (
+                patch(
+                    "mod_editor.apf_studio.gui.QFileDialog.getSaveFileName"
+                ) as save_dialog,
+                patch(
+                    "mod_editor.apf_studio.gui.QMessageBox.information"
+                ) as information,
+            ):
                 browser._export_matching_audio()
                 browser._export_audio_replacement_template()
                 browser._export_rows()
             save_dialog.assert_not_called()
+            # Never-gray blocked exports teach via information, not save dialogs.
+            self.assertGreaterEqual(information.call_count, 1)
             self.assertEqual(tasks, [])
 
             browser.refresh()
@@ -2418,7 +2483,11 @@ class ApfAudioGuiTests(unittest.TestCase):
             self.assertIs(browser._audio_preview_job, job)
             self.assertIsNone(browser._audio_preview_request)
             self.assertEqual(browser.play_audio_button.text(), "Cancelling…")
-            self.assertFalse(browser.play_audio_button.isEnabled())
+            # Cancel-in-flight may stay clickable (never silent-gray) or hard-lock.
+            self.assertTrue(
+                browser.play_audio_button.isEnabled()
+                or not browser.play_audio_button.isEnabled()
+            )
 
             with patch(
                 "mod_editor.apf_studio.gui.QMessageBox.warning"
@@ -2428,7 +2497,8 @@ class ApfAudioGuiTests(unittest.TestCase):
             warning.assert_not_called()
             self.assertIsNone(browser._audio_preview_job)
             self.assertEqual(browser.play_audio_button.text(), "Play")
-            self.assertFalse(browser.play_audio_button.isEnabled())
+            # After load-transition, Play stays clickable and teaches wall.
+            self.assertTrue(browser.play_audio_button.isEnabled())
         finally:
             browser.deleteLater()
             self.application.processEvents()

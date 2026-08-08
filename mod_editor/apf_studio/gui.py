@@ -13016,17 +13016,57 @@ class InspectorBrowser(QFrame):
 
         self.count.setText("Updating audio results…")
         self.page.setText("Waiting for the new search and filters…")
-        self.previous.setEnabled(False)
-        self.next.setEnabled(False)
-        tip = "Load a supported APF game first, then export decoded inspector rows."
-
+        pending_tip = (
+            "Wait for search/filters to finish updating results, then page."
+        )
+        for button in (self.previous, self.next):
+            button.setEnabled(True)
+            button.setToolTip(pending_tip)
+            button.setProperty("disableReason", pending_tip)
+        rows_tip = (
+            "Wait for search/filters to finish updating results, then export "
+            "decoded rows."
+        )
         self.export_rows_button.setEnabled(True)
-
-        self.export_rows_button.setToolTip(tip)
-
-        self.export_rows_button.setProperty("disableReason", tip)
+        self.export_rows_button.setToolTip(rows_tip)
+        self.export_rows_button.setProperty("disableReason", rows_tip)
         self._update_matching_audio_action()
         self._update_audio_shortlist_actions()
+
+    def _sync_inspector_pagination(
+        self, *, previous_available: bool, next_available: bool, ready: bool
+    ) -> None:
+        """Never silent-gray Previous/Next — teach first/last/pending walls."""
+
+        if not ready:
+            tip = (
+                "Wait for search/filters to finish updating results, then page."
+                if self.audio_mode
+                else "Load your APF game first, then page results."
+            )
+            for button in (self.previous, self.next):
+                button.setEnabled(True)
+                button.setToolTip(tip)
+                button.setProperty("disableReason", tip)
+            return
+        if previous_available:
+            self.previous.setEnabled(True)
+            self.previous.setToolTip("Show the previous page of results.")
+            self.previous.setProperty("disableReason", "")
+        else:
+            tip = "Already on the first page of matching results."
+            self.previous.setEnabled(True)
+            self.previous.setToolTip(tip)
+            self.previous.setProperty("disableReason", tip)
+        if next_available:
+            self.next.setEnabled(True)
+            self.next.setToolTip("Show the next page of results.")
+            self.next.setProperty("disableReason", "")
+        else:
+            tip = "Already on the last page of matching results."
+            self.next.setEnabled(True)
+            self.next.setToolTip(tip)
+            self.next.setProperty("disableReason", tip)
 
     def _restore_applied_audio_query_presentation(self) -> None:
         """Restore controls when fast type/erase returns to the shown query."""
@@ -13036,8 +13076,11 @@ class InspectorBrowser(QFrame):
         if self._applied_audio_page_text:
             self.page.setText(self._applied_audio_page_text)
         ready = self._audio_pagination_ready()
-        self.previous.setEnabled(self._applied_audio_previous_available and ready)
-        self.next.setEnabled(self._applied_audio_next_available and ready)
+        self._sync_inspector_pagination(
+            previous_available=self._applied_audio_previous_available,
+            next_available=self._applied_audio_next_available,
+            ready=ready,
+        )
         self.export_rows_button.setEnabled(self.model is not None)
         self._update_matching_audio_action()
         self._update_audio_shortlist_actions()
@@ -13321,12 +13364,13 @@ class InspectorBrowser(QFrame):
             self._applied_audio_previous_available = page.previous_offset is not None
             self._applied_audio_next_available = page.next_offset is not None
         pagination_ready = not self.audio_mode or self._audio_pagination_ready()
-        self.previous.setEnabled(
-            page.previous_offset is not None and pagination_ready
+        self._sync_inspector_pagination(
+            previous_available=page.previous_offset is not None,
+            next_available=page.next_offset is not None,
+            ready=pagination_ready,
         )
-        self.next.setEnabled(page.next_offset is not None and pagination_ready)
         if self.audio_mode:
-            self.export_rows_button.setEnabled(
+            rows_ready = bool(
                 self.model is not None
                 and (
                     self._audio_review_mode
@@ -13334,6 +13378,25 @@ class InspectorBrowser(QFrame):
                     or self._audio_catalog_query_is_current()
                 )
             )
+            # Never silent-gray: stay clickable; clear disableReason when ready.
+            self.export_rows_button.setEnabled(True)
+            if rows_ready:
+                rows_tip = (
+                    "Save every row matching the current search and filters as "
+                    "useful JSON or CSV."
+                )
+                self.export_rows_button.setToolTip(rows_tip)
+                self.export_rows_button.setProperty("disableReason", "")
+            else:
+                rows_tip = (
+                    "Wait for search/filters to finish updating results, then "
+                    "export decoded rows."
+                    if self.model is not None
+                    else "Load a supported APF game first, then export decoded "
+                    "inspector rows."
+                )
+                self.export_rows_button.setToolTip(rows_tip)
+                self.export_rows_button.setProperty("disableReason", rows_tip)
         self._update_matching_audio_action()
         self._update_audio_shortlist_actions()
         self._update_audio_workspace_controls()
@@ -13457,6 +13520,13 @@ class InspectorBrowser(QFrame):
         return values
 
     def _move(self, delta: int) -> None:
+        button = self.previous if delta < 0 else self.next
+        reason = str(button.property("disableReason") or "").strip()
+        if reason:
+            # Prefer status-style teach over modal hang risk under offscreen tests.
+            self.page.setText(reason)
+            self.page.setToolTip(reason)
+            return
         if self.audio_mode and not self._audio_pagination_ready():
             return
         self.offset = max(0, self.offset + delta)
@@ -17062,8 +17132,11 @@ class InspectorBrowser(QFrame):
         )
 
     def _update_buttons(self) -> None:
-        self.previous.setEnabled(False)
-        self.next.setEnabled(False)
+        self._sync_inspector_pagination(
+            previous_available=False,
+            next_available=False,
+            ready=False,
+        )
         self.page.setText("Page 0 of 0")
         if self.model is not None:
             rows_tip = (
