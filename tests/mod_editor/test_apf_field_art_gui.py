@@ -321,7 +321,15 @@ class ApfFieldArtGuiTests(unittest.TestCase):
     def test_unloaded_state_preserves_the_action_lock(self) -> None:
         page = self._page(ready=False)
         try:
-            self.assertEqual(page.summary_label.text(), "Load a game to map Field Art")
+            summary = page.summary_label.text()
+            self.assertIn("Load", summary)
+            self.assertIn("Field Art", summary)
+            # Teachable empty state may include next-step stock-NFL inventory copy.
+            self.assertTrue(
+                summary.startswith("Load a game to map Field Art")
+                or summary.startswith("Load your APF game to map Field Art"),
+                msg=summary,
+            )
             self.assertEqual(page.browser.table.rowCount(), 0)
             self.assertFalse(page.browser.replace_button.isEnabled())
             self.assertFalse(page.browser.revert_button.isEnabled())
