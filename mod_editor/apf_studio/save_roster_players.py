@@ -327,7 +327,14 @@ _COMPOSITE_FIELDS = (
     # nibble of byte 23 is also consumed by packed abilities, so author only
     # whole pounds and preserve that shared nibble exactly.
     PackedField("weight_pounds", "Weight (whole pounds)", "appearance", (_part(23, 4, 4), _part(22, 0, 5, 4)), 0, 0x1FF),
-    PackedField("pbp_id", "Play-by-play ID", "identity", (_part(9, 0, 8), _part(8, 0, 8, 8)), 0, 0xFFFF),
+    PackedField(
+        "pbp_id",
+        "Play-by-play ID (VO name table)",
+        "identity",
+        (_part(9, 0, 8), _part(8, 0, 8, 8)),
+        0,
+        0xFFFF,
+    ),
     PackedField("photo_id", "Photo ID", "appearance", (_part(11, 0, 8), _part(10, 0, 8, 8)), 0, 0xFFFF),
 )
 

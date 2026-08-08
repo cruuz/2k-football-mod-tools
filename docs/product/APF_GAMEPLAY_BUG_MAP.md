@@ -10,7 +10,7 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 | ID | Severity | Symptom | Likely surface | Status | Unblock path |
 | --- | --- | --- | --- | --- | --- |
 | G1 | Huge | ILB→OLB in Dime (star ILBs benched) | Formation **package map** `+0x0D` (11-byte role perm); not assignment 8-byte | **package-map offline writer proved** (bytes); runtime G1 fix **unproved** | See §G1 census below |
-| G2 | Huge | TE→WR in Ace on long downs (practice OK, game broken) | Play links / skill-slot descriptors / save — **not** package map (Ace=all offense) | **RE spike** + Ace map identity proved; offline fix **not** proved | See §G2 spike below |
+| G2 | Huge | TE→WR in Ace on long downs (practice OK, game broken) | Formation **play-link table** (menu composition) / save / director — **not** package map (Ace=all offense) | **link-table offline writer proved** (menu bytes); runtime G2 fix **unproved** | See §G2 spike below |
 | G3 | Huge | DL ignores pre-play pinch/spread/swap; slants instead | Play assignment / DL stunt bits / director | research | Map assignment descriptor bits + DRCT; FX/FY/FW/FT stack does not own this |
 | G4 | Huge | Season mode always daytime | Schedule / time-of-day tables | research | Locate season generator table in 0A/ROST/save |
 | G5 | Huge | Season weather only clear/rain | Weather enum / season generator | research | Census weather enums vs `divot_Grass*` names |
