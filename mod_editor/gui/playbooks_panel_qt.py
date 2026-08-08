@@ -88,6 +88,11 @@ target at the donor's existing chain in the same stock PLAY book. Fixed size,
 the complete chain partition, all nodes, formations, names, and non-target bytes
 are preserved and the result is reparsed. Undo, Revert, Build, and retail-free
 projects are supported. This does not claim freehand waypoint semantics.</p>
+<h3 style="color:#62e6ad">Offline G1/G2 experimental exports</h3>
+<p><b>Export Package-Map Copy</b> and <b>Export Link-Table Copy</b> write a
+private PLAY with formation package-map or menu link-table bytes from a donor.
+Offline-writer-proved for those bytes only; runtime G1/G2 fixes remain unproved.
+Not freehand routes; not project-staged Editable gameplay packs.</p>
 <h3 style="color:#62e6ad">What is exact now</h3>
 <p>All <b>37 PLAY books</b> are read from your private cache: 1,533 formations,
 9,251 plays, eight exact play families, 101,761 assignment references, 32,502
