@@ -10927,7 +10927,10 @@ class InspectorBrowser(QFrame):
         self.play_audio_button = QPushButton("Play")
         self.play_audio_button.setObjectName("secondaryButton")
         self.play_audio_button.setVisible(audio_mode)
-        self.play_audio_button.setEnabled(False)
+        _play_boot = "Load a supported APF game and select a playable sound first."
+        self.play_audio_button.setEnabled(True)
+        self.play_audio_button.setToolTip(_play_boot)
+        self.play_audio_button.setProperty("disableReason", _play_boot)
         self.play_audio_button.setToolTip(
             "Decode a session-private, verified WAV and play it with ffplay, paplay, or aplay."
         )
@@ -12546,7 +12549,10 @@ class InspectorBrowser(QFrame):
         self.export_bank_button.setVisible(False)
         self.export_external_bank_button.setVisible(False)
         self.export_external_bank_button.setEnabled(False)
-        self.play_audio_button.setEnabled(False)
+        tip = "Select a playable sound row first."
+        self.play_audio_button.setEnabled(True)
+        self.play_audio_button.setToolTip(tip)
+        self.play_audio_button.setProperty("disableReason", tip)
         self._configure_audio_waveform(None)
         self._configure_audio_replacement(None)
         tip = "Load a supported APF game first, then export decoded inspector rows."
@@ -12595,7 +12601,10 @@ class InspectorBrowser(QFrame):
         self.export_bank_button.setVisible(False)
         self.export_external_bank_button.setVisible(False)
         self.export_external_bank_button.setEnabled(False)
-        self.play_audio_button.setEnabled(False)
+        tip = "Select a playable sound row first."
+        self.play_audio_button.setEnabled(True)
+        self.play_audio_button.setToolTip(tip)
+        self.play_audio_button.setProperty("disableReason", tip)
         self._configure_audio_waveform(None)
         self._configure_audio_replacement(None)
         tip = "Load a supported APF game first, then export decoded inspector rows."
@@ -13209,7 +13218,10 @@ class InspectorBrowser(QFrame):
             self.export_bank_button.setVisible(False)
             self.export_external_bank_button.setVisible(False)
             self.export_external_bank_button.setEnabled(False)
-            self.play_audio_button.setEnabled(False)
+            tip = "Select a playable sound row first."
+            self.play_audio_button.setEnabled(True)
+            self.play_audio_button.setToolTip(tip)
+            self.play_audio_button.setProperty("disableReason", tip)
             self._cancel_audio_waveform()
             self._configure_audio_waveform(None)
             self._configure_audio_replacement(None)
@@ -16951,7 +16963,10 @@ class InspectorBrowser(QFrame):
             self.import_ratings_sheet_button.setProperty("disableReason", rtip)
         self._update_bulk_audio_export_controls()
         if self.model is None:
-            self.play_audio_button.setEnabled(False)
+            tip = "Select a playable sound row first."
+            self.play_audio_button.setEnabled(True)
+            self.play_audio_button.setToolTip(tip)
+            self.play_audio_button.setProperty("disableReason", tip)
             self.export_bank_button.setVisible(False)
             self.export_external_bank_button.setVisible(False)
             self.export_external_bank_button.setEnabled(False)
