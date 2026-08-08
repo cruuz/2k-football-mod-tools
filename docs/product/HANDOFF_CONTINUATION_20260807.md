@@ -155,3 +155,33 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 - G1/G2 runtime unproved; freehand not Editable
 - monorepo full pytest hang residual (use batched suites)
 - residual silent-gray edges (pagination, some audio replace pack busy locks)
+
+
+## Session tally [2026-08-08T05:37:38-04:00]
+
+**Ahead origin:** ~283 commits on main (local). **Do not push/release without Noah.**
+
+### Product shipped this continuation (never-silent-gray + honesty)
+| Surface | Change |
+| --- | --- |
+| APF text Apply/Revert | never-gray + click-to-explain |
+| APF Text Sheet Export/Import | never-gray |
+| APF ratings sheet Export/Import | never-gray |
+| APF player rating/position Apply/Revert | never-gray |
+| APF bulk audio catalog/banks | never-gray (busy/load) |
+| APF Export matching / decoded rows | never-gray |
+| APF Custom Team Write-raw | project-vs-raw teaching |
+| 2K5 Text & Rosters (all Apply/Revert paths) | never-gray |
+| 2K5 Audio Export matching + waveform + shortlist bulk/toggle | never-gray |
+| 2K5 Gameplay Inspector JSON/CSV | never-gray |
+
+### Gates
+- Registry 70/70
+- Dual packaging APF 189 + 2K5 195 RELEASE_PASS (repeated)
+- E1 logo suite / image_fit / field art stock green this session
+
+### Still open
+- Hour gate ≥10h (~8.1h multi-session WORKLOG stamp span)
+- G1/G2 runtime unproved; freehand not Editable
+- monorepo full pytest hang residual (batched suites)
+- residual intentional grays: cancel-in-flight, busy workers, some form inputs
