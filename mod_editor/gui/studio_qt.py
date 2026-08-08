@@ -432,6 +432,13 @@ class StudioFacade(Protocol):
         progress: ProgressSink,
     ) -> Path: ...
 
+    def export_g2_ace_from_quads_link_table_pack(
+        self,
+        asset_id: str,
+        destination: Path,
+        progress: ProgressSink,
+    ) -> Path: ...
+
     def copy_play_assignment_route(
         self,
         asset_id: str,
@@ -810,6 +817,7 @@ class BrowseOnlyFacade:
     export_playbook_link_table_copy = _unavailable
     export_playbook_package_map_copy = _unavailable
     export_g1_dime_from_nickel_package_map_pack = _unavailable
+    export_g2_ace_from_quads_link_table_pack = _unavailable
     copy_play_assignment_route = _unavailable
     revert_play_assignment_route = _unavailable
     create_formation = _unavailable

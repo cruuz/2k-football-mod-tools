@@ -33,6 +33,7 @@ from mod_editor.core.playbook_package_rule_spike import (
     build_formation_link_table_copy_patch,
     build_formation_package_map_patch,
     build_g1_dime_from_nickel_package_map_pack,
+    build_g2_ace_from_quads_link_table_pack,
     census_g1_dime_vs_nickel,
     descriptor_body_offset,
     formation_package_map_body_offset,
@@ -43,6 +44,7 @@ from mod_editor.core.playbook_package_rule_spike import (
     verify_formation_link_table_copy_patch,
     verify_formation_package_map_patch,
     verify_g1_dime_from_nickel_package_map_pack,
+    verify_g2_ace_from_quads_link_table_pack,
 )
 
 _O0308_PACK = Path(
@@ -346,6 +348,75 @@ class RealO0308PackageMapTests(unittest.TestCase):
         self.assertEqual(
             read_formation_package_map(patch.raw_resource, ace_i),
             read_formation_package_map(self.raw, ace_i),
+        )
+
+    def test_g2_multi_ace_from_quads_pack_offline_proved(self) -> None:
+        """Multi-formation G2 pack: every Ace gets Quads play-link menu table."""
+
+        from mod_editor.core.nfl2k5_playbook_inspector import parse_playbook_resource
+
+        book = parse_playbook_resource(self.raw)
+        ace_indices = [
+            f.index
+            for f in book.formations
+            if re.search(r"\bace\b", f.name or "", re.I)
+        ]
+        quads_i = next(
+            f.index
+            for f in book.formations
+            if re.search(r"\bquads\b", f.name or "", re.I)
+        )
+        self.assertGreaterEqual(len(ace_indices), 1)
+        quads_links = len(book.formations[quads_i].play_links)
+
+        pack = build_g2_ace_from_quads_link_table_pack(self.raw)
+        self.assertEqual(pack.status, "offline_writer_proved")
+        self.assertFalse(pack.manifest["runtime_proved"])
+        self.assertEqual(pack.quads_formation_index, quads_i)
+        self.assertEqual(pack.quads_link_count, quads_links)
+        self.assertGreaterEqual(len(pack.targets), len(ace_indices))
+        self.assertGreater(pack.total_changed_byte_count, 0)
+        self.assertIn("runtime", pack.honesty.casefold())
+        self.assertIn("unproved", pack.honesty.casefold())
+        self.assertIn("menu", pack.honesty.casefold())
+
+        verify_g2_ace_from_quads_link_table_pack(
+            self.raw,
+            pack.raw_resource,
+            quads_index=quads_i,
+            ace_indices=tuple(t.formation_index for t in pack.targets),
+        )
+        patched = parse_playbook_resource(pack.raw_resource)
+        for fi in ace_indices:
+            self.assertEqual(
+                len(patched.formations[fi].play_links),
+                quads_links,
+                msg=f"Ace formation {fi}",
+            )
+            # Package map identity for each Ace (menu-only pack).
+            self.assertEqual(
+                read_formation_package_map(pack.raw_resource, fi),
+                read_formation_package_map(self.raw, fi),
+                msg=f"Ace package map mutated at {fi}",
+            )
+        # Quads donor unchanged; source identity preserved.
+        self.assertEqual(
+            len(patched.formations[quads_i].play_links),
+            quads_links,
+        )
+        self.assertEqual(
+            len(book.formations[quads_i].play_links),
+            quads_links,
+        )
+        # Dime package map untouched (defense surface).
+        dime_i = next(
+            f.index
+            for f in book.formations
+            if re.search(r"\bdime\b", f.name or "", re.I)
+        )
+        self.assertEqual(
+            read_formation_package_map(pack.raw_resource, dime_i),
+            read_formation_package_map(self.raw, dime_i),
         )
 
 

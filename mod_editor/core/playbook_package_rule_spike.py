@@ -938,11 +938,226 @@ def verify_g1_dime_from_nickel_package_map_pack(
     parse_playbook_resource(patched)
 
 
+_QUADS_RE = re.compile(r"\bquads\b", re.IGNORECASE)
+
+
+@dataclass(frozen=True, slots=True)
+class G2AceFromQuadsTarget:
+    """One Ace-named formation that received the Quads play-link table."""
+
+    formation_index: int
+    formation_name: str
+    link_count_before: int
+    link_count_after: int
+    resource_offset: int
+    changed_byte_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class G2AceFromQuadsPackResult:
+    """Multi-formation offline G2 link-table pack (menu bytes; runtime unproved)."""
+
+    raw_resource: bytes
+    quads_formation_index: int
+    quads_formation_name: str
+    quads_link_count: int
+    targets: tuple[G2AceFromQuadsTarget, ...]
+    total_changed_byte_count: int
+    source_sha256: str
+    result_sha256: str
+    status: str
+    honesty: str
+    manifest: dict[str, object]
+
+
+def build_g2_ace_from_quads_link_table_pack(
+    raw_resource: bytes,
+) -> G2AceFromQuadsPackResult:
+    """Copy the first Quads play-link table onto **every** Ace-named formation.
+
+    Fail-closed offline writer for the G2 **menu composition** surface across
+    the whole PLAY book. Touches only formation aux (0x50) play-link tables.
+    Does **not** change package maps or play assignment records. Independent
+    verifier: :func:`verify_g2_ace_from_quads_link_table_pack`.
+
+    Capability: **offline_writer_proved** for menu link-table bytes. **Not** a
+    runtime G2 (TE→WR) fix pack — do not ship as community one-click runtime
+    proof.
+    """
+
+    _require_play_resource(raw_resource)
+    book = parse_playbook_resource(raw_resource)
+
+    quads = next(
+        (f for f in book.formations if _QUADS_RE.search(f.name or "")),
+        None,
+    )
+    if quads is None:
+        raise ValidationError(
+            "G2 multi-Ace pack needs a formation whose name contains Quads."
+        )
+    ace_forms = tuple(
+        f for f in book.formations if _ACE_RE.search(f.name or "")
+    )
+    if not ace_forms:
+        raise ValidationError(
+            "G2 multi-Ace pack needs at least one formation whose name "
+            "contains Ace."
+        )
+    if any(f.index == quads.index for f in ace_forms):
+        raise ValidationError(
+            "G2 multi-Ace pack refuses a formation named both Ace and Quads."
+        )
+
+    working = raw_resource
+    targets: list[G2AceFromQuadsTarget] = []
+    for form in ace_forms:
+        before_count = len(form.play_links)
+        patch = build_formation_link_table_copy_patch(
+            working, form.index, quads.index
+        )
+        verify_formation_link_table_copy_patch(
+            working, patch.raw_resource, form.index, quads.index
+        )
+        # Package map of Ace must stay identity with pre-pack map.
+        old_map = read_formation_package_map(working, form.index)
+        new_map = read_formation_package_map(patch.raw_resource, form.index)
+        if old_map != new_map:
+            raise ValidationError(
+                f"G2 pack mutated package map on Ace formation {form.index}."
+            )
+        working = patch.raw_resource
+        targets.append(
+            G2AceFromQuadsTarget(
+                formation_index=form.index,
+                formation_name=str(form.name or ""),
+                link_count_before=before_count,
+                link_count_after=patch.target_link_count_after,
+                resource_offset=patch.resource_offset,
+                changed_byte_count=patch.changed_byte_count,
+            )
+        )
+
+    verify_g2_ace_from_quads_link_table_pack(
+        raw_resource,
+        working,
+        quads_index=quads.index,
+        ace_indices=tuple(t.formation_index for t in targets),
+    )
+
+    total_changed = sum(t.changed_byte_count for t in targets)
+    honesty = (
+        "offline_writer_proved for formation play-link (menu) table bytes only. "
+        "Runtime G2 (Ace TE→WR) is unproved. Package maps and play assignments "
+        "are untouched. Not a project edit. Source ISO is never mutated. "
+        "Private PLAY export only."
+    )
+    manifest: dict[str, object] = {
+        "kind": "g2_ace_from_quads_link_table_pack",
+        "capability": "offline_writer_proved",
+        "runtime_proved": False,
+        "bug_id": "G2",
+        "quads_formation_index": quads.index,
+        "quads_formation_name": str(quads.name or ""),
+        "quads_link_count": len(quads.play_links),
+        "ace_targets": [
+            {
+                "formation_index": t.formation_index,
+                "formation_name": t.formation_name,
+                "link_count_before": t.link_count_before,
+                "link_count_after": t.link_count_after,
+                "resource_offset": t.resource_offset,
+                "changed_byte_count": t.changed_byte_count,
+            }
+            for t in targets
+        ],
+        "total_changed_byte_count": total_changed,
+        "source_sha256": hashlib.sha256(raw_resource).hexdigest(),
+        "result_sha256": hashlib.sha256(working).hexdigest(),
+        "honesty": honesty,
+        "layout": {
+            "formation_aux_base": FORMATION_AUX_BASE,
+            "formation_aux_size": FORMATION_AUX_SIZE,
+            "surface": "play_link_menu_table",
+        },
+    }
+    return G2AceFromQuadsPackResult(
+        raw_resource=working,
+        quads_formation_index=quads.index,
+        quads_formation_name=str(quads.name or ""),
+        quads_link_count=len(quads.play_links),
+        targets=tuple(targets),
+        total_changed_byte_count=total_changed,
+        source_sha256=hashlib.sha256(raw_resource).hexdigest(),
+        result_sha256=hashlib.sha256(working).hexdigest(),
+        status="offline_writer_proved",
+        honesty=honesty,
+        manifest=manifest,
+    )
+
+
+def verify_g2_ace_from_quads_link_table_pack(
+    source: bytes,
+    patched: bytes,
+    *,
+    quads_index: int,
+    ace_indices: Sequence[int],
+) -> None:
+    """Independent multi-region byte-diff verifier for the G2 multi-Ace pack."""
+
+    _require_play_resource(source)
+    _require_play_resource(patched)
+    if len(source) != len(patched):
+        raise ValidationError(
+            f"Patched resource length {len(patched)} != source {len(source)}."
+        )
+
+    donor_res = RESOURCE_HEADER_SIZE + formation_link_table_body_offset(
+        int(quads_index)
+    )
+    expected_table = source[donor_res : donor_res + FORMATION_AUX_SIZE]
+    if len(expected_table) != FORMATION_AUX_SIZE:
+        raise ValidationError("Quads donor link table is truncated.")
+
+    allowed: set[int] = set()
+    for fi in ace_indices:
+        res_off = RESOURCE_HEADER_SIZE + formation_link_table_body_offset(
+            int(fi)
+        )
+        for i in range(res_off, res_off + FORMATION_AUX_SIZE):
+            allowed.add(i)
+        actual = patched[res_off : res_off + FORMATION_AUX_SIZE]
+        if actual != expected_table:
+            raise ValidationError(
+                f"Ace formation {fi} link table does not match Quads donor."
+            )
+
+    for i, (a, b) in enumerate(zip(source, patched, strict=True)):
+        if i in allowed:
+            continue
+        if a != b:
+            raise ValidationError(
+                f"Byte {i} changed outside Ace link-table regions."
+            )
+
+    # Quads donor table identity preserved.
+    donor_after = patched[donor_res : donor_res + FORMATION_AUX_SIZE]
+    if donor_after != expected_table:
+        raise ValidationError(
+            "Quads donor link table was mutated; pack must leave Quads intact."
+        )
+
+    parse_playbook_resource(source)
+    parse_playbook_resource(patched)
+
+
 __all__ = [
     "G1_G2_LAYOUT",
     "G1DimeFromNickelPackResult",
     "G1DimeFromNickelTarget",
     "G1DimeNickelCensus",
+    "G2AceFromQuadsPackResult",
+    "G2AceFromQuadsTarget",
     "LinkTablePatchResult",
     "O0308_ASSET_ID",
     "O0308_PACK_OFFSET",
@@ -955,6 +1170,7 @@ __all__ = [
     "build_formation_link_table_copy_patch",
     "build_formation_package_map_patch",
     "build_g1_dime_from_nickel_package_map_pack",
+    "build_g2_ace_from_quads_link_table_pack",
     "census_g1_dime_vs_nickel",
     "descriptor_body_offset",
     "formation_link_table_body_offset",
@@ -967,4 +1183,5 @@ __all__ = [
     "verify_formation_link_table_copy_patch",
     "verify_formation_package_map_patch",
     "verify_g1_dime_from_nickel_package_map_pack",
+    "verify_g2_ace_from_quads_link_table_pack",
 ]

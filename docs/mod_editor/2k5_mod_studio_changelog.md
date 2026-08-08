@@ -10,6 +10,10 @@ build path.
 
 ### Community / product
 
+- **G2 multi-Ace link-table pack** — Export G2 multi-Ace pack… copies the Quads
+  play-link (menu) table onto every Ace-named formation in a private PLAY + honesty
+  JSON sidecar. Offline-writer-proved for menu bytes only; runtime TE→WR unproved;
+  package maps/assignments untouched.
 - **Release allowlist ships G1 + formation clone** — `playbook_package_rule_spike.py` and
   `nfl2k5_formation_play_writer.py` were imported by the product but absent from
   `packaging/release-allowlist.txt` (Windows stage would crash on Playbooks G1 export

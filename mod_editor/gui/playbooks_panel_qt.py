@@ -395,6 +395,13 @@ class PlaybooksPanelHost(Protocol):
         progress: ProgressSink,
     ) -> Path: ...
 
+    def export_g2_ace_from_quads_link_table_pack(
+        self,
+        asset_id: str,
+        destination: Path,
+        progress: ProgressSink,
+    ) -> Path: ...
+
     def copy_play_assignment_route(
         self, asset_id: str, target_play_index: int, target_slot_index: int,
         donor_play_index: int, donor_slot_index: int, progress: ProgressSink,
@@ -739,12 +746,27 @@ class PlaybooksPanel(QWidget):
             "both Nickel and Dime formations.",
         )
         self.export_g1_pack_button.clicked.connect(self._export_g1_dime_pack)
+        self.export_g2_pack_button = QPushButton("Export G2 multi-Ace pack…")
+        self.export_g2_pack_button.setObjectName("secondaryButton")
+        self.export_g2_pack_button.setToolTip(
+            "Offline experimental: copy the Quads play-link (menu) table onto "
+            "every Ace-named formation in this PLAY book. Writes a private PLAY "
+            "+ honesty JSON sidecar. Runtime G2 (TE→WR) remains unproved. "
+            "Source ISO is never modified."
+        )
+        self.export_g2_pack_button.setProperty(
+            "disableReason",
+            "Load your NFL 2K5 XISO and select a playbook book that contains "
+            "both Ace and Quads formations.",
+        )
+        self.export_g2_pack_button.clicked.connect(self._export_g2_ace_pack)
         link_copy_row.addWidget(link_copy_label)
         link_copy_row.addWidget(self.link_donor_combo, 1)
         link_copy_row.addWidget(self.g1_nickel_donor_button)
         link_copy_row.addWidget(self.export_link_copy_button)
         link_copy_row.addWidget(self.export_pkgmap_copy_button)
         link_copy_row.addWidget(self.export_g1_pack_button)
+        link_copy_row.addWidget(self.export_g2_pack_button)
         inspector_layout.addLayout(link_copy_row)
 
         raw_split = QSplitter(Qt.Horizontal)
@@ -1430,6 +1452,46 @@ class PlaybooksPanel(QWidget):
         self.export_g1_pack_button.setEnabled(True)
         self.export_g1_pack_button.setToolTip(g1_pack_tip)
         self.export_g1_pack_button.setProperty("disableReason", g1_pack_block)
+        ace_idx = None
+        quads_idx = None
+        if book is not None:
+            for index, formation in enumerate(book.formations):
+                name = str(getattr(formation, "name", "") or "").casefold()
+                if ace_idx is None and re.search(r"\bace\b", name):
+                    ace_idx = index
+                if quads_idx is None and re.search(r"\bquads\b", name):
+                    quads_idx = index
+        if (
+            self.host.source_ready
+            and book is not None
+            and not self._busy
+            and ace_idx is not None
+            and quads_idx is not None
+        ):
+            g2_pack_tip = (
+                "Export private PLAY where every Ace-named formation gets the "
+                "Quads play-link menu table. Offline multi-formation G2 pack; "
+                "runtime TE→WR fix unproved. Sidecar honesty JSON is written beside it."
+            )
+            g2_pack_block = ""
+        elif not self.host.source_ready:
+            g2_pack_tip = g2_pack_block = (
+                "Load your NFL 2K5 XISO first. G2 multi-Ace pack needs a source."
+            )
+        elif book is None:
+            g2_pack_tip = g2_pack_block = (
+                "Select a playbook book that contains Ace and Quads formations."
+            )
+        elif ace_idx is None or quads_idx is None:
+            g2_pack_tip = g2_pack_block = (
+                "This book needs both an Ace and a Quads formation name for the "
+                "multi-Ace G2 link-table pack."
+            )
+        else:
+            g2_pack_tip = g2_pack_block = "Wait for the current operation to finish."
+        self.export_g2_pack_button.setEnabled(True)
+        self.export_g2_pack_button.setToolTip(g2_pack_tip)
+        self.export_g2_pack_button.setProperty("disableReason", g2_pack_block)
         self.link_donor_combo.setEnabled(can_create)
         self.book_table.setEnabled(not self._busy)
         self.search.setEnabled(not self._busy)
@@ -1763,6 +1825,65 @@ class PlaybooksPanel(QWidget):
 
         self._run(
             lambda progress: self.host.export_g1_dime_from_nickel_package_map_pack(
+                book.asset_id,
+                Path(path),
+                progress,
+            ),
+            ready,
+        )
+
+    def _export_g2_ace_pack(self) -> None:
+        reason = str(
+            self.export_g2_pack_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export G2 multi-Ace pack yet",
+                reason
+                + "\n\nOffline play-link menu bytes only; runtime G2 (TE→WR) unproved.",
+            )
+            return
+        book = self._selected_book()
+        if book is None:
+            return
+        answer = QMessageBox.warning(
+            self,
+            "Experimental offline G2 multi-Ace pack",
+            "This writes a private PLAY where **every Ace-named formation** "
+            "gets the Quads play-link (menu) table, plus an honesty JSON sidecar.\n\n"
+            "• Offline-writer-proved for menu link-table bytes only\n"
+            "• Package maps and play assignments are untouched\n"
+            "• Runtime G2 (Ace TE→WR) remains unproved\n"
+            "• Not a project edit — nothing is staged for Build\n"
+            "• Your loaded source / ISO is never modified\n\n"
+            "Continue to choose a save location?",
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Cancel,
+        )
+        if answer != QMessageBox.Yes:
+            return
+        suggested = (
+            f"{book.outer_index:04d}_{book.book_name}_G2_all_Ace_from_Quads_PLAY.bin"
+        )
+        suggested = re.sub(r"[^A-Za-z0-9._-]+", "_", suggested)
+        path, _filter = QFileDialog.getSaveFileName(
+            self,
+            "Export experimental G2 multi-Ace link-table PLAY",
+            suggested,
+            "PLAY resource (*.bin);;All files (*)",
+        )
+        if not path:
+            return
+
+        def ready(value: object) -> None:
+            self.progress_label.setText(
+                f"Exported G2 multi-Ace pack → {value} "
+                "(runtime unproved; honesty JSON beside PLAY)"
+            )
+
+        self._run(
+            lambda progress: self.host.export_g2_ace_from_quads_link_table_pack(
                 book.asset_id,
                 Path(path),
                 progress,

@@ -23,7 +23,7 @@ offline-writer-proved or better.
 | 14 | Eagles shell accuracy | **Partial** | v30 volume; close-up witness pending (handoff) |
 | 15 | Remaining PORTME formats | **Improved** | PNG preview: 8, 1_5_5_5, 5_6_5, 8_8_8_8, 8_8, 4_4_4_4, DXT1/2_3/4_5, DXN (helmet + base-only namefont), **format-32 cubemap face-0**, **linear untiled uncompressed + linear DXT1/2_3/4_5**. Residual: other cubemap faces/mips raw-export; DXT3A if any; exotic Xenos formats. |
 | 16–20 | 2K5 community discoverability | **Partial** | Equipment browse, menu logos labeled in README/changelog; continue polish |
-| GH#2 | Stock playbooks | **Partial** | Browser + route copy + clone + **broken-play annotations** + community legend + empty-flagged teaching + G1 Dime→Nickel donor tip; freehand wall; G1/G2 runtime unproved |
+| GH#2 | Stock playbooks | **Partial** | Browser + route copy + clone + **broken-play annotations** + community legend + empty-flagged teaching + G1 multi-Dime + G2 multi-Ace offline packs; freehand wall; G1/G2 runtime unproved |
 
 Residual risks: G1/G2 **runtime** unproved (offline writers proved for bytes);
 freehand inverse compiler not Editable; STFS resign external; monorepo pytest

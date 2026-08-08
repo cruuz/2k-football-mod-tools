@@ -2166,6 +2166,62 @@ class Nfl2k5StudioFacade:
         )
         return dest
 
+    def export_g2_ace_from_quads_link_table_pack(
+        self,
+        asset_id: str,
+        destination: Path,
+        progress: ProgressSink = _quiet_progress,
+    ) -> Path:
+        """Export a PLAY with every Ace play-link table copied from Quads.
+
+        **Experimental / offline-only multi-formation G2 pack.** Private PLAY
+        + honesty JSON sidecar. Does not stage a project edit. Does not claim a
+        runtime G2 fix. Source archive never mutated. Menu composition only —
+        package maps and play assignments are untouched.
+        """
+
+        import json
+        import tempfile
+
+        from mod_editor.core.playbook_package_rule_spike import (
+            build_g2_ace_from_quads_link_table_pack,
+        )
+
+        progress("Reading stock PLAY for G2 multi-Ace link-table pack", 0, 3)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            index = self._require_universal_index()
+        inspector.load(asset_id)
+
+        progress(
+            "Building offline G2 pack (all Ace ← Quads menu; runtime unproved)",
+            1,
+            3,
+        )
+        dest = Path(destination)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="2k5-g2-ace-pack-") as tmpdir:
+            src_path = Path(tmpdir) / "source.PLAY.bin"
+            index.export_raw(asset_id, src_path)
+            source_bytes = src_path.read_bytes()
+            pack = build_g2_ace_from_quads_link_table_pack(source_bytes)
+            dest.write_bytes(pack.raw_resource)
+            sidecar = dest.with_suffix(dest.suffix + ".g2_manifest.json")
+            if not sidecar.suffix.endswith(".json"):
+                sidecar = Path(str(dest) + ".g2_manifest.json")
+            sidecar.write_text(
+                json.dumps(pack.manifest, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+        progress(
+            "Experimental G2 multi-Ace link-table PLAY exported "
+            f"({len(pack.targets)} Ace target(s); runtime unproved)",
+            3,
+            3,
+        )
+        return dest
+
     def copy_play_assignment_route(
         self,
         asset_id: str,
