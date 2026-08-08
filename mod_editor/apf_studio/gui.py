@@ -10908,11 +10908,14 @@ class InspectorBrowser(QFrame):
         self.load_waveform_button = QPushButton("Load waveform")
         self.load_waveform_button.setObjectName("secondaryButton")
         self.load_waveform_button.setVisible(audio_mode)
-        self.load_waveform_button.setEnabled(False)
-        self.load_waveform_button.setToolTip(
-            "Explicitly decode this one sound to a verified session-private WAV, then "
-            "draw it without playing it. No source or project data is written."
+        # Never silent-gray at construction.
+        _wf_boot = (
+            "Load a supported APF game and select a playable sound first. "
+            "Load waveform stays clickable so walls explain themselves."
         )
+        self.load_waveform_button.setEnabled(True)
+        self.load_waveform_button.setToolTip(_wf_boot)
+        self.load_waveform_button.setProperty("disableReason", _wf_boot)
         self.load_waveform_button.clicked.connect(self._load_audio_waveform)
         self.export_audio_button = QPushButton("Export this sound…")
         self.export_audio_button.setObjectName("primaryButton")
@@ -17473,7 +17476,13 @@ class GettingStartedPage(QWidget):
             self.ready_body.setText(
                 "Choose the supported APF 2K8 USA ISO or its extracted folder. Your source is opened read-only."
             )
-            self.uniform_button.setEnabled(False)
+            tip = (
+                "Load your APF game first (Choose ISO / extracted folder), then "
+                "Browse uniforms. Click still explains — button stays clickable."
+            )
+            self.uniform_button.setEnabled(True)
+            self.uniform_button.setToolTip(tip)
+            self.uniform_button.setProperty("disableReason", tip)
             return
         catalog = facade.require_catalog()
         self.ready_title.setText("Your game is indexed and ready")
@@ -17482,6 +17491,8 @@ class GettingStartedPage(QWidget):
             f"{len(catalog.uniform_assets)} uniform textures, digital_font, and draft_logo are editable now."
         )
         self.uniform_button.setEnabled(True)
+        self.uniform_button.setToolTip("Open the Uniforms workspace.")
+        self.uniform_button.setProperty("disableReason", "")
 
 
 class ApfStudioMainWindow(QMainWindow):
