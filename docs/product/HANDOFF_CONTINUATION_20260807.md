@@ -351,3 +351,10 @@ main **407** ahead. Wall **8.49h**. Packaging green. Hour gate OPEN.
 | Hour gate | OPEN |
 | Dual packaging | green |
 | Registry | 70/70 |
+
+
+## [2026-08-08T06:18:13-04:00] Noah
+1. **main 410 ahead** — no push/release
+2. Dual packaging green; registry 70/70
+3. Hour gate wall **8.50h** OPEN
+4. Primary product depth: never-silent-gray (Discord dead-button class)
