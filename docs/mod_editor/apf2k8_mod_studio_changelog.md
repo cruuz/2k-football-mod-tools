@@ -1,5 +1,33 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.60 — nameplate DXN, linear TXTR, package maps, keyboard/UX — 2026-08-08
+
+### Community issues closed or honesty-labeled
+
+- **Nameplate gibberish (font_albedo / font_normal)** — root cause: base-only DXN
+  (`packed_mips=False`). All 11 NameFont packages preview on real 0A. Outer IDs:
+  114, 283, 504, 538, 609, 640, 937, 956, 963, 1312, 1383.
+- **Jersey numbers discoverability** — `number_0_color`…`number_9_color` 512×512;
+  All Textures search teaches these names (Titans-style “missing” often catalog).
+- **Linear / rain textures** — untiled uncompressed TXTR (e.g.
+  `crowd_shirt_stripe_color_rain`) PNG-preview instead of linear PORTME.
+- **General DXT5A** — coach_hair_occlusion / field_radiance / digit atlases
+  beyond digital_font 128×128.
+- **Cubemap lightmaps** — format-32 face-0 preview (SpecularLightBox class).
+- **Import model silent gray** — buttons stay clickable; click explains Load-game.
+- **Equipment Colors** — team filter; HOME kit only / AWAY kit only; per-set teaching.
+- **Keyboard** — Ctrl+F / Esc clear search / Ctrl+/ hints; studioSearch markers.
+- **G1 package map** — formation `+0x0D` 11-byte role map; experimental offline
+  export Package-Map Copy (not a runtime fix pack).
+- **G2 menu composition** — formation link-table copy writer + experimental export.
+- **Playbook browser** — package-map line in inspector; Ace/Dime/Bear ⚠ annotations.
+
+### Honesty
+
+- G1/G2 offline writers prove **bytes only**; runtime gameplay fix unproved.
+- Experimental PLAY exports do not stage project edits or mutate source ISO.
+- Freehand routes still not Editable.
+
 ## 0.1.0-alpha.59 — community texture/import UX, model tooltips, Field Art honesty, playbook flags — 2026-08-07
 
 ### Community issues closed or honesty-labeled

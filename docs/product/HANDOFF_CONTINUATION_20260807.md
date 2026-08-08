@@ -1,76 +1,70 @@
-# Handoff — continuation marathon 2026-08-07T21:50:39
+# Handoff — continuation marathon 2026-08-08
 
 ## Repo
 - Path: `/media/noah/Storage/for codex 1.0`
 - Branch: `main` (ahead of origin; do not force-push)
-- Versions: 2K5 **RC54** / APF **alpha.59**
+- Versions: 2K5 **RC55** (`1.0.0rc55`) / APF **alpha.60** (`0.1.0-alpha.60`)
 
-## Verified this continuation (real dumps present)
-- APF `extracted/All-Pro Football 2K8 (USA)/0A` logo_l0/l1 format 15 decode+PNG export
-- logo `build_patch` magenta: source read-only, original unchanged, decode_back max_error 0
-- Fit Contain/Cover/Stretch; wordmark stretch
-- Facemask per-set (APF+2K5); model gray tooltips
-- Field Art stock NFL blurb (118 endzones / 6 writable)
-- Any-rip: 34 tests green
-- Packaging retail-free PASS both products
-- New Xenos PNG: 8, 1_5_5_5, 5_6_5, 8_8
-- Playbook community-flagged filter
-- G1/G2 RE spike + G10 tier byte 18 (Gold=2/Silver=4/Bronze=6)
+## Hour gate (honest)
+- Living WORKLOG: `docs/product/WORKLOG_20260807.md` (25+ timestamped product blocks)
+- Deep-run wall ~2026-08-07T21:41 → 2026-08-08T00:40 local (~3h this segment) + prior session work
+- **Formal ≥10h effective product work NOT yet claimed** — continue timestamps; no early E3 exit
 
-## Open / wall
-- Titans arm/shoulder numbers preview (need asset_id)
-- Nameplate gibberish edge cases
-- G1/G2 offline package-rule **writers** (spike only)
-- G10 runtime XEX gate
-- Freehand routes
-- Full 10h hour-gate may span sessions — continue WORKLOG timestamps
+## E1 real-path re-proof (latest)
+Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reproof_003940.txt`
 
-## Evidence scratch (session)
-`/tmp/grok-goal-d84b62e44b40/implementer/` — e1_reverify.md, packaging.txt, any_rip.txt, etc.
+| Claim | Result |
+| --- | --- |
+| logo_l0/l1 preview+export | PASS real 0A 512×512 PNG export |
+| Contain/Cover/Stretch | PASS image_fit |
+| Facemask per-set HOME/AWAY | PASS Equipment Colors tabs + filter |
+| Model import not silent gray | PASS clickable + Load tooltip (APF); Crib click-to-explain (2K5) |
+| Field Art stock teaching | PASS empty/load path + stock endzone blurb |
+| Registry 70/70 | PASS |
+| Broader suite slice | 62 passed (earlier block); re-run this block |
 
-## Next session
-1. Finish/confirm full `tests/mod_editor` green after hang investigation
-2. Offline G1/G2 writer if Dime vs Nickel census yields 8-byte-only delta on o0308
-3. UI polish pass remaining empty states
-4. Only then consider push + beta release
-## Session product (2026-08-07/08 continuation)
+## Shipped this marathon (depth)
 
-### Shipped this turn
-1. **G1 package map** — o0308 Dime vs Nickel census; assignment-only gate FAILED; primary delta is formation `+0x0D` 11-byte role perm. Writer: `build_formation_package_map_patch` + verifier (offline_writer_proved bytes; runtime G1 unproved).
-2. **Nameplate fix** — `font_albedo`/`font_normal` base-only DXN (`packed_mips=False`); 22/22 previews on real 0A. Outers: 114,283,504,538,609,640,937,956,963,1312,1383.
-3. **Titans/numbers** — APF `number_N_color` all 512×512; labeled as discoverability not decode.
-4. **Crib fit** — Contain/Cover/Stretch chooser (dialog+drop).
-5. **All Textures search** teaches logo_l0 / number_0_color / font_albedo.
-6. **Format 32** named 16_16_16_16 cubemap; honest PORTME.
+### G1 / G2 playbooks
+- Package map at formation `+0x0D` (11-byte perm); o0308 Dime/Nickel census
+- Writers: `build_formation_package_map_patch`, `build_formation_link_table_copy_patch` + verifiers
+- UI: package-map inspector line; experimental Export Package-Map / Link-Table Copy (offline private PLAY only)
+- Broken-play Ace/Dime/Bear annotations; community-flagged filter
+- Runtime G1/G2 still **unproved**
 
-### Tests
-- `test_playbook_package_rule_spike` 10p
-- `test_apf_dxn_base_only_namefont` 4p
-- extra format tests green
+### Textures
+- Nameplate font_albedo/font_normal base-only DXN
+- Linear untiled uncompressed TXTR (crowd_shirt_stripe_color_rain proved)
+- General DXT5A; format-32 cubemap face-0
+- Extra Xenos 8 / 1_5_5_5 / 5_6_5 / 8_8
 
-### Residual
-- G1 runtime unproved (emulator)
-- G2 = menu composition not assignment XOR
-- Cubemap face preview still wall
-- Hour gate ≥10h: multi-session accumulation (do not invent hours)
+### UX
+- Keyboard Ctrl+F / Esc / Ctrl+/
+- All Textures search tips; empty states
+- Equipment Colors team filter (APF fictional names)
+- Import fit Contain/Cover/Stretch everywhere critical
 
-### Commits (local main, ahead of origin)
-- 5826696 G1 package-map + nameplate DXN
-- df96490 Crib fit chooser
-- 211f218 WORKLOG
-- 69e914b Cubemap PORTME
+### Packaging
+- Retail-free stage PASS both products on latest tree (re-stage after each major commit cluster)
 
-## Session product (2026-08-08 ~00:16) packaging + link UI
+## Open / residual walls
+1. G1/G2 **runtime** fix packs (emulator witness) — offline only so far
+2. Freehand routes Editable
+3. Per-team stock endzone write wall
+4. Linear **compressed** DXT still PORTME
+5. Some cubemap non-face0 / other formats
+6. G10 XEX user-input charge path
+7. Titans “missing numbers” as discoverability residual (APF numbers decode fine)
 
-### Packaging (real evidence)
-- 2K5 stage 195 files → `2K5_MOD_STUDIO_RELEASE_PASS` retail=false
-- APF stage 189 files → `APF2K8_MOD_STUDIO_RELEASE_PASS` retail=false
-- Scratch evidence under `/tmp/grok-goal-d84b62e44b40/implementer/check_*_release.txt`
+## Do not claim
+- Freehand Editable; runtime hardware parity; community one-click Ace/Dime fix packs as runtime-proved
 
-### Experimental link-table export UI
-- Playbooks banner + Export Link-Table Copy… (offline private PLAY only)
-- Facade `export_playbook_link_table_copy` with independent verifier
-- **Not** project Editable; **not** runtime G2
+## Next session (priority)
+1. Keep WORKLOG timestamps until ≥10h effective product work
+2. Emulator/runtime spike only if Noah asks (headless preferred)
+3. Remaining PORTME community-critical if repro’d with asset_id
+4. Full `tests/mod_editor` green run
+5. Only then consider `git push` + beta release (ask Noah once before `gh release create`)
 
-### Hour gate
-- Still multi-session accumulation; do not claim ≥10h yet
+## Evidence scratch
+`/tmp/grok-goal-d84b62e44b40/implementer/` — e1_reproof_*, broader_product_slice.txt, packaging checks, etc.

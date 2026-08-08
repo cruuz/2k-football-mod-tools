@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.59`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.60`.** Historical sealed packages below retain prior alpha numbers.
 
 > **Current full-shell implementation: v24 shell atlas.** Earlier sections in
 > this research log describe the superseded guarded convex-hull carrier and are

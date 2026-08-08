@@ -5,6 +5,29 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+
+## v1.0 RC55 — package-map writer, playbooks inspector map, crib UX — 2026-08-08
+
+### Community / product
+
+- **G1 package map (Dime ILB surface)** — o0308 census: assignment-only gate
+  failed; primary offline delta is formation `+0x0D` 11-byte role permutation
+  (Nickel vs Dime). `build_formation_package_map_patch` + independent verifier
+  offline-proved for map bytes. Runtime G1 fix **unproved** — no one-click pack.
+- **G2 Ace menu** — formation play-link table copy offline-proved (Ace←Quads
+  class); experimental Export Link-Table Copy in Playbooks (private PLAY only).
+- **Playbooks inspector** — read-only package-map line under Formation; Dime/Nickel/Ace honesty tags.
+- **Crib import fit** — Contain/Cover/Stretch chooser on dialog + drop.
+- **Crib model import/export** — click-to-explain when XISO or scene missing (no silent gray).
+- **Keyboard** — Esc clears search; Ctrl+/ keyboard hints (parity with APF shell).
+- **Broken-play ⚠ Ace/Dime/Bear** — still annotations only; G1 map text updated.
+
+### Honesty
+
+- Package-map / link-table exports never mutate the loaded ISO and are not
+  project staged as Editable gameplay fixes.
+- Freehand routes still not Editable.
+
 ## v1.0 RC54 — playbook host clone stubs, stadium import reasons, stretch fit, broken-play flags — 2026-08-07
 
 ### Community / product fixes
