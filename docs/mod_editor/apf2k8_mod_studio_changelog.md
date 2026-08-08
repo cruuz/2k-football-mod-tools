@@ -18,7 +18,9 @@
   - **Team Logo** Export/Replace/Build/Revert/Master (load/stage/profile walls)
   - **Custom Team Appearance** Stage/Revert when unloaded
   - **All Textures empty search** — teaches logo_l0, number_N_color, font_albedo
-  - **Equipment Colors Revert** never silent-gray; **roster Open/Save** never silent-gray
+  - **Equipment Colors Revert** never silent-gray; **roster Open/Save/Assign/Clear** never silent-gray
+  - **APF stock playbook routes** Copy/Swap/Revert never silent-gray
+  - **Audio Load waveform** never silent-gray (bank/unavailable rows explain)
 - **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
   Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
   embedded TXTR fail closed after **45s** with re-select / Export-raw guidance
