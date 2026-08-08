@@ -3451,8 +3451,15 @@ class StudioMainWindow(QMainWindow):
         next_button.clicked.connect(lambda: self._page_universal_assets(1))
         asset_list.currentItemChanged.connect(self._select_universal_asset)
         export_button.clicked.connect(self._export_universal_asset)
-        previous_button.setEnabled(False)
-        next_button.setEnabled(False)
+        # Never silent-gray: page buttons stay clickable; boot tip until Load.
+        page_boot = (
+            "Load your NFL 2K5 XISO and open All Resources first. "
+            "Previous/Next stay clickable so blocked states explain themselves."
+        )
+        for button in (previous_button, next_button):
+            button.setEnabled(True)
+            button.setToolTip(page_boot)
+            button.setProperty("disableReason", page_boot)
         return page
 
     def _build_stadium_page(
@@ -4692,21 +4699,44 @@ class StudioMainWindow(QMainWindow):
                 state.detail_label.setText(
                     "Try a broader search, another FourCC, or the previous page."
                 )
-            state.previous_button.setEnabled(
-                state.offset > 0
-                and not self._blocking
-                and not self._embedded_operation_is_busy()
+            busy = self._blocking or self._embedded_operation_is_busy()
+            if busy:
+                page_block = "Wait for the current operation to finish, then page."
+            else:
+                page_block = ""
+            if page_block:
+                prev_block = next_block = page_block
+                prev_tip = next_tip = page_block
+            else:
+                if state.offset > 0:
+                    prev_block, prev_tip = "", "Show the previous 250 indexed resources."
+                else:
+                    prev_block = prev_tip = "Already on the first page of indexed resources."
+                if len(state.rows) == 250:
+                    next_block, next_tip = "", "Show the next 250 indexed resources."
+                else:
+                    next_block = next_tip = "Already on the last page of matching resources."
+            state.previous_button.setEnabled(True)
+            state.previous_button.setToolTip(prev_tip)
+            state.previous_button.setProperty("disableReason", prev_block)
+            state.next_button.setEnabled(True)
+            state.next_button.setToolTip(next_tip)
+            state.next_button.setProperty("disableReason", next_block)
+            # Never silent-gray export: empty page teaches select/load wall.
+            if busy:
+                exp_block = "Wait for the current operation to finish."
+            elif not state.rows:
+                exp_block = (
+                    "No matching resources on this page. Broaden search or change FourCC."
+                )
+            else:
+                exp_block = ""
+            state.export_button.setEnabled(True)
+            state.export_button.setToolTip(
+                exp_block
+                or "Export the exact raw game resource (wrapper + body) to a new file."
             )
-            state.next_button.setEnabled(
-                len(state.rows) == 250
-                and not self._blocking
-                and not self._embedded_operation_is_busy()
-            )
-            state.export_button.setEnabled(
-                bool(state.rows)
-                and not self._blocking
-                and not self._embedded_operation_is_busy()
-            )
+            state.export_button.setProperty("disableReason", exp_block)
 
         self._start_task(
             lambda progress: self.facade.browse_resources(
@@ -4724,6 +4754,11 @@ class StudioMainWindow(QMainWindow):
     def _page_universal_assets(self, direction: int) -> None:
         state = self._universal_browser
         if state is None or direction not in {-1, 1}:
+            return
+        button = state.previous_button if direction < 0 else state.next_button
+        reason = str(button.property("disableReason") or "").strip()
+        if reason:
+            self._show_error(reason)
             return
         state.offset = max(0, state.offset + direction * 250)
         self._query_universal_assets(reset=False)

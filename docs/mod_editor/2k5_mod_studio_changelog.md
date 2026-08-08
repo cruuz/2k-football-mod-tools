@@ -47,6 +47,7 @@ build path.
   empty selection teaches “select a player first.”
 - **Stadium Studio surface Export/Replace/Revert** never silent-gray at
   construction (boot disableReason before first texture selection).
+- **All Resources Previous/Next** never silent-gray (first/last/busy/Load walls).
 - **Audio Previous/Next** never silent-gray — first/last page, pending search,
   busy, and unloaded walls teach via disableReason + progress_label (clicks no
   longer look dead).

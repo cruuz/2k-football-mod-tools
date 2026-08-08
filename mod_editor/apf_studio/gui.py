@@ -2112,8 +2112,13 @@ class AssetBrowser(QWidget):
             self.table.setRowCount(0)
             self.result_count.setText("Load a game to browse")
             self.page_label.setText("Page 0 of 0")
-            self.previous_button.setEnabled(False)
-            self.next_button.setEnabled(False)
+            load_tip = (
+                "Load your APF game first, then page All Textures / inventory results."
+            )
+            for button in (self.previous_button, self.next_button):
+                button.setEnabled(True)
+                button.setToolTip(load_tip)
+                button.setProperty("disableReason", load_tip)
             self._clear_detail()
             return
         status_value = self.status_filter.currentData()
@@ -2150,8 +2155,25 @@ class AssetBrowser(QWidget):
         self.table.setUpdatesEnabled(True)
         self.result_count.setText(f"{len(self._matches):,} assets")
         self.page_label.setText(f"Page {self._page + 1} of {page_count}")
-        self.previous_button.setEnabled(self._page > 0)
-        self.next_button.setEnabled(self._page + 1 < page_count)
+        # Never silent-gray: Previous/Next teach first/last page walls.
+        if self._page > 0:
+            self.previous_button.setEnabled(True)
+            self.previous_button.setToolTip("Show the previous page of assets.")
+            self.previous_button.setProperty("disableReason", "")
+        else:
+            tip = "Already on the first page of matching assets."
+            self.previous_button.setEnabled(True)
+            self.previous_button.setToolTip(tip)
+            self.previous_button.setProperty("disableReason", tip)
+        if self._page + 1 < page_count:
+            self.next_button.setEnabled(True)
+            self.next_button.setToolTip("Show the next page of assets.")
+            self.next_button.setProperty("disableReason", "")
+        else:
+            tip = "Already on the last page of matching assets."
+            self.next_button.setEnabled(True)
+            self.next_button.setToolTip(tip)
+            self.next_button.setProperty("disableReason", tip)
         restored = False
         if preserve_asset_id:
             for row in range(self.table.rowCount()):
@@ -2180,6 +2202,11 @@ class AssetBrowser(QWidget):
             self._clear_detail(empty_msg)
 
     def _change_page(self, delta: int) -> None:
+        button = self.previous_button if delta < 0 else self.next_button
+        reason = str(button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Cannot change page yet", reason)
+            return
         self._page += delta
         self.refresh()
 

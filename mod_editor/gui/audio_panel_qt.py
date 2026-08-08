@@ -4088,8 +4088,11 @@ if PYQT5_AVAILABLE:
             self._show_asset(None)
             self.count_label.setText("Load your NFL 2K5 XISO")
             self.range_label.setText("0 results")
-            self.previous_button.setEnabled(False)
-            self.next_button.setEnabled(False)
+            tip = "Load your NFL 2K5 XISO first, then browse audio pages."
+            for button in (self.previous_button, self.next_button):
+                button.setEnabled(True)
+                button.setToolTip(tip)
+                button.setProperty("disableReason", tip)
             self._update_collection_actions()
 
         def _set_selected_asset_id(self, asset_id: str | None) -> bool:
