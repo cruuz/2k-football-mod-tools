@@ -15028,16 +15028,61 @@ class InspectorBrowser(QFrame):
             return
         bank_count = len(self._external_audio_bank_identities())
         loaded = self.model is not None
-        self.export_complete_audio_catalog_button.setEnabled(
-            loaded and not self._audio_export_running
+        # Never silent-gray bulk exports: teach load / busy walls via disableReason.
+        # Ready-state tooltips keep the full honesty boundaries (47,814 / AUSB /
+        # physical banks) that community docs and tests expect.
+        catalog_ready_tip = (
+            "Export every semantic audio row from the loaded game to one new ZIP. "
+            "The manifest and searchable catalog.csv account for all 47,814 pinned "
+            "rows; successful sounds also receive checksums and an ordered "
+            "playlist.m3u8. The 20 AUSB index rows and 19 physical-bank rows are "
+            "recorded as unsupported metadata, not cues."
+        )
+        banks_ready_tip = (
+            "Copy every source-owned physical XMA1 bank—including the two "
+            "soundtrack banks—into one private, checksummed ZIP. Raw banks are "
+            "multi-cue containers; this does not make them playable or editable."
+        )
+        if loaded and not self._audio_export_running:
+            cat_tip = catalog_ready_tip
+            cat_block = ""
+        elif self._audio_export_running:
+            cat_tip = cat_block = (
+                "An audio export is already running. Cancel it first, or wait."
+            )
+        else:
+            cat_tip = cat_block = (
+                "Load a supported APF game first, then export the complete audio catalog."
+            )
+        self.export_complete_audio_catalog_button.setEnabled(True)
+        self.export_complete_audio_catalog_button.setToolTip(cat_tip)
+        self.export_complete_audio_catalog_button.setProperty(
+            "disableReason", cat_block
         )
         self.export_original_audio_banks_button.setText(
             f"Export all original banks ({bank_count})…"
             if bank_count
             else "Export all original banks…"
         )
-        self.export_original_audio_banks_button.setEnabled(
-            bank_count > 0 and not self._audio_export_running
+        if bank_count > 0 and not self._audio_export_running:
+            bank_tip = banks_ready_tip
+            bank_block = ""
+        elif self._audio_export_running:
+            bank_tip = bank_block = (
+                "An audio export is already running. Cancel it first, or wait."
+            )
+        elif bank_count == 0:
+            bank_tip = bank_block = (
+                "No original bank identities are available for this catalog yet."
+            )
+        else:
+            bank_tip = bank_block = (
+                "Load a supported APF game first, then export original banks."
+            )
+        self.export_original_audio_banks_button.setEnabled(True)
+        self.export_original_audio_banks_button.setToolTip(bank_tip)
+        self.export_original_audio_banks_button.setProperty(
+            "disableReason", bank_block
         )
         self.cancel_audio_export_button.setText(
             "Cancelling…"
@@ -15439,6 +15484,16 @@ class InspectorBrowser(QFrame):
     def _export_complete_audio_catalog(self) -> None:
         """Publish every indexed semantic audio row to one private ZIP."""
 
+        reason = str(
+            self.export_complete_audio_catalog_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export complete audio catalog yet",
+                reason,
+            )
+            return
         model = self.model
         if not self.audio_mode or model is None or not model.rows:
             return
@@ -15537,6 +15592,16 @@ class InspectorBrowser(QFrame):
     def _export_all_original_audio_banks(self) -> None:
         """Copy every physical XMA1 bank to one private, accounted ZIP."""
 
+        reason = str(
+            self.export_original_audio_banks_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export original audio banks yet",
+                reason,
+            )
+            return
         identities = self._external_audio_bank_identities()
         if not identities:
             return

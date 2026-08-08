@@ -432,8 +432,23 @@ class ApfAudioBatchGuiTests(unittest.TestCase):
         browser, _facade, _tasks = self._browser()
         try:
             browser._audio_export_started()
-            self.assertFalse(browser.export_complete_audio_catalog_button.isEnabled())
-            self.assertFalse(browser.export_original_audio_banks_button.isEnabled())
+            # Never silent-gray: bulk exports stay clickable with busy disableReason.
+            self.assertTrue(browser.export_complete_audio_catalog_button.isEnabled())
+            self.assertTrue(
+                str(
+                    browser.export_complete_audio_catalog_button.property(
+                        "disableReason"
+                    )
+                    or ""
+                ).strip()
+            )
+            self.assertTrue(browser.export_original_audio_banks_button.isEnabled())
+            self.assertTrue(
+                str(
+                    browser.export_original_audio_banks_button.property("disableReason")
+                    or ""
+                ).strip()
+            )
             self.assertTrue(browser.cancel_audio_export_button.isEnabled())
 
             browser.cancel_audio_export_button.click()
