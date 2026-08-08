@@ -29,3 +29,15 @@ Residual risks: G1/G2 **runtime** unproved (offline writers proved for bytes);
 freehand inverse compiler not Editable; STFS resign external; monorepo pytest
 order-dependent hang residual (use batched suites); hour gate multi-session;
 no interactive Xenia in this run.
+
+### Never-silent-gray expansion (continuation 2026-08-08)
+
+Closed or substantially reduced silent-gray on:
+- APF: text Apply/Revert, Text Sheet, ratings sheet, player rating/position Apply/Revert,
+  bulk audio catalog/banks, Export matching, Export decoded rows, Custom Team Write-raw
+- 2K5: Text & Rosters (string + current + historical), Audio Export matching, Load waveform,
+  shortlist bulk, Gameplay Inspector exports
+
+Residual intentional locks: cancel-in-flight, busy workers, pagination arrows without
+page, some form field enables (inputs, not action buttons).
+
