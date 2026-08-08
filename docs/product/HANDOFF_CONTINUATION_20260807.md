@@ -611,3 +611,6 @@ main **462** ahead. Wall **8.69h**. Full gates green. Hour gate OPEN.
 - G1/G2 runtime unproved; freehand not Editable
 - Monorepo full suite hang residual (use batches)
 - Intentional locks: cancel-in-flight, busy, form fields, empty shortlist export
+
+## Hour gate status 2026-08-08T07:43:57-04:00
+Wall **9.93h** from 21:48 — **still OPEN**.
