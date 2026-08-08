@@ -10979,7 +10979,9 @@ class InspectorBrowser(QFrame):
         )
         self.export_pcm_template_button.setObjectName("secondaryButton")
         self.export_pcm_template_button.setVisible(audio_mode)
-        self.export_pcm_template_button.setEnabled(False)
+        self.export_pcm_template_button.setEnabled(True)
+        self.export_pcm_template_button.setToolTip('Choose a playable sound first, then export its exact PCM template.')
+        self.export_pcm_template_button.setProperty("disableReason", 'Choose a playable sound first, then export its exact PCM template.')
         self.export_pcm_template_button.setAccessibleName(
             "Export exact PCM authoring template for this APF sound"
         )
@@ -10993,7 +10995,9 @@ class InspectorBrowser(QFrame):
         self.replace_pcm_audio_button = QPushButton("Replace from audio…")
         self.replace_pcm_audio_button.setObjectName("primaryButton")
         self.replace_pcm_audio_button.setVisible(audio_mode)
-        self.replace_pcm_audio_button.setEnabled(False)
+        self.replace_pcm_audio_button.setEnabled(True)
+        self.replace_pcm_audio_button.setToolTip('Choose a playable sound first, then replace from ordinary audio.')
+        self.replace_pcm_audio_button.setProperty("disableReason", 'Choose a playable sound first, then replace from ordinary audio.')
         self.replace_pcm_audio_button.setAccessibleName(
             "Replace this APF sound from an ordinary audio file"
         )
@@ -11046,7 +11050,9 @@ class InspectorBrowser(QFrame):
         self.replace_audio_button = QPushButton("Replace with XMA1…")
         self.replace_audio_button.setObjectName("primaryButton")
         self.replace_audio_button.setVisible(audio_mode)
-        self.replace_audio_button.setEnabled(False)
+        self.replace_audio_button.setEnabled(True)
+        self.replace_audio_button.setToolTip('Choose a playable sound first, then Replace with XMA1.')
+        self.replace_audio_button.setProperty("disableReason", 'Choose a playable sound first, then Replace with XMA1.')
         self.replace_audio_button.setToolTip(
             "Choose a pre-encoded RIFF XMA1 file. It must exactly match the selected "
             "sound's channels, sample rate, encoded byte length, packet "
@@ -11057,7 +11063,9 @@ class InspectorBrowser(QFrame):
         self.revert_audio_button = QPushButton("Revert sound")
         self.revert_audio_button.setObjectName("dangerQuietButton")
         self.revert_audio_button.setVisible(audio_mode)
-        self.revert_audio_button.setEnabled(False)
+        self.revert_audio_button.setEnabled(True)
+        self.revert_audio_button.setToolTip('Choose a modified playable sound first to revert.')
+        self.revert_audio_button.setProperty("disableReason", 'Choose a modified playable sound first to revert.')
         self.revert_audio_button.clicked.connect(self._revert_audio)
         self.audio_replace_note = QLabel(
             "PCM authoring bridge • Export an exact silence template, edit that WAV, "
