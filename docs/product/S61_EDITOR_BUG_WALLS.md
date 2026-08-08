@@ -72,3 +72,10 @@ Multi-session WORKLOG wall stamp span tracked honestly in
 `docs/product/WORKLOG_20260807.md`. As of late continuation: ~8.3h wall; ≥10h
 still open. Packaging dual RELEASE_PASS + registry 70/70 are green independently.
 
+### Never-silent-gray expansion (2026-08-08 late-2)
+
+- 2K5 Menus Export; Export Number; Stadium boot; Audio/All Resources pagination
+- APF Field Art Stock NFL endzones button; Place/Save; All Textures pagination
+- APF Complete audio pagination + export_rows disableReason clear
+- Playbooks **G1: Use Nickel donor** helper
+- XMA1 wizard Save/Test never silent-gray

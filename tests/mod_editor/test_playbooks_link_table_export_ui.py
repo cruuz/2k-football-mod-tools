@@ -93,6 +93,38 @@ class LinkTableExportUiTests(unittest.TestCase):
             )
         )
 
+    def test_g1_nickel_donor_helper_selects_nickel(self) -> None:
+        class _Formation:
+            def __init__(self, name: str) -> None:
+                self.name = name
+
+        class _Book:
+            asset_id = "book.g1"
+            outer_index = 1
+            book_name = "G1"
+            formations = (
+                _Formation("4-3"),
+                _Formation("Nickel"),
+                _Formation("Dime"),
+            )
+            plays = ()
+
+        panel = PlaybooksPanel(_Host())
+        try:
+            panel._all_books = (_Book(),)
+            panel.selected_asset_id = "book.g1"
+            panel.link_donor_combo.clear()
+            for index, formation in enumerate(_Book.formations):
+                panel.link_donor_combo.addItem(formation.name, index)
+            panel.g1_nickel_donor_button.setProperty("disableReason", "")
+            panel._select_g1_nickel_donor()
+            self.assertEqual(panel.link_donor_combo.currentData(), 1)
+            self.assertIn("Nickel", panel.progress_label.text())
+            self.assertIn("runtime unproved", panel.progress_label.text().casefold())
+        finally:
+            panel.deleteLater()
+            self.app.processEvents()
+
 
 if __name__ == "__main__":
     unittest.main()
