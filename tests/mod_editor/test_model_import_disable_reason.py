@@ -85,5 +85,82 @@ class TwoK5StadiumImportExplainContractTests(unittest.TestCase):
         )
 
 
+class ApfStadiumMeshImportExplainContractTests(unittest.TestCase):
+    """APF Stadium Studio mesh Import/Export never silent-gray."""
+
+    def test_apf_stadium_mesh_buttons_use_disable_reason(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        source = (root / "mod_editor/apf_studio/gui.py").read_text(encoding="utf-8")
+        self.assertIn("def _refresh_mesh_action_buttons", source)
+        self.assertIn('setProperty("disableReason", block)', source)
+        self.assertIn("Cannot import stadium mesh yet", source)
+        self.assertIn("Cannot export stadium mesh yet", source)
+        # Buttons stay enabled in the refresh path (never setEnabled(False)).
+        self.assertIn("self.import_model_button.setEnabled(True)", source)
+        self.assertIn("self.export_model_button.setEnabled(True)", source)
+
+    def test_apf_stadium_mesh_panel_without_source_stays_clickable(self) -> None:
+        class _Facade:
+            source_ready = False
+            source = None
+
+        def _runner(*_args, **_kwargs):
+            return True
+
+        # Import late to keep module import cost out of other tests' setUp.
+        from mod_editor.apf_studio.gui import StadiumStudioPage  # noqa: WPS433
+
+        panel = StadiumStudioPage(_Facade(), _runner)  # type: ignore[arg-type]
+        try:
+            self.assertTrue(panel.import_model_button.isEnabled())
+            self.assertTrue(panel.export_model_button.isEnabled())
+            tip = panel.import_model_button.toolTip()
+            self.assertIn("Load", tip)
+            reason = str(panel.import_model_button.property("disableReason") or "")
+            self.assertTrue(reason.strip())
+            self.assertIn("Load", reason)
+        finally:
+            panel.deleteLater()
+            self.application.processEvents()
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.application = QApplication.instance() or QApplication([])
+
+
+class ApfWordmarkImportExplainContractTests(unittest.TestCase):
+    """Wordmark Import/Export never silent-gray when game not loaded."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.application = QApplication.instance() or QApplication([])
+
+    def test_wordmark_import_export_without_source_stay_clickable(self) -> None:
+        class _Facade:
+            source_ready = False
+            source = None
+            modified_asset_ids = frozenset()
+
+            def uniform_assets(self, family=None):
+                return ()
+
+        def _runner(*_args, **_kwargs):
+            return True
+
+        from mod_editor.apf_studio.gui import ApfTextLogoPanel  # noqa: WPS433
+
+        panel = ApfTextLogoPanel(_Facade(), _runner)  # type: ignore[arg-type]
+        try:
+            self.assertTrue(panel.import_button.isEnabled())
+            self.assertTrue(panel.export_button.isEnabled())
+            tip = panel.import_button.toolTip()
+            self.assertIn("Load", tip)
+            reason = str(panel.import_button.property("disableReason") or "")
+            self.assertIn("Load", reason)
+        finally:
+            panel.deleteLater()
+            self.application.processEvents()
+
+
 if __name__ == "__main__":
     unittest.main()

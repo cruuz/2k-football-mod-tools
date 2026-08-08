@@ -16,7 +16,7 @@ offline-writer-proved or better.
 | 9 | ISO load any-rip | **Fixed class** | layout-tolerant extract; tests `test_apf_iso_extraction_is_layout_tolerant`, `test_xiso_layout_tolerance` |
 | 8b | Field art stock NFL | **Wall + labeled** | `APF_FIELD_ART_STOCK_NFL_WALL.md`; inventory has stock; writer is 6 proved slots |
 | 9b | Team color editor crash | **Mitigated** | 2K5 unif colour failures stay **inline** (no modal popup on set select); ARGB parse fail-closed (`_argb_to_qcolor`); empty filter disables colour buttons. APF equipment read errors also inline. Tests: `test_unif_color_argb_parse`, equipment GUI suite. |
-| 10 | Gray model import | **Fixed** | APF model panel always clickable + disableReason; 2K5 Crib + **Stadium** Import/Export click-to-explain (never silent gray) |
+| 10 | Gray model import | **Fixed** | APF player/helmet model panel + **APF Stadium mesh** Import/Export + wordmark Import/Export always clickable + disableReason; 2K5 Crib + Stadium Import/Export click-to-explain (never silent gray) |
 | 11 | Windows path/installer | **Ongoing class** | `platform_compat`, beta-5..12 lessons; keep matrix tests green |
 | 12 | PS3 ISO mis-ID | **Fixed class** | structural ID + clear refuse; keep probes |
 | 13 | Helmet shell default path | **Mitigated** | Team Logos UI recommends Full-shell + Normal logo; opaque shell body α255 taught in blurb/tooltip (0x88 translucency defect named). Runtime Xenia witness still partial. |

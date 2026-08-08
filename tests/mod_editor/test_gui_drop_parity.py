@@ -274,6 +274,30 @@ class WordmarkDropParityTests(unittest.TestCase):
             self.application.processEvents()
 
 
+def _pump_pool_idle(application: QApplication, panel: CribPanel, *, timeout_s: float = 10.0) -> None:
+    """Drain QThreadPool work and queued finished/result slots.
+
+    waitForDone alone is not enough: worker signals are QueuedConnection to the
+    GUI thread, so _busy stays True until processEvents runs the finished slot.
+    Offscreen QInputDialog also must be mocked by callers — never left open.
+    """
+    import time
+
+    deadline = time.time() + timeout_s
+    while time.time() < deadline:
+        panel._pool.waitForDone(50)
+        application.processEvents()
+        if panel._pool.activeThreadCount() == 0 and not panel._busy:
+            application.processEvents()
+            if not panel._busy:
+                return
+        time.sleep(0.01)
+    raise AssertionError(
+        f"Crib panel still busy after {timeout_s:.1f}s "
+        f"(active={panel._pool.activeThreadCount()}, busy={panel._busy})"
+    )
+
+
 class CribDropParityTests(unittest.TestCase):
     """2K5 Crib: a dropped off-size JPEG becomes the slot's exact PNG."""
 
@@ -302,11 +326,9 @@ class CribDropParityTests(unittest.TestCase):
             try:
                 # Drain the construction-time preview task so the replace lane
                 # is free when the drop arrives.
-                panel._pool.waitForDone(10000)
-                self.application.processEvents()
+                _pump_pool_idle(self.application, panel)
                 panel.table.selectRow(0)
-                panel._pool.waitForDone(10000)
-                self.application.processEvents()
+                _pump_pool_idle(self.application, panel)
                 self.assertTrue(panel.preview._accepting)
                 selected = panel._selected_asset()
                 self.assertIsNotNone(selected)
@@ -314,9 +336,15 @@ class CribDropParityTests(unittest.TestCase):
                 with tempfile.TemporaryDirectory() as directory:
                     source = _write_jpeg(Path(directory) / "crib.jpg", 200, 300)
                     original = source.read_bytes()
+                    # Off-size JPEG → Contain/Cover/Stretch chooser (same path
+                    # as the Replace dialog). Must mock getItem or offscreen
+                    # hangs forever on the modal QInputDialog.
                     with mock.patch(
-                        "mod_editor.gui.crib_panel_qt.QMessageBox.question",
-                        return_value=QMessageBox.Yes,
+                        "mod_editor.gui.crib_panel_qt.QInputDialog.getItem",
+                        return_value=(
+                            "Cover — fill the slot, crop overflow",
+                            True,
+                        ),
                     ), mock.patch(
                         "mod_editor.gui.crib_panel_qt.QMessageBox.information"
                     ), mock.patch(
@@ -324,8 +352,7 @@ class CribDropParityTests(unittest.TestCase):
                     ):
                         dropped = _drop(panel.preview, source)
                     self.assertTrue(dropped.isAccepted())
-                    panel._pool.waitForDone(10000)
-                    self.application.processEvents()
+                    _pump_pool_idle(self.application, panel)
 
                     self.assertEqual(len(replacements), 1)
                     asset_id, supplied = replacements[0]

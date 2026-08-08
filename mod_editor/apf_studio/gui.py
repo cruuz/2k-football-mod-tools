@@ -5179,6 +5179,9 @@ class ApfTextLogoPanel(QFrame):
         self.import_button.setObjectName("primaryButton")
         self.revert_button = QPushButton("Revert")
         self.revert_button.setObjectName("dangerQuietButton")
+        # Never silent-gray: stay clickable; explain when source/catalog is not ready.
+        self.export_button.setEnabled(True)
+        self.import_button.setEnabled(True)
         self.export_button.clicked.connect(self._export_current)
         self.import_button.clicked.connect(self._choose_image)
         self.revert_button.clicked.connect(self._revert)
@@ -5230,8 +5233,17 @@ class ApfTextLogoPanel(QFrame):
             self.owners.setText(
                 "Load a game to resolve package ownership.\n\n" + START_HERE_HINT
             )
-            self.export_button.setEnabled(False)
-            self.import_button.setEnabled(False)
+            load_tip = (
+                "Load your APF game first (0A). Wordmark export/import needs the "
+                "206-slot catalog. Click still explains this — buttons stay "
+                "clickable so gray never means a silent no-op."
+            )
+            self.export_button.setEnabled(True)
+            self.import_button.setEnabled(True)
+            self.export_button.setToolTip(load_tip)
+            self.import_button.setToolTip(load_tip)
+            self.export_button.setProperty("disableReason", load_tip)
+            self.import_button.setProperty("disableReason", load_tip)
             self.revert_button.setEnabled(False)
             return
         assets = self.facade.uniform_assets("textlogo")
@@ -5239,14 +5251,31 @@ class ApfTextLogoPanel(QFrame):
             self._assets = {}
             self.preview.set_error("The 206-slot wordmark catalog did not validate.")
             self.status.setText("Catalog error")
-            self.export_button.setEnabled(False)
-            self.import_button.setEnabled(False)
+            catalog_tip = (
+                "The 206-slot wordmark catalog did not validate. Re-load a complete "
+                "APF dump (0A with full outer table). Click still explains this."
+            )
+            self.export_button.setEnabled(True)
+            self.import_button.setEnabled(True)
+            self.export_button.setToolTip(catalog_tip)
+            self.import_button.setToolTip(catalog_tip)
+            self.export_button.setProperty("disableReason", catalog_tip)
+            self.import_button.setProperty("disableReason", catalog_tip)
             self.revert_button.setEnabled(False)
             return
         self._assets = {asset.asset_index: asset for asset in assets}
         self.preview.setAcceptDrops(True)
         self.export_button.setEnabled(True)
         self.import_button.setEnabled(True)
+        self.export_button.setToolTip(
+            "Export this 512×128 wordmark PNG (staged replacement if present)."
+        )
+        self.import_button.setToolTip(
+            "Import any image — Contain/Cover/Stretch fit to 512×128, then stage "
+            "into the project Build. Never mutates your original archive."
+        )
+        self.export_button.setProperty("disableReason", "")
+        self.import_button.setProperty("disableReason", "")
         self._selection_changed()
 
     def _selection_changed(self) -> None:
@@ -5296,6 +5325,17 @@ class ApfTextLogoPanel(QFrame):
         )
 
     def _choose_image(self) -> None:
+        reason = str(self.import_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot import wordmark yet",
+                reason
+                + "\n\nFix: File → Load game, point at your APF folder/ISO, then "
+                "import again. Import stages a project copy — it never mutates "
+                "your original dump.",
+            )
+            return
         asset = self.current_asset()
         if asset is None:
             return
@@ -5393,6 +5433,16 @@ class ApfTextLogoPanel(QFrame):
         )
 
     def _export_current(self) -> None:
+        reason = str(self.export_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export wordmark yet",
+                reason
+                + "\n\nFix: File → Load game with a complete APF dump, then export "
+                "the 512×128 wordmark PNG.",
+            )
+            return
         asset = self.current_asset()
         if asset is None:
             return
@@ -6554,11 +6604,13 @@ class StadiumStudioPage(QWidget):
         self.import_model_button.setObjectName("primaryButton")
         self.reset_view_button.setEnabled(False)
         self.export_scene_button.setEnabled(False)
-        self.export_model_button.setEnabled(False)
-        self.import_model_button.setEnabled(False)
+        # Never silent-gray: mesh import/export stay clickable and explain.
+        self.export_model_button.setEnabled(True)
+        self.import_model_button.setEnabled(True)
         self.export_scene_button.setToolTip(
             "Export the private glTF, binary buffer, and evidence manifest. Geometry is raw game data; a root node scales it from centimetres to metres so it opens at a sane size."
         )
+        self._refresh_mesh_action_buttons()
         view_heading.addLayout(view_titles, 1)
         view_heading.addWidget(self.reset_view_button)
         view_heading.addWidget(self.export_scene_button)
@@ -6826,8 +6878,8 @@ class StadiumStudioPage(QWidget):
         )
         self.reset_view_button.setEnabled(False)
         self.export_scene_button.setEnabled(True)
-        self.export_model_button.setEnabled(False)
-        self.import_model_button.setEnabled(False)
+        self._selected_model_target = None
+        self._refresh_mesh_action_buttons()
         self._populate_package(self.facade.stadium_package_assets(scene))
 
         def operation(
@@ -6883,6 +6935,8 @@ class StadiumStudioPage(QWidget):
                     "inner-8 scene. Click a surface to see its exact embedded textures."
                 )
                 self._populate_embedded_textures(())
+            self._selected_model_target = None
+            self._refresh_mesh_action_buttons()
 
         self.run_task("Opening APF Stadium Studio", operation, complete, False)
 
@@ -6898,10 +6952,59 @@ class StadiumStudioPage(QWidget):
         self.surface_identity.setText("No surface selected")
         self.reset_view_button.setEnabled(False)
         self.export_scene_button.setEnabled(False)
-        self.export_model_button.setEnabled(False)
-        self.import_model_button.setEnabled(False)
+        self._selected_model_target = None
+        self._refresh_mesh_action_buttons()
         self.package_panel_title.setText("Owning outer package")
         self._populate_package(())
+
+    def _refresh_mesh_action_buttons(self) -> None:
+        """Keep stadium mesh Import/Export clickable; gray never means silent no-op."""
+
+        ready = bool(getattr(self.facade, "source_ready", False))
+        has_preview = self._preview is not None
+        has_target = self._selected_model_target is not None and has_preview
+        if not ready:
+            block = (
+                "Load your APF game first. Stadium mesh export/import needs the "
+                "retail archive (0A/1A). Click still explains this — buttons stay "
+                "clickable so a gray control is never a dead no-op."
+            )
+        elif not has_preview:
+            block = (
+                "Open a stadium scene from the list first, wait for the private "
+                "geometry preview, then click a catalog-authorized surface. "
+                "Click still explains this."
+            )
+        elif not has_target:
+            block = (
+                "Click a surface that is one of the 77 catalog-authorized "
+                "outer-14/inner-8 POSITION targets. Other surfaces are view-only. "
+                "Click still explains this."
+            )
+        else:
+            block = ""
+        export_tip = (
+            block
+            if block
+            else (
+                "Export this surface as an editable glTF (POSITION targets). "
+                "Keep vertex count and triangles exact; only positions may change."
+            )
+        )
+        import_tip = (
+            block
+            if block
+            else (
+                "Import a same-topology POSITION-only glTF for this surface into a "
+                "new verified volume copy. Never mutates your original archive."
+            )
+        )
+        self.export_model_button.setEnabled(True)
+        self.import_model_button.setEnabled(True)
+        self.export_model_button.setToolTip(export_tip)
+        self.import_model_button.setToolTip(import_tip)
+        self.export_model_button.setProperty("disableReason", block)
+        self.import_model_button.setProperty("disableReason", block)
 
     def _surface_selected(self, mesh_index: int, primitive_index: int) -> None:
         model = self._model
@@ -6910,8 +7013,7 @@ class StadiumStudioPage(QWidget):
         identity = model.surface_identity(mesh_index, primitive_index)
         if identity is None:
             self._selected_model_target = None
-            self.export_model_button.setEnabled(False)
-            self.import_model_button.setEnabled(False)
+            self._refresh_mesh_action_buttons()
             self.surface_identity.setText(
                 f"Mesh {mesh_index} / primitive {primitive_index}"
             )
@@ -6959,9 +7061,7 @@ class StadiumStudioPage(QWidget):
                 f" Exact serialized ownership resolves material slots {slots or 'none'} "
                 f"to {len(owned)} embedded texture{'s' if len(owned) != 1 else ''}."
             )
-        available = selected_target is not None and self._preview is not None
-        self.export_model_button.setEnabled(available)
-        self.import_model_button.setEnabled(available)
+        self._refresh_mesh_action_buttons()
         if selected_target is None:
             self.surface_boundary.setText(
                 "Surface selected, but it is not one of the 77 catalog-authorized "
@@ -6978,6 +7078,18 @@ class StadiumStudioPage(QWidget):
             )
 
     def _export_selected_mesh(self) -> None:
+        reason = str(
+            self.export_model_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export stadium mesh yet",
+                reason
+                + "\n\nFix: load APF → open a stadium scene → click an authorized "
+                "surface → Export selected mesh.",
+            )
+            return
         target = self._selected_model_target
         preview = self._preview
         if target is None or preview is None:
@@ -7010,6 +7122,19 @@ class StadiumStudioPage(QWidget):
         )
 
     def _import_selected_mesh(self) -> None:
+        reason = str(
+            self.import_model_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot import stadium mesh yet",
+                reason
+                + "\n\nFix: load APF → open a stadium scene → click an authorized "
+                "surface → export glTF first → edit POSITION only → Import.\n\n"
+                "Import builds a new volume copy — it never mutates your original.",
+            )
+            return
         target = self._selected_model_target
         preview = self._preview
         source = self.facade.source
