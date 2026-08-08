@@ -111,3 +111,9 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 - Equipment Revert never-gray; E2 product batch 124p; dual packaging PASS
 - Hour gate ≥10h: **NO** (multi-session wall still short of formal 10h)
 - main ~230+ ahead; no push/release
+
+
+## Session update 2026-08-08T04:49:12-04:00
+- APF playbook route Copy/Swap never-gray; roster Assign/Clear; equipment Revert
+- E2 playbook legend + G1 donor tip + empty search; freehand findings name G1/G2 exports
+- Packaging dual PASS; main ~237 ahead; hour gate open
