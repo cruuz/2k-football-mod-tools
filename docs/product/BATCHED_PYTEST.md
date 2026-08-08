@@ -10,7 +10,7 @@ evidence instead of a single monorepo run.
 export QT_QPA_PLATFORM=offscreen
 cd "/media/noah/Storage/for codex 1.0"
 
-# Critical UI / never-gray / playbooks / textures
+# Critical UI / never-gray / playbooks / textures / audio / roster
 python3 -m pytest \
   tests/mod_editor/test_gui_drop_parity.py \
   tests/mod_editor/test_model_import_disable_reason.py \
@@ -20,6 +20,12 @@ python3 -m pytest \
   tests/mod_editor/test_apf_field_art_gui.py \
   tests/mod_editor/test_image_fit.py \
   tests/mod_editor/test_apf_xenos_4444_png.py \
+  tests/mod_editor/test_apf_logo_patch.py \
+  tests/mod_editor/test_audio_panel_qt.py \
+  tests/mod_editor/test_apf_audio_batch_gui.py \
+  tests/mod_editor/test_text_rosters_panel.py \
+  tests/mod_editor/test_apf_roster_identity_gui.py \
+  tests/mod_editor/test_apf_textlogo_gui.py \
   -q
 
 # Or file-letter batches in separate processes:
