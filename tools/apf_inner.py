@@ -60,6 +60,7 @@ XENOS_FORMATS = {
     18: "DXT1",
     19: "DXT2_3",
     20: "DXT4_5",
+    32: "16_16_16_16",  # half-float RGBA; APF lightboxes use dimension=3 cubemap
     49: "DXN",
     58: "DXT3A",
     59: "DXT5A",

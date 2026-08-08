@@ -33,3 +33,29 @@
 2. Offline G1/G2 writer if Dime vs Nickel census yields 8-byte-only delta on o0308
 3. UI polish pass remaining empty states
 4. Only then consider push + beta release
+## Session product (2026-08-07/08 continuation)
+
+### Shipped this turn
+1. **G1 package map** — o0308 Dime vs Nickel census; assignment-only gate FAILED; primary delta is formation `+0x0D` 11-byte role perm. Writer: `build_formation_package_map_patch` + verifier (offline_writer_proved bytes; runtime G1 unproved).
+2. **Nameplate fix** — `font_albedo`/`font_normal` base-only DXN (`packed_mips=False`); 22/22 previews on real 0A. Outers: 114,283,504,538,609,640,937,956,963,1312,1383.
+3. **Titans/numbers** — APF `number_N_color` all 512×512; labeled as discoverability not decode.
+4. **Crib fit** — Contain/Cover/Stretch chooser (dialog+drop).
+5. **All Textures search** teaches logo_l0 / number_0_color / font_albedo.
+6. **Format 32** named 16_16_16_16 cubemap; honest PORTME.
+
+### Tests
+- `test_playbook_package_rule_spike` 10p
+- `test_apf_dxn_base_only_namefont` 4p
+- extra format tests green
+
+### Residual
+- G1 runtime unproved (emulator)
+- G2 = menu composition not assignment XOR
+- Cubemap face preview still wall
+- Hour gate ≥10h: multi-session accumulation (do not invent hours)
+
+### Commits (local main, ahead of origin)
+- 5826696 G1 package-map + nameplate DXN
+- df96490 Crib fit chooser
+- 211f218 WORKLOG
+- 69e914b Cubemap PORTME
