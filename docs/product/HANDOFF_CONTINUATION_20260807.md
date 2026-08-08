@@ -614,3 +614,10 @@ main **462** ahead. Wall **8.69h**. Full gates green. Hour gate OPEN.
 
 ## Hour gate status 2026-08-08T07:43:57-04:00
 Wall **9.93h** from 21:48 — **still OPEN**.
+
+## Latest (2026-08-08T09:11:40-04:00)
+
+- E1 high-impact evidence table refreshed in WORKLOG (119p suite + 61p spot + 21p logo + 19p G1).
+- E2: fixed 2K5 release allowlist gap — G1 package-rule + formation-play writer now stage (197 files, runtime PASS).
+- Residual: G1/G2 runtime unproved; freehand not Editable; monorepo hang; no push/release without Noah.
+- Hour gate MET (~11.4h wall from 21:48). Continue residual DoD walls, not re-smoke only.

@@ -10,6 +10,10 @@ build path.
 
 ### Community / product
 
+- **Release allowlist ships G1 + formation clone** — `playbook_package_rule_spike.py` and
+  `nfl2k5_formation_play_writer.py` were imported by the product but absent from
+  `packaging/release-allowlist.txt` (Windows stage would crash on Playbooks G1 export
+  / formation clone). Staged file count 195→197; runtime closure + release gate green.
 - **Crib drag/drop fit** — off-size JPEG/PNG drops open the same Contain/Cover/
   Stretch chooser as the Replace dialog (shared `_fit_crib_image` path). Drop-
   parity tests mock the chooser under offscreen Qt so the modal never hangs CI.

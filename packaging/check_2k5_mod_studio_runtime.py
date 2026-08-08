@@ -94,19 +94,19 @@ EXPECTED_PRIVATE_STADIUM_TEXTURES = 23_838
 # widening Nfl2k5UnifiedVisualProvider.module_pins would misstate ownership.
 RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
-        "e20b0b3d186c645427611ab6cb3bf7f81670ad7179d729da47f8251e2c762a23",
+        "b25f669bdbdf8e893db792f1af42c3bf9787a708b7b9d62f1124ef6e4a47b290",
     "mod_editor/gui/studio_qt.py":
-        "4ecfe0b35e9185306344d1918b4f23469497ce67e752835dfb5cca7b3dc3811d",
+        "1362fbe3169d4b47772592ea32fa409b2b6120bd58b2ad1822e739daffdd04b1",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "433e68c9872bad8dbe96d2103f20c30e93289e8c62265ee657e5fc9e18939108",
     "mod_editor/studio/facade.py":
-        "46a5d9bc601befe46b5ccdc0d2b70bb7ca28465a4669a6e37d8eeaf5cae85d63",
+        "01abb0901d46a00175831d648cb3899777fbdc6bfdf8378ebd71175e7bae4781",
     "mod_editor/studio/project_archive.py":
-        "b3f5abd58820d0759f4c6f020aeee1c2a1672f7952fd80ce8f6eec198c2ec415",
+        "45f4b8207e5ff821749202712c3edde6a21e70790efcf95512a7d2423ea79e8d",
     "mod_editor/studio/session.py":
-        "22a1ed2fa643e6a9d18ac4efa5d772a91e0e666effc658b77d66638d7f196aaa",
+        "2609878efbe0f803cc7be7f917421e1a3028f858c3ad862c56d8b931f08d7922",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
@@ -125,11 +125,13 @@ REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
         "mod_editor/core/nfl2k5_crib_geometry_writer.py",
         "mod_editor/core/nfl2k5_crib_scene_texture_writer.py",
         "mod_editor/core/nfl2k5_crib_standalone_texture_writer.py",
+        "mod_editor/core/nfl2k5_formation_play_writer.py",
         "mod_editor/core/nfl2k5_playbook_inspector.py",
         "mod_editor/core/nfl2k5_playbook_route_writer.py",
         "mod_editor/core/nfl2k5_safe_text_banks.py",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py",
         "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
+        "mod_editor/core/playbook_package_rule_spike.py",
         "tools/apf_inner.py",
         "tools/apf_outer.py",
         "tools/nfl_crib_bar_monitor_png_xiso.py",
@@ -1690,7 +1692,9 @@ def main() -> int:
         "mod_editor.core.nfl2k5_ausb_build_adapter",
         "mod_editor.core.nfl2k5_ausb_fixed_slots",
         "mod_editor.core.nfl2k5_crib",
+        "mod_editor.core.nfl2k5_formation_play_writer",
         "mod_editor.core.nfl2k5_playbook_inspector",
+        "mod_editor.core.playbook_package_rule_spike",
         "mod_editor.core.nfl2k5_universal_asset_index",
         "mod_editor.core.nfl2k5_scorebug_unified_adapter",
         "mod_editor.core.nfl2k5_stadium_cache",
