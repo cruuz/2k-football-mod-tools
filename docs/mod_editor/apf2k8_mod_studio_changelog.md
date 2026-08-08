@@ -8,7 +8,12 @@
   (`packed_mips=False`). All 11 NameFont packages preview on real 0A. Outer IDs:
   114, 283, 504, 538, 609, 640, 937, 956, 963, 1312, 1383.
 - **Jersey numbers discoverability** — `number_0_color`…`number_9_color` 512×512;
-  All Textures search teaches these names (Titans-style “missing” often catalog).
+  All Textures search teaches these names (Titans-style “missing” often catalog;
+  tip says not under shoulder material).
+- **Save Players teaching** — Face shield/visor label; Play-by-play ID = VO name
+  table (G6 “Number 68…” class); G10/G11 2nd-level charge gate honesty
+  (offline tier/abilities editable; XEX gate unproved).
+- **Equipment Stage never silent-gray** — stays clickable; Load/filter reasons.
 - **Linear / rain textures** — untiled uncompressed TXTR (e.g.
   `crowd_shirt_stripe_color_rain`) PNG-preview instead of linear PORTME.
 - **Linear DXT** — untiled DXT1/2_3/4_5 TXTR bases PNG-preview (pitch-padded
