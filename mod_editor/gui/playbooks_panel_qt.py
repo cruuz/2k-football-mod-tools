@@ -1007,11 +1007,31 @@ class PlaybooksPanel(QWidget):
             self._clear_structure()
             return
         formation = book.formations[int(formation_index)]
-        self.package_map_label.setText(
-            format_formation_package_map_line(
-                formation.name, formation.package_map
-            )
+        map_line = format_formation_package_map_line(
+            formation.name, formation.package_map
         )
+        # Teach G1 experimental path when a Dime formation is selected.
+        if "dime" in formation.name.casefold():
+            nickel = next(
+                (
+                    form
+                    for form in book.formations
+                    if "nickel" in form.name.casefold()
+                    and form.index != formation.index
+                ),
+                None,
+            )
+            if nickel is not None:
+                map_line += (
+                    f"\nG1 tip: set Link/Package donor to “{nickel.name}” "
+                    f"(index {nickel.index}), then Export Package-Map Copy — "
+                    "offline Nickel→Dime map bytes only; runtime ILB fix unproved."
+                )
+                # Prefer Nickel as the experimental donor without forcing export.
+                donor_row = self.link_donor_combo.findData(nickel.index)
+                if donor_row >= 0:
+                    self.link_donor_combo.setCurrentIndex(donor_row)
+        self.package_map_label.setText(map_line)
         self._visible_play_rows = formation_play_rows(book, int(formation_index))
         self.play_table.blockSignals(True)
         self.play_table.clearContents()

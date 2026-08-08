@@ -60,6 +60,8 @@ class CommunityLegendContractTests(unittest.TestCase):
         self.assertIn("G13", source)
         self.assertIn("0 matching books under ⚠ Community-flagged", source)
         self.assertIn("APF_GAMEPLAY_BUG_MAP.md", source)
+        self.assertIn("G1 tip: set Link/Package donor", source)
+        self.assertIn("Nickel→Dime", source)
 
 
 if __name__ == "__main__":
