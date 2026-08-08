@@ -14880,6 +14880,10 @@ class InspectorBrowser(QFrame):
         if process.state() != QProcess.NotRunning:
             self._stop_audio()
             return
+        reason = str(self.play_audio_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Cannot play yet", reason)
+            return
         row = self._selected_row()
         if row is None or row.export_identity is None:
             return
@@ -15025,16 +15029,31 @@ class InspectorBrowser(QFrame):
             return
         selected = self._selected_row()
         self.play_audio_button.setText("Play")
-        self.play_audio_button.setEnabled(
-            bool(
-                selected
-                and selected.export_identity is not None
-                and selected.external_bank_identity is None
+        can_play = bool(
+            selected
+            and selected.export_identity is not None
+            and selected.external_bank_identity is None
+        )
+        if can_play:
+            tip = (
+                "Decode a session-private, verified WAV and play it with "
+                "ffplay, paplay, or aplay."
             )
-        )
-        self.play_audio_button.setToolTip(
-            "Decode a session-private, verified WAV and play it with ffplay, paplay, or aplay."
-        )
+            block = ""
+        elif selected is None:
+            tip = block = "Select a playable sound row first."
+        elif selected.external_bank_identity is not None:
+            tip = block = (
+                "This is a multi-cue external bank. Choose a cue/substream row, "
+                "not the bank container."
+            )
+        else:
+            tip = block = (
+                "This row has no playable export identity (metadata / unsupported)."
+            )
+        self.play_audio_button.setEnabled(True)
+        self.play_audio_button.setToolTip(tip)
+        self.play_audio_button.setProperty("disableReason", block)
 
     def _stop_audio(self) -> None:
         if self._audio_preview_job is not None:
