@@ -5049,13 +5049,48 @@ class StudioMainWindow(QMainWindow):
             import_scene.setProperty(
                 "disableReason", "" if (ready and scene is not None) else tip
             )
-        state.export_button.setEnabled(ready and texture is not None)
-        editable = texture is not None and texture.access_status == STADIUM_EDITABLE
-        state.replace_button.setEnabled(ready and editable)
-        modified = set(getattr(self.facade, "modified_asset_ids", ()))
-        state.revert_button.setEnabled(
-            ready and editable and texture.texture_id in modified  # type: ignore[union-attr]
+        # Never silent-gray texture export/replace/revert.
+        if not ready:
+            tex_block = "Load your NFL 2K5 XISO first (and wait for busy ops)."
+        elif texture is None:
+            tex_block = "Select a stadium surface texture first."
+        else:
+            tex_block = ""
+        state.export_button.setEnabled(True)
+        state.export_button.setToolTip(
+            tex_block or "Export this stadium surface texture as PNG."
         )
+        state.export_button.setProperty("disableReason", tex_block)
+        editable = texture is not None and texture.access_status == STADIUM_EDITABLE
+        if editable and ready:
+            rep_block = ""
+            rep_tip = "Replace this editable stadium texture (auto-resize on import)."
+        elif tex_block:
+            rep_block = rep_tip = tex_block
+        elif texture is not None:
+            rep_block = rep_tip = (
+                f"Texture {texture.texture_index} is not editable "
+                f"({texture.access_status}). Export only."
+            )
+        else:
+            rep_block = rep_tip = "Select an editable stadium texture first."
+        state.replace_button.setEnabled(True)
+        state.replace_button.setToolTip(rep_tip)
+        state.replace_button.setProperty("disableReason", rep_block)
+        modified = set(getattr(self.facade, "modified_asset_ids", ()))
+        can_revert = bool(
+            ready and editable and texture is not None and texture.texture_id in modified
+        )
+        if can_revert:
+            rev_block = ""
+            rev_tip = "Revert staged stadium texture replacement."
+        elif rep_block:
+            rev_block = rev_tip = rep_block
+        else:
+            rev_block = rev_tip = "Nothing to revert—this texture is still original."
+        state.revert_button.setEnabled(True)
+        state.revert_button.setToolTip(rev_tip)
+        state.revert_button.setProperty("disableReason", rev_block)
         current = state.texture_list.currentItem()
         if current is not None and texture is not None:
             current.setText(
@@ -5067,6 +5102,10 @@ class StudioMainWindow(QMainWindow):
     def _export_stadium_texture(self) -> None:
         state = self._stadium_browser
         if state is None:
+            return
+        reason = str(state.export_button.property("disableReason") or "").strip()
+        if reason:
+            self._show_error(reason)
             return
         texture = self._stadium_texture(state.selected_texture_id)
         if texture is None:
@@ -5249,6 +5288,10 @@ class StudioMainWindow(QMainWindow):
         state = self._stadium_browser
         if state is None:
             return
+        reason = str(state.replace_button.property("disableReason") or "").strip()
+        if reason:
+            self._show_error(reason)
+            return
         texture = self._stadium_texture(state.selected_texture_id)
         if texture is None or texture.access_status != STADIUM_EDITABLE:
             return
@@ -5310,6 +5353,10 @@ class StudioMainWindow(QMainWindow):
     def _revert_stadium_texture(self) -> None:
         state = self._stadium_browser
         if state is None:
+            return
+        reason = str(state.revert_button.property("disableReason") or "").strip()
+        if reason:
+            self._show_error(reason)
             return
         texture = self._stadium_texture(state.selected_texture_id)
         if texture is None or texture.access_status != STADIUM_EDITABLE:
