@@ -45,6 +45,7 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 - Extra Xenos 8 / 1_5_5_5 / 5_6_5 / 8_8 / 4_4_4_4
 
 ### UX
+- 2K5 Unif facemask/turtleneck/Apply never silent-gray (disableReason)
 - Keyboard Ctrl+F / Esc / Ctrl+/
 - All Textures search tips; empty states
 - Equipment Colors team filter (APF fictional names); Stage never silent-gray
