@@ -58,6 +58,7 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
   (`packaging_apf_check.txt`, `packaging_2k5_check.txt` under implementer scratch)
 
 ## Open / residual walls
+0. **Full suite hang classes** — logo ProcessPool; audo exact-slot 0A inventory; late audio GUI. Use batched pytest evidence (critical 168 + N-Z 584 + A-M chunks).
 1. G1/G2 **runtime** fix packs (emulator witness) — offline only so far
 2. Freehand routes Editable
 3. Per-team stock endzone write wall
