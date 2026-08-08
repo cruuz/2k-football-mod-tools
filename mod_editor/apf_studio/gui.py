@@ -1902,8 +1902,9 @@ class AssetBrowser(QWidget):
         self.search.setProperty("studioSearch", True)
         self.search.setToolTip(
             "Search the current category by name, type, class, or archive index. "
-            "Jersey digits are number_0_color…number_9_color; nameplate glyphs are "
-            "font_albedo / font_normal (NameFont packages). "
+            "Jersey digits are number_0_color…number_9_color (not under shoulder — "
+            "search All Textures if arm/shoulder numbers look missing). "
+            "Nameplate glyphs are font_albedo / font_normal (NameFont packages). "
             "Press Ctrl+F from anywhere to focus this box; × to clear."
         )
         self.type_filter = QComboBox()
