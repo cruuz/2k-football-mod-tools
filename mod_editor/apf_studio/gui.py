@@ -14401,44 +14401,56 @@ class InspectorBrowser(QFrame):
         if not self.audio_mode:
             return
         self._update_audio_replacement_pack_actions()
+        # Never silent-gray: Export matching stays clickable; disableReason teaches walls.
         if self._audio_review_mode:
-            self.export_matching_button.setEnabled(False)
-            self.export_matching_button.setText("Export matching sounds…")
-            self.export_matching_button.setToolTip(
-                "Review is already the exact hand-picked set. Use Export selected sounds, or return to the browser for a filtered export."
+            tip = (
+                "Review is already the exact hand-picked set. Use Export selected "
+                "sounds, or return to the browser for a filtered export."
             )
+            self.export_matching_button.setEnabled(True)
+            self.export_matching_button.setText("Export matching sounds…")
+            self.export_matching_button.setToolTip(tip)
+            self.export_matching_button.setProperty("disableReason", tip)
             return
         if (
             not self._soundtrack_album_mode
             and not self._audio_catalog_query_is_current()
         ):
-            self.export_matching_button.setEnabled(False)
-            self.export_matching_button.setText("Export matching sounds…")
-            self.export_matching_button.setToolTip(
-                "Updating results. This action unlocks when the visible page matches the search and filters."
+            tip = (
+                "Updating results. This action unlocks when the visible page "
+                "matches the search and filters."
             )
+            self.export_matching_button.setEnabled(True)
+            self.export_matching_button.setText("Export matching sounds…")
+            self.export_matching_button.setToolTip(tip)
+            self.export_matching_button.setProperty("disableReason", tip)
             return
         count = len(self._matching_audio_rows())
         enabled = 1 <= count <= 256
-        self.export_matching_button.setEnabled(enabled)
         if enabled:
+            tip = (
+                f"Export these {count} soundtrack tracks as one transactional XMA or verified-WAV ZIP."
+                if self._soundtrack_album_mode
+                else f"Export these {count} filtered sounds as one transactional XMA or verified-WAV ZIP."
+            )
             self.export_matching_button.setText(
                 f"Export soundtrack version ({count})…"
                 if self._soundtrack_album_mode
                 else f"Export matching sounds ({count})…"
             )
-            self.export_matching_button.setToolTip(
-                f"Export these {count} soundtrack tracks as one transactional XMA or verified-WAV ZIP."
-                if self._soundtrack_album_mode
-                else f"Export these {count} filtered sounds as one transactional XMA or verified-WAV ZIP."
-            )
+            self.export_matching_button.setEnabled(True)
+            self.export_matching_button.setToolTip(tip)
+            self.export_matching_button.setProperty("disableReason", "")
         else:
-            self.export_matching_button.setText("Export matching sounds…")
-            self.export_matching_button.setToolTip(
+            tip = (
                 "No playable sounds match."
                 if count == 0
                 else f"{count:,} playable sounds match; narrow search, kind, role, or source to 256 or fewer."
             )
+            self.export_matching_button.setText("Export matching sounds…")
+            self.export_matching_button.setEnabled(True)
+            self.export_matching_button.setToolTip(tip)
+            self.export_matching_button.setProperty("disableReason", tip)
 
     def _shortlisted_audio_rows(self) -> tuple[InspectorRow, ...]:
         return tuple(self._audio_shortlist.values())
@@ -16175,6 +16187,16 @@ class InspectorBrowser(QFrame):
         )
 
     def _export_matching_audio(self) -> None:
+        reason = str(
+            self.export_matching_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export matching sounds yet",
+                reason,
+            )
+            return
         rows = self._matching_audio_rows()
         if not 1 <= len(rows) <= 256:
             return
