@@ -8,12 +8,14 @@ nameplate DXN (font_albedo), linear TXTR (uncompressed + DXT), G1 package-map +
 G2 link-table offline writers, playbook annotations, keyboard/search polish,
 shell recommended path, equipment Stage explain, click-to-explain model import
 (APF + 2K5 Crib + Stadium), **expanded never-silent-gray** (stadium mesh/package,
-wordmark, AssetBrowser, Uniform, Field Art locks), **45s preview watchdogs**
+wordmark, AssetBrowser, Uniform, Field Art locks, text/roster Apply/Revert,
+audio bulk+shortlist+replace, ratings sheet, player rating/position, Play,
+soundtrack album, Team Logo master, reserve Assign), **45s preview watchdogs**
 (AssetBrowser/Uniform/Wordmark/stadium package), Crib drop-parity hang fixed.
 Living WORKLOG: `docs/product/WORKLOG_20260807.md`. E2 depth includes
 playbook community legend + G1 donor tip + empty search teaching. **≥10h
-hour-gate still accumulating** (multi-session; not claimed). Broader suite
-evidence is **batched** (monorepo single-run hang residual). — do not treat
+hour-gate still accumulating** (~9.6h multi-session wall; not claimed). Broader
+suite evidence is **batched** (monorepo single-run hang residual). — do not treat
 this note as a sealed public release.
 
 
