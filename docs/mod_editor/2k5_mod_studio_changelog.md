@@ -33,14 +33,16 @@ build path.
 ### Community / product fixes
 
 - **Import fit chooser** — off-size dialog/drop imports pick Contain, Cover, or Stretch (not silent auto-cover).
-- **G1/G2 package-rule RE spike** — layout pins + o0308 fixture offsets in `playbook_package_rule_spike` (offline writer still not shipped).
+- **G1/G2 package-rule** — layout pins + o0308 census in `playbook_package_rule_spike`;
+  offline writers for formation package-map (`+0x0D`) and link-table copy **proved
+  for bytes only** (runtime fix packs unproved).
 
 - **Studio launch / Playbooks host** — `BrowseOnlyFacade` and `StudioFacade`
   expose formation/play clone methods so `PlaybooksPanelHost` isinstance checks
   pass (unblocks every headless Studio GUI test that constructs the main window).
 - **Import edited stadium model never silent-gray** — export/import scene buttons
-  always set tooltips for load-required, no-scene-selected, and same-topology
-  contract when enabled.
+  stay **enabled**; tooltips + `disableReason` + click QMessageBox explain
+  load-required / no-scene-selected / same-topology contract (no dead gray).
 - **Import resize** — shared `image_fit` gains **stretch** (Contain/Cover already
   shipped); dialog + drop still share `_fit_for_slot`.
 - **Playbooks Ace / Dime / Bear annotations** — formation/play names matching
