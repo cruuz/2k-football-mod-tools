@@ -359,6 +359,15 @@ class PlaybooksPanelHost(Protocol):
         self, asset_id: str, destination: Path, progress: ProgressSink
     ) -> Path: ...
 
+    def export_playbook_link_table_copy(
+        self,
+        asset_id: str,
+        target_formation_index: int,
+        donor_formation_index: int,
+        destination: Path,
+        progress: ProgressSink,
+    ) -> Path: ...
+
     def copy_play_assignment_route(
         self, asset_id: str, target_play_index: int, target_slot_index: int,
         donor_play_index: int, donor_slot_index: int, progress: ProgressSink,
@@ -628,6 +637,35 @@ class PlaybooksPanel(QWidget):
         create_row.addStretch(1)
         inspector_layout.addLayout(create_row)
 
+        # Experimental G2-class menu composition export (offline only).
+        self.link_copy_banner = QLabel(
+            "⚠ Experimental offline export only — copies another formation’s "
+            "play-link menu (aux table) onto the selected formation and writes "
+            "a private PLAY file. Does not stage a project edit. Does not claim "
+            "a runtime G2 (TE→WR) or G1 fix. Source ISO is never modified."
+        )
+        self.link_copy_banner.setObjectName("playBoundary")
+        self.link_copy_banner.setWordWrap(True)
+        inspector_layout.addWidget(self.link_copy_banner)
+
+        link_copy_row = QHBoxLayout()
+        link_copy_label = QLabel("Export menu copy from donor:")
+        link_copy_label.setObjectName("playFieldLabel")
+        self.link_donor_combo = QComboBox()
+        self.link_donor_combo.setToolTip(
+            "Donor formation whose play-link menu is copied onto the selected "
+            "formation in the exported PLAY only."
+        )
+        self.export_link_copy_button = QPushButton("Export Link-Table Copy…")
+        self.export_link_copy_button.setToolTip(
+            "Build a private PLAY with the selected formation’s menu replaced "
+            "by the donor’s. Offline-writer-proved bytes only; runtime unproved."
+        )
+        link_copy_row.addWidget(link_copy_label)
+        link_copy_row.addWidget(self.link_donor_combo, 1)
+        link_copy_row.addWidget(self.export_link_copy_button)
+        inspector_layout.addLayout(link_copy_row)
+
         raw_split = QSplitter(Qt.Horizontal)
         self.assignment_table = QTableWidget(0, 5)
         self.assignment_table.setHorizontalHeaderLabels(
@@ -701,6 +739,10 @@ class PlaybooksPanel(QWidget):
         self.copy_route_button.clicked.connect(self._copy_selected_route)
         self.revert_route_button.clicked.connect(self._revert_selected_route)
         self.create_formation_button.clicked.connect(self._create_formation)
+        self.export_link_copy_button.clicked.connect(self._export_link_table_copy)
+        self.link_donor_combo.currentIndexChanged.connect(
+            lambda _i: self._refresh_controls()
+        )
         self.create_play_button.clicked.connect(self._create_play)
         self.donor_play_combo.currentIndexChanged.connect(self._refresh_controls)
         self.donor_slot_combo.currentIndexChanged.connect(self._refresh_controls)
@@ -867,6 +909,15 @@ class PlaybooksPanel(QWidget):
                 play.index,
             )
         self.donor_play_combo.blockSignals(False)
+        self.link_donor_combo.blockSignals(True)
+        self.link_donor_combo.clear()
+        for formation in book.formations:
+            self.link_donor_combo.addItem(
+                f"{formation.index:02d} · {formation.name} "
+                f"({len(formation.play_links)} links)",
+                formation.index,
+            )
+        self.link_donor_combo.blockSignals(False)
         self.formation_combo.blockSignals(False)
         if book.formations:
             self.formation_combo.setCurrentIndex(0)
@@ -1051,6 +1102,29 @@ class PlaybooksPanel(QWidget):
             self.create_play_button.setToolTip("Play capacity 270 reached — cannot create more in this book.")
         else:
             self.create_play_button.setToolTip("Clone the selected play into a new slot (reuses name, 11 assignments, bumps count).")
+        target_form = self.formation_combo.currentData()
+        donor_form = self.link_donor_combo.currentData()
+        can_link_export = bool(
+            can_create
+            and target_form is not None
+            and donor_form is not None
+            and int(target_form) != int(donor_form)
+        )
+        self.export_link_copy_button.setEnabled(can_link_export)
+        self.link_donor_combo.setEnabled(can_create)
+        if can_link_export:
+            self.export_link_copy_button.setToolTip(
+                "Export a private PLAY where the selected formation’s play-link "
+                "menu is replaced by the donor’s. Offline only; runtime unproved."
+            )
+        elif target_form is not None and donor_form is not None:
+            self.export_link_copy_button.setToolTip(
+                "Pick a donor formation different from the selected target."
+            )
+        else:
+            self.export_link_copy_button.setToolTip(
+                "Select a book and two different formations to export a menu copy."
+            )
         self.book_table.setEnabled(not self._busy)
         self.search.setEnabled(not self._busy)
         self.family_filter.setEnabled(not self._busy)
@@ -1116,6 +1190,67 @@ class PlaybooksPanel(QWidget):
 
         self._run(
             lambda progress: self.host.create_formation(book.asset_id, int(donor_idx), progress),
+            ready,
+        )
+
+    def _export_link_table_copy(self) -> None:
+        book = self._selected_book()
+        target_idx = self.formation_combo.currentData()
+        donor_idx = self.link_donor_combo.currentData()
+        if book is None or target_idx is None or donor_idx is None:
+            return
+        if int(target_idx) == int(donor_idx):
+            QMessageBox.information(
+                self,
+                "Pick a different donor",
+                "The donor formation must differ from the selected target "
+                "formation. No file was written.",
+            )
+            return
+        target_name = book.formations[int(target_idx)].name
+        donor_name = book.formations[int(donor_idx)].name
+        answer = QMessageBox.warning(
+            self,
+            "Experimental offline export only",
+            f"This will write a private PLAY file where formation "
+            f"“{target_name}” gets the play-link menu from “{donor_name}”.\n\n"
+            "• Not a project edit — nothing is staged for Build.\n"
+            "• Not a runtime G2 (TE→WR) or G1 fix — unproved in-game.\n"
+            "• Your loaded source / ISO is never modified.\n\n"
+            "Continue to choose a save location?",
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Cancel,
+        )
+        if answer != QMessageBox.Yes:
+            return
+        suggested = (
+            f"{book.outer_index:04d}_{book.book_name}_"
+            f"{target_name}_menu_from_{donor_name}_PLAY.bin"
+        )
+        suggested = re.sub(r"[^A-Za-z0-9._-]+", "_", suggested)
+        path, _filter = QFileDialog.getSaveFileName(
+            self,
+            "Export experimental link-table PLAY",
+            suggested,
+            "PLAY resource (*.bin);;All files (*)",
+        )
+        if not path:
+            return
+
+        def ready(value: object) -> None:
+            self.progress_label.setText(
+                f"Exported experimental menu copy → {value} "
+                f"({target_name} ← {donor_name}; runtime unproved)"
+            )
+
+        self._run(
+            lambda progress: self.host.export_playbook_link_table_copy(
+                book.asset_id,
+                int(target_idx),
+                int(donor_idx),
+                Path(path),
+                progress,
+            ),
             ready,
         )
 

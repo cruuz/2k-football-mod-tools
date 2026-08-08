@@ -407,6 +407,15 @@ class StudioFacade(Protocol):
         self, asset_id: str, destination: Path, progress: ProgressSink
     ) -> Path: ...
 
+    def export_playbook_link_table_copy(
+        self,
+        asset_id: str,
+        target_formation_index: int,
+        donor_formation_index: int,
+        destination: Path,
+        progress: ProgressSink,
+    ) -> Path: ...
+
     def copy_play_assignment_route(
         self,
         asset_id: str,
@@ -782,6 +791,7 @@ class BrowseOnlyFacade:
     export_main_menu_inspection = _unavailable
     browse_playbooks = _unavailable
     export_playbook = _unavailable
+    export_playbook_link_table_copy = _unavailable
     copy_play_assignment_route = _unavailable
     revert_play_assignment_route = _unavailable
     create_formation = _unavailable

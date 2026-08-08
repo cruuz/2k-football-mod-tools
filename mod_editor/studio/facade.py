@@ -1976,6 +1976,72 @@ class Nfl2k5StudioFacade:
         progress("Raw PLAY resource exported", 2, 2)
         return path
 
+    def export_playbook_link_table_copy(
+        self,
+        asset_id: str,
+        target_formation_index: int,
+        donor_formation_index: int,
+        destination: Path,
+        progress: ProgressSink = _quiet_progress,
+    ) -> Path:
+        """Export a PLAY with one formation's play-link table copied from a donor.
+
+        **Experimental / offline-only.** Writes a private copy under
+        ``destination``. Does **not** stage a project edit, does **not** claim
+        runtime G2 (TE→WR) fix, and never mutates the loaded source archive.
+        Independent byte-diff verifier runs inside the patch builder.
+        """
+
+        from mod_editor.core.playbook_package_rule_spike import (
+            build_formation_link_table_copy_patch,
+            verify_formation_link_table_copy_patch,
+        )
+
+        progress("Reading stock PLAY for experimental link-table copy", 0, 3)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            index = self._require_universal_index()
+        book = inspector.load(asset_id)
+        if not 0 <= target_formation_index < len(book.formations):
+            raise ValidationError(
+                f"Target formation {target_formation_index} is outside this book."
+            )
+        if not 0 <= donor_formation_index < len(book.formations):
+            raise ValidationError(
+                f"Donor formation {donor_formation_index} is outside this book."
+            )
+        if target_formation_index == donor_formation_index:
+            raise ValidationError("Donor and target formations must differ.")
+
+        # Same raw path as export_playbook, into a temp buffer then patch.
+        progress("Building offline link-table copy (menu composition only)", 1, 3)
+        import tempfile
+
+        dest = Path(destination)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="2k5-play-link-copy-") as tmpdir:
+            src_path = Path(tmpdir) / "source.PLAY.bin"
+            index.export_raw(asset_id, src_path)
+            source_bytes = src_path.read_bytes()
+            patch = build_formation_link_table_copy_patch(
+                source_bytes, target_formation_index, donor_formation_index
+            )
+            verify_formation_link_table_copy_patch(
+                source_bytes,
+                patch.raw_resource,
+                target_formation_index,
+                donor_formation_index,
+            )
+            dest.write_bytes(patch.raw_resource)
+        progress(
+            "Experimental patched PLAY exported "
+            f"(links {patch.target_link_count_before}→{patch.target_link_count_after}; "
+            "runtime unproved)",
+            3,
+            3,
+        )
+        return dest
+
     def copy_play_assignment_route(
         self,
         asset_id: str,
