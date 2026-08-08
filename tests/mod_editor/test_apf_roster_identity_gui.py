@@ -521,7 +521,9 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.assertEqual(browser.roster_name_editor.text(), "JOHN")
             self.assertIn("Maximum: 4", browser.roster_allocation_note.text())
             self.assertIn("runtime-locked", browser.roster_allocation_note.text())
-            self.assertFalse(browser.apply_roster_name_button.isEnabled())
+            self.assertTrue(browser.apply_roster_name_button.isEnabled())
+
+            self.assertTrue(str(browser.apply_roster_name_button.property("disableReason") or "").strip())
             self.assertIn("Team abbreviations", browser.apply_roster_name_button.toolTip())
             self.assertIn("runtime-locked", browser.roster_boundary_note.text())
             browser.roster_name_editor.setText("MOD")
@@ -806,8 +808,9 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.assertIn("EDITABLE", panel.status.text())
             self.assertTrue(panel.value_editor.isEnabled())
             self.assertEqual(panel.value_editor.value(), 99)
-            self.assertFalse(panel.apply_button.isEnabled())
+            self.assertTrue(panel.apply_button.isEnabled())
 
+            self.assertTrue(str(panel.apply_button.property("disableReason") or "").strip())
             panel.search.setText("catch")
             self.application.processEvents()
             self.assertEqual(panel.table.rowCount(), 1)
@@ -852,8 +855,11 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.assertEqual(panel.position.itemData(16), 16)
             self.assertEqual(panel.position.itemText(16), "DE — Defensive End")
             self.assertEqual(panel.position.currentData(), 0)
-            self.assertFalse(panel.apply_button.isEnabled())
-            self.assertFalse(panel.revert_button.isEnabled())
+            self.assertTrue(panel.apply_button.isEnabled())
+
+            self.assertTrue(str(panel.apply_button.property("disableReason") or "").strip())
+            self.assertTrue(panel.revert_button.isEnabled())
+            self.assertTrue(str(panel.revert_button.property("disableReason") or "").strip())
             self.assertIn("code 0", panel.current_state.text())
             self.assertIn("team", panel.note.text())
             self.assertIn("depth-chart", panel.note.text())
@@ -887,7 +893,9 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             )
             self.assertEqual(panel.position.currentData(), 0)
             self.assertIn("ORIGINAL", panel.status.text())
-            self.assertFalse(panel.revert_button.isEnabled())
+            self.assertTrue(panel.revert_button.isEnabled())
+
+            self.assertTrue(str(panel.revert_button.property("disableReason") or "").strip())
             self.assertNotIn("Modified position", browser.table.item(0, 3).text())
             self.assertEqual(modified_events, ["changed", "changed"])
 
@@ -926,7 +934,9 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.assertEqual(tasks[-1], ("Reverting exact APF base rating", True))
             self.assertEqual(panel.table.item(0, 1).text(), "99")
             self.assertEqual(panel.table.item(0, 3).text(), "Original")
-            self.assertFalse(panel.revert_button.isEnabled())
+            self.assertTrue(panel.revert_button.isEnabled())
+
+            self.assertTrue(str(panel.revert_button.property("disableReason") or "").strip())
             self.assertEqual(modified_events, ["changed", "changed"])
         finally:
             browser.deleteLater()
@@ -941,7 +951,9 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.assertEqual(panel.table.item(NATIVE_100_ROW, 1).text(), "100")
             self.assertEqual(panel.value_editor.maximum(), 100)
             self.assertEqual(panel.value_editor.value(), 100)
-            self.assertFalse(panel.apply_button.isEnabled())
+            self.assertTrue(panel.apply_button.isEnabled())
+
+            self.assertTrue(str(panel.apply_button.property("disableReason") or "").strip())
             self.assertIn("source/revert-only", panel.apply_button.toolTip())
 
             panel.value_editor.setValue(99)
@@ -1041,7 +1053,9 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
                 "Shared-allocation warning", browser.roster_allocation_note.text()
             )
             browser.roster_name_editor.setText("TOO-LONG")
-            self.assertFalse(browser.apply_roster_name_button.isEnabled())
+            self.assertTrue(browser.apply_roster_name_button.isEnabled())
+
+            self.assertTrue(str(browser.apply_roster_name_button.property("disableReason") or "").strip())
             self.assertIn(
                 "allocation limit is 6",
                 browser.apply_roster_name_button.toolTip(),
@@ -1158,7 +1172,9 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.assertEqual(facade.revert_calls, ["apf:roster-name:20"])
             self.assertEqual(tasks[-1], ("Reverting APF team name", True))
             self.assertEqual(browser.table.item(1, 0).text(), "SOURCE TEAM")
-            self.assertFalse(browser.revert_roster_name_button.isEnabled())
+            self.assertTrue(browser.revert_roster_name_button.isEnabled())
+
+            self.assertTrue(str(browser.revert_roster_name_button.property("disableReason") or "").strip())
             self.assertEqual(modified_events, ["changed", "changed"])
         finally:
             browser.deleteLater()
@@ -1184,7 +1200,9 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.assertFalse(browser.roster_name_editor.isEnabled())
             self.assertTrue(browser.roster_name_editor.isReadOnly())
             self.assertEqual(browser.apply_roster_name_button.text(), "Replace (Locked)")
-            self.assertFalse(browser.apply_roster_name_button.isEnabled())
+            self.assertTrue(browser.apply_roster_name_button.isEnabled())
+
+            self.assertTrue(str(browser.apply_roster_name_button.property("disableReason") or "").strip())
             note = browser.roster_allocation_note.text()
             self.assertIn("Maximum: 0 UTF-16 characters", note)
             self.assertIn("zero writable characters", note)
@@ -1250,7 +1268,9 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             browser.roster_field_combo.setCurrentIndex(1)
             self.assertEqual(browser.roster_name_editor.text(), "SRC")
             self.assertTrue(browser.roster_name_editor.isReadOnly())
-            self.assertFalse(browser.apply_roster_name_button.isEnabled())
+            self.assertTrue(browser.apply_roster_name_button.isEnabled())
+
+            self.assertTrue(str(browser.apply_roster_name_button.property("disableReason") or "").strip())
             self.assertIn("Locked", browser.roster_field_combo.itemText(1))
             self.assertIn("Maximum: 3", browser.roster_allocation_note.text())
             self.assertIn(
@@ -1267,8 +1287,11 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             self.application.processEvents()
             self.assertFalse(browser.roster_field_combo.isEnabled())
             self.assertFalse(browser.roster_name_editor.isEnabled())
-            self.assertFalse(browser.apply_roster_name_button.isEnabled())
-            self.assertFalse(browser.revert_roster_name_button.isEnabled())
+            self.assertTrue(browser.apply_roster_name_button.isEnabled())
+
+            self.assertTrue(str(browser.apply_roster_name_button.property("disableReason") or "").strip())
+            self.assertTrue(browser.revert_roster_name_button.isEnabled())
+            self.assertTrue(str(browser.revert_roster_name_button.property("disableReason") or "").strip())
             self.assertFalse(browser.roster_aliases_button.isEnabled())
             assert browser.roster_detail_tabs is not None
             self.assertEqual(browser.roster_detail_tabs.currentIndex(), 0)
@@ -1293,14 +1316,18 @@ class ApfRosterIdentityGuiTests(unittest.TestCase):
             browser.table.selectRow(1)
             self.application.processEvents()
             browser.roster_name_editor.setText("THIS TEAM NAME IS TOO LONG")
-            self.assertFalse(browser.apply_roster_name_button.isEnabled())
+            self.assertTrue(browser.apply_roster_name_button.isEnabled())
+
+            self.assertTrue(str(browser.apply_roster_name_button.property("disableReason") or "").strip())
             self.assertIn("allocation limit is 12", browser.apply_roster_name_button.toolTip())
             browser._apply_roster_identity()
             self.assertEqual(facade.replace_calls, [])
             self.assertEqual(tasks, [])
 
             browser.roster_name_editor.setText("A\0B")
-            self.assertFalse(browser.apply_roster_name_button.isEnabled())
+            self.assertTrue(browser.apply_roster_name_button.isEnabled())
+
+            self.assertTrue(str(browser.apply_roster_name_button.property("disableReason") or "").strip())
             self.assertIn("cannot contain a NUL", browser.apply_roster_name_button.toolTip())
             browser._apply_roster_identity()
             self.assertEqual(facade.replace_calls, [])

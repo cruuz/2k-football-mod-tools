@@ -8731,9 +8731,8 @@ class BaseRatingsPanel(QFrame):
     def _apply_rating(self) -> None:
         reason = str(self.apply_button.property("disableReason") or "").strip()
         if reason:
-            from PyQt5.QtWidgets import QMessageBox
-
-            QMessageBox.information(self, "Cannot apply rating yet", reason)
+            # Status-line teach; tooltip already shows the wall.
+            self.selected_rating.setText(reason)
             return
         rating = self._selected_rating()
         if rating is None or self._player_index is None:
@@ -8747,9 +8746,7 @@ class BaseRatingsPanel(QFrame):
     def _revert_rating(self) -> None:
         reason = str(self.revert_button.property("disableReason") or "").strip()
         if reason:
-            from PyQt5.QtWidgets import QMessageBox
-
-            QMessageBox.information(self, "Nothing to revert", reason)
+            self.selected_rating.setText(reason)
             return
         rating = self._selected_rating()
         if rating is None or self._player_index is None:
@@ -9003,9 +9000,7 @@ class PlayerPositionPanel(QFrame):
     def _apply_position(self) -> None:
         reason = str(self.apply_button.property("disableReason") or "").strip()
         if reason:
-            from PyQt5.QtWidgets import QMessageBox
-
-            QMessageBox.information(self, "Cannot apply position yet", reason)
+            self.current_state.setText(reason)
             return
         selected = self.position.currentData()
         if (
@@ -9019,9 +9014,7 @@ class PlayerPositionPanel(QFrame):
     def _revert_position(self) -> None:
         reason = str(self.revert_button.property("disableReason") or "").strip()
         if reason:
-            from PyQt5.QtWidgets import QMessageBox
-
-            QMessageBox.information(self, "Nothing to revert", reason)
+            self.current_state.setText(reason)
             return
         if self._player_index is None:
             return
@@ -13540,8 +13533,13 @@ class InspectorBrowser(QFrame):
             self.roster_allocation_note.setText(
                 "No writable roster-name allocation belongs to this row."
             )
-            self.apply_roster_name_button.setEnabled(False)
-            self.revert_roster_name_button.setEnabled(False)
+            tip = "No writable roster-name allocation belongs to this row."
+            self.apply_roster_name_button.setEnabled(True)
+            self.apply_roster_name_button.setToolTip(tip)
+            self.apply_roster_name_button.setProperty("disableReason", tip)
+            self.revert_roster_name_button.setEnabled(True)
+            self.revert_roster_name_button.setToolTip(tip)
+            self.revert_roster_name_button.setProperty("disableReason", tip)
             self.roster_aliases_button.setText("View affected fields…")
             self.roster_aliases_button.setToolTip("")
             self.roster_aliases_button.setEnabled(False)
@@ -13629,8 +13627,15 @@ class InspectorBrowser(QFrame):
             self.roster_allocation_note.setText(
                 "The selected field has no matching safe allocation; no write is available."
             )
-            self.apply_roster_name_button.setEnabled(False)
-            self.revert_roster_name_button.setEnabled(False)
+            tip = (
+                "The selected field has no matching safe allocation; no write is available."
+            )
+            self.apply_roster_name_button.setEnabled(True)
+            self.apply_roster_name_button.setToolTip(tip)
+            self.apply_roster_name_button.setProperty("disableReason", tip)
+            self.revert_roster_name_button.setEnabled(True)
+            self.revert_roster_name_button.setToolTip(tip)
+            self.revert_roster_name_button.setProperty("disableReason", tip)
             self.roster_aliases_button.setText("View affected fields…")
             self.roster_aliases_button.setToolTip("")
             self.roster_aliases_button.setEnabled(False)
@@ -13707,7 +13712,6 @@ class InspectorBrowser(QFrame):
             allocation_text + "\n\n" + owner_tooltip
         )
         modified = asset_id in self.facade.modified_asset_ids
-        self.revert_roster_name_button.setEnabled(modified)
         self.revert_roster_name_button.setText(
             f"Revert {scope_label}"
             if edit_scope is not None
@@ -13715,11 +13719,14 @@ class InspectorBrowser(QFrame):
             if modified
             else "Revert (Locked)"
         )
-        self.revert_roster_name_button.setToolTip(
-            "Restore this one shared name allocation to the source value."
-            if modified
-            else "This name allocation is still original."
-        )
+        if modified:
+            revert_tip = "Restore this one shared name allocation to the source value."
+            revert_block = ""
+        else:
+            revert_tip = revert_block = "This name allocation is still original."
+        self.revert_roster_name_button.setEnabled(True)
+        self.revert_roster_name_button.setToolTip(revert_tip)
+        self.revert_roster_name_button.setProperty("disableReason", revert_block)
         self._roster_editor_changed()
 
     def _build_roster_alias_dialog(self) -> QDialog:
@@ -13792,8 +13799,16 @@ class InspectorBrowser(QFrame):
         self.roster_allocation_note.setText(message)
         self.roster_boundary_note.clear()
         self.roster_boundary_note.setVisible(False)
-        self.apply_roster_name_button.setEnabled(False)
-        self.revert_roster_name_button.setEnabled(False)
+        tip = (
+            "Select a roster player/team identity field first. Replace/Revert "
+            "stay clickable so blocked states explain themselves."
+        )
+        self.apply_roster_name_button.setEnabled(True)
+        self.apply_roster_name_button.setToolTip(tip)
+        self.apply_roster_name_button.setProperty("disableReason", tip)
+        self.revert_roster_name_button.setEnabled(True)
+        self.revert_roster_name_button.setToolTip(tip)
+        self.revert_roster_name_button.setProperty("disableReason", tip)
         self.roster_aliases_button.setText("View affected fields…")
         self.roster_aliases_button.setToolTip("")
         self.roster_aliases_button.setEnabled(False)
@@ -13807,7 +13822,10 @@ class InspectorBrowser(QFrame):
             return
         selected = self._selected_roster_field()
         if selected is None:
-            self.apply_roster_name_button.setEnabled(False)
+            tip = "Select a roster identity field first."
+            self.apply_roster_name_button.setEnabled(True)
+            self.apply_roster_name_button.setToolTip(tip)
+            self.apply_roster_name_button.setProperty("disableReason", tip)
             return
         row, field_name, asset_id, allocation, _metadata = selected
         value = self.roster_name_editor.text()
@@ -13837,20 +13855,25 @@ class InspectorBrowser(QFrame):
             and bool(getattr(allocation, "editable"))
             and product_editable
         )
-        self.apply_roster_name_button.setEnabled(valid and value != current)
-        self.apply_roster_name_button.setToolTip(
-            (
+        if valid and value != current:
+            tip = (
+                f"Replace this {self._roster_field_label(field_name).casefold()} "
+                f"using {units} of {limit} UTF-16 characters as one Undo step."
+            )
+            block = ""
+        elif not product_editable:
+            tip = block = (
                 self._roster_locked_field_reason(row, field_name, allocation)
                 if self.roster_writes_enabled
                 else ROSTER_IDENTITY_RUNTIME_LOCK_MESSAGE
             )
-            if not product_editable
-            else error
-            or (
-                f"Replace this {self._roster_field_label(field_name).casefold()} "
-                f"using {units} of {limit} UTF-16 characters as one Undo step."
-            )
-        )
+        elif error:
+            tip = block = error
+        else:
+            tip = block = "No change from the current staged/source name."
+        self.apply_roster_name_button.setEnabled(True)
+        self.apply_roster_name_button.setToolTip(tip)
+        self.apply_roster_name_button.setProperty("disableReason", block)
         color = "#39d98a" if valid else "#ffb65c" if not product_editable else "#ff6b7a"
         self.roster_editor_label.setText(
             (
@@ -13864,8 +13887,16 @@ class InspectorBrowser(QFrame):
         self.roster_editor_label.setStyleSheet(f"color: {color};")
 
     def _apply_roster_identity(self) -> None:
+        reason = str(
+            self.apply_roster_name_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            # Teach via allocation note (tooltip already carries disableReason).
+            # Avoid modal QMessageBox so headless tests and quick rejections stay snappy.
+            self.roster_allocation_note.setText(reason)
+            return
         selected = self._selected_roster_field()
-        if selected is None or not self.apply_roster_name_button.isEnabled():
+        if selected is None:
             return
         row, field_name, asset_id, _allocation, _metadata = selected
         value = self.roster_name_editor.text()
@@ -13883,8 +13914,14 @@ class InspectorBrowser(QFrame):
         )
 
     def _revert_roster_identity(self) -> None:
+        reason = str(
+            self.revert_roster_name_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            self.roster_allocation_note.setText(reason)
+            return
         selected = self._selected_roster_field()
-        if selected is None or not self.revert_roster_name_button.isEnabled():
+        if selected is None:
             return
         row, field_name, asset_id, _allocation, _metadata = selected
         edit_scope = self._roster_field_edit_scope(row, field_name)
