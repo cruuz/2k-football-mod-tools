@@ -107,8 +107,26 @@ class PlayerEquipmentModelExportPanel(QWidget):
 
     def set_context(self) -> None:
         ready = bool(getattr(self.facade, "source_ready", False))
-        for button in (*self.buttons.values(), *self.import_buttons.values()):
+        export_reason = (
+            "Export this stock model as glTF (positions + topology for the same-topology importer)."
+            if ready
+            else "Load your APF game (0A) first — model export needs the retail archive."
+        )
+        import_reason = (
+            "Import a same-topology POSITION-only glTF into a new verified 0A copy. "
+            "Topology, materials, UVs, and skinning must match the export manifest."
+            if ready
+            else "Load your APF game (0A) first — model import is disabled until a source is loaded. "
+            "Import stays same-topology POSITION-only after load."
+        )
+        for key, button in self.buttons.items():
             button.setEnabled(ready)
+            button.setToolTip(export_reason)
+        for key, button in self.import_buttons.items():
+            button.setEnabled(ready)
+            button.setToolTip(import_reason)
+            # Click-to-explain even when gray: keep the disabled reason on hover.
+            button.setProperty("disableReason", "" if ready else import_reason)
 
     def _choose_export(self, key: str) -> None:
         source = getattr(self.facade, "source", None)

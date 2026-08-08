@@ -222,6 +222,71 @@ def suggested_playbook_filename(book: Nfl2k5Playbook) -> str:
     return f"{book.outer_index:04d}_{stem or 'playbook'}_PLAY.bin"
 
 
+# Community-reported formation/package issues (APF Discord + GitHub #2).
+# These are annotations only — they do not rewrite PLAY bytes. Auto-fix packs
+# require offline-proved package-rule writers (see docs/product/APF_GAMEPLAY_BUG_MAP.md).
+_BROKEN_PLAY_RULES: tuple[tuple[str, str, str], ...] = (
+    (
+        r"\bace\b",
+        "Ace package",
+        "Community: TE may convert to WR on long downs in game (works in practice). "
+        "See APF gameplay map G2/G12 — package membership RE pending offline fix pack.",
+    ),
+    (
+        r"\bdime\b",
+        "Dime package",
+        "Community: star ILB can be benched / treated as OLB in Dime. "
+        "See APF gameplay map G1 — defensive package sub rules RE pending.",
+    ),
+    (
+        r"\bbear\b",
+        "Bear front",
+        "Community: DE man on TE1 / RLB edge leftovers from 2K5-style imports. "
+        "See APF gameplay map G13 — formation slot roles RE pending.",
+    ),
+)
+
+
+@dataclass(frozen=True, slots=True)
+class BrokenPlayAnnotation:
+    """One honesty-labeled warning for a formation or play name."""
+
+    code: str
+    summary: str
+    detail: str
+
+
+def broken_play_annotations(*names: str) -> tuple[BrokenPlayAnnotation, ...]:
+    """Return community broken-play flags matching any of the given names.
+
+    Matching is case-insensitive on formation/play display names only. This never
+    invents football semantics for opcodes or slot roles.
+    """
+
+    haystack = " ".join(names).casefold()
+    found: list[BrokenPlayAnnotation] = []
+    for pattern, code, detail in _BROKEN_PLAY_RULES:
+        if re.search(pattern, haystack, flags=re.IGNORECASE):
+            found.append(
+                BrokenPlayAnnotation(
+                    code=code,
+                    summary=f"⚠ {code}",
+                    detail=detail,
+                )
+            )
+    return tuple(found)
+
+
+def format_play_name_with_warnings(play_name: str, *extra_names: str) -> str:
+    """Append short ⚠ tags for known community-broken packages."""
+
+    notes = broken_play_annotations(play_name, *extra_names)
+    if not notes:
+        return play_name
+    tags = " ".join(note.summary for note in notes)
+    return f"{play_name}  {tags}"
+
+
 @runtime_checkable
 class PlaybooksPanelHost(Protocol):
     """Complete source-bound facade surface consumed by the viewer."""
@@ -703,8 +768,9 @@ class PlaybooksPanel(QWidget):
             f"Categories: {categories or 'none declared'}"
         )
         for formation in book.formations:
+            formation_label = format_play_name_with_warnings(formation.name)
             self.formation_combo.addItem(
-                f"{formation.index:02d} · {formation.name} "
+                f"{formation.index:02d} · {formation_label} "
                 f"({len(formation.play_links)} linked plays)",
                 formation.index,
             )
@@ -743,20 +809,29 @@ class PlaybooksPanel(QWidget):
         self.play_table.blockSignals(True)
         self.play_table.clearContents()
         self.play_table.setRowCount(len(self._visible_play_rows))
+        formation_name = ""
+        if book is not None and formation_index is not None:
+            formation_name = book.formations[int(formation_index)].name
         for row, linked in enumerate(self._visible_play_rows):
+            display_name = format_play_name_with_warnings(
+                linked.play.name, formation_name
+            )
             values = (
                 str(linked.link_index),
                 str(linked.group),
                 str(linked.play.index),
-                linked.play.name,
+                display_name,
                 f"{linked.play.family_id} · {linked.play.family_label}",
                 f"0x{linked.play.flags_or_id:08x}",
             )
+            warnings = broken_play_annotations(linked.play.name, formation_name)
             for column, value in enumerate(values):
                 item = QTableWidgetItem(value)
                 item.setData(Qt.UserRole, row)
                 if column == 0:
                     item.setToolTip(f"Packed formation value 0x{linked.packed_value:04x}")
+                if column == 3 and warnings:
+                    item.setToolTip("\n\n".join(note.detail for note in warnings))
                 self.play_table.setItem(row, column, item)
         self.play_table.blockSignals(False)
         self.assignment_table.setRowCount(0)
@@ -1097,6 +1172,7 @@ class PlaybooksPanel(QWidget):
 
 
 __all__ = [
+    "BrokenPlayAnnotation",
     "FormationPlayRow",
     "PLAY_EDITOR_FINDINGS_HTML",
     "PLAY_EDITOR_FINDINGS_PLAIN_TEXT",
@@ -1104,7 +1180,9 @@ __all__ = [
     "PlaybookBrowserResult",
     "PlaybooksPanel",
     "PlaybooksPanelHost",
+    "broken_play_annotations",
     "filter_playbooks",
+    "format_play_name_with_warnings",
     "formation_play_rows",
     "playbook_action_state",
     "playbook_search_text",

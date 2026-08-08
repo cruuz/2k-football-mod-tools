@@ -17,7 +17,9 @@ from mod_editor.core.nfl2k5_playbook_inspector import (
 )
 from mod_editor.gui.playbooks_panel_qt import (
     PLAY_EDITOR_FINDINGS_PLAIN_TEXT,
+    broken_play_annotations,
     filter_playbooks,
+    format_play_name_with_warnings,
     formation_play_rows,
     playbook_action_state,
     playbook_search_text,

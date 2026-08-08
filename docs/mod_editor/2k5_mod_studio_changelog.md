@@ -5,6 +5,28 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC54 — playbook host clone stubs, stadium import reasons, stretch fit, broken-play flags — 2026-08-07
+
+### Community / product fixes
+
+- **Studio launch / Playbooks host** — `BrowseOnlyFacade` and `StudioFacade`
+  expose formation/play clone methods so `PlaybooksPanelHost` isinstance checks
+  pass (unblocks every headless Studio GUI test that constructs the main window).
+- **Import edited stadium model never silent-gray** — export/import scene buttons
+  always set tooltips for load-required, no-scene-selected, and same-topology
+  contract when enabled.
+- **Import resize** — shared `image_fit` gains **stretch** (Contain/Cover already
+  shipped); dialog + drop still share `_fit_for_slot`.
+- **Playbooks Ace / Dime / Bear annotations** — formation/play names matching
+  community package bugs show ⚠ tags and tooltips pointing at
+  `docs/product/APF_GAMEPLAY_BUG_MAP.md` (annotations only; no fake auto-fix).
+- **Facemask / turtleneck** — still per physical uniform set (Unif words 0/1),
+  not global.
+
+### Ledger
+
+- Fix-or-wall tracker: `docs/product/S61_EDITOR_BUG_WALLS.md`.
+
 ## v1.0 RC50 — complete uniform fixes, menu/presentation logos, model tools, and release hardening — 2026-08-04
 
 ### Uniform-equipment discoverability

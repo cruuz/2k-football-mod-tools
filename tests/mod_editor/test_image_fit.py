@@ -93,6 +93,12 @@ class FitTests(unittest.TestCase):
             self.assertEqual(result.rgba[offset + 3], 255)
             break
 
+    def test_stretch_forces_exact_size_without_preserving_aspect(self) -> None:
+        result = fit_image(self._image(200, 50), 100, 100, mode="stretch")
+        self.assertEqual(result.action, "stretched")
+        self.assertEqual((result.width, result.height), (100, 100))
+        self.assertIn("without preserving aspect", result.describe())
+
     def test_every_mode_lands_on_the_exact_target(self) -> None:
         for mode in FIT_MODES:
             with self.subTest(mode=mode):

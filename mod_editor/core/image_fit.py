@@ -41,7 +41,7 @@ from .errors import ValidationError
 
 MAX_SOURCE_BYTES = 64 * 1024 * 1024
 MAX_SOURCE_PIXELS = 64 * 1024 * 1024  # a decompression-bomb ceiling
-FIT_MODES = ("auto", "scale", "cover", "contain")
+FIT_MODES = ("auto", "scale", "cover", "contain", "stretch")
 
 
 @dataclass(frozen=True)
@@ -53,7 +53,7 @@ class FitResult:
     rgba: bytes
     source_width: int
     source_height: int
-    action: str          # "exact" | "scaled" | "cropped" | "padded"
+    action: str          # "exact" | "scaled" | "cropped" | "padded" | "stretched"
     cropped_x: int = 0
     cropped_y: int = 0
     padded_x: int = 0
@@ -79,6 +79,11 @@ class FitResult:
                 f"{self.width}x{self.height}, padding "
                 f"{self.padded_x}px horizontally and {self.padded_y}px "
                 "vertically with transparency"
+            )
+        if self.action == "stretched":
+            return (
+                f"stretched {self.source_width}x{self.source_height} "
+                f"to {self.width}x{self.height} without preserving aspect ratio"
             )
         return (
             f"scaled {self.source_width}x{self.source_height} to cover "
@@ -139,10 +144,11 @@ def fit_image(
         )
 
     same_aspect = source_width * height == source_height * width
-    if mode == "scale" or (mode == "auto" and same_aspect):
+    if mode == "stretch" or mode == "scale" or (mode == "auto" and same_aspect):
         resized = image.resize((width, height), Image.LANCZOS)
+        action = "stretched" if mode == "stretch" else "scaled"
         return FitResult(
-            width, height, resized.tobytes(), source_width, source_height, "scaled",
+            width, height, resized.tobytes(), source_width, source_height, action,
             source_format=source_format, source_mode=source_mode,
         )
 

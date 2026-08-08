@@ -5674,9 +5674,13 @@ class ApfFieldArtPanel(QFrame):
         self.description.setObjectName("cardBody")
         self.description.setWordWrap(True)
         self.lock_note = QLabel(
-            "Locked for now: field_radiance and the weather divot textures use "
-            "codecs that aren't proven yet, so they stay browse & export-only "
-            "in the inventory below."
+            "Stock NFL endzone packages (≈118 l0/l1 pairs) appear under All "
+            "Textures / the Field Art inventory browser below — browse and "
+            "export every one. This focused editor only offers the six "
+            "offline-proved writable base slots (shared endzone layers, "
+            "practice overlays, base divots). Per-team endzone writers and "
+            "field_radiance / weather-divot codecs remain export-only until "
+            "proved; see docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md."
         )
         self.lock_note.setObjectName("metadataText")
         self.lock_note.setWordWrap(True)

@@ -15,12 +15,16 @@ bend it. It produces exactly that size from whatever you have.
     # a jersey: fill the slot, trim the overflow
     python3 tools/nfl_fit_image.py art.png 512 256 jersey.png --mode cover
 
+    # force exact pixels without preserving aspect ratio
+    python3 tools/nfl_fit_image.py art.png 512 256 jersey.png --mode stretch
+
     # a folder of PS2 textures for one slot size
     python3 tools/nfl_fit_image.py textures/ 256 128 out/ --mode cover
 
 Which fit to use is not a detail. A crest cropped to fill a square loses its
 edges; a jersey padded with transparency shows those bars in game as holes.
 ``auto`` scales when the aspect already matches and crops otherwise.
+Modes: auto, scale, cover, contain, stretch.
 """
 
 from __future__ import annotations
@@ -48,7 +52,7 @@ def main() -> int:
     parser.add_argument("destination", type=Path,
                         help="output PNG, or output folder when source is one")
     parser.add_argument("--mode", choices=FIT_MODES, default="auto",
-                        help="auto (default), scale, cover, or contain")
+                        help="auto (default), scale, cover, contain, or stretch")
     args = parser.parse_args()
 
     source = args.source.expanduser()

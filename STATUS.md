@@ -1,8 +1,8 @@
-# 2K5 Mod Studio — v1.0 RC50 Release Status
+# 2K5 Mod Studio — v1.0 RC54 Release Status
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The
-> source code and UI identify as the retail-free **`0.1.0-alpha.55` release
+> source code and UI identify as the retail-free **`0.1.0-alpha.59` release
 > candidate**. This status does not claim that the candidate has been committed,
 > pushed, or published; the immutable archive receipts below are retained as
 > release history.

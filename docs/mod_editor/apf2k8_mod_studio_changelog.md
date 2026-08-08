@@ -1,5 +1,33 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.59 — community texture/import UX, model tooltips, Field Art honesty, playbook flags — 2026-08-07
+
+### Community issues closed or honesty-labeled
+
+- **logo_l0 / logo_l1 format 15 (`4_4_4_4`)** — re-verified; regression tests drive
+  shipped `apf_inner.decode_txtr_base_rgba` + PNG write without retail bytes
+  (`tests/mod_editor/test_apf_xenos_4444_png.py`). Import/swap remains the
+  existing logo writer path (beta-27 decode + offline logo patch).
+- **Import resize** — Contain / Cover / Stretch via shared `image_fit`; dialog
+  and drag/drop share `fit_slot_image`. Stretch mode added for forced non-aspect
+  fits; CLI `tools/nfl_fit_image.py` documents it.
+- **Import edited model gray without reason** — helmet/player import buttons now
+  always carry a tooltip explaining load-required vs same-topology contract
+  (`model_export_qt.set_context`).
+- **Field Art stock NFL** — focused editor copy states that ≈118 stock endzone
+  packages live in the inventory/All Textures browser; only six offline-proved
+  base slots are writable. Wall: `docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md`.
+- **Playbook Ace/Dime/Bear warnings** — browser annotations only (no fake fix
+  pack). Gameplay map: `docs/product/APF_GAMEPLAY_BUG_MAP.md` (G1–G14).
+- **§6.1 ledger** — `docs/product/S61_EDITOR_BUG_WALLS.md` fix-or-wall tracker.
+- **Facemask / turtleneck** — remains per-team HOME/AWAY Equipment Colors
+  (not global); visor is per-player Save Players type, not a uniform tint.
+
+### Honesty
+
+- No freehand route Editable claim. No per-team endzone writer overclaim.
+- Writers remain copy-only with independent verifiers.
+
 ## 0.1.0-alpha.55 candidate — whole-shell v24, complete wordmarks/save players, roster truth, and release hardening — 2026-08-04
 
 ### Team Logo ownership is explicit in the editor

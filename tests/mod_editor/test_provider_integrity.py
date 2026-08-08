@@ -185,12 +185,12 @@ class ProviderIntegrityTests(unittest.TestCase):
         )
         self.assertEqual(
             [len(provider.module_pins) for provider in providers],
-            # 80: the unified visual provider includes standalone/SCNE Crib
+            # 81: the unified visual provider includes standalone/SCNE Crib
             # textures, bounded Crib/Stadium geometry, stock PLAY route copy,
-            # fixed-slot audio, the fail-closed AUDO family-label loader,
-            # package-local equipment, and every local module in those exact
-            # import closures.
-            [80, 9, 8, 9, 8, 9],
+            # formation/play clone writer, fixed-slot audio, the fail-closed
+            # AUDO family-label loader, package-local equipment, and every
+            # local module in those exact import closures.
+            [81, 9, 8, 9, 8, 9],
         )
         for provider in providers:
             entries = [provider.backend_module]

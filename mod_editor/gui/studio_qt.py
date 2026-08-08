@@ -407,6 +407,40 @@ class StudioFacade(Protocol):
         self, asset_id: str, destination: Path, progress: ProgressSink
     ) -> Path: ...
 
+    def copy_play_assignment_route(
+        self,
+        asset_id: str,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+        progress: ProgressSink,
+    ) -> object: ...
+
+    def revert_play_assignment_route(
+        self,
+        asset_id: str,
+        target_play_index: int,
+        target_slot_index: int,
+        progress: ProgressSink,
+    ) -> object: ...
+
+    def create_formation(
+        self, asset_id: str, donor_formation_index: int, progress: ProgressSink,
+    ) -> object: ...
+
+    def create_play(
+        self, asset_id: str, donor_play_index: int, progress: ProgressSink,
+    ) -> object: ...
+
+    def revert_formation_create(
+        self, selector: str, progress: ProgressSink,
+    ) -> object: ...
+
+    def revert_play_create(
+        self, selector: str, progress: ProgressSink,
+    ) -> object: ...
+
     @property
     def stadium_available(self) -> bool: ...
 
@@ -750,6 +784,10 @@ class BrowseOnlyFacade:
     export_playbook = _unavailable
     copy_play_assignment_route = _unavailable
     revert_play_assignment_route = _unavailable
+    create_formation = _unavailable
+    create_play = _unavailable
+    revert_formation_create = _unavailable
+    revert_play_create = _unavailable
     stadium_scenes = _unavailable
     stadium_details = _unavailable
     preview_stadium_texture = _unavailable
@@ -4762,10 +4800,41 @@ class StudioMainWindow(QMainWindow):
         ), None)
         export_scene = getattr(self, "_stadium_export_scene_button", None)
         if export_scene is not None:
-            export_scene.setEnabled(ready and scene is not None)
+            can_export = ready and scene is not None
+            export_scene.setEnabled(can_export)
+            if not ready:
+                export_scene.setToolTip(
+                    "Load your NFL 2K5 XISO and open Stadium Studio before exporting a model."
+                )
+            elif scene is None:
+                export_scene.setToolTip(
+                    "Select a stadium scene in the list first, then export its glTF."
+                )
+            else:
+                export_scene.setToolTip(
+                    "Save the selected stadium as a glTF you can open in Blender. "
+                    "The buffer is written beside it; edit positions only for re-import."
+                )
         import_scene = getattr(self, "_stadium_import_scene_button", None)
         if import_scene is not None:
-            import_scene.setEnabled(ready and scene is not None)
+            can_import = ready and scene is not None
+            import_scene.setEnabled(can_import)
+            if not ready:
+                import_scene.setToolTip(
+                    "Load your NFL 2K5 XISO first — Import edited model needs a prepared "
+                    "Stadium Studio scene. Topology must match the export."
+                )
+            elif scene is None:
+                import_scene.setToolTip(
+                    "Select a stadium scene first. Import is same-topology position-only; "
+                    "vertex count and faces must match the export."
+                )
+            else:
+                import_scene.setToolTip(
+                    "Import the matching glTF after moving vertices in Blender. Vertex "
+                    "count and faces must stay unchanged; Mod Studio keeps the game's "
+                    "original UV, material, collision, selector, and other stream bytes."
+                )
         state.export_button.setEnabled(ready and texture is not None)
         editable = texture is not None and texture.access_status == STADIUM_EDITABLE
         state.replace_button.setEnabled(ready and editable)
