@@ -113,6 +113,8 @@ class UniformIndependencePanel(QFrame):
         self.apply_button.clicked.connect(self._apply)
         actions.addWidget(self.apply_button)
         box.addLayout(actions)
+        # Shell-driven ready flag (may differ from facade.source still attached).
+        self._source_ready = bool(getattr(self.facade, "source_ready", False))
 
         self.refresh()
 
@@ -123,13 +125,22 @@ class UniformIndependencePanel(QFrame):
             self.headline.setText(
                 "The uniform assignment plan is not available in this build."
             )
-            self.apply_button.setEnabled(False)
+            tip = (
+                "Uniform independence plan is not available in this build. "
+                "Click still explains — button stays clickable."
+            )
+            self.apply_button.setEnabled(True)
+            self.apply_button.setToolTip(tip)
+            self.apply_button.setProperty("disableReason", tip)
             return
         try:
             plan = uniform_independence.describe_plan()
         except uniform_independence.UniformIndependenceError as exc:
             self.headline.setText(str(exc))
-            self.apply_button.setEnabled(False)
+            tip = f"{exc} Click still explains — button stays clickable."
+            self.apply_button.setEnabled(True)
+            self.apply_button.setToolTip(tip)
+            self.apply_button.setProperty("disableReason", tip)
             return
 
         self._plan = plan
@@ -149,7 +160,27 @@ class UniformIndependencePanel(QFrame):
                     item.setTextAlignment(Qt.AlignCenter)
                 self.table.setItem(index, column, item)
         self._fill_helmet_usage(plan)
-        self.apply_button.setEnabled(bool(rows) and self._source_index() is not None)
+        source_ok = bool(self._source_ready and self._source_index() is not None)
+        can = bool(rows) and source_ok
+        if can:
+            tip = (
+                "Creates a new 0A file with each team pointed at its own textures.\n"
+                "Your loaded game is opened read-only and is not modified."
+            )
+            block = ""
+        elif not source_ok:
+            tip = block = (
+                "Load your APF game first. Independence writes a new 0A copy only. "
+                "Click still explains — button stays clickable."
+            )
+        else:
+            tip = block = (
+                "All listed families are already independent — nothing to apply. "
+                "Click still explains this."
+            )
+        self.apply_button.setEnabled(True)
+        self.apply_button.setToolTip(tip)
+        self.apply_button.setProperty("disableReason", block)
 
     def _fill_helmet_usage(self, plan: uniform_independence.IndependencePlan) -> None:
         """Name the teams behind each helmet, which is the reported surprise.
@@ -184,10 +215,19 @@ class UniformIndependencePanel(QFrame):
                 self.helmets.setItem(position, column, item)
 
     def set_source_ready(self, ready: bool) -> None:
-        self.apply_button.setEnabled(
-            bool(ready) and self._plan is not None
-            and any(not row.already_independent for row in self._plan.families)
+        self._source_ready = bool(ready)
+        # Refresh tooltips/disableReason via refresh path when possible.
+        if self._plan is not None or uniform_independence.plan_available():
+            self.refresh()
+            return
+        tip = (
+            "Load your APF game first. Independence writes a new 0A copy only."
+            if not ready
+            else "Uniform independence plan is not ready yet."
         )
+        self.apply_button.setEnabled(True)
+        self.apply_button.setToolTip(tip)
+        self.apply_button.setProperty("disableReason", tip)
 
     def _source_index(self) -> Path | None:
         source = getattr(self.facade, "source", None)
@@ -195,6 +235,18 @@ class UniformIndependencePanel(QFrame):
         return index if isinstance(index, Path) else None
 
     def _apply(self) -> None:
+        reason = str(self.apply_button.property("disableReason") or "").strip()
+        if reason:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(
+                self,
+                "Cannot apply uniform independence yet",
+                reason
+                + "\n\nFix: load APF with shared families remaining, then apply. "
+                "Writes a new 0A — never mutates your original.",
+            )
+            return
         index = self._source_index()
         if index is None:
             QMessageBox.information(

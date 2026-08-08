@@ -264,7 +264,12 @@ class PanelTests(unittest.TestCase):
 
     def test_it_opens_without_a_game_and_disables_the_action(self) -> None:
         panel = self._panel(ready=False)
-        self.assertFalse(panel.apply_button.isEnabled())
+        # Never silent-gray: clickable + disableReason teaches Load.
+        self.assertTrue(panel.apply_button.isEnabled())
+        self.assertIn(
+            "Load",
+            str(panel.apply_button.property("disableReason") or ""),
+        )
         self.assertTrue(panel.headline.text())
 
     def test_the_caveat_states_what_is_not_proved(self) -> None:
@@ -278,9 +283,16 @@ class PanelTests(unittest.TestCase):
     def test_source_ready_toggles_the_action(self) -> None:
         panel = self._panel(ready=True)
         panel.set_source_ready(False)
-        self.assertFalse(panel.apply_button.isEnabled())
+        self.assertTrue(panel.apply_button.isEnabled())
+        self.assertTrue(
+            str(panel.apply_button.property("disableReason") or "").strip()
+        )
         panel.set_source_ready(True)
         self.assertTrue(panel.apply_button.isEnabled())
+        self.assertEqual(
+            str(panel.apply_button.property("disableReason") or "").strip(),
+            "",
+        )
 
 
 if __name__ == "__main__":
