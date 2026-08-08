@@ -162,7 +162,9 @@ class UniformDropParityTests(unittest.TestCase):
                 source = _write_jpeg(Path(directory) / "drop.jpg", 640, 480)
                 original = source.read_bytes()
                 with mock.patch.object(
-                    gui.QMessageBox, "question", return_value=QMessageBox.Yes
+                    gui.QInputDialog,
+                    "getItem",
+                    return_value=("Cover — fill the slot, crop overflow", True),
                 ), mock.patch.object(gui.QMessageBox, "information"):
                     dropped = _drop(page.preview, source)
                 self.application.processEvents()
@@ -391,6 +393,11 @@ class BrowserDraftLogoDropParityTests(unittest.TestCase):
                 ), mock.patch.object(
                     browser, "_selected_asset", return_value=asset
                 ), mock.patch.object(
+                    gui.QInputDialog,
+                    "getItem",
+                    return_value=("Cover — fill the slot, crop overflow", True),
+                ), mock.patch.object(
+                    # Explicit mode="contain" on draft_logo still confirms via question.
                     gui.QMessageBox, "question", return_value=QMessageBox.Yes
                 ), mock.patch.object(gui.QMessageBox, "information"):
                     browser._replace_from_drop(source)
