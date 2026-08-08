@@ -51,6 +51,17 @@ class ApfImportOffersResizeTests(unittest.TestCase):
         calls = _calls(node)
         self.assertIn("fit_image", calls)
         self.assertIn("fit_to_png", calls)
+        self.assertIn("fit_mode_labels", calls)
+        self.assertIn("fit_mode_from_label", calls)
+        self.assertIn("getItem", calls)
+
+    def test_fit_slot_image_source_names_contain_cover_stretch(self) -> None:
+        source = _GUI.read_text(encoding="utf-8")
+        start = source.index("def fit_slot_image(")
+        block = source[start : start + 3500]
+        self.assertIn("Contain", block)
+        self.assertIn("Cover", block)
+        self.assertIn("Stretch", block)
 
     def test_browser_replace_from_drop_reaches_fit_slot_image(self) -> None:
         tree = ast.parse(_GUI.read_text(encoding="utf-8"))

@@ -78,6 +78,20 @@ class ImportPathsOfferResizeTests(unittest.TestCase):
                     "an off-size PNG will be refused instead of fitted",
                 )
 
+    def test_fit_for_slot_offers_contain_cover_stretch_chooser(self) -> None:
+        """Off-size imports must let the user pick Contain/Cover/Stretch."""
+        node = _function("_fit_for_slot")
+        calls = _calls(node)
+        self.assertIn("fit_mode_labels", calls)
+        self.assertIn("fit_mode_from_label", calls)
+        self.assertIn("getItem", calls)
+        source = _STUDIO.read_text(encoding="utf-8")
+        start = source.index("    def _fit_for_slot(")
+        block = source[start : start + 3500]
+        self.assertIn("Contain", block)
+        self.assertIn("Cover", block)
+        self.assertIn("Stretch", block)
+
     def test_the_drop_handlers_reach_a_covered_path(self) -> None:
         """Drag-and-drop must not be a second, unfitted route in."""
         for dropper, expected in (
@@ -106,11 +120,12 @@ class ImportPathsOfferResizeTests(unittest.TestCase):
             self.assertIn(f'"{suffix}"', source)
 
     def test_the_resizer_still_asks_before_changing_anything(self) -> None:
-        """It must offer, never silently resample what the author supplied."""
+        """It must offer a Contain/Cover/Stretch chooser, never silent resample."""
         body = ast.get_source_segment(
             _STUDIO.read_text(encoding="utf-8"), _function("_fit_for_slot")
         ) or ""
-        self.assertIn("question", body)
+        self.assertIn("getItem", body)
+        self.assertIn("fit_mode_labels", body)
         self.assertIn("not modified", body)
 
 
@@ -218,14 +233,17 @@ class ResizeOffscreenInteractionTests(unittest.TestCase):
                 return_value=(str(self.source), "PNG image (*.png)"),
             ),
             patch(
-                "mod_editor.gui.studio_qt.QMessageBox.question",
-                return_value=QMessageBox.Yes,
-            ) as question,
+                "mod_editor.gui.studio_qt.QInputDialog.getItem",
+                return_value=(
+                    "Cover — fill the slot, crop overflow",
+                    True,
+                ),
+            ) as chooser,
         ):
             QTest.mouseClick(self.window.replace_button, Qt.LeftButton)
             self.application.processEvents()
 
-        question.assert_called_once()
+        chooser.assert_called_once()
         self._assert_fitted_import()
 
     def test_exact_size_jpeg_and_rgb_png_are_converted_to_rgba_png(self) -> None:
@@ -236,13 +254,10 @@ class ResizeOffscreenInteractionTests(unittest.TestCase):
                     source, format=format_name
                 )
                 original = source.read_bytes()
-                with patch(
-                    "mod_editor.gui.studio_qt.QMessageBox.question",
-                    return_value=QMessageBox.Yes,
-                ):
-                    fitted = self.window._fit_for_slot(
-                        source, 64, 64, "exact-size test"
-                    )
+                # Exact size: no Contain/Cover chooser; only PNG conversion.
+                fitted = self.window._fit_for_slot(
+                    source, 64, 64, "exact-size test"
+                )
                 self.assertIsNotNone(fitted)
                 assert fitted is not None
                 self.assertNotEqual(fitted, source)
@@ -264,16 +279,19 @@ class ResizeOffscreenInteractionTests(unittest.TestCase):
         )
 
         with patch(
-            "mod_editor.gui.studio_qt.QMessageBox.question",
-            return_value=QMessageBox.Yes,
-        ) as question:
+            "mod_editor.gui.studio_qt.QInputDialog.getItem",
+            return_value=(
+                "Cover — fill the slot, crop overflow",
+                True,
+            ),
+        ) as chooser:
             QApplication.sendEvent(self.window.preview, enter)
             self.assertTrue(enter.isAccepted())
             QApplication.sendEvent(self.window.preview, dropped)
             self.application.processEvents()
 
         self.assertTrue(dropped.isAccepted())
-        question.assert_called_once()
+        chooser.assert_called_once()
         self._assert_fitted_import()
 
     def test_extended_visual_import_can_save_exact_non_overwriting_master(self) -> None:
@@ -294,8 +312,11 @@ class ResizeOffscreenInteractionTests(unittest.TestCase):
         original_bytes = original.read_bytes()
 
         with patch(
-            "mod_editor.gui.studio_qt.QMessageBox.question",
-            return_value=QMessageBox.Yes,
+            "mod_editor.gui.studio_qt.QInputDialog.getItem",
+            return_value=(
+                "Cover — fill the slot, crop overflow",
+                True,
+            ),
         ):
             self.window._replace_visual_asset(state, asset, original)
         self.application.processEvents()

@@ -4,6 +4,9 @@
 
 ### Community issues closed or honesty-labeled
 
+- **Import fit chooser** — `fit_slot_image` offers Contain/Cover/Stretch; wordmark combo includes Stretch.
+- **G1/G2 RE spike** — shared `playbook_package_rule_spike` + gameplay map addresses (no fake fix pack).
+
 - **logo_l0 / logo_l1 format 15 (`4_4_4_4`)** — re-verified; regression tests drive
   shipped `apf_inner.decode_txtr_base_rgba` + PNG write without retail bytes
   (`tests/mod_editor/test_apf_xenos_4444_png.py`). Import/swap remains the

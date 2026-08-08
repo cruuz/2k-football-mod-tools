@@ -9,6 +9,9 @@ build path.
 
 ### Community / product fixes
 
+- **Import fit chooser** — off-size dialog/drop imports pick Contain, Cover, or Stretch (not silent auto-cover).
+- **G1/G2 package-rule RE spike** — layout pins + o0308 fixture offsets in `playbook_package_rule_spike` (offline writer still not shipped).
+
 - **Studio launch / Playbooks host** — `BrowseOnlyFacade` and `StudioFacade`
   expose formation/play clone methods so `PlaybooksPanelHost` isinstance checks
   pass (unblocks every headless Studio GUI test that constructs the main window).

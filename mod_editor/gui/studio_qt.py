@@ -3931,20 +3931,20 @@ class StudioMainWindow(QMainWindow):
     ) -> Path | None:
         """Return a path that is exactly this slot's size, or None if declined.
 
-        The size rule belongs to the disc -- a texture occupies a fixed byte
-        span -- and the core validators still enforce it, which is what makes
-        them a safety net rather than a suggestion. Refusing the user's file
-        instead of offering to fit it was the app's choice, and it stopped
-        people before they had started.
-
-        An already-correct image is returned untouched, so nothing is resampled
-        that does not need to be.
+        Dialog and drag/drop both call this path. When a resize is required and
+        ``mode`` is ``auto``, the user chooses Contain, Cover, or Stretch.
+        An already-correct RGBA PNG is returned untouched.
         """
         from mod_editor.core.errors import ValidationError
-        from mod_editor.core.image_fit import fit_image, fit_to_png
+        from mod_editor.core.image_fit import (
+            fit_image,
+            fit_mode_from_label,
+            fit_mode_labels,
+            fit_to_png,
+        )
 
         try:
-            probe = fit_image(path, width, height, mode=mode)
+            probe = fit_image(path, width, height, mode="auto")
         except ValidationError as exc:
             self._show_error(f"That file could not be read as an image. {exc}")
             return None
@@ -3954,35 +3954,54 @@ class StudioMainWindow(QMainWindow):
         if not probe.changed and not needs_png_conversion:
             return path
 
-        proposed_change = (
-            "convert that exact-size image to an 8-bit RGBA PNG"
-            if not probe.changed
-            else probe.describe()
-        )
-
-        answer = QMessageBox.question(
-            self,
-            "Prepare this image?" if needs_png_conversion else "Resize this image?",
-            f"{label} must be exactly {width}×{height}, and that image is "
-            f"{probe.source_width}×{probe.source_height}.\n\n"
-            f"Mod Studio can {proposed_change} for you.\n\n"
-            "Your original file is not modified — the resized copy is used for "
-            "this edit only.",
-            QMessageBox.Yes | QMessageBox.Cancel,
-            QMessageBox.Yes,
-        )
-        if answer != QMessageBox.Yes:
-            return None
+        chosen_mode = mode
+        if mode == "auto":
+            if probe.changed:
+                labels = fit_mode_labels()
+                choice, accepted = QInputDialog.getItem(
+                    self,
+                    "How should this image fit the slot?",
+                    f"{label} must be exactly {width}×{height}, and that image is "
+                    f"{probe.source_width}×{probe.source_height}.\n\n"
+                    "Choose Contain, Cover, or Stretch. Dialog and drag/drop "
+                    "share this path. Your original file is not modified.",
+                    labels,
+                    0,
+                    False,
+                )
+                if not accepted:
+                    return None
+                try:
+                    chosen_mode = fit_mode_from_label(str(choice))
+                except ValidationError as exc:
+                    self._show_error(str(exc))
+                    return None
+            else:
+                chosen_mode = "contain"  # exact size, PNG conversion only
+        else:
+            answer = QMessageBox.question(
+                self,
+                "Prepare this image?" if needs_png_conversion else "Resize this image?",
+                f"{label} must be exactly {width}×{height}, and that image is "
+                f"{probe.source_width}×{probe.source_height}.\n\n"
+                f"Mod Studio will apply fit mode “{chosen_mode}”.\n\n"
+                "Your original file is not modified — the prepared copy is used "
+                "for this edit only.",
+                QMessageBox.Yes | QMessageBox.Cancel,
+                QMessageBox.Yes,
+            )
+            if answer != QMessageBox.Yes:
+                return None
         try:
             if self._fit_dir is None:
                 self._fit_dir = Path(tempfile.mkdtemp(prefix="2k5-fitted-"))
             staged = self._fit_dir / f"{_suggested_png_name(label)}"
-            result = fit_to_png(path, width, height, staged, mode=mode)
+            result = fit_to_png(path, width, height, staged, mode=chosen_mode)
         except ValidationError as exc:
             self._show_error(f"Could not resize that image. {exc}")
             return None
         verb = "Prepared" if needs_png_conversion else "Resized"
-        self._set_status(f"{verb} for {label} — {result.describe()}.")
+        self._set_status(f"{verb} for {label} — {result.describe()} ({chosen_mode}).")
         return staged
 
     def _discard_texture_master_draft(self, asset_id: str) -> None:

@@ -1496,17 +1496,22 @@ def fit_slot_image(
 ) -> Path | None:
     """Return an exact-size image for one slot, offering to convert for the user.
 
-    Any format and any size are accepted: the fit layer does the resize and
-    writes an exact RGBA PNG. An already-correct RGBA PNG is returned untouched
-    so a good file is never resampled "just in case". Returns ``None`` when the
-    file cannot be read or the user declines -- never a dead-end error, because
-    the prepared copy is offered before anything is refused.
+    Any format and any size are accepted. Dialog and drag/drop share this
+    helper. When a resize is required and ``mode`` is ``auto``, the user
+    chooses Contain, Cover, or Stretch. An already-correct RGBA PNG is
+    returned untouched. Returns ``None`` when the file cannot be read or the
+    user cancels.
     """
     from mod_editor.core.errors import ValidationError
-    from mod_editor.core.image_fit import fit_image, fit_to_png
+    from mod_editor.core.image_fit import (
+        fit_image,
+        fit_mode_from_label,
+        fit_mode_labels,
+        fit_to_png,
+    )
 
     try:
-        probe = fit_image(path, width, height, mode=mode)
+        probe = fit_image(path, width, height, mode="auto")
     except ValidationError as exc:
         QMessageBox.information(
             parent,
@@ -1522,26 +1527,48 @@ def fit_slot_image(
     if not probe.changed and not needs_png_conversion:
         return path
 
-    proposed_change = (
-        "convert that exact-size image to an 8-bit RGBA PNG"
-        if not probe.changed
-        else probe.describe()
-    )
-    answer = QMessageBox.question(
-        parent,
-        "Prepare this image?",
-        f"{label} must be exactly {width}×{height}, and that image is "
-        f"{probe.source_width}×{probe.source_height}.\n\n"
-        f"Mod Studio can {proposed_change} for you.\n\n"
-        "Your original file is not modified -- the prepared copy is used for "
-        "this edit only.",
-        QMessageBox.Yes | QMessageBox.Cancel,
-        QMessageBox.Yes,
-    )
-    if answer != QMessageBox.Yes:
-        return None
+    chosen_mode = mode
+    if mode == "auto":
+        if probe.changed:
+            labels = fit_mode_labels()
+            choice, accepted = QInputDialog.getItem(
+                parent,
+                "How should this image fit the slot?",
+                f"{label} must be exactly {width}×{height}, and that image is "
+                f"{probe.source_width}×{probe.source_height}.\n\n"
+                "Choose Contain, Cover, or Stretch. Dialog and drag/drop share "
+                "this path. Your original file is not modified.",
+                labels,
+                0,
+                False,
+            )
+            if not accepted:
+                return None
+            try:
+                chosen_mode = fit_mode_from_label(str(choice))
+            except ValidationError as exc:
+                QMessageBox.information(parent, "Invalid fit mode", str(exc))
+                return None
+        else:
+            chosen_mode = "contain"
+    else:
+        answer = QMessageBox.question(
+            parent,
+            "Prepare this image?",
+            f"{label} must be exactly {width}×{height}, and that image is "
+            f"{probe.source_width}×{probe.source_height}.\n\n"
+            f"Mod Studio will apply fit mode “{chosen_mode}”.\n\n"
+            "Your original file is not modified -- the prepared copy is used for "
+            "this edit only.",
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Yes,
+        )
+        if answer != QMessageBox.Yes:
+            return None
     try:
-        result = fit_to_png(path, width, height, staged_destination, mode=mode)
+        result = fit_to_png(
+            path, width, height, staged_destination, mode=chosen_mode
+        )
     except ValidationError as exc:
         QMessageBox.information(
             parent,
@@ -1550,8 +1577,6 @@ def fit_slot_image(
             "No edit was staged.",
         )
         return None
-    # The panel's preview updates to show the exact staged pixels; no extra
-    # dialog stands between the modder and the result.
     del result
     return staged_destination
 
@@ -5085,6 +5110,7 @@ class ApfTextLogoPanel(QFrame):
         self.fit_mode = QComboBox()
         self.fit_mode.addItem("Contain — keep the entire logo", "contain")
         self.fit_mode.addItem("Cover — fill and center-crop", "cover")
+        self.fit_mode.addItem("Stretch — force 512×128 (may distort)", "stretch")
         self.fit_mode.setToolTip(
             "Contain is the safe default for long logos. Cover fills all 512×128 "
             "pixels and trims overflow. Transparent pixels are flattened onto "

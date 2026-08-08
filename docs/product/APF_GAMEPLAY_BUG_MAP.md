@@ -9,8 +9,8 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 
 | ID | Severity | Symptom | Likely surface | Status | Unblock path |
 | --- | --- | --- | --- | --- | --- |
-| G1 | Huge | ILB→OLB in Dime (star ILBs benched) | Defensive playbook formation package / sub rules | **annotated in editor** (⚠ Dime); offline package writer **not** proved | Diff Dime vs Nickel assignment membership on MASTER PLAY + save package bits; spike ROST/PLAY package-rule writer on fixture o0308-class |
-| G2 | Huge | TE→WR in Ace on long downs (practice OK, game broken) | Offensive Ace package membership | **annotated** (⚠ Ace); offline fix **not** proved | Same as G1 for Ace offensive packages; capture practice vs game package consumer |
+| G1 | Huge | ILB→OLB in Dime (star ILBs benched) | Defensive play assignment slots 4–5 + formation aux membership | **RE spike shipped** (`playbook_package_rule_spike.spike_g1_dime_ilb`); offline package writer **not** proved | See §G1 spike below |
+| G2 | Huge | TE→WR in Ace on long downs (practice OK, game broken) | Offensive skill-slot descriptors + Ace formation play links | **RE spike shipped** (`spike_g2_ace_te`); offline fix **not** proved | See §G2 spike below |
 | G3 | Huge | DL ignores pre-play pinch/spread/swap; slants instead | Play assignment / DL stunt bits / director | research | Map assignment descriptor bits + DRCT; FX/FY/FW/FT stack does not own this |
 | G4 | Huge | Season mode always daytime | Schedule / time-of-day tables | research | Locate season generator table in 0A/ROST/save |
 | G5 | Huge | Season weather only clear/rain | Weather enum / season generator | research | Census weather enums vs `divot_Grass*` names |
@@ -38,9 +38,42 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 | Clone writer | o0308 @ disc offset class `106803200` | offline-proved (formation 39→40, play 254→255) |
 | FX/FY/FW/FT overlays | `docs/product/PLAY_F*_SIM_OVERLAY_PROOF.md` | 4/4 orthogonal file proofs landed beta-26..28 |
 | Inverse compiler | `PLAY_INVERSE_COMPILER_SPEC.md` | gates defined; freehand not Editable |
-| Package/sub rules G1/G2 | not yet mapped to byte offsets | **next spike** |
+| Package/sub rules G1/G2 | **mapped** — see below + `mod_editor/core/playbook_package_rule_spike.py` | **re_spike** (not offline-writer-proved) |
+
+### G1 precise spike — Dime ILB→OLB
+
+| Pin | Value |
+| --- | --- |
+| Fixture asset_id | `nfl2k5.resource.o0308.c0000.k504c4159` |
+| Fixture pack_offset | `106803200` |
+| PLAY body `PLAY_BASE` | `0x33FC` |
+| PLAY record size | `0x60` |
+| Assignment field | `PLAY_BASE + play*0x60 + 8 + slot*8` (8 bytes: descriptor u32 + chain_start u32) |
+| Focus slots | **4, 5, 6** (start of defense `0x1b` LB/DB band; `PLAY_PLAYER_ROLE_HYPOTHESIS`) |
+| Formation aux | `FORMATION_AUX_BASE 0x245C`, size `0x50`, `FORMATION_PLAY_LINKS=36` |
+| Shipped API | `spike_g1_dime_ilb(book)` → slot snapshots with body offsets |
+| Offline writer gate | Dime vs Nickel census on o0308: if only assignment 8-byte fields differ in slots 4–5, prove copy-only patch + independent reparse/volume byte-diff. **No fix pack until that gate.** |
+
+### G2 precise spike — Ace TE→WR
+
+| Pin | Value |
+| --- | --- |
+| Same fixture | o0308 asset_id + pack_offset above |
+| Focus slots | **3, 6, 7, 8, 9** (skill/WR variance band) |
+| Formation links | packed play-index in formation link table (low 9 bits; `0x1FF` empty) |
+| Descriptor word | play-level at `PLAY_BASE + play*0x60 + 0x04` |
+| Shipped API | `spike_g2_ace_te(book)` |
+| Offline writer gate | Ace vs non-Ace twin: if only skill-slot assignments or link packed values differ, offline-prove copy of non-broken rule. **No fix pack until that gate.** |
+
+### APF parallel surface
+
+MASTER PLAY assignment-route copy/swap is offline-proved (586×11). G1/G2 need
+the same class of **package membership** proof on APF MASTER once Dime/Ace
+descriptor deltas are isolated on the 2K5 o0308 fixture (shared PLAY family
+lineage) or an APF-named play census.
 
 ## Honesty
 
 No community fix pack is offered as a one-click writer until package rules are
-offline-proved. Editor ⚠ tags are discovery aids only.
+offline-proved. Editor ⚠ tags are discovery aids. The RE spike is precise enough
+to start the offline writer without re-discovering layout constants.

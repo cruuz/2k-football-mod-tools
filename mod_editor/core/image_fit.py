@@ -43,6 +43,42 @@ MAX_SOURCE_BYTES = 64 * 1024 * 1024
 MAX_SOURCE_PIXELS = 64 * 1024 * 1024  # a decompression-bomb ceiling
 FIT_MODES = ("auto", "scale", "cover", "contain", "stretch")
 
+# User-facing choices offered when an import must be resized (dialog + drop).
+# Labels are stable API for GUI and tests; values are FIT_MODES members.
+FIT_MODE_CHOICES: tuple[tuple[str, str], ...] = (
+    ("contain", "Contain — keep whole image, pad with transparency"),
+    ("cover", "Cover — fill the slot, crop overflow"),
+    ("stretch", "Stretch — force exact size (may distort)"),
+)
+
+
+def fit_mode_labels() -> tuple[str, ...]:
+    """Labels for a Contain/Cover/Stretch chooser (no ``auto``)."""
+
+    return tuple(label for _mode, label in FIT_MODE_CHOICES)
+
+
+def fit_mode_from_label(label: str) -> str:
+    """Map a chooser label (or raw mode name) to a FIT_MODES value."""
+
+    raw = str(label).strip()
+    if raw in FIT_MODES:
+        return raw
+    casefold = raw.casefold()
+    for mode, choice_label in FIT_MODE_CHOICES:
+        if choice_label.casefold() == casefold or choice_label.casefold().startswith(
+            casefold.split("—")[0].strip()
+        ):
+            return mode
+    # Prefix match: "Contain — …"
+    head = casefold.split("—", 1)[0].strip()
+    for mode, choice_label in FIT_MODE_CHOICES:
+        if choice_label.casefold().startswith(head) and head:
+            return mode
+    raise ValidationError(
+        f"fit mode must be one of {', '.join(m for m, _ in FIT_MODE_CHOICES)}"
+    )
+
 
 @dataclass(frozen=True)
 class FitResult:
@@ -208,8 +244,11 @@ def fit_to_png(
 
 __all__ = [
     "FIT_MODES",
+    "FIT_MODE_CHOICES",
     "FitResult",
     "MAX_SOURCE_BYTES",
     "fit_image",
+    "fit_mode_from_label",
+    "fit_mode_labels",
     "fit_to_png",
 ]

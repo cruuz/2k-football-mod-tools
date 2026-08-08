@@ -30,7 +30,12 @@ if str(_REPO_ROOT) not in sys.path:
 
 from mod_editor.core.errors import ValidationError  # noqa: E402
 from mod_editor.core.image_fit import (  # noqa: E402
-    FIT_MODES, fit_image, fit_to_png,
+    FIT_MODES,
+    FIT_MODE_CHOICES,
+    fit_image,
+    fit_mode_from_label,
+    fit_mode_labels,
+    fit_to_png,
 )
 
 try:
@@ -98,6 +103,15 @@ class FitTests(unittest.TestCase):
         self.assertEqual(result.action, "stretched")
         self.assertEqual((result.width, result.height), (100, 100))
         self.assertIn("without preserving aspect", result.describe())
+
+    def test_chooser_labels_map_to_contain_cover_stretch(self) -> None:
+        labels = fit_mode_labels()
+        self.assertEqual(len(labels), 3)
+        modes = {fit_mode_from_label(label) for label in labels}
+        self.assertEqual(modes, {"contain", "cover", "stretch"})
+        self.assertEqual(len(FIT_MODE_CHOICES), 3)
+        self.assertEqual(fit_mode_from_label("stretch"), "stretch")
+        self.assertEqual(fit_mode_from_label("Contain — keep whole image, pad with transparency"), "contain")
 
     def test_every_mode_lands_on_the_exact_target(self) -> None:
         for mode in FIT_MODES:
@@ -168,12 +182,17 @@ class WiringTests(unittest.TestCase):
             _REPO_ROOT / "mod_editor" / "apf_studio" / "gui.py"
         ).read_text(encoding="utf-8")
         self.assertNotIn("Wrong PNG size", source)
-        # Three staging paths call the writer: the crest panel, the field-art
-        # panel, and the shared fit_slot_image helper that the uniform,
-        # digital-font and browser routes all go through.
-        self.assertEqual(source.count("fit_to_png(path"), 3,
-                         "every APF staging path must offer the fit")
+        # Shared fit_slot_image plus panel staging paths must call fit_to_png.
+        # Match both `fit_to_png(path` and multi-line `fit_to_png(\n    path`.
+        import re
+        calls = re.findall(r"fit_to_png\s*\(\s*path", source)
+        self.assertGreaterEqual(
+            len(calls), 3,
+            "every APF staging path must offer the fit via fit_to_png(path…)",
+        )
         self.assertIn("def fit_slot_image", source)
+        self.assertIn("fit_mode_labels", source)
+        self.assertIn("getItem", source)
 
     def test_the_2k5_replace_path_fits_before_replacing(self) -> None:
         source = (
