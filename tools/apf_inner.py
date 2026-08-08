@@ -1263,26 +1263,28 @@ def decode_txtr_base_rgba(
             block_size,
         )
     else:
-        # Linear (untiled) 2D base: only uncompressed texel layouts (1×1
-        # "blocks") are proved. Compressed DXT linear remains PORTME.
-        if block_width != 1 or block_height != 1:
+        # Linear (untiled) 2D base: row-major with pitch_pixels. Uncompressed
+        # uses 1×1 "blocks"; DXT/BC uses 4×4 blocks (same decoders as tiled).
+        width_blocks = (width + block_width - 1) // block_width
+        height_blocks = (height + block_height - 1) // block_height
+        pitch_blocks = (pitch + block_width - 1) // block_width
+        if pitch_blocks < width_blocks:
             raise FormatError(
-                "PORTME: linear TXTR routing for compressed DXT formats is "
-                "unverified; export raw TXTR parts instead."
+                f"PORTME: linear TXTR pitch {pitch} is narrower than width {width}"
             )
-        row_bytes = pitch * block_size
-        need = row_bytes * height
+        row_bytes = pitch_blocks * block_size
+        need = row_bytes * height_blocks
         if len(base_data) < need:
             raise FormatError(
                 f"PORTME: linear TXTR base is {len(base_data)} bytes; "
-                f"need {need} for {width}×{height} pitch {pitch}"
+                f"need {need} for {width}×{height} pitch {pitch} "
+                f"({width_blocks}×{height_blocks} blocks)"
             )
-        # Pack tight rows of width*texel_size from pitched source.
-        tight = bytearray(width * height * block_size)
-        src_stride = row_bytes
-        dst_stride = width * block_size
-        for y in range(height):
-            src = y * src_stride
+        # Pack tight rows of width_blocks from pitched source (matches untile out).
+        tight = bytearray(width_blocks * height_blocks * block_size)
+        dst_stride = width_blocks * block_size
+        for y in range(height_blocks):
+            src = y * row_bytes
             dst = y * dst_stride
             tight[dst : dst + dst_stride] = base_data[src : src + dst_stride]
         linear = bytes(tight)

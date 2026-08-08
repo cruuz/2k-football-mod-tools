@@ -54,8 +54,8 @@ SOURCE_PINS = {
     },
     "iff_h7a_parser": {
         "path": "tools/apf_inner.py",
-        "size_bytes": 78_570,
-        "sha256": "7eb66ba962e5bfb976da6f7b47b58bb88c1d755bc1fec4611c8b9e68a4e66f86",
+        "size_bytes": 78_804,
+        "sha256": "0000d85166282be696b476036b698fc26a49436eab67cc6c7488852700fd4acd",
         "schema": None,
         "role": "strict IFF/H7A parser and part-range derivation",
     },

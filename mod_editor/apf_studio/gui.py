@@ -3523,8 +3523,11 @@ class ApfTeamLogoPanel(QFrame):
             FULL_SHELL_CREST_PROFILE,
         )
         self.coverage.setToolTip(
-            "Retail keeps the original side decal. Full-shell uses the exact "
-            "stock helmet-shell atlas and migrates every team package first. "
+            "Retail keeps the original side decal (bounded crest). Full-shell "
+            "uses the stock helmet-shell atlas and migrates every team package "
+            "first. Recommended default for whole-shell paint: Full-shell + "
+            "Normal logo (opaque shell body alpha 255 — the old 0x88 "
+            "translucent body makes helmets see-through in game). "
             + GLOBAL_HELMET_WARNING
         )
         coverage_row.addWidget(coverage_label)
@@ -3572,12 +3575,14 @@ class ApfTeamLogoPanel(QFrame):
 
         description = QLabel(
             "This is the team-logo texture that serves as the helmet crest. "
-            "For Full-shell, choose Normal logo to import ordinary artwork: you "
-            "confirm the shell and two rendered detail colors, inspect an honest "
-            "palette-mapped preview, then place the converted mask. Choose APF "
-            "region mask only for an already-authored weight map; its colors are "
-            "always weights, and strict validation rejects blue, hidden transparent "
-            "color, overweight red/green, or non-four-bit values. "
+            "Recommended path: Full-shell coverage + Normal logo import — "
+            "opaque shell body (alpha 255), two detail colors, honest palette "
+            "preview, then Place on helmet. Avoid translucent shell-body "
+            "blacks (retail 0x88 alpha) — they make the whole helmet "
+            "see-through in Xenia. Choose APF region mask only for an already-"
+            "authored weight map; its colors are always weights, and strict "
+            "validation rejects blue, hidden transparent color, overweight "
+            "red/green, or non-four-bit values. "
             "The game fills mask regions from its palette, so arbitrary source RGB "
             "cannot be preserved literally. "
             "One build writes the crest into both places the disc stores it, "

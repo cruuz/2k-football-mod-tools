@@ -19,9 +19,9 @@ offline-writer-proved or better.
 | 10 | Gray model import | **Fixed** | APF model panel tooltips when disabled; 2K5 stadium import tooltips with reason |
 | 11 | Windows path/installer | **Ongoing class** | `platform_compat`, beta-5..12 lessons; keep matrix tests green |
 | 12 | PS3 ISO mis-ID | **Fixed class** | structural ID + clear refuse; keep probes |
-| 13 | Helmet shell default path | **Partial** | v25 opaque + v30 native-material; recommend path in shell UI; runtime witness partial |
+| 13 | Helmet shell default path | **Mitigated** | Team Logos UI recommends Full-shell + Normal logo; opaque shell body α255 taught in blurb/tooltip (0x88 translucency defect named). Runtime Xenia witness still partial. |
 | 14 | Eagles shell accuracy | **Partial** | v30 volume; close-up witness pending (handoff) |
-| 15 | Remaining PORTME formats | **Improved** | PNG preview: 8, 1_5_5_5, 5_6_5, 8_8_8_8, 8_8, 4_4_4_4, DXT1/2_3/4_5, DXN (helmet + base-only namefont), **format-32 cubemap face-0** (`SpecularLightBox` etc. via `decode_txtr_cubemap_face0_rgba`). Other faces/mips raw-export. Linear untiled uncompressed TXTR (8/555/565/8888/88/4444) now PNG-preview; residual: linear DXT compressed still PORTME; DXT3A if any. |
+| 15 | Remaining PORTME formats | **Improved** | PNG preview: 8, 1_5_5_5, 5_6_5, 8_8_8_8, 8_8, 4_4_4_4, DXT1/2_3/4_5, DXN (helmet + base-only namefont), **format-32 cubemap face-0**, **linear untiled uncompressed + linear DXT1/2_3/4_5**. Residual: other cubemap faces/mips raw-export; DXT3A if any; exotic Xenos formats. |
 | 16–20 | 2K5 community discoverability | **Partial** | Equipment browse, menu logos labeled in README/changelog; continue polish |
 | GH#2 | Stock playbooks | **Partial** | Browser + route copy + clone + **broken-play annotations**; freehand wall |
 

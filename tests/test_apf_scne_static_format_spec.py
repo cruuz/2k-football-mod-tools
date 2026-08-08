@@ -28,7 +28,7 @@ EXPECTED_SPEC_SIZE = 75_227
 # product-data copies used by the desktop runtime.
 # Two of those pins (tools/apf_inner.py and tools/apf_texture_patch.py) had been
 # left stale by earlier work, which is why this test was already failing at HEAD.
-EXPECTED_SPEC_SHA256 = "e45762b8f8a370012b218cb633fad3351f071b84cf8ace7550edead8ee85c43f"
+EXPECTED_SPEC_SHA256 = "f8c94f1814880cf64eaf7eb168f1c793ba1d38b9f6ee92c0600d4ddb8ab5b92a"
 
 
 class ApfScneStaticFormatSpecTest(unittest.TestCase):
