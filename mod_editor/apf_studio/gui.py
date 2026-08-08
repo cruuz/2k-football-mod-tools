@@ -11211,7 +11211,12 @@ class InspectorBrowser(QFrame):
         self.apply_roster_name_button = QPushButton("Replace Name")
         self.apply_roster_name_button.setObjectName("primaryButton")
         self.apply_roster_name_button.setVisible(roster_mode)
-        self.apply_roster_name_button.setEnabled(False)
+        _roster_boot = (
+            "Select a roster identity field first. Replace/Revert stay clickable."
+        )
+        self.apply_roster_name_button.setEnabled(True)
+        self.apply_roster_name_button.setToolTip(_roster_boot)
+        self.apply_roster_name_button.setProperty("disableReason", _roster_boot)
         if roster_mode and not roster_writes_enabled:
             self.apply_roster_name_button.setToolTip(
                 ROSTER_IDENTITY_RUNTIME_LOCK_MESSAGE
@@ -11219,7 +11224,9 @@ class InspectorBrowser(QFrame):
         self.revert_roster_name_button = QPushButton("Revert Name")
         self.revert_roster_name_button.setObjectName("dangerQuietButton")
         self.revert_roster_name_button.setVisible(roster_mode)
-        self.revert_roster_name_button.setEnabled(False)
+        self.revert_roster_name_button.setEnabled(True)
+        self.revert_roster_name_button.setToolTip(_roster_boot)
+        self.revert_roster_name_button.setProperty("disableReason", _roster_boot)
         self.roster_field_combo.currentIndexChanged.connect(
             self._roster_field_changed
         )
