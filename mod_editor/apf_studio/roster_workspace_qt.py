@@ -334,8 +334,18 @@ class RosterReservePlanner(QWidget):
             self.selected_slot.setText("Choose reserve slot 43–53")
             self.player.clear()
             self.player.setEnabled(False)
-            self.assign_button.setEnabled(False)
-            self.clear_button.setEnabled(False)
+            tip = (
+                "Select a reserve row (slots 43–53) after loading your APF game. "
+                "Click still explains — Assign/Clear stay clickable."
+                if self.facade.source_ready
+                else "Load your APF game first, then select a reserve slot 43–53."
+            )
+            self.assign_button.setEnabled(True)
+            self.clear_button.setEnabled(True)
+            self.assign_button.setToolTip(tip)
+            self.clear_button.setToolTip(tip)
+            self.assign_button.setProperty("disableReason", tip)
+            self.clear_button.setProperty("disableReason", tip)
             return
         team_index = self._current_team()
         current = workspace.teams[team_index].reserve_player_indices[reserve_slot]
@@ -364,10 +374,36 @@ class RosterReservePlanner(QWidget):
             f"(master slot {STOCK_ACTIVE_SLOTS + reserve_slot + 1})"
         )
         self.player.setEnabled(bool(choices))
-        self.assign_button.setEnabled(bool(choices))
-        self.clear_button.setEnabled(current is not None)
+        assign_tip = (
+            "Assign the selected player to this reserve slot."
+            if choices
+            else "No free players available for this reserve slot (all assigned/active)."
+        )
+        clear_tip = (
+            "Clear this reserve slot."
+            if current is not None
+            else "Nothing to clear—this reserve slot is already empty."
+        )
+        self.assign_button.setEnabled(True)
+        self.clear_button.setEnabled(True)
+        self.assign_button.setToolTip(assign_tip)
+        self.clear_button.setToolTip(clear_tip)
+        self.assign_button.setProperty(
+            "disableReason", "" if choices else assign_tip
+        )
+        self.clear_button.setProperty(
+            "disableReason", "" if current is not None else clear_tip
+        )
 
     def _assign(self) -> None:
+        reason = str(self.assign_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot assign reserve yet",
+                reason + "\n\nFix: load game → select slot 43–53 → pick a free player.",
+            )
+            return
         reserve_slot = self._selected_reserve_slot()
         player_index = self.player.currentData()
         if reserve_slot is None or player_index is None:
@@ -382,6 +418,14 @@ class RosterReservePlanner(QWidget):
         self._render(select_master_slot=STOCK_ACTIVE_SLOTS + reserve_slot)
 
     def _clear(self) -> None:
+        reason = str(self.clear_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot clear reserve yet",
+                reason,
+            )
+            return
         reserve_slot = self._selected_reserve_slot()
         if reserve_slot is None:
             return
