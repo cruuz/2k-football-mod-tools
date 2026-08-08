@@ -387,8 +387,15 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             self.assertTrue(page.editor.replace_button.isEnabled())
             self.assertTrue(page.editor.export_button.isEnabled())
             self.assertEqual(page.editor.replace_button.text(), "Replace PNG…")
-            self.assertFalse(page.editor.build_button.isEnabled())
-            self.assertFalse(page.editor.revert_button.isEnabled())
+            # Never silent-gray: Build/Revert stay clickable until staged.
+            self.assertTrue(page.editor.build_button.isEnabled())
+            self.assertTrue(page.editor.revert_button.isEnabled())
+            self.assertTrue(
+                str(page.editor.build_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(
+                str(page.editor.revert_button.property("disableReason") or "").strip()
+            )
             self.assertIn("not proved without a Xenia capture", page.editor.description.text())
         finally:
             page.deleteLater()
@@ -397,10 +404,18 @@ class ApfFieldArtGuiTests(unittest.TestCase):
     def test_editor_is_read_only_safe_until_a_game_is_loaded(self) -> None:
         page = self._page(ready=False)
         try:
-            self.assertFalse(page.editor.replace_button.isEnabled())
-            self.assertFalse(page.editor.export_button.isEnabled())
-            self.assertFalse(page.editor.build_button.isEnabled())
-            self.assertFalse(page.editor.revert_button.isEnabled())
+            # Never silent-gray when unloaded: enabled + disableReason teaches Load.
+            self.assertTrue(page.editor.replace_button.isEnabled())
+            self.assertTrue(page.editor.export_button.isEnabled())
+            self.assertTrue(page.editor.build_button.isEnabled())
+            self.assertTrue(page.editor.revert_button.isEnabled())
+            for button in (
+                page.editor.replace_button,
+                page.editor.export_button,
+                page.editor.build_button,
+            ):
+                reason = str(button.property("disableReason") or "")
+                self.assertIn("Load", reason)
             self.assertEqual(page.editor.status.text(), "○ Not loaded")
         finally:
             page.deleteLater()
@@ -433,8 +448,14 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 page.editor._revert()
                 self.application.processEvents()
                 self.assertIsNone(page.editor.staged_path(target))
-                self.assertFalse(page.editor.build_button.isEnabled())
-                self.assertFalse(page.editor.revert_button.isEnabled())
+                self.assertTrue(page.editor.build_button.isEnabled())
+                self.assertTrue(page.editor.revert_button.isEnabled())
+                self.assertTrue(
+                    str(page.editor.build_button.property("disableReason") or "").strip()
+                )
+                self.assertTrue(
+                    str(page.editor.revert_button.property("disableReason") or "").strip()
+                )
         finally:
             page.deleteLater()
             self.application.processEvents()
@@ -562,7 +583,10 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 asked.assert_called_once()
                 self.assertIn("Resize this image?", asked.call_args.args[1])
                 self.assertIsNone(page.editor.staged_path(target))
-                self.assertFalse(page.editor.build_button.isEnabled())
+                self.assertTrue(page.editor.build_button.isEnabled())
+                self.assertTrue(
+                    str(page.editor.build_button.property("disableReason") or "").strip()
+                )
 
                 # Accepting stages a copy at exactly the base size.
                 with mock.patch.object(

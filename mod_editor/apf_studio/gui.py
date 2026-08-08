@@ -6048,36 +6048,56 @@ class ApfFieldArtPanel(QFrame):
         target = self.current_target()
         staged = self.staged_path(target)
         self.slot.setEnabled(ready)
-        self.export_button.setEnabled(ready)
-        self.replace_button.setEnabled(ready)
-        self.build_button.setEnabled(ready and staged is not None)
-        self.revert_button.setEnabled(staged is not None)
-        self.export_button.setToolTip(
+        # Never silent-gray: export/replace/build/revert stay clickable.
+        load_tip = (
+            "Load your APF game first. Field Art export/replace needs a source. "
+            "Click still explains — buttons stay clickable."
+        )
+        export_tip = (
             f"Export the current source-derived {target.width}×{target.height} "
             f"RGBA {target.name} PNG from your game."
             if ready
-            else "Load your game to export this texture."
+            else load_tip
         )
-        self.replace_button.setToolTip(
+        replace_tip = (
             f"Choose an edited {target.width}×{target.height} RGBA PNG for "
             f"{target.name}, or drop it onto the preview."
             if ready
-            else "Load your game to stage a replacement."
+            else load_tip
         )
-        self.revert_button.setToolTip(
-            f"Discard the staged replacement PNG and show your original "
-            f"{target.name} again."
-            if staged is not None
-            else "Nothing to revert—no replacement is staged for this texture."
-        )
-        self.build_button.setToolTip(
+        build_tip = (
             "Copy your 0A and write only this one field-art texture through the "
             "offline-proved writer and its independent verifier."
             if (ready and staged is not None)
             else (
                 f"Load your game and stage a {target.width}×{target.height} RGBA "
                 "PNG to build."
+                if not ready
+                else f"Stage a {target.width}×{target.height} RGBA PNG for "
+                f"{target.name} first, then Build."
             )
+        )
+        revert_tip = (
+            f"Discard the staged replacement PNG and show your original "
+            f"{target.name} again."
+            if staged is not None
+            else "Nothing to revert—no replacement is staged for this texture."
+        )
+        self.export_button.setEnabled(True)
+        self.replace_button.setEnabled(True)
+        self.build_button.setEnabled(True)
+        self.revert_button.setEnabled(True)
+        self.export_button.setToolTip(export_tip)
+        self.replace_button.setToolTip(replace_tip)
+        self.build_button.setToolTip(build_tip)
+        self.revert_button.setToolTip(revert_tip)
+        self.export_button.setProperty("disableReason", "" if ready else load_tip)
+        self.replace_button.setProperty("disableReason", "" if ready else load_tip)
+        self.build_button.setProperty(
+            "disableReason", "" if (ready and staged is not None) else build_tip
+        )
+        self.revert_button.setProperty(
+            "disableReason", "" if staged is not None else revert_tip
         )
         self.preview.setAcceptDrops(ready)
         codec_display = target.codec.replace("_", "·")
@@ -6238,6 +6258,14 @@ class ApfFieldArtPanel(QFrame):
             self.preview.set_error(str(value))
 
     def _export_original(self) -> None:
+        reason = str(self.export_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export Field Art yet",
+                reason + "\n\nFix: File → Load game, then Export original PNG.",
+            )
+            return
         target = self.current_target()
         destination, _filter = QFileDialog.getSaveFileName(
             self,
@@ -6274,6 +6302,16 @@ class ApfFieldArtPanel(QFrame):
         )
 
     def _choose_replacement(self) -> None:
+        reason = str(self.replace_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot replace Field Art yet",
+                reason
+                + "\n\nFix: File → Load game, then Replace or drop an image. "
+                "Build writes a copied 0A — never mutates your original.",
+            )
+            return
         target = self.current_target()
         path, _filter = QFileDialog.getOpenFileName(
             self,
@@ -6348,10 +6386,28 @@ class ApfFieldArtPanel(QFrame):
         )
 
     def _revert(self) -> None:
+        reason = str(self.revert_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Nothing to revert",
+                reason + "\n\nStage a Field Art replacement first.",
+            )
+            return
         self._staged.pop(self.current_target().key, None)
         self.set_context()
 
     def _build_copied_volume(self) -> None:
+        reason = str(self.build_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot build Field Art copy yet",
+                reason
+                + "\n\nFix: load APF → stage one of the six proved slots → Build "
+                "a verified copied 0A.",
+            )
+            return
         source = self.facade.source
         target = self.current_target()
         staged = self.staged_path(target)
