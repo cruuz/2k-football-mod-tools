@@ -10,7 +10,7 @@
 ## Hour gate (honest)
 - Living WORKLOG: `docs/product/WORKLOG_20260807.md` (30+ timestamped product blocks)
 - Deep-run wall ~2026-08-07T21:41 → 2026-08-08T02:01 local + prior segments
-- **Formal ≥10h effective product work NOT yet claimed** — WORKLOG wall span ~6h multi-session; continue timestamps
+- **Formal ≥10h effective product work NOT yet claimed** — WORKLOG wall stamp span ~9.38h multi-session; continue timestamps
 
 ## E1 real-path re-proof (latest 2026-08-08T02:00)
 Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverify_final.txt`
@@ -563,3 +563,25 @@ main **460** ahead. Wall **8.69h**. Packaging green. Hour gate OPEN.
 
 ## [2026-08-08T06:29:40-04:00]
 main **462** ahead. Wall **8.69h**. Full gates green. Hour gate OPEN.
+
+## Session update 2026-08-08T07:10:58-04:00 (never-gray pagination + Field Art stock)
+
+### Shipped
+- **2K5 Menus Export** never silent-gray on map failure
+- **2K5 Export Number** current+historical never silent-gray
+- **2K5 Stadium texture** boot never silent-gray
+- **2K5 Audio / All Resources Previous-Next** never silent-gray
+- **APF Place on helmet** retail coverage + placement Save never silent-gray
+- **APF Field Art Stock NFL endzones** one-click inventory jump
+- **APF All Textures + Complete audio** Previous/Next never silent-gray
+- **export_rows disableReason** cleared when query current (offscreen hang fix)
+- Tests: never-gray boot, field art 15p, audio panel, APF audio GUI **32p batched**, critical 86p, logo 21p + 0A immutable
+- Dual packaging RELEASE_PASS 195/189; registry 70/70
+
+### Hour gate
+- Wall stamp span 21:48 → now: **9.38h** — still OPEN until ≥10h
+- main ahead origin ~466+
+
+### Residual
+- G1/G2 runtime unproved; freehand not Editable; monorepo hang residual (use batches)
+- No push/release without Noah
