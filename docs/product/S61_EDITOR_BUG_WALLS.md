@@ -41,3 +41,21 @@ Closed or substantially reduced silent-gray on:
 Residual intentional locks: cancel-in-flight, busy workers, pagination arrows without
 page, some form field enables (inputs, not action buttons).
 
+### Never-silent-gray expansion wave (2026-08-08 continuation, late)
+
+Additional product surfaces closed (construction + runtime disableReason + teach):
+
+**APF:** text Apply/Revert (incl. construction), Text Sheet, ratings sheet, player
+rating/position, roster identity Replace/Revert, bulk audio catalog/banks, Export
+matching, Export decoded rows, Play, PCM/XMA replace+revert, Soundtrack album,
+Stadium Reset View + Export scene, Team Logo master, Custom Team Write-raw,
+uniform/wordmark/All Textures Revert, reserve Assign/Clear construction.
+
+**2K5:** Text & Rosters (string + current + historical, construction), Audio Export
+matching, Load waveform (full selection path), shortlist bulk+toggle+clear+move,
+replacement template Export/Import, row Play/Export/Replace/Revert, Gameplay
+Inspector exports, visual master construction.
+
+Residual intentional locks: cancel-in-flight, busy workers, pagination, form
+fields (inputs), ratings-sheet import dialog Apply until conflicts cleared.
+
