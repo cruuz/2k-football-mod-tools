@@ -1176,10 +1176,45 @@ class PlaybooksPanel(QWidget):
             linked is not None and target_slot is not None
             and (linked.play.index, target_slot) != (donor_play, donor_slot)
         )
-        self.copy_route_button.setEnabled(state.can_copy_route and different)
-        self.revert_route_button.setEnabled(
+        # Never silent-gray stock route copy/revert.
+        if state.can_copy_route and different:
+            copy_tip = (
+                "Copy donor assignment route onto the selected target slot "
+                "(exact stock descriptor; not freehand)."
+            )
+            copy_block = ""
+        elif not self.host.source_ready:
+            copy_tip = copy_block = (
+                "Load your NFL 2K5 XISO first to copy stock assignment routes."
+            )
+        elif linked is None or target_slot is None:
+            copy_tip = copy_block = (
+                "Select a play and assignment slot, then pick a different donor."
+            )
+        elif not different:
+            copy_tip = copy_block = (
+                "Donor must differ from the target play/slot pair."
+            )
+        else:
+            copy_tip = copy_block = (
+                "Route copy is not available for this selection (viewer busy or book locked)."
+            )
+        can_revert = bool(
             state.can_revert_route and linked is not None and target_slot is not None
         )
+        if can_revert:
+            revert_tip = "Revert staged assignment route for this slot."
+            revert_block = ""
+        else:
+            revert_tip = revert_block = (
+                "Nothing to revert for this slot, or no source/play selected."
+            )
+        self.copy_route_button.setEnabled(True)
+        self.revert_route_button.setEnabled(True)
+        self.copy_route_button.setToolTip(copy_tip)
+        self.revert_route_button.setToolTip(revert_tip)
+        self.copy_route_button.setProperty("disableReason", copy_block)
+        self.revert_route_button.setProperty("disableReason", revert_block)
         # Formation/play creation: never silent-gray; disableReason explains walls.
         book = self._selected_book()
         can_create = bool(book is not None and self.host.source_ready and not self._busy)
@@ -1293,6 +1328,17 @@ class PlaybooksPanel(QWidget):
         return book, linked.play.index, rows[0].row()
 
     def _copy_selected_route(self) -> None:
+        reason = str(
+            self.copy_route_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot copy route yet",
+                reason
+                + "\n\nStock descriptor copy only — not freehand routes.",
+            )
+            return
         target = self._selected_route_target()
         donor_play = self.donor_play_combo.currentData()
         donor_slot = self.donor_slot_combo.currentData()
@@ -1314,6 +1360,16 @@ class PlaybooksPanel(QWidget):
         )
 
     def _revert_selected_route(self) -> None:
+        reason = str(
+            self.revert_route_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Nothing to revert",
+                reason,
+            )
+            return
         target = self._selected_route_target()
         if target is None:
             return
