@@ -39,6 +39,7 @@ build path.
 - **Audio row Play/Export/Replace/Revert** never silent-gray (Load/select/raw walls).
 - **Audio shortlist Move up/down** never silent-gray.
 - **Audio soundtrack quick-view** never silent-gray.
+- **Audio copy pack path** never silent-gray.
 - **Gameplay Inspector Export JSON/CSV** never silent-gray on inspection failure.
 
 ### Honesty
