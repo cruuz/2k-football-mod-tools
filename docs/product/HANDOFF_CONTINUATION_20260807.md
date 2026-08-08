@@ -64,7 +64,7 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 4. Cubemap non-face0 / exotic Xenos formats / DXT3A if any
 5. G10 XEX user-input charge path
 6. Titans “missing numbers” discoverability mitigated (All Textures tip); blank decode still needs asset_id
-7. Full `tests/mod_editor` in flight (slow H7A optimal sections ~25% at ~12m)
+7. Full monorepo suite hangs on logo ProcessPool — use batched evidence: critical 168p, N-Z 584p, a11y fixed, A-M no-logo in flight
 
 ## Do not claim
 - Freehand Editable; runtime hardware parity; community one-click Ace/Dime fix packs as runtime-proved
