@@ -13,8 +13,7 @@ audio bulk+shortlist+replace, ratings sheet, player rating/position, Play,
 soundtrack album, Team Logo master, reserve Assign), **45s preview watchdogs**
 (AssetBrowser/Uniform/Wordmark/stadium package), Crib drop-parity hang fixed.
 Living WORKLOG: `docs/product/WORKLOG_20260807.md`. E2 depth includes
-playbook community legend + G1 donor tip + empty search teaching. **≥10h
-hour-gate still accumulating** (~9.6h multi-session wall; not claimed). Broader
+playbook community legend + G1 donor tip + empty search teaching. **≥10h hour-gate still accumulating** (~8.3h multi-session wall stamp span; not claimed). Broader
 suite evidence is **batched** (monorepo single-run hang residual). — do not treat
 this note as a sealed public release.
 
