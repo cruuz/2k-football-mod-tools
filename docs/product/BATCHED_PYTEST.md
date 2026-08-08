@@ -58,3 +58,12 @@ done
 `tests/conftest.py` sets `QT_QPA_PLATFORM=offscreen` by default.
 
 Do **not** claim full monorepo green while the hang residual is open.
+
+## Hang-prone composition (a–c)
+
+Do **not** batch these together in one process without a hard timeout:
+
+- `test_apf_logo_patch.py` (run alone; ~2m)
+- `test_apf_field_art_patch.py` + helmet crest/placement suites (pass alone; may hang when combined)
+
+Prefer 4-file batches for `test_[a-c]*.py` and isolate logo_patch.

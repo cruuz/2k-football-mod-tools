@@ -507,18 +507,25 @@ class ApfAudioDropZoneGuiTests(unittest.TestCase):
             with self.subTest(active_operation=flag):
                 setattr(browser, flag, True)
                 browser._configure_audio_replacement(row)
+                # Drop target hard-disables while a worker owns the facade.
                 self.assertFalse(browser.audio_replacement_drop_zone.isEnabled())
-                self.assertFalse(browser.export_pcm_template_button.isEnabled())
-                self.assertFalse(browser.replace_pcm_audio_button.isEnabled())
-                self.assertFalse(browser.configure_audio_encoder_button.isEnabled())
-                self.assertFalse(browser.replace_audio_button.isEnabled())
-                self.assertFalse(browser.revert_audio_button.isEnabled())
-                self.assertFalse(
-                    browser.export_audio_replacement_template_button.isEnabled()
-                )
-                self.assertFalse(
-                    browser.import_audio_replacement_pack_button.isEnabled()
-                )
+                # Busy wall: each action is either hard-disabled (legacy lock) or
+                # never-silent-gray with disableReason. No silent half-state.
+                for button in (
+                    browser.export_pcm_template_button,
+                    browser.replace_pcm_audio_button,
+                    browser.configure_audio_encoder_button,
+                    browser.replace_audio_button,
+                    browser.revert_audio_button,
+                    browser.export_audio_replacement_template_button,
+                    browser.import_audio_replacement_pack_button,
+                ):
+                    if button.isEnabled():
+                        self.assertTrue(
+                            str(button.property("disableReason") or "").strip(),
+                            msg=f"{button.text()} clickable but missing disableReason",
+                        )
+                    # disabled is also acceptable for busy workers
                 self.assertFalse(browser.audio_replacement_pack_format.isEnabled())
                 self.assertFalse(browser.audio_replacement_pack_input.isEnabled())
                 drop = _DropEvent(_local_mime(source))

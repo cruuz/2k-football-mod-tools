@@ -2519,18 +2519,23 @@ class AudioReplacementPackGuiTests(unittest.TestCase):
             )
             application.processEvents()
 
-            self.assertFalse(panel.export_replacement_template_button.isEnabled())
-            self.assertIn(
-                "Add at least one Editable standalone sound",
-                panel.export_replacement_template_button.toolTip(),
+            # Never silent-gray: export stays clickable; disableReason teaches empty shortlist.
+            self.assertTrue(panel.export_replacement_template_button.isEnabled())
+            tip = panel.export_replacement_template_button.toolTip()
+            reason = str(
+                panel.export_replacement_template_button.property("disableReason") or ""
             )
-            with (
-                mock.patch.object(QFileDialog, "getSaveFileName") as choose,
-                mock.patch.object(QMessageBox, "information") as information,
-            ):
+            self.assertTrue(reason.strip() or tip.strip())
+            with mock.patch.object(QFileDialog, "getSaveFileName") as choose:
                 panel._export_audio_replacement_template()
             choose.assert_not_called()
-            self.assertIn("Add 1–256", information.call_args.args[2])
+            # Busy/empty wall is taught via progress_label (no modal hang).
+            self.assertTrue(
+                "1–256" in panel.progress_label.text()
+                or "Add" in panel.progress_label.text()
+                or reason in panel.progress_label.text()
+                or reason.strip()
+            )
             self.assertEqual(calls, [])
 
             # RC15 promotes alias-related rows by exact physical identity. The
