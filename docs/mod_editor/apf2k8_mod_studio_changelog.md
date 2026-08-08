@@ -21,6 +21,8 @@
   - **Equipment Colors Revert** never silent-gray; **roster Open/Save/Assign/Clear** never silent-gray
   - **APF stock playbook routes** Copy/Swap/Revert never silent-gray
   - **Audio Load waveform** never silent-gray (bank/unavailable rows explain)
+  - **Text workspace Apply/Revert** never silent-gray — empty selection, UTF-16
+    unit limit, no-change, and nothing-staged walls explain on click
 - **Blank previews / “Preparing preview…” forever** — AssetBrowser, Uniform,
   Wordmark, digital_font, Team Logo crest, Field Art slots, stadium package +
   embedded TXTR fail closed after **45s** with re-select / Export-raw guidance

@@ -24,6 +24,13 @@ build path.
 - **Universal inventory raw Export** never silent-gray. — Export/Edit/Replace/Master/Revert never silent-gray (export-only assets explain).
 - **Unif colour filter-empty** — facemask/turtleneck/Apply/Revert stay clickable. — G1/G2/G13 one-liners under the ⚠ filter;
   empty-state text when Community-flagged matches zero books.
+- **Text & Rosters** — All-Text Apply/Revert/Export, Current Player Apply/Revert,
+  Historical Team/Player Apply/Revert stay clickable with disableReason +
+  click-to-explain (no-change, unit limit, read-only, nothing staged).
+- **Audio Export matching** never silent-gray — shortlist/raw/count/pending
+  walls teach on click (1–256 row bound still enforced).
+- **Audio Load waveform** never silent-gray for Load/select/raw/bank walls
+  (cancel-in-flight may briefly lock while finishing).
 
 ### Honesty
 
