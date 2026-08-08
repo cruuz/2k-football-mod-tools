@@ -16362,10 +16362,23 @@ class InspectorBrowser(QFrame):
         )
 
     def _export_rows(self) -> None:
+        reason = str(self.export_rows_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot export decoded rows yet",
+                reason,
+            )
+            return
         model = self.model
         if model is None:
             return
         if self.audio_mode and not self._audio_catalog_query_is_current():
+            tip = (
+                "Updating results. Export decoded rows unlocks when the visible "
+                "page matches the search and filters."
+            )
+            QMessageBox.information(self, "Cannot export decoded rows yet", tip)
             return
         safe_title = "".join(
             character if character.isalnum() or character in "-_" else "_"
@@ -16622,7 +16635,21 @@ class InspectorBrowser(QFrame):
         self.previous.setEnabled(False)
         self.next.setEnabled(False)
         self.page.setText("Page 0 of 0")
-        self.export_rows_button.setEnabled(self.model is not None)
+        if self.model is not None:
+            rows_tip = (
+                "Save every row matching the current search and filters as useful "
+                "JSON or CSV."
+            )
+            self.export_rows_button.setEnabled(True)
+            self.export_rows_button.setToolTip(rows_tip)
+            self.export_rows_button.setProperty("disableReason", "")
+        else:
+            rows_tip = (
+                "Load a supported APF game first, then export decoded inspector rows."
+            )
+            self.export_rows_button.setEnabled(True)
+            self.export_rows_button.setToolTip(rows_tip)
+            self.export_rows_button.setProperty("disableReason", rows_tip)
         ratings_ready = self.roster_mode and self.model is not None
         if ratings_ready:
             export_rtip = (
