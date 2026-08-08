@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import os
 import unittest
+from pathlib import Path
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from mod_editor.gui.playbooks_panel_qt import (
     broken_play_annotations,
@@ -40,6 +44,22 @@ class BrokenPlayAnnotationTests(unittest.TestCase):
         notes = broken_play_annotations("Quick Out", "Nickel Dime")
         codes = {note.code for note in notes}
         self.assertIn("Dime package", codes)
+
+
+class CommunityLegendContractTests(unittest.TestCase):
+    """Teachable G1/G2/G13 legend ships in the playbooks panel (source contract)."""
+
+    def test_legend_and_empty_flagged_copy_exist_in_shipped_panel(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        source = (root / "mod_editor/gui/playbooks_panel_qt.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("community_legend", source)
+        self.assertIn("G1 ILB→OLB", source)
+        self.assertIn("G2 TE→WR", source)
+        self.assertIn("G13", source)
+        self.assertIn("0 matching books under ⚠ Community-flagged", source)
+        self.assertIn("APF_GAMEPLAY_BUG_MAP.md", source)
 
 
 if __name__ == "__main__":

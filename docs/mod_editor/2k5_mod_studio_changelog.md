@@ -18,6 +18,8 @@ build path.
 - **G1/G2 experimental exports never silent-gray** — Export Package-Map Copy /
   Link-Table Copy stay clickable with disableReason + click-to-explain when the
   XISO/book/formations are not ready (runtime still unproved).
+- **Playbooks community legend** — G1/G2/G13 one-liners under the ⚠ filter;
+  empty-state text when Community-flagged matches zero books.
 
 ### Honesty
 

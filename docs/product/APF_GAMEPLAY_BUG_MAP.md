@@ -29,7 +29,9 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 - **2K5 / APF assignment-route copy-swap** — exact stock descriptor reuse; no freehand.
 - **2K5 formation/play clone** — offline-proved on o0308 39→40 / 254→255.
 - **Playbooks panel broken-play annotations** — Ace / Dime / Bear name flags with tooltips pointing here (annotations only).
-- **Save Players** — 149 fields including 77 ability bits (G10/G11 research surface).
+- **Playbooks panel community legend + empty-filter teaching** — G1/G2/G13 one-line map under the ⚠ filter; zero-match text when Community-flagged returns no books.
+- **Playbooks experimental exports** — Export Package-Map Copy / Link-Table Copy stay clickable with disableReason (never silent-gray); private PLAY only; runtime unproved.
+- **Save Players** — 149 fields including 77 ability bits (G10/G11 research surface); G6 VO / G10 charge honesty labels in the panel.
 - **2K5 formation package-map writer** — `build_formation_package_map_patch` /
   `verify_formation_package_map_patch` (11 bytes @ formation `+0x0D`);
   offline-writer-proved for bytes; **not** a runtime G1 fix pack.

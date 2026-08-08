@@ -2162,7 +2162,22 @@ class AssetBrowser(QWidget):
         if not restored and rows:
             self.table.selectRow(0)
         elif not rows:
-            self._clear_detail("No assets match those filters.")
+            query = self.search.text().strip()
+            empty_msg = (
+                "No assets match those filters.\n\n"
+                "Try: logo_l0 · logo_l1 · number_0_color…number_9_color · "
+                "font_albedo · shoulder_color · draft_logo.\n"
+                "Jersey digits are not under shoulder materials — search "
+                "number_N_color in All Textures. Press Esc or × to clear search."
+            )
+            if query:
+                empty_msg = (
+                    f"No assets match “{query}”.\n\n"
+                    "Try: logo_l0 · number_0_color · font_albedo · shoulder_color. "
+                    "Clear search (Esc) or switch type/status filters."
+                )
+            self.result_count.setText("0 assets · clear search?")
+            self._clear_detail(empty_msg)
 
     def _change_page(self, delta: int) -> None:
         self._page += delta

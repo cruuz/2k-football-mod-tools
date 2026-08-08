@@ -539,6 +539,21 @@ class PlaybooksPanel(QWidget):
         browser_layout.addWidget(self.search)
         browser_layout.addWidget(self.family_filter)
         browser_layout.addWidget(self.warning_filter)
+        self.community_legend = QLabel(
+            "Community flags (annotations only — no auto-fix packs): "
+            "⚠ Ace = G2 TE→WR on long downs · "
+            "⚠ Dime = G1 ILB→OLB role map · "
+            "⚠ Bear = G13 DE/RLB leftovers. "
+            "Use Export Package-Map / Link-Table Copy for offline experimental "
+            "PLAY bytes (runtime unproved)."
+        )
+        self.community_legend.setObjectName("playMuted")
+        self.community_legend.setWordWrap(True)
+        self.community_legend.setToolTip(
+            "Full map: docs/product/APF_GAMEPLAY_BUG_MAP.md (G1–G14). "
+            "Discovery in this panel only rewrites nothing on your disc."
+        )
+        browser_layout.addWidget(self.community_legend)
         self.book_table = QTableWidget(0, 3)
         self.book_table.setHorizontalHeaderLabels(("Book", "Formations", "Plays"))
         self.book_table.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -864,12 +879,26 @@ class PlaybooksPanel(QWidget):
             f"{self.browser.catalog_total:,} books · "
             f"{self.browser.play_total:,} plays · {self.browser.node_total:,} nodes"
         )
-        self.match_label.setText(
-            f"{self.browser.match_total:,} matching book"
-            f"{'s' if self.browser.match_total != 1 else ''} · "
-            f"{self.browser.formation_total:,} formations · "
-            f"{self.browser.chain_total:,} exact chains"
-        )
+        flagged = self.warning_filter.currentData() == "flagged"
+        if self.browser.match_total == 0 and flagged:
+            self.match_label.setText(
+                "0 matching books under ⚠ Community-flagged. "
+                "Load a full XISO, clear the search box, or switch to "
+                "“All formations” — Ace/Dime/Bear names live inside stock books "
+                "once PLAY metadata is indexed."
+            )
+        elif self.browser.match_total == 0:
+            self.match_label.setText(
+                "0 matching books. Clear search/family filters, or load your "
+                "NFL 2K5 XISO if the catalog is empty."
+            )
+        else:
+            self.match_label.setText(
+                f"{self.browser.match_total:,} matching book"
+                f"{'s' if self.browser.match_total != 1 else ''} · "
+                f"{self.browser.formation_total:,} formations · "
+                f"{self.browser.chain_total:,} exact chains"
+            )
         if selected_row >= 0:
             self.book_table.selectRow(selected_row)
             self._book_selected()
@@ -900,7 +929,21 @@ class PlaybooksPanel(QWidget):
         self.formation_combo.clear()
         if book is None:
             self.book_title.setText("No playbook selected")
-            self.book_meta.setText("Broaden the search or choose another family.")
+            flagged = (
+                hasattr(self, "warning_filter")
+                and self.warning_filter.currentData() == "flagged"
+            )
+            if flagged:
+                self.book_meta.setText(
+                    "No ⚠ Ace/Dime/Bear books match this filter. "
+                    "Clear the community-flagged filter or search, load your XISO, "
+                    "then open a stock book and inspect package-map lines for G1."
+                )
+            else:
+                self.book_meta.setText(
+                    "Broaden the search or choose another family. "
+                    "Try Ace, Dime, or Bear in the search box for community flags."
+                )
             self.formation_combo.blockSignals(False)
             self._clear_structure()
             self._refresh_controls()
