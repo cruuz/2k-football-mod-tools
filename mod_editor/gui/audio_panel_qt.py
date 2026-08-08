@@ -4463,39 +4463,44 @@ if PYQT5_AVAILABLE:
             audio_editing_ready = bool(
                 getattr(self.host, "audio_editing_ready", True)
             )
-            self.play_button.setEnabled(ready and playable)
-            self.export_button.setEnabled(ready)
-            editable = bool(
-                ready and (standalone or streaming_range)
-                and asset and asset.editable
-            )
-            self.replace_button.setEnabled(editable)
-            self.revert_button.setEnabled(editable and modified)
-            self.export_button.setText(
-                "Export"
-                if asset is None else
-                "Export Raw Container"
+            # Never silent-gray primary row actions.
+            can_play = ready and playable
+            play_tip = (
+                "Play the privately decoded WAV"
+                if can_play else
+                "Load your NFL 2K5 XISO first."
+                if not ready else
+                "This opaque raw container has no decoded playable-cue contract."
                 if raw_container else
-                "Export WAV" if standalone else
-                "Export WAV / Raw"
-                if isinstance(asset, Nfl2k5StreamingAudioRange) else
-                "Export Raw Bank"
+                "A complete bank is not one cue; choose an indexed range to play it."
+                if not playable else
+                "Select a playable sound first."
             )
-            self.export_button.setToolTip(
+            self.play_button.setEnabled(True)
+            self.play_button.setToolTip(play_tip)
+            self.play_button.setProperty(
+                "disableReason", "" if can_play else play_tip
+            )
+            can_export = ready and asset is not None
+            export_tip = (
                 "Select an audio item"
                 if asset is None else
+                "Load your NFL 2K5 XISO first."
+                if not ready else
                 "Export this exact opaque resource wrapper/body as .bin."
                 if raw_container else
                 asset.export_format_label
             )
-            self.play_button.setToolTip(
-                "Play the privately decoded WAV"
-                if playable else
-                "This opaque raw container has no decoded playable-cue contract."
-                if raw_container else
-                "A complete bank is not one cue; choose an indexed range to play it."
+            self.export_button.setEnabled(True)
+            self.export_button.setToolTip(export_tip)
+            self.export_button.setProperty(
+                "disableReason", "" if can_export else export_tip
             )
-            self.replace_button.setToolTip(
+            editable = bool(
+                ready and (standalone or streaming_range)
+                and asset and asset.editable
+            )
+            replace_tip = (
                 "Raw BANK/ABNK/WBNK replacement is not decoded or exposed."
                 if raw_container else
                 (
@@ -4506,12 +4511,38 @@ if PYQT5_AVAILABLE:
                     + asset.action_note
                 )
                 if editable and not audio_editing_ready and asset is not None else
-                asset.action_note if asset is not None else "Select an audio item"
+                asset.action_note if asset is not None and editable else
+                "Select an Editable fixed-allocation sound or range first."
+                if asset is not None else
+                "Select an audio item"
             )
-            self.revert_button.setToolTip(
+            self.replace_button.setEnabled(True)
+            self.replace_button.setToolTip(replace_tip)
+            self.replace_button.setProperty(
+                "disableReason", "" if editable else replace_tip
+            )
+            can_revert = editable and modified
+            revert_tip = (
                 "Restore the private original for this staged WAV"
-                if modified else
+                if can_revert else
                 "This audio item has no staged replacement"
+                if editable else
+                replace_tip
+            )
+            self.revert_button.setEnabled(True)
+            self.revert_button.setToolTip(revert_tip)
+            self.revert_button.setProperty(
+                "disableReason", "" if can_revert else revert_tip
+            )
+            self.export_button.setText(
+                "Export"
+                if asset is None else
+                "Export Raw Container"
+                if raw_container else
+                "Export WAV" if standalone else
+                "Export WAV / Raw"
+                if isinstance(asset, Nfl2k5StreamingAudioRange) else
+                "Export Raw Bank"
             )
             hint = (
                 "Opaque raw container: export-only; decoding and replacement are unavailable"
@@ -4743,6 +4774,10 @@ if PYQT5_AVAILABLE:
             self._update_audio_shortlist_actions()
 
         def _play_selected(self) -> None:
+            reason = str(self.play_button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             asset = self._selected_asset()
             if asset is None or not isinstance(
                 asset, (Nfl2k5AudioAsset, Nfl2k5StreamingAudioRange)
@@ -4799,6 +4834,10 @@ if PYQT5_AVAILABLE:
             )
 
         def _export_selected(self) -> None:
+            reason = str(self.export_button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             asset = self._selected_asset()
@@ -5458,6 +5497,12 @@ if PYQT5_AVAILABLE:
             )
 
         def _choose_replacement(self) -> None:
+            reason = str(
+                self.replace_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             asset = self._selected_asset()
@@ -5593,6 +5638,10 @@ if PYQT5_AVAILABLE:
             self._run(operation, complete)
 
         def _revert_selected(self) -> None:
+            reason = str(self.revert_button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             asset = self._selected_asset()

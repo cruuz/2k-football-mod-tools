@@ -1254,7 +1254,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
                 "replacements/002__selected-audio.wav",
             )
             self.assertIn("exact Menu Back slot", panel.table.item(0, 5).toolTip())
-            self.assertFalse(panel.revert_button.isEnabled())
+            self.assertTrue(panel.revert_button.isEnabled())
+
+            self.assertTrue(str(panel.revert_button.property("disableReason") or "").strip())
             self.assertGreaterEqual(panel.status_filter.findData("Modified"), 0)
             self.assertIn("staged WAVs", panel.status_filter.toolTip())
             panel._next_page()
@@ -1263,7 +1265,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertTrue(panel.play_button.isEnabled())
             self.assertTrue(panel.export_button.isEnabled())
             self.assertTrue(panel.replace_button.isEnabled())
-            self.assertFalse(panel.revert_button.isEnabled())
+            self.assertTrue(panel.revert_button.isEnabled())
+
+            self.assertTrue(str(panel.revert_button.property("disableReason") or "").strip())
             self.assertTrue(panel.load_waveform_button.isEnabled())
             self.assertEqual(panel.export_button.text(), "Export WAV / Raw")
             panel.family_filter.setCurrentIndex(
@@ -1747,7 +1751,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
                 panel.table.item(0, 5).toolTip(),
                 "Export-only • raw aggregate; edit individual indexed ranges",
             )
-            self.assertFalse(panel.replace_button.isEnabled())
+            self.assertTrue(panel.replace_button.isEnabled())
+
+            self.assertTrue(str(panel.replace_button.property("disableReason") or "").strip())
             self.assertTrue(panel.pack_path_card.isHidden())
             self.assertFalse(panel.copy_pack_path_button.isEnabled())
             self.assertNotEqual(panel.note_label.text(), bank.action_note)
@@ -2409,8 +2415,11 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel.table.item(0, 3).text(), "192 bytes")
             self.assertIn(selected.asset_id, panel.table.item(0, 0).toolTip())
             self.assertEqual(panel.table.item(0, 5).text(), "Export-only")
-            self.assertFalse(panel.play_button.isEnabled())
-            self.assertFalse(panel.replace_button.isEnabled())
+            self.assertTrue(panel.play_button.isEnabled())
+
+            self.assertTrue(str(panel.play_button.property("disableReason") or "").strip())
+            self.assertTrue(panel.replace_button.isEnabled())
+            self.assertTrue(str(panel.replace_button.property("disableReason") or "").strip())
             self.assertTrue(panel.pack_path_card.isHidden())
             self.assertFalse(panel.copy_pack_path_button.isEnabled())
             self.assertTrue(panel.shortlist_toggle_button.isEnabled())
