@@ -2105,7 +2105,7 @@ class Apf2k8HelmetColorProvider(Apf2k8JerseyColorProvider):
         "tools/apf_inner.py": "3f44d5dc0674597fac87a97550e8b6896d502192c0db68cdf7692d73a556db2e",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
         "tools/apf_texture_patch.py": "194d37682ac28fef1853e4c27c8a0327b75ef52218afcf1fbc6f4fa169e1b7b9",
-        "tools/apf_xenos_dxn_mip_layout.py": "eed0f39a027c06ec4e4f46a55eab80dad07bd675801b78cdda079c29ff4839d5",
+        "tools/apf_xenos_dxn_mip_layout.py": "85eba338384d518b111dab153120dc937ed45a898d348f4d1548d5f8d8672431",
     }
     recipe_schema_file = "mod_editor/apf_helmet_recipe.schema.json"
     recipe_schema_file_sha256 = "dcc0c90cd0a17d0790490d9595bfb6d831940ca804770e2fda1659add6fbfef0"

@@ -1888,9 +1888,15 @@ class AssetBrowser(QWidget):
         controls = QHBoxLayout()
         controls.setSpacing(8)
         self.search = QLineEdit()
-        self.search.setPlaceholderText("Search name, type, class, or archive index…")
+        self.search.setPlaceholderText(
+            "Search… e.g. logo_l0, number_0_color, font_albedo, shoulder_color"
+        )
         self.search.setClearButtonEnabled(True)
-        self.search.setToolTip("Search the current category. Use the × inside this field to clear it.")
+        self.search.setToolTip(
+            "Search the current category by name, type, class, or archive index. "
+            "Jersey digits are number_0_color…number_9_color; nameplate glyphs are "
+            "font_albedo / font_normal (NameFont packages). Use × to clear."
+        )
         self.type_filter = QComboBox()
         self.type_filter.setMinimumWidth(145)
         self.type_filter.addItem("All asset types", None)

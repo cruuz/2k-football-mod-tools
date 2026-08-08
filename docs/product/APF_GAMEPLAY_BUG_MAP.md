@@ -9,8 +9,8 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 
 | ID | Severity | Symptom | Likely surface | Status | Unblock path |
 | --- | --- | --- | --- | --- | --- |
-| G1 | Huge | ILB→OLB in Dime (star ILBs benched) | Defensive play assignment slots 4–5 + formation aux membership | **RE spike shipped** (`playbook_package_rule_spike.spike_g1_dime_ilb`); offline package writer **not** proved | See §G1 spike below |
-| G2 | Huge | TE→WR in Ace on long downs (practice OK, game broken) | Offensive skill-slot descriptors + Ace formation play links | **RE spike shipped** (`spike_g2_ace_te`); offline fix **not** proved | See §G2 spike below |
+| G1 | Huge | ILB→OLB in Dime (star ILBs benched) | Formation **package map** `+0x0D` (11-byte role perm); not assignment 8-byte | **package-map offline writer proved** (bytes); runtime G1 fix **unproved** | See §G1 census below |
+| G2 | Huge | TE→WR in Ace on long downs (practice OK, game broken) | Play links / skill-slot descriptors / save — **not** package map (Ace=all offense) | **RE spike** + Ace map identity proved; offline fix **not** proved | See §G2 spike below |
 | G3 | Huge | DL ignores pre-play pinch/spread/swap; slants instead | Play assignment / DL stunt bits / director | research | Map assignment descriptor bits + DRCT; FX/FY/FW/FT stack does not own this |
 | G4 | Huge | Season mode always daytime | Schedule / time-of-day tables | research | Locate season generator table in 0A/ROST/save |
 | G5 | Huge | Season weather only clear/rain | Weather enum / season generator | research | Census weather enums vs `divot_Grass*` names |
@@ -30,6 +30,9 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 - **2K5 formation/play clone** — offline-proved on o0308 39→40 / 254→255.
 - **Playbooks panel broken-play annotations** — Ace / Dime / Bear name flags with tooltips pointing here (annotations only).
 - **Save Players** — 149 fields including 77 ability bits (G10/G11 research surface).
+- **2K5 formation package-map writer** — `build_formation_package_map_patch` /
+  `verify_formation_package_map_patch` (11 bytes @ formation `+0x0D`);
+  offline-writer-proved for bytes; **not** a runtime G1 fix pack.
 
 ## RE spike notes (playbook-related)
 
@@ -38,9 +41,10 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 | Clone writer | o0308 @ disc offset class `106803200` | offline-proved (formation 39→40, play 254→255) |
 | FX/FY/FW/FT overlays | `docs/product/PLAY_F*_SIM_OVERLAY_PROOF.md` | 4/4 orthogonal file proofs landed beta-26..28 |
 | Inverse compiler | `PLAY_INVERSE_COMPILER_SPEC.md` | gates defined; freehand not Editable |
-| Package/sub rules G1/G2 | **mapped** — see below + `mod_editor/core/playbook_package_rule_spike.py` | **re_spike** (not offline-writer-proved) |
+| Package map G1 | formation `+0x0D` 11-byte perm; see census | **offline_writer_proved** (bytes); runtime G1 **unproved** |
+| Package/sub rules G2 | Ace shares offense package map | **re_spike** (map path closed; links/assignments next) |
 
-### G1 precise spike — Dime ILB→OLB
+### G1 precise spike — Dime ILB→OLB (updated 2026-08-07 census)
 
 | Pin | Value |
 | --- | --- |
@@ -48,11 +52,15 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 | Fixture pack_offset | `106803200` |
 | PLAY body `PLAY_BASE` | `0x33FC` |
 | PLAY record size | `0x60` |
-| Assignment field | `PLAY_BASE + play*0x60 + 8 + slot*8` (8 bytes: descriptor u32 + chain_start u32) |
-| Focus slots | **4, 5, 6** (start of defense `0x1b` LB/DB band; `PLAY_PLAYER_ROLE_HYPOTHESIS`) |
-| Formation aux | `FORMATION_AUX_BASE 0x245C`, size `0x50`, `FORMATION_PLAY_LINKS=36` |
-| Shipped API | `spike_g1_dime_ilb(book)` → slot snapshots with body offsets |
-| Offline writer gate | Dime vs Nickel census on o0308: if only assignment 8-byte fields differ in slots 4–5, prove copy-only patch + independent reparse/volume byte-diff. **No fix pack until that gate.** |
+| **Package map** | `FORMATION_BASE + fi*0xB4 + 0x0D` (11 bytes, permutation of 0..10) |
+| o0308 Nickel map | `[4, 5, 0, 2, 3, 1, 7, 8, 9, 6, 10]` (form index 23) |
+| o0308 Dime map | `[5, 0, 2, 3, 1, 7, 8, 9, 4, 6, 10]` (form index 24) |
+| Role-4 delta | Nickel slot-index **0** → Dime slot-index **8** |
+| Assignment-only gate | **FAILED** — 18 shared play indices are the same records (byte-identical); 8 only-Dime / 8 only-Nickel plays have different names; link table differs 16/26 |
+| Formation aux | `FORMATION_AUX_BASE 0x245C`, size `0x50` = play-link table (not separate membership) |
+| Shipped API | `census_g1_dime_vs_nickel`, `read_formation_package_map`, `build_formation_package_map_patch`, `verify_formation_package_map_patch`, `spike_g1_dime_ilb` |
+| Offline writer | **proved** for the 11 map bytes (copy Nickel→Dime or any perm of 0..10); independent full-resource byte-diff |
+| Runtime G1 fix | **unproved** — do not ship as community one-click fix pack until emulator witness |
 
 ### G2 precise spike — Ace TE→WR
 
@@ -60,23 +68,24 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 | --- | --- |
 | Same fixture | o0308 asset_id + pack_offset above |
 | Focus slots | **3, 6, 7, 8, 9** (skill/WR variance band) |
+| Package map | Ace = Split Pro = all offense: `[0, 8, 6, 9, 7, 10, 1, 4, 3, 5, 2]` — **not** the G2 delta |
 | Formation links | packed play-index in formation link table (low 9 bits; `0x1FF` empty) |
 | Descriptor word | play-level at `PLAY_BASE + play*0x60 + 0x04` |
 | Shipped API | `spike_g2_ace_te(book)` |
-| Offline writer gate | Ace vs non-Ace twin: if only skill-slot assignments or link packed values differ, offline-prove copy of non-broken rule. **No fix pack until that gate.** |
+| o0308 Ace vs Quads census (2026-08-07) | 5 shared play indices are **same records** (zero assignment XOR). Only-Ace plays: 58 Strong Toss, 139 PA X Stop-n-Go, 140 RO X Post-Corner, 141 50 TE/Y Outs. Package map identical to all offense. **G2 offline delta is formation play-link menu composition**, not per-play assignment bytes. |
+| Offline writer gate | Optional: rewrite Ace link table to include more TE-named plays (clone of Quads/I-Form links) — menu-only, still not a runtime TE→WR package-rule fix. Save Assignments / director remain candidates. **No one-click fix pack.** |
 
 ### APF parallel surface
 
-MASTER PLAY assignment-route copy/swap is offline-proved (586×11). G1/G2 need
-the same class of **package membership** proof on APF MASTER once Dime/Ace
-descriptor deltas are isolated on the 2K5 o0308 fixture (shared PLAY family
-lineage) or an APF-named play census.
+MASTER PLAY assignment-route copy/swap is offline-proved (586×11). G1 package-map
+is proved on 2K5 o0308; APF MASTER needs the same formation-level package map
+hunt (or equivalent personnel table) before an APF G1 fix pack. G2 remains open
+on both products.
 
 ## Honesty
 
-No community fix pack is offered as a one-click writer until package rules are
-offline-proved. Editor ⚠ tags are discovery aids. The RE spike is precise enough
-to start the offline writer without re-discovering layout constants.
+Package-map bytes may be offline-patched; that is **not** a runtime G1/G2 fix
+pack. Editor ⚠ tags are discovery aids. Runtime claims need emulator witnesses.
 
 
 ### G10/G11 precise spike — ability charge gates (continuation)
