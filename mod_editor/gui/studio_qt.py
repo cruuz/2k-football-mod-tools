@@ -2597,11 +2597,13 @@ class StudioMainWindow(QMainWindow):
         )
         title.setObjectName("heroTitleSmall")
         blurb = QLabel(
-            "Every physical uniform set owns its own two-word Unif record. "
-            "Word 0 jointly controls the facemask and faceshield; the retail "
-            "record does not expose a proved, independent visor colour. Word 1 "
-            "controls HI_turtleneck. Choose the exact team and uniform set "
-            "before applying a colour."
+            "Every physical uniform set owns its own two-word Unif record "
+            "(per-set, not global). Word 0 jointly controls the facemask and "
+            "faceshield; the retail record does not expose a proved, independent "
+            "visor colour — visor type (None/Clear/Dark) is a per-player field "
+            "elsewhere, not a kit tint. Word 1 controls HI_turtleneck. Choose "
+            "the exact team and HOME/AWAY/alternate set before applying a colour. "
+            "Failures stay inline here (no blocking popup on set select)."
         )
         blurb.setObjectName("mutedLabel")
         blurb.setWordWrap(True)
@@ -2738,12 +2740,22 @@ class StudioMainWindow(QMainWindow):
         self._unif_color_loaded_pair = None
         self._selected_unif_color_modified = False
         if selector is None:
-            self.unif_color_status.setText("No uniform set matches that filter.")
+            self.unif_color_status.setText(
+                "No uniform set matches that filter. Clear the filter box to "
+                "see every physical HOME/AWAY/alternate/throwback record."
+            )
+            self.facemask_button.setEnabled(False)
+            self.turtleneck_button.setEnabled(False)
+            self.unif_color_apply.setEnabled(False)
+            self.unif_color_revert.setEnabled(False)
             self._refresh_action_states()
             return
+        self.facemask_button.setEnabled(True)
+        self.turtleneck_button.setEnabled(True)
         if not bool(getattr(self.facade, "source_ready", False)):
             self.unif_color_status.setText(
-                f"Load your XISO to read {selector}'s retail colours."
+                f"Load your XISO to read {selector}'s retail colours. "
+                "Nothing is staged until Apply."
             )
             self._refresh_action_states()
             return
@@ -2804,13 +2816,23 @@ class StudioMainWindow(QMainWindow):
         if hasattr(self, "unif_color_set"):
             self._unif_color_selection_changed()
 
+    @staticmethod
+    def _argb_to_qcolor(value: str) -> QColor:
+        """Parse AARRGGBB / #RRGGBB-like packed strings fail-closed."""
+
+        raw = (value or "").strip().removeprefix("#").upper()
+        if len(raw) == 8 and all(c in "0123456789ABCDEF" for c in raw):
+            return QColor(int(raw[2:4], 16), int(raw[4:6], 16), int(raw[6:8], 16))
+        if len(raw) == 6 and all(c in "0123456789ABCDEF" for c in raw):
+            return QColor(int(raw[0:2], 16), int(raw[2:4], 16), int(raw[4:6], 16))
+        return QColor(0, 0, 0)
+
     def _refresh_unif_color_swatches(self) -> None:
         for button, value in (
             (self.facemask_button, self._pending_facemask),
             (self.turtleneck_button, self._pending_turtleneck),
         ):
-            colour = QColor(int(value[2:4], 16), int(value[4:6], 16),
-                            int(value[6:8], 16))
+            colour = self._argb_to_qcolor(str(value))
             readable = "#101828" if colour.lightness() > 140 else "#edf3fc"
             button.setStyleSheet(
                 f"background:{colour.name()};color:{readable};"
@@ -2818,10 +2840,15 @@ class StudioMainWindow(QMainWindow):
             )
 
     def _choose_unif_color(self, which: str) -> None:
+        if self._selected_unif_color_selector() is None:
+            self.unif_color_status.setText(
+                "Pick a physical uniform set first (filter by team/HOME/AWAY), "
+                "then choose a colour."
+            )
+            return
         current = (self._pending_facemask if which == "facemask"
                    else self._pending_turtleneck)
-        initial = QColor(int(current[2:4], 16), int(current[4:6], 16),
-                         int(current[6:8], 16))
+        initial = self._argb_to_qcolor(str(current))
         chosen = QColorDialog.getColor(
             initial, self, f"Choose the {which} colour"
         )

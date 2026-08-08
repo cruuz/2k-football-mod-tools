@@ -15,7 +15,7 @@ offline-writer-proved or better.
 | 7–8 | Team kits / All Textures export errors | **Wall residual** | Repro with user asset_id; many writers already fail closed with message |
 | 9 | ISO load any-rip | **Fixed class** | layout-tolerant extract; tests `test_apf_iso_extraction_is_layout_tolerant`, `test_xiso_layout_tolerance` |
 | 8b | Field art stock NFL | **Wall + labeled** | `APF_FIELD_ART_STOCK_NFL_WALL.md`; inventory has stock; writer is 6 proved slots |
-| 9b | Team color editor crash | **Wall** | Need stack trace from 2026-08-05 report; APF equipment panel has focused tests |
+| 9b | Team color editor crash | **Mitigated** | 2K5 unif colour failures stay **inline** (no modal popup on set select); ARGB parse fail-closed (`_argb_to_qcolor`); empty filter disables colour buttons. APF equipment read errors also inline. Tests: `test_unif_color_argb_parse`, equipment GUI suite. |
 | 10 | Gray model import | **Fixed** | APF model panel tooltips when disabled; 2K5 stadium import tooltips with reason |
 | 11 | Windows path/installer | **Ongoing class** | `platform_compat`, beta-5..12 lessons; keep matrix tests green |
 | 12 | PS3 ISO mis-ID | **Fixed class** | structural ID + clear refuse; keep probes |

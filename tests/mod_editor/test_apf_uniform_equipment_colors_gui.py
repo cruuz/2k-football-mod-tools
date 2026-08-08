@@ -111,8 +111,16 @@ class UniformEquipmentColorsPanelTests(unittest.TestCase):
         )
         self.assertEqual(panel.home.facemask.itemText(1), "1 · Black · #101010")
         text = " ".join(label.text() for label in panel.findChildren(QLabel))
-        self.assertIn("Player visors remain None, Clear, or Dark", text)
-        self.assertIn("no verified per-uniform visor-tint field", text)
+        # Visor type is per-player (Save Players); kit panel owns facemask/turtleneck only.
+        self.assertTrue(
+            "None / Clear / Dark" in text or "None, Clear, or Dark" in text,
+            msg=text[:200],
+        )
+        self.assertIn("Save Players", text)
+        self.assertTrue(
+            "visor-tint" in text.casefold() or "visor tint" in text.casefold(),
+            msg=text,
+        )
         panel.deleteLater()
 
     def test_stage_and_revert_use_one_team_scoped_asset(self) -> None:

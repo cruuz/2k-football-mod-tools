@@ -136,8 +136,9 @@ class UniformEquipmentColorsPanel(QFrame):
         description = QLabel(
             "Per-uniform-set colors (not global): pick a team slot, then set HOME "
             "and AWAY independently for the facemask bar and Team turtleneck. "
-            "HOME facemask ≠ AWAY for the same team. Player visors remain "
-            "None/Clear/Dark in Save Players — no verified per-uniform visor-tint field."
+            "HOME facemask ≠ AWAY for the same team. Visor type (None / Clear / "
+            "Dark) is edited per-player in Rosters → Save Players — this panel "
+            "does not own a per-uniform visor-tint field."
         )
         description.setObjectName("cardBody")
         description.setWordWrap(True)
@@ -237,11 +238,18 @@ class UniformEquipmentColorsPanel(QFrame):
 
     def set_context(self) -> None:
         ready = bool(self.facade.source_ready)
+        has_team = self.team.count() > 0 and self.team.currentData() is not None
         for widget in (self.team, self.banks, self.stage_button):
-            widget.setEnabled(ready)
+            widget.setEnabled(ready and has_team)
         if not ready:
             self.revert_button.setEnabled(False)
             self.status.setText("Load your game to read uniform equipment colors.")
+            return
+        if not has_team:
+            self.revert_button.setEnabled(False)
+            self.status.setText(
+                "No teams match that filter. Clear the filter box to see all 40."
+            )
             return
         try:
             inspection = self.facade.uniform_equipment_color_inspection(
@@ -249,7 +257,13 @@ class UniformEquipmentColorsPanel(QFrame):
             )
             value = self.facade.uniform_equipment_color_value(self._team_index())
         except Exception as exc:
-            self.status.setText(f"Could not read uniform equipment colors: {exc}")
+            # Inline status only — never a blocking popup on team select.
+            self.status.setText(
+                f"Could not read uniform equipment colors: {exc}. "
+                "Nothing was staged. Pick another team or reload your game."
+            )
+            self.stage_button.setEnabled(False)
+            self.revert_button.setEnabled(False)
             return
         self.home.set_palette(inspection.home_palette)
         self.away.set_palette(inspection.away_palette)
