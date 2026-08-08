@@ -24,7 +24,9 @@ class ModelImportDisableReasonTests(unittest.TestCase):
     def _runner(*_args):
         return True
 
-    def test_import_disabled_without_source_exposes_tooltip_reason(self) -> None:
+    def test_import_without_source_stays_clickable_with_explain_tooltip(self) -> None:
+        """Never silent-gray: enabled + tooltip + click-to-explain dialog path."""
+
         class _Facade:
             source_ready = False
             source = None
@@ -32,11 +34,15 @@ class ModelImportDisableReasonTests(unittest.TestCase):
         panel = PlayerEquipmentModelExportPanel(_Facade(), self._runner)
         try:
             for button in panel.import_buttons.values():
-                self.assertFalse(button.isEnabled())
+                # Stay clickable so a disabled-looking control is never a dead no-op.
+                self.assertTrue(button.isEnabled())
                 tip = button.toolTip()
-                self.assertTrue(tip.strip(), "gray import must explain why")
+                self.assertTrue(tip.strip(), "import must explain why source is required")
                 self.assertIn("Load", tip)
                 self.assertIn("0A", tip)
+                reason = button.property("disableReason")
+                self.assertTrue(str(reason or "").strip())
+                self.assertIn("Load", str(reason))
         finally:
             panel.deleteLater()
             self.application.processEvents()

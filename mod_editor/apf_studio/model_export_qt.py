@@ -110,28 +110,41 @@ class PlayerEquipmentModelExportPanel(QWidget):
         export_reason = (
             "Export this stock model as glTF (positions + topology for the same-topology importer)."
             if ready
-            else "Load your APF game (0A) first — model export needs the retail archive."
+            else "Load your APF game (0A) first — model export needs the retail archive. "
+            "Click still explains this (buttons stay clickable)."
         )
         import_reason = (
             "Import a same-topology POSITION-only glTF into a new verified 0A copy. "
             "Topology, materials, UVs, and skinning must match the export manifest."
             if ready
-            else "Load your APF game (0A) first — model import is disabled until a source is loaded. "
-            "Import stays same-topology POSITION-only after load."
+            else "Load your APF game (0A) first — model import needs a source archive. "
+            "Click still explains this (buttons stay clickable). "
+            "After load: same-topology POSITION-only only."
         )
+        # Keep buttons enabled so a gray-looking “dead” control is never silent:
+        # click always either works or shows a clear next step (never no-op).
         for key, button in self.buttons.items():
-            button.setEnabled(ready)
+            button.setEnabled(True)
             button.setToolTip(export_reason)
+            button.setProperty("disableReason", "" if ready else export_reason)
         for key, button in self.import_buttons.items():
-            button.setEnabled(ready)
+            button.setEnabled(True)
             button.setToolTip(import_reason)
-            # Click-to-explain even when gray: keep the disabled reason on hover.
             button.setProperty("disableReason", "" if ready else import_reason)
 
     def _choose_export(self, key: str) -> None:
         source = getattr(self.facade, "source", None)
         index_0a = getattr(source, "index_0a", None)
         if index_0a is None:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(
+                self,
+                "Load a game first",
+                "Model export needs your APF extracted game (0A).\n\n"
+                "Fix: use File → Load game (or the welcome Load control), "
+                "point at your APF folder or ISO, then export again.",
+            )
             return
         destination, _filter = QFileDialog.getSaveFileName(
             self,
@@ -155,6 +168,16 @@ class PlayerEquipmentModelExportPanel(QWidget):
         source = getattr(self.facade, "source", None)
         index_0a = getattr(source, "index_0a", None)
         if index_0a is None:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(
+                self,
+                "Load a game first",
+                "Model import needs your APF extracted game (0A).\n\n"
+                "Fix: load the game, export a reference glTF first, edit only "
+                "POSITION in Blender (same topology), then import again.\n\n"
+                "Import never mutates your original archive — it builds a new copy.",
+            )
             return
         edited, _filter = QFileDialog.getOpenFileName(
             self,

@@ -1172,7 +1172,13 @@ class ImageDropLabel(QLabel):
 
     pngDropped = pyqtSignal(Path)
 
-    def __init__(self, empty_text: str = "Preview appears here"):
+    def __init__(
+        self,
+        empty_text: str = (
+            "Select a texture on the left to preview it here.\n"
+            "Search tips: logo_l0, number_0_color, font_albedo, shoulder_color."
+        ),
+    ):
         super().__init__()
         self._source_pixmap: QPixmap | None = None
         self.setObjectName("imagePreview")
@@ -2253,7 +2259,13 @@ class AssetBrowser(QWidget):
 
         self.run_task("Preparing asset preview", operation, complete, False)
 
-    def _clear_detail(self, message: str = "Choose an asset to inspect it.") -> None:
+    def _clear_detail(
+        self,
+        message: str = (
+            "Choose an asset on the left to inspect, export, or replace it.\n"
+            "Try search: logo_l0 · number_0_color · font_albedo · shoulder_color."
+        ),
+    ) -> None:
         self.detail_title.setText("Choose an asset")
         self.detail_status.setText("Every indexed record remains visible.")
         self.preview.set_message(message)
@@ -6391,7 +6403,12 @@ class FieldArtStudioPage(QWidget):
         self.editor.set_context()
         if not self.facade.source_ready:
             self.capabilities.set_cards(())
-            self._clear_semantic_view("Load a game to map Field Art")
+            self._clear_semantic_view(
+                "Load your APF game to map Field Art.\n\n"
+                "Next: File → Load game, then open Field Art. Stock NFL endzones "
+                "appear in the semantic list (~118 read-only inventory) plus the "
+                "6 writable create-team slots when a source is loaded."
+            )
             self.browser.set_context()
             return
 
