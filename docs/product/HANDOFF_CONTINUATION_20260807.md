@@ -88,3 +88,11 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 - Packaging dual RELEASE_PASS (APF 189 / 2K5 195) post-changes
 - Registry 70/70
 - Hour gate ≥10h: **still open** (multi-session continue)
+
+
+## Session update 2026-08-08T04:13:44-04:00 (watchdogs + never-gray depth)
+- AssetBrowser + UniformStudio **45s preview watchdog** (blank-forever fail-closed)
+- Never silent-gray: stadium mesh/package, wordmark, AssetBrowser, Uniform, Field Art locks
+- drop_parity hang **fixed**
+- Critical batch 101p; packaging RELEASE_PASS; registry 70/70
+- Hour gate ≥10h: **still open**
