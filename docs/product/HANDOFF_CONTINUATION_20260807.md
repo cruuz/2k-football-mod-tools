@@ -196,3 +196,20 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 ## Update [2026-08-08T05:49:23-04:00]
 - APF audio PCM/XMA replace never-gray; dual packaging green; **301** ahead origin
 - Hour gate still open (~9.0h wall)
+
+
+## Marathon continuation status [2026-08-08T05:51:36-04:00]
+
+**Ahead origin:** **309** commits. No push/release.
+
+### This continuation product (never-silent-gray firehose)
+APF: text Apply/Revert/Text Sheet/ratings sheet, player rating+position, roster identity Replace/Revert, bulk audio catalog/banks, Export matching/decoded rows, Play, PCM/XMA replace, Soundtrack album, Stadium scene export, Team Logo master, Custom Team Write-raw  
+2K5: Text & Rosters all Apply/Revert paths, Audio Export matching, Load waveform, shortlist (matching/page/review/export/toggle/clear), replacement template Export/Import, Gameplay Inspector exports, visual master boot
+
+### Gates still green
+Registry 70/70 · Dual packaging APF 189 + 2K5 195 RELEASE_PASS · E1 logo 21p + 0A immutable · multi-suite 109p smoke
+
+### Open
+- Hour gate ≥10h (~9.2h WORKLOG wall span 21:48→05:51)
+- G1/G2 runtime unproved; freehand not Editable
+- monorepo full pytest hang residual
