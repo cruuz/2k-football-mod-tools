@@ -3456,8 +3456,17 @@ if PYQT5_AVAILABLE:
             if self._busy:
                 self.replacement_pack_contents.setEnabled(False)
                 self.replacement_pack_container.setEnabled(False)
-                self.export_replacement_template_button.setEnabled(False)
-                self.import_replacement_pack_button.setEnabled(False)
+                busy_tip = "Wait for the current audio operation to finish."
+                self.export_replacement_template_button.setEnabled(True)
+                self.export_replacement_template_button.setToolTip(busy_tip)
+                self.export_replacement_template_button.setProperty(
+                    "disableReason", busy_tip
+                )
+                self.import_replacement_pack_button.setEnabled(True)
+                self.import_replacement_pack_button.setToolTip(busy_tip)
+                self.import_replacement_pack_button.setProperty(
+                    "disableReason", busy_tip
+                )
                 return
             count = len(self._audio_shortlist)
             ineligible_count = len(self._replacement_pack_ineligible_audio_ids())
@@ -3501,7 +3510,6 @@ if PYQT5_AVAILABLE:
                 and batch_export
                 and (not selected_mode or (count > 0 and ineligible_count == 0))
             )
-            self.export_replacement_template_button.setEnabled(can_export)
             self.export_replacement_template_button.setText(
                 f"Export shortlist template ({count})…"
                 if selected_mode else
@@ -3558,11 +3566,24 @@ if PYQT5_AVAILABLE:
                     "remain import-compatible; use All standalone sounds for the current "
                     "complete 850-sound workflow."
                 )
-            self.export_replacement_template_button.setToolTip(export_tooltip)
-            self.import_replacement_pack_button.setEnabled(
-                batch_ready and batch_import and batch_preflight
-            )
-            self.import_replacement_pack_button.setToolTip(
+            # Never silent-gray: export stays clickable; disableReason when blocked.
+            if can_export:
+                self.export_replacement_template_button.setEnabled(True)
+                self.export_replacement_template_button.setToolTip(export_tooltip)
+                self.export_replacement_template_button.setProperty(
+                    "disableReason", ""
+                )
+            else:
+                block = export_tooltip
+                if not self.host.source_ready:
+                    block = "Load your NFL 2K5 XISO first."
+                self.export_replacement_template_button.setEnabled(True)
+                self.export_replacement_template_button.setToolTip(block)
+                self.export_replacement_template_button.setProperty(
+                    "disableReason", block
+                )
+            import_ready = batch_ready and batch_import and batch_preflight
+            import_tip = (
                 "Choose the folder or ZIP format above. The manifest automatically "
                 "detects current v4 all-850 packs, old v3 all-850 packs, v2 shortlists, "
                 "and v1 legacy packs. Preview fully validates the read-only cue map, "
@@ -3574,6 +3595,21 @@ if PYQT5_AVAILABLE:
                 "This host does not provide the safe preview-and-confirm replacement-pack "
                 "workflow."
             )
+            if import_ready:
+                self.import_replacement_pack_button.setEnabled(True)
+                self.import_replacement_pack_button.setToolTip(import_tip)
+                self.import_replacement_pack_button.setProperty("disableReason", "")
+            else:
+                block = (
+                    "Load your NFL 2K5 XISO first."
+                    if not self.host.source_ready
+                    else import_tip
+                )
+                self.import_replacement_pack_button.setEnabled(True)
+                self.import_replacement_pack_button.setToolTip(block)
+                self.import_replacement_pack_button.setProperty(
+                    "disableReason", block
+                )
 
         @staticmethod
         def _duration(seconds: float) -> str:
@@ -5018,6 +5054,13 @@ if PYQT5_AVAILABLE:
             )
 
         def _export_audio_replacement_template(self) -> None:
+            reason = str(
+                self.export_replacement_template_button.property("disableReason")
+                or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             export_method = getattr(
@@ -5174,6 +5217,12 @@ if PYQT5_AVAILABLE:
             )
 
         def _import_audio_replacement_pack(self) -> None:
+            reason = str(
+                self.import_replacement_pack_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             import_method = getattr(self.host, "import_audio_replacement_pack", None)
