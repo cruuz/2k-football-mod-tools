@@ -2951,6 +2951,17 @@ class UniformStudioPage(QWidget):
             if token == self._preview_token and self._selected_asset() == asset:
                 self.preview.set_image(Path(result))
 
+        def _uniform_preview_watchdog() -> None:
+            if token != self._preview_token:
+                return
+            if str(self.preview.property("previewState") or "") != "loading":
+                return
+            self.preview.set_error(
+                f"{asset.title}: preview still preparing after 45s. "
+                "Re-select the slot or Export PNG / Export raw."
+            )
+
+        QTimer.singleShot(45_000, _uniform_preview_watchdog)
         self.run_task(
             "Preparing uniform preview",
             lambda progress: self.facade.preview_uniform(asset.asset_id, progress),
