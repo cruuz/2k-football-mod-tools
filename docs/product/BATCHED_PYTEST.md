@@ -26,6 +26,7 @@ python3 -m pytest \
   tests/mod_editor/test_text_rosters_panel.py \
   tests/mod_editor/test_apf_roster_identity_gui.py \
   tests/mod_editor/test_apf_textlogo_gui.py \
+  tests/mod_editor/test_never_silent_gray_boot.py \
   -q
 
 # Or file-letter batches in separate processes:
