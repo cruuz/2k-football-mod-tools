@@ -3253,9 +3253,7 @@ if PYQT5_AVAILABLE:
             ready = self.host.source_ready and not self._busy
             catalog_ready = self._catalog_page_actions_ready()
             self.shortlist_count_label.setText(f"Selected {count} / 256")
-            self.shortlist_clear_button.setEnabled(
-                ready and (count > 0 or cleared_count > 0)
-            )
+            clear_ready = ready and (count > 0 or cleared_count > 0)
             self.shortlist_clear_button.setText(
                 "Clear" if count else
                 "Undo" if cleared_count else
@@ -3265,13 +3263,22 @@ if PYQT5_AVAILABLE:
                 "Clear audio shortlist" if count or not cleared_count else
                 f"Restore the {cleared_count} sounds cleared from the audio shortlist"
             )
-            self.shortlist_clear_button.setToolTip(
+            clear_tip = (
                 f"Clear these {count} selected sounds. You can undo this until the "
                 "next shortlist change or source load."
                 if count else
                 f"Restore all {cleared_count} cleared sounds in their original order."
                 if cleared_count else
+                "Load your NFL 2K5 XISO first."
+                if not self.host.source_ready else
+                "Wait for the current audio task to finish."
+                if self._busy else
                 "Add sounds before clearing the shortlist."
+            )
+            self.shortlist_clear_button.setEnabled(True)
+            self.shortlist_clear_button.setToolTip(clear_tip)
+            self.shortlist_clear_button.setProperty(
+                "disableReason", "" if clear_ready else clear_tip
             )
             self.shortlist_review_button.setText(
                 "Back to browser"
@@ -4701,6 +4708,12 @@ if PYQT5_AVAILABLE:
             self._update_audio_shortlist_actions()
 
         def _clear_audio_shortlist(self) -> None:
+            reason = str(
+                self.shortlist_clear_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy or not self.host.source_ready:
                 return
             if not self._audio_shortlist:

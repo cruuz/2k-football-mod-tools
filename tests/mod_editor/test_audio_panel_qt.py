@@ -3179,7 +3179,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel._cleared_audio_shortlist, ())
             panel._toggle_audio_shortlist()
             self.assertEqual(panel._shortlisted_audio_ids(), ())
-            self.assertFalse(panel.shortlist_clear_button.isEnabled())
+            self.assertTrue(panel.shortlist_clear_button.isEnabled())
+
+            self.assertTrue(str(panel.shortlist_clear_button.property("disableReason") or "").strip())
             panel._clear_audio_shortlist()
             self.assertEqual(panel._shortlisted_audio_ids(), ())
 
@@ -3189,7 +3191,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             panel.reset_for_source()
             self.assertEqual(panel._cleared_audio_shortlist, ())
             self.assertEqual(panel._shortlisted_audio_ids(), ())
-            self.assertFalse(panel.shortlist_clear_button.isEnabled())
+            self.assertTrue(panel.shortlist_clear_button.isEnabled())
+
+            self.assertTrue(str(panel.shortlist_clear_button.property("disableReason") or "").strip())
             panel.deleteLater()
             application.processEvents()
 
