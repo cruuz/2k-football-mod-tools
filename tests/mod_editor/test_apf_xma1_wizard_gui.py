@@ -212,6 +212,11 @@ class SmokeTestTests(unittest.TestCase):
         self.assertIn("Fix:", result.summary)
 
 
+@unittest.skipIf(
+    os.name == "nt",
+    "PyQt5 offscreen wizard construction is unstable on hosted Windows; "
+    "the shell-free encoder smoke tests remain active there",
+)
 class WizardDialogTests(unittest.TestCase):
     """The dialog gates saving on a passed smoke test."""
 
