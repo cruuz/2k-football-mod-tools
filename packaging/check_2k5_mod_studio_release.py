@@ -24,6 +24,16 @@ MAX_RELEASE_FILE_BYTES = 8 * 1024 * 1024
 # product data instead of ``reports/``, but are held to the same immutable
 # contract so a release cannot silently acquire retail payloads.
 REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
+    "reports/assets/menu_state_trace.json": (
+        39_938,
+        "ecd93117a3a808a16697c23ae10e3225953bcb4dabda30afabdc5c02911974f1",
+        "vc_menu_state_trace/v1",
+    ),
+    "reports/assets/nfl_main_menu_live_state.json": (
+        18_483,
+        "a5d4b64962fefb2e5dbee4768d120172c0642405df2a0137759e2bce3737b89a",
+        "nfl2k5_main_menu_live_state/v1",
+    ),
     "reports/assets/nfl2k5_p8_texture_inventory.json": (
         8_338_553,
         "01b030e9f7b58786a76ba23a66d59a485024e7001656b03d595991aec0c8cf3f",
@@ -88,6 +98,11 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
         72_257,
         "ea66da8ea539114563de5694599a6046bde78661556846a34f8addeb31d544dd",
         "nfl2k5_audo_family_labels/v2",
+    ),
+    "reports/assets/uniform_texture_sharing.v2.json": (
+        415_528,
+        "9e137a17d0a5faaf6c12f35b7503193f583f4a97e7370deced28fefadf7c26cf",
+        "uniform_texture_sharing_audit/v2",
     ),
     "mod_editor/data/nfl2k5_crib_catalog.v1.json": (
         735_928,

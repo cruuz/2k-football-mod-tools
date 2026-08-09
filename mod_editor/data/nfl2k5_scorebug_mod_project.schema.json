@@ -1,0 +1,156 @@
+{
+  "$id": "https://local.invalid/nfl2k5_scorebug_mod_project.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "properties": {
+        "edits": {
+          "contains": {
+            "properties": {
+              "target": {
+                "const": "score_buga"
+              }
+            },
+            "required": [
+              "target"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 0
+        }
+      }
+    },
+    {
+      "properties": {
+        "edits": {
+          "contains": {
+            "properties": {
+              "target": {
+                "const": "shield_espn"
+              }
+            },
+            "required": [
+              "target"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 0
+        }
+      }
+    },
+    {
+      "properties": {
+        "edits": {
+          "contains": {
+            "properties": {
+              "target": {
+                "const": "digital_font"
+              }
+            },
+            "required": [
+              "target"
+            ]
+          },
+          "maxContains": 1,
+          "minContains": 0
+        }
+      }
+    }
+  ],
+  "properties": {
+    "edits": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "png": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "png_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "png_size": {
+            "maximum": 33554432,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "target": {
+            "enum": [
+              "score_buga",
+              "shield_espn",
+              "digital_font"
+            ]
+          }
+        },
+        "required": [
+          "png",
+          "png_sha256",
+          "png_size",
+          "target"
+        ],
+        "type": "object"
+      },
+      "maxItems": 3,
+      "minItems": 1,
+      "type": "array"
+    },
+    "purpose": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema": {
+      "const": "nfl2k5_scorebug_mod_project/v1"
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_index_sha256": {
+          "const": "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d"
+        },
+        "canonical_index_size": {
+          "const": 193710080
+        },
+        "default_xbe_sha256": {
+          "const": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        },
+        "default_xbe_size": {
+          "const": 11948032
+        },
+        "scorebug_audit_sha256": {
+          "const": "57bcbb1c0ff8e6c2376565365aba523e4c2fe8cdb66d3a7058daa84993c2ccd1"
+        },
+        "scorebug_audit_size": {
+          "const": 46512
+        },
+        "xiso_sha256": {
+          "const": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"
+        },
+        "xiso_size": {
+          "const": 6300499968
+        }
+      },
+      "required": [
+        "canonical_index_sha256",
+        "canonical_index_size",
+        "default_xbe_sha256",
+        "default_xbe_size",
+        "scorebug_audit_sha256",
+        "scorebug_audit_size",
+        "xiso_sha256",
+        "xiso_size"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "edits",
+    "purpose",
+    "schema",
+    "source"
+  ],
+  "title": "NFL 2K5 scorebug mod project",
+  "type": "object"
+}

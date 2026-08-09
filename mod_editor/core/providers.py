@@ -1101,7 +1101,7 @@ class Nfl2k5ScorebugProvider:
         "tools/nfl_uniform_inventory.py": "c8593288ab737609d1f8ce4787af2a76a0e80d96a3d09cd686695c1e408b17c3",
         "tools/xbe_info.py": "c7843c317a7ec022bc22ee6266b96d856b57233af2d6baa71ec071a94212e0ef",
     }
-    recipe_schema_file = "reports/assets/nfl2k5_scorebug_mod_project.schema.json"
+    recipe_schema_file = "mod_editor/data/nfl2k5_scorebug_mod_project.schema.json"
     recipe_schema_file_sha256 = "2e213dc7448f34f40da2f9ab4cc2a1ccd9b4412390939411c12f231d11d81277"
     backend_schema = "nfl2k5_scorebug_mod_project/v1"
     source_sha256 = "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9"

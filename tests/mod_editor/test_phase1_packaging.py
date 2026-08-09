@@ -240,11 +240,11 @@ class ModStudioPackagingTests(unittest.TestCase):
                 release_gate.audit_release(root, allowlist)
 
     def test_reviewed_metadata_files_match_exact_contract_and_have_no_payload(self) -> None:
-        self.assertEqual(len(release_gate.REVIEWED_METADATA), 19)
+        self.assertEqual(len(release_gate.REVIEWED_METADATA), 22)
         self.assertEqual(
             sum(path.startswith("reports/assets/")
                 for path in release_gate.REVIEWED_METADATA),
-            13,
+            16,
         )
         for relative, (size, expected_sha, schema) in release_gate.REVIEWED_METADATA.items():
             path = ROOT / relative
@@ -457,7 +457,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn(
             '"apf2k8.scorebug_presentation.digital_font"', runtime_probe
         )
-        self.assertIn("reports=13 reviewed_metadata=19", runtime_probe)
+        self.assertIn("reports=16 reviewed_metadata=22", runtime_probe)
         self.assertIn("Nfl2k5StadiumCacheCoordinator", runtime_probe)
         self.assertIn("build_scorebug_texture_import", runtime_probe)
 

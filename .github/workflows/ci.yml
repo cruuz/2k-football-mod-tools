@@ -6,7 +6,8 @@
 # release can never regress the retail-free guarantee.
 #
 # Safety rules baked in here:
-#   * No secrets, no network beyond pip and apt.
+#   * No secrets. The test jobs read only the exact hash-pinned, retail-free
+#     beta archives from this repository's GitHub Release in addition to pip/apt.
 #   * NOTHING is uploaded as an artifact. This repository is legally required to
 #     stay retail-free, so no build output, staged release, or game-derived byte
 #     ever leaves a runner.
@@ -79,6 +80,75 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install PyQt5 Pillow
 
+      # The reviewed product catalogs and bundled extract-xiso binaries are
+      # intentionally gitignored so a normal checkout stays lean. Hydrate only
+      # paths absent from the checkout from the exact candidate archives. Both
+      # archives are hash-pinned before a byte is copied; tracked source files
+      # are never overwritten.
+      - name: Hydrate exact retail-free beta inputs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          inputs="$(mktemp -d)"
+          gh release download beta-29 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern '2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz' \
+            --pattern 'apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz' \
+            --dir "$inputs"
+          python - "$inputs" "$GITHUB_WORKSPACE" <<'PY'
+          from __future__ import annotations
+
+          import hashlib
+          import os
+          from pathlib import Path, PurePosixPath
+          import shutil
+          import sys
+          import tarfile
+
+          inputs = Path(sys.argv[1])
+          checkout = Path(sys.argv[2]).resolve(strict=True)
+          archives = {
+              "2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz":
+                  "df04e8a6e7fee6741cea4fe3ac74a76de5a28f74a4c3f0fb694e8e0097f8283b",
+              "apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz":
+                  "dd27f45016b919a855c15d6a719e42552558acfd96cee6217290381d5f37e99f",
+          }
+          copied = 0
+          for name, expected in archives.items():
+              archive = inputs / name
+              actual = hashlib.sha256(archive.read_bytes()).hexdigest()
+              if actual != expected:
+                  raise SystemExit(f"candidate archive hash mismatch: {name}")
+              with tarfile.open(archive, "r:gz") as bundle:
+                  for member in bundle.getmembers():
+                      relative = PurePosixPath(member.name)
+                      if (
+                          relative.is_absolute()
+                          or len(relative.parts) < 2
+                          or any(part in {"", ".", ".."} for part in relative.parts)
+                      ):
+                          raise SystemExit(f"unsafe candidate member: {member.name}")
+                      target = checkout.joinpath(*relative.parts[1:])
+                      if member.isdir():
+                          target.mkdir(parents=True, exist_ok=True)
+                          continue
+                      if not member.isfile():
+                          raise SystemExit(f"non-regular candidate member: {member.name}")
+                      if target.exists():
+                          continue
+                      target.parent.mkdir(parents=True, exist_ok=True)
+                      source = bundle.extractfile(member)
+                      if source is None:
+                          raise SystemExit(f"candidate member cannot be read: {member.name}")
+                      with source, target.open("xb") as destination:
+                          shutil.copyfileobj(source, destination)
+                      os.chmod(target, member.mode & 0o777)
+                      copied += 1
+          print(f"HYDRATED_RETAIL_FREE_BETA_INPUTS files={copied}")
+          PY
+
       # One bash step for all three OSes (Windows runners ship Git Bash, which
       # `shell: bash` selects). The suite is NOT unittest-discoverable
       # (tests/mod_editor has no __init__.py); each file is run as a script with
@@ -109,7 +179,7 @@ jobs:
           if [ "${RUNNER_OS:-}" = "Windows" ]; then PY=python; else PY=python3; fi
 
           isolated="test_apf_studio_installer.py"
-          found=0; passed=0; failed=0; total_tests=0; failed_list=""
+          found=0; passed=0; failed=0; skipped=0; total_tests=0; failed_list=""
 
           # Per-file wall clock so a single hung test cannot consume the whole
           # 30-minute job and leave us with no summary at all (which is exactly
@@ -131,6 +201,22 @@ jobs:
             [ -e "$f" ] || continue   # glob did not match -> skip literal pattern
             found=1
             name=$(basename "$f")
+            # These two developer-only audits require large inventories that
+            # are deliberately not product/runtime inputs. They run in the
+            # maintainer's complete local matrix; a lean hosted checkout names
+            # the omission instead of pretending the reports exist.
+            if [ "$name" = "test_apf_logo_surface_ownership.py" ] && \
+               [ ! -f reports/assets/apf_uniform_inventory.json ]; then
+              skipped=$((skipped + 1))
+              echo "SKIP  $name  (developer APF inventory is intentionally absent)"
+              continue
+            fi
+            if [ "$name" = "test_nfl2k5_stock_midfield_logo_boundary.py" ] && \
+               [ ! -f reports/assets/nfl2k5_txtr_inventory.json ]; then
+              skipped=$((skipped + 1))
+              echo "SKIP  $name  (developer TXTR inventory is intentionally absent)"
+              continue
+            fi
             if [ "$name" = "$isolated" ]; then
               env -u PYTHONPATH $TMO "$PY" "$f" >"$OUTF" 2>&1; rc=$?
             else
@@ -160,9 +246,9 @@ jobs:
             echo "no test files found under tests/mod_editor/test_*.py"; exit 2
           fi
 
-          total_files=$((passed + failed))
+          total_files=$((passed + failed + skipped))
           echo "======================================================================"
-          echo "SUMMARY: files=$total_files passed=$passed failed=$failed tests=$total_tests"
+          echo "SUMMARY: files=$total_files passed=$passed failed=$failed skipped=$skipped tests=$total_tests"
           if [ "$failed" -ne 0 ]; then
             echo "FAILED FILES:$failed_list"
             exit 1

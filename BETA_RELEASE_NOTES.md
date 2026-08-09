@@ -47,8 +47,8 @@ and
 
 | Asset | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz` | 10,939,254 | `a8ee1b0446f9a80deebec831fee586f8b09694f628e1da01aaef956ba7f8469c` |
-| `2K5-Mod-Studio-1.0-RC56-Setup.exe` | 56,696,804 | `c787918ff94968ad8e8b764077e2737ea8e248c59388d99312083704c7f69e4f` |
+| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz` | 10,984,870 | `df04e8a6e7fee6741cea4fe3ac74a76de5a28f74a4c3f0fb694e8e0097f8283b` |
+| `2K5-Mod-Studio-1.0-RC56-Setup.exe` | 56,724,248 | `dc05df463a72314fd2c8f9f8c39ad87488d45478f27a16a64b0b45a4fd0dbbbc` |
 | `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz` | 1,652,616 | `dd27f45016b919a855c15d6a719e42552558acfd96cee6217290381d5f37e99f` |
 | `APF-2K8-Mod-Studio-0.1.0-alpha.61-Setup.exe` | 52,695,992 | `77663030cdd18ba1f1ee3f9ff49044cf0176845bab0bee4052b9ebc190f86dc8` |
 

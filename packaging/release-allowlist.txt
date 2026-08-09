@@ -96,6 +96,7 @@ mod_editor/data/nfl2k5_crib_catalog.v1.json
 mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json
 mod_editor/data/nfl2k5_gameplay_inspection.v1.json
 mod_editor/data/nfl2k5_main_menu_inspection.v1.json
+mod_editor/data/nfl2k5_scorebug_mod_project.schema.json
 mod_editor/gui/__init__.py
 mod_editor/gui/audio_panel_qt.py
 mod_editor/gui/audio_waveform_qt.py
@@ -131,12 +132,15 @@ reports/assets/nfl2k5_jersey_tset_compatibility.json
 reports/assets/nfl2k5_live_face_texture_compatibility.json
 reports/assets/nfl2k5_live_helmet_txtr_compatibility.json
 reports/assets/nfl2k5_live_numbers_nameplate_compatibility.json
+reports/assets/nfl_main_menu_live_state.json
+reports/assets/menu_state_trace.json
 reports/assets/nfl2k5_p8_texture_inventory.json
 reports/assets/nfl2k5_pants_tset_compatibility.json
 reports/assets/nfl2k5_player_portrait_compatibility.json
 reports/assets/nfl2k5_sleeve_tset_compatibility.json
 reports/assets/nfl2k5_team_select_card_inventory.json
 reports/assets/scorebug_presentation_audit.json
+reports/assets/uniform_texture_sharing.v2.json
 reports/specs/nfl2k5_crib_static_position_targets.v1.json
 reports/specs/nfl2k5_stadium_static_target_catalog.v1.json
 tools/apf_inner.py

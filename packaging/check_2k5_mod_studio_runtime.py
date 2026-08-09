@@ -54,6 +54,9 @@ REQUIRED_REPORTS = frozenset(
         "nfl2k5_audo_import_capacity.json",
         "nfl2k5_audo_family_labels.json",
         "nfl2k5_p8_texture_inventory.json",
+        "menu_state_trace.json",
+        "nfl_main_menu_live_state.json",
+        "uniform_texture_sharing.v2.json",
     }
 )
 PRIVATE_INVENTORY = "nfl2k5_resource_chunks_v2.json"
@@ -2173,7 +2176,7 @@ def main() -> int:
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
         "registry=70 sections=12 nfl2k5_capabilities=32 "
-        "reports=13 reviewed_metadata=19 sets=634 visuals=71963 "
+        "reports=16 reviewed_metadata=22 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "
         "text_read_only=3272 roster_numbers=6522 "
