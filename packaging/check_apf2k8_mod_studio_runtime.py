@@ -386,10 +386,11 @@ def _check_install_contract() -> None:
 
         first = installer.install(ROOT, environment=environment)
         paths = first.paths
+        resolved_home = home.resolve(strict=True)
         require(first.action == "installed", "first per-user install was not classified as installed")
-        require(paths.app_dir == home / "xdg-data/apf2k8-mod-studio/app",
+        require(paths.app_dir == resolved_home / "xdg-data/apf2k8-mod-studio/app",
                 "per-user application path changed")
-        require(paths.wrapper == home / ".local/bin/apf2k8-mod-studio",
+        require(paths.wrapper == resolved_home / ".local/bin/apf2k8-mod-studio",
                 "per-user command path changed")
         for path in (paths.app_dir, paths.wrapper, paths.desktop, paths.icon, paths.record):
             require(os.path.lexists(path), f"per-user install omitted {path}")

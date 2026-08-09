@@ -32,7 +32,19 @@ def _reject_symlinked_destination_parent(dest: Path) -> None:
     current = dest.absolute().parent
     while True:
         if _lexists(current) and current.is_symlink():
-            raise StageError(f"destination has a symlinked parent: {current}")
+            # macOS intentionally exposes these fixed system aliases. They are
+            # outside the caller-controlled suffix and resolve to equally fixed
+            # /private roots; rejecting /var made every tempfile destination on
+            # hosted macOS fail before the allowlist was even read. Any other
+            # symlink in the lexical destination chain remains a hard refusal.
+            macos_aliases = {
+                Path("/etc"): Path("/private/etc"),
+                Path("/tmp"): Path("/private/tmp"),
+                Path("/var"): Path("/private/var"),
+            }
+            expected = macos_aliases.get(current) if sys.platform == "darwin" else None
+            if expected is None or current.resolve(strict=True) != expected:
+                raise StageError(f"destination has a symlinked parent: {current}")
         parent = current.parent
         if parent == current:
             return

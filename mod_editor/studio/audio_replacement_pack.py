@@ -312,13 +312,15 @@ def _open_directory_handle(path: Path, label: str) -> DirHandle:
 
 
 def _pinned_staging_root(handle: DirHandle) -> Path:
-    """POSIX ``/proc/self/fd`` anchor for inode-pinned staged path writes.
+    """POSIX descriptor-path anchor for inode-pinned staged path writes.
 
-    POSIX-only.  ``/proc/self/fd/<fd>`` follows the directory *inode* the handle
-    holds open, so the path-based staging writes below cannot be redirected by a
-    swap of the parent path.  Windows has no such fd-path and a bare ``realpath``
-    is NOT pinned -- that was the weakening this closes -- so on Windows the caller
-    routes every staged write and the enumeration through the parent
+    Linux exposes ``/proc/self/fd/<fd>`` and macOS exposes ``/dev/fd/<fd>``.
+    Both follow the directory *inode* the handle holds open, so the path-based
+    staging writes below cannot be redirected by a swap of the parent path. The
+    selected alias is identity-checked against the open descriptor before use.
+    Windows has no such fd-path and a bare ``realpath`` is NOT pinned -- that was
+    the weakening this closes -- so on Windows the caller routes every staged
+    write and the enumeration through the parent
     :class:`DirHandle`'s own re-verified at-operations (:func:`_staged_write`,
     :func:`_staged_mkdir`, :func:`_staged_template_files`) instead of this path, and
     reaching here on Windows is a bug that fails closed rather than handing back an
@@ -330,7 +332,21 @@ def _pinned_staging_root(handle: DirHandle) -> Path:
             "Windows audio-template staging must go through the pinned DirHandle, "
             "not a realpath"
         )
-    return Path("/proc/self/fd") / str(handle.dir_fd)
+    opened = handle.fstat()
+    for root in (Path("/proc/self/fd"), Path("/dev/fd")):
+        candidate = root / str(handle.dir_fd)
+        try:
+            alias = candidate.stat()
+        except OSError:
+            continue
+        if (
+            stat.S_ISDIR(alias.st_mode)
+            and (alias.st_dev, alias.st_ino) == (opened.st_dev, opened.st_ino)
+        ):
+            return candidate
+    raise AudioReplacementPackError(
+        "POSIX audio-template staging has no identity-matched descriptor path"
+    )
 
 
 def _staged_mkdir(
