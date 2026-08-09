@@ -276,9 +276,17 @@ what was sealed.
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-30>
 
-Beta 30 carries 2K5 RC57 and APF alpha.62. Final downloadable-asset byte counts
-and checksums are recorded only after the release artifacts are built and
-verified; no provisional receipt is published in this source update.
+Beta 30 carries 2K5 RC57 and APF alpha.62. All six assets were independently
+rebuilt byte-for-byte before publication.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC57-20260809.tar.gz` | 10,986,486 | `915f03e49c78b0eac48c4d20665611cb5395ac76d961e551d21a148da77079a4` |
+| `2K5-Mod-Studio-v1.0-RC57-20260809.tar.gz.sha256` | 107 | `0fa346ec12c70791ef0b100214413e91f6759d821708430b3efd68b98b43b340` |
+| `2K5-Mod-Studio-1.0-RC57-Setup.exe` | 56,727,599 | `75e49a34ee9ab91835b504935ec36f655d6785a478b08d7c8b41064ed6c509a2` |
+| `apf2k8-mod-studio-0.1.0-alpha.62-20260809.tar.gz` | 1,651,432 | `0c6d68209ccba7ad744343079793211e8c5c341396d0fd3ea7cfe7bdd2418deb` |
+| `apf2k8-mod-studio-0.1.0-alpha.62-20260809.tar.gz.sha256` | 115 | `c694e897775276186b1b6ce91a0cfad35617641e8c856f84e752f669468bff17` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.62-Setup.exe` | 52,699,449 | `3e5291d16fb429cc3a64da8951f5c5184a2fa6a217b75b9816775ec1d9c32f99` |
 
 ### `beta-29` — 2026-08-09 · superseded (refreshed in place)
 
