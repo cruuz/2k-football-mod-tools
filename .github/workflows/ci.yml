@@ -296,11 +296,10 @@ jobs:
   # metadata (reports/assets/*.json) and the vendored extract-xiso are shippable
   # release-build inputs that are intentionally gitignored: the release tarball
   # is assembled locally and published as a GitHub Release asset, so a normal
-  # lean checkout does not contain them (see .gitignore). This job therefore
-  # detects those inputs and:
-  #   * runs the FULL gate when they are present (any regression fails the job), or
-  #   * SKIPS LOUDLY with an explicit notice when they are absent -- never a
-  #     silent green, and never a weakened check.
+  # lean checkout does not contain them (see .gitignore). This job hydrates only
+  # missing paths from the two exact hash-pinned Beta archives, then runs both
+  # full gates. The presence checks below remain a fail-closed diagnostic if
+  # hydration ever stops supplying either reviewed input set.
   # ---------------------------------------------------------------------------
   release-gates:
     name: retail-free release gates (Linux)
@@ -313,6 +312,70 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Hydrate exact retail-free beta inputs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          inputs="$(mktemp -d)"
+          gh release download beta-30 \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern '2K5-Mod-Studio-v1.0-RC57-20260809.tar.gz' \
+            --pattern 'apf2k8-mod-studio-0.1.0-alpha.62-20260809.tar.gz' \
+            --dir "$inputs"
+          python - "$inputs" "$GITHUB_WORKSPACE" <<'PY'
+          from __future__ import annotations
+
+          import hashlib
+          import os
+          from pathlib import Path, PurePosixPath
+          import shutil
+          import sys
+          import tarfile
+
+          inputs = Path(sys.argv[1])
+          checkout = Path(sys.argv[2]).resolve(strict=True)
+          archives = {
+              "2K5-Mod-Studio-v1.0-RC57-20260809.tar.gz":
+                  "915f03e49c78b0eac48c4d20665611cb5395ac76d961e551d21a148da77079a4",
+              "apf2k8-mod-studio-0.1.0-alpha.62-20260809.tar.gz":
+                  "0c6d68209ccba7ad744343079793211e8c5c341396d0fd3ea7cfe7bdd2418deb",
+          }
+          copied = 0
+          for name, expected in archives.items():
+              archive = inputs / name
+              actual = hashlib.sha256(archive.read_bytes()).hexdigest()
+              if actual != expected:
+                  raise SystemExit(f"candidate archive hash mismatch: {name}")
+              with tarfile.open(archive, "r:gz") as bundle:
+                  for member in bundle.getmembers():
+                      relative = PurePosixPath(member.name)
+                      if (
+                          relative.is_absolute()
+                          or len(relative.parts) < 2
+                          or any(part in {"", ".", ".."} for part in relative.parts)
+                      ):
+                          raise SystemExit(f"unsafe candidate member: {member.name}")
+                      target = checkout.joinpath(*relative.parts[1:])
+                      if member.isdir():
+                          target.mkdir(parents=True, exist_ok=True)
+                          continue
+                      if not member.isfile():
+                          raise SystemExit(f"non-regular candidate member: {member.name}")
+                      if target.exists():
+                          continue
+                      target.parent.mkdir(parents=True, exist_ok=True)
+                      source = bundle.extractfile(member)
+                      if source is None:
+                          raise SystemExit(f"candidate member cannot be read: {member.name}")
+                      with source, target.open("xb") as destination:
+                          shutil.copyfileobj(source, destination)
+                      os.chmod(target, member.mode & 0o777)
+                      copied += 1
+          print(f"HYDRATED_RETAIL_FREE_BETA_INPUTS files={copied}")
+          PY
 
       - name: Install Qt system libraries and desktop-file-utils
         run: |
