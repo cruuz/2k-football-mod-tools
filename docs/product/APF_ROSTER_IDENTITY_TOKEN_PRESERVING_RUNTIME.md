@@ -177,7 +177,7 @@ the ROST reparsed successfully, and the source remained unchanged. The private
 its runtime-equivalence section records the matching candidate and prior video
 hashes rather than merely asserting equivalence in prose.
 
-Fresh isolated Spark visual QA also passed after the UX fix. **Identity &
+Fresh isolated-display visual QA also passed after the UX fix. **Identity &
 Names** defaulted visible with **Base Ratings (28)** adjacent. **Replace Player
 Name**, **Revert Player Name**, and **View 23 affected fields…** were all visible
 with the exact `4/4` limit and no clipping or scroll trap. A separate

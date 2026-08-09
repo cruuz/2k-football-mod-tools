@@ -1,4 +1,4 @@
-# Draft AI findings for 2K5 Mod Studio
+# Fantasy Draft findings for 2K5 Mod Studio
 
 Status: bounded static experiment completed; runtime A/B still pending  
 Date: 2026-07-18

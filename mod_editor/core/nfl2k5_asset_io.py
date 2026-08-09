@@ -11,7 +11,7 @@ import sys
 from typing import Any
 
 from .errors import ValidationError
-from .nfl2k5_source_cache import SourceCache
+from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -140,7 +140,7 @@ class Nfl2k5AssetIO:
             if (
                 record.get("schema") == ORIGINAL_SCHEMA
                 and record.get("asset_id") == asset.asset_id
-                and record.get("source_sha256") == self.cache.source.sha256
+                and record.get("source_sha256") == SOURCE_SHA256
                 and recorded_dimensions == [asset.width, asset.height]
             ):
                 return path
@@ -176,7 +176,10 @@ class Nfl2k5AssetIO:
             "png_sha256": sha256_bytes(png),
             "rgba_sha256": sha256_bytes(rgba),
             "schema": ORIGINAL_SCHEMA,
-            "source_sha256": self.cache.source.sha256,
+            # All admitted XISO layouts reduce to the same independently pinned
+            # source cache.  Bind its private originals to that canonical cache
+            # identity, not to padding/layout bytes in the selected container.
+            "source_sha256": SOURCE_SHA256,
         }
         # Keep the valid stale pair until fresh decoding succeeds. Each final
         # pathname is then replaced atomically; no pre-emptive unlink is needed.

@@ -1530,7 +1530,7 @@ class Nfl2k5BuildService:
             )
         return BuildResult(
             output_xiso=final_output,
-            output_size=SOURCE_SIZE,
+            output_size=source_size,
             output_sha256=output_row["xiso_sha256"],
             edit_count=project_row["edit_count"],
             changed_byte_count=patch_row["changed_byte_count"],

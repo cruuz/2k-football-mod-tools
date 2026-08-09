@@ -35,9 +35,9 @@ KNOWN_RETAIL_SHA256 = frozenset(
 # closure.  Its exact license is mandatory beside it.  Neither file contains
 # game data.
 REVIEWED_BINARY = "tools/vendor/extract-xiso/build/extract-xiso"
-REVIEWED_BINARY_SIZE = 56_584
+REVIEWED_BINARY_SIZE = 51_336
 REVIEWED_BINARY_SHA256 = (
-    "96e6286d371e47e24474a3b7c89ef5c204ddca9c93c95d5ebcb7bcf1d6eb530f"
+    "222e7763df8f16d9b252c625fac5ef551cd25cdf031a785b3ec73c6e53c5d7f2"
 )
 REVIEWED_LICENSE = "tools/vendor/extract-xiso/LICENSE.TXT"
 REVIEWED_LICENSE_SIZE = 3_115
@@ -96,7 +96,7 @@ INSTALL_EXECUTABLES = frozenset(
 # private paths are embedded in the release checker.
 REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
     "mod_editor/apf_studio/__init__.py": (
-        '__version__ = "0.1.0-alpha.61"',
+        '__version__ = "0.1.0-alpha.62"',
     ),
     "mod_editor/apf_studio/audio_annotations.py": (
         'AUDIO_ANNOTATIONS_SCHEMA = "apf2k8_audio_annotations/v1"',
@@ -246,7 +246,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "confirmation_token",
     ),
     "APF2K8-README.md": (
-        "0.1.0-alpha.61",
+        "0.1.0-alpha.62",
         "Normal logo — convert to APF regions (recommended)",
         "APF region mask (advanced)",
         "Your cue label & notes",
@@ -271,7 +271,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "normalized original import plus the last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_getting_started.md": (
-        "0.1.0-alpha.61",
+        "0.1.0-alpha.62",
         "Your cue label & notes",
         "Labeled only",
         "audio-annotations.json",
@@ -291,7 +291,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "normalized original import and last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_changelog.md": (
-        "0.1.0-alpha.61",
+        "0.1.0-alpha.62",
         "project_metadata_only_stable_logical_cue_id",
         "audio-annotations.json",
         "selected_exact_slot_xma1_or_conformed_audio",
@@ -309,7 +309,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "original import plus its last transform",
     ),
     "docs/mod_editor/APF2K8_STATUS.md": (
-        "0.1.0-alpha.61",
+        "0.1.0-alpha.62",
         "0.1.0-alpha.51 candidate boundary",
         "project_metadata_only_stable_logical_cue_id",
         "47,775 playable cues",
@@ -722,10 +722,12 @@ def _validate_install_surface(relative: str, text: str, info: os.stat_result) ->
         ),
         "install.sh": (
             "apf2k8_mod_studio_installer.py",
+            "PYTHONDONTWRITEBYTECODE=1",
             'install --source-root "$release_root"',
         ),
         "uninstall.sh": (
             "apf2k8_mod_studio_installer.py",
+            "PYTHONDONTWRITEBYTECODE=1",
             'uninstall "$@"',
         ),
         "packaging/apf2k8_mod_studio_installer.py": (

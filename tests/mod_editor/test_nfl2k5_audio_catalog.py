@@ -39,7 +39,7 @@ from mod_editor.core.nfl2k5_audio_source_fingerprints import (
     Nfl2k5AudioSourceFingerprintStore,
 )
 from mod_editor.core.nfl2k5_ausb_fixed_slots import build_streaming_slot_catalog
-from mod_editor.core.nfl2k5_source_cache import SourceCache
+from mod_editor.core.nfl2k5_source_cache import SOURCE_SHA256, SourceCache
 from mod_editor.core.nfl_audio import (
     NFL_MENU_BACK_AUDIO_FRAME_COUNT,
     load_nfl_menu_back_audio_recipe,
@@ -198,9 +198,11 @@ def _capacity_row(
 
 class AudioFixture:
     def __init__(self, root: Path) -> None:
-        # Private audio stores intentionally require the cache directory name
-        # to equal its source-XISO digest.
-        root = root / ("f" * 64)
+        # Private audio stores are shared by alternate containers for the same
+        # canonical game identity.  Keep the SourceRecord deliberately
+        # different below so persisted inventories/sidecars prove they bind to
+        # this canonical directory, not the selected container hash.
+        root = root / SOURCE_SHA256
         root.mkdir(mode=0o700)
         self.root = root
         self.pack0 = root / "0"
@@ -385,7 +387,7 @@ class AudioFixture:
             return struct.pack(f"<{len(samples)}h", *samples)
 
         exact_store = Nfl2k5AudioSourceFingerprintStore(
-            expected_source_sha256=self.cache.source.sha256,
+            expected_source_sha256=SOURCE_SHA256,
             expected_standalone_count=len(catalog.assets),
             expected_streaming_slot_count=len(slots),
             expected_streaming_owner_count=sum(len(slot.owners) for slot in slots),
@@ -422,7 +424,7 @@ class AudioFixture:
             for slot in slots
         )
         containment_store = Nfl2k5AudioSourceContainmentStore(
-            expected_source_sha256=self.cache.source.sha256,
+            expected_source_sha256=SOURCE_SHA256,
             expected_cue_count=len(cues),
             expected_owner_count=len(owner_ids),
         )
@@ -431,7 +433,7 @@ class AudioFixture:
             policy,
             owner_ids,
             lambda: build_private_containment_inventory(
-                self.cache.source.sha256,
+                SOURCE_SHA256,
                 policy,
                 cues,
                 expected_cue_count=len(cues),
@@ -460,6 +462,52 @@ class Nfl2k5AudioCatalogTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
+
+    def test_shared_cache_reuses_inventories_and_wav_sidecars_across_source_records(self) -> None:
+        exact, containment = self.service.load_private_origin_inventories()
+        self.assertEqual(exact.source_sha256, SOURCE_SHA256)
+        self.assertEqual(containment.source_binding_sha256, SOURCE_SHA256)
+
+        alternate_source = replace(self.fixture.cache.source, sha256="e" * 64)
+        alternate_cache = replace(self.fixture.cache, source=alternate_source)
+        alternate_service = Nfl2k5AudioService(alternate_cache, self.catalog)
+
+        alternate_exact, alternate_containment = (
+            alternate_service.load_private_origin_inventories()
+        )
+        self.assertEqual(alternate_exact, exact)
+        self.assertEqual(alternate_containment, containment)
+
+        standalone = self.catalog.assets[0]
+        standalone_wav = self.service.ensure_original(standalone)
+        self.assertEqual(
+            alternate_service.ensure_original(standalone), standalone_wav
+        )
+        standalone_sidecar = json.loads(
+            standalone_wav.with_suffix(".json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(standalone_sidecar["source_sha256"], SOURCE_SHA256)
+
+        streaming = self.catalog.streaming_ranges[0]
+        streaming_wav = self.service.ensure_streaming_range_wav(streaming)
+        self.assertEqual(
+            alternate_service.ensure_streaming_range_wav(streaming), streaming_wav
+        )
+        streaming_sidecar_path = streaming_wav.with_suffix(".json")
+        streaming_sidecar = json.loads(
+            streaming_sidecar_path.read_text(encoding="utf-8")
+        )
+        self.assertEqual(streaming_sidecar["source_sha256"], SOURCE_SHA256)
+
+        # A container-specific binding must not be accepted as a shortcut around
+        # the canonical shared-cache identity or the existing sidecar checks.
+        streaming_sidecar["source_sha256"] = "e" * 64
+        streaming_sidecar_path.write_text(
+            json.dumps(streaming_sidecar, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(Nfl2k5AudioCatalogError, "changed outside"):
+            alternate_service.ensure_streaming_range_wav(streaming)
 
     def test_catalog_uses_physical_stable_ids_for_every_exact_slot(self) -> None:
         self.assertEqual(self.catalog.asset_count, 2)

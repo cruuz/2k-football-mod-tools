@@ -1,4 +1,4 @@
-# §6.1 editor bug fix-or-wall ledger (2026-08-07 marathon)
+# §6.1 editor bug fix-or-wall ledger (2026-08-07)
 
 Living tracker. “Fixed” requires a test driving shipped entry points. “Wall”
 requires an unblock path. Capability honesty: never mark Editable without
@@ -13,11 +13,11 @@ offline-writer-proved or better.
 | 5 | Facemask per uniform set | **Fixed** (APF + 2K5) | APF Equipment Colors HOME/AWAY per team + Stage never silent-gray; 2K5 Unif per physical set + facemask/turtleneck/Apply never silent-gray; tests equipment GUI + unif ARGB |
 | 6 | Titans arm/shoulder numbers missing in preview | **Fixed known catalog; unknown-asset wall** | **APF:** all 24×`number_0_color`…`number_9_color` decode 512×512 RGBA and All Textures teaches those names. **2K5:** Titans 32×32 arm/shoulder digits are covered by the live-number catalog. A remaining blank requires product/version, team, `asset_id`, outer/inner index, format ID, and screenshot/error text; without that target there is no safe byte span to patch. |
 | 7–8 | Team kits / All Textures export errors | **Explicit repro wall** | No current asset ID reproduces the historical screenshots. Unblock with product/version, loaded-source type, workspace, selected `asset_id`, outer/inner index, requested export action, and full error/log text. The existing path must then gain a regression test that drives the shipped facade/asset I/O entry point; no generic writer expansion is authorized from a screenshot alone. |
-| 9 | ISO load any-rip | **Fixed class** | layout-tolerant extract; tests `test_apf_iso_extraction_is_layout_tolerant`, `test_xiso_layout_tolerance` |
+| 9 | ISO load any-rip | **Fixed class (Beta 30)** | Layout-tolerant extraction remains covered by `test_apf_iso_extraction_is_layout_tolerant` and `test_xiso_layout_tolerance`. 2K5 RC57 also binds Stadium, visual, Crib, and audio-derived cache data to the independently validated game content rather than container padding/layout, and parses containment against the actual opened image size. |
 | 8b | Field art stock NFL | **Wall + labeled** | `APF_FIELD_ART_STOCK_NFL_WALL.md`; inventory has stock; writer is 6 proved slots |
 | 9b | Team color editor crash | **Fixed current path** | 2K5 unif colour failures stay **inline** (no modal popup on set select); ARGB parse fail-closed (`_argb_to_qcolor`); empty filter teaches instead of crashing. APF equipment read errors are also inline. Tests: `test_unif_color_argb_parse`, equipment GUI suite. |
 | 10 | Gray model import | **Fixed** | APF player/helmet model panel + **APF Stadium mesh** Import/Export + wordmark Import/Export always clickable + disableReason; 2K5 Crib + Stadium Import/Export click-to-explain (never silent gray) |
-| 11 | Windows path/installer | **Fixed current release; permanent CI gate** | `platform_compat`, layout-tolerant extraction, embeddable-CPython path handling, O_BINARY, and deterministic NSIS are covered by platform/installer tests. The per-file GitHub matrix on Windows/macOS/Linux is a release gate; a future regression is not an open RC56 feature. |
+| 11 | Windows path/installer | **Fixed current release; permanent CI gate** | `platform_compat`, layout-tolerant extraction, embeddable-CPython path handling, O_BINARY, and deterministic NSIS are covered by platform/installer tests. The per-file GitHub matrix on Windows/macOS/Linux is a release gate; a future regression is not an open RC57 feature. |
 | 12 | PS3 ISO mis-ID | **Fixed class** | structural ID + clear refuse; keep probes |
 | 13 | Helmet shell default path | **Fixed UI; runtime-material wall** | Team Logos recommends Full-shell + Normal logo and an opaque α255 body, explicitly naming the old `0x88` translucency defect. A broader runtime/material claim requires a matched stock-vs-built Xenia capture for the same team, camera, lighting, and source hash. |
 | 14 | Eagles shell accuracy | **Explicit runtime wall** | The v30 whole-shell volume and static placement gates exist. Close only after a matched front-crown/side/rear Xenia witness identifies team, logo slot, shell mode, source hash, build hash, camera, and lighting; without that evidence another placement change would be guesswork. |
@@ -25,14 +25,14 @@ offline-writer-proved or better.
 | 16 | Socks / equipment hard to find | **Fixed** | Team Kit **Browse 45 Equipment Textures** opens the canonical set-filtered All Textures rows; `test_2k5_uniform_equipment_export.py` pins the route and label. |
 | 17 | Menu logos vs in-game logos | **Fixed** | Getting Started and catalog labels separate live helmet art, Team Select cards, and Team Presentation — Menu/UI resources; all reuse canonical asset IDs and handlers. |
 | 18 | Nameplates / numbers-sheet workflow | **Fixed bounded workflow; cross-game split wall** | 634 1024×32 nameplate atlases and 19,020 digit targets use exact-size import with shared Contain/Cover/Stretch handling and writer verification. Automatic conversion of an arbitrary 2K27 sheet is blocked until its source manifest/UV mapping is supplied; repeated PNGs without that map cannot authorize a split. |
-| 19 | ISO false rejects | **Fixed current class** | Hash/size-independent XDVDFS recognition and layout-tolerant extraction are covered by `test_xiso_layout_tolerance` and any-rip probes. |
+| 19 | ISO false rejects | **Fixed current class (Beta 30)** | Hash/size-independent XDVDFS recognition and layout-tolerant extraction are covered by `test_xiso_layout_tolerance` and any-rip probes. RC57 adds shared-cache regressions for alternate valid container identities, plus actual-size containment and build-result coverage. APF alpha.62 revalidates its normal read-only load path against a real USA ISO without publishing private source details. |
 | 20 | Uniform colour read failures | **Fixed current path** | Bad/empty ARGB values fail closed inline without modal spam; `test_unif_color_argb_parse.py` and uniform-control tests cover the shipped GUI path. |
 | GH#2 | Stock playbooks | **Shipped bounded editor + explicit runtime/freehand wall** | Browser, route copy, clone, broken-play annotations, community legend, empty-state teaching, G1 multi-Dime and G2 multi-Ace offline packs ship. Freehand inverse compilation and runtime G1/G2 behavior remain unproved and are labeled; emulator evidence is required before a one-click gameplay-fix claim. |
 
 Residual risks: G1/G2 **runtime** unproved (offline writers proved for bytes);
 freehand inverse compiler not Editable; STFS resign external; monorepo pytest
-order-dependent hang residual (use batched suites); hour gate multi-session;
-no interactive Xenia in this run.
+order-dependent hang residual (use batched suites); interactive Xenia validation
+remains pending.
 
 ### Never-silent-gray expansion (continuation 2026-08-08)
 
@@ -79,10 +79,6 @@ canonical `asset_id`, outer/inner index where applicable, format/dimensions/mips
 the exact action, and full error/log text. Runtime visual walls additionally need
 matched source/build hashes and controlled captures. Retail payload bytes never
 belong in the repository or issue attachment.
-
-### Hour gate (process)
-Multi-session WORKLOG wall stamps in `docs/product/WORKLOG_20260807.md` reach
-~11.4h; the ≥10h gate is **MET**. Packaging and registry gates remain independent.
 
 ### Never-silent-gray expansion (2026-08-08 late-2)
 

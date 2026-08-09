@@ -37,7 +37,7 @@ from .json_stream import (
     iter_top_level_array,
     require_regular_file,
 )
-from .nfl2k5_source_cache import SourceCache
+from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
 from .nfl2k5_crib_electronics_targets import TARGETS as CRIB_ELECTRONICS_TARGETS
 
 
@@ -1060,6 +1060,11 @@ class Nfl2k5CribIO:
     def ensure_original(self, asset: CribAsset) -> Path:
         path = self.original_path(asset)
         metadata = path.with_suffix(".json")
+        tampered = ValidationError(
+            "A private Crib original changed outside Mod Studio. "
+            "Remove the source cache and load the XISO again."
+        )
+        stale = False
         if path.is_file() and metadata.is_file() and not path.is_symlink() \
                 and not metadata.is_symlink():
             try:
@@ -1068,21 +1073,31 @@ class Nfl2k5CribIO:
                     payload, asset.dimensions
                 )
                 record = json.loads(metadata.read_text(encoding="utf-8"))
-                if (
-                    record.get("schema") == ORIGINAL_SCHEMA
-                    and record.get("asset_id") == asset.asset_id
-                    and record.get("source_sha256") == self.cache.source.sha256
-                    and record.get("png_sha256") == _sha256(payload)
-                    and record.get("rgba_sha256") == _sha256(rgba)
-                    and (width, height) == asset.dimensions
-                ):
-                    return path
             except (OSError, ValueError, json.JSONDecodeError):
-                pass
-            raise ValidationError(
-                "A private Crib original changed outside Mod Studio. "
-                "Remove the source cache and load the XISO again."
-            )
+                raise tampered from None
+            # Verify the pair against its own hashes before interpreting an old
+            # source binding as stale.  A different legal XISO wrapper changes
+            # no extracted game bytes, while an altered PNG remains fatal.
+            if (
+                not isinstance(record, dict)
+                or record.get("png_sha256") != _sha256(payload)
+                or record.get("rgba_sha256") != _sha256(rgba)
+                or (width, height) != asset.dimensions
+                or record.get("schema") != ORIGINAL_SCHEMA
+                or record.get("asset_id") != asset.asset_id
+            ):
+                raise tampered
+            binding = record.get("source_sha256")
+            if binding == SOURCE_SHA256:
+                return path
+            if not isinstance(binding, str) or HEX_SHA256.fullmatch(binding) is None:
+                raise tampered
+            stale = True
+        elif os.path.lexists(path) or os.path.lexists(metadata):
+            # Never turn an incomplete pair, link, or directory into a valid
+            # cache entry.  Only a complete, internally verified legacy pair is
+            # eligible for the refresh path above.
+            raise tampered
         _span, _chunk, _decoded, _texture, rgba = self._decode_asset(asset)
         png = encode_rgba_png(asset.width, asset.height, rgba)
         try:
@@ -1091,18 +1106,24 @@ class Nfl2k5CribIO:
             raise ValidationError("Exported Crib PNG failed its strict recheck") from exc
         if reparsed != (asset.width, asset.height, rgba):
             raise ValidationError("Exported Crib PNG failed its pixel round-trip")
-        _atomic_write(path, png)
         record = {
             "asset_id": asset.asset_id,
             "dimensions": [asset.width, asset.height],
             "png_sha256": _sha256(png),
             "rgba_sha256": _sha256(rgba),
             "schema": ORIGINAL_SCHEMA,
-            "source_sha256": self.cache.source.sha256,
+            # All admitted XISO layouts reduce to the same independently pinned
+            # source cache.  Bind its private originals to that canonical cache
+            # identity, not to padding/layout bytes in the selected container.
+            "source_sha256": SOURCE_SHA256,
         }
+        # Preserve an intact legacy pair until fresh decoding and PNG
+        # verification both succeed, then replace each pathname atomically.
+        _atomic_write(path, png, replace=stale)
         _atomic_write(
             metadata,
             (json.dumps(record, indent=2, sort_keys=True) + "\n").encode("utf-8"),
+            replace=stale,
         )
         return path
 

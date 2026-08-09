@@ -4,11 +4,18 @@ APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-The source code and UI identify as **`0.1.0-alpha.61`**, the current retail-free
+The source code and UI identify as **`0.1.0-alpha.62`**, the current retail-free
 release candidate; its mode-`0444` archive is authenticated by the adjacent
 `.sha256` sidecar. Alpha.38 and earlier remain preserved unchanged. Verify
 whichever sealed archive you install with its authoritative adjacent `.sha256`
 sidecar. Packaged guides remain deliberately self-hash-free.
+
+Alpha.62 revalidates the normal ISO recognition, extraction, load, and read-only
+source path against a real USA APF 2K8 image. The image stayed read-only, and no
+private path, image hash, extracted game data, or retail payload is included in
+the app or this guide. Its Linux install and uninstall helpers also suppress
+Python bytecode before importing the installer, so they cannot create an
+undeclared `__pycache__` before the fail-closed release audit.
 
 Alpha 32 changes batch audio replacement into a no-surprises two-step flow.
 Choose **Review replacement folder…** or **Review replacement ZIP…** first.
@@ -419,7 +426,7 @@ entry. The pristine source remained unchanged, all 117 non-selected retail
 crests were migrated, and the selected Eagles shell-atlas hash matched its
 pinned value. The exact atomically published candidate then passed an
 independent 118-package/236-layer reopen plus a **10-view static asset-space
-visual gate** at the stock high and low helmet LODs. Spark review of both
+visual gate** at the stock high and low helmet LODs. Visual review of both
 hash-pinned contact sheets found a coherent shell-spanning Eagles wing from
 side/front/crown through the rear, with its low-LOD silhouette retained and no
 smears, gaps, holes, seam breaks, or visible UV artifacts. This proves the

@@ -16,8 +16,8 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "reports/assets/apf_xenia_controller_capture_provenance.v1.json"
-MANIFEST_SIZE = 4304
-MANIFEST_SHA256 = "c4fd63b6d831637a2904396e106282103d3f923c16cab58066d7f68337b97120"
+MANIFEST_SIZE = 3903
+MANIFEST_SHA256 = "1e3499bcbe800ff12dbaa819476941e6473678b55e14a4b07c9b2d89fcee133d"
 RECORDED_INVOCATION_PATH = "tools/xenia_virtual_gamepad.py"
 FROZEN_SOURCE = (
     "reports/cut_content/apf_nfl_lineage/runtime_provenance/"
@@ -29,23 +29,14 @@ FROZEN_SOURCE_SHA256 = (
     "fe63265a8e19a873adb794be132f84a44b7a40cd488d753505751470fdaf48dc"
 )
 
-EXPECTED_RECOVERY = {
+EXPECTED_CORROBORATION = {
     "method": (
-        "byte-exact recovery from a later preserved session output that printed "
-        "the then-current controller helper; accepted because its length and "
-        "digest matched the capture-time hashes in all three legacy "
+        "the frozen controller source is corroborated by its byte length and "
+        "digest matching the capture-time hashes in all three legacy "
         "report/transcript pairs"
     ),
-    "session_log_home_relative": (
-        ".codex/sessions/2026/07/15/"
-        "rollout-2026-07-15T19-12-41-019f680d-c783-7bd3-bd51-a51e3362cf38.jsonl"
-    ),
-    "session_output_line": 1019,
-    "session_output_timestamp_utc": "2026-07-16T00:28:00.057Z",
-    "session_output_call_id": "call_TZOE0bBBRsj56i82FpUuYPNS",
-    "listing_postdates_capture": True,
-    "listing_is_original_capture_session": False,
-    "recovered_bytes_are_authority": False,
+    "private_recovery_record_details_published": False,
+    "corroborating_record_is_authority": False,
     "frozen_repository_copy_is_authority": True,
 }
 
@@ -131,8 +122,8 @@ EXPECTED_CLAIM_BOUNDARY = {
     "legacy_reports_and_transcripts_preserved_byte_exact": True,
     "recorded_invocation_path_is_a_capture_time_path": True,
     "recorded_invocation_path_is_current_source_authority": False,
-    "recovery_listing_postdates_capture": True,
-    "recovery_listing_is_original_capture_session": False,
+    "private_recovery_record_details_published": False,
+    "corroborating_record_is_authority": False,
     "capture_time_hash_matches_frozen_source": True,
     "frozen_source_is_capture_byte_authority": True,
     "frozen_source_is_executed_by_validation": False,
@@ -170,55 +161,6 @@ def _strict_json(payload: bytes, label: str) -> dict[str, Any]:
         raise ProvenanceError(f"invalid JSON in {label}: {error}") from error
     require(isinstance(value, dict), f"{label} root is not an object")
     return value
-
-
-def recover_source_from_session_record(session_log: Path) -> bytes:
-    """Extract the frozen source from the separately retained recovery record.
-
-    This is an optional provenance proof.  The canonical repository validator
-    deliberately does not require a user's private session archive to exist.
-    """
-
-    wanted_line = EXPECTED_RECOVERY["session_output_line"]
-    record_payload: bytes | None = None
-    with session_log.open("rb") as stream:
-        for line_number, line in enumerate(stream, 1):
-            if line_number == wanted_line:
-                record_payload = line
-                break
-    require(record_payload is not None, "recovery session output line is missing")
-    record = _strict_json(record_payload, "recovery session output record")
-    require(
-        record.get("timestamp") == EXPECTED_RECOVERY["session_output_timestamp_utc"],
-        "recovery session output timestamp differs",
-    )
-    require(record.get("type") == "response_item", "recovery record type differs")
-    payload = record.get("payload")
-    require(isinstance(payload, dict), "recovery output payload is not an object")
-    require(
-        payload.get("type") == "custom_tool_call_output"
-        and payload.get("call_id") == EXPECTED_RECOVERY["session_output_call_id"],
-        "recovery output call identity differs",
-    )
-    output = payload.get("output")
-    require(isinstance(output, list), "recovery output blocks are missing")
-    text_blocks: list[str] = []
-    for block in output:
-        require(isinstance(block, dict), "recovery output block is not an object")
-        if block.get("type") == "input_text":
-            block_text = block.get("text")
-            require(isinstance(block_text, str), "recovery output text is invalid")
-            text_blocks.append(block_text)
-    combined = "".join(text_blocks)
-    marker = "#!/usr/bin/env python3\n"
-    require(combined.count(marker) == 1, "recovery source marker count differs")
-    source = combined[combined.index(marker) :].encode("utf-8")
-    require(len(source) == FROZEN_SOURCE_SIZE, "recovered source size differs")
-    require(
-        hashlib.sha256(source).hexdigest() == FROZEN_SOURCE_SHA256,
-        "recovered source SHA-256 differs",
-    )
-    return source
 
 
 def _safe_relative(value: str, label: str) -> PurePosixPath:
@@ -387,7 +329,7 @@ def validate(root: Path = ROOT, binding_id: str | None = None) -> dict[str, Any]
             "frozen_path": FROZEN_SOURCE,
             "size_bytes": FROZEN_SOURCE_SIZE,
             "sha256": FROZEN_SOURCE_SHA256,
-            "recovery": EXPECTED_RECOVERY,
+            "corroboration": EXPECTED_CORROBORATION,
         },
         "controller provenance source record differs",
     )
@@ -440,38 +382,16 @@ def main(argv: list[str] | None = None) -> int:
         "--binding",
         choices=[binding["id"] for binding in EXPECTED_BINDINGS],
     )
-    parser.add_argument(
-        "--verify-recovery-session",
-        action="store_true",
-        help=(
-            "also verify the private later-session recovery listing under the "
-            "current user's home directory"
-        ),
-    )
     args = parser.parse_args(argv)
     try:
         result = validate(binding_id=args.binding)
-        session_verified = False
-        if args.verify_recovery_session:
-            session_path = Path.home() / EXPECTED_RECOVERY["session_log_home_relative"]
-            recovered = recover_source_from_session_record(session_path)
-            frozen = read_bound(
-                ROOT,
-                FROZEN_SOURCE,
-                FROZEN_SOURCE_SIZE,
-                FROZEN_SOURCE_SHA256,
-                "frozen capture controller source",
-            )
-            require(recovered == frozen, "recovered and frozen source bytes differ")
-            session_verified = True
         print(
             "APF_XENIA_CONTROLLER_CAPTURE_PROVENANCE_PASS "
             f"bindings={result['binding_count']} "
             f"source_size={result['source_size']} "
             f"source_sha256={result['source_sha256']} "
             "reports_unchanged=true transcripts_unchanged=true "
-            "source_executed=false "
-            f"recovery_session_verified={str(session_verified).lower()}"
+            "source_executed=false private_record_details_published=false"
         )
         return 0
     except (OSError, ProvenanceError) as error:

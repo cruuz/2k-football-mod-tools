@@ -75,7 +75,7 @@ assert xiso["artifacts"]["source_iso_sha256"] == "7b4b493b9492ecfb353ae97c724321
 assert xiso["artifacts"]["patched_xiso_sha256"] == "f34cdd0ee8fd41fd9b21a075d33e229a3807b9874b9b628a90d1c8e0bd1e4c16"
 assert xiso["artifacts"]["patched_xiso_size"] == 6300958720
 assert xiso["extract_xiso"]["git_commit"] == "b72e5b60d598ec6df80534cda19cdcd4361aa18c"
-assert xiso["extract_xiso"]["sha256"] == "96e6286d371e47e24474a3b7c89ef5c204ddca9c93c95d5ebcb7bcf1d6eb530f"
+assert xiso["extract_xiso"]["sha256"] == "222e7763df8f16d9b252c625fac5ef551cd25cdf031a785b3ec73c6e53c5d7f2"
 assert xiso["extract_xiso"]["create_command"][1:3] == ["-m", "-c"]
 assert xiso["extract_xiso"]["media_patch_disabled_with_m"] is True
 assert len(xiso["files"]) == 19

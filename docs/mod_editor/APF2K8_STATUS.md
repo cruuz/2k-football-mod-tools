@@ -1,6 +1,13 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.61`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.62`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.62 release validation
+
+The shipped ISO recognition, extraction, load, and read-only source path has
+been revalidated against a real USA APF 2K8 image as well as the retail-free
+layout-tolerance suite. The source remained read-only. This public status does
+not record its private path, image hash, extracted game data, or retail bytes.
 
 > **Current full-shell implementation: v24 shell atlas.** Earlier sections in
 > this research log describe the superseded guarded convex-hull carrier and are
@@ -16,7 +23,7 @@ carrier language is retained only as a superseded contract;
 it does not describe v24. The current 10-view static asset-space visual gate
 proof used no Xenia, Wine, emulator, controller, or FIFO.
 
-The source code and UI identify as the retail-free **`0.1.0-alpha.61`**.
+The source code and UI identify as the retail-free **`0.1.0-alpha.62`**.
 `0.1.0-alpha.34` remains preserved unchanged; its mode-`0444`,
 815,213-byte archive has SHA-256
 `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`,
@@ -592,7 +599,7 @@ Last updated: 2026-08-03
   regenerated, every rebuilt package reparsed, and the independent cache/shell
   verifiers passed. The exact atomically published candidate also passed an
   independent 118-package/236-layer reopen and a 10-view static asset-space
-  visual gate at both stock helmet LODs. Spark review found an authentic
+  visual gate at both stock helmet LODs. Visual review found an authentic
   shell-spanning Eagles wing with coherent side/front/rear/crown coverage and
   no low-LOD smears, gaps, holes, seam breaks, or visible UV artifacts. This is
   a static Eagles visual-match proof only. No Xenia, Wine, emulator, controller,
@@ -1207,7 +1214,7 @@ Last updated: 2026-08-03
   dedicated cross-domain audio-safety suite passes `4/4`, the focused combined
   audio/build suite passes `25/25`, and the complete headless APF source suite
   passes `348/348`.
-- Visual closure: Spark previously approved the fresh Alpha.23 Audio/Soundtrack
+- Visual closure: isolated-display review previously approved the fresh Alpha.23 Audio/Soundtrack
   screen on isolated `DISPLAY=:99` with no clipping, overlap, or spacing defect.
   The sealed `gui.py` and launch wrapper are byte-identical to that approved
   source at SHA-256 `0ccc9c88a7cec85292456ff8cac0572a65b3e9858dcaea370dc87dc2af3c3f34`
@@ -1255,7 +1262,7 @@ Last updated: 2026-08-03
   exact-slot validator passes `23/23`; focused Audio GUI coverage passes
   `20/20`. The sealed and source GUI are byte-identical at SHA-256
   `e12724fb3bf8e27540b8320dffa89f2ba4094761e2ee5707a9899c874bf23973`.
-  Spark Hands inspected the recognized-source Audio window only on isolated
+  Isolated-display visual QA inspected the recognized-source Audio window on
   `DISPLAY=:99`: **Alpha 22 • retail-free**, all `47,814` rows, enabled
   **Replace with XMA1…**, correctly disabled Revert for an original sound, and
   the advanced WAV/FLAC warning were visible without clipping.
@@ -1341,7 +1348,7 @@ Last updated: 2026-08-03
   exactly matching the runtime-proved candidate. Only outer 1126 changed, the
   edited ROST reparsed, and the recognized source identity/hash remained
   unchanged throughout.
-- Visual proof: Spark inspected a fresh isolated-display window after the UX
+- Visual proof: a fresh isolated-display window was inspected after the UX
   fix. **Identity & Names** was visible by default beside **Base Ratings (28)**;
   **Replace Player Name**, **Revert Player Name**, and **View 23 affected fields…**
   were simultaneously visible with the exact `4/4` limit and no clipping or
@@ -1380,7 +1387,7 @@ Last updated: 2026-08-03
   was deleted with its temporary directory.
 - Regression evidence: the focused Audio suite passes `53/53`; the complete
   Mod Studio product suite passes `641/641`.
-- Spark Hands inspected a fresh Alpha.20 Audio window only on isolated
+- Isolated-display visual QA inspected a fresh Alpha.20 Audio window on
   `DISPLAY=:99`. It visibly loaded all `47,814` rows (`2,261` standalone
   sounds, `20` AUSB indexes, `45,514` substreams, and `19` physical banks),
   showed the complete-catalog, all-original-banks, and cancellation controls,
@@ -1472,7 +1479,7 @@ Last updated: 2026-08-03
   test proves running/disabled/cancel/recovery state. A real visual cancel was
   not captured because the operating-system cache let the 1.1 GB export finish
   before the isolated desktop operator could press Cancel.
-- Spark Hands inspected fresh Alpha.19 Audio windows only on isolated
+- Isolated-display visual QA inspected fresh Alpha.19 Audio windows on
   `DISPLAY=:99`. The page showed 2,261 standalone cues, 20 AUSB descriptors,
   45,514 substreams, 19 physical banks, all 47,814 rows, and the separate
   complete-catalog, all-original-banks, and Cancel controls without clipping
@@ -1529,7 +1536,7 @@ Last updated: 2026-08-03
   passes with `58` modules and `31` capabilities. Private-source runtime passes
   at `10,464` universal rows, `96` specialist uniform rows, and `408` uniform
   inventory rows while preserving the exact source SHA-256 above.
-- Spark Hands checked the final ratings-import modal on isolated
+- Isolated-display visual QA checked the final ratings-import modal on
   `DISPLAY=:99`: New replacements `1`, Reverts `0`, Already matches `63,111`,
   Source conflicts `0`, Project conflicts `0`, Errors `0`. Labels, warning,
   one-Undo note, Cancel, and Apply are high-contrast with no clipping or
@@ -1557,7 +1564,7 @@ Last updated: 2026-08-03
   retail-free release gate, 57-module source-free runtime gate, untouched-
   private-source indexing gate, and 27/27 focused installer/ratings-GUI/
   capability-parity regression.
-- Spark Hands visually verified the fresh `Alpha 17 • retail-free` window on
+- Isolated-display visual QA verified the fresh `Alpha 17 • retail-free` window on
   isolated `DISPLAY=:99`: exact-value editor, Apply/Revert controls,
   Value/Byte/State table, spacing, and footer all render without clipping or
   overlap. The user's live desktop and pointer were untouched.
@@ -1602,7 +1609,7 @@ Last updated: 2026-08-03
   deterministic archive is byte-identical to the published archive. The
   normalized path/type/mode/size inventory SHA-256 is
   `3ef081a50324068c360e658927ea7c3855b3ebb942485cdd9acf043bb549cf46`.
-- Visual QA ran only through Spark Hands on isolated `DISPLAY=:99`. The fresh
+- Visual QA ran only on isolated `DISPLAY=:99`. The fresh
   `Alpha 16 • retail-free` Rosters & Players window showed the exact-value
   spinbox, Apply/Revert controls above the Value/Byte/State table, readable
   spacing, and a fully visible footer with no clipping or overlap. The user's
@@ -1690,7 +1697,7 @@ Last updated: 2026-08-03
   file bytes, `22` executables, zero symlinks or special files, and `87` tar
   entries. Their shared path/mode/size inventory SHA-256 is
   `6b5c7868c4f39febd889e225ab9f7d6d5e075064bbeccd17bbb0fc9f4ad98cd2`.
-- Spark Hands inspected fresh Stadium window `0x03800035` and Audio window
+- Isolated-display visual QA inspected fresh Stadium window `0x03800035` and Audio window
   `0x04000035` on isolated `DISPLAY=:99`. Both showed the exact `Alpha 13`
   badge. Stadium displayed the 116-mesh / 328-draw / 113-material /
   13-shader-family / 737-texture-identity finding and a gray **Replace
@@ -1720,7 +1727,7 @@ Last updated: 2026-08-03
 - Private-source proof: 93 exact stadium SCNE records; the first scene loads
   116 meshes, 112,158 vertices, 68,669 source triangles, and nine same-outer
   package records.
-- Visual gate: Spark Hands inspected a fresh source-ready `1480×920` window on
+- Visual gate: a fresh source-ready `1480×920` window was inspected on
   isolated `DISPLAY=:99`. It showed `Alpha 12 • retail-free`, all `93` stadium
   scenes, the first private 3D scene at 116 meshes / 112,158 vertices / 68,669
   source triangles / 11,549 preview triangles, its nine-record outer package,
@@ -1766,7 +1773,7 @@ Last updated: 2026-08-03
 - Private-source proof: 10,464 universal items, 408 uniform/equipment records
   (96 editable + 312 additional), 2,302 Audio-category assets, 47,814 semantic
   Audio rows, 19 named physical banks, and 20 descriptor owners.
-- Visual gate: passed after sealing through Spark Hands on isolated
+- Visual gate: passed after sealing on isolated
   `DISPLAY=:99`. A fresh source-ready `1480×920` window showed
   `Alpha 11 • retail-free`; Uniforms rendered the exact 96/312 split and all
   408 records; Gameplay rendered all 38 honest read-only semantic rows;
@@ -1774,7 +1781,7 @@ Last updated: 2026-08-03
   `digital_font` contract, and 25 raw assets; Audio completed at 47,814 rows
   and filtered `lines.bin` to the single 776.4 MB raw-bank row. No emulator,
   active desktop, user pointer, export, or edit was used. The footer remained
-  unobstructed. Spark noted minor leading-glyph/tab-label OCR or padding
+  unobstructed. Visual QA noted minor leading-glyph/tab-label OCR or padding
   clipping and dense ellipsized table/detail text; these are queued as source
   UX polish rather than hidden from the receipt.
 - The published tree and independent clean extraction are byte-, size-, and
@@ -1807,11 +1814,11 @@ Last updated: 2026-08-03
   `c72d53f052fb843d01e259e50fa7628b5b56f21212588c6545757554e4c0fd28`
 - Test gates: `20/20` focused Audio/Text-Sheet, `20/20` focused recovery,
   `115/115` APF-pattern, and `489/489` complete cross-title Mod Studio tests.
-- Visual gate: passed after the headless seal through Spark Hands on isolated
+- Visual gate: passed after the headless seal on isolated
   `DISPLAY=:99`. Fresh source-ready windows showed `Alpha 10 • retail-free`,
   both Text Sheet buttons and allocation-limit UI, all shortlist Review/reorder
   controls, the 15-row `Stereo masters • jukeboxmusic (15)` album, and the
-  switch to `Mono companions • jukebox22 (15)`. Spark found no clipping,
+  switch to `Mono companions • jukebox22 (15)`. Visual QA found no clipping,
   overlap, spacing collapse, or footer obstruction. The active desktop and
   user pointer were never used; no emulator was launched.
 - The published tree and independent clean extraction are byte-, size-, and
@@ -2089,9 +2096,9 @@ wildcards are unsupported. Its release gate rejects:
 - `__pycache__`, `.pyc`, symlinks, hardlinks, special files, world-writable
   files, case collisions, and undeclared files.
 
-The executable exceptions are exact reviewed files: the 56,584-byte Linux
+The executable exceptions are exact reviewed files: the 51,336-byte Linux
 `extract-xiso` (SHA-256
-`96e6286d371e47e24474a3b7c89ef5c204ddca9c93c95d5ebcb7bcf1d6eb530f`),
+`222e7763df8f16d9b252c625fac5ef551cd25cdf031a785b3ec73c6e53c5d7f2`),
 the 293,273-byte Windows `extract-xiso.exe` (SHA-256
 `e9567fe31b168b226531ed532714b3e1cc9070cdfac0c102fb881e2825aee68d`),
 and the 14,472-byte Linux x86-64 minimum-cost H7A helper (SHA-256
@@ -2155,7 +2162,7 @@ pulling the 2K5 product closure into the APF release.
   Eagles mask, all 118 crest packages, logo cache, optional custom-team
   appearance, and shell geometry pass their exact headless file-level gates.
   The exact v24 published candidate also passes its independent 236-layer reopen
-  and 10-view high/low static asset-space visual gate. Spark found the authentic
+  and 10-view high/low static asset-space visual gate. Visual review found the authentic
   shell-spanning Eagles wing coherent from both sides through front, crown, and
   rear, with no visible UV artifacts or low-LOD breaks. This does not prove the
   game consumes the edited asset. No Xenia, Wine, emulator, controller, or FIFO

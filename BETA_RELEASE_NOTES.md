@@ -1,3 +1,33 @@
+# beta-30 — RC57 / alpha.62
+
+**Date:** 2026-08-09
+
+**2K5 Mod Studio:** `v1.0-RC57`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.62`
+
+## Beta 30 fixes
+
+- 2K5 now keeps every validated USA retail container layout on one canonical,
+  content-verified private cache. Stadium Studio results and visual, Crib, and
+  audio originals no longer become incompatible merely because the selected
+  ISO has different wrapper padding or partition placement.
+- Private audio fingerprint and containment inventories use that same validated
+  game-content identity. Containment parsing uses the size of the container
+  that was actually opened, while builds preserve and report that container's
+  actual output size.
+- The selected source file remains independently guarded for read-only scans,
+  session recovery, and building; sharing derived cache data does not weaken
+  source-change checks.
+- APF alpha.62 revalidates the shipped ISO recognition, extraction, load, and
+  read-only source path against a real USA game image. No private source path,
+  image hash, or retail payload is included in this release record.
+- APF install and uninstall helpers suppress Python bytecode before importing
+  the installer, so a fail-closed release audit cannot be dirtied by a new
+  `__pycache__` directory.
+
+---
+
 # beta-29 — RC56 / alpha.61
 
 **Date:** 2026-08-09

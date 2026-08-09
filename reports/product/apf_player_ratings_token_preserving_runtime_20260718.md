@@ -25,7 +25,7 @@ consumer observed `99`.
   `.codex-tmp/apf-four-family-runtime-sdl/runtime-marino-speed99-alpha15/{storage,content,cache}`
 - Xenia reported `ProfileManager: Found 0 Profiles`, proving this was the fresh
   profile path.
-- All visual inspection and controller operation used spark-hands. The
+- All visual inspection and controller operation ran in the isolated graphical session. The
   operator's live desktop was not touched.
 
 ## Source and build receipt
@@ -148,4 +148,3 @@ same player and enough trials to separate the rating effect from input and
 animation variance. Preserve this exact one-byte/token-preserving build route.
 A direct player-editor numeric screen, if recovered, can add a visible-value
 spot check but should not replace the gameplay A/B.
-

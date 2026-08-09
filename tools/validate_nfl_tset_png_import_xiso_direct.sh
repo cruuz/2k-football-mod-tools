@@ -16,7 +16,7 @@ index='extracted/ESPN NFL 2K5 (USA)/vc_53450030/0'
 vendor=tools/vendor/extract-xiso
 extract_xiso="$vendor/build/extract-xiso"
 expected_commit=b72e5b60d598ec6df80534cda19cdcd4361aa18c
-expected_extract_sha=96e6286d371e47e24474a3b7c89ef5c204ddca9c93c95d5ebcb7bcf1d6eb530f
+expected_extract_sha=222e7763df8f16d9b252c625fac5ef551cd25cdf031a785b3ec73c6e53c5d7f2
 fresh=$(mktemp -d /tmp/nfl-png-import-xiso-validate.XXXXXX)
 trap 'rm -rf -- "$fresh"' EXIT
 

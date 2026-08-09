@@ -83,13 +83,18 @@ sudo apt install ffmpeg
 The Audio tab inventories all 2,261 standalone sounds, all 45,514 addressable
 substreams, both 15-track soundtrack encodings, and all 19 named physical XMA1
 banks. Original XMA1/WAV export and exact raw-bank export are available. The
-current release candidate, **`0.1.0-alpha.61`**, gives the 2,261 standalone
+current release candidate, **`0.1.0-alpha.62`**, gives the 2,261 standalone
 rows and all 45,514 individually addressed AUSB rows an advanced exact-slot
 replacement route, selected-sound PCM16 authoring through a separately
 installed encoder, and v1 XMA1 plus v2 exact-PCM16 folder/ZIP batch hand-off.
 Alpha.38 and earlier remain preserved as previous sealed retail-free packages. AUSB index rows and
 whole physical-bank rows remain descriptive/private raw exports rather than
 single-sound editors.
+
+Alpha.62 also revalidates the shipped ISO recognition, extraction, load, and
+read-only source path against a real USA APF 2K8 image. The source remained
+read-only; no private path, image hash, extracted game data, or retail payload
+is included in this retail-free package or documentation.
 
 Alpha.34 adds **Your cue label & notes** to all **47,775 playable cues**: the
 2,261 standalone AUDO sounds and 45,514 individual AUSB substreams. Enter a
@@ -565,7 +570,7 @@ entry. The pristine source remained unchanged, all 117 non-selected retail
 crests were migrated, and the selected Eagles shell-atlas hash matched its
 pinned value. The exact atomically published v24 candidate then passed an
 independent 118-package/236-layer reopen and a **10-view static asset-space
-visual gate** across the stock high and low helmet LODs. Spark review of the
+visual gate** across the stock high and low helmet LODs. Visual review of the
 hash-pinned contact sheets found an authentic shell-spanning Eagles wing with
 coherent side, front, rear, and crown coverage; the low LOD retained the
 silhouette without smears, gaps, holes, seam breaks, or visible UV artifacts.

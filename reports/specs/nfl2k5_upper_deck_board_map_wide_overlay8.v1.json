@@ -24,9 +24,9 @@
     },
     "runtime_queue": {
       "path": "reports/specs/nfl2k5_upper_deck_wide_overlay8_runtime_queue.v1.json",
-      "sha256": "6537545cffa8946675edceca4b901c678d27d78a0f428a15e663aec336fdd844",
-      "size": 9841,
-      "status": "offline_runtime_lane_fully_prepared_spark_mcp_unavailable"
+      "sha256": "79a14a2ed1ee006dddde33b3baab78df4a57f5169967209a6aa0d54f888a77f9",
+      "size": 8543,
+      "status": "offline_runtime_lane_prepared_manual_capture_pending"
     },
     "s42_diagnostic_xiso": {
       "manifest_path": "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/s42-xiso-workflow.json",
@@ -244,9 +244,9 @@
     "arbitrary_external_geometry_proved": false,
     "board_asset_static_mapping_narrowed": true,
     "changed_count_disc_transport_proved": true,
-    "controller_lane_released": true,
     "direct_upper_deck_runtime_visibility_proved": false,
     "installable_layout_identical_retail_xiso_built": true,
+    "manual_runtime_capture_pending": true,
     "original_xbox_hardware_proved": false,
     "positive_visibility_candidate_built": true,
     "production_ready": false,
@@ -263,7 +263,7 @@
   },
   "prior_runtime_sentinel": {
     "control_frame": {
-      "path": ".codex-tmp/nfl2k5-group36-geometry-xemu-20260713/logs/control-s42nd-replay-matched.png",
+      "path": "nfl2k5-group36-geometry-xemu-20260713/logs/control-s42nd-replay-matched.png",
       "role": "s42nd end-zone-facing frame containing the suspended board",
       "sha256": "201b4d68bd105f9548892254a62ab4e48162b25b6d548ef78972252698a9ba79",
       "size": 602224
@@ -286,16 +286,14 @@
     "shape_name": "group36"
   },
   "runtime_next_step": {
-    "controller_lane_released": true,
-    "emulator_launched_for_this_candidate": false,
-    "required_pair": [
+    "capture_pair": [
       "Pinned s42 visible-night control XISO with retail geometry.",
       "Pinned wide-overlay8 s42 visible-night diagnostic XISO."
     ],
-    "required_protocol": "Use the same xemu build, teams, play state, end-zone-facing replay route, camera inputs, and board-containing frame. The positive proof is a wide sign overlay across the board in the candidate frame that is absent from the control frame.",
+    "comparison_protocol": "Use the same xemu build, teams, play state, end-zone-facing replay route, camera inputs, and board-containing frame. The positive proof is a wide sign overlay across the board in the candidate frame that is absent from the control frame.",
+    "emulator_capture_completed": false,
     "runtime_queue_path": "reports/specs/nfl2k5_upper_deck_wide_overlay8_runtime_queue.v1.json",
-    "spark_hands_available_to_root_or_subagent": false,
-    "stopping_reason": "The controller/event19 lane was explicitly released, but /home/noah/AGENTS.md requires spark-hands for every GUI launch, operation, capture, and visual judgment, and neither root nor this subagent exposes spark_desktop_task or spark_look. The exact configs, isolated HDD overlays, evidence paths, and Spark goal are prepared without launching xemu."
+    "status": "manual_runtime_capture_pending"
   },
   "s42_control_from_retail": {
     "changed_byte_count": 45,

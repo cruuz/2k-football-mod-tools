@@ -19,7 +19,7 @@ next narrow route: Xenia's `break_on_instruction` facility.
 
 - Private user-supplied game tree; no source-game file was patched.
 - Private Xenia Canary build `canary_experimental@6e5b8324f` (2026-07-08).
-- Wine-hosted Vulkan/FBO/SDL runtime on the isolated Spark Hands desktop
+- Wine-hosted Vulkan/FBO/SDL runtime on the isolated graphical desktop
   `DISPLAY=:99`; the user's visible desktop and pointer were untouched.
 - `break_on_instruction = 2226214024` (`0x84B15488`).
 - `store_all_context_values = true` and `debug = true` for this attempt only.

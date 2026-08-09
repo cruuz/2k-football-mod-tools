@@ -24,7 +24,7 @@ from .nfl2k5_extended_visual_catalog import (
     ExtendedVisualAsset,
     VisualReportPaths,
 )
-from .nfl2k5_source_cache import SourceCache
+from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -161,7 +161,7 @@ class Nfl2k5ExtendedVisualIO:
             if (
                 record.get("schema") == ORIGINAL_SCHEMA
                 and record.get("asset_id") == asset.asset_id
-                and record.get("source_sha256") == self.cache.source.sha256
+                and record.get("source_sha256") == SOURCE_SHA256
                 and recorded_dimensions == [asset.width, asset.height]
             ):
                 return path
@@ -195,7 +195,10 @@ class Nfl2k5ExtendedVisualIO:
             "png_sha256": _sha256(png),
             "rgba_sha256": _sha256(rgba),
             "schema": ORIGINAL_SCHEMA,
-            "source_sha256": self.cache.source.sha256,
+            # All admitted XISO layouts reduce to the same independently pinned
+            # source cache.  Bind its private originals to that canonical cache
+            # identity, not to padding/layout bytes in the selected container.
+            "source_sha256": SOURCE_SHA256,
         }
         # Do not delete an intact stale pair before the fresh decode succeeds.
         _atomic_write(path, png, replace=stale)

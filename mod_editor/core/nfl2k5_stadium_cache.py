@@ -373,7 +373,10 @@ class Nfl2k5StadiumCacheCoordinator:
         final = root / PRIVATE_PARENT / FINAL_NAME
         if not final.exists():
             return None
-        return self._validate_result(final, cache.source.sha256)
+        # Every admitted container is reduced to the same independently pinned
+        # pack/inventory cache.  Bind derived assets to that canonical content,
+        # not to padding/layout bytes in whichever legal XISO was selected.
+        return self._validate_result(final, SOURCE_SHA256)
 
     def ensure(
         self,
@@ -431,7 +434,7 @@ class Nfl2k5StadiumCacheCoordinator:
             final = parent / FINAL_NAME
             if final.exists():
                 sink("Stadium Studio private assets ready", 1, 1)
-                return self._validate_result(final, cache.source.sha256)
+                return self._validate_result(final, SOURCE_SHA256)
             staging = parent / STAGING_NAME
             if staging.exists():
                 info = staging.lstat()
@@ -458,7 +461,7 @@ class Nfl2k5StadiumCacheCoordinator:
                 "--pack0", str(pack0),
                 "--inventory", str(inventory),
                 "--output", str(staging),
-                "--source-sha256", cache.source.sha256,
+                "--source-sha256", SOURCE_SHA256,
                 "--expected-scenes", str(EXPECTED_STADIUM_SCENES),
                 "--minimum-free-bytes", str(self.free_space_reserve),
             )
@@ -470,7 +473,7 @@ class Nfl2k5StadiumCacheCoordinator:
                     f"{detail} The source XISO and shareable projects were untouched; "
                     "completed scene checkpoints remain in the private cache for retry."
                 )
-            self._validate_result(staging, cache.source.sha256)
+            self._validate_result(staging, SOURCE_SHA256)
             if final.exists():
                 raise StadiumCacheError(
                     "Another process published Stadium Studio assets unexpectedly"
@@ -482,7 +485,7 @@ class Nfl2k5StadiumCacheCoordinator:
             fsync_directory(parent)
             sink("Stadium Studio private assets ready", 1, 1)
             # Re-resolve every path after the directory rename.
-            return self._validate_result(final, cache.source.sha256)
+            return self._validate_result(final, SOURCE_SHA256)
         finally:
             try:
                 release_lock(lock_fd)
@@ -551,6 +554,10 @@ class Nfl2k5StadiumCacheCoordinator:
         ):
             raise StadiumCacheError("The private NFL 2K5 source cache is not a safe directory")
         root = cache.root.resolve(strict=True)
+        if root.name != SOURCE_SHA256:
+            raise StadiumCacheError(
+                "The private NFL 2K5 source cache is not the canonical game cache"
+            )
         pack0 = _regular_file(cache.pack0, "private archive pack 0")
         inventory = _regular_file(cache.inventory, "private resource inventory")
         for path, label in ((pack0, "pack 0"), (inventory, "resource inventory")):

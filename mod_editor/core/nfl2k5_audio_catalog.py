@@ -56,7 +56,7 @@ from .nfl2k5_audo_fixed_slots import (
     EDITABLE_CLASSIFICATION,
     generic_fixed_slot_warning,
 )
-from .nfl2k5_source_cache import SourceCache
+from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
 from .nfl_audio import (
     NFL_MENU_BACK_AUDIO_CHANNELS,
     NFL_MENU_BACK_AUDIO_FRAME_COUNT,
@@ -2011,13 +2011,13 @@ class Nfl2k5AudioService:
             + [owner.asset_id for slot in slots for owner in slot.owners]
         ))
         exact_store = Nfl2k5AudioSourceFingerprintStore(
-            expected_source_sha256=self.cache.source.sha256,
+            expected_source_sha256=SOURCE_SHA256,
             expected_standalone_count=len(self.catalog.assets),
             expected_streaming_slot_count=len(slots),
             expected_streaming_owner_count=sum(len(slot.owners) for slot in slots),
         )
         containment_store = Nfl2k5AudioSourceContainmentStore(
-            expected_source_sha256=self.cache.source.sha256,
+            expected_source_sha256=SOURCE_SHA256,
             expected_cue_count=len(self.catalog.assets) + len(slots),
             expected_owner_count=len(owner_ids),
         )
@@ -2048,7 +2048,7 @@ class Nfl2k5AudioService:
         if not (
             exact.source_sha256
             == containment.source_binding_sha256
-            == self.cache.source.sha256
+            == SOURCE_SHA256
         ):
             raise Nfl2k5AudioCatalogError(
                 "Private audio safety inventories belong to a different game copy"
@@ -2109,7 +2109,7 @@ class Nfl2k5AudioService:
                     "frame_count": selected.frame_count,
                     "sample_rate": selected.sample_rate,
                     "schema": ORIGINAL_SCHEMA,
-                    "source_sha256": self.cache.source.sha256,
+                    "source_sha256": SOURCE_SHA256,
                     "wav_sha256": hashlib.sha256(payload).hexdigest(),
                     "wav_size": len(payload),
                 } and (
@@ -2145,7 +2145,7 @@ class Nfl2k5AudioService:
             "frame_count": selected.frame_count,
             "sample_rate": selected.sample_rate,
             "schema": ORIGINAL_SCHEMA,
-            "source_sha256": self.cache.source.sha256,
+            "source_sha256": SOURCE_SHA256,
             "wav_sha256": hashlib.sha256(wav_payload).hexdigest(),
             "wav_size": len(wav_payload),
         }
@@ -2186,7 +2186,7 @@ class Nfl2k5AudioService:
             "frame_count": selected.frame_count,
             "sample_rate": selected.sample_rate,
             "schema": STREAMING_RANGE_ORIGINAL_SCHEMA,
-            "source_sha256": self.cache.source.sha256,
+            "source_sha256": SOURCE_SHA256,
             "wav_sha256": hashlib.sha256(wav_payload).hexdigest(),
             "wav_size": len(wav_payload),
         }
@@ -2547,7 +2547,7 @@ class Nfl2k5AudioService:
                     continue
                 if not isinstance(record, dict) or (
                     record.get("schema") != STREAMING_RANGE_ORIGINAL_SCHEMA
-                    or record.get("source_sha256") != self.cache.source.sha256
+                    or record.get("source_sha256") != SOURCE_SHA256
                     or _SHA256_RE.fullmatch(
                         str(record.get("decoded_pcm_sha256", ""))
                     ) is None

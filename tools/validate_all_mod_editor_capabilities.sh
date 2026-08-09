@@ -9,12 +9,37 @@ esac
 root="$(CDPATH= builtin cd -- "$script_dir/.." && builtin pwd -P)"
 builtin cd -- "$root"
 
-rg_dir=/home/noah/.nvm/versions/node/v22.22.0/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex-path
+rg_path=
+for candidate in /usr/bin/rg /bin/rg; do
+  if [[ -f $candidate && -x $candidate ]]; then
+    rg_path=$candidate
+    break
+  fi
+done
+if [[ -z $rg_path ]]; then
+  rg_path=$(type -P -- rg || true)
+fi
+if [[ -z $rg_path ]]; then
+  echo "required command not found: rg" >&2
+  exit 1
+fi
+case "$rg_path" in
+  /*) ;;
+  *)
+    rg_name=${rg_path##*/}
+    case "$rg_path" in
+      */*) rg_dir=${rg_path%/*} ;;
+      *) rg_dir=. ;;
+    esac
+    rg_dir=$(CDPATH= builtin cd -- "$rg_dir" && builtin pwd -P)
+    rg_path=$rg_dir/$rg_name
+    ;;
+esac
+rg_dir=${rg_path%/*}
 
 exec /usr/bin/env -i \
   GIT_CONFIG_GLOBAL=/dev/null \
   GIT_CONFIG_NOSYSTEM=1 \
-  HOME=/home/noah \
   LANG=C.UTF-8 \
   LC_ALL=C.UTF-8 \
   PATH="/usr/bin:/bin:$rg_dir" \

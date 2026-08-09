@@ -47,7 +47,7 @@ class ApfFullShellVisualGateTests(unittest.TestCase):
         self.assertEqual(self.receipt["static_renderer_gate"]["view_count"], 10)
         self.assertTrue(self.receipt["independent_catalog_gate"]["passed"])
         self.assertTrue(self.receipt["static_renderer_gate"]["passed"])
-        self.assertTrue(self.receipt["spark_visual_review"]["passed"])
+        self.assertTrue(self.receipt["isolated_visual_review"]["passed"])
         self.assertTrue(
             self.receipt["claim_boundary"][
                 "static_asset_space_eagles_visual_match_proved"

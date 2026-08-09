@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Show one generated contact sheet briefly for Spark visual verification."""
+"""Show one generated contact sheet briefly for isolated visual verification."""
 
 from pathlib import Path
 import sys

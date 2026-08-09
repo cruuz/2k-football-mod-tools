@@ -1003,8 +1003,12 @@ class Nfl2k5AudioSourceContainmentScanner:
             )
             assert capacity_payload is not None
             try:
+                # Parse the container the user actually opened.  Valid raw-disc
+                # and repacked layouts can be larger than the canonical dump;
+                # the authenticated pack extents below, not wrapper padding,
+                # define the retail content this scanner consumes.
                 entries, _directory = scanner.xdvdfs_parser(
-                    source.descriptor, pins.source_size
+                    source.descriptor, os.fstat(source.descriptor).st_size
                 )
             except (OSError, ValueError) as exc:
                 raise AudioSourceContainmentError(

@@ -24,7 +24,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.61"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.62"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -32,8 +32,8 @@ if str(TOOLS) not in sys.path:
 
 EXTRACTOR = ROOT / "tools/vendor/extract-xiso/build/extract-xiso"
 EXTRACTOR_LICENSE = ROOT / "tools/vendor/extract-xiso/LICENSE.TXT"
-EXTRACTOR_SIZE = 56_584
-EXTRACTOR_SHA256 = "96e6286d371e47e24474a3b7c89ef5c204ddca9c93c95d5ebcb7bcf1d6eb530f"
+EXTRACTOR_SIZE = 51_336
+EXTRACTOR_SHA256 = "222e7763df8f16d9b252c625fac5ef551cd25cdf031a785b3ec73c6e53c5d7f2"
 # The Windows extractor, built from the same vendored extract-xiso 2.7.1 source
 # so a Windows user can hand the app a .iso directly.  Pinned exactly like the
 # ELF above: a bundled binary nobody can rebuild from this tree at review time
@@ -360,6 +360,11 @@ def _check_install_contract() -> None:
             all(token not in text for token in ("rm -rf", "rm -fr", "DISPLAY=:0", "xdotool")),
             f"install/launch script acquired a destructive or active-desktop token: {script.name}",
         )
+        if script.name in {"install.sh", "uninstall.sh"}:
+            require(
+                "PYTHONDONTWRITEBYTECODE=1" in text,
+                f"installer bootstrap can contaminate its audited source: {script.name}",
+            )
         syntax = subprocess.run(
             ["bash", "-n", str(script)],
             stdin=subprocess.DEVNULL,

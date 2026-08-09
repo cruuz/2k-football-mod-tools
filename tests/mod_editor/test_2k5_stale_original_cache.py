@@ -11,8 +11,9 @@ every cached original, so a perfectly intact cache reported itself as
 tampered-with and the only advice on offer was to delete it.
 
 Those cases now separate. Bytes that disagree with their own recorded hashes are
-still refused loudly. An entry that is internally consistent but was recorded
-against another source is simply re-decoded.
+still refused loudly. An intact legacy entry is re-decoded once and rebound to
+the canonical extracted-content cache; canonical entries are shared by every
+recognized layout of that same disc.
 """
 
 from __future__ import annotations
@@ -34,6 +35,7 @@ for _extra in (_REPO_ROOT / "tools",):
 from mod_editor.core import nfl2k5_asset_io as uniform_io  # noqa: E402
 from mod_editor.core import nfl2k5_extended_visual_io as vio  # noqa: E402
 from mod_editor.core.errors import ValidationError  # noqa: E402
+from mod_editor.core.nfl2k5_source_cache import SOURCE_SHA256  # noqa: E402
 import nfl_tset_png_import as png_codec  # noqa: E402
 
 _encode = png_codec.encode_rgba_png
@@ -93,13 +95,13 @@ def _write_cached_original(root: Path, asset: _Asset, source_sha: str,
 
 
 class StaleOriginalTests(unittest.TestCase):
-    def test_an_entry_from_another_source_is_reused_not_refused(self) -> None:
+    def test_an_intact_legacy_binding_is_refreshed_not_refused(self) -> None:
         asset = _Asset()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            _write_cached_original(root, asset, "sha-of-the-old-xiso")
-            # The loaded disc is a different one, so every cached record names
-            # the wrong source. That must not read as tampering.
+            _write_cached_original(root, asset, "c" * 64)
+            # A pre-fix sidecar named one particular container. That mismatch is
+            # stale metadata, not evidence that its verified PNG was altered.
             decoded: list[str] = []
 
             def decoder(_asset):
@@ -108,25 +110,32 @@ class StaleOriginalTests(unittest.TestCase):
                 return _encode(asset.width, asset.height, rgba), rgba
 
             io = vio.Nfl2k5ExtendedVisualIO(
-                _Cache(root, "sha-of-the-newly-loaded-xiso"),
+                _Cache(root, "a" * 64),
                 original_decoder=decoder,
             )
-            io.ensure_original(asset)
+            path = io.ensure_original(asset)
             self.assertEqual(decoded, ["called"],
                              "a stale entry should be re-decoded, not refused")
+            record = json.loads(path.with_suffix(".json").read_text())
+            self.assertEqual(record["source_sha256"], SOURCE_SHA256)
 
-    def test_an_entry_matching_this_source_is_returned_untouched(self) -> None:
+    def test_canonical_entry_is_reused_across_legal_container_hashes(self) -> None:
         asset = _Asset()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            path, png = _write_cached_original(root, asset, "sha-current")
+            path, png = _write_cached_original(root, asset, SOURCE_SHA256)
 
             def decoder(_asset):  # pragma: no cover - must not run
                 raise AssertionError("a valid cached original was re-decoded")
 
-            io = vio.Nfl2k5ExtendedVisualIO(_Cache(root, "sha-current"),
-                                   original_decoder=decoder)
-            self.assertEqual(io.ensure_original(asset), path)
+            repack = vio.Nfl2k5ExtendedVisualIO(
+                _Cache(root, "a" * 64), original_decoder=decoder
+            )
+            raw_read = vio.Nfl2k5ExtendedVisualIO(
+                _Cache(root, "b" * 64), original_decoder=decoder
+            )
+            self.assertEqual(repack.ensure_original(asset), path)
+            self.assertEqual(raw_read.ensure_original(asset), path)
             self.assertEqual(path.read_bytes(), png)
 
     def test_bytes_that_disagree_with_their_own_record_are_still_refused(self) -> None:
@@ -134,8 +143,8 @@ class StaleOriginalTests(unittest.TestCase):
         asset = _Asset()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            _write_cached_original(root, asset, "sha-current", corrupt=True)
-            io = vio.Nfl2k5ExtendedVisualIO(_Cache(root, "sha-current"))
+            _write_cached_original(root, asset, SOURCE_SHA256, corrupt=True)
+            io = vio.Nfl2k5ExtendedVisualIO(_Cache(root, "a" * 64))
             with self.assertRaises(ValidationError) as caught:
                 io.ensure_original(asset)
             self.assertIn("changed outside Mod Studio", str(caught.exception))
@@ -147,11 +156,11 @@ class StaleOriginalTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             _write_cached_original(
-                root, asset, "sha-current", dimensions=(8, 8)
+                root, asset, SOURCE_SHA256, dimensions=(8, 8)
             )
             rgba = bytes([1, 2, 3, 255]) * (asset.width * asset.height)
             io = vio.Nfl2k5ExtendedVisualIO(
-                _Cache(root, "sha-current"),
+                _Cache(root, "a" * 64),
                 original_decoder=lambda _asset: (
                     _encode(asset.width, asset.height, rgba), rgba
                 ),
@@ -170,7 +179,7 @@ class StaleOriginalTests(unittest.TestCase):
         asset = _Asset()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            path, old_png = _write_cached_original(root, asset, "old-source")
+            path, old_png = _write_cached_original(root, asset, "c" * 64)
             metadata = path.with_suffix(".json")
             old_metadata = metadata.read_bytes()
 
@@ -178,7 +187,7 @@ class StaleOriginalTests(unittest.TestCase):
                 raise ValidationError("fresh decode failed")
 
             io = vio.Nfl2k5ExtendedVisualIO(
-                _Cache(root, "new-source"), original_decoder=failed
+                _Cache(root, "a" * 64), original_decoder=failed
             )
             with self.assertRaisesRegex(ValidationError, "fresh decode failed"):
                 io.ensure_original(asset)
@@ -203,7 +212,7 @@ class TeamKitUniformCacheTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             _write_cached_original(
-                root, asset, "sha-current", dimensions=(8, 8), extended=False
+                root, asset, SOURCE_SHA256, dimensions=(8, 8), extended=False
             )
             decoded: list[str] = []
             rgba = bytes([5, 6, 7, 255]) * (asset.width * asset.height)
@@ -212,7 +221,7 @@ class TeamKitUniformCacheTests(unittest.TestCase):
                 decoded.append("called")
                 return _encode(asset.width, asset.height, rgba), rgba
 
-            io = _uniform_io(root, "sha-current", decoder)
+            io = _uniform_io(root, "a" * 64, decoder)
             path = io.ensure_original(asset)
             self.assertEqual(decoded, ["called"])
             self.assertEqual(
@@ -225,28 +234,47 @@ class TeamKitUniformCacheTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             _write_cached_original(
-                root, asset, "old-source", extended=False
+                root, asset, "c" * 64, extended=False
             )
             rgba = bytes([5, 6, 7, 255]) * (asset.width * asset.height)
             io = _uniform_io(
                 root,
-                "new-source",
+                "a" * 64,
                 lambda _asset: (_encode(asset.width, asset.height, rgba), rgba),
             )
             path = io.ensure_original(asset)
             record = json.loads(path.with_suffix(".json").read_text())
-            self.assertEqual(record["source_sha256"], "new-source")
+            self.assertEqual(record["source_sha256"], SOURCE_SHA256)
+
+    def test_team_kit_lane_reuses_canonical_entry_across_layouts(self) -> None:
+        asset = _Asset()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path, png = _write_cached_original(
+                root, asset, SOURCE_SHA256, extended=False
+            )
+
+            def decoder(_asset):  # pragma: no cover - must not run
+                raise AssertionError("a canonical cached original was re-decoded")
+
+            self.assertEqual(
+                _uniform_io(root, "a" * 64, decoder).ensure_original(asset), path
+            )
+            self.assertEqual(
+                _uniform_io(root, "b" * 64, decoder).ensure_original(asset), path
+            )
+            self.assertEqual(path.read_bytes(), png)
 
     def test_team_kit_lane_still_refuses_changed_bytes(self) -> None:
         asset = _Asset()
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             _write_cached_original(
-                root, asset, "sha-current", corrupt=True, extended=False
+                root, asset, SOURCE_SHA256, corrupt=True, extended=False
             )
             io = _uniform_io(
                 root,
-                "sha-current",
+                "a" * 64,
                 lambda _asset: (_ for _ in ()).throw(
                     AssertionError("tampered bytes must not be silently refreshed")
                 ),

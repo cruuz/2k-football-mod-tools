@@ -5,6 +5,26 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC57 — valid-container shared-cache repair — 2026-08-09
+
+- **Valid ISO layouts share one verified cache** — once the USA retail game is
+  recognized and its extracted packs and inventory match their independent
+  pins, container padding and partition placement no longer create competing
+  cache identities.
+- **Stadium Studio loads across layouts** — its private result marker and worker
+  now bind the canonical validated game content, fixing the incompatible or
+  incomplete result-marker error raised after an otherwise successful load.
+- **Original previews stay source-correct** — ordinary and extended visuals,
+  Crib art, standalone audio, and streaming-range sidecars use the canonical
+  cache binding. Intact legacy visual and Crib entries refresh safely; altered
+  bytes and unsafe paths still fail closed.
+- **Audio safety data is reusable** — exact PCM fingerprints and containment
+  inventories use the canonical cache identity, and containment parses the
+  actual opened container size instead of assuming one disc-image layout.
+- **Build sizes are honest** — build validation, free-space budgeting, and the
+  returned result use the selected container's actual size. Direct source-file,
+  recovery, and session race guards remain tied to the exact selected file.
+
 
 ## v1.0 RC56 — crib drop-parity + never-gray G1/G2 — 2026-08-09
 
@@ -1454,7 +1474,7 @@ build path.
   emulator was launched and the user's desktop was not touched. Exact release
   counts, archive hash, and extraction-parity receipt are recorded in
   `STATUS.md` and the archive's adjacent checksum sidecar after sealing.
-- Post-seal Spark Hands QA passed on isolated `DISPLAY=:99`. A fresh
+- Post-seal visual QA passed on isolated `DISPLAY=:99`. A fresh
   `v1.0 RC8 • Xbox Edition` window loaded the recognized XISO and visibly
   presented the 39-component **Complete Team Kit**, paired `HOME + AWAY`
   scope, editable-folder selector, Import/Export actions, private-retail-art
@@ -1510,8 +1530,8 @@ build path.
   current cross-title headless suite passes **475/475**. The clean stage passed
   release, runtime closure, source-free registry, desktop-entry, launcher
   syntax, and post-runtime release gates before publication.
-- The required new-layout visual inspection remains a separate root-session
-  Spark Hands gate; no GUI or emulator was launched while assembling this
+- The required new-layout visual inspection remains a separate isolated-display
+  gate; no GUI or emulator was launched while assembling this
   source and package checkpoint. The exact archive receipt is recorded in
   `STATUS.md` and the archive's adjacent checksum sidecar.
 
@@ -1558,7 +1578,7 @@ build path.
 - The focused Audio backend/offscreen-Qt selection passes **18/18 tests**. The
   complete current cross-title desktop-tool suite passes **443/443** with
   `PYTHONDONTWRITEBYTECODE=1` and `QT_QPA_PLATFORM=offscreen`.
-- Spark Hands inspected the RC6 Audio workspace on isolated `DISPLAY=:99`. The
+- Isolated-display visual QA inspected the RC6 Audio workspace on `DISPLAY=:99`. The
   Soundtrack, matching-export, shortlist Add/Remove, Add-page, count, Clear,
   and Export-selected controls are readable and unclipped; the browser/detail
   layout remains usable without touching the user's desktop or mouse.
@@ -1607,7 +1627,7 @@ build path.
   and facade checks. The focused project, recovery, facade, and session
   selection passes 35/35 tests without a visible desktop; the complete current
   desktop-tool suite passes 428/428.
-- Spark Hands inspected the clean RC5 candidate on isolated `DISPLAY=:99`.
+- Isolated-display visual QA inspected the clean RC5 candidate on `DISPLAY=:99`.
   **File** visibly exposes **Save Project** (`Ctrl+S`) and **Save Project As…**
   (`Ctrl+Shift+S`); both are correctly disabled in the clean, no-edit state,
   and the complete menu renders without clipped or overlapping text. The check
@@ -1650,7 +1670,7 @@ build path.
 - Added the **Modified** filter for instant review of staged standalone WAVs.
   Streaming banks/ranges correctly return no Modified rows because their
   replacement route remains disabled.
-- Spark Hands checked the final Audio layout on isolated `DISPLAY=:99`. It
+- Isolated-display visual QA checked the final Audio layout on `DISPLAY=:99`. It
   caught Qt consuming the first ampersand as a mnemonic marker; the button now
   visibly reads **Soundtrack & music (136)**, and both filter/action rows,
   browser table, and detail pane remain unclipped.
@@ -1684,8 +1704,8 @@ build path.
 - Added the APF digital-font provider to the exact clean-release closure. This
   fixes a real clean-stage import failure while keeping the 2K5 application
   package source-free and retail-free.
-- Ran four current-code visual checks through Spark Hands on the isolated
-  `DISPLAY=:99`: recovery/recent files, every Audio scope, the complete
+- Ran four current-code visual checks on isolated `DISPLAY=:99`:
+  recovery/recent files, every Audio scope, the complete
   Gameplay inspector, and both Menus inspector modes. All controls, disabled
   states, tables, tooltips, and status labels rendered without clipping or
   overlap; the isolated QA window and synthetic recovery fixture were removed.
@@ -1974,7 +1994,7 @@ build path.
 - The source remained read-only and retained SHA-256
   `7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9`
   before and after the build.
-- Headless Spark inspected xemu only on private Xvfb display `:99`. It saw the
+- Headless visual QA inspected xemu only on private Xvfb display `:99`. It saw the
   ESPN splash, stable attract sequence, and a clean NFL 2K5 title /
   **Press START** screen with no visible corruption.
 - This was a boot-level spot check. The release does not claim that every edited

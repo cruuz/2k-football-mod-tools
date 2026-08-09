@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
@@ -130,7 +131,7 @@ class StadiumCacheCoordinatorTests(unittest.TestCase):
         # Resolve the temp root so paths the coordinator canonicalises compare
         # equal to ours under a symlinked (macOS /private/var) or short-name
         # (Windows) temp location.
-        self.root = Path(self.temporary.name).resolve() / "private-source-cache"
+        self.root = Path(self.temporary.name).resolve() / SOURCE_SHA256
         self.root.mkdir()
         self.pack0 = self.root / "extracted" / "game" / "0"
         self.pack0.parent.mkdir(parents=True)
@@ -198,6 +199,50 @@ class StadiumCacheCoordinatorTests(unittest.TestCase):
         }
         for raw in supplied_paths:
             Path(raw).resolve().relative_to(self.root.resolve())
+
+    def test_shared_cache_reuses_stadiums_across_legal_container_layouts(self) -> None:
+        """XISO padding/layout is not the identity of derived game content."""
+
+        runner = SyntheticSuccessfulRunner()
+        coordinator = Nfl2k5StadiumCacheCoordinator(
+            runner=runner,
+            free_space_reserve=0,
+        )
+        first_container = replace(
+            self.cache,
+            source=replace(
+                self.cache.source,
+                selected_path="/private/user/alternate-6gb.iso",
+                inspected_path="/private/user/alternate-6gb.iso",
+                sha256="a" * 64,
+                size=6_300_958_720,
+            ),
+        )
+        second_container = replace(
+            self.cache,
+            source=replace(
+                self.cache.source,
+                selected_path="/private/user/alternate-7gb.iso",
+                inspected_path="/private/user/alternate-7gb.iso",
+                sha256="b" * 64,
+                size=7_825_162_240,
+            ),
+        )
+
+        first = coordinator.ensure(first_container)
+        loaded = coordinator.load_existing(second_container)
+        second = coordinator.ensure(second_container)
+
+        self.assertEqual(first, loaded)
+        self.assertEqual(first, second)
+        self.assertEqual(len(runner.calls), 1)
+        command = runner.calls[0]
+        self.assertEqual(
+            command[command.index("--source-sha256") + 1],
+            SOURCE_SHA256,
+        )
+        marker = json.loads((first.root / "result.json").read_text())
+        self.assertEqual(marker["source_sha256"], SOURCE_SHA256)
 
     def test_existing_staging_checkpoints_are_preserved_for_worker_resume(self) -> None:
         staging = self.root / "derived" / ".stadium-studio-v1.staging"

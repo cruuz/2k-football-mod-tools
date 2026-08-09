@@ -558,7 +558,7 @@ class Nfl2k5AudioSourceFingerprintStore:
         return self._load(
             root,
             path,
-            cache.source.sha256,
+            self.expected_source_sha256,
             expected_standalone,
             expected_streaming,
         )
@@ -590,7 +590,7 @@ class Nfl2k5AudioSourceFingerprintStore:
             result = self._load(
                 root,
                 path,
-                cache.source.sha256,
+                self.expected_source_sha256,
                 expected_standalone,
                 expected_streaming,
             )
@@ -640,7 +640,7 @@ class Nfl2k5AudioSourceFingerprintStore:
 
         self._check_cancelled(cancelled, completed)
         document = self._document(
-            cache.source.sha256, standalone_rows, streaming_rows
+            self.expected_source_sha256, standalone_rows, streaming_rows
         )
         payload = _canonical_json(document)
         _require(
@@ -651,7 +651,7 @@ class Nfl2k5AudioSourceFingerprintStore:
         self._parse_document(
             payload,
             path,
-            cache.source.sha256,
+            self.expected_source_sha256,
             expected_standalone,
             expected_streaming,
         )
@@ -668,7 +668,7 @@ class Nfl2k5AudioSourceFingerprintStore:
         result = self._load(
             root,
             path,
-            cache.source.sha256,
+            self.expected_source_sha256,
             expected_standalone,
             expected_streaming,
         )

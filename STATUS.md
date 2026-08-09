@@ -1,8 +1,25 @@
-# 2K5 Mod Studio — v1.0 RC56 Release Status
+# 2K5 Mod Studio — v1.0 RC57 Release Status
 
-## Continuation marathon note (2026-08-08)
+## Beta 30 — valid-container cache repair (2026-08-09)
 
-Source/UI versions: **2K5 RC56** / **APF alpha.61**. Community-named work this marathon includes
+Source/UI versions are **2K5 RC57** and **APF alpha.62**; both use updater tag
+`beta-30`.
+
+- Every recognized USA retail 2K5 container layout now reduces to one canonical,
+  independently verified game-content cache. Stadium Studio results and visual,
+  Crib, standalone-audio, streaming-audio, exact-fingerprint, and containment
+  data no longer bind to irrelevant wrapper padding or partition placement.
+- The containment scanner parses the size of the image actually opened. Build
+  results and free-space checks use that same real source/output size, while
+  direct source reads, sessions, recovery, and source-change guards remain tied
+  to the exact selected file.
+- APF alpha.62 revalidates its shipped ISO recognition, extraction, load, and
+  read-only source path against a real USA image. No private source path, image
+  hash, extracted game data, or retail payload is published here.
+
+## RC56 / alpha.61 product-completion note (2026-08-08)
+
+The preceding RC56/alpha.61 work included
 nameplate DXN (font_albedo), linear TXTR (uncompressed + DXT), G1 package-map +
 G2 link-table offline writers, playbook annotations, keyboard/search polish,
 shell recommended path, equipment Stage explain, click-to-explain model import
@@ -13,16 +30,16 @@ soundtrack album, Team Logo master, reserve Assign, **Menus Export**, **Export N
 **pagination** (2K5 audio/All Resources, APF All Textures + Complete audio),
 **Field Art Stock NFL endzones button**, helmet Place/Save), **45s preview watchdogs**
 (AssetBrowser/Uniform/Wordmark/stadium package), Crib drop-parity hang fixed.
-Living WORKLOG: `docs/product/WORKLOG_20260807.md`. E2 depth includes
-playbook community legend + G1 donor tip + empty search teaching. **≥10h hour-gate MET** (~11.4h+ multi-session wall stamp from 21:48). G1 multi-Dime + G2 multi-Ace offline packs ship (runtime unproved). Broader
+E2 depth includes playbook community legend + G1 donor tip + empty search
+teaching. G1 multi-Dime + G2 multi-Ace offline packs ship (runtime unproved). Broader
 suite evidence is **batched** (monorepo single-run hang residual; APF audio GUI 32p
 in 8-at-a-time batches). — do not treat this note as a sealed public release.
 
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The
-> source code and UI identify as the retail-free **`0.1.0-alpha.61` release**,
-> published with 2K5 RC56 in `beta-29`. Current download receipts are recorded
+> source code and UI identify as the retail-free **`0.1.0-alpha.62` release**,
+> paired with 2K5 RC57 for `beta-30`. Download receipts are recorded
 > in the Published releases section below; older immutable archive receipts are
 > retained as release history.
 > An older
@@ -153,8 +170,8 @@ in 8-at-a-time batches). — do not treat this note as a sealed public release.
 > passes 11/11 synthetic tests, and its real-source dry-run preserved all six
 > source files / 3,919,218,688 bytes while launching no GUI. A log-only control
 > must still prove the exact defensive consumer before the one-player override
-> is enabled; the required Spark desktop operator is unavailable in this
-> session. A completed post-hook static census now shows why that first test
+> is enabled; the required controlled desktop validation remains pending. A
+> completed post-hook static census now shows why that first test
 > cannot be widened casually: the XEX has 93 direct calls to the two primary
 > position count/getter helpers, at least 25 direct roster-class consumers,
 > two explicit append caps at 42, and a separate 17-position-by-42-player
@@ -172,9 +189,9 @@ in 8-at-a-time batches). — do not treat this note as a sealed public release.
 > write-only. The native binary SHA-256 is
 > `712df8acf4886bbc917713a7b5e120140d57b3a59a0c98e4f5ff6b5f8a47187d`.
 > It is default-off and has not been launched; the live scenario matrix still
-> requires the designated Spark desktop operator.
+> requires controlled isolated-desktop validation.
 
-Last updated: 2026-08-04 (America/New_York)
+Last updated: 2026-08-09 (America/New_York)
 
 ## Unreleased RC50 closure
 
@@ -255,7 +272,15 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-29` — 2026-08-09 · CURRENT (refreshed in place)
+### `beta-30` — 2026-08-09 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-30>
+
+Beta 30 carries 2K5 RC57 and APF alpha.62. Final downloadable-asset byte counts
+and checksums are recorded only after the release artifacts are built and
+verified; no provisional receipt is published in this source update.
+
+### `beta-29` — 2026-08-09 · superseded (refreshed in place)
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-29>
 
@@ -1034,13 +1059,12 @@ editor renders—four 2K5 and four APF—covering dashboards, Giants away unifor
 jerseys, Stadium Studio, and soundtrack/audio browsers. Their manifest verifies
 dimensions, hashes, file sizes, and nonblank headless rendering, and the entire
 34-file kit passes its refreshed `SHA256SUMS`. No visible desktop or pointer was
-used. Spark Hands was unavailable, so the eight filenames honestly retain
-`HEADLESS_UNVERIFIED`; the two earlier dashboard captures remain the
-Spark-reviewed fallback.
+used. The eight filenames honestly retain `HEADLESS_UNVERIFIED`; the two
+earlier reviewed dashboard captures remain the fallback.
 
 - **Shipped:** 2K5 Mod Studio `v1.0 RC26`, with explicit bounded waveforms for 54,421 playable sounds, same-ID media invalidation, and one safe Audio/Crib worker lane; eight current editor teaser renders are also in the Desktop proof kit.
 - **Experiment result:** 1088/1088 combined, 601/601 2K5, 107/107 release-focused, and 24/24 lifecycle tests pass; stage/extraction gates are retail-free, the rebuild is byte-identical, and independent review is GO with no P0/P1.
-- **Blocked on the user:** nothing blocks continued headless product work; audibility/meaning of provisional cues still needs a controller-driven xemu listen A/B, and the new teaser candidates need one quick human visual look because Spark was unavailable.
+- **Blocked on the user:** nothing blocks continued headless product work; audibility/meaning of provisional cues still needs a controller-driven xemu listen A/B, and the new teaser candidates need one quick human visual look.
 - **Next step:** ship RC27's one default **All Playable Audio (54,421)** search spanning standalone cues and streaming ranges, then carry the best bounded batch ergonomics back to APF.
 - **Deliberately not done:** no visible desktop, pointer control, audio device, emulator, external player, retail bytes, recovered song-title claim, or audible-runtime claim was used or added.
 
@@ -1512,17 +1536,6 @@ available, required, and upward-rounded shortfall without creating a partial
 output. The focused build-safety suite passes 32/32 and the direct unit-boundary
 matrix passes 16/16.
 
-## Headless operation — active
-
-The managed Codex remote-control service is running as `noah-desktop`. A
-read-only process audit found 42 stale Mod Studio GUI test sessions left from
-July 18–19 (12 2K5 and 30 APF), including broken-X11 error dialogs and five
-still-running APF Python windows. Their exact process groups were terminated
-so they can no longer take focus or the mouse. No project, source, release, or
-game file was deleted; the test apps can be relaunched normally if needed.
-Current product work is terminal-only. No new GUI or emulator process will be
-launched without the designated Spark desktop operator.
-
 ## RC13 collection parity and keyboard search — shipped
 
 RC13 fixes a product-path mismatch exposed only after RC11 made fixed AUSB
@@ -1905,11 +1918,11 @@ with `PYTHONDONTWRITEBYTECODE=1` and `QT_QPA_PLATFORM=offscreen`. RC8 was
 assembled headlessly: no visible GUI or emulator was launched, and the user's
 desktop was not touched.
 
-The sealed checkpoint then passed its separate visual gate through Spark Hands
+The sealed checkpoint then passed its separate isolated-display visual gate
 on isolated `DISPLAY=:99`. The fresh `v1.0 RC8 • Xbox Edition` window loaded
 the user's XISO and showed the 39-component **Complete Team Kit** panel with
 paired `HOME + AWAY`, editable-folder selection, Export/Import actions, the
-private-retail-art warning, and the normal build footer. Spark found no
+private-retail-art warning, and the normal build footer. Visual QA found no
 clipping, overlap, inconsistent padding, or footer obstruction. The user's
 active desktop and pointer were never used.
 
@@ -2061,7 +2074,7 @@ The preserved sealed non-overwriting RC5 release is:
 - Runtime closure imports **36 product modules** and **22 tool modules**. The
   canonical product surface remains **60 registry capabilities**, **11
   sections**, and **30 NFL 2K5 capabilities**.
-- The clean isolated Spark check passed the File-menu shortcut, disabled-state,
+- The clean isolated-display check passed the File-menu shortcut, disabled-state,
   spacing, and clipping review on `DISPLAY=:99`.
 - Empty documents remain replacement-only: the explicit archive contains only
   `project.json`, `edits: []`, and the existing `user-replacements-only` policy.
@@ -2078,7 +2091,7 @@ The preserved sealed non-overwriting RC5 release is:
   registry validation passed all 60 rows.
 - The complete current desktop-tool selection passed **419/419 tests**,
   including both title backends and shared-provider cases. The new 2K5 and APF
-  Audio layouts then passed through Spark Hands on the isolated display.
+  Audio layouts then passed visual QA on the isolated display.
 - The exact release allowlist now includes the new metadata-only Audio bundle
   module. The fresh stage passed with **134 files**, **13 internal directories**
   (**14 including the release root**), and **101,736,199 file bytes**, with no
@@ -2109,8 +2122,9 @@ The preserved sealed non-overwriting RC5 release is:
 - Empty, family-filtered, and targeted real-catalog range pages completed in
   1.4 ms, 12.4 ms, and 14.3 ms respectively in the headless timing spot check.
 - All 76 applicable headless audio/product integration tests passed. The one
-  visual Qt test was deliberately not run because desktop operation is assigned
-  to Spark Hands; capability-registry validation separately passed all 60 rows.
+  visual Qt test was deliberately not run because it required separate
+  isolated-display operation; capability-registry validation separately passed
+  all 60 rows.
 
 ### AUSB Xbox IMA decode closure
 
@@ -2279,7 +2293,7 @@ after the build:
 
 `7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9`
 
-Headless Spark inspected xemu only on the private Xvfb display `:99`; the test
+Headless visual QA inspected xemu only on the private Xvfb display `:99`; the test
 never moved, clicked, or typed on the user's real desktop. It saw the ESPN
 splash, a stable attract sequence, and a clean NFL 2K5 title / **Press START**
 screen with no visible corruption.

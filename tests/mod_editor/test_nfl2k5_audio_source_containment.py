@@ -180,6 +180,45 @@ class Nfl2k5AudioSourceContainmentTests(unittest.TestCase):
         )
         self.assertEqual(regenerated.inventory_path.read_bytes(), original_payload)
 
+    def test_container_parser_receives_the_opened_alternate_layout_size(self) -> None:
+        original_size = self.fixture.source.stat().st_size
+        with self.fixture.source.open("ab") as stream:
+            stream.write(b"\0" * 4096)
+        actual_size = self.fixture.source.stat().st_size
+        self.fixture.cache = replace(
+            self.fixture.cache,
+            source=replace(
+                self.fixture.cache.source,
+                sha256=hashlib.sha256(self.fixture.source.read_bytes()).hexdigest(),
+                size=actual_size,
+            ),
+        )
+        observed_sizes: list[int] = []
+        fixture_parser = self.fixture.parser
+
+        def layout_tolerant_parser(descriptor: int, image_size: int):
+            observed_sizes.append(image_size)
+            # The synthetic fixture's extent table is unchanged by legal tail
+            # padding; reuse it after proving the scanner supplied the real size.
+            return fixture_parser(descriptor, original_size)
+
+        scanner = Nfl2k5AudioSourceContainmentScanner(
+            pins=self.fixture.pins,
+            capacity_report=self.fixture.capacity_report,
+            store=self.store(),
+            xdvdfs_parser=layout_tolerant_parser,
+            decode_batch_bytes=144,
+        )
+        result = scanner.ensure(
+            self.fixture.source.resolve(), self.fixture.cache
+        )
+
+        self.assertEqual(observed_sizes, [actual_size])
+        self.assertEqual(
+            result.inventory.source_binding_sha256,
+            self.fixture.source_sha256,
+        )
+
     def test_cancellation_during_direct_source_build_publishes_nothing(self) -> None:
         should_cancel = False
 

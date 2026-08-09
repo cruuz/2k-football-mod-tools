@@ -1,5 +1,20 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.62 — real-ISO release validation — 2026-08-09
+
+- The shipped ISO recognition, extraction, load, and read-only source path was
+  revalidated against a real USA APF 2K8 image in addition to the retail-free
+  automated layout-tolerance suite.
+- The source remained read-only and no source path, image hash, extracted game
+  data, or retail payload is recorded in this public release documentation.
+- Linux install and uninstall helpers set `PYTHONDONTWRITEBYTECODE=1` before
+  importing installer code, preventing a pre-audit `__pycache__` from making a
+  clean release tree fail its own closed-world check.
+- The shared updater identity is `beta-30`.
+- The bundled Linux `extract-xiso` was rebuilt with its build-host prefix
+  removed and stripped; release/runtime pins now cover the 51,336-byte
+  privacy-clean ELF.
+
 ## 0.1.0-alpha.61 — never-silent-gray + blank-preview fail-closed — 2026-08-09
 
 ### Beta 29 refresh
@@ -286,7 +301,7 @@
   receipt at `docs/mod_editor/apf2k8_full_shell_visual_gate.json`. Its
   independent reopen verified all 118 packages / 236 layers, and its
   deterministic high/low renderer produced ten nonempty side, front, rear, and
-  crown views. Spark review of both hash-pinned contact sheets passed: the wing
+  crown views. Visual review of both hash-pinned contact sheets passed: the wing
   reads as one authentic shell-spanning Eagles design with coherent bilateral,
   front, rear, and crown coverage, while the low LOD retains its silhouette
   without visible UV smear, gaps, holes, or seam breaks. This is static
@@ -1464,7 +1479,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   `0212b638c1cdfa348110e57dbef4af5e0048101ff340202f52fec2021cd54044`,
   exactly matching the runtime-proved candidate; only outer 1126 changed and
   the source remained byte-identical.
-- Completed isolated Spark visual QA after the roster-layout UX fix. A fresh
+- Completed isolated-display visual QA after the roster-layout UX fix. A fresh
   window showed **Identity & Names** by default with **Base Ratings (28)**
   adjacent; **Replace Player Name**, **Revert Player Name**, and **View 23
   affected fields…** were simultaneously visible with the exact `4/4` limit and no
@@ -1784,7 +1799,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   Registry validation passed at `61` global / `31` APF capabilities, with
   APF cards split 7 Editable, 7 Preview, 3 Export-only, and 14 Coming Soon.
 - The complete source suite passed `528/528` tests before sealing.
-- Spark Hands inspected fresh Stadium (`0x03800035`) and Audio (`0x04000035`)
+- Isolated-display visual QA inspected fresh Stadium (`0x03800035`) and Audio (`0x04000035`)
   windows on isolated `DISPLAY=:99`. Both showed the exact `Alpha 13` badge.
   Stadium displayed the 116-mesh / 328-draw / 113-material / 13-shader-family /
   737-texture-identity boundary and a gray **Replace (locked)** action. Audio
@@ -1840,7 +1855,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   supported private-source runtime, registry, desktop, Bash, and isolated
   installer lifecycle gates. Derived `.gltf`, `.glb`, `.bin`, and `.zip` files
   are structurally excluded.
-- Spark Hands verified the 93-scene viewer, first 116-mesh scene, nine-record
+- Isolated-display visual QA verified the 93-scene viewer, first 116-mesh scene, nine-record
   package inspector, and 2048×1024 package preview on isolated `DISPLAY=:99`.
   It also caught that a disabled primary Replace button retained the orange
   ID-specific style. Alpha.12 is immutable; the next build fixes disabled
@@ -1906,7 +1921,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   supported private-source runtime (`10,464` universal assets / `96` writer
   uniforms / `408` total uniforms), registry, desktop, all-four-script Bash,
   isolated install/update/uninstall, and repeated post-runtime gates.
-- Spark Hands verified the sealed build on isolated `DISPLAY=:99`: the 408-row
+- Isolated-display visual QA verified the sealed build on `DISPLAY=:99`: the 408-row
   Uniforms split, 38-row Gameplay map, eight-row Scorebug map with 128×128
   digital-font writer, 25 raw presentation assets, 47,814-row Audio inventory,
   and single filtered 776.4 MB `lines.bin` physical bank all rendered. No
@@ -1951,7 +1966,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - Headless gates pass `20/20` focused Audio/Text-Sheet tests, `20/20` focused
   recovery tests, and `115/115` APF-pattern tests; the complete cross-title Mod
   Studio suite passes `489/489`.
-- The package was created headlessly. Its separate post-seal Spark Hands gate
+- The package was created headlessly. Its separate post-seal visual gate
   then passed on isolated `DISPLAY=:99`: fresh source-ready windows visibly
   showed `Alpha 10 • retail-free`, both Text Sheet actions and allocation-limit
   UI, all shortlist Review/reorder controls, the 15-row stereo Soundtrack
@@ -1980,7 +1995,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   and repeated post-runtime release gates.
 - Alpha.9 remains unchanged at
   `046f7463a8eb7a13b78e4a7b53eff2e310a2594e5d4b4526378b8dfc1204b83d`.
-- Isolated Spark visual verification passed after the headless seal. The exact
+- Isolated-display visual verification passed after the headless seal. The exact
   observed controls and desktop-isolation boundary are recorded in
   `APF2K8_STATUS.md`.
 
@@ -2022,7 +2037,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   game, never a shareable project payload.
 - Headless gates pass `20/20` focused recovery tests and `107/107` APF-pattern
   tests; the complete current cross-title product gate passes `468/468`.
-- Spark Hands verified current alpha.9 window `0x09a0002b` at `1480×920` on
+- Isolated-display visual QA verified current alpha.9 window `0x09a0002b` at `1480×920` on
   isolated `DISPLAY=:99`. `Alpha 9 • retail-free`, all 14 sidebar categories,
   the complete header/footer, the nine-row File menu, **Open Recent Game** and
   **Open Recent Project** empty-state flyouts, and **Recover Unsaved Edits**
@@ -2086,7 +2101,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - Added `9` focused active-document tests. The combined document/core/safety
   slice passes `36/36`, and the complete current cross-title gate passes
   `443/443`.
-- Spark Hands verified source-ready alpha.8 window `0x0860002b` at `1480×920`
+- Isolated-display visual QA verified source-ready alpha.8 window `0x0860002b` at `1480×920`
   on isolated `DISPLAY=:99`. `Alpha 8 • retail-free`, the source-ready header,
   all `14` sidebar categories, and every header control were readable and
   unclipped. The File menu showed Open Project (`Ctrl+Shift+O`), Save
@@ -2136,7 +2151,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   deduplication, page addition, the all-or-nothing 256 cap, model reset, badges,
   ordered forwarding, and the original-XMA default.
 - The complete cross-title product gate passes 428/428 tests.
-- Spark Hands loaded the current Audio page on isolated `DISPLAY=:99` at
+- Isolated-display visual QA loaded the current Audio page on `DISPLAY=:99` at
   1480×920. All 47,795 decoded rows were present, and the shortlist heading,
   Add/Remove, Add this page, Clear, `Selected N / 256`, export, matching-export,
   and replacement-boundary controls were readable and unclipped.
@@ -2177,7 +2192,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
 - Moved the Audio kind/role/source controls onto their own filter row and added
   `Ctrl+Shift+B` to focus the bank selector. This keeps the search/export row
   readable at ordinary laptop widths.
-- Spark Hands verified the separate two-row Audio controls on isolated
+- Isolated-display visual QA verified the separate two-row Audio controls on
   `DISPLAY=:99`: search/export, kind, role, source, table, and detail actions
   remain fully readable with no clipping or overlap.
 - The complete cross-title product gate passes 419/419 tests. Alpha.6 is a new
@@ -2212,7 +2227,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   The complete universal raw inventory remains one click away while Play,
   individual export, bank export, filtered export, and the honest replacement
   boundary no longer compete with a second vertical browser for height.
-- Spark Hands checked the current build on isolated `DISPLAY=:99`. The broad
+- Isolated-display visual QA checked the current build on `DISPLAY=:99`. The broad
   47,795-row view shows filtered export as clearly disabled; its own full-width
   row and the replacement row are fully separated with no clipping or overlap.
   The enabled 1–256 state is covered by the focused offscreen Qt interaction
@@ -2258,7 +2273,7 @@ labels, closed the crest-rectangle question, and unlocked `endzone_l0`.
   that allocation; it does not invent screen ownership for the other editable
   TXT/STRG rows.
 - Added compact text-detail spacing and keyboard focus shortcuts (`Ctrl+F` for
-  decoded search, `Ctrl+Shift+K` for record kind) after isolated Spark QA found
+  decoded search, `Ctrl+Shift+K` for record kind) after isolated-display QA found
   two minor clips in the first pass.
 - Turned the complete APF audio inspector into a modder-facing browser: 2,261
   standalone `AUDO` sounds, 20 `AUSB` bank records, and all 45,514 bank
@@ -2442,7 +2457,7 @@ separates shippable application code from the retail-heavy research workspace.
   screenshots, emulator state, caches, runtime evidence, `__pycache__`,
   symlinks, hardlinks, special files, world-writable files, and undeclared
   paths.
-- The only allowed executable is the exact reviewed 56,584-byte Linux
+- The only allowed executable is the exact reviewed 51,336-byte Linux
   `extract-xiso`; its SHA-256 and mandatory license are pinned independently.
 - Added a source-free runtime closure check that imports every APF product and
   writer module, validates the 30 capability cards, and round-trips a synthetic

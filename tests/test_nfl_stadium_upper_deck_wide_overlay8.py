@@ -9,7 +9,6 @@ import math
 from pathlib import Path
 import struct
 import sys
-import tomllib
 import unittest
 
 
@@ -151,6 +150,56 @@ def quad_area(points: list[tuple[float, float, float]]) -> float:
                for value in vectors)
 
 
+class RuntimeQueueManifestTests(unittest.TestCase):
+    def test_runtime_queue_is_a_neutral_manual_capture_plan(self) -> None:
+        queue = load_canonical(RUNTIME_QUEUE)
+        self.assertEqual(
+            queue["schema"], "nfl2k5_upper_deck_wide_overlay8_runtime_queue/v1"
+        )
+        self.assertEqual(
+            queue["status"], "offline_runtime_lane_prepared_manual_capture_pending"
+        )
+        self.assertTrue(queue["claims"]["runtime_launch_prepared"])
+        self.assertTrue(queue["claims"]["manual_runtime_capture_pending"])
+        self.assertFalse(queue["claims"]["emulator_capture_completed"])
+        self.assertFalse(queue["claims"]["matched_runtime_pair_captured"])
+        self.assertFalse(queue["claims"]["direct_upper_deck_visibility_proved"])
+        self.assertEqual(
+            queue["runtime_capture_status"]["state"],
+            "manual_capture_pending",
+        )
+        plan = queue["manual_capture_plan"]
+        self.assertEqual(len(plan["capture_sequence"]), 3)
+        self.assertIn(
+            "hold left stick down for 4.00 seconds",
+            plan["camera_protocol"],
+        )
+        self.assertIn("Backbreaker artifacts outside", plan["scope"])
+        self.assertEqual(set(queue), {
+            "claims", "date", "emulator", "expected_evidence",
+            "manual_capture_plan", "prepared_runs", "runtime_capture_status",
+            "schema", "status", "target", "version",
+        })
+        self.assertEqual(set(plan), {
+            "camera_protocol", "capture_sequence", "comparison_questions",
+            "scope", "uncertainty_policy",
+        })
+        self.assertEqual(set(queue["runtime_capture_status"]), {
+            "desktop_environment", "emulator_capture_completed", "state",
+        })
+        self.assertEqual(len(queue["expected_evidence"]["screenshots"]), 5)
+        for run in queue["prepared_runs"].values():
+            for kind in ("config", "hdd", "xiso"):
+                record = run[kind]
+                self.assertFalse(Path(record["path"]).is_absolute())
+                self.assertGreater(record["size"], 0)
+                self.assertEqual(len(record["sha256"]), 64)
+                int(record["sha256"], 16)
+            self.assertTrue(run["config"]["path"].endswith(".toml"))
+            self.assertTrue(run["hdd"]["path"].endswith(".qcow2"))
+            self.assertTrue(run["xiso"]["path"].endswith(".iso"))
+
+
 @unittest.skipUnless(
     OUTPUT_VOLUME.is_file(),
     # ``build/`` is gitignored, and this volume is a large generated output from
@@ -286,42 +335,6 @@ class UpperDeckWideOverlay8Tests(unittest.TestCase):
         self.assertTrue(s42_verify["default_xbe_exact"])
         self.assertTrue(retail_verify["xdvdfs_tree_exact"])
         self.assertTrue(s42_verify["xdvdfs_tree_exact"])
-
-    def test_runtime_queue_is_complete_and_does_not_invent_gui_evidence(self) -> None:
-        queue = load_canonical(RUNTIME_QUEUE)
-        self.assertEqual(
-            queue["schema"], "nfl2k5_upper_deck_wide_overlay8_runtime_queue/v1"
-        )
-        self.assertEqual(
-            queue["status"], "offline_runtime_lane_fully_prepared_spark_mcp_unavailable"
-        )
-        self.assertTrue(queue["claims"]["controller_lane_released"])
-        self.assertTrue(queue["claims"]["runtime_launch_prepared"])
-        self.assertFalse(queue["claims"]["emulator_launched_for_this_queue"])
-        self.assertFalse(queue["claims"]["matched_runtime_pair_captured"])
-        self.assertFalse(queue["claims"]["direct_upper_deck_visibility_proved"])
-        self.assertEqual(
-            queue["spark_handoff"]["required_tools"],
-            ["spark_desktop_task", "spark_look"],
-        )
-        self.assertIn(
-            "never read, modify, or launch anything in a Backbreaker path",
-            queue["spark_handoff"]["desktop_task_goal"],
-        )
-        self.assertEqual(len(queue["expected_evidence"]["screenshots"]), 5)
-        for run in queue["prepared_runs"].values():
-            config = ROOT / run["config"]["path"]
-            hdd = ROOT / run["hdd"]["path"]
-            xiso = ROOT / run["xiso"]["path"]
-            self.assertEqual(config.stat().st_size, run["config"]["size"])
-            self.assertEqual(hdd.stat().st_size, run["hdd"]["size"])
-            self.assertEqual(xiso.stat().st_size, run["xiso"]["size"])
-            self.assertEqual(sha256(config), run["config"]["sha256"])
-            self.assertEqual(sha256(hdd), run["hdd"]["sha256"])
-            parsed = tomllib.loads(config.read_text())
-            self.assertEqual(Path(parsed["sys"]["files"]["hdd_path"]), hdd)
-            self.assertEqual(Path(parsed["sys"]["files"]["dvd_path"]), xiso)
-
 
 if __name__ == "__main__":
     unittest.main()

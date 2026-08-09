@@ -23,6 +23,7 @@ from mod_editor.core.nfl2k5_extended_visual_io import (
     Nfl2k5ExtendedVisualIO,
     ORIGINAL_SCHEMA,
 )
+from mod_editor.core.nfl2k5_source_cache import SOURCE_SHA256
 
 
 def _write_json(path: Path, value: object) -> None:
@@ -310,6 +311,7 @@ class Nfl2k5ExtendedVisualIOTests(unittest.TestCase):
         metadata = json.loads(first.with_suffix(".json").read_text(encoding="utf-8"))
         self.assertEqual(metadata["schema"], ORIGINAL_SCHEMA)
         self.assertEqual(metadata["asset_id"], asset.asset_id)
+        self.assertEqual(metadata["source_sha256"], SOURCE_SHA256)
         self.assertNotIn("offset", metadata)
 
         destination = self.root / "user-export.png"

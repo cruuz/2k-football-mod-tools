@@ -1,7 +1,7 @@
 {
   "schema": "apf2k8_full_shell_visual_gate/v1",
   "observed_at": "2026-08-04",
-  "spark_reviewed_at": "2026-08-04T02:57:32-04:00",
+  "isolated_visual_reviewed_at": "2026-08-04T02:57:32-04:00",
   "candidate": {
     "output_0a_sha256": "0e9630348bf367032120f46d149cda7b8c3b490eaedb609fb67c0a12acf02122",
     "output_0a_size": 1140850688,
@@ -70,8 +70,8 @@
     ],
     "receipt_sha256": "4826c15d5fd95500ab1cdf5254e1073931974d6e0de3fe1ec83df270fc5d6d60"
   },
-  "spark_visual_review": {
-    "method": "spark_hands_static_contact_sheet_inspection",
+  "isolated_visual_review": {
+    "method": "isolated_display_static_contact_sheet_inspection",
     "passed": true,
     "reviewed_exact_contact_sheet_hashes": true,
     "high_lod": "Authentic shell-spanning Eagles wing with bilateral, front, rear, and crown coherence; no visible UV artifacts.",

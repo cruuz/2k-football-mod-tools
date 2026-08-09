@@ -352,7 +352,7 @@ def run(source_path: Path, replacement_path: Path, import_manifest_path: Path,
                 "xemu_started": False,
                 "title_executed": False,
                 "portme": (
-                    "PORTME: runtime agent may boot only this exact SHA-pinned output "
+                    "PORTME: a runtime tester may boot only this exact SHA-pinned output "
                     "and capture matched Detroit HOME control/patched frames."
                 ),
             },

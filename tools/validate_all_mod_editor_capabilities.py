@@ -23,6 +23,7 @@ import json
 import os
 from pathlib import Path
 import shlex
+import shutil
 import signal
 import stat
 import subprocess
@@ -68,19 +69,33 @@ EXPECTED_DEFERRED_IDS = (
     "nfl2k5.catching_drops.behavior",
     "nfl2k5.franchise_restoration_cross_title.port",
 )
-PINNED_RG_PATH = Path(
-    "/home/noah/.nvm/versions/node/v22.22.0/lib/node_modules/@openai/codex/"
-    "node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/"
-    "codex-path/rg"
-)
-# Keep the user-writable Codex vendor directory last.  It supplies only ``rg``;
-# putting it first would let a newly added sibling shadow a system command even
-# though the captured provenance for that command still pointed into /usr/bin.
+def _discover_rg_path() -> Path:
+    """Return the host's ripgrep without embedding a workstation path."""
+
+    for directory in (Path("/usr/bin"), Path("/bin")):
+        candidate = directory / "rg"
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return candidate.absolute()
+    discovered = shutil.which("rg")
+    if discovered is not None:
+        # Preserve the PATH lookup leaf.  The provenance capture below records
+        # and verifies its complete symlink chain as well as the resolved file.
+        return Path(os.path.abspath(discovered))
+    # Keep imports usable on hosts without ripgrep so the focused suite can
+    # report its existing named skip.  A real run still fails closed when the
+    # executable provenance is captured.
+    return Path("/usr/bin/rg")
+
+
+PINNED_RG_PATH = _discover_rg_path()
+# Keep a discovered non-system directory last.  System commands therefore win
+# normal lookup, while the exact ripgrep executable is still captured and
+# verified before and after the validation run.
 FIXED_PATH = f"/usr/bin:/bin:{PINNED_RG_PATH.parent}"
 FIXED_ENVIRONMENT = {
     "GIT_CONFIG_GLOBAL": "/dev/null",
     "GIT_CONFIG_NOSYSTEM": "1",
-    "HOME": "/home/noah",
+    "HOME": str(Path.home().resolve()),
     "LANG": "C.UTF-8",
     "LC_ALL": "C.UTF-8",
     "PATH": FIXED_PATH,
