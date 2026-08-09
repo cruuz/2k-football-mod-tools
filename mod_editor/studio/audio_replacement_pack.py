@@ -311,20 +311,22 @@ def _open_directory_handle(path: Path, label: str) -> DirHandle:
     return handle
 
 
-def _pinned_staging_root(handle: DirHandle) -> Path:
-    """POSIX descriptor-path anchor for inode-pinned staged path writes.
+def _pinned_staging_root(handle: DirHandle) -> Path | None:
+    """Return a usable POSIX descriptor-path anchor, when the host exposes one.
 
     Linux exposes ``/proc/self/fd/<fd>`` and macOS exposes ``/dev/fd/<fd>``.
     Both follow the directory *inode* the handle holds open, so the path-based
     staging writes below cannot be redirected by a swap of the parent path. The
     selected alias is identity-checked against the open descriptor before use.
-    Windows has no such fd-path and a bare ``realpath`` is NOT pinned -- that was
-    the weakening this closes -- so on Windows the caller routes every staged
-    write and the enumeration through the parent
+    Some hosted macOS environments expose neither alias with the directory
+    identity the descriptor pins.  A bare ``realpath`` is NOT a replacement: in
+    that case, and on Windows, the caller routes every staged write and the
+    enumeration through the parent
     :class:`DirHandle`'s own re-verified at-operations (:func:`_staged_write`,
     :func:`_staged_mkdir`, :func:`_staged_template_files`) instead of this path, and
-    reaching here on Windows is a bug that fails closed rather than handing back an
-    unpinned root.
+    reaching here on Windows is a bug that fails closed rather than handing back
+    an unpinned root.  ``None`` therefore means "use DirHandle at-operations",
+    never "fall back to path writes".
     """
 
     if handle.mechanism != DIRHANDLE_POSIX_DIR_FD:
@@ -344,9 +346,7 @@ def _pinned_staging_root(handle: DirHandle) -> Path:
             and (alias.st_dev, alias.st_ino) == (opened.st_dev, opened.st_ino)
         ):
             return candidate
-    raise AudioReplacementPackError(
-        "POSIX audio-template staging has no identity-matched descriptor path"
-    )
+    return None
 
 
 def _staged_mkdir(
@@ -354,9 +354,9 @@ def _staged_mkdir(
 ) -> None:
     """Create ``name`` in the staging root, pinned where the platform can.
 
-    Byte-identical path ``mkdir`` on POSIX (``stage_handle is None``); a re-verified
-    :meth:`DirHandle.mkdir` on Windows, where the staging directory is pinned by a
-    held handle rather than an fd-path.
+    Byte-identical path ``mkdir`` when an identity-checked descriptor path is
+    available (``stage_handle is None``); otherwise :meth:`DirHandle.mkdir`, where
+    the staging directory is pinned by its own held handle.
     """
 
     if stage_handle is None:
@@ -370,10 +370,11 @@ def _staged_write(
 ) -> None:
     """Create and write ``name`` in the staging root, pinned where the platform can.
 
-    Byte-identical :func:`_write_new` on POSIX (``stage_handle is None``); the pinned
-    :func:`_write_new_at` on Windows, so a swapped parent or a symlinked child is
-    refused -- as far as a re-verified realpath pin can, which is not the
-    kernel-enforced refusal POSIX gets; see
+    Byte-identical :func:`_write_new` when an identity-checked descriptor path is
+    available (``stage_handle is None``); otherwise the pinned
+    :func:`_write_new_at`, so a swapped parent or a symlinked child is refused --
+    kernel-enforced on POSIX and, as far as a re-verified realpath pin can, on
+    Windows; see
     :func:`platform_compat.directory_transaction_guarantee` for the residual --
     instead of a bare path write being silently redirected.
     """
@@ -389,10 +390,11 @@ def _staged_template_files(
 ) -> set[str]:
     """The relative FILE set in the staging root for the zero-retail-audio check.
 
-    Byte-identical ``set(_folder_files(...))`` on POSIX (``stage_handle is None``);
-    the pinned, re-verified :func:`_folder_files_at` enumeration on Windows, so a
-    swapped parent is refused rather than a bare ``realpath`` being walked
-    (on Windows by re-verified identity, not kernel resolution -- see
+    Byte-identical ``set(_folder_files(...))`` when an identity-checked descriptor
+    path is available (``stage_handle is None``); otherwise the pinned
+    :func:`_folder_files_at` enumeration, so a swapped parent is refused rather
+    than a bare ``realpath`` being walked (on Windows by re-verified identity, not
+    kernel resolution -- see
     :func:`platform_compat.directory_transaction_guarantee`).
     """
 
@@ -1225,7 +1227,7 @@ def _write_template_archive(
 ) -> None:
     """Write the fixed, retail-free template members into ``archive``.
 
-    Shared verbatim by the POSIX path-based publish and the Windows handle-pinned
+    Shared verbatim by the descriptor-path publish and the handle-pinned
     :func:`_publish_zip_template_at`, so both emit the identical member set -- the
     guide, the manifest, an optional cue map, and the empty ``replacements``
     directory -- and neither can drift from the other.
@@ -1249,7 +1251,7 @@ def _publish_zip_template_at(
 ) -> None:
     """Create, verify and atomically publish the ZIP template through the pinned parent.
 
-    Windows-only counterpart to the byte-identical POSIX path-based flow in
+    Handle-pinned counterpart to the byte-identical descriptor-path flow in
     :meth:`AudioReplacementPackService.export_template`.  Every step is a re-verified
     :class:`DirHandle` at-operation on the pinned parent directory: the archive is
     created ``O_EXCL`` through the handle -- never written to a bare ``realpath`` --
@@ -1333,11 +1335,10 @@ def _folder_files(
 
 
 def _folder_files_at(root: DirHandle) -> set[str]:
-    """Pinned staging-tree enumeration: the relative FILE set under ``root`` (Windows).
+    """Pinned staging-tree enumeration: the relative FILE set under ``root``.
 
-    The byte-identical POSIX enumeration is :func:`_folder_files` walking the
-    ``/proc/self/fd`` anchor; Windows has no such fd-path, so this reproduces that
-    result -- the set of relative regular-file names, with the same
+    When a descriptor-path anchor is unavailable, this reproduces the
+    :func:`_folder_files` result -- the set of relative regular-file names, with the same
     ``S_ISREG``/``S_ISLNK``/``st_nlink == 1`` gates :func:`_regular_file` applies --
     but every ``scandir``, ``stat`` and directory descent is a re-verified
     :class:`DirHandle` at-operation, so a swapped parent is refused rather than
@@ -1380,6 +1381,65 @@ def _folder_files_at(root: DirHandle) -> set[str]:
             )
         files.add(entry.name)
     return files
+
+
+def _remove_staged_template_at(
+    parent: DirHandle, stage_name: str, stage_handle: DirHandle | None = None
+) -> None:
+    """Best-effort removal of only this writer's known staged template tree.
+
+    This is the descriptor-path-unavailable cleanup.  It never follows a bare
+    realpath and never recursively removes an unexpected entry.  POSIX removes
+    the now-empty stage name while its child descriptor is still held; Windows
+    must release the child pin first because that platform refuses to remove an
+    open directory.
+    """
+
+    if stage_handle is None:
+        try:
+            stage_handle = parent.open_dir(stage_name)
+        except OSError:
+            return
+    try:
+        for name in (
+            AUDIO_REPLACEMENT_GUIDE,
+            AUDIO_REPLACEMENT_MANIFEST,
+            AUDIO_CUE_MAP,
+        ):
+            try:
+                info = stage_handle.stat(name, follow=False)
+            except OSError:
+                continue
+            if stat.S_ISREG(info.st_mode) and not stat.S_ISLNK(info.st_mode):
+                try:
+                    stage_handle.unlink(name)
+                except OSError:
+                    pass
+        try:
+            replacements = stage_handle.open_dir(REPLACEMENTS_DIRECTORY)
+        except OSError:
+            replacements = None
+        if replacements is not None:
+            try:
+                if not tuple(replacements.scandir()):
+                    stage_handle.rmdir(REPLACEMENTS_DIRECTORY)
+            except OSError:
+                pass
+            finally:
+                replacements.close()
+        if parent.mechanism == DIRHANDLE_POSIX_DIR_FD:
+            try:
+                parent.rmdir(stage_name)
+            except OSError:
+                pass
+    finally:
+        # The caller transfers ownership of a supplied handle to this cleanup.
+        stage_handle.close()
+    if parent.mechanism != DIRHANDLE_POSIX_DIR_FD:
+        try:
+            parent.rmdir(stage_name)
+        except OSError:
+            pass
 
 
 @contextmanager
@@ -1613,23 +1673,26 @@ class AudioReplacementPackService:
         # Raw descriptor on POSIX so the atomic-publish helper stays byte-identical
         # (and the directory-descriptor race test can drive it through that fd);
         # the handle itself on Windows, which has no descriptor to hand out.
-        posix_staging = parent_handle.mechanism == DIRHANDLE_POSIX_DIR_FD
-        parent_ref = parent_handle.dir_fd if posix_staging else parent_handle
-        # Where the staged files are written.  POSIX anchors them under
-        # /proc/self/fd/<parent_fd>, inode-pinned through the descriptor and
-        # byte-identical.  Windows has no fd-path, so the staging directory is
-        # opened as its OWN re-verified DirHandle (below, inside the try so a
-        # failure cleans up) and every nested write and the enumeration is a handle
-        # at-operation -- a bare realpath would be unpinned.
+        posix_handle = parent_handle.mechanism == DIRHANDLE_POSIX_DIR_FD
+        parent_ref = parent_handle.dir_fd if posix_handle else parent_handle
+        # Use a descriptor path only when this host exposes one with the exact
+        # pinned identity.  Hosted macOS can expose neither /proc/self/fd nor a
+        # usable /dev/fd directory alias; there (and on Windows) the staging
+        # directory gets its OWN DirHandle and every nested operation is relative
+        # to that pin.  A bare realpath is never used for writes.
         stage_handle: DirHandle | None = None
-        if posix_staging:
-            pinned_parent = _pinned_staging_root(parent_handle)
+        pinned_parent = (
+            _pinned_staging_root(parent_handle) if posix_handle else None
+        )
+        path_staging = pinned_parent is not None
+        if path_staging:
+            assert pinned_parent is not None
             stage = pinned_parent / stage_name
         else:
             assert parent_handle.realpath is not None
             stage = Path(parent_handle.realpath) / stage_name
         try:
-            if not posix_staging:
+            if not path_staging:
                 stage_handle = parent_handle.open_dir(stage_name)
             _staged_mkdir(stage, stage_handle, REPLACEMENTS_DIRECTORY, 0o700)
             _staged_write(stage, stage_handle, AUDIO_REPLACEMENT_GUIDE, guide)
@@ -1650,12 +1713,11 @@ class AudioReplacementPackService:
                 == expected_template_files,
                 "Metadata template unexpectedly contains an audio payload",
             )
-            # The staged writes and their check are done; release the Windows
-            # staging pin now.  Holding the staging directory's own handle would
-            # make Windows refuse to rename it during the folder publish below (the
-            # pin withholds delete/rename), and would block its removal at cleanup;
-            # the publish itself is pinned by parent_handle.  No-op on POSIX.
-            if stage_handle is not None:
+            # Folder publication renames the staging directory.  Windows refuses
+            # that while its child pin is open; closing here is also harmless for
+            # the POSIX no-replace rename.  ZIP publication keeps the child pin
+            # through cleanup.
+            if stage_handle is not None and normalized == "folder":
                 stage_handle.close()
                 stage_handle = None
             progress("Publishing retail-free audio template", len(assets), len(assets) + 1)
@@ -1663,7 +1725,8 @@ class AudioReplacementPackService:
                 _rename_noreplace(
                     parent_ref, stage_name, requested.name
                 )
-            elif posix_staging:
+            elif path_staging:
+                assert pinned_parent is not None
                 archive_name = f"{stage_name}.zip"
                 archive_path = pinned_parent / archive_name
                 try:
@@ -1691,9 +1754,8 @@ class AudioReplacementPackService:
                 finally:
                     archive_path.unlink(missing_ok=True)
             else:
-                # Windows: create, verify and publish the ZIP through the pinned
-                # parent handle so its creation is bound to the pinned directory
-                # rather than a bare realpath.
+                # Create, verify and publish the ZIP through the pinned parent
+                # handle when no usable descriptor path exists.
                 _publish_zip_template_at(
                     parent_handle,
                     f"{stage_name}.zip",
@@ -1730,13 +1792,14 @@ class AudioReplacementPackService:
                 f"A file or folder already exists there: {requested}"
             ) from exc
         finally:
-            # Release the Windows staging pin before removing the directory it
-            # pins (a held handle blocks the delete there); idempotent and a no-op
-            # on POSIX or once already closed above.
-            if stage_handle is not None:
-                stage_handle.close()
-            if stage.exists():
-                shutil.rmtree(stage, ignore_errors=True)
+            if path_staging:
+                if stage.exists():
+                    shutil.rmtree(stage, ignore_errors=True)
+            else:
+                _remove_staged_template_at(
+                    parent_handle, stage_name, stage_handle
+                )
+                stage_handle = None
             parent_handle.close()
 
     @contextmanager

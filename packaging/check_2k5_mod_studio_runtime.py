@@ -103,7 +103,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
-        "8b5f3982e55148bd49ac928d8f90c2606bc28bce2796440417bbdafb455a6d9b",
+        "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
         "9001379a3d9ba448a9583026af055658fbd10efee080ae57a8f5dabae6795340",
     "mod_editor/studio/project_archive.py":

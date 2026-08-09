@@ -111,9 +111,9 @@ jobs:
           checkout = Path(sys.argv[2]).resolve(strict=True)
           archives = {
               "2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz":
-                  "241554dd6f46b72a3d7528d4eb94beec132a7a8346375c60aecc8eb3f5b57ece",
+                  "c8d35307b80d3e9ddbc444490062c2e7796a342ffc7068954be76801c044133e",
               "apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz":
-                  "b5859d9340b1ec69a49633815f5aa8f4a2a3af1a032ea9a60585792c2fb35eb5",
+                  "9db37b3e20b2ece84305fa3fb14f3e8a2fb0884e2a87cde9a40d24a6444a4ceb",
           }
           copied = 0
           for name, expected in archives.items():

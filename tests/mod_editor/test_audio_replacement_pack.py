@@ -45,6 +45,7 @@ from mod_editor.studio.audio_replacement_pack import (
     MAX_PREFLIGHT_CHANGED_ROWS,
     MAX_REPLACEMENT_WAV_BYTES,
     MAX_SELECTED_AUDIO_COUNT,
+    REPLACEMENTS_DIRECTORY,
     AudioReplacementPackPreflightResult,
     AudioReplacementPackService,
     complete_standalone_pack_path,
@@ -242,6 +243,31 @@ class AudioReplacementPackTests(unittest.TestCase):
                 [AUDIO_REPLACEMENT_GUIDE, AUDIO_REPLACEMENT_MANIFEST, "replacements/"],
             )
             self.assertFalse(any(name.endswith(".wav") for name in archive.namelist()))
+
+    def test_export_uses_dirhandle_when_posix_fd_paths_are_unavailable(self) -> None:
+        """Hosted macOS need not expose a usable /proc/self/fd or /dev/fd alias."""
+
+        folder = self.root / "macos-fallback-folder"
+        archive_path = self.root / "macos-fallback.zip"
+        with mock.patch.object(
+            audio_pack_module, "_pinned_staging_root", return_value=None
+        ):
+            self.service.export_template(folder, container="folder")
+            self.service.export_template(archive_path, container="zip")
+
+        self.assertTrue((folder / REPLACEMENTS_DIRECTORY).is_dir())
+        with zipfile.ZipFile(archive_path) as archive:
+            self.assertEqual(
+                archive.namelist(),
+                [
+                    AUDIO_REPLACEMENT_GUIDE,
+                    AUDIO_REPLACEMENT_MANIFEST,
+                    f"{REPLACEMENTS_DIRECTORY}/",
+                ],
+            )
+        self.assertFalse(
+            any(".audio-pack-" in path.name for path in self.root.iterdir())
+        )
 
     def test_v1_v2_zip_bytes_remain_rc15_compatible(self) -> None:
         legacy = self.root / "legacy-v1.zip"
