@@ -29,7 +29,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc55"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc56"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
@@ -49,13 +49,13 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC55 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC56 — Getting Started"
         ))
         self.assertIn(
             "## v1.0 RC48 Audio Converter, Stadium Model Export, Update Check", changelog
         )
         self.assertIn("## v1.0 RC50", changelog)
-        self.assertIn("## v1.0 RC55", changelog)
+        self.assertIn("## v1.0 RC56", changelog)
         self.assertIn(
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
@@ -64,7 +64,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("complete 12-tab sidebar", getting_started)
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC55 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC56 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:

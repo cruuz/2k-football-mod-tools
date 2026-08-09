@@ -1,61 +1,65 @@
-# Beta Release Notes
+# beta-29 — RC56 / alpha.61
 
-> **Superseded.** This file describes **Beta 1** and is kept as a record. Beta 1
-> was Linux-first, so its platform notes below no longer describe the current
-> tools. The current release is
-> [**Beta 2**](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-2),
-> which runs on Windows, macOS and Linux; its notes live on that release page.
+**Date:** 2026-08-09
 
-> **Current candidate (unreleased) — 2026-08-06.** The working tree is
-> **2K5 Mod Studio v1.0 RC50** + **APF 2K8 Mod Studio 0.1.0-alpha.55**. It is
-> a release candidate, not a release: nothing here has been committed,
-> packaged, or published. The latest published release remains
-> [**beta-23**](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-23)
-> (2K5 v1.0 RC49 + APF 0.1.0-alpha.54, 2026-08-05), which supersedes the
-> Beta 2 pointer above. The changelogs are the candidate's source of truth:
-> [`docs/mod_editor/2k5_mod_studio_changelog.md`](docs/mod_editor/2k5_mod_studio_changelog.md)
-> and [`docs/mod_editor/apf2k8_mod_studio_changelog.md`](docs/mod_editor/apf2k8_mod_studio_changelog.md).
->
-> Headlines since beta-23:
->
-> - **2K5 RC48:** drop-in ordinary-audio replacement (849/849 authorable slots
->   converted and re-verified), per-uniform facemask/faceshield/turtleneck
->   colours across all 634 sets, 28,530 package-local equipment textures
->   editable in All Textures, stadium glTF export scaled to metres, update
->   check.
-> - **2K5 RC50:** standalone editable inventory raised from 9,640 to 11,395
->   (+1,755 menu/mini-card/franchise/draft presentation surfaces); the 4,080
->   explicit-size A1 player strips no longer blanket-refused; all 2,547
->   current jersey numbers editable including 68 secondary-pool rows;
->   per-player face shield (None/Clear/Dark); all 498 Crib textures editable
->   plus a Crib Models tab; Team Kit → Browse 45 Equipment Textures; bounded
->   stadium glTF vertex import (75 position lanes; runtime visibility
->   unproved); exact same-book playbook stock-route copy; high-resolution
->   authoring masters.
-> - **APF alpha.51:** `default.xex` decryption settled the ratings — 31
->   editable rating bytes, up from 28; crest editor widened to all 118 logo
->   slots; `endzone_l0` accepts edits; stadium glTF opens at sane units.
-> - **APF alpha.52:** Team Independence — every built-in team points at its
->   own uniform textures (95 assignments changed, nothing added); ordinary
->   audio accepted at the drop target with exact-slot conformance; external
->   XMA1 output compared with authored PCM before staging.
-> - **APF alpha.53:** Custom Team Appearance owns shell colours for user slots
->   32–39 with a one-click 2017 Eagles preset; the full-shell crest route is a
->   normal headless editor build; raw-save appearance path with verified STFS
->   handoff; Save Assignments for all 40 teams / 69 books; paired RPCS3/Xenia
->   roster audit (zero unexplained rows); helmet/player same-topology POSITION
->   import.
-> - **APF alpha.55:** whole-shell atlas v24 (all 118 packages / 236 layers
->   compile; 10-view static visual gate passed); complete 206-slot wordmark
->   editor; verified stock assignment-route copy/swap across 586 MASTER plays;
->   complete 149-field Save Players editor with verified STFS handoff; stadium
->   selected-mesh POSITION round trip (77 surfaces); explicit Team Logo
->   coupled-write disclosure; high-resolution helmet-logo masters.
-> - **Known APF issue:** an accepted-team Xenia menu witness (Eagles helmet
->   preview in Manage Team → Logo Selection, 2026-08-03) passed with stated
->   caveats, but in live gameplay the v24 shell renders semi-transparent/flat
->   (known background-alpha `0x88` defect; fix in flight). Gameplay shell
->   proof is not claimed.
+**2K5 Mod Studio:** `v1.0-RC56`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.61`
+
+This beta closes the editor-completion marathon with installable Windows builds
+and portable source archives for both products. The changelogs remain the
+feature-level source of truth:
+[`docs/mod_editor/2k5_mod_studio_changelog.md`](docs/mod_editor/2k5_mod_studio_changelog.md)
+and
+[`docs/mod_editor/apf2k8_mod_studio_changelog.md`](docs/mod_editor/apf2k8_mod_studio_changelog.md).
+
+## Highlights
+
+- APF `logo_l0` / `logo_l1` format-15 (`4_4_4_4`) preview, PNG export, and the
+  existing import/swap writer path are regression-covered; base-only DXN
+  NameFont textures no longer decode as gibberish.
+- Dialog and drag/drop imports share explicit **Contain / Cover / Stretch**
+  fitting, including 2K5 Crib art.
+- Equipment colours are taught and applied per physical HOME/AWAY uniform set;
+  APF visor remains a per-player Save Players field.
+- Blank previews fail closed after 45 seconds with recovery guidance, and
+  formerly silent disabled editor actions now stay clickable and explain the
+  exact load, selection, size, format, or ownership wall.
+- APF Field Art can jump directly to the approximately 118 stock NFL endzone
+  family for browse/export; the focused writer remains limited to its six
+  offline-proved base slots.
+- Playbook browsers annotate the community Ace/Dime/Bear cases. Experimental
+  G1 multi-Dime package-map and G2 multi-Ace link-table exports ship as private
+  offline packs with independent byte verifiers and honesty sidecars.
+- The Windows release allowlist now includes the G1/package-map and formation
+  clone modules, closing the staged-build crash path.
+
+## Evidence boundaries
+
+- G1 and G2 exports prove offline bytes only; emulator/gameplay fixes are not
+  claimed.
+- Freehand routes are not Editable. Stock route copy/swap reuses exact existing
+  descriptors.
+- APF per-team stock endzone writing, unseen formats/assets, and the G10/G11
+  user-input ability gate remain explicit evidence walls in the product ledgers.
+
+## Release integrity
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz` | 10,939,254 | `a8ee1b0446f9a80deebec831fee586f8b09694f628e1da01aaef956ba7f8469c` |
+| `2K5-Mod-Studio-1.0-RC56-Setup.exe` | 56,696,804 | `c787918ff94968ad8e8b764077e2737ea8e248c59388d99312083704c7f69e4f` |
+| `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz` | 1,652,616 | `dd27f45016b919a855c15d6a719e42552558acfd96cee6217290381d5f37e99f` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.61-Setup.exe` | 52,695,992 | `77663030cdd18ba1f1ee3f9ff49044cf0176845bab0bee4052b9ebc190f86dc8` |
+
+The `.tar.gz.sha256` sidecars are attached with the archives. Windows installers
+are self-contained and reproducibly built, but not code-signed; the installer
+explains the Windows warning before installation.
+
+## Historical Beta 1 notes
+
+Everything below this heading is retained as an archival record and does not
+describe beta-29.
 
 **Release:** Beta 1
 **Date:** 2026-07-22

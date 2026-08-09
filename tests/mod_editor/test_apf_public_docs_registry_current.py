@@ -221,7 +221,7 @@ class ApfPublicClaimsTests(unittest.TestCase):
             ):
                 self.assertIn(marker.casefold(), text.casefold(), path.name)
         for path in PUBLIC_DOCS[1:]:
-            self.assertIn("0.1.0-alpha.60", path.read_text(encoding="utf-8"))
+            self.assertIn("0.1.0-alpha.61", path.read_text(encoding="utf-8"))
         self.assertIn("not Mike Smith", self.docs)
         self.assertNotIn("Xenia Mike Smith", self.docs)
         self.assertNotIn("1.01×", self.docs)

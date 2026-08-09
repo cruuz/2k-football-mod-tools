@@ -1,9 +1,8 @@
-# 2K5 Mod Studio — v1.0 RC55 Release Status
+# 2K5 Mod Studio — v1.0 RC56 Release Status
 
 ## Continuation marathon note (2026-08-08)
 
-Source/UI versions: **2K5 RC55** / **APF alpha.60** (+ unreleased never-silent-gray /
-blank-preview fail-closed on main). Community-named work this marathon includes
+Source/UI versions: **2K5 RC56** / **APF alpha.61**. Community-named work this marathon includes
 nameplate DXN (font_albedo), linear TXTR (uncompressed + DXT), G1 package-map +
 G2 link-table offline writers, playbook annotations, keyboard/search polish,
 shell recommended path, equipment Stage explain, click-to-explain model import
@@ -22,7 +21,7 @@ in 8-at-a-time batches). — do not treat this note as a sealed public release.
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The
-> source code and UI identify as the retail-free **`0.1.0-alpha.60` release
+> source code and UI identify as the retail-free **`0.1.0-alpha.61` release
 > candidate**. This status does not claim that the candidate has been committed,
 > pushed, or published; the immutable archive receipts below are retained as
 > release history.

@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio Changelog
 
-## Unreleased (post-alpha.60 continuation) — never-silent-gray + blank-preview fail-closed — 2026-08-08
+## 0.1.0-alpha.61 — never-silent-gray + blank-preview fail-closed — 2026-08-09
 
 ### Community issues closed or honesty-labeled
 

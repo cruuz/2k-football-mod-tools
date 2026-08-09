@@ -522,7 +522,6 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_playbook_route_writer.py": "9607daa8b63b0afac400c34e82ad98a0253c2dd95b88aa3468aa86e82bd50698",
         "mod_editor/core/nfl2k5_formation_play_writer.py": "16c5bea6c83d9d6fb153dca806478f5b8731a5b975612a37772934ac6b7b0d8f",
         "mod_editor/core/nfl2k5_playbook_inspector.py": "f77f94c4d926d9fb5de55626bec8106e9c7a9b124e0553b724913922d8d3099f",
-        "mod_editor/core/playbook_package_rule_spike.py": "bebfaede2c62bd86dbc1e42d26443d0c84d82e9150220b67c13d30497f5ce953",
         "mod_editor/core/nfl2k5_universal_asset_index.py": "3bf99afe588f381d4604a883ad92a5bfbb1bb39391bce4acb5b97eda54bc27d7",
         "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "aea43c39b8101e9507930f6a9014cfebd966189bef1f96c297702bfb62acb7b9",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py": "4d292f46a4c7e8b590c636b0996ec6db1f7e1aa844d1a461faa372c95d4edc7b",

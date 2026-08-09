@@ -3,7 +3,7 @@
 ## Repo
 - Path: `/media/noah/Storage/for codex 1.0`
 - Branch: `main` (ahead of origin; do not force-push)
-- Versions: 2K5 **RC55** (`1.0.0rc55`) / APF **alpha.60** (`0.1.0-alpha.60`)
+- Versions: 2K5 **RC56** (`1.0.0rc56`) / APF **alpha.61** (`0.1.0-alpha.61`)
 - Recent: linear DXT preview; shell recommended path; equipment Stage explain;
   2K5 stadium Import/Export never silent-gray; pin cascade digital_font/SCNE
 
@@ -142,7 +142,7 @@ Evidence: `/tmp/grok-goal-d84b62e44b40/implementer/e1_reverify.md` + `e1_reverif
 
 ## Continuation block [2026-08-08T05:29:14-04:00]
 
-**Shipped this session (post RC55/alpha.60 never-gray wave):**
+**Shipped in RC56/alpha.61 (never-gray wave):**
 - APF: text Apply/Revert, Text Sheet Export/Import, ratings sheet Export/Import,
   Custom Team Write-raw (project-vs-raw teaching)
 - 2K5: Text & Rosters all Apply/Revert paths, Audio Export matching, Load waveform,

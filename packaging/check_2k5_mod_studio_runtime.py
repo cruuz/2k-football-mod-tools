@@ -131,7 +131,6 @@ REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
         "mod_editor/core/nfl2k5_safe_text_banks.py",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py",
         "mod_editor/core/nfl2k5_uniform_equipment_writer.py",
-        "mod_editor/core/playbook_package_rule_spike.py",
         "tools/apf_inner.py",
         "tools/apf_outer.py",
         "tools/nfl_crib_bar_monitor_png_xiso.py",

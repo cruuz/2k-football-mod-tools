@@ -6,7 +6,7 @@ writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
 
-## Unreleased (post-RC55 continuation) — crib drop-parity + never-gray G1/G2 — 2026-08-08
+## v1.0 RC56 — crib drop-parity + never-gray G1/G2 — 2026-08-09
 
 ### Community / product
 
