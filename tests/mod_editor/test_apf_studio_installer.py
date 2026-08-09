@@ -60,6 +60,10 @@ def _launcher_python() -> str:
     return sys.executable
 
 
+@unittest.skipIf(
+    os.name == "nt",
+    "the per-user XDG installer is POSIX-only; Windows ships the NSIS installer",
+)
 class ReleaseClosureTests(unittest.TestCase):
     def test_external_xma1_bridge_is_in_the_retail_free_runtime_closure(self) -> None:
         entries = set(_release_entries())
@@ -313,6 +317,10 @@ class ReleaseClosureTests(unittest.TestCase):
         self.assertIn("len(registry.capabilities) == 70", runtime)
 
 
+@unittest.skipIf(
+    os.name == "nt",
+    "the per-user XDG installer is POSIX-only; Windows ships the NSIS installer",
+)
 class PerUserPathTests(unittest.TestCase):
     def test_launcher_hands_its_exact_private_state_root_to_the_app(self) -> None:
         launcher = (
@@ -360,6 +368,10 @@ class PerUserPathTests(unittest.TestCase):
         self.assertIn("X-APF2K8-Mod-Studio-Managed=true", rendered)
 
 
+@unittest.skipIf(
+    os.name == "nt",
+    "the per-user XDG installer is POSIX-only; Windows ships the NSIS installer",
+)
 class PerUserLifecycleTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="apf-installer-lifecycle-")

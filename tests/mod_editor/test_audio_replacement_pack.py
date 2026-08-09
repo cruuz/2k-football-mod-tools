@@ -1143,24 +1143,37 @@ class AudioReplacementPackTests(unittest.TestCase):
         reached_final_call = False
 
         def race_at_final_call(
-            parent_descriptor: int, source_name: str, destination_name: str
+            parent_descriptor: object, source_name: str, destination_name: str
         ) -> None:
             nonlocal reached_final_call
             reached_final_call = True
-            os.mkdir(destination_name, mode=0o700, dir_fd=parent_descriptor)
-            marker = os.open(
-                f"{destination_name}/foreign.txt",
-                (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
-                0o600,
-                dir_fd=parent_descriptor,
-            )
+            flags = (
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL
+            ) | getattr(os, "O_BINARY", 0)
+            destination_handle = None
+            if isinstance(parent_descriptor, int):
+                os.mkdir(destination_name, mode=0o700, dir_fd=parent_descriptor)
+                marker = os.open(
+                    f"{destination_name}/foreign.txt",
+                    flags,
+                    0o600,
+                    dir_fd=parent_descriptor,
+                )
+            else:
+                parent_descriptor.mkdir(destination_name, 0o700)  # type: ignore[attr-defined]
+                destination_handle = parent_descriptor.open_dir(  # type: ignore[attr-defined]
+                    destination_name
+                )
+                marker = destination_handle.open("foreign.txt", flags, 0o600)
             try:
                 os.write(marker, b"foreign destination survives")
             finally:
                 os.close(marker)
+                if destination_handle is not None:
+                    destination_handle.close()
             real_rename_noreplace(
                 parent_descriptor, source_name, destination_name
-            )
+            )  # type: ignore[arg-type]
 
         with (
             mock.patch.object(

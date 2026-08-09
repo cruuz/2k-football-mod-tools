@@ -1729,10 +1729,11 @@ class Apf2k8JerseyColorProvider:
         if len(argv) < 2:
             raise ProviderError("Typed APF provider argv has no allowlisted entry module")
         try:
-            relative = os.fspath(
-                Path(argv[1]).resolve(strict=False).relative_to(
-                    self.workspace.resolve(strict=True)
-                )
+            relative = (
+                Path(argv[1])
+                .resolve(strict=False)
+                .relative_to(self.workspace.resolve(strict=True))
+                .as_posix()
             )
         except (OSError, ValueError) as exc:
             raise ProviderError("Typed APF provider entry module is outside the workspace") from exc

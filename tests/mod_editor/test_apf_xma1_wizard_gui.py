@@ -11,6 +11,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 import stat
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -30,11 +31,38 @@ from mod_editor.apf_studio.gui import (  # noqa: E402
 )
 
 
-def _make_script(root: Path, name: str, body: str) -> Path:
-    script = root / name
-    script.write_text("#!/bin/sh\n" + body, encoding="utf-8")
+def _make_script(root: Path, name: str, behavior: str) -> Path:
+    bodies = {
+        "copy": "shutil.copyfile(sys.argv[1], sys.argv[2])\n",
+        "placeholders": (
+            "Path(sys.argv[2]).write_text('|'.join(sys.argv[3:6]), "
+            "encoding='utf-8')\n"
+            "shutil.copyfile(sys.argv[1], sys.argv[2] + '.tone')\n"
+        ),
+        "exit-2": "raise SystemExit(2)\n",
+        "silent": "pass\n",
+        "sleep": "time.sleep(5)\n",
+    }
+    script = root / f"{name}.py"
+    script.write_text(
+        "#!/usr/bin/env python3\n"
+        "from pathlib import Path\n"
+        "import shutil\n"
+        "import sys\n"
+        "import time\n"
+        + bodies[behavior],
+        encoding="utf-8",
+    )
     script.chmod(script.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
     return script
+
+
+def _fixture_invocation(script: Path) -> tuple[Path, tuple[str, ...]]:
+    """Run Python fixtures without relying on POSIX shebangs on Windows."""
+
+    if os.name == "nt":
+        return Path(sys.executable).resolve(), (str(script),)
+    return script, ()
 
 
 class ArgumentTemplateTests(unittest.TestCase):
@@ -86,10 +114,11 @@ class SmokeTestTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
 
     def test_a_working_encoder_passes_and_reports_its_output(self) -> None:
-        encoder = _make_script(self.root, "good-encoder", 'cp "$1" "$2"\n')
+        script = _make_script(self.root, "good-encoder", "copy")
+        encoder, leading = _fixture_invocation(script)
         result = run_xma1_smoke_test(
             executable=encoder,
-            arguments=("{input}", "{output}"),
+            arguments=(*leading, "{input}", "{output}"),
             work_dir=self.work,
         )
         self.assertTrue(result.testable)
@@ -101,14 +130,12 @@ class SmokeTestTests(unittest.TestCase):
         self.assertIn("Success", result.summary)
 
     def test_optional_placeholders_are_substituted(self) -> None:
-        encoder = _make_script(
-            self.root,
-            "placeholder-encoder",
-            'printf "%s|%s|%s" "$3" "$4" "$5" > "$2"\ncp "$1" "$2".tone\n',
-        )
+        script = _make_script(self.root, "placeholder-encoder", "placeholders")
+        encoder, leading = _fixture_invocation(script)
         result = run_xma1_smoke_test(
             executable=encoder,
             arguments=(
+                *leading,
                 "{input}",
                 "{output}",
                 "{channels}",
@@ -122,10 +149,11 @@ class SmokeTestTests(unittest.TestCase):
         self.assertEqual(output.read_text(encoding="utf-8"), "1|44100|44100")
 
     def test_a_failing_exit_code_is_reported_with_a_fix(self) -> None:
-        encoder = _make_script(self.root, "bad-encoder", "exit 2\n")
+        script = _make_script(self.root, "bad-encoder", "exit-2")
+        encoder, leading = _fixture_invocation(script)
         result = run_xma1_smoke_test(
             executable=encoder,
-            arguments=("{input}", "{output}"),
+            arguments=(*leading, "{input}", "{output}"),
             work_dir=self.work,
         )
         self.assertTrue(result.testable)
@@ -135,10 +163,11 @@ class SmokeTestTests(unittest.TestCase):
         self.assertIn("Fix:", result.summary)
 
     def test_a_clean_exit_without_output_is_reported_with_a_fix(self) -> None:
-        encoder = _make_script(self.root, "silent-encoder", "exit 0\n")
+        script = _make_script(self.root, "silent-encoder", "silent")
+        encoder, leading = _fixture_invocation(script)
         result = run_xma1_smoke_test(
             executable=encoder,
-            arguments=("{input}", "{output}"),
+            arguments=(*leading, "{input}", "{output}"),
             work_dir=self.work,
         )
         self.assertFalse(result.passed)
@@ -146,10 +175,11 @@ class SmokeTestTests(unittest.TestCase):
         self.assertIn("Fix:", result.summary)
 
     def test_an_encoded_size_template_cannot_be_tested_but_can_be_saved(self) -> None:
-        encoder = _make_script(self.root, "sized-encoder", 'cp "$1" "$2"\n')
+        script = _make_script(self.root, "sized-encoder", "copy")
+        encoder, leading = _fixture_invocation(script)
         result = run_xma1_smoke_test(
             executable=encoder,
-            arguments=("{input}", "{output}", "{encoded_size}"),
+            arguments=(*leading, "{input}", "{output}", "{encoded_size}"),
             work_dir=self.work,
         )
         self.assertFalse(result.testable)
@@ -169,10 +199,11 @@ class SmokeTestTests(unittest.TestCase):
         self.assertIn("Fix:", result.summary)
 
     def test_a_hung_encoder_times_out_with_a_fix(self) -> None:
-        encoder = _make_script(self.root, "slow-encoder", "sleep 5\n")
+        script = _make_script(self.root, "slow-encoder", "sleep")
+        encoder, leading = _fixture_invocation(script)
         result = run_xma1_smoke_test(
             executable=encoder,
-            arguments=("{input}", "{output}"),
+            arguments=(*leading, "{input}", "{output}"),
             work_dir=self.work,
             timeout_seconds=1,
         )
@@ -205,7 +236,8 @@ class WizardDialogTests(unittest.TestCase):
         return wizard
 
     def test_save_is_locked_until_the_tone_test_passes(self) -> None:
-        encoder = _make_script(self.root, "ui-encoder", 'cp "$1" "$2"\n')
+        script = _make_script(self.root, "ui-encoder", "copy")
+        encoder, leading = _fixture_invocation(script)
         wizard = self._wizard()
         # Never silent-gray: buttons stay clickable with disableReason walls.
         self.assertTrue(wizard.save_button.isEnabled())
@@ -218,6 +250,9 @@ class WizardDialogTests(unittest.TestCase):
         )
 
         wizard.encoder_path.setText(str(encoder))
+        wizard.arguments_editor.setPlainText(
+            "\n".join((*leading, "{input}", "{output}"))
+        )
         self.assertTrue(wizard.test_button.isEnabled())
         self.assertFalse(
             str(wizard.test_button.property("disableReason") or "").strip()
@@ -245,15 +280,21 @@ class WizardDialogTests(unittest.TestCase):
         )
 
     def test_accepting_builds_a_validated_encoder(self) -> None:
-        encoder = _make_script(self.root, "accept-encoder", 'cp "$1" "$2"\n')
+        script = _make_script(self.root, "accept-encoder", "copy")
+        encoder, leading = _fixture_invocation(script)
         wizard = self._wizard()
         wizard.encoder_path.setText(str(encoder))
+        wizard.arguments_editor.setPlainText(
+            "\n".join((*leading, "{input}", "{output}"))
+        )
         wizard._run_smoke_test()
         self.assertTrue(wizard._smoke_passed)
         wizard._accept_configuration()
         configured = wizard.encoder
         self.assertEqual(configured.executable, encoder.resolve())
-        self.assertEqual(configured.arguments, ("{input}", "{output}"))
+        self.assertEqual(
+            configured.arguments, (*leading, "{input}", "{output}")
+        )
         self.assertIsNone(configured.wine_executable)
 
     def test_recommended_template_button_fills_the_placeholders(self) -> None:
@@ -268,10 +309,13 @@ class WizardDialogTests(unittest.TestCase):
         )
 
     def test_an_untestable_template_unlocks_saving_with_an_explanation(self) -> None:
-        encoder = _make_script(self.root, "sized-ui-encoder", 'cp "$1" "$2"\n')
+        script = _make_script(self.root, "sized-ui-encoder", "copy")
+        encoder, leading = _fixture_invocation(script)
         wizard = self._wizard()
         wizard.encoder_path.setText(str(encoder))
-        wizard.arguments_editor.setPlainText("{input}\n{output}\n{encoded_size}")
+        wizard.arguments_editor.setPlainText(
+            "\n".join((*leading, "{input}", "{output}", "{encoded_size}"))
+        )
         wizard._run_smoke_test()
         self.assertFalse(wizard._smoke_passed)
         self.assertFalse(wizard._smoke_testable)

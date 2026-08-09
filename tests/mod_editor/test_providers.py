@@ -715,7 +715,11 @@ class ProviderTests(unittest.TestCase):
         )
         self.assertEqual(runner.calls[1][0][3:], expected_tail)
         for argv, cwd, _stage in runner.calls:
-            self.assertTrue(argv[1].endswith("tools/nfl2k5_scorebug_mod_project.py"))
+            self.assertTrue(
+                Path(argv[1]).as_posix().endswith(
+                    "tools/nfl2k5_scorebug_mod_project.py"
+                )
+            )
             self.assertEqual(cwd, Path(__file__).resolve().parents[2])
             self.assertNotIn(
                 self.registry.get(SCOREBUG_CAPABILITY_ID).raw["backend"]["command"],

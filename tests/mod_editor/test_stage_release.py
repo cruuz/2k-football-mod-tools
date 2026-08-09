@@ -41,7 +41,8 @@ class ReleaseStagingTests(unittest.TestCase):
             self.assertEqual((destination / "data.txt").read_bytes(), b"exact data\n")
             staged_launcher = destination / "bin/launch.sh"
             self.assertEqual(staged_launcher.read_bytes(), launcher.read_bytes())
-            self.assertTrue(staged_launcher.stat().st_mode & stat.S_IXUSR)
+            if os.name != "nt":
+                self.assertTrue(staged_launcher.stat().st_mode & stat.S_IXUSR)
 
     def test_refuses_existing_destination_without_touching_it(self) -> None:
         for kind in ("directory", "file", "dangling-symlink"):

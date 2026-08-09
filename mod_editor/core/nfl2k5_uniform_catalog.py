@@ -69,7 +69,10 @@ def _path_text(path: str | os.PathLike[str]) -> str:
         raise UniformCatalogError("Replacement PNG path must be a string or path") from exc
     _require(isinstance(value, str), "Replacement PNG path must be text, not bytes")
     _require(bool(value) and "\0" not in value, "Replacement PNG path cannot be empty")
-    return value
+    # Provider edit records are portable JSON contracts.  Preserve relative or
+    # absolute spelling while canonicalizing Windows separators so identical
+    # input emits identical manifest bytes on every supported host.
+    return value.replace("\\", "/")
 
 
 def _split_owners(value: object) -> tuple[str, ...]:

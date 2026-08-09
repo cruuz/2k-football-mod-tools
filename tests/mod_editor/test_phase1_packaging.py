@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import hashlib
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -17,6 +18,10 @@ release_gate = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(release_gate)
 
 
+@unittest.skipIf(
+    os.name == "nt",
+    "POSIX inode/link-count release audit runs in the dedicated Linux gate",
+)
 class ModStudioPackagingTests(unittest.TestCase):
     def test_source_version_and_visible_product_label_are_pinned(self) -> None:
         package_source = (ROOT / "mod_editor/__init__.py").read_text(

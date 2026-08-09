@@ -47,10 +47,10 @@ and
 
 | Asset | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz` | 10,984,825 | `c8d35307b80d3e9ddbc444490062c2e7796a342ffc7068954be76801c044133e` |
-| `2K5-Mod-Studio-1.0-RC56-Setup.exe` | 56,732,227 | `0c67efff2e2bea578b1763bb519118f17abe04c6e880792aa892106c70524ad8` |
-| `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz` | 1,651,744 | `9db37b3e20b2ece84305fa3fb14f3e8a2fb0884e2a87cde9a40d24a6444a4ceb` |
-| `APF-2K8-Mod-Studio-0.1.0-alpha.61-Setup.exe` | 52,692,124 | `5a0e193dd7721ce8b931e05f1cbea807e336ab7134a01df08fca57ce19cd934e` |
+| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz` | 10,984,920 | `781dbc2166da6c8eec11d0b8afa5ae1802110338a00c2672bdf66a42cff10bef` |
+| `2K5-Mod-Studio-1.0-RC56-Setup.exe` | 56,732,272 | `8c57e5470e12872b725db191589658852ea701537b47e0daceee636ec6c00d35` |
+| `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz` | 1,651,802 | `1e4162624713892270ebfde83247f0fd575dda426fbbf8b9794644be0854c954` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.61-Setup.exe` | 52,694,742 | `4a542e5e29e9f23625e31e8660fb2d3128acc0a518e038bdf857815ef96e5734` |
 
 The `.tar.gz.sha256` sidecars are attached with the archives. Windows installers
 are self-contained and reproducibly built, but not code-signed; the installer

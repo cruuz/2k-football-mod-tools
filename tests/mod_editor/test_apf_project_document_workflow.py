@@ -14,6 +14,7 @@ import zipfile
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
+from PyQt5 import sip  # noqa: E402
 from PyQt5.QtGui import QCloseEvent  # noqa: E402
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
@@ -272,8 +273,11 @@ class ApfActiveProjectWindowTests(unittest.TestCase):
         self.window._update_product_state()
 
     def tearDown(self) -> None:
-        self.window.deleteLater()
+        self.window._allow_close = True
+        self.window.close()
         self.application.processEvents()
+        if not sip.isdeleted(self.window):
+            sip.delete(self.window)
 
     def _first_save(self, destination: Path) -> None:
         self.window._mark_document_changed()

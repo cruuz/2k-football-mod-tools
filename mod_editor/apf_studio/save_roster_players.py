@@ -704,7 +704,12 @@ def inspect_bytes(source: bytes, *, source_path: Path = Path("Roster.ROS")) -> S
 
 
 def _read_regular(path: Path) -> bytes:
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
     try:
         descriptor = os.open(path, flags)
     except OSError as exc:
@@ -1121,7 +1126,14 @@ def verify_patch(
 
 def _reserve(path: Path, mode: int) -> int:
     _require(path.parent.is_dir(), f"destination directory does not exist: {path.parent}")
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags = (
+        os.O_WRONLY
+        | os.O_CREAT
+        | os.O_EXCL
+        | getattr(os, "O_BINARY", 0)
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
     try:
         return os.open(path, flags, mode)
     except OSError as exc:
