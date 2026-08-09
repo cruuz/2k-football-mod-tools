@@ -21,11 +21,11 @@ in 8-at-a-time batches). — do not treat this note as a sealed public release.
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The
-> source code and UI identify as the retail-free **`0.1.0-alpha.61` release
-> candidate**. This status does not claim that the candidate has been committed,
-> pushed, or published; the immutable archive receipts below are retained as
-> release history.
-> The previous
+> source code and UI identify as the retail-free **`0.1.0-alpha.61` release**,
+> published with 2K5 RC56 in `beta-29`. Current download receipts are recorded
+> in the Published releases section below; older immutable archive receipts are
+> retained as release history.
+> An older
 > sealed package is `0.1.0-alpha.34`; its `815,213`-byte archive checksum is
 > `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`
 > and is authenticated by the adjacent mode-`0444` `.sha256` sidecar.
@@ -255,7 +255,23 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-22` — 2026-07-28 · CURRENT
+### `beta-29` — 2026-08-09 · CURRENT (refreshed in place)
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-29>
+
+The refresh keeps the public Beta 29 / RC56 / alpha.61 identities and corrects
+the shared updater build tag from `beta-22` to `beta-29` in both products.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz` | 10,985,098 | `7ec2a1916efd8bb2deb47493e18a12035c982d398b2c4e5ec6f26cc1adb75cb9` |
+| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz.sha256` | 107 | `9d0fc23c219f2e32d469c4c8ac87da9bea359b61362c4280ddb7257e8d16fe0f` |
+| `2K5-Mod-Studio-1.0-RC56-Setup.exe` | 56,722,195 | `64d783446f0297bbb26ab9c6fa44d5bf10a5e5a1fb49369014d32c28c9c46cc8` |
+| `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz` | 1,651,940 | `34768b81845d8feb6c5ba891be4d8c1a880ea3169312003254aa5081e474bb26` |
+| `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz.sha256` | 115 | `0122a5ce9746da1f9f644ff3d4472b1253315d0957610d8902ce2e55c3a1f394` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.61-Setup.exe` | 52,688,569 | `7d5a909d45847f4845814d16239cd981171abd9f48d07a62cf3a97b143bb9388` |
+
+### `beta-22` — 2026-07-28 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-22>
 

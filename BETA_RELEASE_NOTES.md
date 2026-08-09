@@ -6,6 +6,11 @@
 
 **APF 2K8 Mod Studio:** `v0.1.0-alpha.61`
 
+> **Beta 29 refresh (2026-08-09):** The assets were rebuilt in place after a
+> stale shared updater label made both editors report `beta-22` and offer Beta
+> 29 to Beta 29 users. Product versions remain RC56 / alpha.61. If an earlier
+> Beta 29 download shows that notice, download the refreshed Beta 29 build.
+
 This beta closes the editor-completion marathon with installable Windows builds
 and portable source archives for both products. The changelogs remain the
 feature-level source of truth:
@@ -47,10 +52,10 @@ and
 
 | Asset | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz` | 10,984,920 | `781dbc2166da6c8eec11d0b8afa5ae1802110338a00c2672bdf66a42cff10bef` |
-| `2K5-Mod-Studio-1.0-RC56-Setup.exe` | 56,732,272 | `8c57e5470e12872b725db191589658852ea701537b47e0daceee636ec6c00d35` |
-| `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz` | 1,651,802 | `1e4162624713892270ebfde83247f0fd575dda426fbbf8b9794644be0854c954` |
-| `APF-2K8-Mod-Studio-0.1.0-alpha.61-Setup.exe` | 52,694,742 | `4a542e5e29e9f23625e31e8660fb2d3128acc0a518e038bdf857815ef96e5734` |
+| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz` | 10,985,098 | `7ec2a1916efd8bb2deb47493e18a12035c982d398b2c4e5ec6f26cc1adb75cb9` |
+| `2K5-Mod-Studio-1.0-RC56-Setup.exe` | 56,722,195 | `64d783446f0297bbb26ab9c6fa44d5bf10a5e5a1fb49369014d32c28c9c46cc8` |
+| `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz` | 1,651,940 | `34768b81845d8feb6c5ba891be4d8c1a880ea3169312003254aa5081e474bb26` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.61-Setup.exe` | 52,688,569 | `7d5a909d45847f4845814d16239cd981171abd9f48d07a62cf3a97b143bb9388` |
 
 The `.tar.gz.sha256` sidecars are attached with the archives. Windows installers
 are self-contained and reproducibly built, but not code-signed; the installer

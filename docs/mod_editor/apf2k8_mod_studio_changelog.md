@@ -2,6 +2,12 @@
 
 ## 0.1.0-alpha.61 — never-silent-gray + blank-preview fail-closed — 2026-08-09
 
+### Beta 29 refresh
+
+- **Updater identity corrected** — alpha.61 now identifies its release channel
+  as `beta-29`, not the stale `beta-22` packaging label, so manual and automatic
+  checks no longer offer Beta 29 to an already-current Beta 29 build.
+
 ### Community issues closed or honesty-labeled
 
 - **Import / Replace gray with no explanation (Discord class)** — expanded

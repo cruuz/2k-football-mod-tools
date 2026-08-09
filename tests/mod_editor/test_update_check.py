@@ -86,6 +86,13 @@ class ComparisonTests(unittest.TestCase):
         self.assertFalse(status.available)
         self.assertIn("up to date", status.headline)
 
+    def test_beta_29_build_does_not_offer_itself(self) -> None:
+        with _serve([_release("beta-29", prerelease=False)]):
+            status = update_check.check()
+        self.assertFalse(status.available)
+        self.assertEqual(status.current_tag, "beta-29")
+        self.assertEqual(status.latest_tag, "beta-29")
+
     def test_the_newest_entry_wins_and_drafts_are_skipped(self) -> None:
         with _serve([
             _release("beta-99", draft=True),
@@ -193,6 +200,9 @@ class LinkSafetyTests(unittest.TestCase):
 class BuildTagTests(unittest.TestCase):
     def test_the_build_tag_looks_like_a_release_tag(self) -> None:
         self.assertTrue(update_check._TAG.match(update_check.BUILD_RELEASE_TAG))
+
+    def test_the_build_tag_matches_beta_29(self) -> None:
+        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-29")
 
 
 if __name__ == "__main__":

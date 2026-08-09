@@ -8,6 +8,12 @@ build path.
 
 ## v1.0 RC56 — crib drop-parity + never-gray G1/G2 — 2026-08-09
 
+### Beta 29 refresh
+
+- **Updater identity corrected** — RC56 now identifies its release channel as
+  `beta-29`, not the stale `beta-22` packaging label, so manual and automatic
+  checks no longer offer Beta 29 to an already-current Beta 29 build.
+
 ### Community / product
 
 - **G2 multi-Ace link-table pack** — Export G2 multi-Ace pack… copies the Quads
