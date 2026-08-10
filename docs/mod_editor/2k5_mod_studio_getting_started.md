@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC58 — Getting Started
+# 2K5 Mod Studio v1.0 RC59 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -6,7 +6,7 @@ master copy: the app reads it, remembers your edits in a separate project, and
 creates a new modded copy when you click Build. It never writes changes into
 the master.
 
-RC58 accepts validated USA retail ISO layouts without treating harmless wrapper
+RC59 accepts validated USA retail ISO layouts without treating harmless wrapper
 padding or partition placement as different game content. Stadium Studio,
 visual and Crib originals, and private audio safety data share the same
 independently verified cache. The app still guards the exact file you selected

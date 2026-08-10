@@ -181,6 +181,7 @@ from .product_findings import gameplay_snapshot, presentation_snapshot
 from .roster_workspace_qt import RosterReservePlanner
 from .save_playbooks_qt import SavePlaybookAssignmentsPanel
 from .playbook_route_qt import PlayAssignmentRoutePanel
+from .playbook_membership_qt import ApfPlaybookMembershipPanel
 from .save_roster_players_qt import SaveRosterPlayersPanel
 from .stadium import ApfStadiumPreview, ApfStadiumScene
 from .stadium_material_findings import load_stadium_material_findings
@@ -3851,6 +3852,22 @@ class ApfTeamLogoPanel(QFrame):
             ),
         )
         specs.addWidget(self.crest_cache_pill)
+        specs.addWidget(
+            _spec_pill(
+                "Two layers · one mark",
+                tooltip=(
+                    "A crest is six region masks across two textures: logo_l0 "
+                    "carries regions 0-2 in its R/G/B and logo_l1 carries "
+                    "regions 3-5, each filled from its own palette entry. 79 "
+                    "of the 118 packages use both. One image dropped here is "
+                    "written to logo_l0 and the detail layer's masks are "
+                    "cleared, so your mark is drawn exactly once — putting the "
+                    "same art in both would draw it again in the other three "
+                    "colours. Use Export both layers to see the real masks, and "
+                    "tools/apf_logo_patch.py --png/--png-l1 to author both."
+                ),
+            )
+        )
         specs.addStretch(1)
 
         slot_row = QHBoxLayout()
@@ -3985,6 +4002,18 @@ class ApfTeamLogoPanel(QFrame):
         actions.setSpacing(8)
         self.export_button = QPushButton("Export original PNG…")
         self.export_button.setObjectName("secondaryButton")
+        # A crest is two region-mask textures, and 79 of the 118 packages use
+        # both. Offering only one flattened export hid the layer a modder has
+        # to see before they can author a real crest.
+        self.export_layers_button = QPushButton("Export both layers…")
+        self.export_layers_button.setObjectName("secondaryButton")
+        layers_tip = (
+            "Load a team logo first, then export logo_l0 and logo_l1 as "
+            "separate PNGs."
+        )
+        self.export_layers_button.setEnabled(True)
+        self.export_layers_button.setToolTip(layers_tip)
+        self.export_layers_button.setProperty("disableReason", layers_tip)
         self.master_button = QPushButton(
             "Save high-resolution authoring master…"
         )
@@ -4032,11 +4061,13 @@ class ApfTeamLogoPanel(QFrame):
             "route; it creates no Xenia patch and never edits default.xex."
         )
         self.export_button.clicked.connect(self._export_original)
+        self.export_layers_button.clicked.connect(self._export_both_layers)
         self.master_button.clicked.connect(self._save_authoring_master)
         self.replace_button.clicked.connect(self._choose_replacement)
         self.revert_button.clicked.connect(self._revert)
         self.build_button.clicked.connect(self._build_copied_volume)
         actions.addWidget(self.export_button)
+        actions.addWidget(self.export_layers_button)
         actions.addWidget(self.master_button)
         actions.addWidget(self.edit_button)
         actions.addWidget(self.place_button)
@@ -4681,6 +4712,17 @@ class ApfTeamLogoPanel(QFrame):
         self.build_button.setToolTip(build_tip)
         self.revert_button.setToolTip(revert_tip)
         self.export_button.setProperty("disableReason", "" if ready else load_tip)
+        self.export_layers_button.setEnabled(True)
+        self.export_layers_button.setToolTip(
+            "Save this crest's two region-mask layers as separate PNGs. "
+            "logo_l0 carries regions 0-2 and logo_l1 regions 3-5; 79 of the "
+            "118 crest packages use both."
+            if ready
+            else load_tip
+        )
+        self.export_layers_button.setProperty(
+            "disableReason", "" if ready else load_tip
+        )
         self.replace_button.setProperty("disableReason", "" if ready else load_tip)
         self.build_button.setProperty("disableReason", build_block)
         self.revert_button.setProperty(
@@ -4888,6 +4930,79 @@ class ApfTeamLogoPanel(QFrame):
             ),
             True,
         )
+
+    def _export_both_layers(self) -> None:
+        """Save this crest's two region-mask layers as separate PNGs.
+
+        A crest is six region masks: ``logo_l0`` carries regions 0-2 in its
+        R/G/B and ``logo_l1`` carries regions 3-5, and 79 of the game's 118
+        packages use both. Exporting one flattened picture hid that, so anyone
+        wanting to edit a real crest had no way to see what they were editing.
+        """
+
+        reason = str(self.export_layers_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(
+                self, "Cannot export the crest layers yet", reason
+            )
+            return
+        directory = QFileDialog.getExistingDirectory(
+            self,
+            "Choose a folder for this crest's two layers",
+            str(Path.home()),
+        )
+        if not directory:
+            return
+        crest = self.selected_crest()
+        stem = f"uniform_logo_{crest.asset_index:02d}"
+        folder = Path(directory)
+        targets = (folder / f"{stem}_logo_l0.png", folder / f"{stem}_logo_l1.png")
+        existing = [str(path) for path in targets if path.exists()]
+        if existing:
+            QMessageBox.information(
+                self,
+                "Choose an empty folder",
+                "Exports never overwrite an existing file. These already "
+                "exist:\n\n" + "\n".join(existing),
+            )
+            return
+        source = self.facade.source
+        index_0a = getattr(source, "index_0a", None) if source is not None else None
+        if index_0a is None:
+            return
+
+        def operation(progress: Callable[[str, int, int], None]) -> tuple[Path, Path]:
+            from PIL import Image
+
+            progress("Decoding both crest layers", 0, 2)
+            writer = self._writer_module()
+            rgba_l0, rgba_l1 = writer.read_logo_layers(
+                Path(index_0a), crest.outer_entry_index
+            )
+            for step, (rgba, target) in enumerate(
+                zip((rgba_l0, rgba_l1), targets), start=1
+            ):
+                Image.frombytes(
+                    "RGBA", (self._WIDTH, self._HEIGHT), bytes(rgba)
+                ).save(target)
+                progress("Writing crest layer PNGs", step, 2)
+            return targets
+
+        def done(result: object) -> None:
+            first, second = result  # type: ignore[misc]
+            QMessageBox.information(
+                self,
+                "Crest layers exported",
+                f"Saved:\n{first}\n{second}\n\n"
+                "These are region masks, not painted pictures: R, G and B each "
+                "select a region the game fills with one flat colour. logo_l0 "
+                "holds regions 0-2 and logo_l1 holds regions 3-5.\n\n"
+                "Dropping a single image here writes it to logo_l0 and clears "
+                "logo_l1, so your mark is drawn exactly once. To author both "
+                "layers, use tools/apf_logo_patch.py with --png and --png-l1.",
+            )
+
+        self.run_task("Exporting both crest layers", operation, done, True)
 
     def _choose_replacement(self) -> None:
         reason = str(self.replace_button.property("disableReason") or "").strip()
@@ -17703,6 +17818,14 @@ class InspectorCategoryPage(QWidget):
             if category is ApfCategory.PLAYBOOKS
             else None
         )
+        # Swapping whole books is a coarse control -- the book names in a save
+        # collapse to a handful of real types -- so the product also edits which
+        # plays a formation actually offers.
+        self.playbook_membership = (
+            ApfPlaybookMembershipPanel(facade, run_task)
+            if category is ApfCategory.PLAYBOOKS
+            else None
+        )
         self.workspace_tabs: QTabWidget | None = None
         self.inspector.modifiedChanged.connect(self.modifiedChanged)
         self.inspector.audioAnnotationChanged.connect(
@@ -17712,6 +17835,8 @@ class InspectorCategoryPage(QWidget):
             self.assets.modifiedChanged.connect(self.modifiedChanged)
         if self.playbook_routes is not None:
             self.playbook_routes.modifiedChanged.connect(self.modifiedChanged)
+        if self.playbook_membership is not None:
+            self.playbook_membership.modifiedChanged.connect(self.modifiedChanged)
         if not include_assets:
             layout.addWidget(self.inspector, 1)
         elif category in {
@@ -17738,6 +17863,7 @@ class InspectorCategoryPage(QWidget):
                 tabs.addTab(self.assets, "&Raw Roster Assets")  # type: ignore[arg-type]
             elif category is ApfCategory.PLAYBOOKS:
                 tabs.addTab(self.inspector, "PLAY / DRCT Inspector")
+                tabs.addTab(self.playbook_membership, "Fine-tune Plays")  # type: ignore[arg-type]
                 tabs.addTab(self.playbook_routes, "Assignment Routes")  # type: ignore[arg-type]
                 tabs.addTab(self.save_playbooks, "Save Assignments")  # type: ignore[arg-type]
                 tabs.addTab(self.assets, "Raw Playbook Assets")  # type: ignore[arg-type]

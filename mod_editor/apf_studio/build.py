@@ -184,7 +184,16 @@ def compile_full_shell_crest_entries(
         nonlocal completed
         slot = slot_by_outer[entry_index]
         if slot.asset_index == selected_asset_index:
-            output = (carrier.atlas_rgba, carrier.atlas_rgba)
+            # One supplied mark belongs in one layer. A crest is six region
+            # masks -- logo_l0 carries regions 0-2 and logo_l1 regions 3-5 --
+            # so putting the same art in both draws it a second time in the
+            # other three palette colours. Clear the detail layer's masks and
+            # keep its alpha: exactly the shape 39 retail packages already ship
+            # for a crest that uses no detail layer.
+            output = (
+                carrier.atlas_rgba,
+                apf_logo_patch.cleared_detail_rgba(retail_l1),
+            )
         else:
             atlas_l0, report_l0 = apf_helmet_crest_wrap_patch.bake_retail_crest_atlas(
                 parsed_source.system, retail_l0
@@ -206,11 +215,13 @@ def compile_full_shell_crest_entries(
         cached_transform,
         max_workers=package_workers,
     )
+    # The cached copy must agree with the package copy about how many times the
+    # mark is drawn, or the frontend tile and the helmet disagree.
     cache = apf_logocache_patch.build_cache_patch(
         Path(index_path),
         selected_asset_index,
         Path(semantic_png),
-        png_l1=Path(semantic_png),
+        clear_l1=True,
     )
     cache_structure_verification = apf_logocache_verify.verify_cache_structure(
         cache.directory_bytes, cache.payload_bytes
@@ -1994,17 +2005,25 @@ class ApfBuildService:
             }
             return full_shell.entries, row
         try:
+            # A crest is six region masks split across two textures: logo_l0
+            # carries regions 0-2 and logo_l1 regions 3-5, each filled from its
+            # own palette entry. Mirroring one staged mark into both layers
+            # therefore drew it twice, the second time in the other three
+            # colours -- which is what a modder sees as a wrong-looking crest,
+            # and it happened on all 118 packages (79 of which ship real detail
+            # art of their own). One supplied mark goes in logo_l0 and the
+            # detail layer's masks are cleared, keeping its alpha exactly.
             package = apf_logo_patch.build_patch(
                 self.source.index_0a,
                 modification.replacement_path,
                 entry_index=outer_index,
-                png_path_l1=modification.replacement_path,
+                clear_l1=True,
             )
             cache = apf_logocache_patch.build_cache_patch(
                 self.source.index_0a,
                 asset_index,
                 modification.replacement_path,
-                png_l1=modification.replacement_path,
+                clear_l1=True,
             )
         except (
             OSError,

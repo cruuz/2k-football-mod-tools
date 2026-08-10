@@ -5,6 +5,21 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC59 — stadium caches recover instead of dead-ending — 2026-08-10
+
+### Fixed
+
+- **"Private Stadium Studio result marker is incompatible or incomplete".**
+  Beta 30 rebound derived stadium assets to the canonical game-content identity
+  instead of a container hash — the right fix — but every private cache written
+  before that change then failed its own marker check with no way back. Anyone
+  who had already opened Stadium Studio met this error on every launch, on a
+  game that had worked, with the only remedy being to delete a private directory
+  nobody had told them about.
+  A cache this build cannot read is now treated as stale and re-derived
+  automatically. Safety refusals are unchanged and still refuse: a symlink, a
+  junction, or anything outside the private root is never removed automatically.
+
 ## v1.0 RC58 — findable stadium geometry + real xemu setup — 2026-08-10
 
 ### Stadium models

@@ -1,5 +1,45 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.64 — two-layer crests, and playbook fine-tuning — 2026-08-10
+
+### The reported crest bug, root-caused
+
+- **One image was being written into both crest layers.** A crest is not one
+  picture and not even three masks — it is **six region masks split across two
+  textures**. The shader binds `Layer0`/`Layer1` at `s0`/`s1` with a six-entry
+  palette and Region0–Region5 weights, so `logo_l0` carries regions 0-2 and
+  `logo_l1` carries regions 3-5. Writing your art into both drew it a second
+  time in the other three palette colours.
+- Measured across all 118 crest packages: **none** have identical layers,
+  **79 carry real detail art** in `logo_l1`, and **39 ship a `logo_l1` whose
+  RGB is zero with its alpha untouched** — retail's own shape for a crest that
+  uses no detail layer.
+- One dropped image now goes to `logo_l0` and the detail layer's region masks
+  are cleared with its alpha copied through byte-for-byte, so your mark is drawn
+  exactly once. To author both layers, use `tools/apf_logo_patch.py --png
+  --png-l1`; `--clear-l1` is the new single-image treatment.
+- **Export both layers…** saves `logo_l0` and `logo_l1` as separate PNGs, so the
+  masks are visible before you edit them.
+
+### Playbooks: fine-tune what a formation offers
+
+- **New Playbooks → Fine-tune Plays.** Pick any of MASTER's 163 formations and
+  tick plays in or out of it. APF stores one fixed 74-byte bitmap per formation
+  over the book's 586 plays, so each change is a single bit inside a fixed
+  allocation: nothing moves, no count changes, the resource keeps its exact byte
+  extent, and an independent verifier re-derives every changed byte before a
+  copied `0A` is written.
+- This is the level below book assignment. The 36 offensive and 33 defensive
+  book records in a roster save are **labels**: measured on two real saves they
+  resolve to **7 offensive and 4 defensive** actual books (plus user books), so
+  reassigning a team from one name to another frequently changes nothing.
+- Boundary, stated plainly: this edits the book the game selects plays from.
+  Whether the CPU's play-calling reads the same table is **not** proved. The
+  stock CPU books are 15 separate on-disc `SPLB` resources; editing those
+  directly is not offered yet.
+
+- The shared updater identity is `beta-32`.
+
 ## 0.1.0-alpha.63 — browsed rows reach their real editor — 2026-08-10
 
 ### Community issue closed

@@ -747,6 +747,31 @@ def _extract_layer(
     )
 
 
+def cleared_detail_rgba(rgba: bytes) -> bytes:
+    """One detail layer with every region mask cleared and its alpha kept.
+
+    A crest is a six-region mask split across two textures: ``logo_l0`` carries
+    regions 0-2 in its R/G/B and ``logo_l1`` carries regions 3-5, and the shader
+    fills each marked region from its own palette entry.  Writing the same art
+    into both therefore draws the mark twice, once in the wrong three colours.
+
+    "Cleared" is not invented here.  Thirty-nine of the game's own 118 crest
+    packages ship a ``logo_l1`` whose R/G/B is zero everywhere while its alpha
+    field is untouched -- that is retail's own shape for a crest that uses no
+    detail layer, and it is exactly what this reproduces.  Only the three
+    channels that select regions are changed; alpha is copied through, so the
+    edit cannot depend on a theory about what alpha means.
+    """
+
+    if len(rgba) != WIDTH * HEIGHT * 4:
+        raise PatchError("a crest layer must be exactly 512x512 RGBA")
+    cleared = bytearray(rgba)
+    cleared[0::4] = bytes(WIDTH * HEIGHT)
+    cleared[1::4] = bytes(WIDTH * HEIGHT)
+    cleared[2::4] = bytes(WIDTH * HEIGHT)
+    return bytes(cleared)
+
+
 def read_logo_layers(
     index_path: Path,
     entry_index: int,
@@ -913,18 +938,31 @@ def build_patch(
     png_path_l1: Path | None = None,
     file_index_l1: int | None = None,
     regenerate_mips: bool = True,
+    clear_l1: bool = False,
 ) -> PatchResult:
     """Build a rebuilt uniform_logo entry with ``logo_l0`` (and optionally ``logo_l1``).
 
-    With ``png_path_l1`` omitted this writes only ``logo_l0`` (inner file 1) and
-    byte-preserves the sibling ``logo_l1`` layer, exactly as before.  With
-    ``png_path_l1`` supplied it co-writes both shared scorebug/crest sampler
-    layers: both base levels are re-encoded, both 0x2C000 packed mip tails are
-    regenerated from their corresponding edited base, and the single shared
-    VRAM block is recompressed once inside the fixed outer allocation (or the
-    writer fails closed).
+    Three detail-layer treatments, because a crest is six region masks split
+    across two textures and each treatment is right for a different job:
+
+    * ``png_path_l1`` supplied -- co-write both layers from the caller's own two
+      masks.  Both base levels are re-encoded, both 0x2C000 packed mip tails are
+      regenerated from their corresponding edited base, and the single shared
+      VRAM block is recompressed once inside the fixed outer allocation (or the
+      writer fails closed).
+    * ``clear_l1`` -- write ``logo_l0`` from the caller's art and clear the
+      detail layer's region masks, so the new mark renders exactly once.  This
+      is the correct treatment for one supplied image: mirroring that image into
+      both layers draws it twice, in two different palette colours.
+    * neither -- write only ``logo_l0`` and byte-preserve the sibling layer.
+      The game's own detail linework then stays on top of the new art, which is
+      only what you want when you are deliberately editing the fill alone.
     """
 
+    if png_path_l1 is not None and clear_l1:
+        raise PatchError(
+            "choose one detail-layer treatment: supply logo_l1 art, or clear it"
+        )
     archive, entry, record, original_entry, original_blocks, original_stored = (
         _open_entry(index_path, entry_index)
     )
@@ -935,6 +973,28 @@ def build_patch(
         file_index = found_l0
     if file_index_l1 is None:
         file_index_l1 = found_l1
+    if clear_l1:
+        retail_l1 = _extract_layer(
+            record,
+            original_blocks,
+            file_index_l1,
+            SIBLING_NAME,
+            pinned_base_sha(entry_index, SIBLING_NAME),
+        )
+        return _build_dual_layer_rgba_opened(
+            index_path,
+            _load_png(png_path, WIDTH, HEIGHT),
+            cleared_detail_rgba(retail_l1.rgba),
+            entry_index,
+            file_index,
+            file_index_l1,
+            entry,
+            record,
+            original_entry,
+            original_blocks,
+            original_stored,
+            regenerate_mips,
+        )
     if png_path_l1 is None:
         return _build_single_layer(
             index_path,
@@ -1892,6 +1952,14 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         help="optional edited 512x512 RGBA PNG for logo_l1; co-writes both shared layers",
     )
+    parser.add_argument(
+        "--clear-l1",
+        action="store_true",
+        help="clear the detail layer's region masks (keeping its alpha) so one "
+             "supplied mark renders exactly once; use instead of --png-l1 when "
+             "you have a single image, because the two layers carry regions "
+             "0-2 and 3-5 of the same crest and are not interchangeable",
+    )
     parser.add_argument("--entry-index", type=int, default=ENTRY_INDEX)
     # Left unset the layers are found by name, which is what makes the writer
     # work on every crest package rather than only the one whose inner-file
@@ -1946,6 +2014,7 @@ def main(argv: list[str] | None = None) -> int:
             png_path_l1=png_path_l1,
             file_index_l1=args.file_index_l1,
             regenerate_mips=not args.preserve_mips,
+            clear_l1=args.clear_l1,
         )
         archive = apf_outer.parse_archive(index_path)
         entry = archive.entries[args.entry_index]

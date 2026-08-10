@@ -165,6 +165,10 @@ class PanelTests(unittest.TestCase):
                 ],
                 [
                     "PLAY / DRCT Inspector",
+                    # Fine-tune Plays edits which plays a formation offers --
+                    # the level below reassigning whole books, which the book
+                    # table makes a coarse control.
+                    "Fine-tune Plays",
                     "Assignment Routes",
                     "Save Assignments",
                     "Raw Playbook Assets",

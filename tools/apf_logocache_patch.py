@@ -75,6 +75,7 @@ import apf_outer  # noqa: E402
 from apf_logo_patch import (  # noqa: E402
     BASE_LEN,
     MIP_LEN,
+    cleared_detail_rgba,
     rebuild_mip_tail,
     OutputReservation,
     PatchError,
@@ -540,9 +541,20 @@ def build_cache_patch(
     catalog_index: int,
     png_l0: Path,
     png_l1: Path | None = None,
+    clear_l1: bool = False,
 ) -> CachePatchResult:
-    """Rewrite catalog ``N``'s logo_l0 (and optionally logo_l1) inside the cache."""
+    """Rewrite catalog ``N``'s logo_l0 (and optionally logo_l1) inside the cache.
 
+    ``clear_l1`` clears the cached detail layer's region masks while keeping its
+    alpha, matching the package writer's treatment of one supplied mark.  The
+    two copies of a crest have to agree, or the frontend tile and the helmet
+    disagree about how many times the mark is drawn.
+    """
+
+    if png_l1 is not None and clear_l1:
+        raise PatchError(
+            "choose one detail-layer treatment: supply logo_l1 art, or clear it"
+        )
     if not 0 <= catalog_index < CATALOG_COUNT:
         raise PatchError(f"catalog index {catalog_index} is outside 0..{CATALOG_COUNT - 1}")
 
@@ -553,17 +565,22 @@ def build_cache_patch(
 
     name_l0 = f"{catalog_index:02d}_logo_l0"
     name_l1 = f"{catalog_index:02d}_logo_l1"
-    targets: list[tuple[_CacheLayerTarget, Path]] = [
+    # A target's art is either a PNG the caller supplied or exact RGBA this
+    # writer derived from the cached retail layer.
+    targets: list[tuple[_CacheLayerTarget, Path | bytes]] = [
         (_extract_target(directory, pay_raw, name_l0, None), png_l0)
     ]
     if png_l1 is not None:
         targets.append((_extract_target(directory, pay_raw, name_l1, None), png_l1))
+    elif clear_l1:
+        detail = _extract_target(directory, pay_raw, name_l1, None)
+        targets.append((detail, cleared_detail_rgba(detail.rgba)))
 
     edits: dict[int, bytes] = {}
     # (target, wanted_rgba, new_base, new_stored_b)
     changed: list[tuple[_CacheLayerTarget, bytes, bytes, bytes, bytes]] = []
-    for target, png in targets:
-        wanted = _load_png(png, 512, 512)
+    for target, art in targets:
+        wanted = art if isinstance(art, bytes) else _load_png(art, 512, 512)
         if wanted == target.rgba:
             continue
         new_base = encode_4444_base(target.metadata, wanted)

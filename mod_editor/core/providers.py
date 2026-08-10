@@ -526,7 +526,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "aea43c39b8101e9507930f6a9014cfebd966189bef1f96c297702bfb62acb7b9",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py": "4d292f46a4c7e8b590c636b0996ec6db1f7e1aa844d1a461faa372c95d4edc7b",
         "mod_editor/core/nfl2k5_build_service.py": "49b01dac2da660b2c582bee57765fc4abbfdb68a2cd0efe287dbb9097c344cee",
-        "mod_editor/core/nfl2k5_stadium_cache.py": "a4ec5987a578d1a4eb314b0e04515522897f6aa7010a92bc9abbd68af36b5e66",
+        "mod_editor/core/nfl2k5_stadium_cache.py": "24bc748223ba18aaad0f1c8347fddd9967a2c5a01dd5caaa2e843985ca00349e",
         "mod_editor/core/nfl2k5_stadium_studio.py": "54fc34b0f72b0f8d98d5599e49bd4735a0e51a3d6067963e188190f9a5bb6430",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "5e205827d9fcec50ef9999cd508469481a718816947ecb42c346182325c5ed6b",

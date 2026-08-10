@@ -1,3 +1,79 @@
+# beta-32 — RC59 / alpha.64
+
+**Date:** 2026-08-10
+
+**2K5 Mod Studio:** `v1.0-RC59`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.64`
+
+## Crest replacement was writing your image into both layers
+
+Reported after Beta 31, and the cause is deeper than "logos have two images".
+A crest is **six region masks split across two textures**: the shader binds
+`Layer0`/`Layer1` with a six-entry palette and Region0–Region5 weights, so
+`logo_l0` carries regions 0–2 and `logo_l1` carries regions 3–5. Mirroring one
+staged image into both drew your mark a second time in the other three palette
+colours.
+
+Measured across all 118 crest packages: **none** have identical layers,
+**79 carry real detail art** in `logo_l1`, and **39 ship a `logo_l1` whose RGB
+is zero with its alpha untouched** — retail's own shape for a crest with no
+detail layer. One dropped image now goes to `logo_l0` and the detail layer's
+masks are cleared with its alpha copied byte-for-byte, so your mark is drawn
+exactly once.
+
+**Export both layers…** saves `logo_l0` and `logo_l1` as separate PNGs. To
+author both, `tools/apf_logo_patch.py --png --png-l1`.
+
+## Stadium Studio: "result marker is incompatible or incomplete"
+
+Beta 30 rebound derived stadium assets to the canonical game-content identity
+instead of a container hash. That was the right fix and it left every private
+cache written before it failing its own marker check **with no way back** — so
+anyone who had already opened Stadium Studio met this error on every launch, on
+a game that used to work, with the only remedy being to delete a private
+directory nobody had told them about.
+
+A cache this build cannot read is now treated as stale and re-derived
+automatically. Safety refusals are unchanged and still refuse: a symlink, a
+junction, or anything outside the private root is never removed automatically.
+
+## Playbooks: fine-tune what a formation offers
+
+New **Playbooks → Fine-tune Plays**. Pick any of MASTER's 163 formations and
+tick plays in or out of it. APF stores one fixed 74-byte bitmap per formation
+over the book's 586 plays, so each change is a single bit inside a fixed
+allocation — nothing moves, no count changes, the resource keeps its exact byte
+extent, and an independent verifier re-derives every changed byte before a
+copied `0A` is written.
+
+This is the level below book assignment, and that matters: the 36 offensive and
+33 defensive book records in a roster save are **labels**. Measured on two real
+saves they resolve to **7 offensive and 4 defensive** actual books (plus user
+books), so reassigning a team from one book name to another frequently changes
+nothing at all. The stock books themselves are 15 separate on-disc `SPLB`
+resources.
+
+**Boundary, unsoftened:** this edits the book the game selects plays from.
+Whether the CPU's play-calling reads the same table is **not** proved, and
+editing the `SPLB` books directly is not offered yet.
+
+## Release integrity
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC59-20260810.tar.gz` | 10,993,241 | `5048eda1bef446bc5ee893aaced4222446b987a59848e1004537f2c61888d384` |
+| `2K5-Mod-Studio-v1.0-RC59-20260810.tar.gz.sha256` | 107 | `e733354a48943354f2026ef51ff04624a2a1d1a2f8276540e708b6052f7c04d4` |
+| `2K5-Mod-Studio-1.0-RC59-Setup.exe` | 56,727,634 | `c1ce238da1fa9a69d0bbd0b029310117dcf21264b2736a235f0a003c00f6bc5a` |
+| `apf2k8-mod-studio-0.1.0-alpha.64-20260810.tar.gz` | 1,675,531 | `c6e9f94ad2dfc89c7183d1bf898431c2d295822f0cb1c715c00b982a652637c2` |
+| `apf2k8-mod-studio-0.1.0-alpha.64-20260810.tar.gz.sha256` | 115 | `f1bf33d4666089e108c5859dd23e11ebec9d6260dc588d9973e4c6163ecbd11f` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.64-Setup.exe` | 52,705,992 | `59533e7cea506c4eee84a1dcec23ecb7ca082e029359b3ea4c24a7e492bc47c4` |
+
+Windows installers are self-contained and reproducibly built, but not
+code-signed; the installer explains the Windows warning before installation.
+
+---
+
 # beta-31 — RC58 / alpha.63
 
 **Date:** 2026-08-10
