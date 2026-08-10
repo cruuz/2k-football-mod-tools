@@ -211,6 +211,8 @@ class _FakeFacade:
         self.last_project_identity: ProjectTargetIdentity | None = None
         self.launcher = SimpleNamespace(settings=SimpleNamespace(configured=False))
         self.can_launch_xenia = False
+        # Launch names its single blocker instead of graying out.
+        self.xenia_blocker = "Build a modded game folder first."
         self.save_calls: list[dict[str, object]] = []
         self.close_calls = 0
         self._inspectors = object()

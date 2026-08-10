@@ -359,7 +359,11 @@ class ApfUniformInventoryGuiTests(unittest.TestCase):
             self.assertTrue(
                 str(browser.replace_button.property("disableReason") or "").strip()
             )
-            self.assertIn("not an editable", browser.replace_button.toolTip())
+            # helmet_normal has no proved writer anywhere in the product, so
+            # the refusal names that fact instead of blaming this browser, and
+            # no workspace hand-off is offered for it.
+            self.assertIn("No proved writer owns", browser.replace_button.toolTip())
+            self.assertIsNone(browser._route)
             browser.run_task = _run_task_now  # type: ignore[assignment]
             with tempfile.TemporaryDirectory() as directory:
                 destination = Path(directory) / "helmet-normal.png"

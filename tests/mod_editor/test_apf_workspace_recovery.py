@@ -365,6 +365,8 @@ class _WindowFacade:
         self.last_project_identity = None
         self.launcher = SimpleNamespace(settings=SimpleNamespace(configured=False))
         self.can_launch_xenia = False
+        # Launch names its single blocker instead of graying out.
+        self.xenia_blocker = "Build a modded game folder first."
         self.close_calls = 0
         self.recovery_calls = 0
         self.recovery_started: threading.Event | None = None

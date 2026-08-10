@@ -86,12 +86,36 @@ class ComparisonTests(unittest.TestCase):
         self.assertFalse(status.available)
         self.assertIn("up to date", status.headline)
 
-    def test_beta_30_build_does_not_offer_itself(self) -> None:
-        with _serve([_release("beta-30", prerelease=False)]):
+    def test_the_shipped_build_does_not_offer_itself(self) -> None:
+        tag = update_check.BUILD_RELEASE_TAG
+        with _serve([_release(tag, prerelease=False)]):
             status = update_check.check()
         self.assertFalse(status.available)
-        self.assertEqual(status.current_tag, "beta-30")
+        self.assertEqual(status.current_tag, tag)
+        self.assertEqual(status.latest_tag, tag)
+
+    def test_an_older_published_release_is_never_offered_as_an_update(self) -> None:
+        """A re-published older tag must not tell people to move backwards."""
+
+        with _serve([_release("beta-29"), _release("beta-31")]):
+            status = update_check.check("beta-31")
+        self.assertFalse(status.available)
+        self.assertEqual(status.latest_tag, "beta-31")
+        self.assertIn("up to date", status.headline)
+
+    def test_the_highest_beta_wins_over_github_ordering(self) -> None:
+        # GitHub lists by creation date, so refreshing an old release can put
+        # it first. The highest beta number is still the newest release.
+        with _serve([_release("beta-29"), _release("beta-30")]):
+            status = update_check.check("beta-29")
+        self.assertTrue(status.available)
         self.assertEqual(status.latest_tag, "beta-30")
+
+    def test_an_unrecognised_tag_scheme_still_announces_a_change(self) -> None:
+        with _serve([_release("2026.1")]):
+            status = update_check.check("beta-31")
+        self.assertTrue(status.available)
+        self.assertEqual(status.latest_tag, "2026.1")
 
     def test_the_newest_entry_wins_and_drafts_are_skipped(self) -> None:
         with _serve([
@@ -201,8 +225,8 @@ class BuildTagTests(unittest.TestCase):
     def test_the_build_tag_looks_like_a_release_tag(self) -> None:
         self.assertTrue(update_check._TAG.match(update_check.BUILD_RELEASE_TAG))
 
-    def test_the_build_tag_matches_beta_30(self) -> None:
-        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-30")
+    def test_the_build_tag_matches_beta_31(self) -> None:
+        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-31")
 
 
 if __name__ == "__main__":

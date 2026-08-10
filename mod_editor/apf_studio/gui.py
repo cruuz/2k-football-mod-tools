@@ -186,6 +186,14 @@ from .stadium import ApfStadiumPreview, ApfStadiumScene
 from .stadium_material_findings import load_stadium_material_findings
 from . import stadium_model_import
 from . import stadium_texture
+from .workspace_routes import (
+    TEAM_LOGO_TAB,
+    UNIFORM_MATERIALS_TAB,
+    WORDMARK_TAB,
+    WorkspaceHandoff,
+    WorkspaceRoute,
+    route_for_asset,
+)
 
 
 PRODUCT_NAME = "APF 2K8 Mod Studio"
@@ -376,6 +384,39 @@ def _edit_id_for_asset(asset: ApfAsset) -> str:
 
 def _is_editable_png_asset(asset: ApfAsset) -> bool:
     return _asset_product_action(asset) is not None
+
+
+def _workspace_route_for(
+    facade: ApfStudioFacade, asset: ApfAsset
+) -> WorkspaceRoute | None:
+    """The dedicated workspace that owns a proved writer for this exact row.
+
+    The universal browser can only replace the two exact-size PNG slots bound
+    in :data:`ASSET_ACTION_BINDINGS`, but hundreds of the rows it lists -- every
+    helmet crest layer, all 96 uniform materials, all 206 wordmarks, the six
+    field-art base textures -- are written every day by a focused editor
+    elsewhere in the app.  Resolving that here lets the browser hand a row over
+    instead of refusing it.  Every lookup uses tables the catalog already built,
+    so this costs nothing per selection and never reads the archive again.
+    """
+
+    uniform_assets: tuple[UniformAsset, ...] = ()
+    if getattr(facade, "source_ready", False):
+        try:
+            uniform_assets = facade.uniform_assets()
+        except Exception:  # noqa: BLE001 - a hand-off hint must never break selection
+            uniform_assets = ()
+    return route_for_asset(
+        asset,
+        uniform_assets=uniform_assets,
+        field_art_targets={
+            target.key: target.name for target in FIELD_ART_COVERED_TARGETS
+        },
+        stadium_texture_location=(
+            stadium_texture.OUTER_INDEX,
+            stadium_texture.INNER_INDEX,
+        ),
+    )
 
 
 def _asset_status_text(asset: ApfAsset) -> str:
@@ -1860,6 +1901,9 @@ class AssetBrowser(QWidget):
     """Searchable, filtered, paged browser for the complete live APF catalog."""
 
     modifiedChanged = pyqtSignal()
+    #: A selected row asking the shell to open the workspace that owns its
+    #: writer, optionally carrying the image the user already chose here.
+    openWorkspaceRequested = pyqtSignal(object)
 
     def __init__(
         self,
@@ -1876,6 +1920,7 @@ class AssetBrowser(QWidget):
         self.run_task = run_task
         self._matches: tuple[ApfAsset, ...] = ()
         self._visible: dict[str, ApfAsset] = {}
+        self._route: WorkspaceRoute | None = None
         self._excluded_asset_ids: frozenset[str] = frozenset()
         self._included_asset_ids: frozenset[str] | None = None
         self.browse_export_only = browse_export_only
@@ -2183,6 +2228,12 @@ class AssetBrowser(QWidget):
                     break
         if not restored and rows:
             self.table.selectRow(0)
+            # Re-selecting the same row *number* emits no selection change, so
+            # after a search that keeps the row count the detail panel would
+            # keep describing the asset that used to be there -- and Export or
+            # Replace would then act on that stale row instead of the visible
+            # one. Refresh the detail from the table every time.
+            self._selection_changed()
         elif not rows:
             query = self.search.text().strip()
             empty_msg = (
@@ -2234,22 +2285,48 @@ class AssetBrowser(QWidget):
             f"{'s' if asset.part_count != 1 else ''}\n"
             f"ID: {asset.asset_id}"
         )
+        editable_png = _is_editable_png_asset(asset) and not self.browse_export_only
+        # A row this browser cannot write itself may still be owned by a proved
+        # editor elsewhere in the app.  Resolving that turns the old refusal
+        # into a hand-off, which is the whole point of this panel's actions.
+        route = None if editable_png else _workspace_route_for(self.facade, asset)
+        self._route = route
         notes = list(asset.notes)
         action = _asset_product_action(asset)
         if action is not None:
             notes.insert(0, action.authoring_note)
-        if self.browse_export_only and self.action_lock_reason:
+        if route is not None:
+            notes.insert(0, route.summary)
+        elif self.browse_export_only and self.action_lock_reason:
             notes.insert(0, self.action_lock_reason)
         notes.append(f"Export action: {asset.export_label}.")
         self.detail_notes.setText("\n".join(notes) or "This exact record can be exported from your own game.")
         self.export_button.setEnabled(True)
         self.export_button.setProperty("disableReason", "")
         self.export_button.setToolTip(f"Export {asset.name} ({asset.export_label}).")
-        editable_png = _is_editable_png_asset(asset) and not self.browse_export_only
-        # Drop parity with the Replace button: a drop is admitted exactly when
-        # the Replace action is available for this row.
-        self.preview.setAcceptDrops(editable_png)
-        if self.browse_export_only:
+        # Drop parity with the Replace button: a drop is admitted when Replace
+        # works here, and also when a workspace can finish the same drop.
+        self.preview.setAcceptDrops(editable_png or route is not None)
+        if route is not None:
+            self.replace_button.setText(route.action_label)
+            self.replace_button.setVisible(True)
+            self.replace_button.setEnabled(True)
+            self.replace_button.setProperty("disableReason", "")
+            self.replace_button.setToolTip(
+                f"Open {asset.name} in {route.destination}, the workspace whose "
+                "proved writer owns it. Choose or drop your image here and it "
+                "arrives there already staged."
+            )
+            self.revert_button.setText("Revert")
+            self.revert_button.setVisible(True)
+            self.revert_button.setEnabled(True)
+            rev = (
+                f"{asset.name} is edited in {route.destination}; revert it "
+                "there, or use Revert All in the footer."
+            )
+            self.revert_button.setToolTip(rev)
+            self.revert_button.setProperty("disableReason", rev)
+        elif self.browse_export_only:
             self.replace_button.setText("Replace locked")
             self.revert_button.setText("Revert locked")
             self.replace_button.setVisible(True)
@@ -2279,9 +2356,9 @@ class AssetBrowser(QWidget):
                 )
             else:
                 tip = (
-                    f"{asset.name} is not an editable PNG slot in this browser. "
-                    "Export raw/parts instead, or open the dedicated workspace "
-                    "(Uniforms, Logos, Field Art writers) for proved writers."
+                    f"No proved writer owns {asset.name} yet, so this build "
+                    "does not offer a replacement for it. Export raw/parts to "
+                    "study it; editing unlocks when an exact writer exists."
                 )
                 self.replace_button.setToolTip(tip)
                 self.replace_button.setProperty("disableReason", tip)
@@ -2292,7 +2369,8 @@ class AssetBrowser(QWidget):
                 rev_block = ""
             elif not editable_png:
                 rev_tip = rev_block = (
-                    f"{asset.name} is not an editable PNG slot in this browser."
+                    f"There is no staged replacement for {asset.name}, because "
+                    "no proved writer owns it yet."
                 )
             else:
                 rev_tip = rev_block = (
@@ -2360,6 +2438,7 @@ class AssetBrowser(QWidget):
         self.detail_status.setText("Every indexed record remains visible.")
         self.preview.set_message(message)
         self.preview.setAcceptDrops(False)
+        self._route = None
         self.detail_metadata.setText("")
         self.detail_notes.setText("")
         choose_tip = (
@@ -2484,18 +2563,29 @@ class AssetBrowser(QWidget):
         return self._fit_dir / f"{name}-{uuid4().hex}.png"
 
     def _replace_selected(self) -> None:
+        asset = self._selected_asset()
+        route = self._route
+        if asset is not None and route is not None:
+            # The row has a proved writer, just not in this browser. Let the
+            # user pick the image here and carry it to the workspace that
+            # owns it, so one click finishes the job they started.
+            path, _filter = QFileDialog.getOpenFileName(
+                self,
+                f"Choose an image for {asset.name} (any size or format)",
+                str(Path.home()),
+                IMAGE_IMPORT_FILTER,
+            )
+            self._hand_off(asset, route, Path(path) if path else None)
+            return
         reason = str(self.replace_button.property("disableReason") or "").strip()
         if reason:
             QMessageBox.information(
                 self,
                 "Cannot replace this texture yet",
                 reason
-                + "\n\nFix: choose an Editable PNG row, or use the dedicated "
-                "workspace for proved writers. Replacement never mutates your "
-                "original dump.",
+                + "\n\nReplacement never mutates your original dump.",
             )
             return
-        asset = self._selected_asset()
         if asset is None:
             return
         path, _filter = QFileDialog.getOpenFileName(
@@ -2508,6 +2598,20 @@ class AssetBrowser(QWidget):
             return
         self._replace_from_drop(Path(path))
 
+    def _hand_off(
+        self, asset: ApfAsset, route: WorkspaceRoute, image: Path | None
+    ) -> None:
+        """Ask the shell to open this row in the workspace that can write it."""
+
+        self.openWorkspaceRequested.emit(
+            WorkspaceHandoff(
+                route=route,
+                asset_name=asset.name,
+                asset_id=asset.asset_id,
+                image=str(image) if image is not None else "",
+            )
+        )
+
     def _replace_from_drop(self, path: Path) -> None:
         """Replace the selected row from a chosen or dropped image.
 
@@ -2516,6 +2620,9 @@ class AssetBrowser(QWidget):
         """
 
         asset = self._selected_asset()
+        if asset is not None and self._route is not None:
+            self._hand_off(asset, self._route, Path(path))
+            return
         action = _asset_product_action(asset) if asset is not None else None
         if asset is None or action is None:
             return
@@ -2948,6 +3055,29 @@ class UniformStudioPage(QWidget):
     def _selected_asset(self) -> UniformAsset | None:
         item = self.list.currentItem()
         return self._visible.get(item.data(Qt.UserRole)) if item else None
+
+    def focus_workspace_route(self, route: WorkspaceRoute, image: Path | None) -> bool:
+        """Select one material slot handed over from an asset browser.
+
+        Any active family filter or search text is cleared first: a hand-off
+        that lands on an empty list because of a filter the user forgot about
+        would be a worse wall than the one this replaced.
+        """
+
+        if route.tab != UNIFORM_MATERIALS_TAB:
+            return False
+        self.tabs.setCurrentIndex(0)
+        if self.family_filter.currentData() is not None:
+            self.family_filter.setCurrentIndex(0)
+        if self.search.text():
+            self.search.clear()
+        self.refresh(route.key)
+        asset = self._selected_asset()
+        if asset is None or asset.asset_id != route.key:
+            return False
+        if image is not None:
+            self._replace_path(image)
+        return True
 
     def _selection_changed(self) -> None:
         asset = self._selected_asset()
@@ -4349,6 +4479,31 @@ class ApfTeamLogoPanel(QFrame):
         self.modifiedChanged.emit()
         return True
 
+    def stage_image(self, path: Path) -> None:
+        """Stage one user image exactly as a drop onto the preview would.
+
+        Public because a hand-off from the asset browser has to finish the
+        action the user already started there, not just change page.
+        """
+
+        self._stage_path(path)
+
+    def focus_outer_entry(self, outer_entry_index: int) -> bool:
+        """Select the crest package stored at one outer archive entry.
+
+        This is how a ``logo_l0`` / ``logo_l1`` row handed over from the asset
+        browser lands on the right team: the browser knows only the archive
+        location, and the picker already carries it on every slot.
+        """
+
+        self._populate_slots()
+        for index in range(self.slot.count()):
+            slot = self.slot.itemData(index)
+            if getattr(slot, "outer_entry_index", None) == outer_entry_index:
+                self.slot.setCurrentIndex(index)
+                return True
+        return False
+
     def _populate_slots(self) -> None:
         """Offer every crest package the loaded game carries, not just the teams.
 
@@ -5610,6 +5765,19 @@ class ApfTextLogoPanel(QFrame):
     def current_asset(self) -> UniformAsset | None:
         return self._assets.get(self.slot.value())
 
+    def focus_slot(self, asset_index: int) -> bool:
+        """Select one wordmark slot, for a hand-off from the asset browser."""
+
+        if not self.slot.minimum() <= asset_index <= self.slot.maximum():
+            return False
+        self.slot.setValue(asset_index)
+        return True
+
+    def stage_image(self, path: Path) -> None:
+        """Stage one user image exactly as a drop onto the preview would."""
+
+        self._stage_path(path)
+
     def set_context(self) -> None:
         source = getattr(self.facade, "source", None)
         source_identity = (
@@ -5953,6 +6121,28 @@ class LogosStudioPage(QWidget):
             "wordmarks; Team Logo never resizes a crest into this family.",
         )
         layout.addWidget(tabs, 1)
+        self.tabs = tabs
+        self._team_logo_tab = team_logo_index
+        self._wordmark_tab = wordmark_index
+
+    def focus_workspace_route(self, route: WorkspaceRoute, image: Path | None) -> bool:
+        """Open a crest or wordmark handed over from an asset browser."""
+
+        if route.tab == TEAM_LOGO_TAB:
+            self.tabs.setCurrentIndex(self._team_logo_tab)
+            if not self.team_logo.focus_outer_entry(int(route.key)):
+                return False
+            if image is not None:
+                self.team_logo.stage_image(image)
+            return True
+        if route.tab == WORDMARK_TAB:
+            self.tabs.setCurrentIndex(self._wordmark_tab)
+            if not self.wordmarks.focus_slot(int(route.key)):
+                return False
+            if image is not None:
+                self.wordmarks.stage_image(image)
+            return True
+        return False
 
     def set_context(self) -> None:
         if self.facade.source_ready:
@@ -6254,6 +6444,20 @@ class ApfFieldArtPanel(QFrame):
 
     def staged_path(self, target: _FieldArtTarget) -> Path | None:
         return self._staged.get(target.key)
+
+    def focus_target(self, name: str) -> bool:
+        """Select one writable base texture by its slot name."""
+
+        for index, target in enumerate(FIELD_ART_COVERED_TARGETS):
+            if target.name == name:
+                self.slot.setCurrentIndex(index)
+                return True
+        return False
+
+    def stage_image(self, path: Path) -> None:
+        """Stage one user image exactly as a drop onto the preview would."""
+
+        self._stage_path(path)
 
     def _target_changed(self, _index: int = -1) -> None:
         self.set_context()
@@ -6996,6 +7200,15 @@ class FieldArtStudioPage(QWidget):
         if index >= 0:
             self.group_filter.setCurrentIndex(index)
 
+    def focus_workspace_route(self, route: WorkspaceRoute, image: Path | None) -> bool:
+        """Select one writable base texture handed over from an asset browser."""
+
+        if not self.editor.focus_target(route.key):
+            return False
+        if image is not None:
+            self.editor.stage_image(image)
+        return True
+
     def set_context(self) -> None:
         self.editor.set_context()
         if not self.facade.source_ready:
@@ -7057,6 +7270,7 @@ class StadiumStudioPage(QWidget):
         self._stadium_texture_preview_dir: Path | None = None
         self._preview: ApfStadiumPreview | None = None
         self._model: GltfWireframeModel | None = None
+        self._mesh_targets: tuple[stadium_model_import.StadiumTarget, ...] = ()
         self._scene_generation = 0
         self._texture_generation = 0
         self._source_sha256: str | None = None
@@ -7149,8 +7363,25 @@ class StadiumStudioPage(QWidget):
         # Never silent-gray: mesh import/export stay clickable and explain.
         self.export_model_button.setEnabled(True)
         self.import_model_button.setEnabled(True)
+        # Finding an editable mesh used to mean clicking around the wireframe
+        # until one of the 77 authorized nodes happened to be under the cursor;
+        # 12 of the scene's 89 nodes are not authorized, and nothing on screen
+        # said which. The picker lists every authorized target by name so the
+        # editable set is a list, not a hunt.
+        self.mesh_target = QComboBox()
+        self.mesh_target.setObjectName("comboField")
+        self.mesh_target.setMinimumWidth(230)
+        self.mesh_target.setAccessibleName("Editable stadium mesh")
+        self.mesh_target.setToolTip(
+            "Every catalog-authorized POSITION target in this scene. Choosing "
+            "one selects it for Export/Import and highlights it in the view; "
+            "clicking a surface in the view still works and updates this list."
+        )
+        self.mesh_target.addItem("Editable meshes — load a stadium scene", None)
+        self.mesh_target.currentIndexChanged.connect(self._mesh_target_chosen)
         self._refresh_mesh_action_buttons()
         view_heading.addLayout(view_titles, 1)
+        view_heading.addWidget(self.mesh_target)
         view_heading.addWidget(self.reset_view_button)
         view_heading.addWidget(self.export_scene_button)
         view_heading.addWidget(self.export_model_button)
@@ -7407,6 +7638,27 @@ class StadiumStudioPage(QWidget):
             else None
         )
 
+    def focus_workspace_route(
+        self, route: WorkspaceRoute, _image: Path | None = None
+    ) -> bool:
+        """Open the stadium scene handed over from an asset browser.
+
+        No image is staged here: an embedded stadium texture is chosen from the
+        package list on this page, so the hand-off lands the user on the scene
+        and lets them pick the exact texture.
+        """
+
+        outer, _, inner = route.key.partition(":")
+        target = f"apf:outer:{outer}:inner:{inner}"
+        if not any(scene.asset_id == target for scene in self._scenes):
+            return False
+        # Cleared before the filter runs, so an active search cannot hide the
+        # scene the user was just sent to.
+        self.scene_search.clear()
+        self._apply_scene_filter(preserve_asset_id=target)
+        scene = self._selected_scene()
+        return scene is not None and scene.asset_id == target
+
     def _scene_selected(
         self, current: QListWidgetItem | None, _previous: QListWidgetItem | None
     ) -> None:
@@ -7446,6 +7698,7 @@ class StadiumStudioPage(QWidget):
         self.export_scene_button.setToolTip(export_ready)
         self.export_scene_button.setProperty("disableReason", "")
         self._selected_model_target = None
+        self._populate_mesh_targets(scene)
         self._refresh_mesh_action_buttons()
         self._populate_package(self.facade.stadium_package_assets(scene))
 
@@ -7529,9 +7782,112 @@ class StadiumStudioPage(QWidget):
         self.export_scene_button.setToolTip(tip)
         self.export_scene_button.setProperty("disableReason", tip)
         self._selected_model_target = None
+        self._populate_mesh_targets(None)
         self._refresh_mesh_action_buttons()
         self.package_panel_title.setText("Owning outer package")
         self._populate_package(())
+
+    def _populate_mesh_targets(self, scene: ApfStadiumScene | None) -> None:
+        """List every authorized POSITION target in the opened scene.
+
+        The catalog is the authority for which meshes are writable, so the
+        picker is derived from it rather than from anything the viewer guesses
+        about the geometry.
+        """
+
+        targets = (
+            tuple(
+                target
+                for target in stadium_model_import.targets()
+                if target.outer_index == scene.outer_index
+                and target.inner_index == scene.inner_index
+            )
+            if scene is not None
+            else ()
+        )
+        self._mesh_targets = targets
+        self.mesh_target.blockSignals(True)
+        self.mesh_target.clear()
+        if not targets:
+            self.mesh_target.addItem(
+                "No editable meshes in this scene", None
+            )
+            self.mesh_target.setEnabled(False)
+            self.mesh_target.setToolTip(
+                "This stadium scene has no catalog-authorized POSITION target, "
+                "so it is view and scene-export only. The scene that does carry "
+                "them lists its editable meshes here."
+            )
+        else:
+            self.mesh_target.addItem(
+                f"Choose one of {len(targets)} editable meshes…", None
+            )
+            for target in targets:
+                self.mesh_target.addItem(
+                    f"{target.node_name} — {target.vertex_count:,} vertices",
+                    target,
+                )
+            self.mesh_target.setEnabled(True)
+            self.mesh_target.setToolTip(
+                f"All {len(targets)} catalog-authorized POSITION targets in "
+                "this scene. Choosing one selects it for Export/Import and "
+                "highlights it in the view; clicking a surface in the view "
+                "still works and updates this list."
+            )
+        self.mesh_target.setCurrentIndex(0)
+        self.mesh_target.blockSignals(False)
+        # The picker and the Export/Import walls describe the same state, so
+        # they are never refreshed apart.
+        self._refresh_mesh_action_buttons()
+
+    def _sync_mesh_target_choice(self) -> None:
+        """Show the currently selected target in the picker without recursing."""
+
+        target = self._selected_model_target
+        self.mesh_target.blockSignals(True)
+        index = 0
+        if target is not None:
+            found = self.mesh_target.findData(target)
+            if found >= 0:
+                index = found
+        self.mesh_target.setCurrentIndex(index)
+        self.mesh_target.blockSignals(False)
+
+    def _mesh_target_chosen(self, _index: int) -> None:
+        """Select a mesh from the picker and mirror it into the 3D view."""
+
+        target = self.mesh_target.currentData()
+        if target is None:
+            return
+        self._selected_model_target = target
+        model = self._model
+        surface = None
+        if model is not None:
+            surface = next(
+                (
+                    (identity.mesh_index, identity.primitive_index)
+                    for identity in model.surfaces
+                    if target.node_index in identity.apf_scene_node_indices
+                ),
+                None,
+            )
+        if surface is not None:
+            # Re-uses the click path so the identity/ownership panes, the
+            # highlight, and the buttons all describe one selection.
+            self.viewport.set_selected_surface(*surface)
+            self._surface_selected(*surface)
+            return
+        self.surface_identity.setText(
+            f"{target.node_name} • APF scene node {target.node_index} • "
+            f"{target.vertex_count:,} vertices"
+        )
+        self.surface_boundary.setText(
+            f"Editable geometry target {target.target_id}: export then re-import "
+            "the exact same vertex count and expanded topology. Only POSITION "
+            "may change; original UVs, normals, materials and attachments stay "
+            "byte-identical."
+        )
+        self._refresh_mesh_action_buttons()
 
     def _refresh_mesh_action_buttons(self) -> None:
         """Keep stadium mesh Import/Export clickable; gray never means silent no-op."""
@@ -7551,11 +7907,18 @@ class StadiumStudioPage(QWidget):
                 "geometry preview, then click a catalog-authorized surface. "
                 "Click still explains this."
             )
+        elif not self._mesh_targets:
+            block = (
+                "This stadium scene carries no catalog-authorized POSITION "
+                "target, so it is view and scene-export only. Open the scene "
+                "whose Editable meshes picker lists targets. Click still "
+                "explains this."
+            )
         elif not has_target:
             block = (
-                "Click a surface that is one of the 77 catalog-authorized "
-                "outer-14/inner-8 POSITION targets. Other surfaces are view-only. "
-                "Click still explains this."
+                f"Choose one of the {len(self._mesh_targets)} editable meshes "
+                "from the picker above, or click that surface in the view. "
+                "Other surfaces are view-only. Click still explains this."
             )
         else:
             block = ""
@@ -7589,6 +7952,7 @@ class StadiumStudioPage(QWidget):
         identity = model.surface_identity(mesh_index, primitive_index)
         if identity is None:
             self._selected_model_target = None
+            self._sync_mesh_target_choice()
             self._refresh_mesh_action_buttons()
             self.surface_identity.setText(
                 f"Mesh {mesh_index} / primitive {primitive_index}"
@@ -7618,6 +7982,8 @@ class StadiumStudioPage(QWidget):
             else None
         )
         self._selected_model_target = selected_target
+        # A click in the view and a choice in the picker are the same selection.
+        self._sync_mesh_target_choice()
         texture_ownership = ""
         if self._texture_catalog is not None:
             owned = self._texture_catalog.textures_for_nodes(
@@ -17944,9 +18310,15 @@ class ApfStudioMainWindow(QMainWindow):
         workspace_layout.setSpacing(0)
         workspace_layout.addWidget(self._build_header())
         self.pages = QStackedWidget()
+        # The footer is built before the pages because it owns the status line
+        # and progress bar every page's run_task writes to. A page constructed
+        # against an already-loaded game starts work during construction, and
+        # with the footer built afterwards that first status update raised
+        # AttributeError and took the window down before it appeared.
+        footer = self._build_footer()
         self._build_pages()
         workspace_layout.addWidget(self.pages, 1)
-        workspace_layout.addWidget(self._build_footer())
+        workspace_layout.addWidget(footer)
         root_layout.addWidget(workspace, 1)
 
         self.navigation.currentRowChanged.connect(self.pages.setCurrentIndex)
@@ -18449,6 +18821,46 @@ class ApfStudioMainWindow(QMainWindow):
                 page.modifiedChanged.connect(self._mark_document_changed)  # type: ignore[attr-defined]
             self._pages[category] = page
             self.pages.addWidget(self._wrap_scrollable_page(page))
+        # Every asset browser on every page -- including the ones nested in
+        # workspace tabs -- can hand a row to the workspace that owns its
+        # writer.  Connecting them here keeps that one rule in one place.
+        for page in self._pages.values():
+            for browser in page.findChildren(AssetBrowser):
+                browser.openWorkspaceRequested.connect(self._open_workspace_route)
+
+    def _open_workspace_route(self, handoff: WorkspaceHandoff) -> None:
+        """Open a browsed row in the workspace whose proved writer owns it."""
+
+        route = handoff.route
+        page = self._pages.get(route.category)
+        focus = getattr(page, "focus_workspace_route", None)
+        if page is None or focus is None:
+            self.operation_status.setText(
+                f"{handoff.asset_name} is edited in {route.destination}."
+            )
+            return
+        self.navigation.setCurrentRow(APF_CATEGORY_ORDER.index(route.category))
+        image = Path(handoff.image) if handoff.image else None
+        try:
+            opened = bool(focus(route, image))
+        except Exception:  # noqa: BLE001 - navigation must not take the shell down
+            # The fallback below states where the row is edited, so a failed
+            # preselect degrades to directions rather than to a crash.
+            opened = False
+        if opened:
+            self.operation_status.setText(
+                f"{handoff.asset_name} opened in {route.destination}"
+                + (" with your image staged." if image is not None else ".")
+            )
+            return
+        QMessageBox.information(
+            self,
+            f"Open {handoff.asset_name} in {route.destination}",
+            f"{route.summary}\n\n"
+            f"This build could not preselect it automatically — load your game "
+            f"if you have not yet, then choose it in {route.destination}. Your "
+            "original dump is never modified.",
+        )
 
     def _wrap_scrollable_page(self, page: QWidget) -> QScrollArea:
         """Host a workspace page inside a resizable vertical scroll area.
@@ -18905,17 +19317,23 @@ class ApfStudioMainWindow(QMainWindow):
             else "Configure Xenia"
         )
         self.build_button.setEnabled(ready and not blocking)
-        self.launch_button.setEnabled(self.facade.can_launch_xenia and not blocking)
         self.build_button.setToolTip(
             "Create a separate, verified modded game folder. Your source stays untouched."
             if ready
             else "Load your APF game before building."
         )
+        # Never silent-gray: Launch stays clickable and names the one thing
+        # that is missing. The button used to gray out while relabelling itself
+        # "Configure Xenia to Launch" -- an instruction on a dead control.
+        blocker = self.facade.xenia_blocker
+        if blocking:
+            blocker = blocker or "An operation is running • wait for it to finish."
+        self.launch_button.setEnabled(not blocking)
         self.launch_button.setToolTip(
-            "Launch the most recently built game folder in Xenia."
-            if self.facade.can_launch_xenia
-            else "Build a game folder and configure Xenia before launching."
+            blocker or "Launch the most recently built game folder in Xenia."
         )
+        self.launch_button.setProperty("disableReason", blocker)
+        self.launch_button.setAccessibleDescription(self.launch_button.toolTip())
         if self.facade.last_build is not None and not self.facade.launcher.settings.configured:
             self.launch_button.setText("Configure Xenia to Launch")
         else:
@@ -19518,7 +19936,22 @@ class ApfStudioMainWindow(QMainWindow):
         self._update_product_state()
 
     def _launch_xenia(self) -> None:
-        if not self.facade.can_launch_xenia:
+        blocker = self.facade.xenia_blocker
+        if blocker:
+            # Clicking a blocked action must teach, and when the fix is
+            # "tell me where Xenia is" it must also offer to do it.
+            if "Configure Xenia" in blocker:
+                answer = QMessageBox.question(
+                    self,
+                    "Xenia is not configured yet",
+                    blocker + "\n\nChoose Xenia Canary now?",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.Yes,
+                )
+                if answer == QMessageBox.Yes:
+                    self._configure_xenia()
+                return
+            QMessageBox.information(self, "Cannot launch Xenia yet", blocker)
             return
         self._run_task(
             "Starting the last verified build in Xenia Canary",

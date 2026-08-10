@@ -625,6 +625,12 @@ def _build_audio_search_index(catalog: Nfl2k5AudioCatalog) -> AudioSearchIndex:
     }
 
 
+#: Where a chosen xemu executable is remembered between sessions, matching the
+#: APF editor's ``~/.config/apf2k8-mod-studio/settings.json``.
+XEMU_SETTINGS_PATH = Path.home() / ".config" / "2k5-mod-studio" / "settings.json"
+XEMU_SETTINGS_SCHEMA = "2k5_mod_studio_xemu_settings/v1"
+
+
 def _detect_xemu_command() -> tuple[str, ...]:
     direct = shutil.which("xemu")
     if direct:
@@ -644,6 +650,58 @@ def _detect_xemu_command() -> tuple[str, ...]:
     except (OSError, subprocess.TimeoutExpired):
         return ()
     return (flatpak, "run", "app.xemu.xemu") if found.returncode == 0 else ()
+
+
+def _stored_xemu_command(path: Path | None = None) -> tuple[str, ...]:
+    """The xemu executable the user chose, if it is still runnable."""
+
+    settings = path or XEMU_SETTINGS_PATH
+    try:
+        document = json.loads(settings.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return ()
+    if not isinstance(document, dict) or document.get("schema") != XEMU_SETTINGS_SCHEMA:
+        return ()
+    chosen = document.get("xemu_path")
+    if not isinstance(chosen, str) or not chosen:
+        return ()
+    executable = Path(chosen)
+    if not executable.is_file() or not os.access(executable, os.X_OK):
+        return ()
+    return (str(executable),)
+
+
+def _store_xemu_command(executable: Path, path: Path | None = None) -> None:
+    settings = path or XEMU_SETTINGS_PATH
+    settings.parent.mkdir(parents=True, exist_ok=True)
+    payload = json.dumps(
+        {"schema": XEMU_SETTINGS_SCHEMA, "xemu_path": str(executable)},
+        indent=2,
+        sort_keys=True,
+    ) + "\n"
+    temporary = settings.with_name(f".{settings.name}.{os.getpid()}.tmp")
+    # Explicit newline: this file is compared byte-for-byte across platforms,
+    # so the host must never choose CRLF for it.
+    temporary.write_text(payload, encoding="utf-8", newline="\n")
+    os.replace(temporary, settings)
+
+
+def _xemu_launch_argv(command: Sequence[str], xiso: Path) -> tuple[str, ...]:
+    """The exact argv to start, including sandbox access for a Flatpak xemu.
+
+    A Flatpak xemu can only open paths its sandbox exposes, and a modded XISO
+    normally lands somewhere it has no permission for -- an external drive, a
+    project folder outside home. The launch then failed with an I/O error that
+    read like a bad build rather than a sandbox refusal. Granting read-only
+    access to that one directory for this one run is the narrowest fix, and
+    nothing is ever written back through it.
+    """
+
+    argv = tuple(command)
+    if len(argv) >= 3 and Path(argv[0]).name == "flatpak" and argv[1] == "run":
+        share = f"--filesystem={xiso.parent}:ro"
+        return (*argv[:2], share, *argv[2:], "-dvd_path", str(xiso))
+    return (*argv, "-dvd_path", str(xiso))
 
 
 class Nfl2k5StudioFacade:
@@ -693,8 +751,13 @@ class Nfl2k5StudioFacade:
         self.source_cache = source_cache or Nfl2k5SourceCache()
         self.build_service = build_service or Nfl2k5BuildService()
         self.session_factory = session_factory
+        # A caller-supplied command wins (tests, packaging). Otherwise the
+        # user's own choice comes first and auto-detection is the fallback.
+        self._xemu_command_pinned = xemu_command is not None
         self._xemu_command = (
-            tuple(xemu_command) if xemu_command is not None else _detect_xemu_command()
+            tuple(xemu_command)
+            if xemu_command is not None
+            else (_stored_xemu_command() or _detect_xemu_command())
         )
         self._process_launcher = process_launcher
         self._universal_index_factory = universal_index_factory
@@ -790,14 +853,82 @@ class Nfl2k5StudioFacade:
 
     @property
     def can_launch_xemu(self) -> bool:
+        return not self.xemu_blocker
+
+    @property
+    def xemu_blocker(self) -> str:
+        """Why one-click launch is unavailable, or ``""`` when it is ready.
+
+        The button used to gray out with one message covering two unrelated
+        causes -- no build yet, and no emulator found -- so a modder could not
+        tell which one applied to them. Naming the exact blocker is what makes
+        the control honest.
+        """
+
+        if not self.xemu_command:
+            return (
+                "xemu was not found. Install it (or its app.xemu.xemu Flatpak), "
+                "or choose the xemu executable yourself with Configure xemu."
+            )
         with self._lock:
             result = self._last_build
-            return bool(
-                self._xemu_command
-                and result is not None
-                and result.output_xiso.is_file()
-                and not result.output_xiso.is_symlink()
+        if result is None:
+            return (
+                "Build a modded XISO first — Launch starts the most recent "
+                "build, and there is not one yet in this session."
             )
+        if not result.output_xiso.is_file() or result.output_xiso.is_symlink():
+            return (
+                f"The last build is no longer at {result.output_xiso}. Build "
+                "again, then launch."
+            )
+        return ""
+
+    @property
+    def xemu_command(self) -> tuple[str, ...]:
+        """The resolved xemu invocation, re-detected while it is still unknown.
+
+        Detection used to run once, when the app started. Someone who installed
+        xemu because the editor told them to then had to restart the editor
+        before the button believed them.
+        """
+
+        with self._lock:
+            if self._xemu_command or self._xemu_command_pinned:
+                return self._xemu_command
+        found = _stored_xemu_command() or _detect_xemu_command()
+        with self._lock:
+            if not self._xemu_command and not self._xemu_command_pinned:
+                self._xemu_command = found
+            return self._xemu_command
+
+    def configure_xemu(self, executable: Path) -> tuple[str, ...]:
+        """Remember the xemu executable the user picked, for every session."""
+
+        chosen = Path(executable).expanduser()
+        try:
+            chosen = chosen.resolve(strict=True)
+        except OSError as exc:
+            raise ValidationError(f"That xemu path could not be opened: {exc}") from exc
+        if not chosen.is_file():
+            raise ValidationError(
+                "Choose the xemu program itself, not a folder or a shortcut."
+            )
+        if not os.access(chosen, os.X_OK):
+            raise ValidationError(
+                f"{chosen.name} is not executable. Choose the xemu binary, or "
+                "mark it executable first."
+            )
+        try:
+            _store_xemu_command(chosen)
+        except OSError as exc:
+            raise ValidationError(
+                f"The xemu choice could not be saved: {exc}"
+            ) from exc
+        with self._lock:
+            self._xemu_command = (str(chosen),)
+            self._xemu_command_pinned = False
+        return (str(chosen),)
 
     @property
     def last_build_output(self) -> Path | None:
@@ -2938,18 +3069,19 @@ class Nfl2k5StudioFacade:
         return result
 
     def launch_xemu(self, progress: ProgressSink) -> object:
+        command = self.xemu_command
         with self._lock:
             result = self._last_build
-            command = self._xemu_command
         if not command:
             raise ValidationError(
-                "xemu is not configured. Install xemu or its app.xemu.xemu Flatpak."
+                "xemu is not configured. Install xemu or its app.xemu.xemu "
+                "Flatpak, or choose the xemu program with Configure xemu."
             )
         if result is None or not result.output_xiso.is_file() \
                 or result.output_xiso.is_symlink():
             raise ValidationError("Build a modded XISO before launching xemu.")
         progress("Starting xemu", 0, 1)
-        argv = (*command, "-dvd_path", str(result.output_xiso))
+        argv = _xemu_launch_argv(command, result.output_xiso)
         try:
             self._process_launcher(
                 argv,

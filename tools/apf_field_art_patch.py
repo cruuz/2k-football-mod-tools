@@ -183,6 +183,18 @@ _CONTRACTS: dict[tuple[int, int], FieldArtContract] = {
     ),
 }
 
+def writable_locations() -> dict[tuple[int, int], str]:
+    """``(outer entry, inner file) -> slot name`` for every writable slot.
+
+    The editor's asset browser lists these rows beside thousands it cannot
+    write, and it has to tell a modder which ones a proved writer already owns.
+    Reading the pinned contract keys is the only honest way to answer that: the
+    answer moves with this table instead of with a copy of it.
+    """
+
+    return {key: contract.name for key, contract in _CONTRACTS.items()}
+
+
 # Named refusals for the field-art families intentionally not shipped tonight.
 _UNSUPPORTED_KINDS = {
     "field_radiance": "format 59 DXT5A + broadcast/const-channel swizzle [0,0,0,5]",

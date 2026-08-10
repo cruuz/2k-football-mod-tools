@@ -85,6 +85,7 @@ mod_editor/apf_studio/uniform_equipment_colors_qt.py
 mod_editor/apf_studio/uniform_independence.py
 mod_editor/apf_studio/uniform_independence_panel.py
 mod_editor/apf_studio/uniform_targets.py
+mod_editor/apf_studio/workspace_routes.py
 mod_editor/capabilities/registry.schema.json
 mod_editor/capabilities/registry.v1.json
 mod_editor/capabilities/validate_registry.py

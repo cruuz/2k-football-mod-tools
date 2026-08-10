@@ -288,6 +288,11 @@ class StudioFacade(Protocol):
     @property
     def can_launch_xemu(self) -> bool: ...
 
+    @property
+    def xemu_blocker(self) -> str: ...
+
+    def configure_xemu(self, executable: Path) -> tuple[str, ...]: ...
+
     def load_source(self, source_xiso: Path, progress: ProgressSink) -> object: ...
 
     def preview_asset(self, asset: UniformAsset, progress: ProgressSink) -> Path: ...
@@ -782,6 +787,10 @@ class BrowseOnlyFacade:
     project_metadata_count = 0
     can_undo = False
     can_launch_xemu = False
+    xemu_blocker = (
+        "The editing backend is not connected in this build, so there is "
+        "nothing to launch. Browsing every catalog entry still works."
+    )
 
     @staticmethod
     def _unavailable(*_args: object, **_kwargs: object) -> object:
@@ -871,6 +880,7 @@ class BrowseOnlyFacade:
     playbook_available = False
     build_iso = _unavailable
     launch_xemu = _unavailable
+    configure_xemu = _unavailable
 
     @staticmethod
     def inspect_gameplay(progress: ProgressSink) -> object:
@@ -978,6 +988,7 @@ class _StadiumBrowserState:
     scenes_loaded: bool = False
     scenes_loading: bool = False
     generation: int = 0
+    editable_only: QCheckBox | None = None
 
 
 def uniform_search_text(uniform_set: UniformSet) -> str:
@@ -2045,6 +2056,13 @@ class StudioMainWindow(QMainWindow):
         workspace_layout.setSpacing(0)
         workspace_layout.addWidget(self._build_header())
 
+        # The footer owns the status line, progress bar, and the Undo/Revert
+        # controls that _refresh_action_states touches. Pages are built next,
+        # and an embedded panel constructed against an already-loaded game
+        # reports its state during construction -- which reached those widgets
+        # before they existed and took the window down before it appeared.
+        footer = self._build_footer()
+
         self.pages = QStackedWidget()
         self.pages.setObjectName("pages")
         self.welcome_page = self._build_welcome_page()
@@ -2201,7 +2219,7 @@ class StudioMainWindow(QMainWindow):
             self._category_pages[category] = page
             self.pages.addWidget(self._page_scroll_host(page))
         workspace_layout.addWidget(self.pages, 1)
-        workspace_layout.addWidget(self._build_footer())
+        workspace_layout.addWidget(footer)
         root_layout.addWidget(workspace, 1)
 
         self.navigation.currentRowChanged.connect(self.pages.setCurrentIndex)
@@ -3515,6 +3533,21 @@ class StudioMainWindow(QMainWindow):
         search_row.addWidget(search, 1)
         search_row.addWidget(search_button)
         scenes_layout.addLayout(search_row)
+        # Exactly one of the 477 indexed scenes carries catalog-pinned geometry
+        # targets, and nothing in this list used to say which. Someone asking
+        # whether stadium models work would open scene after scene, watch Import
+        # stage nothing, and reasonably conclude they do not.
+        editable_only = QCheckBox("Only scenes with editable geometry")
+        editable_only.setObjectName("filterCheck")
+        editable_only.setToolTip(
+            "The bounded same-count position writer is pinned to one full "
+            "Stadium scene. Tick this to list only that scene; untick to browse "
+            "every indexed stadium scene for viewing and glTF export."
+        )
+        editable_only.setAccessibleName(
+            "Show only stadium scenes with editable geometry"
+        )
+        scenes_layout.addWidget(editable_only)
         scene_list = QListWidget()
         scene_list.setObjectName("assetList")
         scene_list.setSpacing(2)
@@ -3627,8 +3660,10 @@ class StudioMainWindow(QMainWindow):
             findings, export_button, replace_button, revert_button,
         )
         self._stadium_browser = state
+        state.editable_only = editable_only
         search.returnPressed.connect(lambda: self._load_stadium_scenes(force=True))
         search_button.clicked.connect(lambda: self._load_stadium_scenes(force=True))
+        editable_only.toggled.connect(lambda _checked: self._populate_stadium_scenes())
         self._stadium_people_filter.toggled.connect(
             lambda _checked: self._select_stadium_scene(
                 self._stadium_browser.scene_list.currentItem()
@@ -3738,7 +3773,8 @@ class StudioMainWindow(QMainWindow):
         status_box = QVBoxLayout()
         status_box.setSpacing(4)
         self.operation_status = QLabel(
-            "Ready — load a game or browse what’s available"
+            getattr(self, "_pending_status", None)
+            or "Ready — load a game or browse what’s available"
         )
         self.operation_status.setObjectName("operationStatus")
         self.operation_status.setTextFormat(Qt.PlainText)
@@ -3769,10 +3805,20 @@ class StudioMainWindow(QMainWindow):
         self.build_button = QPushButton("Build Modded XISO")
         self.build_button.setObjectName("buildButton")
         self.build_button.setToolTip(BUILD_READY_MESSAGE)
+        self.configure_xemu_button = QPushButton("Configure xemu")
+        self.configure_xemu_button.setObjectName("utilityButton")
+        self.configure_xemu_button.setToolTip(
+            "Choose the xemu program to launch builds with. Only needed when "
+            "xemu is not on your PATH or installed as the app.xemu.xemu Flatpak."
+        )
+        self.configure_xemu_button.setAccessibleName("Configure the xemu launcher")
+        self.configure_xemu_button.setAccessibleDescription(
+            self.configure_xemu_button.toolTip()
+        )
         self.launch_button = QPushButton("Launch Latest Build")
         self.launch_button.setObjectName("launchButton")
         self.launch_button.setToolTip(
-            "Build a modded XISO and configure xemu to enable one-click launch."
+            "Build a modded XISO and set up xemu to enable one-click launch."
         )
         self.undo_button.setAccessibleName("Undo the most recent project edit")
         self.undo_button.setAccessibleDescription(
@@ -3789,10 +3835,14 @@ class StudioMainWindow(QMainWindow):
         self.undo_button.clicked.connect(self._undo)
         self.revert_all_button.clicked.connect(self._revert_all)
         self.build_button.clicked.connect(self._choose_build_output)
+        self.configure_xemu_button.clicked.connect(self._configure_xemu)
         self.launch_button.clicked.connect(self._launch_xemu)
         layout.addWidget(self.edit_count)
         layout.addWidget(self.undo_button)
         layout.addWidget(self.revert_all_button)
+        layout.addSpacing(4)
+        layout.addWidget(self.configure_xemu_button)
+        layout.addSpacing(4)
         layout.addWidget(self.build_button)
         layout.addWidget(self.launch_button)
         return footer
@@ -4872,27 +4922,7 @@ class StudioMainWindow(QMainWindow):
             state.scenes = tuple(result)  # type: ignore[arg-type]
             state.scenes_loaded = True
             state.scenes_loading = False
-            state.scene_list.blockSignals(True)
-            state.scene_list.clear()
-            for scene in state.scenes:
-                item = QListWidgetItem(
-                    f"Outer {scene.outer_index} / chunk {scene.chunk_index}"
-                )
-                item.setData(Qt.UserRole, scene.scene_id)
-                item.setToolTip(
-                    f"{scene.scene_id} • {scene.mesh_count} meshes • "
-                    f"{scene.vertex_count:,} vertices"
-                )
-                item.setSizeHint(QSize(260, 44))
-                state.scene_list.addItem(item)
-            state.scene_list.blockSignals(False)
-            state.count_label.setText(f"{len(state.scenes):,}")
-            if state.scenes:
-                state.scene_list.setCurrentRow(0)
-            else:
-                state.scene_label.setText("No matching stadium scenes")
-                state.scene_metadata.setText("Try a broader outer/scene search.")
-                state.viewport.set_model(None)
+            self._populate_stadium_scenes()
 
         self._start_task(
             lambda progress: self.facade.stadium_scenes(search, progress),
@@ -4900,6 +4930,80 @@ class StudioMainWindow(QMainWindow):
             label="Loading Stadium Studio",
             blocking=False,
         )
+
+    def _populate_stadium_scenes(self) -> None:
+        """Fill the scene list, marking the scenes whose geometry is writable.
+
+        Only scenes carrying catalog-pinned geometry targets accept an edited
+        glTF. Naming that in the row -- and offering a filter that hides the
+        rest -- is the difference between "stadium models work" and a modder
+        opening scenes at random until they give up.
+        """
+
+        state = self._stadium_browser
+        if state is None:
+            return
+        checkbox = state.editable_only
+        editable_only = checkbox is not None and checkbox.isChecked()
+        editable = tuple(scene for scene in state.scenes if scene.geometry_targets)
+        rows = editable if editable_only else state.scenes
+        previous = state.selected_scene_id
+        state.scene_list.blockSignals(True)
+        state.scene_list.clear()
+        selected_row = -1
+        for index, scene in enumerate(rows):
+            writable = bool(scene.geometry_targets)
+            label = f"Outer {scene.outer_index} / chunk {scene.chunk_index}"
+            if writable:
+                label = (
+                    f"✎ {label}\n{len(scene.geometry_targets)} editable meshes"
+                )
+            item = QListWidgetItem(label)
+            item.setData(Qt.UserRole, scene.scene_id)
+            item.setToolTip(
+                f"{scene.scene_id} • {scene.mesh_count} meshes • "
+                f"{scene.vertex_count:,} vertices"
+                + (
+                    "\nEdited glTF positions can be imported for this scene."
+                    if writable
+                    else "\nView and glTF export only: no geometry target is "
+                    "catalogued for this scene, so Import has nothing to write."
+                )
+            )
+            item.setSizeHint(QSize(260, 56 if writable else 44))
+            state.scene_list.addItem(item)
+            if scene.scene_id == previous:
+                selected_row = index
+        state.scene_list.blockSignals(False)
+        if checkbox is not None:
+            checkbox.setText(
+                f"Only scenes with editable geometry ({len(editable)})"
+            )
+        state.count_label.setText(
+            f"{len(rows):,} / {len(state.scenes):,}"
+            if editable_only
+            else f"{len(rows):,}"
+        )
+        if not rows:
+            state.selected_scene_id = None
+            state.scene_label.setText("No matching stadium scenes")
+            state.scene_metadata.setText("Try a broader outer/scene search.")
+            state.viewport.set_model(None)
+            return
+        if selected_row < 0:
+            # Land on a writable scene when the list holds one, so the first
+            # thing a modder sees is the scene Import actually accepts.
+            selected_row = next(
+                (
+                    index
+                    for index, scene in enumerate(rows)
+                    if scene.geometry_targets
+                ),
+                0,
+            )
+        # The list was cleared, so its current row is -1 and this assignment
+        # always emits currentItemChanged -> _select_stadium_scene.
+        state.scene_list.setCurrentRow(selected_row)
 
     def _select_stadium_scene(
         self, current: QListWidgetItem | None, _previous: QListWidgetItem | None
@@ -6465,8 +6569,44 @@ class StudioMainWindow(QMainWindow):
             blocking=True,
         )
 
+    def _configure_xemu(self) -> None:
+        """Let the user point at their own xemu build."""
+
+        chosen, _selected = QFileDialog.getOpenFileName(
+            self,
+            "Choose the xemu program",
+            str(Path.home()),
+            "All files (*)",
+        )
+        if not chosen:
+            return
+        try:
+            command = self.facade.configure_xemu(Path(chosen))
+        except Exception as exc:  # ValidationError and OS-level refusals
+            self._show_error(str(exc))
+            return
+        self._set_status(f"xemu set to {command[0]} • Launch is ready after a build.")
+        self._refresh_action_states()
+
     def _launch_xemu(self) -> None:
         if self._refuse_while_audio_busy("launch xemu"):
+            return
+        blocker = str(getattr(self.facade, "xemu_blocker", "") or "")
+        if blocker:
+            # Clicking a blocked action must teach, and when the fix is
+            # "tell me where xemu is" it must also offer to do it.
+            if "Configure xemu" in blocker:
+                answer = QMessageBox.question(
+                    self,
+                    "xemu is not set up yet",
+                    blocker + "\n\nChoose the xemu program now?",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.Yes,
+                )
+                if answer == QMessageBox.Yes:
+                    self._configure_xemu()
+                return
+            QMessageBox.information(self, "Cannot launch xemu yet", blocker)
             return
 
         def success(result: object) -> None:
@@ -6551,7 +6691,15 @@ class StudioMainWindow(QMainWindow):
         self._refresh_action_states()
 
     def _set_status(self, message: str) -> None:
-        self.operation_status.setText(message)
+        # Pages are built before the footer that owns this label, and a page
+        # constructed against an already-loaded game can report status during
+        # construction. Remember the message instead of raising: the window
+        # appearing at all matters more than one early status line.
+        status = getattr(self, "operation_status", None)
+        if status is None:
+            self._pending_status = message
+            return
+        status.setText(message)
 
     def _specialized_panel_status(self, message: str) -> None:
         """Forward embedded-panel status once the shared footer exists."""
@@ -6968,13 +7116,20 @@ class StudioMainWindow(QMainWindow):
             )
         )
         self.build_button.setAccessibleDescription(self.build_button.toolTip())
-        can_launch = bool(getattr(self.facade, "can_launch_xemu", False))
-        self.launch_button.setEnabled(can_launch and not global_busy)
+        # Never silent-gray: Launch stays clickable and names the one thing
+        # that is actually missing, instead of graying out with a message that
+        # covers two unrelated causes at once.
+        blocker = str(getattr(self.facade, "xemu_blocker", "") or "")
+        if not blocker and not bool(getattr(self.facade, "can_launch_xemu", False)):
+            blocker = "Build a modded XISO and set up xemu to enable one-click launch."
+        if global_busy:
+            blocker = blocker or "An operation is running • wait for it to finish."
+        self.launch_button.setEnabled(not global_busy)
         self.launch_button.setToolTip(
-            "Launch the latest completed build in xemu."
-            if can_launch
-            else "Build a modded XISO and configure xemu to enable one-click launch."
+            blocker or "Launch the latest completed build in xemu."
         )
+        self.launch_button.setProperty("disableReason", blocker)
+        self.launch_button.setAccessibleDescription(self.launch_button.toolTip())
         self.navigation.setEnabled(not global_busy)
         audio_busy = self._embedded_audio_busy
         crib_busy = self._embedded_crib_busy

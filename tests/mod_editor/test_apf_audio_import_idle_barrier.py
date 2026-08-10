@@ -73,6 +73,8 @@ class _RunnerFacade:
             settings=SimpleNamespace(configured=False)
         )
         self.can_launch_xenia = False
+        # Launch names its single blocker instead of graying out.
+        self.xenia_blocker = "Build a modded game folder first."
         self.preview_calls = 0
         self.apply_calls = 0
         self.close_calls = 0

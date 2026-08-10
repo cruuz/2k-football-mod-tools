@@ -12,7 +12,7 @@ import json
 import os
 from pathlib import Path
 import tempfile
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Mapping
 
 from mod_editor.core.capabilities import CapabilityRegistryLoader, Classification
 from mod_editor.core.model import GameId
@@ -39,6 +39,7 @@ import apf_inner  # type: ignore  # noqa: E402
 import apf_outer  # type: ignore  # noqa: E402
 import apf_uniform_inventory  # type: ignore  # noqa: E402
 import apf_textlogo_patch  # type: ignore  # noqa: E402
+import apf_field_art_patch  # type: ignore  # noqa: E402
 
 from .uniform_targets import load_targets
 
@@ -121,12 +122,43 @@ def _status_for(
     return ApfStatus.EXPORT_ONLY
 
 
+#: Which dedicated workspace owns the proved writer for a record the universal
+#: browser cannot write itself.  Two kinds of ownership appear here: the helmet
+#: crest layers, which are recognised structurally because every
+#: ``uniform_logo_NN`` package stores exactly ``logo_l0`` and ``logo_l1``; and
+#: fixed archive locations supplied by the writers' own tables.
+CREST_LAYER_NAMES = ("logo_l0", "logo_l1")
+
+
+def _workspace_owner(
+    outer_index: int,
+    inner_index: int | None,
+    type_name: str,
+    name: str,
+    owned_locations: Mapping[tuple[int, int], str] | None,
+) -> str:
+    """The workspace that edits this record, or ``""`` when none does.
+
+    Saying "no validated replacement writer owns this target yet" about a
+    record that Uniforms, Logos, or Field Art writes every day was the single
+    most misleading sentence in the browser: it sent modders away from a door
+    that was already open, and it was reported as a bug against two releases.
+    """
+
+    if type_name == "TXTR" and name in CREST_LAYER_NAMES:
+        return "Logos & Team Art → Team Logo"
+    if owned_locations and inner_index is not None:
+        return owned_locations.get((outer_index, inner_index), "")
+    return ""
+
+
 def _notes_for(
     outer_index: int,
     inner_index: int | None,
     type_name: str,
     name: str,
     status: ApfStatus,
+    owned_locations: Mapping[tuple[int, int], str] | None = None,
 ) -> tuple[str, ...]:
     asset_id = (
         f"apf:outer:{outer_index}"
@@ -138,6 +170,16 @@ def _notes_for(
     )
     if action is not None:
         return action.notes
+    owner = _workspace_owner(
+        outer_index, inner_index, type_name, name, owned_locations
+    )
+    if owner:
+        return (
+            "PNG export is attempted for decoded formats; an exact raw-parts "
+            "ZIP is always available.",
+            f"A proved writer owns this target: edit it in {owner}. Selecting "
+            "this row offers that hand-off directly.",
+        )
     if status is ApfStatus.PREVIEW:
         return ("This structure is mapped for browsing; replacement is not yet safe.",)
     if status is ApfStatus.EXPORT_ONLY:
@@ -155,6 +197,28 @@ def _notes_for(
             "Only an exact raw export is available here; no decoded authoring format or validated writer owns this target yet.",
         )
     return ()
+
+
+def _owned_locations(
+    uniforms: Iterable[UniformAsset],
+) -> dict[tuple[int, int], str]:
+    """Archive locations a dedicated workspace already writes.
+
+    The tables come from the writers themselves -- the uniform/wordmark
+    inventory and the field-art patcher's pinned contracts -- so this map can
+    never claim an authorship the product does not have.
+    """
+
+    owners: dict[tuple[int, int], str] = {}
+    for uniform in uniforms:
+        owners[(uniform.outer_index, uniform.inner_index)] = (
+            "Logos & Team Art → Wordmarks"
+            if uniform.family == "textlogo"
+            else "Uniforms & Equipment → Editable Materials"
+        )
+    for location in apf_field_art_patch.writable_locations():
+        owners[location] = "Field Art → base texture editor"
+    return owners
 
 
 def _external_audio_catalog_identities(
@@ -323,6 +387,10 @@ class CatalogBuilder:
                 pass
         cache.mkdir(parents=True, exist_ok=True)
         archive = apf_outer.parse_archive(source.index_0a)
+        # Resolved before the walk so every indexed row can name the workspace
+        # that already writes it instead of claiming nothing does.
+        uniforms = build_uniform_assets(source.index_0a)
+        owned_locations = _owned_locations(uniforms)
         assets: list[ApfAsset] = []
         iff_entries: list[dict[str, object]] = []
         iff_count = 0
@@ -385,6 +453,7 @@ class CatalogBuilder:
                                 type_name,
                                 name,
                                 status,
+                                owned_locations,
                             ),
                             metadata={
                                 "file_id": f"0x{item.file_id:08x}",
@@ -414,7 +483,6 @@ class CatalogBuilder:
             "iff_entries": iff_entries,
         }
         self._write_json_atomic(selection_path, selection_payload)
-        uniforms = build_uniform_assets(source.index_0a)
         capabilities = build_capability_cards()
         document = {
             "schema": CATALOG_SCHEMA,
@@ -478,6 +546,8 @@ class CatalogBuilder:
             != 10_394
         ):
             raise CatalogError("Cached APF inner selection is stale")
+        uniforms = build_uniform_assets(source.index_0a)
+        owned_locations = _owned_locations(uniforms)
         loaded_assets: list[ApfAsset] = []
         for row in document["assets"]:
             outer_index = int(row["outer_index"])
@@ -508,7 +578,12 @@ class CatalogBuilder:
                     outer_size=int(row["outer_size"]),
                     part_count=int(row["part_count"]),
                     notes=_notes_for(
-                        outer_index, inner_index, type_name, name, status
+                        outer_index,
+                        inner_index,
+                        type_name,
+                        name,
+                        status,
+                        owned_locations,
                     ),
                     metadata=dict(row.get("metadata", {})),
                 )
@@ -525,7 +600,7 @@ class CatalogBuilder:
             non_iff_count=70,
             inner_count=10_394,
             assets=assets,
-            uniform_assets=build_uniform_assets(source.index_0a),
+            uniform_assets=uniforms,
             capabilities=build_capability_cards(),
             audio_selection_manifest=selection,
         )

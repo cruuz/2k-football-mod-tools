@@ -1,5 +1,52 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.63 — browsed rows reach their real editor — 2026-08-10
+
+### Community issue closed
+
+- **`logo_l0 is not an editable PNG slot in this browser` (reported against
+  Beta 29 and Beta 30)** — the message was true about the browser and false
+  about the product. Every one of the 118 `uniform_logo_NN` crest packages is
+  written by **Logos → Team Logo**, and the browser's own search hint pointed
+  people straight at those rows. Selecting a row a proved writer owns now offers
+  **Edit in Team Logo… / Edit in Uniforms… / Edit in Wordmarks… / Edit in Field
+  Art…** instead of a refusal. That button opens the workspace, selects the
+  exact slot, and — if you chose or dropped an image in the browser — brings it
+  with you already staged. 236 crest layers, 96 uniform materials, 206
+  wordmarks, and the six writable field-art textures are covered.
+- **The asset notes stopped contradicting the app** — a row a workspace writes
+  no longer reads "No validated replacement writer owns this target yet"; it
+  names the workspace that owns it. Rows with genuinely no writer say exactly
+  that, and still offer raw/parts export.
+
+### Stadium models
+
+- **Editable meshes are a list, not a hunt** — Stadium Studio now carries an
+  **Editable meshes** picker holding every catalog-authorized POSITION target in
+  the open scene (77 in the proved outer-14 / inner-8 scene). Choosing one
+  selects it for Export/Import and highlights it in the 3D view; clicking a
+  surface in the view still works and updates the picker. A scene with no
+  authorized target says so instead of implying the wrong click.
+
+### Emulator
+
+- **Launch in Xenia never silently grays** — it stays clickable and names the
+  one thing that is missing (no build yet, Xenia not configured, or a build
+  folder that has since moved). When Xenia is the missing piece, clicking offers
+  to choose it there and then, instead of relabelling a dead button.
+
+### Reliability
+
+- A window opened against an already-loaded game no longer fails during
+  construction: the shared status/progress footer is built before the pages that
+  report into it.
+- The asset browser's detail pane can no longer describe a row that is no longer
+  selected after a search, which previously let Export act on a stale row.
+- The update check refuses to advertise a release older than the running build,
+  and reads the highest published beta rather than trusting list order.
+
+- The shared updater identity is `beta-31`.
+
 ## 0.1.0-alpha.62 — real-ISO release validation — 2026-08-09
 
 - The shipped ISO recognition, extraction, load, and read-only source path was

@@ -1,8 +1,35 @@
-# 2K5 Mod Studio — v1.0 RC57 Release Status
+# 2K5 Mod Studio — v1.0 RC58 Release Status
+
+## Beta 31 — browsed rows reach their editor, findable stadium geometry (2026-08-10)
+
+Source/UI versions are **2K5 RC58** and **APF alpha.63**; both use updater tag
+`beta-31`.
+
+- **Reported Beta 29/30 bug fixed.** The APF universal browser answered
+  `logo_l0 is not an editable PNG slot in this browser` on rows the product
+  writes every day. Selecting such a row now offers **Edit in Team Logo… /
+  Uniforms… / Wordmarks… / Field Art…**, opens that workspace with the exact
+  slot selected, and carries a chosen or dropped image across already staged.
+  236 crest layers, 96 uniform materials, 206 wordmarks, and six field-art base
+  textures are covered; rows with no proved writer say that instead, and keep
+  raw/parts export.
+- **Stadium geometry is findable in both editors.** 2K5 marks the one scene of
+  477 whose geometry Import can write, opens on it, and offers an
+  editable-geometry-only filter; APF lists all 77 catalog-authorized POSITION
+  targets in a picker instead of requiring the right click in the 3D view. Both
+  round trips were re-proved end to end against real games for this release.
+- **Emulator launch stops overstating.** 2K5 gains **Configure xemu** (remembered
+  between sessions), re-detects xemu instead of deciding once at startup, and
+  grants a Flatpak xemu read-only access to the built XISO's directory. Both
+  editors' Launch buttons stay clickable and name the single missing piece.
+- **Update identity.** The check refuses to advertise a release older than the
+  running build and reads the highest published beta rather than trusting
+  GitHub's list order, so a Beta 31 build is never told to "update" to Beta 31
+  or to anything behind it.
 
 ## Beta 30 — valid-container cache repair (2026-08-09)
 
-Source/UI versions are **2K5 RC57** and **APF alpha.62**; both use updater tag
+Source/UI versions were **2K5 RC57** and **APF alpha.62**; both used updater tag
 `beta-30`.
 
 - Every recognized USA retail 2K5 container layout now reduces to one canonical,
@@ -38,8 +65,8 @@ in 8-at-a-time batches). — do not treat this note as a sealed public release.
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The
-> source code and UI identify as the retail-free **`0.1.0-alpha.62` release**,
-> paired with 2K5 RC57 for `beta-30`. Download receipts are recorded
+> source code and UI identify as the retail-free **`0.1.0-alpha.63` release**,
+> paired with 2K5 RC58 for `beta-31`. Download receipts are recorded
 > in the Published releases section below; older immutable archive receipts are
 > retained as release history.
 > An older
@@ -272,7 +299,24 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-30` — 2026-08-09 · CURRENT
+### `beta-31` — 2026-08-10 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-31>
+
+Beta 31 carries 2K5 RC58 and APF alpha.63. Both Linux archives reproduce
+byte-for-byte from their staged trees, and both retail-free release gates pass
+(2K5 staged 201 files, APF staged 190).
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC58-20260810.tar.gz` | 10,991,308 | `029ce61e922d9aeb7df1363591623cac0ce34e67dce6425c95697863c568470a` |
+| `2K5-Mod-Studio-v1.0-RC58-20260810.tar.gz.sha256` | 107 | `42a6516d88780ad826d1c12b501a2c5d2d1ab2117e1bb1c07165929ea92546ba` |
+| `2K5-Mod-Studio-1.0-RC58-Setup.exe` | 56,728,573 | `6878d82f2ee78312a35e1c23cb273312b49145548bc067f0a3f51f6170c36547` |
+| `apf2k8-mod-studio-0.1.0-alpha.63-20260810.tar.gz` | 1,664,367 | `6c83945f896dde704c84bf5da5b85a6f8730e68db62cda7d5cff02c0332ac2fc` |
+| `apf2k8-mod-studio-0.1.0-alpha.63-20260810.tar.gz.sha256` | 115 | `a8b00030325eb3d5de7d3fb383b6b641b4d282cab29bb7fc7d4f918a4769b22a` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.63-Setup.exe` | 52,702,500 | `226877e6ab54ca4a76b912afb24d46496c08145b3ac09213a79a1c66a5ccb5b4` |
+
+### `beta-30` — 2026-08-09 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-30>
 

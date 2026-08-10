@@ -32,13 +32,41 @@ RELEASES_API = (
 RELEASES_PAGE = "https://github.com/cruuz/2k-football-mod-tools/releases"
 
 #: The release this build was cut from. Packaging updates it when a release is
-#: tagged; the check is "does the newest tag differ from mine", which works
+#: tagged; the check compares it with the newest published tag, which works
 #: across the two products' different version schemes without parsing either.
-BUILD_RELEASE_TAG = "beta-30"
+BUILD_RELEASE_TAG = "beta-31"
 
 DEFAULT_TIMEOUT_SECONDS = 6.0
 MAX_RESPONSE_BYTES = 1024 * 1024
 _TAG = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+#: Every release this project has ever published is ``beta-<n>``. Reading that
+#: number lets the check refuse to advertise a *backwards* move.
+_BETA = re.compile(r"^beta-(\d{1,6})$")
+
+
+def _beta_number(tag: str) -> int | None:
+    match = _BETA.match(tag.strip())
+    return int(match.group(1)) if match else None
+
+
+def _is_newer(latest: str, current: str) -> bool:
+    """Whether ``latest`` is genuinely ahead of the running build.
+
+    Plain inequality was enough while the newest release was always the highest
+    beta, and wrong the moment it was not: a re-published older tag, or a build
+    running before its own release is public, would both have told the user to
+    "update" to something behind them. When both tags are betas the numbers
+    decide; anything unrecognised falls back to "different means newer" so an
+    unforeseen tag scheme still gets announced rather than silently swallowed.
+    """
+
+    if latest == current:
+        return False
+    latest_number = _beta_number(latest)
+    current_number = _beta_number(current)
+    if latest_number is not None and current_number is not None:
+        return latest_number > current_number
+    return True
 
 
 @dataclass(frozen=True)
@@ -109,15 +137,24 @@ def check(
             detail="No connection, or GitHub did not answer.",
         )
 
-    # Newest first. Drafts are not published to anyone, so they are skipped;
-    # pre-releases are kept, because every beta this project ships is one.
-    document = next(
-        (
-            item for item in releases
-            if isinstance(item, dict) and not item.get("draft")
-        ),
-        None,
-    )
+    # Drafts are not published to anyone, so they are skipped; pre-releases are
+    # kept, because every beta this project ships is one.
+    published = [
+        item for item in releases
+        if isinstance(item, dict) and not item.get("draft")
+    ]
+    # GitHub orders this list by creation date, which is only the same as
+    # "highest release" until an older tag is re-published. Prefer the highest
+    # beta number when the tags say so, and keep GitHub's own order otherwise.
+    document = next(iter(published), None)
+    numbered = [
+        (number, item)
+        for item in published
+        for number in (_beta_number(str(item.get("tag_name") or "")),)
+        if number is not None
+    ]
+    if numbered:
+        document = max(numbered, key=lambda row: row[0])[1]
     if document is None:
         return UpdateStatus(
             available=False, current_tag=current_tag,
@@ -142,7 +179,7 @@ def check(
         title = ""
 
     return UpdateStatus(
-        available=latest != current_tag,
+        available=_is_newer(latest, current_tag),
         current_tag=current_tag,
         latest_tag=latest,
         url=url,

@@ -218,7 +218,35 @@ class ApfStudioFacade:
 
     @property
     def can_launch_xenia(self) -> bool:
-        return self.last_build is not None and self.launcher.settings.configured
+        return not self.xenia_blocker
+
+    @property
+    def xenia_blocker(self) -> str:
+        """Why launching is unavailable, or ``""`` when it is ready.
+
+        One gray button used to stand for two unrelated causes -- no build yet,
+        and no emulator configured -- so a modder could not tell which one was
+        theirs. Naming the exact blocker is what lets the control stay clickable
+        and still be honest.
+        """
+
+        if self.last_build is None:
+            return (
+                "Build a modded game folder first — Launch starts the most "
+                "recent build, and there is not one yet in this session."
+            )
+        if not self.launcher.settings.configured:
+            return (
+                "Xenia Canary is not configured yet. Use Configure Xenia to "
+                "choose it (and its Wine loader, when this is not Windows)."
+            )
+        output = self.last_build.output_game
+        if not output.is_dir():
+            return (
+                f"The last build is no longer at {output}. Build again, then "
+                "launch."
+            )
+        return ""
 
     def load_source(self, selected: Path, progress: Progress = _noop) -> ApfCatalog:
         with self._session_lock:

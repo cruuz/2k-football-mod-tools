@@ -1,3 +1,102 @@
+# beta-31 — RC58 / alpha.63
+
+**Date:** 2026-08-10
+
+**2K5 Mod Studio:** `v1.0-RC58`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.63`
+
+## The reported bug: `logo_l0 is not an editable PNG slot in this browser`
+
+Reported against Beta 29 and Beta 30. The message was true about the browser and
+false about the product: every one of the 118 `uniform_logo_NN` crest packages is
+written by **Logos → Team Logo**, and the browser's own search hint pointed
+people straight at those rows.
+
+Selecting a row that a proved writer owns now offers **Edit in Team Logo… /
+Edit in Uniforms… / Edit in Wordmarks… / Edit in Field Art…** instead of a
+refusal. That button opens the workspace, selects the exact slot, and — if you
+chose or dropped an image in the browser — carries it across already staged.
+Covered: 236 crest layers (`logo_l0` + `logo_l1` × 118 packages), 96 uniform
+materials, 206 wordmarks, six field-art base textures.
+
+The asset notes stopped contradicting the app, too. A row a workspace writes no
+longer reads "No validated replacement writer owns this target yet"; it names
+the workspace that owns it. Rows that genuinely have no writer say exactly that,
+and still offer raw/parts export.
+
+## Stadium models
+
+Both round trips were re-proved end to end against real games for this release —
+export, edit vertices, import, verify. What changed is that you can now *find*
+the geometry you are allowed to edit:
+
+- **2K5** indexes 477 stadium scenes and exactly one of them carries the
+  catalog-pinned geometry targets Import can write. That scene now shows a ✎
+  marker with its editable-mesh count, the list opens on it instead of on row 1,
+  and a new **Only scenes with editable geometry** filter hides the rest. Every
+  other scene's tooltip says plainly that it is view and glTF-export only.
+- **APF** adds an **Editable meshes** picker listing all 77 catalog-authorized
+  POSITION targets in the open scene. Choosing one selects it for Export/Import
+  and highlights it in the 3D view; clicking a surface in the view still works
+  and updates the picker. A scene with no authorized target says so.
+
+Boundaries are unchanged: same vertex count, same expanded topology, POSITION
+only. UVs, normals, materials, skins, attachments and every other byte stay
+exact, and runtime visibility remains unproved.
+
+## Emulator launch
+
+- **2K5 gains Configure xemu**, and remembers the choice between sessions. The
+  old tooltip told people to "configure xemu" when nothing in the app could.
+- **xemu is re-detected while it is still missing**, instead of being decided
+  once at startup — installing xemu because the editor asked you to no longer
+  requires restarting the editor.
+- **A Flatpak xemu can open builds outside home.** The launch now grants
+  read-only sandbox access to the built XISO's own directory; without it a build
+  on an external drive failed with an I/O error that looked like a bad build.
+- **Neither editor's Launch button silently grays any more.** It stays clickable
+  and names the single missing piece — no build yet, no emulator, or a build
+  that has since moved — and when the emulator is what is missing, clicking
+  offers to choose it.
+
+## Also in this build
+
+- The update check refuses to advertise a release older than the running build,
+  and reads the highest published beta rather than trusting GitHub's list order.
+  A Beta 31 build is never told to "update" to Beta 31 or to anything behind it.
+- A window opened against an already-loaded game no longer fails during
+  construction; the shared status/progress footer is built before the pages that
+  report into it.
+- The APF asset browser's detail pane can no longer describe a row that is no
+  longer selected after a search, which previously let Export act on a stale row.
+
+## Verified for this release
+
+- Both retail-free release gates pass: 2K5 stages 201 files, APF stages 190.
+- The full suite runs green per-file across 221 test files.
+- Both Linux archives reproduce byte-for-byte from the same staged trees.
+- The packaged 2K5 build loads all three local retail images
+  (6,300,958,720 / 7,825,162,240 / 6,300,499,968 bytes) with 477 stadium scenes
+  each; the packaged APF build loads the extracted Xbox 360 game and reproduces
+  the reported `logo_l0` path end to end.
+
+## Release integrity
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC58-20260810.tar.gz` | 10,991,308 | `029ce61e922d9aeb7df1363591623cac0ce34e67dce6425c95697863c568470a` |
+| `2K5-Mod-Studio-v1.0-RC58-20260810.tar.gz.sha256` | 107 | `42a6516d88780ad826d1c12b501a2c5d2d1ab2117e1bb1c07165929ea92546ba` |
+| `2K5-Mod-Studio-1.0-RC58-Setup.exe` | 56,728,573 | `6878d82f2ee78312a35e1c23cb273312b49145548bc067f0a3f51f6170c36547` |
+| `apf2k8-mod-studio-0.1.0-alpha.63-20260810.tar.gz` | 1,664,367 | `6c83945f896dde704c84bf5da5b85a6f8730e68db62cda7d5cff02c0332ac2fc` |
+| `apf2k8-mod-studio-0.1.0-alpha.63-20260810.tar.gz.sha256` | 115 | `a8b00030325eb3d5de7d3fb383b6b641b4d282cab29bb7fc7d4f918a4769b22a` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.63-Setup.exe` | 52,702,500 | `226877e6ab54ca4a76b912afb24d46496c08145b3ac09213a79a1c66a5ccb5b4` |
+
+Windows installers are self-contained and reproducibly built, but not
+code-signed; the installer explains the Windows warning before installation.
+
+---
+
 # beta-30 — RC57 / alpha.62
 
 **Date:** 2026-08-09

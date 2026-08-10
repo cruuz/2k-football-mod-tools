@@ -5,6 +5,43 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC58 — findable stadium geometry + real xemu setup — 2026-08-10
+
+### Stadium models
+
+- **The editable stadium scene is marked and opened first** — Stadium Studio
+  indexes 477 scenes, and exactly one of them carries the catalog-pinned
+  geometry targets that Import can write. That scene now shows a ✎ marker and
+  its editable-mesh count, the list opens on it instead of on row 1, and a new
+  **Only scenes with editable geometry** filter hides the rest. Every other
+  scene's tooltip says plainly that it is view and glTF-export only, so Import
+  staging nothing is never a mystery.
+
+### Emulator
+
+- **Configure xemu** — the footer can now point the editor at your own xemu
+  program, and the choice is remembered between sessions. The old tooltip told
+  people to "configure xemu" when nothing in the app could do it.
+- **xemu is re-detected while it is still missing** — detection used to run once
+  at startup, so installing xemu because the editor asked you to did nothing
+  until you restarted the editor.
+- **Flatpak xemu can open builds outside home** — a Flatpak launch now grants
+  read-only sandbox access to the built XISO's own directory. Without it, a
+  build on an external drive failed with an I/O error that looked like a bad
+  build rather than a sandbox refusal.
+- **Launch Latest Build never silently grays** — it stays clickable and names
+  the one thing that is missing (no build yet, no xemu, or a build that has
+  since moved) rather than one message covering all of them; when xemu is the
+  missing piece, clicking offers to choose it.
+
+### Reliability
+
+- A window opened against an already-loaded game no longer fails during
+  construction: the shared status/progress footer is built before the pages that
+  report into it.
+- The update check refuses to advertise a release older than the running build,
+  and reads the highest published beta rather than trusting list order.
+
 ## v1.0 RC57 — valid-container shared-cache repair — 2026-08-09
 
 - **Valid ISO layouts share one verified cache** — once the USA retail game is
