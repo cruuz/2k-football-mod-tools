@@ -30,41 +30,48 @@ class _Build:
 
 
 class XemuLaunchArgumentTests(unittest.TestCase):
+    # Expected path strings are built from Path, never written as POSIX
+    # literals: str(Path) renders backslashes on Windows, and a literal here
+    # passes on Linux while failing on the runner that matters least to this
+    # Linux-only feature and most to the suite staying green.
     def test_a_direct_xemu_gets_the_plain_dvd_path(self) -> None:
-        argv = studio_facade._xemu_launch_argv(
-            ("/usr/bin/xemu",), Path("/games/modded.iso")
-        )
-        self.assertEqual(
-            argv, ("/usr/bin/xemu", "-dvd_path", "/games/modded.iso")
-        )
+        iso = Path("/games/modded.iso")
+        argv = studio_facade._xemu_launch_argv(("/usr/bin/xemu",), iso)
+        self.assertEqual(argv, ("/usr/bin/xemu", "-dvd_path", str(iso)))
 
     def test_a_flatpak_xemu_is_given_read_access_to_the_iso_directory(self) -> None:
         """Without this the sandbox refuses the file and it reads as a bad build."""
 
+        iso = Path("/media/drive/builds/modded.iso")
         argv = studio_facade._xemu_launch_argv(
-            ("/usr/bin/flatpak", "run", "app.xemu.xemu"),
-            Path("/media/drive/builds/modded.iso"),
+            ("/usr/bin/flatpak", "run", "app.xemu.xemu"), iso
         )
         self.assertEqual(
             argv,
             (
                 "/usr/bin/flatpak",
                 "run",
-                "--filesystem=/media/drive/builds:ro",
+                f"--filesystem={iso.parent}:ro",
                 "app.xemu.xemu",
                 "-dvd_path",
-                "/media/drive/builds/modded.iso",
+                str(iso),
             ),
         )
-        # Read-only: launching a build never gives the emulator write access.
-        self.assertIn(":ro", argv[2])
+        # The share is inserted before the application id, where flatpak
+        # accepts its own options, and is read-only: launching a build never
+        # gives the emulator write access.
+        self.assertEqual(argv[3], "app.xemu.xemu")
+        self.assertTrue(argv[2].endswith(":ro"))
 
     def test_a_flatpak_style_command_that_is_not_flatpak_is_left_alone(self) -> None:
+        iso = Path("/games/modded.iso")
         argv = studio_facade._xemu_launch_argv(
-            ("/opt/xemu/run", "run", "something"), Path("/games/modded.iso")
+            ("/opt/xemu/run", "run", "something"), iso
         )
-        self.assertEqual(argv[:3], ("/opt/xemu/run", "run", "something"))
-        self.assertNotIn("--filesystem=/games:ro", argv)
+        self.assertEqual(
+            argv, ("/opt/xemu/run", "run", "something", "-dvd_path", str(iso))
+        )
+        self.assertFalse(any(item.startswith("--filesystem=") for item in argv))
 
 
 class XemuSettingsTests(unittest.TestCase):
@@ -134,13 +141,17 @@ class XemuBlockerTests(unittest.TestCase):
             folder = Path(directory)
             with self.assertRaises(ValidationError):
                 facade.configure_xemu(folder)
-            not_executable = folder / "notes.txt"
-            not_executable.write_text("hello")
-            with self.assertRaises(ValidationError) as caught:
-                facade.configure_xemu(not_executable)
-            self.assertIn("not executable", str(caught.exception))
             with self.assertRaises(ValidationError):
                 facade.configure_xemu(folder / "missing")
+            # The execute bit only means something where the OS has one.
+            # Windows grants X_OK to any existing file, so asserting this
+            # refusal everywhere would be testing the platform, not the code.
+            if os.name == "posix":
+                not_executable = folder / "notes.txt"
+                not_executable.write_text("hello")
+                with self.assertRaises(ValidationError) as caught:
+                    facade.configure_xemu(not_executable)
+                self.assertIn("not executable", str(caught.exception))
 
 
 class XeniaBlockerTests(unittest.TestCase):

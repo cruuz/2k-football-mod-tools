@@ -308,12 +308,16 @@ class BrowserActionTests(unittest.TestCase):
         browser.openWorkspaceRequested.connect(seen.append)
         try:
             self._select(browser, "logo_l0")
-            browser._replace_from_drop(Path("/tmp/some-crest.png"))
+            dropped = Path("/tmp/some-crest.png")
+            browser._replace_from_drop(dropped)
             self.assertEqual(len(seen), 1)
             self.assertEqual(seen[0].route.tab, TEAM_LOGO_TAB)
             self.assertEqual(seen[0].route.key, "36")
             self.assertEqual(seen[0].asset_name, "logo_l0")
-            self.assertEqual(seen[0].image, "/tmp/some-crest.png")
+            # str(Path(...)), not a POSIX literal: this same assertion with a
+            # hard-coded "/tmp/..." passed on Linux and failed on Windows,
+            # where str(Path) renders backslashes.
+            self.assertEqual(seen[0].image, str(dropped))
         finally:
             browser.deleteLater()
             self.app.processEvents()
