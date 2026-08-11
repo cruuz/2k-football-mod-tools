@@ -42,6 +42,12 @@ writers all use block-compressed formats at 8 or 16 bytes per block, where both
 corrections are no-ops. Their output is unchanged byte for byte, and there is now
 a test that says so.
 
+**Xbox 360 only.** This fix is Xenos texture addressing — the 360 GPU's tiling,
+its packed-mip layout, its 4096-byte subresource alignment. APF 2K8 on PS3 does
+not store its textures that way, and these tools do not read or write the PS3
+build at all. If you mod a PS3 copy, nothing here changes it, and a crest that
+still looks wrong there is not this bug coming back.
+
 The layout also refuses outright to hand back a chain whose levels share bytes,
 so this class of bug fails closed instead of reaching a crest.
 
