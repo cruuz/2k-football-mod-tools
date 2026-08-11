@@ -5,6 +5,12 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC62 — no 2K5 changes — 2026-08-11
+
+- This release fixes APF 2K8 team-crest mip regeneration and adds a two-layer
+  crest import to APF's Team Logo panel. Nothing in 2K5 changed; the version
+  moves so both products keep shipping from one release.
+
 ## v1.0 RC60 — validation harness PATH isolation — 2026-08-10
 
 - The capability validation harness put the discovered ripgrep's whole

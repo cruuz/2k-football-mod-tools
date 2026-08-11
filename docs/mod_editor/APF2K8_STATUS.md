@@ -1,8 +1,8 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.65`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.67`.** Historical sealed packages below retain prior alpha numbers.
 
-## 0.1.0-alpha.65 release validation
+## 0.1.0-alpha.67 release validation
 
 The shipped ISO recognition, extraction, load, and read-only source path has
 been revalidated against a real USA APF 2K8 image as well as the retail-free
@@ -23,7 +23,7 @@ carrier language is retained only as a superseded contract;
 it does not describe v24. The current 10-view static asset-space visual gate
 proof used no Xenia, Wine, emulator, controller, or FIFO.
 
-The source code and UI identify as the retail-free **`0.1.0-alpha.65`**.
+The source code and UI identify as the retail-free **`0.1.0-alpha.67`**.
 `0.1.0-alpha.34` remains preserved unchanged; its mode-`0444`,
 815,213-byte archive has SHA-256
 `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`,
