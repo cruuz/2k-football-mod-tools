@@ -344,8 +344,14 @@ class AllCapabilityValidationTests(unittest.TestCase):
         self.assertEqual(snapshot.path, resolved)
         path_entries = FIXED_PATH.split(":")
         self.assertEqual(path_entries[:2], ["/usr/bin", "/bin"])
-        self.assertEqual(path_entries[-1], str(resolved.parent))
-        self.assertEqual(list(resolved.parent.iterdir()), [resolved])
+        # The invariant is that the PATH tail exposes exactly one command, so
+        # nothing on the host can shadow an audited one through it. Asserting
+        # the *discovered* directory instead made this fail on any machine whose
+        # ripgrep ships in a shared vendor bin beside other executables.
+        tail = Path(path_entries[-1])
+        entries = sorted(entry.name for entry in tail.iterdir())
+        self.assertEqual(entries, [resolved.name])
+        self.assertEqual((tail / resolved.name).resolve(), resolved)
 
     def test_audited_registry_host_commands_have_provenance(self) -> None:
         # Audit closure: 42 registry entry scripts plus their 11 literal local

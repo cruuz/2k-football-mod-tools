@@ -87,11 +87,50 @@ def _discover_rg_path() -> Path:
     return Path("/usr/bin/rg")
 
 
+def _isolated_rg_directory(resolved: Path) -> Path:
+    """A directory holding ripgrep and nothing else, for the fixed PATH tail.
+
+    The tail of the fixed PATH must expose exactly one command.  When ripgrep
+    comes from ``/usr/bin`` that is already true, but a ripgrep discovered
+    through ``PATH`` often lives in a shared vendor bin beside other
+    executables -- and putting that whole directory on the validation PATH lets
+    any of them shadow an audited command.
+
+    So when the discovered directory holds anything besides ripgrep, expose it
+    through a private single-entry directory instead.  Any failure falls back to
+    the discovered directory, where the caller's own single-entry assertion
+    still catches the problem rather than hiding it.
+    """
+
+    try:
+        siblings = sorted(entry.name for entry in resolved.parent.iterdir())
+    except OSError:
+        return resolved.parent
+    if siblings == [resolved.name]:
+        return resolved.parent
+    private = Path.home() / ".cache" / "2k-mod-tools" / "validation-bin"
+    try:
+        private.mkdir(parents=True, exist_ok=True)
+        for stale in private.iterdir():
+            if stale.name != resolved.name:
+                stale.unlink()
+        link = private / resolved.name
+        if link.is_symlink() or link.exists():
+            if link.resolve() == resolved:
+                return private
+            link.unlink()
+        link.symlink_to(resolved)
+    except OSError:
+        return resolved.parent
+    return private
+
+
 PINNED_RG_PATH = _discover_rg_path()
-# Keep a discovered non-system directory last.  System commands therefore win
-# normal lookup, while the exact ripgrep executable is still captured and
-# verified before and after the validation run.
-FIXED_PATH = f"/usr/bin:/bin:{PINNED_RG_PATH.parent}"
+# Keep a single-command directory last.  System commands therefore win normal
+# lookup, the exact ripgrep executable is still captured and verified before
+# and after the validation run, and nothing else on the host can shadow an
+# audited command through this entry.
+FIXED_PATH = f"/usr/bin:/bin:{_isolated_rg_directory(PINNED_RG_PATH.resolve())}"
 FIXED_ENVIRONMENT = {
     "GIT_CONFIG_GLOBAL": "/dev/null",
     "GIT_CONFIG_NOSYSTEM": "1",
