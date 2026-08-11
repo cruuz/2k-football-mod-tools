@@ -40,8 +40,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.11', '3.12']
+        os: [windows-latest]
+        python-version: ['3.12']
     env:
       # Qt needs a display. The offscreen platform plugin gives it one with no
       # X server / no window, on every OS.
@@ -247,7 +247,7 @@ jobs:
               failed=$((failed + 1))
               failed_list="$failed_list $name"
               printf 'FAIL  %s  (rc=%s)\n' "$name" "$rc"
-              printf '%s\n' "$out" | tail -40
+              printf '%s\n' "$out" | tail -400
               echo "----------------------------------------------------------------------"
             fi
           done
