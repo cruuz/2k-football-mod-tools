@@ -539,6 +539,7 @@ def _write_bound_copied_volume(
         source.descriptor,
         output.descriptor,
         source.metadata,
+        output.path,
     )
     os.fsync(output.descriptor)
     output_metadata = _assert_bound_output(

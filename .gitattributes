@@ -11,5 +11,8 @@
 # Windows batch launchers must stay CRLF to run reliably under cmd.exe.
 *.bat text eol=crlf
 
-# Binary assets: never apply end-of-line conversion.
+# Binary assets: never apply end-of-line conversion. The .ico is pinned by
+# SHA-256 in both release gates, so leaving it to Git's text/binary heuristic
+# would put a released hash at the mercy of a guess.
 *.png binary
+*.ico binary

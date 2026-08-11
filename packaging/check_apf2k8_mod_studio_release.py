@@ -60,11 +60,29 @@ REVIEWED_H7A_BINARY_SIZE = 14_472
 REVIEWED_H7A_BINARY_SHA256 = (
     "9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab"
 )
+# The application icon Windows puts on the Start Menu shortcut, and the only
+# image in the closure.  Icons are the classic hiding place for a renamed
+# payload, so it gets the same treatment as the extractors above: pinned size,
+# pinned hash, and still required to be a Windows icon image.  ".ico" remains an
+# unapproved suffix for every other path -- this is one named file, not a
+# relaxed category.
+#
+# The bytes are original work generated from geometry by tools/make_app_icons.py
+# (also in this release), which is deterministic: anyone can re-run it and get
+# this exact file back.  Update the pin only from that script's --print-pins
+# output, never by hand.
+ICO_MAGIC = b"\x00\x00\x01\x00"
+REVIEWED_ICON = "packaging/icons/apf2k8-mod-studio.ico"
+REVIEWED_ICON_SIZE = 23_822
+REVIEWED_ICON_SHA256 = (
+    "dc00ecd1c67a63509acad6eb45fd6aa593a4add7839ea8bf685b9eca0d4154b2"
+)
 REVIEWED_PATHS = frozenset(
     {
         REVIEWED_BINARY,
         REVIEWED_WINDOWS_BINARY,
         REVIEWED_H7A_BINARY,
+        REVIEWED_ICON,
         REVIEWED_LICENSE,
     }
 )
@@ -96,7 +114,7 @@ INSTALL_EXECUTABLES = frozenset(
 # private paths are embedded in the release checker.
 REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
     "mod_editor/apf_studio/__init__.py": (
-        '__version__ = "0.1.0-alpha.65"',
+        '__version__ = "0.1.0-alpha.66"',
     ),
     "mod_editor/apf_studio/audio_annotations.py": (
         'AUDIO_ANNOTATIONS_SCHEMA = "apf2k8_audio_annotations/v1"',
@@ -246,7 +264,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "confirmation_token",
     ),
     "APF2K8-README.md": (
-        "0.1.0-alpha.65",
+        "0.1.0-alpha.66",
         "Normal logo — convert to APF regions (recommended)",
         "APF region mask (advanced)",
         "Your cue label & notes",
@@ -271,7 +289,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "normalized original import plus the last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_getting_started.md": (
-        "0.1.0-alpha.65",
+        "0.1.0-alpha.66",
         "Your cue label & notes",
         "Labeled only",
         "audio-annotations.json",
@@ -291,7 +309,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "normalized original import and last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_changelog.md": (
-        "0.1.0-alpha.65",
+        "0.1.0-alpha.66",
         "project_metadata_only_stable_logical_cue_id",
         "audio-annotations.json",
         "selected_exact_slot_xma1_or_conformed_audio",
@@ -309,7 +327,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "original import plus its last transform",
     ),
     "docs/mod_editor/APF2K8_STATUS.md": (
-        "0.1.0-alpha.65",
+        "0.1.0-alpha.66",
         "0.1.0-alpha.51 candidate boundary",
         "project_metadata_only_stable_logical_cue_id",
         "47,775 playable cues",
@@ -614,6 +632,17 @@ def _validate_reviewed_binary(path: Path, info: os.stat_result) -> str:
     return digest
 
 
+def _validate_reviewed_icon(path: Path, info: os.stat_result) -> str:
+    if info.st_size != REVIEWED_ICON_SIZE:
+        raise ReleaseCheckError("reviewed application icon size changed")
+    digest, payload = _hash_regular(path, info.st_size, REVIEWED_ICON_SIZE)
+    if digest != REVIEWED_ICON_SHA256:
+        raise ReleaseCheckError("reviewed application icon hash changed")
+    if not payload.startswith(ICO_MAGIC):
+        raise ReleaseCheckError("reviewed application icon is no longer a Windows icon")
+    return digest
+
+
 def _validate_reviewed_h7a_binary(path: Path, info: os.stat_result) -> str:
     if info.st_size != REVIEWED_H7A_BINARY_SIZE:
         raise ReleaseCheckError("reviewed H7A encoder binary size changed")
@@ -793,7 +822,10 @@ def audit_release(root: Path, allowlist_path: Path) -> dict[str, object]:
                 f"allowlist declares forbidden private/game component {forbidden!r}: {item}"
             )
     if REVIEWED_PATHS - declared:
-        raise ReleaseCheckError("reviewed extract-xiso binary and license must both be declared")
+        raise ReleaseCheckError(
+            "every reviewed binary, the extractor licence, and the application "
+            "icon must all be declared"
+        )
 
     seen_files: set[str] = set()
     seen_folded: set[str] = set()
@@ -832,6 +864,8 @@ def audit_release(root: Path, allowlist_path: Path) -> dict[str, object]:
             digest = _validate_reviewed_windows_binary(path, info)
         elif relative == REVIEWED_H7A_BINARY:
             digest = _validate_reviewed_h7a_binary(path, info)
+        elif relative == REVIEWED_ICON:
+            digest = _validate_reviewed_icon(path, info)
         else:
             suffix = path.suffix.casefold()
             if suffix in FORBIDDEN_MEDIA_SUFFIXES:
@@ -868,6 +902,7 @@ def audit_release(root: Path, allowlist_path: Path) -> dict[str, object]:
         "total_bytes": total_bytes,
         "retail_hash_count_rejected": len(KNOWN_RETAIL_SHA256),
         "reviewed_binary_count": 3,
+        "reviewed_icon_count": 1,
         "reviewed_metadata_count": reviewed_metadata_count,
         "install_surface_count": len(INSTALL_SURFACE),
         "retail_payloads_included": False,

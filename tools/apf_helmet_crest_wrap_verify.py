@@ -21,6 +21,8 @@ for candidate in (ROOT, ROOT / "tools"):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
+from mod_editor.core import platform_compat  # noqa: E402
+
 import apf_inner  # noqa: E402
 import apf_outer  # noqa: E402
 
@@ -587,7 +589,7 @@ def _regular_volume(path: Path, label: str) -> None:
 def _read_outer_volume(path: Path) -> bytes:
     descriptor = os.open(path, os.O_RDONLY)
     try:
-        value = os.pread(descriptor, OUTER_SIZE, OUTER_OFFSET)
+        value = platform_compat.pread(descriptor, OUTER_SIZE, OUTER_OFFSET)
     finally:
         os.close(descriptor)
     require(len(value) == OUTER_SIZE, "short outer allocation read")

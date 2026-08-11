@@ -22,6 +22,29 @@ Mint those package names are normally `python3`, `python3-pyqt5`, and
 into a directory on `PATH`; the launcher resolves that symlink back to the
 application root.
 
+## Application icons
+
+`tools/make_app_icons.py` generates every icon both editors use, from geometry
+rather than from an art file, and is deterministic: re-running it rewrites the
+committed assets with the bytes they already had. Run it after changing any of
+its constants, never edit its output by hand, and use `--check` to prove the
+committed assets are current.
+
+| Output | Used by |
+| --- | --- |
+| `packaging/<slug>.svg` | the Linux hicolor theme's scalable slot |
+| `packaging/icons/<slug>.ico` | the window/taskbar icon at runtime, the NSIS installer chrome, and the Windows shortcuts |
+| `packaging/icons/<slug>-<size>.png` | reference renders; not staged into a release |
+
+16, 24 and 32 px are drawn separately rather than downscaled, and 16 px drops
+the `K` because three glyphs cannot resolve in that width. The `.ico` carries
+all of them, which is why it is what the app loads first.
+
+The `.ico` is the only image either release ships. Both release gates pin it by
+exact size and SHA-256 and re-check its image magic on every run, so regenerate
+the pins from `tools/make_app_icons.py --print-pins` whenever the icon changes.
+
+
 ## Retail-free release gate
 
 Never stage a release by copying the workspace. Create a new staging directory
@@ -36,7 +59,8 @@ python3 packaging/check_2k5_mod_studio_release.py /path/to/staged-release
 ```
 
 The release gate refuses undeclared files, symlinks, hardlinks, special files,
-world-writable files, binary or non-UTF-8 content, known NFL 2K5 retail hashes
+world-writable files, binary or non-UTF-8 content other than the one pinned
+application icon, known NFL 2K5 retail hashes
 and container magic, retail/container/media extensions (including glTF/GLB),
 either known private workstation home/mount prefix in staged text, and any path
 under extracted, reports, assets, build, cache, originals, runtime, or other

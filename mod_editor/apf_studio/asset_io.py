@@ -19,6 +19,7 @@ from mod_editor.core import platform_compat
 from .backend import ensure_tools_importable
 from .catalog import ApfCatalog
 from .inspectors import ExportIdentity, InspectorRow
+from . import scene_textures
 from .models import (
     ApfAsset,
     ApfCategory,
@@ -213,6 +214,98 @@ class ApfAssetIO:
 
     def export_digital_font(self, destination: Path) -> Path:
         return _exclusive_copy(self.preview_digital_font(), destination)
+
+    def scene_textures(
+        self, assets: Iterable[ApfAsset]
+    ) -> tuple[scene_textures.SceneTexture, ...]:
+        """Embedded TXTR descriptors declared by the given SCNE rows.
+
+        These have no inner-file index, so they are not catalog assets and
+        never gain an editable status; the caller lists them as read-only
+        artwork.
+        """
+
+        return scene_textures.read_scene_textures(self.source, tuple(assets))
+
+    def preview_scene_texture(self, texture: scene_textures.SceneTexture) -> Path:
+        destination = (
+            self.originals_root
+            / "scene-textures"
+            / f"outer-{texture.outer_index:04d}-inner-{texture.inner_index:04d}"
+            f"-tex-{texture.index:03d}.png"
+        )
+        if destination.is_file() and not destination.is_symlink():
+            try:
+                with Image.open(destination) as image:
+                    image.load()
+                    if image.format == "PNG" and image.mode == "RGBA":
+                        return destination
+            except (OSError, ValueError):
+                pass
+            # A private derived cache, so a truncated file is rebuilt rather
+            # than handed to the user as their exported image.
+            destination.unlink(missing_ok=True)
+        payload = scene_textures.read_texture_payload(self.source, texture)
+        try:
+            width, height, rgba = scene_textures.decode_texture_rgba(texture, payload)
+        except (scene_textures.SceneTextureError, apf_inner.FormatError, ValueError) as exc:
+            detail = str(exc).strip() or exc.__class__.__name__
+            raise AssetIoError(
+                f"{texture.title}: PNG preview failed ({detail}). "
+                "Export the raw descriptor and payload instead."
+            ) from exc
+        self._write_png_cache(destination, width, height, rgba)
+        return destination
+
+    def export_scene_texture(
+        self, texture: scene_textures.SceneTexture, destination: Path
+    ) -> Path:
+        suffix = destination.suffix.casefold()
+        if suffix == ".png":
+            return _exclusive_copy(self.preview_scene_texture(texture), destination)
+        if suffix != ".zip":
+            raise AssetIoError(
+                "An embedded scene texture exports as .png (decoded) or .zip "
+                "(raw descriptor and payload)."
+            )
+        return self._export_scene_texture_bundle(texture, destination)
+
+    def _export_scene_texture_bundle(
+        self, texture: scene_textures.SceneTexture, destination: Path
+    ) -> Path:
+        payload = scene_textures.read_texture_payload(self.source, texture)
+        with tempfile.TemporaryDirectory(prefix="apf-scene-texture-export-") as name:
+            temporary = Path(name) / "scene-texture.zip"
+            with zipfile.ZipFile(temporary, "x", compression=zipfile.ZIP_DEFLATED) as archive:
+                archive.writestr("payload.bin", payload)
+                archive.writestr(
+                    "metadata.json",
+                    json.dumps(
+                        {
+                            "schema": "apf2k8_mod_studio_scene_texture_export/v1",
+                            "outer_index": texture.outer_index,
+                            "inner_index": texture.inner_index,
+                            "scene_name": texture.scene_name,
+                            "embedded_index": texture.index,
+                            "texture_id": f"0x{texture.texture_id:08x}",
+                            "width": texture.width,
+                            "height": texture.height,
+                            "format_name": texture.format_name,
+                            "video_offset": texture.video_offset,
+                            "payload_length": len(payload),
+                            "payload_sha256": hashlib.sha256(payload).hexdigest(),
+                            "writer_available": False,
+                            "note": (
+                                "Local export from the user's own game; do not "
+                                "redistribute retail payloads. No writer is "
+                                "proved for textures embedded in a SCNE part."
+                            ),
+                        },
+                        indent=2,
+                    )
+                    + "\n",
+                )
+            return _exclusive_copy(temporary, destination)
 
     def preview_texture(self, asset: ApfAsset | str) -> Path:
         item = self.catalog.get(asset) if isinstance(asset, str) else asset

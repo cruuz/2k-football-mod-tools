@@ -25,6 +25,10 @@ from PIL import Image, UnidentifiedImageError
 
 WORKSPACE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(WORKSPACE / "tools"))
+if str(WORKSPACE) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE))
+
+from mod_editor.core import platform_compat  # noqa: E402
 
 import apf_inner  # noqa: E402
 import apf_outer  # noqa: E402
@@ -121,7 +125,9 @@ def read_all(identity: OpenIdentity, label: str) -> bytes:
     chunks: list[bytes] = []
     cursor = 0
     while cursor < identity.size:
-        chunk = os.pread(identity.descriptor, min(1024 * 1024, identity.size - cursor), cursor)
+        chunk = platform_compat.pread(
+            identity.descriptor, min(1024 * 1024, identity.size - cursor), cursor
+        )
         require(bool(chunk), f"{label} shortened during read")
         chunks.append(chunk)
         cursor += len(chunk)
@@ -224,7 +230,7 @@ def hash_fd(descriptor: int, size: int) -> str:
     digest = hashlib.sha256()
     cursor = 0
     while cursor < size:
-        chunk = os.pread(descriptor, min(8 * 1024 * 1024, size - cursor), cursor)
+        chunk = platform_compat.pread(descriptor, min(8 * 1024 * 1024, size - cursor), cursor)
         require(bool(chunk), "file shortened during SHA-256 read")
         digest.update(chunk)
         cursor += len(chunk)
@@ -269,8 +275,8 @@ def compare_copy_outside_span(
         cursor = 0
         while cursor < source.size:
             count = min(8 * 1024 * 1024, source.size - cursor)
-            first = os.pread(source.descriptor, count, cursor)
-            second = os.pread(output.descriptor, count, cursor)
+            first = platform_compat.pread(source.descriptor, count, cursor)
+            second = platform_compat.pread(output.descriptor, count, cursor)
             require(len(first) == count and len(second) == count,
                     "short paired read while verifying copied APF 0A")
             source_full.update(first)
@@ -476,7 +482,7 @@ def decode_output_entry(output: Path, row: dict[str, Any]) -> dict[str, Any]:
         size = int(row["outer_allocation"]["size"])
         require(0 <= offset <= identity.size and size <= identity.size - offset,
                 "output selected jersey span is outside copied 0A")
-        entry_bytes = os.pread(identity.descriptor, size, offset)
+        entry_bytes = platform_compat.pread(identity.descriptor, size, offset)
         require(len(entry_bytes) == size, "short read of output selected jersey entry")
         identity.recheck_path("output APF 0A")
     finally:

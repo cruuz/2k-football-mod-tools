@@ -100,6 +100,7 @@ mod_editor/data/nfl2k5_scorebug_mod_project.schema.json
 mod_editor/gui/__init__.py
 mod_editor/gui/audio_panel_qt.py
 mod_editor/gui/audio_waveform_qt.py
+mod_editor/gui/branding.py
 mod_editor/gui/crash_report.py
 mod_editor/gui/crib_panel_qt.py
 mod_editor/gui/gameplay_panel_qt.py
@@ -124,6 +125,7 @@ packaging/2k5-mod-studio.svg
 packaging/README.md
 packaging/check_2k5_mod_studio_release.py
 packaging/check_2k5_mod_studio_runtime.py
+packaging/icons/2k5-mod-studio.ico
 packaging/release-allowlist.txt
 reports/assets/nfl2k5_audo_family_labels.json
 reports/assets/nfl2k5_audo_import_capacity.json
@@ -150,6 +152,7 @@ tools/apf_outer.py
 tools/apf_xenos_mip_layout.py
 tools/game_audio_convert.py
 tools/launch_2k5_mod_studio.sh
+tools/make_app_icons.py
 tools/nfl2k5_jersey_png_workflow.py
 tools/nfl2k5_ps2_save.py
 tools/nfl2k5_ps2_save_verify.py

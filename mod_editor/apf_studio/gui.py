@@ -22,7 +22,7 @@ import sys
 import tempfile
 import threading
 import traceback
-from typing import Any, Callable, Iterable, Mapping
+from typing import Any, Callable, Iterable, Mapping, Sequence
 from uuid import uuid4
 import wave
 
@@ -93,6 +93,7 @@ from mod_editor.core.texture_master import (
     fit_transform as texture_master_fit_transform,
     snapshot_texture_master_source,
 )
+from mod_editor.gui import branding
 from mod_editor.gui import crash_report
 from mod_editor.gui import update_ui
 from mod_editor.gui.apf_audio_waveform_qt import (
@@ -183,11 +184,14 @@ from .save_playbooks_qt import SavePlaybookAssignmentsPanel
 from .playbook_route_qt import PlayAssignmentRoutePanel
 from .playbook_membership_qt import ApfPlaybookMembershipPanel
 from .save_roster_players_qt import SaveRosterPlayersPanel
+from .scene_textures import SceneTexture, shared_texture_ids
 from .stadium import ApfStadiumPreview, ApfStadiumScene
 from .stadium_material_findings import load_stadium_material_findings
 from . import stadium_model_import
 from . import stadium_texture
 from .workspace_routes import (
+    DIGITAL_FONT_NAME,
+    DIGITAL_FONT_TAB,
     TEAM_LOGO_TAB,
     UNIFORM_MATERIALS_TAB,
     WORDMARK_TAB,
@@ -209,19 +213,7 @@ WORKSPACE_PAGE_MIN_HEIGHT = 400
 
 def _window_icon() -> QIcon | None:
     """Return the bundled application icon, or None if it is unavailable."""
-    candidate = (
-        Path(__file__).resolve().parents[2]
-        / "packaging"
-        / "apf2k8-mod-studio.svg"
-    )
-    try:
-        if candidate.is_file():
-            icon = QIcon(str(candidate))
-            if not icon.isNull():
-                return icon
-    except Exception:
-        pass
-    return None
+    return branding.app_icon("apf2k8-mod-studio")
 
 AUDIO_REPLACEMENT_IMPORT_CONFIRMATION_CONTRACT = (
     "fully_validated_read_only_preview_then_explicit_apply"
@@ -238,7 +230,7 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.ROSTERS: "Browse the on-disc roster or open Save Players for a raw Roster.ROS / verified STFS handoff. The save editor exposes 149 exact packed fields per player, all 15 fixed-allocation identity text fields, and count-preserving populated roster-slot swaps. Overall and capacity expansion remain locked because their complete engine contracts are not proved.",
     ApfCategory.TEAM_IDENTITY: "Browse team-facing resources; more identity editing unlocks here as each field is proven safe.",
     ApfCategory.LOGOS: "Replace the shared 512×512 team-logo crest and the 128×128 draft logo, and browse every indexed logo and team-art record.",
-    ApfCategory.SCOREBUG: "Edit the proved digital_font mask and inspect the rest of the broadcast presentation inventory.",
+    ApfCategory.SCOREBUG: "See the field scorebug\u2019s own artwork \u2014 every graphic embedded in its seven scene parts plus the shared score-digit mask \u2014 and preview or export any of it. Only digital_font has a proved writer; geometry, layout, and timing are read-only.",
     ApfCategory.FIELD_ART: "Browse ~118 stock NFL endzone packages + practice/divot inventory. The focused editor writes six offline-proved base slots; other rows stay export-only until proved.",
     ApfCategory.STADIUMS: "Explore stadium geometry in 3D, edit any of the 78 statically owned embedded textures, and round-trip same-topology POSITION edits for 77 catalog-authorized surfaces into a separately verified copied 1A.",
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
@@ -2341,7 +2333,8 @@ class AssetBrowser(QWidget):
             self.replace_button.setToolTip(lock)
             self.replace_button.setProperty("disableReason", lock)
             self.revert_button.setToolTip(
-                "There is no staged Field Art replacement to revert because replacement is locked."
+                "There is no staged replacement to revert here because "
+                "replacement is locked on this browse surface."
             )
             self.revert_button.setProperty("disableReason", lock)
         else:
@@ -2460,7 +2453,8 @@ class AssetBrowser(QWidget):
             self.replace_button.setToolTip(lock)
             self.replace_button.setProperty("disableReason", lock)
             self.revert_button.setToolTip(
-                "There is no staged Field Art replacement to revert because replacement is locked."
+                "There is no staged replacement to revert here because "
+                "replacement is locked on this browse surface."
             )
             self.revert_button.setProperty("disableReason", lock)
         else:
@@ -3672,6 +3666,11 @@ class DigitalFontPanel(QFrame):
                 tempfile.mkdtemp(prefix="apf-digital-font-fitted-")
             )
         return self._fit_dir / f"digital-font-{uuid4().hex}.png"
+
+    def stage_image(self, path: Path) -> None:
+        """Finish a replacement a browser row started, after a hand-off."""
+
+        self._replace_path(Path(path))
 
     def _replace_path(self, path: Path) -> None:
         if not self.facade.source_ready:
@@ -6245,6 +6244,10 @@ class LogosStudioPage(QWidget):
 
         if route.tab == TEAM_LOGO_TAB:
             self.tabs.setCurrentIndex(self._team_logo_tab)
+            if not route.key:
+                # A row that only samples a crest at runtime -- the scorebug's
+                # team-logo component -- names no one package to preselect.
+                return True
             if not self.team_logo.focus_outer_entry(int(route.key)):
                 return False
             if image is not None:
@@ -8902,8 +8905,629 @@ class StadiumStudioPage(QWidget):
         )
 
 
+#: One scorebug graphic as the page presents it.  ``texture`` is set for a
+#: descriptor embedded in a SCNE part, which has no catalog identity and no
+#: writer; it is ``None`` for the one indexed TXTR a writer owns.
+@dataclass(frozen=True)
+class _ScorebugGraphic:
+    key: str
+    title: str
+    where: str
+    size: str
+    format_name: str
+    editing: str
+    detail: str
+    texture: SceneTexture | None = None
+    editable: bool = False
+
+
+#: Presentation systems that share this category but not the field HUD.  Each
+#: entry is (button label, name tokens, one-line boundary).
+SCOREBUG_SYSTEM_FILTERS: tuple[tuple[str, tuple[str, ...], str], ...] = (
+    (
+        "Field scorebug",
+        ("scorebug", "digital_font"),
+        "The seven-part in-game HUD above. This is the system this page is named after.",
+    ),
+    (
+        "Season GameCast",
+        ("gamecast",),
+        "A separate season/franchise presentation system. Editing it does not change the field HUD.",
+    ),
+    (
+        "Instant replay",
+        ("replay", "telestrator"),
+        "The replay overlay is a separate system. Editing it does not change the field HUD.",
+    ),
+    (
+        "Halftime",
+        ("halftime",),
+        "Halftime show, ticker, and team comparison are a separate system. Editing them does not change the field HUD.",
+    ),
+)
+
+#: Repeated verbatim beside every read-only control on this page.  The
+#: embedded-texture writer that does exist is pinned to the authenticated
+#: stadium package and authorizes nothing here.
+SCENE_TEXTURE_NO_WRITER_REASON = (
+    "Not proved: no writer exists for a texture embedded inside a SCNE part. "
+    "The stadium embedded-texture writer is pinned to that one authenticated "
+    "package and does not authorize this descriptor. Preview and export are "
+    "read-only, and the scene geometry that draws it has no writer either."
+)
+
+
+class ScorebugGraphicsPanel(QFrame):
+    """The artwork the field scorebug is actually built from.
+
+    The page used to name this inventory and show none of it: eleven TXTR
+    descriptors live inside the ``scorebug_*`` SCNE parts, and a texture with
+    no inner-file index can never become a catalog row.  This panel reads them
+    straight out of the user's own game and previews them, while stating on the
+    row itself that only the shared digit atlas has a proved writer.
+    """
+
+    editDigitalFontRequested = pyqtSignal()
+
+    def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
+        super().__init__()
+        self.facade = facade
+        self.run_task = run_task
+        self.setObjectName("panel")
+        self._graphics: tuple[_ScorebugGraphic, ...] = ()
+        self._selected_key = ""
+        self._preview_token = 0
+        self._read_token = 0
+
+        box = QVBoxLayout(self)
+        box.setContentsMargins(14, 12, 14, 12)
+        box.setSpacing(8)
+
+        header = QHBoxLayout()
+        header.setSpacing(10)
+        title = QLabel("Field scorebug graphics")
+        title.setObjectName("panelTitle")
+        self.count = QLabel("Load a game to see the scorebug")
+        self.count.setObjectName("countPill")
+        header.addWidget(title)
+        header.addWidget(self.count)
+        header.addStretch(1)
+        box.addLayout(header)
+
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.setChildrenCollapsible(False)
+        self.preview = ImageDropLabel(
+            "Load your APF game, then pick a graphic to see it here."
+        )
+        # Read-only artwork: nothing on this preview accepts a replacement.
+        self.preview.setAcceptDrops(False)
+        self.preview.setMinimumSize(210, 190)
+        splitter.addWidget(self.preview)
+
+        self.table = QTableWidget(0, 4)
+        self.table.setObjectName("scorebugGraphicsTable")
+        self.table.setHorizontalHeaderLabels(
+            ("Graphic", "Size", "Format", "Editing")
+        )
+        self.table.verticalHeader().setVisible(False)
+        self.table.verticalHeader().setDefaultSectionSize(26)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.setAlternatingRowColors(True)
+        self.table.setMinimumWidth(320)
+        self.table.setMinimumHeight(250)
+        header_view = self.table.horizontalHeader()
+        header_view.setSectionResizeMode(0, header_view.Stretch)
+        header_view.setSectionResizeMode(1, header_view.ResizeToContents)
+        header_view.setSectionResizeMode(2, header_view.ResizeToContents)
+        header_view.setSectionResizeMode(3, header_view.ResizeToContents)
+        self.table.itemSelectionChanged.connect(self._selection_changed)
+        splitter.addWidget(self.table)
+        splitter.setStretchFactor(0, 0)
+        splitter.setStretchFactor(1, 1)
+        splitter.setSizes([230, 620])
+        box.addWidget(splitter, 1)
+
+        self.detail = QLabel(
+            "Every graphic here is read-only except the shared score-digit mask."
+        )
+        self.detail.setObjectName("findingText")
+        self.detail.setWordWrap(True)
+        # A plain wrapped label makes its longest word the panel's minimum
+        # width; this page has to survive a 1040-wide shell.
+        self.detail.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Minimum)
+        self.detail.setMinimumWidth(0)
+        box.addWidget(self.detail)
+
+        actions = QHBoxLayout()
+        actions.setSpacing(8)
+        self.export_png_button = QPushButton("Export PNG…")
+        self.export_png_button.setObjectName("secondaryButton")
+        self.export_raw_button = QPushButton("Export raw descriptor…")
+        self.export_raw_button.setObjectName("utilityButton")
+        self.edit_button = QPushButton("Edit the score digits…")
+        self.edit_button.setObjectName("primaryButton")
+        self.export_png_button.clicked.connect(self._export_png)
+        self.export_raw_button.clicked.connect(self._export_raw)
+        self.edit_button.clicked.connect(self._edit_selected)
+        actions.addWidget(self.export_png_button)
+        actions.addWidget(self.export_raw_button)
+        actions.addWidget(self.edit_button)
+        actions.addStretch(1)
+        box.addLayout(actions)
+        self._set_actions("Load your APF game to preview and export the scorebug art.")
+
+    def _set_actions(self, reason: str) -> None:
+        """Never silent-gray: a blocked button still says why when clicked."""
+
+        for button in (
+            self.export_png_button,
+            self.export_raw_button,
+            self.edit_button,
+        ):
+            button.setEnabled(True)
+            button.setProperty("disableReason", reason)
+            if reason:
+                button.setToolTip(reason)
+
+    def _selected(self) -> _ScorebugGraphic | None:
+        for graphic in self._graphics:
+            if graphic.key == self._selected_key:
+                return graphic
+        return None
+
+    def set_context(self) -> None:
+        if not self.facade.source_ready:
+            self._graphics = ()
+            self._selected_key = ""
+            self.table.clearContents()
+            self.table.setRowCount(0)
+            self.count.setText("Load a game to see the scorebug")
+            self.preview.set_message(
+                "Load your APF game, then pick a graphic to see it here."
+            )
+            self.detail.setText(
+                "The field scorebug's artwork is stored inside its scene "
+                "packages. Load your own game and it is read straight out of "
+                "there — your original files are never modified."
+            )
+            self._set_actions(
+                "Load your APF game first (File → Load game), then the scorebug "
+                "art can be previewed and exported."
+            )
+            return
+        assets = self.facade.browse_assets(
+            category=ApfCategory.SCOREBUG,
+            limit=len(self.facade.require_catalog().assets) + 1,
+        )
+        scenes = [
+            asset
+            for asset in assets
+            if asset.type_name == "SCNE" and asset.name.startswith("scorebug")
+        ]
+        self.count.setText("Reading the scorebug scenes…")
+        self._read_token += 1
+        token = self._read_token
+
+        def _watchdog() -> None:
+            # A read that fails raises into the shell's error path, which never
+            # reaches this panel.  Without this the count pill would keep
+            # claiming a read is in flight long after it stopped.
+            if token != self._read_token or self._graphics:
+                return
+            self.count.setText("Could not read the scorebug scenes")
+            self.detail.setText(
+                "This copy's scorebug scene packages could not be read. The "
+                "presentation inventory below still lists every indexed record."
+            )
+            self._set_actions(
+                "The embedded scorebug graphics could not be read from this "
+                "copy, so there is nothing here to preview or export. Reload "
+                "your game, or use the inventory below."
+            )
+
+        QTimer.singleShot(45_000, _watchdog)
+        self.run_task(
+            "Reading embedded scorebug graphics",
+            lambda progress: self.facade.scene_textures(
+                [asset.asset_id for asset in scenes], progress
+            ),
+            lambda textures: self._populate(tuple(textures), assets),
+            False,
+        )
+
+    def _populate(
+        self, textures: tuple[SceneTexture, ...], assets: Sequence[ApfAsset]
+    ) -> None:
+        shared = shared_texture_ids(textures)
+        rows: list[_ScorebugGraphic] = []
+        for texture in textures:
+            note = SCENE_TEXTURE_NO_WRITER_REASON
+            editing = "Read-only · no writer"
+            if texture.texture_id in shared:
+                editing = "Read-only · shared id"
+                note = (
+                    f"Texture id 0x{texture.texture_id:08x} is declared by more "
+                    "than one scorebug component, so these are one image reused, "
+                    "not independent slots. " + SCENE_TEXTURE_NO_WRITER_REASON
+                )
+            rows.append(
+                _ScorebugGraphic(
+                    key=texture.key,
+                    title=texture.title,
+                    where=f"{texture.location} · id 0x{texture.texture_id:08x} · {texture.vram_span}",
+                    size=texture.dimensions,
+                    format_name=texture.format_name,
+                    editing=editing,
+                    detail=note,
+                    texture=texture,
+                )
+            )
+        for asset in assets:
+            if asset.type_name != "TXTR" or asset.name != DIGITAL_FONT_NAME:
+                continue
+            rows.append(
+                _ScorebugGraphic(
+                    key=asset.asset_id,
+                    title="digital_font · score digits",
+                    where=f"{asset.location} · shared global atlas",
+                    size="128×128",
+                    format_name="DXT5A",
+                    editing="Editable · shared atlas",
+                    detail=(
+                        "The one graphic on this page with a proved writer. It "
+                        "is a global atlas, so edits may affect UI outside the "
+                        "field scorebug, and runtime visibility is not proved — "
+                        "the write itself is proved only offline, into a new "
+                        "copied volume."
+                    ),
+                    editable=True,
+                )
+            )
+        self._graphics = tuple(rows)
+        editable = sum(1 for row in rows if row.editable)
+        self.count.setText(
+            f"{len(rows)} graphics · {editable} with a proved writer"
+        )
+        self.table.blockSignals(True)
+        self.table.clearContents()
+        self.table.setRowCount(len(rows))
+        for index, graphic in enumerate(rows):
+            values = (graphic.title, graphic.size, graphic.format_name, graphic.editing)
+            for column, value in enumerate(values):
+                cell = QTableWidgetItem(value)
+                cell.setData(Qt.UserRole, graphic.key)
+                cell.setToolTip(f"{graphic.where}\n\n{graphic.detail}")
+                if column == 3:
+                    cell.setForeground(
+                        QColor("#39d98a" if graphic.editable else "#f2bd5a")
+                    )
+                self.table.setItem(index, column, cell)
+        self.table.blockSignals(False)
+        if rows:
+            wanted = next(
+                (i for i, row in enumerate(rows) if row.key == self._selected_key), 0
+            )
+            self.table.selectRow(wanted)
+        else:
+            self._selected_key = ""
+            self.detail.setText(
+                "No embedded scorebug graphics were found in this copy. The "
+                "presentation inventory below still lists every indexed record."
+            )
+            self._set_actions("This copy exposed no embedded scorebug graphics to export.")
+
+    def _selection_changed(self) -> None:
+        items = self.table.selectedItems()
+        self._selected_key = str(items[0].data(Qt.UserRole)) if items else ""
+        graphic = self._selected()
+        if graphic is None:
+            self.detail.setText("Choose a graphic to see where it lives.")
+            return
+        self.detail.setText(f"{graphic.where}\n{graphic.detail}")
+        if graphic.editable:
+            self._set_actions("")
+            self.export_png_button.setToolTip(
+                "Export the current score-digit mask as a PNG."
+            )
+            raw_note = (
+                "digital_font is an indexed TXTR, not an embedded scene "
+                "descriptor. Use Export PNG, or the inventory below for its raw parts."
+            )
+            self.export_raw_button.setProperty("disableReason", raw_note)
+            self.export_raw_button.setToolTip(raw_note)
+            self.edit_button.setToolTip(
+                "Open the Digital Font editor below with this slot selected."
+            )
+        else:
+            self._set_actions("")
+            self.export_png_button.setToolTip(
+                "Save this embedded graphic as a decoded PNG."
+            )
+            self.export_raw_button.setToolTip(
+                "Save the exact descriptor metadata and payload bytes as a ZIP."
+            )
+            self.edit_button.setProperty("disableReason", graphic.detail)
+            self.edit_button.setToolTip(graphic.detail)
+        self._load_preview(graphic)
+
+    def _load_preview(self, graphic: _ScorebugGraphic) -> None:
+        self._preview_token += 1
+        token = self._preview_token
+        self.preview.set_loading(f"Decoding {graphic.title}…")
+
+        def _apply(result: object) -> None:
+            if token != self._preview_token:
+                return
+            self.preview.set_image(Path(str(result)))
+
+        if graphic.texture is not None:
+            texture = graphic.texture
+            self.run_task(
+                "Decoding embedded scorebug graphic",
+                lambda progress: self.facade.preview_scene_texture(texture, progress),
+                _apply,
+                False,
+            )
+            return
+        self.run_task(
+            "Preparing digital_font preview",
+            lambda progress: self.facade.preview_digital_font(progress),
+            _apply,
+            False,
+        )
+
+    def _blocked(self, button: QPushButton, title: str) -> bool:
+        reason = str(button.property("disableReason") or "").strip()
+        if not reason:
+            return False
+        QMessageBox.information(self, title, reason)
+        return True
+
+    def _new_destination(self, suggestion: str, caption: str, filter_text: str) -> Path | None:
+        destination, _filter = QFileDialog.getSaveFileName(
+            self, caption, str(Path.home() / suggestion), filter_text
+        )
+        if not destination:
+            return None
+        path = Path(destination)
+        if not path.suffix:
+            path = path.with_suffix(Path(suggestion).suffix)
+        if path.exists():
+            QMessageBox.information(
+                self,
+                "Choose a new filename",
+                "Exports never overwrite an existing file. Choose a new filename and try again.",
+            )
+            return None
+        return path
+
+    def _export_png(self) -> None:
+        if self._blocked(self.export_png_button, "Cannot export this graphic yet"):
+            return
+        graphic = self._selected()
+        if graphic is None:
+            return
+        safe = graphic.key.replace(":", "-")
+        path = self._new_destination(
+            f"apf-{safe}.png", "Export this scorebug graphic as PNG", "RGBA PNG (*.png)"
+        )
+        if path is None:
+            return
+        if graphic.texture is not None:
+            texture = graphic.texture
+            operation = lambda progress: self.facade.export_scene_texture(  # noqa: E731
+                texture, path, progress
+            )
+        else:
+            operation = lambda progress: self.facade.export_digital_font(  # noqa: E731
+                path, progress
+            )
+        self.run_task(
+            "Exporting scorebug graphic",
+            operation,
+            lambda result: QMessageBox.information(
+                self, "PNG exported", f"Saved to:\n{Path(result)}"
+            ),
+            True,
+        )
+
+    def _export_raw(self) -> None:
+        if self._blocked(self.export_raw_button, "Cannot export raw bytes here"):
+            return
+        graphic = self._selected()
+        if graphic is None or graphic.texture is None:
+            return
+        texture = graphic.texture
+        safe = graphic.key.replace(":", "-")
+        path = self._new_destination(
+            f"apf-{safe}.zip",
+            "Export the exact descriptor and payload",
+            "ZIP bundle (*.zip)",
+        )
+        if path is None:
+            return
+        self.run_task(
+            "Exporting embedded descriptor",
+            lambda progress: self.facade.export_scene_texture(texture, path, progress),
+            lambda result: QMessageBox.information(
+                self,
+                "Raw bytes exported",
+                f"Saved to:\n{Path(result)}\n\nThe bundle records that no writer "
+                "is proved for this descriptor.",
+            ),
+            True,
+        )
+
+    def _edit_selected(self) -> None:
+        if self._blocked(self.edit_button, "This graphic has no proved writer"):
+            return
+        self.editDigitalFontRequested.emit()
+
+    def focus_digital_font(self) -> bool:
+        for index, graphic in enumerate(self._graphics):
+            if graphic.editable:
+                self.table.selectRow(index)
+                return True
+        return False
+
+
+class ScorebugComponentsPanel(QFrame):
+    """The seven SCNE parts the field HUD is assembled from, read-only."""
+
+    openWorkspaceRequested = pyqtSignal(object)
+
+    def __init__(self, facade: ApfStudioFacade):
+        super().__init__()
+        self.facade = facade
+        self.setObjectName("panel")
+        self._route: WorkspaceRoute | None = None
+        self._route_name = ""
+
+        box = QVBoxLayout(self)
+        box.setContentsMargins(14, 12, 14, 12)
+        box.setSpacing(8)
+
+        header = QHBoxLayout()
+        header.setSpacing(10)
+        title = QLabel("How the field scorebug is assembled")
+        title.setObjectName("panelTitle")
+        self.summary = QLabel("Load a game to map the components.")
+        self.summary.setObjectName("countPill")
+        header.addWidget(title)
+        header.addWidget(self.summary)
+        header.addStretch(1)
+        self.route_button = QPushButton("Open Team Logo…")
+        self.route_button.setObjectName("secondaryButton")
+        self.route_button.clicked.connect(self._open_route)
+        header.addWidget(self.route_button)
+        box.addLayout(header)
+
+        self.table = QTableWidget(0, 5)
+        self.table.setObjectName("scorebugComponentTable")
+        self.table.setHorizontalHeaderLabels(
+            ("Component", "Meshes", "Triangles", "Own artwork", "What you can change")
+        )
+        self.table.verticalHeader().setVisible(False)
+        self.table.verticalHeader().setDefaultSectionSize(26)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.setAlternatingRowColors(True)
+        self.table.setFixedHeight(230)
+        view = self.table.horizontalHeader()
+        view.setSectionResizeMode(0, view.Stretch)
+        view.setSectionResizeMode(1, view.ResizeToContents)
+        view.setSectionResizeMode(2, view.ResizeToContents)
+        view.setSectionResizeMode(3, view.ResizeToContents)
+        view.setSectionResizeMode(4, view.Stretch)
+        box.addWidget(self.table)
+
+        self.note = QLabel(
+            "Geometry, layout, and component timing are read-only: no SCNE "
+            "writer exists for either title. Scores, the clock, down and "
+            "distance, and team identity are executable behaviour — no asset "
+            "edit changes them."
+        )
+        self.note.setObjectName("mutedLabel")
+        self.note.setWordWrap(True)
+        self.note.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Minimum)
+        self.note.setMinimumWidth(0)
+        box.addWidget(self.note)
+        self._set_route(None, "")
+
+    def _set_route(self, route: WorkspaceRoute | None, name: str) -> None:
+        self._route = route
+        self._route_name = name
+        # Never silent-gray: the button stays clickable and explains itself.
+        self.route_button.setEnabled(True)
+        if route is None:
+            reason = (
+                "Load your APF game first. The team-logo component then routes "
+                "to the crest writer that feeds its runtime samplers."
+            )
+            self.route_button.setProperty("disableReason", reason)
+            self.route_button.setToolTip(reason)
+            return
+        self.route_button.setProperty("disableReason", "")
+        # One place owns the wording of a hand-off: the route table itself.
+        self.route_button.setText(route.action_label)
+        self.route_button.setToolTip(f"{name} — {route.summary}")
+
+    def _open_route(self) -> None:
+        reason = str(self.route_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Open Team Logo", reason)
+            return
+        if self._route is None:
+            return
+        self.openWorkspaceRequested.emit(
+            WorkspaceHandoff(
+                route=self._route,
+                asset_name=self._route_name,
+                asset_id=self._route_name,
+            )
+        )
+
+    def set_context(self) -> None:
+        snapshot = presentation_snapshot()
+        components = [
+            row for row in snapshot.model.rows if row.kind == "scorebug_scene_component"
+        ]
+        self.table.clearContents()
+        self.table.setRowCount(len(components))
+        for index, row in enumerate(components):
+            fields = dict(row.fields)
+            embedded = int(fields.get("embedded_texture_count", 0) or 0)
+            samplers = int(fields.get("dynamic_logo_sampler_count", 0) or 0)
+            if samplers:
+                art = f"{samplers} runtime sampler(s)"
+                boundary = (
+                    "Draws a team logo the game supplies at runtime. Team Logo "
+                    "writes both candidate reservoirs; which one this reads is "
+                    "not proved."
+                )
+            elif embedded:
+                art = f"{embedded} embedded texture(s)"
+                boundary = "Artwork previews and exports above; no writer is proved for it."
+            else:
+                art = "none"
+                boundary = "Geometry only — nothing here is editable."
+            values = (
+                row.title,
+                f"{int(fields.get('mesh_count', 0) or 0):,}",
+                f"{int(fields.get('triangle_count', 0) or 0):,}",
+                art,
+                boundary,
+            )
+            for column, value in enumerate(values):
+                cell = QTableWidgetItem(value)
+                cell.setToolTip(f"{row.title} — {boundary}")
+                self.table.setItem(index, column, cell)
+        self.summary.setText(
+            f"{len(components)} components · "
+            f"{int(snapshot.summary.get('bounded_texture_writers', 0))} proved writer"
+        )
+        if not self.facade.source_ready:
+            self._set_route(None, "")
+            return
+        for asset in self.facade.browse_assets(
+            category=ApfCategory.SCOREBUG,
+            limit=len(self.facade.require_catalog().assets) + 1,
+        ):
+            route = route_for_asset(asset)
+            if route is not None and route.category is ApfCategory.LOGOS:
+                self._set_route(route, asset.name)
+                return
+        self._set_route(None, "")
+
+
 class ScorebugStudioPage(QWidget):
+    """Field scorebug art first, then its components, then the full inventory."""
+
     modifiedChanged = pyqtSignal()
+    openWorkspaceRequested = pyqtSignal(object)
 
     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
         super().__init__()
@@ -8914,19 +9538,128 @@ class ScorebugStudioPage(QWidget):
         layout.addWidget(PageHeading(ApfCategory.SCOREBUG))
         self.capabilities = CapabilityPanel(ApfCategory.SCOREBUG)
         layout.addWidget(self.capabilities)
+
+        self.graphics = ScorebugGraphicsPanel(facade, run_task)
+        self.graphics.editDigitalFontRequested.connect(self._show_digital_font)
+        layout.addWidget(self.graphics)
+
+        self.components = ScorebugComponentsPanel(facade)
+        self.components.openWorkspaceRequested.connect(self.openWorkspaceRequested)
+        layout.addWidget(self.components)
+
+        systems = QFrame()
+        systems.setObjectName("panel")
+        systems_box = QVBoxLayout(systems)
+        systems_box.setContentsMargins(14, 10, 14, 10)
+        systems_box.setSpacing(6)
+        systems_title = QLabel("This category also holds four separate systems")
+        systems_title.setObjectName("panelTitle")
+        systems_box.addWidget(systems_title)
+        buttons = QHBoxLayout()
+        buttons.setSpacing(8)
+        for label, tokens, boundary in SCOREBUG_SYSTEM_FILTERS:
+            button = QPushButton(label)
+            button.setObjectName("utilityButton")
+            button.setToolTip(boundary)
+            button.clicked.connect(
+                lambda _checked=False, value=tokens, text=boundary: self._filter_system(
+                    value, text
+                )
+            )
+            buttons.addWidget(button)
+        show_all = QPushButton("Show everything")
+        show_all.setObjectName("utilityButton")
+        show_all.setToolTip("Clear the filter and list every indexed presentation record.")
+        show_all.clicked.connect(lambda: self._filter_system((), ""))
+        buttons.addWidget(show_all)
+        buttons.addStretch(1)
+        systems_box.addLayout(buttons)
+        self.system_note = QLabel(
+            "Overlay audio for replays, challenges, and halftime lives in "
+            "sfx_overlay.iff and is owned by the Audio workspace."
+        )
+        self.system_note.setObjectName("mutedLabel")
+        self.system_note.setWordWrap(True)
+        self.system_note.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Minimum)
+        self.system_note.setMinimumWidth(0)
+        systems_box.addWidget(self.system_note)
+        layout.addWidget(systems)
+
         tabs = QTabWidget()
         tabs.setObjectName("workspaceTabs")
         self.presentation = InspectorBrowser(
             "Mapped field-scorebug semantics", facade, run_task
         )
         self.digital_font = DigitalFontPanel(facade, run_task)
-        self.browser = AssetBrowser(facade, ApfCategory.SCOREBUG, run_task)
+        self.browser = AssetBrowser(
+            facade,
+            ApfCategory.SCOREBUG,
+            run_task,
+            browse_export_only=True,
+            action_lock_reason=(
+                "This presentation inventory is browse and export-only. The one "
+                "proved writer on this page is the shared digital_font score-digit "
+                "mask, edited in the Digital Font tab. The SCNE geometry, the "
+                "textures embedded inside it, and the GameCast, replay, and "
+                "halftime records have no proved writer."
+            ),
+        )
         self.digital_font.modifiedChanged.connect(self.modifiedChanged)
         self.browser.modifiedChanged.connect(self.modifiedChanged)
         tabs.addTab(self.presentation, "Presentation Map")
-        tabs.addTab(self.digital_font, "Digital Font")
-        tabs.addTab(self.browser, "Raw Presentation Assets")
+        self._digital_font_tab = tabs.addTab(self.digital_font, DIGITAL_FONT_TAB)
+        self._browser_tab = tabs.addTab(self.browser, "Raw Presentation Assets")
+        tabs.setTabToolTip(
+            self._digital_font_tab,
+            "The one proved writer on this page: the shared 128×128 score-digit mask.",
+        )
         layout.addWidget(tabs, 1)
+        self.tabs = tabs
+
+    def _show_digital_font(self) -> None:
+        self.tabs.setCurrentIndex(self._digital_font_tab)
+
+    def _filter_system(self, tokens: tuple[str, ...], boundary: str) -> None:
+        if not self.facade.source_ready:
+            QMessageBox.information(
+                self,
+                "Load your game first",
+                "Load your APF game (File → Load game), then these buttons filter "
+                "the presentation inventory to one system at a time.",
+            )
+            return
+        assets = self.facade.browse_assets(
+            category=ApfCategory.SCOREBUG,
+            limit=len(self.facade.require_catalog().assets) + 1,
+        )
+        if tokens:
+            matched = [
+                asset.asset_id
+                for asset in assets
+                if any(token in asset.name.casefold() for token in tokens)
+            ]
+            self.browser.set_included_asset_ids(matched)
+            self.system_note.setText(f"{len(matched)} records. {boundary}")
+        else:
+            self.browser.set_included_asset_ids(None)
+            self.system_note.setText(
+                f"All {len(assets)} indexed presentation records. Overlay audio "
+                "for replays, challenges, and halftime lives in sfx_overlay.iff "
+                "and is owned by the Audio workspace."
+            )
+        self.tabs.setCurrentIndex(self._browser_tab)
+        self.browser.set_context()
+
+    def focus_workspace_route(self, route: WorkspaceRoute, image: Path | None) -> bool:
+        """Open the shared score-digit mask handed over from a browser row."""
+
+        if route.tab != DIGITAL_FONT_TAB or route.key != DIGITAL_FONT_NAME:
+            return False
+        self.graphics.focus_digital_font()
+        self._show_digital_font()
+        if image is not None:
+            self.digital_font.stage_image(image)
+        return True
 
     def set_context(self) -> None:
         if self.facade.source_ready:
@@ -8952,11 +9685,15 @@ class ScorebugStudioPage(QWidget):
             self.presentation.set_unavailable(
                 "Load your APF game to open the mapped presentation inspector."
             )
+        self.graphics.set_context()
+        self.components.set_context()
         self.digital_font.set_context()
         self.browser.set_context()
 
     def refresh(self) -> None:
         self.presentation.refresh()
+        self.graphics.set_context()
+        self.components.set_context()
         self.digital_font.set_context()
         self.browser.refresh()
 
@@ -18349,7 +19086,9 @@ class ApfStudioMainWindow(QMainWindow):
         if icon is not None:
             self.setWindowIcon(icon)
         self.resize(1480, 920)
-        self.setMinimumSize(1180, 720)
+        # Its own content needs about 1,128 px, and a 1366-wide laptop must be
+        # able to show the whole window rather than clip the footer actions.
+        self.setMinimumSize(1040, 600)
         self._build_ui()
         self._build_menu()
         self._install_keyboard_shortcuts()
@@ -18827,14 +19566,24 @@ class ApfStudioMainWindow(QMainWindow):
         layout.setSpacing(8)
         titles = QVBoxLayout()
         titles.setSpacing(2)
-        self.page_eyebrow = QLabel("ALL-PRO FOOTBALL 2K8 • MODDING WORKSPACE")
+        # Plain QLabels reported their whole sentence as a hard minimum width,
+        # so on a narrow window this row had to compress past what it could
+        # give and the title rendered *underneath* the status pill. Eliding
+        # labels shrink instead and keep the full text on hover.
+        self.page_eyebrow = WordElidedLabel("ALL-PRO FOOTBALL 2K8 • MODDING WORKSPACE")
         self.page_eyebrow.setObjectName("eyebrow")
-        self.page_title = QLabel(ApfCategory.GETTING_STARTED.title)
+        self.page_title = WordElidedLabel(ApfCategory.GETTING_STARTED.title)
         self.page_title.setObjectName("pageTitle")
+        for label in (self.page_eyebrow, self.page_title):
+            label.setMinimumWidth(0)
+            label.setSizePolicy(
+                QSizePolicy.Ignored, label.sizePolicy().verticalPolicy()
+            )
         titles.addWidget(self.page_eyebrow)
         titles.addWidget(self.page_title)
-        layout.addLayout(titles)
-        layout.addStretch(1)
+        # The titles absorb the slack themselves, so the header actions keep
+        # their full width and nothing has to overlap to fit.
+        layout.addLayout(titles, 1)
         self.source_pill = QLabel("●  No game loaded")
         self.source_pill.setObjectName("sourcePill")
         self.source_pill.setProperty("ready", False)
@@ -18923,6 +19672,9 @@ class ApfStudioMainWindow(QMainWindow):
             elif category is ApfCategory.SCOREBUG:
                 page = ScorebugStudioPage(self.facade, self._run_task)
                 page.modifiedChanged.connect(self._mark_document_changed)  # type: ignore[attr-defined]
+                # The scorebug's team-logo component is not an asset browser
+                # row, so it hands itself over through the page instead.
+                page.openWorkspaceRequested.connect(self._open_workspace_route)  # type: ignore[attr-defined]
             elif category is ApfCategory.FIELD_ART:
                 page = FieldArtStudioPage(self.facade, self._run_task)
                 page.modifiedChanged.connect(self._mark_document_changed)  # type: ignore[attr-defined]
@@ -19021,12 +19773,22 @@ class ApfStudioMainWindow(QMainWindow):
         footer.setObjectName("footer")
         footer.setMinimumHeight(68)
         layout = QHBoxLayout(footer)
-        layout.setContentsMargins(20, 8, 20, 8)
-        layout.setSpacing(8)
+        # The action row needs about 800 px of its own; at the 1040-wide floor
+        # the workspace column is 790, and the 10 px shortfall was clipping the
+        # last button's label. Trim the gutters rather than the buttons.
+        layout.setContentsMargins(12, 8, 12, 8)
+        layout.setSpacing(6)
         status_box = QVBoxLayout()
         status_box.setSpacing(5)
         self.operation_status = QLabel("Load your APF game to begin.")
         self.operation_status.setObjectName("operationStatus")
+        # A plain QLabel never elides, so a long status sentence would become a
+        # hard minimum width for the footer and then for the window. Let it
+        # shrink; the full text stays available on hover.
+        self.operation_status.setSizePolicy(
+            QSizePolicy.Ignored, self.operation_status.sizePolicy().verticalPolicy()
+        )
+        self.operation_status.setMinimumWidth(0)
         self.operation_status.setAccessibleName("Current operation status")
         self.operation_status.setAccessibleDescription(
             "Reports what the app is doing and whether an operation succeeded."
@@ -20399,7 +21161,8 @@ class ApfStudioMainWindow(QMainWindow):
             QTreeWidget:focus, QPlainTextEdit:focus {
                 border: 2px solid #f08a4b;
             }
-            QTableWidget#assetTable, QTableWidget#fieldArtGroupTable {
+            QTableWidget#assetTable, QTableWidget#fieldArtGroupTable,
+            QTableWidget#scorebugGraphicsTable, QTableWidget#scorebugComponentTable {
                 background: #0c1421; alternate-background-color: #101a2a;
                 border: 1px solid #27364b; border-radius: 8px; gridline-color: #1e2b3e;
                 selection-background-color: #29445f; selection-color: white; outline: none;
@@ -20548,6 +21311,9 @@ def launch_studio(
         crash_report.install(PRODUCT_NAME)
     application.setApplicationName(PRODUCT_NAME)
     application.setOrganizationName(PRODUCT_NAME)
+    _application_icon = _window_icon()
+    if _application_icon is not None:
+        application.setWindowIcon(_application_icon)
     state_error = ""
     if workspace_store is None:
         try:
@@ -20609,6 +21375,8 @@ __all__ = [
     "LogosStudioPage",
     "PRODUCT_NAME",
     "RatingSheetImportPreviewDialog",
+    "ScorebugComponentsPanel",
+    "ScorebugGraphicsPanel",
     "ScorebugStudioPage",
     "StadiumStudioPage",
     "StudioMainWindow",

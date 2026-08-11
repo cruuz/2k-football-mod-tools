@@ -267,6 +267,23 @@ RETAIL_MAGIC = (
     b"XEX2",
 )
 
+# The one binary asset in this release: the application icon Windows puts on the
+# Start Menu shortcut. Icons are the classic hiding place for a payload someone
+# renamed, so this file is not merely allowlisted -- it is pinned to an exact
+# size and SHA-256 and required to still be a Windows icon image, the same
+# treatment the APF release gives its reviewed extractor binaries.
+#
+# The bytes are original work generated from geometry by tools/make_app_icons.py
+# (also in this release), which is deterministic: anyone can re-run it and get
+# this exact file back. Update the pin only from that script's --print-pins
+# output, never by hand.
+ICO_MAGIC = b"\x00\x00\x01\x00"
+REVIEWED_ICON = "packaging/icons/2k5-mod-studio.ico"
+REVIEWED_ICON_SIZE = 24_127
+REVIEWED_ICON_SHA256 = (
+    "76fdffd1de77aa7ed53ba87076e995b7443f3cc379981c1241f7c9c108f5a18f"
+)
+
 # Reject only the two known workstation prefixes.  Build the strings from
 # fragments so this allowlisted checker does not contain the private paths it
 # is designed to detect in staged text.
@@ -366,6 +383,23 @@ def _iter_tree(root: Path) -> Iterable[tuple[Path, os.stat_result]]:
             yield path, info
             if stat.S_ISDIR(info.st_mode):
                 pending.append(path)
+
+
+def _validate_reviewed_icon(path: Path, relative: str, info: os.stat_result) -> str:
+    """Confirm the staged icon is byte-for-byte the reviewed one."""
+    if info.st_size != REVIEWED_ICON_SIZE:
+        raise ReleaseCheckError(f"reviewed application icon size changed: {relative}")
+    payload = path.read_bytes()
+    if len(payload) != REVIEWED_ICON_SIZE:
+        raise ReleaseCheckError(f"release file changed while being read: {relative}")
+    digest = hashlib.sha256(payload).hexdigest()
+    if digest != REVIEWED_ICON_SHA256:
+        raise ReleaseCheckError(f"reviewed application icon hash changed: {relative}")
+    if not payload.startswith(ICO_MAGIC):
+        raise ReleaseCheckError(
+            f"reviewed application icon is no longer a Windows icon: {relative}"
+        )
+    return digest
 
 
 def _hash_and_validate_text(
@@ -480,6 +514,7 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
     folded_paths: set[str] = set()
     total_bytes = 0
     reviewed_metadata_count = 0
+    reviewed_icon_count = 0
     for path, info in _iter_tree(release_root):
         relative_path = PurePosixPath(path.relative_to(release_root).as_posix())
         relative = relative_path.as_posix()
@@ -507,6 +542,17 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
             raise ReleaseCheckError(f"world-writable release file is forbidden: {relative}")
         if not _is_allowed(relative, exact, prefixes):
             raise ReleaseCheckError(f"file is absent from the release allowlist: {relative}")
+        if relative == REVIEWED_ICON:
+            # The only non-text file here, and the exemption is anchored to this
+            # one path: ".ico" stays an unapproved suffix everywhere else, so
+            # nothing can ship simply by taking the extension.  Whether the icon
+            # is *present* is not decided here -- the allowlist declares it, and
+            # the completeness check below refuses a release that omits it.
+            _validate_reviewed_icon(path, relative, info)
+            reviewed_icon_count += 1
+            seen_files.add(relative)
+            total_bytes += info.st_size
+            continue
         suffix = path.suffix.casefold()
         if suffix in FORBIDDEN_SUFFIXES:
             raise ReleaseCheckError(f"retail/container/media suffix is forbidden: {relative}")
@@ -572,6 +618,7 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
         "directory_count": len(seen_directories),
         "total_bytes": total_bytes,
         "reviewed_metadata_file_count": reviewed_metadata_count,
+        "reviewed_icon_count": reviewed_icon_count,
         "private_generated_inventories_included": False,
         "retail_payloads_included": False,
         "symlinks_included": False,

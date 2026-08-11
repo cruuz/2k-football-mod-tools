@@ -174,12 +174,18 @@ def default_workspace_state_root() -> Path:
             )
         return selected
     configured = os.environ.get("XDG_STATE_HOME", "").strip()
-    base = (
-        Path(configured).expanduser()
-        if configured
-        else Path.home() / ".local" / "state"
-    )
-    return base / "apf2k8-mod-studio"
+    if configured:
+        return Path(configured).expanduser() / "apf2k8-mod-studio"
+    # Windows does not use the XDG layout. ~/.local/state resolves there to
+    # C:\Users\<user>\.local\state, a folder this app neither owns nor
+    # usually creates -- .local under a Windows profile is commonly left by pip
+    # user installs or WSL, and its ACL is then inherited. A user hit
+    # [Errno 13] Permission denied reading the 2K5 editor's state from exactly
+    # that path, fixed only by running as administrator, which this app must
+    # never require. Use the same per-user root the private caches use.
+    if platform_compat.IS_WINDOWS:
+        return platform_compat.user_private_root() / "apf2k8-mod-studio" / "state"
+    return Path.home() / ".local" / "state" / "apf2k8-mod-studio"
 
 
 def _canonical_workspace_path(path: Path, *, must_exist: bool) -> Path:

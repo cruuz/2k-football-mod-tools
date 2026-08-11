@@ -4,7 +4,7 @@
 
 **2K5 Mod Studio:** `v1.0-RC60`
 
-**APF 2K8 Mod Studio:** `v0.1.0-alpha.65`
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.66`
 
 ## Edit the stock CPU playbooks
 
@@ -51,9 +51,9 @@ of them was wrong, which by this project's standard is the same defect.
 | `2K5-Mod-Studio-v1.0-RC60-20260810.tar.gz` | 10,993,449 | `0c801ddfc7932eeb013bdc2d12fbe5c1bab32bd4559d465d5b57efdc842eb4bc` |
 | `2K5-Mod-Studio-v1.0-RC60-20260810.tar.gz.sha256` | 107 | `a2f0a010edba1ba2debbc6f44b9e4064bfc59cba91f0675559315a30ddd6532c` |
 | `2K5-Mod-Studio-1.0-RC60-Setup.exe` | 56,728,111 | `47865a08253a6ee9b0af6edb11a4d4fa8fe5af88cfa3956c2a9a6590e776171e` |
-| `apf2k8-mod-studio-0.1.0-alpha.65-20260810.tar.gz` | 1,677,933 | `8f11dd50542ac8a321bbf82f6d6602c73fea0af9c8a865382b42c26e361aa71a` |
-| `apf2k8-mod-studio-0.1.0-alpha.65-20260810.tar.gz.sha256` | 115 | `45ec2865da317abf3166a44d3abdf2c5a64a55712791344853adc8a431ee0400` |
-| `APF-2K8-Mod-Studio-0.1.0-alpha.65-Setup.exe` | 52,705,870 | `26846c7294756b1109ebf0d2670f50d95bb7efa9a724213b31b72e19899b2256` |
+| `apf2k8-mod-studio-0.1.0-alpha.66-20260810.tar.gz` | 1,677,933 | `8f11dd50542ac8a321bbf82f6d6602c73fea0af9c8a865382b42c26e361aa71a` |
+| `apf2k8-mod-studio-0.1.0-alpha.66-20260810.tar.gz.sha256` | 115 | `45ec2865da317abf3166a44d3abdf2c5a64a55712791344853adc8a431ee0400` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.66-Setup.exe` | 52,705,870 | `26846c7294756b1109ebf0d2670f50d95bb7efa9a724213b31b72e19899b2256` |
 
 Windows installers are self-contained and reproducibly built, but not
 code-signed; the installer explains the Windows warning before installation.

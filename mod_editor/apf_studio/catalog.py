@@ -73,10 +73,14 @@ def _category_for(name: str, type_name: str) -> ApfCategory:
         for token in ("jersey", "pants", "helmet", "shoulder", "sock", "shoe", "glove", "numberfont", "namefont")
     ):
         return ApfCategory.UNIFORMS
-    if any(token in value for token in ("logo", "teamcard", "team_card")):
-        return ApfCategory.LOGOS
+    # Presentation is tested before the generic "logo" token: the field
+    # scorebug's own team-logo component is named ``scorebug_team_logos``, and
+    # matching "logo" first filed one of the seven components under Logos &
+    # Team Art, where the Scorebug workspace could never show it.
     if any(token in value for token in ("scorebug", "scoreboard", "gamecast", "digital_font", "halftime", "replay")):
         return ApfCategory.SCOREBUG
+    if any(token in value for token in ("logo", "teamcard", "team_card")):
+        return ApfCategory.LOGOS
     if any(token in value for token in ("field", "turf", "endzone", "midfield", "grass", "divot")):
         return ApfCategory.FIELD_ART
     if any(token in value for token in ("stadium", "stad_")):

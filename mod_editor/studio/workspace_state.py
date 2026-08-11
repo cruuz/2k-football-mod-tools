@@ -18,6 +18,7 @@ import stat
 from typing import Iterable
 from uuid import uuid4
 
+from mod_editor.core import platform_compat
 from mod_editor.core.errors import ValidationError
 
 
@@ -28,13 +29,32 @@ MAX_STATE_BYTES = 256 * 1024
 
 
 def default_workspace_state_root() -> Path:
-    """Return the XDG-compatible private state directory used by the app."""
+    """Where this app keeps recent-file and recovery state, per platform.
+
+    POSIX keeps the XDG location: ``$XDG_STATE_HOME`` or ``~/.local/state``.
+
+    Windows does not, and shipping the XDG path there was a real defect.
+    ``~/.local/state`` is a Linux convention; on Windows it resolves to
+    ``C:\\Users\\<user>\\.local\\state``, a folder this app neither owns nor
+    usually creates.  ``.local`` under a Windows profile is commonly made by
+    other tooling -- pip user installs, WSL -- and whatever ACL that tooling
+    left behind is the one this app inherits.  A user hit
+    ``[Errno 13] Permission denied`` reading state from exactly that path, and
+    the error went away only when the app ran as administrator, which this app
+    must never need.
+
+    Windows therefore uses the same per-user root the private cache already
+    uses, ``%LOCALAPPDATA%`` (:func:`platform_compat.user_private_root`), whose
+    ACL belongs to the account and is inherited by everything beneath it.  The
+    cache made that choice and documented why; state had simply not followed.
+    """
 
     configured = os.environ.get("XDG_STATE_HOME", "").strip()
-    base = Path(configured).expanduser() if configured else (
-        Path.home() / ".local" / "state"
-    )
-    return base / "2k5-mod-studio"
+    if configured:
+        return Path(configured).expanduser() / "2k5-mod-studio"
+    if platform_compat.IS_WINDOWS:
+        return platform_compat.user_private_root() / "2k5-mod-studio" / "state"
+    return Path.home() / ".local" / "state" / "2k5-mod-studio"
 
 
 def _canonical_path(path: Path, *, must_exist: bool) -> Path:

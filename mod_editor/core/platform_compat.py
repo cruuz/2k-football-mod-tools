@@ -2381,7 +2381,7 @@ def _verify_read_only_descriptor(fd: int, path: str | None) -> None:
         )
 
 
-def fchmod(fd: int, mode: int, path: str | None = None) -> None:
+def fchmod(fd: int, mode: int, path: str | os.PathLike[str] | None = None) -> None:
     """Set the mode bits on a descriptor's backing file, portably.
 
     Uses :func:`os.fchmod` on POSIX.  On Windows -- which has no ``os.fchmod``
@@ -2401,6 +2401,73 @@ def fchmod(fd: int, mode: int, path: str | None = None) -> None:
         return
     if path is not None:
         os.chmod(path, mode)
+
+
+def supports_descriptor_times() -> bool:
+    """Whether timestamps can be set through an open descriptor on this host.
+
+    This is the one capability in the module that the usual
+    ``getattr(os, ..., None)`` probe answers wrongly.  ``os.utime`` *exists*
+    everywhere; what varies is whether it accepts a descriptor in place of a
+    path, and CPython records that in ``os.supports_fd`` -- built from
+    ``HAVE_FUTIMENS`` / ``HAVE_FUTIMES``, neither of which Windows defines.  A
+    ``hasattr`` guard therefore passes on Windows and the call still fails, with
+    ``TypeError: utime: path should be string, bytes or os.PathLike, not int``.
+    Asking the capability table is the only correct test, and it is a capability
+    question rather than a platform one, so any host that grows or loses the
+    support is answered correctly here without naming an OS.
+    """
+
+    return os.utime in os.supports_fd
+
+
+def utime_ns(
+    fd: int, path: str | os.PathLike[str] | None, *, ns: tuple[int, int]
+) -> bool:
+    """Stamp ``(atime, mtime)`` nanoseconds onto a descriptor's file, portably.
+
+    Returns ``True`` only when the timestamps were really applied, ``False``
+    when this platform could not apply them.  It never raises: timestamps are
+    cosmetic metadata, and the callers are copy transactions whose product is
+    the bytes and the mode, so a failed stamp must never fail a build that
+    otherwise wrote a correct file.  The bool is what keeps the skip visible to
+    a caller that wants to report it, instead of a pretended success.
+
+    Where :func:`os.utime` accepts the descriptor -- :func:`supports_descriptor_times`
+    -- that is what runs, byte for byte the call the POSIX sites made, so the
+    write lands on the pinned inode and no name is resolved.  The path is
+    consulted only when that form is unavailable (Windows) or when the host's
+    capability table over-promised and the descriptor call failed anyway, and
+    that fallback is deliberately narrow: it re-``stat``\\ s the name without
+    following symlinks and refuses unless ``(st_dev, st_ino)`` still matches the
+    caller's descriptor, so a name swapped between open and stamp is skipped
+    rather than stamped.  That check is not race-free -- nothing path-based on
+    Windows is -- which is why only this cosmetic metadata step is ever allowed
+    through it; the data write stays on the descriptor.  With no path to fall
+    back to, the stamp is skipped.
+    """
+
+    if supports_descriptor_times():
+        try:
+            os.utime(fd, ns=ns)
+            return True
+        except (OSError, TypeError):
+            # A host whose capability table over-promises; the path form below
+            # is still worth trying before giving the timestamps up.
+            pass
+    if path is None:
+        return False
+    try:
+        pinned = os.fstat(fd)
+        named = os.stat(path, follow_symlinks=False)
+        if not (pinned.st_ino and named.st_ino):
+            return False
+        if (named.st_dev, named.st_ino) != (pinned.st_dev, pinned.st_ino):
+            return False
+        os.utime(path, ns=ns)
+        return True
+    except (OSError, TypeError):
+        return False
 
 
 def available_bytes(path: str | os.PathLike[str]) -> int:
@@ -5057,12 +5124,20 @@ def open_private_stage(
     used -- byte for byte -- so it has no name and no link, and is published by
     linking it out of ``/proc/self/fd`` (see :func:`publish_private_stage`).
 
-    Where ``O_TMPFILE`` is absent (macOS, Windows) it is instead a private temp
-    file created ``O_CREAT | O_EXCL`` under ``dir_fd`` -- the "stage in a private
+    Where ``O_TMPFILE`` is absent -- macOS -- it is instead a private temp file
+    created ``O_CREAT | O_EXCL`` under ``dir_fd`` -- the "stage in a private
     directory on the same filesystem then os.link" degradation -- with a
     ``0o600`` mode and one link.  It is on the same filesystem as its
     destination by construction, so the eventual publish is a same-filesystem
-    link (POSIX) or rename (Windows).
+    link.
+
+    Both branches address the directory through ``dir_fd``, so both need a real
+    directory descriptor, and Windows has neither one nor the ``dir_fd=``
+    argument (``os.supports_dir_fd`` is empty there and the CRT cannot open a
+    directory at all).  This helper is therefore POSIX-only and raises there
+    rather than degrading; :class:`DirHandle` / :func:`open_dir_handle` is the
+    portable directory abstraction, and nothing on either release allowlist
+    calls this.
 
     The caller owns the returned descriptor and, when ``staging_name`` is not
     ``None``, must unlink that name if it abandons the publish.
@@ -5671,12 +5746,14 @@ __all__ = [
     "seal_readonly",
     "sealed_file_mode",
     "supports_change_time_identity",
+    "supports_descriptor_times",
     "supports_directory_fsync",
     "supports_posix_uid_ownership",
     "supports_reflink",
     "supports_sealed_memfd",
     "try_reflink",
     "user_private_root",
+    "utime_ns",
     "verify_private_directory",
     "verify_private_file",
     "verify_private_root_placement",

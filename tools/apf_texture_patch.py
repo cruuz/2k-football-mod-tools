@@ -1012,10 +1012,22 @@ def _copy_fd_metadata(
     source_descriptor: int,
     output_descriptor: int,
     source_metadata: os.stat_result,
+    output_path: Path | None,
 ) -> None:
-    """Copy mode, available extended attributes, and timestamps by fd."""
+    """Copy mode, available extended attributes, and timestamps by fd.
+
+    ``output_path`` is the name ``output_descriptor`` was opened as.  POSIX never
+    consults it -- every step here addresses the descriptor, so the metadata
+    cannot be redirected to another file by a swap of that name.  It exists for
+    the platforms whose ``chmod``/``utime`` have no descriptor form at all
+    (Windows), where it is the difference between copying this metadata and
+    silently dropping it; the fallbacks it enables are metadata-only and each
+    caller re-checks that the output name still resolves to the descriptor's
+    inode before reporting success, so a redirected stamp fails the build rather
+    than passing for a clean one.  The bytes are never written through the name.
+    """
     platform_compat.fchmod(
-        output_descriptor, stat.S_IMODE(source_metadata.st_mode), path=None
+        output_descriptor, stat.S_IMODE(source_metadata.st_mode), path=output_path
     )
     if all(hasattr(os, name) for name in ("listxattr", "getxattr", "setxattr")):
         try:
@@ -1030,8 +1042,11 @@ def _copy_fd_metadata(
                 # Match shutil.copystat's best-effort behavior for attributes
                 # unavailable to the current user or destination filesystem.
                 continue
-    os.utime(
+    # Timestamps are cosmetic: utime_ns reports a skip rather than raising, and a
+    # skip must not fail a transaction whose bytes and mode are already correct.
+    platform_compat.utime_ns(
         output_descriptor,
+        output_path,
         ns=(source_metadata.st_atime_ns, source_metadata.st_mtime_ns),
     )
 
@@ -1118,7 +1133,9 @@ def _write_copied_volume(
         if not _path_is_owned_inode(source_volume, source_identity):
             raise PatchError("source APF volume pathname changed during copy")
 
-        _copy_fd_metadata(source_descriptor, output_descriptor, source_metadata)
+        _copy_fd_metadata(
+            source_descriptor, output_descriptor, source_metadata, output_volume
+        )
         os.fsync(output_descriptor)
         if not _path_is_owned_inode(output_volume, output_identity):
             raise PatchError("output volume pathname changed during copied-volume patch")

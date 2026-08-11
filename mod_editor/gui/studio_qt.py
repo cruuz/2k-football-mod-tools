@@ -61,6 +61,11 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor import __version__
+from mod_editor.core.nfl2k5_stadium_cache import (
+    ESTIMATED_PRIVATE_BYTES,
+    ESTIMATED_SECONDS_HIGH,
+    ESTIMATED_SECONDS_LOW,
+)
 from mod_editor.core.errors import ValidationError
 from mod_editor.core import update_check
 from mod_editor.core.texture_master import (
@@ -68,6 +73,7 @@ from mod_editor.core.texture_master import (
     fit_transform as texture_master_fit_transform,
     snapshot_texture_master_source,
 )
+from mod_editor.gui import branding
 from mod_editor.gui import crash_report
 from mod_editor.gui import update_ui
 from mod_editor.core.capabilities import CapabilityRegistryLoader
@@ -239,19 +245,7 @@ def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
 
 def _window_icon() -> QIcon | None:
     """Return the bundled application icon, or None if it is unavailable."""
-    candidate = (
-        Path(__file__).resolve().parents[2]
-        / "packaging"
-        / "2k5-mod-studio.svg"
-    )
-    try:
-        if candidate.is_file():
-            icon = QIcon(str(candidate))
-            if not icon.isNull():
-                return icon
-    except Exception:
-        pass
-    return None
+    return branding.app_icon("2k5-mod-studio")
 
 
 @runtime_checkable
@@ -1445,7 +1439,10 @@ class StudioMainWindow(QMainWindow):
         # floor is deliberately low so the window fits a 1366x768 laptop after
         # the OS chrome.  Pages scroll (see _page_scroll_host), so a short window
         # never clips the header or the bottom build/launch action bar.
-        self.setMinimumSize(1180, 640)
+        # The shell now fits its own content at about 1,092 px wide, so the
+        # floor no longer has to be 1,180. A 1366-wide laptop is a normal
+        # machine for this audience and the window must fit on one.
+        self.setMinimumSize(1040, 600)
         self.resize(1480, 920)
         self.setObjectName("studioWindow")
         self._build_ui()
@@ -3778,6 +3775,16 @@ class StudioMainWindow(QMainWindow):
         )
         self.operation_status.setObjectName("operationStatus")
         self.operation_status.setTextFormat(Qt.PlainText)
+        # A plain QLabel never elides, so its full sentence became a hard
+        # minimum width for the footer -- 509 px of it -- and the footer in turn
+        # set the window's minimum to 1601 px. That is wider than a 1366-wide
+        # laptop can show, which is why switching pages felt like the app no
+        # longer fitted its own window. Let it shrink and elide; the full text
+        # stays available as a tooltip.
+        self.operation_status.setSizePolicy(
+            QSizePolicy.Ignored, self.operation_status.sizePolicy().verticalPolicy()
+        )
+        self.operation_status.setMinimumWidth(0)
         self.operation_status.setAccessibleName("Current operation status")
         self.operation_status.setAccessibleDescription(
             "Reports what the app is doing and whether an operation succeeded."
@@ -4915,8 +4922,31 @@ class StudioMainWindow(QMainWindow):
         if state.scenes_loading or (state.scenes_loaded and not force):
             return
         state.scenes_loading = True
-        state.scene_metadata.setText("Loading stadium scene catalog…")
+        # The first open of this tab for a given game DERIVES the stadium
+        # assets: about 750 MB over ten to thirty minutes, once. Saying
+        # "Loading…" and nothing else for half an hour is why this read as
+        # broken to the first user who hit it on a cold cache.
+        state.scene_metadata.setText(
+            "Preparing private stadium assets from your own game.\n"
+            f"First time only: about {ESTIMATED_PRIVATE_BYTES // (1024**2)} MB "
+            f"and {ESTIMATED_SECONDS_LOW // 60}–{ESTIMATED_SECONDS_HIGH // 60} "
+            "minutes. Later opens are instant."
+        )
+        state.count_label.setText("Preparing…")
         search = state.search.text().strip()
+
+        def report(stage: str, completed: int, total: int) -> None:
+            current = self._stadium_browser
+            if current is None or current is not state:
+                return
+            if total > 1 and completed <= total:
+                current.count_label.setText(f"{completed:,}/{total:,}")
+                current.scene_metadata.setText(
+                    f"{stage}…\n{completed:,} of {total:,} — first time only, "
+                    "later opens are instant."
+                )
+            else:
+                current.scene_metadata.setText(f"{stage}…")
 
         def success(result: object) -> None:
             state.scenes = tuple(result)  # type: ignore[arg-type]
@@ -4924,11 +4954,25 @@ class StudioMainWindow(QMainWindow):
             state.scenes_loading = False
             self._populate_stadium_scenes()
 
+        def failed(message: str) -> None:
+            current = self._stadium_browser
+            if current is None:
+                return
+            current.scenes_loading = False
+            current.count_label.setText("Retry")
+            current.scene_metadata.setText(
+                f"Stadium assets could not be prepared: {message}\n"
+                "Your game and projects are untouched. Reopen this tab to try "
+                "again; completed scenes are kept and resumed."
+            )
+
         self._start_task(
             lambda progress: self.facade.stadium_scenes(search, progress),
             success,
             label="Loading Stadium Studio",
             blocking=False,
+            on_error=failed,
+            on_progress=report,
         )
 
     def _populate_stadium_scenes(self) -> None:
@@ -6630,6 +6674,7 @@ class StudioMainWindow(QMainWindow):
         blocking: bool,
         show_errors: bool = True,
         on_error: Callable[[str], None] | None = None,
+        on_progress: Callable[[str, int, int], None] | None = None,
     ) -> None:
         if blocking and self._refuse_while_audio_busy(
             f"start {label.casefold()}"
@@ -6648,6 +6693,15 @@ class StudioMainWindow(QMainWindow):
         # selection change. Blocking user operations own that progress UI.
         if blocking:
             worker.signals.progress.connect(self._task_progress)
+        if on_progress is not None:
+            # A non-blocking task does not own the footer progress strip, but it
+            # can still be a long one -- the first stadium derivation runs for
+            # ten to thirty minutes. Without this a caller had no way to report
+            # progress at all, so that job showed a single static label for its
+            # whole run and read as hung.
+            worker.signals.progress.connect(
+                lambda stage, done, total: on_progress(stage, done, total)
+            )
 
         def error(message: str) -> None:
             if on_error is not None:
@@ -6700,6 +6754,9 @@ class StudioMainWindow(QMainWindow):
             self._pending_status = message
             return
         status.setText(message)
+        # The label elides to fit whatever width the footer has; the whole
+        # sentence stays readable on hover rather than being lost.
+        status.setToolTip(message)
 
     def _specialized_panel_status(self, message: str) -> None:
         """Forward embedded-panel status once the shared footer exists."""
@@ -7681,6 +7738,12 @@ def launch_studio(
         crash_report.install("2K5 Mod Studio")
     app.setApplicationName("2K5 Mod Studio")
     app.setOrganizationName("2K5 Mod Studio")
+    # Application-wide, not just per-window: dialogs and the taskbar group take
+    # their picture from here, and a window that has one while its own message
+    # boxes fall back to the Qt default looks half-finished.
+    icon = _window_icon()
+    if icon is not None:
+        app.setWindowIcon(icon)
     window = StudioMainWindow(
         facade,
         product_catalog=product_catalog,

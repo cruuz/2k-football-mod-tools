@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio Changelog
 
-## 0.1.0-alpha.65 — the stock CPU playbooks, and a corrected claim — 2026-08-10
+## 0.1.0-alpha.66 — the stock CPU playbooks, and a corrected claim — 2026-08-10
 
 ### Edit the CPU playbooks themselves
 

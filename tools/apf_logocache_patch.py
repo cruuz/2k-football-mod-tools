@@ -924,7 +924,9 @@ def _write_copied_volume_extents(
         if not _path_is_owned_inode(source_volume, source_identity):
             raise PatchError("source APF volume pathname changed during copy")
 
-        _copy_fd_metadata(source_descriptor, output_descriptor, source_metadata)
+        _copy_fd_metadata(
+            source_descriptor, output_descriptor, source_metadata, output_volume
+        )
         os.fsync(output_descriptor)
         if not _path_is_owned_inode(output_volume, output_identity):
             raise PatchError("output volume pathname changed during copied-volume patch")

@@ -39,6 +39,18 @@ TEAM_LOGO_TAB = "Team Logo"
 WORDMARK_TAB = "Wordmarks"
 UNIFORM_MATERIALS_TAB = "Editable Materials"
 
+#: The tab :class:`~mod_editor.apf_studio.gui.ScorebugStudioPage` gives the one
+#: presentation slot that has a proved writer.
+DIGITAL_FONT_TAB = "Digital Font"
+
+#: Exact identity of the shared score-digit atlas.
+DIGITAL_FONT_NAME = "digital_font"
+
+#: The field scorebug's own team-logo component.  It embeds no texture; it
+#: samples one at runtime, which is why it routes to the crest writer rather
+#: than claiming an editor of its own.
+SCOREBUG_TEAM_LOGO_SCENE = "scorebug_team_logos"
+
 
 @dataclass(frozen=True, slots=True)
 class WorkspaceRoute:
@@ -62,6 +74,48 @@ class WorkspaceRoute:
         if not self.tab:
             return self.category.title
         return f"{self.category.title} → {self.tab}"
+
+
+def _scorebug_route(asset: ApfAsset) -> WorkspaceRoute | None:
+    """The two presentation rows a proved writer can actually reach.
+
+    Everything else on the field scorebug -- the SCNE geometry and the eleven
+    TXTR descriptors embedded inside those scenes -- has no writer, so it gets
+    no route.  Returning ``None`` is how this table says *nothing here can edit
+    that*, and the browser then keeps its honest export-only boundary.
+    """
+
+    if asset.type_name == "TXTR" and asset.name == DIGITAL_FONT_NAME:
+        return WorkspaceRoute(
+            category=ApfCategory.SCOREBUG,
+            tab=DIGITAL_FONT_TAB,
+            key=DIGITAL_FONT_NAME,
+            action_label="Edit the score digits…",
+            workspace_label="Scorebug & Presentation → Digital Font",
+            summary=(
+                "This is the shared 128×128 alpha-only score-digit atlas. The "
+                "Digital Font editor owns it and accepts any image size or "
+                "format, refitting it for you. It is a global atlas: edits may "
+                "affect UI outside the field scorebug, and runtime visibility "
+                "is not proved."
+            ),
+        )
+    if asset.type_name == "SCNE" and asset.name == SCOREBUG_TEAM_LOGO_SCENE:
+        return WorkspaceRoute(
+            category=ApfCategory.LOGOS,
+            tab=TEAM_LOGO_TAB,
+            key="",
+            action_label="Open Team Logo…",
+            workspace_label="Logos & Team Art → Team Logo",
+            summary=(
+                "This scorebug component embeds no texture. It samples the team "
+                "logo at runtime through two dynamic samplers. Team Logo writes "
+                "both candidate reservoirs (the uniform_logo crest package and "
+                "the logo cache); which one the scorebug actually reads is not "
+                "proved. The component's own geometry stays read-only."
+            ),
+        )
+    return None
 
 
 def _crest_route(asset: ApfAsset) -> WorkspaceRoute | None:
@@ -156,6 +210,10 @@ def route_for_asset(
     textures Stadium Studio edits.  Callers pass what they already hold; each
     omitted table simply disables its own rules.
     """
+
+    presentation = _scorebug_route(asset)
+    if presentation is not None:
+        return presentation
 
     crest = _crest_route(asset)
     if crest is not None:

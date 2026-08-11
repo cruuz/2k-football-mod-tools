@@ -7,7 +7,7 @@ from dataclasses import replace
 from pathlib import Path
 import tempfile
 from threading import RLock
-from typing import Callable, Iterable, Mapping
+from typing import Callable, Iterable, Mapping, Sequence
 
 from mod_editor.core.texture_master import (
     AuthoringTransform,
@@ -87,6 +87,7 @@ from .roster_workspace import (
 from .session import ApfSession
 from .source import SourceManager
 from .stadium import ApfStadiumPreview, ApfStadiumScene
+from . import scene_textures
 from . import stadium_texture
 from .text_sheet import (
     TextSheetExportReceipt,
@@ -1123,6 +1124,37 @@ class ApfStudioFacade:
     def export_asset(self, asset_id: str, destination: Path, progress: Progress = _noop) -> Path:
         progress("Exporting game asset", 0, 0)
         return self.require_session().asset_io.export_asset(asset_id, destination)
+
+    def scene_textures(
+        self, asset_ids: Sequence[str], progress: Progress = _noop
+    ) -> tuple[scene_textures.SceneTexture, ...]:
+        """Embedded scene artwork for catalog SCNE rows, read-only.
+
+        These descriptors have no inner-file index, so no writer -- and no
+        editable status -- can attach to them.
+        """
+
+        progress("Reading embedded scene textures", 0, 0)
+        catalog = self.require_catalog()
+        assets = tuple(catalog.get(asset_id) for asset_id in asset_ids)
+        return self.require_session().asset_io.scene_textures(assets)
+
+    def preview_scene_texture(
+        self, texture: scene_textures.SceneTexture, progress: Progress = _noop
+    ) -> Path:
+        progress("Preparing embedded texture preview", 0, 0)
+        return self.require_session().asset_io.preview_scene_texture(texture)
+
+    def export_scene_texture(
+        self,
+        texture: scene_textures.SceneTexture,
+        destination: Path,
+        progress: Progress = _noop,
+    ) -> Path:
+        progress("Exporting embedded scene texture", 0, 0)
+        return self.require_session().asset_io.export_scene_texture(
+            texture, destination
+        )
 
     def stadium_scenes(self, search: str = "") -> tuple[ApfStadiumScene, ...]:
         return self.require_session().asset_io.stadium_scenes(search)

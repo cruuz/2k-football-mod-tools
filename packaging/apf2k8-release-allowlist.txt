@@ -74,6 +74,7 @@ mod_editor/apf_studio/save_playbooks.py
 mod_editor/apf_studio/save_playbooks_qt.py
 mod_editor/apf_studio/save_roster_players.py
 mod_editor/apf_studio/save_roster_players_qt.py
+mod_editor/apf_studio/scene_textures.py
 mod_editor/apf_studio/session.py
 mod_editor/apf_studio/source.py
 mod_editor/apf_studio/stadium.py
@@ -110,6 +111,7 @@ mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json
 mod_editor/data/apf2k8_textlogo_targets.v1.json
 mod_editor/data/apf2k8_uniform_targets.v1.json
 mod_editor/gui/apf_audio_waveform_qt.py
+mod_editor/gui/branding.py
 mod_editor/gui/crash_report.py
 mod_editor/gui/stadium_viewer.py
 mod_editor/gui/texture_editor.py
@@ -120,6 +122,7 @@ packaging/apf2k8-release-allowlist.txt
 packaging/apf2k8_mod_studio_installer.py
 packaging/check_apf2k8_mod_studio_release.py
 packaging/check_apf2k8_mod_studio_runtime.py
+packaging/icons/apf2k8-mod-studio.ico
 tools/apf_audio.py
 tools/apf_audo_exact_slot.py
 tools/apf_ausb_audio.py
@@ -177,6 +180,7 @@ tools/apf_xenos_mip_layout.py
 tools/director_inventory.py
 tools/game_audio_convert.py
 tools/launch_apf2k8_mod_studio.sh
+tools/make_app_icons.py
 tools/nfl_dxt1.py
 tools/nfl_fit_image.py
 tools/nfl_outer.py

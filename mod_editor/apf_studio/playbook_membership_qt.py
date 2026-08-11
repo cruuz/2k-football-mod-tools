@@ -14,9 +14,21 @@ rewrites only that record's entry list.
 
 Everything else is preserved and independently re-derived before publication:
 the record trailer, every other record, the two tail regions whose meaning is
-not established, and every other byte of the volume.  The four tagged slots per
-formation have an unproved meaning, so removing one is refused rather than
-guessed, and no claim is made about in-game CPU behaviour.
+not established, and every other byte of the volume.
+
+A formation also carries tagged slots -- ``min(4, plays)`` of them in every one
+of the 209 populated retail records, with no exceptions -- and they are authored
+per formation rather than falling out of position.  Three of them are the
+formation's audibles: the game writes a slot number into bits 12-10 of an entry
+at ``0x84864c78`` and runs that counter 0, 1, 2 while stepping 176 bytes -- one
+SPLB record -- per formation, and swaps a slot between plays at ``0x84a8ab28``.
+Slot 4 marks an untagged play.  The fourth tagged slot, 3, is never written by
+that loop and its purpose is *not* established.
+
+This panel therefore never drops a slot: it moves one onto another play in the
+same formation, or carries it there when its play is removed, and refuses only
+what would break the counted rule.  No claim is made about in-game CPU
+play-calling.
 """
 
 from __future__ import annotations
@@ -31,6 +43,7 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QFrame,
     QHBoxLayout,
+    QInputDialog,
     QLabel,
     QLineEdit,
     QListWidget,
@@ -45,15 +58,49 @@ from mod_editor.core.errors import ValidationError
 
 
 TaskRunner = Callable[[str, object, object, bool], None]
+StagedChange = splb.MembershipChange | splb.TagMove
 
 BOUNDARY = (
     "This edits the stock CPU playbooks themselves — the SPLB resources the "
     "game ships, one per book. Only the entry list of the selected formation's "
     "record is rewritten; the record trailer, every other record and every "
     "other byte stay exact, and an independent verifier re-derives every "
-    "changed byte before anything is written. The four tagged slots per "
-    "formation have an unproved meaning, so removing one is refused rather "
-    "than guessed. In-game CPU behaviour is NOT proved."
+    "changed byte before anything is written. A formation's tagged slots are "
+    "never dropped — one can be moved or carried onto another play in the same "
+    "formation — and only an edit that would break the proved min(4, plays) "
+    "rule is refused. Three of those slots are the formation's audibles, proved "
+    "in the game's own code; the fourth is unexplained. In-game CPU play-calling "
+    "behaviour is still NOT proved."
+)
+
+#: What is settled about the tagged slots, and what is only a reading. Kept as
+#: one string so the panel, its tooltips and its tests all quote the same words.
+TAG_BOUNDARY = (
+    "Proved about the tagged slots: every populated formation in all fifteen "
+    "books carries exactly min(4, plays) of them — 209 records, zero "
+    "exceptions — and they are authored per formation, not positional. "
+    "Singleback Ace and Ace Flip hold byte-identical 77-play lists, same plays "
+    "and same X values, yet Ace tags entries 70–73 and Ace Flip tags 0–3; only "
+    "137 of the 209 records tag their leading entries at all.\n\n"
+    "What they DO is now proved too, in the game's own code. Community reporter "
+    "Urianus read them as the formation's audibles — \"the user only gets 3 per "
+    "formation\" — and the executable agrees. The game does not merely read "
+    "these bits, it writes them: at 0x84864c78 it inserts a slot number into "
+    "bits 12–10 of an entry and stores it back, and the loop around it runs that "
+    "counter 0, 1, 2 — three slots per formation — stepping 176 bytes at a time, "
+    "which is exactly one SPLB record. Slot 4 is what an untagged play carries, "
+    "and the loop hunts for those as candidates. The game also ships the move "
+    "this panel performs: 0x84a8ab28 takes a slot off one play and puts it on "
+    "another.\n\n"
+    "So three of the four are the audibles you set at the line. The fourth "
+    "(slot 3) is a real tagged slot that the assign loop never writes, and what "
+    "it is for is NOT established — the one place the executable tests for it "
+    "is a generic bit-field clamp, which proves nothing. It is preserved and "
+    "editable, but unexplained.\n\n"
+    "So the slots are never dropped: one can be moved onto another play in the "
+    "same formation, or carried onto one when its play is removed. Only edits "
+    "that would break the counted rule — fewer slots than min(4, plays), the "
+    "same slot twice, or a slot value the retail books never use — are refused."
 )
 
 
@@ -72,6 +119,10 @@ class ApfPlaybookMembershipPanel(QFrame):
         self._formations: dict[int, str] = {}
         # record index -> {play index: wanted membership}
         self._staged: dict[int, dict[int, bool]] = {}
+        # record index -> {play losing a tagged slot: play carrying it on}
+        self._staged_heirs: dict[int, dict[int, int]] = {}
+        # record index -> {play a tagged slot leaves: play it lands on}
+        self._staged_moves: dict[int, dict[int, int]] = {}
         self._loading = False
 
         root = QVBoxLayout(self)
@@ -148,6 +199,19 @@ class ApfPlaybookMembershipPanel(QFrame):
         right.addWidget(self.play_header)
         right.addWidget(self.play_search)
         right.addWidget(self.play_list, 3)
+        tag_row = QHBoxLayout()
+        tag_row.setSpacing(8)
+        self.move_tag_button = QPushButton("Move tagged slot…")
+        self.move_tag_button.setObjectName("quietButton")
+        self.move_tag_button.setAccessibleName("Move a tagged slot to another play")
+        self.move_tag_button.clicked.connect(self._move_tag)
+        self.tag_help_button = QPushButton("What are tagged slots?")
+        self.tag_help_button.setObjectName("quietButton")
+        self.tag_help_button.clicked.connect(self._explain_tags)
+        tag_row.addWidget(self.move_tag_button)
+        tag_row.addWidget(self.tag_help_button)
+        tag_row.addStretch(1)
+        right.addLayout(tag_row)
         columns.addLayout(right, 3)
         root.addLayout(columns, 1)
 
@@ -181,7 +245,7 @@ class ApfPlaybookMembershipPanel(QFrame):
     def set_context(self) -> None:
         if not bool(getattr(self.facade, "source_ready", False)):
             self._book = None
-            self._staged = {}
+            self._clear_staged()
             self.formation_list.clear()
             self.play_list.clear()
             self.status.setText("Not loaded")
@@ -196,7 +260,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         outer = self.book_picker.currentData()
         if outer is None:
             return
-        self._staged = {}
+        self._clear_staged()
 
         def operation(progress: Callable[[str, int, int], None]) -> dict:
             import playbook_inventory  # type: ignore
@@ -242,9 +306,9 @@ class ApfPlaybookMembershipPanel(QFrame):
                 name = self._formations.get(record.formation_index, "?")
                 count = len(self._wanted_plays(record.record_index))
                 label = f"{name}  ·  {count} plays"
-                staged = self._staged.get(record.record_index) or {}
+                staged = self._staged_count(record.record_index)
                 if staged:
-                    label += f"   ✎ {len(staged)} changed"
+                    label += f"   ✎ {staged} changed"
                 item = QListWidgetItem(label)
                 item.setData(Qt.UserRole, record.record_index)
                 self.formation_list.addItem(item)
@@ -279,6 +343,161 @@ class ApfPlaybookMembershipPanel(QFrame):
                 base.discard(play_index)
         return base
 
+    # ------------------------------------------------------------- tag staging
+
+    def _clear_staged(self) -> None:
+        self._staged = {}
+        self._staged_heirs = {}
+        self._staged_moves = {}
+
+    def _staged_count(self, record_index: int) -> int:
+        return len(self._staged.get(record_index) or {}) + len(
+            self._staged_moves.get(record_index) or {}
+        )
+
+    def _record_changes(
+        self, record_index: int, extra: tuple[StagedChange, ...] = ()
+    ) -> tuple[list[splb.MembershipChange], list[splb.TagMove]]:
+        staged = [
+            change
+            for change in self.staged_changes()
+            if change.record_index == record_index
+        ]
+        memberships = [c for c in staged if isinstance(c, splb.MembershipChange)]
+        moves = [c for c in staged if isinstance(c, splb.TagMove)]
+        for change in extra:
+            if isinstance(change, splb.MembershipChange):
+                memberships = [
+                    m for m in memberships if m.play_index != change.play_index
+                ] + [change]
+            else:
+                moves = [m for m in moves if m.from_play != change.from_play] + [change]
+        return memberships, moves
+
+    def _preview(
+        self, record_index: int, extra: tuple[StagedChange, ...] = ()
+    ) -> tuple[splb.SplbEntry, ...] | None:
+        """The record's entries as staged, or None if that state is not legal."""
+
+        record = self._record(record_index)
+        if record is None or self._book is None:
+            return None
+        memberships, moves = self._record_changes(record_index, extra)
+        try:
+            return splb.apply_record_changes(self._book, record, memberships, moves)
+        except ValidationError:
+            return None
+
+    def _effective_tags(self, record_index: int) -> dict[int, int]:
+        entries = self._preview(record_index)
+        record = self._record(record_index)
+        if entries is None:
+            entries = record.entries if record is not None else ()
+        return {entry.play_index: entry.y for entry in entries if entry.tagged}
+
+    def _staged_play_indices(self, record_index: int) -> list[int]:
+        entries = self._preview(record_index)
+        if entries is not None:
+            return [entry.play_index for entry in entries]
+        return sorted(self._wanted_plays(record_index))
+
+    def _carry_candidates(self, record_index: int, play_index: int) -> list[int]:
+        """Plays that can take this play's tagged slot when it is removed.
+
+        Each one is proved by running the real writer, so the picker never
+        offers a choice that would fail at build time.
+        """
+
+        outer = self._book.outer_index if self._book is not None else 0
+        candidates: list[int] = []
+        for other in self._staged_play_indices(record_index):
+            if other == play_index:
+                continue
+            change = splb.MembershipChange(outer, record_index, play_index, False, other)
+            if self._preview(record_index, (change,)) is not None:
+                candidates.append(other)
+        return candidates
+
+    def _move_candidates(self, record_index: int, play_index: int) -> list[int]:
+        outer = self._book.outer_index if self._book is not None else 0
+        candidates: list[int] = []
+        for other in self._staged_play_indices(record_index):
+            if other == play_index:
+                continue
+            move = splb.TagMove(outer, record_index, play_index, other)
+            if self._preview(record_index, (move,)) is not None:
+                candidates.append(other)
+        return candidates
+
+    def removal_needs_heir(self, record_index: int, play_index: int) -> bool:
+        """Would dropping this play leave the formation short a tagged slot?"""
+
+        outer = self._book.outer_index if self._book is not None else 0
+        change = splb.MembershipChange(outer, record_index, play_index, False)
+        return self._preview(record_index, (change,)) is None
+
+    def stage_membership(
+        self, record_index: int, play_index: int, wanted: bool, heir: int | None = None
+    ) -> None:
+        """Stage one add or remove, with an optional heir for its tagged slot."""
+
+        record = self._record(record_index)
+        if record is None:
+            raise ValidationError("No formation is loaded")
+        was_staged = dict(self._staged.get(record_index) or {})
+        was_heirs = dict(self._staged_heirs.get(record_index) or {})
+        staged = dict(was_staged)
+        heirs = dict(was_heirs)
+        base = {entry.play_index for entry in record.entries}
+        if wanted == (play_index in base) and heir is None:
+            staged.pop(play_index, None)
+            heirs.pop(play_index, None)
+        else:
+            staged[play_index] = wanted
+            heirs.pop(play_index, None)
+            if heir is not None:
+                heirs[play_index] = heir
+        self._replace_staged(record_index, staged, heirs)
+        if self._preview(record_index) is None:
+            self._replace_staged(record_index, was_staged, was_heirs)
+            raise ValidationError(
+                "That change would leave the formation outside the proved tagged-slot "
+                "rule, so it was not staged."
+            )
+        self._after_stage()
+
+    def _replace_staged(
+        self, record_index: int, staged: dict[int, bool], heirs: dict[int, int]
+    ) -> None:
+        for store, value in ((self._staged, staged), (self._staged_heirs, heirs)):
+            if value:
+                store[record_index] = value  # type: ignore[assignment]
+            else:
+                store.pop(record_index, None)
+
+    def stage_tag_move(self, record_index: int, from_play: int, to_play: int) -> None:
+        """Stage moving one tagged slot onto another play in the same formation."""
+
+        if self._book is None:
+            raise ValidationError("No playbook is loaded")
+        move = splb.TagMove(self._book.outer_index, record_index, from_play, to_play)
+        if self._preview(record_index, (move,)) is None:
+            raise ValidationError(
+                f"Play {from_play} cannot hand its tagged slot to play {to_play} in "
+                "this formation."
+            )
+        moves = self._staged_moves.setdefault(record_index, {})
+        moves[from_play] = to_play
+        self._after_stage()
+
+    def _after_stage(self) -> None:
+        self._refresh_formations()
+        self._refresh_plays()
+        self._refresh_actions()
+        self.modifiedChanged.emit()
+
+    # ------------------------------------------------------------------- plays
+
     def _refresh_plays(self) -> None:
         self._loading = True
         try:
@@ -288,7 +507,7 @@ class ApfPlaybookMembershipPanel(QFrame):
             if record is None or not self._plays:
                 self.play_header.setText("Plays")
                 return
-            tagged = {e.play_index: e.y for e in record.entries if e.tagged}
+            tagged = self._effective_tags(record.record_index)
             wanted = self._wanted_plays(record.record_index)
             needle = self.play_search.text().strip().casefold()
             for play_index, name in enumerate(self._plays):
@@ -306,8 +525,11 @@ class ApfPlaybookMembershipPanel(QFrame):
                 )
                 if play_index in tagged:
                     item.setToolTip(
-                        "This is one of the four tagged slots for this formation. "
-                        "Their meaning is unproved, so removing one is refused."
+                        f"This play holds tagged slot {tagged[play_index]} for this "
+                        "formation. The slot is never dropped: untick the play and "
+                        "the studio offers to carry it onto another play here, or "
+                        "use “Move tagged slot…” to hand it over now. What the slot "
+                        "denotes is not proved."
                     )
                 self.play_list.addItem(item)
             self.play_header.setText(
@@ -319,6 +541,11 @@ class ApfPlaybookMembershipPanel(QFrame):
             self._loading = False
         self._refresh_actions()
 
+    def _restore_tick(self, item: QListWidgetItem, checked: bool) -> None:
+        self._loading = True
+        item.setCheckState(Qt.Checked if checked else Qt.Unchecked)
+        self._loading = False
+
     def _play_toggled(self, item: QListWidgetItem) -> None:
         if self._loading:
             return
@@ -328,44 +555,134 @@ class ApfPlaybookMembershipPanel(QFrame):
             return
         play_index = int(item.data(Qt.UserRole))
         wanted = item.checkState() == Qt.Checked
-        tagged = {e.play_index: e.y for e in record.entries if e.tagged}
-        if not wanted and play_index in tagged:
-            self._loading = True
-            item.setCheckState(Qt.Checked)
-            self._loading = False
+        heir: int | None = None
+        if not wanted and self.removal_needs_heir(record.record_index, play_index):
+            heir = self._ask_for_heir(record.record_index, play_index)
+            if heir is None:
+                self._restore_tick(item, True)
+                return
+        try:
+            self.stage_membership(record.record_index, play_index, wanted, heir)
+        except ValidationError as exc:
+            self._restore_tick(item, not wanted)
+            QMessageBox.information(self, "That edit was not staged", str(exc))
+
+    def _ask_for_heir(self, record_index: int, play_index: int) -> int | None:
+        """Offer to carry the tagged slot onto another play instead of refusing."""
+
+        tagged = self._effective_tags(record_index)
+        slot = tagged.get(play_index)
+        candidates = self._carry_candidates(record_index, play_index)
+        if not candidates:
             QMessageBox.information(
                 self,
-                "That slot is tagged",
-                f"{self._plays[play_index]} occupies tagged slot "
-                f"{tagged[play_index]} for this formation. Every populated "
-                "record carries exactly one slot 1 and at most one each of 0, "
-                "2 and 3; what those four denote is not established, so this "
-                "build refuses to remove one rather than guess what it breaks.",
+                "Nothing here can carry that slot",
+                f"{self._play_name(play_index)} holds tagged slot {slot}, and no "
+                "other play in this formation can take it without breaking the "
+                "proved min(4, plays) rule. Tick another play into this formation "
+                "first, then untick this one.",
+            )
+            return None
+        answer = QMessageBox.question(
+            self,
+            "Carry the tagged slot over?",
+            f"{self._play_name(play_index)} holds tagged slot {slot} for this "
+            f"formation, and the formation has to keep "
+            f"{splb.required_tag_count(len(self._staged_play_indices(record_index)) - 1)}"
+            " tagged slots. Hand the slot to another play here and the removal goes "
+            "through.\n\n" + TAG_BOUNDARY,
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Yes,
+        )
+        if answer != QMessageBox.Yes:
+            return None
+        return self._pick_play(
+            candidates,
+            "Carry the tagged slot to",
+            f"Which play takes tagged slot {slot}?",
+        )
+
+    def _pick_play(self, candidates: list[int], title: str, prompt: str) -> int | None:
+        labels = [self._play_name(play) for play in candidates]
+        choice, accepted = QInputDialog.getItem(self, title, prompt, labels, 0, False)
+        if not accepted:
+            return None
+        return candidates[labels.index(choice)]
+
+    def _play_name(self, play_index: int) -> str:
+        if 0 <= play_index < len(self._plays):
+            return self._plays[play_index]
+        return f"play {play_index}"
+
+    def _move_tag(self) -> None:
+        record_index = self._selected_record_index()
+        if record_index is None or self._book is None:
+            QMessageBox.information(
+                self,
+                "Pick a formation first",
+                "Load a playbook and select a formation, then select the play whose "
+                "tagged slot you want to move.",
             )
             return
-        base = {e.play_index for e in record.entries}
-        staged = self._staged.setdefault(record.record_index, {})
-        if wanted == (play_index in base):
-            staged.pop(play_index, None)
-            if not staged:
-                self._staged.pop(record.record_index, None)
-        else:
-            staged[play_index] = wanted
-        self._refresh_formations()
-        self._refresh_actions()
-        self.modifiedChanged.emit()
+        item = self.play_list.currentItem()
+        play_index = int(item.data(Qt.UserRole)) if item is not None else -1
+        tagged = self._effective_tags(record_index)
+        if play_index not in tagged:
+            QMessageBox.information(
+                self,
+                "Select a tagged play",
+                "Highlight the play that currently holds the tagged slot, then use "
+                "this button to hand the slot to another play in the same "
+                "formation.\n\n" + TAG_BOUNDARY,
+            )
+            return
+        candidates = self._move_candidates(record_index, play_index)
+        if not candidates:
+            QMessageBox.information(
+                self,
+                "Nowhere to move it",
+                "This formation has no other play that can hold the slot.",
+            )
+            return
+        target = self._pick_play(
+            candidates,
+            "Move tagged slot",
+            f"Move tagged slot {tagged[play_index]} from "
+            f"{self._play_name(play_index)} to:",
+        )
+        if target is None:
+            return
+        try:
+            self.stage_tag_move(record_index, play_index, target)
+        except ValidationError as exc:
+            QMessageBox.information(self, "That move was not staged", str(exc))
+
+    def _explain_tags(self) -> None:
+        QMessageBox.information(self, "Tagged slots", TAG_BOUNDARY)
 
     # ---------------------------------------------------------------- actions
 
-    def staged_changes(self) -> tuple[splb.MembershipChange, ...]:
+    def staged_changes(self) -> tuple[StagedChange, ...]:
         if self._book is None:
             return ()
-        out: list[splb.MembershipChange] = []
+        out: list[StagedChange] = []
         for record_index, plays in sorted(self._staged.items()):
+            heirs = self._staged_heirs.get(record_index) or {}
             for play_index, wanted in sorted(plays.items()):
                 out.append(
                     splb.MembershipChange(
-                        self._book.outer_index, record_index, play_index, wanted
+                        self._book.outer_index,
+                        record_index,
+                        play_index,
+                        wanted,
+                        None if wanted else heirs.get(play_index),
+                    )
+                )
+        for record_index, moves in sorted(self._staged_moves.items()):
+            for from_play, to_play in sorted(moves.items()):
+                out.append(
+                    splb.TagMove(
+                        self._book.outer_index, record_index, from_play, to_play
                     )
                 )
         return tuple(out)
@@ -380,10 +697,17 @@ class ApfPlaybookMembershipPanel(QFrame):
         elif self._book is None:
             block = "Choose a stock playbook first."
         elif not staged:
-            block = "Tick or untick plays for a formation first. Nothing is staged yet."
+            block = (
+                "Tick or untick plays for a formation, or move a tagged slot, first. "
+                "Nothing is staged yet."
+            )
         else:
             block = ""
         self.build_button.setProperty("disableReason", block)
+        self.move_tag_button.setToolTip(
+            "Hand the highlighted play's tagged slot to another play in the same "
+            "formation. The count of tagged slots never changes."
+        )
         self.build_button.setToolTip(
             block
             or f"Write {len(staged)} playbook change"
@@ -401,11 +725,8 @@ class ApfPlaybookMembershipPanel(QFrame):
         if reason:
             QMessageBox.information(self, "Nothing to revert", reason)
             return
-        self._staged = {}
-        self._refresh_formations()
-        self._refresh_plays()
-        self._refresh_actions()
-        self.modifiedChanged.emit()
+        self._clear_staged()
+        self._after_stage()
 
     def _build(self) -> None:
         reason = str(self.build_button.property("disableReason") or "").strip()
@@ -482,4 +803,4 @@ def _publish_copied_volume(index_path: Path, out_root: Path, entry) -> Path:
     return destination
 
 
-__all__ = ["ApfPlaybookMembershipPanel", "BOUNDARY"]
+__all__ = ["ApfPlaybookMembershipPanel", "BOUNDARY", "TAG_BOUNDARY"]
