@@ -131,6 +131,27 @@ def _entry(pack_offset: int, size: int) -> apf_outer.Entry:
     )
 
 
+def _host_records_posix_modes() -> bool:
+    """Whether this filesystem stores the permission bits the copy propagates.
+
+    Asked by writing a file rather than by naming an OS, because that is the
+    only thing the assertions below actually depend on.  Windows records just
+    the read-only attribute -- ``os.chmod`` honours ``S_IWRITE`` and drops the
+    rest -- so ``0o640`` reads back as ``0o666`` and no copy can be made to
+    compare equal to its source.  The bytes, which are the product, are still
+    checked everywhere.
+    """
+
+    with tempfile.TemporaryDirectory() as directory:
+        probe = Path(directory) / "probe"
+        probe.write_bytes(b"")
+        os.chmod(probe, SOURCE_MODE)
+        return stat.S_IMODE(os.stat(probe).st_mode) == SOURCE_MODE
+
+
+HOST_RECORDS_POSIX_MODES = _host_records_posix_modes()
+
+
 def _write_source_volume(directory: Path) -> Path:
     source = directory / "source" / "0A"
     source.parent.mkdir(parents=True, exist_ok=True)
@@ -172,7 +193,13 @@ def simulated_windows() -> Iterator[None]:
     os.supports_dir_fd = frozenset()  # type: ignore[assignment]
     for name in saved_attributes:
         delattr(os, name)
-    os.O_BINARY = 0  # type: ignore[attr-defined]
+    if saved_binary is None:
+        # Give the simulation the attribute Windows really publishes, so a
+        # writer that reaches for it takes the same branch here.  Where the
+        # host already has one, leave it alone: forcing it to 0 on real Windows
+        # downgrades every O_BINARY open in the shipped writers to a text-mode
+        # open, and os.read then stops at the first 0x1A in a binary volume.
+        os.O_BINARY = 0  # type: ignore[attr-defined]
     platform_compat.IS_WINDOWS = True
     try:
         yield
@@ -248,14 +275,27 @@ class DescriptorTimeCapabilityTests(unittest.TestCase):
 class UtimeNsTests(unittest.TestCase):
     """The helper's own contract, on this host and on a simulated Windows."""
 
-    def _pair(self, directory: Path) -> tuple[Path, Path, int]:
-        source = _write_source_volume(directory)
-        output = directory / "copied" / "0A"
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_bytes(_volume_body())
-        descriptor = os.open(output, os.O_RDWR)
-        self.addCleanup(os.close, descriptor)
-        return source, output, descriptor
+    @contextlib.contextmanager
+    def _pair(self) -> Iterator[tuple[Path, Path, int]]:
+        """Own the descriptor and the directory together.
+
+        Windows refuses to delete a file that still has an open handle, so the
+        descriptor has to close before the temporary directory is torn down.
+        ``addCleanup`` runs at the end of the test method, which is after the
+        directory context has already exited and failed.
+        """
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = _write_source_volume(root)
+            output = root / "copied" / "0A"
+            output.parent.mkdir(parents=True, exist_ok=True)
+            output.write_bytes(_volume_body())
+            descriptor = os.open(output, os.O_RDWR | getattr(os, "O_BINARY", 0))
+            try:
+                yield source, output, descriptor
+            finally:
+                os.close(descriptor)
 
     @unittest.skipUnless(
         platform_compat.supports_descriptor_times(),
@@ -263,8 +303,7 @@ class UtimeNsTests(unittest.TestCase):
         "by the simulated-Windows sibling below",
     )
     def test_stamps_through_the_descriptor_where_supported(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            _, output, descriptor = self._pair(Path(directory))
+        with self._pair() as (_, output, descriptor):
             applied = platform_compat.utime_ns(
                 descriptor, None, ns=(SOURCE_ATIME_NS, SOURCE_MTIME_NS)
             )
@@ -272,8 +311,7 @@ class UtimeNsTests(unittest.TestCase):
             self.assertEqual(os.stat(output).st_mtime_ns, SOURCE_MTIME_NS)
 
     def test_stamps_through_the_path_when_the_descriptor_form_is_absent(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            _, output, descriptor = self._pair(Path(directory))
+        with self._pair() as (_, output, descriptor):
             with simulated_windows():
                 applied = platform_compat.utime_ns(
                     descriptor, output, ns=(SOURCE_ATIME_NS, SOURCE_MTIME_NS)
@@ -282,8 +320,7 @@ class UtimeNsTests(unittest.TestCase):
             self.assertEqual(os.stat(output).st_mtime_ns, SOURCE_MTIME_NS)
 
     def test_reports_a_skip_when_no_path_can_be_consulted(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            _, output, descriptor = self._pair(Path(directory))
+        with self._pair() as (_, output, descriptor):
             untouched = os.stat(output).st_mtime_ns
             with simulated_windows():
                 applied = platform_compat.utime_ns(
@@ -299,28 +336,32 @@ class UtimeNsTests(unittest.TestCase):
             OSError(errno.EPERM, "Operation not permitted"),
         ):
             with self.subTest(error=type(error).__name__):
-                with tempfile.TemporaryDirectory() as directory:
-                    _, output, descriptor = self._pair(Path(directory))
+                with self._pair() as (_, output, descriptor):
                     with utime_always_raising(error) as attempts:
                         applied = platform_compat.utime_ns(
                             descriptor, output, ns=(SOURCE_ATIME_NS, SOURCE_MTIME_NS)
                         )
-                self.assertFalse(applied)
-                # Both forms were really tried, and neither escaped.
-                self.assertIn(descriptor, attempts)
-                self.assertIn(output, attempts)
+                    self.assertFalse(applied)
+                    # Both forms were really tried, and neither escaped.
+                    self.assertIn(descriptor, attempts)
+                    self.assertIn(output, attempts)
 
     def test_the_path_fallback_refuses_a_name_that_is_no_longer_the_file(self) -> None:
         # The one place a name is consulted must not be redirectable: a decoy
         # moved into the output's name between open and stamp is skipped, not
         # stamped, because its (st_dev, st_ino) is not the descriptor's.
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            _, output, descriptor = self._pair(root)
+        with self._pair() as (_, output, descriptor):
+            root = output.parent.parent
             decoy = root / "decoy"
             decoy.write_bytes(b"decoy contents")
             decoy_before = os.stat(decoy).st_mtime_ns
-            os.replace(decoy, output)
+            try:
+                os.replace(decoy, output)
+            except PermissionError as exc:
+                # Windows will not rename over a name whose file this process
+                # still holds open, so the substitution this guards against
+                # cannot be staged there at all while the descriptor lives.
+                self.skipTest(f"this platform refuses the substitution: {exc}")
             with simulated_windows():
                 applied = platform_compat.utime_ns(
                     descriptor, output, ns=(SOURCE_ATIME_NS, SOURCE_MTIME_NS)
@@ -362,9 +403,10 @@ class CopyFdMetadataTests(unittest.TestCase):
                 with tempfile.TemporaryDirectory() as directory:
                     source, output = self._prepared(Path(directory))
                     self._copy(module, source, output)
-                    self.assertEqual(
-                        stat.S_IMODE(os.stat(output).st_mode), SOURCE_MODE
-                    )
+                    if HOST_RECORDS_POSIX_MODES:
+                        self.assertEqual(
+                            stat.S_IMODE(os.stat(output).st_mode), SOURCE_MODE
+                        )
                     self.assertEqual(output.read_bytes(), _volume_body())
                     if platform_compat.supports_descriptor_times():
                         self.assertEqual(
@@ -382,9 +424,10 @@ class CopyFdMetadataTests(unittest.TestCase):
                     with simulated_windows():
                         self._copy(module, source, output)
                     self.assertEqual(output.read_bytes(), _volume_body())
-                    self.assertEqual(
-                        stat.S_IMODE(os.stat(output).st_mode), SOURCE_MODE
-                    )
+                    if HOST_RECORDS_POSIX_MODES:
+                        self.assertEqual(
+                            stat.S_IMODE(os.stat(output).st_mode), SOURCE_MODE
+                        )
                     self.assertEqual(
                         os.stat(output).st_mtime_ns, os.stat(source).st_mtime_ns
                     )
@@ -403,9 +446,10 @@ class CopyFdMetadataTests(unittest.TestCase):
                         self.assertTrue(attempts, "utime was never attempted")
                         # The two things that actually matter survive intact.
                         self.assertEqual(output.read_bytes(), _volume_body())
-                        self.assertEqual(
-                            stat.S_IMODE(os.stat(output).st_mode), SOURCE_MODE
-                        )
+                        if HOST_RECORDS_POSIX_MODES:
+                            self.assertEqual(
+                                stat.S_IMODE(os.stat(output).st_mode), SOURCE_MODE
+                            )
 
 
 class CopiedVolumeTransactionTests(unittest.TestCase):
@@ -420,7 +464,8 @@ class CopiedVolumeTransactionTests(unittest.TestCase):
         expected = bytearray(_volume_body())
         expected[ENTRY_OFFSET : ENTRY_OFFSET + len(REPLACEMENT)] = REPLACEMENT
         self.assertEqual(output.read_bytes(), bytes(expected))
-        self.assertEqual(stat.S_IMODE(os.stat(output).st_mode), SOURCE_MODE)
+        if HOST_RECORDS_POSIX_MODES:
+            self.assertEqual(stat.S_IMODE(os.stat(output).st_mode), SOURCE_MODE)
         self.assertEqual(os.stat(source).st_mtime_ns, SOURCE_MTIME_NS)
 
     def test_copied_volume_builds_under_simulated_windows(self) -> None:

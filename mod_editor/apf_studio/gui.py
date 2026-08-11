@@ -1740,6 +1740,15 @@ class WordElidedLabel(QLabel):
     def __init__(self, text: str):
         super().__init__()
         self._full_text = ""
+        # Eliding the drawn text is only half of it: QLabel still reports the
+        # full sentence as its minimum width, so a layout can never actually
+        # shrink the label and the whole page inherits the sentence as a hard
+        # floor.  Declaring here that this label may be shrunk is what makes
+        # the eliding reachable, and it belongs with the class rather than at
+        # each call site -- omitting it is invisible on a wide desktop and only
+        # surfaces on a narrow screen or a wider system font.
+        self.setMinimumWidth(0)
+        self.setSizePolicy(QSizePolicy.Ignored, self.sizePolicy().verticalPolicy())
         self.setText(text)
 
     def setText(self, text: str) -> None:  # noqa: N802 - Qt override
@@ -3433,7 +3442,7 @@ class DigitalFontPanel(QFrame):
         box.addWidget(self.preview)
         content = QVBoxLayout()
         title_row = QHBoxLayout()
-        title = QLabel("digital_font — score digit mask")
+        title = WordElidedLabel("digital_font — score digit mask")
         title.setObjectName("panelTitle")
         self.status = QLabel("Not loaded")
         self.status.setObjectName("statusBadge")
@@ -8985,9 +8994,9 @@ class ScorebugGraphicsPanel(QFrame):
 
         header = QHBoxLayout()
         header.setSpacing(10)
-        title = QLabel("Field scorebug graphics")
+        title = WordElidedLabel("Field scorebug graphics")
         title.setObjectName("panelTitle")
-        self.count = QLabel("Load a game to see the scorebug")
+        self.count = WordElidedLabel("Load a game to see the scorebug")
         self.count.setObjectName("countPill")
         header.addWidget(title)
         header.addWidget(self.count)
@@ -9048,6 +9057,19 @@ class ScorebugGraphicsPanel(QFrame):
         self.export_raw_button.setObjectName("utilityButton")
         self.edit_button = QPushButton("Edit the score digits…")
         self.edit_button.setObjectName("primaryButton")
+        # Three verbose labels side by side are the widest row on the page, and
+        # a button reports its whole label as a hard minimum. Qt already elides
+        # button text that will not fit, so let the row shrink rather than have
+        # it set the floor for the entire shell.
+        for button in (
+            self.export_png_button,
+            self.export_raw_button,
+            self.edit_button,
+        ):
+            button.setMinimumWidth(0)
+            button.setSizePolicy(
+                QSizePolicy.Ignored, button.sizePolicy().verticalPolicy()
+            )
         self.export_png_button.clicked.connect(self._export_png)
         self.export_raw_button.clicked.connect(self._export_raw)
         self.edit_button.clicked.connect(self._edit_selected)
@@ -9391,9 +9413,9 @@ class ScorebugComponentsPanel(QFrame):
 
         header = QHBoxLayout()
         header.setSpacing(10)
-        title = QLabel("How the field scorebug is assembled")
+        title = WordElidedLabel("How the field scorebug is assembled")
         title.setObjectName("panelTitle")
-        self.summary = QLabel("Load a game to map the components.")
+        self.summary = WordElidedLabel("Load a game to map the components.")
         self.summary.setObjectName("countPill")
         header.addWidget(title)
         header.addWidget(self.summary)
@@ -9552,7 +9574,7 @@ class ScorebugStudioPage(QWidget):
         systems_box = QVBoxLayout(systems)
         systems_box.setContentsMargins(14, 10, 14, 10)
         systems_box.setSpacing(6)
-        systems_title = QLabel("This category also holds four separate systems")
+        systems_title = WordElidedLabel("This category also holds four separate systems")
         systems_title.setObjectName("panelTitle")
         systems_box.addWidget(systems_title)
         buttons = QHBoxLayout()
@@ -9561,6 +9583,10 @@ class ScorebugStudioPage(QWidget):
             button = QPushButton(label)
             button.setObjectName("utilityButton")
             button.setToolTip(boundary)
+            button.setMinimumWidth(0)
+            button.setSizePolicy(
+                QSizePolicy.Ignored, button.sizePolicy().verticalPolicy()
+            )
             button.clicked.connect(
                 lambda _checked=False, value=tokens, text=boundary: self._filter_system(
                     value, text
@@ -9570,6 +9596,10 @@ class ScorebugStudioPage(QWidget):
         show_all = QPushButton("Show everything")
         show_all.setObjectName("utilityButton")
         show_all.setToolTip("Clear the filter and list every indexed presentation record.")
+        show_all.setMinimumWidth(0)
+        show_all.setSizePolicy(
+            QSizePolicy.Ignored, show_all.sizePolicy().verticalPolicy()
+        )
         show_all.clicked.connect(lambda: self._filter_system((), ""))
         buttons.addWidget(show_all)
         buttons.addStretch(1)
