@@ -29,7 +29,7 @@ import apf_logocache_verify as verifier  # noqa: E402
 
 
 EVIDENCE = ROOT / "tools/apf_logocache_product_evidence.v1.json"
-EVIDENCE_SHA256 = "f865a4b7d0998caf70ba20b151ef838a0e85f7abab8af0b552bc164839e96ef1"
+EVIDENCE_SHA256 = "c8f28dc54641e2c22fcdd47c42ba28182e08dcdc91bf910a4a4853d40cdba623"
 FULL_VOLUME_AUTHORITY_SHA256 = (
     "a48b7b10c858716ee55ddf456665123afbfbcb635feb4b83d725a692f3b7c491"
 )

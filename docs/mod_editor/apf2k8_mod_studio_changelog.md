@@ -1,6 +1,50 @@
 # APF 2K8 Mod Studio Changelog
 
-## 0.1.0-alpha.66 — the stock CPU playbooks, and a corrected claim — 2026-08-10
+## 0.1.0-alpha.67 — crest mips, and both layers from the app — 2026-08-11
+
+### Fixed: a second, smaller logo in the corner of your crest
+
+- **A regenerated crest wrote one mip level through another.** At some draw
+  distances the crest showed your logo with a smaller copy of itself tucked
+  into a corner, and at the smallest ones it showed the retail logo as though
+  the mod had not applied. Both came from one addressing mistake in the packed
+  mip chain, so both are gone.
+- The chain advanced each level by the product of its aligned dimensions. Xenos
+  starts every stored level on a 4096-byte boundary, and a 32x32 tile of
+  two-byte texels is scattered over 0xC00 bytes of address space rather than
+  packed into 0x800. The packed tail was therefore addressed 0x800 bytes inside
+  the 32x32 level: regenerating the chain overwrote 427 of that level's 2048
+  bytes with the 16x16 and smaller levels, and never touched the real tail.
+- The corrected chain accounts for the retail-declared mip length of 0x2C000
+  exactly, with nothing left over. The old one reached 0x2B000 and explained the
+  missing page away as padding.
+- Only the crests were affected. The uniform, wordmark and helmet writers use
+  block-compressed formats at 8 or 16 bytes per block, where both corrections
+  are no-ops; their output is unchanged, byte for byte.
+- If you built a crest with alpha.64 through alpha.66, rebuild it from the same
+  PNG — no re-authoring, just another Build.
+- `derive_layout` now refuses any layout whose levels share bytes, so this
+  cannot reach a crest again without failing first.
+
+### Team Logo can author both crest layers
+
+- **Replace both layers…** imports an edited `logo_l0` and `logo_l1` together.
+  Export both layers could already take a crest apart; putting one back needed
+  `tools/apf_logo_patch.py --png --png-l1` at a terminal, which left the 79 of
+  118 packages that use both layers effectively read-only in the app.
+- Each image is sized the way a single import is sized, and both are carried
+  into the package and the logo cache by the same proved writers.
+- **A single image no longer gets copied into `logo_l1`.** The two layers hold
+  regions 0-2 and 3-5 of one crest and are not interchangeable, so the same mask
+  in both selected all six regions and drew the mark once per region. One image
+  now goes to `logo_l0` and clears the detail layer — what the export dialog
+  already said happened, and what a full project Build already did. The
+  copied-volume Build was the odd one out, so the same staged image could give
+  you two different crests depending on which button you pressed.
+- `tools/apf_logocache_patch.py` gains the `--clear-l1` flag its Python API
+  already had, so the cache can be told the same thing as the package.
+
+## 0.1.0-alpha.65 — the stock CPU playbooks, and a corrected claim — 2026-08-10
 
 ### Edit the CPU playbooks themselves
 

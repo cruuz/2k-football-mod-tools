@@ -1,475 +1,104 @@
-# beta-33 — RC60 / alpha.65
+# beta-35 — RC62 / alpha.67
 
-**Date:** 2026-08-10
+**Date:** 2026-08-11
 
-**2K5 Mod Studio:** `v1.0-RC60`
+**2K5 Mod Studio:** `v1.0-RC62`
 
-**APF 2K8 Mod Studio:** `v0.1.0-alpha.66`
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.67`
 
-## Edit the stock CPU playbooks
+Two APF team-logo fixes, both from bug reports against Beta 34. Nothing in 2K5
+changed this release.
 
-**Playbooks → Fine-tune Plays** now edits APF's `SPLB` resources — the books the
-CPU actually calls from. Pick a book, pick a formation, tick plays in and out,
-build a copied `0A`.
+## Fixed: the second, smaller logo in the corner of your crest
 
-Fifteen books ship, and that is the whole real set: seven offensive
-(`O-ZoneBlock`, `O-WestCoast`, `O-ManBlock`, `O-Shotgun`, `O-TwoBack`,
-`O-SinglebackAce`, `O-Singleback3WR`), four defensive (`X-43Cover2`,
-`X-43Blitz`, `X-34Base`, `X-34ZoneBlitz`) and four unnamed. The 36 offensive and
-33 defensive book records in a roster save are *labels* over these, which is why
-reassigning a team's book so often changed nothing at all.
+If you built a team crest and looked at a helmet from certain distances, you saw
+your logo with a smaller copy of itself tucked into a corner. Look from further
+away and you got the retail logo back, as though the mod had not applied at all.
 
-Each book is exactly 32,288 bytes holding a 176-record array; a populated record
-names a formation and lists the plays the CPU may call from it. Only the selected
-record's entry list is rewritten — the record trailer, every other record, both
-tail regions whose meaning is not established, and every other byte are
-preserved, and an independent verifier re-derives every changed byte before
-anything is written.
+Both were the same mistake, in how the writer addressed the crest's chain of
+smaller copies (its mip levels).
 
-Every formation carries four tagged slots whose meaning is unproved. Removing
-one is refused rather than guessed, and the panel shows you which they are.
-In-game CPU behaviour is **not** proved.
-
-## Withdrawn: a claim Beta 32 should not have made
-
-Beta 32's Fine-tune Plays edited MASTER's 0x54-stride bitmap and described it as
-"which plays each formation offers". Decoding the `SPLB` books refutes that
-reading: for MASTER row 147 the books give the 3-4 defence "Base, Fan, Razor
-Left…", while row 147 of that table yields "Big Pinch, Big Fan, Big 2 Hard…" —
-31 of 51 overlap, rows 147/148/149 are identical to each other, and coverage
-across all populated book records is 24–25% with no record fully covered. The
-row index is not the formation index, or the relation is not formation-to-play.
+The chain moved from one level to the next by multiplying the level's aligned
+width and height. That is not how the Xbox 360's GPU lays them out. Every stored
+level starts on a 4096-byte boundary, and — only at two bytes per texel, which
+is exactly what a crest is — a 32x32 tile is scattered across 0xC00 bytes of
+address space instead of packed into 0x800.
 
-That writer is removed and the relation is now recorded as unidentified. The
-bytes Beta 32 wrote were bounded and independently verified; the *description*
-of them was wrong, which by this project's standard is the same defect.
+Both errors point the same way, so the shared tile holding the 16x16 and smaller
+levels was addressed 0x800 bytes *inside* the 32x32 level. Regenerating the chain
+wrote those small levels through the 32x32 one, replacing 427 of its 2048 bytes
+— that is the smaller logo in the corner — and left the real tail untouched, so
+the smallest draws kept serving the retail crest.
 
-## Release integrity
+The corrected chain accounts for the retail-declared mip length of 0x2C000
+exactly, with nothing left over. The old one reached 0x2B000 and explained the
+missing page away as padding, which is the clue that was there the whole time.
 
-| Asset | Bytes | SHA-256 |
-| --- | ---: | --- |
-| `2K5-Mod-Studio-v1.0-RC60-20260810.tar.gz` | 10,993,449 | `0c801ddfc7932eeb013bdc2d12fbe5c1bab32bd4559d465d5b57efdc842eb4bc` |
-| `2K5-Mod-Studio-v1.0-RC60-20260810.tar.gz.sha256` | 107 | `a2f0a010edba1ba2debbc6f44b9e4064bfc59cba91f0675559315a30ddd6532c` |
-| `2K5-Mod-Studio-1.0-RC60-Setup.exe` | 56,728,111 | `47865a08253a6ee9b0af6edb11a4d4fa8fe5af88cfa3956c2a9a6590e776171e` |
-| `apf2k8-mod-studio-0.1.0-alpha.66-20260810.tar.gz` | 1,677,933 | `8f11dd50542ac8a321bbf82f6d6602c73fea0af9c8a865382b42c26e361aa71a` |
-| `apf2k8-mod-studio-0.1.0-alpha.66-20260810.tar.gz.sha256` | 115 | `45ec2865da317abf3166a44d3abdf2c5a64a55712791344853adc8a431ee0400` |
-| `APF-2K8-Mod-Studio-0.1.0-alpha.66-Setup.exe` | 52,705,870 | `26846c7294756b1109ebf0d2670f50d95bb7efa9a724213b31b72e19899b2256` |
+**If you built a crest with Beta 32, 33 or 34, rebuild it from the same PNG.**
+No re-authoring — just Build again.
 
-Windows installers are self-contained and reproducibly built, but not
-code-signed; the installer explains the Windows warning before installation.
+**Only crests were affected.** The uniform, wordmark, pants, shoulder and helmet
+writers all use block-compressed formats at 8 or 16 bytes per block, where both
+corrections are no-ops. Their output is unchanged byte for byte, and there is now
+a test that says so.
 
----
+**Xbox 360 only.** This fix is Xenos texture addressing — the 360 GPU's tiling,
+its packed-mip layout, its 4096-byte subresource alignment. APF 2K8 on PS3 does
+not store its textures that way, and these tools do not read or write the PS3
+build at all. If you mod a PS3 copy, nothing here changes it, and a crest that
+still looks wrong there is not this bug coming back.
 
-# beta-32 — RC59 / alpha.64
+The layout also refuses outright to hand back a chain whose levels share bytes,
+so this class of bug fails closed instead of reaching a crest.
 
-**Date:** 2026-08-10
+## Team Logo can author both crest layers
 
-**2K5 Mod Studio:** `v1.0-RC59`
+A crest is not one picture. It is six region masks split across two textures:
+`logo_l0` carries regions 0-2 and `logo_l1` carries regions 3-5, and 79 of the
+game's 118 crest packages use both.
 
-**APF 2K8 Mod Studio:** `v0.1.0-alpha.64`
+**Export both layers** could already take a crest apart. Putting one back needed
+`tools/apf_logo_patch.py --png --png-l1` at a command line, which meant those 79
+packages were effectively read-only inside the app.
 
-## Crest replacement was writing your image into both layers
+**Logos & Team Art → Team Logo → Replace both layers…** now imports the two PNGs
+together. Each is sized the way a single import is sized, and both are written
+into the `uniform_logo_NN` package and the matching `uniform_logocache` slot by
+the same proved writers, in one copied `0A`.
 
-Reported after Beta 31, and the cause is deeper than "logos have two images".
-A crest is **six region masks split across two textures**: the shader binds
-`Layer0`/`Layer1` with a six-entry palette and Region0–Region5 weights, so
-`logo_l0` carries regions 0–2 and `logo_l1` carries regions 3–5. Mirroring one
-staged image into both drew your mark a second time in the other three palette
-colours.
+### A single image no longer gets copied into both layers
 
-Measured across all 118 crest packages: **none** have identical layers,
-**79 carry real detail art** in `logo_l1`, and **39 ship a `logo_l1` whose RGB
-is zero with its alpha untouched** — retail's own shape for a crest with no
-detail layer. One dropped image now goes to `logo_l0` and the detail layer's
-masks are cleared with its alpha copied byte-for-byte, so your mark is drawn
-exactly once.
+Dropping one image used to write that same mask to `logo_l0` *and* `logo_l1`,
+which selects all six regions and draws your mark once per region in six
+different flat colours. One image now goes to `logo_l0` and clears the detail
+layer, so the mark is drawn exactly once.
 
-**Export both layers…** saves `logo_l0` and `logo_l1` as separate PNGs. To
-author both, `tools/apf_logo_patch.py --png --png-l1`.
+That is what the panel's own export dialog already told you happened, and what a
+full project Build already did. The copied-volume Build was the odd one out — so
+the same staged image could give you two different crests depending on which
+button you pressed.
 
-## Stadium Studio: "result marker is incompatible or incomplete"
+`tools/apf_logocache_patch.py` gains the `--clear-l1` flag its Python API already
+had, so the cache can be told the same thing as the package.
 
-Beta 30 rebound derived stadium assets to the canonical game-content identity
-instead of a container hash. That was the right fix and it left every private
-cache written before it failing its own marker check **with no way back** — so
-anyone who had already opened Stadium Studio met this error on every launch, on
-a game that used to work, with the only remedy being to delete a private
-directory nobody had told them about.
-
-A cache this build cannot read is now treated as stale and re-derived
-automatically. Safety refusals are unchanged and still refuse: a symlink, a
-junction, or anything outside the private root is never removed automatically.
-
-## Playbooks: fine-tune what a formation offers
-
-New **Playbooks → Fine-tune Plays**. Pick any of MASTER's 163 formations and
-tick plays in or out of it. APF stores one fixed 74-byte bitmap per formation
-over the book's 586 plays, so each change is a single bit inside a fixed
-allocation — nothing moves, no count changes, the resource keeps its exact byte
-extent, and an independent verifier re-derives every changed byte before a
-copied `0A` is written.
-
-This is the level below book assignment, and that matters: the 36 offensive and
-33 defensive book records in a roster save are **labels**. Measured on two real
-saves they resolve to **7 offensive and 4 defensive** actual books (plus user
-books), so reassigning a team from one book name to another frequently changes
-nothing at all. The stock books themselves are 15 separate on-disc `SPLB`
-resources.
-
-**Boundary, unsoftened:** this edits the book the game selects plays from.
-Whether the CPU's play-calling reads the same table is **not** proved, and
-editing the `SPLB` books directly is not offered yet.
-
-## Release integrity
-
-| Asset | Bytes | SHA-256 |
-| --- | ---: | --- |
-| `2K5-Mod-Studio-v1.0-RC59-20260810.tar.gz` | 10,993,241 | `5048eda1bef446bc5ee893aaced4222446b987a59848e1004537f2c61888d384` |
-| `2K5-Mod-Studio-v1.0-RC59-20260810.tar.gz.sha256` | 107 | `e733354a48943354f2026ef51ff04624a2a1d1a2f8276540e708b6052f7c04d4` |
-| `2K5-Mod-Studio-1.0-RC59-Setup.exe` | 56,727,634 | `c1ce238da1fa9a69d0bbd0b029310117dcf21264b2736a235f0a003c00f6bc5a` |
-| `apf2k8-mod-studio-0.1.0-alpha.64-20260810.tar.gz` | 1,675,531 | `c6e9f94ad2dfc89c7183d1bf898431c2d295822f0cb1c715c00b982a652637c2` |
-| `apf2k8-mod-studio-0.1.0-alpha.64-20260810.tar.gz.sha256` | 115 | `f1bf33d4666089e108c5859dd23e11ebec9d6260dc588d9973e4c6163ecbd11f` |
-| `APF-2K8-Mod-Studio-0.1.0-alpha.64-Setup.exe` | 52,705,992 | `59533e7cea506c4eee84a1dcec23ecb7ca082e029359b3ea4c24a7e492bc47c4` |
-
-Windows installers are self-contained and reproducibly built, but not
-code-signed; the installer explains the Windows warning before installation.
-
----
-
-# beta-31 — RC58 / alpha.63
-
-**Date:** 2026-08-10
-
-**2K5 Mod Studio:** `v1.0-RC58`
-
-**APF 2K8 Mod Studio:** `v0.1.0-alpha.63`
-
-## The reported bug: `logo_l0 is not an editable PNG slot in this browser`
-
-Reported against Beta 29 and Beta 30. The message was true about the browser and
-false about the product: every one of the 118 `uniform_logo_NN` crest packages is
-written by **Logos → Team Logo**, and the browser's own search hint pointed
-people straight at those rows.
-
-Selecting a row that a proved writer owns now offers **Edit in Team Logo… /
-Edit in Uniforms… / Edit in Wordmarks… / Edit in Field Art…** instead of a
-refusal. That button opens the workspace, selects the exact slot, and — if you
-chose or dropped an image in the browser — carries it across already staged.
-Covered: 236 crest layers (`logo_l0` + `logo_l1` × 118 packages), 96 uniform
-materials, 206 wordmarks, six field-art base textures.
-
-The asset notes stopped contradicting the app, too. A row a workspace writes no
-longer reads "No validated replacement writer owns this target yet"; it names
-the workspace that owns it. Rows that genuinely have no writer say exactly that,
-and still offer raw/parts export.
-
-## Stadium models
-
-Both round trips were re-proved end to end against real games for this release —
-export, edit vertices, import, verify. What changed is that you can now *find*
-the geometry you are allowed to edit:
-
-- **2K5** indexes 477 stadium scenes and exactly one of them carries the
-  catalog-pinned geometry targets Import can write. That scene now shows a ✎
-  marker with its editable-mesh count, the list opens on it instead of on row 1,
-  and a new **Only scenes with editable geometry** filter hides the rest. Every
-  other scene's tooltip says plainly that it is view and glTF-export only.
-- **APF** adds an **Editable meshes** picker listing all 77 catalog-authorized
-  POSITION targets in the open scene. Choosing one selects it for Export/Import
-  and highlights it in the 3D view; clicking a surface in the view still works
-  and updates the picker. A scene with no authorized target says so.
-
-Boundaries are unchanged: same vertex count, same expanded topology, POSITION
-only. UVs, normals, materials, skins, attachments and every other byte stay
-exact, and runtime visibility remains unproved.
-
-## Emulator launch
-
-- **2K5 gains Configure xemu**, and remembers the choice between sessions. The
-  old tooltip told people to "configure xemu" when nothing in the app could.
-- **xemu is re-detected while it is still missing**, instead of being decided
-  once at startup — installing xemu because the editor asked you to no longer
-  requires restarting the editor.
-- **A Flatpak xemu can open builds outside home.** The launch now grants
-  read-only sandbox access to the built XISO's own directory; without it a build
-  on an external drive failed with an I/O error that looked like a bad build.
-- **Neither editor's Launch button silently grays any more.** It stays clickable
-  and names the single missing piece — no build yet, no emulator, or a build
-  that has since moved — and when the emulator is what is missing, clicking
-  offers to choose it.
-
-## Also in this build
-
-- The update check refuses to advertise a release older than the running build,
-  and reads the highest published beta rather than trusting GitHub's list order.
-  A Beta 31 build is never told to "update" to Beta 31 or to anything behind it.
-- A window opened against an already-loaded game no longer fails during
-  construction; the shared status/progress footer is built before the pages that
-  report into it.
-- The APF asset browser's detail pane can no longer describe a row that is no
-  longer selected after a search, which previously let Export act on a stale row.
-
-## Verified for this release
-
-- Both retail-free release gates pass: 2K5 stages 201 files, APF stages 190.
-- The full suite runs green per-file across 221 test files.
-- Both Linux archives reproduce byte-for-byte from the same staged trees.
-- The packaged 2K5 build loads all three local retail images
-  (6,300,958,720 / 7,825,162,240 / 6,300,499,968 bytes) with 477 stadium scenes
-  each; the packaged APF build loads the extracted Xbox 360 game and reproduces
-  the reported `logo_l0` path end to end.
-
-## Release integrity
-
-| Asset | Bytes | SHA-256 |
-| --- | ---: | --- |
-| `2K5-Mod-Studio-v1.0-RC58-20260810.tar.gz` | 10,991,308 | `029ce61e922d9aeb7df1363591623cac0ce34e67dce6425c95697863c568470a` |
-| `2K5-Mod-Studio-v1.0-RC58-20260810.tar.gz.sha256` | 107 | `42a6516d88780ad826d1c12b501a2c5d2d1ab2117e1bb1c07165929ea92546ba` |
-| `2K5-Mod-Studio-1.0-RC58-Setup.exe` | 56,728,573 | `6878d82f2ee78312a35e1c23cb273312b49145548bc067f0a3f51f6170c36547` |
-| `apf2k8-mod-studio-0.1.0-alpha.63-20260810.tar.gz` | 1,664,367 | `6c83945f896dde704c84bf5da5b85a6f8730e68db62cda7d5cff02c0332ac2fc` |
-| `apf2k8-mod-studio-0.1.0-alpha.63-20260810.tar.gz.sha256` | 115 | `a8b00030325eb3d5de7d3fb383b6b641b4d282cab29bb7fc7d4f918a4769b22a` |
-| `APF-2K8-Mod-Studio-0.1.0-alpha.63-Setup.exe` | 52,702,500 | `226877e6ab54ca4a76b912afb24d46496c08145b3ac09213a79a1c66a5ccb5b4` |
-
-Windows installers are self-contained and reproducibly built, but not
-code-signed; the installer explains the Windows warning before installation.
-
----
-
-# beta-30 — RC57 / alpha.62
-
-**Date:** 2026-08-09
-
-**2K5 Mod Studio:** `v1.0-RC57`
-
-**APF 2K8 Mod Studio:** `v0.1.0-alpha.62`
-
-## Beta 30 fixes
-
-- 2K5 now keeps every validated USA retail container layout on one canonical,
-  content-verified private cache. Stadium Studio results and visual, Crib, and
-  audio originals no longer become incompatible merely because the selected
-  ISO has different wrapper padding or partition placement.
-- Private audio fingerprint and containment inventories use that same validated
-  game-content identity. Containment parsing uses the size of the container
-  that was actually opened, while builds preserve and report that container's
-  actual output size.
-- The selected source file remains independently guarded for read-only scans,
-  session recovery, and building; sharing derived cache data does not weaken
-  source-change checks.
-- APF alpha.62 revalidates the shipped ISO recognition, extraction, load, and
-  read-only source path against a real USA game image. No private source path,
-  image hash, or retail payload is included in this release record.
-- APF install and uninstall helpers suppress Python bytecode before importing
-  the installer, so a fail-closed release audit cannot be dirtied by a new
-  `__pycache__` directory.
-
-## Release integrity
-
-| Asset | Bytes | SHA-256 |
-| --- | ---: | --- |
-| `2K5-Mod-Studio-v1.0-RC57-20260809.tar.gz` | 10,986,486 | `915f03e49c78b0eac48c4d20665611cb5395ac76d961e551d21a148da77079a4` |
-| `2K5-Mod-Studio-v1.0-RC57-20260809.tar.gz.sha256` | 107 | `0fa346ec12c70791ef0b100214413e91f6759d821708430b3efd68b98b43b340` |
-| `2K5-Mod-Studio-1.0-RC57-Setup.exe` | 56,727,599 | `75e49a34ee9ab91835b504935ec36f655d6785a478b08d7c8b41064ed6c509a2` |
-| `apf2k8-mod-studio-0.1.0-alpha.62-20260809.tar.gz` | 1,651,432 | `0c6d68209ccba7ad744343079793211e8c5c341396d0fd3ea7cfe7bdd2418deb` |
-| `apf2k8-mod-studio-0.1.0-alpha.62-20260809.tar.gz.sha256` | 115 | `c694e897775276186b1b6ce91a0cfad35617641e8c856f84e752f669468bff17` |
-| `APF-2K8-Mod-Studio-0.1.0-alpha.62-Setup.exe` | 52,699,449 | `3e5291d16fb429cc3a64da8951f5c5184a2fa6a217b75b9816775ec1d9c32f99` |
-
----
-
-# beta-29 — RC56 / alpha.61
-
-**Date:** 2026-08-09
-
-**2K5 Mod Studio:** `v1.0-RC56`
-
-**APF 2K8 Mod Studio:** `v0.1.0-alpha.61`
-
-> **Beta 29 refresh (2026-08-09):** The assets were rebuilt in place after a
-> stale shared updater label made both editors report `beta-22` and offer Beta
-> 29 to Beta 29 users. Product versions remain RC56 / alpha.61. If an earlier
-> Beta 29 download shows that notice, download the refreshed Beta 29 build.
-
-This beta closes the editor-completion marathon with installable Windows builds
-and portable source archives for both products. The changelogs remain the
-feature-level source of truth:
-[`docs/mod_editor/2k5_mod_studio_changelog.md`](docs/mod_editor/2k5_mod_studio_changelog.md)
-and
-[`docs/mod_editor/apf2k8_mod_studio_changelog.md`](docs/mod_editor/apf2k8_mod_studio_changelog.md).
-
-## Highlights
-
-- APF `logo_l0` / `logo_l1` format-15 (`4_4_4_4`) preview, PNG export, and the
-  existing import/swap writer path are regression-covered; base-only DXN
-  NameFont textures no longer decode as gibberish.
-- Dialog and drag/drop imports share explicit **Contain / Cover / Stretch**
-  fitting, including 2K5 Crib art.
-- Equipment colours are taught and applied per physical HOME/AWAY uniform set;
-  APF visor remains a per-player Save Players field.
-- Blank previews fail closed after 45 seconds with recovery guidance, and
-  formerly silent disabled editor actions now stay clickable and explain the
-  exact load, selection, size, format, or ownership wall.
-- APF Field Art can jump directly to the approximately 118 stock NFL endzone
-  family for browse/export; the focused writer remains limited to its six
-  offline-proved base slots.
-- Playbook browsers annotate the community Ace/Dime/Bear cases. Experimental
-  G1 multi-Dime package-map and G2 multi-Ace link-table exports ship as private
-  offline packs with independent byte verifiers and honesty sidecars.
-- The Windows release allowlist now includes the G1/package-map and formation
-  clone modules, closing the staged-build crash path.
-
-## Evidence boundaries
-
-- G1 and G2 exports prove offline bytes only; emulator/gameplay fixes are not
-  claimed.
-- Freehand routes are not Editable. Stock route copy/swap reuses exact existing
-  descriptors.
-- APF per-team stock endzone writing, unseen formats/assets, and the G10/G11
-  user-input ability gate remain explicit evidence walls in the product ledgers.
-
-## Release integrity
-
-| Asset | Bytes | SHA-256 |
-| --- | ---: | --- |
-| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz` | 10,985,098 | `7ec2a1916efd8bb2deb47493e18a12035c982d398b2c4e5ec6f26cc1adb75cb9` |
-| `2K5-Mod-Studio-1.0-RC56-Setup.exe` | 56,722,195 | `64d783446f0297bbb26ab9c6fa44d5bf10a5e5a1fb49369014d32c28c9c46cc8` |
-| `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz` | 1,651,940 | `34768b81845d8feb6c5ba891be4d8c1a880ea3169312003254aa5081e474bb26` |
-| `APF-2K8-Mod-Studio-0.1.0-alpha.61-Setup.exe` | 52,688,569 | `7d5a909d45847f4845814d16239cd981171abd9f48d07a62cf3a97b143bb9388` |
-
-The `.tar.gz.sha256` sidecars are attached with the archives. Windows installers
-are self-contained and reproducibly built, but not code-signed; the installer
-explains the Windows warning before installation.
-
-## Historical Beta 1 notes
-
-Everything below this heading is retained as an archival record and does not
-describe beta-29.
-
-**Release:** Beta 1
-**Date:** 2026-07-22
-**Tools included:**
-- **2K5 Mod Studio** — ESPN NFL 2K5 (original Xbox) — `v1.0-RC29`
-- **APF 2K8 Mod Studio** — All-Pro Football 2K8 (Xbox 360) — `v0.1.0-alpha.34`
-
-This is the first public beta of both editors. They are functional, retail-free,
-and Linux-first. Read the [README](README.md) for install/usage and the
-[license](LICENSE) for terms.
-
----
-
-## What's in this beta
-
-### 2K5 Mod Studio (v1.0-RC29)
-- Unified visual mod project: uniforms/Supported Team Kit, portraits, live faces,
-  create-team field art, scorebug/presentation art, Team Select cards.
-- Stadium Studio: 477 scenes, 23,838 editable P8 textures, with a
-  **"People & sideline only"** filter (fans, cheerleaders, coaches, officials,
-  chain crew, camera/media, ushers, sideline props).
-- Audio: all 850 standalone cues + all 53,571 playable streaming ranges
-  (exact-slot), with cue labels/notes.
-- Rosters: primary players (names + jersey), historical teams, and jersey plus
-  per-player None/Clear/Dark face-shield type for both pools. The face-shield
-  selector is not a HOME/AWAY tint; loaded saves may override the disc seed.
-- Text: 20,074 editable strings across 716 banks.
-- Project save/load, autosave/crash recovery, build-to-new-XISO, xemu launch.
-
-### APF 2K8 Mod Studio (v0.1.0-alpha.34)
-- Uniforms: 96 editable textures (jersey/pants/helmet/shoulder) + `digital_font`
-  + `draft_logo`.
-- Rosters & Players: team names, player names, all 31 ratings, exact Position,
-  53-row roster planner.
-- Audio: all 47,775 editable AUDO/AUSB cues (exact-slot XMA1 via a user-supplied
-  encoder), cue labels/notes, batch folder/ZIP authoring.
-- Field Art inventory, Stadium Studio, presentation inspectors.
-
----
-
-## Release integrity
-
-Each editor is shipped as a deterministic, byte-for-byte reproducible archive
-with an adjacent SHA-256 sidecar:
-
-| Editor | Archive | SHA-256 |
-| --- | --- | --- |
-| 2K5 Mod Studio v1.0-RC29 | `2K5-Mod-Studio-v1.0-RC29-20260720.tar.gz` | `c1000937cdc47861ce6e1a23c4696c052a0c7bc3cebb1c0279ed9cc1efcdd99d` |
-| APF 2K8 Mod Studio v0.1.0-alpha.34 | `apf2k8-mod-studio-0.1.0-alpha.34-linux-x86_64.tar.gz` | `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4` |
-
-Verify with `sha256sum -c <archive>.sha256` (must say `OK`).
-
-Every archive passes an automated **retail-free gate** (no game bytes, decoded
-pixels/audio, private paths, symlinks, or undeclared files) and a
-**runtime-closure** check (every shipped module imports from the clean stage).
-
----
-
-## Known limits (beta)
-
-- **Offline-proved vs runtime-proved.** Most writers are offline-proved
-  (copied-image byte-diff verified). A smaller set is also runtime-proved in an
-  emulator. The capability registry labels each writer
-  (`Editable`, `Preview`/`Export-only`, `Proof boundary`, or `Research boundary`).
-- **Emulator-only executable patches.** Features that patch the game executable
-  invalidate the retail signature and run only on the named emulators (xemu /
-  Xenia), never original hardware.
-- **Still outside the proved boundary** (tracked in
-  [`docs/product/NFL2K5_COMPLETION_STATUS_AND_WALLS.md`](docs/product/NFL2K5_COMPLETION_STATUS_AND_WALLS.md)):
-  arbitrary/new-topology 3D model import (bounded position-only Stadium and
-  Crib imports are available), whole streaming-bank audio repack and per-cue
-  loop/gain/pan/mixer editing, freehand playbook route drawing/import (exact
-  same-book stock assignment copying is available), franchise
-  rookie-draft AI variety, Xbox save editing (its saves are signed with a
-  platform key; PS2 saves are writable — see below), and uniform
-  pixel→body-region UV decoding.
-- **Historical Beta 1 platform note (not current): Windows / macOS were a
-  preview.** Launchers were bundled for all three
-  platforms and CI runs the suite on all three, but it does not yet pass on
-  Windows or macOS and neither GUI has been manually driven. Linux is the
-  supported platform. On Windows the bundled `extract-xiso` extractor is a Linux
-  binary, so load an already-extracted game folder rather than an ISO.
-
----
-
-## PlayStation 2 saves (preview — separate download)
-
-**This is not part of the two archives above.** PS2 save support ships as its
-own command-line package, `NFL2K5-PS2-Save-Toolkit`, on the Releases page. The
-`v1.0-RC29` and `v0.1.0-alpha.34` archives listed earlier predate it and do not
-contain it. The graphical editors do not expose PS2 saves yet.
-
-The toolkit reads an **ESPN NFL 2K5 (PlayStation 2, `SLUS-20919`) memory-card
-save** from a `.psu`, an extracted save folder, or a `.ps2` card image; applies
-fixed-allocation roster name edits inside its `ROST` arena; reseals the CRC-32
-integrity field; and writes a `.psu` that PCSX2, mymc and PS2 Save Builder
-import. It needs only Python 3 — no PyQt5, no Pillow.
-
-Unlike the Xbox release — whose saves carry a platform-keyed signature and stay
-read-only here — PS2 save integrity is a recomputable CRC-32, so an offline
-writer is safe. Every edit is bounded to the bytes the original occupies and is
-checked by an independent verifier (`tools/nfl2k5_ps2_save_verify.py`) that
-confirms only the declared ranges changed, the checksum matches, and the roster
-arena never moved. The capability is registered `offline-writer-proved`; an
-in-game reload witness is the next step.
-
-See [`docs/product/NFL2K5_PS2_SAVE_PIPELINE.md`](docs/product/NFL2K5_PS2_SAVE_PIPELINE.md)
-for the approach, the already-proven Madden/NCAA PS2 save pipeline it builds on,
-and the custom progression engine that generates historically accurate content
-for any season from 2008 through 2026.
-
----
-
-## How to run a mod
-
-1. Install (extract the archive; `./install.sh` or run the launcher).
-2. Load your own clean game ISO (or extracted folder).
-3. Browse → Replace editable assets with your own files.
-4. Save a project, then **Build** to a new empty folder.
-5. Run the built `default.xbe` (xemu) or `default.xex` (Xenia).
-
-See the getting-started guides in [`docs/mod_editor/`](docs/mod_editor/) for the
-full walkthrough and the exact, evidence-backed boundary of each feature.
-
----
-
-## Beta disclaimer
-
-Provided "as is", without warranty. Work-in-progress software for enthusiasts
-modding games they legally own. Keep backups of your original game files.
+## What is not proved
+
+No in-game or emulator witness is claimed for either fix. Both are proved
+offline:
+
+- every regenerated level is read back out of the rebuilt tail and compared to
+  the level it should be, and every level's byte range is checked against every
+  other level's;
+- the derived chain is checked against the retail-declared allocation exactly;
+- the two-layer import is checked end to end through to the arguments both
+  writers receive.
+
+The reported artifact and its disappearance were observed by the reporter on
+hardware, not reproduced here. If you have a crest built with an earlier beta,
+rebuilding it and looking at a helmet is the confirmation this release wants.
+
+## Credits
+
+Both bugs were reported by **davidhbui**, including the observation that the
+artifact tracks zoom level — which is what pointed at the mip chain rather than
+the base texture.

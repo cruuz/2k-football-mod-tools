@@ -454,7 +454,11 @@ class ApfTeamLogoGuiTests(unittest.TestCase):
                 self.assertTrue(package_argv[1].endswith("apf_logo_patch.py"))
                 self.assertEqual(_value_after(package_argv, "--index"), str(index))
                 self.assertEqual(_value_after(package_argv, "--png"), str(staged))
-                self.assertEqual(_value_after(package_argv, "--png-l1"), str(staged))
+                # One staged image is the base layer only. Copying it into the
+                # detail layer too would select regions 3-5 with the same mask
+                # and draw the mark once per region.
+                self.assertIn("--clear-l1", package_argv)
+                self.assertNotIn("--png-l1", package_argv)
                 intermediate = _value_after(package_argv, "--output-volume")
 
                 # The intermediate is staged under the index's own pack name with
@@ -471,7 +475,10 @@ class ApfTeamLogoGuiTests(unittest.TestCase):
                 self.assertEqual(_value_after(cache_argv, "--index"), intermediate)
                 self.assertEqual(_value_after(cache_argv, "--catalog-index"), "1")
                 self.assertEqual(_value_after(cache_argv, "--png"), str(staged))
-                self.assertEqual(_value_after(cache_argv, "--png-l1"), str(staged))
+                # The cache has to agree with the package about how many times
+                # the mark is drawn, so it gets the same treatment.
+                self.assertIn("--clear-l1", cache_argv)
+                self.assertNotIn("--png-l1", cache_argv)
                 self.assertEqual(
                     _value_after(cache_argv, "--output-volume"), str(out_volume)
                 )
@@ -499,6 +506,146 @@ class ApfTeamLogoGuiTests(unittest.TestCase):
             finally:
                 panel.deleteLater()
                 self.application.processEvents()
+
+    def _stage_both_layers(
+        self, root: Path
+    ) -> tuple[ApfTeamLogoPanel, _RecordingRunner, Path, Path, Path]:
+        index = _fake_game(root)
+        panel, recorder = self._panel(index_0a=str(index))
+        base = _write_png(root / "crest_l0.png", panel._WIDTH, panel._HEIGHT)
+        detail = _write_png(root / "crest_l1.png", panel._WIDTH, panel._HEIGHT)
+        with mock.patch.object(
+            gui.QFileDialog,
+            "getOpenFileName",
+            side_effect=[(str(base), ""), (str(detail), "")],
+        ), mock.patch.object(gui.QMessageBox, "information"):
+            panel._choose_both_layers()
+        self.application.processEvents()
+        return panel, recorder, base, detail, index
+
+    def test_both_crest_layers_can_be_imported_without_the_command_line(self) -> None:
+        # Export both layers could always take a crest apart; until this there
+        # was no way to put one back together outside a terminal.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            panel, _runner, _base, _detail, _index = self._stage_both_layers(root)
+            try:
+                self.assertIsNotNone(panel._staged_png)
+                self.assertIsNotNone(panel._staged_detail_png)
+                self.assertTrue(panel._staged_detail_png.exists())
+            finally:
+                panel.deleteLater()
+                self.application.processEvents()
+
+    def test_two_staged_layers_reach_both_writers(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            panel, runner, _base, _detail, index = self._stage_both_layers(root)
+            try:
+                detail_staged = panel._staged_detail_png
+                base_staged = panel._staged_png
+                out_volume = root / "out" / "0A"
+                with mock.patch.object(
+                    gui.QFileDialog,
+                    "getSaveFileName",
+                    return_value=(str(out_volume), ""),
+                ), mock.patch.object(
+                    gui.QMessageBox, "question", return_value=gui.QMessageBox.Yes
+                ):
+                    panel._build_copied_volume()
+
+                operation = runner.operation_for("Building copied 0A")
+                with mock.patch.object(
+                    gui.ApfTeamLogoPanel,
+                    "_declared_sibling_packs",
+                    return_value=DECLARED_SIBLINGS,
+                ), mock.patch(
+                    "subprocess.run", return_value=_CompletedProcess(0)
+                ) as run:
+                    operation(lambda *_args: None)
+
+                package_argv = run.call_args_list[0].args[0]
+                cache_argv = run.call_args_list[1].args[0]
+                for argv in (package_argv, cache_argv):
+                    self.assertEqual(_value_after(argv, "--png"), str(base_staged))
+                    self.assertEqual(
+                        _value_after(argv, "--png-l1"), str(detail_staged)
+                    )
+                    self.assertNotIn("--clear-l1", argv)
+                self.assertEqual(_value_after(package_argv, "--index"), str(index))
+            finally:
+                panel.deleteLater()
+                self.application.processEvents()
+
+    def test_the_same_file_for_both_layers_is_refused(self) -> None:
+        # The layers hold different regions of one crest. Accepting one file
+        # for both would quietly draw the mark once per region.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            index = _fake_game(root)
+            panel, _runner = self._panel(index_0a=str(index))
+            try:
+                same = _write_png(root / "one.png", panel._WIDTH, panel._HEIGHT)
+                with mock.patch.object(
+                    gui.QFileDialog,
+                    "getOpenFileName",
+                    side_effect=[(str(same), ""), (str(same), "")],
+                ), mock.patch.object(
+                    gui.QMessageBox, "information"
+                ) as shown:
+                    panel._choose_both_layers()
+                self.assertIsNone(panel._staged_detail_png)
+                self.assertIsNone(panel._staged_png)
+                self.assertIn(
+                    "two different",
+                    " ".join(str(part) for part in shown.call_args.args).casefold(),
+                )
+            finally:
+                panel.deleteLater()
+                self.application.processEvents()
+
+    def test_staging_one_image_drops_a_previously_staged_detail_layer(self) -> None:
+        # Otherwise a single mark would inherit the regions of whichever crest
+        # happened to be imported before it.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            panel, _runner, _base, _detail, _index = self._stage_both_layers(root)
+            try:
+                self.assertIsNotNone(panel._staged_detail_png)
+                replacement = _write_png(
+                    root / "single.png", panel._WIDTH, panel._HEIGHT
+                )
+                panel._stage_path(replacement)
+                self.application.processEvents()
+                self.assertIsNone(panel._staged_detail_png)
+            finally:
+                panel.deleteLater()
+                self.application.processEvents()
+
+    def test_revert_clears_the_staged_detail_layer(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            panel, _runner, _base, _detail, _index = self._stage_both_layers(root)
+            try:
+                panel._revert()
+                self.application.processEvents()
+                self.assertIsNone(panel._staged_detail_png)
+                self.assertIsNone(panel._staged_png)
+            finally:
+                panel.deleteLater()
+                self.application.processEvents()
+
+    def test_replace_both_layers_teaches_load_before_a_game_is_open(self) -> None:
+        panel, _runner = self._panel(ready=False)
+        try:
+            self.assertTrue(panel.replace_layers_button.isEnabled())
+            self.assertIn(
+                "Load",
+                str(panel.replace_layers_button.property("disableReason") or ""),
+            )
+        finally:
+            panel.deleteLater()
+            self.application.processEvents()
 
     def test_full_shell_profile_writes_carrier_without_a_xenia_patch(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -671,10 +671,15 @@ def build_team_logo_copied_volume(
     appearance_manifest: Path | None = None,
     crest_profile: str = RETAIL_CREST_PROFILE,
     crest_wrap_manifest: Path | None = None,
+    detail_png: Path | None = None,
 ) -> dict[str, object]:
     """Build one complete package/cache crest result from a read-only source.
 
-    The staged crest is mirrored into both ``logo_l0`` and ``logo_l1``. Retail
+    A crest is six region masks: ``logo_l0`` carries regions 0-2 and
+    ``logo_l1`` carries regions 3-5.  Supply ``detail_png`` to author both
+    layers; with one image the detail layer's masks are cleared so the mark
+    renders exactly once, which is what the panel has always told people it
+    does and what the project build already did.  Retail
     side-decal builds use the bounded package/cache tools; full-shell builds
     compile every crest package plus the cache and shell route before a hidden
     same-filesystem stage is atomically published to the requested 0A name.
@@ -839,13 +844,20 @@ def build_team_logo_copied_volume(
         for pack in siblings:
             _link_reference(index_path.parent / pack, workspace / pack)
         staged_manifest = workspace / "team_logo_package.json"
+        # The two layers hold different regions of one crest and are not
+        # interchangeable, so a single image goes to logo_l0 and clears the
+        # detail layer rather than being copied into both.
+        layer_arguments = (
+            ["--png-l1", str(detail_png)]
+            if detail_png is not None
+            else ["--clear-l1"]
+        )
         package_arguments = [
             "--index",
             str(index_path),
             "--png",
             str(texture_png),
-            "--png-l1",
-            str(texture_png),
+            *layer_arguments,
             "--output-volume",
             str(staged_volume),
             "--manifest",
@@ -881,8 +893,7 @@ def build_team_logo_copied_volume(
                 str(cache_catalog_index),
                 "--png",
                 str(texture_png),
-                "--png-l1",
-                str(texture_png),
+                *layer_arguments,
                 "--output-volume",
                 str(out_volume),
                 "--manifest",
@@ -890,19 +901,35 @@ def build_team_logo_copied_volume(
             ],
             "Writing the same crest into the prebuilt logo cache",
         )
+        # The verifier matches the changed entries exactly. Clearing a detail
+        # layer that a crest never used rewrites nothing, so ask the cache
+        # writer's own receipt which layers it actually touched rather than
+        # asserting a second one always moved.
+        detail_entry = f"{cache_catalog_index:02d}_logo_l1"
+        detail_changed = True
+        try:
+            cache_layers = json.loads(
+                cache_manifest.read_text(encoding="utf-8")
+            ).get("layers")
+        except (OSError, ValueError):
+            cache_layers = None
+        if isinstance(cache_layers, dict) and detail_entry in cache_layers:
+            detail_changed = bool(cache_layers[detail_entry].get("changed", True))
+        verify_arguments = [
+            "--source",
+            str(staged_volume),
+            "--output",
+            str(out_volume),
+            "--catalog-index",
+            str(cache_catalog_index),
+            "--manifest",
+            str(cache_verify_manifest),
+        ]
+        if detail_changed:
+            verify_arguments.append("--expect-l1")
         run(
             tools / "apf_logocache_verify.py",
-            [
-                "--source",
-                str(staged_volume),
-                "--output",
-                str(out_volume),
-                "--catalog-index",
-                str(cache_catalog_index),
-                "--expect-l1",
-                "--manifest",
-                str(cache_verify_manifest),
-            ],
+            verify_arguments,
             "Independently verifying the copied volume and regenerated crest mips",
         )
         if appearance_replacements:
@@ -3797,6 +3824,9 @@ class ApfTeamLogoPanel(QFrame):
         self.run_task = run_task
         self._staged_png: Path | None = None
         self._source_staged_png: Path | None = None
+        # A crest's detail layer, staged only when someone authors both halves.
+        # Left None, one supplied mark goes to logo_l0 and logo_l1 is cleared.
+        self._staged_detail_png: Path | None = None
         self._placement_source_rgba: bytes | None = None
         self._placement_state: Placement | None = None
         self._texture_master_draft: _HelmetTextureMasterDraft | None = None
@@ -4035,6 +4065,17 @@ class ApfTeamLogoPanel(QFrame):
         self.master_button.setProperty("disableReason", master_tip)
         self.replace_button = QPushButton("Replace PNG…")
         self.replace_button.setObjectName("primaryButton")
+        # Exporting both layers without a way to bring both back left the
+        # second half of every real crest reachable only from a terminal.
+        self.replace_layers_button = QPushButton("Replace both layers…")
+        self.replace_layers_button.setObjectName("secondaryButton")
+        replace_layers_tip = (
+            "Load a team logo first, then import a logo_l0 and a logo_l1 PNG "
+            "to author both halves of the crest."
+        )
+        self.replace_layers_button.setEnabled(True)
+        self.replace_layers_button.setToolTip(replace_layers_tip)
+        self.replace_layers_button.setProperty("disableReason", replace_layers_tip)
         self.revert_button = QPushButton("Revert")
         self.revert_button.setObjectName("dangerQuietButton")
         self.build_button = QPushButton("Build copied 0A (team logo)…")
@@ -4072,6 +4113,7 @@ class ApfTeamLogoPanel(QFrame):
         self.export_layers_button.clicked.connect(self._export_both_layers)
         self.master_button.clicked.connect(self._save_authoring_master)
         self.replace_button.clicked.connect(self._choose_replacement)
+        self.replace_layers_button.clicked.connect(self._choose_both_layers)
         self.revert_button.clicked.connect(self._revert)
         self.build_button.clicked.connect(self._build_copied_volume)
         actions.addWidget(self.export_button)
@@ -4080,6 +4122,7 @@ class ApfTeamLogoPanel(QFrame):
         actions.addWidget(self.edit_button)
         actions.addWidget(self.place_button)
         actions.addWidget(self.replace_button)
+        actions.addWidget(self.replace_layers_button)
         actions.addWidget(self.revert_button)
         actions.addWidget(self.build_button)
         actions.addStretch(1)
@@ -4731,6 +4774,17 @@ class ApfTeamLogoPanel(QFrame):
         self.export_layers_button.setProperty(
             "disableReason", "" if ready else load_tip
         )
+        self.replace_layers_button.setEnabled(True)
+        self.replace_layers_button.setToolTip(
+            "Import an edited logo_l0 and logo_l1 together. Use this to bring "
+            "back what Export both layers saved; a single image goes through "
+            "Replace PNG instead, which clears logo_l1 for you."
+            if ready
+            else load_tip
+        )
+        self.replace_layers_button.setProperty(
+            "disableReason", "" if ready else load_tip
+        )
         self.replace_button.setProperty("disableReason", "" if ready else load_tip)
         self.build_button.setProperty("disableReason", build_block)
         self.revert_button.setProperty(
@@ -5006,11 +5060,126 @@ class ApfTeamLogoPanel(QFrame):
                 "select a region the game fills with one flat colour. logo_l0 "
                 "holds regions 0-2 and logo_l1 holds regions 3-5.\n\n"
                 "Dropping a single image here writes it to logo_l0 and clears "
-                "logo_l1, so your mark is drawn exactly once. To author both "
-                "layers, use tools/apf_logo_patch.py with --png and --png-l1.",
+                "logo_l1, so your mark is drawn exactly once. Edit these two "
+                "files and bring them back with Replace both layers to author "
+                "the whole crest.",
             )
 
         self.run_task("Exporting both crest layers", operation, done, True)
+
+    def _choose_both_layers(self) -> None:
+        """Stage an edited logo_l0 and logo_l1 together.
+
+        Export both layers has always been able to take a crest apart; without
+        this the only way to put one back together was
+        ``tools/apf_logo_patch.py --png --png-l1`` in a terminal, so the 79
+        packages that use both layers were effectively read-only in the app.
+        """
+
+        reason = str(
+            self.replace_layers_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot replace the crest layers yet",
+                reason
+                + "\n\nFix: File → Load game, then Export both layers, edit "
+                "them, and bring both back here.",
+            )
+            return
+        if self._selected_profile() == FULL_SHELL_CREST_PROFILE:
+            QMessageBox.information(
+                self,
+                "Two-layer import is a retail-decal workflow",
+                "The whole-shell profile derives its own art from one image "
+                "before it is placed on the shell, so it has no second layer "
+                "to import.\n\nFix: switch coverage to the retail side decal, "
+                "then import both layers.",
+            )
+            return
+        image_filter = (
+            "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.tga);;All files (*)"
+        )
+        base_path, _filter = QFileDialog.getOpenFileName(
+            self,
+            "Step 1 of 2 — choose the logo_l0 image (crest regions 0-2)",
+            str(Path.home()),
+            image_filter,
+        )
+        if not base_path:
+            return
+        detail_path, _filter = QFileDialog.getOpenFileName(
+            self,
+            "Step 2 of 2 — choose the logo_l1 image (crest regions 3-5)",
+            str(Path(base_path).parent),
+            image_filter,
+        )
+        if not detail_path:
+            return
+        if Path(base_path) == Path(detail_path):
+            QMessageBox.information(
+                self,
+                "Choose two different images",
+                "The layers carry different regions of one crest and are not "
+                "interchangeable. Writing the same mask to both draws your "
+                "mark once per region.\n\nFix: to use a single image, cancel "
+                "and use Replace PNG — that clears logo_l1 for you.",
+            )
+            return
+        # The detail layer is prepared first: staging the base layer commits it
+        # to the project, and a detail layer that cannot be read should not
+        # leave a half-applied crest behind.
+        staged_detail = self._prepare_detail_layer(Path(detail_path))
+        if staged_detail is None:
+            return
+        if not self._stage_path(Path(base_path), keep_detail_layer=True):
+            return
+        if self._staged_png is None:
+            return
+        self._staged_detail_png = staged_detail
+        self.set_context()
+        QMessageBox.information(
+            self,
+            "Both crest layers staged",
+            f"logo_l0: {Path(base_path).name}\n"
+            f"logo_l1: {Path(detail_path).name}\n\n"
+            "Build copied 0A writes both layers into the selected "
+            "uniform_logo_NN package and the matching logo-cache slot.\n\n"
+            "The preview shows logo_l0; logo_l1 has no standalone appearance "
+            "because its channels select regions the game fills with flat "
+            "colours.",
+        )
+
+    def _prepare_detail_layer(self, path: Path) -> Path | None:
+        """Validate and size one logo_l1 image, returning a private staged PNG.
+
+        Returns ``None`` when the file cannot be used; the user has already
+        been told why.
+        """
+
+        from mod_editor.core.errors import ValidationError
+        from mod_editor.core.image_fit import fit_to_png
+
+        staged = self._preview_path(f"team_logo_l1-{uuid4().hex}.png")
+        try:
+            # 'contain' matches the base layer: a region mask must keep its
+            # whole shape, and padding with transparency selects no region.
+            fit_to_png(path, self._WIDTH, self._HEIGHT, staged, mode="contain")
+        except ValidationError as exc:
+            QMessageBox.information(
+                self,
+                "That detail layer could not be read as an image",
+                f"{exc}\n\nFix: choose a {_plain_image_formats()} image for "
+                "logo_l1. Any size works — the editor resizes it for you.",
+            )
+            return None
+        except OSError as exc:
+            QMessageBox.information(
+                self, "Could not stage the detail layer", str(exc)
+            )
+            return None
+        return staged
 
     def _choose_replacement(self) -> None:
         reason = str(self.replace_button.property("disableReason") or "").strip()
@@ -5371,7 +5540,7 @@ class ApfTeamLogoPanel(QFrame):
             Path(source), auto_fit=False, preserve_external_master=False
         )
 
-    def _stage_path(self, path: Path) -> None:
+    def _stage_path(self, path: Path, *, keep_detail_layer: bool = False) -> bool:
         """Stage an image for the crest, resizing it when it is not exact.
 
         The crest occupies a fixed byte span, so the writer needs exactly
@@ -5380,15 +5549,22 @@ class ApfTeamLogoPanel(QFrame):
         from anywhere is never already that size. Now the wrong size is an
         offer rather than a dead end, and the exact case is untouched -- an
         already-correct PNG is handed to the writer as the user supplied it.
+
+        Returns whether an edit was staged.  Staging one image drops any
+        previously staged detail layer, so a single mark is never silently
+        combined with the regions of an earlier crest; ``keep_detail_layer``
+        is how the two-layer import stages its base half without doing that.
         """
         if not self.facade.source_ready:
-            return
+            return False
+        if not keep_detail_layer:
+            self._clear_staged_detail_layer()
         if self._selected_profile() == FULL_SHELL_CREST_PROFILE:
             # Full-shell normal art is converted to semantic weights first;
             # advanced masks are strict-validated. Only then can placement and
             # staging receive a semantic pre-guard PNG.
             self._place_full_shell_path(Path(path), auto_fit=True)
-            return
+            return self._staged_png is not None
         from mod_editor.core.errors import ValidationError
         from mod_editor.core.image_fit import fit_image, fit_to_png
 
@@ -5406,7 +5582,7 @@ class ApfTeamLogoPanel(QFrame):
                 f"{exc}\n\nFix: choose or drop a {_plain_image_formats()} "
                 "image. Any size works -- the editor resizes it for you.",
             )
-            return
+            return False
 
         needs_png_conversion = (
             probe.source_format != "PNG" or probe.source_mode != "RGBA"
@@ -5423,7 +5599,7 @@ class ApfTeamLogoPanel(QFrame):
                     "Could not preserve full-resolution source",
                     str(exc),
                 )
-                return
+                return False
             if self._commit_design(Path(path)):
                 self._placement_source_rgba = None
                 self._placement_state = None
@@ -5431,9 +5607,9 @@ class ApfTeamLogoPanel(QFrame):
                     draft, owns_new_snapshot=True
                 )
                 self.set_context()
-            else:
-                self._delete_texture_master_files(draft)
-            return
+                return True
+            self._delete_texture_master_files(draft)
+            return False
 
         # Prepare the exact pixels first, then show them for approval. A
         # modder deciding a crest fit should see the actual result, not a
@@ -5449,7 +5625,7 @@ class ApfTeamLogoPanel(QFrame):
                 f"{exc}\n\nFix: try a different {_plain_image_formats()} "
                 "image. No edit was staged.",
             )
-            return
+            return False
         if not confirm_prepared_slot_image(
             self,
             staged,
@@ -5467,7 +5643,7 @@ class ApfTeamLogoPanel(QFrame):
             accept_label="Stage this crest",
         ):
             staged.unlink(missing_ok=True)
-            return
+            return False
         draft = None
         try:
             draft = self._prepare_retail_texture_master_draft(Path(path), probe)
@@ -5479,15 +5655,22 @@ class ApfTeamLogoPanel(QFrame):
                 "Could not preserve full-resolution source",
                 str(exc),
             )
-            return
+            return False
         if not self._commit_design(staged):
             self._delete_texture_master_files(draft)
-            return
+            return False
         assert draft is not None
         self._placement_source_rgba = None
         self._placement_state = None
         self._install_texture_master_draft(draft, owns_new_snapshot=True)
         self.set_context()
+        return True
+
+    def _clear_staged_detail_layer(self) -> None:
+        staged = self._staged_detail_png
+        self._staged_detail_png = None
+        if staged is not None:
+            staged.unlink(missing_ok=True)
 
     def _revert(self) -> None:
         reason = str(self.revert_button.property("disableReason") or "").strip()
@@ -5503,6 +5686,7 @@ class ApfTeamLogoPanel(QFrame):
             revert(HELMET_CREST_DESIGN_EDIT_ID)
         self._staged_png = None
         self._source_staged_png = None
+        self._clear_staged_detail_layer()
         self._placement_source_rgba = None
         self._placement_state = None
         self._clear_texture_master_draft()
@@ -5595,6 +5779,13 @@ class ApfTeamLogoPanel(QFrame):
             if crest_wrap_manifest is not None
             else "\nHelmet coverage: retail side decal"
         )
+        layer_detail = (
+            "\nCrest layers: logo_l0 and logo_l1 both written from the two "
+            "images you staged"
+            if self._staged_detail_png is not None
+            else "\nCrest layers: your image goes to logo_l0 and logo_l1 is "
+            "cleared, so the mark is drawn exactly once"
+        )
         appearance_detail = (
             "\nCustom-team appearance slots: "
             + ", ".join(str(slot) for slot in sorted(appearance_replacements))
@@ -5624,7 +5815,8 @@ class ApfTeamLogoPanel(QFrame):
             f"Manifests: {package_manifest.name}\n"
             f"           {cache_manifest.name}\n"
             f"Verifier:  {cache_verify_manifest.name}\n"
-            f"{coverage_detail}\n\n"
+            f"{coverage_detail}\n"
+            f"{layer_detail}\n\n"
             f"{appearance_detail}\n\n"
             "The selected uniform_logo_NN package is the helmet-crest source. "
             "The cache is co-written for the other logo surfaces that may read it.\n\n"
@@ -5635,6 +5827,7 @@ class ApfTeamLogoPanel(QFrame):
         if confirm != QMessageBox.Yes:
             return
         staged = self._staged_png
+        staged_detail = self._staged_detail_png
 
         def operation(progress: Callable[[str, int, int], None]) -> dict[str, object]:
             # One Team Logo action through the shared copied-volume builder the
@@ -5655,6 +5848,7 @@ class ApfTeamLogoPanel(QFrame):
                 appearance_manifest=appearance_manifest,
                 crest_profile=crest_profile,
                 crest_wrap_manifest=crest_wrap_manifest,
+                detail_png=staged_detail,
             )
 
         self.run_task(
