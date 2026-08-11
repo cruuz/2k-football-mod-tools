@@ -162,7 +162,10 @@ class WiringTests(unittest.TestCase):
         source = (
             _REPO_ROOT / "mod_editor" / "apf_studio" / "gui.py"
         ).read_text(encoding="utf-8")
-        start = source.index("    def _stage_path(self, path: Path) -> None:")
+        # Anchored on the class rather than an exact signature: several panels
+        # define _stage_path, and this one is about the crest.
+        panel = source.index("class ApfTeamLogoPanel")
+        start = source.index("    def _stage_path(self, path: Path", panel)
         block = source[start:start + 3000]
         self.assertIn("fit_image", block)
         self.assertIn("fit_to_png", block)

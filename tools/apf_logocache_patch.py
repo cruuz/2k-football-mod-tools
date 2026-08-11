@@ -955,6 +955,14 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--catalog-index", required=True, type=int, help="team logo catalog index 0..117")
     parser.add_argument("--png", required=True, type=Path, help="edited 512x512 RGBA PNG for N_logo_l0")
     parser.add_argument("--png-l1", type=Path, help="optional edited 512x512 RGBA PNG for N_logo_l1")
+    parser.add_argument(
+        "--clear-l1",
+        action="store_true",
+        help="clear the cached detail layer's region masks (keeping its alpha) "
+             "so one supplied mark renders exactly once; use instead of "
+             "--png-l1 when you have a single image, and pair it with the same "
+             "flag on apf_logo_patch.py so the package and the cache agree",
+    )
     parser.add_argument("--output-directory-entry", type=Path, help="write rebuilt uniform_logocache.iff")
     parser.add_argument("--output-payload-entry", type=Path, help="write rebuilt uniform_logocache.cdf")
     parser.add_argument(
@@ -998,7 +1006,13 @@ def main(argv: list[str] | None = None) -> int:
             ],
         )
         manifest_reservation = _reserve_new(manifest_path)
-        result = build_cache_patch(index_path, args.catalog_index, png_path, png_l1)
+        result = build_cache_patch(
+            index_path,
+            args.catalog_index,
+            png_path,
+            png_l1,
+            clear_l1=args.clear_l1,
+        )
         document = result.manifest
         if output_dir_entry is not None:
             _write_new(output_dir_entry, result.directory_bytes)
