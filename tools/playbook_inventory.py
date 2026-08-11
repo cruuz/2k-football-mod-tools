@@ -251,12 +251,26 @@ def parse_apf_formation_memberships(
     formation_count: int,
     play_count: int,
 ) -> tuple[list[dict[str, object]], dict[str, object]]:
-    """Parse APF MASTER's fixed formation/play-membership bitmap table.
+    """Parse APF MASTER's fixed 0x54-stride bitmap table.
 
-    The bit order is MSB first within each byte: play ``n`` is selected by
-    ``row[n // 8] & (0x80 >> (n % 8))``.  Only the bitmap relationship is
-    named here.  The ten-byte row tail remains raw until its consumers are
-    recovered.
+    The bit order is MSB first within each byte: bit ``n`` of a row is
+    ``row[n // 8] & (0x80 >> (n % 8))``.
+
+    WHAT THIS TABLE IS HAS NOT BEEN ESTABLISHED, and the previous name for it
+    -- "formation/play membership" -- is now known to be wrong.  The stock CPU
+    playbooks (``SPLB``, see ``mod_editor/core/apf2k8_splb_writer.py``) name a
+    formation and list its plays outright, and cross-checking them against this
+    table refutes the membership reading: for MASTER row 147 the SPLB books
+    give the 3-4 defence "Base, Fan, Razor Left, ...", while row 147 here
+    yields "Big Pinch, Big Fan, Big 2 Hard, ..." -- only 31 of 51 overlap, and
+    rows 147/148/149 are identical to each other.  Coverage across all
+    populated SPLB records is 24-25%, with 0 of 209 records fully covered, so
+    it is not an off-by-one or a bit-order error either.
+
+    The row index is therefore NOT the formation index, or the relation is not
+    formation-to-play.  Callers must treat ``play_membership_*`` as an
+    unidentified relation and must not present it to a user as "the plays this
+    formation offers".  The ten-byte row tail also remains raw.
     """
 
     if not 0 < formation_count <= APF_FORMATION_MEMBERSHIP_CAPACITY:

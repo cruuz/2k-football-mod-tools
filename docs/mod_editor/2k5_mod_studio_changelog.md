@@ -5,6 +5,16 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC60 — validation harness PATH isolation — 2026-08-10
+
+- The capability validation harness put the discovered ripgrep's whole
+  directory on its fixed PATH while asserting that directory holds exactly one
+  command. That held when ripgrep came from `/usr/bin` and failed on any machine
+  whose ripgrep ships in a shared vendor bin. It now exposes ripgrep through a
+  private single-entry directory, so the invariant holds everywhere instead of
+  only where it happened to already. Maintainer tooling; nothing user-facing
+  changed in 2K5 this release.
+
 ## v1.0 RC59 — stadium caches recover instead of dead-ending — 2026-08-10
 
 ### Fixed

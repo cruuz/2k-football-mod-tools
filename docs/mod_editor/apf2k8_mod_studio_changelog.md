@@ -1,5 +1,43 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.65 — the stock CPU playbooks, and a corrected claim — 2026-08-10
+
+### Edit the CPU playbooks themselves
+
+- **Playbooks → Fine-tune Plays now edits the stock `SPLB` books.** These are
+  what the CPU actually calls from. Each is an on-disc resource of exactly
+  32,288 bytes holding a 176-record array; a populated record names a MASTER
+  formation and lists the plays the CPU may call from it. Pick a book, pick a
+  formation, tick plays in and out, build a copied `0A`.
+- Fifteen books ship: seven offensive (`O-ZoneBlock`, `O-WestCoast`,
+  `O-ManBlock`, `O-Shotgun`, `O-TwoBack`, `O-SinglebackAce`,
+  `O-Singleback3WR`), four defensive (`X-43Cover2`, `X-43Blitz`, `X-34Base`,
+  `X-34ZoneBlitz`) and four unnamed. That is the whole real set — the 36 and 33
+  book records in a roster save are labels over these.
+- Only the selected record's entry list is rewritten. The record trailer, every
+  other record, both tail regions whose meaning is not established, and every
+  other byte are preserved, and an independent verifier re-derives every changed
+  byte before anything is written.
+- Each formation carries four tagged slots whose meaning is unproved, so
+  removing one is refused rather than guessed. The panel says which they are.
+
+### Corrected: a claim alpha.64 should not have made
+
+- **alpha.64's Fine-tune Plays described a table it could not prove.** It edited
+  MASTER's 0x54-stride bitmap and called it "which plays each formation offers".
+  Decoding the `SPLB` books refutes that reading: for MASTER row 147 the books
+  give the 3-4 defence "Base, Fan, Razor Left…", while row 147 of that table
+  yields "Big Pinch, Big Fan, Big 2 Hard…" — 31 of 51 overlap, rows 147/148/149
+  are identical, and coverage across all populated book records is 24–25% with
+  no record fully covered. The row index is not the formation index, or the
+  relation is not formation-to-play.
+- That writer has been removed and `playbook_inventory` now records the relation
+  as unidentified. Nothing in the product presents it to a user any more. The
+  bytes alpha.64 wrote were bounded and verified; the *description* of them was
+  wrong, which by this project's standard is the same defect.
+
+- The shared updater identity is `beta-33`.
+
 ## 0.1.0-alpha.64 — two-layer crests, and playbook fine-tuning — 2026-08-10
 
 ### The reported crest bug, root-caused

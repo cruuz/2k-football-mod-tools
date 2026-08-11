@@ -1,4 +1,23 @@
-# 2K5 Mod Studio — v1.0 RC59 Release Status
+# 2K5 Mod Studio — v1.0 RC60 Release Status
+
+## Beta 33 — the stock CPU playbooks (2026-08-10)
+
+Source/UI versions are **2K5 RC60** and **APF alpha.65**; both use updater tag
+`beta-33`.
+
+- **Fine-tune Plays now edits APF's stock `SPLB` CPU playbooks** — the fifteen
+  on-disc resources the CPU actually calls from (seven offensive, four
+  defensive, four unnamed). Pick a book, pick a formation, tick plays in and
+  out. Only the selected record's entry list is rewritten; the trailer, every
+  other record, both unmapped tail regions and every other byte are preserved
+  and independently re-derived.
+- **A Beta 32 claim is withdrawn.** alpha.64's Fine-tune Plays edited MASTER's
+  0x54-stride bitmap and described it as "which plays each formation offers".
+  Decoding the SPLB books refutes that: row 147 of that table yields "Big Pinch,
+  Big Fan…" where the 3-4 defence is "Base, Fan, Razor Left…", coverage is
+  24–25%, and no record is fully covered. The writer is removed and the relation
+  is now recorded as unidentified. The bytes were bounded and verified; the
+  description was wrong, which is the same defect by this project's standard.
 
 ## Beta 32 — two-layer crests, stadium cache recovery, playbook fine-tuning (2026-08-10)
 
@@ -85,8 +104,8 @@ in 8-at-a-time batches). — do not treat this note as a sealed public release.
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The
-> source code and UI identify as the retail-free **`0.1.0-alpha.64` release**,
-> paired with 2K5 RC59 for `beta-32`. Download receipts are recorded
+> source code and UI identify as the retail-free **`0.1.0-alpha.65` release**,
+> paired with 2K5 RC60 for `beta-33`. Download receipts are recorded
 > in the Published releases section below; older immutable archive receipts are
 > retained as release history.
 > An older
@@ -319,7 +338,23 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-32` — 2026-08-10 · CURRENT
+### `beta-33` — 2026-08-10 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-33>
+
+Beta 33 carries 2K5 RC60 and APF alpha.65. Both retail-free gates pass (2K5
+staged 201 files, APF staged 192); the local suite is 223 of 223 files green.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC60-20260810.tar.gz` | 10,993,449 | `0c801ddfc7932eeb013bdc2d12fbe5c1bab32bd4559d465d5b57efdc842eb4bc` |
+| `2K5-Mod-Studio-v1.0-RC60-20260810.tar.gz.sha256` | 107 | `a2f0a010edba1ba2debbc6f44b9e4064bfc59cba91f0675559315a30ddd6532c` |
+| `2K5-Mod-Studio-1.0-RC60-Setup.exe` | 56,728,111 | `47865a08253a6ee9b0af6edb11a4d4fa8fe5af88cfa3956c2a9a6590e776171e` |
+| `apf2k8-mod-studio-0.1.0-alpha.65-20260810.tar.gz` | 1,677,933 | `8f11dd50542ac8a321bbf82f6d6602c73fea0af9c8a865382b42c26e361aa71a` |
+| `apf2k8-mod-studio-0.1.0-alpha.65-20260810.tar.gz.sha256` | 115 | `45ec2865da317abf3166a44d3abdf2c5a64a55712791344853adc8a431ee0400` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.65-Setup.exe` | 52,705,870 | `26846c7294756b1109ebf0d2670f50d95bb7efa9a724213b31b72e19899b2256` |
+
+### `beta-32` — 2026-08-10 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-32>
 

@@ -1,20 +1,22 @@
-"""Add and remove plays inside an APF 2K8 formation.
+"""Edit the stock CPU playbooks APF 2K8 ships.
 
-Until now the only playbook edit either this product or the community's editor
-offered was reassigning which stock book a team calls from -- and the 36
-offensive and 33 defensive book records in a roster save are labels that
-collapse to a handful of distinct types, so that swap frequently changes
+Reassigning which book a team calls from -- all the community's editor can do,
+and all this product could do before -- is a coarse control: the 36 offensive
+and 33 defensive book records in a roster save are *labels* that resolve to
+seven offensive and four defensive real books, so the swap frequently changes
 nothing at all.
 
-This panel edits the level below it.  APF's MASTER ``PLAY`` resource stores one
-fixed 74-byte bitmap per formation over the book's 586 plays; ticking a play
-here sets or clears one bit.  Nothing moves, no count changes, and the
-resource's byte extent is identical, so the whole edit is provable by byte diff
--- which is why this is offerable when freehand route authoring still is not.
+This panel edits those real books.  Each is an on-disc ``SPLB`` resource of
+exactly 32,288 bytes holding a 176-record array; a populated record names a
+MASTER formation and lists the plays the CPU may call from it, as big-endian
+u16 entries whose low ten bits are the MASTER play index.  Ticking a play
+rewrites only that record's entry list.
 
-The boundary is stated on the panel and not softened: this changes the book the
-game selects plays from.  Whether the CPU's play-calling reads the same table
-is untested, and the CPU book *types* are named only inside a roster save.
+Everything else is preserved and independently re-derived before publication:
+the record trailer, every other record, the two tail regions whose meaning is
+not established, and every other byte of the volume.  The four tagged slots per
+formation have an unproved meaning, so removing one is refused rather than
+guessed, and no claim is made about in-game CPU behaviour.
 """
 
 from __future__ import annotations
@@ -25,6 +27,7 @@ from typing import Callable
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
     QAbstractItemView,
+    QComboBox,
     QFileDialog,
     QFrame,
     QHBoxLayout,
@@ -37,23 +40,25 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
 )
 
-from mod_editor.core import apf2k8_playbook_membership_writer as membership
-from mod_editor.core.apf2k8_playbook_route_writer import read_master_play_body
+from mod_editor.core import apf2k8_splb_writer as splb
 from mod_editor.core.errors import ValidationError
 
 
 TaskRunner = Callable[[str, object, object, bool], None]
 
 BOUNDARY = (
-    "This edits MASTER PLAY: which plays each formation offers. It is a "
-    "bitmap edit inside a fixed allocation — no play, route, name or count is "
-    "rewritten, and an independent verifier re-derives every changed byte. "
-    "Whether the CPU's play-calling reads this table is NOT proved."
+    "This edits the stock CPU playbooks themselves — the SPLB resources the "
+    "game ships, one per book. Only the entry list of the selected formation's "
+    "record is rewritten; the record trailer, every other record and every "
+    "other byte stay exact, and an independent verifier re-derives every "
+    "changed byte before anything is written. The four tagged slots per "
+    "formation have an unproved meaning, so removing one is refused rather "
+    "than guessed. In-game CPU behaviour is NOT proved."
 )
 
 
 class ApfPlaybookMembershipPanel(QFrame):
-    """Tick plays in and out of one formation, then build a copied 0A."""
+    """Pick a stock book, pick a formation, tick plays in and out."""
 
     modifiedChanged = pyqtSignal()
 
@@ -62,9 +67,10 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.facade = facade
         self.run_task = run_task
         self.setObjectName("panel")
-        self._formations: list[dict] = []
-        self._plays: list[dict] = []
-        # formation index -> {play index: wanted membership}
+        self._book: splb.SplbBook | None = None
+        self._plays: list[str] = []
+        self._formations: dict[int, str] = {}
+        # record index -> {play index: wanted membership}
         self._staged: dict[int, dict[int, bool]] = {}
         self._loading = False
 
@@ -73,7 +79,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         root.setSpacing(9)
 
         heading = QHBoxLayout()
-        title = QLabel("Fine-tune a formation's plays")
+        title = QLabel("Stock CPU playbooks")
         title.setObjectName("panelTitle")
         self.status = QLabel("Not loaded")
         self.status.setObjectName("statusBadge")
@@ -84,32 +90,42 @@ class ApfPlaybookMembershipPanel(QFrame):
 
         blurb = QLabel(
             "Reassigning a team's book usually changes nothing: the 36 offensive "
-            "and 33 defensive book names in a save are labels over a handful of "
-            "real types. This edits the plays themselves."
+            "and 33 defensive book names in a save are labels over seven "
+            "offensive and four defensive real books. These are those books."
         )
         blurb.setObjectName("mutedLabel")
         blurb.setWordWrap(True)
         root.addWidget(blurb)
+
+        book_row = QHBoxLayout()
+        book_row.setSpacing(8)
+        book_row.addWidget(QLabel("Playbook:"))
+        self.book_picker = QComboBox()
+        self.book_picker.setObjectName("comboField")
+        self.book_picker.setAccessibleName("Stock CPU playbook")
+        self.book_picker.setToolTip(
+            "The fifteen stock playbook resources the game ships. Eleven carry "
+            "a name; four are unnamed and are shown by their archive entry."
+        )
+        for outer, name in sorted(splb.STOCK_BOOKS.items()):
+            label = name or f"(unnamed book, entry {outer})"
+            self.book_picker.addItem(label, outer)
+        self.book_picker.currentIndexChanged.connect(lambda _i: self._load_book())
+        book_row.addWidget(self.book_picker, 1)
+        root.addLayout(book_row)
 
         columns = QHBoxLayout()
         columns.setSpacing(14)
 
         left = QVBoxLayout()
         left.setSpacing(6)
-        self.formation_search = QLineEdit()
-        self.formation_search.setPlaceholderText("Search formations…")
-        self.formation_search.setClearButtonEnabled(True)
-        self.formation_search.setProperty("studioSearch", True)
-        self.formation_search.setAccessibleName("Search APF formations")
-        self.formation_search.textChanged.connect(lambda _text: self._refresh_formations())
         self.formation_list = QListWidget()
         self.formation_list.setObjectName("assetList")
         self.formation_list.setSelectionMode(QAbstractItemView.SingleSelection)
         self.formation_list.currentItemChanged.connect(
             lambda _current, _previous: self._refresh_plays()
         )
-        left.addWidget(QLabel("Formations"))
-        left.addWidget(self.formation_search)
+        left.addWidget(QLabel("Formations this book uses"))
         left.addWidget(self.formation_list, 1)
         columns.addLayout(left, 2)
 
@@ -118,13 +134,14 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.play_search = QLineEdit()
         self.play_search.setPlaceholderText("Search plays…")
         self.play_search.setClearButtonEnabled(True)
+        self.play_search.setProperty("studioSearch", True)
         self.play_search.setAccessibleName("Search APF plays")
         self.play_search.textChanged.connect(lambda _text: self._refresh_plays())
         self.play_list = QListWidget()
         self.play_list.setObjectName("assetList")
         self.play_list.setToolTip(
-            "Ticked plays belong to the selected formation. Tick to add, untick "
-            "to remove."
+            "Ticked plays are the ones the CPU may call from this formation in "
+            "this book. Tick to add, untick to remove."
         )
         self.play_list.itemChanged.connect(self._play_toggled)
         self.play_header = QLabel("Plays")
@@ -156,71 +173,83 @@ class ApfPlaybookMembershipPanel(QFrame):
 
     # ---------------------------------------------------------------- context
 
+    def _index_0a(self) -> Path | None:
+        source = getattr(self.facade, "source", None)
+        value = getattr(source, "index_0a", None) if source is not None else None
+        return Path(value) if value is not None else None
+
     def set_context(self) -> None:
-        ready = bool(getattr(self.facade, "source_ready", False))
-        if not ready:
-            self._formations = []
-            self._plays = []
+        if not bool(getattr(self.facade, "source_ready", False)):
+            self._book = None
             self._staged = {}
             self.formation_list.clear()
             self.play_list.clear()
             self.status.setText("Not loaded")
             self._refresh_actions()
             return
-        source = getattr(self.facade, "source", None)
-        index_0a = getattr(source, "index_0a", None) if source is not None else None
-        if index_0a is None:
+        self._load_book()
+
+    def _load_book(self) -> None:
+        index_0a = self._index_0a()
+        if index_0a is None or not bool(getattr(self.facade, "source_ready", False)):
             return
+        outer = self.book_picker.currentData()
+        if outer is None:
+            return
+        self._staged = {}
 
         def operation(progress: Callable[[str, int, int], None]) -> dict:
-            progress("Reading MASTER PLAY", 0, 1)
-            body = read_master_play_body(Path(index_0a))
-            parsed = membership._parse(body)
-            progress("MASTER PLAY ready", 1, 1)
+            import playbook_inventory  # type: ignore
+
+            progress("Reading the stock playbook", 0, 2)
+            book = splb.read_book(index_0a, int(outer))
+            progress("Reading MASTER play names", 1, 2)
+            master = playbook_inventory.parse_apf(index_0a, 64 * 1024 * 1024)[0]
+            progress("Playbook ready", 2, 2)
             return {
-                "formations": list(parsed["formations"]),
-                "plays": list(parsed["plays"]),
+                "book": book,
+                "plays": [str(p["name"]) for p in master["plays"]],
+                "formations": {
+                    int(f["index"]): str(f["name"]) for f in master["formations"]
+                },
             }
 
         def done(result: object) -> None:
             payload = result  # type: ignore[assignment]
-            self._formations = list(payload["formations"])  # type: ignore[index]
-            self._plays = list(payload["plays"])  # type: ignore[index]
+            self._book = payload["book"]  # type: ignore[index]
+            self._plays = payload["plays"]  # type: ignore[index]
+            self._formations = payload["formations"]  # type: ignore[index]
+            used = [r for r in self._book.records if r.populated]
             self.status.setText(
-                f"{len(self._formations)} formations · {len(self._plays)} plays"
+                f"{self._book.name or 'unnamed'} · {len(used)} formations"
             )
             self._refresh_formations()
             self._refresh_actions()
 
-        self.run_task("Opening the APF playbook", operation, done, False)
+        self.run_task("Opening the stock playbook", operation, done, False)
 
     # ------------------------------------------------------------------- view
 
     def _refresh_formations(self) -> None:
-        needle = self.formation_search.text().strip().casefold()
-        selected = self._selected_formation_index()
+        selected = self._selected_record_index()
         self.formation_list.blockSignals(True)
         self.formation_list.clear()
         row_to_select = -1
-        for formation in self._formations:
-            name = str(formation["name"])
-            if needle and needle not in name.casefold():
-                continue
-            index = int(formation["index"])
-            edits = self._staged.get(index) or {}
-            changed = sum(
-                1
-                for play_index, wanted in edits.items()
-                if wanted != (play_index in set(formation["play_membership_indices"]))
-            )
-            label = f"{name}  ·  {formation['play_membership_count']} plays"
-            if changed:
-                label += f"   ✎ {changed} changed"
-            item = QListWidgetItem(label)
-            item.setData(Qt.UserRole, index)
-            self.formation_list.addItem(item)
-            if index == selected:
-                row_to_select = self.formation_list.count() - 1
+        if self._book is not None:
+            for record in self._book.records:
+                if not record.populated:
+                    continue
+                name = self._formations.get(record.formation_index, "?")
+                count = len(self._wanted_plays(record.record_index))
+                label = f"{name}  ·  {count} plays"
+                staged = self._staged.get(record.record_index) or {}
+                if staged:
+                    label += f"   ✎ {len(staged)} changed"
+                item = QListWidgetItem(label)
+                item.setData(Qt.UserRole, record.record_index)
+                self.formation_list.addItem(item)
+                if record.record_index == selected:
+                    row_to_select = self.formation_list.count() - 1
         self.formation_list.blockSignals(False)
         if row_to_select < 0 and self.formation_list.count():
             row_to_select = 0
@@ -229,40 +258,62 @@ class ApfPlaybookMembershipPanel(QFrame):
         else:
             self._refresh_plays()
 
-    def _selected_formation_index(self) -> int | None:
+    def _selected_record_index(self) -> int | None:
         item = self.formation_list.currentItem()
         return int(item.data(Qt.UserRole)) if item is not None else None
 
-    def _wanted(self, formation_index: int, play_index: int) -> bool:
-        formation = self._formations[formation_index]
-        base = play_index in set(formation["play_membership_indices"])
-        return self._staged.get(formation_index, {}).get(play_index, base)
+    def _record(self, record_index: int) -> splb.SplbRecord | None:
+        if self._book is None:
+            return None
+        return self._book.records[record_index]
+
+    def _wanted_plays(self, record_index: int) -> set[int]:
+        record = self._record(record_index)
+        if record is None:
+            return set()
+        base = {entry.play_index for entry in record.entries}
+        for play_index, wanted in (self._staged.get(record_index) or {}).items():
+            if wanted:
+                base.add(play_index)
+            else:
+                base.discard(play_index)
+        return base
 
     def _refresh_plays(self) -> None:
         self._loading = True
         try:
             self.play_list.clear()
-            index = self._selected_formation_index()
-            if index is None or not self._plays:
+            record_index = self._selected_record_index()
+            record = self._record(record_index) if record_index is not None else None
+            if record is None or not self._plays:
                 self.play_header.setText("Plays")
                 return
-            formation = self._formations[index]
+            tagged = {e.play_index: e.y for e in record.entries if e.tagged}
+            wanted = self._wanted_plays(record.record_index)
             needle = self.play_search.text().strip().casefold()
-            members = 0
-            for play in self._plays:
-                play_index = int(play["index"])
-                wanted = self._wanted(index, play_index)
-                members += int(wanted)
-                name = str(play["name"])
+            for play_index, name in enumerate(self._plays):
                 if needle and needle not in name.casefold():
                     continue
-                item = QListWidgetItem(name)
+                item = QListWidgetItem(
+                    f"{name}   [tagged slot {tagged[play_index]}]"
+                    if play_index in tagged
+                    else name
+                )
                 item.setData(Qt.UserRole, play_index)
                 item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-                item.setCheckState(Qt.Checked if wanted else Qt.Unchecked)
+                item.setCheckState(
+                    Qt.Checked if play_index in wanted else Qt.Unchecked
+                )
+                if play_index in tagged:
+                    item.setToolTip(
+                        "This is one of the four tagged slots for this formation. "
+                        "Their meaning is unproved, so removing one is refused."
+                    )
                 self.play_list.addItem(item)
             self.play_header.setText(
-                f"Plays in {formation['name']} — {members} of {len(self._plays)}"
+                f"Plays the CPU may call from "
+                f"{self._formations.get(record.formation_index, '?')} — "
+                f"{len(wanted)} of {len(self._plays)}"
             )
         finally:
             self._loading = False
@@ -271,61 +322,78 @@ class ApfPlaybookMembershipPanel(QFrame):
     def _play_toggled(self, item: QListWidgetItem) -> None:
         if self._loading:
             return
-        formation_index = self._selected_formation_index()
-        if formation_index is None:
+        record_index = self._selected_record_index()
+        record = self._record(record_index) if record_index is not None else None
+        if record is None:
             return
         play_index = int(item.data(Qt.UserRole))
         wanted = item.checkState() == Qt.Checked
-        base = play_index in set(
-            self._formations[formation_index]["play_membership_indices"]
-        )
-        edits = self._staged.setdefault(formation_index, {})
-        if wanted == base:
-            edits.pop(play_index, None)
-            if not edits:
-                self._staged.pop(formation_index, None)
+        tagged = {e.play_index: e.y for e in record.entries if e.tagged}
+        if not wanted and play_index in tagged:
+            self._loading = True
+            item.setCheckState(Qt.Checked)
+            self._loading = False
+            QMessageBox.information(
+                self,
+                "That slot is tagged",
+                f"{self._plays[play_index]} occupies tagged slot "
+                f"{tagged[play_index]} for this formation. Every populated "
+                "record carries exactly one slot 1 and at most one each of 0, "
+                "2 and 3; what those four denote is not established, so this "
+                "build refuses to remove one rather than guess what it breaks.",
+            )
+            return
+        base = {e.play_index for e in record.entries}
+        staged = self._staged.setdefault(record.record_index, {})
+        if wanted == (play_index in base):
+            staged.pop(play_index, None)
+            if not staged:
+                self._staged.pop(record.record_index, None)
         else:
-            edits[play_index] = wanted
+            staged[play_index] = wanted
         self._refresh_formations()
         self._refresh_actions()
         self.modifiedChanged.emit()
 
     # ---------------------------------------------------------------- actions
 
-    def staged_edits(self) -> tuple[membership.MembershipEdit, ...]:
-        edits: list[membership.MembershipEdit] = []
-        for formation_index, plays in sorted(self._staged.items()):
+    def staged_changes(self) -> tuple[splb.MembershipChange, ...]:
+        if self._book is None:
+            return ()
+        out: list[splb.MembershipChange] = []
+        for record_index, plays in sorted(self._staged.items()):
             for play_index, wanted in sorted(plays.items()):
-                edits.append(
-                    membership.MembershipEdit(formation_index, play_index, wanted)
+                out.append(
+                    splb.MembershipChange(
+                        self._book.outer_index, record_index, play_index, wanted
+                    )
                 )
-        return tuple(edits)
+        return tuple(out)
 
     def _refresh_actions(self) -> None:
-        ready = bool(getattr(self.facade, "source_ready", False))
-        staged = self.staged_edits()
-        # Never silent-gray: both actions stay clickable and explain.
+        staged = self.staged_changes()
+        # Never silent-gray: both stay clickable and explain.
         self.revert_button.setEnabled(True)
         self.build_button.setEnabled(True)
-        if not ready:
-            block = "Load your APF game first, then pick a formation."
+        if not bool(getattr(self.facade, "source_ready", False)):
+            block = "Load your APF game first, then pick a playbook."
+        elif self._book is None:
+            block = "Choose a stock playbook first."
         elif not staged:
-            block = (
-                "Tick or untick plays for a formation first. Nothing is staged yet."
-            )
+            block = "Tick or untick plays for a formation first. Nothing is staged yet."
         else:
             block = ""
         self.build_button.setProperty("disableReason", block)
         self.build_button.setToolTip(
             block
-            or f"Write {len(staged)} membership change"
+            or f"Write {len(staged)} playbook change"
             f"{'s' if len(staged) != 1 else ''} into a copied 0A. Your source is "
             "never opened for writing."
         )
         revert_block = "" if staged else "There are no staged playbook changes."
         self.revert_button.setProperty("disableReason", revert_block)
         self.revert_button.setToolTip(
-            revert_block or f"Discard {len(staged)} staged membership change(s)."
+            revert_block or f"Discard {len(staged)} staged change(s)."
         )
 
     def _revert(self) -> None:
@@ -344,8 +412,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         if reason:
             QMessageBox.information(self, "Cannot build the playbook yet", reason)
             return
-        source = getattr(self.facade, "source", None)
-        index_0a = getattr(source, "index_0a", None) if source is not None else None
+        index_0a = self._index_0a()
         if index_0a is None:
             return
         directory = QFileDialog.getExistingDirectory(
@@ -362,13 +429,13 @@ class ApfPlaybookMembershipPanel(QFrame):
                 "anything. Choose an empty folder and try again.",
             )
             return
-        edits = self.staged_edits()
+        changes = self.staged_changes()
 
         def operation(progress: Callable[[str, int, int], None]) -> dict:
-            progress("Compiling playbook membership", 0, 2)
-            entry = membership.build_membership_patch(Path(index_0a), edits)
+            progress("Compiling the stock playbook", 0, 2)
+            entry = splb.build_book_patch(index_0a, changes)
             progress("Writing the copied volume", 1, 2)
-            written = _publish_copied_volume(Path(index_0a), out_root, entry)
+            written = _publish_copied_volume(index_0a, out_root, entry)
             progress("Modded playbook ready", 2, 2)
             return {"path": written, "report": entry.report}
 
@@ -380,8 +447,9 @@ class ApfPlaybookMembershipPanel(QFrame):
                 self,
                 "Modded playbook built",
                 f"Wrote:\n{payload['path']}\n\n"  # type: ignore[index]
-                f"{report['changed_bit_count']} membership change"
-                f"{'s' if report['changed_bit_count'] != 1 else ''} · "
+                f"{len(report['changes'])} change"
+                f"{'s' if len(report['changes']) != 1 else ''} to "
+                f"{report['book_name'] or 'an unnamed book'} · "
                 f"{verification.get('changed_byte_count', 0)} byte(s) differ from "
                 "your source.\n\n" + BOUNDARY,
             )
@@ -390,11 +458,7 @@ class ApfPlaybookMembershipPanel(QFrame):
 
 
 def _publish_copied_volume(index_path: Path, out_root: Path, entry) -> Path:
-    """Copy the user's volume and replace only the one rebuilt entry.
-
-    Reuses the crest writer's copy primitive, which never opens the source for
-    writing and byte-checks the copy before the replacement lands.
-    """
+    """Copy the user's volume and replace only the one rebuilt entry."""
 
     from mod_editor.apf_studio.backend import ensure_tools_importable
 
