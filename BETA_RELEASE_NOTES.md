@@ -26,9 +26,11 @@ address space instead of packed into 0x800.
 
 Both errors point the same way, so the shared tile holding the 16x16 and smaller
 levels was addressed 0x800 bytes *inside* the 32x32 level. Regenerating the chain
-wrote those small levels through the 32x32 one, replacing 427 of its 2048 bytes
-— that is the smaller logo in the corner — and left the real tail untouched, so
-the smallest draws kept serving the retail crest.
+wrote those small levels through the 32x32 one — that is the smaller logo in the
+corner — and left the real tail untouched, so the smallest draws kept serving the
+retail crest. How much of the 32x32 level is overwritten depends on the artwork:
+427 of its 2048 bytes for the image the fix was first derived from, 325 for the
+real team crest rebuilt to check it.
 
 The corrected chain accounts for the retail-declared mip length of 0x2C000
 exactly, with nothing left over. The old one reached 0x2B000 and explained the
@@ -81,24 +83,54 @@ button you pressed.
 `tools/apf_logocache_patch.py` gains the `--clear-l1` flag its Python API already
 had, so the cache can be told the same thing as the package.
 
-## What is not proved
+## What is proved, and what is not
 
-No in-game or emulator witness is claimed for either fix. Both are proved
-offline:
+The defect was reproduced here before this release shipped. A real team crest
+was built twice from a retail disc, once with Beta 34's code and once with this
+one, and every level of both was read back out and compared:
 
-- every regenerated level is read back out of the rebuilt tail and compared to
-  the level it should be, and every level's byte range is checked against every
-  other level's;
-- the derived chain is checked against the retail-declared allocation exactly;
-- the two-layer import is checked end to end through to the arguments both
-  writers receive.
+| level | size | built with Beta 34 | built with this release |
+| --- | --- | --- | --- |
+| 0-3 | 512² to 64² | exact | exact |
+| 4 | 32² | 325 of 2048 bytes wrong | exact |
+| 5-9 | 16² to 1² | byte-identical to retail | exact |
 
-The reported artifact and its disappearance were observed by the reporter on
-hardware, not reproduced here. If you have a crest built with an earlier beta,
-rebuilding it and looking at a helmet is the confirmation this release wants.
+Decoded back to pictures, Beta 34's 32x32 level draws the mark with a second
+offset copy of itself, and its 16x16 and smaller levels are the retail logo
+pixel for pixel. That is both halves of the report, and they are gone here.
+
+Those levels are not merely present — they are sampled. Xenia's texture fetch
+constant for that crest reports `mip_min_level=0`, `mip_max_level=9` and a
+`linear` mip filter, so the GPU blends through the whole chain and the levels
+Beta 34 left retail were being drawn.
+
+Also checked offline: every level's byte range against every other level's, the
+derived chain against the retail-declared allocation exactly, the single-image
+treatment clearing the detail layer at all ten levels and rebuilding its chain,
+and the two-layer import end to end through to the arguments both writers get.
+
+**Not done: a side-by-side photograph of a helmet in the emulator.** The game
+was booted on both builds and reached live play, but the capture is driven by
+timed button presses and the two runs did not land on the same screen, so there
+is no honest frame-to-frame comparison to show. If you have a crest built with
+an earlier beta, rebuilding it and looking at a helmet is still worth doing.
 
 ## Credits
 
 Both bugs were reported by **davidhbui**, including the observation that the
 artifact tracks zoom level — which is what pointed at the mip chain rather than
 the base texture.
+
+## Downloads
+
+| file | bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC62-20260811.tar.gz` | 11,032,048 | `96f62e24871f314cdeaed07ccfdb1c8565b3d5c6e78bb6cc9b0e869fba5f94c5` |
+| `2K5-Mod-Studio-1.0.0rc62-Setup.exe` | 56,674,441 | `ca3f1041f3cd7158b08e0470ce4d7beb1a80235ecd281c511f45a3e0e5a3cf19` |
+| `apf2k8-mod-studio-0.1.0-alpha.67-20260811.tar.gz` | 1,742,447 | `52e8b35b946f854f80cbd68449b0c97d4d236204c8a4eb8cc596440e7c7f876f` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.67-Setup.exe` | 52,638,991 | `0f25f1a8f354938dc4ebe59f3a642d25feb8582f3e716ef8b68f71c1b100bb78` |
+
+Windows installers are self-contained and reproducibly built, but not
+code-signed; the installer explains the Windows warning before installation.
+
+These archives are retail-free. They contain no game data of any kind.
