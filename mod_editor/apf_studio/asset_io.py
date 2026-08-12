@@ -45,6 +45,9 @@ import apf_xenos_dxn_mip_layout  # type: ignore  # noqa: E402
 import apf_xenos_dxt5a  # type: ignore  # noqa: E402
 
 
+_CACHE_NOTE_UNSET = object()
+
+
 class AssetIoError(ValueError):
     """Human-readable export/preview failure."""
 
@@ -149,7 +152,9 @@ def _write_audio_playlist(
 
 
 class ApfAssetIO:
-    PREVIEW_CACHE_VERSION = "v2"
+    PREVIEW_CACHE_VERSION = "v3"
+    _CACHE_NOTE_SCHEMA = "apf2k8_mod_studio_preview_note/v1"
+    _CACHE_NOTE_MISSING = object()
 
     def __init__(
         self,
@@ -161,32 +166,74 @@ class ApfAssetIO:
         self.catalog = catalog
         self.cache_root = cache_root or Path.home() / ".cache" / "apf2k8-mod-studio"
         self._audio_preview_receipts: dict[Path, str] = {}
-        # Set by every preview decode: a plain note when the decoded alpha was
-        # uniformly zero and the preview was forced opaque for display, else
-        # None. Panels append it to their status text so the user is not
-        # misled about what they are editing; raw exports and encoders retain
-        # the source alpha.
+        # Set by every preview decode: a plain note when display substituted
+        # alpha or the retail source is genuinely empty, else None. Panels
+        # append it to their status text so the user is not misled about what
+        # they are editing. PNG exports use the same visible pixels, while raw
+        # exports and encoders retain the source alpha.
         self.display_alpha_note: str | None = None
         self.stadium = ApfStadiumService(source, catalog, self.cache_root)
 
-    def _force_opaque_for_display(self, rgba: bytes) -> bytes:
-        rgba, applied = apf_inner.force_opaque_alpha_for_display(rgba)
-        self.display_alpha_note = (
-            "This texture's alpha channel is unused storage (all zero); "
-            "the preview is shown opaque so the real mask data is visible."
-            if applied
-            else None
+    def _display_rgba_and_note(
+        self,
+        rgba: bytes,
+        *,
+        source_label: str = "texture",
+    ) -> tuple[bytes, str | None]:
+        if not any(rgba):
+            return (
+                rgba,
+                f"This {source_label} is empty in the retail source "
+                "(all decoded RGBA channels are zero); there is no artwork "
+                "to display.",
+            )
+        displayed, applied = apf_inner.force_opaque_alpha_for_display(rgba)
+        return (
+            displayed,
+            (
+                "This texture's alpha channel is unused storage (all zero); "
+                "the preview is shown opaque so the real mask data is visible."
+                if applied
+                else None
+            ),
         )
-        return rgba
 
-    def _set_display_alpha_note_from_rgba(self, rgba: bytes) -> None:
-        _rgba, applied = apf_inner.force_opaque_alpha_for_display(rgba)
-        self.display_alpha_note = (
-            "This texture's alpha channel is unused storage (all zero); "
-            "the preview is shown opaque so the real mask data is visible."
-            if applied
-            else None
+    def _force_opaque_for_display(
+        self,
+        rgba: bytes,
+        *,
+        source_label: str = "texture",
+    ) -> bytes:
+        displayed, note = self._display_rgba_and_note(
+            rgba, source_label=source_label
         )
+        self.display_alpha_note = note
+        return displayed
+
+    @staticmethod
+    def _cache_note_path(path: Path) -> Path:
+        return path.with_name(path.name + ".meta.json")
+
+    @classmethod
+    def _read_cached_display_note(cls, path: Path) -> str | None | object:
+        metadata_path = cls._cache_note_path(path)
+        try:
+            document = json.loads(metadata_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError):
+            return cls._CACHE_NOTE_MISSING
+        if not isinstance(document, dict):
+            return cls._CACHE_NOTE_MISSING
+        if document.get("schema") != cls._CACHE_NOTE_SCHEMA:
+            return cls._CACHE_NOTE_MISSING
+        note = document.get("display_note")
+        if note is not None and not isinstance(note, str):
+            return cls._CACHE_NOTE_MISSING
+        return note
+
+    @classmethod
+    def _remove_cached_preview(cls, path: Path) -> None:
+        path.unlink(missing_ok=True)
+        cls._cache_note_path(path).unlink(missing_ok=True)
 
     @property
     def originals_root(self) -> Path:
@@ -202,13 +249,23 @@ class ApfAssetIO:
         )
         if destination.is_file():
             self._validate_uniform_png(destination, item)
-            with Image.open(destination) as image:
-                image.load()
-                self._set_display_alpha_note_from_rgba(image.tobytes())
-            return destination
+            note = self._read_cached_display_note(destination)
+            if note is not self._CACHE_NOTE_MISSING:
+                self.display_alpha_note = note  # type: ignore[assignment]
+                return destination
+            self._remove_cached_preview(destination)
         rgba = self._decode_uniform_rgba(item)
-        rgba = self._force_opaque_for_display(rgba)
-        self._write_png_cache(destination, item.width, item.height, rgba)
+        rgba = self._force_opaque_for_display(
+            rgba,
+            source_label=f"{item.family} slot {item.asset_index:02d}",
+        )
+        self._write_png_cache(
+            destination,
+            item.width,
+            item.height,
+            rgba,
+            display_note=self.display_alpha_note,
+        )
         self._validate_uniform_png(destination, item)
         return destination
 
@@ -216,7 +273,10 @@ class ApfAssetIO:
         item = self.catalog.uniform(asset) if isinstance(asset, str) else asset
         with tempfile.TemporaryDirectory(prefix="apf-uniform-export-") as temporary:
             source = Path(temporary) / f"{item.family}-{item.asset_index:02d}.png"
-            rgba = self._decode_uniform_rgba(item)
+            rgba, _note = self._display_rgba_and_note(
+                self._decode_uniform_rgba(item),
+                source_label=f"{item.family} slot {item.asset_index:02d}",
+            )
             self._write_png_cache(source, item.width, item.height, rgba)
             return _exclusive_copy(source, destination)
 
@@ -281,17 +341,19 @@ class ApfAssetIO:
                 with Image.open(destination) as image:
                     image.load()
                     if image.format == "PNG" and image.mode == "RGBA":
-                        self._set_display_alpha_note_from_rgba(image.tobytes())
-                        return destination
+                        note = self._read_cached_display_note(destination)
+                        if note is not self._CACHE_NOTE_MISSING:
+                            self.display_alpha_note = note  # type: ignore[assignment]
+                            return destination
             except (OSError, ValueError):
                 pass
             # A private derived cache, so a truncated file is rebuilt rather
             # than handed to the user as their exported image.
-            destination.unlink(missing_ok=True)
+            self._remove_cached_preview(destination)
         payload = scene_textures.read_texture_payload(self.source, texture)
         try:
             width, height, rgba = scene_textures.decode_texture_rgba(
-                texture, payload, for_display=True
+                texture, payload
             )
         except (scene_textures.SceneTextureError, apf_inner.FormatError, ValueError) as exc:
             detail = str(exc).strip() or exc.__class__.__name__
@@ -299,8 +361,16 @@ class ApfAssetIO:
                 f"{texture.title}: PNG preview failed ({detail}). "
                 "Export the raw descriptor and payload instead."
             ) from exc
-        rgba = self._force_opaque_for_display(rgba)
-        self._write_png_cache(destination, width, height, rgba)
+        rgba = self._force_opaque_for_display(
+            rgba, source_label=f"{texture.title} texture"
+        )
+        self._write_png_cache(
+            destination,
+            width,
+            height,
+            rgba,
+            display_note=self.display_alpha_note,
+        )
         return destination
 
     def export_scene_texture(
@@ -312,6 +382,9 @@ class ApfAssetIO:
                 source = Path(name) / "scene-texture.png"
                 payload = scene_textures.read_texture_payload(self.source, texture)
                 width, height, rgba = scene_textures.decode_texture_rgba(texture, payload)
+                rgba, _note = self._display_rgba_and_note(
+                    rgba, source_label=f"{texture.title} texture"
+                )
                 self._write_png_cache(source, width, height, rgba)
                 return _exclusive_copy(source, destination)
         if suffix != ".zip":
@@ -374,13 +447,15 @@ class ApfAssetIO:
                     image.load()
                     if image.format != "PNG" or image.mode != "RGBA":
                         raise AssetIoError("cached texture preview is not an RGBA PNG")
-                    self._set_display_alpha_note_from_rgba(image.tobytes())
-                return destination
+                    note = self._read_cached_display_note(destination)
+                    if note is not self._CACHE_NOTE_MISSING:
+                        self.display_alpha_note = note  # type: ignore[assignment]
+                        return destination
             except (OSError, ValueError, AssetIoError):
                 # This directory is a private, derived cache.  A truncated cache
                 # must never become the user's exported image; rebuild it from
                 # the validated source instead.
-                destination.unlink(missing_ok=True)
+                self._remove_cached_preview(destination)
         try:
             width, height, rgba = self._decode_texture_rgba(item)
         except (apf_inner.FormatError, ValueError) as exc:
@@ -395,8 +470,16 @@ class ApfAssetIO:
                 "search by asset name — a PORTME format will show this error "
                 "instead of hanging blank."
             ) from exc
-        rgba = self._force_opaque_for_display(rgba)
-        self._write_png_cache(destination, width, height, rgba)
+        rgba = self._force_opaque_for_display(
+            rgba, source_label=f"{item.name} texture"
+        )
+        self._write_png_cache(
+            destination,
+            width,
+            height,
+            rgba,
+            display_note=self.display_alpha_note,
+        )
         return destination
 
     def export_asset(self, asset: ApfAsset | str, destination: Path) -> Path:
@@ -406,6 +489,9 @@ class ApfAssetIO:
             with tempfile.TemporaryDirectory(prefix="apf-texture-export-") as temporary:
                 source = Path(temporary) / f"outer-{item.outer_index:04d}-inner-{item.inner_index:04d}.png"
                 width, height, rgba = self._decode_texture_rgba(item)
+                rgba, _note = self._display_rgba_and_note(
+                    rgba, source_label=f"{item.name} texture"
+                )
                 self._write_png_cache(source, width, height, rgba)
                 return _exclusive_copy(source, destination)
         if item.type_name == "AUDO" and suffix in {".xma", ".wav"}:
@@ -1137,8 +1223,16 @@ class ApfAssetIO:
             # This preserves a file created concurrently at the chosen path.
             return _exclusive_copy(temporary, destination)
 
-    @staticmethod
-    def _write_png_cache(path: Path, width: int, height: int, rgba: bytes) -> None:
+    @classmethod
+    def _write_png_cache(
+        cls,
+        path: Path,
+        width: int,
+        height: int,
+        rgba: bytes,
+        *,
+        display_note: str | None | object = _CACHE_NOTE_UNSET,
+    ) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         descriptor, temporary_name = tempfile.mkstemp(
             prefix=f".{path.name}.", suffix=".tmp", dir=path.parent
@@ -1153,6 +1247,31 @@ class ApfAssetIO:
         except BaseException:
             temporary.unlink(missing_ok=True)
             raise
+        if display_note is not _CACHE_NOTE_UNSET:
+            metadata_path = cls._cache_note_path(path)
+            descriptor, temporary_name = tempfile.mkstemp(
+                prefix=f".{metadata_path.name}.",
+                suffix=".tmp",
+                dir=metadata_path.parent,
+            )
+            os.close(descriptor)
+            metadata_temporary = Path(temporary_name)
+            try:
+                metadata_temporary.write_text(
+                    json.dumps(
+                        {
+                            "schema": cls._CACHE_NOTE_SCHEMA,
+                            "display_note": display_note,
+                        },
+                        sort_keys=True,
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
+                os.replace(metadata_temporary, metadata_path)
+            except BaseException:
+                metadata_temporary.unlink(missing_ok=True)
+                raise
 
     @staticmethod
     def _validate_uniform_png(path: Path, asset: UniformAsset) -> None:
