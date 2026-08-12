@@ -402,6 +402,13 @@ class CopyTests(unittest.TestCase):
         self.assertNotIn("removing one is refused rather than guessed", self.panel_copy)
         self.assertIn("moved", self.panel_copy)
 
+    def test_the_copy_does_not_claim_runtime_cpu_play_calling(self) -> None:
+        for copy in (self.panel_prose, self.writer_prose):
+            self.assertIn("runtime", copy)
+            self.assertIn("unproved", copy)
+            self.assertNotIn("cpu may call", copy)
+            self.assertNotIn("cpu actually calls", copy)
+
 
 class PanelTests(unittest.TestCase):
     """The panel offers the carry rather than telling the user to go do it."""
@@ -435,6 +442,14 @@ class PanelTests(unittest.TestCase):
         self.assertFalse(self.panel.removal_needs_heir(FULL, 40))
         # Four plays, four slots: the slot leaves with its play.
         self.assertFalse(self.panel.removal_needs_heir(FOUR, 53))
+
+    def test_live_play_controls_use_the_stored_membership_boundary(self) -> None:
+        self.panel._refresh_plays()
+
+        self.assertIn("Stored plays for", self.panel.play_header.text())
+        self.assertNotIn("CPU may call", self.panel.play_header.text())
+        self.assertIn("stored", self.panel.play_list.toolTip())
+        self.assertIn("unproved", self.panel.play_list.toolTip())
 
     def test_the_panel_only_offers_heirs_that_actually_work(self) -> None:
         candidates = self.panel._carry_candidates(FULL, 11)

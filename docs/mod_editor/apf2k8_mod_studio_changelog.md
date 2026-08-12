@@ -64,11 +64,11 @@ layers; per-team replacement remains unproved and is labeled that way.
 
 ### Edit the CPU playbooks themselves
 
-- **Playbooks → Fine-tune Plays now edits the stock `SPLB` books.** These are
-  what the CPU actually calls from. Each is an on-disc resource of exactly
-  32,288 bytes holding a 176-record array; a populated record names a MASTER
-  formation and lists the plays the CPU may call from it. Pick a book, pick a
-  formation, tick plays in and out, build a copied `0A`.
+- **Playbooks → Fine-tune Plays now edits the stored membership in the stock
+  `SPLB` books.** Each is an on-disc resource of exactly 32,288 bytes holding a
+  176-record array; a populated record names a MASTER formation and stores its
+  play list. Pick a book, pick a formation, tick plays in and out, build a
+  copied `0A`. Runtime CPU consumption of an edited list remains unproved.
 - Fifteen books ship: seven offensive (`O-ZoneBlock`, `O-WestCoast`,
   `O-ManBlock`, `O-Shotgun`, `O-TwoBack`, `O-SinglebackAce`,
   `O-Singleback3WR`), four defensive (`X-43Cover2`, `X-43Blitz`, `X-34Base`,

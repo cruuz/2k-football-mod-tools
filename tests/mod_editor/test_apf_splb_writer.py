@@ -1,11 +1,11 @@
 """Editing APF 2K8's stock CPU playbooks.
 
-These are the books the CPU calls from. A roster save's 36 offensive and 33
-defensive playbook records are only labels -- they hold a name, a type and a
-side and no content pointer -- and they resolve to seven offensive and four
-defensive real books, which is why reassigning one so often changed nothing.
-The content is fifteen on-disc ``SPLB`` resources, and this is the writer for
-them.
+These are the stock playbook resources the game ships. A roster save's 36
+offensive and 33 defensive playbook records are only labels -- they hold a
+name, a type and a side and no content pointer -- and they resolve to seven
+offensive and four defensive real books, which is why reassigning one so often
+changed nothing. The stored membership is fifteen on-disc ``SPLB`` resources,
+and this is the writer for them. Runtime CPU consumption remains unproved.
 
 The layout is proved; two trailer fields and both tail regions are not. This
 writer is offerable anyway because it never touches them, and the tests below

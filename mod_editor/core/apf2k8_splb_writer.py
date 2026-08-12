@@ -1,10 +1,11 @@
 """Edit APF 2K8 stock CPU playbooks (``SPLB``) in a copied volume.
 
-These are the books the CPU actually calls from.  A roster save's 36 offensive
-and 33 defensive playbook records are only *labels*: they carry a name, a type
-string and a side, with no content pointer at all, and they resolve to seven
-offensive and four defensive real types.  The content lives here, on the disc,
-as fifteen ``SPLB`` resources of exactly 32,288 bytes each.
+These are the stock playbook resources the game ships.  A roster save's 36
+offensive and 33 defensive playbook records are only *labels*: they carry a
+name, a type string and a side, with no content pointer at all, and they resolve
+to seven offensive and four defensive real types.  The stored membership lives
+here, on the disc, as fifteen ``SPLB`` resources of exactly 32,288 bytes each.
+Runtime CPU consumption of an edited membership list remains unproved.
 
 Layout, established by decoding all fifteen books and checking every decoded
 name against the MASTER ``PLAY`` resource:
