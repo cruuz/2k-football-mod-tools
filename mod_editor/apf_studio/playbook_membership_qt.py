@@ -8,9 +8,10 @@ nothing at all.
 
 This panel edits those real books.  Each is an on-disc ``SPLB`` resource of
 exactly 32,288 bytes holding a 176-record array; a populated record names a
-MASTER formation and lists the plays the CPU may call from it, as big-endian
-u16 entries whose low ten bits are the MASTER play index.  Ticking a play
-rewrites only that record's entry list.
+MASTER formation and stores a list of plays for it, as big-endian u16 entries
+whose low ten bits are the MASTER play index.  Ticking a play rewrites only
+that record's entry list.  Runtime CPU consumption of the edited list remains
+unproved.
 
 Everything else is preserved and independently re-derived before publication:
 the record trailer, every other record, the two tail regions whose meaning is
@@ -193,8 +194,8 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.play_list = QListWidget()
         self.play_list.setObjectName("assetList")
         self.play_list.setToolTip(
-            "Ticked plays are the ones the CPU may call from this formation in "
-            "this book. Tick to add, untick to remove."
+            "Ticked plays are stored in this formation's SPLB record. Runtime "
+            "CPU consumption is unproved. Tick to add, untick to remove."
         )
         self.play_list.itemChanged.connect(self._play_toggled)
         self.play_header = QLabel("Plays")
@@ -535,7 +536,7 @@ class ApfPlaybookMembershipPanel(QFrame):
                     )
                 self.play_list.addItem(item)
             self.play_header.setText(
-                f"Plays the CPU may call from "
+                f"Stored plays for "
                 f"{self._formations.get(record.formation_index, '?')} — "
                 f"{len(wanted)} of {len(self._plays)}"
             )

@@ -5,12 +5,12 @@
 Source/UI versions are **2K5 RC60** and **APF alpha.65**; both use updater tag
 `beta-33`.
 
-- **Fine-tune Plays now edits APF's stock `SPLB` CPU playbooks** — the fifteen
-  on-disc resources the CPU actually calls from (seven offensive, four
-  defensive, four unnamed). Pick a book, pick a formation, tick plays in and
-  out. Only the selected record's entry list is rewritten; the trailer, every
-  other record, both unmapped tail regions and every other byte are preserved
-  and independently re-derived.
+- **Fine-tune Plays now edits APF's stock `SPLB` playbook membership** — the
+  fifteen on-disc resources the game ships (seven offensive, four defensive,
+  four unnamed). Pick a book, pick a formation, tick plays in and out. Only the
+  selected record's entry list is rewritten; the trailer, every other record,
+  both unmapped tail regions and every other byte are preserved and
+  independently re-derived. Runtime CPU consumption remains unproved.
 - **A Beta 32 claim is withdrawn.** alpha.64's Fine-tune Plays edited MASTER's
   0x54-stride bitmap and described it as "which plays each formation offers".
   Decoding the SPLB books refutes that: row 147 of that table yields "Big Pinch,

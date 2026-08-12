@@ -11,6 +11,19 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-37 — 2026-08-12
+
+**APF 2K8 alpha.69 completes the mask-preview follow-up.**
+
+- Preview notes persist across cache hits instead of being inferred from
+  already-opaqued pixels.
+- Uniform, TXTR, and embedded scene-texture PNG exports are visible in normal
+  image editors while proved writers still restore retail alpha storage.
+- Genuinely empty decoded retail slots are labeled as empty rather than as
+  preview failures.
+- Fine-tune Plays now uses honest stored-membership wording; runtime CPU
+  consumption remains unproved. The shared updater identity is `beta-37`.
+
 ## beta-36 — 2026-08-11
 
 **APF 2K8 previews and Windows builds no longer require elevation.**

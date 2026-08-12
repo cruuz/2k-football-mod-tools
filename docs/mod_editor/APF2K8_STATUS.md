@@ -1,8 +1,19 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.68`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.69`.** Historical sealed packages below retain prior alpha numbers.
 
-## 0.1.0-alpha.68 release validation
+## 0.1.0-alpha.69 release validation
+
+Beta 37 completes the Beta 36 preview follow-up without claiming a new runtime
+consumer. Private preview caches persist the display-only alpha note, visible
+PNG exports use the same safe display conversion as previews, and an all-zero
+decoded source is labeled as an empty retail slot. The SPLB playbook surface
+now describes stored membership rather than claiming that the game consumes an
+edited list at runtime. The source and writer boundaries remain unchanged:
+raw exports are source-faithful, proved writers restore retail alpha storage,
+and no in-game CPU play-calling result is claimed here.
+
+## 0.1.0-alpha.68 release validation (historical)
 
 The shipped ISO recognition, extraction, load, and read-only source path has
 been revalidated against a real USA APF 2K8 image as well as the retail-free
