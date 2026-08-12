@@ -35,14 +35,19 @@ empty retail slots) was already complete in Beta 37 / alpha.69.
 
 ## Verification boundary
 
-Focused playbook, launcher, updater, and UI tests pass. Full suite, release
-gates, deterministic archives, and local launcher smoke tests are recorded
-below after packaging. No retail data is added to the repository or release
-archives.
+Focused playbook, launcher, updater, and UI tests pass (135 passed, 11 skipped).
+The retail-free APF release gate passed on the staged tree (196 files). The
+Linux archive and Windows installer below were built from that stage. No retail
+data is added to the repository or release archives.
 
 ## Downloads
 
-Receipts for the sealed archives will be recorded here after packaging.
+| Asset | Size | SHA-256 |
+|---|---:|---|
+| `2K5-Mod-Studio-v1.0-RC62-20260812.tar.gz` | 11,032,707 bytes | `1f681899452f4cb70a86d60769316cdd02091728b614cc39bab8e63e7762a235` |
+| `2K5-Mod-Studio-1.0.0rc62-Setup.exe` | 56,683,037 bytes | `a0b54bc5cc760576c35f2f1d3cd399c9d540523871f93b9f25d34f63ab64102c` |
+| `apf2k8-mod-studio-0.1.0-alpha.70-20260812.tar.gz` | 1,751,122 bytes | `fa224fc3d3640b7d30c1c3a0991c4d92574e639d5c7cc420172fd304cd3e979c` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.70-Setup.exe` | 52,652,594 bytes | `b30e97fe6ac032aa15c609ec809f3017391926f7d184253fe562961b691efdab` |
 
 ## beta-37 — RC62 / alpha.69
 
