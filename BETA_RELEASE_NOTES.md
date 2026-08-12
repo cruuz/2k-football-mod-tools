@@ -40,7 +40,7 @@ archives.
 | `2K5-Mod-Studio-v1.0-RC62-20260812.tar.gz` | 11,032,707 bytes | `1f681899452f4cb70a86d60769316cdd02091728b614cc39bab8e63e7762a235` |
 | `2K5-Mod-Studio-1.0.0rc62-Setup.exe` | 56,683,037 bytes | `a0b54bc5cc760576c35f2f1d3cd399c9d540523871f93b9f25d34f63ab64102c` |
 | `apf2k8-mod-studio-0.1.0-alpha.69-20260812.tar.gz` | 1,746,351 bytes | `ec90a59ec81fedab3c6c7aa55479e0f9fdcaa3f4e654ac41ee12a9e9afc08d0a` |
-| `APF-2K8-Mod-Studio-0.1.0-alpha.69-Setup.exe` | 52,639,986 bytes | `2faa126de3c1cdc4d47689e6a15359da63adbc31b56d9dcb93140582fa82ec45` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.69-Setup.exe` | 52,640,035 bytes | `77e2d5f91d86f1f362c83d5280122d697fb08a2352a4b6ecd63a7b88a70e6f45` |
 
 ## beta-36 — RC62 / alpha.68
 
