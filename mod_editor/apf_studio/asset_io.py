@@ -1267,6 +1267,7 @@ class ApfAssetIO:
                     )
                     + "\n",
                     encoding="utf-8",
+                    newline="\n",
                 )
                 os.replace(metadata_temporary, metadata_path)
             except BaseException:
