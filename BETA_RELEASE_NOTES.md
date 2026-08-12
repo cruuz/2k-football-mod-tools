@@ -1,4 +1,67 @@
-# beta-35 — RC62 / alpha.67
+# beta-36 — RC62 / alpha.68
+
+**Date:** 2026-08-11
+
+**2K5 Mod Studio:** `v1.0-RC62` (unchanged)
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.68`
+
+## Fixed: jersey and shoulder previews are visible
+
+Retail `jersey_color` and `shoulder_color` textures store their mask data in
+RGB while leaving alpha at zero for every pixel. The old preview treated that
+storage alpha as transparency and showed a blank checkerboard.
+
+Beta 36 force-opaques only that all-zero alpha during preview, records a clear
+“shown opaque” note in the panel, and invalidates the old preview cache. Raw
+PNG exports remain source-faithful. When a displayed PNG returns through the
+writer, the original all-zero alpha is restored before BC3 encoding, so the
+display convenience cannot alter the game payload.
+
+The low-level `helmet_color` message was also corrected: DXN (format 49) is
+supported by the asset layer's dedicated layout decoder, not by the generic
+base-format decoder that reports the PORTME.
+
+## Fixed: normal-user Windows builds
+
+The Windows installer remains per-user and uses `RequestExecutionLevel user`.
+Runtime staging no longer depends on an administrator-only symbolic link:
+staged sibling packs try symlink, then hardlink, then a verified copy when the
+game and output are on different filesystems. Playbook output uses the same
+fallback. Export commits go through the platform no-replace publisher, which
+works on filesystems such as exFAT.
+
+Windows users should choose a new empty output folder under Documents or
+Desktop, not Program Files, the original game folder, or a disc. No
+administrator mode is needed.
+
+## Field Art discoverability
+
+All 235 stock endzone layers (118 `endzone_l0` and 117 `endzone_l1`) are
+surfaced by the Field Art inventory for browsing and export. The focused editor
+continues to offer only the two shared outer-6 layers whose copied-volume
+writer is pinned and proved; per-team replacement remains explicitly
+unproved rather than being presented as a safe edit.
+
+## Verification boundary
+
+Targeted local regression tests cover the display/encode alpha split, cache
+routing, DXN messaging, Field Art UI, portable publishing, provider pins, and
+Windows fallback code. The only local ISO available for this run was a
+PlayStation 3 APF image (`All-Pro Football 2K8-001.iso`); the source loader
+correctly refused it as non-Xbox data, so no Xbox 360 texture decode/build claim
+is made here.
+
+## Downloads
+
+| Asset | Size | SHA-256 |
+|---|---:|---|
+| `2K5-Mod-Studio-v1.0-RC62-20260811.tar.gz` | 11,032,048 bytes | `96f62e24871f314cdeaed07ccfdb1c8565b3d5c6e78bb6cc9b0e869fba5f94c5` |
+| `2K5-Mod-Studio-1.0.0rc62-Setup.exe` | 56,674,441 bytes | `ca3f1041f3cd7158b08e0470ce4d7beb1a80235ecd281c511f45a3e0e5a3cf19` |
+| `apf2k8-mod-studio-0.1.0-alpha.68-20260811.tar.gz` | 1,745,759 bytes | `449291a4a1aa18490bb11332b51c0ce1f690e3a72200a853815e0138b9183b20` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.68-Setup.exe` | 52,634,090 bytes | `6b805d4b91ba76901aef9500be9a9f2d3e4d0c62668823e6d73a0931ef981252` |
+
+## beta-35 — RC62 / alpha.67
 
 **Date:** 2026-08-11
 

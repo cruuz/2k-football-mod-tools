@@ -18,6 +18,7 @@ import stat
 from typing import Any, Iterable
 from uuid import UUID, uuid4
 
+from mod_editor.core import platform_compat
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.json_stream import read_bounded_regular_file
 from mod_editor.core.nfl2k5_asset_io import copy_user_asset_atomic, sha256_bytes
@@ -115,7 +116,7 @@ def _write_new_atomic(path: Path, payload: bytes) -> Path:
             stream.flush()
             os.fsync(stream.fileno())
         try:
-            os.link(temporary, path, follow_symlinks=False)
+            platform_compat.publish_no_replace(temporary, path)
         except FileExistsError as exc:
             raise ValidationError(f"A file already exists there: {path}") from exc
         return path

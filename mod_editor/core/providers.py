@@ -16,6 +16,7 @@ import os
 from pathlib import Path
 import queue
 import re
+import shutil
 import stat
 import subprocess
 import sys
@@ -402,6 +403,45 @@ def _verify_staged_payload(
         os.close(descriptor)
 
 
+def _materialize_readonly_tree(source: Path, destination: Path, label: str) -> None:
+    """Expose read-only evidence without requiring symlink privileges."""
+
+    if source.is_symlink():
+        raise ProviderError(
+            f"Pinned {label} evidence root must be a non-symlink directory"
+        )
+    destination.mkdir(parents=True, exist_ok=True)
+    if not destination.is_dir() or destination.is_symlink():
+        raise ProviderError(
+            f"Pinned {label} evidence destination has an invalid type"
+        )
+    for child in source.iterdir():
+        child_info = child.lstat()
+        if stat.S_ISLNK(child_info.st_mode):
+            raise ProviderError(
+                f"Pinned {label} evidence child must not be a symlink"
+            )
+        child_destination = destination / child.name
+        if child.is_dir():
+            _materialize_readonly_tree(child, child_destination, label)
+            continue
+        if not child.is_file():
+            raise ProviderError(
+                f"Pinned {label} evidence child is not a regular file"
+            )
+        if child_destination.exists():
+            continue
+        try:
+            os.link(child, child_destination)
+        except (OSError, NotImplementedError, AttributeError):
+            shutil.copyfile(child, child_destination)
+        if child_destination.stat().st_size != child_info.st_size:
+            child_destination.unlink(missing_ok=True)
+            raise ProviderError(
+                f"Pinned {label} evidence copy has the wrong size: {child}"
+            )
+
+
 @contextmanager
 def _pinned_execution_bundle(
     workspace: Path,
@@ -412,10 +452,11 @@ def _pinned_execution_bundle(
     """Yield an executable copy made only from freshly verified module bytes.
 
     Every local import in a provider's reviewed closure is copied into a private
-    temporary tree.  The backend therefore executes the bytes that were hashed,
-    even if an original workspace pathname changes after pinning.  Read-only
-    evidence roots are linked into the mirror because the backends independently
-    hash those inputs; no executable file is linked.
+    temporary tree. The backend therefore executes the bytes that were hashed,
+    even if an original workspace pathname changes after pinning. Read-only
+    evidence roots are materialized as hard-linked files when possible and
+    copied when the source and temporary directory are on different
+    filesystems; neither route needs Windows administrator rights.
     """
 
     if entry_module not in pins:
@@ -447,31 +488,7 @@ def _pinned_execution_bundle(
                 raise ProviderError(
                     f"Pinned {label} evidence root must be a non-symlink directory"
                 )
-            if not destination.exists():
-                destination.symlink_to(
-                    source.resolve(strict=True), target_is_directory=True
-                )
-                continue
-            # A pinned data file may already have created one child directory
-            # (for example reports/specs). Merge only the other read-only
-            # evidence children; never replace the freshly staged pinned bytes.
-            if not destination.is_dir() or destination.is_symlink():
-                raise ProviderError(
-                    f"Pinned {label} evidence destination has an invalid type"
-                )
-            for child in source.iterdir():
-                child_destination = destination / child.name
-                if child_destination.exists():
-                    continue
-                child_info = child.lstat()
-                if stat.S_ISLNK(child_info.st_mode):
-                    raise ProviderError(
-                        f"Pinned {label} evidence child must not be a symlink"
-                    )
-                child_destination.symlink_to(
-                    child.resolve(strict=True),
-                    target_is_directory=stat.S_ISDIR(child_info.st_mode),
-                )
+            _materialize_readonly_tree(source, destination, label)
         entry = bundle_root / entry_module
         try:
             yield entry
@@ -531,7 +548,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
         "mod_editor/core/sources.py": "d47ef48a21d0cb4bb47e2b0f5ace029e68c3dc8906caa7d48e19e6dea4341375",
-        "tools/apf_inner.py": "0000d85166282be696b476036b698fc26a49436eab67cc6c7488852700fd4acd",
+        "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
         "tools/nfl2k5_jersey_png_workflow.py": "e7af6773a07085da33745e62bfccc59c2f013e833f2aa1ae9009c965938f5832",
         backend_module: backend_module_sha256,
@@ -1545,12 +1562,12 @@ class Apf2k8JerseyColorProvider:
     verifier_module_sha256 = "559c3b8d5125ad7e31a4a3212249d35846b8c143f693503accbae7d32868e09f"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
-        "tools/apf_inner.py": "0000d85166282be696b476036b698fc26a49436eab67cc6c7488852700fd4acd",
+        "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
         "tools/apf_texture_patch.py": "f1e1d1beaea599610c6c83d0d47f3970a5ee7bd73e23ad5b5aee79dc2a2e7694",
-        "tools/apf_uniform_mip_patch.py": "26ee8964c84f8aa2676e00d9b05af99582fddc4c2e7b040304d44a0aa75c9881",
+        "tools/apf_uniform_mip_patch.py": "c93c95c8441ab074eedc83776fda88204a9c68c40ea0455fc619d162825c20f9",
         "tools/apf_xenos_mip_layout.py": "ec07ea62ad67b3fff7e92fb8779c0cf85f65bc9f196c39b374dd19455619f9d7",
     }
     recipe_schema_file = "mod_editor/apf_jersey_recipe.schema.json"
@@ -2070,7 +2087,7 @@ class Apf2k8PantsColorProvider(Apf2k8JerseyColorProvider):
     verifier_module_sha256 = "4a253a09389c62919e921eb6a9771acf319dc0486ac9b22e0c2c5a4bfe8325a8"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
-        "tools/apf_inner.py": "0000d85166282be696b476036b698fc26a49436eab67cc6c7488852700fd4acd",
+        "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
         "tools/apf_pants_color_transport.py": "a3f33a0fc5b860f78a0686f3e559db4c3d22a05cdfb7793019599ef67cd05615",
         backend_module: backend_module_sha256,
@@ -2103,7 +2120,7 @@ class Apf2k8HelmetColorProvider(Apf2k8JerseyColorProvider):
         "tools/apf_helmet_color_transport.py": "ac181589e29142f74b2ec0b951f046bb9a15039e4404c876d0533547e29f7526",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
-        "tools/apf_inner.py": "0000d85166282be696b476036b698fc26a49436eab67cc6c7488852700fd4acd",
+        "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
         "tools/apf_texture_patch.py": "f1e1d1beaea599610c6c83d0d47f3970a5ee7bd73e23ad5b5aee79dc2a2e7694",
         "tools/apf_xenos_dxn_mip_layout.py": "85eba338384d518b111dab153120dc937ed45a898d348f4d1548d5f8d8672431",
@@ -2131,13 +2148,13 @@ class Apf2k8ShoulderColorProvider(Apf2k8JerseyColorProvider):
     verifier_module_sha256 = "9481262b3bcaa112bcb83c74f596bc09c98b6081a5d3c78162ad35599ae2fbd9"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
-        "tools/apf_inner.py": "0000d85166282be696b476036b698fc26a49436eab67cc6c7488852700fd4acd",
+        "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_shoulder_color_transport.py": "23073d7701d14aa762f1c43598528c446c2174d154162ed542cbd377aafdaf26",
+        "tools/apf_shoulder_color_transport.py": "9b617b6e578cd9026c7e0d103b6c187afb4e84a1be60b132c7a8ff620b45a9a5",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
         "tools/apf_texture_patch.py": "f1e1d1beaea599610c6c83d0d47f3970a5ee7bd73e23ad5b5aee79dc2a2e7694",
-        "tools/apf_uniform_mip_patch.py": "26ee8964c84f8aa2676e00d9b05af99582fddc4c2e7b040304d44a0aa75c9881",
+        "tools/apf_uniform_mip_patch.py": "c93c95c8441ab074eedc83776fda88204a9c68c40ea0455fc619d162825c20f9",
         "tools/apf_xenos_mip_layout.py": "ec07ea62ad67b3fff7e92fb8779c0cf85f65bc9f196c39b374dd19455619f9d7",
     }
     recipe_schema_file = "mod_editor/apf_shoulder_recipe.schema.json"

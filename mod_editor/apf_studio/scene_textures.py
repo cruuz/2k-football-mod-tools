@@ -189,7 +189,12 @@ def texture_payload(texture: SceneTexture, vram: bytes) -> bytes:
     return vram[texture.video_offset : end]
 
 
-def decode_texture_rgba(texture: SceneTexture, payload: bytes) -> tuple[int, int, bytes]:
+def decode_texture_rgba(
+    texture: SceneTexture,
+    payload: bytes,
+    *,
+    for_display: bool = False,
+) -> tuple[int, int, bytes]:
     """Base-level RGBA for one embedded descriptor.
 
     Format routing mirrors :meth:`ApfAssetIO._decode_texture_rgba` so an
@@ -205,8 +210,8 @@ def decode_texture_rgba(texture: SceneTexture, payload: bytes) -> tuple[int, int
         locations = apf_xenos_dxn_mip_layout.derive_layout(metadata)
         linear = apf_xenos_dxn_mip_layout.extract_linear_dxn(base, locations[0])
         rgba = apf_helmet_color_transport.decode_linear_dxn(linear, locations[0])
-        return locations[0].width, locations[0].height, rgba
-    if format_value == 59:  # DXT5A, alpha-only
+        width, height = locations[0].width, locations[0].height
+    elif format_value == 59:  # DXT5A, alpha-only
         width = texture.width
         height = texture.height
         pitch = int(metadata.get("pitch_pixels", width))
@@ -219,8 +224,12 @@ def decode_texture_rgba(texture: SceneTexture, payload: bytes) -> tuple[int, int
             base, width, height, pitch, endian_mode=endian
         )
         alpha = apf_xenos_dxt5a.decode_linear_alpha_general(linear, width, height)
-        return width, height, apf_xenos_dxt5a.alpha_to_rgba_general(alpha, width, height)
-    return apf_inner.decode_txtr_base_rgba(metadata, base)
+        rgba = apf_xenos_dxt5a.alpha_to_rgba_general(alpha, width, height)
+    else:
+        width, height, rgba = apf_inner.decode_txtr_base_rgba(metadata, base)
+    if for_display:
+        rgba, _ = apf_inner.force_opaque_alpha_for_display(rgba)
+    return width, height, rgba
 
 
 def _scene_parts(

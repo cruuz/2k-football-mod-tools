@@ -92,10 +92,10 @@ jobs:
         run: |
           set -euo pipefail
           inputs="$(mktemp -d)"
-          gh release download beta-35 \
+          gh release download beta-36 \
             --repo "$GITHUB_REPOSITORY" \
             --pattern '2K5-Mod-Studio-v1.0-RC62-20260811.tar.gz' \
-            --pattern 'apf2k8-mod-studio-0.1.0-alpha.67-20260811.tar.gz' \
+            --pattern 'apf2k8-mod-studio-0.1.0-alpha.68-20260811.tar.gz' \
             --dir "$inputs"
           python - "$inputs" "$GITHUB_WORKSPACE" <<'PY'
           from __future__ import annotations
@@ -112,8 +112,8 @@ jobs:
           archives = {
               "2K5-Mod-Studio-v1.0-RC62-20260811.tar.gz":
                   "96f62e24871f314cdeaed07ccfdb1c8565b3d5c6e78bb6cc9b0e869fba5f94c5",
-              "apf2k8-mod-studio-0.1.0-alpha.67-20260811.tar.gz":
-                  "52e8b35b946f854f80cbd68449b0c97d4d236204c8a4eb8cc596440e7c7f876f",
+              "apf2k8-mod-studio-0.1.0-alpha.68-20260811.tar.gz":
+                  "449291a4a1aa18490bb11332b51c0ce1f690e3a72200a853815e0138b9183b20",
           }
           copied = 0
           for name, expected in archives.items():
@@ -320,10 +320,10 @@ jobs:
         run: |
           set -euo pipefail
           inputs="$(mktemp -d)"
-          gh release download beta-35 \
+          gh release download beta-36 \
             --repo "$GITHUB_REPOSITORY" \
             --pattern '2K5-Mod-Studio-v1.0-RC62-20260811.tar.gz' \
-            --pattern 'apf2k8-mod-studio-0.1.0-alpha.67-20260811.tar.gz' \
+            --pattern 'apf2k8-mod-studio-0.1.0-alpha.68-20260811.tar.gz' \
             --dir "$inputs"
           python - "$inputs" "$GITHUB_WORKSPACE" <<'PY'
           from __future__ import annotations
@@ -340,8 +340,8 @@ jobs:
           archives = {
               "2K5-Mod-Studio-v1.0-RC62-20260811.tar.gz":
                   "96f62e24871f314cdeaed07ccfdb1c8565b3d5c6e78bb6cc9b0e869fba5f94c5",
-              "apf2k8-mod-studio-0.1.0-alpha.67-20260811.tar.gz":
-                  "52e8b35b946f854f80cbd68449b0c97d4d236204c8a4eb8cc596440e7c7f876f",
+              "apf2k8-mod-studio-0.1.0-alpha.68-20260811.tar.gz":
+                  "449291a4a1aa18490bb11332b51c0ce1f690e3a72200a853815e0138b9183b20",
           }
           copied = 0
           for name, expected in archives.items():

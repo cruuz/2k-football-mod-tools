@@ -33,7 +33,9 @@ play-calling.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
+import shutil
 from typing import Callable
 
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -792,8 +794,27 @@ def _publish_copied_volume(index_path: Path, out_root: Path, entry) -> Path:
         if sibling.name == index_path.name or not sibling.is_file():
             continue
         target = out_root / sibling.name
-        if not target.exists():
-            target.symlink_to(sibling.resolve())
+        if target.exists() or target.is_symlink():
+            continue
+        failures: list[str] = []
+        for linker in (os.symlink, os.link):
+            try:
+                linker(sibling, target)
+                break
+            except (OSError, NotImplementedError, AttributeError) as exc:
+                failures.append(f"{getattr(linker, '__name__', 'link')}: {exc}")
+        else:
+            try:
+                shutil.copyfile(sibling, target)
+                if target.stat().st_size != sibling.stat().st_size:
+                    raise OSError("copied sibling pack has the wrong size")
+            except OSError as exc:
+                target.unlink(missing_ok=True)
+                raise RuntimeError(
+                    f"Could not stage sibling pack {sibling.name} without "
+                    f"administrator rights ({'; '.join(failures)}; copy: {exc}). "
+                    "Choose a writable output folder and try again."
+                ) from exc
     archive = apf_outer.parse_archive(index_path)
     outer_entry = archive.entries[entry.outer_index]
     destination = out_root / index_path.name

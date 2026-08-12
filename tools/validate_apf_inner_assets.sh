@@ -27,7 +27,7 @@ jq -e '
 test "$(wc -l < reports/manifests/apf_inner_candidates.tsv)" -eq 10395
 
 test "$(sha256sum tools/apf_inner.py | cut -d' ' -f1)" = \
-  75a74b34524b3861785b916e3470862bccfe278825a63aa2dccb924849ae9606
+  4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf
 test "$(sha256sum reports/manifests/apf_inner.json | cut -d' ' -f1)" = \
   b57772a88e969db47aca6add24b1387ab2470b53cdb2f6f21bd4a3d8999fb6d1
 test "$(sha256sum reports/manifests/apf_inner_candidates.tsv | cut -d' ' -f1)" = \

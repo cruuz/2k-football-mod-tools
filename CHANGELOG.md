@@ -11,6 +11,23 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-36 — 2026-08-11
+
+**APF 2K8 previews and Windows builds no longer require elevation.**
+`0.1.0-alpha.68`.
+
+- `jersey_color` and `shoulder_color` previews now show their RGB mask data
+  when retail alpha is uniformly zero. The substitution is display-only;
+  raw exports and the encode path preserve retail alpha exactly.
+- DXN (`helmet_color`) failures from the low-level decoder now explain that
+  the asset layer owns the separate DXN layout.
+- Windows staging falls back from symlink to hardlink to a verified copy, so
+  output on another drive does not require administrator mode. Exports use the
+  platform no-replace publisher for exFAT-safe commits.
+- Field Art explicitly surfaces all 235 stock endzone layers for browsing and
+  export while keeping the two shared writer slots separate from unproved
+  per-team authoring.
+
 ## beta-11 — 2026-07-28
 
 **Exporting a Team Kit as a folder now works on Windows.** `v1.0-RC36`.

@@ -113,7 +113,7 @@ class ExtraFormatPngDecodeTests(unittest.TestCase):
         msg = str(ctx.exception)
         self.assertIn("PORTME", msg)
         self.assertIn("7", msg)
-        self.assertIn("Supported PNG previews", msg)
+        self.assertIn("This decoder covers", msg)
 
     def test_png_roundtrip_write_for_565(self) -> None:
         linear = bytearray(8 * 8 * 2)

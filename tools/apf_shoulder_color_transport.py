@@ -393,6 +393,12 @@ def build_patch(
     for location, source_linear, source_rgba, wanted in zip(
         locations, original_linear, original_rgba, wanted_levels
     ):
+        # shoulder_color is a selector mask whose retail alpha is unused and
+        # uniformly zero. Preview/export display may force it opaque so RGB is
+        # visible, but the encoder must restore the original zero alpha.
+        wanted = apf_inner.restore_unused_mask_alpha_for_encode(
+            wanted, source_rgba
+        )
         linear, indices = bc3_backend._encode_changed_blocks(  # type: ignore[attr-defined]
             source_linear, source_rgba, wanted, location
         )

@@ -96,10 +96,9 @@ def _exclusive_copy(
         os.close(descriptor)
         descriptor = -1
         _require_audio_preview_not_cancelled(cancel_requested)
-        # Linking a complete same-directory temporary is atomic and cannot
-        # overwrite a destination that appears concurrently.
-        os.link(temporary, destination)
-        temporary.unlink()
+        # Publish through the platform layer: Windows/exFAT may not support
+        # hard links even when a same-directory rename is atomic.
+        platform_compat.publish_no_replace(temporary, destination)
     except BaseException:
         if descriptor >= 0:
             os.close(descriptor)
@@ -150,6 +149,8 @@ def _write_audio_playlist(
 
 
 class ApfAssetIO:
+    PREVIEW_CACHE_VERSION = "v2"
+
     def __init__(
         self,
         source: ApfSource,
@@ -160,7 +161,32 @@ class ApfAssetIO:
         self.catalog = catalog
         self.cache_root = cache_root or Path.home() / ".cache" / "apf2k8-mod-studio"
         self._audio_preview_receipts: dict[Path, str] = {}
+        # Set by every preview decode: a plain note when the decoded alpha was
+        # uniformly zero and the preview was forced opaque for display, else
+        # None. Panels append it to their status text so the user is not
+        # misled about what they are editing; raw exports and encoders retain
+        # the source alpha.
+        self.display_alpha_note: str | None = None
         self.stadium = ApfStadiumService(source, catalog, self.cache_root)
+
+    def _force_opaque_for_display(self, rgba: bytes) -> bytes:
+        rgba, applied = apf_inner.force_opaque_alpha_for_display(rgba)
+        self.display_alpha_note = (
+            "This texture's alpha channel is unused storage (all zero); "
+            "the preview is shown opaque so the real mask data is visible."
+            if applied
+            else None
+        )
+        return rgba
+
+    def _set_display_alpha_note_from_rgba(self, rgba: bytes) -> None:
+        _rgba, applied = apf_inner.force_opaque_alpha_for_display(rgba)
+        self.display_alpha_note = (
+            "This texture's alpha channel is unused storage (all zero); "
+            "the preview is shown opaque so the real mask data is visible."
+            if applied
+            else None
+        )
 
     @property
     def originals_root(self) -> Path:
@@ -168,19 +194,34 @@ class ApfAssetIO:
 
     def preview_uniform(self, asset: UniformAsset | str) -> Path:
         item = self.catalog.uniform(asset) if isinstance(asset, str) else asset
-        destination = self.originals_root / "uniforms" / f"{item.family}-{item.asset_index:02d}.png"
+        destination = (
+            self.originals_root
+            / self.PREVIEW_CACHE_VERSION
+            / "uniforms"
+            / f"{item.family}-{item.asset_index:02d}.png"
+        )
         if destination.is_file():
             self._validate_uniform_png(destination, item)
+            with Image.open(destination) as image:
+                image.load()
+                self._set_display_alpha_note_from_rgba(image.tobytes())
             return destination
         rgba = self._decode_uniform_rgba(item)
+        rgba = self._force_opaque_for_display(rgba)
         self._write_png_cache(destination, item.width, item.height, rgba)
         self._validate_uniform_png(destination, item)
         return destination
 
     def export_uniform(self, asset: UniformAsset | str, destination: Path) -> Path:
-        return _exclusive_copy(self.preview_uniform(asset), destination)
+        item = self.catalog.uniform(asset) if isinstance(asset, str) else asset
+        with tempfile.TemporaryDirectory(prefix="apf-uniform-export-") as temporary:
+            source = Path(temporary) / f"{item.family}-{item.asset_index:02d}.png"
+            rgba = self._decode_uniform_rgba(item)
+            self._write_png_cache(source, item.width, item.height, rgba)
+            return _exclusive_copy(source, destination)
 
     def preview_digital_font(self) -> Path:
+        self.display_alpha_note = None
         destination = self.originals_root / "presentation" / "digital_font.png"
         if destination.is_file():
             with Image.open(destination) as image:
@@ -230,6 +271,7 @@ class ApfAssetIO:
     def preview_scene_texture(self, texture: scene_textures.SceneTexture) -> Path:
         destination = (
             self.originals_root
+            / self.PREVIEW_CACHE_VERSION
             / "scene-textures"
             / f"outer-{texture.outer_index:04d}-inner-{texture.inner_index:04d}"
             f"-tex-{texture.index:03d}.png"
@@ -239,6 +281,7 @@ class ApfAssetIO:
                 with Image.open(destination) as image:
                     image.load()
                     if image.format == "PNG" and image.mode == "RGBA":
+                        self._set_display_alpha_note_from_rgba(image.tobytes())
                         return destination
             except (OSError, ValueError):
                 pass
@@ -247,13 +290,16 @@ class ApfAssetIO:
             destination.unlink(missing_ok=True)
         payload = scene_textures.read_texture_payload(self.source, texture)
         try:
-            width, height, rgba = scene_textures.decode_texture_rgba(texture, payload)
+            width, height, rgba = scene_textures.decode_texture_rgba(
+                texture, payload, for_display=True
+            )
         except (scene_textures.SceneTextureError, apf_inner.FormatError, ValueError) as exc:
             detail = str(exc).strip() or exc.__class__.__name__
             raise AssetIoError(
                 f"{texture.title}: PNG preview failed ({detail}). "
                 "Export the raw descriptor and payload instead."
             ) from exc
+        rgba = self._force_opaque_for_display(rgba)
         self._write_png_cache(destination, width, height, rgba)
         return destination
 
@@ -262,7 +308,12 @@ class ApfAssetIO:
     ) -> Path:
         suffix = destination.suffix.casefold()
         if suffix == ".png":
-            return _exclusive_copy(self.preview_scene_texture(texture), destination)
+            with tempfile.TemporaryDirectory(prefix="apf-scene-texture-export-") as name:
+                source = Path(name) / "scene-texture.png"
+                payload = scene_textures.read_texture_payload(self.source, texture)
+                width, height, rgba = scene_textures.decode_texture_rgba(texture, payload)
+                self._write_png_cache(source, width, height, rgba)
+                return _exclusive_copy(source, destination)
         if suffix != ".zip":
             raise AssetIoError(
                 "An embedded scene texture exports as .png (decoded) or .zip "
@@ -313,6 +364,7 @@ class ApfAssetIO:
             raise AssetIoError("Only TXTR assets have PNG previews")
         destination = (
             self.originals_root
+            / self.PREVIEW_CACHE_VERSION
             / "textures"
             / f"outer-{item.outer_index:04d}-inner-{item.inner_index:04d}.png"
         )
@@ -322,6 +374,7 @@ class ApfAssetIO:
                     image.load()
                     if image.format != "PNG" or image.mode != "RGBA":
                         raise AssetIoError("cached texture preview is not an RGBA PNG")
+                    self._set_display_alpha_note_from_rgba(image.tobytes())
                 return destination
             except (OSError, ValueError, AssetIoError):
                 # This directory is a private, derived cache.  A truncated cache
@@ -342,6 +395,7 @@ class ApfAssetIO:
                 "search by asset name — a PORTME format will show this error "
                 "instead of hanging blank."
             ) from exc
+        rgba = self._force_opaque_for_display(rgba)
         self._write_png_cache(destination, width, height, rgba)
         return destination
 
@@ -349,7 +403,11 @@ class ApfAssetIO:
         item = self.catalog.get(asset) if isinstance(asset, str) else asset
         suffix = destination.suffix.casefold()
         if item.type_name == "TXTR" and suffix == ".png":
-            return _exclusive_copy(self.preview_texture(item), destination)
+            with tempfile.TemporaryDirectory(prefix="apf-texture-export-") as temporary:
+                source = Path(temporary) / f"outer-{item.outer_index:04d}-inner-{item.inner_index:04d}.png"
+                width, height, rgba = self._decode_texture_rgba(item)
+                self._write_png_cache(source, width, height, rgba)
+                return _exclusive_copy(source, destination)
         if item.type_name == "AUDO" and suffix in {".xma", ".wav"}:
             return self._export_audo(item, destination)
         if item.inner_index is None and suffix != ".zip":
@@ -926,7 +984,11 @@ class ApfAssetIO:
             locations = apf_xenos_dxn_mip_layout.derive_layout(metadata)
             linear = apf_xenos_dxn_mip_layout.extract_linear_dxn(parts[-1], locations[0])
             rgba = apf_helmet_color_transport.decode_linear_dxn(linear, locations[0])
-            return locations[0].width, locations[0].height, rgba
+            return (
+                locations[0].width,
+                locations[0].height,
+                rgba,
+            )
         if int(metadata.get("format", -1)) == 59:
             # General DXT5A (not only digital_font 128×128 fixed allocation).
             width = int(metadata["width"])
@@ -945,7 +1007,8 @@ class ApfAssetIO:
             )
             rgba = apf_xenos_dxt5a.alpha_to_rgba_general(alpha, width, height)
             return width, height, rgba
-        return apf_inner.decode_txtr_base_rgba(metadata, parts[-1])
+        width, height, rgba = apf_inner.decode_txtr_base_rgba(metadata, parts[-1])
+        return width, height, rgba
 
     def _read_inner_parts(
         self, outer_index: int, inner_index: int
@@ -1024,8 +1087,7 @@ class ApfAssetIO:
                 stream.flush()
                 platform_compat.fchmod(stream.fileno(), 0o644, path=temporary)
                 os.fsync(stream.fileno())
-            os.link(temporary, destination)
-            temporary.unlink()
+            platform_compat.publish_no_replace(temporary, destination)
         except BaseException:
             if descriptor >= 0:
                 os.close(descriptor)

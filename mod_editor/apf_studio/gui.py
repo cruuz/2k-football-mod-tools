@@ -231,7 +231,7 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.TEAM_IDENTITY: "Browse team-facing resources; more identity editing unlocks here as each field is proven safe.",
     ApfCategory.LOGOS: "Replace the shared 512×512 team-logo crest and the 128×128 draft logo, and browse every indexed logo and team-art record.",
     ApfCategory.SCOREBUG: "See the field scorebug\u2019s own artwork \u2014 every graphic embedded in its seven scene parts plus the shared score-digit mask \u2014 and preview or export any of it. Only digital_font has a proved writer; geometry, layout, and timing are read-only.",
-    ApfCategory.FIELD_ART: "Browse ~118 stock NFL endzone packages + practice/divot inventory. The focused editor writes six offline-proved base slots; other rows stay export-only until proved.",
+    ApfCategory.FIELD_ART: "Browse 235 stock NFL endzone layers (118 endzone_l0 + 117 endzone_l1) plus practice/divot inventory. Per-team endzones are browsable under All Textures; only the two shared outer-6 layers are writable in the focused editor.",
     ApfCategory.STADIUMS: "Explore stadium geometry in 3D, edit any of the 78 statically owned embedded textures, and round-trip same-topology POSITION edits for 77 catalog-authorized surfaces into a separately verified copied 1A.",
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",
@@ -451,14 +451,17 @@ def _copy_new(source: Path, destination: Path) -> Path:
 
 
 def _link_reference(source: Path, destination: Path) -> None:
-    """Reference one read-only pack beside a staged volume without copying it.
+    """Reference one read-only pack beside a staged volume.
 
     An APF index only parses under its own pack name and beside every sibling
     pack it declares, so chaining two writers over one volume needs those packs
-    visible next to the intermediate copy.  A link is a reference, not a copy:
-    no pack is duplicated, and the user's game is still never opened for
-    writing.  Symlinks are tried first because they work across filesystems; a
-    hard link is the fallback for platforms that restrict symlink creation.
+    visible next to the intermediate copy. Symlinks are tried first because
+    they work across filesystems; a hard link is the fallback for platforms
+    that restrict symlink creation. If both link types are unavailable (for
+    example, a Windows user chose an output drive different from the game
+    drive), copy the read-only pack as a final fallback. That costs disk space
+    and time but needs no administrator privilege and preserves the same
+    parser contract.
     """
 
     failures: list[str] = []
@@ -468,10 +471,22 @@ def _link_reference(source: Path, destination: Path) -> None:
             return
         except (OSError, NotImplementedError, AttributeError) as exc:
             failures.append(f"{getattr(linker, '__name__', 'link')}: {exc}")
+    try:
+        if not source.is_file() or source.is_symlink():
+            raise OSError("source pack is not a regular non-symlink file")
+        if destination.exists() or destination.is_symlink():
+            raise FileExistsError(destination)
+        shutil.copyfile(source, destination)
+        if destination.stat().st_size != source.stat().st_size:
+            destination.unlink(missing_ok=True)
+            raise OSError("copied sibling pack has the wrong size")
+        return
+    except OSError as exc:
+        failures.append(f"copy: {exc}")
     raise RuntimeError(
-        f"Could not reference the sibling pack {source.name} beside the staged "
-        f"volume ({'; '.join(failures)}). This build needs the packs your game "
-        "declares to be visible next to its own copy."
+        f"Could not stage the sibling pack {source.name} beside the staged "
+        f"volume ({'; '.join(failures)}). Choose a writable output folder and "
+        "try again."
     )
 
 
@@ -1208,6 +1223,25 @@ _ERROR_FIX_HINTS: tuple[tuple[str, str], ...] = (
         "FFmpeg was not found",
         "Fix: install FFmpeg to convert ordinary audio (MP3, FLAC, OGG, M4A), or "
         "supply a PCM16 WAV that already matches the slot's exact shape.",
+    ),
+    (
+        "administrator rights",
+        "Fix: Mod Studio does not need Run as administrator. Choose an empty "
+        "output folder you can write to, such as Documents or Desktop. If the "
+        "game is on another drive, the build may copy read-only sibling packs "
+        "instead of linking them; that is slower but still needs no elevation.",
+    ),
+    (
+        "Access is denied",
+        "Fix: do not choose Program Files, the game disc, or another protected "
+        "folder for output. Choose a new empty folder under Documents/Desktop; "
+        "the installer and editor are designed to run as a normal Windows user.",
+    ),
+    (
+        "Permission denied",
+        "Fix: choose a new empty output folder under Documents or Desktop. "
+        "Never build into the original game folder; Mod Studio always creates a "
+        "separate copy and does not require administrator mode.",
     ),
 )
 
@@ -2438,6 +2472,11 @@ class AssetBrowser(QWidget):
             ok, value = result  # type: ignore[misc]
             if ok:
                 self.preview.set_image(Path(value))
+                note = getattr(self.facade, "preview_alpha_note", None)
+                if note:
+                    self.preview.setToolTip(
+                        self.preview.toolTip() + "\n\n" + str(note)
+                    )
             else:
                 self.preview.set_error(str(value))
 
@@ -3168,6 +3207,11 @@ class UniformStudioPage(QWidget):
         def complete(result: object) -> None:
             if token == self._preview_token and self._selected_asset() == asset:
                 self.preview.set_image(Path(result))
+                note = getattr(self.facade, "preview_alpha_note", None)
+                if note:
+                    self.preview.setToolTip(
+                        self.preview.toolTip() + "\n\n" + str(note)
+                    )
 
         def _uniform_preview_watchdog() -> None:
             if token != self._preview_token:
@@ -6203,6 +6247,11 @@ class ApfTextLogoPanel(QFrame):
         def complete(result: object) -> None:
             if token == self._preview_token and self.current_asset() == asset:
                 self.preview.set_image(Path(str(result)))
+                note = getattr(self.facade, "preview_alpha_note", None)
+                if note:
+                    self.preview.setToolTip(
+                        self.preview.toolTip() + "\n\n" + str(note)
+                    )
 
         def _wordmark_preview_watchdog() -> None:
             if token != self._preview_token:
@@ -6633,6 +6682,7 @@ class ApfFieldArtPanel(QFrame):
         self._staged: dict[tuple[int, int], Path] = {}
         self._preview_dir: Path | None = None
         self._preview_token = 0
+        self._display_alpha_note: str | None = None
         self.setObjectName("panel")
         box = QHBoxLayout(self)
         box.setContentsMargins(16, 14, 16, 14)
@@ -6939,7 +6989,11 @@ class ApfFieldArtPanel(QFrame):
         return self._preview_dir / name
 
     def _decode_source_operation(
-        self, target: _FieldArtTarget, progress: Callable[[str, int, int], None]
+        self,
+        target: _FieldArtTarget,
+        progress: Callable[[str, int, int], None],
+        *,
+        for_display: bool = True,
     ) -> tuple[bool, object]:
         try:
             source = self.facade.source
@@ -6976,6 +7030,14 @@ class ApfFieldArtPanel(QFrame):
                 )
             base = pixel_bytes[head_len : head_len + contract.base_len]
             width, height, rgba = apf_inner.decode_txtr_base_rgba(metadata, base)
+            self._display_alpha_note = None
+            if for_display:
+                rgba, applied = apf_inner.force_opaque_alpha_for_display(rgba)
+                if applied:
+                    self._display_alpha_note = (
+                        "This mask's alpha is unused storage (all zero); "
+                        "the preview is shown opaque so its RGB data is visible."
+                    )
             output = self._preview_path(f"{contract.name}_source.png")
             Image.frombytes("RGBA", (width, height), rgba).save(output)
             return True, output
@@ -6994,6 +7056,10 @@ class ApfFieldArtPanel(QFrame):
         ok, value = result  # type: ignore[misc]
         if ok:
             self.preview.set_image(Path(str(value)))
+            if self._display_alpha_note:
+                self.path_note.setText(
+                    self.path_note.text() + "\n\n" + self._display_alpha_note
+                )
         else:
             self.preview.set_error(str(value))
 
@@ -7027,7 +7093,9 @@ class ApfFieldArtPanel(QFrame):
             return
 
         def operation(progress: Callable[[str, int, int], None]) -> Path:
-            ok, value = self._decode_source_operation(target, progress)
+            ok, value = self._decode_source_operation(
+                target, progress, for_display=False
+            )
             if not ok:
                 raise RuntimeError(str(value))
             return _copy_new(Path(str(value)), path)
@@ -7307,8 +7375,8 @@ class FieldArtStudioPage(QWidget):
         self.stock_endzone_button.setObjectName("secondaryButton")
         self.stock_endzone_button.setToolTip(
             "Jump the ownership map + inventory to the stock NFL endzone family "
-            "(≈118 package pairs). Browse/export only — writable base slots stay "
-            "in the focused editor above. Per-team endzone writers are not proved."
+            "(235 per-team layers). Browse/export only — per-team writers are not "
+            "proved. The focused editor writes only the two shared outer-6 layers."
         )
         self.stock_endzone_button.setProperty(
             "disableReason",
@@ -7464,9 +7532,9 @@ class FieldArtStudioPage(QWidget):
         )
         # Never silent-gray stock jump: ready once inventory maps endzone family.
         stock_tip = (
-            "Filter to stock NFL endzone packages (≈118 l0/l1 pairs). "
-            "Browse and Export original PNG only — focused editor above still "
-            "owns the six writable base slots."
+            "Filter to the 235 per-team stock NFL endzone layers. "
+            "Browse and Export original PNG only — per-team writers are not "
+            "proved; the focused editor owns only the two shared outer-6 layers."
         )
         self.stock_endzone_button.setEnabled(True)
         self.stock_endzone_button.setToolTip(stock_tip)

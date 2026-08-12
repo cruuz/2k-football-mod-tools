@@ -1247,8 +1247,10 @@ def decode_txtr_base_rgba(
         raise FormatError(
             f"PORTME: Xenos format {format_value} "
             f"({metadata['format_name']}) is not implemented for PNG. "
-            f"Supported PNG previews: 8, 1_5_5_5, 5_6_5, 8_8_8_8, 8_8, "
-            f"4_4_4_4, DXT1, DXT2_3, DXT4_5, DXN, format-32 cubemap face0. "
+            f"This decoder covers: 8, 1_5_5_5, 5_6_5, 8_8_8_8, 8_8, "
+            f"4_4_4_4, DXT1, DXT2_3, DXT4_5, format-32 cubemap face0. "
+            f"DXN (49) and DXT5A (59) are decoded by the asset layer above "
+            f"this one, which routes them through their own layouts. "
             f"Export raw TXTR parts instead."
         )
 
@@ -1380,6 +1382,57 @@ def decode_txtr_base_rgba(
                         destination = (y * width + x) * 4
                         rgba[destination : destination + 4] = bytes(pixel)
     return width, height, bytes(rgba)
+
+
+def force_opaque_alpha_for_display(rgba: bytes) -> tuple[bytes, bool]:
+    """Substitute 255 for an alpha channel that is uniformly zero, display only.
+
+    Some APF mask textures (``jersey_color``, ``shoulder_color``) store real
+    mask data in RGB while retail left alpha at zero everywhere: the shader
+    consumes RGB as mask selectors and never samples alpha, so the channel is
+    unused storage rather than an opacity instruction.  A preview that honours
+    that alpha composites zero over the checkerboard and shows a blank panel
+    for a texture that is anything but blank.
+
+    The gate is deliberately narrow: exactly one distinct alpha value and that
+    value is 0.  Genuinely transparent art (varying alpha, or a uniform 255)
+    is returned untouched.
+
+    DISPLAY PATH ONLY.  The substituted alpha must never reach an encoder --
+    the zero alpha is written back verbatim on the encode side, and
+    :func:`restore_unused_mask_alpha_for_encode` is the matching half of the
+    split.
+    """
+
+    if len(rgba) % 4:
+        raise FormatError("RGBA buffer length is not a multiple of four")
+    if not rgba or any(rgba[3::4]):
+        return rgba, False
+    forced = bytearray(rgba)
+    forced[3::4] = b"\xff" * (len(rgba) // 4)
+    return bytes(forced), True
+
+
+def restore_unused_mask_alpha_for_encode(wanted: bytes, original: bytes) -> bytes:
+    """Force *wanted*'s alpha to zero when *original*'s alpha is uniformly zero.
+
+    The encode half of the display/encode split for all-zero-alpha mask
+    textures.  A preview or export shows such a mask force-opaqued (see
+    :func:`force_opaque_alpha_for_display`) so the user can see and edit the
+    RGB mask; when that image comes back in, its display alpha must not be
+    encoded -- the slot's alpha is unused storage that retail holds at zero,
+    and it is written back verbatim.  Gating on the *original* decoded base
+    (not the incoming image) keeps the rule family-agnostic and leaves slots
+    with real, varying alpha completely alone.
+    """
+
+    if len(wanted) != len(original) or len(wanted) % 4:
+        raise FormatError("wanted and original RGBA lengths differ")
+    if not original or any(original[3::4]):
+        return wanted
+    restored = bytearray(wanted)
+    restored[3::4] = b"\0" * (len(wanted) // 4)
+    return bytes(restored)
 
 
 def _png_chunk(kind: bytes, payload: bytes) -> bytes:

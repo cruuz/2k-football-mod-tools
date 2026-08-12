@@ -169,7 +169,7 @@ def _publish_archive(
         os.replace(temporary, destination)
         return
     try:
-        os.link(temporary, destination, follow_symlinks=False)
+        platform_compat.publish_no_replace(temporary, destination)
     except FileExistsError as exc:
         raise ValidationError(f"A file appeared at the project destination: {destination}") from exc
 

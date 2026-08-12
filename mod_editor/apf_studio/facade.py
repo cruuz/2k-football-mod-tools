@@ -178,6 +178,15 @@ class ApfStudioFacade:
         return self.source.display_name if self.source else "No game loaded"
 
     @property
+    def preview_alpha_note(self) -> str | None:
+        """Explain a display-only alpha substitution made by the last preview."""
+        return (
+            self.session.asset_io.display_alpha_note
+            if self.session is not None
+            else None
+        )
+
+    @property
     def modified_asset_ids(self) -> frozenset[str]:
         return self.session.modified_asset_ids if self.session else frozenset()
 

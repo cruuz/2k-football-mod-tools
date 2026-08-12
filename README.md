@@ -187,6 +187,14 @@ Double-click launchers are bundled for all three platforms (see *Install*).
    message if something is missing. (APF 2K8 Mod Studio ships the same three
    launchers named `APF-2K8-Mod-Studio.sh` / `.bat` / `.command`.)
 
+   **Windows permissions:** the editor and the per-user installer are intended
+   to run as a normal user; do not use **Run as administrator**. Always build
+   into a new empty folder under Documents or Desktop, never into Program
+   Files, the original game folder, or a disc. If the source and output are on
+   different drives, the editor can copy its read-only sibling packs when
+   Windows will not allow a link. That may take longer, but it does not require
+   elevation.
+
 ### From source
 ```bash
 git clone https://github.com/<you>/2k-football-mod-tools.git

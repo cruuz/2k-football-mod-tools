@@ -124,6 +124,14 @@ def _encode_changed_blocks(
         raise UniformPatchError(f"mip {location.level} original RGBA length is invalid")
     if len(wanted_rgba) != len(original_rgba):
         raise UniformPatchError(f"mip {location.level} wanted RGBA length is invalid")
+    # ``jersey_color`` is a mask texture. Retail stores its alpha channel as
+    # zero for every texel because the shader consumes RGB selectors and never
+    # samples alpha. The preview deliberately force-opaques that unused
+    # channel so the modder can see the mask; restore the retail zero before
+    # encoding so a display-only convenience can never corrupt the payload.
+    wanted_rgba = apf_inner.restore_unused_mask_alpha_for_encode(
+        wanted_rgba, original_rgba
+    )
     result = bytearray(original_linear)
     changed: list[int] = []
     for block_y in range(location.height_blocks):

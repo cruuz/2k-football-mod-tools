@@ -1,6 +1,22 @@
 # APF 2K8 Mod Studio Changelog
 
-## 0.1.0-alpha.67 — crest mips, and both layers from the app — 2026-08-11
+## 0.1.0-alpha.68 — previews and normal-user Windows builds — 2026-08-11
+
+Beta 36 makes `jersey_color` and `shoulder_color` previews visible when retail
+stores their unused alpha channel as all zero. The preview substitutes opaque
+alpha only for display, exports the original RGBA, and restores retail zero
+alpha before either writer encodes a replacement. DXN (`helmet_color`) errors
+now explain that the asset layer owns its separate decoder.
+
+Windows builds no longer depend on administrator-only symbolic links: staged
+pack references fall back from symlink to hardlink to a verified copy, and
+exports use the platform no-replace publisher so exFAT is supported. The
+installer remains per-user; output should be a new writable folder outside
+Program Files and the original game folder.
+
+Field Art now makes the full 235-layer stock endzone family discoverable for
+browse/export. The focused writer still owns only the two shared outer-6
+layers; per-team replacement remains unproved and is labeled that way.
 
 ### Fixed: a second, smaller logo in the corner of your crest
 
