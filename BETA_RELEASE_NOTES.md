@@ -1,4 +1,50 @@
-# beta-37 — RC62 / alpha.69
+# beta-38 — RC62 / alpha.70
+
+**Date:** 2026-08-12
+
+**2K5 Mod Studio:** `v1.0-RC62` (unchanged)
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.70`
+
+## Fixed: tagged-slot move onto an added play
+
+Moving a tagged slot onto a play added in the same request now verifies. The
+old check treated a move as a Y-swap against the original book, so a new play
+(no original Y) failed even when the compiler was correct. That was the
+X-43Blitz Bear case: add play 560, then hand it tagged slot 1 from play 542.
+
+## Added: empty a formation
+
+**Empty this formation…** removes every stored play in one request. Tagged
+slots are shed because `min(4, 0)` is 0. The record trailer is not touched, so
+the formation is still named in the book. The executable's count (`0x84a8ac30`)
+and get-nth (`0x84a8bd20`) then return 0/null, so the four tagged plays cannot
+come from that record. Which formation the director selects next is still
+runtime-unproved. This is not a WR3→TE package substitution.
+
+## Added: title update 1.1 for Xenia launch
+
+**Title Update 1.1…** pins the Xbox 360 LIVE installer (title `54540807`,
+content type `000B0000`) by size and SHA-256 and copies it into this session's
+isolated Xenia content folder on Launch. The 1.1 update is required on
+Xbox/Xenia and never shipped for PS3. A TU installed only in a standalone
+Xenia folder will not apply here.
+
+Davidhbui's Beta 36 mask-preview follow-up (cache-hit notes, visible exports,
+empty retail slots) was already complete in Beta 37 / alpha.69.
+
+## Verification boundary
+
+Focused playbook, launcher, updater, and UI tests pass. Full suite, release
+gates, deterministic archives, and local launcher smoke tests are recorded
+below after packaging. No retail data is added to the repository or release
+archives.
+
+## Downloads
+
+Receipts for the sealed archives will be recorded here after packaging.
+
+## beta-37 — RC62 / alpha.69
 
 **Date:** 2026-08-12
 

@@ -5,7 +5,15 @@ offensive and 33 defensive playbook records are only *labels*: they carry a
 name, a type string and a side, with no content pointer at all, and they resolve
 to seven offensive and four defensive real types.  The stored membership lives
 here, on the disc, as fifteen ``SPLB`` resources of exactly 32,288 bytes each.
-Runtime CPU consumption of an edited membership list remains unproved.
+The decompressed executable **does** consume that list: ``0x84a8ac30`` counts
+entries until play-index ``1023`` (cap 84), ``0x84a8bd20`` returns the nth
+MASTER play or null, and ``0x84a8aa80`` finds a play by tagged slot. An empty
+record (first entry ``0x13FF``) makes count return 0 and get-nth return null;
+surveyed callers skip the play loop when count is 0, so the four tagged plays
+cannot be returned from that record. Whether the director then selects a
+different formation, and which play it calls on 3rd-and-long from a still-
+populated list, remain runtime-unproved. Automatic WR3→TE package substitution
+is not offered.
 
 Layout, established by decoding all fifteen books and checking every decoded
 name against the MASTER ``PLAY`` resource:
@@ -66,9 +74,18 @@ untagged play carries and the loop scans for those as candidates.  The move
 this writer performs is the game's own: ``0x84a8ab28`` takes a slot off one play
 and puts it on another.  Supporting accessors: ``0x848630e8`` returns
 ``(entry >> 10) & 7``, ``0x848630f8`` writes it back with ``rlwimi``/``sthx``,
-and ``0x84a8aa84`` returns the play whose ``Y`` equals a caller-supplied slot --
-masking ``& 0x3FF``, skipping ``1023``, bounded at 84, every constant this
-module already pins.
+and ``0x84a8aa80`` (mflr; walk at ``0x84a8aa84``) returns the play whose ``Y``
+equals a caller-supplied slot -- masking ``& 0x3FF``, skipping ``1023``,
+bounded at 84, every constant this module already pins.
+
+Membership consumption, same image, same constants. ``0x84a8ac30`` walks the
+entry list, increments a counter while the play index is not ``1023``, and
+stops at 84. ``0x84a8bd20`` takes an index in r5, refuses ``>= 84``, loads
+``halfword[base + index*2]``, masks 10 bits, and returns null on ``1023``.
+Callers at ``0x84a14ce8``, ``0x84a47448``, ``0x84a2e8e8`` and ``0x84a8fe9c``
+compare that count to 0 and skip the get-nth loop when it is empty. That is
+static proof an emptied formation cannot yield a stored play. It is not a
+runtime witness of which formation the CPU picks next.
 
 The **fourth** tag, ``Y == 3``, is a different matter: the assign loop never
 writes it, and the only place the executable tests for it is a generic 3-bit
@@ -80,8 +97,11 @@ substitution.  String proximity is not a code path; find field access by
 scanning for the instruction.  This writer
 therefore edits the tags only in ways that keep the proved ``min(4, plays)``
 rule exactly: a tag may be moved onto another play in the same formation, or
-carried onto one when its play is removed, but it may never be dropped,
-duplicated, or given a value the retail books never use.
+carried onto one when its play is removed. Emptying a formation sheds every
+tag because ``min(4, 0)`` is 0; the record trailer is left untouched. The
+executable's count/get-nth consumers then return 0/null for that record
+(static); which formation the director selects next is still runtime-unproved.
+A tag may never be duplicated or given a value the retail books never use.
 """
 
 from __future__ import annotations
@@ -127,6 +147,32 @@ NEUTRAL_X = 2
 #: four.  Used only to pick a slot the user has not picked; never to relabel one.
 TAG_PRIORITY = (1, 0, 2, 3)
 MAX_TAGS = len(TAG_PRIORITY)
+
+#: Decompressed PE (``tools/xex_extract_pe.cpp``), image base ``0x82000000``,
+#: SHA-256 ``cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf``.
+#: File offset = VA − image base. Words are big-endian PowerPC.
+APF_PE_SHA256 = "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf"
+APF_PE_IMAGE_BASE = 0x82000000
+STATIC_CONSUMER_WORDS: Mapping[int, int] = {
+    0x84864C78: 0x538A54EA,  # rlwimi r10, r28, 10, 19, 21  (audible Y write)
+    0x84A8AA80: 0x7D8802A6,  # find-by-slot mflr
+    0x84A8AAA8: 0x552705BE,  # clrlwi r7, r9, 22
+    0x84A8AAAC: 0x2B0703FF,  # cmplwi r7, 1023
+    0x84A8AAC8: 0x2F0B0054,  # cmpwi r11, 84
+    0x84A8AC30: 0x7D8802A6,  # count-plays mflr
+    0x84A8AC54: 0xA12B0000,  # lhz r9, 0(r11)
+    0x84A8AC58: 0x552905BE,  # clrlwi r9, r9, 22
+    0x84A8AC5C: 0x2B0903FF,  # cmplwi r9, 1023
+    0x84A8AC64: 0x38630001,  # addi r3, r3, 1
+    0x84A8AC6C: 0x2F030054,  # cmpwi r3, 84
+    0x84A8BD20: 0x7D8802A6,  # get-nth mflr
+    0x84A8BD34: 0x2F050054,  # cmpwi r5, 84
+    0x84A8BD44: 0x54AB083C,  # slwi r11, r5, 1
+    0x84A8BD48: 0x7D6B1A2E,  # lhzx r11, r11, r3
+    0x84A8BD4C: 0x556B05BE,  # clrlwi r11, r11, 22
+    0x84A8BD50: 0x2B0B03FF,  # cmplwi r11, 1023
+    0x84A8BD7C: 0x38600000,  # li r3, 0  (empty / OOB)
+}
 
 #: outer entry -> book name, as shipped. Fifteen resources; four carry no name.
 STOCK_BOOKS: Mapping[int, str] = {
@@ -526,6 +572,14 @@ def apply_record_changes(
         entries[source] = SplbEntry(origin.x, destination.y, origin.play_index)
         entries[target] = SplbEntry(destination.x, origin.y, destination.play_index)
 
+    removing = {change.play_index for change in memberships if not change.member}
+    if entries and all(entry.play_index in removing for entry in entries):
+        # min(4, 0) is 0: a formation with no stored plays carries no tagged
+        # slots. The trailer still names the formation; CPU selection of that
+        # empty record is unproved.
+        _check_tag_rule(record.record_index, before, [])
+        return ()
+
     for change in memberships:
         if change.member:
             continue
@@ -639,7 +693,10 @@ def compile_book(
             "resource_length_unchanged": True,
             "tag_count_rule_held": True,
             "tag_meaning_proved": False,
+            "cpu_membership_static_proved": True,
             "cpu_behaviour_runtime_proved": False,
+            "empty_record_returns_no_plays": True,
+            "wr3_te_package_sub_proved": False,
         },
     }
     return CompiledBook(book.outer_index, b"", bytes(replacement), report)
@@ -672,7 +729,12 @@ def verify_book(
                 f"Stock-playbook verification: byte 0x{offset:x} changed outside the "
                 "entry region of any record a change named"
             )
-    # The decoded result must actually say what was asked.
+    # The decoded result must actually say what was asked. Isolated
+    # original-vs-final checks on one TagMove or one heir break down once a
+    # request composes an add with a move (the destination has no original Y)
+    # or several removals (a later change can take the slot onward). Re-apply
+    # the same request to the parsed-before book and demand the packed bytes
+    # match that entry list.
     parsed_before = parse_book(before, request.outer_index)
     parsed_after = parse_book(after, request.outer_index)
     for change in request.memberships:
@@ -683,34 +745,66 @@ def verify_book(
                 "Stock-playbook verification: the reparsed book disagrees with the "
                 f"request for record {change.record_index} play {change.play_index}"
             )
-        if change.tag_heir is None:
+    for record_index in sorted(touched):
+        memberships = tuple(
+            change
+            for change in request.memberships
+            if change.record_index == record_index
+        )
+        moves = tuple(
+            move for move in request.moves if move.record_index == record_index
+        )
+        expected = apply_record_changes(
+            parsed_before, parsed_before.records[record_index], memberships, moves
+        )
+        actual = parsed_after.records[record_index].entries
+        _check_tag_rule(
+            record_index, parsed_before.records[record_index].entries, list(actual)
+        )
+        if actual == expected:
             continue
-        was = next(
-            e.y
-            for e in parsed_before.records[change.record_index].entries
-            if e.play_index == change.play_index
-        )
-        heir = next(
-            (e for e in record.entries if e.play_index == change.tag_heir), None
-        )
-        if heir is None or heir.y != was:
-            raise ValidationError(
-                f"Stock-playbook verification: play {change.tag_heir} did not inherit "
-                f"tagged slot {was} in record {change.record_index}"
+        was = {
+            entry.play_index: entry.y
+            for entry in parsed_before.records[record_index].entries
+        }
+        now = {entry.play_index: entry.y for entry in actual}
+        for move in moves:
+            if now.get(move.to_play) != was.get(move.from_play):
+                raise ValidationError(
+                    "Stock-playbook verification: the reparsed book does not show tagged "
+                    f"slot {was.get(move.from_play)} moved from play {move.from_play} to "
+                    f"{move.to_play} in record {move.record_index}"
+                )
+        for change in memberships:
+            if change.tag_heir is None or change.member:
+                continue
+            origin = next(
+                (
+                    entry.y
+                    for entry in parsed_before.records[record_index].entries
+                    if entry.play_index == change.play_index
+                ),
+                None,
             )
-    for move in request.moves:
-        source = parsed_before.records[move.record_index]
-        target = parsed_after.records[move.record_index]
-        was = {e.play_index: e.y for e in source.entries}
-        now = {e.play_index: e.y for e in target.entries}
-        if now.get(move.to_play) != was.get(move.from_play) or now.get(
-            move.from_play
-        ) != was.get(move.to_play):
-            raise ValidationError(
-                "Stock-playbook verification: the reparsed book does not show tagged "
-                f"slot {was.get(move.from_play)} moved from play {move.from_play} to "
-                f"{move.to_play} in record {move.record_index}"
+            heir = next(
+                (entry for entry in expected if entry.play_index == change.tag_heir),
+                None,
             )
+            if heir is not None and origin is not None and heir.y == origin:
+                # The request still names this heir; the packed bytes lost it.
+                packed = next(
+                    (entry for entry in actual if entry.play_index == change.tag_heir),
+                    None,
+                )
+                if packed is None or packed.y != origin:
+                    raise ValidationError(
+                        f"Stock-playbook verification: play {change.tag_heir} did not "
+                        f"inherit tagged slot {origin} in record {record_index}"
+                    )
+        raise ValidationError(
+            f"Stock-playbook verification: record {record_index} entries do not "
+            "match the requested edits"
+        )
     for index, (a, b) in enumerate(zip(parsed_before.records, parsed_after.records)):
         if a.trailer != b.trailer:
             raise ValidationError(

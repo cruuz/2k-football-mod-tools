@@ -1,5 +1,20 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.70 — tagged-slot compose, empty formations, title update 1.1 — 2026-08-12
+
+Beta 38 fixes the stock-playbook verifier so a tagged slot can move onto a play
+added in the same request (X-43Blitz Bear: play 542 → 560). Fine-tune Plays
+gains **Empty this formation…**, which sheds every stored play because
+`min(4, 0)` is 0 and leaves the record trailer untouched. The decompressed
+executable counts that list at `0x84a8ac30` and returns the nth play at
+`0x84a8bd20`; an empty record returns 0/null. Launch copies the hash-pinned
+Xbox 360 title update 1.1 LIVE package into this session's isolated Xenia
+content folder; the update never shipped for PS3. Automatic WR3→TE package
+substitution is not offered: APF MASTER has an 11-byte role permutation at
+formation `+0x11`, but which index is WR3 vs TE is unproved. Which play the CPU
+calls on 3rd-and-long remains runtime-unproved. The shared update checker
+identifies this build as `beta-38`.
+
 ## 0.1.0-alpha.69 — visible exports and honest playbook wording — 2026-08-12
 
 Beta 37 completes the Beta 36 mask-preview follow-up:

@@ -20,7 +20,7 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 | G9 | Bug | Offensive false starts almost never | Slider→code / RNG | **wall: no slider-to-code binding** | Run fixed-seed/identical-state samples at slider min/max, record event counts and save bytes, then trace the slider read and RNG branch. A UI slider value alone cannot authorize a patch. |
 | G10 | HUGE | Bronze/silver no 2nd-level charge when user-controlled | Ability gate on input path | **offline tier/ability writes proved; XEX input-gate wall** | Use the pinned Save Players fields below to create bronze+skills and gold-no-skills fixtures, capture the user-vs-AI divergence in Xenia, then trace the first XEX consumer. |
 | G11 | Huge | All golds get 2nd-level charge without skills | Same gate inverted | **offline tier/ability writes proved; XEX input-gate wall** | Same controlled fixture and trace as G10; no XEX patch is authorized without the input-path branch address and emulator witness. |
-| G12 | #2 | TEs rarely on field; never 3rd/4th long except Shotgun PB | Offensive PB construction | **annotated; stock-book writer wall** | Browser/⚠ annotations and route copy ship. Pin the target APF stock book plus Save Assignment owner and prove a count-preserving per-team book write before enabling automatic long-down composition. G2’s menu link copy is not runtime proof. |
+| G12 | #2 | TEs rarely on field; never 3rd/4th long except Shotgun PB | Offensive PB construction | **SPLB membership statically consumed; package-sub role legend unproved** | Fine-tune Plays can empty a formation (`min(4,0)=0`; trailer untouched) or add TE-using plays and move tagged slots onto them, including a play added in the same request. The decompressed executable counts that list at `0x84a8ac30` and returns the nth play at `0x84a8bd20`; an empty record returns 0/null, so the four tagged plays cannot come from it. Which formation the director selects next, and which play it calls on 3rd-and-long, remain runtime-unproved. APF MASTER formations carry an 11-byte permutation of 0..10 at `+0x11` (163/163); which index is WR3 vs TE is unproved, so automatic package substitution is not offered. Choose Side (2nd controller to middle) is a user-team observation, not a disc edit. |
 | G13 | #2 | Bear DE man on TE1 / RLB edge leftovers | Formation slot roles | **annotated; role-consumer wall** | `PLAY_PLAYER_ROLE_HYPOTHESIS` is the current precise hypothesis. Pin one Bear formation/play fixture and trace the role-slot consumer before changing any descriptor; the ⚠ tag is discovery only. |
 | G14 | #2 | Many unused PB clones | Save Assignments + stock PB editor | **bounded route copy shipped; per-team book wall** | 586×11 assignment route copy/swap is offline-proved. True per-team stock books require a pinned Save Assignment owner plus count-preserving book selection/build verification; freehand inverse compilation remains blocked. |
 
@@ -82,9 +82,10 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
 ### APF parallel surface
 
 MASTER PLAY assignment-route copy/swap is offline-proved (586×11). G1 package-map
-is proved on 2K5 o0308; APF MASTER needs the same formation-level package map
-hunt (or equivalent personnel table) before an APF G1 fix pack. G2 remains open
-on both products.
+is proved on 2K5 o0308 at formation `+0x0D`. APF MASTER has the parallel 11-byte
+permutation of 0..10 at formation `+0x11` (163/163 formations, census 2026-08-12).
+Which APF index is WR3 vs TE is **not** established, so there is no APF G12
+package-sub writer. G2 remains open on both products.
 
 ## Honesty
 

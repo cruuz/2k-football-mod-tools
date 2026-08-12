@@ -14,6 +14,7 @@ reject.
 
 from __future__ import annotations
 
+import hashlib
 import os
 from pathlib import Path
 import struct
@@ -143,6 +144,24 @@ class TagMoveTests(unittest.TestCase):
                 ],
             )
 
+    def test_a_slot_can_move_onto_a_play_added_in_the_same_request(self) -> None:
+        """The verifier used to demand a Y-swap against the original book.
+
+        Play 560 in X-43Blitz Bear is the community case: add it, then hand it
+        tagged slot 1. The destination has no original Y, so treating the move
+        as a swap against the source book refused a legal compile.
+        """
+
+        changes = [
+            splb.MembershipChange(OUTER, FULL, 300, True),
+            splb.TagMove(OUTER, FULL, 11, 300),
+        ]
+        after = self._record_after(changes)
+        self.assertEqual(_tags(after)[300], 1)
+        self.assertNotIn(11, _tags(after))
+        self.assertIn(300, [e.play_index for e in after.entries])
+        self.assertTrue(splb.follows_tag_rule(after.entries))
+
 
 class RemovalCarriesTheSlotTests(unittest.TestCase):
     """Removing a tagged play offers a successor instead of a flat refusal."""
@@ -225,6 +244,18 @@ class RemovalCarriesTheSlotTests(unittest.TestCase):
         self.assertEqual(_tags(after), {70: 1, 200: 0})
         self.assertTrue(splb.retail_tag_shape(after.entries))
 
+    def test_emptying_a_formation_sheds_every_tagged_slot(self) -> None:
+        changes = [
+            splb.MembershipChange(OUTER, FULL, play, False)
+            for play in (40, 41, 42, 10, 11, 12, 13)
+        ]
+        compiled = splb.compile_book(self.book, changes)
+        splb.verify_book(self.body, compiled.replacement, changes)
+        after = splb.parse_book(compiled.replacement, OUTER).records[FULL]
+        self.assertEqual(after.entries, ())
+        self.assertTrue(splb.follows_tag_rule(after.entries))
+        self.assertEqual(after.trailer, self.book.records[FULL].trailer)
+
 
 class InvariantTests(unittest.TestCase):
     """The rule the writer enforces is exactly the one the retail books keep."""
@@ -289,7 +320,10 @@ class InvariantTests(unittest.TestCase):
         claims = splb.compile_book(self.book, [move]).report["claims"]
         self.assertTrue(claims["tag_count_rule_held"])
         self.assertFalse(claims["tag_meaning_proved"])
+        self.assertTrue(claims["cpu_membership_static_proved"])
         self.assertFalse(claims["cpu_behaviour_runtime_proved"])
+        self.assertTrue(claims["empty_record_returns_no_plays"])
+        self.assertFalse(claims["wr3_te_package_sub_proved"])
 
 
 class ForgedOutputTests(unittest.TestCase):
@@ -379,6 +413,8 @@ class CopyTests(unittest.TestCase):
             self.assertIn("audible", copy.lower())
             self.assertIn("0x84864c78", copy)      # the write that proves it
             self.assertIn("0x84a8ab28", copy)      # the swap the panel mirrors
+            self.assertIn("0x84a8ac30", copy)      # count-plays consumer
+            self.assertIn("0x84a8bd20", copy)      # get-nth consumer
 
     def test_the_copy_still_refuses_to_explain_the_fourth_slot(self) -> None:
         """Three slots are proved audibles; the fourth is not explained.
@@ -401,6 +437,8 @@ class CopyTests(unittest.TestCase):
     def test_the_copy_no_longer_calls_the_slot_meaning_the_reason_to_refuse(self) -> None:
         self.assertNotIn("removing one is refused rather than guessed", self.panel_copy)
         self.assertIn("moved", self.panel_copy)
+        self.assertIn("Emptying a formation", self.panel_copy)
+        self.assertIn("min(4, 0)", self.panel_copy)
 
     def test_the_copy_does_not_claim_runtime_cpu_play_calling(self) -> None:
         for copy in (self.panel_prose, self.writer_prose):
@@ -408,6 +446,34 @@ class CopyTests(unittest.TestCase):
             self.assertIn("unproved", copy)
             self.assertNotIn("cpu may call", copy)
             self.assertNotIn("cpu actually calls", copy)
+
+    def test_the_copy_states_empty_records_return_no_plays(self) -> None:
+        for copy in (self.panel_copy, self.writer_copy):
+            self.assertIn("0x84a8ac30", copy)
+            self.assertIn("0x84a8bd20", copy)
+
+
+class StaticConsumerPinTests(unittest.TestCase):
+    """When the decompressed PE is present, the cited instructions must match."""
+
+    def test_static_consumer_words_match_the_decompressed_pe(self) -> None:
+        candidates = (
+            Path("/tmp/apf.pe"),
+            WORKSPACE / ".codex-tmp/apf-sixth/apf-decoded.pe",
+        )
+        pe_path = next((path for path in candidates if path.is_file()), None)
+        if pe_path is None:
+            self.skipTest("decompressed APF PE is not on this machine")
+        payload = pe_path.read_bytes()
+        self.assertEqual(hashlib.sha256(payload).hexdigest(), splb.APF_PE_SHA256)
+        for address, expected in splb.STATIC_CONSUMER_WORDS.items():
+            offset = address - splb.APF_PE_IMAGE_BASE
+            actual = struct.unpack_from(">I", payload, offset)[0]
+            self.assertEqual(
+                actual,
+                expected,
+                f"VA 0x{address:08x}: expected 0x{expected:08x}, got 0x{actual:08x}",
+            )
 
 
 class PanelTests(unittest.TestCase):
@@ -533,6 +599,17 @@ class PanelTests(unittest.TestCase):
             item.setCheckState(Qt.Unchecked)
         self.assertEqual(self.panel.staged_changes(), ())
         self.assertEqual(self._item_for(11).checkState(), Qt.Checked)
+
+    def test_emptying_a_formation_stages_a_verified_clear(self) -> None:
+        self.panel.stage_empty_formation(FULL)
+        changes = self.panel.staged_changes()
+        self.assertTrue(changes)
+        self.assertTrue(all(isinstance(c, splb.MembershipChange) for c in changes))
+        self.assertTrue(all(not c.member for c in changes))
+        compiled = splb.compile_book(self.panel._book, changes)
+        splb.verify_book(self.body, compiled.replacement, changes)
+        after = splb.parse_book(compiled.replacement, OUTER).records[FULL]
+        self.assertEqual(after.entries, ())
 
 
 @unittest.skipUnless(DISC_AVAILABLE, "extracted APF 0A not present")

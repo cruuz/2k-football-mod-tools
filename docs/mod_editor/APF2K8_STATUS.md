@@ -1,8 +1,21 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.69`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.70`.** Historical sealed packages below retain prior alpha numbers.
 
-## 0.1.0-alpha.69 release validation
+## 0.1.0-alpha.70 release validation
+
+Beta 38 ships the stock-playbook follow-up from community reports. Moving a
+tagged slot onto a play added in the same request now verifies. A formation
+can be emptied (`min(4, 0)` is 0; the trailer is untouched). The decompressed
+executable counts that list at `0x84a8ac30` and returns the nth play at
+`0x84a8bd20`; an empty record returns 0/null. Launch can copy the hash-pinned
+Xbox 360 title update 1.1 LIVE package into the isolated Xenia content folder.
+Automatic WR3→TE package substitution is not offered (APF formation `+0x11`
+role permutation found; WR3 vs TE index unproved). Which play the CPU calls on
+3rd-and-long remains runtime-unproved. Davidhbui's Beta 36 mask-preview
+follow-up was already complete in alpha.69.
+
+## 0.1.0-alpha.69 release validation (historical)
 
 Beta 37 completes the Beta 36 preview follow-up without claiming a new runtime
 consumer. Private preview caches persist the display-only alpha note, visible

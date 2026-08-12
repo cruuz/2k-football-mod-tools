@@ -12,7 +12,7 @@ from .models import (
     UniformAsset,
 )
 
-__version__ = "0.1.0-alpha.69"
+__version__ = "0.1.0-alpha.70"
 
 __all__ = [
     "ApfAsset",

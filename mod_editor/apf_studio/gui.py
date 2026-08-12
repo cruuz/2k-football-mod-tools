@@ -20109,6 +20109,8 @@ class ApfStudioMainWindow(QMainWindow):
         self.revert_all_button.setObjectName("dangerQuietButton")
         self.configure_xenia_button = QPushButton("Configure Xenia")
         self.configure_xenia_button.setObjectName("utilityButton")
+        self.title_update_button = QPushButton("Title Update 1.1…")
+        self.title_update_button.setObjectName("utilityButton")
         self.build_button = QPushButton("Build Game Folder")
         self.build_button.setObjectName("buildButton")
         self.launch_button = QPushButton("Launch in Xenia")
@@ -20116,6 +20118,11 @@ class ApfStudioMainWindow(QMainWindow):
         self.undo_button.setToolTip("Undo the most recent edit in this project.")
         self.revert_all_button.setToolTip("Nothing to revert—there are no active edits.")
         self.configure_xenia_button.setToolTip("Choose Xenia Canary and its Wine launcher.")
+        self.title_update_button.setToolTip(
+            "Choose the Xbox 360 APF 2K8 title update 1.1 LIVE package. It is "
+            "required on Xenia/Xbox and never shipped for PS3. Launch copies it "
+            "into this session's isolated Xenia content folder."
+        )
         self.build_button.setToolTip("Create a separate, verified modded game folder.")
         self.launch_button.setToolTip("Launch the most recently built game folder in Xenia.")
         self.undo_button.setAccessibleName("Undo the most recent project edit")
@@ -20128,6 +20135,10 @@ class ApfStudioMainWindow(QMainWindow):
         self.configure_xenia_button.setAccessibleDescription(
             self.configure_xenia_button.toolTip()
         )
+        self.title_update_button.setAccessibleName("Install APF title update 1.1")
+        self.title_update_button.setAccessibleDescription(
+            self.title_update_button.toolTip()
+        )
         self.build_button.setAccessibleName("Build a separate modded game folder")
         self.build_button.setAccessibleDescription(self.build_button.toolTip())
         self.launch_button.setAccessibleName("Launch the latest build in Xenia")
@@ -20135,6 +20146,7 @@ class ApfStudioMainWindow(QMainWindow):
         self.undo_button.clicked.connect(self._undo)
         self.revert_all_button.clicked.connect(self._revert_all)
         self.configure_xenia_button.clicked.connect(self._configure_xenia)
+        self.title_update_button.clicked.connect(self._configure_title_update)
         self.build_button.clicked.connect(self._build_game)
         self.launch_button.clicked.connect(self._launch_xenia)
         layout.addWidget(self.modified_count)
@@ -20142,6 +20154,7 @@ class ApfStudioMainWindow(QMainWindow):
         layout.addWidget(self.revert_all_button)
         layout.addSpacing(4)
         layout.addWidget(self.configure_xenia_button)
+        layout.addWidget(self.title_update_button)
         layout.addSpacing(4)
         layout.addWidget(self.build_button)
         layout.addWidget(self.launch_button)
@@ -20495,6 +20508,11 @@ class ApfStudioMainWindow(QMainWindow):
             "Xenia Configured"
             if self.facade.launcher.settings.configured
             else "Configure Xenia"
+        )
+        self.title_update_button.setEnabled(not blocking)
+        tu_ready = self.facade.launcher.settings.title_update_path is not None
+        self.title_update_button.setText(
+            "Title Update 1.1 ready" if tu_ready else "Title Update 1.1…"
         )
         self.build_button.setEnabled(ready and not blocking)
         self.build_button.setToolTip(
@@ -21115,6 +21133,26 @@ class ApfStudioMainWindow(QMainWindow):
         self._last_detail = "Xenia Canary is configured. Build a game folder, then click Launch."
         self._update_product_state()
 
+    def _configure_title_update(self) -> None:
+        selected, _filter = QFileDialog.getOpenFileName(
+            self,
+            "Choose APF 2K8 title update 1.1",
+            str(Path.home()),
+            "Xbox LIVE package (TU_* *);;All files (*)",
+        )
+        if not selected:
+            return
+        try:
+            self.facade.configure_title_update(Path(selected))
+        except Exception as exc:
+            self._show_error(str(exc), traceback.format_exc())
+            return
+        self._last_detail = (
+            "Title update 1.1 is pinned. Launch will copy it into this session's "
+            "Xenia content folder. It never shipped for PS3."
+        )
+        self._update_product_state()
+
     def _launch_xenia(self) -> None:
         blocker = self.facade.xenia_blocker
         if blocker:
@@ -21133,6 +21171,25 @@ class ApfStudioMainWindow(QMainWindow):
                 return
             QMessageBox.information(self, "Cannot launch Xenia yet", blocker)
             return
+        if self.facade.launcher.settings.title_update_path is None:
+            answer = QMessageBox.question(
+                self,
+                "Title update 1.1 is not installed",
+                "APF 2K8 title update 1.1 is required on Xbox and Xenia; it never "
+                "shipped for PS3. This studio launches into an isolated Xenia "
+                "content folder, so a TU installed in a standalone Xenia folder "
+                "will not apply here.\n\n"
+                "Choose the LIVE STFS package now (the same file Xenia's "
+                "File → Install Content uses), or launch without it.",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
+                QMessageBox.Yes,
+            )
+            if answer == QMessageBox.Cancel:
+                return
+            if answer == QMessageBox.Yes:
+                self._configure_title_update()
+                if self.facade.launcher.settings.title_update_path is None:
+                    return
         self._run_task(
             "Starting the last verified build in Xenia Canary",
             lambda _progress: self.facade.launch_xenia(),

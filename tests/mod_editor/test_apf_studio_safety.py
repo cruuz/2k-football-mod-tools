@@ -992,6 +992,82 @@ class CatalogAndLauncherSafetyTests(unittest.TestCase):
                 launcher.launch(game)
             self.assertEqual(victim.read_bytes(), b"preserve me")
 
+    def test_title_update_1_1_is_hash_pinned(self) -> None:
+        from mod_editor.apf_studio.launcher import (
+            APF_TITLE_UPDATE_SIZE,
+            inspect_title_update,
+            install_title_update,
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            too_small = root / "tiny"
+            too_small.write_bytes(b"LIVE")
+            with self.assertRaisesRegex(LaunchError, "recognizes"):
+                inspect_title_update(too_small)
+            wrong_hash = root / "wrong"
+            wrong_hash.write_bytes(b"LIVE" + b"\0" * (APF_TITLE_UPDATE_SIZE - 4))
+            with self.assertRaisesRegex(LaunchError, "hash-pinned"):
+                inspect_title_update(wrong_hash)
+            link = root / "link"
+            link.symlink_to(too_small)
+            with self.assertRaisesRegex(LaunchError, "non-symlink"):
+                inspect_title_update(link)
+
+        known = Path("/home/noah/Downloads/uranus/TU_1A58207_0000008000000.0000000000082")
+        if not known.is_file():
+            return
+        with tempfile.TemporaryDirectory() as directory:
+            content = Path(directory) / "content"
+            installed = install_title_update(content, known)
+            self.assertTrue(installed.is_file())
+            self.assertEqual(installed.stat().st_size, APF_TITLE_UPDATE_SIZE)
+            again = install_title_update(content, known)
+            self.assertEqual(again, installed)
+
+    def test_launch_copies_title_update_into_isolated_content_root(self) -> None:
+        from mod_editor.apf_studio.launcher import (
+            APF_TITLE_UPDATE_FILENAME,
+            APF_TITLE_ID,
+            APF_TITLE_UPDATE_CONTENT_TYPE,
+            hashlib_sha256_path,
+            install_title_update,
+        )
+
+        known = Path("/home/noah/Downloads/uranus/TU_1A58207_0000008000000.0000000000082")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            executable = root / "xenia"
+            executable.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            executable.chmod(0o755)
+            settings = XeniaSettings(root / "settings.json")
+            settings.configure(executable)
+            if known.is_file():
+                settings.configure_title_update(known)
+            game = root / "game"
+            game.mkdir()
+            (game / "default.xex").write_bytes(b"fixture")
+            data = root / "data"
+            launcher = XeniaLauncher(settings, data_root=data)
+            with patch("subprocess.Popen") as popen:
+                popen.return_value.pid = 4242
+                receipt = launcher.launch(game)
+            command = popen.call_args[0][0]
+            self.assertIn("--apply_title_update=true", command)
+            self.assertTrue(any(item.startswith("--content_root=") for item in command))
+            self.assertEqual(receipt.pid, 4242)
+            if known.is_file():
+                run = data / hashlib_sha256_path(game)
+                installed = (
+                    run
+                    / "content"
+                    / f"{APF_TITLE_ID:08X}"
+                    / f"{APF_TITLE_UPDATE_CONTENT_TYPE:08X}"
+                    / APF_TITLE_UPDATE_FILENAME
+                )
+                self.assertTrue(installed.is_file())
+                self.assertEqual(installed, install_title_update(run / "content", known))
+
 
 if __name__ == "__main__":
     unittest.main()

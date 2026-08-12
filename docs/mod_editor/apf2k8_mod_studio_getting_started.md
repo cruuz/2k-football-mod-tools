@@ -4,7 +4,7 @@ APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-The source code and UI identify as **`0.1.0-alpha.69`**, the current retail-free
+The source code and UI identify as **`0.1.0-alpha.70`**, the current retail-free
 release candidate; its mode-`0444` archive is authenticated by the adjacent
 `.sha256` sidecar. Alpha.38 and earlier remain preserved unchanged. Verify
 whichever sealed archive you install with its authoritative adjacent `.sha256`
@@ -149,7 +149,10 @@ shortcut changed outside the installer is reported and preserved, not erased.
 - Python 3, PyQt5, and Pillow. The launcher reports each missing dependency in
   plain language before trying to open the application.
 - Xenia Canary for playing the result. Xemu is an original-Xbox emulator and is
-  not the correct emulator for APF 2K8.
+  not the correct emulator for APF 2K8. On Xbox and Xenia, **title update 1.1**
+  is required; it never shipped for PS3. Use **Title Update 1.1…** so Launch
+  copies that LIVE package into this session's isolated Xenia content folder
+  (a TU installed only in a standalone Xenia folder will not apply here).
 
 The supported source revision is recognized by all seven hashes in the app's
 read-only source ledger: the original ISO plus `0A`, `0B`, `1A`, `1B`,
@@ -195,7 +198,9 @@ error and no source file is changed.
    The first Save asks for a name. After that, use `Ctrl+S` to update the active
    project or `Ctrl+Shift+S` to save a separate copy.
 8. Choose **Build** and select a new, empty destination folder.
-9. In Xenia Canary, open `default.xex` from that newly built folder.
+9. Choose **Title Update 1.1…** if you have not already, then **Launch in
+   Xenia**. The 1.1 LIVE package is required on Xbox/Xenia and never shipped
+   for PS3.
 
 The product currently builds a complete extracted game directory. It does not
 claim to rebuild a bootable retail ISO. Never redistribute the built directory:
@@ -763,6 +768,27 @@ accounted for exactly two assignment fields / three bytes, reopened to IDs
 13/32 with the book table unchanged, then reverse-patched to the byte-exact
 original. This proves bounded raw-save transport only; gameplay consumption in
 Xenia or on Xbox 360 remains unproved.
+
+## Fine-tune stock CPU playbooks
+
+Open **Playbooks & Plays → Fine-tune Plays**. This edits the on-disc `SPLB`
+membership lists, not the save-assignment labels.
+
+- Tick plays in or out of a formation. Tagged slots follow `min(4, plays)`.
+- **Move tagged slot…** can hand a slot to a play you just added in the same
+  request (the X-43Blitz Bear case).
+- **Empty this formation…** removes every stored play because `min(4, 0)` is 0.
+  The record trailer still names the formation. The executable's count
+  (`0x84a8ac30`) and get-nth (`0x84a8bd20`) then return 0/null, so the four
+  tagged plays cannot come from that record. Which formation the director
+  selects next is still runtime-unproved.
+- Automatic WR3→TE package substitution is not offered. APF MASTER has an
+  11-byte role permutation at formation `+0x11`, but which index is WR3 vs TE
+  is unproved. To put TEs on the tagged slots, add those plays and move the
+  slots onto them.
+
+Which play the CPU calls on 3rd-and-long from a still-populated list remains
+runtime-unproved.
 
 A signed Xbox package now uses the same verified raw-handoff lane as Save
 Players: Mod Studio verifies and extracts `Roster.ROS`, writes an independently

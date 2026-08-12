@@ -11,6 +11,19 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-38 — 2026-08-12
+
+**APF 2K8 alpha.70: tagged-slot compose, empty formations, title update 1.1.**
+
+- Moving a tagged slot onto a play added in the same request now verifies.
+- A formation can be emptied; tagged slots are shed because `min(4, 0)` is 0.
+  Count `0x84a8ac30` / get-nth `0x84a8bd20` then return 0/null for that record.
+- Launch installs the hash-pinned Xbox 360 title update 1.1 into the isolated
+  Xenia content folder. The update never shipped for PS3.
+- Automatic WR3→TE package substitution is not offered (APF `+0x11` map found;
+  role legend unproved). 3rd-and-long play choice remains runtime-unproved.
+  2K5 stays RC62. The shared updater identity is `beta-38`.
+
 ## beta-37 — 2026-08-12
 
 **APF 2K8 alpha.69 completes the mask-preview follow-up.**

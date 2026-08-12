@@ -2008,6 +2008,9 @@ class ApfStudioFacade:
     def configure_xenia(self, executable: Path, wine: Path | None = None) -> None:
         self.launcher.settings.configure(executable, wine)
 
+    def configure_title_update(self, path: Path) -> None:
+        self.launcher.settings.configure_title_update(path)
+
     def launch_xenia(self) -> LaunchReceipt:
         if self.last_build is None:
             raise FacadeError("Build a modded game folder first")

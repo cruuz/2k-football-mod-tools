@@ -172,6 +172,20 @@ class G1G2SpikeTests(unittest.TestCase):
 
 
 class PackageMapLayoutTests(unittest.TestCase):
+    def test_apf_package_map_offset_is_not_the_2k5_offset(self) -> None:
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_FORMATION_SIZE,
+            APF_PACKAGE_MAP_OFFSET_IN_FORMATION,
+            APF_PACKAGE_MAP_ROLE_LEGEND_PROVED,
+        )
+
+        self.assertEqual(APF_PACKAGE_MAP_OFFSET_IN_FORMATION, 0x11)
+        self.assertEqual(APF_FORMATION_SIZE, 0xB8)
+        self.assertNotEqual(
+            APF_PACKAGE_MAP_OFFSET_IN_FORMATION, PACKAGE_MAP_OFFSET_IN_FORMATION
+        )
+        self.assertFalse(APF_PACKAGE_MAP_ROLE_LEGEND_PROVED)
+
     def test_package_map_offset_formula(self) -> None:
         self.assertEqual(
             formation_package_map_body_offset(24),

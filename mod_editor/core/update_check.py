@@ -34,7 +34,7 @@ RELEASES_PAGE = "https://github.com/cruuz/2k-football-mod-tools/releases"
 #: The release this build was cut from. Packaging updates it when a release is
 #: tagged; the check compares it with the newest published tag, which works
 #: across the two products' different version schemes without parsing either.
-BUILD_RELEASE_TAG = "beta-37"
+BUILD_RELEASE_TAG = "beta-38"
 
 DEFAULT_TIMEOUT_SECONDS = 6.0
 MAX_RESPONSE_BYTES = 1024 * 1024

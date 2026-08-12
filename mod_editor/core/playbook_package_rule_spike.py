@@ -68,6 +68,14 @@ O0308_PACK_OFFSET = 106_803_200
 PACKAGE_MAP_OFFSET_IN_FORMATION = 0x0D
 PACKAGE_MAP_SIZE = 11
 
+# APF MASTER PLAY (outer 180). Census 2026-08-12 on the retail body: every one
+# of 163 formations has an 11-byte permutation of 0..10 at +0x11. That is the
+# APF parallel of the 2K5 +0x0D map. Which index is WR3 vs TE is **not**
+# established, so this is not a WR3→TE writer.
+APF_PACKAGE_MAP_OFFSET_IN_FORMATION = 0x11
+APF_FORMATION_SIZE = 0xB8
+APF_PACKAGE_MAP_ROLE_LEGEND_PROVED = False
+
 # Layout offsets relative to PLAY resource body (after 0x20 resource header).
 # Verified against nfl2k5_playbook_inspector constants + PLAY_* product docs.
 G1_G2_LAYOUT: dict[str, int | str] = {

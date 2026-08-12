@@ -10,8 +10,9 @@ This panel edits those real books.  Each is an on-disc ``SPLB`` resource of
 exactly 32,288 bytes holding a 176-record array; a populated record names a
 MASTER formation and stores a list of plays for it, as big-endian u16 entries
 whose low ten bits are the MASTER play index.  Ticking a play rewrites only
-that record's entry list.  Runtime CPU consumption of the edited list remains
-unproved.
+that record's entry list.  The executable counts that list at ``0x84a8ac30``
+and returns the nth play at ``0x84a8bd20``; runtime which-play-on-3rd-and-long
+behaviour remains unproved.
 
 Everything else is preserved and independently re-derived before publication:
 the record trailer, every other record, the two tail regions whose meaning is
@@ -26,10 +27,14 @@ SPLB record -- per formation, and swaps a slot between plays at ``0x84a8ab28``.
 Slot 4 marks an untagged play.  The fourth tagged slot, 3, is never written by
 that loop and its purpose is *not* established.
 
-This panel therefore never drops a slot: it moves one onto another play in the
-same formation, or carries it there when its play is removed, and refuses only
-what would break the counted rule.  No claim is made about in-game CPU
-play-calling.
+This panel therefore never drops a slot below ``min(4, plays)``: it moves one
+onto another play in the same formation, or carries it there when its play is
+removed, and it will empty a formation (zero stored plays, zero tags) because
+that is what the counted rule requires. The record trailer is left untouched.
+Count ``0x84a8ac30`` and get-nth ``0x84a8bd20`` return 0/null for an empty
+record, so the four tagged plays cannot come from it. Which formation the
+director selects next is still runtime-unproved. No claim is made about
+in-game CPU play-calling.
 """
 
 from __future__ import annotations
@@ -69,11 +74,22 @@ BOUNDARY = (
     "record is rewritten; the record trailer, every other record and every "
     "other byte stay exact, and an independent verifier re-derives every "
     "changed byte before anything is written. A formation's tagged slots are "
-    "never dropped — one can be moved or carried onto another play in the same "
-    "formation — and only an edit that would break the proved min(4, plays) "
-    "rule is refused. Three of those slots are the formation's audibles, proved "
-    "in the game's own code; the fourth is unexplained. In-game CPU play-calling "
-    "behaviour is still NOT proved."
+    "never dropped below min(4, plays) — one can be moved or carried onto "
+    "another play in the same formation — and emptying a formation sheds every "
+    "slot because min(4, 0) is 0. The trailer still names the formation. The "
+    "executable counts that list at 0x84a8ac30 and returns the nth play at "
+    "0x84a8bd20; an empty record makes both return 0/null, so the four tagged "
+    "plays cannot come from it. Which formation the director selects next, and "
+    "which play it calls on 3rd-and-long from a still-populated list, remain "
+    "runtime-unproved. Three of those slots are the formation's audibles, "
+    "proved in the game's own code; the fourth is unexplained. In-game CPU "
+    "play-calling behaviour is still NOT proved. Automatic WR3→TE package "
+    "substitution is not offered: APF MASTER has an 11-byte role permutation "
+    "at formation +0x11, but which index is WR3 vs TE is unproved. The proved "
+    "workaround is to store TE-using plays in the formation (add them, move "
+    "the tagged slots onto them) or to empty the formation's stored list. "
+    "Only an edit that would break the counted rule on a still-populated "
+    "record is refused."
 )
 
 #: What is settled about the tagged slots, and what is only a reading. Kept as
@@ -100,9 +116,14 @@ TAG_BOUNDARY = (
     "it is for is NOT established — the one place the executable tests for it "
     "is a generic bit-field clamp, which proves nothing. It is preserved and "
     "editable, but unexplained.\n\n"
-    "So the slots are never dropped: one can be moved onto another play in the "
-    "same formation, or carried onto one when its play is removed. Only edits "
-    "that would break the counted rule — fewer slots than min(4, plays), the "
+    "So the slots are never dropped below min(4, plays): one can be moved onto "
+    "another play in the same formation, or carried onto one when its play is "
+    "removed. Emptying a formation sheds every slot because min(4, 0) is 0; "
+    "the record trailer is left untouched. Count 0x84a8ac30 and get-nth "
+    "0x84a8bd20 then return 0/null for that record (static); which formation "
+    "the director selects next is still runtime-unproved. Only edits that "
+    "would break the counted "
+    "rule — fewer slots than min(4, plays) on a still-populated record, the "
     "same slot twice, or a slot value the retail books never use — are refused."
 )
 
@@ -194,8 +215,10 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.play_list = QListWidget()
         self.play_list.setObjectName("assetList")
         self.play_list.setToolTip(
-            "Ticked plays are stored in this formation's SPLB record. Runtime "
-            "CPU consumption is unproved. Tick to add, untick to remove."
+            "Ticked plays are stored in this formation's SPLB record. The "
+            "executable reads that list (0x84a8ac30 / 0x84a8bd20); which play "
+            "the CPU calls on 3rd-and-long is still runtime-unproved. Tick to "
+            "add, untick to remove."
         )
         self.play_list.itemChanged.connect(self._play_toggled)
         self.play_header = QLabel("Plays")
@@ -212,6 +235,11 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.tag_help_button.setObjectName("quietButton")
         self.tag_help_button.clicked.connect(self._explain_tags)
         tag_row.addWidget(self.move_tag_button)
+        self.empty_button = QPushButton("Empty this formation…")
+        self.empty_button.setObjectName("dangerQuietButton")
+        self.empty_button.setAccessibleName("Remove every stored play from this formation")
+        self.empty_button.clicked.connect(self._empty_formation)
+        tag_row.addWidget(self.empty_button)
         tag_row.addWidget(self.tag_help_button)
         tag_row.addStretch(1)
         right.addLayout(tag_row)
@@ -469,6 +497,30 @@ class ApfPlaybookMembershipPanel(QFrame):
             )
         self._after_stage()
 
+    def stage_empty_formation(self, record_index: int) -> None:
+        """Stage removal of every stored play in this record, shedding all tags."""
+
+        record = self._record(record_index)
+        if record is None or not record.entries:
+            raise ValidationError("This formation already has no stored plays")
+        was_staged = dict(self._staged.get(record_index) or {})
+        was_heirs = dict(self._staged_heirs.get(record_index) or {})
+        was_moves = dict(self._staged_moves.get(record_index) or {})
+        staged = {entry.play_index: False for entry in record.entries}
+        self._replace_staged(record_index, staged, {})
+        self._staged_moves.pop(record_index, None)
+        if self._preview(record_index) is None:
+            self._replace_staged(record_index, was_staged, was_heirs)
+            if was_moves:
+                self._staged_moves[record_index] = was_moves
+            else:
+                self._staged_moves.pop(record_index, None)
+            raise ValidationError(
+                "Emptying this formation was refused; the tagged-slot rule still "
+                "applies to a populated record."
+            )
+        self._after_stage()
+
     def _replace_staged(
         self, record_index: int, staged: dict[int, bool], heirs: dict[int, int]
     ) -> None:
@@ -583,7 +635,10 @@ class ApfPlaybookMembershipPanel(QFrame):
                 f"{self._play_name(play_index)} holds tagged slot {slot}, and no "
                 "other play in this formation can take it without breaking the "
                 "proved min(4, plays) rule. Tick another play into this formation "
-                "first, then untick this one.",
+                "first, then untick this one — or use “Empty this formation…” to "
+                "shed every stored play at once (count/get-nth then return "
+                "0/null; which formation the director selects next is still "
+                "runtime-unproved).",
             )
             return None
         answer = QMessageBox.question(
@@ -663,6 +718,54 @@ class ApfPlaybookMembershipPanel(QFrame):
     def _explain_tags(self) -> None:
         QMessageBox.information(self, "Tagged slots", TAG_BOUNDARY)
 
+    def _empty_formation(self) -> None:
+        reason = str(self.empty_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Cannot empty this formation yet", reason)
+            return
+        record_index = self._selected_record_index()
+        record = self._record(record_index) if record_index is not None else None
+        if record is None:
+            QMessageBox.information(
+                self,
+                "Pick a formation first",
+                "Load a playbook and select a formation, then empty its stored "
+                "play list.",
+            )
+            return
+        if not record.entries and not (self._staged.get(record.record_index) or {}):
+            QMessageBox.information(
+                self,
+                "Already empty",
+                "This formation already has no stored plays.",
+            )
+            return
+        answer = QMessageBox.question(
+            self,
+            "Empty this formation?",
+            f"Remove all {len(record.entries)} stored plays from "
+            f"{self._formations.get(record.formation_index, 'this formation')}. "
+            "The tagged slots go with them because min(4, 0) is 0. The record "
+            "trailer is not touched, so the formation is still named in this "
+            "book. Count 0x84a8ac30 and get-nth 0x84a8bd20 then return 0/null, "
+            "so the four tagged plays cannot come from this record. Which "
+            "formation the director selects next is still runtime-unproved.\n\n"
+            "This is the proved way to stop storing the four tagged plays. It "
+            "is not a WR3→TE package substitution — APF MASTER has an 11-byte "
+            "role permutation at formation +0x11, but which index is WR3 vs TE "
+            "is unproved. To keep the formation and put TEs on the tagged "
+            "slots, add those plays and use “Move tagged slot…”.\n\n"
+            + TAG_BOUNDARY,
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Cancel,
+        )
+        if answer != QMessageBox.Yes:
+            return
+        try:
+            self.stage_empty_formation(record.record_index)
+        except ValidationError as exc:
+            QMessageBox.information(self, "That edit was not staged", str(exc))
+
     # ---------------------------------------------------------------- actions
 
     def staged_changes(self) -> tuple[StagedChange, ...]:
@@ -709,7 +812,24 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.build_button.setProperty("disableReason", block)
         self.move_tag_button.setToolTip(
             "Hand the highlighted play's tagged slot to another play in the same "
-            "formation. The count of tagged slots never changes."
+            "formation, including one you just ticked in. The count of tagged "
+            "slots never changes unless you empty the formation."
+        )
+        self.empty_button.setEnabled(True)
+        empty_block = ""
+        if not bool(getattr(self.facade, "source_ready", False)):
+            empty_block = "Load your APF game first, then pick a playbook."
+        elif self._book is None:
+            empty_block = "Choose a stock playbook first."
+        elif self._selected_record_index() is None:
+            empty_block = "Select a formation first."
+        self.empty_button.setProperty("disableReason", empty_block)
+        self.empty_button.setToolTip(
+            empty_block
+            or "Remove every stored play from this formation in one request. "
+            "Tagged slots are shed because min(4, 0) is 0. Count/get-nth then "
+            "return 0/null for this record; which formation the director "
+            "selects next is still runtime-unproved."
         )
         self.build_button.setToolTip(
             block
