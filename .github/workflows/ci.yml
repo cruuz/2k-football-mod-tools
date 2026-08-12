@@ -113,7 +113,7 @@ jobs:
               "2K5-Mod-Studio-v1.0-RC62-20260812.tar.gz":
                   "1f681899452f4cb70a86d60769316cdd02091728b614cc39bab8e63e7762a235",
               "apf2k8-mod-studio-0.1.0-alpha.69-20260812.tar.gz":
-                  "f5078983282453f4cd1dbb48e442bea69c80590cf1d9d9a9126ab777ae63af78",
+                  "ec90a59ec81fedab3c6c7aa55479e0f9fdcaa3f4e654ac41ee12a9e9afc08d0a",
           }
           copied = 0
           for name, expected in archives.items():
@@ -341,7 +341,7 @@ jobs:
               "2K5-Mod-Studio-v1.0-RC62-20260812.tar.gz":
                   "1f681899452f4cb70a86d60769316cdd02091728b614cc39bab8e63e7762a235",
               "apf2k8-mod-studio-0.1.0-alpha.69-20260812.tar.gz":
-                  "f5078983282453f4cd1dbb48e442bea69c80590cf1d9d9a9126ab777ae63af78",
+                  "ec90a59ec81fedab3c6c7aa55479e0f9fdcaa3f4e654ac41ee12a9e9afc08d0a",
           }
           copied = 0
           for name, expected in archives.items():
