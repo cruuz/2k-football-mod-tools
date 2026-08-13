@@ -1103,6 +1103,30 @@ class ApfStudioFacade:
             self.last_build = None
             return result
 
+    def stage_splb_membership(
+        self,
+        changes,
+        progress: Progress = _noop,
+    ) -> int:
+        """Hand the panel's whole staged Fine-tune Plays set to the project."""
+
+        with self._session_lock:
+            progress("Checking the stock playbook edits", 0, 1)
+            result = self.require_session().apply_splb_membership_batch(changes)
+            progress("Stock playbook edits staged", 1, 1)
+            self.last_build = None
+            return result
+
+    def staged_splb_changes(self) -> tuple:
+        with self._session_lock:
+            session = self.session
+            return session.staged_splb_changes() if session is not None else ()
+
+    def staged_splb_book(self) -> int | None:
+        with self._session_lock:
+            session = self.session
+            return session.staged_splb_book() if session is not None else None
+
     def export_localization_text_sheet(
         self,
         destination: Path,

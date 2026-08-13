@@ -102,6 +102,7 @@ mod_editor/core/model.py
 mod_editor/core/platform_compat.py
 mod_editor/core/texture_master.py
 mod_editor/core/update_check.py
+mod_editor/data/apf2k8_endzone_labels.v1.json
 mod_editor/data/apf2k8_player_positions.v1.json
 mod_editor/data/apf2k8_player_ratings.v1.json
 mod_editor/data/apf2k8_product_findings.v1.json

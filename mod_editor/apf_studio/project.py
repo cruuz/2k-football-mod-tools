@@ -46,6 +46,11 @@ from mod_editor.core.apf2k8_playbook_route_writer import (
     decode_route_clone_payload,
     request_from_mapping as route_clone_request_from_mapping,
 )
+from mod_editor.core.apf2k8_splb_writer import (
+    PROVIDER_KIND as SPLB_MEMBERSHIP_KIND,
+    change_from_mapping as splb_change_from_mapping,
+    decode_membership_payload as decode_splb_membership_payload,
+)
 from mod_editor.core.errors import ValidationError
 
 from .player_ratings import PlayerRatingsError, load_player_rating_schema
@@ -793,6 +798,7 @@ def _payload_name(asset_id: str, kind: str) -> str:
             "custom_team_appearance",
             "uniform_equipment_colors",
             PLAY_ASSIGNMENT_ROUTE_KIND,
+            SPLB_MEMBERSHIP_KIND,
         }
         else ".xma1-packets"
         if kind in {AUDO_EXACT_SLOT_KIND, AUSB_EXACT_SLOT_KIND}
@@ -949,6 +955,11 @@ def _validate_payload_source(
     elif modification.kind == PLAY_ASSIGNMENT_ROUTE_KIND:
         try:
             decode_route_clone_payload(data, modification.asset_id)
+        except ValidationError as exc:
+            raise ProjectError(str(exc)) from exc
+    elif modification.kind == SPLB_MEMBERSHIP_KIND:
+        try:
+            decode_splb_membership_payload(data, modification.asset_id)
         except ValidationError as exc:
             raise ProjectError(str(exc)) from exc
     elif modification.kind in {AUDO_EXACT_SLOT_KIND, AUSB_EXACT_SLOT_KIND}:
@@ -1675,6 +1686,16 @@ def _validated_metadata(
                 f"APF route-clone target metadata changed: {asset_id}"
             )
         return value
+    if kind == SPLB_MEMBERSHIP_KIND:
+        try:
+            change = splb_change_from_mapping(value)
+        except ValidationError as exc:
+            raise ProjectError(str(exc)) from exc
+        if change.selector != asset_id:
+            raise ProjectError(
+                f"Stock-playbook target metadata changed: {asset_id}"
+            )
+        return value
     if kind == AUDO_EXACT_SLOT_KIND:
         allowed = {
             "outer_table_index",
@@ -2162,6 +2183,12 @@ def load_project(
             elif kind == PLAY_ASSIGNMENT_ROUTE_KIND:
                 try:
                     decode_route_clone_payload(data, asset_id)
+                except ValidationError as exc:
+                    raise ProjectError(str(exc)) from exc
+                extension = ".json"
+            elif kind == SPLB_MEMBERSHIP_KIND:
+                try:
+                    decode_splb_membership_payload(data, asset_id)
                 except ValidationError as exc:
                     raise ProjectError(str(exc)) from exc
                 extension = ".json"

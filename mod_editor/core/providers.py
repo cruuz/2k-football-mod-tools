@@ -1566,7 +1566,7 @@ class Apf2k8JerseyColorProvider:
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_texture_patch.py": "f1e1d1beaea599610c6c83d0d47f3970a5ee7bd73e23ad5b5aee79dc2a2e7694",
+        "tools/apf_texture_patch.py": "79fcf7fcb6bc9678a27a4dc41f4692a2378ee47e1a908f51a1212dadb1415159",
         "tools/apf_uniform_mip_patch.py": "c93c95c8441ab074eedc83776fda88204a9c68c40ea0455fc619d162825c20f9",
         "tools/apf_xenos_mip_layout.py": "ec07ea62ad67b3fff7e92fb8779c0cf85f65bc9f196c39b374dd19455619f9d7",
     }
@@ -2089,10 +2089,10 @@ class Apf2k8PantsColorProvider(Apf2k8JerseyColorProvider):
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
         "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_pants_color_transport.py": "a3f33a0fc5b860f78a0686f3e559db4c3d22a05cdfb7793019599ef67cd05615",
+        "tools/apf_pants_color_transport.py": "658a124fef839e5252dc89dc6fcd4736698cd2b6a6b053c6f9935bbc75e12871",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
-        "tools/apf_texture_patch.py": "f1e1d1beaea599610c6c83d0d47f3970a5ee7bd73e23ad5b5aee79dc2a2e7694",
+        "tools/apf_texture_patch.py": "79fcf7fcb6bc9678a27a4dc41f4692a2378ee47e1a908f51a1212dadb1415159",
         "tools/apf_xenos_bc1_mip_layout.py": "56f53603e73e563ff66305430956373468160fb0af9380fe0257c5a5edde9234",
         "tools/nfl_dxt1.py": "bce75aca68acbfaa5112927e228672d4d77c58fc27cd3ce047751d8875dcb9a2",
     }
@@ -2117,12 +2117,12 @@ class Apf2k8HelmetColorProvider(Apf2k8JerseyColorProvider):
     verifier_module_sha256 = "a1c07511ddcaacda083a4970555ee3c61c88c188227b853689dd299cb7841a18"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
-        "tools/apf_helmet_color_transport.py": "ac181589e29142f74b2ec0b951f046bb9a15039e4404c876d0533547e29f7526",
+        "tools/apf_helmet_color_transport.py": "86d4fbf1b43b2dfb02b6d3e35c4829ccaf3b0818edf5bab60903595269a933cb",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
         "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_texture_patch.py": "f1e1d1beaea599610c6c83d0d47f3970a5ee7bd73e23ad5b5aee79dc2a2e7694",
+        "tools/apf_texture_patch.py": "79fcf7fcb6bc9678a27a4dc41f4692a2378ee47e1a908f51a1212dadb1415159",
         "tools/apf_xenos_dxn_mip_layout.py": "85eba338384d518b111dab153120dc937ed45a898d348f4d1548d5f8d8672431",
     }
     recipe_schema_file = "mod_editor/apf_helmet_recipe.schema.json"
@@ -2150,10 +2150,10 @@ class Apf2k8ShoulderColorProvider(Apf2k8JerseyColorProvider):
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
         "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_shoulder_color_transport.py": "9b617b6e578cd9026c7e0d103b6c187afb4e84a1be60b132c7a8ff620b45a9a5",
+        "tools/apf_shoulder_color_transport.py": "ba654154c990fad1b45760cfd325b352def357e5f1030915323591128e0a9b46",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
-        "tools/apf_texture_patch.py": "f1e1d1beaea599610c6c83d0d47f3970a5ee7bd73e23ad5b5aee79dc2a2e7694",
+        "tools/apf_texture_patch.py": "79fcf7fcb6bc9678a27a4dc41f4692a2378ee47e1a908f51a1212dadb1415159",
         "tools/apf_uniform_mip_patch.py": "c93c95c8441ab074eedc83776fda88204a9c68c40ea0455fc619d162825c20f9",
         "tools/apf_xenos_mip_layout.py": "ec07ea62ad67b3fff7e92fb8779c0cf85f65bc9f196c39b374dd19455619f9d7",
     }

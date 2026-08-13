@@ -11,6 +11,48 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-39 — 2026-08-13
+
+**APF 2K8 alpha.71: Save Project keeps Fine-tune Plays, and three community
+reports answered.**
+
+- **Save Project now saves Fine-tune Plays.** The panel was the only place the
+  staged playbook edits lived, so a saved project reopened with the playbook
+  apparently untouched. Every staged tick, carry, and tagged-slot move is now a
+  project modification that round-trips through the archive and the build, and
+  reopening a project selects the book it belongs to. Reported by Urianus
+  against alpha.69 and again against alpha.70.
+- **Emptying a formation now leads with what it does in game.** Urianus emptied
+  the formations without a TE in `O-ManBlock` on alpha.70 and the CPU lined up
+  personnel packages that book does not contain — and one the game does not
+  ship at all — for plays that are not in the book. Static count `0x84a8ac30` /
+  get-nth `0x84a8bd20` returning 0/null was never a proof that the director
+  handles an empty record gracefully, and the copy said so as if it were. The
+  confirmation now opens with the report, and emptying *every* populated
+  formation in a book is refused outright.
+- **A refused uniform replacement names its target.** "rebuilt shoulder IFF
+  exceeds fixed allocation by 9231 bytes" now reads as the slot, the outer
+  entry, the allocation, and the slot's real compressed budget. A build with
+  several over-budget targets reports all of them at once instead of stopping
+  at the first. The uniform panel shows each shoulder slot's budget and its
+  rank among the 24 before anything is staged — the budget is set by how
+  detailed retail's own artwork in that slot is, so the slot with the most free
+  space can be the least able to take a busy mask. Reported by davidhbui.
+- **Field Art: outer 6 is not a shared layer.** It is one team's own endzone —
+  the package whose writer was proved first — and the old wording told users
+  that editing it changed a common layer. Withdrawn in the panel and the doc.
+  Endzone layers are also region masks rather than artwork, which the copy now
+  states. **Export endzone contact sheet…** renders all 118 packages into
+  labelled sheets so a team's endzone can be found by eye; 31 packages are
+  identified so far. A name search cannot work — the nicknames are not on the
+  disc at all. Reported by davidhbui.
+- Fine-tune Plays keeps its full static record but no longer word-wraps 11,360
+  characters of executable addresses between the user and the controls; it is
+  behind **Research pins**.
+- Fixed the alpha.70 test regression where the title-update button crashed every
+  window test whose launcher settings double predated it.
+- 2K5 stays RC62. The shared updater identity is `beta-39`.
+
 ## beta-38 — 2026-08-12
 
 **APF 2K8 alpha.70: tagged-slot compose, empty formations, title update 1.1.**

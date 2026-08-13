@@ -64,6 +64,75 @@ class PatchError(ValueError):
     """Raised when a proposed patch cannot be proved safe."""
 
 
+class AllocationOverflowError(PatchError):
+    """One rebuilt entry does not fit the slot the game reserved for it.
+
+    This is the writer being right, not a defect: the game reads each of these
+    entries from a fixed span, so nothing may grow.  It carries the target's
+    identity and its real budget because the useful question is never "how many
+    bytes over" on its own -- it is *which* target, and how much room that
+    target ever had.  A slot's budget is set by how large retail's own
+    compressed payload there is, not by the sector slack around it, so the slot
+    with the most apparent free space can be the least able to accept detailed
+    art (measured across the 24 shoulder slots by davidhbui, Beta 38).
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        target: str,
+        overflow_bytes: int,
+        allocation_size: int,
+        budget_bytes: int | None = None,
+        retail_bytes: int | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.target = target
+        self.overflow_bytes = int(overflow_bytes)
+        self.allocation_size = int(allocation_size)
+        self.budget_bytes = None if budget_bytes is None else int(budget_bytes)
+        self.retail_bytes = None if retail_bytes is None else int(retail_bytes)
+
+
+def allocation_overflow(
+    *,
+    target: str,
+    overflow_bytes: int,
+    allocation_size: int,
+    budget_bytes: int | None = None,
+    retail_bytes: int | None = None,
+) -> AllocationOverflowError:
+    """Build the one overflow message every fixed-allocation writer should raise."""
+
+    detail = (
+        f"{target}: the rebuilt entry is {overflow_bytes:,} bytes over its "
+        f"{allocation_size:,}-byte fixed allocation."
+    )
+    if budget_bytes is not None and retail_bytes is not None:
+        detail += (
+            f" This slot's compressed budget is {budget_bytes:,} bytes and "
+            f"retail already uses {retail_bytes:,} of it. The budget is set by "
+            "how detailed retail's own artwork in this slot is, so a slot "
+            "holding a near-flat mask cannot take a busy replacement no matter "
+            "how much free space it appears to have."
+        )
+    detail += (
+        " Simplify the replacement — these are region masks, so flatten "
+        "colours to the retail palette and remove anti-aliasing, which emits "
+        "invalid region IDs rather than soft edges — or choose a slot whose "
+        "retail artwork is already detailed."
+    )
+    return AllocationOverflowError(
+        detail,
+        target=target,
+        overflow_bytes=overflow_bytes,
+        allocation_size=allocation_size,
+        budget_bytes=budget_bytes,
+        retail_bytes=retail_bytes,
+    )
+
+
 class BytesReader:
     """Minimal entry-relative reader used to validate a rebuilt entry in RAM."""
 

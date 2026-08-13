@@ -22,6 +22,13 @@ from mod_editor.core.apf2k8_playbook_route_writer import (
     decode_route_clone_payload,
     request_from_mapping as route_clone_request_from_mapping,
 )
+from mod_editor.core.apf2k8_splb_writer import (
+    PROVIDER_KIND as SPLB_MEMBERSHIP_KIND,
+    REPORT_SCHEMA as SPLB_MEMBERSHIP_WRITER_SCHEMA,
+    build_book_patch as build_splb_book_patch,
+    change_from_mapping as splb_change_from_mapping,
+    decode_membership_payload as decode_splb_membership_payload,
+)
 from mod_editor.core.errors import ValidationError
 
 from .backend import ensure_tools_importable
@@ -801,10 +808,12 @@ class ApfBuildService:
         custom_team_appearance_group: list[Modification] = []
         uniform_equipment_color_group: list[Modification] = []
         play_assignment_route_group: list[Modification] = []
+        splb_membership_group: list[Modification] = []
         helmet_crest_design_group: list[Modification] = []
         audo_overlay_group: list[Modification] = []
         ausb_overlay_group: list[Modification] = []
         replacement_hashes: dict[str, str] = {}
+        overflowed: list[apf_texture_patch.AllocationOverflowError] = []
         for index, modification in enumerate(edits, start=1):
             try:
                 replacement_before = sha256_file(
@@ -840,6 +849,8 @@ class ApfBuildService:
                 uniform_equipment_color_group.append(modification)
             elif modification.kind == PLAY_ASSIGNMENT_ROUTE_KIND:
                 play_assignment_route_group.append(modification)
+            elif modification.kind == SPLB_MEMBERSHIP_KIND:
+                splb_membership_group.append(modification)
             elif modification.kind == HELMET_CREST_DESIGN_KIND:
                 helmet_crest_design_group.append(modification)
             elif modification.kind == AUDO_EXACT_SLOT_KIND:
@@ -847,7 +858,18 @@ class ApfBuildService:
             elif modification.kind == AUSB_EXACT_SLOT_KIND:
                 ausb_overlay_group.append(modification)
             else:
-                outer_index, entry_bytes, writer_schema = self._compile(modification)
+                try:
+                    outer_index, entry_bytes, writer_schema = self._compile(
+                        modification
+                    )
+                except apf_texture_patch.AllocationOverflowError as exc:
+                    # Every fixed-allocation target is independent, so stopping
+                    # at the first over-budget one hides the rest and turns a
+                    # multi-target build into one guess per attempt at ~40 s
+                    # each. Collect them and report the whole set once.
+                    overflowed.append(exc)
+                    progress("Compiling mod edits", index, max(1, len(edits)))
+                    continue
                 if outer_index in compiled:
                     raise BuildError(
                         f"Two edits resolve to the same APF outer entry {outer_index}"
@@ -866,6 +888,33 @@ class ApfBuildService:
                 )
                 edit_rows.append(compiled[outer_index][1])
             progress("Compiling mod edits", index, max(1, len(edits)))
+        if overflowed:
+            if len(overflowed) == 1:
+                raise BuildError(str(overflowed[0]))
+            worst = min(item.overflow_bytes for item in overflowed)
+            raise BuildError(
+                f"{len(overflowed)} replacements do not fit their targets' fixed "
+                "allocations. Nothing was written. Every one of them is listed "
+                "here so you can fix them together rather than one build at a "
+                "time:\n\n"
+                + "\n\n".join(
+                    f"• {item.target}: {item.overflow_bytes:,} bytes over"
+                    + (
+                        f" a {item.budget_bytes:,}-byte compressed budget "
+                        f"(retail uses {item.retail_bytes:,})"
+                        if item.budget_bytes is not None
+                        and item.retail_bytes is not None
+                        else ""
+                    )
+                    for item in sorted(overflowed, key=lambda x: x.overflow_bytes)
+                )
+                + "\n\nThese are region masks: flatten colours to the retail "
+                "palette and remove anti-aliasing, which emits invalid region "
+                "IDs rather than soft edges. A slot's budget is set by how "
+                "detailed retail's own artwork there is, not by how much free "
+                "space it appears to have, so a near-flat retail slot cannot "
+                f"take busy art. The closest one is {worst:,} bytes over."
+            )
         if audo_overlay_group:
             coordinates = tuple(
                 self._audo_coordinates(modification)
@@ -1078,6 +1127,17 @@ class ApfBuildService:
             if outer_index in compiled:
                 raise BuildError(
                     "APF route clones collide with another edit at outer "
+                    f"{outer_index}"
+                )
+            compiled[outer_index] = (entry_bytes, row)
+            edit_rows.append(row)
+        if splb_membership_group:
+            outer_index, entry_bytes, row = self._compile_splb_membership(
+                tuple(splb_membership_group)
+            )
+            if outer_index in compiled:
+                raise BuildError(
+                    "Fine-tune Plays edits collide with another edit at outer "
                     f"{outer_index}"
                 )
             compiled[outer_index] = (entry_bytes, row)
@@ -2112,6 +2172,66 @@ class ApfBuildService:
             ),
             "changed_byte_count": result.compiled_resource.changed_byte_count,
             "changed_ranges": result.report["changed_ranges"],
+            "compiler_claims": result.report["claims"],
+        }
+        return result.outer_index, result.entry_bytes, row
+
+    def _compile_splb_membership(
+        self, modifications: tuple[Modification, ...]
+    ) -> tuple[int, bytes, dict[str, object]]:
+        """Compile every staged Fine-tune Plays edit into one rebuilt book."""
+
+        if not modifications:
+            raise BuildError("Select at least one stock-playbook change")
+        changes = []
+        for modification in modifications:
+            try:
+                change = decode_splb_membership_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+                metadata_change = splb_change_from_mapping(modification.metadata)
+            except (OSError, ValidationError) as exc:
+                raise BuildError(
+                    f"Could not read stock-playbook edit {modification.asset_id}: "
+                    f"{exc}"
+                ) from exc
+            if change != metadata_change:
+                raise BuildError(
+                    f"Stock-playbook edit metadata changed: {modification.asset_id}"
+                )
+            changes.append(change)
+        outers = {change.outer_index for change in changes}
+        if len(outers) != 1:
+            raise BuildError(
+                "Fine-tune Plays edits name more than one stock playbook; the "
+                "writer compiles one book at a time."
+            )
+        try:
+            result = build_splb_book_patch(self.source.index_0a, changes)
+        except ValidationError as exc:
+            raise BuildError(f"Could not compile the stock playbook: {exc}") from exc
+        expected_outer = outers.pop()
+        if result.outer_index != expected_outer:
+            raise BuildError("The stock-playbook writer target changed")
+        row: dict[str, object] = {
+            "asset_ids": tuple(item.asset_id for item in modifications),
+            "kind": "splb_book_membership_batch",
+            "outer_index": result.outer_index,
+            "replacement_payload_sha256s": {
+                item.asset_id: item.replacement_sha256 for item in modifications
+            },
+            "entry_size": len(result.entry_bytes),
+            "entry_sha256": _hash_bytes(result.entry_bytes),
+            "writer_schema": SPLB_MEMBERSHIP_WRITER_SCHEMA,
+            "writer_mode": "stock_book_entry_prefix_rewrite",
+            "book_name": result.report["book_name"],
+            "changed_byte_count": result.report["verification"]["changed_byte_count"],
+            "changed_records": result.report["verification"]["changed_records"],
+            "records_emptied": result.report["records_emptied"],
+            "populated_records_remaining": result.report[
+                "populated_records_remaining"
+            ],
             "compiler_claims": result.report["claims"],
         }
         return result.outer_index, result.entry_bytes, row

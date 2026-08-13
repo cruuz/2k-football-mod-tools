@@ -1,3 +1,121 @@
+# beta-39 — RC62 / alpha.71
+
+**Date:** 2026-08-13
+
+**2K5 Mod Studio:** `v1.0-RC62` (unchanged)
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.71`
+
+## Fixed: Save Project now saves Fine-tune Plays
+
+Reported by **Urianus** against alpha.69 and again against alpha.70. Since the
+panel shipped in Beta 32 its staged edits lived only in the panel's own memory.
+Nothing wrote them into the session, so Save Project produced a file that
+silently did not contain them and reopening it showed an untouched playbook.
+
+Every staged change — a play ticked in or out, a tagged slot carried onto
+another play, a tagged slot moved — is now a project modification carrying only
+selectors (an outer entry, a record, and play indices; never a byte of your SPLB
+resource). It round-trips through the project archive and the main build, so
+playbook edits and uniform edits can land in the same volume. Opening a project
+selects the book its edits belong to. Switching books with work staged now asks
+instead of discarding silently.
+
+## Changed: emptying a formation now leads with what it does in game
+
+Also **Urianus**, on alpha.70: after emptying the formations without a TE in
+`O-ManBlock`, the CPU lined up personnel packages that book does not contain
+(00, 10, 01, 12, 11) and one the game does not ship at all (02), running plays
+that are not in the book. It happened whenever the director selected an emptied
+formation; untouched books behaved normally. Plays are not bound to formations
+— he moved an offensive play into a defensive book and it ran — so a formation
+that stores nothing does not make the director skip it. It makes the director
+call something the book never listed.
+
+The static facts are unchanged: count `0x84a8ac30` returns 0 and get-nth
+`0x84a8bd20` returns null for an empty record. **That was never a proof that the
+director handles the null well, and the previous copy read as though it were.**
+The confirmation now opens with the report, the compile report carries
+`empty_record_runtime_safe: False`, and emptying **every** populated formation
+in a book is refused outright.
+
+To keep a formation and put TEs on its tagged slots, add those plays and use
+**Move tagged slot…**. Nothing has been reported against that path.
+
+## Fixed: a refused uniform replacement names its target
+
+Reported by **davidhbui**. Staging several shoulder replacements produced, about
+forty seconds per target:
+
+```
+rebuilt shoulder IFF exceeds fixed allocation by 9231 bytes
+```
+
+Nothing in that names a team, slot, outer entry, or source PNG, so fixing one
+file and rebuilding produced `9292 → 9231` — an apparent 61-byte improvement
+that was actually a *different* slot failing. The message now reads as the slot,
+the outer entry, the allocation, and the slot's real compressed budget, and a
+build with several over-budget targets reports all of them at once instead of
+stopping at the first.
+
+The uniform panel also shows each shoulder slot's budget and its rank among the
+24 before anything is staged. His measurement is why: a slot's budget is
+retail's own compressed payload plus a small sector slack, and the payload
+dominates — so outer 182, which has the *most* visible free space of any
+shoulder slot, is 18th of 24 for capacity and refuses a detailed mask that
+outer 184 and 198 accept. Picking by "which has the most room" picks the worst
+slot.
+
+## Fixed: Field Art — outer 6 is not a shared layer
+
+Also **davidhbui**. The category blurb and
+`docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md` both called outer 6 a **shared**
+endzone layer. Decoding it shows bespoke per-team artwork — two figures in
+wide-brimmed hats with bandoliers and revolvers, a masked figure, a hitching
+rail — structurally identical to the other 117 packages. It is simply the pair
+whose writer was proved first. The old wording told users that editing it
+changed a common layer when it repaints one specific team's endzone. Withdrawn.
+
+Endzone layers are also **region masks, not artwork**: pure red/green/blue
+region selectors over black, with shader-driven colours in game. The panel now
+carries the same authoring contract the uniform masks do.
+
+## Added: export endzone contact sheet
+
+A team's endzone cannot be found by searching. The nicknames are not on the
+disc at all — `Redcoats` appears zero times in `0A`, `0B`, `1A`, `1B` and
+`default.xex` across ASCII, UTF-16BE and UTF-16LE; it exists only in
+`Roster.ROS`. **Export endzone contact sheet…** renders all 118 packages into
+labelled sheets so a package can be identified by eye in one action.
+Thirty-one packages are already identified — davidhbui's list, each one
+confirmed here by decoding the retail volume — and those rows carry the team
+name. Unidentified packages show their index rather than a guess.
+
+## Improved: the playbook panel is readable again
+
+Fine-tune Plays keeps its complete static record, including every withdrawn
+candidate, but 11,360 characters of executable addresses no longer word-wrap
+between the play list and the buttons. They are behind **Research pins**.
+
+## Fixed: alpha.70 test regression
+
+The Title Update 1.1 button read `settings.title_update_path` unconditionally,
+which crashed every window test whose launcher-settings double predated the
+field — 28 tests red in the shipped Beta 38.
+
+## Verification boundary
+
+Nothing about CPU play-calling became proved. `wr3_te_package_sub_proved`,
+`APF_3RD_AND_LONG_PLAY_CHOICE_PROVED`, `cpu_behaviour_runtime_proved`, and the
+full package-map role legend all remain False. No per-team endzone writer ships;
+Field Art stays browse/export-only apart from the six offline-proved slots.
+
+## Downloads
+
+See the release assets attached to the `beta-39` tag.
+
+---
+
 # beta-38 — RC62 / alpha.70
 
 **Date:** 2026-08-12

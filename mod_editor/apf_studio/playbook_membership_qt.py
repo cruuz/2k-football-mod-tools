@@ -25,7 +25,161 @@ formation's audibles: the game writes a slot number into bits 12-10 of an entry
 at ``0x84864c78`` and runs that counter 0, 1, 2 while stepping 176 bytes -- one
 SPLB record -- per formation, and swaps a slot between plays at ``0x84a8ab28``.
 Slot 4 marks an untagged play.  The fourth tagged slot, 3, is never written by
-that loop and its purpose is *not* established.
+that loop, but ``0x84a850f0`` looks it up with the other three (counter 0..3).
+That is not a proof of 3rd-and-long CPU play-calling. MASTER categories
+(Ace, 5 Wide, Flush) are personnel packages; ``0x8485bd38`` extracts the
+SPLB trailer index. ``0x84a472d0`` is play-type UI, not down;
+``0x8486ce88`` picks a play from situation word0 / ``+0x2BC`` (a tab).
+Eligibility ANDs the map-role mask at ``0x820FC380`` with a personnel cell
+(also at ``0x84862580`` in the 11-slot loop). ``0x84b694a8`` stores 1 or 2
+to situation ``+8``. ``0x8499e3e8`` compares compact ``+0x18`` to 115, not
+down. ``0x844dbe00`` is ``.pdata``, not a script table. ``0x84a89ea8``
+maps a play onto an SPLB record, not a situation. Situation ``+0x1F8``
+is a play-type filter. ``0x848699d8`` filters by type nibble, not down.
+It reads the current book from playcall ``+0x20`` (global ``0x851A2780``).
+``0x8493d968`` registers that object; ``0x8493e180`` is a packed ``+0x20``
+setter with 0 ``bl`` callers. ``0x8485e7f8`` has 0 ``bl`` callers and the
+assigner does not fall through into it. The in-game builder does not call
+the eligibility AND. DRCT insert ``0x8466b998`` is type-list registration;
+``0x8466af70`` loads ``dir_ingame.iff`` via ``0x8468da70``, not an opcode
+walker. ``0x8466a818`` relocates DRCT pointers (NFL ``0x000dc700`` analog);
+``0x8466aae0`` walks the relocated fixed table, not the instruction
+consumer. ``0x8466abc0`` indexes fixed-record children via ``+0x18``;
+``0x8466af28`` indexes strings via ``+0x14``. Picker ``0x8486ce88`` takes
+the playcall object as ``r3`` (``0x8470c2c4``). Jump-table ``0x8470bf18``
+takes a small integer mode 0..19 (``0x84712498``); case 2 (``li r3, 2``
+at ``0x847163d4``) is frontend, not CPU down/ytg. ``0x84867938`` also reads
+``+0x20``. Find-by-slot's book singleton is ``0x8520CDE0`` (init
+``0x84a139d0``). UI ``0x84a28318`` reads playcall ``+0x1C``/``+0x20``.
+Shadow ``0x84887e18`` writes bitmasks to ``0x8516C908+0x20``, not a book.
+Slot ``+0`` can be type singleton ``0x850F1218`` (install
+``0x84ad0048``); init ``0x847c6da8`` copies live MASTER from
+``0x84F3F7D8+0x2C`` (``0x849fd6a8``) onto type ``+0x20``. Helper
+``0x8486cd80`` is UI-only. Setter ``0x849fd6c8`` is bind/SPLB-select
+(table ``0x851D9660`` via ``0x849fcf60``), not per-play.
+``0x849d81d0`` is init-stored at ``0x84E28670+0x2C94`` (0 ``bl``).
+``get_down`` lives only in packed property blob ``0x84EB0DE4``.
+Property-get-by-id ``0x849c9c90`` uses ids 997..999, not down.
+Relocator ``0x8466a994`` inlines the instruction directory at ``+0x20``.
+NFL ``0x000dca40`` is a bitset/float lookup, not an instruction indexer.
+``dir_ingame.iff`` (outer 153) has 1015 instruction records; 1014 begin
+``0B 00 01 00`` then a token at +4 — bytecode, not a C++ vtable. The
+relocator rewrites only the inline directory words; it does not follow
+those pointers into record bodies. Packed ``lhz +6`` getter
+``0x84ab2010`` has 0 ``bl`` and 0 inbound pointers. DRCT vtable[2]
+``0x8466ba30`` unlinks a list. Byte-stream ``0x8466bd38`` compares
+94/96/97 and 275–330, not instruction tokens. ``0x84bcd760`` is a
+string classifier (0 ``bl``). 0 ``addi 32``/``lwzx``/``lbz 0(record)``
+consumer. ``dir_wrapup.iff`` (outer 265) has 96 records, all ``0B 00``.
+Groups are tagged fields (``0B 00`` + u16 field + u8), not a VM opcode
+at +4. vtable[0] ``0x8466b8b0`` only relocates then walks the fixed
+table (``bl 0x8466aae0`` at ``0x8466b8fc``). Packed +0x14/+0x18
+indexers have 0 ``bl`` and 0 inbound pointers. ``0x8466af48`` is a
+bounds check (r4 < +0x10), not a type mapper. ``0x84b162a8`` is an
+embedded C++ object at +0x20. ``lbz``+``cmpwi 11`` then 12 is a
+class-id, not tag ``0x0B``.
+Field ids inside ``0B 00`` groups are BE u16 ``0x0100``/``0x0200``,
+not 1/2. Nested lead bytes ``0x03``..``0x09`` appear after those
+groups. 0 ``lhz``+``cmpwi 0x0100`` parser (``0x84c381e8`` is
+stack/float). 0 skip-``0B 00`` then ``lhz``. 0 ``lhbrx`` in TEXT.
+``0x84a87b38`` is play-type nibble ``srwi 28``. ``0x84bdfb00`` is
+ASCII Y/I.
+0 ``cmpwi 0x0B00`` in TEXT. ``0x848bb1a8`` is RTTI class 2 vs 11.
+``0x8466b660`` is a map count vs 256, not field ``0x0100``.
+``0x8466c7f0`` is a packed LE f32 (4×lbz, not lwbrx). 0 lis/addi of ``0x84EE65C0``.
+``0x84671838`` is C++ vt[2] on r4+0x20, not a property registrar.
+0B groups are tag + u8 variant + BE u16 field + u8 (variant 0 is
+3589/3621; variants 1–5 use field ``0x0200``), not a 2-byte
+``0B00`` tag. ``0x84842f48`` is RTTI class 3/4/5/6/7/11/12 via
++0x14/+4. ``0x8476ca80`` counts 10×5-byte slots at object
++0x13D9. ``0x8492bb24`` sums 5-byte windows then uses floats.
+``0x84b0a4c0`` compact-int-indexes stride-12 table ``0x84EE65A8``
+(max id ``0x35``) then ``bctrl`` get/set; 0 ``cmpwi 11`` in those
+cases. ``0x849e7790`` copies a 12-byte record (``0xffff`` sentinel),
+not a 0B group.
+``0x847e2818`` is class-id 3/5/6/7/4 via +4, not leftover leads.
+``0x84abb590`` copies 5 bytes with no tag check. ``0x84a9d7a0``
+copies stride-32 floats at +0x1C, not NFL table ``0xB73BD0``.
+NFL ``dir_ingame`` (outer 4) has 1310 instruction records, all
+starting ``0B``; prefixes ``0B 00 01 00`` / ``01 01`` / ``01 02`` —
+same tag+variant+u16 encoding as APF. ``0x84be2b48`` is an
+ASCII/scanf 0..11 jump, not leftover leads. ``0x848777cc`` loads
+one float from ``0x84F1A150+0x1C``, not a stride-32 bitset table.
+``0x84b93b10`` reads a 5-byte header with no ``0x0B`` check;
+caller ``0x84b94258`` switches on first byte 0..4.
+Non-``0B`` leftovers are concatenated typed groups: type ``0x04`` is
+tag + 4-byte LE float (size 5) on APF and NFL; types ``0x05``/``0x06``/
+``0x07``/``0x08``/``0x09`` are 1-byte tags (a following ``00`` is the
+terminator type, not a payload); type ``0x03`` is tag + u8 (size 2).
+That walk consumes APF ingame 1015/1015 and NFL ingame 1310/1310.
+``0x849277a8`` switches on a presentation byte (cases 4/11 store
+floats), not those tags. ``0x84c4c480`` copies 1/2/4/8 bytes with
+endian swap (``cmplwi`` 1/2/4/8 then ``lwbrx`` for width 4), not a
+type-4 float reader. ``0x84ba2520`` walks a stride-12 table in r4
+from a packed descriptor (``mulli`` 12 + ``lbz`` +8), not a property
+``bctrl`` registrar. ``0x846c2068`` compares object +0x62 to 4 then
+stores 5, not float-group size. ``0x8466c890`` is a float-expression
+VM (opcodes 0..12, table ``0x8466c91c``, cursor ``0x84F1779C``);
+case 4 is the LE f32 immediate (helper ``0x8466c7f0``); case 11
+consumes 1 extra byte, not a leftover 0B group. Descriptor slot
+``0x844dd260``. ``0x8477f950`` switches on a UI byte 0..12 (cases
+5-10 just return). ``0x84a37850`` loads situation down and ytg
+together and wraps ytg at 100, not a play picker. ``0x848864b0``
+compares situation word0 to 4 (not down) and playcall+0x38 to 11.
+``0x84a5eb08`` indexes 24-byte tables by type 3/4/8/9/11/12, not leftover.
+``0x8475b7b0`` tweens ``0x84D58C70`` (``lfs`` +0x258, counter +0x25C), not
+situation ytg. NFL xbe has 0 ``add r32,5`` within 80 bytes of ``cmp al, 0x0B``;
+the only ``.text`` sites with both ``cmp al,4`` and ``cmp al,0x0B`` within 48
+bytes are ``0x1138e0`` (object +0x35 enum) and killed play-type classifiers
+``0x133fd1`` / ``0x27e830``. ``0x84a23bd0`` cycles situation +0x1F8 through
+0..7 (UI play-type filter), not CPU 3rd-and-long. The only PE pointer to
+picker ``0x8486ce88`` is its ``.pdata`` row ``0x844e8568`` (section
+``0x844DBE00``), not a ``bctrl`` dispatch slot. Situation +0x1F8 setter
+``0x849d36d8`` has 0 ``bl`` and 0 PE pointers. NFL relocator ``0x000dc700``
+returns after fixing +0x14/+0x0c/+0x08 and does not walk instruction bodies.
+``0x848631d0`` is the +0x1F8 getter used by the "Offensive Play calling"
+widget (``0x845FE7D4``); ``0x849d36d8`` remains the packed setter (0 ``bl``).
+NFL ``0x168ad0`` walks a SHAP list at +0x14 (stride 0xC, dword==3), not leftover
+TLV. The only ``lhz`` +6 then ``addi`` 32 is relocator ``0x8466a994``.
+``0x84a2ccd8`` reads situation +0x1F8 and +0x2BC (word0==2, filter==0,
+tab==3), not down/ytg. The only TEXT sites with cmp 4, addi 5, and cmp 11
+together are occupancy ``0x84961548`` and bit-pack ``0x849e3a24``, not leftover
+sizes. Picker-caller neighborhood ``0x84814dcc`` / ``0x84816118`` compares
+situation word0 to 4, not Fourth Down; the addi 5 is ``srawi``-3 index math.
+``0x8485a04c`` switches word0 0/1/2/3/4/9 into mode immediates. Real
+``addi r,r,5`` (not ``li 5``) plus cmp 4/11 is still not a leftover stream:
+``0x84869e60`` is a 4-wide fill remainder and ``0x84a9adcc`` is an 11-slot
+``lbzx`` at object+5 beside the role table. ``0x84a21298`` is a packed UI
+formatter (0 ``bl``) that indexes the seven labels at ``0x84E446C8``
+("First Down" … "Third and Long" ``0x845FD8B4`` … "Fourth and Long"); every
+``lis``/``addi`` of its object ``0x85212B88`` sits in the same ``0x84a20xxx``
+widget cluster, not a CPU picker. ``lbz``+``cmplwi`` 9 then ``bctr`` at
+``0x84911750`` / ``0x849ecd48`` switch object fields, not leftover tags.
+``0x847d7590`` / ``0x8480189c`` compare playcall ``0x851A2780+0x3C`` to 3/6,
+not down. Every TEXT ``lis``/``addi`` of leftover cursor ``0x84F1779C`` /
+``0x84F177AC`` sits in expr-VM ``0x8466c778``–``0x8466d888``; the VM entry
+stores r5 to cursor+8 (``0x8466c8dc``). No TEXT site loads situation +0x254
+and +0x25C together and yields D&D index 4; lookalikes ``0x8499e420`` /
+``0x849a3b58`` compare script node +0x10/+0x14. Packed get_ytg ``0x84b68cd8``
+(``lwz r3, +0x25C(r3)``) has 0 ``bl`` and 0 PE pointers; the situation
+property blob that holds get_down ``0x84ad92e0`` has no +0x25C getter.
+Expr VM ``0x8466c890`` has only desc slot ``0x844dd260`` (0 inbound PE ptrs,
+0 TEXT ``lis``/``addi``). 0 ``lwz`` +0x20 then ``lbz`` and cmp 4/11 leftover
+walk. ``0x84879bc0`` extracts ytg bit 1, not a D&D index. Packed object
+get_down ``0x84b68cc8`` sits next to get_ytg (0 PE ptrs). ``0x84ad0348``
+copies situation +0x254/+0x258/+0x25C onto a stack blob (only PE is
+``.pdata`` ``0x844f72b0``); not a D&D index. 0 aligned inbound PE pointers
+into get_down blob ``0x84EB0800``..``0x84EB0F00``. Other TEXT ``lwz``
++0x254/+0x25C pairs are stack slots, tween ``0x8475b7b0``, status query
+``0x84b694a8``, or a non-situation object where +0x254 is a pointer
+(``0x84b39458``). TEXT ``lis``/``addi`` of the blob only hit row base
+``0x84EB02D0`` (packed ``0x84ad9f40``: ``mulli`` r4, 0x1C then ``lwz`` +4).
+get_down's row ``0x84EB0DD0`` is not 0x1C-aligned from that base. 0
+``addi`` 32 then ``lwz`` 0 then ``lbz`` 0(record) leftover walk. 8 ``lwz``
++0x20 then ``lbz`` 0 sites are string/ASCII. Only TEXT ``lis 0x0B00`` is
+bitmask ``0x848ee750`` (``li r4, 11``). ``0x84b64c88`` walks a 4-byte window with UTF-8 extra-byte
+table ``0x844C69C8`` (0xC0→1, 0xE0→2, 0xF0→3; 0x0B→0), not leftover sizes.
+That is still not the CPU 3rd-and-long picker.
 
 This panel therefore never drops a slot below ``min(4, plays)``: it moves one
 onto another play in the same formation, or carries it there when its play is
@@ -68,6 +222,27 @@ from mod_editor.core.errors import ValidationError
 TaskRunner = Callable[[str, object, object, bool], None]
 StagedChange = splb.MembershipChange | splb.TagMove
 
+#: What a user has to know before emptying a formation, in the order they need
+#: it.  The static consumer facts stay below in the research pins; this is the
+#: in-game consequence a real player measured, and it leads.
+EMPTY_FORMATION_WARNING = (
+    "Emptying a formation changes how the CPU plays, in a way this project "
+    "cannot yet predict.\n\n"
+    "Reported in-game by Urianus on alpha.70: after emptying the formations "
+    "without a TE in O-ManBlock, the CPU lined up personnel packages that book "
+    "does not contain (00, 10, 01, 12, 11) and one the game does not ship at "
+    "all (02), running plays that are not in the book. He saw it whenever the "
+    "director selected an emptied formation; books he had not touched behaved "
+    "normally. Plays are not bound to formations — he moved an offensive play "
+    "into a defensive book and it ran — so a formation that stores nothing "
+    "does not make the director skip it. It makes the director call something "
+    "the book never listed.\n\n"
+    "The static side is unchanged and was never a safety proof: count "
+    "0x84a8ac30 returns 0 and get-nth 0x84a8bd20 returns null for an empty "
+    "record, so the four tagged plays cannot come from it. What the director "
+    "does with that null is what the report above describes."
+)
+
 BOUNDARY = (
     "This edits the stock CPU playbooks themselves — the SPLB resources the "
     "game ships, one per book. Only the entry list of the selected formation's "
@@ -79,17 +254,197 @@ BOUNDARY = (
     "slot because min(4, 0) is 0. The trailer still names the formation. The "
     "executable counts that list at 0x84a8ac30 and returns the nth play at "
     "0x84a8bd20; an empty record makes both return 0/null, so the four tagged "
-    "plays cannot come from it. Which formation the director selects next, and "
+    "plays cannot come from it. That is a static fact about the two consumers, "
+    "not a safety proof, and a runtime report contradicts the safe reading: "
+    "Urianus, on alpha.70, watched the CPU call out-of-book plays and "
+    "personnel packages once a book had emptied formations in it. Emptying is "
+    "offered with that warning attached, and emptying every populated "
+    "formation in a book is refused outright. Which formation the director "
+    "selects next, and "
     "which play it calls on 3rd-and-long from a still-populated list, remain "
     "runtime-unproved. Three of those slots are the formation's audibles, "
-    "proved in the game's own code; the fourth is unexplained. In-game CPU "
-    "play-calling behaviour is still NOT proved. Automatic WR3→TE package "
+    "proved in the game's own code; the fourth is looked up with them at "
+    "0x84a850f0 (loop 0..3), which is not a 3rd-and-long proof. In-game CPU "
+    "play-calling behaviour is still NOT proved.\n\n"
+    "Automatic WR3→TE package "
     "substitution is not offered: APF MASTER has an 11-byte role permutation "
-    "at formation +0x11, but which index is WR3 vs TE is unproved. The proved "
-    "workaround is to store TE-using plays in the formation (add them, move "
-    "the tagged slots onto them) or to empty the formation's stored list. "
-    "Only an edit that would break the counted rule on a still-populated "
-    "record is refused."
+    "at formation +0x11. Role 8 is TE and role 9 is WR (byte table "
+    "0x820FC320, loaded at 0x84a9ae68 from the map byte stored at on-field "
+    "+0x34; 8 → TE, 9 → WR). Swapping those two bytes is not runtime-proved, "
+    "so it is not offered. The proved "
+    "workaround is to store TE-using plays in the formation — add them, then "
+    "move the tagged slots onto them. Only an edit that would break the "
+    "counted rule on a still-populated record, or empty every populated "
+    "formation in a book, is refused.\n\n"
+    "Every address behind these statements is listed under “Research pins”."
+)
+
+#: The full static reverse-engineering record behind :data:`BOUNDARY`.
+#:
+#: It belongs in the product -- every claim the panel makes has to be checkable
+#: against the executable, and withdrawing a wrong one has to be visible.  It
+#: does not belong wrapped across the panel below the play list, which is where
+#: it was: 11,360 characters of hex addresses between a user and the buttons
+#: they came for.  The panel now shows the boundary and puts this behind
+#: “Research pins”, so nothing is hidden and nothing is in the way.
+RESEARCH_PINS = (
+    "Static pins behind the boundary above. Decompressed PE, image base "
+    "0x82000000, SHA-256 "
+    "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf. "
+    "Entries marked as *not* something are withdrawn candidates, kept so they "
+    "are not re-chased.\n\n"
+    "Down lives at "
+    "object +0x254 (3 = Third Down, table 0x820E57C8); in-game 0x848d96e4 "
+    "compares it, but that helper is not a play picker. The 11-player builder "
+    "indexes the +0x11 map by slot at 0x848605b4. MASTER categories at +0x44 "
+    "are personnel packages (Ace, 5 Wide, Flush); 0x8485bd38 extracts the "
+    "SPLB trailer index. That is not a 3rd-and-long picker. 0x84a472d0 is "
+    "play-type UI (obj+4 walks 0x84e4d810); 0x8486ce88 picks a play from "
+    "situation word0 / +0x2BC (a 0..3 tab, not down). Eligibility at "
+    "0x8485e810 ANDs the map-role word-mask (table 0x820FC380) with a "
+    "personnel-table cell; the same AND runs at 0x84862580. 0x844dbe00 "
+    "is .pdata unwind data, not a script table. 0x84a89ea8 maps a play "
+    "onto an SPLB record (not a situation picker). Situation +0x1F8 is a "
+    "play-type filter (table 0x84DCB2A8), not down. 0x848699d8 filters "
+    "by play-type nibble, not down; it reads the current book from "
+    "playcall +0x20 (global 0x851A2780). 0x8493d968 registers that object; "
+    "0x8493e180 is a packed +0x20 setter with 0 bl callers. 0x8485e7f8 has 0 bl callers "
+    "and the assigner does not fall through into it. The in-game builder "
+    "does not call the eligibility AND. DRCT insert 0x8466b998 is "
+    "type-list registration; 0x8466af70 loads dir_ingame.iff via 0x8468da70, "
+    "not an opcode walker. 0x8466a818 relocates DRCT pointers (NFL 0x000dc700 "
+    "analog); 0x8466aae0 walks the relocated fixed table, not the instruction "
+    "consumer. 0x8466abc0 indexes fixed-record children via +0x18; 0x8466af28 "
+    "indexes strings via +0x14. Picker 0x8486ce88 takes the playcall object "
+    "as r3 (0x8470c2c4). Jump-table 0x8470bf18 takes a small integer mode "
+    "0..19 (0x84712498); case 2 (li r3, 2 at 0x847163d4) is frontend, not "
+    "CPU down/ytg. Find-by-slot's book singleton is 0x8520CDE0 "
+    "(init 0x84a139d0). UI 0x84a28318 reads playcall +0x1C/+0x20. "
+    "Shadow 0x84887e18 writes bitmasks to 0x8516C908+0x20, not a book. "
+    "Slot+0 can be type singleton 0x850F1218 (install 0x84ad0048); "
+    "init 0x847c6da8 copies live MASTER from 0x84F3F7D8+0x2C "
+    "(0x849fd6a8) onto type +0x20. Helper 0x8486cd80 is UI-only. "
+    "Setter 0x849fd6c8 is bind/SPLB-select (table 0x851D9660 via "
+    "0x849fcf60), not per-play. "
+    "0x849d81d0 is init-stored at 0x84E28670+0x2C94 (0 bl). "
+    "get_down lives only in packed property blob 0x84EB0DE4. "
+    "Property-get-by-id 0x849c9c90 uses ids 997..999, not down. "
+    "Relocator 0x8466a994 inlines the instruction directory at +0x20. "
+    "NFL 0x000dca40 is a bitset/float lookup, not an instruction indexer. "
+    "dir_ingame.iff (outer 153) has 1015 instruction records; 1014 begin "
+    "0B 00 01 00 then a token at +4 — bytecode, not a C++ vtable. The "
+    "relocator rewrites only the inline directory words; it does not follow "
+    "those pointers into record bodies. Packed lhz +6 getter 0x84ab2010 "
+    "has 0 bl and 0 inbound pointers. DRCT vtable[2] 0x8466ba30 unlinks a "
+    "list. Byte-stream 0x8466bd38 compares 94/96/97 and 275–330, not "
+    "instruction tokens. 0x84bcd760 is a string classifier (0 bl). "
+    "0 addi 32/lwzx/lbz 0(record) consumer. "
+    "dir_wrapup.iff (outer 265) has 96 records, all 0B 00. Groups are "
+    "tagged fields (0B 00 + u16 field + u8), not a VM opcode at +4. "
+    "vtable[0] 0x8466b8b0 only relocates then walks the fixed table "
+    "(bl 0x8466aae0 at 0x8466b8fc). Packed +0x14/+0x18 indexers have "
+    "0 bl and 0 inbound pointers. 0x8466af48 is a bounds check "
+    "(r4 < +0x10), not a type mapper. 0x84b162a8 is an embedded C++ "
+    "object at +0x20. lbz+cmpwi 11 then 12 is a class-id, not tag 0x0B. "
+    "Field ids inside 0B 00 groups are BE u16 0x0100/0x0200, not 1/2. "
+    "Nested lead bytes 0x03..0x09 appear after those groups. "
+    "0 lhz+cmpwi 0x0100 parser (0x84c381e8 is stack/float). "
+    "0 skip-0B 00 then lhz. 0 lhbrx in TEXT. 0x84a87b38 is play-type "
+    "nibble srwi 28. 0x84bdfb00 is ASCII Y/I. "
+    "0 cmpwi 0x0B00 in TEXT. 0x848bb1a8 is RTTI class 2 vs 11. "
+    "0x8466b660 is a map count vs 256, not field 0x0100. "
+    "0x8466c7f0 is a packed LE f32 (4×lbz, not lwbrx). 0 lis/addi of 0x84EE65C0. "
+    "0x84671838 is C++ vt[2] on r4+0x20, not a property registrar. "
+    "0B groups are tag + u8 variant + BE u16 field + u8 (variant 0 is "
+    "3589/3621; variants 1-5 use field 0x0200), not a 2-byte 0B00 tag. "
+    "0x84842f48 is RTTI class 3/4/5/6/7/11/12 via +0x14/+4. "
+    "0x8476ca80 counts 10x5-byte slots at object +0x13D9. "
+    "0x8492bb24 sums 5-byte windows then uses floats. "
+    "0x84b0a4c0 compact-int-indexes stride-12 table 0x84EE65A8 "
+    "(max id 0x35) then bctrl get/set; 0 cmpwi 11 in those cases. "
+    "0x849e7790 copies a 12-byte record (0xffff sentinel), not a 0B group. "
+    "0x847e2818 is class-id 3/5/6/7/4 via +4, not leftover leads. "
+    "0x84abb590 copies 5 bytes with no tag check. 0x84a9d7a0 copies "
+    "stride-32 floats at +0x1C, not NFL table 0xB73BD0. "
+    "NFL dir_ingame (outer 4) has 1310 instruction records, all starting "
+    "0B; prefixes 0B 00 01 00 / 01 01 / 01 02 — same tag+variant+u16 "
+    "encoding as APF. 0x84be2b48 is an ASCII/scanf 0..11 jump, not leftover "
+    "leads. 0x848777cc loads one float from 0x84F1A150+0x1C, not a stride-32 "
+    "bitset table. 0x84b93b10 reads a 5-byte header with no 0x0B check; "
+    "caller 0x84b94258 switches on first byte 0..4. "
+    "Non-0B leftovers are concatenated typed groups: type 0x04 is tag + "
+    "4-byte LE float (size 5) on APF and NFL; types 0x05/0x06/0x07/0x08/0x09 "
+    "are 1-byte tags (a following 00 is the terminator type, not a payload); "
+    "type 0x03 is tag + u8 (size 2). That walk consumes APF ingame 1015/1015 "
+    "and NFL ingame 1310/1310. 0x849277a8 switches on a presentation byte "
+    "(cases 4/11 store floats), not those tags. 0x84c4c480 copies 1/2/4/8 "
+    "bytes with endian swap (cmplwi 1/2/4/8 then lwbrx for width 4), not a "
+    "type-4 float reader. 0x84ba2520 walks a stride-12 table in r4 from a "
+    "packed descriptor (mulli 12 + lbz +8), not a property bctrl registrar. "
+    "0x846c2068 compares object +0x62 to 4 then stores 5, not float-group "
+    "size. 0x8466c890 is a float-expression VM (opcodes 0..12, table "
+    "0x8466c91c, cursor 0x84F1779C); case 4 is the LE f32 immediate "
+    "(helper 0x8466c7f0); case 11 consumes 1 extra byte, not a leftover "
+    "0B group. Descriptor slot 0x844dd260. 0x8477f950 switches on a UI "
+    "byte 0..12 (cases 5-10 just return). 0x84a37850 loads situation down "
+    "and ytg together and wraps ytg at 100, not a play picker. "
+    "0x848864b0 compares situation word0 to 4 (not down) and playcall+0x38 "
+    "to 11. 0x84a5eb08 indexes 24-byte tables by type 3/4/8/9/11/12, not leftover. "
+    "0x8475b7b0 tweens 0x84D58C70 (lfs +0x258, counter +0x25C), not situation ytg. "
+    "NFL xbe has 0 add r32,5 within 80 bytes of cmp al, 0x0B; the only .text "
+    "sites with both cmp al,4 and cmp al,0x0B within 48 bytes are 0x1138e0 "
+    "(object +0x35 enum) and killed play-type classifiers 0x133fd1 / 0x27e830. "
+    "0x84a23bd0 cycles situation +0x1F8 through 0..7 (UI play-type filter), "
+    "not CPU 3rd-and-long. The only PE pointer to picker 0x8486ce88 is "
+    "its .pdata row 0x844e8568 (section 0x844DBE00), not a bctrl dispatch "
+    "slot. Situation +0x1F8 setter 0x849d36d8 has 0 bl and 0 PE pointers. "
+    "NFL relocator 0x000dc700 returns after fixing +0x14/+0x0c/+0x08 and "
+    "does not walk instruction bodies. "
+    "0x848631d0 is the +0x1F8 getter used by the Offensive Play calling "
+    "widget (0x845FE7D4); 0x849d36d8 remains the packed setter (0 bl). "
+    "NFL 0x168ad0 walks a SHAP list at +0x14 (stride 0xC, dword==3), not leftover "
+    "TLV. The only lhz +6 then addi 32 is relocator 0x8466a994. "
+    "0x84a2ccd8 reads situation +0x1F8 and +0x2BC (word0==2, filter==0, "
+    "tab==3), not down/ytg. The only TEXT sites with cmp 4, addi 5, and cmp 11 "
+    "together are occupancy 0x84961548 and bit-pack 0x849e3a24, not leftover "
+    "sizes. Picker-caller neighborhood 0x84814dcc / 0x84816118 compares "
+    "situation word0 to 4, not Fourth Down; the addi 5 is srawi-3 index math. "
+    "0x8485a04c switches word0 0/1/2/3/4/9 into mode immediates. Real "
+    "addi r,r,5 (not li 5) plus cmp 4/11 is still not a leftover stream: "
+    "0x84869e60 is a 4-wide fill remainder and 0x84a9adcc is an 11-slot "
+    "lbzx at object+5 beside the role table. "
+    "0x84a21298 is a packed UI formatter (0 bl) that indexes the seven "
+    "labels at 0x84E446C8 (First Down … Third and Long 0x845FD8B4 … "
+    "Fourth and Long); every lis/addi of its object 0x85212B88 sits in "
+    "the same 0x84a20xxx widget cluster, not a CPU picker. "
+    "lbz+cmplwi 9 then bctr at 0x84911750 / 0x849ecd48 switch object "
+    "fields, not leftover tags. "
+    "0x847d7590 / 0x8480189c compare playcall 0x851A2780+0x3C to 3/6, "
+    "not down. Every TEXT lis/addi of leftover cursor 0x84F1779C / "
+    "0x84F177AC sits in expr-VM 0x8466c778-0x8466d888; the VM entry "
+    "stores r5 to cursor+8 (0x8466c8dc). No TEXT site loads situation +0x254 "
+    "and +0x25C together and yields D&D index 4; lookalikes 0x8499e420 / "
+    "0x849a3b58 compare script node +0x10/+0x14. "
+    "Packed get_ytg 0x84b68cd8 (lwz r3, +0x25C(r3)) has 0 bl and 0 PE "
+    "pointers; the situation property blob that holds get_down 0x84ad92e0 "
+    "has no +0x25C getter. Expr VM 0x8466c890 has only desc slot "
+    "0x844dd260 (0 inbound PE ptrs, 0 TEXT lis/addi). 0 lwz +0x20 then "
+    "lbz and cmp 4/11 leftover walk. 0x84879bc0 extracts ytg bit 1, not "
+    "a D&D index. Packed object get_down 0x84b68cc8 sits next to get_ytg "
+    "(0 PE ptrs). 0x84ad0348 copies situation +0x254/+0x258/+0x25C onto a "
+    "stack blob (only PE is .pdata 0x844f72b0); not a D&D index. 0 aligned "
+    "inbound PE pointers into get_down blob 0x84EB0800..0x84EB0F00. Other "
+    "TEXT lwz +0x254/+0x25C pairs are stack slots, tween 0x8475b7b0, "
+    "status query 0x84b694a8, or a non-situation object where +0x254 is a "
+    "pointer (0x84b39458). TEXT lis/addi of the blob only hit row base "
+    "0x84EB02D0 (packed 0x84ad9f40: mulli r4, 0x1C then lwz +4). "
+    "get_down's row 0x84EB0DD0 is not 0x1C-aligned from that base. 0 "
+    "addi 32 then lwz 0 then lbz 0(record) leftover walk. 8 lwz +0x20 "
+    "then lbz 0 sites are string/ASCII. Only TEXT lis 0x0B00 is bitmask "
+    "0x848ee750 (li r4, 11). "
+    "0x84b64c88 walks a 4-byte window with UTF-8 extra-byte table 0x844C69C8 "
+    "(0xC0→1, 0xE0→2, 0xF0→3; 0x0B→0), not leftover sizes. "
+    "0x84b694a8 stores 1 or 2 to situation +8, not a play."
 )
 
 #: What is settled about the tagged slots, and what is only a reading. Kept as
@@ -112,19 +467,179 @@ TAG_BOUNDARY = (
     "this panel performs: 0x84a8ab28 takes a slot off one play and puts it on "
     "another.\n\n"
     "So three of the four are the audibles you set at the line. The fourth "
-    "(slot 3) is a real tagged slot that the assign loop never writes, and what "
-    "it is for is NOT established — the one place the executable tests for it "
-    "is a generic bit-field clamp, which proves nothing. It is preserved and "
-    "editable, but unexplained.\n\n"
+    "(slot 3) is a real tagged slot that the assign loop never writes. "
+    "0x84a850f0 walks tagged slots 0, 1, 2, 3 (cmpwi r30, 4 at 0x84a851ec) "
+    "and calls find-by-slot for each; that collector is reached from an "
+    "in-game tick. That does not prove the CPU calls those four plays on "
+    "3rd-and-long — 0x84a850f0 has no down or yards-to-go consumer. Down is "
+    "object +0x254 (3 = Third Down at 0x820E57C8); 0x848d96e4 compares it "
+    "in-game, and 0x84809898 is a type-id match, not a play picker. Ace tags "
+    "four runs, Ace Flip four play-action passes, O-Shotgun empty/open includes "
+    "90 TE Stop, and that book's base Gun tags are four runs, so the four tags "
+    "are not a 3rd-and-long call set.\n\n"
+    "The rest of the static record is under “Research pins”."
+)
+
+#: The remainder of the tagged-slot pins, split out of :data:`TAG_BOUNDARY` for
+#: the same reason as :data:`RESEARCH_PINS`: a modal dialog a user has to read
+#: to answer "can I move this slot" should not be eleven thousand characters of
+#: withdrawn candidates.
+TAG_RESEARCH_PINS = (
+    "The 11-player builder loads map[slot] at "
+    "0x848605b4. MASTER category records (Ace, 5 Wide, Flush) are personnel "
+    "packages; 0x8485bd38 extracts the trailer index — still not a "
+    "3rd-and-long picker. 0x84a472d0 is play-type UI; 0x8486ce88 uses "
+    "situation word0 / +0x2BC (a tab), not down. Eligibility at 0x8485e810 "
+    "ANDs table 0x820FC380 with a personnel cell. 0x8485e7f8 has 0 bl "
+    "callers. 0x848699d8 reads playcall +0x20 (0x851A2780), not down. "
+    "0x8493d968 registers that object. 0x8466af70 loads dir_ingame.iff. "
+    "0x8466a818 relocates DRCT pointers. 0x8466abc0 indexes +0x18 children. "
+    "Picker 0x8486ce88 takes the playcall object as r3 (0x8470c2c4). "
+    "Jump-table 0x8470bf18 takes a small integer mode 0..19 "
+    "(0x84712498); case 2 (li r3, 2 at 0x847163d4) is frontend, not "
+    "CPU down/ytg. "
+    "0x84867938 also reads +0x20. "
+    "Find-by-slot's book singleton is 0x8520CDE0 (init 0x84a139d0). "
+    "UI 0x84a28318 reads playcall +0x1C/+0x20. "
+    "Shadow 0x84887e18 writes bitmasks to 0x8516C908+0x20, not a book. "
+    "Slot+0 can be type singleton 0x850F1218 (install 0x84ad0048); "
+    "init 0x847c6da8 copies live MASTER from 0x84F3F7D8+0x2C "
+    "(0x849fd6a8) onto type +0x20. Helper 0x8486cd80 is UI-only. "
+    "Setter 0x849fd6c8 is bind/SPLB-select (table 0x851D9660 via "
+    "0x849fcf60), not per-play. "
+    "0x849d81d0 is init-stored at 0x84E28670+0x2C94 (0 bl). "
+    "get_down lives only in packed property blob 0x84EB0DE4. "
+    "Property-get-by-id 0x849c9c90 uses ids 997..999, not down. "
+    "Relocator 0x8466a994 inlines the instruction directory at +0x20. "
+    "NFL 0x000dca40 is a bitset/float lookup, not an instruction indexer. "
+    "dir_ingame.iff (outer 153) has 1015 instruction records; 1014 begin "
+    "0B 00 01 00 then a token at +4 — bytecode, not a C++ vtable. The "
+    "relocator rewrites only the inline directory words; it does not follow "
+    "those pointers into record bodies. Packed lhz +6 getter 0x84ab2010 "
+    "has 0 bl and 0 inbound pointers. DRCT vtable[2] 0x8466ba30 unlinks a "
+    "list. Byte-stream 0x8466bd38 compares 94/96/97 and 275–330, not "
+    "instruction tokens. 0x84bcd760 is a string classifier (0 bl). "
+    "0 addi 32/lwzx/lbz 0(record) consumer. "
+    "dir_wrapup.iff (outer 265) has 96 records, all 0B 00. Groups are "
+    "tagged fields (0B 00 + u16 field + u8), not a VM opcode at +4. "
+    "vtable[0] 0x8466b8b0 only relocates then walks the fixed table "
+    "(bl 0x8466aae0 at 0x8466b8fc). Packed +0x14/+0x18 indexers have "
+    "0 bl and 0 inbound pointers. 0x8466af48 is a bounds check "
+    "(r4 < +0x10), not a type mapper. 0x84b162a8 is an embedded C++ "
+    "object at +0x20. lbz+cmpwi 11 then 12 is a class-id, not tag 0x0B. "
+    "Field ids inside 0B 00 groups are BE u16 0x0100/0x0200, not 1/2. "
+    "Nested lead bytes 0x03..0x09 appear after those groups. "
+    "0 lhz+cmpwi 0x0100 parser (0x84c381e8 is stack/float). "
+    "0 skip-0B 00 then lhz. 0 lhbrx in TEXT. 0x84a87b38 is play-type "
+    "nibble srwi 28. 0x84bdfb00 is ASCII Y/I. "
+    "0 cmpwi 0x0B00 in TEXT. 0x848bb1a8 is RTTI class 2 vs 11. "
+    "0x8466b660 is a map count vs 256, not field 0x0100. "
+    "0x8466c7f0 is a packed LE f32 (4×lbz, not lwbrx). 0 lis/addi of 0x84EE65C0. "
+    "0x84671838 is C++ vt[2] on r4+0x20, not a property registrar. "
+    "0B groups are tag + u8 variant + BE u16 field + u8 (variant 0 is "
+    "3589/3621; variants 1-5 use field 0x0200), not a 2-byte 0B00 tag. "
+    "0x84842f48 is RTTI class 3/4/5/6/7/11/12 via +0x14/+4. "
+    "0x8476ca80 counts 10x5-byte slots at object +0x13D9. "
+    "0x8492bb24 sums 5-byte windows then uses floats. "
+    "0x84b0a4c0 compact-int-indexes stride-12 table 0x84EE65A8 "
+    "(max id 0x35) then bctrl get/set; 0 cmpwi 11 in those cases. "
+    "0x849e7790 copies a 12-byte record (0xffff sentinel), not a 0B group. "
+    "0x847e2818 is class-id 3/5/6/7/4 via +4, not leftover leads. "
+    "0x84abb590 copies 5 bytes with no tag check. 0x84a9d7a0 copies "
+    "stride-32 floats at +0x1C, not NFL table 0xB73BD0. "
+    "NFL dir_ingame (outer 4) has 1310 instruction records, all starting "
+    "0B; prefixes 0B 00 01 00 / 01 01 / 01 02 — same tag+variant+u16 "
+    "encoding as APF. 0x84be2b48 is an ASCII/scanf 0..11 jump, not leftover "
+    "leads. 0x848777cc loads one float from 0x84F1A150+0x1C, not a stride-32 "
+    "bitset table. 0x84b93b10 reads a 5-byte header with no 0x0B check; "
+    "caller 0x84b94258 switches on first byte 0..4. "
+    "Non-0B leftovers are concatenated typed groups: type 0x04 is tag + "
+    "4-byte LE float (size 5) on APF and NFL; types 0x05/0x06/0x07/0x08/0x09 "
+    "are 1-byte tags (a following 00 is the terminator type, not a payload); "
+    "type 0x03 is tag + u8 (size 2). That walk consumes APF ingame 1015/1015 "
+    "and NFL ingame 1310/1310. 0x849277a8 switches on a presentation byte "
+    "(cases 4/11 store floats), not those tags. 0x84c4c480 copies 1/2/4/8 "
+    "bytes with endian swap (cmplwi 1/2/4/8 then lwbrx for width 4), not a "
+    "type-4 float reader. 0x84ba2520 walks a stride-12 table in r4 from a "
+    "packed descriptor (mulli 12 + lbz +8), not a property bctrl registrar. "
+    "0x846c2068 compares object +0x62 to 4 then stores 5, not float-group "
+    "size. 0x8466c890 is a float-expression VM (opcodes 0..12, table "
+    "0x8466c91c, cursor 0x84F1779C); case 4 is the LE f32 immediate "
+    "(helper 0x8466c7f0); case 11 consumes 1 extra byte, not a leftover "
+    "0B group. Descriptor slot 0x844dd260. 0x8477f950 switches on a UI "
+    "byte 0..12 (cases 5-10 just return). 0x84a37850 loads situation down "
+    "and ytg together and wraps ytg at 100, not a play picker. "
+    "0x848864b0 compares situation word0 to 4 (not down) and playcall+0x38 "
+    "to 11. 0x84a5eb08 indexes 24-byte tables by type 3/4/8/9/11/12, not leftover. "
+    "0x8475b7b0 tweens 0x84D58C70 (lfs +0x258, counter +0x25C), not situation ytg. "
+    "NFL xbe has 0 add r32,5 within 80 bytes of cmp al, 0x0B; the only .text "
+    "sites with both cmp al,4 and cmp al,0x0B within 48 bytes are 0x1138e0 "
+    "(object +0x35 enum) and killed play-type classifiers 0x133fd1 / 0x27e830. "
+    "0x84a23bd0 cycles situation +0x1F8 through 0..7 (UI play-type filter), "
+    "not CPU 3rd-and-long. The only PE pointer to picker 0x8486ce88 is "
+    "its .pdata row 0x844e8568 (section 0x844DBE00), not a bctrl dispatch "
+    "slot. Situation +0x1F8 setter 0x849d36d8 has 0 bl and 0 PE pointers. "
+    "NFL relocator 0x000dc700 returns after fixing +0x14/+0x0c/+0x08 and "
+    "does not walk instruction bodies. "
+    "0x848631d0 is the +0x1F8 getter used by the Offensive Play calling "
+    "widget (0x845FE7D4); 0x849d36d8 remains the packed setter (0 bl). "
+    "NFL 0x168ad0 walks a SHAP list at +0x14 (stride 0xC, dword==3), not leftover "
+    "TLV. The only lhz +6 then addi 32 is relocator 0x8466a994. "
+    "0x84a2ccd8 reads situation +0x1F8 and +0x2BC (word0==2, filter==0, "
+    "tab==3), not down/ytg. The only TEXT sites with cmp 4, addi 5, and cmp 11 "
+    "together are occupancy 0x84961548 and bit-pack 0x849e3a24, not leftover "
+    "sizes. Picker-caller neighborhood 0x84814dcc / 0x84816118 compares "
+    "situation word0 to 4, not Fourth Down; the addi 5 is srawi-3 index math. "
+    "0x8485a04c switches word0 0/1/2/3/4/9 into mode immediates. Real "
+    "addi r,r,5 (not li 5) plus cmp 4/11 is still not a leftover stream: "
+    "0x84869e60 is a 4-wide fill remainder and 0x84a9adcc is an 11-slot "
+    "lbzx at object+5 beside the role table. "
+    "0x84a21298 is a packed UI formatter (0 bl) that indexes the seven "
+    "labels at 0x84E446C8 (First Down … Third and Long 0x845FD8B4 … "
+    "Fourth and Long); every lis/addi of its object 0x85212B88 sits in "
+    "the same 0x84a20xxx widget cluster, not a CPU picker. "
+    "lbz+cmplwi 9 then bctr at 0x84911750 / 0x849ecd48 switch object "
+    "fields, not leftover tags. "
+    "0x847d7590 / 0x8480189c compare playcall 0x851A2780+0x3C to 3/6, "
+    "not down. Every TEXT lis/addi of leftover cursor 0x84F1779C / "
+    "0x84F177AC sits in expr-VM 0x8466c778-0x8466d888; the VM entry "
+    "stores r5 to cursor+8 (0x8466c8dc). No TEXT site loads situation +0x254 "
+    "and +0x25C together and yields D&D index 4; lookalikes 0x8499e420 / "
+    "0x849a3b58 compare script node +0x10/+0x14. "
+    "Packed get_ytg 0x84b68cd8 (lwz r3, +0x25C(r3)) has 0 bl and 0 PE "
+    "pointers; the situation property blob that holds get_down 0x84ad92e0 "
+    "has no +0x25C getter. Expr VM 0x8466c890 has only desc slot "
+    "0x844dd260 (0 inbound PE ptrs, 0 TEXT lis/addi). 0 lwz +0x20 then "
+    "lbz and cmp 4/11 leftover walk. 0x84879bc0 extracts ytg bit 1, not "
+    "a D&D index. Packed object get_down 0x84b68cc8 sits next to get_ytg "
+    "(0 PE ptrs). 0x84ad0348 copies situation +0x254/+0x258/+0x25C onto a "
+    "stack blob (only PE is .pdata 0x844f72b0); not a D&D index. 0 aligned "
+    "inbound PE pointers into get_down blob 0x84EB0800..0x84EB0F00. Other "
+    "TEXT lwz +0x254/+0x25C pairs are stack slots, tween 0x8475b7b0, "
+    "status query 0x84b694a8, or a non-situation object where +0x254 is a "
+    "pointer (0x84b39458). TEXT lis/addi of the blob only hit row base "
+    "0x84EB02D0 (packed 0x84ad9f40: mulli r4, 0x1C then lwz +4). "
+    "get_down's row 0x84EB0DD0 is not 0x1C-aligned from that base. 0 "
+    "addi 32 then lwz 0 then lbz 0(record) leftover walk. 8 lwz +0x20 "
+    "then lbz 0 sites are string/ASCII. Only TEXT lis 0x0B00 is bitmask "
+    "0x848ee750 (li r4, 11). "
+    "0x84b64c88 walks a 4-byte window with UTF-8 extra-byte table 0x844C69C8 "
+    "(0xC0→1, 0xE0→2, 0xF0→3; 0x0B→0), not leftover sizes. "
+    "0x84b694a8 stores 1 or 2 "
+    "to situation +8, not a play. The tag is preserved and editable.\n\n"
     "So the slots are never dropped below min(4, plays): one can be moved onto "
     "another play in the same formation, or carried onto one when its play is "
     "removed. Emptying a formation sheds every slot because min(4, 0) is 0; "
     "the record trailer is left untouched. Count 0x84a8ac30 and get-nth "
     "0x84a8bd20 then return 0/null for that record (static); which formation "
-    "the director selects next is still runtime-unproved. Only edits that "
+    "the director selects next is still runtime-unproved, and a community "
+    "runtime report says an emptied record is not selected harmlessly. Only "
+    "edits that "
     "would break the counted "
     "rule — fewer slots than min(4, plays) on a still-populated record, the "
-    "same slot twice, or a slot value the retail books never use — are refused."
+    "same slot twice, or a slot value the retail books never use — are refused, "
+    "along with emptying every populated formation in a book.\n\n"
+    + EMPTY_FORMATION_WARNING
 )
 
 
@@ -139,6 +654,9 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.run_task = run_task
         self.setObjectName("panel")
         self._book: splb.SplbBook | None = None
+        #: Which volume ``_book`` was read from, so a repeated refresh for the
+        #: same game and book does not re-read the MASTER play catalog.
+        self._loaded_index: Path | None = None
         self._plays: list[str] = []
         self._formations: dict[int, str] = {}
         # record index -> {play index: wanted membership}
@@ -234,6 +752,17 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.tag_help_button = QPushButton("What are tagged slots?")
         self.tag_help_button.setObjectName("quietButton")
         self.tag_help_button.clicked.connect(self._explain_tags)
+        self.pins_button = QPushButton("Research pins")
+        self.pins_button.setObjectName("quietButton")
+        self.pins_button.setAccessibleName(
+            "Show the static executable addresses behind these claims"
+        )
+        self.pins_button.setToolTip(
+            "Every executable address behind what this panel claims, including "
+            "the candidates that were checked and withdrawn. Nothing here "
+            "changes what the buttons do."
+        )
+        self.pins_button.clicked.connect(self._show_research_pins)
         tag_row.addWidget(self.move_tag_button)
         self.empty_button = QPushButton("Empty this formation…")
         self.empty_button.setObjectName("dangerQuietButton")
@@ -241,6 +770,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.empty_button.clicked.connect(self._empty_formation)
         tag_row.addWidget(self.empty_button)
         tag_row.addWidget(self.tag_help_button)
+        tag_row.addWidget(self.pins_button)
         tag_row.addStretch(1)
         right.addLayout(tag_row)
         columns.addLayout(right, 3)
@@ -273,13 +803,47 @@ class ApfPlaybookMembershipPanel(QFrame):
         value = getattr(source, "index_0a", None) if source is not None else None
         return Path(value) if value is not None else None
 
+    def _project_book(self) -> int | None:
+        reader = getattr(self.facade, "staged_splb_book", None)
+        if reader is None:
+            return None
+        try:
+            return reader()
+        except Exception:
+            return None
+
     def set_context(self) -> None:
         if not bool(getattr(self.facade, "source_ready", False)):
             self._book = None
+            self._loaded_index = None
             self._clear_staged()
             self.formation_list.clear()
             self.play_list.clear()
             self.status.setText("Not loaded")
+            self._refresh_actions()
+            return
+        # An opened project may already carry Fine-tune Plays edits. Show the
+        # book they belong to rather than the first one in the list, so the user
+        # sees their own work instead of an apparently untouched playbook.
+        staged_book = self._project_book()
+        if staged_book is not None:
+            row = self.book_picker.findData(staged_book)
+            if row >= 0 and row != self.book_picker.currentIndex():
+                self.book_picker.setCurrentIndex(row)   # triggers _load_book
+                return
+        index_0a = self._index_0a()
+        outer = self.book_picker.currentData()
+        if (
+            self._book is not None
+            and outer is not None
+            and self._book.outer_index == int(outer)
+            and self._loaded_index == index_0a
+        ):
+            # Same game, same book: re-reading the whole MASTER play catalog
+            # would cost seconds for nothing. Only the staged set can have
+            # changed underneath, so re-derive that and repaint.
+            self._restore_from_project()
+            self._refresh_formations()
             self._refresh_actions()
             return
         self._load_book()
@@ -291,6 +855,34 @@ class ApfPlaybookMembershipPanel(QFrame):
         outer = self.book_picker.currentData()
         if outer is None:
             return
+        # The writer compiles one book at a time, so switching books with work
+        # staged has to be a decision the user makes, not a silent discard.
+        staged_book = self._project_book()
+        if staged_book is not None and staged_book != int(outer):
+            answer = QMessageBox.question(
+                self,
+                "Discard the staged playbook edits?",
+                f"{self._book_label(staged_book)} has staged changes, and the "
+                "studio writes one stock playbook at a time. Opening "
+                f"{self._book_label(int(outer))} discards them.\n\n"
+                "Cancel to go back and build or save first.",
+                QMessageBox.Discard | QMessageBox.Cancel,
+                QMessageBox.Cancel,
+            )
+            if answer != QMessageBox.Discard:
+                previous = self.book_picker.findData(staged_book)
+                if previous >= 0:
+                    self.book_picker.blockSignals(True)
+                    self.book_picker.setCurrentIndex(previous)
+                    self.book_picker.blockSignals(False)
+                return
+            clear = getattr(self.facade, "stage_splb_membership", None)
+            if clear is not None:
+                try:
+                    clear(())
+                except Exception:
+                    pass
+            self.modifiedChanged.emit()
         self._clear_staged()
 
         def operation(progress: Callable[[str, int, int], None]) -> dict:
@@ -314,14 +906,22 @@ class ApfPlaybookMembershipPanel(QFrame):
             self._book = payload["book"]  # type: ignore[index]
             self._plays = payload["plays"]  # type: ignore[index]
             self._formations = payload["formations"]  # type: ignore[index]
+            self._loaded_index = index_0a
+            self._restore_from_project()
             used = [r for r in self._book.records if r.populated]
+            staged = len(self.staged_changes())
             self.status.setText(
                 f"{self._book.name or 'unnamed'} · {len(used)} formations"
+                + (f" · {staged} staged change{'s' if staged != 1 else ''}" if staged else "")
             )
             self._refresh_formations()
             self._refresh_actions()
 
         self.run_task("Opening the stock playbook", operation, done, False)
+
+    def _book_label(self, outer: int) -> str:
+        name = splb.STOCK_BOOKS.get(outer)
+        return name or f"the unnamed book at entry {outer}"
 
     # ------------------------------------------------------------------- view
 
@@ -497,12 +1097,42 @@ class ApfPlaybookMembershipPanel(QFrame):
             )
         self._after_stage()
 
+    def populated_records_after_staging(self, pending_empty: int | None = None) -> int:
+        """How many formations in this book would still hold a play.
+
+        ``pending_empty`` names a record the caller is about to empty but has
+        not staged yet, so the last-formation guard can answer before the edit
+        is applied rather than after.
+        """
+
+        if self._book is None:
+            return 0
+        total = 0
+        for record in self._book.records:
+            if not record.populated:
+                continue
+            if record.record_index == pending_empty:
+                continue
+            entries = self._preview(record.record_index)
+            if entries is None:
+                entries = record.entries
+            if entries:
+                total += 1
+        return total
+
     def stage_empty_formation(self, record_index: int) -> None:
         """Stage removal of every stored play in this record, shedding all tags."""
 
         record = self._record(record_index)
         if record is None or not record.entries:
             raise ValidationError("This formation already has no stored plays")
+        if self.populated_records_after_staging(pending_empty=record_index) == 0:
+            raise ValidationError(
+                "This is the last formation in the book that still holds a play. "
+                "A book with nothing stored anywhere leaves the CPU director "
+                "nothing to select at all, so it is refused. Keep one formation "
+                "populated, or edit a different book."
+            )
         was_staged = dict(self._staged.get(record_index) or {})
         was_heirs = dict(self._staged_heirs.get(record_index) or {})
         was_moves = dict(self._staged_moves.get(record_index) or {})
@@ -546,10 +1176,67 @@ class ApfPlaybookMembershipPanel(QFrame):
         self._after_stage()
 
     def _after_stage(self) -> None:
+        self._commit_to_project()
         self._refresh_formations()
         self._refresh_plays()
         self._refresh_actions()
         self.modifiedChanged.emit()
+
+    # --------------------------------------------------------- project storage
+
+    def _commit_to_project(self) -> None:
+        """Hand the whole staged set to the session so Save Project keeps it.
+
+        Before this existed the panel was the only place the edits lived, so
+        Save Project wrote a file that silently did not contain them (reported
+        by Urianus against alpha.69 and again against alpha.70).  The session
+        now holds one modification per staged change, exactly as the assignment
+        route panel does, and the project archive round-trips them.
+        """
+
+        stage = getattr(self.facade, "stage_splb_membership", None)
+        if stage is None or not bool(getattr(self.facade, "source_ready", False)):
+            return
+        try:
+            stage(self.staged_changes())
+        except Exception as exc:      # session/validation errors are user-facing
+            QMessageBox.warning(
+                self,
+                "These playbook edits were not saved into the project",
+                "The change is still shown here, but the project could not "
+                f"store it:\n\n{exc}\n\nUse Revert changes and try again, or "
+                "build the copied 0A now — otherwise Save Project will not "
+                "carry these edits.",
+            )
+
+    def _restore_from_project(self) -> None:
+        """Rebuild the panel's staged state from what the project already holds."""
+
+        self._clear_staged()
+        if self._book is None:
+            return
+        reader = getattr(self.facade, "staged_splb_changes", None)
+        if reader is None:
+            return
+        try:
+            changes = reader()
+        except Exception:
+            return
+        for change in changes:
+            if change.outer_index != self._book.outer_index:
+                continue
+            if isinstance(change, splb.MembershipChange):
+                self._staged.setdefault(change.record_index, {})[
+                    change.play_index
+                ] = change.member
+                if change.tag_heir is not None:
+                    self._staged_heirs.setdefault(change.record_index, {})[
+                        change.play_index
+                    ] = change.tag_heir
+            elif isinstance(change, splb.TagMove):
+                self._staged_moves.setdefault(change.record_index, {})[
+                    change.from_play
+                ] = change.to_play
 
     # ------------------------------------------------------------------- plays
 
@@ -635,10 +1322,9 @@ class ApfPlaybookMembershipPanel(QFrame):
                 f"{self._play_name(play_index)} holds tagged slot {slot}, and no "
                 "other play in this formation can take it without breaking the "
                 "proved min(4, plays) rule. Tick another play into this formation "
-                "first, then untick this one — or use “Empty this formation…” to "
-                "shed every stored play at once (count/get-nth then return "
-                "0/null; which formation the director selects next is still "
-                "runtime-unproved).",
+                "first, then untick this one. “Empty this formation…” sheds every "
+                "stored play at once, but it is reported to change what the CPU "
+                "calls — read the warning on that button first.",
             )
             return None
         answer = QMessageBox.question(
@@ -718,6 +1404,24 @@ class ApfPlaybookMembershipPanel(QFrame):
     def _explain_tags(self) -> None:
         QMessageBox.information(self, "Tagged slots", TAG_BOUNDARY)
 
+    def _show_research_pins(self) -> None:
+        """The full static record, on request rather than in the way.
+
+        The panel used to word-wrap all of this under the play list. Keeping it
+        reachable is the honesty requirement; keeping it inline was not.
+        """
+
+        box = QMessageBox(self)
+        box.setWindowTitle("Research pins")
+        box.setText(
+            "Every executable address behind what this panel claims — including "
+            "the candidates that were checked and withdrawn, so they are not "
+            "re-chased. None of this changes what the buttons do."
+        )
+        box.setDetailedText(f"{RESEARCH_PINS}\n\n{TAG_RESEARCH_PINS}")
+        box.setStandardButtons(QMessageBox.Close)
+        box.exec_()
+
     def _empty_formation(self) -> None:
         reason = str(self.empty_button.property("disableReason") or "").strip()
         if reason:
@@ -740,22 +1444,36 @@ class ApfPlaybookMembershipPanel(QFrame):
                 "This formation already has no stored plays.",
             )
             return
+        remaining = self.populated_records_after_staging(
+            pending_empty=record.record_index
+        )
+        if remaining == 0:
+            QMessageBox.information(
+                self,
+                "This is the book's last populated formation",
+                "Emptying it would leave this playbook with no stored play in any "
+                "formation, and the CPU director would have nothing at all to "
+                "select. That is refused. Keep one formation populated, or edit a "
+                "different book.",
+            )
+            return
         answer = QMessageBox.question(
             self,
             "Empty this formation?",
+            EMPTY_FORMATION_WARNING
+            + "\n\n"
             f"Remove all {len(record.entries)} stored plays from "
             f"{self._formations.get(record.formation_index, 'this formation')}. "
-            "The tagged slots go with them because min(4, 0) is 0. The record "
-            "trailer is not touched, so the formation is still named in this "
-            "book. Count 0x84a8ac30 and get-nth 0x84a8bd20 then return 0/null, "
-            "so the four tagged plays cannot come from this record. Which "
-            "formation the director selects next is still runtime-unproved.\n\n"
-            "This is the proved way to stop storing the four tagged plays. It "
-            "is not a WR3→TE package substitution — APF MASTER has an 11-byte "
-            "role permutation at formation +0x11, but which index is WR3 vs TE "
-            "is unproved. To keep the formation and put TEs on the tagged "
-            "slots, add those plays and use “Move tagged slot…”.\n\n"
-            + TAG_BOUNDARY,
+            f"{remaining} formation{'s' if remaining != 1 else ''} in this book "
+            "would still hold plays. The tagged slots go with them because "
+            "min(4, 0) is 0, and the record trailer is not touched, so the "
+            "formation is still named in this book.\n\n"
+            "It is not a WR3→TE package substitution — APF MASTER has an 11-byte "
+            "role permutation at formation +0x11. Role 8 is TE and role 9 is WR "
+            "(0x820FC320 / 0x84a9ae68); swapping them is not runtime-proved. "
+            "To keep the formation and put TEs on the tagged "
+            "slots, add those plays and use “Move tagged slot…” instead — that "
+            "path has no reported in-game side effect.",
             QMessageBox.Yes | QMessageBox.Cancel,
             QMessageBox.Cancel,
         )
@@ -827,9 +1545,10 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.empty_button.setToolTip(
             empty_block
             or "Remove every stored play from this formation in one request. "
-            "Tagged slots are shed because min(4, 0) is 0. Count/get-nth then "
-            "return 0/null for this record; which formation the director "
-            "selects next is still runtime-unproved."
+            "Tagged slots are shed because min(4, 0) is 0. Reported in-game to "
+            "make the CPU call plays and personnel packages this book does not "
+            "contain — the confirmation explains what was seen. Emptying the "
+            "book's last populated formation is refused."
         )
         self.build_button.setToolTip(
             block
@@ -945,4 +1664,11 @@ def _publish_copied_volume(index_path: Path, out_root: Path, entry) -> Path:
     return destination
 
 
-__all__ = ["ApfPlaybookMembershipPanel", "BOUNDARY", "TAG_BOUNDARY"]
+__all__ = [
+    "ApfPlaybookMembershipPanel",
+    "BOUNDARY",
+    "EMPTY_FORMATION_WARNING",
+    "RESEARCH_PINS",
+    "TAG_BOUNDARY",
+    "TAG_RESEARCH_PINS",
+]

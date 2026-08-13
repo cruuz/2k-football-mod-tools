@@ -1,13 +1,38 @@
-"""Field Art UI must name stock NFL endzones vs proved writable slots."""
+"""Field Art UI must name stock endzones vs proved writable slots.
+
+Package 6 was described as a **shared** endzone layer in the category blurb and
+in ``docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md``. Decoding it shows bespoke
+per-team artwork -- two figures in wide-brimmed hats with bandoliers and
+revolvers, a masked figure, a hitching rail -- structurally identical to the
+other 117 packages (2048x512, DXT1, the same l0/l1 split). It is the package
+whose writer was proved first, nothing more. The old wording told users that
+editing it changed a common layer when it repaints one specific team's endzone,
+which is the kind of error found only after someone ships a mod (davidhbui,
+Beta 38).
+"""
 
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
-from mod_editor.apf_studio.field_art import _NAME_CONTRACTS
+from mod_editor.apf_studio import field_art
+from mod_editor.apf_studio.field_art import (
+    ENDZONE_IDENTITY_NOTE,
+    ENDZONE_LABELS,
+    ENDZONE_MASK_CONTRACT,
+    _NAME_CONTRACTS,
+    endzone_team_labels,
+)
 from mod_editor.apf_studio.gui import CATEGORY_BLURBS, FIELD_ART_COVERED_TARGETS
 from mod_editor.apf_studio.models import ApfCategory
+
+
+WALL_DOC = (
+    Path(__file__).resolve().parents[2]
+    / "docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md"
+)
 
 
 class FieldArtStockLabelTests(unittest.TestCase):
@@ -18,7 +43,7 @@ class FieldArtStockLabelTests(unittest.TestCase):
     def test_writable_slots_are_six_proved_bases(self) -> None:
         self.assertEqual(len(FIELD_ART_COVERED_TARGETS), 6)
 
-    def test_category_blurb_names_stock_nfl_and_writable_bound(self) -> None:
+    def test_category_blurb_names_stock_and_writable_bound(self) -> None:
         help_text = CATEGORY_BLURBS[ApfCategory.FIELD_ART]
         self.assertIn("118", help_text)
         self.assertIn("stock", help_text.casefold())
@@ -26,6 +51,90 @@ class FieldArtStockLabelTests(unittest.TestCase):
             "six" in help_text.casefold() or "6" in help_text,
             help_text,
         )
+
+
+class OuterSixIsNotSharedTests(unittest.TestCase):
+    """No surface may call package 6 a shared layer again."""
+
+    def test_the_category_blurb_withdraws_the_shared_claim(self) -> None:
+        blurb = CATEGORY_BLURBS[ApfCategory.FIELD_ART]
+        self.assertNotIn("shared outer-6", blurb)
+        self.assertIn("not a shared layer", blurb)
+        self.assertIn("region mask", blurb.casefold())
+
+    def test_the_two_writable_endzone_slots_say_whose_endzone_they_are(self) -> None:
+        endzone_targets = [
+            target
+            for target in FIELD_ART_COVERED_TARGETS
+            if str(target.name).startswith("endzone_")
+        ]
+        self.assertEqual(len(endzone_targets), 2)
+        for target in endzone_targets:
+            with self.subTest(inner=target.name):
+                self.assertEqual(target.entry_index, 6)
+                self.assertIn("not a shared layer", target.note.casefold())
+                self.assertIn("region mask", target.note.casefold())
+
+    def test_the_wall_document_records_the_correction(self) -> None:
+        text = WALL_DOC.read_text(encoding="utf-8")
+        self.assertIn("outer 6 is not a shared layer", text.casefold())
+        self.assertIn("region masks, not artwork", text.casefold())
+        self.assertNotIn("shared endzone layers outer 6", text)
+
+
+class EndzoneLabelTableTests(unittest.TestCase):
+    """A package nobody identified stays an index, never a guess."""
+
+    def test_every_label_is_a_distinct_real_package_index(self) -> None:
+        labels = endzone_team_labels()
+        self.assertGreaterEqual(len(labels), 31)
+        self.assertLessEqual(len(labels), 118)
+        for outer, team in labels.items():
+            with self.subTest(outer=outer):
+                self.assertIsInstance(outer, int)
+                self.assertGreaterEqual(outer, 0)
+                self.assertLess(outer, 1543)
+                self.assertTrue(team.strip())
+
+    def test_the_verified_identifications_are_the_ones_that_were_decoded(self) -> None:
+        labels = endzone_team_labels()
+        for outer, team in (
+            (1533, "Redcoats"),
+            (1139, "Pharaohs"),
+            (1258, "Biohazard"),
+            (753, "Gorillas"),
+            (802, "A's"),
+            (1360, "Z's"),
+        ):
+            with self.subTest(outer=outer):
+                self.assertEqual(labels[outer], team)
+
+    def test_package_six_is_not_labelled_shared(self) -> None:
+        self.assertNotIn("shared", endzone_team_labels().get(6, "").casefold())
+
+    def test_every_row_credits_who_identified_it(self) -> None:
+        document = json.loads(ENDZONE_LABELS.read_text(encoding="utf-8"))
+        self.assertEqual(document["schema"], field_art.ENDZONE_LABELS_SCHEMA)
+        for row in document["labels"]:
+            with self.subTest(outer=row["outer_index"]):
+                self.assertTrue(str(row["source"]).strip())
+                self.assertIn(row["kind"], {"nickname", "alphabet"})
+
+
+class EndzoneDiscoveryCopyTests(unittest.TestCase):
+    """Say why search cannot work, rather than shipping a search that cannot."""
+
+    def test_the_mask_contract_states_the_authoring_rules(self) -> None:
+        contract = ENDZONE_MASK_CONTRACT.casefold()
+        self.assertIn("region mask", contract)
+        self.assertIn("anti-aliasing", contract)
+        self.assertIn("dxt1", contract)
+
+    def test_the_identity_note_explains_why_a_name_search_cannot_work(self) -> None:
+        note = ENDZONE_IDENTITY_NOTE
+        self.assertIn("Roster.ROS", note)
+        self.assertIn("default.xex", note)
+        self.assertIn("contact sheet", note.casefold())
 
 
 if __name__ == "__main__":

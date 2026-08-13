@@ -58,7 +58,7 @@ class Apf2k8DigitalFontProvider:
     module_pins: Mapping[str, str] = {
         "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
         "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_texture_patch.py": "f1e1d1beaea599610c6c83d0d47f3970a5ee7bd73e23ad5b5aee79dc2a2e7694",
+        "tools/apf_texture_patch.py": "79fcf7fcb6bc9678a27a4dc41f4692a2378ee47e1a908f51a1212dadb1415159",
         "tools/apf_xenos_dxt5a.py": "063c4d564748019198b54898c3676f541a85319606f3ae9bd733d9340c7d66f6",
         "tools/apf_digital_font_layout.py": "df7ef3f9f5a664a0b5edce4e1dc15ccbca6fd9e3eb3579377f12abb0b392fcb4",
         "tools/apf_digital_font_transport.py": "4ed563c17df79df3f0bef6190546c5fbe82314ed71fc3bf7a965c845130a0bf8",

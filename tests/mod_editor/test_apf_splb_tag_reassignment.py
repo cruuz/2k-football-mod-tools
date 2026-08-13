@@ -5,7 +5,7 @@ tagged slots -- 209 records, zero exceptions -- and the slots are authored per
 formation rather than falling out of entry order.  Three of them are the
 formation's audibles -- the game writes a slot number into bits 12..10 at
 ``0x84864c78`` and runs that counter 0, 1, 2 per record -- and the fourth is
-unexplained.  Either way the studio's rule is the same: never drop a slot,
+collected with them at ``0x84a850f0``, not proved as 3rd-and-long.  Either way the studio's rule is the same: never drop a slot,
 never duplicate one, never invent a value the retail books do not use, but let
 the user hand one to another play in the same formation.  These tests hold that
 line from both ends -- the writer's, and a forged output the verifier has to
@@ -15,9 +15,12 @@ reject.
 from __future__ import annotations
 
 import hashlib
+import inspect
+import json
 import os
 from pathlib import Path
 import struct
+import tempfile
 import unittest
 
 
@@ -382,7 +385,19 @@ class CopyTests(unittest.TestCase):
     def setUp(self) -> None:
         from mod_editor.apf_studio import playbook_membership_qt as panel
 
-        self.panel_copy = f"{panel.BOUNDARY}\n{panel.TAG_BOUNDARY}\n{panel.__doc__}"
+        # The panel shows BOUNDARY / TAG_BOUNDARY inline and puts the address
+        # wall behind "Research pins". Both halves are still product copy a
+        # user can reach, so both are held to the same standard here.
+        self.panel_copy = "\n".join(
+            (
+                panel.BOUNDARY,
+                panel.TAG_BOUNDARY,
+                panel.RESEARCH_PINS,
+                panel.TAG_RESEARCH_PINS,
+                panel.EMPTY_FORMATION_WARNING,
+                str(panel.__doc__),
+            )
+        )
         self.writer_copy = str(splb.__doc__)
         # These read as prose to a user but as reStructuredText in a docstring,
         # so "**not** established" and "``Y``" carry markup mid-phrase. Assert
@@ -416,17 +431,142 @@ class CopyTests(unittest.TestCase):
             self.assertIn("0x84a8ac30", copy)      # count-plays consumer
             self.assertIn("0x84a8bd20", copy)      # get-nth consumer
 
-    def test_the_copy_still_refuses_to_explain_the_fourth_slot(self) -> None:
-        """Three slots are proved audibles; the fourth is not explained.
+    def test_the_copy_states_the_fourth_slot_is_collected_not_3rd_and_long(self) -> None:
+        """Y==3 is a first-class tagged slot in 0x84a850f0; 3rd-and-long is not pinned.
 
-        The assign loop runs 0..2 and never writes slot 3, and the only place
-        the executable tests for it is a generic bit-field clamp. Claiming a
-        purpose for it would be exactly the overreach this product forbids.
+        The assign loop still runs 0..2 and never writes slot 3. The collector
+        at 0x84a850f0 walks 0..3. Down is pinned at +0x254 / 0x848d96e4, but
+        that is not the play picker. Copy must name the collector and the down
+        field and still refuse to call either the CPU's 3rd-and-long choice.
         """
 
+        for copy in (self.panel_copy, self.writer_copy):
+            self.assertIn("0x84a850f0", copy)
+            self.assertIn("0x84a851ec", copy)
+            self.assertIn("0x848d96e4", copy)
+            self.assertIn("0x848605b4", copy)
+            self.assertIn("0x820E57C8", copy)
+            self.assertIn("0x8485bd38", copy)
+            self.assertIn("0x84a472d0", copy)
+            self.assertIn("0x8486ce88", copy)
+            self.assertIn("0x8485e810", copy)
+            self.assertIn("0x84862580", copy)
+            self.assertIn("0x844dbe00", copy)
+            self.assertIn("0x820FC380", copy)
+            self.assertIn("0x84b694a8", copy)
+            self.assertIn("0x84a89ea8", copy)
+            self.assertIn("0x84DCB2A8", copy)
+            self.assertIn("0x848699d8", copy)
+            self.assertIn("0x8485e7f8", copy)
+            self.assertIn("0x851A2780", copy)
+            self.assertIn("0x8466b998", copy)
+            self.assertIn("0x8493d968", copy)
+            self.assertIn("0x8493e180", copy)
+            self.assertIn("0x8466af70", copy)
+            self.assertIn("0x8466a818", copy)
+            self.assertIn("0x8466aae0", copy)
+            self.assertIn("0x8466abc0", copy)
+            self.assertIn("0x8466af28", copy)
+            self.assertIn("0x8470c2c4", copy)
+            self.assertIn("0x84712498", copy)
+            self.assertIn("0x847163d4", copy)
+            self.assertIn("0x84867938", copy)
+            self.assertIn("0x84a139d0", copy)
+            self.assertIn("0x84a28318", copy)
+            self.assertIn("0x84887e18", copy)
+            self.assertIn("0x850F1218", copy)
+            self.assertIn("0x84ad0048", copy)
+            self.assertIn("0x847c6da8", copy)
+            self.assertIn("0x849fd6a8", copy)
+            self.assertIn("0x8486cd80", copy)
+            self.assertIn("0x849fd6c8", copy)
+            self.assertIn("0x851D9660", copy)
+            self.assertIn("0x849fcf60", copy)
+            self.assertIn("0x849d81d0", copy)
+            self.assertIn("0x84E28670", copy)
+            self.assertIn("0x84EB0DE4", copy)
+            self.assertIn("0x849c9c90", copy)
+            self.assertIn("0x8466a994", copy)
+            self.assertIn("0x000dca40", copy)
+            self.assertIn("0x84ab2010", copy)
+            self.assertIn("0x8466ba30", copy)
+            self.assertIn("0x8466bd38", copy)
+            self.assertIn("0x8466af48", copy)
+            self.assertIn("0x84b162a8", copy)
+            self.assertIn("0x8466b8fc", copy)
+            self.assertIn("0x84c381e8", copy)
+            self.assertIn("0x84a87b38", copy)
+            self.assertIn("0x84bdfb00", copy)
+            self.assertIn("0x848bb1a8", copy)
+            self.assertIn("0x8466b660", copy)
+            self.assertIn("0x8466c7f0", copy)
+            self.assertIn("0x84671838", copy)
+            self.assertIn("0x84842f48", copy)
+            self.assertIn("0x8476ca80", copy)
+            self.assertIn("0x8492bb24", copy)
+            self.assertIn("0x84b0a4c0", copy)
+            self.assertIn("0x84EE65A8", copy)
+            self.assertIn("0x849e7790", copy)
+            self.assertIn("0x847e2818", copy)
+            self.assertIn("0x84abb590", copy)
+            self.assertIn("0x84a9d7a0", copy)
+            self.assertIn("0x84be2b48", copy)
+            self.assertIn("0x848777cc", copy)
+            self.assertIn("0x84b93b10", copy)
+            self.assertIn("0x84b94258", copy)
+            self.assertIn("0x849277a8", copy)
+            self.assertIn("0x84c4c480", copy)
+            self.assertIn("0x84ba2520", copy)
+            self.assertIn("0x846c2068", copy)
+            self.assertIn("0x8466c890", copy)
+            self.assertIn("0x8466c91c", copy)
+            self.assertIn("0x844dd260", copy)
+            self.assertIn("0x8477f950", copy)
+            self.assertIn("0x84a37850", copy)
+            self.assertIn("0x848864b0", copy)
+            self.assertIn("0x84a5eb08", copy)
+            self.assertIn("0x8475b7b0", copy)
+            self.assertIn("0x1138e0", copy)
+            self.assertIn("0x84a23bd0", copy)
+            self.assertIn("0x844e8568", copy)
+            self.assertIn("0x849d36d8", copy)
+            self.assertIn("0x848631d0", copy)
+            self.assertIn("0x168ad0", copy)
+            self.assertIn("0x84a2ccd8", copy)
+            self.assertIn("0x84961548", copy)
+            self.assertIn("0x849e3a24", copy)
+            self.assertIn("0x84814dcc", copy)
+            self.assertIn("0x84816118", copy)
+            self.assertIn("0x8485a04c", copy)
+            self.assertIn("0x84869e60", copy)
+            self.assertIn("0x84a9adcc", copy)
+            self.assertIn("0x84a21298", copy)
+            self.assertIn("0x84E446C8", copy)
+            self.assertIn("0x845FD8B4", copy)
+            self.assertIn("0x85212B88", copy)
+            self.assertIn("0x84911750", copy)
+            self.assertIn("0x849ecd48", copy)
+            self.assertIn("0x847d7590", copy)
+            self.assertIn("0x8480189c", copy)
+            self.assertIn("0x84F1779C", copy)
+            self.assertIn("0x8466c8dc", copy)
+            self.assertIn("0x8499e420", copy)
+            self.assertIn("0x849a3b58", copy)
+            self.assertIn("0x84b68cd8", copy)
+            self.assertIn("0x84ad92e0", copy)
+            self.assertIn("0x84879bc0", copy)
+            self.assertIn("0x84b68cc8", copy)
+            self.assertIn("0x84ad0348", copy)
+            self.assertIn("0x844f72b0", copy)
+            self.assertIn("0x84b39458", copy)
+            self.assertIn("0x84EB02D0", copy)
+            self.assertIn("0x84ad9f40", copy)
+            self.assertIn("0x848ee750", copy)
+            self.assertIn("0x84b64c88", copy)
+        self.assertIn("NOT proved", self.panel_copy)
         for copy in (self.panel_prose, self.writer_prose):
-            self.assertIn("not established", copy)
-        self.assertIn("NOT proved", self.panel_copy)   # in-game CPU behaviour
+            self.assertIn("3rd-and-long", copy)
+            self.assertNotIn("generic bit-field clamp", copy)
 
     def test_the_copy_does_not_cite_the_disproved_glyph_mapper(self) -> None:
         """A disassembly showed 0x84a17298 never touches the glyph strings."""
@@ -446,6 +586,13 @@ class CopyTests(unittest.TestCase):
             self.assertIn("unproved", copy)
             self.assertNotIn("cpu may call", copy)
             self.assertNotIn("cpu actually calls", copy)
+
+    def test_the_copy_states_role_8_is_te_and_role_9_is_wr(self) -> None:
+        for copy in (self.panel_copy, self.writer_copy):
+            self.assertIn("0x820FC320", copy)
+            self.assertIn("0x84a9ae68", copy)
+            self.assertIn("8 → TE", copy)
+            self.assertIn("9 → WR", copy)
 
     def test_the_copy_states_empty_records_return_no_plays(self) -> None:
         for copy in (self.panel_copy, self.writer_copy):
@@ -474,6 +621,65 @@ class StaticConsumerPinTests(unittest.TestCase):
                 expected,
                 f"VA 0x{address:08x}: expected 0x{expected:08x}, got 0x{actual:08x}",
             )
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_ROLE_TO_ROSTER_FIRST_11,
+            APF_ROLE_TO_ROSTER_TABLE_VA,
+        )
+
+        table_off = APF_ROLE_TO_ROSTER_TABLE_VA - splb.APF_PE_IMAGE_BASE
+        self.assertEqual(
+            tuple(payload[table_off : table_off + 11]),
+            APF_ROLE_TO_ROSTER_FIRST_11,
+        )
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_DOWN_NAME_TABLE_VA,
+            APF_DOWN_NAMES,
+        )
+
+        name_off = APF_DOWN_NAME_TABLE_VA - splb.APF_PE_IMAGE_BASE
+        for index, expected in enumerate(APF_DOWN_NAMES):
+            ptr = struct.unpack_from(">I", payload, name_off + index * 4)[0]
+            text_off = ptr - splb.APF_PE_IMAGE_BASE
+            got = payload[text_off : text_off + len(expected) * 2].decode("utf-16-be")
+            self.assertEqual(got, expected, f"down name {index}")
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_CATEGORY_PERSONNEL_ACE_ROW_INDEX,
+            APF_CATEGORY_PERSONNEL_FIVE_WIDE_ROW_INDEX,
+            APF_CATEGORY_PERSONNEL_ROW_ACE,
+            APF_CATEGORY_PERSONNEL_ROW_FIVE_WIDE,
+            APF_CATEGORY_PERSONNEL_TABLE_VA,
+        )
+
+        table_off = APF_CATEGORY_PERSONNEL_TABLE_VA - splb.APF_PE_IMAGE_BASE
+        for row_index, expected in (
+            (APF_CATEGORY_PERSONNEL_ACE_ROW_INDEX, APF_CATEGORY_PERSONNEL_ROW_ACE),
+            (
+                APF_CATEGORY_PERSONNEL_FIVE_WIDE_ROW_INDEX,
+                APF_CATEGORY_PERSONNEL_ROW_FIVE_WIDE,
+            ),
+        ):
+            got = []
+            for col in range(11):
+                word_off = table_off + (row_index * 11 + col) * 4
+                got.append(payload[word_off])
+            self.assertEqual(tuple(got), expected, f"personnel row {row_index}")
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_PACKAGE_MAP_ROLE_TE,
+            APF_PACKAGE_MAP_ROLE_WR3,
+            APF_ROLE_ELIGIBILITY_MASK_TE,
+            APF_ROLE_ELIGIBILITY_MASK_WR,
+            APF_ROLE_ELIGIBILITY_WORD_TABLE_VA,
+        )
+
+        elig_off = APF_ROLE_ELIGIBILITY_WORD_TABLE_VA - splb.APF_PE_IMAGE_BASE
+        self.assertEqual(
+            struct.unpack_from(">I", payload, elig_off + APF_PACKAGE_MAP_ROLE_TE * 4)[0],
+            APF_ROLE_ELIGIBILITY_MASK_TE,
+        )
+        self.assertEqual(
+            struct.unpack_from(">I", payload, elig_off + APF_PACKAGE_MAP_ROLE_WR3 * 4)[0],
+            APF_ROLE_ELIGIBILITY_MASK_WR,
+        )
 
 
 class PanelTests(unittest.TestCase):
@@ -610,6 +816,331 @@ class PanelTests(unittest.TestCase):
         splb.verify_book(self.body, compiled.replacement, changes)
         after = splb.parse_book(compiled.replacement, OUTER).records[FULL]
         self.assertEqual(after.entries, ())
+
+    def test_the_panel_counts_what_would_still_be_populated(self) -> None:
+        self.assertEqual(self.panel.populated_records_after_staging(), 4)
+        self.assertEqual(
+            self.panel.populated_records_after_staging(pending_empty=FULL), 3
+        )
+        self.panel.stage_empty_formation(FULL)
+        self.assertEqual(self.panel.populated_records_after_staging(), 3)
+
+    def test_the_last_populated_formation_cannot_be_emptied(self) -> None:
+        for record_index in (FULL, FOUR, THREE):
+            self.panel.stage_empty_formation(record_index)
+        self.assertEqual(self.panel.populated_records_after_staging(), 1)
+        with self.assertRaises(ValidationError) as caught:
+            self.panel.stage_empty_formation(ONE)
+        self.assertIn("last formation", str(caught.exception))
+        # The refusal leaves the three staged clears exactly as they were.
+        self.assertEqual(self.panel.populated_records_after_staging(), 1)
+
+
+class PanelReadabilityTests(unittest.TestCase):
+    """Honesty copy has to be reachable, not in the way.
+
+    The inline boundary label had grown to 11,360 characters and the tagged-slot
+    dialog to 11,252 -- mostly executable addresses and withdrawn candidates,
+    word-wrapped between a user and the controls they came for. The record still
+    ships in full; it moved behind "Research pins".
+    """
+
+    #: Long enough to state the boundary, short enough that someone reads it.
+    INLINE_LIMIT = 3_000
+
+    def setUp(self) -> None:
+        from mod_editor.apf_studio import playbook_membership_qt as panel
+
+        self.panel = panel
+
+    def test_the_inline_copy_is_short_enough_to_read(self) -> None:
+        for name in ("BOUNDARY", "TAG_BOUNDARY", "EMPTY_FORMATION_WARNING"):
+            with self.subTest(copy=name):
+                self.assertLessEqual(len(getattr(self.panel, name)), self.INLINE_LIMIT)
+
+    def test_the_full_static_record_still_ships(self) -> None:
+        pins = f"{self.panel.RESEARCH_PINS}\n{self.panel.TAG_RESEARCH_PINS}"
+        # Every address the boundary leans on has to remain checkable.
+        for address in (
+            "0x84a8ac30",
+            "0x84a8bd20",
+            "0x84864c78",
+            "0x84a8ab28",
+            "0x84a850f0",
+            "0x820FC320",
+        ):
+            with self.subTest(address=address):
+                self.assertIn(
+                    address,
+                    pins
+                    + self.panel.BOUNDARY
+                    + self.panel.TAG_BOUNDARY
+                    + self.panel.EMPTY_FORMATION_WARNING,
+                )
+
+    def test_the_inline_copy_points_at_the_pins(self) -> None:
+        self.assertIn("Research pins", self.panel.BOUNDARY)
+        self.assertIn("Research pins", self.panel.TAG_BOUNDARY)
+
+
+class PanelProjectHandoffTests(unittest.TestCase):
+    """Every staged tick has to reach the session, or Save Project loses it."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        from PyQt5.QtWidgets import QApplication
+
+        cls.application = QApplication.instance() or QApplication([])
+
+    def setUp(self) -> None:
+        from types import SimpleNamespace
+
+        from mod_editor.apf_studio.playbook_membership_qt import (
+            ApfPlaybookMembershipPanel,
+        )
+
+        self.stored: tuple = ()
+
+        def stage(changes) -> int:
+            self.stored = tuple(changes)
+            return len(self.stored)
+
+        self.facade = SimpleNamespace(
+            source_ready=True,
+            source=SimpleNamespace(index_0a=Path("0A")),
+            stage_splb_membership=stage,
+            staged_splb_changes=lambda: self.stored,
+            staged_splb_book=lambda: next(
+                iter({c.outer_index for c in self.stored}), None
+            ),
+        )
+        self.body = _book_bytes()
+        self.panel = ApfPlaybookMembershipPanel(self.facade, lambda *_a: None)
+        self.panel._book = splb.parse_book(self.body, OUTER)
+        self.panel._plays = [f"Play {index}" for index in range(586)]
+        self.panel._formations = {62: "Ace", 63: "Ace Flip", 64: "Slot", 65: "Goal"}
+        self.panel._refresh_formations()
+
+    def tearDown(self) -> None:
+        self.panel.deleteLater()
+
+    def test_staging_hands_every_change_to_the_project(self) -> None:
+        self.panel.stage_membership(ONE, 200, True)
+        self.assertEqual(self.stored, self.panel.staged_changes())
+        self.assertEqual(len(self.stored), 1)
+        self.panel.stage_tag_move(FULL, 11, 40)
+        self.assertEqual(self.stored, self.panel.staged_changes())
+        self.assertEqual(len(self.stored), 2)
+
+    def test_reverting_clears_the_project_too(self) -> None:
+        self.panel.stage_membership(ONE, 200, True)
+        self.assertTrue(self.stored)
+        self.panel._revert()
+        self.assertEqual(self.stored, ())
+
+    def test_a_reopened_project_restores_the_staged_ticks(self) -> None:
+        self.panel.stage_membership(FULL, 11, False, heir=41)
+        self.panel.stage_membership(ONE, 200, True)
+        self.panel.stage_tag_move(FOUR, 50, 51)
+        saved = self.stored
+
+        self.panel._clear_staged()
+        self.assertEqual(self.panel.staged_changes(), ())
+
+        self.panel._restore_from_project()
+        self.assertEqual(self.panel.staged_changes(), saved)
+        self.assertEqual(self.panel._staged_heirs[FULL][11], 41)
+        self.assertEqual(self.panel._staged_moves[FOUR][50], 51)
+        self.assertNotIn(11, self.panel._wanted_plays(FULL))
+        self.assertIn(200, self.panel._wanted_plays(ONE))
+
+    def test_edits_for_another_book_are_not_restored_here(self) -> None:
+        self.stored = (splb.MembershipChange(130, FULL, 11, False, 41),)
+        self.panel._restore_from_project()
+        self.assertEqual(self.panel.staged_changes(), ())
+
+    def test_refreshing_the_same_game_and_book_does_not_reread_the_catalog(
+        self,
+    ) -> None:
+        """A refresh must not spend seconds re-reading MASTER for nothing."""
+
+        self.panel._loaded_index = self.panel._index_0a()
+        self.panel.book_picker.setCurrentIndex(
+            self.panel.book_picker.findData(OUTER)
+        )
+        self.panel._loaded_index = self.panel._index_0a()
+        self.stored = (splb.MembershipChange(OUTER, ONE, 200, True),)
+
+        calls: list[str] = []
+        self.panel.run_task = lambda *args: calls.append(str(args[0]))
+        self.panel.set_context()
+
+        self.assertEqual(calls, [])
+        # It still picks up what the project gained while the panel was idle.
+        self.assertEqual(self.panel.staged_changes(), self.stored)
+
+    def test_a_playbooks_page_refresh_reaches_this_panel(self) -> None:
+        """The panel used to load a book only when the dropdown changed."""
+
+        from mod_editor.apf_studio.gui import InspectorCategoryPage
+
+        source = inspect.getsource(InspectorCategoryPage.refresh)
+        self.assertIn("playbook_membership", source)
+        self.assertIn("set_context", source)
+
+
+class EmptyBookRefusalTests(unittest.TestCase):
+    """A book with nothing stored anywhere is refused, not shipped.
+
+    Static count/get-nth returning 0/null for an empty record was never a proof
+    that the director handles one gracefully, and Urianus's alpha.70 report says
+    it does not: emptied formations produced out-of-book plays and personnel
+    packages.  Emptying every populated record has no honest reading at all.
+    """
+
+    def setUp(self) -> None:
+        self.body = _book_bytes()
+        self.book = splb.parse_book(self.body, OUTER)
+
+    def _clear(self, record_index: int) -> list[splb.MembershipChange]:
+        return [
+            splb.MembershipChange(OUTER, record_index, entry.play_index, False)
+            for entry in self.book.records[record_index].entries
+        ]
+
+    def test_emptying_every_populated_record_is_refused(self) -> None:
+        changes: list[splb.MembershipChange] = []
+        for record_index in (FULL, FOUR, THREE, ONE):
+            changes.extend(self._clear(record_index))
+        with self.assertRaises(ValidationError) as caught:
+            splb.compile_book(self.book, changes)
+        message = str(caught.exception)
+        self.assertIn("every populated formation", message)
+        self.assertIn("out-of-book", message)
+
+    def test_leaving_one_formation_populated_still_compiles(self) -> None:
+        changes: list[splb.MembershipChange] = []
+        for record_index in (FULL, FOUR, THREE):
+            changes.extend(self._clear(record_index))
+        compiled = splb.compile_book(self.book, changes)
+        splb.verify_book(self.body, compiled.replacement, changes)
+        self.assertEqual(compiled.report["records_emptied"], [FULL, FOUR, THREE])
+        self.assertEqual(compiled.report["populated_records_remaining"], 1)
+
+    def test_the_report_never_claims_an_emptied_record_is_runtime_safe(self) -> None:
+        compiled = splb.compile_book(self.book, self._clear(FULL))
+        claims = compiled.report["claims"]
+        self.assertIs(claims["empty_record_returns_no_plays"], True)
+        self.assertIs(claims["empty_record_runtime_safe"], False)
+        self.assertIs(claims["empty_record_reported_out_of_book_calls"], True)
+        untouched = splb.compile_book(
+            self.book, [splb.MembershipChange(OUTER, ONE, 200, True)]
+        )
+        self.assertEqual(untouched.report["records_emptied"], [])
+        self.assertIs(
+            untouched.report["claims"]["empty_record_reported_out_of_book_calls"],
+            False,
+        )
+
+
+class ProjectPayloadTests(unittest.TestCase):
+    """Save Project has to carry Fine-tune Plays, and carry only selectors.
+
+    Reported by Urianus against alpha.69 and again against alpha.70: the panel
+    held the staged edits and nothing else did, so a saved project reopened with
+    the playbook apparently untouched.
+    """
+
+    def test_a_membership_change_round_trips_through_its_payload(self) -> None:
+        for change in (
+            splb.MembershipChange(OUTER, FULL, 11, False, 41),
+            splb.MembershipChange(OUTER, ONE, 200, True),
+            splb.TagMove(OUTER, FULL, 11, 40),
+        ):
+            with self.subTest(change=change):
+                payload = splb.encode_membership_payload(change)
+                self.assertEqual(
+                    splb.decode_membership_payload(payload, change.selector), change
+                )
+                self.assertEqual(
+                    splb.change_from_mapping(splb.change_metadata(change)), change
+                )
+
+    def test_a_payload_carries_no_resource_bytes(self) -> None:
+        payload = splb.encode_membership_payload(
+            splb.MembershipChange(OUTER, FULL, 11, False, 41)
+        )
+        document = json.loads(payload.decode("utf-8"))
+        self.assertEqual(document["schema"], splb.PAYLOAD_SCHEMA)
+        self.assertEqual(
+            set(document["change"]),
+            {
+                "change_kind",
+                "outer_index",
+                "record_index",
+                "play_index",
+                "member",
+                "tag_heir",
+            },
+        )
+
+    def test_a_payload_that_names_another_target_is_refused(self) -> None:
+        change = splb.MembershipChange(OUTER, FULL, 11, False, 41)
+        payload = splb.encode_membership_payload(change)
+        other = splb.MembershipChange(OUTER, FULL, 12, False, 41)
+        with self.assertRaises(ValidationError):
+            splb.decode_membership_payload(payload, other.selector)
+
+    def test_a_non_canonical_or_malformed_payload_is_refused(self) -> None:
+        change = splb.MembershipChange(OUTER, FULL, 11, False, 41)
+        selector = change.selector
+        for payload in (
+            b'{"schema":"' + splb.PAYLOAD_SCHEMA.encode() + b'","change":{}}\n',
+            splb.encode_membership_payload(change).replace(b",", b", ", 1),
+            b"not json",
+            b'{"schema":"other/v1","change":{}}\n',
+        ):
+            with self.subTest(payload=payload[:32]):
+                with self.assertRaises(ValidationError):
+                    splb.decode_membership_payload(payload, selector)
+
+    def test_the_project_archive_round_trips_one_staged_change(self) -> None:
+        from mod_editor.apf_studio import project
+        from mod_editor.apf_studio.models import Modification
+
+        change = splb.MembershipChange(OUTER, FULL, 11, False, 41)
+        payload = splb.encode_membership_payload(change)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            replacement = root / "membership.json"
+            replacement.write_bytes(payload)
+            modification = Modification(
+                change.selector,
+                splb.PROVIDER_KIND,
+                replacement,
+                hashlib.sha256(payload).hexdigest(),
+                splb.change_metadata(change),
+            )
+            archive = project.save_project(
+                root / "playbook.apf2k8mod",
+                source_sha256="b" * 64,
+                modifications=(modification,),
+            )
+            _document, loaded, _annotations = project.load_project(
+                archive,
+                expected_source_sha256="b" * 64,
+                destination_dir=root / "loaded",
+            )
+            self.assertEqual(len(loaded), 1)
+            self.assertEqual(loaded[0].asset_id, change.selector)
+            self.assertEqual(loaded[0].kind, splb.PROVIDER_KIND)
+            self.assertEqual(loaded[0].metadata, splb.change_metadata(change))
+            self.assertEqual(
+                splb.decode_membership_payload(
+                    loaded[0].replacement_path.read_bytes(), change.selector
+                ),
+                change,
+            )
 
 
 @unittest.skipUnless(DISC_AVAILABLE, "extracted APF 0A not present")

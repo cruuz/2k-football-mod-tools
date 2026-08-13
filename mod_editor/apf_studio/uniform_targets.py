@@ -144,6 +144,117 @@ def target_record(family: str, asset_index: int) -> dict[str, object]:
     return load_targets()[family][asset_index]
 
 
+CAPACITY_FAMILIES = ("shoulder",)
+_CAPACITY_CACHE: dict[tuple[str, str], tuple[dict[str, object], ...]] = {}
+_CAPACITY_LOCK = threading.RLock()
+#: How many of the 24 slots each band covers. The split is the measured one:
+#: davidhbui built one detailed mask against three shoulder slots on Beta 38
+#: and found the roomiest third took it while the bottom third refused it.
+_BAND_SIZE = 8
+
+
+def capacity_table(index_0a: Path, family: str) -> tuple[dict[str, object], ...]:
+    """Every slot in one family with its real replacement budget and rank.
+
+    A fixed-allocation slot's budget is ``retail's own compressed payload +
+    the sector slack``, and retail's payload is the dominant term -- so the
+    slot with the *most* visible slack can be the least able to accept a busy
+    replacement.  Ranking the family answers that directly, and it self-
+    calibrates instead of hard-coding byte thresholds that only hold for one
+    texture size.
+
+    Reading the whole family costs 24 IFF header parses, not 24 builds.
+    """
+
+    if family not in CAPACITY_FAMILIES:
+        return ()
+    key = (str(index_0a), family)
+    with _CAPACITY_LOCK:
+        cached = _CAPACITY_CACHE.get(key)
+    if cached is not None:
+        return cached
+    rows: list[dict[str, object]] = []
+    for asset_index in range(24):
+        row = target_record(family, asset_index)
+        try:
+            rows.append(
+                dict(apf_shoulder_color_transport.inspect_capacity(index_0a, row))
+            )
+        except Exception:
+            # A capacity hint is an aid, never a gate: a source this cannot
+            # read is a problem the writer reports properly at build time.
+            return ()
+    ordered = sorted(
+        rows, key=lambda item: int(item["compressed_budget_bytes"]), reverse=True
+    )
+    for position, item in enumerate(ordered):
+        item["capacity_rank"] = position + 1
+        item["capacity_of"] = len(ordered)
+        item["band"] = (
+            "detailed"
+            if position < _BAND_SIZE
+            else "moderate"
+            if position < 2 * _BAND_SIZE
+            else "simple"
+        )
+    result = tuple(sorted(ordered, key=lambda item: int(item["asset_index"])))
+    with _CAPACITY_LOCK:
+        _CAPACITY_CACHE[key] = result
+    return result
+
+
+def slot_capacity(
+    index_0a: Path, family: str, asset_index: int
+) -> dict[str, object] | None:
+    """One slot's replacement budget and its rank in its family, or ``None``.
+
+    Only ``shoulder`` answers today, because it is the family whose budget
+    caught a user out.  ``None`` means there is no capacity model for this
+    family, not that the slot has no limit.
+    """
+
+    table = capacity_table(index_0a, family)
+    for item in table:
+        if int(item["asset_index"]) == int(asset_index):
+            return item
+    return None
+
+
+def capacity_summary(capacity: dict[str, object] | None) -> str:
+    """One line a user can act on while still choosing a slot."""
+
+    if not capacity:
+        return ""
+    band = str(capacity.get("band", ""))
+    rank = capacity.get("capacity_rank")
+    total = capacity.get("capacity_of")
+    budget = int(capacity.get("compressed_budget_bytes", 0))
+    detail = {
+        "detailed": (
+            "retail already stores busy artwork here, so this slot has room "
+            "for a detailed replacement mask."
+        ),
+        "moderate": (
+            "moderate detail fits. If a build reports it over budget, flatten "
+            "colours to the retail palette and try again."
+        ),
+        "simple": (
+            "retail's artwork here is nearly flat, so this slot is one of the "
+            "smallest on the disc. Only simple region masks fit — a detailed "
+            "one is refused, however much free space the slot appears to have."
+        ),
+    }.get(band, "")
+    position = (
+        f", {rank} roomiest of {total}" if rank is not None and total is not None else ""
+    )
+    return (
+        f"Replacement budget · {band} ({budget:,} compressed bytes{position}) — "
+        f"{detail} These are region masks: flat colours, hard edges, no "
+        "anti-aliasing (an anti-aliased edge emits invalid region IDs and "
+        "inflates the payload)."
+    )
+
+
 @contextmanager
 def _selected_jersey(row: dict[str, object]) -> Iterator[None]:
     """Bind the proven single-target transport to one pinned jersey safely."""

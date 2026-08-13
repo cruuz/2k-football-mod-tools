@@ -29,6 +29,17 @@ from mod_editor.core.apf2k8_playbook_route_writer import (
     read_master_play_body,
     request_from_mapping as route_clone_request_from_mapping,
 )
+from mod_editor.core.apf2k8_splb_writer import (
+    PROVIDER_KIND as SPLB_MEMBERSHIP_KIND,
+    MembershipChange as SplbMembershipChange,
+    TagMove as SplbTagMove,
+    change_from_mapping as splb_change_from_mapping,
+    change_metadata as splb_change_metadata,
+    compile_book as compile_splb_book,
+    decode_membership_payload as decode_splb_membership_payload,
+    encode_membership_payload as encode_splb_membership_payload,
+    read_book as read_splb_book,
+)
 from mod_editor.core.errors import ValidationError
 
 from .asset_io import ApfAssetIO, AssetIoError, AudioPreviewCancelled
@@ -2355,6 +2366,127 @@ class ApfSession:
             self._modifications[second.selector],
         )
 
+    # ------------------------------------------------ stock playbook membership
+
+    def _active_splb_changes(
+        self, modifications: Mapping[str, Modification] | None = None
+    ) -> tuple[SplbMembershipChange | SplbTagMove, ...]:
+        """Every staged Fine-tune Plays edit, re-read from its stored payload."""
+
+        source = self._modifications if modifications is None else modifications
+        result: list[SplbMembershipChange | SplbTagMove] = []
+        for modification in source.values():
+            if modification.kind != SPLB_MEMBERSHIP_KIND:
+                continue
+            try:
+                change = decode_splb_membership_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+                metadata_change = splb_change_from_mapping(modification.metadata)
+            except (OSError, ValidationError) as exc:
+                raise SessionError(
+                    f"The active stock-playbook edit is invalid: {exc}"
+                ) from exc
+            if change != metadata_change:
+                raise SessionError(
+                    "Stock-playbook edit target metadata changed: "
+                    f"{modification.asset_id}"
+                )
+            result.append(change)
+        return tuple(sorted(result, key=lambda item: item.selector))
+
+    def staged_splb_book(self) -> int | None:
+        """Which stock playbook the staged Fine-tune Plays edits belong to."""
+
+        outers = {change.outer_index for change in self._active_splb_changes()}
+        if len(outers) > 1:
+            raise SessionError(
+                "The project stages Fine-tune Plays edits for more than one book"
+            )
+        return outers.pop() if outers else None
+
+    def staged_splb_changes(self) -> tuple[SplbMembershipChange | SplbTagMove, ...]:
+        return self._active_splb_changes()
+
+    def apply_splb_membership_batch(
+        self,
+        changes: Iterable[SplbMembershipChange | SplbTagMove],
+    ) -> int:
+        """Replace the staged Fine-tune Plays set with ``changes``.
+
+        The panel owns one book at a time, so the whole staged set is handed
+        over as a unit: what the user sees ticked is exactly what the project
+        stores.  Every change is compiled against the user's own book before it
+        is accepted, so a project can never carry an edit the writer would
+        refuse at build time.
+        """
+
+        normalized = tuple(changes)
+        prepared: list[Modification] = []
+        seen: set[str] = set()
+        outers: set[int] = set()
+        for change in normalized:
+            if not isinstance(change, (SplbMembershipChange, SplbTagMove)):
+                raise SessionError("A stock-playbook change is malformed")
+            try:
+                payload = encode_splb_membership_payload(change)
+            except ValidationError as exc:
+                raise SessionError(str(exc)) from exc
+            if change.selector in seen:
+                raise SessionError(
+                    "A stock-playbook batch repeats one formation slot"
+                )
+            seen.add(change.selector)
+            outers.add(change.outer_index)
+            digest = hashlib.sha256(payload).hexdigest()
+            stored = self._store_payload(digest, payload, ".json")
+            prepared.append(
+                Modification(
+                    asset_id=change.selector,
+                    kind=SPLB_MEMBERSHIP_KIND,
+                    replacement_path=stored,
+                    replacement_sha256=digest,
+                    metadata=splb_change_metadata(change),
+                )
+            )
+        if len(outers) > 1:
+            raise SessionError("Stage edits for one stock playbook at a time")
+        # The panel hands over its whole staged set, so anything it no longer
+        # lists has been unticked or reverted and must not survive here.
+        updated = {
+            asset_id: modification
+            for asset_id, modification in self._modifications.items()
+            if modification.kind != SPLB_MEMBERSHIP_KIND
+        }
+        for modification in prepared:
+            updated[modification.asset_id] = modification
+        active = self._active_splb_changes(updated)
+        if active:
+            outer = {change.outer_index for change in active}
+            if len(outer) != 1:
+                raise SessionError("Stage edits for one stock playbook at a time")
+            try:
+                book = read_splb_book(self.source.index_0a, outer.pop())
+                compile_splb_book(book, active)
+            except ValidationError as exc:
+                raise SessionError(str(exc)) from exc
+        if updated == self._modifications:
+            return 0
+        changed = {
+            key
+            for key in set(updated).union(self._modifications)
+            if updated.get(key) != self._modifications.get(key)
+        }
+        self._record_undo()
+        self._modifications = updated
+        return len(changed)
+
+    def clear_splb_membership(self) -> int:
+        """Drop every staged Fine-tune Plays edit as one Undo action."""
+
+        return self.apply_splb_membership_batch(())
+
     def player_base_rating_value(self, player_index: int, field_id: str) -> int:
         """Return the active authored value or the untouched on-disc integer."""
 
@@ -2659,6 +2791,33 @@ class ApfSession:
             self._record_undo()
             self._modifications = updated
             return True
+        if previous.kind == SPLB_MEMBERSHIP_KIND:
+            # One staged change can depend on another: a removal names an heir
+            # that a staged add put in the record. Dropping one in isolation can
+            # leave a set the writer would refuse, so prove the remainder still
+            # compiles rather than discovering it at build time.
+            updated = dict(self._modifications)
+            updated.pop(asset_id)
+            active = self._active_splb_changes(updated)
+            if active:
+                outers = {change.outer_index for change in active}
+                try:
+                    if len(outers) != 1:
+                        raise ValidationError(
+                            "the remaining edits name more than one stock playbook"
+                        )
+                    compile_splb_book(
+                        read_splb_book(self.source.index_0a, outers.pop()), active
+                    )
+                except ValidationError as exc:
+                    raise SessionError(
+                        "Reverting only this Fine-tune Plays edit would leave the "
+                        f"rest outside the proved rule ({exc}). Use Revert changes "
+                        "in Fine-tune Plays to drop them together."
+                    ) from exc
+            self._record_undo()
+            self._modifications = updated
+            return True
         self._record_undo()
         del self._modifications[asset_id]
         return True
@@ -2930,6 +3089,26 @@ class ApfSession:
                         )
                     digest = hashlib.sha256(data).hexdigest()
                     suffix = ".json"
+                elif modification.kind == SPLB_MEMBERSHIP_KIND:
+                    try:
+                        data = modification.replacement_path.read_bytes()
+                        change = decode_splb_membership_payload(
+                            data, modification.asset_id
+                        )
+                        metadata_change = splb_change_from_mapping(
+                            modification.metadata
+                        )
+                    except (OSError, ValidationError) as exc:
+                        raise SessionError(
+                            f"Project stock-playbook edit is invalid: {exc}"
+                        ) from exc
+                    if change != metadata_change:
+                        raise SessionError(
+                            "Project stock-playbook target metadata changed: "
+                            f"{modification.asset_id}"
+                        )
+                    digest = hashlib.sha256(data).hexdigest()
+                    suffix = ".json"
                 elif modification.kind == AUDO_EXACT_SLOT_KIND:
                     fields = modification.asset_id.split(":")
                     try:
@@ -3190,6 +3369,27 @@ class ApfSession:
                 except ValidationError as exc:
                     raise SessionError(
                         f"Project APF route-clone set is unsafe: {exc}"
+                    ) from exc
+            splb_modifications = {
+                item.asset_id: item
+                for item in validated
+                if item.kind == SPLB_MEMBERSHIP_KIND
+            }
+            if splb_modifications:
+                active = self._active_splb_changes(splb_modifications)
+                outers = {change.outer_index for change in active}
+                if len(outers) != 1:
+                    raise SessionError(
+                        "This project stages Fine-tune Plays edits for more than "
+                        "one stock playbook; the writer compiles one book at a time."
+                    )
+                try:
+                    compile_splb_book(
+                        read_splb_book(self.source.index_0a, outers.pop()), active
+                    )
+                except ValidationError as exc:
+                    raise SessionError(
+                        f"Project stock-playbook edit set is unsafe: {exc}"
                     ) from exc
             self._record_undo()
             self._modifications = {item.asset_id: item for item in validated}

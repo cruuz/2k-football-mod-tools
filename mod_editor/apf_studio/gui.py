@@ -133,10 +133,14 @@ from .facade import (
     TEAM_DISPLAY_NAME_EDIT_SCOPE_MESSAGE,
 )
 from .field_art import (
+    ENDZONE_IDENTITY_NOTE,
+    ENDZONE_MASK_CONTRACT,
     FieldArtInventory,
     FieldArtInventoryError,
     FieldArtKind,
     build_field_art_inventory,
+    endzone_team_labels,
+    export_endzone_contact_sheets,
 )
 from .inspectors import ApfInspectorService, ExportIdentity, InspectorRow, PagedModel
 from .helmet_crest_design import (
@@ -231,7 +235,7 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.TEAM_IDENTITY: "Browse team-facing resources; more identity editing unlocks here as each field is proven safe.",
     ApfCategory.LOGOS: "Replace the shared 512×512 team-logo crest and the 128×128 draft logo, and browse every indexed logo and team-art record.",
     ApfCategory.SCOREBUG: "See the field scorebug\u2019s own artwork \u2014 every graphic embedded in its seven scene parts plus the shared score-digit mask \u2014 and preview or export any of it. Only digital_font has a proved writer; geometry, layout, and timing are read-only.",
-    ApfCategory.FIELD_ART: "Browse 235 stock NFL endzone layers (118 endzone_l0 + 117 endzone_l1) plus practice/divot inventory. Per-team endzones are browsable under All Textures; only the two shared outer-6 layers are writable in the focused editor.",
+    ApfCategory.FIELD_ART: "Browse 235 stock endzone layers (118 endzone_l0 + 117 endzone_l1) plus practice/divot inventory. Every package is one team's own artwork — outer 6 is not a shared layer, it is simply the pair proved writable first, so editing it repaints that one team. The other per-team endzones are browsable under All Textures. All of them are red/green/blue region masks, not paintable art.",
     ApfCategory.STADIUMS: "Explore stadium geometry in 3D, edit any of the 78 statically owned embedded textures, and round-trip same-topology POSITION edits for 77 catalog-authorized surfaces into a separately verified copied 1A.",
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",
@@ -3163,7 +3167,15 @@ class UniformStudioPage(QWidget):
         self.modified_badge.setText("● Modified" if modified else _status_text(asset.status))
         color = "#39d98a" if modified else _status_color(asset.status)
         self.modified_badge.setStyleSheet(f"color: {color}; border-color: {color};")
-        self.contract.setText(f"PNG contract\n{asset.png_contract}")
+        # A fixed-allocation slot's budget is set by how detailed retail's own
+        # artwork there is, not by the free space around it, so the answer has
+        # to arrive while the slot is being chosen rather than 40 s into a
+        # build that refuses it (davidhbui, Beta 38).
+        capacity_line = self._capacity_summary(asset)
+        self.contract.setText(
+            f"PNG contract\n{asset.png_contract}"
+            + (f"\n{capacity_line}" if capacity_line else "")
+        )
         self.contract.setVisible(True)
         teams = ", ".join(asset.affected_teams) if asset.affected_teams else "No current team selector references this physical slot."
         self.teams.setText(f"Selector ownership\n{teams}")
@@ -3230,6 +3242,23 @@ class UniformStudioPage(QWidget):
             complete,
             False,
         )
+
+    def _capacity_summary(self, asset) -> str:
+        """The selected slot's replacement budget, or "" when there is no model."""
+
+        source = getattr(self.facade, "source", None)
+        index_0a = getattr(source, "index_0a", None) if source is not None else None
+        if index_0a is None:
+            return ""
+        try:
+            from . import uniform_targets
+
+            capacity = uniform_targets.slot_capacity(
+                Path(index_0a), str(asset.family), int(asset.asset_index)
+            )
+            return uniform_targets.capacity_summary(capacity)
+        except Exception:
+            return ""
 
     def _clear_detail(
         self,
@@ -6619,13 +6648,22 @@ class _FieldArtTarget:
 FIELD_ART_COVERED_TARGETS: tuple[_FieldArtTarget, ...] = (
     _FieldArtTarget(
         6, 0, "endzone_l0", 2048, 512, "DXT1", False,
-        "Endzone base layer. The sibling endzone_l1 layer, the descriptor pad, "
-        "and the packed mip tail all stay byte-identical.",
+        "Endzone base layer for the one team that owns package 6 — not a "
+        "shared layer, so editing it repaints that team's endzone only. It is "
+        "structurally identical to the other 117 packages and is simply the "
+        "pair proved writable first. A red/green/blue region mask over black, "
+        "like jersey_color and shoulder_color: hard edges and flat colours, "
+        "because intermediate values are invalid region IDs, not blends. The "
+        "sibling endzone_l1 layer, the descriptor pad, and the packed mip tail "
+        "all stay byte-identical.",
     ),
     _FieldArtTarget(
         6, 1, "endzone_l1", 2048, 512, "DXT1", False,
-        "Endzone second layer. The sibling endzone_l0 layer, the descriptor pad, "
-        "and the packed mip tail all stay byte-identical.",
+        "Endzone second layer for the same single team as endzone_l0 above, "
+        "and not a shared layer either. Also a red/green/blue region mask over black; "
+        "author it with flat colours and no anti-aliasing. The sibling "
+        "endzone_l0 layer, the descriptor pad, and the packed mip tail all "
+        "stay byte-identical.",
     ),
     _FieldArtTarget(
         659, 18, "pc_field_goal", 256, 256, "DXT1", False,
@@ -7340,6 +7378,7 @@ class FieldArtStudioPage(QWidget):
     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
         super().__init__()
         self.facade = facade
+        self.run_task = run_task
         self.inventory: FieldArtInventory | None = None
 
         layout = QVBoxLayout(self)
@@ -7371,21 +7410,36 @@ class FieldArtStudioPage(QWidget):
         self.group_filter.setToolTip(
             "Filter the exact catalog rows by a reviewed semantic family."
         )
-        self.stock_endzone_button = QPushButton("Stock NFL endzones")
+        self.stock_endzone_button = QPushButton("Stock team endzones")
         self.stock_endzone_button.setObjectName("secondaryButton")
         self.stock_endzone_button.setToolTip(
-            "Jump the ownership map + inventory to the stock NFL endzone family "
-            "(235 per-team layers). Browse/export only — per-team writers are not "
-            "proved. The focused editor writes only the two shared outer-6 layers."
+            "Jump the ownership map + inventory to the endzone family (235 "
+            "per-team layers in 118 packages). Browse/export only — per-team "
+            "writers are not proved. The focused editor writes package 6, which "
+            "is one team's own endzone rather than a shared layer."
         )
         self.stock_endzone_button.setProperty(
             "disableReason",
-            "Load your APF game first, then Stock NFL endzones filters the inventory.",
+            "Load your APF game first, then Stock team endzones filters the inventory.",
         )
         self.stock_endzone_button.clicked.connect(self._show_stock_endzones)
+        self.contact_sheet_button = QPushButton("Export endzone contact sheet…")
+        self.contact_sheet_button.setObjectName("secondaryButton")
+        self.contact_sheet_button.setToolTip(
+            "Render every endzone package into labelled sheets so you can find "
+            "a team's endzone by looking at it. A name search cannot work — the "
+            "nicknames are not on the disc at all, only in Roster.ROS. Your "
+            "game is opened read-only."
+        )
+        self.contact_sheet_button.setProperty(
+            "disableReason",
+            "Load your APF game first, then export the endzone contact sheet.",
+        )
+        self.contact_sheet_button.clicked.connect(self._export_endzone_contact_sheet)
         semantic_header.addWidget(semantic_title)
         semantic_header.addWidget(self.summary_label)
         semantic_header.addStretch(1)
+        semantic_header.addWidget(self.contact_sheet_button)
         semantic_header.addWidget(self.stock_endzone_button)
         semantic_header.addWidget(QLabel("Show"))
         semantic_header.addWidget(self.group_filter)
@@ -7462,12 +7516,19 @@ class FieldArtStudioPage(QWidget):
         )
         self.browser.set_included_asset_ids(None)
         load_tip = (
-            "Load your APF game first, then Stock NFL endzones filters the inventory "
+            "Load your APF game first, then Stock team endzones filters the inventory "
             "to ≈118 package pairs (browse/export only)."
         )
         self.stock_endzone_button.setEnabled(True)
         self.stock_endzone_button.setToolTip(load_tip)
         self.stock_endzone_button.setProperty("disableReason", load_tip)
+        sheet_tip = (
+            "Load your APF game first, then export the endzone contact sheet to "
+            "identify a team's endzone package by its artwork."
+        )
+        self.contact_sheet_button.setEnabled(True)
+        self.contact_sheet_button.setToolTip(sheet_tip)
+        self.contact_sheet_button.setProperty("disableReason", sheet_tip)
 
     def _show_stock_endzones(self) -> None:
         """Community path: surface stock NFL endzone packages without Discord help."""
@@ -7488,6 +7549,68 @@ class FieldArtStudioPage(QWidget):
             )
             return
         self.group_filter.setCurrentIndex(index)
+
+    def _export_endzone_contact_sheet(self) -> None:
+        """Turn "which package is my team's endzone" into one action.
+
+        The rows carry no team identity and the nicknames are not on the disc,
+        so no search can answer this. Rendering all 118 packages and looking is
+        the only route, and it was previously an afternoon of scripting.
+        """
+
+        reason = str(self.contact_sheet_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Endzone contact sheet", reason)
+            return
+        source = getattr(self.facade, "source", None)
+        index_0a = getattr(source, "index_0a", None) if source is not None else None
+        if index_0a is None:
+            return
+        directory = QFileDialog.getExistingDirectory(
+            self, "Choose a folder for the endzone contact sheets", str(Path.home())
+        )
+        if not directory:
+            return
+        destination = Path(directory)
+        outer_indices: tuple[int, ...] = ()
+        if self.inventory is not None:
+            outer_indices = tuple(
+                sorted(
+                    {
+                        record.outer_index
+                        for record in self.inventory.records
+                        if record.kind is FieldArtKind.ENDZONE_TEXTURE
+                    }
+                )
+            )
+
+        def operation(progress) -> dict:
+            written = export_endzone_contact_sheets(
+                Path(index_0a),
+                destination,
+                progress=progress,
+                outer_indices=outer_indices or None,
+            )
+            return {"paths": written}
+
+        def done(result: object) -> None:
+            written = result["paths"]  # type: ignore[index]
+            labelled = len(endzone_team_labels())
+            QMessageBox.information(
+                self,
+                "Endzone contact sheets written",
+                f"Wrote {len(written)} sheet{'s' if len(written) != 1 else ''} to:\n"
+                f"{destination}\n\n"
+                f"Every endzone package is tiled and labelled with its package "
+                f"index; {labelled} of them also carry the team that has been "
+                "identified from the artwork so far. Find your team, note the "
+                "package number, and open that package under All Textures.\n\n"
+                + ENDZONE_MASK_CONTRACT
+                + "\n\n"
+                + ENDZONE_IDENTITY_NOTE,
+            )
+
+        self.run_task("Rendering endzone contact sheets", operation, done, False)
 
     def _populate_semantic_view(self, inventory: FieldArtInventory) -> None:
         self.inventory = inventory
@@ -7532,13 +7655,23 @@ class FieldArtStudioPage(QWidget):
         )
         # Never silent-gray stock jump: ready once inventory maps endzone family.
         stock_tip = (
-            "Filter to the 235 per-team stock NFL endzone layers. "
+            "Filter to the 235 per-team stock endzone layers. "
             "Browse and Export original PNG only — per-team writers are not "
-            "proved; the focused editor owns only the two shared outer-6 layers."
+            "proved; the focused editor owns package 6, which is one team's own "
+            "endzone and not a shared layer."
         )
         self.stock_endzone_button.setEnabled(True)
         self.stock_endzone_button.setToolTip(stock_tip)
         self.stock_endzone_button.setProperty("disableReason", "")
+        labelled = len(endzone_team_labels())
+        self.contact_sheet_button.setEnabled(True)
+        self.contact_sheet_button.setToolTip(
+            "Render all 118 endzone packages into labelled sheets so a team's "
+            f"endzone can be found by eye ({labelled} are already identified). "
+            "A name search cannot work: the nicknames are not on the disc, only "
+            "in Roster.ROS. Your game is opened read-only."
+        )
+        self.contact_sheet_button.setProperty("disableReason", "")
 
     def _selected_group(self):
         if self.inventory is None:
@@ -19035,6 +19168,13 @@ class InspectorCategoryPage(QWidget):
             self.assets.refresh()
         if self.playbook_routes is not None:
             self.playbook_routes.refresh()
+        if self.playbook_membership is not None:
+            # Without this the panel only ever loaded a book when the user
+            # changed the dropdown, because its one construction-time
+            # set_context() ran before a source existed. It also has to hear
+            # about an opened project so it can show the edits that project
+            # already carries.
+            self.playbook_membership.set_context()
 
 
 def _format_summary(values: dict[str, int] | object) -> str:
