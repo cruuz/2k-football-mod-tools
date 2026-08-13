@@ -5,6 +5,33 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC64 — a fixed VC-LZ span fits the art down instead of refusing — 2026-08-13
+
+- **A texture that will not fit its retail compressed span is now quantized
+  down instead of failing the build.** Building could refuse with
+  `VC-LZ stream needs more than the 34416-byte bound` — 34,416 is a live
+  helmet TXTR — and the message named no team, no slot, and no image.
+
+  `quantize_levels_to_vc_lz_bound` has shipped for a while: it tries palettes
+  from 256 down to 2 and returns the first that fits, which is what the sleeve,
+  digit, all-texture and Crib importers already do. Four importers that
+  compress into a bounded span still called the plain 256-entry quantizer and
+  hard-failed: live helmet, jersey, scorebug, and the compressed create-team
+  field art. They now use the ladder. **The ladder starts at 256, so art that
+  already fit is byte-for-byte unchanged**; only art that used to fail steps
+  down. When even a two-colour version will not fit, the message says so and
+  says what to simplify.
+
+  The three P8 importers that write *uncompressed* fixed spans — team select
+  card, player portrait, Crib team photo — have no bound to overflow and are
+  deliberately left alone.
+
+- **Every build failure now names the edit that caused it.** The dispatcher
+  knew each edit's kind and selector and attached neither, so any importer's
+  message stood alone in a build carrying dozens of edits.
+
+  Reported against Beta 40.
+
 ## v1.0 RC63 — Team Kit equipment edits can be built — 2026-08-13
 
 - **Swapping a sock, glove, shoe, wristband, elbow pad, or long-sleeve texture

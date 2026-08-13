@@ -1,5 +1,13 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.73 — no APF changes — 2026-08-13
+
+Beta 41 fixes 2K5's fixed VC-LZ span handling: a texture that will not fit its
+retail compressed allocation is now quantized down instead of failing the
+build, and every build failure names the edit that caused it. Nothing in APF
+changed; the version moves so both products keep shipping from one release, and
+the shared update checker identifies this build as `beta-41`.
+
 ## 0.1.0-alpha.72 — no APF changes — 2026-08-13
 
 Beta 40 fixes 2K5's Team Kit equipment routing: swapping a sock, glove, shoe,

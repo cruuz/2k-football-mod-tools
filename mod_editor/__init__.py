@@ -1,6 +1,6 @@
 """Public-safe mod project editor for user-owned 2K football game sources."""
 
-__version__ = "1.0.0rc63"
+__version__ = "1.0.0rc64"
 
 from .core.controller import ModEditorController
 

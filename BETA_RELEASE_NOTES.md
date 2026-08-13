@@ -1,3 +1,69 @@
+# beta-41 — RC64 / alpha.73
+
+**Date:** 2026-08-13
+
+**2K5 Mod Studio:** `v1.0-RC64`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.73` (no functional change — it carries the
+new shared updater identity, so its bytes differ and its version moves with them)
+
+## Fixed: a texture that will not fit is quantized down, not refused
+
+Building could stop with:
+
+```
+The modded XISO could not be built. VC-LZ stream needs more than the
+34416-byte bound
+Nothing was changed in your source XISO.
+```
+
+34,416 is the stored size of a **live helmet TXTR**. Two things were wrong.
+
+**The importer gave up.** A perfectly valid P8 image can be impossible to
+encode with a 256-entry palette even though a visually equivalent lower-colour
+version fits the retail span. `quantize_levels_to_vc_lz_bound` already handles
+that — it tries palettes from 256 down to 2 and takes the first that fits — and
+it is what the sleeve, digit, all-texture and Crib importers already use. Four
+importers that compress into a bounded span still called the plain 256-entry
+quantizer and hard-failed: **live helmet, jersey, scorebug, and the compressed
+create-team field art.** They now use the ladder.
+
+**The ladder starts at 256, so anything that already built is byte-for-byte
+identical.** Only art that used to fail outright now steps down to a smaller
+palette. If even a two-colour version cannot fit, the message says so and says
+what to simplify.
+
+The three P8 importers that write *uncompressed* fixed spans — team select
+card, player portrait, Crib team photo — have no VC-LZ bound to overflow and
+were deliberately left alone.
+
+## Fixed: every build failure names the edit that caused it
+
+The message above named no team, no slot, and no image, in a build that can
+carry dozens of edits. The dispatcher knew each edit's kind and selector and
+attached neither. Now any importer failure reads as, for example:
+
+```
+live_helmet live-helmet:NE:home:0:helmet00: VC-LZ stream needs more than the
+34416-byte bound
+```
+
+## Verification boundary
+
+No new asset became editable, and no writer's guarantees changed. A build that
+succeeded before produces the same bytes.
+
+## Downloads
+
+| Asset | Size | SHA-256 |
+|---|---:|---|
+| `2K5-Mod-Studio-v1.0-RC64-20260813.tar.gz` | 11,051,750 bytes | `7c26461169f5ecc241e63b9a9abcc9e50ade67b58a0de90da288c9d49a56b967` |
+| `2K5-Mod-Studio-1.0.0rc64-Setup.exe` | 56,690,933 bytes | `6a43aace816d456d8bc5133e7fc8eca6d1dd7ad201580a2e0872cc984587ac54` |
+| `apf2k8-mod-studio-0.1.0-alpha.73-20260813.tar.gz` | 1,805,902 bytes | `dbcae611e385d3f110ad350b7bff962c09af2138c3fe206ba7ae33dadd46e819` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.73-Setup.exe` | 52,682,862 bytes | `6fe9aa947af243ee9f1e836abcbffed77351e1020b0624c85bc22cd86accddcc` |
+
+---
+
 # beta-40 — RC63 / alpha.72
 
 **Date:** 2026-08-13

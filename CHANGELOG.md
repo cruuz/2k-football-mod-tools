@@ -11,6 +11,30 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-41 — 2026-08-13
+
+**2K5 RC64: a fixed VC-LZ span fits the art down instead of refusing it.**
+
+- **A texture that will not fit its retail compressed span is now quantized
+  down instead of failing the build.** Building could refuse with `VC-LZ stream
+  needs more than the 34416-byte bound` — 34,416 is a live helmet TXTR — and
+  the message named no team, no slot, and no image.
+- `quantize_levels_to_vc_lz_bound` has shipped for a while and is what the
+  sleeve, digit, all-texture and Crib importers already use: palettes from 256
+  down to 2, first fit wins. Four importers that compress into a bounded span
+  still called the plain 256-entry quantizer and hard-failed — live helmet,
+  jersey, scorebug, and the compressed create-team field art. **The ladder
+  starts at 256, so art that already fit is byte-for-byte unchanged**; only art
+  that used to fail steps down. When even two colours will not fit, the message
+  says what to simplify.
+- The three P8 importers that write uncompressed fixed spans — team select
+  card, player portrait, Crib team photo — have no bound to overflow and are
+  deliberately left alone.
+- **Every build failure now names the edit that caused it.** The dispatcher
+  knew each edit's kind and selector and attached neither.
+- APF 2K8 has no functional change; it moves to alpha.73 because the shared
+  updater identity is now `beta-41`. Reported against Beta 40.
+
 ## beta-40 — 2026-08-13
 
 **2K5 RC63: Team Kit equipment edits can actually be built.**

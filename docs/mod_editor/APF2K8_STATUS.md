@@ -1,6 +1,12 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.72`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.73`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.73 release validation
+
+Beta 41 changes nothing in APF except the shared updater identity, which moves
+to `beta-41`. The release fixes 2K5's bounded VC-LZ quantization and names the
+failing edit in build errors.
 
 ## 0.1.0-alpha.72 release validation
 
