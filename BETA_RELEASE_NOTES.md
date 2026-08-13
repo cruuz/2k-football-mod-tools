@@ -112,7 +112,15 @@ Field Art stays browse/export-only apart from the six offline-proved slots.
 
 ## Downloads
 
-See the release assets attached to the `beta-39` tag.
+Both 2K5 archives are rebuilt because the shared provider self-integrity pins
+changed with the three uniform transports. RC62's behaviour is unchanged.
+
+| Asset | Size | SHA-256 |
+|---|---:|---|
+| `2K5-Mod-Studio-v1.0-RC62-20260813.tar.gz` | 11,045,717 bytes | `f7171575a3ac1823f0fc47cbba2871d9272420e57667661c8265dad1275ad63f` |
+| `2K5-Mod-Studio-1.0.0rc62-Setup.exe` | 56,684,489 bytes | `b77d6059ff76f66dc95dfa83928795c45f70f22075b1e210c128f94259875e13` |
+| `apf2k8-mod-studio-0.1.0-alpha.71-20260813.tar.gz` | 1,805,592 bytes | `9470156401bf07c61fb33bd1f2a2d5f6972d9f929240ad0e7efab5d5937a0c18` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.71-Setup.exe` | 52,680,145 bytes | `5b121966210e616223c3586428c95c0cad02a4f6124c33b5f5966ad3d7ecc244` |
 
 ---
 
