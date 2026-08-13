@@ -46,16 +46,63 @@ from nfl_txtr import TxtrError  # noqa: E402
 ALWAYS_COMPRESSED_IMPORTERS = (
     "nfl_live_helmet_txtr_png_import",
     "nfl_jersey_tset_png_import",
+    "nfl_pants_tset_png_import",
     "nfl_scorebug_png_import",
     "nfl_sleeve_tset_png_import",
     "nfl_live_numbers_nameplate_png_import",
 )
 
-#: Create-team field art has both compressed and uncompressed targets, so it
-#: keeps the plain quantizer for the uncompressed branch on purpose.
+#: Writers with both compressed and uncompressed targets. Each uses the bounded
+#: ladder on the compressed branch and keeps the plain quantizer on the other,
+#: where there is no VC-LZ stream to overflow.
 CONDITIONAL_IMPORTERS = ("nfl_create_team_field_art_png_import",)
 
 BOUNDED_IMPORTERS = ALWAYS_COMPRESSED_IMPORTERS + CONDITIONAL_IMPORTERS
+
+#: Same conditional shape, addressed by path because they are not all in tools/.
+CONDITIONAL_PATHS = frozenset({
+    "tools/nfl_create_team_field_art_png_import.py",
+    "tools/nfl_all_texture_xiso_workflow.py",
+    "mod_editor/core/nfl2k5_crib_standalone_texture_writer.py",
+})
+
+#: Modules that compress but are not PNG importers -- the library that defines
+#: both quantizers, and writers that quantize into a *decoded* allocation and
+#: own their compression separately. Named so the discovery test cannot be
+#: quietly widened: anything new has to be classified on purpose.
+NOT_PNG_IMPORTERS = frozenset({
+    "tools/nfl_tset_png_import.py",
+    "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+    "tools/nfl_crib_bar_monitor_png_xiso.py",
+})
+
+
+def _modules_that_compress() -> set[str]:
+    """Every non-harness module that encodes into a bounded VC-LZ stream.
+
+    Derived from the tree rather than listed by hand. The first attempt at this
+    fix missed the pants importer because the sweep that found the offenders
+    was truncated and the resulting list was then hard-coded into a test, so
+    the test agreed with the omission. Discovering the set here means a new or
+    overlooked importer fails instead of being trusted.
+    """
+
+    found: set[str] = set()
+    for root in ("tools", "mod_editor"):
+        for path in sorted((WORKSPACE / root).rglob("*.py")):
+            name = path.name
+            if (
+                "dynamic_validate" in name
+                or name.startswith("test_")
+                or name.endswith("_verify.py")
+                or name == "nfl_txtr.py"
+            ):
+                continue
+            text = path.read_text(encoding="utf-8")
+            if "rebuild_compressed_chunk_fixed_span(" in text \
+                    or "compress_vc_lz(" in text:
+                found.add(path.relative_to(WORKSPACE).as_posix())
+    return found
 
 #: Importers that write an uncompressed fixed span. Nothing to overflow, so
 #: wiring the bounded quantizer here would change output for no reason.
@@ -71,6 +118,33 @@ def _source(module_name: str) -> str:
 
 
 class BoundedQuantizerWiringTests(unittest.TestCase):
+    def test_the_declared_set_is_the_set_that_actually_compresses(self) -> None:
+        """Derive the offenders from the tree; do not trust a hand-written list.
+
+        This is the test that would have caught the pants importer. Anything
+        that compresses and is not classified here fails, so a new importer
+        cannot inherit the bug by being forgotten.
+        """
+
+        discovered = _modules_that_compress()
+        classified = {f"tools/{name}.py" for name in ALWAYS_COMPRESSED_IMPORTERS}
+        classified |= {f"tools/{name}.py" for name in UNCOMPRESSED_IMPORTERS}
+        classified |= CONDITIONAL_PATHS
+        classified |= NOT_PNG_IMPORTERS
+        # Every discovered module must be one we have made a decision about.
+        # Modules that only re-export or wrap are allowed to be neither by
+        # having no quantizer call at all.
+        unclassified = {
+            path for path in discovered - classified
+            if "quantize_levels(" in (WORKSPACE / path).read_text(encoding="utf-8")
+        }
+        self.assertEqual(
+            unclassified,
+            set(),
+            "these compress into a VC-LZ span and still quantize unbounded: "
+            f"{sorted(unclassified)}",
+        )
+
     def test_every_compressing_importer_uses_the_bounded_quantizer(self) -> None:
         for name in BOUNDED_IMPORTERS:
             with self.subTest(importer=name):
@@ -207,12 +281,38 @@ class FailingEditIsNamedTests(unittest.TestCase):
                 raise backend.ProjectError("scorebug down: already named")
         self.assertEqual(str(caught.exception).count("scorebug down"), 1)
 
-    def test_an_edit_without_a_selector_still_names_its_kind(self) -> None:
-        self.assertEqual(backend.describe_edit({"kind": "unif_color"}), "unif_color")
+    def test_a_uniform_edit_is_named_by_the_coordinates_it_was_picked_by(self) -> None:
+        """A uniform edit has no selector, and "pants:" alone told nobody anything."""
+
+        label = backend.describe_edit({
+            "kind": "pants", "asset_code": "NE", "side": "home", "variant": 0,
+            "clean_png": "x.png", "mud_png": None, "mud_mode": "identity",
+        })
+        self.assertIn("pants", label)
+        self.assertIn("NE", label)
+        self.assertIn("home", label)
+        self.assertIn("variant=0", label)
+
+    def test_a_selector_still_wins_when_a_kind_has_one(self) -> None:
         self.assertEqual(
             backend.describe_edit({"kind": "p8_texture", "selector": "p8:1:2"}),
             "p8_texture p8:1:2",
         )
+
+    def test_an_edit_with_nothing_to_say_falls_back_to_its_kind(self) -> None:
+        self.assertEqual(backend.describe_edit({"kind": "unif_color"}), "unif_color")
+
+    def test_the_reported_pants_failure_now_names_its_target(self) -> None:
+        edit = {"kind": "pants", "asset_code": "NE", "side": "home", "variant": 0}
+        with self.assertRaises(backend.ProjectError) as caught:
+            with backend._naming_the_failing_edit(edit):
+                raise backend.ProjectError(
+                    "VC-LZ stream needs more than the 75472-byte bound"
+                )
+        message = str(caught.exception)
+        self.assertIn("pants", message)
+        self.assertIn("NE", message)
+        self.assertIn("75472-byte bound", message)
 
     def test_the_dispatcher_actually_wraps_the_importer(self) -> None:
         import inspect

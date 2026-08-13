@@ -2418,11 +2418,18 @@ def build_crib_scene_texture_import(
     )
 
 
-def describe_edit(edit: dict[str, Any]) -> str:
-    """Name one project edit the way its owner would recognize it.
+#: Coordinate fields a user actually chose in the UI, in the order they read.
+#: A uniform edit carries no selector -- it is an asset code, a side and a
+#: variant -- so "pants:" alone is useless when a project holds several.
+_EDIT_COORDINATES = ("asset_code", "team", "side", "variant", "family", "slot")
 
-    Selectors are the only stable identity every kind carries, so use one when
-    it exists and fall back to the kind alone rather than inventing a label.
+
+def describe_edit(edit: dict[str, Any]) -> str:
+    """Name one project edit the way the person who made it would recognize it.
+
+    A selector is the best label when a kind has one. Uniform edits do not, so
+    fall back to the coordinates they were picked by, and to the bare kind only
+    when there is genuinely nothing else to say.
     """
 
     kind = str(edit.get("kind") or "edit")
@@ -2430,7 +2437,12 @@ def describe_edit(edit: dict[str, Any]) -> str:
         value = edit.get(field)
         if isinstance(value, str) and value.strip():
             return f"{kind} {value.strip()}"
-    return kind
+    parts = [
+        f"{field}={edit[field]}"
+        for field in _EDIT_COORDINATES
+        if isinstance(edit.get(field), (str, int)) and str(edit[field]).strip()
+    ]
+    return f"{kind} ({', '.join(parts)})" if parts else kind
 
 
 @contextlib.contextmanager

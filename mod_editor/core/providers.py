@@ -511,7 +511,7 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "9c2e84b7bfdd1c4919c5e80b5cf5febed21babf114d01d5cfe7d4405b5e9c083"
+    backend_module_sha256 = "f909e98a9b1a50b76602cd4d3ac8a3413c24fff8384b9d7207ed2b255e28e5ff"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
@@ -570,7 +570,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl_live_numbers_nameplate_targets.py": "e122e41055e4d3b02ab35041db2e3cbd828fcf90c1b8f258abeb8718c20fc6a4",
         "tools/nfl_outer.py": "affbb92ea9fcce81b5d3502b2946fc0cf275b660c1ea93492730267110d49b46",
         "tools/nfl_roster.py": "8b5268787b072888d24be13952732b302ce41d648f7c59a1dd1a89a3aad56511",
-        "tools/nfl_pants_tset_png_import.py": "7ceff6c3956c0e4993e20c710d5ff08d671c8474864c63a31d3e532c1bd54ed6",
+        "tools/nfl_pants_tset_png_import.py": "8bade58c1262c92024ae61a0c4e0bb8507e5b83d13c6ddfbbb35a278b778ac76",
         "tools/nfl_pants_tset_targets.py": "f53b13492b3ec9a197fdff5adfb1e06e56c40db8e85265aa25d0fc7879779f2b",
         "tools/nfl_player_portrait_png_import.py": "555c0d81e633033053b2427883be9bff8ebbe8b7844c81fdb0c329445485932e",
         "tools/nfl_player_portrait_targets.py": "0121d71588ad717ca68f4b2c67dbf32f8d0d36eb47b7b1e28bc4d39ce093c3ba",

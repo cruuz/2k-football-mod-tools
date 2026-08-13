@@ -1,5 +1,12 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.74 — no APF changes — 2026-08-13
+
+Beta 42 completes the 2K5 VC-LZ work: the pants importer was missed in Beta 41
+and now uses the palette ladder, and the guard test derives its list from the
+tree rather than trusting a hand-written one. Nothing in APF changed; the shared
+update checker identifies this build as `beta-42`.
+
 ## 0.1.0-alpha.73 — no APF changes — 2026-08-13
 
 Beta 41 fixes 2K5's fixed VC-LZ span handling: a texture that will not fit its

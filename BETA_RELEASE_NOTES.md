@@ -1,3 +1,75 @@
+# beta-42 — RC65 / alpha.74
+
+**Date:** 2026-08-13
+
+**2K5 Mod Studio:** `v1.0-RC65`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.74` (no functional change — it carries the
+new shared updater identity)
+
+## Fixed: pants, which Beta 41 missed
+
+Building a pants replacement still refused:
+
+```
+The modded XISO could not be built. pants: VC-LZ stream needs more than the
+75472-byte bound
+```
+
+Beta 41 wired the palette ladder into live helmet, jersey, scorebug and
+create-team field art — **and not pants.** The sweep that found the offenders
+was truncated, the resulting list was hard-coded into the test meant to guard
+it, and the test therefore agreed with the omission. Pants now uses the ladder
+like its siblings.
+
+**The guard test now derives its list from the tree.** Anything that compresses
+into a bounded VC-LZ span and still quantizes at a flat 256 fails the suite, so
+a missed or newly added importer cannot inherit this bug by being forgotten.
+
+## Fixed: the failing edit is named by what you picked
+
+Beta 41's message said only `pants:`. A uniform edit carries no selector, so
+the label fell back to the bare kind — useless in a project with several. It
+now reads:
+
+```
+pants (asset_code=NE, side=home, variant=0): VC-LZ stream needs more than the
+75472-byte bound
+```
+
+## What the pants slot can actually hold
+
+Pants are the tightest uniform slot: 177,024 decoded bytes have to fit a
+75,472-byte compressed span, a 2.35:1 ratio. Measured against that bound:
+
+| Source art | Fits at |
+|---|---|
+| Flat team colours, hard edges | 2–16 colours, with room to spare |
+| Shaded cloth with soft gradients | 64 colours |
+| Photographic fabric with fine noise | 8 colours |
+| Pure random noise (worst case possible) | 4 colours |
+
+So a pants replacement now always builds. Detailed or noisy source art will
+come through with a reduced palette — if colour fidelity matters, remove film
+grain, fabric noise and long smooth gradients from the PNG before importing and
+more of the palette survives.
+
+## Verification boundary
+
+The ladder starts at 256, so a build that succeeded before produces the same
+bytes. No new asset became editable.
+
+## Downloads
+
+| Asset | Size | SHA-256 |
+|---|---:|---|
+| `2K5-Mod-Studio-v1.0-RC65-20260813.tar.gz` | 11,052,675 bytes | `dec0d23c0bef46ad1904987399bdf406ecd295695816d999049cddee90219ab0` |
+| `2K5-Mod-Studio-1.0.0rc65-Setup.exe` | 56,695,191 bytes | `aef730ae3e0c180cd45c50784135a906208e03b5d53a24a2891edcd8d674a36d` |
+| `apf2k8-mod-studio-0.1.0-alpha.74-20260813.tar.gz` | 1,805,994 bytes | `3aae4468350ff4962797d3adc0e43aa8af2b2a0a6d8b17766645af8452c1cc7c` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.74-Setup.exe` | 52,678,234 bytes | `c0c3619ab048a00c4ab1d4ef3c3c4c2b893d44b2d1873282737a2189e2392dcc` |
+
+---
+
 # beta-41 — RC64 / alpha.73
 
 **Date:** 2026-08-13

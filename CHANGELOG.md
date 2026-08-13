@@ -11,6 +11,28 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-42 — 2026-08-13
+
+**2K5 RC65: pants too, and a test that finds the next one.**
+
+- **The pants importer was missed in Beta 41 and is fixed here.** Building a
+  pants replacement still refused with `pants: VC-LZ stream needs more than the
+  75472-byte bound`. Beta 41 wired the palette ladder into live helmet, jersey,
+  scorebug and create-team field art but not pants, because the sweep that
+  found the offenders was truncated and the resulting list was then hard-coded
+  into the test that was supposed to guard it — so the test agreed with the
+  omission. Pants now uses the ladder like its siblings.
+- **That test now derives the set from the tree instead of trusting a list.**
+  Anything that compresses into a bounded VC-LZ span and still quantizes at a
+  flat 256 fails the suite, so a missed or newly added importer cannot inherit
+  this bug by being forgotten.
+- **A failing edit is named by the coordinates it was picked by.** Beta 41's
+  message said only `pants:` — a uniform edit carries no selector, so the label
+  fell back to the bare kind. It now reads
+  `pants (asset_code=NE, side=home, variant=0)`.
+- APF 2K8 has no functional change; it moves to alpha.74 because the shared
+  updater identity is now `beta-42`.
+
 ## beta-41 — 2026-08-13
 
 **2K5 RC64: a fixed VC-LZ span fits the art down instead of refusing it.**
