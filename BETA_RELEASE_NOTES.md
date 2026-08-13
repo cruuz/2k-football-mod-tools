@@ -1,3 +1,60 @@
+# beta-40 — RC63 / alpha.71
+
+**Date:** 2026-08-13
+
+**2K5 Mod Studio:** `v1.0-RC63`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.71` (unchanged)
+
+## Fixed: Team Kit equipment edits can be built
+
+Swapping textures in the Team Kit panel and then building produced:
+
+```
+Unknown uniform asset ID: tset:3660:4:0:socks00
+Nothing was changed in your source XISO.
+```
+
+`tset:3660:4:0:socks00` is **Socks 00 — Cincinnati Bengals Home**, a 64×64
+uniform-equipment texture. Only the uniform *sets* live in the uniform catalog;
+the Team Kit's 45 package-local socks, elbow pads, gloves, long sleeves, shoes
+and wristbands come from the extended visual catalog, together with `p8:`
+textures, portraits, live faces, create-field art and the scorebug — **47,237
+assets the build could not name.**
+
+Staging worked, which is why this was only discovered at build time: the panel
+hands `replace()` an already-resolved asset object. Every later step
+re-resolved the ID *string* through the uniform catalog. So **Build Modded
+XISO, Save Project, Load Project, Import Team Kit, Undo's restore and Revert
+All** all refused equipment edits, and a session could accumulate a large
+amount of work with nowhere to put it.
+
+All of those steps now resolve through `Nfl2k5ProductVisualCatalog`. A uniform
+edit resolves to the identical object it always did, so jersey, helmet and
+digit edits are byte-for-byte unchanged.
+
+If you have a session full of refused equipment edits: they are still staged.
+Install this build, reopen, and build — you do not need to redo them.
+
+**Where it came from.** The routing dates to the first public beta. It became
+reachable in RC49, when Team Kit gained the equipment parts, so it only bit
+someone who edited socks rather than jerseys. Reported against Beta 39.
+
+## Verification boundary
+
+No writer changed. No new asset became editable. The fix is which catalog
+answers "what is this asset ID", and the aggregate is built from the session's
+own uniform catalog so a uniform ID cannot resolve to a different object than
+before.
+
+## Downloads
+
+| Asset | Size | SHA-256 |
+|---|---:|---|
+| _recorded below once sealed_ | | |
+
+---
+
 # beta-39 — RC62 / alpha.71
 
 **Date:** 2026-08-13

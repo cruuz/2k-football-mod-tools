@@ -5,6 +5,28 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC63 — Team Kit equipment edits can be built — 2026-08-13
+
+- **Swapping a sock, glove, shoe, wristband, elbow pad, or long-sleeve texture
+  no longer breaks the build.** Build Modded XISO refused with
+  `Unknown uniform asset ID: tset:3660:4:0:socks00`, and Save Project, Load
+  Project, Import Team Kit, Undo's restore and Revert All refused the same way.
+
+  Only the uniform *sets* live in the uniform catalog. The Team Kit's 45
+  package-local equipment parts are `tset:` assets minted by the extended
+  visual catalog, along with `p8:` textures, portraits, live faces,
+  create-field art and the scorebug — 47,237 assets the build could not name.
+  Staging worked because the panel hands `replace()` an already-resolved asset
+  object; every later step re-resolved the ID string through the wrong catalog.
+
+  Every one of those steps now resolves through `Nfl2k5ProductVisualCatalog`,
+  the aggregate that was written for exactly this and never handed to a
+  session. A uniform edit resolves to the identical object it always did, so
+  jersey, helmet and digit edits are unchanged.
+
+  Reported against Beta 39. The routing dates to the first public beta; it
+  became reachable in RC49, when Team Kit gained the equipment parts.
+
 ## v1.0 RC62 — no 2K5 changes — 2026-08-11
 
 - This release fixes APF 2K8 team-crest mip regeneration and adds a two-layer

@@ -999,11 +999,24 @@ class Nfl2k5StudioFacade:
         progress("Main Menu report exported", 1, 1)
         return output
 
+    def _attach_visual_catalog(self, session: object) -> None:
+        """Hand a new session the aggregate this facade already loaded.
+
+        The session can derive its own, but building the extended catalog costs
+        about 1.7 s and this one is already in memory. Duck-typed so a
+        stand-in session factory needs no new signature.
+        """
+
+        attach = getattr(session, "attach_visual_catalog", None)
+        if callable(attach):
+            attach(self.visual_catalog)
+
     def load_source(self, source_xiso: Path, progress: ProgressSink) -> object:
         cache = self.source_cache.index(source_xiso, progress)
         progress("Preparing the complete asset browser", 0, 1)
         universal_index = self._universal_index_factory(cache)
         session = self.session_factory(cache, self.uniform_catalog)
+        self._attach_visual_catalog(session)
         text_catalog = None
         attach_text = getattr(session, "attach_text_catalog", None)
         if callable(attach_text):
@@ -2895,6 +2908,7 @@ class Nfl2k5StudioFacade:
                 "Load your own NFL 2K5 XISO before opening a shared project."
             )
         candidate = self.session_factory(cache, self.uniform_catalog)
+        self._attach_visual_catalog(candidate)
         try:
             return self._load_project_candidate(
                 source=source,

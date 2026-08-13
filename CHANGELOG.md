@@ -11,6 +11,29 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-40 — 2026-08-13
+
+**2K5 RC63: Team Kit equipment edits can actually be built.**
+
+- **Swapping a sock, glove, shoe, wristband, elbow pad, or long-sleeve texture
+  no longer breaks the build.** Build Modded XISO refused with `Unknown uniform
+  asset ID: tset:3660:4:0:socks00` and left the source XISO untouched — and
+  Save Project, Load Project, Import Team Kit, Undo's restore and Revert All
+  all refused the same way, so a session could fill up with equipment edits
+  that had nowhere to go.
+- Only the uniform *sets* live in the uniform catalog. The Team Kit's 45
+  package-local equipment parts are `tset:` assets from the extended visual
+  catalog, along with `p8:` textures, portraits, live faces, create-field art
+  and the scorebug — 47,237 assets the build could not name. Staging worked
+  because the panel hands `replace()` an already-resolved asset object; every
+  later step re-resolved the ID string through the wrong catalog.
+- All of those steps now resolve through `Nfl2k5ProductVisualCatalog`, the
+  aggregate written for exactly this and never handed to a session. A uniform
+  edit resolves to the identical object it always did, so jersey, helmet and
+  digit edits are unchanged. Reported against Beta 39; the routing dates to the
+  first public beta and became reachable in RC49.
+- APF 2K8 stays alpha.71. The shared updater identity is `beta-40`.
+
 ## beta-39 — 2026-08-13
 
 **APF 2K8 alpha.71: Save Project keeps Fine-tune Plays, and three community

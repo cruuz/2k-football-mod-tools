@@ -1,7 +1,7 @@
-# Handoff: Beta 39
+# Handoff: Beta 40
 
 **Date:** 2026-08-13
-**For:** the next session on APF playbook / uniform / field-art work
+**For:** the next session on APF or 2K5 work
 **Repo:** `https://github.com/cruuz/2k-football-mod-tools`
 **Branch:** `cursor/ship-beta-38` (the branch name is stale; it now carries Beta 39)
 **Main:** still Beta 36 (`981f596`). Do not treat main as current.
@@ -9,6 +9,57 @@
 Beta 39 is a community-report release. Three reports were answered, one shipped
 claim was withdrawn, and one alpha.70 test regression was fixed. The Layer B
 static G12 pins that were uncommitted at Beta 38 ship here too.
+
+---
+
+## Beta 40 — one fix, and the lesson it carries
+
+**A staged PNG edit now resolves through the catalog that minted its ID.**
+
+Build Modded XISO refused with `Unknown uniform asset ID: tset:3660:4:0:socks00`
+after a user swapped Team Kit textures. That ID is "Socks 00 — Cincinnati
+Bengals Home", a 64×64 `uniform_equipment_texture`.
+
+`StudioSession.catalog` is the **uniform** catalog and owns the uniform set
+hierarchy — 24,726 `nfl2k5.uniform.*` assets. Everything else a visual browser
+can stage is minted by the **extended** catalog: 28,530 `tset:` (the Team Kit's
+socks/elbow pads/gloves/long sleeves/shoes/wristbands), 11,395 `p8:`, 4,303
+portraits, 1,872 live faces, 1,134 create-field, 3 scorebug — 47,237 assets the
+build could not name.
+
+The reason it survived so long: `replace()` takes an already-resolved asset
+*object* from the panel, so staging always worked. Five later sites re-resolved
+the ID *string* through `self.catalog`:
+
+| Site | Surface |
+|---|---|
+| `canonical_document` | Build Modded XISO |
+| `_project_png_asset` | Save Project, Load Project |
+| `replace_batch` | Import Team Kit / 0–9 Sheet |
+| `_undo_visual_action` | Undo, when restoring a previous edit |
+| Revert-All plan | Revert All |
+
+All five now call `_visual_asset(asset_id)`, which uses
+`Nfl2k5ProductVisualCatalog` — an aggregate whose own docstring says a
+reversible session can use it "for either catalog without knowing where the
+asset originated", and which nothing had ever handed to a session. The session
+derives it from **its own** uniform catalog rather than a module-level default,
+so a uniform ID resolves to the identical object it always did; the facade
+attaches the one it already loaded so nobody pays the 1.7 s rebuild.
+
+Tests: `tests/mod_editor/test_studio_visual_asset_routing.py`. The four
+build-path tests were confirmed to fail against the old routing before the fix
+was kept.
+
+**The lesson.** This is the third instance in two releases of the same shape: a
+mechanism built and then not wired to the thing that needed it —
+`PAYLOAD_SCHEMA` (Fine-tune Plays never reached a project),
+`Nfl2k5ProductVisualCatalog` (sessions never reached the extended catalog), and
+the membership panel never reached by a page refresh. When adding a resolver,
+aggregate, or schema, grep for its own name before assuming it is in use; a
+constant with one definition and zero references is a feature that does not
+exist. And when a surface spans two catalogs, the test that matters is
+*stage-then-build*, not stage.
 
 ---
 
@@ -145,19 +196,26 @@ carry `title_update_path=None`.
 
 ## Identity
 
-| | Beta 38 | Beta 39 |
-|---|---|---|
-| Tag / updater identity | `beta-38` | `beta-39` |
-| APF studio | `0.1.0-alpha.70` | `0.1.0-alpha.71` |
-| 2K5 studio | RC62 | **unchanged RC62** |
+| | Beta 38 | Beta 39 | Beta 40 |
+|---|---|---|---|
+| Tag / updater identity | `beta-38` | `beta-39` | `beta-40` |
+| APF studio | `0.1.0-alpha.70` | `0.1.0-alpha.71` | **unchanged alpha.71** |
+| 2K5 studio | RC62 | unchanged RC62 | `v1.0-RC63` |
 
-Bumped in `mod_editor/apf_studio/__init__.py`, `mod_editor/core/update_check.py`,
+APF identity lives in `mod_editor/apf_studio/__init__.py`,
 `packaging/check_apf2k8_mod_studio_{release,runtime}.py`, `APF2K8-README.md`,
-and the two version tests.
+and the getting-started header. 2K5 identity lives in `mod_editor/__init__.py`,
+`STATUS.md`, `docs/mod_editor/2k5_mod_studio_getting_started.md`, and
+`tests/mod_editor/test_phase1_packaging.py`. The shared tag is
+`mod_editor/core/update_check.py`.
 
-`.github/workflows/ci.yml` still hydrates from `beta-38` assets. **Update it
-after the beta-39 release assets exist and their hashes are recorded**, exactly
-as `07fbc09` did for Beta 38.
+**After any release, run `python3 packaging/repin.py`** — both runtime gates
+pin the SHA-256 of the modules they ship, so editing `studio/session.py`,
+`studio/facade.py`, `core/providers.py`, or any `tools/` writer moves a pin and
+the gate refuses until it is re-synced. Preview first, then `--apply`.
+
+`.github/workflows/ci.yml` hydrates from the previous release's assets; update
+it once the new assets exist and their hashes are recorded.
 
 ---
 
