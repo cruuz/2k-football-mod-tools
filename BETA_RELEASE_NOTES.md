@@ -1,10 +1,11 @@
-# beta-40 — RC63 / alpha.71
+# beta-40 — RC63 / alpha.72
 
 **Date:** 2026-08-13
 
 **2K5 Mod Studio:** `v1.0-RC63`
 
-**APF 2K8 Mod Studio:** `v0.1.0-alpha.71` (unchanged)
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.72` (no functional change — it carries the
+new shared updater identity, so its bytes differ and its version moves with them)
 
 ## Fixed: Team Kit equipment edits can be built
 
@@ -51,7 +52,10 @@ before.
 
 | Asset | Size | SHA-256 |
 |---|---:|---|
-| _recorded below once sealed_ | | |
+| `2K5-Mod-Studio-v1.0-RC63-20260813.tar.gz` | 11,048,530 bytes | `f1a83f4ec2157ca44e9e609d5ee8257fd2127f554d2acc4f710544300a841d35` |
+| `2K5-Mod-Studio-1.0.0rc63-Setup.exe` | 56,691,503 bytes | `4917d9743c8e2752603edfd8707273a497221f92799ec971498847d64aeb0f95` |
+| `apf2k8-mod-studio-0.1.0-alpha.72-20260813.tar.gz` | 1,805,774 bytes | `8b1301d906ccaab13c283f987ec44db94ceb0afe105f9f91258eb84b4fb72233` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.72-Setup.exe` | 52,684,454 bytes | `60e306c526ebc0d100eb0b54de68e5c055778206bf9d8346f581c4d1c9224b56` |
 
 ---
 

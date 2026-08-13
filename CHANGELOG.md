@@ -32,7 +32,8 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
   edit resolves to the identical object it always did, so jersey, helmet and
   digit edits are unchanged. Reported against Beta 39; the routing dates to the
   first public beta and became reachable in RC49.
-- APF 2K8 stays alpha.71. The shared updater identity is `beta-40`.
+- APF 2K8 has no functional change; it moves to alpha.72 because the shared
+  updater identity is now `beta-40` and its archive bytes therefore differ.
 
 ## beta-39 — 2026-08-13
 

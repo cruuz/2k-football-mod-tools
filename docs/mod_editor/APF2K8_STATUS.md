@@ -1,6 +1,12 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.71`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.72`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.72 release validation
+
+Beta 40 changes nothing in APF except the shared updater identity, which moves
+to `beta-40`. The release fixes 2K5's Team Kit equipment routing; the version
+moves so both products keep shipping from one release.
 
 ## 0.1.0-alpha.71 release validation
 

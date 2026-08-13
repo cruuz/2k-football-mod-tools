@@ -1,5 +1,13 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.72 — no APF changes — 2026-08-13
+
+Beta 40 fixes 2K5's Team Kit equipment routing: swapping a sock, glove, shoe,
+wristband, elbow pad or long-sleeve texture used to refuse at Build with
+`Unknown uniform asset ID`. Nothing in APF changed; the version moves so both
+products keep shipping from one release, and the shared update checker
+identifies this build as `beta-40`.
+
 ## 0.1.0-alpha.71 — Save Project keeps Fine-tune Plays — 2026-08-13
 
 Beta 39 answers three community reports.
