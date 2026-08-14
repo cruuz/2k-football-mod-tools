@@ -338,7 +338,27 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-33` — 2026-08-10 · CURRENT
+### `beta-43` — 2026-08-14 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-43>
+
+Beta 43 carries 2K5 RC66 and APF alpha.75. Both retail-free gates pass (2K5
+staged 206 files, APF staged 197); the local suite is **234 passed, 0 failed,
+0 skipped**, with the previously unrunnable files restored rather than skipped.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC66-20260814.tar.gz` | 11,309,218 | `60f094b756daa1853c7f417e04666022d77f89fdcf9ffa795600963bf4feaf7f` |
+| `2K5-Mod-Studio-v1.0-RC66-20260814.tar.gz.sha256` | 107 | `906949646fc4af60a1f7e3af30a9319e39ae609f167045306f91e873a5ed5126` |
+| `2K5-Mod-Studio-1.0.0rc66-Setup.exe` | 56,841,924 | `518772fb55c67829cd6e3ddabe54333b1d2a902ba856abb2398b21b5987399b8` |
+| `apf2k8-mod-studio-0.1.0-alpha.75-20260814.tar.gz` | 1,807,131 | `968dfb78945481bf76f6e2d9588d2034f4d45e56d7814c70f63824b0d0d6f07e` |
+| `apf2k8-mod-studio-0.1.0-alpha.75-20260814.tar.gz.sha256` | 115 | `7c90ca6af7054b2b9b5042cfcb2ace379266ef3c120948cbc3643dacec4bf034` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.75-Setup.exe` | 52,681,421 | `aab0231bb682410676b9bafbd33ae62ebae381a1305524cc4257a1373d207cec` |
+
+The Windows installers are unsigned; SmartScreen will warn. Verify the SHA-256
+before running.
+
+### `beta-33` — 2026-08-10 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-33>
 
