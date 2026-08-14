@@ -228,6 +228,35 @@ class LayoutPinTests(unittest.TestCase):
         self.assertEqual(splb.FILLER & splb.PLAY_MASK, 1023)
         self.assertGreater(splb.FILLER & splb.PLAY_MASK, 585)
 
+    def test_flip_partner_name_is_an_exact_suffix_pair(self) -> None:
+        self.assertEqual(splb.flip_partner_name("Ace"), "Ace Flip")
+        self.assertEqual(splb.flip_partner_name("Ace Flip"), "Ace")
+        self.assertEqual(
+            splb.flip_partner_name("Weak I Jokers"), "Weak I Jokers Flip"
+        )
+        self.assertNotEqual(
+            splb.flip_partner_name("Weak I Jokers"),
+            "Weak I Jokers Flip Pair",
+        )
+        self.assertIsNone(splb.flip_partner_name(""))
+        self.assertIsNone(splb.flip_partner_name("   "))
+
+    def test_flip_partner_record_uses_the_exact_suffix(self) -> None:
+        book = splb.parse_book(_synthetic_book(), 943)
+        populated = [record for record in book.records if record.populated]
+        names = {
+            populated[0].formation_index: "Ace",
+            populated[1].formation_index: "Ace Flip",
+        }
+        partner = splb.find_flip_partner_record(book, populated[0], names)
+        self.assertIsNotNone(partner)
+        assert partner is not None
+        self.assertEqual(partner.record_index, populated[1].record_index)
+        names[populated[1].formation_index] = "Weak I Jokers Flip Pair"
+        self.assertIsNone(
+            splb.find_flip_partner_record(book, populated[0], names)
+        )
+
 
 class PanelContractTests(unittest.TestCase):
     def test_the_panel_states_the_unproved_boundary(self) -> None:

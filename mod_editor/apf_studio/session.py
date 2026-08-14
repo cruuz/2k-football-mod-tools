@@ -2396,30 +2396,49 @@ class ApfSession:
             result.append(change)
         return tuple(sorted(result, key=lambda item: item.selector))
 
-    def staged_splb_book(self) -> int | None:
-        """Which stock playbook the staged Fine-tune Plays edits belong to."""
+    def staged_splb_outers(self) -> tuple[int, ...]:
+        """Every stock playbook that currently has Fine-tune Plays edits."""
 
-        outers = {change.outer_index for change in self._active_splb_changes()}
-        if len(outers) > 1:
-            raise SessionError(
-                "The project stages Fine-tune Plays edits for more than one book"
-            )
-        return outers.pop() if outers else None
+        return tuple(
+            sorted({change.outer_index for change in self._active_splb_changes()})
+        )
+
+    def staged_splb_book(self) -> int | None:
+        """The only staged stock playbook, or None if none or more than one."""
+
+        outers = self.staged_splb_outers()
+        if len(outers) == 1:
+            return outers[0]
+        return None
 
     def staged_splb_changes(self) -> tuple[SplbMembershipChange | SplbTagMove, ...]:
         return self._active_splb_changes()
 
+    def _compile_splb_groups(
+        self, active: Iterable[SplbMembershipChange | SplbTagMove]
+    ) -> None:
+        """Compile each named book separately. The writer is still one book."""
+
+        groups: dict[int, list[SplbMembershipChange | SplbTagMove]] = {}
+        for change in active:
+            groups.setdefault(change.outer_index, []).append(change)
+        for outer_index, group in sorted(groups.items()):
+            compile_splb_book(
+                read_splb_book(self.source.index_0a, outer_index), tuple(group)
+            )
+
     def apply_splb_membership_batch(
         self,
         changes: Iterable[SplbMembershipChange | SplbTagMove],
+        *,
+        replace_outer: int | None = None,
     ) -> int:
-        """Replace the staged Fine-tune Plays set with ``changes``.
+        """Merge Fine-tune Plays edits for one book, keeping every other book.
 
-        The panel owns one book at a time, so the whole staged set is handed
-        over as a unit: what the user sees ticked is exactly what the project
-        stores.  Every change is compiled against the user's own book before it
-        is accepted, so a project can never carry an edit the writer would
-        refuse at build time.
+        One call still names one stock playbook — the writer compiles one book
+        at a time. ``replace_outer`` is the book whose previous ticks are
+        replaced. An empty batch with ``replace_outer=None`` clears every book
+        (Revert-all). An empty batch with ``replace_outer=N`` clears only N.
         """
 
         normalized = tuple(changes)
@@ -2451,24 +2470,40 @@ class ApfSession:
                 )
             )
         if len(outers) > 1:
-            raise SessionError("Stage edits for one stock playbook at a time")
-        # The panel hands over its whole staged set, so anything it no longer
-        # lists has been unticked or reverted and must not survive here.
-        updated = {
-            asset_id: modification
-            for asset_id, modification in self._modifications.items()
-            if modification.kind != SPLB_MEMBERSHIP_KIND
-        }
+            raise SessionError(
+                "A Fine-tune Plays batch must name one stock playbook"
+            )
+        if normalized:
+            batch_outer = next(iter(outers))
+            if replace_outer is None:
+                replace_outer = batch_outer
+            elif replace_outer != batch_outer:
+                raise SessionError(
+                    "replace_outer does not match the Fine-tune Plays batch"
+                )
+        updated: dict[str, Modification] = {}
+        for asset_id, modification in self._modifications.items():
+            if modification.kind != SPLB_MEMBERSHIP_KIND:
+                updated[asset_id] = modification
+                continue
+            if replace_outer is None:
+                continue
+            try:
+                existing = splb_change_from_mapping(modification.metadata)
+            except ValidationError:
+                existing = decode_splb_membership_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+            if existing.outer_index == replace_outer:
+                continue
+            updated[asset_id] = modification
         for modification in prepared:
             updated[modification.asset_id] = modification
         active = self._active_splb_changes(updated)
         if active:
-            outer = {change.outer_index for change in active}
-            if len(outer) != 1:
-                raise SessionError("Stage edits for one stock playbook at a time")
             try:
-                book = read_splb_book(self.source.index_0a, outer.pop())
-                compile_splb_book(book, active)
+                self._compile_splb_groups(active)
             except ValidationError as exc:
                 raise SessionError(str(exc)) from exc
         if updated == self._modifications:
@@ -2800,15 +2835,8 @@ class ApfSession:
             updated.pop(asset_id)
             active = self._active_splb_changes(updated)
             if active:
-                outers = {change.outer_index for change in active}
                 try:
-                    if len(outers) != 1:
-                        raise ValidationError(
-                            "the remaining edits name more than one stock playbook"
-                        )
-                    compile_splb_book(
-                        read_splb_book(self.source.index_0a, outers.pop()), active
-                    )
+                    self._compile_splb_groups(active)
                 except ValidationError as exc:
                     raise SessionError(
                         "Reverting only this Fine-tune Plays edit would leave the "
@@ -3377,16 +3405,8 @@ class ApfSession:
             }
             if splb_modifications:
                 active = self._active_splb_changes(splb_modifications)
-                outers = {change.outer_index for change in active}
-                if len(outers) != 1:
-                    raise SessionError(
-                        "This project stages Fine-tune Plays edits for more than "
-                        "one stock playbook; the writer compiles one book at a time."
-                    )
                 try:
-                    compile_splb_book(
-                        read_splb_book(self.source.index_0a, outers.pop()), active
-                    )
+                    self._compile_splb_groups(active)
                 except ValidationError as exc:
                     raise SessionError(
                         f"Project stock-playbook edit set is unsafe: {exc}"

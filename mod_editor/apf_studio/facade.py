@@ -1107,12 +1107,16 @@ class ApfStudioFacade:
         self,
         changes,
         progress: Progress = _noop,
+        *,
+        replace_outer: int | None = None,
     ) -> int:
-        """Hand the panel's whole staged Fine-tune Plays set to the project."""
+        """Merge one book's Fine-tune Plays ticks into the project."""
 
         with self._session_lock:
             progress("Checking the stock playbook edits", 0, 1)
-            result = self.require_session().apply_splb_membership_batch(changes)
+            result = self.require_session().apply_splb_membership_batch(
+                changes, replace_outer=replace_outer
+            )
             progress("Stock playbook edits staged", 1, 1)
             self.last_build = None
             return result
@@ -1121,6 +1125,11 @@ class ApfStudioFacade:
         with self._session_lock:
             session = self.session
             return session.staged_splb_changes() if session is not None else ()
+
+    def staged_splb_outers(self) -> tuple:
+        with self._session_lock:
+            session = self.session
+            return session.staged_splb_outers() if session is not None else ()
 
     def staged_splb_book(self) -> int | None:
         with self._session_lock:
@@ -2005,7 +2014,13 @@ class ApfStudioFacade:
             self.last_project_identity = current_identity
             return count
 
-    def build(self, output_game: Path, progress: Progress = _noop) -> BuildReceipt:
+    def build(
+        self,
+        output_game: Path,
+        progress: Progress = _noop,
+        *,
+        replace_existing: bool = False,
+    ) -> BuildReceipt:
         with self._session_lock:
             session = self.require_session()
             locked_roster_edits = tuple(
@@ -2024,7 +2039,10 @@ class ApfStudioFacade:
                 )
             assert self.source is not None
             receipt = ApfBuildService(self.source).build(
-                session.modifications, output_game, progress
+                session.modifications,
+                output_game,
+                progress,
+                replace_existing=replace_existing,
             )
             self.last_build = receipt
             return receipt

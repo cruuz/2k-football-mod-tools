@@ -9,7 +9,6 @@ assets and does not touch a user's source directly; every operation crosses the
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from datetime import datetime
 import html
 import json
 import math
@@ -21198,24 +21197,51 @@ class ApfStudioMainWindow(QMainWindow):
     def _build_game(self) -> None:
         if not self.facade.source_ready:
             return
-        parent = QFileDialog.getExistingDirectory(
+        chosen = QFileDialog.getExistingDirectory(
             self,
-            "Choose where the new modded game folder should be created",
+            "Choose the folder Xenia should load",
             str(Path.home()),
             QFileDialog.ShowDirsOnly,
         )
-        if not parent:
+        if not chosen:
             return
-        timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
-        parent_path = Path(parent)
-        output = parent_path / f"APF2K8-Mod-{timestamp}"
-        suffix = 2
-        while output.exists():
-            output = parent_path / f"APF2K8-Mod-{timestamp}-{suffix}"
-            suffix += 1
+        output = Path(chosen)
+        source = getattr(self.facade, "source", None)
+        source_root = getattr(source, "game_root", None)
+        if source_root is not None:
+            try:
+                if output.resolve() == Path(source_root).resolve() or output.resolve().is_relative_to(
+                    Path(source_root).resolve()
+                ):
+                    QMessageBox.information(
+                        self,
+                        "That is the source game",
+                        "The build never writes into the loaded retail folder. "
+                        "Choose the folder Xenia already loads, or an empty one.",
+                    )
+                    return
+            except (OSError, ValueError):
+                pass
+        replace_existing = False
+        if output.exists() and any(output.iterdir()):
+            answer = QMessageBox.question(
+                self,
+                "Replace this folder's game files?",
+                f"Build into:\n{output}\n\n"
+                "The next build will replace the files in this folder so Xenia "
+                "can keep the same path. The retail source stays untouched.\n\n"
+                "Close Xenia first if it has this folder open.",
+                QMessageBox.Yes | QMessageBox.Cancel,
+                QMessageBox.Cancel,
+            )
+            if answer != QMessageBox.Yes:
+                return
+            replace_existing = True
         self._run_task(
             "Building a complete separate APF game folder",
-            lambda progress: self.facade.build(output, progress),
+            lambda progress, dest=output, replace=replace_existing: self.facade.build(
+                dest, progress, replace_existing=replace
+            ),
             self._build_complete,
             True,
         )
@@ -21228,8 +21254,9 @@ class ApfStudioMainWindow(QMainWindow):
         QMessageBox.information(
             self,
             "Modded game folder built",
-            f"Created:\n{output}\n\n"
+            f"Wrote:\n{output}\n\n"
             f"Applied {changed} edit{'s' if changed != 1 else ''}. The complete output was verified and your source stayed untouched.\n\n"
+            "Point Xenia at this folder. Rebuild into the same folder to keep that path.\n\n"
             "This folder contains your retail game data. Do not redistribute it; share the .apf2k8mod project instead.",
         )
 

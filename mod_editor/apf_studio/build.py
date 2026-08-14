@@ -627,6 +627,39 @@ def publish_compiled_outer_entries(
     }
 
 
+def _replace_directory_with_staging(staging: Path, destination: Path) -> None:
+    """Swap a previous build folder for a newly staged one.
+
+    The source game is never this destination. Close anything that has the
+    folder open (Xenia) or the aside-rename fails and nothing is replaced.
+    """
+
+    aside = destination.with_name(destination.name + ".apf-replacing")
+    if aside.exists() or aside.is_symlink():
+        if aside.is_dir() and not aside.is_symlink():
+            shutil.rmtree(aside)
+        else:
+            aside.unlink()
+    try:
+        destination.rename(aside)
+    except OSError as exc:
+        raise BuildError(
+            f"Could not replace {destination}. Close Xenia or any other "
+            f"program using that folder and try again ({exc})."
+        ) from exc
+    try:
+        _publish_directory_noreplace(staging, destination)
+    except BaseException:
+        if destination.exists():
+            shutil.rmtree(destination, ignore_errors=True)
+        try:
+            aside.rename(destination)
+        except OSError:
+            pass
+        raise
+    shutil.rmtree(aside, ignore_errors=True)
+
+
 def _publish_directory_noreplace(staging: Path, destination: Path) -> None:
     """Publish the staged build folder to its final name, never overwriting one.
 
@@ -753,6 +786,8 @@ class ApfBuildService:
         modifications: Iterable[Modification],
         output_game: Path,
         progress: Progress = _noop,
+        *,
+        replace_existing: bool = False,
     ) -> BuildReceipt:
         output_game = output_game.expanduser().absolute().resolve(strict=False)
         source_root = self.source.game_root.resolve(strict=True)
@@ -760,10 +795,17 @@ class ApfBuildService:
             raise BuildError(
                 "Choose an output folder outside the untouched source game folder"
             )
+        replacing = False
         if output_game.exists():
-            raise FileExistsError(
-                f"Choose a new output folder; this already exists: {output_game}"
-            )
+            if not replace_existing:
+                raise FileExistsError(
+                    f"Choose a new output folder; this already exists: {output_game}"
+                )
+            if not output_game.is_dir() or output_game.is_symlink():
+                raise BuildError(
+                    f"Replace target must be a regular directory: {output_game}"
+                )
+            replacing = True
         output_game.parent.mkdir(parents=True, exist_ok=True)
         _require_build_space(output_game.parent)
         source_before = sha256_file(
@@ -1132,16 +1174,16 @@ class ApfBuildService:
             compiled[outer_index] = (entry_bytes, row)
             edit_rows.append(row)
         if splb_membership_group:
-            outer_index, entry_bytes, row = self._compile_splb_membership(
+            for outer_index, entry_bytes, row in self._compile_splb_membership(
                 tuple(splb_membership_group)
-            )
-            if outer_index in compiled:
-                raise BuildError(
-                    "Fine-tune Plays edits collide with another edit at outer "
-                    f"{outer_index}"
-                )
-            compiled[outer_index] = (entry_bytes, row)
-            edit_rows.append(row)
+            ):
+                if outer_index in compiled:
+                    raise BuildError(
+                        "Fine-tune Plays edits collide with another edit at outer "
+                        f"{outer_index}"
+                    )
+                compiled[outer_index] = (entry_bytes, row)
+                edit_rows.append(row)
         for modification in edits:
             try:
                 replacement_after = sha256_file(
@@ -1323,7 +1365,10 @@ class ApfBuildService:
                 )
                 stream.flush()
                 os.fsync(stream.fileno())
-            _publish_directory_noreplace(staging, output_game)
+            if replacing:
+                _replace_directory_with_staging(staging, output_game)
+            else:
+                _publish_directory_noreplace(staging, output_game)
             final_manifest = output_game / manifest_stage.name
             return BuildReceipt(
                 output_game=output_game,
@@ -2178,12 +2223,12 @@ class ApfBuildService:
 
     def _compile_splb_membership(
         self, modifications: tuple[Modification, ...]
-    ) -> tuple[int, bytes, dict[str, object]]:
-        """Compile every staged Fine-tune Plays edit into one rebuilt book."""
+    ) -> list[tuple[int, bytes, dict[str, object]]]:
+        """Compile Fine-tune Plays edits, one rebuilt book per outer."""
 
         if not modifications:
             raise BuildError("Select at least one stock-playbook change")
-        changes = []
+        grouped: dict[int, list[tuple[Modification, object]]] = {}
         for modification in modifications:
             try:
                 change = decode_splb_membership_payload(
@@ -2200,41 +2245,44 @@ class ApfBuildService:
                 raise BuildError(
                     f"Stock-playbook edit metadata changed: {modification.asset_id}"
                 )
-            changes.append(change)
-        outers = {change.outer_index for change in changes}
-        if len(outers) != 1:
-            raise BuildError(
-                "Fine-tune Plays edits name more than one stock playbook; the "
-                "writer compiles one book at a time."
-            )
-        try:
-            result = build_splb_book_patch(self.source.index_0a, changes)
-        except ValidationError as exc:
-            raise BuildError(f"Could not compile the stock playbook: {exc}") from exc
-        expected_outer = outers.pop()
-        if result.outer_index != expected_outer:
-            raise BuildError("The stock-playbook writer target changed")
-        row: dict[str, object] = {
-            "asset_ids": tuple(item.asset_id for item in modifications),
-            "kind": "splb_book_membership_batch",
-            "outer_index": result.outer_index,
-            "replacement_payload_sha256s": {
-                item.asset_id: item.replacement_sha256 for item in modifications
-            },
-            "entry_size": len(result.entry_bytes),
-            "entry_sha256": _hash_bytes(result.entry_bytes),
-            "writer_schema": SPLB_MEMBERSHIP_WRITER_SCHEMA,
-            "writer_mode": "stock_book_entry_prefix_rewrite",
-            "book_name": result.report["book_name"],
-            "changed_byte_count": result.report["verification"]["changed_byte_count"],
-            "changed_records": result.report["verification"]["changed_records"],
-            "records_emptied": result.report["records_emptied"],
-            "populated_records_remaining": result.report[
-                "populated_records_remaining"
-            ],
-            "compiler_claims": result.report["claims"],
-        }
-        return result.outer_index, result.entry_bytes, row
+            grouped.setdefault(change.outer_index, []).append((modification, change))
+        compiled_rows: list[tuple[int, bytes, dict[str, object]]] = []
+        for outer_index, items in sorted(grouped.items()):
+            book_modifications = tuple(item[0] for item in items)
+            changes = [item[1] for item in items]
+            try:
+                result = build_splb_book_patch(self.source.index_0a, changes)
+            except ValidationError as exc:
+                raise BuildError(
+                    f"Could not compile stock playbook {outer_index}: {exc}"
+                ) from exc
+            if result.outer_index != outer_index:
+                raise BuildError("The stock-playbook writer target changed")
+            row = {
+                "asset_ids": tuple(item.asset_id for item in book_modifications),
+                "kind": "splb_book_membership_batch",
+                "outer_index": result.outer_index,
+                "replacement_payload_sha256s": {
+                    item.asset_id: item.replacement_sha256
+                    for item in book_modifications
+                },
+                "entry_size": len(result.entry_bytes),
+                "entry_sha256": _hash_bytes(result.entry_bytes),
+                "writer_schema": SPLB_MEMBERSHIP_WRITER_SCHEMA,
+                "writer_mode": "stock_book_entry_prefix_rewrite",
+                "book_name": result.report["book_name"],
+                "changed_byte_count": result.report["verification"][
+                    "changed_byte_count"
+                ],
+                "changed_records": result.report["verification"]["changed_records"],
+                "records_emptied": result.report["records_emptied"],
+                "populated_records_remaining": result.report[
+                    "populated_records_remaining"
+                ],
+                "compiler_claims": result.report["claims"],
+            }
+            compiled_rows.append((result.outer_index, result.entry_bytes, row))
+        return compiled_rows
 
     def _compile(self, modification: Modification) -> tuple[int, bytes, str]:
         if modification.kind == "uniform":

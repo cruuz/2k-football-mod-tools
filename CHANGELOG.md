@@ -11,6 +11,31 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-44 — 2026-08-14
+
+**Urianus can edit every stock book, the TE-workaround copy is gone, and
+Build writes into the folder Xenia already loads.**
+
+2K5 is `v1.0-RC67` (updater identity only). APF is `0.1.0-alpha.76`.
+
+- Fine-tune Plays does not choose personnel. Play names are not positions.
+  `50 TE Corner` in I Spread still fields 0 TEs. The old “add TE plays and
+  Move tagged slot” sentence is withdrawn.
+- A project can hold every stock book. Switching books no longer discards
+  staged work. Build compiles each book separately into one copied `0A`.
+- Emptying an exact ` Flip` twin (Ace / Ace Flip) empties both. Weak I
+  Jokers Flip Pair is not that twin. Emptying only one hung on load.
+- Empty-formation copy now includes the 2026-08-14 defensive / O-Ace Ace
+  Empty reports. Still not a director writer.
+- Build writes into the folder you pick and can replace a previous build
+  so Xenia keeps the same path. No more `APF2K8-Mod-TIMESTAMP` child.
+  Close Xenia first if that folder is open. The retail source is never
+  written.
+- davidhbui's PS3 texture-parity spec is checked in as
+  `docs/product/APF_PS3_TEXTURE_PARITY.md`. Weave / numbers / endzones are
+  not in this cut — those are the next writer family, not tonight's
+  playbook-safety release.
+
 ## beta-43 — 2026-08-14
 
 **Four investigations, one shipped user-facing bug fixed, and the first camera

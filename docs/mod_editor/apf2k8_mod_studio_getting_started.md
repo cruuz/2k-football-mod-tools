@@ -4,7 +4,7 @@ APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-The source code and UI identify as **`0.1.0-alpha.75`**, the current retail-free
+The source code and UI identify as **`0.1.0-alpha.76`**, the current retail-free
 release candidate; its mode-`0444` archive is authenticated by the adjacent
 `.sha256` sidecar. Alpha.38 and earlier remain preserved unchanged. Verify
 whichever sealed archive you install with its authoritative adjacent `.sha256`
@@ -145,7 +145,9 @@ shortcut changed outside the installer is reported and preserved, not erased.
 - A clean USA APF 2K8 ISO, or its complete extracted game folder.
 - Enough free space for a private extraction and a separate modded game folder.
   A complete extracted build is roughly 4 GB; keep additional working space for
-  previews and exports.
+  previews and exports. **Build writes into the folder you pick** — choose the
+  directory Xenia already loads and confirm replace. The studio no longer
+  creates an `APF2K8-Mod-TIMESTAMP` child inside an empty folder.
 - Python 3, PyQt5, and Pillow. The launcher reports each missing dependency in
   plain language before trying to open the application.
 - Xenia Canary for playing the result. Xemu is an original-Xbox emulator and is
@@ -796,15 +798,29 @@ Xenia or on Xbox 360 remains unproved.
 Open **Playbooks & Plays → Fine-tune Plays**. This edits the on-disc `SPLB`
 membership lists, not the save-assignment labels.
 
+Fine-tune Plays changes which MASTER plays a formation **stores**. It does
+not change who lines up. Personnel comes from the formation package map
+(MASTER `+0x11`). A play named `50 TE Corner` can live in I Spread (20 / 0 TE)
+because the play is routes and assignments on whatever slots that formation
+plugs. Play names are not personnel. **Move tagged slot…** only reassigns Y
+tags inside one record.
+
+Role 8 maps to roster TE and role 9 to WR in table `0x820FC320`; whether a
+formation has a TE is whether its map contains role 8. Swapping those bytes is
+not runtime-proved, so it is not offered.
+
 - Tick plays in or out of a formation. Tagged slots follow `min(4, plays)`.
 - **Move tagged slot…** can hand a slot to a play you just added in the same
-  request (the X-43Blitz Bear case).
+  request (the X-43Blitz Bear case). That only reassigns Y tags inside one
+  record. It does not change who lines up.
 - **Save Project keeps these edits.** Before alpha.71 the panel was the only
   place they lived, so a saved project reopened with the playbook apparently
   untouched. The project now stores each staged change as a selector — outer
   entry, record, play indices — and never a byte of your `SPLB` resource.
-  Reopening a project selects the book the edits belong to. The studio writes
-  one stock playbook at a time, so switching books with work staged asks first.
+  Reopening a project keeps every staged book. Switching books no longer
+  discards the others — a project can hold all fifteen stock books and Build
+  writes them all into one copied 0A. The writer still compiles one book per
+  call; the session groups by outer.
 - **Empty this formation… changes what the CPU does, in a way this project
   cannot yet predict.** Urianus emptied the formations without a TE in
   `O-ManBlock` on alpha.70 and the CPU lined up personnel packages that book
@@ -819,15 +835,21 @@ membership lists, not the save-assignment labels.
   executable's count (`0x84a8ac30`) and get-nth (`0x84a8bd20`) return 0/null,
   so the four tagged plays cannot come from that record. Emptying **every**
   populated formation in a book is refused: that leaves the director nothing at
-  all to select. To keep a formation and put TEs on its tagged slots, add those
-  plays and use **Move tagged slot…** instead — nothing has been reported
-  against that path.
+  all to select. Adding a play whose name mentions TE, or moving a tagged slot
+  onto it, does not change who lines up. Emptying one of an exact “ Flip”
+  twin (Ace / Ace Flip) without the other hangs on load, so the panel
+  empties both together. Weak I Jokers Flip Pair is not that kind of twin.
+  Emptying a defensive formation still lets the director select it and call
+  something the book never listed, except X-43Blitz 4-3 / Bear, which falls
+  back to the other formation.
 - **Research pins** shows every executable address behind these statements,
   including the candidates that were checked and withdrawn.
 - Automatic WR3→TE package substitution is not offered. APF MASTER has an
   11-byte role permutation at formation `+0x11`. Role 8 is TE and role 9 is WR
   (`0x820FC320` / `0x84a9ae68`); the builder indexes that map by slot
-  (`0x848605b4`). Swapping them is not runtime-proved. MASTER categories at
+  (`0x848605b4`). Whether a formation has a TE is whether its map contains
+  role 8. Swapping those bytes is not runtime-proved, so it is not offered.
+  MASTER categories at
   `+0x44` are personnel packages (Ace, 5 Wide, Flush); `0x8485bd38` extracts
   the trailer index. `0x84a472d0` is play-type UI, not down; `0x8486ce88`
   picks a play from situation word0 / `+0x2BC` (a tab). Eligibility ANDs
@@ -969,8 +991,6 @@ membership lists, not the save-assignment labels.
   +0x20 then `lbz` 0 sites are string/ASCII. Only TEXT `lis 0x0B00` is
   bitmask `0x848ee750` (`li r4, 11`). `0x84b64c88` walks a 4-byte window with UTF-8 extra-byte
   table `0x844C69C8` (0xC0→1, 0xE0→2, 0xF0→3; 0x0B→0), not leftover sizes.
-  To put TEs
-  on the tagged slots, add those plays and move the slots onto them.
 
 Which play the CPU calls on 3rd-and-long from a still-populated list remains
 runtime-unproved.

@@ -5,6 +5,12 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC67 — updater identity beta-44 — 2026-08-14
+
+- Shared updater identity is `beta-44`. No 2K5 writer or importer changed.
+  The Fine-tune Plays, empty-formation, and build-folder work in this tag is
+  APF-only.
+
 ## v1.0 RC66 — Check My Images, and a camera map — 2026-08-14
 
 - **New: Check My Images.** Sits directly above Build. Runs the real quantizer

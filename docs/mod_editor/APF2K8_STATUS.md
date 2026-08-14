@@ -1,6 +1,12 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.75`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.76`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.76 release validation
+
+Beta 44 answers Urianus on Fine-tune Plays (personnel honesty, every stock
+book in one project, Flip-pair empty safety, build-folder overwrite) and
+records davidhbui's PS3 texture-parity spec. 2K5 is RC67 (updater identity only).
 
 ## 0.1.0-alpha.75 release validation
 

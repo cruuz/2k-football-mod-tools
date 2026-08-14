@@ -226,21 +226,25 @@ StagedChange = splb.MembershipChange | splb.TagMove
 #: it.  The static consumer facts stay below in the research pins; this is the
 #: in-game consequence a real player measured, and it leads.
 EMPTY_FORMATION_WARNING = (
-    "Emptying a formation changes how the CPU plays, in a way this project "
-    "cannot yet predict.\n\n"
-    "Reported in-game by Urianus on alpha.70: after emptying the formations "
-    "without a TE in O-ManBlock, the CPU lined up personnel packages that book "
-    "does not contain (00, 10, 01, 12, 11) and one the game does not ship at "
-    "all (02), running plays that are not in the book. He saw it whenever the "
-    "director selected an emptied formation; books he had not touched behaved "
-    "normally. Plays are not bound to formations — he moved an offensive play "
-    "into a defensive book and it ran — so a formation that stores nothing "
-    "does not make the director skip it. It makes the director call something "
-    "the book never listed.\n\n"
-    "The static side is unchanged and was never a safety proof: count "
-    "0x84a8ac30 returns 0 and get-nth 0x84a8bd20 returns null for an empty "
-    "record, so the four tagged plays cannot come from it. What the director "
-    "does with that null is what the report above describes."
+    "Emptying a formation does not make the CPU skip it. The trailer still "
+    "names the formation; the director still selects it; count 0x84a8ac30 / "
+    "get-nth 0x84a8bd20 return 0/null; the CPU then calls something the book "
+    "never listed.\n\n"
+    "Urianus, alpha.70: emptied no-TE formations in O-ManBlock and the CPU "
+    "lined up packages that book does not contain (00, 10, 01, 12, 11) and "
+    "one the game does not ship (02).\n\n"
+    "Urianus, 2026-08-14: emptying any defensive formation does the same "
+    "random-call thing, except X-43Blitz between 4-3 and Bear — that pair "
+    "falls back to the other formation and the same play (e.g. 46 Whip Blast "
+    "1 Rubber). Emptying one of an exact “ Flip” twin (Ace / Ace Flip) "
+    "without the other hangs on load. Weak I Jokers Flip Pair is not the "
+    "twin of Weak I Jokers. In O-Ace the 3rd/4th-and-long call is Ace Empty "
+    "with TEs subbed for WRs; emptying the 2-RB Ace formations falls through "
+    "to that Ace Empty; emptying Ace Empty itself falls through to another "
+    "Ace with TEs still subbed out.\n\n"
+    "Fine-tune Plays does not change who lines up. Personnel comes from the "
+    "formation package map (MASTER +0x11). Play names are not personnel. "
+    "Emptying every populated formation in a book is refused."
 )
 
 BOUNDARY = (
@@ -266,16 +270,21 @@ BOUNDARY = (
     "proved in the game's own code; the fourth is looked up with them at "
     "0x84a850f0 (loop 0..3), which is not a 3rd-and-long proof. In-game CPU "
     "play-calling behaviour is still NOT proved.\n\n"
-    "Automatic WR3→TE package "
-    "substitution is not offered: APF MASTER has an 11-byte role permutation "
-    "at formation +0x11. Role 8 is TE and role 9 is WR (byte table "
-    "0x820FC320, loaded at 0x84a9ae68 from the map byte stored at on-field "
-    "+0x34; 8 → TE, 9 → WR). Swapping those two bytes is not runtime-proved, "
-    "so it is not offered. The proved "
-    "workaround is to store TE-using plays in the formation — add them, then "
-    "move the tagged slots onto them. Only an edit that would break the "
-    "counted rule on a still-populated record, or empty every populated "
-    "formation in a book, is refused.\n\n"
+    "Fine-tune Plays changes which MASTER plays a formation STORES. It does "
+    "not change who lines up. Personnel comes from the formation package map "
+    "(MASTER +0x11). A play named 50 TE Corner can live in I Spread (20 / 0 TE) "
+    "because the play is routes and assignments on whatever slots that "
+    "formation plugs. Play names are not personnel. Role 8 maps to roster TE "
+    "and role 9 to WR in table 0x820FC320 (loaded at 0x84a9ae68 from the map "
+    "byte stored at on-field +0x34; 8 → TE, 9 → WR). Whether a formation has "
+    "a TE is whether its map contains role 8. Swapping those bytes is not "
+    "runtime-proved, so it is not offered. Automatic WR3→TE package "
+    "substitution is not offered. Move tagged slot only reassigns Y tags "
+    "inside one record. A project can hold every stock book and Build writes "
+    "them all into one copied 0A. Emptying one of an exact “ Flip” twin "
+    "without the other is refused (infinite-load report). Only an edit that "
+    "would break the counted rule on a still-populated record, or empty every "
+    "populated formation in a book, is refused.\n\n"
     "Every address behind these statements is listed under “Research pins”."
 )
 
@@ -803,14 +812,32 @@ class ApfPlaybookMembershipPanel(QFrame):
         value = getattr(source, "index_0a", None) if source is not None else None
         return Path(value) if value is not None else None
 
-    def _project_book(self) -> int | None:
-        reader = getattr(self.facade, "staged_splb_book", None)
-        if reader is None:
-            return None
+    def _project_outers(self) -> tuple[int, ...]:
+        reader = getattr(self.facade, "staged_splb_outers", None)
+        if reader is not None:
+            try:
+                return tuple(int(item) for item in reader())
+            except Exception:
+                return ()
+        single = getattr(self.facade, "staged_splb_book", None)
+        if single is None:
+            return ()
         try:
-            return reader()
+            value = single()
         except Exception:
+            return ()
+        return () if value is None else (int(value),)
+
+    def _project_book(self) -> int | None:
+        """Book to jump to on refresh. Stay put if the picker is already staged."""
+
+        outers = self._project_outers()
+        current = self.book_picker.currentData()
+        if current is not None and int(current) in outers:
             return None
+        if len(outers) == 1:
+            return outers[0]
+        return None
 
     def set_context(self) -> None:
         if not bool(getattr(self.facade, "source_ready", False)):
@@ -855,34 +882,8 @@ class ApfPlaybookMembershipPanel(QFrame):
         outer = self.book_picker.currentData()
         if outer is None:
             return
-        # The writer compiles one book at a time, so switching books with work
-        # staged has to be a decision the user makes, not a silent discard.
-        staged_book = self._project_book()
-        if staged_book is not None and staged_book != int(outer):
-            answer = QMessageBox.question(
-                self,
-                "Discard the staged playbook edits?",
-                f"{self._book_label(staged_book)} has staged changes, and the "
-                "studio writes one stock playbook at a time. Opening "
-                f"{self._book_label(int(outer))} discards them.\n\n"
-                "Cancel to go back and build or save first.",
-                QMessageBox.Discard | QMessageBox.Cancel,
-                QMessageBox.Cancel,
-            )
-            if answer != QMessageBox.Discard:
-                previous = self.book_picker.findData(staged_book)
-                if previous >= 0:
-                    self.book_picker.blockSignals(True)
-                    self.book_picker.setCurrentIndex(previous)
-                    self.book_picker.blockSignals(False)
-                return
-            clear = getattr(self.facade, "stage_splb_membership", None)
-            if clear is not None:
-                try:
-                    clear(())
-                except Exception:
-                    pass
-            self.modifiedChanged.emit()
+        # Other books stay staged in the project. This panel only edits one
+        # book at a time; switching no longer discards them.
         self._clear_staged()
 
         def operation(progress: Callable[[str, int, int], None]) -> dict:
@@ -1097,21 +1098,28 @@ class ApfPlaybookMembershipPanel(QFrame):
             )
         self._after_stage()
 
-    def populated_records_after_staging(self, pending_empty: int | None = None) -> int:
+    def populated_records_after_staging(
+        self, pending_empty: int | tuple[int, ...] | None = None
+    ) -> int:
         """How many formations in this book would still hold a play.
 
-        ``pending_empty`` names a record the caller is about to empty but has
+        ``pending_empty`` names record(s) the caller is about to empty but has
         not staged yet, so the last-formation guard can answer before the edit
         is applied rather than after.
         """
 
         if self._book is None:
             return 0
+        pending: set[int] = set()
+        if isinstance(pending_empty, int):
+            pending.add(pending_empty)
+        elif pending_empty:
+            pending.update(pending_empty)
         total = 0
         for record in self._book.records:
             if not record.populated:
                 continue
-            if record.record_index == pending_empty:
+            if record.record_index in pending:
                 continue
             entries = self._preview(record.record_index)
             if entries is None:
@@ -1123,32 +1131,55 @@ class ApfPlaybookMembershipPanel(QFrame):
     def stage_empty_formation(self, record_index: int) -> None:
         """Stage removal of every stored play in this record, shedding all tags."""
 
-        record = self._record(record_index)
-        if record is None or not record.entries:
-            raise ValidationError("This formation already has no stored plays")
-        if self.populated_records_after_staging(pending_empty=record_index) == 0:
+        self.stage_empty_formations((record_index,))
+
+    def stage_empty_formations(self, record_indexes: tuple[int, ...]) -> None:
+        """Empty one or more records, then commit once."""
+
+        if self._book is None:
+            raise ValidationError("No playbook is loaded")
+        records = []
+        for record_index in record_indexes:
+            record = self._record(record_index)
+            if record is None or not record.entries:
+                raise ValidationError("This formation already has no stored plays")
+            records.append(record)
+        pending = tuple(record.record_index for record in records)
+        if self.populated_records_after_staging(pending_empty=pending) == 0:
             raise ValidationError(
                 "This is the last formation in the book that still holds a play. "
                 "A book with nothing stored anywhere leaves the CPU director "
                 "nothing to select at all, so it is refused. Keep one formation "
                 "populated, or edit a different book."
             )
-        was_staged = dict(self._staged.get(record_index) or {})
-        was_heirs = dict(self._staged_heirs.get(record_index) or {})
-        was_moves = dict(self._staged_moves.get(record_index) or {})
-        staged = {entry.play_index: False for entry in record.entries}
-        self._replace_staged(record_index, staged, {})
-        self._staged_moves.pop(record_index, None)
-        if self._preview(record_index) is None:
-            self._replace_staged(record_index, was_staged, was_heirs)
-            if was_moves:
-                self._staged_moves[record_index] = was_moves
-            else:
+        snapshots = []
+        try:
+            for record in records:
+                record_index = record.record_index
+                snapshots.append(
+                    (
+                        record_index,
+                        dict(self._staged.get(record_index) or {}),
+                        dict(self._staged_heirs.get(record_index) or {}),
+                        dict(self._staged_moves.get(record_index) or {}),
+                    )
+                )
+                staged = {entry.play_index: False for entry in record.entries}
+                self._replace_staged(record_index, staged, {})
                 self._staged_moves.pop(record_index, None)
-            raise ValidationError(
-                "Emptying this formation was refused; the tagged-slot rule still "
-                "applies to a populated record."
-            )
+                if self._preview(record_index) is None:
+                    raise ValidationError(
+                        "Emptying this formation was refused; the tagged-slot "
+                        "rule still applies to a populated record."
+                    )
+        except ValidationError:
+            for record_index, was_staged, was_heirs, was_moves in snapshots:
+                self._replace_staged(record_index, was_staged, was_heirs)
+                if was_moves:
+                    self._staged_moves[record_index] = was_moves
+                else:
+                    self._staged_moves.pop(record_index, None)
+            raise
         self._after_stage()
 
     def _replace_staged(
@@ -1197,7 +1228,10 @@ class ApfPlaybookMembershipPanel(QFrame):
         stage = getattr(self.facade, "stage_splb_membership", None)
         if stage is None or not bool(getattr(self.facade, "source_ready", False)):
             return
+        replace_outer = None if self._book is None else int(self._book.outer_index)
         try:
+            stage(self.staged_changes(), replace_outer=replace_outer)
+        except TypeError:
             stage(self.staged_changes())
         except Exception as exc:      # session/validation errors are user-facing
             QMessageBox.warning(
@@ -1444,9 +1478,17 @@ class ApfPlaybookMembershipPanel(QFrame):
                 "This formation already has no stored plays.",
             )
             return
-        remaining = self.populated_records_after_staging(
-            pending_empty=record.record_index
-        )
+        partner = None
+        if self._book is not None:
+            partner = splb.find_flip_partner_record(
+                self._book, record, self._formations
+            )
+            if partner is not None and not partner.populated:
+                partner = None
+        pending = (record.record_index,)
+        if partner is not None:
+            pending = (record.record_index, partner.record_index)
+        remaining = self.populated_records_after_staging(pending_empty=pending)
         if remaining == 0:
             QMessageBox.information(
                 self,
@@ -1457,30 +1499,40 @@ class ApfPlaybookMembershipPanel(QFrame):
                 "different book.",
             )
             return
+        mine = self._formations.get(record.formation_index, "this formation")
+        extra = ""
+        if partner is not None:
+            other = self._formations.get(partner.formation_index, "its Flip twin")
+            extra = (
+                f"\n\n{mine} has an exact “ Flip” twin: {other}. Emptying only "
+                "one of that pair hangs on load (Urianus, 2026-08-14). Both "
+                "will be emptied together."
+            )
         answer = QMessageBox.question(
             self,
-            "Empty this formation?",
+            "Empty this formation?" if partner is None else "Empty this Flip pair?",
             EMPTY_FORMATION_WARNING
             + "\n\n"
-            f"Remove all {len(record.entries)} stored plays from "
-            f"{self._formations.get(record.formation_index, 'this formation')}. "
-            f"{remaining} formation{'s' if remaining != 1 else ''} in this book "
-            "would still hold plays. The tagged slots go with them because "
-            "min(4, 0) is 0, and the record trailer is not touched, so the "
-            "formation is still named in this book.\n\n"
-            "It is not a WR3→TE package substitution — APF MASTER has an 11-byte "
-            "role permutation at formation +0x11. Role 8 is TE and role 9 is WR "
-            "(0x820FC320 / 0x84a9ae68); swapping them is not runtime-proved. "
-            "To keep the formation and put TEs on the tagged "
-            "slots, add those plays and use “Move tagged slot…” instead — that "
-            "path has no reported in-game side effect.",
+            f"Remove all stored plays from {mine}"
+            + (f" and {other}" if partner is not None else "")
+            + f". {remaining} formation"
+            f"{'s' if remaining != 1 else ''} in this book would still hold "
+            "plays. The tagged slots go with them because min(4, 0) is 0, and "
+            "the record trailer is not touched, so the formation is still "
+            "named in this book."
+            + extra,
             QMessageBox.Yes | QMessageBox.Cancel,
             QMessageBox.Cancel,
         )
         if answer != QMessageBox.Yes:
             return
         try:
-            self.stage_empty_formation(record.record_index)
+            if partner is None:
+                self.stage_empty_formation(record.record_index)
+            else:
+                self.stage_empty_formations(
+                    (record.record_index, partner.record_index)
+                )
         except ValidationError as exc:
             QMessageBox.information(self, "That edit was not staged", str(exc))
 
@@ -1579,19 +1631,23 @@ class ApfPlaybookMembershipPanel(QFrame):
         if index_0a is None:
             return
         directory = QFileDialog.getExistingDirectory(
-            self, "Choose an empty folder for the modded volume", str(Path.home())
+            self, "Choose the folder for the copied 0A", str(Path.home())
         )
         if not directory:
             return
         out_root = Path(directory)
         if any(out_root.iterdir()):
-            QMessageBox.information(
+            answer = QMessageBox.question(
                 self,
-                "Choose an empty folder",
-                "The build writes a complete copied volume and never overwrites "
-                "anything. Choose an empty folder and try again.",
+                "Replace files in this folder?",
+                f"{out_root} is not empty. The copied 0A will be written here "
+                "so Xenia can keep this path. Other files already here stay "
+                "unless they share a name with the volume.",
+                QMessageBox.Yes | QMessageBox.Cancel,
+                QMessageBox.Cancel,
             )
-            return
+            if answer != QMessageBox.Yes:
+                return
         changes = self.staged_changes()
 
         def operation(progress: Callable[[str, int, int], None]) -> dict:
@@ -1658,9 +1714,21 @@ def _publish_copied_volume(index_path: Path, out_root: Path, entry) -> Path:
     archive = apf_outer.parse_archive(index_path)
     outer_entry = archive.entries[entry.outer_index]
     destination = out_root / index_path.name
-    apf_logo_patch._write_copied_volume(
-        index_path, destination, outer_entry, entry.entry_bytes
-    )
+    write_to = destination
+    if destination.exists() or destination.is_symlink():
+        write_to = destination.with_name(destination.name + ".apf-new")
+        if write_to.exists() or write_to.is_symlink():
+            write_to.unlink()
+    try:
+        apf_logo_patch._write_copied_volume(
+            index_path, write_to, outer_entry, entry.entry_bytes
+        )
+        if write_to != destination:
+            os.replace(write_to, destination)
+    except BaseException:
+        if write_to != destination:
+            write_to.unlink(missing_ok=True)
+        raise
     return destination
 
 

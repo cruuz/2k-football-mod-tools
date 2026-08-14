@@ -652,6 +652,42 @@ def required_tag_count(entry_count: int) -> int:
     return min(MAX_TAGS, entry_count)
 
 
+#: Exact suffix that pairs a formation with its flipped twin. "Flip Pair" in
+#: the middle of a name is not this suffix — Weak I Jokers Flip Pair is not
+#: the partner of Weak I Jokers. Ace / Ace Flip is.
+FLIP_SUFFIX = " Flip"
+
+
+def flip_partner_name(name: str) -> str | None:
+    """The other name in an exact ``' Flip'`` pair, or None if ``name`` is empty."""
+
+    cleaned = name.strip()
+    if not cleaned:
+        return None
+    if cleaned.endswith(FLIP_SUFFIX):
+        return cleaned[: -len(FLIP_SUFFIX)]
+    return cleaned + FLIP_SUFFIX
+
+
+def find_flip_partner_record(
+    book: "SplbBook",
+    record: "SplbRecord",
+    names: Mapping[int, str],
+) -> "SplbRecord | None":
+    """The same-book record whose formation name is the exact Flip twin."""
+
+    mine = names.get(record.formation_index, "").strip()
+    wanted = flip_partner_name(mine)
+    if wanted is None:
+        return None
+    for other in book.records:
+        if other.record_index == record.record_index:
+            continue
+        if names.get(other.formation_index, "").strip() == wanted:
+            return other
+    return None
+
+
 @dataclass(frozen=True, slots=True)
 class SplbEntry:
     x: int
@@ -1587,8 +1623,11 @@ __all__ = [
     "REPORT_SCHEMA",
     "STOCK_BOOKS",
     "TAG_PRIORITY",
+    "FLIP_SUFFIX",
     "CompiledBook",
     "MembershipChange",
+    "find_flip_partner_record",
+    "flip_partner_name",
     "SplbBook",
     "SplbEntry",
     "SplbRecord",

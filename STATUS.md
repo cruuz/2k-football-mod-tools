@@ -1,4 +1,4 @@
-# 2K5 Mod Studio — v1.0 RC66 Release Status
+# 2K5 Mod Studio — v1.0 RC67 Release Status
 
 ## Beta 33 — the stock CPU playbooks (2026-08-10)
 

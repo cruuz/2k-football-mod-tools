@@ -1,5 +1,29 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.76 — Fine-tune Plays does not choose personnel — 2026-08-14
+
+- **Withdrawn: Fine-tune Plays as a way to change who lines up.** The panel
+  changes which MASTER plays a formation stores. It does not change who lines
+  up. Personnel comes from the formation package map (MASTER `+0x11`). A play
+  named `50 TE Corner` can live in I Spread (20 / 0 TE) because the play is
+  routes and assignments on whatever slots that formation plugs. Play names are
+  not personnel. Role 8 maps to roster TE and role 9 to WR in table
+  `0x820FC320`; whether a formation has a TE is whether its map contains role 8.
+  Swapping those bytes is not runtime-proved, so it is not offered. **Move
+  tagged slot…** only reassigns Y tags inside one record.
+- **A project can hold every stock book.** Switching books no longer discards
+  staged work. Build compiles each outer separately into one copied `0A`. The
+  writer is still one book per call.
+- **Emptying an exact ` Flip` twin empties both.** Ace / Ace Flip is a pair;
+  Weak I Jokers Flip Pair is not. Emptying only one hangs on load (Urianus,
+  2026-08-14). Emptying the pair is refused if that would clear the last
+  plays in the book. Defensive empties still let the director call something
+  the book never listed, except X-43Blitz 4-3 / Bear.
+- **Build writes into the folder you pick.** It no longer creates an
+  `APF2K8-Mod-TIMESTAMP` child. Rebuild into the same folder (confirm
+  replace) so Xenia can keep the path. Close Xenia first if the folder is
+  open. The retail source is still never written.
+
 ## 0.1.0-alpha.75 — camera map, and a catalog that regenerates again — 2026-08-14
 
 - **New: `--inspect-camera-options apf2k8`.** Nine named settings — including a

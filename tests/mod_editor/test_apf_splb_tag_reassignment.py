@@ -882,6 +882,28 @@ class PanelReadabilityTests(unittest.TestCase):
         self.assertIn("Research pins", self.panel.BOUNDARY)
         self.assertIn("Research pins", self.panel.TAG_BOUNDARY)
 
+    def test_switching_books_does_not_ask_to_discard(self) -> None:
+        source = inspect.getsource(self.panel.ApfPlaybookMembershipPanel._load_book)
+        self.assertNotIn("Discard the staged playbook", source)
+        self.assertIn("no longer discards", source)
+
+    def test_the_copy_does_not_treat_play_names_as_personnel(self) -> None:
+        """Adding a TE-named play or moving a Y tag is not a personnel edit."""
+
+        getting_started = (
+            WORKSPACE / "docs/mod_editor/apf2k8_mod_studio_getting_started.md"
+        ).read_text(encoding="utf-8")
+        for name, copy in (
+            ("BOUNDARY", self.panel.BOUNDARY),
+            ("EMPTY_FORMATION_WARNING", self.panel.EMPTY_FORMATION_WARNING),
+            ("getting-started", getting_started),
+        ):
+            with self.subTest(copy=name):
+                self.assertNotIn("put TEs on", copy)
+                self.assertNotIn("TE-using plays", copy)
+                self.assertIn("Personnel comes from the formation package map", copy)
+                self.assertIn("Play names are not personnel", copy)
+
 
 class PanelProjectHandoffTests(unittest.TestCase):
     """Every staged tick has to reach the session, or Save Project loses it."""
@@ -901,7 +923,7 @@ class PanelProjectHandoffTests(unittest.TestCase):
 
         self.stored: tuple = ()
 
-        def stage(changes) -> int:
+        def stage(changes, **_kwargs) -> int:
             self.stored = tuple(changes)
             return len(self.stored)
 
