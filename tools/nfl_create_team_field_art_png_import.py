@@ -316,8 +316,10 @@ def build_import(index_path: Path, inventory_path: Path, logo_code: int,
         palette, linear_levels, quantization = (
             bounded.palette, bounded.index_levels, bounded.quantization
         )
+        palette_fit_attempts = list(bounded.attempts)
     else:
         palette, linear_levels, quantization = palette_tools.quantize_levels(mips)
+        palette_fit_attempts = []
     require(len(linear_levels) == level_count and
             sum(len(value) for value in linear_levels) == int(target["palette_offset"]),
             "quantized mip index allocation changed")
@@ -425,6 +427,9 @@ def build_import(index_path: Path, inventory_path: Path, logo_code: int,
         "quantization": {"algorithm":
                          "weighted_median_cut_rgba_then_nearest_squared_error",
                          **quantization, "palette_entries": len(palette),
+                         # Only the compressed branch runs the ladder.
+                         "palette_fit_attempts": palette_fit_attempts,
+                         "palette_was_reduced": len(palette_fit_attempts) > 1,
                          "unused_palette_entries_zero_filled": True},
         "compression": compression_record,
         "rebuild": {**rebuild_record, "span_size": len(rebuilt_span),

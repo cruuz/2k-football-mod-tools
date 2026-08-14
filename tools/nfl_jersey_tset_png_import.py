@@ -328,6 +328,11 @@ def import_png(index: Path, inventory_path: Path, compatibility_path: Path,
             "algorithm": "weighted_median_cut_rgba_then_nearest_rgba_squared_error",
             "tie_breaks": "channel R,G,B,A; stable lexical colors; lowest palette index",
             **quantization,
+            # The bounded ladder can quantize a replacement down to fit its
+            # fixed VC-LZ span. That is lossy, so it is recorded here and
+            # reported to the user rather than applied silently.
+            "palette_fit_attempts": list(bounded.attempts),
+            "palette_was_reduced": len(bounded.attempts) > 1,
             "clean_palette_entries": len(clean_palette),
             "mud_palette_entries": len(mud_palette),
             "shared_index_chain": True,

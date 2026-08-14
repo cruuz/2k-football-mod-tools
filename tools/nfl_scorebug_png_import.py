@@ -307,6 +307,11 @@ def build_import(index_path: Path, audit_path: Path, target_name: str,
                       "strict_rgba8_noninterlaced": True},
         "quantization": {
             "algorithm": "weighted_median_cut_rgba_then_nearest_squared_error",
+            # The bounded ladder can quantize a replacement down to fit its
+            # fixed VC-LZ span. That is lossy, so it is recorded here and
+            # reported to the user rather than applied silently.
+            "palette_fit_attempts": list(bounded.attempts),
+            "palette_was_reduced": len(bounded.attempts) > 1,
             **quantization, "palette_entries": len(palette),
             "unused_palette_entries_zero_filled": True,
         },
