@@ -92,10 +92,10 @@ jobs:
         run: |
           set -euo pipefail
           inputs="$(mktemp -d)"
-          gh release download beta-43 \
+          gh release download beta-44 \
             --repo "$GITHUB_REPOSITORY" \
-            --pattern '2K5-Mod-Studio-v1.0-RC66-20260814.tar.gz' \
-            --pattern 'apf2k8-mod-studio-0.1.0-alpha.75-20260814.tar.gz' \
+            --pattern '2K5-Mod-Studio-v1.0-RC67-20260814.tar.gz' \
+            --pattern 'apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz' \
             --dir "$inputs"
           python - "$inputs" "$GITHUB_WORKSPACE" <<'PY'
           from __future__ import annotations
@@ -110,10 +110,10 @@ jobs:
           inputs = Path(sys.argv[1])
           checkout = Path(sys.argv[2]).resolve(strict=True)
           archives = {
-              "2K5-Mod-Studio-v1.0-RC66-20260814.tar.gz":
-                  "60f094b756daa1853c7f417e04666022d77f89fdcf9ffa795600963bf4feaf7f",
-              "apf2k8-mod-studio-0.1.0-alpha.75-20260814.tar.gz":
-                  "968dfb78945481bf76f6e2d9588d2034f4d45e56d7814c70f63824b0d0d6f07e",
+              "2K5-Mod-Studio-v1.0-RC67-20260814.tar.gz":
+                  "3d21945506a92077fedd1ea56aee15ac9192fb3ca58696ea5e0ba76e96e77466",
+              "apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz":
+                  "20bab375ce66bfd668768fce92f5cb903078ece6f4323c38e96df56fb9d37cda",
           }
           copied = 0
           for name, expected in archives.items():
@@ -320,10 +320,10 @@ jobs:
         run: |
           set -euo pipefail
           inputs="$(mktemp -d)"
-          gh release download beta-43 \
+          gh release download beta-44 \
             --repo "$GITHUB_REPOSITORY" \
-            --pattern '2K5-Mod-Studio-v1.0-RC66-20260814.tar.gz' \
-            --pattern 'apf2k8-mod-studio-0.1.0-alpha.75-20260814.tar.gz' \
+            --pattern '2K5-Mod-Studio-v1.0-RC67-20260814.tar.gz' \
+            --pattern 'apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz' \
             --dir "$inputs"
           python - "$inputs" "$GITHUB_WORKSPACE" <<'PY'
           from __future__ import annotations
@@ -338,10 +338,10 @@ jobs:
           inputs = Path(sys.argv[1])
           checkout = Path(sys.argv[2]).resolve(strict=True)
           archives = {
-              "2K5-Mod-Studio-v1.0-RC66-20260814.tar.gz":
-                  "60f094b756daa1853c7f417e04666022d77f89fdcf9ffa795600963bf4feaf7f",
-              "apf2k8-mod-studio-0.1.0-alpha.75-20260814.tar.gz":
-                  "968dfb78945481bf76f6e2d9588d2034f4d45e56d7814c70f63824b0d0d6f07e",
+              "2K5-Mod-Studio-v1.0-RC67-20260814.tar.gz":
+                  "3d21945506a92077fedd1ea56aee15ac9192fb3ca58696ea5e0ba76e96e77466",
+              "apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz":
+                  "20bab375ce66bfd668768fce92f5cb903078ece6f4323c38e96df56fb9d37cda",
           }
           copied = 0
           for name, expected in archives.items():

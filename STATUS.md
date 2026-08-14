@@ -338,7 +338,23 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-43` — 2026-08-14 · CURRENT
+### `beta-44` — 2026-08-14 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-44>
+
+Beta 44 carries 2K5 RC67 (updater identity only) and APF alpha.76. Both
+retail-free gates pass (2K5 staged 206 files, APF staged 197). Fine-tune Plays
+holds every stock book, withdraws the TE-workaround copy, empties Flip twins
+together, and writes into the folder Xenia already loads.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC67-20260814.tar.gz` | 11,061,896 | `3d21945506a92077fedd1ea56aee15ac9192fb3ca58696ea5e0ba76e96e77466` |
+| `2K5-Mod-Studio-v1.0-RC67-20260814.tar.gz.sha256` | 107 | `9341b9f78893dddcbe93cee06975efd22fb7751b11a4161c7369efbcb7908807` |
+| `apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz` | 1,810,390 | `20bab375ce66bfd668768fce92f5cb903078ece6f4323c38e96df56fb9d37cda` |
+| `apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz.sha256` | 115 | `019ceb36b5e7939e9e9e2b1624fc1420378674901f986853b7462ffd859d51d4` |
+
+### `beta-43` — 2026-08-14 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-43>
 
