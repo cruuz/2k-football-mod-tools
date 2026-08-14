@@ -48,7 +48,7 @@ jq -e '
   .outer14_stadium_static_target_catalog.additional_target_count == 77 and
   .outer14_stadium_static_target_catalog.selected_second_target_handoff.node_index == 3 and
   .outer14_stadium_static_target_catalog.selected_second_target_handoff.draw_record_count == 3 and
-  .outer14_stadium_static_target_catalog.selected_second_target_handoff.allocation_slack_after_bytes == 1367 and
+  .outer14_stadium_static_target_catalog.selected_second_target_handoff.allocation_slack_after_bytes == 1967 and
   .outer14_stadium_static_target_catalog.selected_second_target_handoff.historical_catalog_generation_time_writer_complete == false and
   .outer14_stadium_static_target_catalog.selected_second_target_handoff.downstream_catalog_dispatcher_now_implemented == true and
   .outer14_stadium_static_target_catalog.selected_second_target_handoff.runtime_rigid_attachment_proved == false and

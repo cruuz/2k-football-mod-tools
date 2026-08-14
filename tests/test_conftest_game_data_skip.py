@@ -65,6 +65,60 @@ class GameDataDetectionTests(unittest.TestCase):
     def test_an_ordinary_assertion_is_never_converted(self) -> None:
         self.assertIsNone(conftest._missing_game_data(AssertionError("3 != 4")))
 
+    def test_an_english_word_is_not_a_path(self) -> None:
+        """The reason this hook has to match path-shaped text.
+
+        Six of the gitignored trees are bare words -- build, assets, research,
+        extracted, artifacts, docs/updates. A substring test turns any failure
+        whose message happens to contain one of them into a skip, which hides
+        real red. This is the case that actually happened: a genuine
+        AssertionError reading "... decided at build time" was reported as
+        "Skipped: game data not present: build".
+        """
+
+        for word in ("build", "assets", "research", "extracted", "artifacts"):
+            with self.subTest(word=word):
+                self.assertFalse(
+                    conftest._names_a_path(f"... decided at {word} time", word)
+                )
+                self.assertTrue(
+                    conftest._names_a_path(f"wrote {word}/manifest.json", word)
+                )
+
+    def test_a_nested_gitignored_tree_still_counts(self) -> None:
+        # The gitignore pattern "research/" also matches "docs/research/", so a
+        # preceding separator must stay allowed.
+        self.assertTrue(conftest._names_a_path(
+            "missing local file docs/research/apf_audio.md", "research"
+        ))
+
+    def test_a_directory_named_at_the_end_of_a_path_still_counts(self) -> None:
+        # A tree named as the final segment has no trailing separator, so
+        # requiring one would unmask a genuine missing-game-data failure. This
+        # is the exact case that appears in the stadium writer's symlink test.
+        self.assertTrue(conftest._names_a_path(
+            "[Errno 2] No such file or directory: "
+            "'/home/x/tmpabc/ancestor_link/All-Pro Football 2K8 (USA)'",
+            "All-Pro Football 2K8 (USA)",
+        ))
+
+    def test_a_longer_word_with_the_same_prefix_is_not_a_match(self) -> None:
+        self.assertFalse(conftest._names_a_path("builds/output.log", "build"))
+
+    def test_a_multi_segment_tree_matches_at_a_word_boundary(self) -> None:
+        self.assertTrue(conftest._names_a_path(
+            "reports/assets/inventory.json is missing", "reports/assets"
+        ))
+        self.assertFalse(conftest._names_a_path(
+            "reports/assets-backup/inventory.json", "reports/assets"
+        ))
+
+    def test_a_plain_assertion_mentioning_a_word_still_fails(self) -> None:
+        # End to end through the real entry point, not just the helper.
+        self.assertIsNone(conftest._missing_game_data(
+            AssertionError("expected the build to finish, got a timeout")
+        ))
+
     def test_a_wrapped_cause_is_still_found(self) -> None:
         """Refusals are usually re-raised as the tool's own error type."""
 

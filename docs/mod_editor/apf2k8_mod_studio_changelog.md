@@ -1,5 +1,33 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.75 — camera map, and a catalog that regenerates again — 2026-08-14
+
+- **New: `--inspect-camera-options apf2k8`.** Nine named settings — including a
+  **Camera Pitch** axis NFL 2K5 does not have, and separate Home and Away pivot
+  and zoom toggles — with their shipped ranges, plus the named presets.
+- **APF ships a sixth camera preset the menu cannot reach.** `Blimp` is fully
+  authored: a camera 3,750 units above the field, which is what its name says.
+  It is unreachable because three instructions hard-code the selection bound and
+  none of them reads the menu's own maximum. The inspector names it and marks it
+  not selectable. Nothing has been patched, and nobody has seen it render.
+- **No archive-only camera mod is possible.** Stated as a refusal rather than an
+  omission: every camera node in the APF archives belongs to an intro, cutscene,
+  menu or model-preview scene, and no stadium scene contains one.
+- **The stadium static target catalog can be regenerated again.** It had stopped:
+  the greedy H7A encoder is 2,599 bytes worse than retail on that block before
+  any edit, so rebuilding overflowed a slot retail itself fits. The generator now
+  preserves retail's own tokens instead, in pure Python, so the catalog is
+  byte-identical on Linux, macOS and Windows. The representative edit's growth
+  fell from 659 bytes to 59 and its slack rose from 1,367 to 1,967.
+- **The SCNE per-node transform record is 144 bytes, not 64.** The catalog had
+  been pinning a span covering 44% of the real table. At the correct stride every
+  record reads as a clean 4x4 matrix, and the long-standing "non-finite
+  components" note is explained and gone: those bytes are a node-name CRC-32.
+- **Correction for anyone building on the slider evidence:** the 84-byte settings
+  blob is in memory order, not menu order. Human Catching is element 9 (byte
+  0x24) and CPU Catching is element 18 (byte 0x48). The previously published
+  indices would have written Coverage while claiming Catching.
+
 ## 0.1.0-alpha.74 — no APF changes — 2026-08-13
 
 Beta 42 completes the 2K5 VC-LZ work: the pants importer was missed in Beta 41

@@ -23,6 +23,7 @@ the maintainer's and CI, runs exactly what it ran before.
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 
 # Headless CI / monorepo GUI tests: offscreen Qt avoids modal dialogs and
@@ -121,10 +122,45 @@ def _named_in_message(error: BaseException) -> Path | None:
 
     text = str(error)
     for candidate in GITIGNORED_TREES + GITIGNORED_FILES:
-        relative = candidate.relative_to(ROOT).as_posix()
-        if (relative in text or str(candidate) in text) and not candidate.exists():
+        if candidate.exists():
+            continue
+        if str(candidate) in text:
+            return candidate
+        if _names_a_path(text, candidate.relative_to(ROOT).as_posix()):
             return candidate
     return None
+
+
+def _names_a_path(text: str, relative: str) -> bool:
+    """True when ``text`` names ``relative`` as a PATH, not as an English word.
+
+    This hook turns a FAILED test into a SKIPPED one, and six of the gitignored
+    trees are bare words that appear constantly in this project's assertion
+    text: ``build``, ``assets``, ``research``, ``extracted``, ``artifacts`` and
+    ``docs/updates``. A plain substring test therefore silently hides real red --
+    a genuine AssertionError reading "... decided at build time" was reported as
+    "Skipped: game data not present: build" purely because the message contained
+    the word "build". A check that agrees with the mistake is worse than no
+    check.
+
+    So a bare word only counts when it sits next to a path separator -- either
+    following one (``.../ancestor_link/All-Pro Football 2K8 (USA)``) or followed
+    by one (``build/manifest.json``). "decided at build time" has neither and
+    stays a failure. A multi-segment name already looks like a path, so a word
+    boundary is enough.
+
+    Both directions matter. A *preceding* separator is what lets ``research/``
+    match ``docs/research/``, since the gitignore pattern applies at any depth,
+    and it is what keeps a directory named at the end of a path from being
+    unmasked.
+    """
+
+    name = re.escape(relative)
+    if "/" in relative:
+        pattern = rf"(?<![\w.-]){name}(?![\w-])"
+    else:
+        pattern = rf"(?:(?<=/){name}(?![\w-])|(?<![\w.-]){name}/)"
+    return re.search(pattern, text) is not None
 
 
 def _missing_game_data(error: BaseException) -> Path | None:

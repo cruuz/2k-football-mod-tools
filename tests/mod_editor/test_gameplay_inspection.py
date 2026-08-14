@@ -44,7 +44,12 @@ class GameplayInspectionTests(unittest.TestCase):
         self.assertFalse(nfl["save_or_profile_writer_available"])
         self.assertTrue(nfl["observed_fixture_values_available"])
         self.assertEqual(nfl["sliders"][3]["observed_settings1_value"], 0.5)
-        self.assertEqual(nfl["sliders"][3]["observed_franchise1_value"], 0.35)
+        # 1.0, not 0.35. The save stores each slider vector in its globals'
+        # ADDRESS order, where Catching is last; the inventory tool used to
+        # enumerate them in MENU order, where Catching is fourth, so 12 of the
+        # 18 vector slots reported their neighbour's value. 0.35 is Human
+        # COVERAGE. This fixture's Human Catching is maxed.
+        self.assertEqual(nfl["sliders"][3]["observed_franchise1_value"], 1.0)
         self.assertFalse(apf["observed_fixture_values_available"])
         self.assertFalse(apf["executable_writer_available"])
         self.assertFalse(apf["out_of_range_runtime_safety_proved"])
@@ -157,10 +162,13 @@ class GameplayInspectionTests(unittest.TestCase):
             {"USR", "STG", "FXG", "TMM"},
         )
         self.assertEqual(len(value["observed_slider_values"]), 21)
+        # See the note on the slider-order fix above: 0.35 belonged to Human
+        # Coverage, which the old menu-order layout published under Catching's
+        # name. The fixture's real Human Catching is 1.0.
         self.assertEqual(value["observed_slider_values"][3], {
             "name": "Human Catching",
             "settings1": 0.5,
-            "franchise1": 0.35,
+            "franchise1": 1.0,
         })
         self.assertTrue(value["integrity_boundary"]["savegame_signature_owned"])
         self.assertEqual(value["integrity_boundary"]["extra_size"], 20)

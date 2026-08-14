@@ -54,7 +54,39 @@ class SaveInventoryUnitTests(unittest.TestCase):
         ])
         self.assertEqual(result["rows"][0]["offset"], "0x284")
         self.assertEqual(result["rows"][-1]["offset"], "0x2DC")
-        self.assertEqual(result["rows"][-1]["semantic_index"], 8)
+        # The last physical slot holds Human CATCHING, not Human Fatigue. The
+        # save is a flat memcpy of the RAM struct, so a vector's slot order is
+        # its globals' address order, and Catching's global (0x00E600F4) is the
+        # highest in the human group even though the menu lists it fourth.
+        # This assertion previously read `semantic_index == 8`, which is the
+        # display index of Fatigue -- the test agreed with the mislabelling and
+        # so could never catch it.
+        self.assertEqual(result["rows"][-1]["label"], "Human Catching")
+        self.assertEqual(result["rows"][-1]["semantic_index"],
+                         inventory.LABELS.index("Human Catching"))
+
+    def test_each_vector_is_stored_in_global_address_order(self) -> None:
+        """Pin the ordering rule itself, derived, so it cannot regress.
+
+        Twelve of the eighteen vector slots were once labelled as their
+        neighbour because the layout enumerated LABELS in menu order. Deriving
+        the expectation from EXPECTED_GLOBALS here means this test cannot repeat
+        that mistake by hand-typing the same wrong order.
+        """
+
+        for group in ("cpu_vector", "human_vector"):
+            with self.subTest(group=group):
+                labels = [label for label, _offset, kind
+                          in inventory.SLIDER_LAYOUT if kind == group]
+                self.assertEqual(len(labels), 9)
+                self.assertEqual(
+                    labels,
+                    sorted(labels, key=lambda l: inventory.EXPECTED_GLOBALS[l]),
+                )
+                self.assertEqual(labels[-1].split()[0] + " Catching", labels[-1])
+        offsets = {label: offset for label, offset, _ in inventory.SLIDER_LAYOUT}
+        self.assertEqual(offsets["Human Catching"], 0x2DC)
+        self.assertEqual(offsets["CPU Catching"], 0x2B8)
 
     def test_rejects_non_grid_or_out_of_range_slider(self) -> None:
         payload = bytearray(0x2E0)
@@ -340,7 +372,7 @@ class SaveInventoryCanonicalTests(unittest.TestCase):
         self.assertEqual(len(raw), 31_477)
         self.assertEqual(
             hashlib.sha256(raw).hexdigest(),
-            "52cd53b218b9608197c43721f2e874865ed9cf29ef6d75e03e2c3b996bbc344d",
+            "e49d30bc9adb87faf1a592a9d3a529169659be8f926be9db9028c90009477e3c",
         )
         self.assertEqual(raw, inventory.canonical_json(self.report))
         self.assertEqual(self.report["schema"], inventory.SCHEMA)
@@ -401,7 +433,10 @@ class SaveInventoryCanonicalTests(unittest.TestCase):
             "savegame_sha256", "extra_size", "extra_sha256", "first_cluster"
         })
         self.assertEqual(slider_rows[0]["label"], "Injury")
-        self.assertEqual(slider_rows[-1]["label"], "Human Fatigue")
+        # Human CATCHING, not Fatigue: the vectors are stored in the globals'
+        # address order, where Catching is last. The old menu-order layout put
+        # Fatigue here and shifted 12 of the 18 vector labels by one.
+        self.assertEqual(slider_rows[-1]["label"], "Human Catching")
 
     def test_analyzer_has_no_mutating_or_payload_export_option(self) -> None:
         source = (ROOT / "tools/nfl2k5_xbox_save_inventory.py").read_text(

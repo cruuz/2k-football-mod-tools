@@ -147,7 +147,23 @@ class TeamKitBundleTests(unittest.TestCase):
         )
         self.assertEqual(torso["dimensions"], {"height": 256, "width": 512})
         self.assertIn("UV atlas", torso["authoring_note"])
+        # A modern texture pack normally ships numbers painted into the jersey.
+        # 2K5 draws them separately and on top, so baked-in numbers come out
+        # doubled -- reported from a real macOS import, and the slot copy has to
+        # say so before someone spends an evening on the art.
+        self.assertIn("Do not paint jersey numbers", torso["authoring_note"])
+        self.assertIn("Jersey Digit 0-9", torso["authoring_note"])
+        self.assertIn("appear twice", torso["authoring_note"])
         self.assertIn("independently writable", torso["ownership_note"])
+        nameplate = next(
+            row for row in manifest["assets"]
+            if row["asset_id"].endswith("nameplate")
+        )
+        # 1024x32 horizontal. The transposed 32x1024 reading came from a TXTR
+        # descriptor bug that was fixed in the decoder while this copy kept it,
+        # which would send an author to paint a rotated strip.
+        self.assertIn("1024×32 horizontal", nameplate["authoring_note"])
+        self.assertNotIn("32×1024", nameplate["authoring_note"])
         card = next(
             row for row in manifest["assets"]
             if row["asset_id"].endswith("team-select.helm.128")

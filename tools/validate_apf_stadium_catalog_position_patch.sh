@@ -15,8 +15,8 @@ check_pin() {
   test "$(sha256sum "$path" | cut -d' ' -f1)" = "$digest"
 }
 
-check_pin "$CATALOG" 456821 e2b21ebf4d358358627d26b7d7ea3c6cf600ea3f9d1e139cb9caa8ff1748a424
-check_pin "$SCHEMA" 5585 41fcf955c65d81bb5da2d229d6a2ffee692a9c5ae80eda1c0849911c90950277
+check_pin "$CATALOG" 456898 c3122019b74645380052670f9fdce389277a454b440dd7b7f438276b05f57469
+check_pin "$SCHEMA" 5585 ff24b219f4d00a7342dcc41e37ef4d8afe487af8a23ce1c1fcf523fd498c28ac
 check_pin "$SAMPLE" 2971 329d3290201407f1acb905d432bf8b53547a654fd895cd37a347ae979c4b60a9
 check_pin "$REPORT" 5932 eebd060dbcbeb07a01ccb2ac5a3491f0306ec43424080b33ad49258819333eea
 

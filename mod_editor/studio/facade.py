@@ -200,7 +200,7 @@ _GAMEPLAY_SNAPSHOT = (
 )
 _GAMEPLAY_SNAPSHOT_SIZE = 22_874
 _GAMEPLAY_SNAPSHOT_SHA256 = (
-    "864c785d3b0a689dace1ec9c37be0bc276519a334775c9df8953d6d62722dbe3"
+    "4657b4b9c81bf723d13849275d5469c74d3b4d2feccc033f0f06d2cd5e8d1793"
 )
 _GAMEPLAY_SNAPSHOT_SCHEMA = "nfl2k5_mod_studio_gameplay_inspection/v1"
 _MENU_SNAPSHOT = _PRODUCT_ROOT / "mod_editor/data/nfl2k5_main_menu_inspection.v1.json"
@@ -934,6 +934,31 @@ class Nfl2k5StudioFacade:
     def last_build_output(self) -> Path | None:
         with self._lock:
             return self._last_build.output_xiso if self._last_build else None
+
+    def preflight_visual_edits(
+        self, progress: ProgressSink = _quiet_progress
+    ) -> tuple[object, ...]:
+        """Predict what each staged PNG will become in its fixed slot.
+
+        Read-only, and safe to run at any time: it changes no session state and
+        tells the user which replacements come through untouched, which lose
+        palette entries to fit a fixed compressed span, and which cannot fit at
+        all -- before a build makes that decision silently.
+        """
+
+        from mod_editor.core import nfl2k5_import_preflight as preflight
+
+        with self._lock:
+            session = self._require_session()
+            staged = session.staged_preflight_inputs()
+        if not staged:
+            progress("Nothing staged to check", 1, 1)
+            return ()
+        # The ladder runs for seconds per slot, so it runs outside the lock --
+        # holding it would freeze every status field the window polls.
+        rows = preflight.predict_edits(staged, progress=progress)
+        progress("Image check complete", len(staged), len(staged))
+        return rows
 
     def inspect_gameplay(
         self, progress: ProgressSink = _quiet_progress

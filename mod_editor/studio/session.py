@@ -15,7 +15,7 @@ import os
 from pathlib import Path
 import shutil
 import stat
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 from uuid import UUID, uuid4
 
 from mod_editor.core import platform_compat
@@ -2893,6 +2893,46 @@ class StudioSession:
             f"Imported {len(changed_ids)} changed audio cue"
             f"{'s' if len(changed_ids) != 1 else ''} as one Undo action.",
         )
+
+    def staged_preflight_inputs(self) -> tuple[tuple[Any, ...], ...]:
+        """Snapshot every staged PNG edit as a prediction input.
+
+        Deliberately fast and side-effect free, so a caller can take it under a
+        lock and then run the slow prediction outside one. Resolving the fixed
+        allocation is a cached report lookup, not a build.
+        """
+
+        from mod_editor.core import nfl2k5_import_preflight as preflight
+
+        staged: list[tuple[Any, Path]] = []
+        for asset_id in sorted(self._edits):
+            asset = self._visual_asset(asset_id)
+            staged.append((asset, self._edits[asset_id].replacement_path))
+        return preflight.edits_for_assets(staged)
+
+    def preflight_visual_edits(
+        self,
+        progress: Callable[[str, int, int], None] | None = None,
+    ) -> tuple[Any, ...]:
+        """Say what each staged PNG will become before a build decides it.
+
+        Beta 41/42 replaced a hard build failure with a palette ladder that
+        quantizes art down until it fits its fixed VC-LZ span. That is lossy and
+        it shipped silent, so a jersey could lose 240 palette entries with
+        nothing said. This runs the real quantizer and encoder against the real
+        slot contract first, per staged edit.
+
+        It is read-only: no session state changes, and a family with no modelled
+        contract -- or one whose compatibility report is unavailable -- is
+        reported as unmodelled rather than guessed at.
+        """
+
+        from mod_editor.core import nfl2k5_import_preflight as preflight
+
+        rows = self.staged_preflight_inputs()
+        if not rows:
+            return ()
+        return preflight.predict_edits(rows, progress=progress)
 
     def preflight_audio_batch(
         self,

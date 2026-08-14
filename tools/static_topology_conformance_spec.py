@@ -32,7 +32,7 @@ SOURCE_PINS = {
     "apf_parent_spec": (
         "reports/specs/apf2k8_scne_static_serializer.v1.json",
         75_227,
-        "8c945740e987b1a27786b29858e46d6a99da65fa96abb019b7e1f28cc1f92b0c",
+        "b7cd1928e71eaf1b64b182a3594f1151102161df49c7762d4a2a987f5df2da59",
     ),
     "nfl_roundtrip_report": (
         "reports/assets/nfl_stadium_group36_position_patch_roundtrip.json",

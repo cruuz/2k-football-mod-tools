@@ -11,6 +11,116 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-43 — 2026-08-14
+
+**Four investigations, one shipped user-facing bug fixed, and the first camera
+map either game has ever had.**
+
+Nothing in this release claims runtime behaviour. Every address below was read
+from a binary; no game was launched and no patch applied.
+
+### New: Check My Images (2K5)
+
+Beta 41/42 replaced a hard build failure with a palette ladder that quantizes
+art down until it fits its fixed VC-LZ span. That is lossy and it shipped
+silent. **Check My Images** now sits above Build and tells you, per staged slot,
+whether your art fits as authored, will be reduced to N colours, or will not fit
+at all — before the build decides it for you.
+
+Finishing it turned up a defect worth more than the feature: the `sleeve` slot
+was modelled as 512x256 with six mips like the torso. The real sleeve slot is
+**128x128, five mips, with a 64-byte gap between the clean and mud palettes** —
+a sevenfold error that would have produced a confident wrong answer for every
+sleeve. Slot contracts are now *derived* from the four importers with an
+import-time cross-check, not typed into a table.
+
+Also corrected: the torso/sleeve/pants copy now says **do not paint jersey
+numbers into the art** — 2K5 draws them from separate digit textures in the same
+set (Jersey/Arm 64x64, Helmet 32x32, Nameplate 1024x32), so baked-in numbers
+appear twice. And the nameplate atlas is **1024x32 horizontal**, not the 32x1024
+the copy claimed; that was a pre-fix transposed value the decoder corrected long
+ago and three user-facing places kept.
+
+### New: camera options inspector, both products
+
+`--inspect-camera-options nfl2k5|apf2k8`, backed by a report regenerated from
+the executables and validated for byte identity. Before this work the project
+had not located a single camera byte.
+
+- 2K5: seven settings, row table mapped, **six presets** (Standard, Far, Side,
+  Iso, Blimp, Custom). Camera Distance is a multiplier, Camera Height is world
+  units — only Angle is 0..1, and a UI that draws all three the same is wrong.
+- APF: nine settings including a **Camera Pitch** axis 2K5 does not have, and
+  separate Home/Away toggles.
+- **APF ships a sixth preset, `Blimp`, that the menu cannot reach.** Its block
+  is fully authored — a camera 3,750 units up, which is what its name says. It
+  is unreachable because three immediates hard-code the bound and none of them
+  reads `maximum()`.
+- Stated as a refusal, not an omission: the gameplay camera has **no asset-side
+  representation** in either game. Every camera node in both archives belongs to
+  an intro, cutscene, menu or model-preview scene, and no stadium scene contains
+  one. **No archive-only mod can change a camera setting or preset.**
+
+### Fixed: the public inspector was mislabelling 12 of 18 sliders
+
+The save is a flat memcpy of the RAM struct, so each slider vector is stored in
+its globals' **address** order, where Catching is last — not the menu's display
+order, where it is fourth. Twelve of the eighteen vector slots were therefore
+published under their neighbour's name. A reader who saw "Human Catching 0.35"
+was looking at Human Coverage; the real Human Catching in that save is 1.0.
+
+Order is now derived from the address table rather than assumed, and four checks
+that had been asserting the wrong values were corrected with it. The matching
+APF defect is fixed too: blob element order is memory order, so Human Catching
+is element 9 and CPU Catching element 18 — a writer built on the old indices
+would have written Coverage while claiming Catching.
+
+### Fixed: the test harness was hiding red
+
+`conftest` reclassified a failed test as skipped whenever the failure message
+merely contained the name of an absent gitignored tree — and six of those names
+are ordinary words: `build`, `assets`, `research`, `extracted`, `artifacts`,
+`docs/updates`. A real assertion failure reading "... decided at build time" was
+reported as `Skipped: game data not present: build`. Matching is now path-shaped.
+Measured across 300 files: 245 masked failures before, 245 after, zero outcomes
+changed.
+
+### Fixed: the stadium target catalog could no longer be regenerated
+
+Regenerating it failed with "second-target representative edit exceeds outer
+allocation". The cause was not drift: the greedy H7A encoder is **2,599 bytes
+worse than retail** on that block *before* any edit, so a greedy rebuild
+overflows a slot retail itself fits. The generator now re-encodes by preserving
+retail's own tokens — pure Python, so the regenerated catalog is byte-identical
+on all three platforms rather than depending on a Linux-only binary. The
+representative edit's growth dropped from 659 bytes to **59**, and its slack rose
+from 1,367 to 1,967: the safety property strengthened.
+
+That unblocked a second correction. The SCNE per-node transform record is
+**144 bytes, not 64** — provable two ways, and the shipped catalog had been
+pinning a span covering 44% of the real table. At the correct stride every one
+of the 96 records checked has `m[15] == 1.0` and zero non-finite components, and
+a long-standing "non-finite components" note disappears: those bytes are a
+node-name CRC-32 that reads as a signalling NaN at the wrong stride.
+
+### Research landed
+
+- `docs/product/APF_GAMEPLAY_BUG_MAP.md` gains **G15**: the NFL 2K5 franchise
+  rookie draft restricts CPU round-1 picks to **4 of 17 positions** — QB/HB/DE on
+  picks 1-5, DE/HB/T on 6-32, the same board for all 32 teams. Two gates on the
+  round counter replace the scoring formula with a table constant and then read
+  only the top three entries. It leaks into the human's Suggested Picks as well.
+  APF has no rookie draft at all.
+- A method warning was promoted into that file's Honesty section: **"zero
+  references" from the function ledger is not evidence.** 32% of the APF ledger's
+  rows are truncated to size 8, which had already produced two wrong conclusions.
+- `docs/product/CAMERA_MAP.md` is new and complete for both products.
+- The catching slider was investigated and **refused**. On 2K5 the value is
+  genuinely meaningful above 100 — the arithmetic stays linear — but it cannot be
+  written (the save is signed), one press of the "+" control snaps it back to
+  100, and it does not generalise: Fumble saturates, Interception inverts, and
+  Fatigue is a boolean that is already off at 100.
+
 ## beta-42 — 2026-08-13
 
 **2K5 RC65: pants too, and a test that finds the next one.**

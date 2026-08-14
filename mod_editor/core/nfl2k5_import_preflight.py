@@ -24,6 +24,7 @@ that then refuses.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 import sys
 from typing import Callable, Iterable, Sequence
@@ -35,6 +36,9 @@ if str(TOOLS) not in sys.path:
     sys.path.insert(0, str(TOOLS))
 
 import nfl_tset_png_import as palette_tools  # noqa: E402
+import nfl_live_helmet_txtr_png_import as _helmet_import  # noqa: E402
+import nfl_pants_tset_png_import as _pants_import  # noqa: E402
+import nfl_sleeve_tset_png_import as _sleeve_import  # noqa: E402
 from nfl_txtr import TxtrError, swizzle_2d  # noqa: E402
 
 
@@ -51,9 +55,11 @@ UNMODELLED = "unmodelled"
 class SlotContract:
     """The fixed shape one P8 family writes into.
 
-    ``palette_count`` is 2 for the jersey/pants TSETs, which carry a clean and a
-    mud palette over one shared index chain, and 1 for the single-palette
-    families.
+    ``palette_count`` is 2 for the jersey/sleeve/pants TSETs, which carry a
+    clean and a mud palette over one shared index chain, and 1 for the
+    single-palette families.  ``interpalette_gap_bytes`` is the padding the
+    sleeve layout carries *between* those two palettes; it is zero everywhere
+    else, and leaving it out made the sleeve's decoded size wrong.
     """
 
     kind: str
@@ -62,6 +68,7 @@ class SlotContract:
     mip_levels: int
     system_bytes: int
     palette_count: int
+    interpalette_gap_bytes: int = 0
 
     @property
     def mip_dimensions(self) -> tuple[tuple[int, int], ...]:
@@ -80,18 +87,144 @@ class SlotContract:
             self.system_bytes
             + self.index_chain_bytes
             + 1024 * self.palette_count
+            + self.interpalette_gap_bytes
         )
+
+
+def _contract_from_importer(kind: str, module, system_bytes: int,
+                            palette_count: int) -> SlotContract:
+    """Read one family's shape off the importer that actually writes it.
+
+    Typing these numbers by hand is how the sleeve came to be modelled as a
+    512x256 six-mip slot when the real one is 128x128 with five mips and a
+    64-byte gap between its palettes -- a 7x error that would have produced a
+    confident wrong prediction for every sleeve.  So they are read from the
+    importer's own constants and then cross-checked against the decoded size
+    that importer refuses to deviate from.
+    """
+
+    dimensions = tuple(module.MIP_DIMENSIONS)
+    width, height = dimensions[0]
+    contract = SlotContract(
+        kind=kind,
+        width=width,
+        height=height,
+        mip_levels=len(dimensions),
+        system_bytes=system_bytes,
+        palette_count=palette_count,
+        interpalette_gap_bytes=int(getattr(module, "INTERPALETTE_GAP_BYTES", 0)),
+    )
+    # The importers all assert ``len(decoded) == system_bytes + VIDEO_BYTES``.
+    # If this ever disagrees, the contract is wrong and a prediction built on
+    # it would be worse than no prediction, so fail at import rather than ship
+    # a number nobody can trust.
+    expected = system_bytes + int(module.VIDEO_BYTES)
+    if contract.decoded_bytes != expected:
+        raise AssertionError(
+            f"{kind} slot contract disagrees with its importer: "
+            f"{contract.decoded_bytes} != {expected}"
+        )
+    if contract.mip_dimensions != dimensions:
+        raise AssertionError(
+            f"{kind} slot contract mip chain disagrees with its importer"
+        )
+    return contract
 
 
 #: The families whose decoded layout is proved and stable enough to predict.
 #: Anything absent is reported as UNMODELLED rather than approximated -- a
 #: confident wrong number would be worse than no number.
 CONTRACTS: dict[str, SlotContract] = {
-    "torso": SlotContract("torso", 512, 256, 6, 256, 2),
-    "sleeve": SlotContract("sleeve", 512, 256, 6, 256, 2),
-    "pants": SlotContract("pants", 512, 256, 6, 256, 2),
-    "live_helmet": SlotContract("live_helmet", 256, 256, 6, 128, 1),
+    # Jersey/torso shares the legacy TSET module's chain; pants and sleeve each
+    # pin their own, and they are NOT the same shape as each other.
+    "torso": _contract_from_importer("torso", palette_tools, 256, 2),
+    "sleeve": _contract_from_importer("sleeve", _sleeve_import, 256, 2),
+    "pants": _contract_from_importer("pants", _pants_import, 256, 2),
+    "live_helmet": _contract_from_importer("live_helmet", _helmet_import, 128, 1),
 }
+
+
+#: Each modelled family's target module, which owns the fixed allocation for a
+#: given (asset code, side, variant) package. ``live_helmet`` also selects on
+#: family, because a set ships two helmet meshes with separate spans.
+_TARGET_MODULES: dict[str, tuple[str, bool]] = {
+    "torso": ("nfl_jersey_tset_targets", False),
+    "sleeve": ("nfl_sleeve_tset_targets", False),
+    "pants": ("nfl_pants_tset_targets", False),
+    "live_helmet": ("nfl_live_helmet_txtr_targets", True),
+}
+
+
+@lru_cache(maxsize=None)
+def slot_allocation_bytes(
+    kind: str,
+    asset_code: str,
+    side: str,
+    variant: int,
+    family: str | None = None,
+) -> int | None:
+    """The fixed compressed span one package writes into, or None.
+
+    None means "do not predict this one": either the family has no modelled
+    contract, or its compatibility report is unavailable -- those reports are
+    gitignored derived data, so a working tree can legitimately be without them.
+    Returning None keeps the prediction honest instead of inventing a bound.
+
+    Cached because each lookup re-reads and re-hashes a ~2 MB report, and a
+    staged set can hold dozens of edits against the same few packages.
+    """
+
+    entry = _TARGET_MODULES.get(kind)
+    if entry is None:
+        return None
+    module_name, needs_family = entry
+    try:
+        import importlib
+
+        module = importlib.import_module(module_name)
+        if needs_family:
+            if not family:
+                return None
+            _, _, _, target = module.select_target(
+                asset_code, side, int(variant), family
+            )
+        else:
+            _, _, _, target = module.select_target(asset_code, side, int(variant))
+        return int(target.stored_size)
+    except Exception:
+        # A missing, stale or unreadable report is a reason not to predict, not
+        # a reason to fail the whole check -- the build still validates it.
+        return None
+
+
+def edits_for_assets(
+    staged: Iterable[tuple[object, Path]],
+) -> tuple[tuple[str, str, str, Path, int | None], ...]:
+    """Turn ``(catalog asset, staged PNG)`` pairs into prediction inputs.
+
+    The asset is duck-typed on purpose: a uniform-set component and an
+    extended-catalog row (equipment, portraits, field art, the scorebug) reach
+    this the same way, and only the four modelled families resolve to a bound.
+    """
+
+    rows: list[tuple[str, str, str, Path, int | None]] = []
+    for asset, png_path in staged:
+        kind = str(getattr(asset, "kind", "") or "")
+        label = str(getattr(asset, "label", "") or getattr(asset, "asset_id", ""))
+        asset_code = str(getattr(asset, "asset_code", "") or "")
+        side = str(getattr(asset, "side_code", "") or "")
+        variant = getattr(asset, "variant", 0) or 0
+        family = getattr(asset, "family", None)
+        allocation = (
+            slot_allocation_bytes(kind, asset_code, side, int(variant), family)
+            if asset_code and side
+            else None
+        )
+        rows.append((
+            str(getattr(asset, "asset_id", "")), label, kind, Path(png_path),
+            allocation,
+        ))
+    return tuple(rows)
 
 
 @dataclass(frozen=True, slots=True)
@@ -203,16 +336,23 @@ def predict_slot(
     levels = _mip_chain(rgba, contract)
     system = bytes(contract.system_bytes)
 
+    gap = bytes(contract.interpalette_gap_bytes)
+
     def candidate(palette, index_levels) -> bytes:
         chain = b"".join(
             swizzle_2d(indices, level.width, level.height, 1)
             for indices, level in zip(index_levels, levels)
         )
-        return (
-            system
-            + chain
-            + palette_tools.palette_bytes(palette) * contract.palette_count
-        )
+        one = palette_tools.palette_bytes(palette)
+        # ``gap.join`` puts the padding *between* the clean and mud palettes and
+        # nowhere else, so a single-palette family is unaffected.
+        payload = system + chain + gap.join(one for _ in range(contract.palette_count))
+        if len(payload) != contract.decoded_bytes:
+            raise AssertionError(
+                f"{contract.kind} candidate payload is {len(payload)} bytes, "
+                f"contract says {contract.decoded_bytes}"
+            )
+        return payload
 
     try:
         fit = palette_tools.quantize_levels_to_vc_lz_bound(
@@ -256,26 +396,42 @@ def predict_slot(
 
 
 def predict_edits(
-    edits: Iterable[tuple[str, str, str, Path, int]],
+    edits: Iterable[tuple[str, str, str, Path, int | None]],
     *,
     progress: Callable[[str, int, int], None] | None = None,
+    contracts: dict[str, SlotContract] | None = None,
 ) -> tuple[SlotPrediction, ...]:
     """Predict a whole staged set.
 
     Each edit is ``(asset_id, label, kind, png_path, allocation_bytes)``. A kind
-    with no modelled contract is reported as unmodelled and costs nothing.
+    with no modelled contract, or an allocation that could not be resolved, is
+    reported as unmodelled and costs nothing.
+
+    ``contracts`` exists so tests can exercise the ladder against a small slot;
+    walking a real 512x256 six-mip chain costs seconds per tier, which is fine
+    for a user waiting on their own art and far too slow for CI.
     """
 
+    table = CONTRACTS if contracts is None else contracts
     rows: list[SlotPrediction] = []
     staged: Sequence = list(edits)
     for index, (asset_id, label, kind, png_path, allocation) in enumerate(staged):
         if progress is not None:
             progress(f"Checking {label or asset_id}", index, len(staged))
-        contract = CONTRACTS.get(kind)
+        contract = table.get(kind)
         if contract is None:
             rows.append(SlotPrediction(
                 asset_id, label or asset_id, kind, UNMODELLED,
                 detail="this family has no fixed-span prediction yet.",
+            ))
+            continue
+        if allocation is None:
+            rows.append(SlotPrediction(
+                asset_id, label or asset_id, kind, UNMODELLED,
+                detail=(
+                    "this slot's size could not be read, so it will be decided "
+                    "at build time."
+                ),
             ))
             continue
         rows.append(predict_slot(
@@ -325,7 +481,9 @@ __all__ = [
     "UNMODELLED",
     "SlotContract",
     "SlotPrediction",
+    "edits_for_assets",
     "predict_edits",
     "predict_slot",
     "report",
+    "slot_allocation_bytes",
 ]

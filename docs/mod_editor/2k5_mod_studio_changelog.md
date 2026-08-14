@@ -5,6 +5,36 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC66 — Check My Images, and a camera map — 2026-08-14
+
+- **New: Check My Images.** Sits directly above Build. Runs the real quantizer
+  and the real encoder against the real slot contract for every staged image and
+  reports, per slot: fits as authored, will be reduced to N colours, or will not
+  fit. The palette ladder added in Beta 41/42 is lossy and used to happen
+  silently; this is how you find out first. It changes nothing and starts no
+  build.
+- **The `sleeve` slot contract was wrong and is fixed.** It had been modelled as
+  512x256 with six mips like the torso; the real slot is 128x128, five mips,
+  with a 64-byte gap between the clean and mud palettes. Contracts are now
+  derived from the importers themselves and cross-checked at import time, so a
+  typed table cannot drift from the code that writes the bytes again.
+- **Jersey numbers: do not paint them into the art.** The torso, sleeve and
+  pants slot copy now says so. 2K5 draws numbers from separate digit textures in
+  the same uniform set — Jersey and Arm digits at 64x64, Helmet digits at 32x32,
+  and a 1024x32 nameplate atlas — so numbers baked into the jersey appear twice.
+- **The nameplate atlas is 1024x32 horizontal**, not 32x1024 vertical. The
+  transposed value came from a TXTR descriptor bug fixed long ago in the decoder,
+  and three user-facing places still carried it.
+- **New: `--inspect-camera-options nfl2k5`.** Seven named settings with their
+  shipped ranges and six named presets. Camera Distance is a dimensionless
+  multiplier and Camera Height is world units; only Camera Angle is 0..1. The
+  three sliders only move the camera while the preset is set to Custom — that is
+  how the shipped game works. Read-only: the values live in a signed save.
+- **The published slider snapshot was mislabelling 12 of 18 entries.** The save
+  stores each slider vector in its globals' address order, where Catching is
+  last, not the menu's display order, where it is fourth. If you read a slider
+  value out of this tool before, re-read it.
+
 ## v1.0 RC65 — pants too, and a test that finds the next one — 2026-08-13
 
 - **The pants importer was missed in Beta 41 and is fixed here.** Building a

@@ -11,10 +11,10 @@
                     "const": "apf2k8_stadium_static_position_target_catalog/v1"
                 },
                 "sha256": {
-                    "const": "e2b21ebf4d358358627d26b7d7ea3c6cf600ea3f9d1e139cb9caa8ff1748a424"
+                    "const": "c3122019b74645380052670f9fdce389277a454b440dd7b7f438276b05f57469"
                 },
                 "size_bytes": {
-                    "const": 456821
+                    "const": 456898
                 }
             },
             "required": [

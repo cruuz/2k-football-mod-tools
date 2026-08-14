@@ -7,7 +7,7 @@
     },
     "draft_integrity_probe": {
       "path": "reports/gameplay_tuning/nfl_draft_weight_xbe_integrity_probe.json",
-      "sha256": "4e4aa2574c7e57f8adabb77b688dc12e879fb6009551afa3b1d76132fc26f7f8",
+      "sha256": "4e96733fce37f07ec53ad9ab7f74b6ee6c7c693dfa153256c2899c3f7a4c270c",
       "size": 5720
     },
     "function_ledger": {
@@ -17,8 +17,8 @@
     },
     "gameplay_draft_audit": {
       "path": "reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json",
-      "sha256": "c53522ee0f4151291f154720a1d457ff7368fb256fbf5845561f4ad68289524b",
-      "size": 53996
+      "sha256": "0c1c47c7f025f9fbb303b9a7d78e7aaf8e9d3c4d603a47bc7819d5ded43557ec",
+      "size": 54545
     },
     "pseudo_cap_validator": {
       "path": "research/functions/nfl2k5/pseudo_c/shard_011776_012287.c",

@@ -151,6 +151,22 @@ BUILD_READY_MESSAGE = (
     "Create a separate modded XISO. Your original game file is never changed."
 )
 
+CHECK_IMAGES_MESSAGE = (
+    "Try every staged image against the exact slot it has to fit, and say "
+    "which ones come through untouched, which lose colours, and which will "
+    "not fit at all. Nothing is changed and no build is started."
+)
+
+#: What actually costs a replacement its palette. Said in the panel because the
+#: intuitive fix -- shrink the image -- does nothing: the editor resizes to the
+#: slot either way, and it is the number of distinct shades that has to fit.
+CHECK_IMAGES_ADVICE = (
+    "What costs palette here is the number of distinct shades in your art, not "
+    "its resolution — the editor resizes to the slot either way. Flat team "
+    "colours fit; photographic noise, dithering, and long smooth gradients are "
+    "what force a reduction."
+)
+
 # Pillow normalizes these formats to the exact RGBA PNG the disc writer needs.
 # Keep the file chooser and drag/drop admission on one list so neither path can
 # regress to accepting only already-perfect PNGs.
@@ -384,6 +400,8 @@ class StudioFacade(Protocol):
         self, asset: UniversalAssetRecord | str, destination: Path,
         progress: ProgressSink,
     ) -> Path: ...
+
+    def preflight_visual_edits(self, progress: ProgressSink) -> object: ...
 
     def inspect_gameplay(self, progress: ProgressSink) -> object: ...
 
@@ -813,6 +831,7 @@ class BrowseOnlyFacade:
     resource_kinds = _unavailable
     browse_resources = _unavailable
     export_resource = _unavailable
+    preflight_visual_edits = _unavailable
     export_gameplay_inspection = _unavailable
     export_main_menu_inspection = _unavailable
     browse_playbooks = _unavailable
@@ -3809,6 +3828,15 @@ class StudioMainWindow(QMainWindow):
         self.undo_button.setObjectName("secondaryButton")
         self.revert_all_button = QPushButton("Revert All")
         self.revert_all_button.setObjectName("dangerQuietButton")
+        self.check_images_button = QPushButton("Check My Images")
+        self.check_images_button.setObjectName("utilityButton")
+        self.check_images_button.setToolTip(CHECK_IMAGES_MESSAGE)
+        self.check_images_button.setAccessibleName(
+            "Check staged images against their slots"
+        )
+        self.check_images_button.setAccessibleDescription(
+            self.check_images_button.toolTip()
+        )
         self.build_button = QPushButton("Build Modded XISO")
         self.build_button.setObjectName("buildButton")
         self.build_button.setToolTip(BUILD_READY_MESSAGE)
@@ -3841,6 +3869,7 @@ class StudioMainWindow(QMainWindow):
         self.launch_button.setAccessibleDescription(self.launch_button.toolTip())
         self.undo_button.clicked.connect(self._undo)
         self.revert_all_button.clicked.connect(self._revert_all)
+        self.check_images_button.clicked.connect(self._check_staged_images)
         self.build_button.clicked.connect(self._choose_build_output)
         self.configure_xemu_button.clicked.connect(self._configure_xemu)
         self.launch_button.clicked.connect(self._launch_xemu)
@@ -3850,6 +3879,9 @@ class StudioMainWindow(QMainWindow):
         layout.addSpacing(4)
         layout.addWidget(self.configure_xemu_button)
         layout.addSpacing(4)
+        # Directly above Build, because this is the question a user has right
+        # before they press it: will my art come through the way I drew it?
+        layout.addWidget(self.check_images_button)
         layout.addWidget(self.build_button)
         layout.addWidget(self.launch_button)
         return footer
@@ -6571,6 +6603,85 @@ class StudioMainWindow(QMainWindow):
 
         self._defer_until_blocking_task_finished(refresh_consumers)
 
+    def _check_staged_images(self) -> None:
+        """Say what the fixed slots will do to the staged art, before a build.
+
+        The build's palette ladder is lossy and used to be silent: a jersey
+        could come out with 16 colours instead of 255 and the only way to learn
+        that was to look at the result. This answers the question first.
+        """
+
+        if self._refuse_while_audio_busy("check staged images"):
+            return
+        self._start_task(
+            lambda progress: self.facade.preflight_visual_edits(progress),
+            self._present_image_check,
+            label="Checking your images against their slots",
+            blocking=True,
+        )
+
+    def _present_image_check(self, result: object) -> None:
+        from mod_editor.core import nfl2k5_import_preflight as preflight
+
+        rows = tuple(result or ())
+        if not rows:
+            self._set_status("Nothing is staged, so there is nothing to check.")
+            QMessageBox.information(
+                self,
+                "Nothing to check",
+                "Replace at least one image before checking. This looks at the "
+                "PNGs you have staged, not at the whole game.",
+            )
+            return
+
+        refused = [row for row in rows if row.outcome == preflight.REFUSED]
+        reduced = [row for row in rows if row.outcome == preflight.REDUCED]
+        full = [row for row in rows if row.outcome == preflight.FULL]
+        unmodelled = [row for row in rows if row.outcome == preflight.UNMODELLED]
+
+        if refused:
+            headline = (
+                f"{len(refused)} of {len(rows)} will not fit and will stop the build."
+            )
+        elif reduced:
+            headline = (
+                f"{len(reduced)} of {len(rows)} will build, but lose colours to "
+                "fit a fixed slot."
+            )
+        elif full and not unmodelled:
+            headline = f"All {len(rows)} fit as authored, untouched."
+        elif full:
+            # Saying "all N fit" when some of them were never checked would be a
+            # claim this cannot support. Count only what was actually predicted.
+            headline = (
+                f"{len(full)} of {len(rows)} fit as authored; "
+                f"{len(unmodelled)} could not be checked here."
+            )
+        else:
+            headline = (
+                f"None of these {len(rows)} could be checked here — they will be "
+                "decided at build time."
+            )
+
+        self._set_status(f"Image check — {headline}")
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Warning if refused else QMessageBox.Information)
+        box.setWindowTitle("Image check")
+        box.setText(headline)
+        if refused or reduced:
+            box.setInformativeText(CHECK_IMAGES_ADVICE)
+        elif full and len(full) == len(rows):
+            box.setInformativeText(
+                "Nothing will be changed to make your art fit."
+            )
+        elif unmodelled:
+            box.setInformativeText(
+                "A slot is only predicted when its fixed size is known. The "
+                "build still checks every one of them."
+            )
+        box.setDetailedText("\n".join(row.summary() for row in rows))
+        box.exec_()
+
     def _choose_build_output(self) -> None:
         if self._refuse_while_audio_busy("build a modded XISO"):
             return
@@ -7173,6 +7284,25 @@ class StudioMainWindow(QMainWindow):
             )
         )
         self.build_button.setAccessibleDescription(self.build_button.toolTip())
+        # Same gate as Build, and the same rule about naming the blocker: this
+        # checks the staged edits, so with none there is nothing to check.
+        self.check_images_button.setEnabled(ready and count > 0 and not global_busy)
+        if not ready:
+            check_blocker = "Load your NFL 2K5 XISO first."
+        elif count <= 0:
+            check_blocker = (
+                "Replace at least one image first — this checks what you have "
+                "staged."
+            )
+        elif global_busy:
+            check_blocker = "An operation is running • wait for it to finish."
+        else:
+            check_blocker = ""
+        self.check_images_button.setToolTip(check_blocker or CHECK_IMAGES_MESSAGE)
+        self.check_images_button.setProperty("disableReason", check_blocker)
+        self.check_images_button.setAccessibleDescription(
+            self.check_images_button.toolTip()
+        )
         # Never silent-gray: Launch stays clickable and names the one thing
         # that is actually missing, instead of graying out with a message that
         # covers two unrelated causes at once.

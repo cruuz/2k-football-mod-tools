@@ -32,8 +32,8 @@
   "inputs": {
     "gameplay_tuning_audit": {
       "path": "reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json",
-      "sha256": "c53522ee0f4151291f154720a1d457ff7368fb256fbf5845561f4ad68289524b",
-      "size": 53996
+      "sha256": "0c1c47c7f025f9fbb303b9a7d78e7aaf8e9d3c4d603a47bc7819d5ded43557ec",
+      "size": 54545
     },
     "retail_xbe": {
       "path": "extracted/ESPN NFL 2K5 (USA)/default.xbe",
