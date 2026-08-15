@@ -114,8 +114,48 @@ def _validate_independent_boundary() -> None:
     require(callable(verifier.verify), "field-art independent verifier is unavailable")
 
 
+def _writable_extra_keys() -> set[tuple[int, int]]:
+    """Descriptor-derived extras the writer may add beside the six core pins.
+
+    Format 59 DXT5A and any codec outside the three proved writers stay out.
+    The core six remain independently pinned even when this catalog grows.
+    """
+
+    document = json.loads(patch._EXTRA_TARGETS.read_text(encoding="utf-8"))
+    require(
+        document.get("schema") == "apf2k8_field_extra_targets/v1",
+        "field extra target catalog schema changed",
+    )
+    require(
+        document.get("source_0a_sha256") == EXPECTED_VOLUME_SHA256,
+        "field extra target catalog is not for the pinned retail 0A",
+    )
+    keys: set[tuple[int, int]] = set()
+    for group in ("package_659", "endzones"):
+        rows = document.get(group)
+        require(isinstance(rows, list), f"field extra target catalog missing {group}")
+        for row in rows:
+            if int(row["format"]) not in {6, 18, 20}:
+                continue
+            if str(row["codec"]) not in {"rgba8888", "dxt1", "bc3"}:
+                continue
+            key = (int(row["entry_index"]), int(row["file_index"]))
+            if key in EXPECTED_TARGETS:
+                continue
+            keys.add(key)
+    return keys
+
+
 def validate_fast(evidence_path: Path = EVIDENCE) -> dict[str, Any]:
-    require(set(patch._CONTRACTS) == set(EXPECTED_TARGETS), "field-art target set differs")
+    require(
+        set(patch._CORE_CONTRACT_KEYS) == set(EXPECTED_TARGETS),
+        "field-art core target set differs",
+    )
+    extra_keys = _writable_extra_keys()
+    require(
+        set(patch._CONTRACTS) == set(EXPECTED_TARGETS) | extra_keys,
+        "field-art target set differs",
+    )
     for key, expected in EXPECTED_TARGETS.items():
         contract = patch._CONTRACTS[key]
         observed = (contract.name, contract.codec, contract.width, contract.height)
@@ -123,6 +163,20 @@ def validate_fast(evidence_path: Path = EVIDENCE) -> dict[str, Any]:
         require(
             len(contract.entry_sha256) == len(contract.base_sha256) == 64,
             f"field-art hash pins are malformed for {key}",
+        )
+    for key in extra_keys:
+        contract = patch._CONTRACTS[key]
+        require(
+            contract.format in {6, 18, 20},
+            f"field-art extra {key} is not a writable format",
+        )
+        require(
+            contract.codec in {"rgba8888", "dxt1", "bc3"},
+            f"field-art extra {key} is not a writable codec",
+        )
+        require(
+            len(contract.entry_sha256) == len(contract.base_sha256) == 64,
+            f"field-art extra hash pins are malformed for {key}",
         )
     _validate_independent_boundary()
 
@@ -226,9 +280,11 @@ def main(argv: list[str] | None = None) -> int:
         if not args.full_volume:
             require(not any(value is not None for value in deep_values),
                     "full-volume inputs require --full-volume")
+            extra_count = len(set(patch._CONTRACTS) - set(EXPECTED_TARGETS))
             print(
                 "APF_FIELD_ART_PRODUCT_VALIDATION_PASS "
-                "mode=fast targets=6 evidence=hash-pinned full_volume=explicit"
+                f"mode=fast core=6 extras={extra_count} "
+                "evidence=hash-pinned full_volume=explicit"
             )
             return 0
         report = validate_full_volume(args)

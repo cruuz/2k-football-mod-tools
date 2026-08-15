@@ -11,6 +11,30 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-45 — 2026-08-15
+
+**Field Art writes 221 textures, All Textures writes 480 jersey digits, and
+jersey slots show the same capacity rank as shoulders.**
+
+2K5 is `v1.0-RC68` (updater identity only). APF is `0.1.0-alpha.77`.
+
+- Field Art writable set is 221, not six: original six bases, 21 package-659
+  weave/dirtmaps (ten 64×64 8_8_8_8, two 256×256 BC3 `weave_skin_weights_*`,
+  nine BC3 dirtmaps), and 196 format-18 DXT1 endzone layers. Thirty-nine
+  format-59 DXT5A `endzone_l1` stay export-only. Mip tails stay
+  byte-preserved. In-game look is unproved.
+- All Textures writes the 480 jersey digits (24 packages ×
+  `number_0_color`…`number_9_normal`, 512×512, 240 DXT1 + 240 DXN). One
+  shared compressed budget per package; overflow names the digit and the
+  package. Package 2 has 9 bytes of usable slack after the name footer.
+  Roster→package binding is unlocated. Runtime visibility is unproved.
+- Jersey capacity uses the same measured two-block IFF budget as shoulder.
+  It is a picker aid, never a replace gate.
+- Export WR3↔TE package-map pack is experimental Ace-named 8↔9. Retail Ace
+  Empty is not an 8↔9 swap of Ace. Runtime G12 / 3rd-and-long stays
+  unproved. 3rd-and-long user logic has no data-side writer.
+- Opening a copied or studio-built `0A` still fails closed.
+
 ## beta-44 — 2026-08-14
 
 **Urianus can edit every stock book, the TE-workaround copy is gone, and

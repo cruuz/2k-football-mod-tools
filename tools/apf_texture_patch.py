@@ -102,6 +102,7 @@ def allocation_overflow(
     allocation_size: int,
     budget_bytes: int | None = None,
     retail_bytes: int | None = None,
+    advice: str | None = None,
 ) -> AllocationOverflowError:
     """Build the one overflow message every fixed-allocation writer should raise."""
 
@@ -112,16 +113,23 @@ def allocation_overflow(
     if budget_bytes is not None and retail_bytes is not None:
         detail += (
             f" This slot's compressed budget is {budget_bytes:,} bytes and "
-            f"retail already uses {retail_bytes:,} of it. The budget is set by "
-            "how detailed retail's own artwork in this slot is, so a slot "
-            "holding a near-flat mask cannot take a busy replacement no matter "
-            "how much free space it appears to have."
+            f"retail already uses {retail_bytes:,} of it."
         )
-    detail += (
-        " Simplify the replacement — these are region masks, so flatten "
-        "colours to the retail palette and remove anti-aliasing, which emits "
-        "invalid region IDs rather than soft edges — or choose a slot whose "
-        "retail artwork is already detailed."
+        if advice is None:
+            detail += (
+                " The budget is set by how detailed retail's own artwork in "
+                "this slot is, so a slot holding a near-flat mask cannot take "
+                "a busy replacement no matter how much free space it appears "
+                "to have."
+            )
+    detail += " " + (
+        advice
+        or (
+            "Simplify the replacement — these are region masks, so flatten "
+            "colours to the retail palette and remove anti-aliasing, which emits "
+            "invalid region IDs rather than soft edges — or choose a slot whose "
+            "retail artwork is already detailed."
+        )
     )
     return AllocationOverflowError(
         detail,

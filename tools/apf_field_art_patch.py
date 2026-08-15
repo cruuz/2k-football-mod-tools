@@ -52,7 +52,7 @@ from pathlib import Path
 import stat
 import struct
 import sys
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Mapping
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
@@ -183,6 +183,70 @@ _CONTRACTS: dict[tuple[int, int], FieldArtContract] = {
     ),
 }
 
+_EXTRA_TARGETS = (
+    Path(__file__).resolve().parents[1]
+    / "mod_editor"
+    / "data"
+    / "apf2k8_field_extra_targets.v1.json"
+)
+_CORE_CONTRACT_KEYS = frozenset(_CONTRACTS)
+
+
+def _contract_from_row(row: Mapping[str, object]) -> FieldArtContract:
+    swizzle = row["swizzle"]
+    if not isinstance(swizzle, (list, tuple)) or len(swizzle) != 4:
+        raise PatchError("extra field-art contract swizzle is malformed")
+    sibling = row.get("sibling_name")
+    return FieldArtContract(
+        entry_index=int(row["entry_index"]),
+        file_index=int(row["file_index"]),
+        name=str(row["name"]),
+        type_name=str(row["type_name"]),
+        kind=str(row["kind"]),
+        codec=str(row["codec"]),
+        format=int(row["format"]),
+        width=int(row["width"]),
+        height=int(row["height"]),
+        pitch_pixels=int(row["pitch_pixels"]),
+        endianness=int(row["endianness"]),
+        swizzle=(int(swizzle[0]), int(swizzle[1]), int(swizzle[2]), int(swizzle[3])),
+        base_len=int(row["base_len"]),
+        mip_len=int(row["mip_len"]),
+        part_layout=str(row["part_layout"]),
+        head_len=int(row["head_len"]),
+        entry_sha256=str(row["entry_sha256"]),
+        base_sha256=str(row["base_sha256"]),
+        sibling_name=None if sibling in (None, "") else str(sibling),
+    )
+
+
+def _load_extra_contracts() -> None:
+    """Merge descriptor-derived weave/dirtmap/endzone pins. Skip format 59."""
+
+    document = json.loads(_EXTRA_TARGETS.read_text(encoding="utf-8"))
+    if document.get("schema") != "apf2k8_field_extra_targets/v1":
+        raise PatchError("field extra target catalog schema changed")
+    if document.get("source_0a_sha256") != (
+        "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+    ):
+        raise PatchError("field extra target catalog is not for the pinned retail 0A")
+    for group in ("package_659", "endzones"):
+        rows = document.get(group)
+        if not isinstance(rows, list):
+            raise PatchError(f"field extra target catalog missing {group}")
+        for row in rows:
+            if int(row["format"]) != int(row["format"]):
+                continue
+            if int(row["format"]) not in {6, 18, 20}:
+                continue
+            if str(row["codec"]) not in {"rgba8888", "dxt1", "bc3"}:
+                continue
+            key = (int(row["entry_index"]), int(row["file_index"]))
+            if key in _CONTRACTS:
+                continue
+            _CONTRACTS[key] = _contract_from_row(row)
+
+
 def writable_locations() -> dict[tuple[int, int], str]:
     """``(outer entry, inner file) -> slot name`` for every writable slot.
 
@@ -225,6 +289,9 @@ _PORTME = [
 # ---------------------------------------------------------------------------
 class PatchError(ValueError):
     """Raised when a proposed patch cannot be proved safe."""
+
+
+_load_extra_contracts()
 
 
 class BytesReader:

@@ -1,5 +1,34 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.77 — field extras, numbers, jersey capacity — 2026-08-15
+
+- **Field Art writable set is 221, not six.** The original six bases stay
+  pinned. Package 659 adds 21 weave/dirtmaps (ten 64×64 8_8_8_8 weaves,
+  two 256×256 BC3 `weave_skin_weights_*`, nine BC3 dirtmaps). Format-18
+  DXT1 endzones add 194 layers (118 `l0` + 78 `l1` beyond the core pair).
+  Thirty-nine format-59 DXT5A `endzone_l1` stay export-only. Mip tails
+  stay byte-preserved. In-game look is unproved.
+- **All Textures writes the 480 jersey digits.** 24 packages ×
+  `number_0_color`…`number_9_normal`, 512×512, 240 DXT1 + 240 DXN. One
+  shared compressed budget per package; overflow names the digit and the
+  package. Package 2 has 9 bytes of usable slack after the name footer.
+  Roster→package binding is unlocated. Runtime visibility is unproved.
+- **Jersey capacity** uses the same measured two-block IFF budget as
+  shoulder (24 slots, detailed/moderate/simple bands of 8). It is a picker
+  aid, never a replace gate.
+- **Export WR3↔TE package-map pack…** on Fine-tune Plays. Experimental
+  private MASTER PLAY export: swap roles 8 and 9 on every Ace-named
+  formation at `+0x11`, plus an honesty JSON sidecar. Retail Ace Empty is
+  **not** an 8↔9 swap of Ace (slots 9/10 are 6↔7). Runtime G12 /
+  3rd-and-long stays unproved; `wr3_te_package_sub_proved` stays False.
+- **3rd-and-long user logic…** names the XEX addresses and refuses a
+  writer. No data-side table was found.
+- Opening a copied `0A` still fails closed. A studio-built folder with
+  `.apf2k8-mod-studio-build.json` whose source hash is retail gets a
+  named refusal (Beta 44 multi-book + rebuild into the last folder).
+  Writers pin retail entry hashes, so a second pass from a copied `0A`
+  is unsafe. Arbitrary modified volumes stay refused.
+
 ## 0.1.0-alpha.76 — Fine-tune Plays does not choose personnel — 2026-08-14
 
 - **Withdrawn: Fine-tune Plays as a way to change who lines up.** The panel

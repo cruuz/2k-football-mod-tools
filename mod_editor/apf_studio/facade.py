@@ -532,6 +532,15 @@ class ApfStudioFacade:
             self.last_build = None
             return result
 
+    def replace_number(
+        self, asset_id: str, supplied_png: Path, progress: Progress = _noop
+    ) -> Modification:
+        with self._session_lock:
+            progress("Checking jersey-number PNG", 0, 0)
+            result = self.require_session().replace_number(asset_id, supplied_png)
+            self.last_build = None
+            return result
+
     def preview_digital_font(self, progress: Progress = _noop) -> Path:
         progress("Preparing digital_font preview", 0, 0)
         return self.require_session().asset_io.preview_digital_font()
@@ -890,7 +899,7 @@ class ApfStudioFacade:
 
     @staticmethod
     def _field_art_target(target_key: tuple[int, int]):
-        """Resolve one of the six offered offline-proved field-art slots."""
+        """Resolve one offered offline-proved field-art slot."""
 
         from . import gui
 
@@ -1135,6 +1144,66 @@ class ApfStudioFacade:
         with self._session_lock:
             session = self.session
             return session.staged_splb_book() if session is not None else None
+
+    def export_g12_wr3_te_package_map_pack(
+        self,
+        destination: Path,
+        progress: Progress = _noop,
+    ) -> Path:
+        """Export MASTER PLAY with 8↔9 swapped on Ace-named formations.
+
+        Experimental / offline-only. Private body + honesty JSON sidecar.
+        Does not stage a project edit. Does not claim 3rd-and-long is fixed.
+        Source 0A is never mutated.
+        """
+
+        import json
+
+        from mod_editor.core.apf2k8_playbook_route_writer import (
+            read_master_play_body,
+        )
+        from mod_editor.core.playbook_package_rule_spike import (
+            build_g12_wr3_te_package_map_pack,
+        )
+
+        progress("Reading APF MASTER PLAY for G12 WR3↔TE pack", 0, 3)
+        source = self.source
+        if source is None:
+            raise FacadeError("Load your APF 2K8 game first")
+        body = read_master_play_body(source.index_0a)
+        progress(
+            "Building offline G12 pack (Ace-named maps 8↔9; 3rd-and-long unproved)",
+            1,
+            3,
+        )
+        dest = Path(destination)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        pack = build_g12_wr3_te_package_map_pack(body)
+        dest.write_bytes(pack.raw_resource)
+        sidecar = dest.with_suffix(dest.suffix + ".g12_manifest.json")
+        if not sidecar.suffix.endswith(".json"):
+            sidecar = Path(str(dest) + ".g12_manifest.json")
+        sidecar.write_text(
+            json.dumps(pack.manifest, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+        progress(
+            "Experimental G12 WR3↔TE package-map MASTER exported "
+            f"({len(pack.targets)} Ace-named target(s); runtime unproved)",
+            3,
+            3,
+        )
+        return dest
+
+    def refuse_apf_3rd_and_long_user_logic_writer(self) -> None:
+        """User-facing refusal: no DATA-side 3rd-and-long writer."""
+
+        from mod_editor.core.playbook_package_rule_spike import (
+            refuse_apf_3rd_and_long_user_logic_writer,
+        )
+
+        refuse_apf_3rd_and_long_user_logic_writer()
 
     def export_localization_text_sheet(
         self,

@@ -226,7 +226,9 @@ def route_for_asset(
 
     if field_art_targets:
         name = field_art_targets.get(location)  # type: ignore[arg-type]
-        if name is not None:
+        # Location alone is not enough: Additional Assets fixtures and
+        # unrelated TXTRs can share an outer/inner with a writable endzone.
+        if name is not None and asset.name == name:
             return _field_art_route(name)
 
     if stadium_texture_location is not None and location == stadium_texture_location:

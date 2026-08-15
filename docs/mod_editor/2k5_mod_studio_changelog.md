@@ -5,6 +5,12 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC68 — updater identity beta-45 — 2026-08-15
+
+- Shared updater identity is `beta-45`. No 2K5 writer or importer changed.
+  Field Art extras, jersey numbers, jersey capacity, and the G12 pack in this
+  tag are APF-only.
+
 ## v1.0 RC67 — updater identity beta-44 — 2026-08-14
 
 - Shared updater identity is `beta-44`. No 2K5 writer or importer changed.

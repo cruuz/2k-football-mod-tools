@@ -33,6 +33,13 @@ WALL_DOC = (
     Path(__file__).resolve().parents[2]
     / "docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md"
 )
+_FIELD_EXTRA_TARGETS = (
+    Path(__file__).resolve().parents[2]
+    / "mod_editor"
+    / "data"
+    / "apf2k8_field_extra_targets.v1.json"
+)
+_WRITABLE_XENOS_FORMATS = frozenset({6, 18, 20})
 
 
 class FieldArtStockLabelTests(unittest.TestCase):
@@ -40,17 +47,37 @@ class FieldArtStockLabelTests(unittest.TestCase):
         self.assertEqual(_NAME_CONTRACTS["endzone_l0"].count, 118)
         self.assertEqual(_NAME_CONTRACTS["endzone_l1"].count, 117)
 
-    def test_writable_slots_are_six_proved_bases(self) -> None:
-        self.assertEqual(len(FIELD_ART_COVERED_TARGETS), 6)
+    def test_writable_slots_keep_the_original_six_and_add_derived_families(self) -> None:
+        names = {target.name for target in FIELD_ART_COVERED_TARGETS}
+        # 6 core + 21 weave/dirt (fmt 6/18/20) + 194 extra format-18 endzones.
+        self.assertGreaterEqual(len(FIELD_ART_COVERED_TARGETS), 6 + 21 + 194)
+        for required in (
+            "endzone_l0",
+            "endzone_l1",
+            "pc_field_goal",
+            "Field_Pass_text",
+            "Stride_number_field",
+            "divots",
+            "weave_jersey0",
+            "dirtmap_helmet",
+        ):
+            self.assertIn(required, names)
 
     def test_category_blurb_names_stock_and_writable_bound(self) -> None:
         help_text = CATEGORY_BLURBS[ApfCategory.FIELD_ART]
+        folded = help_text.casefold()
+        # 118 is the inventory l0 count, not a writable-team claim.
         self.assertIn("118", help_text)
-        self.assertIn("stock", help_text.casefold())
+        self.assertIn("stock", folded)
         self.assertTrue(
-            "six" in help_text.casefold() or "6" in help_text,
+            "six" in folded or "6" in help_text,
             help_text,
         )
+        self.assertIn("format-18", folded)
+        self.assertIn("format-59", folded)
+        self.assertIn("browse-only", folded)
+        self.assertNotIn("all 118 teams", folded)
+        self.assertNotIn("every team", folded)
 
 
 class OuterSixIsNotSharedTests(unittest.TestCase):
@@ -62,18 +89,53 @@ class OuterSixIsNotSharedTests(unittest.TestCase):
         self.assertIn("not a shared layer", blurb)
         self.assertIn("region mask", blurb.casefold())
 
-    def test_the_two_writable_endzone_slots_say_whose_endzone_they_are(self) -> None:
+    def test_writable_endzones_are_not_shared_layers(self) -> None:
         endzone_targets = [
             target
             for target in FIELD_ART_COVERED_TARGETS
             if str(target.name).startswith("endzone_")
         ]
-        self.assertEqual(len(endzone_targets), 2)
+        # 196 format-18 layers: every l0 plus the 78 format-18 l1 siblings.
+        # 39 format-59 l1 layers stay out, so this is not all 235 inventory rows.
+        self.assertEqual(len(endzone_targets), 196)
+        self.assertEqual(
+            sum(1 for target in endzone_targets if target.name == "endzone_l0"),
+            118,
+        )
+        self.assertEqual(
+            sum(1 for target in endzone_targets if target.name == "endzone_l1"),
+            78,
+        )
+        package_six = [t for t in endzone_targets if t.entry_index == 6]
+        self.assertEqual({t.name for t in package_six}, {"endzone_l0", "endzone_l1"})
         for target in endzone_targets:
-            with self.subTest(inner=target.name):
-                self.assertEqual(target.entry_index, 6)
+            with self.subTest(key=target.key):
                 self.assertIn("not a shared layer", target.note.casefold())
-                self.assertIn("region mask", target.note.casefold())
+
+    def test_format_59_endzones_are_refused_and_copy_stays_honest(self) -> None:
+        document = json.loads(_FIELD_EXTRA_TARGETS.read_text(encoding="utf-8"))
+        fmt59 = [
+            (int(row["entry_index"]), int(row["file_index"]))
+            for row in document["endzones"]
+            if int(row["format"]) == 59
+        ]
+        writable_extras = [
+            (int(row["entry_index"]), int(row["file_index"]))
+            for group in ("package_659", "endzones")
+            for row in document[group]
+            if int(row["format"]) in _WRITABLE_XENOS_FORMATS
+        ]
+        self.assertEqual(len(fmt59), 39)
+        self.assertEqual(
+            {row["name"] for row in document["endzones"] if int(row["format"]) == 59},
+            {"endzone_l1"},
+        )
+        offered = {target.key for target in FIELD_ART_COVERED_TARGETS}
+        for key in writable_extras:
+            self.assertIn(key, offered)
+        for key in fmt59:
+            self.assertNotIn(key, offered)
+        self.assertNotIn((78, 1), offered)
 
     def test_the_wall_document_records_the_correction(self) -> None:
         text = WALL_DOC.read_text(encoding="utf-8")

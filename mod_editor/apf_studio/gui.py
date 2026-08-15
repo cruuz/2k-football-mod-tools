@@ -173,6 +173,7 @@ from .models import (
     UniformAsset,
     asset_action_binding,
 )
+from .number_targets import action_binding as number_action_binding
 from .model_export_qt import PlayerEquipmentModelExportPanel
 from .project import (
     ProjectError,
@@ -234,7 +235,7 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.TEAM_IDENTITY: "Browse team-facing resources; more identity editing unlocks here as each field is proven safe.",
     ApfCategory.LOGOS: "Replace the shared 512×512 team-logo crest and the 128×128 draft logo, and browse every indexed logo and team-art record.",
     ApfCategory.SCOREBUG: "See the field scorebug\u2019s own artwork \u2014 every graphic embedded in its seven scene parts plus the shared score-digit mask \u2014 and preview or export any of it. Only digital_font has a proved writer; geometry, layout, and timing are read-only.",
-    ApfCategory.FIELD_ART: "Browse 235 stock endzone layers (118 endzone_l0 + 117 endzone_l1) plus practice/divot inventory. Every package is one team's own artwork — outer 6 is not a shared layer, it is simply the pair proved writable first, so editing it repaints that one team. The other per-team endzones are browsable under All Textures. All of them are red/green/blue region masks, not paintable art.",
+    ApfCategory.FIELD_ART: "Browse 235 stock endzone layers (118 endzone_l0 + 117 endzone_l1) plus practice/divot inventory. Every package is one team's own artwork — outer 6 is not a shared layer. Format-18 DXT1 endzones, package-659 weave/dirtmaps, and the original six bases are writable. Format-59 DXT5A endzones stay browse-only. Format-18 endzones are red/green/blue region masks, not paintable art.",
     ApfCategory.STADIUMS: "Explore stadium geometry in 3D, edit any of the 78 statically owned embedded textures, and round-trip same-topology POSITION edits for 77 catalog-authorized surfaces into a separately verified copied 1A.",
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",
@@ -364,7 +365,16 @@ def _spec_pill(text: str, *, emphasis: bool = False, tooltip: str = "") -> QLabe
 
 
 def _asset_product_action(asset: ApfAsset) -> AssetActionBinding | None:
-    return asset_action_binding(
+    action = asset_action_binding(
+        asset.asset_id,
+        asset.outer_index,
+        asset.inner_index,
+        asset.name,
+        asset.type_name,
+    )
+    if action is not None:
+        return action
+    return number_action_binding(
         asset.asset_id,
         asset.outer_index,
         asset.inner_index,
@@ -2460,7 +2470,9 @@ class AssetBrowser(QWidget):
 
         def operation(progress: Callable[[str, int, int], None]) -> tuple[bool, object]:
             try:
-                if action is not None:
+                if action is not None and action.replace_method == "replace_number":
+                    path = self.facade.preview_asset(asset.asset_id, progress)
+                elif action is not None:
                     preview = getattr(self.facade, action.preview_method)
                     path = preview(progress)
                 else:
@@ -2606,6 +2618,8 @@ class AssetBrowser(QWidget):
                 if modification is not None:
                     progress(f"Exporting current {asset.name} PNG", 0, 0)
                     return _copy_new(modification.replacement_path, path)
+                if action.replace_method == "replace_number":
+                    return self.facade.export_asset(asset.asset_id, path, progress)
                 export = getattr(self.facade, action.export_method)
                 return export(path, progress)
             return self.facade.export_asset(asset.asset_id, path, progress)
@@ -2719,6 +2733,18 @@ class AssetBrowser(QWidget):
             prepared = _prepare_digital_font_mask(
                 self, Path(path), self._fitted_path(safe_name)
             )
+        elif replace_method == "replace_number":
+            prepared = fit_slot_image(
+                self,
+                Path(path),
+                512,
+                512,
+                f"The {asset.name} jersey digit",
+                mode="contain",
+                staged_destination=self._fitted_path(safe_name),
+            )
+            if prepared is not None:
+                prepared = _conform_number_png(prepared, asset.name)
         else:
             # draft_logo (and any future exact-size PNG editor) accepts any
             # image, contained onto the slot with transparent padding.
@@ -2733,7 +2759,12 @@ class AssetBrowser(QWidget):
             )
         if prepared is None:
             return
-        replace = getattr(self.facade, replace_method)
+        if replace_method == "replace_number":
+            replace = lambda png, progress, asset_id=asset.asset_id: (
+                self.facade.replace_number(asset_id, png, progress)
+            )
+        else:
+            replace = getattr(self.facade, replace_method)
         self.run_task(
             f"Replacing {asset.name}",
             lambda progress: replace(prepared, progress),
@@ -3171,10 +3202,11 @@ class UniformStudioPage(QWidget):
         # to arrive while the slot is being chosen rather than 40 s into a
         # build that refuses it (davidhbui, Beta 38).
         capacity_line = self._capacity_summary(asset)
-        self.contract.setText(
-            f"PNG contract\n{asset.png_contract}"
-            + (f"\n{capacity_line}" if capacity_line else "")
+        team_line = self._team_capacity_line(asset)
+        extra = "".join(
+            f"\n{line}" for line in (capacity_line, team_line) if line
         )
+        self.contract.setText(f"PNG contract\n{asset.png_contract}{extra}")
         self.contract.setVisible(True)
         teams = ", ".join(asset.affected_teams) if asset.affected_teams else "No current team selector references this physical slot."
         self.teams.setText(f"Selector ownership\n{teams}")
@@ -3256,6 +3288,44 @@ class UniformStudioPage(QWidget):
                 Path(index_0a), str(asset.family), int(asset.asset_index)
             )
             return uniform_targets.capacity_summary(capacity)
+        except Exception:
+            return ""
+
+    def _team_capacity_line(self, asset) -> str:
+        """Per-team jersey+shoulder ranks when this slot names its owners."""
+
+        teams = tuple(getattr(asset, "affected_teams", ()) or ())
+        if not teams:
+            return ""
+        source = getattr(self.facade, "source", None)
+        index_0a = getattr(source, "index_0a", None) if source is not None else None
+        if index_0a is None:
+            return ""
+        try:
+            from . import uniform_targets
+
+            jersey_by_team: dict[str, int] = {}
+            shoulder_by_team: dict[str, int] = {}
+            for item in self._assets:
+                if item.family == "jersey":
+                    for team in item.affected_teams:
+                        jersey_by_team[team] = item.asset_index
+                elif item.family == "shoulder":
+                    for team in item.affected_teams:
+                        shoulder_by_team[team] = item.asset_index
+            lines: list[str] = []
+            for team in teams:
+                line = uniform_targets.team_capacity_line(
+                    Path(index_0a),
+                    jersey_by_team.get(team),
+                    shoulder_by_team.get(team),
+                )
+                if not line:
+                    continue
+                lines.append(f"{team}: {line}" if len(teams) > 1 else line)
+                if len(lines) >= 3:
+                    break
+            return "\n".join(lines)
         except Exception:
             return ""
 
@@ -3423,6 +3493,28 @@ class UniformStudioPage(QWidget):
     def _mutation_complete(self, asset_id: str) -> None:
         self.refresh(asset_id)
         self.modifiedChanged.emit()
+
+
+def _conform_number_png(path: Path, name: str) -> Path:
+    """Force the jersey-number channel contract the writer will validate.
+
+    Writes a sibling copy. The user's source file is never overwritten.
+    """
+
+    from PIL import Image
+
+    with Image.open(path) as image:
+        image.load()
+        size = image.size
+        rgba = bytearray(image.convert("RGBA").tobytes())
+    if not name.endswith("_normal"):
+        return path
+    for offset in range(0, len(rgba), 4):
+        rgba[offset + 2] = 0
+        rgba[offset + 3] = 255
+    destination = path.with_name(f"{path.stem}.apf-number-normal{path.suffix}")
+    Image.frombytes("RGBA", size, bytes(rgba)).save(destination)
+    return destination
 
 
 def _prepare_digital_font_mask(
@@ -6687,6 +6779,52 @@ FIELD_ART_COVERED_TARGETS: tuple[_FieldArtTarget, ...] = (
 )
 
 
+def _extra_field_art_targets() -> tuple[_FieldArtTarget, ...]:
+    """Descriptor-derived weave, dirtmap, and format-18 endzone slots."""
+
+    from .backend import ensure_tools_importable
+
+    ensure_tools_importable()
+    import apf_field_art_patch as field_art_writer
+
+    core = {(6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)}
+    codec_label = {"dxt1": "DXT1", "bc3": "BC3", "rgba8888": "8_8_8_8"}
+    notes = {
+        "UNIFORM_WEAVE": (
+            "Uniform weave/detail map. Layout comes from the retail descriptor, "
+            "not a typed table. Runtime visibility is unproved."
+        ),
+        "UNIFORM_DIRTMAP": (
+            "Uniform dirt/wear map. Layout comes from the retail descriptor. "
+            "Runtime visibility is unproved."
+        ),
+        "ENDZONE_TEXTURE": (
+            "Per-team endzone region mask, same DXT1 structure as package 6. "
+            "Format-59 DXT5A packages are not offered. Not a shared layer."
+        ),
+    }
+    extras: list[_FieldArtTarget] = []
+    for key, contract in sorted(field_art_writer._CONTRACTS.items()):
+        if key in core:
+            continue
+        extras.append(
+            _FieldArtTarget(
+                contract.entry_index,
+                contract.file_index,
+                contract.name,
+                contract.width,
+                contract.height,
+                codec_label[contract.codec],
+                contract.codec == "rgba8888",
+                notes.get(contract.kind, "Descriptor-derived writable texture."),
+            )
+        )
+    return tuple(extras)
+
+
+FIELD_ART_COVERED_TARGETS = FIELD_ART_COVERED_TARGETS + _extra_field_art_targets()
+
+
 class ApfFieldArtPanel(QFrame):
     """Focused editor for the offline-proved, writable field-art base textures.
 
@@ -6701,10 +6839,10 @@ class ApfFieldArtPanel(QFrame):
     rebuilt entry in RAM before it is written, and pairs the write with an
     independent verifier; the retail source is never opened for writing.
 
-    Only the six slots proved bit-exact offline are offered.  The deferred
-    field-art families (``field_radiance`` and the ``divot_Grass*`` weather
-    textures) and the SCNE/CurveAnim rows have no bounded writer and stay
-    locked in the inventory browser below.
+    The original six proved bases, package-659 weave/dirtmaps, and format-18
+    endzones are offered.  Format-59 DXT5A endzones, ``field_radiance``, the
+    ``divot_Grass*`` weather textures, and the SCNE/CurveAnim rows stay locked
+    in the inventory browser below.
 
     The panel never mutates the shared editing session, so it never marks
     unrelated project state modified, and it makes no in-game/runtime claim:
@@ -6779,18 +6917,36 @@ class ApfFieldArtPanel(QFrame):
         slot_row.setSpacing(8)
         slot_label = QLabel("Texture:")
         slot_label.setObjectName("metadataText")
+        self.slot_filter = QLineEdit()
+        self.slot_filter.setObjectName("searchField")
+        self.slot_filter.setPlaceholderText("Filter textures… (name, codec, outer)")
+        self.slot_filter.setClearButtonEnabled(True)
+        self.slot_filter.setAccessibleName("Filter writable field-art textures")
+        self.slot_filter.setProperty("studioSearch", True)
+        self.slot_filter.setToolTip(
+            "Filter the writable field-art list by name, codec, or outer/inner "
+            "index. Clear the box to see every proved slot. Format-59 DXT5A "
+            "endzones and the deferred codecs never appear here."
+        )
         self.slot = QComboBox()
         self.slot.setObjectName("comboField")
-        for target in FIELD_ART_COVERED_TARGETS:
-            self.slot.addItem(target.label)
-        self.slot.setToolTip(
-            "Only the field-art slots the offline writer proved bit-exact are "
-            "selectable. field_radiance (DXT5A) and the divot_Grass* weather "
-            "textures (5_6_5) are deferred codecs, and the SCNE/CurveAnim rows "
-            "have no serializer, so none of them are offered here."
+        self.slot.setMaxVisibleItems(24)
+        self.slot.setSizeAdjustPolicy(
+            QComboBox.AdjustToMinimumContentsLengthWithIcon
         )
+        self.slot.setMinimumContentsLength(24)
+        self.slot.setToolTip(
+            "Writable field-art slots: the original six proved bases, "
+            "package-659 weave/dirtmaps, and format-18 endzones. "
+            "field_radiance (DXT5A), format-59 endzones, and the "
+            "divot_Grass* weather textures (5_6_5) are deferred, and the "
+            "SCNE/CurveAnim rows have no serializer, so none of them are "
+            "offered here."
+        )
+        self._populate_slots()
         slot_row.addWidget(slot_label)
-        slot_row.addWidget(self.slot, 1)
+        slot_row.addWidget(self.slot_filter, 1)
+        slot_row.addWidget(self.slot, 2)
 
         self.description = QLabel("")
         self.description.setObjectName("cardBody")
@@ -6798,11 +6954,11 @@ class ApfFieldArtPanel(QFrame):
         self.lock_note = QLabel(
             "Stock NFL endzone packages (≈118 l0/l1 pairs) appear under All "
             "Textures / the Field Art inventory browser below — browse and "
-            "export every one. This focused editor only offers the six "
-            "offline-proved writable base slots (shared endzone layers, "
-            "practice overlays, base divots). Per-team endzone writers and "
-            "field_radiance / weather-divot codecs remain export-only until "
-            "proved; see docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md."
+            "export every one. This editor writes the original six proved "
+            "bases, package-659 weave/dirtmaps, and format-18 per-team "
+            "endzones. Format-59 DXT5A endzones and field_radiance / "
+            "weather-divot codecs remain export-only; see "
+            "docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md."
         )
         self.lock_note.setObjectName("metadataText")
         self.lock_note.setWordWrap(True)
@@ -6842,25 +6998,81 @@ class ApfFieldArtPanel(QFrame):
         box.addLayout(content, 1)
         # Connected only once every widget set_context() touches exists.
         self.slot.currentIndexChanged.connect(self._target_changed)
+        self.slot_filter.textChanged.connect(self._filter_slots)
         self.set_context()
 
+    def _populate_slots(
+        self, preserve_key: tuple[int, int] | None = None
+    ) -> None:
+        """Fill the combo from the proved table, optionally filtered."""
+
+        needle = self.slot_filter.text().strip().casefold()
+        if preserve_key is None:
+            current = self.slot.currentData()
+            if isinstance(current, _FieldArtTarget):
+                preserve_key = current.key
+        if needle:
+            matches = tuple(
+                target
+                for target in FIELD_ART_COVERED_TARGETS
+                if needle
+                in (
+                    f"{target.name} {target.codec} {target.entry_index} "
+                    f"{target.file_index} {target.label}"
+                ).casefold()
+            )
+        else:
+            matches = FIELD_ART_COVERED_TARGETS
+        self.slot.blockSignals(True)
+        self.slot.clear()
+        selected = 0
+        for target in matches:
+            self.slot.addItem(target.label, target)
+            if target.key == preserve_key:
+                selected = self.slot.count() - 1
+        if self.slot.count():
+            self.slot.setCurrentIndex(selected)
+        self.slot.blockSignals(False)
+
+    def _filter_slots(self, _text: str = "") -> None:
+        self._populate_slots()
+        self._target_changed()
+
     def current_target(self) -> _FieldArtTarget:
-        index = self.slot.currentIndex()
-        if not 0 <= index < len(FIELD_ART_COVERED_TARGETS):
-            return FIELD_ART_COVERED_TARGETS[0]
-        return FIELD_ART_COVERED_TARGETS[index]
+        target = self.slot.currentData()
+        if isinstance(target, _FieldArtTarget):
+            return target
+        return FIELD_ART_COVERED_TARGETS[0]
 
     def staged_path(self, target: _FieldArtTarget) -> Path | None:
         return self._staged.get(target.key)
 
     def focus_target(self, name: str) -> bool:
-        """Select one writable base texture by its slot name."""
+        """Select one writable base texture by slot name or ``outer:inner``."""
 
-        for index, target in enumerate(FIELD_ART_COVERED_TARGETS):
-            if target.name == name:
-                self.slot.setCurrentIndex(index)
-                return True
-        return False
+        wanted: _FieldArtTarget | None = None
+        if name.count(":") == 1:
+            left, right = name.split(":")
+            if left.isdigit() and right.isdigit():
+                key = (int(left), int(right))
+                wanted = next(
+                    (target for target in FIELD_ART_COVERED_TARGETS if target.key == key),
+                    None,
+                )
+        if wanted is None:
+            wanted = next(
+                (target for target in FIELD_ART_COVERED_TARGETS if target.name == name),
+                None,
+            )
+        if wanted is None:
+            return False
+        if self.slot_filter.text():
+            self.slot_filter.blockSignals(True)
+            self.slot_filter.clear()
+            self.slot_filter.blockSignals(False)
+        self._populate_slots(preserve_key=wanted.key)
+        self._target_changed()
+        return self.current_target().key == wanted.key
 
     def stage_image(self, path: Path) -> None:
         """Stage one user image exactly as a drop onto the preview would."""
@@ -6874,8 +7086,10 @@ class ApfFieldArtPanel(QFrame):
         ready = self.facade.source_ready
         target = self.current_target()
         staged = self.staged_path(target)
-        self.slot.setEnabled(ready)
-        # Never silent-gray: export/replace/build/revert stay clickable.
+        # Never silent-gray: the 221-slot combo stays searchable even before
+        # a game is loaded, and export/replace/build/revert stay clickable.
+        self.slot.setEnabled(True)
+        self.slot_filter.setEnabled(True)
         load_tip = (
             "Load your APF game first. Field Art export/replace needs a source. "
             "Click still explains — buttons stay clickable."
@@ -7354,23 +7568,25 @@ class ApfFieldArtPanel(QFrame):
 class FieldArtStudioPage(QWidget):
     """Reviewed APF field-art families over the universal asset browser.
 
-    Authorship on this page is exactly the six base-texture slots the offline
-    writer proved bit-exact; :class:`ApfFieldArtPanel` owns them and routes
-    every write through ``tools/apf_field_art_patch.py``.  Everything else stays
-    discovery: each semantic row below is still the original catalog identity
-    consumed by :class:`AssetBrowser`, so preview and export keep using the
-    existing bounded I/O path, and the page never manufactures selector,
-    material, stadium, or team ownership.
+    Authorship on this page is the offline-proved writable set the field-art
+    writer owns — the original six bases, package-659 weave/dirtmaps, and
+    format-18 endzones.  :class:`ApfFieldArtPanel` routes every write through
+    ``tools/apf_field_art_patch.py``.  Format-59 DXT5A endzones and the
+    deferred codecs stay discovery: each semantic row below is still the
+    original catalog identity consumed by :class:`AssetBrowser`, so preview
+    and export keep using the existing bounded I/O path, and the page never
+    manufactures selector, material, stadium, or team ownership.
     """
 
     modifiedChanged = pyqtSignal()
 
     ACTION_LOCK_REASON = (
-        "This full Field Art inventory is browse and export-only. The six "
-        "offline-proved base textures are edited in the Field Art editor above; "
-        "here, archive-package co-location still does not prove the runtime "
-        "field material or its team/stadium selector, and the deferred codecs "
-        "(field_radiance, the divot_Grass* weather textures) and the "
+        "This full Field Art inventory is browse and export-only. Writable "
+        "bases, weave/dirtmaps, and format-18 endzones are edited in the "
+        "Field Art editor above; here, archive-package co-location still "
+        "does not prove the runtime field material or its team/stadium "
+        "selector, and the deferred codecs (field_radiance, format-59 "
+        "endzones, the divot_Grass* weather textures) and the "
         "SCNE/CurveAnim rows have no bounded writer at all."
     )
 
@@ -7510,8 +7726,9 @@ class FieldArtStudioPage(QWidget):
             "Semantic families are unavailable; the raw catalog remains visible below."
         )
         self.package_note.setText(
-            "This inventory stays browse/export-only; only the six offline-proved "
-            "base textures in the Field Art editor above are writable."
+            "This inventory stays browse/export-only. Writable bases, "
+            "weave/dirtmaps, and format-18 endzones are edited above; "
+            "format-59 DXT5A endzones stay export-only."
         )
         self.browser.set_included_asset_ids(None)
         load_tip = (
@@ -7736,9 +7953,11 @@ class FieldArtStudioPage(QWidget):
             self.capabilities.set_cards(())
             self._clear_semantic_view(
                 "Load your APF game to map Field Art.\n\n"
-                "Next: File → Load game, then open Field Art. Stock NFL endzones "
-                "appear in the semantic list (~118 read-only inventory) plus the "
-                "6 writable create-team slots when a source is loaded."
+                "Next: File → Load game, then open Field Art. Stock NFL "
+                "endzones appear in the semantic list (~118 packages). "
+                "Format-18 layers, package-659 weave/dirtmaps, and the "
+                "original six bases are writable; format-59 DXT5A layers "
+                "stay browse/export-only."
             )
             self.browser.set_context()
             return

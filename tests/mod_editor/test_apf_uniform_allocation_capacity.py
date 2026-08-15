@@ -22,6 +22,7 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 import unittest
+from unittest import mock
 
 
 WORKSPACE = Path(__file__).resolve().parents[2]
@@ -36,7 +37,21 @@ import apf_shoulder_color_transport as shoulder  # noqa: E402
 from mod_editor.apf_studio import uniform_targets  # noqa: E402
 
 
-INDEX = WORKSPACE / "extracted/All-Pro Football 2K8 (USA)/0A"
+def _apf_index_0a() -> Path:
+    candidates = (
+        WORKSPACE / "extracted/All-Pro Football 2K8 (USA)/0A",
+        Path(
+            "/media/noah/Storage/for codex 1.0/extracted/"
+            "All-Pro Football 2K8 (USA)/0A"
+        ),
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return candidates[0]
+
+
+INDEX = _apf_index_0a()
 
 # The three slots davidhbui built the same detailed mask against.
 FAILED_SLOT = 4      # outer 182 -- 12,373 bytes over, and the most sector slack
@@ -85,11 +100,81 @@ class OverflowMessageTests(unittest.TestCase):
         )
         self.assertTrue(helmet.target_label(row).startswith("Helmet slot 4 "))
         self.assertTrue(pants.target_label(row).startswith("Pants slot 4 "))
+        jersey_row = {
+            "asset_index": 6,
+            "outer_table_index": 875,
+            "outer_name": "uniform_jersey_06.iff",
+        }
+        self.assertEqual(
+            uniform_targets.target_label("jersey", jersey_row),
+            "Jersey slot 6 (outer 875, uniform_jersey_06.iff)",
+        )
 
     def test_a_malformed_row_still_produces_a_usable_label(self) -> None:
         for module in (shoulder, helmet, pants):
             with self.subTest(module=module.__name__):
                 self.assertTrue(module.target_label({}).endswith("target"))
+        self.assertEqual(uniform_targets.target_label("jersey", {}), "Jersey target")
+
+    def test_jersey_overflow_names_the_slot_not_a_generic_package(self) -> None:
+        error = uniform_targets.jersey_allocation_overflow(
+            {
+                "asset_index": 6,
+                "outer_table_index": 875,
+                "outer_name": "uniform_jersey_06.iff",
+                "outer_allocation": {"size": 32_768},
+            },
+            overflow_bytes=4_096,
+            budget_bytes=30_000,
+            retail_bytes=28_000,
+        )
+        message = str(error)
+        self.assertIn("Jersey slot 6", message)
+        self.assertIn("outer 875", message)
+        self.assertIn("uniform_jersey_06.iff", message)
+        self.assertIn("4,096 bytes over", message)
+        self.assertIn("32,768-byte fixed allocation", message)
+        self.assertNotIn("package full", message.lower())
+        self.assertEqual(
+            error.target,
+            "Jersey slot 6 (outer 875, uniform_jersey_06.iff)",
+        )
+        self.assertIsInstance(error, archive_patch.AllocationOverflowError)
+
+    def test_the_generic_jersey_writer_overflow_is_rewritten(self) -> None:
+        row = {
+            "asset_index": 6,
+            "outer_table_index": 875,
+            "outer_name": "uniform_jersey_06.iff",
+            "outer_allocation": {"size": 32_768},
+        }
+        generic = uniform_targets.apf_uniform_mip_patch.UniformPatchError(
+            "rebuilt uniform IFF exceeds its fixed outer allocation by "
+            "4096 bytes; refusing output"
+        )
+        inspected = {
+            "compressed_budget_bytes": 30_000,
+            "retail_compressed_bytes": 28_000,
+        }
+        with mock.patch.object(
+            uniform_targets, "_inspect_family_capacity", return_value=inspected
+        ):
+            remapped = uniform_targets._jersey_overflow_from_writer(
+                generic, row, Path("0A")
+            )
+        self.assertIsInstance(remapped, archive_patch.AllocationOverflowError)
+        assert remapped is not None
+        self.assertEqual(remapped.overflow_bytes, 4_096)
+        self.assertEqual(remapped.allocation_size, 32_768)
+        self.assertEqual(remapped.budget_bytes, 30_000)
+        self.assertIn("Jersey slot 6", str(remapped))
+        self.assertIsNone(
+            uniform_targets._jersey_overflow_from_writer(
+                RuntimeError("PNG is 1x1; target is 1024x1024"),
+                row,
+                Path("0A"),
+            )
+        )
 
 
 class CapacityModelTests(unittest.TestCase):
@@ -112,10 +197,126 @@ class CapacityModelTests(unittest.TestCase):
         self.assertEqual(capacity["retail_compressed_bytes"], 600)
         self.assertEqual(capacity["headroom_bytes"], 80)
 
+    def test_jersey_is_a_capacity_family(self) -> None:
+        self.assertIn("jersey", uniform_targets.CAPACITY_FAMILIES)
+        self.assertIn("shoulder", uniform_targets.CAPACITY_FAMILIES)
+        self.assertEqual(
+            uniform_targets.JERSEY_CAPACITY_SCHEMA, "apf_jersey_color_capacity/v1"
+        )
+
+    def test_jersey_inspection_relabels_the_shared_two_block_model(self) -> None:
+        row = {
+            "asset_index": 6,
+            "outer_table_index": 875,
+            "outer_name": "uniform_jersey_06.iff",
+        }
+        fake = {
+            "schema": "apf_shoulder_color_transport/v1",
+            "target": "Shoulder slot 6 (outer 875, uniform_jersey_06.iff)",
+            "asset_index": 6,
+            "outer_table_index": 875,
+            "compressed_budget_bytes": 12_000,
+        }
+        with mock.patch.object(
+            uniform_targets.apf_shoulder_color_transport,
+            "inspect_capacity",
+            return_value=fake,
+        ):
+            jersey = uniform_targets._inspect_family_capacity(
+                "jersey", Path("0A"), row
+            )
+            shoulder_row = uniform_targets._inspect_family_capacity(
+                "shoulder", Path("0A"), row
+            )
+        self.assertEqual(jersey["schema"], "apf_jersey_color_capacity/v1")
+        self.assertEqual(
+            jersey["target"],
+            "Jersey slot 6 (outer 875, uniform_jersey_06.iff)",
+        )
+        self.assertEqual(jersey["compressed_budget_bytes"], 12_000)
+        self.assertEqual(shoulder_row["schema"], "apf_shoulder_color_transport/v1")
+        self.assertTrue(str(shoulder_row["target"]).startswith("Shoulder slot"))
+
+    def test_capacity_bands_split_the_24_slots_into_measured_thirds(self) -> None:
+        path = Path("__jersey_band_fixture__")
+
+        def fake_inspect(family: str, index_0a: Path, row: dict[str, object]):
+            index = int(row["asset_index"])
+            return {
+                "schema": uniform_targets.JERSEY_CAPACITY_SCHEMA,
+                "target": uniform_targets.target_label("jersey", row),
+                "asset_index": index,
+                "outer_table_index": index,
+                "compressed_budget_bytes": 2_400 - index,
+            }
+
+        try:
+            with mock.patch.object(
+                uniform_targets, "_inspect_family_capacity", side_effect=fake_inspect
+            ):
+                table = uniform_targets.capacity_table(path, "jersey")
+            ranked = sorted(table, key=lambda item: int(item["capacity_rank"]))
+            self.assertEqual([str(item["band"]) for item in ranked[:8]], ["detailed"] * 8)
+            self.assertEqual(
+                [str(item["band"]) for item in ranked[8:16]], ["moderate"] * 8
+            )
+            self.assertEqual([str(item["band"]) for item in ranked[16:]], ["simple"] * 8)
+        finally:
+            with uniform_targets._CAPACITY_LOCK:
+                uniform_targets._CAPACITY_CACHE.pop((str(path), "jersey"), None)
+
+    def test_compile_rewrites_the_generic_jersey_writer_overflow(self) -> None:
+        row = uniform_targets.target_record("jersey", 6)
+        generic = uniform_targets.apf_uniform_mip_patch.UniformPatchError(
+            "rebuilt uniform IFF exceeds its fixed outer allocation by "
+            "4096 bytes; refusing output"
+        )
+        with mock.patch.object(
+            uniform_targets.apf_uniform_mip_patch,
+            "build_patch",
+            side_effect=generic,
+        ):
+            with self.assertRaises(archive_patch.AllocationOverflowError) as ctx:
+                uniform_targets.compile_uniform_patch(
+                    Path("missing-0A"), Path("x.png"), "jersey", 6
+                )
+        message = str(ctx.exception)
+        self.assertIn(f"Jersey slot {int(row['asset_index'])}", message)
+        self.assertIn(str(row["outer_name"]), message)
+        self.assertIn(f"outer {int(row['outer_table_index'])}", message)
+        self.assertNotIn("package full", message.lower())
+        self.assertEqual(ctx.exception.overflow_bytes, 4_096)
+        allocation = row["outer_allocation"]
+        assert isinstance(allocation, dict)
+        self.assertEqual(ctx.exception.allocation_size, int(allocation["size"]))
+
+    def test_compile_leaves_non_overflow_jersey_errors_alone(self) -> None:
+        err = uniform_targets.apf_uniform_mip_patch.UniformPatchError(
+            "PNG is 1x1; target is 1024x1024"
+        )
+        with mock.patch.object(
+            uniform_targets.apf_uniform_mip_patch,
+            "build_patch",
+            side_effect=err,
+        ):
+            with self.assertRaises(
+                uniform_targets.apf_uniform_mip_patch.UniformPatchError
+            ) as ctx:
+                uniform_targets.compile_uniform_patch(
+                    Path("missing-0A"), Path("x.png"), "jersey", 6
+                )
+        self.assertIs(ctx.exception, err)
+
     def test_a_family_without_a_capacity_model_says_so(self) -> None:
-        self.assertEqual(uniform_targets.capacity_table(Path("0A"), "jersey"), ())
-        self.assertIsNone(uniform_targets.slot_capacity(Path("0A"), "jersey", 0))
+        self.assertEqual(uniform_targets.capacity_table(Path("0A"), "pants"), ())
+        self.assertIsNone(uniform_targets.slot_capacity(Path("0A"), "helmet", 0))
         self.assertEqual(uniform_targets.capacity_summary(None), "")
+        self.assertEqual(
+            uniform_targets.team_capacity_line(
+                Path("0A"), jersey_index=0, shoulder_index=0
+            ),
+            "",
+        )
 
 
 @unittest.skipUnless(INDEX.is_file(), "private APF source is unavailable")
@@ -177,6 +378,77 @@ class RealShoulderCapacityTests(unittest.TestCase):
         self.assertIn("Replacement budget", summary)
         self.assertIn("roomiest of 24", summary)
         self.assertIn("anti-aliasing", summary)
+
+
+@unittest.skipUnless(INDEX.is_file(), "private APF source is unavailable")
+class RealJerseyCapacityTests(unittest.TestCase):
+    """Jersey uses the same two-block budget model; ranks come from the disc."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.table = uniform_targets.capacity_table(INDEX, "jersey")
+
+    def test_every_jersey_slot_is_ranked_exactly_once(self) -> None:
+        self.assertEqual(len(self.table), 24)
+        self.assertEqual(
+            sorted(int(row["asset_index"]) for row in self.table), list(range(24))
+        )
+        self.assertEqual(
+            sorted(int(row["capacity_rank"]) for row in self.table),
+            list(range(1, 25)),
+        )
+        self.assertEqual(
+            {str(row["band"]) for row in self.table},
+            {"detailed", "moderate", "simple"},
+        )
+        bands = [str(row["band"]) for row in self.table]
+        self.assertEqual(bands.count("detailed"), 8)
+        self.assertEqual(bands.count("moderate"), 8)
+        self.assertEqual(bands.count("simple"), 8)
+        for row in self.table:
+            with self.subTest(slot=int(row["asset_index"])):
+                catalog = uniform_targets.target_record(
+                    "jersey", int(row["asset_index"])
+                )
+                self.assertEqual(row["schema"], uniform_targets.JERSEY_CAPACITY_SCHEMA)
+                self.assertEqual(
+                    row["target"],
+                    uniform_targets.target_label("jersey", catalog),
+                )
+                self.assertGreater(int(row["compressed_budget_bytes"]), 0)
+
+    def test_the_summary_is_an_aid_not_a_runtime_claim(self) -> None:
+        summary = uniform_targets.capacity_summary(
+            uniform_targets.slot_capacity(INDEX, "jersey", 0)
+        )
+        self.assertIn("Replacement budget", summary)
+        self.assertIn("roomiest of 24", summary)
+        self.assertIn("region masks", summary)
+        self.assertNotIn("look", summary.lower())
+
+    def test_ranks_follow_the_measured_budget_not_a_hardcoded_order(self) -> None:
+        ordered = sorted(self.table, key=lambda row: int(row["capacity_rank"]))
+        budgets = [int(row["compressed_budget_bytes"]) for row in ordered]
+        self.assertEqual(budgets, sorted(budgets, reverse=True))
+        self.assertEqual(len({int(row["asset_index"]) for row in ordered}), 24)
+
+    def test_combined_team_line_names_both_family_ranks(self) -> None:
+        line = uniform_targets.team_capacity_line(
+            INDEX, jersey_index=0, shoulder_index=0
+        )
+        self.assertRegex(
+            line, r"jersey rank \d+/24, shoulder rank \d+/24"
+        )
+        jersey = uniform_targets.slot_capacity(INDEX, "jersey", 0)
+        shoulder = uniform_targets.slot_capacity(INDEX, "shoulder", 0)
+        assert jersey is not None and shoulder is not None
+        self.assertEqual(
+            line,
+            (
+                f"jersey rank {jersey['capacity_rank']}/24, "
+                f"shoulder rank {shoulder['capacity_rank']}/24"
+            ),
+        )
 
 
 if __name__ == "__main__":

@@ -24,8 +24,9 @@ ensure_tools_importable()
 import apf_helmet_color_transport  # type: ignore  # noqa: E402
 import apf_pants_color_transport  # type: ignore  # noqa: E402
 import apf_shoulder_color_transport  # type: ignore  # noqa: E402
-import apf_uniform_mip_patch  # type: ignore  # noqa: E402
 import apf_textlogo_patch  # type: ignore  # noqa: E402
+import apf_texture_patch as archive_patch  # type: ignore  # noqa: E402
+import apf_uniform_mip_patch  # type: ignore  # noqa: E402
 
 
 CATALOG = PRODUCT_ROOT / "mod_editor" / "data" / "apf2k8_uniform_targets.v1.json"
@@ -144,13 +145,98 @@ def target_record(family: str, asset_index: int) -> dict[str, object]:
     return load_targets()[family][asset_index]
 
 
-CAPACITY_FAMILIES = ("shoulder",)
+CAPACITY_FAMILIES = ("shoulder", "jersey")
+JERSEY_CAPACITY_SCHEMA = "apf_jersey_color_capacity/v1"
+# How many of the 24 slots each band covers. The split is the measured one:
+# davidhbui built one detailed mask against three shoulder slots on Beta 38
+# and found the roomiest third took it while the bottom third refused it.
+_BAND_SIZE = 8
+_OVERFLOW_BYTES_RE = re.compile(
+    r"exceeds its fixed outer allocation by ([0-9]+) bytes"
+)
 _CAPACITY_CACHE: dict[tuple[str, str], tuple[dict[str, object], ...]] = {}
 _CAPACITY_LOCK = threading.RLock()
-#: How many of the 24 slots each band covers. The split is the measured one:
-#: davidhbui built one detailed mask against three shoulder slots on Beta 38
-#: and found the roomiest third took it while the bottom third refused it.
-_BAND_SIZE = 8
+
+
+def target_label(family: str, row: dict[str, object]) -> str:
+    """Name one slot the way a user picked it, not as a generic package."""
+
+    title = {
+        "jersey": "Jersey",
+        "shoulder": "Shoulder",
+        "pants": "Pants",
+        "helmet": "Helmet",
+    }.get(family, family.capitalize() if family else "Uniform")
+    try:
+        slot = int(row["asset_index"])  # type: ignore[index]
+        outer = int(row["outer_table_index"])  # type: ignore[index]
+    except (KeyError, TypeError, ValueError):
+        return f"{title} target"
+    name = str(row.get("outer_name") or "").strip()
+    return (
+        f"{title} slot {slot} (outer {outer}"
+        + (f", {name}" if name else "")
+        + ")"
+    )
+
+
+def _inspect_family_capacity(
+    family: str, index_0a: Path, row: dict[str, object]
+) -> dict[str, object]:
+    """Shoulder and jersey share the two-block IFF budget formula."""
+
+    inspected = dict(apf_shoulder_color_transport.inspect_capacity(index_0a, row))
+    if family == "jersey":
+        inspected["schema"] = JERSEY_CAPACITY_SCHEMA
+        inspected["target"] = target_label("jersey", row)
+    return inspected
+
+
+def jersey_allocation_overflow(
+    row: dict[str, object],
+    overflow_bytes: int,
+    *,
+    allocation_size: int | None = None,
+    budget_bytes: int | None = None,
+    retail_bytes: int | None = None,
+):
+    """Name the jersey slot in the same overflow form the other mask writers use."""
+
+    if allocation_size is None:
+        allocation = row.get("outer_allocation")
+        size = allocation.get("size") if isinstance(allocation, dict) else None
+        allocation_size = int(size) if isinstance(size, int) else 0
+    return archive_patch.allocation_overflow(
+        target=target_label("jersey", row),
+        overflow_bytes=overflow_bytes,
+        allocation_size=allocation_size,
+        budget_bytes=budget_bytes,
+        retail_bytes=retail_bytes,
+    )
+
+
+def _jersey_overflow_from_writer(
+    exc: BaseException, row: dict[str, object], index_0a: Path
+):
+    """Translate the mip writer's generic overflow into a named jersey refusal."""
+
+    match = _OVERFLOW_BYTES_RE.search(str(exc))
+    if match is None:
+        return None
+    budget = None
+    retail = None
+    try:
+        inspected = _inspect_family_capacity("jersey", index_0a, row)
+        budget = int(inspected["compressed_budget_bytes"])
+        retail = int(inspected["retail_compressed_bytes"])
+    except Exception:
+        pass
+    return jersey_allocation_overflow(
+        row,
+        int(match.group(1)),
+        budget_bytes=budget,
+        retail_bytes=retail,
+    )
 
 
 def capacity_table(index_0a: Path, family: str) -> tuple[dict[str, object], ...]:
@@ -177,9 +263,7 @@ def capacity_table(index_0a: Path, family: str) -> tuple[dict[str, object], ...]
     for asset_index in range(24):
         row = target_record(family, asset_index)
         try:
-            rows.append(
-                dict(apf_shoulder_color_transport.inspect_capacity(index_0a, row))
-            )
+            rows.append(dict(_inspect_family_capacity(family, index_0a, row)))
         except Exception:
             # A capacity hint is an aid, never a gate: a source this cannot
             # read is a problem the writer reports properly at build time.
@@ -208,9 +292,9 @@ def slot_capacity(
 ) -> dict[str, object] | None:
     """One slot's replacement budget and its rank in its family, or ``None``.
 
-    Only ``shoulder`` answers today, because it is the family whose budget
-    caught a user out.  ``None`` means there is no capacity model for this
-    family, not that the slot has no limit.
+    ``shoulder`` and ``jersey`` share the same two-block IFF budget model.
+    ``None`` means there is no capacity model for this family, not that the
+    slot has no limit.
     """
 
     table = capacity_table(index_0a, family)
@@ -252,6 +336,31 @@ def capacity_summary(capacity: dict[str, object] | None) -> str:
         f"{detail} These are region masks: flat colours, hard edges, no "
         "anti-aliasing (an anti-aliased edge emits invalid region IDs and "
         "inflates the payload)."
+    )
+
+
+def team_capacity_line(
+    index_0a: Path,
+    jersey_index: int | None,
+    shoulder_index: int | None,
+) -> str:
+    """Compact per-team ranks: ``jersey rank X/24, shoulder rank Y/24``."""
+
+    if jersey_index is None or shoulder_index is None:
+        return ""
+    jersey = slot_capacity(index_0a, "jersey", jersey_index)
+    shoulder = slot_capacity(index_0a, "shoulder", shoulder_index)
+    if not jersey or not shoulder:
+        return ""
+    jersey_rank = jersey.get("capacity_rank")
+    jersey_of = jersey.get("capacity_of")
+    shoulder_rank = shoulder.get("capacity_rank")
+    shoulder_of = shoulder.get("capacity_of")
+    if None in (jersey_rank, jersey_of, shoulder_rank, shoulder_of):
+        return ""
+    return (
+        f"jersey rank {jersey_rank}/{jersey_of}, "
+        f"shoulder rank {shoulder_rank}/{shoulder_of}"
     )
 
 
@@ -311,7 +420,13 @@ def compile_uniform_patch(
     row = target_record(family, asset_index)
     if family == "jersey":
         with _selected_jersey(row):
-            result = apf_uniform_mip_patch.build_patch(index_0a, png_path)
+            try:
+                result = apf_uniform_mip_patch.build_patch(index_0a, png_path)
+            except apf_uniform_mip_patch.UniformPatchError as exc:
+                remapped = _jersey_overflow_from_writer(exc, row, index_0a)
+                if remapped is None:
+                    raise
+                raise remapped from exc
     elif family == "pants":
         result = apf_pants_color_transport.build_patch(index_0a, png_path, row)
     elif family == "helmet":

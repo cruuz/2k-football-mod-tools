@@ -36,6 +36,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 import re
+import struct
 from typing import Iterable, Sequence
 
 from .errors import ValidationError
@@ -75,10 +76,28 @@ PACKAGE_MAP_SIZE = 11
 # Role 8 = TE and role 9 = WR are statically proved (see
 # APF_PACKAGE_MAP_ROLE_8_TE_9_WR_PROVED). The other nine ids are **not** a
 # complete roster-position legend — formation geometry and the XEX byte table
-# disagree on 1..7 — so this is still not a WR3→TE writer.
+# disagree on 1..7. An experimental 8↔9 permutation pack ships below; it is
+# not a runtime WR3→TE proof and does not claim 3rd-and-long.
 APF_PACKAGE_MAP_OFFSET_IN_FORMATION = 0x11
 APF_FORMATION_SIZE = 0xB8
+APF_FORMATION_BASE = 0x0244
+APF_MASTER_BODY_SIZE = 0x2C750
+APF_FORMATION_COUNT_OFFSET = 0x34
+APF_RETAIL_FORMATION_COUNT = 163
+APF_FORMATION_COUNT_MAX = 176
 APF_PACKAGE_MAP_ROLE_LEGEND_PROVED = False
+# Disc 2026-08-14: Ace Empty is NOT an 8↔9 swap of Ace. Roles 8/9 stay in
+# slots 2/3; only slots 9/10 swap 6↔7.
+APF_ACE_EMPTY_PACKAGE_MAP = (0, 10, 8, 9, 1, 4, 3, 5, 2, 7, 6)
+APF_ACE_EMPTY_IS_WR3_TE_SWAP_OF_ACE = False
+APF_ACE_VS_ACE_EMPTY_SLOT_DELTAS = ((9, 6, 7), (10, 7, 6))
+APF_ACE_FORMATION_INDEX = 62
+APF_ACE_EMPTY_FORMATION_INDEX = 106
+APF_WR3_TE_PACKAGE_SUB_PROVED = False
+# Experimental G12 export remaps each Ace-named +0x11 map 8↔9 in place.
+# Ace Empty is never a donor (its stock delta is slots 9/10 = 6↔7).
+APF_G12_PACK_EXPERIMENTAL = True
+APF_G12_PACK_USES_ACE_EMPTY_AS_SOURCE = False
 
 # Decompressed PE (same image as apf2k8_splb_writer.APF_PE_SHA256, base
 # 0x82000000). 0x84a9ae68 is `lis r11, 0x8210; addi r11, r11, -15584; lbzx
@@ -715,6 +734,29 @@ APF_DOWN_NAMES = (
     "Safety Kick",
 )
 APF_3RD_AND_LONG_PLAY_CHOICE_PROVED = False
+# User-team 3rd-and-long "next-best pass formation" search (Urianus, 2026-08-14)
+# has no DATA-side table. PE has the UI labels and the Ace Empty name; no
+# "next best" / "best pass" string. The play picker is XEX and does not load
+# down+ytg. This project will not ship an executable patch.
+APF_USER_3RD_AND_LONG_DATA_WRITER_EXISTS = False
+APF_USER_3RD_AND_LONG_SEARCH_PROVED = False
+APF_3RD_AND_LONG_UI_LABEL_VA = 0x845FD8B4
+APF_4TH_AND_LONG_UI_LABEL_VA = 0x845FD8F8
+APF_ACE_EMPTY_NAME_VA = 0x8460574C
+APF_3RD_AND_LONG_USER_LOGIC_REFUSAL = (
+    "No data-side 3rd-and-long writer exists. Urianus reported that a "
+    "user-controlled team searches the next-best pass formation on "
+    "3rd-and-long and the CPU does not. That fork is not in MASTER, SPLB, "
+    "or dir_ingame leftovers.\n\n"
+    "Pinned XEX (not a patch target): situation down +0x254 / ytg +0x25C; "
+    "packed get_down 0x84AD92E0 / 0x84B68CC8; packed get_ytg 0x84B68CD8; "
+    "picker 0x8486CE88 (situation word0 / +0x2BC tab, not down); UI labels "
+    "0x845FD8B4 / 0x845FD8F8; Ace Empty name 0x8460574C. No surveyed "
+    "function loads +0x254 and +0x25C and also calls SPLB get-nth/count. "
+    "No UTF-16BE or ASCII 'next best' / 'best pass' string in the PE.\n\n"
+    "This project treats emulator-only executable patches as unsafe/"
+    "deferred. APF_3RD_AND_LONG_PLAY_CHOICE_PROVED stays False."
+)
 
 # Layout offsets relative to PLAY resource body (after 0x20 resource header).
 # Verified against nfl2k5_playbook_inspector constants + PLAY_* product docs.
@@ -1799,6 +1841,515 @@ def verify_g2_ace_from_quads_link_table_pack(
     parse_playbook_resource(patched)
 
 
+_APF_ACE_NAME_RE = re.compile(r"\bace\b", re.IGNORECASE)
+
+
+def _require_apf_master_body(raw: bytes) -> None:
+    if len(raw) != APF_MASTER_BODY_SIZE:
+        raise ValidationError(
+            f"APF MASTER PLAY body is {len(raw):,} bytes; "
+            f"{APF_MASTER_BODY_SIZE:,} were expected."
+        )
+
+
+def apf_formation_count(raw_body: bytes) -> int:
+    """Declared formation count at MASTER +0x34 (big-endian)."""
+
+    _require_apf_master_body(raw_body)
+    count = struct.unpack_from(">I", raw_body, APF_FORMATION_COUNT_OFFSET)[0]
+    if not 1 <= count <= APF_FORMATION_COUNT_MAX:
+        raise ValidationError(
+            f"APF MASTER formation count {count} is outside 1.."
+            f"{APF_FORMATION_COUNT_MAX}."
+        )
+    end = APF_FORMATION_BASE + count * APF_FORMATION_SIZE
+    if end > len(raw_body):
+        raise ValidationError("APF formation table overruns the MASTER body.")
+    return count
+
+
+def apf_formation_package_map_offset(formation_index: int) -> int:
+    """Body offset of the 11-byte package map at formation +0x11."""
+
+    if formation_index < 0:
+        raise ValidationError(
+            f"formation_index must be non-negative; got {formation_index}."
+        )
+    return (
+        APF_FORMATION_BASE
+        + formation_index * APF_FORMATION_SIZE
+        + APF_PACKAGE_MAP_OFFSET_IN_FORMATION
+    )
+
+
+def _apf_relative(raw_body: bytes, field: int) -> int:
+    if field < 0 or field + 4 > len(raw_body):
+        raise ValidationError("APF formation name pointer is out of range.")
+    stored = struct.unpack_from(">i", raw_body, field)[0]
+    target = field - 1 + stored
+    if not 0 <= target < len(raw_body):
+        raise ValidationError(
+            f"APF formation name pointer at 0x{field:x} resolves outside the body."
+        )
+    return target
+
+
+def read_apf_formation_name(raw_body: bytes, formation_index: int) -> str:
+    """Read one MASTER formation name (UTF-16BE, relative pointer at +0)."""
+
+    count = apf_formation_count(raw_body)
+    if not 0 <= formation_index < count:
+        raise ValidationError(
+            f"formation_index must be 0..{count - 1}; got {formation_index}."
+        )
+    field = APF_FORMATION_BASE + formation_index * APF_FORMATION_SIZE
+    offset = _apf_relative(raw_body, field)
+    if offset & 1:
+        raise ValidationError(
+            f"APF formation {formation_index} name is not UTF-16 aligned."
+        )
+    cursor = offset
+    while cursor + 2 <= len(raw_body):
+        if raw_body[cursor : cursor + 2] == b"\0\0":
+            try:
+                name = raw_body[offset:cursor].decode("utf-16be")
+            except UnicodeDecodeError as exc:
+                raise ValidationError(
+                    f"APF formation {formation_index} name is not UTF-16BE."
+                ) from exc
+            if not name:
+                raise ValidationError(f"APF formation {formation_index} has an empty name.")
+            return name
+        cursor += 2
+    raise ValidationError(
+        f"APF formation {formation_index} name is unterminated."
+    )
+
+
+def read_apf_formation_package_map(
+    raw_body: bytes, formation_index: int
+) -> tuple[int, ...]:
+    """Read the 11-byte +0x11 package map from an APF MASTER body."""
+
+    count = apf_formation_count(raw_body)
+    if not 0 <= formation_index < count:
+        raise ValidationError(
+            f"formation_index must be 0..{count - 1}; got {formation_index}."
+        )
+    offset = apf_formation_package_map_offset(formation_index)
+    chunk = raw_body[offset : offset + PACKAGE_MAP_SIZE]
+    if len(chunk) != PACKAGE_MAP_SIZE:
+        raise ValidationError("APF package map lies outside the MASTER body.")
+    return tuple(chunk)
+
+
+def swap_apf_package_map_wr3_te(package_map: Sequence[int]) -> tuple[int, ...]:
+    """Swap roles 8 and 9. Result must stay a permutation of 0..10."""
+
+    current = _validate_package_map(package_map)
+    if (
+        APF_PACKAGE_MAP_ROLE_TE not in current
+        or APF_PACKAGE_MAP_ROLE_WR3 not in current
+    ):
+        raise ValidationError(
+            "WR3↔TE swap needs both role 8 and role 9 in the package map."
+        )
+    swapped = bytes(
+        APF_PACKAGE_MAP_ROLE_WR3
+        if value == APF_PACKAGE_MAP_ROLE_TE
+        else APF_PACKAGE_MAP_ROLE_TE
+        if value == APF_PACKAGE_MAP_ROLE_WR3
+        else value
+        for value in current
+    )
+    return tuple(_validate_package_map(swapped))
+
+
+def build_apf_formation_package_map_patch(
+    raw_body: bytes,
+    formation_index: int,
+    new_map: Sequence[int],
+) -> PackageMapPatchResult:
+    """Patch one APF MASTER formation's +0x11 map. Touches only those 11 bytes."""
+
+    _require_apf_master_body(raw_body)
+    new_bytes = _validate_package_map(new_map)
+    old = read_apf_formation_package_map(raw_body, formation_index)
+    offset = apf_formation_package_map_offset(formation_index)
+    out = bytearray(raw_body)
+    out[offset : offset + PACKAGE_MAP_SIZE] = new_bytes
+    result = bytes(out)
+    changed = sum(1 for a, b in zip(raw_body, result, strict=True) if a != b)
+    if changed != sum(1 for a, b in zip(old, new_bytes) if a != b):
+        outside = [
+            i
+            for i in range(len(raw_body))
+            if raw_body[i] != result[i]
+            and not (offset <= i < offset + PACKAGE_MAP_SIZE)
+        ]
+        if outside:
+            raise ValidationError(
+                "APF package-map patch leaked outside the map region at "
+                f"offsets {outside[:8]}."
+            )
+    return PackageMapPatchResult(
+        raw_resource=result,
+        formation_index=formation_index,
+        body_offset=offset,
+        resource_offset=offset,
+        old_map=old,
+        new_map=tuple(new_bytes),
+        changed_byte_count=changed,
+        source_sha256=hashlib.sha256(raw_body).hexdigest(),
+        result_sha256=hashlib.sha256(result).hexdigest(),
+        status="offline_writer_proved",
+    )
+
+
+def verify_apf_formation_package_map_patch(
+    source: bytes,
+    patched: bytes,
+    formation_index: int,
+    expected_new_map: Sequence[int],
+) -> None:
+    """Independent byte-diff verifier for one APF +0x11 map patch."""
+
+    _require_apf_master_body(source)
+    _require_apf_master_body(patched)
+    expected = _validate_package_map(expected_new_map)
+    if len(source) != len(patched):
+        raise ValidationError(
+            f"Patched MASTER length {len(patched)} != source {len(source)}."
+        )
+    offset = apf_formation_package_map_offset(formation_index)
+    actual = patched[offset : offset + PACKAGE_MAP_SIZE]
+    if actual != expected:
+        raise ValidationError(
+            f"APF formation {formation_index} map {list(actual)} != expected "
+            f"{list(expected)}."
+        )
+    for i, (a, b) in enumerate(zip(source, patched, strict=True)):
+        if offset <= i < offset + PACKAGE_MAP_SIZE:
+            continue
+        if a != b:
+            raise ValidationError(
+                f"Byte {i} changed outside APF formation {formation_index} "
+                "package-map region."
+            )
+    got = read_apf_formation_package_map(patched, formation_index)
+    if got != tuple(expected):
+        raise ValidationError("Re-read APF package map does not match expected.")
+
+
+@dataclass(frozen=True, slots=True)
+class ApfAceEmptyCensus:
+    """Retail Ace vs Ace Empty package-map census (not a 3rd-and-long proof)."""
+
+    ace_formation_index: int
+    ace_formation_name: str
+    ace_package_map: tuple[int, ...]
+    empty_formation_index: int
+    empty_formation_name: str
+    empty_package_map: tuple[int, ...]
+    maps_identical: bool
+    empty_is_wr3_te_swap_of_ace: bool
+    slot_deltas: tuple[tuple[int, int, int], ...]
+    notes: str
+
+
+def census_apf_ace_vs_ace_empty(raw_body: bytes) -> ApfAceEmptyCensus:
+    """Measure Ace vs Ace Empty maps. Retail Empty is slots 9/10, not 8↔9."""
+
+    _require_apf_master_body(raw_body)
+    count = apf_formation_count(raw_body)
+    ace_i = empty_i = None
+    ace_name = empty_name = ""
+    for index in range(count):
+        name = read_apf_formation_name(raw_body, index)
+        if ace_i is None and name == "Ace":
+            ace_i = index
+            ace_name = name
+        elif empty_i is None and name == "Ace Empty":
+            empty_i = index
+            empty_name = name
+        if ace_i is not None and empty_i is not None:
+            break
+    if ace_i is None or empty_i is None:
+        raise ValidationError(
+            "Census needs exact MASTER formation names Ace and Ace Empty."
+        )
+    ace_map = read_apf_formation_package_map(raw_body, ace_i)
+    empty_map = read_apf_formation_package_map(raw_body, empty_i)
+    deltas = tuple(
+        (slot, ace_map[slot], empty_map[slot])
+        for slot in range(PACKAGE_MAP_SIZE)
+        if ace_map[slot] != empty_map[slot]
+    )
+    is_swap = empty_map == swap_apf_package_map_wr3_te(ace_map)
+    return ApfAceEmptyCensus(
+        ace_formation_index=ace_i,
+        ace_formation_name=ace_name,
+        ace_package_map=ace_map,
+        empty_formation_index=empty_i,
+        empty_formation_name=empty_name,
+        empty_package_map=empty_map,
+        maps_identical=ace_map == empty_map,
+        empty_is_wr3_te_swap_of_ace=is_swap,
+        slot_deltas=deltas,
+        notes=(
+            "Retail Ace Empty is not an 8↔9 swap of Ace. Roles 8/9 stay in "
+            "slots 2/3; the only delta is slots 9/10 (6↔7). The experimental "
+            "pack therefore applies a uniqueness-preserving 8↔9 permutation "
+            "to Ace-named maps rather than copying Ace Empty. Runtime G12 "
+            "(TEs on 3rd-and-long) is unproved."
+        ),
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class G12Wr3TeTarget:
+    """One Ace-named MASTER formation that received the 8↔9 swap."""
+
+    formation_index: int
+    formation_name: str
+    old_map: tuple[int, ...]
+    new_map: tuple[int, ...]
+    resource_offset: int
+    changed_byte_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class G12Wr3TePackResult:
+    """Experimental APF 8↔9 package-map pack (bytes only; runtime unproved)."""
+
+    raw_resource: bytes
+    targets: tuple[G12Wr3TeTarget, ...]
+    total_changed_byte_count: int
+    source_sha256: str
+    result_sha256: str
+    status: str
+    honesty: str
+    manifest: dict[str, object]
+
+
+def g12_wr3_te_honesty() -> str:
+    return (
+        "experimental Ace-named 8↔9 package-map remapping. "
+        "offline_writer_proved for APF MASTER +0x11 package-map bytes only. "
+        "Retail Ace Empty is not an 8↔9 swap of Ace (slots 9/10 are 6↔7). "
+        "Ace Empty is not used as a source: this pack does not copy Ace Empty "
+        "onto Ace. It swaps roles 8 and 9 on each Ace-named formation's own "
+        "map. Runtime G12 (TEs on 3rd-and-long) is unproved. "
+        "wr3_te_package_sub_proved stays False. Not a 3rd-and-long fix. "
+        "Not a project edit. Source 0A is never mutated. Private MASTER "
+        "PLAY export only."
+    )
+
+
+def list_apf_ace_named_formations(
+    raw_body: bytes,
+) -> tuple[tuple[int, str], ...]:
+    """MASTER formations whose name matches a word-boundary Ace."""
+
+    count = apf_formation_count(raw_body)
+    found: list[tuple[int, str]] = []
+    for index in range(count):
+        name = read_apf_formation_name(raw_body, index)
+        if _APF_ACE_NAME_RE.search(name):
+            found.append((index, name))
+    return tuple(found)
+
+
+def _apf_exact_named_package_map(
+    raw_body: bytes, exact_name: str
+) -> tuple[int, ...] | None:
+    for index in range(apf_formation_count(raw_body)):
+        if read_apf_formation_name(raw_body, index) == exact_name:
+            return read_apf_formation_package_map(raw_body, index)
+    return None
+
+
+def build_g12_wr3_te_package_map_pack(
+    raw_body: bytes,
+) -> G12Wr3TePackResult:
+    """Swap roles 8↔9 on every Ace-named APF MASTER formation.
+
+    Fail-closed experimental export. Touches only 11-byte +0x11 maps.
+    Independent verifier: :func:`verify_g12_wr3_te_package_map_pack`.
+
+    Capability: **offline_writer_proved** for map bytes. **Not** a runtime
+    G12 / 3rd-and-long fix. ``wr3_te_package_sub_proved`` stays False.
+    """
+
+    _require_apf_master_body(raw_body)
+    named = list_apf_ace_named_formations(raw_body)
+    if not named:
+        raise ValidationError(
+            "G12 WR3↔TE pack needs at least one formation whose name "
+            "contains Ace."
+        )
+
+    empty_source = _apf_exact_named_package_map(raw_body, "Ace Empty")
+
+    working = raw_body
+    targets: list[G12Wr3TeTarget] = []
+    for index, name in named:
+        # Each Ace-named map is remapped in place. Ace Empty is never a donor.
+        old = read_apf_formation_package_map(working, index)
+        new_map = swap_apf_package_map_wr3_te(old)
+        if name == "Ace" and empty_source is not None and new_map == empty_source:
+            raise ValidationError(
+                "G12 pack must not copy Ace Empty onto Ace. The experimental "
+                "export is an Ace-named 8↔9 remap, not an Ace Empty copy."
+            )
+        if old == new_map:
+            targets.append(
+                G12Wr3TeTarget(
+                    formation_index=index,
+                    formation_name=name,
+                    old_map=old,
+                    new_map=new_map,
+                    resource_offset=apf_formation_package_map_offset(index),
+                    changed_byte_count=0,
+                )
+            )
+            continue
+        patch = build_apf_formation_package_map_patch(working, index, new_map)
+        verify_apf_formation_package_map_patch(
+            working, patch.raw_resource, index, new_map
+        )
+        working = patch.raw_resource
+        targets.append(
+            G12Wr3TeTarget(
+                formation_index=index,
+                formation_name=name,
+                old_map=old,
+                new_map=patch.new_map,
+                resource_offset=patch.resource_offset,
+                changed_byte_count=patch.changed_byte_count,
+            )
+        )
+
+    verify_g12_wr3_te_package_map_pack(
+        raw_body,
+        working,
+        formation_indices=tuple(t.formation_index for t in targets),
+    )
+
+    total_changed = sum(t.changed_byte_count for t in targets)
+    honesty = g12_wr3_te_honesty()
+    ace_map = None
+    empty_map = None
+    for target in targets:
+        if target.formation_name == "Ace":
+            ace_map = list(target.old_map)
+        elif target.formation_name == "Ace Empty":
+            empty_map = list(target.old_map)
+    manifest: dict[str, object] = {
+        "kind": "g12_wr3_te_package_map_pack",
+        "capability": "offline_writer_proved",
+        "runtime_proved": False,
+        "experimental": APF_G12_PACK_EXPERIMENTAL,
+        "wr3_te_package_sub_proved": False,
+        "APF_3RD_AND_LONG_PLAY_CHOICE_PROVED": False,
+        "ace_empty_is_wr3_te_swap_of_ace": False,
+        "ace_empty_used_as_source": APF_G12_PACK_USES_ACE_EMPTY_AS_SOURCE,
+        "bug_id": "G12",
+        "package_map_offset_in_formation": APF_PACKAGE_MAP_OFFSET_IN_FORMATION,
+        "ace_stock_package_map": list(APF_ACE_PACKAGE_MAP),
+        "ace_empty_stock_package_map": list(APF_ACE_EMPTY_PACKAGE_MAP),
+        "ace_source_package_map": ace_map,
+        "ace_empty_source_package_map": empty_map,
+        "ace_vs_ace_empty_slot_deltas": [
+            list(row) for row in APF_ACE_VS_ACE_EMPTY_SLOT_DELTAS
+        ],
+        "targets": [
+            {
+                "formation_index": t.formation_index,
+                "formation_name": t.formation_name,
+                "old_map": list(t.old_map),
+                "new_map": list(t.new_map),
+                "resource_offset": t.resource_offset,
+                "changed_byte_count": t.changed_byte_count,
+            }
+            for t in targets
+        ],
+        "total_changed_byte_count": total_changed,
+        "source_sha256": hashlib.sha256(raw_body).hexdigest(),
+        "result_sha256": hashlib.sha256(working).hexdigest(),
+        "honesty": honesty,
+    }
+    return G12Wr3TePackResult(
+        raw_resource=working,
+        targets=tuple(targets),
+        total_changed_byte_count=total_changed,
+        source_sha256=hashlib.sha256(raw_body).hexdigest(),
+        result_sha256=hashlib.sha256(working).hexdigest(),
+        status="offline_writer_proved",
+        honesty=honesty,
+        manifest=manifest,
+    )
+
+
+def verify_g12_wr3_te_package_map_pack(
+    source: bytes,
+    patched: bytes,
+    *,
+    formation_indices: Sequence[int],
+) -> None:
+    """Independent multi-region verifier for the G12 8↔9 pack."""
+
+    _require_apf_master_body(source)
+    _require_apf_master_body(patched)
+    if len(source) != len(patched):
+        raise ValidationError(
+            f"Patched MASTER length {len(patched)} != source {len(source)}."
+        )
+    if not formation_indices:
+        raise ValidationError("G12 pack verifier needs at least one target index.")
+
+    empty_source = _apf_exact_named_package_map(source, "Ace Empty")
+
+    allowed: set[int] = set()
+    for fi in formation_indices:
+        offset = apf_formation_package_map_offset(int(fi))
+        for i in range(offset, offset + PACKAGE_MAP_SIZE):
+            allowed.add(i)
+        old = read_apf_formation_package_map(source, int(fi))
+        expected = bytes(swap_apf_package_map_wr3_te(old))
+        actual = patched[offset : offset + PACKAGE_MAP_SIZE]
+        if actual != expected:
+            raise ValidationError(
+                f"Ace-named formation {fi} map {list(actual)} != 8↔9 swap "
+                f"{list(expected)}."
+            )
+        if (
+            empty_source is not None
+            and read_apf_formation_name(source, int(fi)) == "Ace"
+            and tuple(actual) == empty_source
+        ):
+            raise ValidationError("G12 pack must not copy Ace Empty onto Ace.")
+
+    for i, (a, b) in enumerate(zip(source, patched, strict=True)):
+        if i in allowed:
+            continue
+        if a != b:
+            raise ValidationError(
+                f"Byte {i} changed outside Ace-named package-map regions "
+                f"(source 0x{a:02x} → 0x{b:02x})."
+            )
+
+
+class ApfThirdAndLongUserLogicRefusal(ValidationError):
+    """No DATA-side 3rd-and-long writer. The fork is XEX-only."""
+
+
+def refuse_apf_3rd_and_long_user_logic_writer() -> None:
+    """No DATA-side 3rd-and-long writer. XEX-only; not shipped."""
+
+    raise ApfThirdAndLongUserLogicRefusal(APF_3RD_AND_LONG_USER_LOGIC_REFUSAL)
+
+
 __all__ = [
     "G1_G2_LAYOUT",
     "G1DimeFromNickelPackResult",
@@ -1832,7 +2383,43 @@ __all__ = [
     "verify_formation_package_map_patch",
     "verify_g1_dime_from_nickel_package_map_pack",
     "verify_g2_ace_from_quads_link_table_pack",
+    "APF_ACE_EMPTY_FORMATION_INDEX",
+    "APF_ACE_EMPTY_IS_WR3_TE_SWAP_OF_ACE",
+    "APF_ACE_EMPTY_NAME_VA",
+    "APF_ACE_EMPTY_PACKAGE_MAP",
+    "APF_ACE_FORMATION_INDEX",
     "APF_ACE_PACKAGE_MAP",
+    "APF_ACE_VS_ACE_EMPTY_SLOT_DELTAS",
+    "APF_FORMATION_BASE",
+    "APF_FORMATION_COUNT_MAX",
+    "APF_FORMATION_COUNT_OFFSET",
+    "APF_MASTER_BODY_SIZE",
+    "APF_RETAIL_FORMATION_COUNT",
+    "APF_WR3_TE_PACKAGE_SUB_PROVED",
+    "APF_G12_PACK_EXPERIMENTAL",
+    "APF_G12_PACK_USES_ACE_EMPTY_AS_SOURCE",
+    "APF_3RD_AND_LONG_UI_LABEL_VA",
+    "APF_4TH_AND_LONG_UI_LABEL_VA",
+    "APF_3RD_AND_LONG_USER_LOGIC_REFUSAL",
+    "APF_USER_3RD_AND_LONG_DATA_WRITER_EXISTS",
+    "APF_USER_3RD_AND_LONG_SEARCH_PROVED",
+    "ApfAceEmptyCensus",
+    "ApfThirdAndLongUserLogicRefusal",
+    "G12Wr3TePackResult",
+    "G12Wr3TeTarget",
+    "apf_formation_count",
+    "apf_formation_package_map_offset",
+    "build_apf_formation_package_map_patch",
+    "build_g12_wr3_te_package_map_pack",
+    "census_apf_ace_vs_ace_empty",
+    "g12_wr3_te_honesty",
+    "list_apf_ace_named_formations",
+    "read_apf_formation_name",
+    "read_apf_formation_package_map",
+    "refuse_apf_3rd_and_long_user_logic_writer",
+    "swap_apf_package_map_wr3_te",
+    "verify_apf_formation_package_map_patch",
+    "verify_g12_wr3_te_package_map_pack",
     "APF_CATEGORY_GETTER_VA",
     "APF_CATEGORY_INDEX_EXTRACT_PROVED",
     "APF_CATEGORY_PERSONNEL_ACE_ROW_INDEX",

@@ -96,6 +96,7 @@ from .models import (
     DRAFT_LOGO_EDIT_ID,
     DRAFT_LOGO_INNER_INDEX,
     DRAFT_LOGO_OUTER_INDEX,
+    NUMBER_TEXTURE_KIND,
     ApfSource,
     ApfStatus,
     Modification,
@@ -109,6 +110,7 @@ from .project import (
     load_project as read_project_archive,
     save_project as write_project_archive,
 )
+from .number_targets import lookup as lookup_number_target
 from .player_positions import PlayerPositionsError
 
 
@@ -1724,6 +1726,44 @@ class ApfSession:
                 "height": item.height,
                 "outer_index": item.outer_index,
                 "inner_index": item.inner_index,
+            },
+        )
+        self._set(item.asset_id, modification)
+        return modification
+
+    def replace_number(self, asset: str, supplied_png: Path) -> Modification:
+        item = self.catalog.get(asset)
+        target = lookup_number_target(
+            item.outer_index, item.inner_index, item.name, item.type_name
+        )
+        if target is None or item.status is not ApfStatus.EDITABLE:
+            raise SessionError(
+                f"{item.name} is not a writable jersey-number texture"
+            )
+        self.asset_io.preview_texture(item)
+        contract = (
+            "number_normal" if str(target["codec"]) == "dxn" else "number_color"
+        )
+        data, digest = self._validated_png(
+            supplied_png,
+            width=512,
+            height=512,
+            contract=contract,
+        )
+        stored = self._store_replacement(item.asset_id, digest, data)
+        modification = Modification(
+            asset_id=item.asset_id,
+            kind=NUMBER_TEXTURE_KIND,
+            replacement_path=stored,
+            replacement_sha256=digest,
+            metadata={
+                "slot_index": int(target["slot_index"]),
+                "entry_index": int(target["entry_index"]),
+                "file_index": int(target["file_index"]),
+                "name": str(target["name"]),
+                "codec": str(target["codec"]),
+                "width": 512,
+                "height": 512,
             },
         )
         self._set(item.asset_id, modification)
@@ -3364,6 +3404,47 @@ class ApfSession:
                         )
                     digest = hashlib.sha256(data).hexdigest()
                     suffix = ".json"
+                elif modification.kind == NUMBER_TEXTURE_KIND:
+                    item = self.catalog.get(modification.asset_id)
+                    target = lookup_number_target(
+                        item.outer_index,
+                        item.inner_index,
+                        item.name,
+                        item.type_name,
+                    )
+                    if target is None or item.status is not ApfStatus.EDITABLE:
+                        raise SessionError(
+                            "The project jersey-number target changed in this game"
+                        )
+                    self.asset_io.preview_texture(item)
+                    contract = (
+                        "number_normal"
+                        if str(target["codec"]) == "dxn"
+                        else "number_color"
+                    )
+                    data, digest = self._validated_png(
+                        modification.replacement_path,
+                        width=512,
+                        height=512,
+                        contract=contract,
+                    )
+                    expected = {
+                        "slot_index": int(target["slot_index"]),
+                        "entry_index": int(target["entry_index"]),
+                        "file_index": int(target["file_index"]),
+                        "name": str(target["name"]),
+                        "codec": str(target["codec"]),
+                        "width": 512,
+                        "height": 512,
+                    }
+                    if any(
+                        modification.metadata.get(key) != value
+                        for key, value in expected.items()
+                    ):
+                        raise SessionError(
+                            "Project jersey-number target metadata changed: "
+                            f"{modification.asset_id}"
+                        )
                 else:
                     raise SessionError(
                         "Project contains an unsupported editable target: "
@@ -3640,6 +3721,15 @@ class ApfSession:
                 raise SessionError("Helmet PNG blue must be 0; only the R/G mask channels are stored")
             if any(rgba[index] != 255 for index in range(3, len(rgba), 4)):
                 raise SessionError("Helmet PNG alpha must be 255 everywhere")
+        if contract == "number_normal":
+            if any(rgba[index] != 0 for index in range(2, len(rgba), 4)):
+                raise SessionError(
+                    "Jersey-number normal PNG blue must be 0; only the R/G DXN channels are stored"
+                )
+            if any(rgba[index] != 255 for index in range(3, len(rgba), 4)):
+                raise SessionError(
+                    "Jersey-number normal PNG alpha must be 255 everywhere"
+                )
         if contract == "digital_font" and any(
             rgba[index] != 255 or rgba[index + 1] != 255 or rgba[index + 2] != 255
             for index in range(0, len(rgba), 4)

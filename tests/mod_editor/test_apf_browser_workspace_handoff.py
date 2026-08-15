@@ -4,7 +4,8 @@ Beta 29 and Beta 30 answered *"logo_l0 is not an editable PNG slot in this
 browser"* to a modder who had followed the browser's own search hint.  The
 sentence described the browser and not the product: the Team Logo editor writes
 every one of the 118 crest packages, Uniforms writes the 96 material slots,
-Wordmarks writes all 206, and Field Art writes its six base textures.
+Wordmarks writes all 206, and Field Art writes its offline-proved bases,
+weave/dirtmaps, and format-18 endzones.
 
 These tests pin the behaviour that replaced the refusal -- the row is routed,
 the action button offers the hand-off, a chosen image travels with it, and a row
@@ -152,6 +153,14 @@ class WorkspaceRouteTests(unittest.TestCase):
             route_for_asset(
                 _asset(name="helmet_normal", outer_index=901, inner_index=3),
                 uniform_assets=(_uniform("helmet", 0, 400, 0),),
+                field_art_targets={(6, 0): "endzone_l0"},
+            )
+        )
+
+    def test_field_art_location_does_not_route_a_different_name(self) -> None:
+        self.assertIsNone(
+            route_for_asset(
+                _asset(name="helmet_normal", outer_index=6, inner_index=0),
                 field_art_targets={(6, 0): "endzone_l0"},
             )
         )

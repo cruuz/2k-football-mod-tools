@@ -1,6 +1,13 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.76`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.77`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.77 release validation
+
+Beta 45 ships Field Art extras (221 writable slots), 480 jersey digits, jersey
+capacity, and an experimental Ace-named WR3↔TE pack. Format-59 endzones stay
+export-only. 3rd-and-long has no data writer. Copied `0A` stays refused. 2K5
+is RC68 (updater identity only). Runtime visibility is unproved.
 
 ## 0.1.0-alpha.76 release validation
 
@@ -640,11 +647,11 @@ The dedicated Field Art workspace inventories 258 honest records in seven
 groups and 125 packages: 235 endzone
 records, four field scenes, four radiance records, six divot/weather records,
 three overlays, four practice scenes, and two penalty curves. Its semantic
-search/filter and normal preview/export routes are wired. Six proved textures—
-`endzone_l0`, `endzone_l1`, `pc_field_goal`, `Field_Pass_text`,
-`Stride_number_field`, and `divots`—have exact
-Replace/Revert/project/Build transports. Every other row remains visibly
-inspect/export-only until its own runtime ownership is proved.
+search/filter and normal preview/export routes are wired. The original six
+bases plus 215 extras (package-659 weave/dirtmaps and format-18 endzones)
+have exact Replace/Revert/project/Build transports (221 slots). Thirty-nine
+format-59 DXT5A `endzone_l1` layers stay inspect/export-only. Runtime
+visibility is unproved.
 
 Rosters & Players exposes a bounded map of 3,273 fixed UTF-16BE allocations,
 3,272 of which are nonempty. Those allocations serve 4,628 mapped player/team
@@ -2463,7 +2470,7 @@ APF capability card is labeled Coming Soon.
 | Player positions | Editable through a fixed semantic dropdown covering all 17 exact codes (QB through DE), with per-player Replace/Revert and modified state | The writer atomically preserves semantic `+0x34` and required mirror `+0x35`; the first changed-position Xenia spot check remains pending. Position edits deliberately do not alter ratings, team membership, tier, abilities, or depth-chart slots. |
 | Membership, depth charts, roster capacity | Alpha.23 contains a 32-team × 53-row **planner**; runtime writeback is a Research boundary | Each populated source team has 42 runtime membership pointers. Rows 43–53 are eleven project-only reserve choices saved in a retail-free `.apf2k8roster`; Build does not apply them. True 53-active-player teams require an emulator-target XEX accessor/direct-consumer patch plus owned side-table storage. Teams 25–32 use populated online-placeholder records whose offline selection ownership remains unproved. |
 | Logos and team art | `draft_logo` Editable; Team Logo writes all 118 source-resolved crest packages plus both matching cache layers and regenerated mip tails; Wordmarks writes all 206 separate 512×128 slot-6 packages with six regenerated BC1 mips and whole-volume verification; fixed `front_crown_to_rear_v1` routes a bilateral semantic bake through the exact stock high/low shell atlas in copied `0A`, with a 121-entry all-package headless gate and passed 10-view high/low static Eagles visual gate | The frontend `uniform_logocache` / Team Select owner is statically mapped, and the exact v24 static Eagles appearance is proved. Gameplay consumption, package-versus-cache resolution for the scorebug's dynamic samplers, exact wordmark runtime consumers, and Xbox 360 hardware behavior remain unproved. |
-| Field/end-zone/midfield art | 258-record / 7-family / 125-package semantic map; six exact textures have Replace/Revert/project/Build transports | Runtime visibility for the six writers and ownership for all remaining rows are unproved; unsupported rows remain inspect/export-only. |
+| Field/end-zone/midfield art | 258-record / 7-family / 125-package semantic map; 6 core + 215 extras (weave/dirt fmt 6/18/20 + format-18 endzones) have Replace/Revert/project/Build transports; 39 format-59 endzones refused | Runtime visibility is unproved for every Field Art writer. Format-59 endzones and the deferred codecs remain inspect/export-only; format-18 writes are not all 118 teams. |
 | Stadium Studio texture picking | Outer-14/inner-8 closes the exact 89-node → 84-material → 78-embedded-TXTR join; clicked surfaces list only owned textures, and all 78 formats have auto-resizing, full-mip, source-read-only copied-`1A` staging/build/Revert transports | Runtime visibility and other stadium scenes remain unproved; edits fail closed if retail-token-preserving H7A cannot fit the fixed allocation. |
 | Stadium POSITION geometry | Editable for 77 catalog-authorized outer-14/inner-8 surfaces through selected-mesh glTF export/import and a new independently verified copied `1A` | Vertex count/topology, transforms, UVs, normals, materials, skins, attachments and collision are locked. Runtime visibility, rigid attachment semantics and other stadium scenes remain unproved. |
 | Scorebug composition | All seven draw/material routes are closed: bottombar/titlebar/infobar/statbar own 11 embedded TXTRs total; messages/blackbar own none; team-logo inner 156 has two exact runtime-injected logo samplers and no static TXTR. `digital_font` remains editable. | The dynamic sampler's final runtime resolver (`uniform_logo` versus separate `uniform_logocache`) still needs code/runtime proof. Team Logo already co-writes both candidate reservoirs; no third texture family is evidenced. |

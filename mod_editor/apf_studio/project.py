@@ -31,6 +31,7 @@ from .models import (
     DRAFT_LOGO_EDIT_ID,
     DRAFT_LOGO_INNER_INDEX,
     DRAFT_LOGO_OUTER_INDEX,
+    NUMBER_TEXTURE_KIND,
     Modification,
 )
 from .helmet_crest_design import (
@@ -1818,6 +1819,46 @@ def _validated_metadata(
         ):
             raise ProjectError(
                 f"AUSB exact-slot audio project target metadata changed: {asset_id}"
+            )
+        return value
+    if kind == NUMBER_TEXTURE_KIND:
+        allowed = {
+            "slot_index",
+            "entry_index",
+            "file_index",
+            "name",
+            "codec",
+            "width",
+            "height",
+        }
+        if set(value) != allowed:
+            raise ProjectError(f"Jersey-number project metadata is invalid: {asset_id}")
+        fields = asset_id.split(":")
+        try:
+            outer_index = int(fields[2])
+            inner_index = int(fields[4])
+        except (IndexError, ValueError) as exc:
+            raise ProjectError(
+                f"Jersey-number project target is invalid: {asset_id}"
+            ) from exc
+        name = value.get("name")
+        codec = value.get("codec")
+        if (
+            fields[:2] != ["apf", "outer"]
+            or fields[3] != "inner"
+            or len(fields) != 5
+            or type(value.get("slot_index")) is not int
+            or not 0 <= int(value["slot_index"]) < 24
+            or value.get("entry_index") != outer_index
+            or value.get("file_index") != inner_index
+            or not isinstance(name, str)
+            or not name.startswith("number_")
+            or codec not in {"dxt1", "dxn"}
+            or value.get("width") != 512
+            or value.get("height") != 512
+        ):
+            raise ProjectError(
+                f"Jersey-number project target metadata changed: {asset_id}"
             )
         return value
     raise ProjectError(f"Unsupported project replacement target: {asset_id}")

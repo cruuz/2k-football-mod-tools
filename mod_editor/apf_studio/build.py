@@ -40,6 +40,8 @@ from .models import (
     DRAFT_LOGO_EDIT_ID,
     DRAFT_LOGO_INNER_INDEX,
     DRAFT_LOGO_OUTER_INDEX,
+    NUMBER_TEXTURE_KIND,
+    NUMBER_TEXTURE_WRITER_SCHEMA,
     ApfSource,
     BuildReceipt,
     Modification,
@@ -76,6 +78,8 @@ import apf_logocache_verify  # type: ignore  # noqa: E402
 import apf_team_crests  # type: ignore  # noqa: E402
 
 from .project import ProjectError, decode_text_payload
+from .number_targets import NumberPatchError
+from .number_targets import compile_package_patch as compile_number_package_patch
 from .uniform_targets import compile_uniform_patch
 
 
@@ -854,6 +858,7 @@ class ApfBuildService:
         helmet_crest_design_group: list[Modification] = []
         audo_overlay_group: list[Modification] = []
         ausb_overlay_group: list[Modification] = []
+        number_groups: dict[int, list[Modification]] = {}
         replacement_hashes: dict[str, str] = {}
         overflowed: list[apf_texture_patch.AllocationOverflowError] = []
         for index, modification in enumerate(edits, start=1):
@@ -899,6 +904,13 @@ class ApfBuildService:
                 audo_overlay_group.append(modification)
             elif modification.kind == AUSB_EXACT_SLOT_KIND:
                 ausb_overlay_group.append(modification)
+            elif modification.kind == NUMBER_TEXTURE_KIND:
+                entry_index = modification.metadata.get("entry_index")
+                if type(entry_index) is not int:
+                    raise BuildError(
+                        f"Jersey-number edit is missing its package: {modification.asset_id}"
+                    )
+                number_groups.setdefault(entry_index, []).append(modification)
             else:
                 try:
                     outer_index, entry_bytes, writer_schema = self._compile(
@@ -930,6 +942,57 @@ class ApfBuildService:
                 )
                 edit_rows.append(compiled[outer_index][1])
             progress("Compiling mod edits", index, max(1, len(edits)))
+        for outer_index, group in sorted(number_groups.items()):
+            replacements: dict[str, Path] = {}
+            for modification in group:
+                name = modification.metadata.get("name")
+                if not isinstance(name, str) or name in replacements:
+                    raise BuildError(
+                        f"Jersey-number edit identity changed: {modification.asset_id}"
+                    )
+                if (
+                    modification.metadata.get("entry_index") != outer_index
+                    or type(modification.metadata.get("file_index")) is not int
+                    or type(modification.metadata.get("slot_index")) is not int
+                ):
+                    raise BuildError(
+                        f"Jersey-number target metadata changed: {modification.asset_id}"
+                    )
+                replacements[name] = modification.replacement_path
+            try:
+                result = compile_number_package_patch(
+                    self.source.index_0a, outer_index, replacements
+                )
+            except apf_texture_patch.AllocationOverflowError as exc:
+                overflowed.append(exc)
+                continue
+            except NumberPatchError as exc:
+                raise BuildError(
+                    f"Could not compile jersey-number package {outer_index}: {exc}"
+                ) from exc
+            if outer_index in compiled:
+                raise BuildError(
+                    f"Jersey-number edits collide with another APF outer entry {outer_index} edit"
+                )
+            compiled[outer_index] = (
+                result.entry_bytes,
+                {
+                    "asset_ids": tuple(item.asset_id for item in group),
+                    "kind": NUMBER_TEXTURE_KIND,
+                    "outer_index": outer_index,
+                    "staged_digits": list(result.manifest.get("staged_digits", ())),
+                    "replacement_png_sha256s": {
+                        item.asset_id: item.replacement_sha256 for item in group
+                    },
+                    "entry_size": len(result.entry_bytes),
+                    "entry_sha256": _hash_bytes(result.entry_bytes),
+                    "writer_schema": NUMBER_TEXTURE_WRITER_SCHEMA,
+                    "remaining_package_budget_bytes": result.manifest.get(
+                        "remaining_package_budget_bytes"
+                    ),
+                },
+            )
+            edit_rows.append(compiled[outer_index][1])
         if overflowed:
             if len(overflowed) == 1:
                 raise BuildError(str(overflowed[0]))
@@ -950,12 +1013,13 @@ class ApfBuildService:
                     )
                     for item in sorted(overflowed, key=lambda x: x.overflow_bytes)
                 )
-                + "\n\nThese are region masks: flatten colours to the retail "
-                "palette and remove anti-aliasing, which emits invalid region "
-                "IDs rather than soft edges. A slot's budget is set by how "
-                "detailed retail's own artwork there is, not by how much free "
-                "space it appears to have, so a near-flat retail slot cannot "
-                f"take busy art. The closest one is {worst:,} bytes over."
+                + "\n\nA slot's budget is set by how detailed retail's own "
+                "artwork there is, not by how much free space it appears to "
+                "have, so a near-flat retail slot cannot take busy art. "
+                "Region-mask slots (jersey/shoulder/crest/endzone) need flat "
+                "colours and hard edges. Jersey digits are DXT1/DXN and "
+                "share one package budget — they are not masks. The closest "
+                f"one is {worst:,} bytes over."
             )
         if audo_overlay_group:
             coordinates = tuple(

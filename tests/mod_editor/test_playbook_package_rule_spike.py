@@ -201,6 +201,35 @@ class PackageMapLayoutTests(unittest.TestCase):
         self.assertEqual(APF_ACE_PACKAGE_MAP[3], APF_PACKAGE_MAP_ROLE_WR3)
         self.assertEqual(sorted(APF_ACE_PACKAGE_MAP), list(range(11)))
         from mod_editor.core.playbook_package_rule_spike import (
+            APF_ACE_EMPTY_IS_WR3_TE_SWAP_OF_ACE,
+            APF_ACE_EMPTY_PACKAGE_MAP,
+            APF_ACE_VS_ACE_EMPTY_SLOT_DELTAS,
+            APF_FORMATION_BASE,
+            APF_G12_PACK_EXPERIMENTAL,
+            APF_G12_PACK_USES_ACE_EMPTY_AS_SOURCE,
+            APF_MASTER_BODY_SIZE,
+            APF_USER_3RD_AND_LONG_DATA_WRITER_EXISTS,
+            APF_WR3_TE_PACKAGE_SUB_PROVED,
+            swap_apf_package_map_wr3_te,
+        )
+
+        self.assertEqual(APF_FORMATION_BASE, 0x0244)
+        self.assertEqual(APF_MASTER_BODY_SIZE, 0x2C750)
+        self.assertFalse(APF_ACE_EMPTY_IS_WR3_TE_SWAP_OF_ACE)
+        self.assertFalse(APF_WR3_TE_PACKAGE_SUB_PROVED)
+        self.assertTrue(APF_G12_PACK_EXPERIMENTAL)
+        self.assertFalse(APF_G12_PACK_USES_ACE_EMPTY_AS_SOURCE)
+        self.assertFalse(APF_USER_3RD_AND_LONG_DATA_WRITER_EXISTS)
+        self.assertEqual(APF_ACE_EMPTY_PACKAGE_MAP[2], APF_PACKAGE_MAP_ROLE_TE)
+        self.assertEqual(APF_ACE_EMPTY_PACKAGE_MAP[3], APF_PACKAGE_MAP_ROLE_WR3)
+        self.assertEqual(
+            APF_ACE_VS_ACE_EMPTY_SLOT_DELTAS, ((9, 6, 7), (10, 7, 6))
+        )
+        self.assertNotEqual(
+            APF_ACE_EMPTY_PACKAGE_MAP,
+            swap_apf_package_map_wr3_te(APF_ACE_PACKAGE_MAP),
+        )
+        from mod_editor.core.playbook_package_rule_spike import (
             APF_3RD_AND_LONG_PLAY_CHOICE_PROVED,
             APF_DOWN_NAME_TABLE_VA,
             APF_DOWN_NAMES,
@@ -1025,6 +1054,299 @@ class RealO0308PackageMapTests(unittest.TestCase):
             read_formation_package_map(pack.raw_resource, dime_i),
             read_formation_package_map(self.raw, dime_i),
         )
+
+
+def _put_apf_name(body: bytearray, field: int, text: str, pool: int) -> int:
+    encoded = text.encode("utf-16be") + b"\0\0"
+    body[pool : pool + len(encoded)] = encoded
+    import struct
+
+    struct.pack_into(">i", body, field, pool - field + 1)
+    return pool + len(encoded)
+
+
+def _synthetic_apf_master() -> bytes:
+    """Minimal MASTER body with Ace / Ace Empty / Nickel maps."""
+
+    import struct
+
+    from mod_editor.core.playbook_package_rule_spike import (
+        APF_ACE_EMPTY_PACKAGE_MAP,
+        APF_ACE_PACKAGE_MAP,
+        APF_FORMATION_BASE,
+        APF_FORMATION_COUNT_OFFSET,
+        APF_FORMATION_SIZE,
+        APF_MASTER_BODY_SIZE,
+        APF_PACKAGE_MAP_OFFSET_IN_FORMATION,
+    )
+
+    body = bytearray(APF_MASTER_BODY_SIZE)
+    struct.pack_into(">I", body, APF_FORMATION_COUNT_OFFSET, 3)
+    names = ("Ace", "Ace Empty", "Nickel")
+    maps = (
+        APF_ACE_PACKAGE_MAP,
+        APF_ACE_EMPTY_PACKAGE_MAP,
+        (4, 5, 0, 2, 3, 1, 7, 8, 9, 6, 10),
+    )
+    pool = 0x22384
+    for index, (name, pmap) in enumerate(zip(names, maps, strict=True)):
+        field = APF_FORMATION_BASE + index * APF_FORMATION_SIZE
+        pool = _put_apf_name(body, field, name, pool)
+        offset = field + APF_PACKAGE_MAP_OFFSET_IN_FORMATION
+        body[offset : offset + 11] = bytes(pmap)
+    return bytes(body)
+
+
+class ApfG12PackageMapWriterTests(unittest.TestCase):
+    def test_swap_is_a_permutation_and_toggles_8_and_9(self) -> None:
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_ACE_PACKAGE_MAP,
+            swap_apf_package_map_wr3_te,
+        )
+
+        swapped = swap_apf_package_map_wr3_te(APF_ACE_PACKAGE_MAP)
+        self.assertEqual(sorted(swapped), list(range(11)))
+        self.assertEqual(swapped[2], 9)
+        self.assertEqual(swapped[3], 8)
+        self.assertEqual(swap_apf_package_map_wr3_te(swapped), APF_ACE_PACKAGE_MAP)
+
+    def test_swap_refuses_a_map_missing_one_role(self) -> None:
+        from mod_editor.core.playbook_package_rule_spike import (
+            swap_apf_package_map_wr3_te,
+        )
+
+        missing = (0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 10)
+        with self.assertRaises(ValidationError):
+            swap_apf_package_map_wr3_te(missing)
+
+    def test_synthetic_census_and_g12_pack(self) -> None:
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_3RD_AND_LONG_PLAY_CHOICE_PROVED,
+            APF_ACE_EMPTY_PACKAGE_MAP,
+            APF_ACE_PACKAGE_MAP,
+            APF_WR3_TE_PACKAGE_SUB_PROVED,
+            build_g12_wr3_te_package_map_pack,
+            census_apf_ace_vs_ace_empty,
+            read_apf_formation_package_map,
+            swap_apf_package_map_wr3_te,
+            verify_g12_wr3_te_package_map_pack,
+        )
+
+        raw = _synthetic_apf_master()
+        census = census_apf_ace_vs_ace_empty(raw)
+        self.assertEqual(census.ace_formation_index, 0)
+        self.assertEqual(census.empty_formation_index, 1)
+        self.assertEqual(census.ace_package_map, APF_ACE_PACKAGE_MAP)
+        self.assertEqual(census.empty_package_map, APF_ACE_EMPTY_PACKAGE_MAP)
+        self.assertFalse(census.maps_identical)
+        self.assertFalse(census.empty_is_wr3_te_swap_of_ace)
+        self.assertEqual(census.slot_deltas, ((9, 6, 7), (10, 7, 6)))
+
+        pack = build_g12_wr3_te_package_map_pack(raw)
+        self.assertEqual(pack.status, "offline_writer_proved")
+        self.assertFalse(pack.manifest["runtime_proved"])
+        self.assertTrue(pack.manifest["experimental"])
+        self.assertFalse(pack.manifest["wr3_te_package_sub_proved"])
+        self.assertFalse(pack.manifest["APF_3RD_AND_LONG_PLAY_CHOICE_PROVED"])
+        self.assertFalse(pack.manifest["ace_empty_is_wr3_te_swap_of_ace"])
+        self.assertFalse(pack.manifest["ace_empty_used_as_source"])
+        self.assertFalse(APF_WR3_TE_PACKAGE_SUB_PROVED)
+        self.assertFalse(APF_3RD_AND_LONG_PLAY_CHOICE_PROVED)
+        self.assertIn("experimental", pack.honesty.casefold())
+        self.assertIn("ace-named", pack.honesty.casefold())
+        self.assertIn("8", pack.honesty)
+        self.assertIn("unproved", pack.honesty.casefold())
+        self.assertIn("3rd-and-long", pack.honesty.casefold())
+        self.assertIn("does not copy ace empty", pack.honesty.casefold())
+        self.assertEqual(len(pack.targets), 2)
+        names = {t.formation_name for t in pack.targets}
+        self.assertEqual(names, {"Ace", "Ace Empty"})
+        self.assertTrue(all("ace" in t.formation_name.casefold() for t in pack.targets))
+        self.assertGreater(pack.total_changed_byte_count, 0)
+
+        verify_g12_wr3_te_package_map_pack(
+            raw,
+            pack.raw_resource,
+            formation_indices=tuple(t.formation_index for t in pack.targets),
+        )
+        ace_after = read_apf_formation_package_map(pack.raw_resource, 0)
+        empty_after = read_apf_formation_package_map(pack.raw_resource, 1)
+        self.assertEqual(ace_after, swap_apf_package_map_wr3_te(APF_ACE_PACKAGE_MAP))
+        self.assertEqual(
+            empty_after, swap_apf_package_map_wr3_te(APF_ACE_EMPTY_PACKAGE_MAP)
+        )
+        self.assertNotEqual(ace_after, APF_ACE_EMPTY_PACKAGE_MAP)
+        self.assertNotEqual(ace_after, empty_after)
+        self.assertEqual(
+            read_apf_formation_package_map(pack.raw_resource, 2),
+            read_apf_formation_package_map(raw, 2),
+        )
+        self.assertEqual(
+            read_apf_formation_package_map(raw, 0), APF_ACE_PACKAGE_MAP
+        )
+
+    def test_pack_refuses_a_book_without_ace(self) -> None:
+        import struct
+
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_FORMATION_BASE,
+            APF_FORMATION_COUNT_OFFSET,
+            APF_FORMATION_SIZE,
+            APF_MASTER_BODY_SIZE,
+            APF_PACKAGE_MAP_OFFSET_IN_FORMATION,
+            build_g12_wr3_te_package_map_pack,
+        )
+
+        body = bytearray(APF_MASTER_BODY_SIZE)
+        struct.pack_into(">I", body, APF_FORMATION_COUNT_OFFSET, 1)
+        _put_apf_name(body, APF_FORMATION_BASE, "Nickel", 0x22384)
+        offset = APF_FORMATION_BASE + APF_PACKAGE_MAP_OFFSET_IN_FORMATION
+        body[offset : offset + 11] = bytes(range(11))
+        with self.assertRaisesRegex(ValidationError, "Ace"):
+            build_g12_wr3_te_package_map_pack(bytes(body))
+
+    def test_g12_pack_is_experimental_ace_named_8_9(self) -> None:
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_G12_PACK_EXPERIMENTAL,
+            APF_PACKAGE_MAP_ROLE_TE,
+            APF_PACKAGE_MAP_ROLE_WR3,
+            APF_WR3_TE_PACKAGE_SUB_PROVED,
+            build_g12_wr3_te_package_map_pack,
+            swap_apf_package_map_wr3_te,
+        )
+
+        self.assertTrue(APF_G12_PACK_EXPERIMENTAL)
+        self.assertFalse(APF_WR3_TE_PACKAGE_SUB_PROVED)
+        pack = build_g12_wr3_te_package_map_pack(_synthetic_apf_master())
+        self.assertTrue(pack.manifest["experimental"])
+        self.assertIn("experimental", pack.honesty.casefold())
+        self.assertIn("ace-named", pack.honesty.casefold())
+        for target in pack.targets:
+            self.assertRegex(target.formation_name, r"(?i)\bace\b")
+            self.assertEqual(
+                target.new_map, swap_apf_package_map_wr3_te(target.old_map)
+            )
+            self.assertEqual(
+                target.old_map.index(APF_PACKAGE_MAP_ROLE_TE),
+                target.new_map.index(APF_PACKAGE_MAP_ROLE_WR3),
+            )
+            self.assertEqual(
+                target.old_map.index(APF_PACKAGE_MAP_ROLE_WR3),
+                target.new_map.index(APF_PACKAGE_MAP_ROLE_TE),
+            )
+
+    def test_g12_pack_does_not_use_ace_empty_as_source(self) -> None:
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_ACE_EMPTY_PACKAGE_MAP,
+            APF_ACE_PACKAGE_MAP,
+            APF_G12_PACK_USES_ACE_EMPTY_AS_SOURCE,
+            build_g12_wr3_te_package_map_pack,
+            read_apf_formation_package_map,
+            swap_apf_package_map_wr3_te,
+        )
+
+        self.assertFalse(APF_G12_PACK_USES_ACE_EMPTY_AS_SOURCE)
+        raw = _synthetic_apf_master()
+        pack = build_g12_wr3_te_package_map_pack(raw)
+        self.assertFalse(pack.manifest["ace_empty_used_as_source"])
+        self.assertIn("not used as a source", pack.honesty.casefold())
+        ace = next(t for t in pack.targets if t.formation_name == "Ace")
+        self.assertEqual(ace.old_map, APF_ACE_PACKAGE_MAP)
+        self.assertEqual(ace.new_map, swap_apf_package_map_wr3_te(APF_ACE_PACKAGE_MAP))
+        self.assertNotEqual(ace.new_map, APF_ACE_EMPTY_PACKAGE_MAP)
+        self.assertNotEqual(
+            ace.new_map, read_apf_formation_package_map(raw, 1)
+        )
+        self.assertNotEqual(
+            ace.new_map, swap_apf_package_map_wr3_te(APF_ACE_EMPTY_PACKAGE_MAP)
+        )
+
+    def test_3rd_and_long_writer_is_refused(self) -> None:
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_3RD_AND_LONG_PLAY_CHOICE_PROVED,
+            APF_3RD_AND_LONG_USER_LOGIC_REFUSAL,
+            APF_USER_3RD_AND_LONG_DATA_WRITER_EXISTS,
+            ApfThirdAndLongUserLogicRefusal,
+            refuse_apf_3rd_and_long_user_logic_writer,
+        )
+
+        self.assertFalse(APF_3RD_AND_LONG_PLAY_CHOICE_PROVED)
+        self.assertFalse(APF_USER_3RD_AND_LONG_DATA_WRITER_EXISTS)
+        with self.assertRaises(ValidationError) as caught:
+            refuse_apf_3rd_and_long_user_logic_writer()
+        self.assertIsInstance(caught.exception, ApfThirdAndLongUserLogicRefusal)
+        self.assertEqual(str(caught.exception), APF_3RD_AND_LONG_USER_LOGIC_REFUSAL)
+        self.assertIn("XEX", str(caught.exception))
+        self.assertIn("0x8486CE88", str(caught.exception))
+        self.assertIn("unsafe", str(caught.exception).casefold())
+
+
+_APF_DISC_0A = Path(
+    "/media/noah/Storage/for codex 1.0/extracted/All-Pro Football 2K8 (USA)/0A"
+)
+
+
+@unittest.skipUnless(
+    _APF_DISC_0A.is_file() and not _APF_DISC_0A.is_symlink(),
+    "APF retail 0A not present at the Storage disc path",
+)
+class RealApfMasterG12Tests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        from mod_editor.core.apf2k8_playbook_route_writer import (
+            read_master_play_body,
+        )
+
+        cls.raw = read_master_play_body(_APF_DISC_0A)
+
+    def test_retail_ace_empty_is_not_an_8_9_swap(self) -> None:
+        from mod_editor.core.playbook_package_rule_spike import (
+            APF_ACE_EMPTY_FORMATION_INDEX,
+            APF_ACE_EMPTY_PACKAGE_MAP,
+            APF_ACE_FORMATION_INDEX,
+            APF_ACE_PACKAGE_MAP,
+            APF_RETAIL_FORMATION_COUNT,
+            apf_formation_count,
+            census_apf_ace_vs_ace_empty,
+        )
+
+        self.assertEqual(apf_formation_count(self.raw), APF_RETAIL_FORMATION_COUNT)
+        census = census_apf_ace_vs_ace_empty(self.raw)
+        self.assertEqual(census.ace_formation_index, APF_ACE_FORMATION_INDEX)
+        self.assertEqual(census.empty_formation_index, APF_ACE_EMPTY_FORMATION_INDEX)
+        self.assertEqual(census.ace_package_map, APF_ACE_PACKAGE_MAP)
+        self.assertEqual(census.empty_package_map, APF_ACE_EMPTY_PACKAGE_MAP)
+        self.assertFalse(census.empty_is_wr3_te_swap_of_ace)
+
+    def test_g12_pack_swaps_ace_named_maps_only(self) -> None:
+        from mod_editor.core.playbook_package_rule_spike import (
+            build_g12_wr3_te_package_map_pack,
+            list_apf_ace_named_formations,
+            read_apf_formation_package_map,
+            swap_apf_package_map_wr3_te,
+            verify_g12_wr3_te_package_map_pack,
+        )
+
+        named = list_apf_ace_named_formations(self.raw)
+        self.assertGreaterEqual(len(named), 2)
+        names = {name for _index, name in named}
+        self.assertIn("Ace", names)
+        self.assertIn("Ace Empty", names)
+        pack = build_g12_wr3_te_package_map_pack(self.raw)
+        verify_g12_wr3_te_package_map_pack(
+            self.raw,
+            pack.raw_resource,
+            formation_indices=tuple(t.formation_index for t in pack.targets),
+        )
+        self.assertGreater(pack.total_changed_byte_count, 0)
+        for index, name in named:
+            self.assertEqual(
+                read_apf_formation_package_map(pack.raw_resource, index),
+                swap_apf_package_map_wr3_te(
+                    read_apf_formation_package_map(self.raw, index)
+                ),
+                msg=name,
+            )
 
 
 if __name__ == "__main__":

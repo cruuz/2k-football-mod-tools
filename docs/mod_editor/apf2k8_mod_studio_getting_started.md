@@ -4,7 +4,7 @@ APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-The source code and UI identify as **`0.1.0-alpha.76`**, the current retail-free
+The source code and UI identify as **`0.1.0-alpha.77`**, the current retail-free
 release candidate; its mode-`0444` archive is authenticated by the adjacent
 `.sha256` sidecar. Alpha.38 and earlier remain preserved unchanged. Verify
 whichever sealed archive you install with its authoritative adjacent `.sha256`
@@ -199,7 +199,11 @@ error and no source file is changed.
 7. Save a `.apf2k8mod` project if you want to continue later or share the mod.
    The first Save asks for a name. After that, use `Ctrl+S` to update the active
    project or `Ctrl+Shift+S` to save a separate copy.
-8. Choose **Build** and select a new, empty destination folder.
+8. Choose **Build** and pick the folder Xenia already loads. Confirm
+   replace; the studio writes into that folder and does not create an
+   `APF2K8-Mod-TIMESTAMP` child. A copied or studio-built `0A` cannot be
+   opened as source — load the retail extract and rebuild into the last
+   folder.
 9. Choose **Title Update 1.1…** if you have not already, then **Launch in
    Xenia**. The 1.1 LIVE package is required on Xbox/Xenia and never shipped
    for PS3.
@@ -295,8 +299,9 @@ to have. Measured across the 24 shoulder slots (davidhbui, Beta 38): the slot
 with the **most** sector slack is 18th of 24 for capacity, and refuses a
 detailed mask that two roomier slots accept.
 
-The detail line under a selected shoulder slot names its budget and its rank in
-the family, so a slot can be chosen before a build is spent on it. If a build
+The detail line under a selected jersey or shoulder slot names its budget and
+its rank in that family, so a slot can be chosen before a build is spent on it.
+Jersey uses the same compressed-budget model as shoulder. If a build
 does refuse, the message names the slot, its outer entry, its allocation, and
 its budget — and if several targets are over, it reports all of them at once.
 
@@ -806,10 +811,20 @@ plugs. Play names are not personnel. **Move tagged slot…** only reassigns Y
 tags inside one record.
 
 Role 8 maps to roster TE and role 9 to WR in table `0x820FC320`; whether a
-formation has a TE is whether its map contains role 8. Swapping those bytes is
-not runtime-proved, so it is not offered.
+formation has a TE is whether its map contains role 8. **Export WR3↔TE
+package-map pack…** is an experimental private MASTER PLAY export that swaps
+those two roles on Ace-named formations and writes an honesty JSON sidecar.
+Retail Ace Empty is not an 8↔9 swap of Ace (slots 9/10 are 6↔7). The export
+is not a 3rd-and-long fix, does not stage a project edit, and
+`wr3_te_package_sub_proved` stays False. User-team 3rd-and-long “next-best
+pass formation” search has no data-side writer — **3rd-and-long user
+logic…** names the XEX addresses and refuses a patch.
 
 - Tick plays in or out of a formation. Tagged slots follow `min(4, plays)`.
+- **Export WR3↔TE package-map pack…** writes a private MASTER PLAY and an
+  honesty JSON sidecar. It is experimental. It does not fix 3rd-and-long.
+- **3rd-and-long user logic…** names the XEX addresses and refuses a writer.
+  There is no data-side table for the user-team next-best pass search.
 - **Move tagged slot…** can hand a slot to a play you just added in the same
   request (the X-43Blitz Bear case). That only reassigns Y tags inside one
   record. It does not change who lines up.
@@ -848,7 +863,11 @@ not runtime-proved, so it is not offered.
   11-byte role permutation at formation `+0x11`. Role 8 is TE and role 9 is WR
   (`0x820FC320` / `0x84a9ae68`); the builder indexes that map by slot
   (`0x848605b4`). Whether a formation has a TE is whether its map contains
-  role 8. Swapping those bytes is not runtime-proved, so it is not offered.
+  role 8. Swapping those bytes is not runtime-proved, so it is not a staged
+  project edit. **Export WR3↔TE package-map pack…** writes a private
+  Ace-named 8↔9 MASTER PLAY plus honesty JSON; retail Ace Empty is not an
+  8↔9 swap of Ace (slots 9/10 are 6↔7). **3rd-and-long user logic…** names
+  the XEX addresses and refuses a writer.
   MASTER categories at
   `+0x44` are personnel packages (Ace, 5 Wide, Flush); `0x8485bd38` extracts
   the trailer index. `0x84a472d0` is play-type UI, not down; `0x8486ce88`
@@ -1116,21 +1135,26 @@ that category. The header shows seven families across 125 archive packages:
 
 Search by name, choose a family, inspect the source package, and use the
 existing PNG/scene/raw export offered for that asset. An export comes from the
-user's game and stays private. Six exact texture targets have bounded
-Replace/Revert/project/Build transports: `endzone_l0`, `endzone_l1`,
-`pc_field_goal`, `Field_Pass_text`, `Stride_number_field`, and `divots`. Import
-auto-resizes to the target dimensions, regenerates the required encoded payload,
-stages a source-fenced copied `0A`, and fails closed if the fixed allocation
-cannot be preserved. The other Field Art rows remain inspect/export-only until
-their team, stadium, selector, material, shader, and runtime ownership is proved.
+user's game and stays private. The Field Art editor writes the original six
+bases (`endzone_l0`, `endzone_l1`, `pc_field_goal`, `Field_Pass_text`,
+`Stride_number_field`, `divots`), the 21 package-659 weave/dirtmaps (ten
+64×64 8_8_8_8 weaves, two 256×256 BC3 `weave_skin_weights_*`, nine BC3
+dirtmaps), and 196 format-18 DXT1 endzone layers (118 `l0` + 78 `l1`).
+Import auto-resizes to the target dimensions, regenerates the required
+encoded payload, stages a source-fenced copied `0A`, and fails closed if
+the fixed allocation cannot be preserved. Thirty-nine format-59 DXT5A
+`endzone_l1` layers, `field_radiance`, the `divot_Grass*` weather textures,
+and the SCNE/CurveAnim rows stay inspect/export-only. In-game look is not
+proved.
 
 ### Finding one team's endzone
 
-Every endzone package is **one team's own artwork**. Package 6 — the writable
-pair above — is not a shared layer; it is structurally identical to the other
-117 and is simply the pair whose writer was proved first, so editing it repaints
-that one team's endzone. (Earlier builds described it as shared. That was
-wrong.)
+Every endzone package is **one team's own artwork**. Package 6 is not a
+shared layer; it is structurally identical to the other format-18 packages
+and was simply the pair whose writer was proved first. Editing any writable
+endzone slot repaints that one team's layer. (Earlier builds described
+outer 6 as shared. That was wrong.) Format-59 `endzone_l1` packages are
+not offered.
 
 You cannot find a team's endzone by searching. The nicknames are not on the
 disc: a name like `Redcoats` appears zero times in `0A`, `0B`, `1A`, `1B` and

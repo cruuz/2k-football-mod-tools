@@ -12,10 +12,12 @@ under All Textures.
    Field Art rows including **≈118 endzone_l0** and **117 endzone_l1** package
    pairs (stock NFL package-local art). These appear in the Field Art inventory
    browser and All Textures under the field-art category filter.
-2. **Focused editor (writable):** `FIELD_ART_COVERED_TARGETS` offers only the
-   **six** slots with offline-proved writers in `tools/apf_field_art_patch.py`
-   (the endzone layer pair at outer 6, practice overlays outer 659, base divots
-   outer 53). That is intentional honesty, not a missing catalog filter bug.
+2. **Focused editor (writable):** `FIELD_ART_COVERED_TARGETS` offers the
+   original six bases plus descriptor-derived extras the writer can prove:
+   21 package-659 weave/dirtmaps and 194 additional format-18 endzones
+   (221 slots total). Thirty-nine format-59 DXT5A `endzone_l1` layers stay
+   browse/export-only. That split is intentional honesty, not a missing
+   catalog filter bug.
 3. **Created teams:** custom-team appearance / user slots may surface different
    authoring paths; stock endzones remain package-local TXTR pairs until a
    per-package writer is proved.

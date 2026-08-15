@@ -29,6 +29,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 import hashlib
+import json
 import os
 from pathlib import Path
 import random
@@ -48,8 +49,22 @@ import apf_field_art_patch as fa  # noqa: E402
 import apf_field_art_verify as fav  # noqa: E402
 
 
-INDEX_PATH = WORKSPACE / "extracted/All-Pro Football 2K8 (USA)/0A"
-DISC_AVAILABLE = INDEX_PATH.exists()
+def _apf_index_0a() -> Path:
+    candidates = (
+        WORKSPACE / "extracted/All-Pro Football 2K8 (USA)/0A",
+        Path(
+            "/media/noah/Storage/for codex 1.0/extracted/"
+            "All-Pro Football 2K8 (USA)/0A"
+        ),
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return candidates[0]
+
+
+INDEX_PATH = _apf_index_0a()
+DISC_AVAILABLE = INDEX_PATH.is_file()
 SLOW = os.environ.get("APF_FIELD_ART_SLOW") == "1"
 _SIBLINGS = ("0B", "1A", "1B")
 
@@ -116,10 +131,13 @@ def _volume_dir(root: Path) -> Path:
 
 class FieldArtContractPinTests(unittest.TestCase):
     def test_contract_table_pins_every_shipped_slot(self) -> None:
-        self.assertEqual(
-            set(fa._CONTRACTS),
-            {(6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)},
-        )
+        core = {(6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)}
+        self.assertTrue(core.issubset(set(fa._CONTRACTS)))
+        self.assertGreaterEqual(len(fa._CONTRACTS), 6 + 21 + 194)
+        self.assertIn((659, 189), fa._CONTRACTS)  # weave_jersey0
+        self.assertEqual(fa._CONTRACTS[(659, 189)].codec, "rgba8888")
+        self.assertIn((659, 193), fa._CONTRACTS)  # dirtmap_helmet
+        self.assertEqual(fa._CONTRACTS[(659, 193)].codec, "bc3")
         endzone = fa._CONTRACTS[(6, 0)]
         self.assertEqual((endzone.codec, endzone.format), ("dxt1", 18))
         self.assertEqual((endzone.width, endzone.height), (2048, 512))
@@ -135,6 +153,29 @@ class FieldArtContractPinTests(unittest.TestCase):
         # These need a new DXT5A / 5_6_5 codec and a non-permutation swizzle path.
         for key in ((53, 3), (659, 11), (659, 168), (659, 173)):
             self.assertNotIn(key, fa._CONTRACTS)
+        # Format-59 DXT5A endzone layers stay out of the writer table.
+        self.assertNotIn((78, 1), fa._CONTRACTS)
+        extra = json.loads(
+            (WORKSPACE / "mod_editor/data/apf2k8_field_extra_targets.v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        refused = [
+            (int(row["entry_index"]), int(row["file_index"]))
+            for row in extra["endzones"]
+            if int(row["format"]) == 59
+        ]
+        self.assertEqual(len(refused), 39)
+        for key in refused:
+            self.assertNotIn(key, fa._CONTRACTS)
+        weights_head = fa._CONTRACTS[(659, 104)]
+        weights_arm = fa._CONTRACTS[(659, 227)]
+        self.assertEqual(weights_head.name, "weave_skin_weights_head")
+        self.assertEqual((weights_head.codec, weights_head.format), ("bc3", 20))
+        self.assertEqual((weights_head.width, weights_head.height), (256, 256))
+        self.assertEqual(weights_arm.name, "weave_skin_weights_arm")
+        self.assertEqual((weights_arm.codec, weights_arm.format), ("bc3", 20))
+        self.assertEqual((weights_arm.width, weights_arm.height), (256, 256))
 
 
 @unittest.skipUnless(DISC_AVAILABLE, "extracted APF 0A not present")

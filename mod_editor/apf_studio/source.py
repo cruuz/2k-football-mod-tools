@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import json
 import os
 from pathlib import Path
 import shutil
@@ -35,6 +36,28 @@ def _xdvdfs_module():
 
 EXPECTED_0A_SHA256 = "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
 EXPECTED_0A_SIZE = 1_140_850_688
+STUDIO_BUILD_SIDECAR_NAME = ".apf2k8-mod-studio-build.json"
+STUDIO_BUILD_SCHEMA = "apf2k8_mod_studio_build/v1"
+COPIED_0A_REFUSAL = (
+    "0A does not match the supported untouched APF USA revision. "
+    "This editor always loads the original extracted game and writes a "
+    "separate copied 0A. A previously modified volume cannot be opened as "
+    "source — writers pin retail entry hashes, so a second pass from a "
+    "copied 0A is unsafe.\n\n"
+    "Beta 44 already keeps every stock book in one project. Load the "
+    "original retail game, keep your edits in the project, and rebuild "
+    "into the last folder so Xenia can keep the same path."
+)
+STUDIO_BUILT_0A_REFUSAL = (
+    "That folder is a previous APF 2K8 Mod Studio build, not the retail "
+    "source. Its .apf2k8-mod-studio-build.json says the source 0A was "
+    "retail, but this editor cannot reopen a copied 0A: writers pin retail "
+    "entry hashes and would mis-compile or refuse the next edit.\n\n"
+    "Load the original extracted game. Keep every stock book in one "
+    "project (Beta 44 multi-book). Rebuild into the last folder — the "
+    "same path Xenia already loads — and confirm replace. Close Xenia "
+    "first if that folder is open."
+)
 EXPECTED_XEX_SHA256 = "981a57143b0a665b2220f72366e1368c5374b91c77a22d93945439d51a2cd28f"
 EXPECTED_ISO_SHA256 = "c45aab61de93773dfe25adbae5749ad5adb3f3369a6c0106b2159ad603b6fe53"
 EXPECTED_GAME_FILES: dict[str, int] = {
@@ -57,6 +80,52 @@ EXPECTED_GAME_HASHES: dict[str, str] = {
 
 class SourceError(ValueError):
     """Raised when a selected source is not the supported APF USA revision."""
+
+
+def studio_build_sidecar_path(root: Path) -> Path:
+    return Path(root) / STUDIO_BUILD_SIDECAR_NAME
+
+
+def inspect_studio_build_sidecar(root: Path, digest: str) -> dict[str, object] | None:
+    """Return the sidecar only when this tool built ``digest`` from retail.
+
+    A missing, linked, or untrusted sidecar is not evidence. Arbitrary
+    modified 0A files stay refused even if someone drops a JSON next to them.
+    """
+
+    path = studio_build_sidecar_path(root)
+    try:
+        item = path.lstat()
+    except FileNotFoundError:
+        return None
+    if not stat.S_ISREG(item.st_mode) or stat.S_ISLNK(item.st_mode):
+        return None
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return None
+    if not isinstance(document, dict):
+        return None
+    source = document.get("source")
+    output = document.get("output")
+    if (
+        document.get("schema") != STUDIO_BUILD_SCHEMA
+        or not isinstance(source, dict)
+        or not isinstance(output, dict)
+        or source.get("0a_sha256_before") != EXPECTED_0A_SHA256
+        or source.get("source_modified") is not False
+        or output.get("0a_sha256") != digest
+    ):
+        return None
+    return document
+
+
+def classify_non_retail_0a(root: Path, digest: str) -> SourceError:
+    """Name the refusal. Never authorize a modified 0A as the loaded source."""
+
+    if inspect_studio_build_sidecar(root, digest) is not None:
+        return SourceError(STUDIO_BUILT_0A_REFUSAL)
+    return SourceError(COPIED_0A_REFUSAL)
 
 
 def _noop_progress(_stage: str, _completed: int, _total: int) -> None:
@@ -221,10 +290,10 @@ class SourceManager:
         index = root / "0A"
         digest = sha256_file(index, progress, stage="Recognizing APF game data")
         if digest != EXPECTED_0A_SHA256:
-            raise SourceError(
-                "0A does not match the supported untouched APF USA revision. "
-                "Load the original extracted game, not a previously modified copy."
-            )
+            # Writers compile from retail entry hashes. A studio-built 0A
+            # whose sidecar still names the retail source is still unsafe to
+            # reopen — the next compile would treat modified entries as stock.
+            raise classify_non_retail_0a(root, digest)
         hashes = self._validate_complete_ledger(root, digest, progress)
         xex_digest = hashes["default.xex"]
         return ApfSource(
@@ -257,8 +326,6 @@ class SourceManager:
             }
         if receipt_path.is_file():
             try:
-                import json
-
                 receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
                 if (
                     receipt.get("schema") == "apf2k8_mod_studio_source_ledger/v1"
@@ -283,8 +350,6 @@ class SourceManager:
         if hashes != EXPECTED_GAME_HASHES:
             raise SourceError("The APF source ledger is incomplete")
         receipt_path.parent.mkdir(parents=True, exist_ok=True)
-        import json
-
         descriptor, temporary_name = tempfile.mkstemp(
             prefix=f".{receipt_path.name}.",
             suffix=".tmp",
