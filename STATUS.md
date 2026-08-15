@@ -340,13 +340,24 @@ what was sealed.
 
 ### `beta-46` — 2026-08-15 · CURRENT
 
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-46>
+
 Beta 46 carries 2K5 RC69 (updater identity only) and APF alpha.78. It repairs
 the two Beta 45 Playbooks actions, withdraws the unusable raw WR3↔TE `.bin`
 export from the APF product, replaces the confusing 3rd-and-long copy, and
-adds a staged local-import closure gate. No game writer changed.
+adds a staged local-import closure gate. No game writer changed. All eight
+hosted CI jobs passed on Linux, macOS, and Windows with Python 3.11/3.12.
 
-Published asset receipts are added after the release assets exist; an archive
-cannot contain its own final digest.
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC69-20260815.tar.gz` | 11,067,647 | `beb2f97daa568a45fc35ccc56c9998c535f97e8cf483136b140c919db87b8cd1` |
+| `2K5-Mod-Studio-v1.0-RC69-20260815.tar.gz.sha256` | 107 | `196ccb9874c8d3c87140f477c0632a6ed1883a018d719dea161f718fb6a4167d` |
+| `apf2k8-mod-studio-0.1.0-alpha.78-20260815.tar.gz` | 1,877,078 | `5bb649124a9229500330ce1f4f60a7e206bf89bf04efd7c778d30b4e017ace33` |
+| `apf2k8-mod-studio-0.1.0-alpha.78-20260815.tar.gz.sha256` | 115 | `f86637ab88e37e89b335b2c8d1ea7614ad437843ecc76782fa1686cdd397599d` |
+| `2K5-Mod-Studio-1.0.0rc69-Setup.exe` | 56,702,060 | `cacabd63b66de0efe7d81499bb507bffabb2d0efa1fd3ff0d69fe620756ead0c` |
+| `2K5-Mod-Studio-1.0.0rc69-Setup.exe.sha256` | 101 | `d1d52ddf823d2f2a5fe7eed7bf3a6775ec7a64a1c902b4b0ae525196fdd70bbf` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.78-Setup.exe` | 52,724,180 | `afd199cd5f73d060e68df24f9393eab6ef9bbae26f28ff1e0577b70adf751e15` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.78-Setup.exe.sha256` | 110 | `4c02f8a4977976950bcf73982f6a40880dbb1f5b7f0fbf5b901619896b8a980b` |
 
 ### `beta-45` — 2026-08-15 · superseded
 
