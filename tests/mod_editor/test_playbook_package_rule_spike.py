@@ -1276,9 +1276,9 @@ class ApfG12PackageMapWriterTests(unittest.TestCase):
             refuse_apf_3rd_and_long_user_logic_writer()
         self.assertIsInstance(caught.exception, ApfThirdAndLongUserLogicRefusal)
         self.assertEqual(str(caught.exception), APF_3RD_AND_LONG_USER_LOGIC_REFUSAL)
-        self.assertIn("XEX", str(caught.exception))
+        self.assertIn("default.xex", str(caught.exception))
         self.assertIn("0x8486CE88", str(caught.exception))
-        self.assertIn("unsafe", str(caught.exception).casefold())
+        self.assertIn("does not patch", str(caught.exception).casefold())
 
 
 _APF_DISC_0A = Path(

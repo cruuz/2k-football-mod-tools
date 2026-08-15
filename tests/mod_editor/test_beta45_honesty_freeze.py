@@ -1,8 +1,4 @@
-"""Pin the no-ship honesty freeze for the unreleased Beta 45 WIP.
-
-Identity stays Beta 44. The four forbidden claims stay out of live copy.
-3rd-and-long and copied 0A stay refused. Weave weights are BC3 256×256.
-"""
+"""Keep Beta 45's research limits honest in later releases."""
 
 from __future__ import annotations
 
@@ -20,14 +16,14 @@ import validate_apf_field_art_product as field_gate  # noqa: E402
 
 
 class Beta45HonestyFreezeTests(unittest.TestCase):
-    def test_product_identity_is_beta_45(self) -> None:
+    def test_product_identity_is_beta_46(self) -> None:
         import mod_editor
         from mod_editor.apf_studio import __version__ as apf_version
         from mod_editor.core.update_check import BUILD_RELEASE_TAG
 
-        self.assertEqual(mod_editor.__version__, "1.0.0rc68")
-        self.assertEqual(apf_version, "0.1.0-alpha.77")
-        self.assertEqual(BUILD_RELEASE_TAG, "beta-45")
+        self.assertEqual(mod_editor.__version__, "1.0.0rc69")
+        self.assertEqual(apf_version, "0.1.0-alpha.78")
+        self.assertEqual(BUILD_RELEASE_TAG, "beta-46")
 
     def test_ci_hydrate_tag_is_a_published_beta(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
@@ -112,7 +108,7 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
         for key in refused:
             self.assertNotIn(key, writer._CONTRACTS)
 
-    def test_third_and_long_writer_refuses_and_names_xex(self) -> None:
+    def test_third_and_long_writer_refuses_and_names_executable(self) -> None:
         from mod_editor.core.errors import ValidationError
         from mod_editor.core.playbook_package_rule_spike import (
             APF_3RD_AND_LONG_PLAY_CHOICE_PROVED,
@@ -124,7 +120,7 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
         with self.assertRaises(ApfThirdAndLongUserLogicRefusal) as caught:
             refuse_apf_3rd_and_long_user_logic_writer()
         self.assertIsInstance(caught.exception, ValidationError)
-        self.assertIn("XEX", str(caught.exception))
+        self.assertIn("default.xex", str(caught.exception))
 
     def test_copied_and_studio_built_0a_are_refused_as_source(self) -> None:
         import json

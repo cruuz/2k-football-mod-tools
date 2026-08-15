@@ -65,6 +65,49 @@ def _launcher_python() -> str:
     "the per-user XDG installer is POSIX-only; Windows ships the NSIS installer",
 )
 class ReleaseClosureTests(unittest.TestCase):
+    def test_literal_local_import_gate_catches_a_lazy_missing_module(self) -> None:
+        gate_path = ROOT / "packaging/check_apf2k8_mod_studio_runtime.py"
+        spec = importlib.util.spec_from_file_location(
+            "_apf_runtime_import_closure_test", gate_path
+        )
+        assert spec is not None and spec.loader is not None
+        gate = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(gate)
+        with tempfile.TemporaryDirectory(prefix="apf-lazy-import-closure-") as temporary:
+            stage = Path(temporary)
+            feature = stage / "mod_editor/apf_studio/feature.py"
+            feature.parent.mkdir(parents=True)
+            feature.write_text(
+                "def on_click():\n"
+                "    from mod_editor.core.shipped_only_in_source import value\n"
+                "    return value\n",
+                encoding="utf-8",
+            )
+            original_root = gate.ROOT
+            gate.ROOT = stage
+            try:
+                with self.assertRaisesRegex(
+                    RuntimeError,
+                    "feature.py:2 imports missing local module "
+                    "mod_editor.core.shipped_only_in_source",
+                ):
+                    gate._check_literal_product_import_closure()
+            finally:
+                gate.ROOT = original_root
+
+    def test_apf_stage_has_no_dependency_on_the_mixed_2k5_research_module(self) -> None:
+        entries = set(_release_entries())
+        self.assertNotIn(
+            "mod_editor/core/playbook_package_rule_spike.py",
+            entries,
+        )
+        for relative in (
+            "mod_editor/apf_studio/facade.py",
+            "mod_editor/apf_studio/playbook_membership_qt.py",
+        ):
+            text = (ROOT / relative).read_text(encoding="utf-8")
+            self.assertNotIn("playbook_package_rule_spike", text)
+
     def test_external_xma1_bridge_is_in_the_retail_free_runtime_closure(self) -> None:
         entries = set(_release_entries())
         self.assertTrue(

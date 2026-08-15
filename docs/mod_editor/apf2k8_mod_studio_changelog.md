@@ -1,5 +1,31 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.78 — Playbooks repair and export withdrawal — 2026-08-15
+
+- **Fixed: 3rd-and-long editing status no longer crashes.** Beta 45 tried to
+  import a research module that was not included in the APF package. The first
+  click opened the crash reporter; later clicks repeated the same exception,
+  which the crash reporter suppressed, so the button appeared dead until
+  restart. The button now opens a normal explanation directly and remains
+  usable on every click.
+- **Withdrawn: the WR3↔TE raw `.bin` export.** It produced a 182,096-byte copy
+  of APF's internal formation table and a JSON verification report. It was not
+  a playable mod, could not be imported into Mod Studio, was not included by
+  Build Game Folder, and had no supported installation method. The byte-level
+  experiment remains developer research; the product no longer implies that a
+  modder can use the file.
+- **Clearer 3rd-and-long copy.** Mod Studio found no editable setting for the
+  reported user-team/CPU difference in MASTER PLAY, the stock playbooks, or the
+  director files. The behavior appears to live in `default.xex`, which Mod
+  Studio does not patch. Technical addresses remain under **Research pins**.
+- **New packaged-import closure check.** The clean APF release gate parses every
+  staged Python file and refuses any literal `mod_editor.*` import whose target
+  is absent from the package, including imports inside callbacks.
+- No game writer changed. Copied and studio-built `0A` folders still cannot be
+  opened as source. A future safe continuation feature would need the original
+  retail source, a matching project, and deterministic replay verification; it
+  is not part of alpha.78.
+
 ## 0.1.0-alpha.77 — field extras, numbers, jersey capacity — 2026-08-15
 
 - **Field Art writable set is 221, not six.** The original six bases stay
@@ -16,13 +42,15 @@
 - **Jersey capacity** uses the same measured two-block IFF budget as
   shoulder (24 slots, detailed/moderate/simple bands of 8). It is a picker
   aid, never a replace gate.
-- **Export WR3↔TE package-map pack…** on Fine-tune Plays. Experimental
-  private MASTER PLAY export: swap roles 8 and 9 on every Ace-named
-  formation at `+0x11`, plus an honesty JSON sidecar. Retail Ace Empty is
-  **not** an 8↔9 swap of Ace (slots 9/10 are 6↔7). Runtime G12 /
-  3rd-and-long stays unproved; `wr3_te_package_sub_proved` stays False.
-- **3rd-and-long user logic…** names the XEX addresses and refuses a
-  writer. No data-side table was found.
+- **Export WR3↔TE package-map pack…** on Fine-tune Plays. This experimental
+  action copied the internal MASTER PLAY table with roles 8 and 9 swapped on
+  Ace-named formations at `+0x11`, plus a JSON verification report. Retail Ace
+  Empty is **not** an 8↔9 swap of Ace (slots 9/10 are 6↔7). Runtime G12 /
+  3rd-and-long stays unproved; `wr3_te_package_sub_proved` stays False. Alpha.78
+  withdraws the action because the exported file had no supported use.
+- **3rd-and-long user logic…** was intended to explain that no editable
+  setting was found in the game data and that executable patching is outside
+  Mod Studio's scope. Alpha.78 replaces the unclear wording and broken action.
 - Opening a copied `0A` still fails closed. A studio-built folder with
   `.apf2k8-mod-studio-build.json` whose source hash is retail gets a
   named refusal (Beta 44 multi-book + rebuild into the last folder).

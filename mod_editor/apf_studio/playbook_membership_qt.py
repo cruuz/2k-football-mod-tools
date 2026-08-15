@@ -249,49 +249,29 @@ EMPTY_FORMATION_WARNING = (
 )
 
 BOUNDARY = (
-    "This edits the stock CPU playbooks themselves — the SPLB resources the "
-    "game ships, one per book. Only the entry list of the selected formation's "
-    "record is rewritten; the record trailer, every other record and every "
-    "other byte stay exact, and an independent verifier re-derives every "
-    "changed byte before anything is written. A formation's tagged slots are "
-    "never dropped below min(4, plays) — one can be moved or carried onto "
-    "another play in the same formation — and emptying a formation sheds every "
-    "slot because min(4, 0) is 0. The trailer still names the formation. The "
-    "executable counts that list at 0x84a8ac30 and returns the nth play at "
-    "0x84a8bd20; an empty record makes both return 0/null, so the four tagged "
-    "plays cannot come from it. That is a static fact about the two consumers, "
-    "not a safety proof, and a runtime report contradicts the safe reading: "
-    "Urianus, on alpha.70, watched the CPU call out-of-book plays and "
-    "personnel packages once a book had emptied formations in it. Emptying is "
-    "offered with that warning attached, and emptying every populated "
-    "formation in a book is refused outright. Which formation the director "
-    "selects next, and "
-    "which play it calls on 3rd-and-long from a still-populated list, remain "
-    "runtime-unproved. Three of those slots are the formation's audibles, "
-    "proved in the game's own code; the fourth is looked up with them at "
-    "0x84a850f0 (loop 0..3), which is not a 3rd-and-long proof. In-game CPU "
-    "play-calling behaviour is still NOT proved.\n\n"
-    "Fine-tune Plays changes which MASTER plays a formation STORES. It does "
-    "not change who lines up. Personnel comes from the formation package map "
-    "(MASTER +0x11). A play named 50 TE Corner can live in I Spread (20 / 0 TE) "
-    "because the play is routes and assignments on whatever slots that "
-    "formation plugs. Play names are not personnel. Role 8 maps to roster TE "
-    "and role 9 to WR in table 0x820FC320 (loaded at 0x84a9ae68 from the map "
-    "byte stored at on-field +0x34; 8 → TE, 9 → WR). Whether a formation has "
-    "a TE is whether its map contains role 8. Swapping those bytes is not "
-    "runtime-proved. Export WR3↔TE package-map pack writes a private MASTER "
-    "PLAY plus honesty JSON (8↔9 on Ace-named maps). Retail Ace Empty is not "
-    "an 8↔9 swap of Ace. That export is not a 3rd-and-long fix and does not "
-    "stage a project edit. Automatic WR3→TE package substitution is not "
-    "offered. 3rd-and-long user logic has no data-side writer. Move tagged "
-    "slot only reassigns Y tags "
-    "inside one record. A project can hold every stock book. Build Game "
-    "Folder writes every staged book into the folder you pick; this panel's "
-    "Build copied 0A writes the open book. Emptying one of an exact “ Flip” twin "
-    "without the other is refused (infinite-load report). Only an edit that "
-    "would break the counted rule on a still-populated record, or empty every "
-    "populated formation in a book, is refused.\n\n"
-    "Every address behind these statements is listed under “Research pins”."
+    "Fine-tune Plays changes which plays each stock CPU formation stores. It "
+    "does not change the personnel who line up, and it does not guarantee which "
+    "play the CPU will choose in a situation. A play name such as 50 TE Corner "
+    "describes routes; it does not add a tight end to the formation.\n\n"
+    "Three tagged slots are the formation's audibles. Mod Studio preserves all "
+    "tagged slots unless you deliberately empty the formation. Empty formations "
+    "are risky: an in-game report found that the CPU then called plays and "
+    "personnel that were not in the book. Mod Studio warns before doing that, "
+    "will not empty a whole book, and keeps exact Flip twins together.\n\n"
+    "Changes stay in your project until Build. Build Game Folder applies every "
+    "edited book to the separate folder you choose; your original game remains "
+    "untouched. Technical addresses and byte-level evidence are under Research "
+    "pins."
+)
+
+THIRD_AND_LONG_STATUS = (
+    "Mod Studio cannot change how APF chooses formations on 3rd-and-long. "
+    "We found no editable setting for the reported user-team/CPU difference in "
+    "MASTER PLAY, the stock playbooks, or the director files.\n\n"
+    "The behavior appears to be implemented in default.xex, the game "
+    "executable. Mod Studio does not patch default.xex. Nothing was changed.\n\n"
+    "The technical addresses behind this conclusion remain available under "
+    "Research pins."
 )
 
 #: The full static reverse-engineering record behind :data:`BOUNDARY`.
@@ -311,7 +291,9 @@ RESEARCH_PINS = (
     "Down lives at "
     "object +0x254 (3 = Third Down, table 0x820E57C8); in-game 0x848d96e4 "
     "compares it, but that helper is not a play picker. The 11-player builder "
-    "indexes the +0x11 map by slot at 0x848605b4. MASTER categories at +0x44 "
+    "indexes the +0x11 map by slot at 0x848605b4. Role table 0x820FC320 "
+    "(loaded at 0x84a9ae68) maps role 8 → TE and role 9 → WR. "
+    "MASTER categories at +0x44 "
     "are personnel packages (Ace, 5 Wide, Flush); 0x8485bd38 extracts the "
     "SPLB trailer index. That is not a 3rd-and-long picker. 0x84a472d0 is "
     "play-type UI (obj+4 walks 0x84e4d810); 0x8486ce88 picks a play from "
@@ -778,37 +760,14 @@ class ApfPlaybookMembershipPanel(QFrame):
             "changes what the buttons do."
         )
         self.pins_button.clicked.connect(self._show_research_pins)
-        self.export_g12_pack_button = QPushButton("Export WR3↔TE package-map pack…")
-        self.export_g12_pack_button.setObjectName("secondaryButton")
-        self.export_g12_pack_button.setAccessibleName(
-            "Export experimental WR3 to TE package map pack"
-        )
-        self.export_g12_pack_button.setToolTip(
-            "Experimental: swap roles 8 and 9 on every Ace-named MASTER "
-            "formation (+0x11). Private MASTER PLAY + honesty JSON. Retail "
-            "Ace Empty is not an 8↔9 swap of Ace. Runtime G12 / 3rd-and-long "
-            "is unproved. Source 0A is never modified."
-        )
-        self.export_g12_pack_button.setProperty(
-            "disableReason",
-            "Load your APF game first. The experimental WR3↔TE pack reads "
-            "MASTER PLAY from the retail 0A.",
-        )
-        self.export_g12_pack_button.clicked.connect(self._export_g12_wr3_te_pack)
-        self.third_long_button = QPushButton("3rd-and-long user logic…")
+        self.third_long_button = QPushButton("3rd-and-long editing status…")
         self.third_long_button.setObjectName("quietButton")
         self.third_long_button.setAccessibleName(
-            "Explain why 3rd-and-long user logic cannot be written"
+            "Explain why 3rd-and-long behavior cannot be edited"
         )
         self.third_long_button.setToolTip(
-            "Urianus reported that a user team searches the next-best pass "
-            "formation on 3rd-and-long and the CPU does not. No data-side "
-            "writer exists. The fork is XEX; this project will not patch it."
-        )
-        self.third_long_button.setProperty(
-            "disableReason",
-            "No data-side 3rd-and-long writer. Click for the pinned XEX "
-            "addresses and the refusal.",
+            "Mod Studio cannot change the reported user-team/CPU difference "
+            "through APF's playbook data. Click for a plain-language explanation."
         )
         self.third_long_button.clicked.connect(self._refuse_third_and_long)
         tag_row.addWidget(self.move_tag_button)
@@ -819,7 +778,6 @@ class ApfPlaybookMembershipPanel(QFrame):
         tag_row.addWidget(self.empty_button)
         tag_row.addWidget(self.tag_help_button)
         tag_row.addWidget(self.pins_button)
-        tag_row.addWidget(self.export_g12_pack_button)
         tag_row.addWidget(self.third_long_button)
         tag_row.addStretch(1)
         right.addLayout(tag_row)
@@ -1654,117 +1612,17 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.revert_button.setToolTip(
             revert_block or f"Discard {len(staged)} staged change(s)."
         )
-        self.export_g12_pack_button.setEnabled(True)
         self.third_long_button.setEnabled(True)
-        if not bool(getattr(self.facade, "source_ready", False)):
-            g12_block = (
-                "Load your APF game first. The experimental WR3↔TE pack reads "
-                "MASTER PLAY from the retail 0A."
-            )
-        else:
-            g12_block = ""
-        self.export_g12_pack_button.setProperty("disableReason", g12_block)
-        self.export_g12_pack_button.setToolTip(
-            g12_block
-            or (
-                "Experimental: swap roles 8 and 9 on every Ace-named MASTER "
-                "formation (+0x11). Private MASTER PLAY + honesty JSON. Retail "
-                "Ace Empty is not an 8↔9 swap of Ace. Runtime G12 / "
-                "3rd-and-long is unproved. Source 0A is never modified."
-            )
-        )
-        third_block = (
-            "No data-side 3rd-and-long writer. Click for the pinned XEX "
-            "addresses and the refusal."
-        )
-        self.third_long_button.setProperty("disableReason", third_block)
-        self.third_long_button.setToolTip(third_block)
-
-    def _export_g12_wr3_te_pack(self) -> None:
-        reason = str(
-            self.export_g12_pack_button.property("disableReason") or ""
-        ).strip()
-        if reason:
-            QMessageBox.information(
-                self,
-                "Cannot export the WR3↔TE pack yet",
-                reason
-                + "\n\nExperimental package-map bytes only. This does not "
-                "fix 3rd-and-long.",
-            )
-            return
-        exporter = getattr(self.facade, "export_g12_wr3_te_package_map_pack", None)
-        if exporter is None:
-            QMessageBox.information(
-                self,
-                "Cannot export the WR3↔TE pack yet",
-                "This session does not expose the experimental G12 export.",
-            )
-            return
-        answer = QMessageBox.warning(
-            self,
-            "Experimental offline WR3↔TE package-map pack",
-            "This writes a private MASTER PLAY where every Ace-named "
-            "formation gets roles 8 and 9 swapped at +0x11, plus an honesty "
-            "JSON sidecar.\n\n"
-            "• Retail Ace Empty is not an 8↔9 swap of Ace (slots 9/10 are "
-            "6↔7)\n"
-            "• Offline-writer-proved for those 11-byte maps only\n"
-            "• Runtime G12 / 3rd-and-long remains unproved\n"
-            "• wr3_te_package_sub_proved stays False\n"
-            "• Not a project edit — nothing is staged for Build\n"
-            "• Your loaded source is never modified\n\n"
-            "Continue to choose a save location?",
-            QMessageBox.Yes | QMessageBox.Cancel,
-            QMessageBox.Cancel,
-        )
-        if answer != QMessageBox.Yes:
-            return
-        path, _filter = QFileDialog.getSaveFileName(
-            self,
-            "Export experimental G12 WR3↔TE package-map MASTER",
-            "apf_master_g12_wr3_te_package_map.bin",
-            "MASTER PLAY body (*.bin);;All files (*)",
-        )
-        if not path:
-            return
-
-        def done(value: object) -> None:
-            QMessageBox.information(
-                self,
-                "Experimental G12 pack exported",
-                f"Wrote:\n{value}\n\n"
-                "Honesty JSON is beside that file. Runtime 3rd-and-long is "
-                "unproved. Source 0A was not modified.",
-            )
-
-        self.run_task(
-            "Exporting experimental G12 WR3↔TE package-map pack",
-            lambda progress: exporter(Path(path), progress),
-            done,
-            True,
+        self.third_long_button.setToolTip(
+            "Mod Studio cannot change the reported user-team/CPU difference "
+            "through APF's playbook data. Click for a plain-language explanation."
         )
 
     def _refuse_third_and_long(self) -> None:
-        from mod_editor.core.playbook_package_rule_spike import (
-            APF_3RD_AND_LONG_USER_LOGIC_REFUSAL,
-        )
-
-        refuser = getattr(
-            self.facade, "refuse_apf_3rd_and_long_user_logic_writer", None
-        )
-        if refuser is not None:
-            try:
-                refuser()
-            except ValidationError as exc:
-                QMessageBox.information(
-                    self, "No 3rd-and-long data writer", str(exc)
-                )
-                return
         QMessageBox.information(
             self,
-            "No 3rd-and-long data writer",
-            APF_3RD_AND_LONG_USER_LOGIC_REFUSAL,
+            "3rd-and-long editing is not available",
+            THIRD_AND_LONG_STATUS,
         )
 
     def _revert(self) -> None:

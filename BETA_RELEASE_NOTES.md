@@ -1,3 +1,46 @@
+# beta-46 — RC69 / alpha.78
+
+**Date:** 2026-08-15
+
+**2K5 Mod Studio:** `v1.0-RC69` (updater identity only)
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.78`
+
+## Fixed: both broken Beta 45 Playbooks actions
+
+Beta 45 added two buttons that imported a research module only when clicked.
+That module was present in the source checkout but absent from the packaged APF
+application. The 3rd-and-long button therefore opened the crash reporter; the
+WR3↔TE export failed in its background task. Repeating the 3rd-and-long click
+raised the same exception again, but duplicate crash dialogs are suppressed,
+so the button appeared dead until restart.
+
+The 3rd-and-long button now opens a normal status dialog directly and works on
+every click. The dialog says what Mod Studio knows in ordinary language: no
+editable setting for the reported user-team/CPU difference was found in the
+playbooks or director data; the behavior appears to live in `default.xex`,
+which Mod Studio does not patch.
+
+## Withdrawn: the raw WR3↔TE `.bin` export
+
+The exported file was a 182,096-byte standalone copy of an internal formation
+table. It was not a playable mod. Mod Studio had no importer for it, Build Game
+Folder did not consume it, and copying it into the game folder could not work.
+The byte-level experiment remains in the developer research code, but the
+product no longer presents it as a usable workflow.
+
+## Release-packaging regression guard
+
+The clean APF runtime gate now parses every staged Python file and verifies that
+each literal `mod_editor.*` import resolves inside the staged package, including
+imports inside callbacks. A source-tree test can no longer hide this exact
+class of missing packaged dependency.
+
+No game writer changed. Your original game remains untouched, and copied or
+studio-built `0A` folders still cannot be used as source.
+
+---
+
 # beta-42 — RC65 / alpha.74
 
 **Date:** 2026-08-13

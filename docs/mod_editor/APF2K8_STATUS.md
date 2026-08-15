@@ -1,6 +1,15 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.77`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.78`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.78 release validation
+
+Beta 46 fixes both Beta 45 Playbooks crashes by removing the APF product's
+dependency on an unshipped mixed-game research module. The 3rd-and-long button
+now gives a clear, repeatable status explanation. The WR3↔TE raw-table export
+has been withdrawn because no importer, Build path, or supported installation
+method consumed its `.bin` file. The staged runtime gate now verifies literal
+local-import closure. 2K5 is RC69 (updater identity only).
 
 ## 0.1.0-alpha.77 release validation
 

@@ -735,27 +735,29 @@ APF_DOWN_NAMES = (
 )
 APF_3RD_AND_LONG_PLAY_CHOICE_PROVED = False
 # User-team 3rd-and-long "next-best pass formation" search (Urianus, 2026-08-14)
-# has no DATA-side table. PE has the UI labels and the Ace Empty name; no
-# "next best" / "best pass" string. The play picker is XEX and does not load
-# down+ytg. This project will not ship an executable patch.
+# has no located setting in the playbook or archive data. PE has the UI labels
+# and the Ace Empty name; no "next best" / "best pass" string. The play picker
+# is in default.xex and does not load down+ytg. This project will not ship an
+# executable patch.
 APF_USER_3RD_AND_LONG_DATA_WRITER_EXISTS = False
 APF_USER_3RD_AND_LONG_SEARCH_PROVED = False
 APF_3RD_AND_LONG_UI_LABEL_VA = 0x845FD8B4
 APF_4TH_AND_LONG_UI_LABEL_VA = 0x845FD8F8
 APF_ACE_EMPTY_NAME_VA = 0x8460574C
 APF_3RD_AND_LONG_USER_LOGIC_REFUSAL = (
-    "No data-side 3rd-and-long writer exists. Urianus reported that a "
-    "user-controlled team searches the next-best pass formation on "
-    "3rd-and-long and the CPU does not. That fork is not in MASTER, SPLB, "
-    "or dir_ingame leftovers.\n\n"
-    "Pinned XEX (not a patch target): situation down +0x254 / ytg +0x25C; "
+    "Mod Studio cannot change how APF chooses formations on 3rd-and-long. "
+    "No editable setting for the reported user-team/CPU difference was found "
+    "in MASTER PLAY, the stock playbooks, or the director files. The behavior "
+    "appears to be implemented in default.xex, which Mod Studio does not "
+    "patch. Nothing was changed.\n\n"
+    "Technical evidence (not patch targets): situation down +0x254 / ytg +0x25C; "
     "packed get_down 0x84AD92E0 / 0x84B68CC8; packed get_ytg 0x84B68CD8; "
     "picker 0x8486CE88 (situation word0 / +0x2BC tab, not down); UI labels "
     "0x845FD8B4 / 0x845FD8F8; Ace Empty name 0x8460574C. No surveyed "
     "function loads +0x254 and +0x25C and also calls SPLB get-nth/count. "
     "No UTF-16BE or ASCII 'next best' / 'best pass' string in the PE.\n\n"
-    "This project treats emulator-only executable patches as unsafe/"
-    "deferred. APF_3RD_AND_LONG_PLAY_CHOICE_PROVED stays False."
+    "Executable patching remains deferred. "
+    "APF_3RD_AND_LONG_PLAY_CHOICE_PROVED stays False."
 )
 
 # Layout offsets relative to PLAY resource body (after 0x20 resource header).

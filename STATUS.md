@@ -1,4 +1,4 @@
-# 2K5 Mod Studio — v1.0 RC68 Release Status
+# 2K5 Mod Studio — v1.0 RC69 Release Status
 
 ## Beta 33 — the stock CPU playbooks (2026-08-10)
 
@@ -338,7 +338,17 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-45` — 2026-08-15 · CURRENT
+### `beta-46` — 2026-08-15 · CURRENT
+
+Beta 46 carries 2K5 RC69 (updater identity only) and APF alpha.78. It repairs
+the two Beta 45 Playbooks actions, withdraws the unusable raw WR3↔TE `.bin`
+export from the APF product, replaces the confusing 3rd-and-long copy, and
+adds a staged local-import closure gate. No game writer changed.
+
+Published asset receipts are added after the release assets exist; an archive
+cannot contain its own final digest.
+
+### `beta-45` — 2026-08-15 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-45>
 

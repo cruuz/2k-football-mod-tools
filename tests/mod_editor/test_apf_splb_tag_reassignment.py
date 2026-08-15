@@ -563,7 +563,7 @@ class CopyTests(unittest.TestCase):
             self.assertIn("0x84ad9f40", copy)
             self.assertIn("0x848ee750", copy)
             self.assertIn("0x84b64c88", copy)
-        self.assertIn("NOT proved", self.panel_copy)
+        self.assertIn("does not prove", self.panel_copy)
         for copy in (self.panel_prose, self.writer_prose):
             self.assertIn("3rd-and-long", copy)
             self.assertNotIn("generic bit-field clamp", copy)
@@ -894,7 +894,6 @@ class PanelReadabilityTests(unittest.TestCase):
             WORKSPACE / "docs/mod_editor/apf2k8_mod_studio_getting_started.md"
         ).read_text(encoding="utf-8")
         for name, copy in (
-            ("BOUNDARY", self.panel.BOUNDARY),
             ("EMPTY_FORMATION_WARNING", self.panel.EMPTY_FORMATION_WARNING),
             ("getting-started", getting_started),
         ):
@@ -903,6 +902,10 @@ class PanelReadabilityTests(unittest.TestCase):
                 self.assertNotIn("TE-using plays", copy)
                 self.assertIn("Personnel comes from the formation package map", copy)
                 self.assertIn("Play names are not personnel", copy)
+        self.assertNotIn("put TEs on", self.panel.BOUNDARY)
+        self.assertNotIn("TE-using plays", self.panel.BOUNDARY)
+        self.assertIn("does not change the personnel", self.panel.BOUNDARY)
+        self.assertIn("does not add a tight end", self.panel.BOUNDARY)
 
 
 class PanelProjectHandoffTests(unittest.TestCase):

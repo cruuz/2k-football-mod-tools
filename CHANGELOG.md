@@ -11,6 +11,28 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-46 — 2026-08-15
+
+**The two broken Beta 45 Playbooks actions are repaired, and the raw WR3↔TE
+research export is no longer presented as something a modder can install.**
+
+2K5 is `v1.0-RC69` (updater identity only). APF is `0.1.0-alpha.78`.
+
+- **3rd-and-long editing status works repeatedly.** The button now opens a
+  plain-language explanation directly. It no longer imports an omitted module,
+  falls into the global crash reporter, or appears dead after the first click.
+- **The WR3↔TE `.bin` export is withdrawn from the product UI.** Beta 45 wrote
+  a standalone copy of an internal formation table, not a playable mod. Mod
+  Studio had no importer for it, Build Game Folder ignored it, and copying it
+  into the game folder could not work. The underlying byte experiment remains
+  available to developers as research, but it is not a modder workflow.
+- **The staged runtime gate now checks literal local-import closure.** Every
+  `mod_editor.*` import named by every staged Python file must resolve inside
+  the staged product, including imports hidden inside button callbacks. This
+  catches the release-packaging gap that let both Beta 45 failures ship.
+- No game writer changed. Field Art, jersey digits, jersey capacity, stock-book
+  editing, source safety, and the copied-`0A` refusal keep their Beta 45 limits.
+
 ## beta-45 — 2026-08-15
 
 **Field Art writes 221 textures, All Textures writes 480 jersey digits, and
@@ -32,7 +54,8 @@ jersey slots show the same capacity rank as shoulders.**
   It is a picker aid, never a replace gate.
 - Export WR3↔TE package-map pack is experimental Ace-named 8↔9. Retail Ace
   Empty is not an 8↔9 swap of Ace. Runtime G12 / 3rd-and-long stays
-  unproved. 3rd-and-long user logic has no data-side writer.
+  unproved. No editable 3rd-and-long setting was found in the playbook or
+  archive data.
 - Opening a copied or studio-built `0A` still fails closed.
 
 ## beta-44 — 2026-08-14

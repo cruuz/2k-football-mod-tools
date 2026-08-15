@@ -4,7 +4,7 @@ APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-The source code and UI identify as **`0.1.0-alpha.77`**, the current retail-free
+The source code and UI identify as **`0.1.0-alpha.78`**, the current retail-free
 release candidate; its mode-`0444` archive is authenticated by the adjacent
 `.sha256` sidecar. Alpha.38 and earlier remain preserved unchanged. Verify
 whichever sealed archive you install with its authoritative adjacent `.sha256`
@@ -811,20 +811,21 @@ plugs. Play names are not personnel. **Move tagged slot…** only reassigns Y
 tags inside one record.
 
 Role 8 maps to roster TE and role 9 to WR in table `0x820FC320`; whether a
-formation has a TE is whether its map contains role 8. **Export WR3↔TE
-package-map pack…** is an experimental private MASTER PLAY export that swaps
-those two roles on Ace-named formations and writes an honesty JSON sidecar.
-Retail Ace Empty is not an 8↔9 swap of Ace (slots 9/10 are 6↔7). The export
-is not a 3rd-and-long fix, does not stage a project edit, and
-`wr3_te_package_sub_proved` stays False. User-team 3rd-and-long “next-best
-pass formation” search has no data-side writer — **3rd-and-long user
-logic…** names the XEX addresses and refuses a patch.
+formation has a TE is whether its map contains role 8. Swapping those role
+bytes has not been proved in-game, so Mod Studio does not offer it as a project
+edit. Beta 45 briefly exposed a raw-table export for this experiment. That
+button is gone: the `.bin` was not a playable mod, Mod Studio could not import
+it, Build Game Folder ignored it, and there was no supported way to install it.
+
+The reported user-team/CPU difference on 3rd-and-long also has no editable
+setting in MASTER PLAY, the stock playbooks, or the director files. The
+behavior appears to be implemented in `default.xex`, which Mod Studio does not
+patch. **3rd-and-long editing status…** explains that boundary without changing
+anything. Technical addresses remain under **Research pins**.
 
 - Tick plays in or out of a formation. Tagged slots follow `min(4, plays)`.
-- **Export WR3↔TE package-map pack…** writes a private MASTER PLAY and an
-  honesty JSON sidecar. It is experimental. It does not fix 3rd-and-long.
-- **3rd-and-long user logic…** names the XEX addresses and refuses a writer.
-  There is no data-side table for the user-team next-best pass search.
+- **3rd-and-long editing status…** explains why this behavior cannot currently
+  be changed. It is a status dialog, not a writer, and can be opened repeatedly.
 - **Move tagged slot…** can hand a slot to a play you just added in the same
   request (the X-43Blitz Bear case). That only reassigns Y tags inside one
   record. It does not change who lines up.
@@ -864,10 +865,11 @@ logic…** names the XEX addresses and refuses a patch.
   (`0x820FC320` / `0x84a9ae68`); the builder indexes that map by slot
   (`0x848605b4`). Whether a formation has a TE is whether its map contains
   role 8. Swapping those bytes is not runtime-proved, so it is not a staged
-  project edit. **Export WR3↔TE package-map pack…** writes a private
-  Ace-named 8↔9 MASTER PLAY plus honesty JSON; retail Ace Empty is not an
-  8↔9 swap of Ace (slots 9/10 are 6↔7). **3rd-and-long user logic…** names
-  the XEX addresses and refuses a writer.
+  project edit. Retail Ace Empty is not an 8↔9 swap of Ace (slots 9/10 are
+  6↔7). The former raw WR3↔TE export had no import, Build, or installation path
+  and is no longer in the product. **3rd-and-long editing status…** explains
+  that the reported behavior appears to live in `default.xex`, which Mod Studio
+  does not patch.
   MASTER categories at
   `+0x44` are personnel packages (Ace, 5 Wide, Flush); `0x8485bd38` extracts
   the trailer index. `0x84a472d0` is play-type UI, not down; `0x8486ce88`

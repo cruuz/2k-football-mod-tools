@@ -5,6 +5,12 @@ runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
 
+## v1.0 RC69 — updater identity beta-46 — 2026-08-15
+
+- Shared updater identity is `beta-46`. No 2K5 writer or importer changed.
+  The Playbooks repair, raw-export withdrawal, and APF packaged-import closure
+  check in this tag are APF-only.
+
 ## v1.0 RC68 — updater identity beta-45 — 2026-08-15
 
 - Shared updater identity is `beta-45`. No 2K5 writer or importer changed.

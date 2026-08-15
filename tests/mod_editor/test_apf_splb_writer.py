@@ -262,9 +262,9 @@ class PanelContractTests(unittest.TestCase):
     def test_the_panel_states_the_unproved_boundary(self) -> None:
         from mod_editor.apf_studio.playbook_membership_qt import BOUNDARY
 
-        self.assertIn("NOT proved", BOUNDARY)
-        self.assertIn("SPLB", BOUNDARY)
-        self.assertIn("refused", BOUNDARY)
+        self.assertIn("does not guarantee", BOUNDARY)
+        self.assertIn("will not empty a whole book", BOUNDARY)
+        self.assertIn("Research pins", BOUNDARY)
 
 
 if __name__ == "__main__":  # pragma: no cover

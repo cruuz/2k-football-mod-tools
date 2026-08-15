@@ -1,10 +1,11 @@
-"""Beta 45 honest G12 surfaces: experimental 8↔9 pack, 3rd-and-long refusal, copied 0A."""
+"""Playbook research boundaries, plain 3rd-and-long status, and copied 0A."""
 
 from __future__ import annotations
 
 import json
 import os
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
@@ -139,7 +140,7 @@ class G12PanelHonestyTests(unittest.TestCase):
 
         cls.app = QApplication.instance() or QApplication([])
 
-    def test_buttons_are_never_silent_gray(self) -> None:
+    def test_status_button_is_clickable_and_raw_research_export_is_withdrawn(self) -> None:
         from mod_editor.apf_studio.playbook_membership_qt import (
             ApfPlaybookMembershipPanel,
         )
@@ -149,45 +150,38 @@ class G12PanelHonestyTests(unittest.TestCase):
         facade.source = None
         panel = ApfPlaybookMembershipPanel(facade, lambda *_a, **_k: None)
         try:
-            self.assertTrue(panel.export_g12_pack_button.isEnabled())
-            self.assertTrue(
-                str(panel.export_g12_pack_button.property("disableReason") or "").strip()
-            )
+            self.assertFalse(hasattr(panel, "export_g12_pack_button"))
             self.assertTrue(panel.third_long_button.isEnabled())
-            self.assertTrue(
-                str(panel.third_long_button.property("disableReason") or "").strip()
-            )
-            self.assertIn(
-                "3rd-and-long",
-                str(panel.third_long_button.property("disableReason")).casefold(),
-            )
+            self.assertIn("3rd-and-long", panel.third_long_button.text().casefold())
+            self.assertIn("plain-language", panel.third_long_button.toolTip())
         finally:
             panel.deleteLater()
             self.app.processEvents()
 
-    def test_loaded_source_clears_the_g12_export_block(self) -> None:
+    def test_status_button_can_be_clicked_twice_without_the_crash_reporter(self) -> None:
         from mod_editor.apf_studio.playbook_membership_qt import (
             ApfPlaybookMembershipPanel,
         )
 
         facade = MagicMock()
         facade.source_ready = False
-        facade.source = MagicMock(index_0a=Path("/tmp/0A"))
-        facade.staged_splb_outers.return_value = ()
-        facade.staged_splb_changes.return_value = ()
+        facade.source = None
         panel = ApfPlaybookMembershipPanel(facade, lambda *_a, **_k: None)
         try:
-            facade.source_ready = True
-            panel._refresh_actions()
-            self.assertTrue(panel.export_g12_pack_button.isEnabled())
-            self.assertEqual(
-                str(panel.export_g12_pack_button.property("disableReason") or ""),
-                "",
-            )
-            self.assertTrue(panel.third_long_button.isEnabled())
-            self.assertTrue(
-                str(panel.third_long_button.property("disableReason") or "").strip()
-            )
+            with patch(
+                "mod_editor.apf_studio.playbook_membership_qt.QMessageBox.information"
+            ) as information, patch.object(sys, "excepthook") as excepthook:
+                panel.third_long_button.click()
+                panel.third_long_button.click()
+            self.assertEqual(information.call_count, 2)
+            excepthook.assert_not_called()
+            for call in information.call_args_list:
+                title, body = call.args[1:3]
+                self.assertEqual(title, "3rd-and-long editing is not available")
+                self.assertIn("default.xex", body)
+                self.assertIn("Nothing was changed", body)
+                self.assertNotIn("data-side", body.casefold())
+                self.assertNotIn("refuses a writer", body.casefold())
         finally:
             panel.deleteLater()
             self.app.processEvents()
@@ -196,38 +190,19 @@ class G12PanelHonestyTests(unittest.TestCase):
         from mod_editor.apf_studio.playbook_membership_qt import BOUNDARY
 
         self.assertNotIn("put TEs on", BOUNDARY)
-        self.assertIn("not a 3rd-and-long fix", BOUNDARY)
-        self.assertIn("no data-side writer", BOUNDARY)
+        self.assertIn("does not change the personnel", BOUNDARY)
+        self.assertNotIn("data-side", BOUNDARY.casefold())
+        self.assertNotIn("0x84", BOUNDARY)
 
-    def test_facade_ships_the_export_and_the_refusal(self) -> None:
+    def test_facade_does_not_offer_an_unusable_raw_export(self) -> None:
         from mod_editor.apf_studio.facade import ApfStudioFacade
 
-        self.assertTrue(
-            callable(
-                getattr(ApfStudioFacade, "export_g12_wr3_te_package_map_pack", None)
-            )
+        self.assertFalse(
+            hasattr(ApfStudioFacade, "export_g12_wr3_te_package_map_pack")
         )
-        self.assertTrue(
-            callable(
-                getattr(
-                    ApfStudioFacade, "refuse_apf_3rd_and_long_user_logic_writer", None
-                )
-            )
+        self.assertFalse(
+            hasattr(ApfStudioFacade, "refuse_apf_3rd_and_long_user_logic_writer")
         )
-
-    def test_facade_refusal_raises(self) -> None:
-        from mod_editor.apf_studio.facade import ApfStudioFacade
-        from mod_editor.core.playbook_package_rule_spike import (
-            ApfThirdAndLongUserLogicRefusal,
-        )
-
-        with self.assertRaises(ValidationError) as caught:
-            ApfStudioFacade.refuse_apf_3rd_and_long_user_logic_writer(
-                object()  # type: ignore[arg-type]
-            )
-        self.assertIsInstance(caught.exception, ApfThirdAndLongUserLogicRefusal)
-        self.assertIn("No data-side", str(caught.exception))
-        self.assertIn("XEX", str(caught.exception))
 
 
 def _synthetic_apf_master() -> bytes:
@@ -292,7 +267,7 @@ class G12LibraryHonestyTests(unittest.TestCase):
         self.assertNotEqual(ace.new_map, APF_ACE_EMPTY_PACKAGE_MAP)
         self.assertTrue(all("ace" in t.formation_name.casefold() for t in pack.targets))
 
-    def test_library_refusal_is_typed_and_names_xex(self) -> None:
+    def test_library_refusal_is_typed_and_names_executable(self) -> None:
         from mod_editor.core.playbook_package_rule_spike import (
             APF_3RD_AND_LONG_PLAY_CHOICE_PROVED,
             APF_3RD_AND_LONG_USER_LOGIC_REFUSAL,
@@ -305,7 +280,7 @@ class G12LibraryHonestyTests(unittest.TestCase):
             refuse_apf_3rd_and_long_user_logic_writer()
         self.assertIsInstance(caught.exception, ValidationError)
         self.assertEqual(str(caught.exception), APF_3RD_AND_LONG_USER_LOGIC_REFUSAL)
-        self.assertIn("XEX", str(caught.exception))
+        self.assertIn("default.xex", str(caught.exception))
         self.assertIn("0x8486CE88", str(caught.exception))
 
 

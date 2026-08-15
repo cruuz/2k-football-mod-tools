@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import configparser
 import hashlib
 import importlib
@@ -24,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.77"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.78"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -466,6 +467,55 @@ def _check_namespace_isolation() -> None:
             "mod_editor is not the tested APF namespace package")
     require(core is not None and getattr(core, "__file__", None) is None,
             "mod_editor.core is not the tested APF namespace package")
+
+
+def _check_literal_product_import_closure() -> None:
+    """Reject a staged APF tree whose code names an unshipped local module.
+
+    Importing each public module is not enough: a button callback can hide an
+    import until a user clicks it. Beta 45 did exactly that in two Playbooks
+    actions. Parse every staged Python file and require every literal
+    ``mod_editor.*`` import to resolve inside this clean product tree. Namespace
+    package directories are valid even though their mixed-product
+    ``__init__.py`` files are deliberately absent.
+    """
+
+    missing: list[str] = []
+    for path in sorted(ROOT.rglob("*.py")):
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        except (OSError, SyntaxError, UnicodeError) as exc:
+            raise RuntimeError(f"could not inspect staged import closure: {path}") from exc
+        relative = path.relative_to(ROOT)
+        package = list(relative.with_suffix("").parts[:-1])
+        if relative.name == "__init__.py":
+            package = list(relative.parts[:-1])
+        candidates: list[tuple[int, str]] = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                candidates.extend((node.lineno, alias.name) for alias in node.names)
+            elif isinstance(node, ast.ImportFrom):
+                if node.level:
+                    keep = len(package) - node.level + 1
+                    parts = package[: max(0, keep)]
+                    if node.module:
+                        parts.extend(node.module.split("."))
+                    name = ".".join(parts)
+                else:
+                    name = node.module or ""
+                if name:
+                    candidates.append((node.lineno, name))
+        for line, name in candidates:
+            if name != "mod_editor" and not name.startswith("mod_editor."):
+                continue
+            target = ROOT.joinpath(*name.split("."))
+            if target.is_dir() or target.with_suffix(".py").is_file():
+                continue
+            missing.append(f"{relative}:{line} imports missing local module {name}")
+    require(
+        not missing,
+        "staged APF local-import closure is incomplete: " + "; ".join(missing),
+    )
 
 
 def _check_audo_authoring_doc() -> None:
@@ -2417,6 +2467,7 @@ def main(argv: list[str] | None = None) -> int:
         _check_h7a_encoder()
         _check_desktop_contract()
         _check_install_contract()
+        _check_literal_product_import_closure()
         modules = {name: importlib.import_module(name) for name in PRODUCT_MODULES}
         for name in TOOL_MODULES:
             importlib.import_module(name)
