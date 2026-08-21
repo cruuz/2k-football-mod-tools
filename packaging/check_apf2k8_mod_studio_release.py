@@ -114,7 +114,7 @@ INSTALL_EXECUTABLES = frozenset(
 # private paths are embedded in the release checker.
 REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
     "mod_editor/apf_studio/__init__.py": (
-        '__version__ = "0.1.0-alpha.68"',
+        '__version__ = "0.1.0-alpha.80"',
     ),
     "mod_editor/apf_studio/audio_annotations.py": (
         'AUDIO_ANNOTATIONS_SCHEMA = "apf2k8_audio_annotations/v1"',
@@ -264,7 +264,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "confirmation_token",
     ),
     "APF2K8-README.md": (
-        "0.1.0-alpha.68",
+        "0.1.0-alpha.80",
         "Normal logo — convert to APF regions (recommended)",
         "APF region mask (advanced)",
         "Your cue label & notes",
@@ -289,7 +289,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "normalized original import plus the last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_getting_started.md": (
-        "0.1.0-alpha.68",
+        "0.1.0-alpha.80",
         "Your cue label & notes",
         "Labeled only",
         "audio-annotations.json",
@@ -309,7 +309,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "normalized original import and last transform",
     ),
     "docs/mod_editor/apf2k8_mod_studio_changelog.md": (
-        "0.1.0-alpha.68",
+        "0.1.0-alpha.80",
         "project_metadata_only_stable_logical_cue_id",
         "audio-annotations.json",
         "selected_exact_slot_xma1_or_conformed_audio",
@@ -327,7 +327,7 @@ REQUIRED_PRODUCT_CONTRACT_MARKERS: dict[str, tuple[str, ...]] = {
         "original import plus its last transform",
     ),
     "docs/mod_editor/APF2K8_STATUS.md": (
-        "0.1.0-alpha.68",
+        "0.1.0-alpha.80",
         "0.1.0-alpha.51 candidate boundary",
         "project_metadata_only_stable_logical_cue_id",
         "47,775 playable cues",
@@ -372,6 +372,15 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
         98_846,
         "39a1e0c944a846e24d7a11c52d6a0fbba4091959f01856d3a087efde01ba490c",
         "apf2k8_textlogo_targets/v1",
+    ),
+    # Which team owns each endzone package, identified by looking at the
+    # decoded artwork. Archive indices and nicknames only: no decoded pixels,
+    # no compressed spans, and nothing that is not already visible to anyone
+    # who exports a contact sheet from their own game.
+    "mod_editor/data/apf2k8_endzone_labels.v1.json": (
+        4_899,
+        "63f827a548da7d0aaa2f01382cd08d4b3aeec2887ba9343dcc351da4af239715",
+        "apf2k8_endzone_labels/v1",
     ),
 }
 

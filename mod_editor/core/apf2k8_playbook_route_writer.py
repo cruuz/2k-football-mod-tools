@@ -39,6 +39,10 @@ PROVIDER_KIND = "play_assignment_route"
 REPORT_SCHEMA = "apf2k8_play_assignment_route_clone/v1"
 PAYLOAD_SCHEMA = "apf2k8_play_assignment_route_replacement/v1"
 MASTER_ASSET_ID = "apf:playbook:180:0"
+ROUTE_ORPHAN_MESSAGE = (
+    "This route is only used on the target play, so Copy would delete it. "
+    "Use Swap instead — that trades the two routes and keeps both."
+)
 
 
 def _sha256(payload: bytes) -> str:
@@ -178,6 +182,10 @@ def decode_route_clone_payload(
         raise ValidationError(
             f"APF route-clone replacement is not valid UTF-8 JSON: {target_id}"
         ) from exc
+    except RecursionError as exc:
+        raise ValidationError(
+            f"APF route-clone replacement is too deeply nested: {target_id}"
+        ) from exc
     if (
         not isinstance(document, dict)
         or set(document) != {"schema", "request"}
@@ -191,6 +199,63 @@ def decode_route_clone_payload(
             f"APF route-clone payload target changed: {target_id}"
         )
     return request
+
+
+def relay_candidates(
+    body_or_parsed: bytes | Mapping[str, object],
+    target_play: int,
+    target_slot: int,
+    donor_play: int,
+    donor_slot: int,
+) -> tuple[tuple[int, int], ...]:
+    """Slots whose current chain start is shared by at least one other slot.
+
+    The target slot itself, every slot on the donor play, and any slot routed
+    to a unique chain are excluded; only the remaining assignments can carry a
+    displaced chain without deleting it.
+    """
+
+    parsed = (
+        body_or_parsed
+        if isinstance(body_or_parsed, Mapping)
+        else _parse(body_or_parsed)
+    )
+    _slot(parsed, target_play, target_slot, "Target")
+    _slot(parsed, donor_play, donor_slot, "Donor")
+    plays = parsed["plays"]
+    assert isinstance(plays, list)
+    multiplicity: dict[int, int] = {}
+    for play in plays:
+        assert isinstance(play, dict)
+        for slot in play["slots"]:
+            assert isinstance(slot, dict)
+            node = int(slot["route_node_index"])
+            multiplicity[node] = multiplicity.get(node, 0) + 1
+    candidates: list[tuple[int, int]] = []
+    for play_index, play in enumerate(plays):
+        if play_index == donor_play:
+            continue
+        slots = play["slots"]
+        assert isinstance(slots, list)
+        for slot_index, slot in enumerate(slots):
+            if play_index == target_play and slot_index == target_slot:
+                continue
+            if multiplicity[int(slot["route_node_index"])] >= 2:
+                candidates.append((play_index, slot_index))
+    return tuple(candidates)
+
+
+def build_relayed_copy_requests(
+    target: tuple[int, int],
+    donor: tuple[int, int],
+    relay: tuple[int, int],
+) -> tuple[RouteCloneRequest, RouteCloneRequest]:
+    """target <- donor plus relay <- target's original chain, as one batch."""
+
+    return (
+        RouteCloneRequest(target[0], target[1], donor[0], donor[1]),
+        RouteCloneRequest(relay[0], relay[1], target[0], target[1]),
+    )
 
 
 def _assignment_fields(play_index: int, slot_index: int) -> tuple[int, int]:
@@ -339,11 +404,7 @@ def verify_route_clones(
         for slot in play["slots"]
     }
     if replacement_starts != source_starts:
-        raise ValidationError(
-            "This APF route copy would orphan a game-authored chain. Choose a "
-            "target whose current chain is also used elsewhere, or make a "
-            "balanced swap that preserves every assignment-chain start."
-        )
+        raise ValidationError(ROUTE_ORPHAN_MESSAGE)
 
     changed = _difference_ranges(source, replacement)
     if not changed:
@@ -632,6 +693,143 @@ def build_play_route_patch(
     return CompiledRouteCloneEntry(180, rebuilt, compiled, report)
 
 
+def encode_master_play_body(index_path: Path, new_body: bytes) -> tuple[bytes, dict[str, object]]:
+    """Pack a decoded MASTER PLAY body into outer 180 without touching source."""
+
+    try:
+        archive = apf_outer.parse_archive(Path(index_path))
+        entry = archive.entries[180]
+        with apf_inner.ArchiveReader(archive) as reader:
+            record = apf_inner.parse_iff(reader, entry)
+            original_entry = reader.read(entry, 0, entry.size)
+            original_blocks = [
+                apf_inner.decode_block(reader, record, index, 256 * 1024 * 1024)
+                for index in range(record.block_count)
+            ]
+            original_stored = [
+                reader.read(entry, block.start_offset, block.stored_length)
+                for block in record.blocks
+            ]
+    except (OSError, IndexError, apf_inner.FormatError, apf_outer.FormatError) as exc:
+        raise ValidationError(f"Could not open APF MASTER PLAY: {exc}") from exc
+    if (
+        entry.name_id != 487_346_054
+        or len(entry.segments) != 1
+        or entry.segments[0].pack_name != "0A"
+        or record.warnings
+        or record.footer is None
+        or record.block_count != 1
+        or record.file_count != 1
+        or len(record.files) != 1
+    ):
+        raise ValidationError("APF MASTER PLAY IFF/outer ownership changed.")
+    target_file = record.files[0]
+    if (
+        target_file.name != "mpb"
+        or target_file.type_name != "PLAY"
+        or target_file.file_id != 0x33CDF8E3
+        or target_file.type_hash != 0x681C330E
+        or len(target_file.parts) != 1
+        or target_file.parts[0].block_index != 0
+    ):
+        raise ValidationError("APF MASTER PLAY inner-file ownership changed.")
+    target_part = target_file.parts[0]
+    original_body = original_blocks[0][
+        target_part.offset : target_part.offset + target_part.length
+    ]
+    if len(new_body) != len(original_body):
+        raise ValidationError(
+            f"APF MASTER PLAY body is {len(new_body):,} bytes; "
+            f"{len(original_body):,} were expected."
+        )
+    patched_block = bytearray(original_blocks[0])
+    patched_block[target_part.offset : target_part.offset + target_part.length] = (
+        new_body
+    )
+    new_block = bytes(patched_block)
+    descriptor = record.blocks[0]
+    if not descriptor.is_compressed or descriptor.wrapper is None:
+        raise ValidationError("APF MASTER PLAY block is no longer H7A-compressed.")
+    try:
+        compressed, preservation = apf_inner.encode_h7a_preserving_tokens(
+            original_stored[0][apf_inner.H7A_HEADER_SIZE :],
+            original_blocks[0],
+            new_block,
+            descriptor.wrapper.shift,
+        )
+        stored = struct.pack(
+            ">5I",
+            apf_inner.H7A_MAGIC,
+            len(new_block),
+            apf_inner.H7A_HEADER_SIZE + len(compressed),
+            descriptor.unknown_10,
+            descriptor.wrapper.shift,
+        ) + compressed
+        roundtrip = apf_inner.decompress_h7a(
+            compressed, len(new_block), descriptor.wrapper.shift
+        )
+    except apf_inner.FormatError as exc:
+        raise ValidationError(f"Could not encode APF MASTER PLAY H7A: {exc}") from exc
+    if roundtrip != new_block:
+        raise ValidationError("APF MASTER PLAY H7A round trip changed the edit.")
+
+    header = bytearray(original_entry[: record.header_size])
+    block_start = record.header_size
+    struct.pack_into(
+        ">8I",
+        header,
+        apf_inner.IFF_HEADER_SIZE,
+        descriptor.name_hash,
+        descriptor.type_hash,
+        descriptor.unknown_08,
+        descriptor.uncompressed_length,
+        descriptor.unknown_10,
+        block_start,
+        len(stored),
+        descriptor.indexed,
+    )
+    file_length = record.header_size + len(stored)
+    struct.pack_into(">I", header, 0x08, file_length)
+    footer_size = 8 + record.footer.payload_size
+    footer = original_entry[record.file_length : record.file_length + footer_size]
+    tail = original_entry[record.file_length + footer_size :]
+    if any(tail):
+        raise ValidationError("APF MASTER PLAY outer allocation has a nonzero tail.")
+    active = bytes(header) + stored + footer
+    if len(active) > entry.size:
+        raise ValidationError(
+            "Edited APF MASTER PLAY does not fit the game's fixed compressed allocation."
+        )
+    rebuilt = active + b"\0" * (entry.size - len(active))
+
+    memory = apf_texture_patch.BytesReader(rebuilt)
+    try:
+        reparsed = apf_inner.parse_iff(memory, entry)
+        decoded = apf_inner.decode_block(memory, reparsed, 0, 256 * 1024 * 1024)
+    except apf_inner.FormatError as exc:
+        raise ValidationError(f"Rebuilt APF MASTER PLAY IFF is invalid: {exc}") from exc
+    if reparsed.warnings or decoded != new_block:
+        raise ValidationError("Rebuilt APF MASTER PLAY changed its decoded block.")
+    rebuilt_part = reparsed.files[0].parts[0]
+    verified_body = decoded[
+        rebuilt_part.offset : rebuilt_part.offset + rebuilt_part.length
+    ]
+    if verified_body != new_body:
+        raise ValidationError("Rebuilt APF MASTER PLAY differs from its compiled body.")
+    report = {
+        "outer_index": 180,
+        "output_entry_size": len(rebuilt),
+        "output_entry_sha256": _sha256(rebuilt),
+        "h7a_transport": {
+            "strategy": "retail-token-preserving",
+            **preservation,
+            "compressed_block_size": len(stored),
+            "file_length": file_length,
+        },
+    }
+    return rebuilt, report
+
+
 def _write_new(path: Path, payload: bytes) -> Path:
     target = path.expanduser().absolute()
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -717,11 +915,15 @@ __all__ = [
     "MASTER_ASSET_ID",
     "PROVIDER_KIND",
     "PAYLOAD_SCHEMA",
+    "ROUTE_ORPHAN_MESSAGE",
     "PlayRouteCloneRequest",
     "RouteCloneRequest",
+    "build_relayed_copy_requests",
     "compile_play_route_clones",
     "compile_route_clones",
     "build_play_route_patch",
+    "relay_candidates",
+    "encode_master_play_body",
     "request_from_mapping",
     "read_master_play_body",
     "decode_route_clone_payload",

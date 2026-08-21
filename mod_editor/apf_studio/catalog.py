@@ -41,6 +41,8 @@ import apf_uniform_inventory  # type: ignore  # noqa: E402
 import apf_textlogo_patch  # type: ignore  # noqa: E402
 import apf_field_art_patch  # type: ignore  # noqa: E402
 
+from .number_targets import action_binding as number_action_binding
+from .number_targets import writable_locations as number_writable_locations
 from .uniform_targets import load_targets
 
 
@@ -70,7 +72,18 @@ def _category_for(name: str, type_name: str) -> ApfCategory:
         return ApfCategory.ROSTERS
     if "uniform" in value or any(
         token in value
-        for token in ("jersey", "pants", "helmet", "shoulder", "sock", "shoe", "glove", "numberfont", "namefont")
+        for token in (
+            "jersey",
+            "pants",
+            "helmet",
+            "shoulder",
+            "sock",
+            "shoe",
+            "glove",
+            "number_",
+            "numberfont",
+            "namefont",
+        )
     ):
         return ApfCategory.UNIFORMS
     # Presentation is tested before the generic "logo" token: the field
@@ -105,10 +118,16 @@ def _status_for(
     action = asset_action_binding(
         asset_id, outer_index, inner_index, name, type_name
     )
+    if action is None:
+        action = number_action_binding(
+            asset_id, outer_index, inner_index, name, type_name
+        )
     capability = (
         capability_action_binding(action.capability_id) if action else None
     )
     if capability is not None and capability.has_complete_editor:
+        return ApfStatus.EDITABLE
+    if action is not None and action.replace_method == "replace_number":
         return ApfStatus.EDITABLE
     if type_name in {"TXTR", "SCNE", "AUDO", "AUSB", "CurveAnim", "SingleMoCap"}:
         return ApfStatus.EXPORT_ONLY
@@ -172,6 +191,10 @@ def _notes_for(
     action = asset_action_binding(
         asset_id, outer_index, inner_index, name, type_name
     )
+    if action is None:
+        action = number_action_binding(
+            asset_id, outer_index, inner_index, name, type_name
+        )
     if action is not None:
         return action.notes
     owner = _workspace_owner(
@@ -222,6 +245,8 @@ def _owned_locations(
         )
     for location in apf_field_art_patch.writable_locations():
         owners[location] = "Field Art → base texture editor"
+    for location in number_writable_locations():
+        owners[location] = "All Textures → jersey digits"
     return owners
 
 

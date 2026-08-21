@@ -1,9 +1,130 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC71 — Beta 47 identity (2026-08-21)
+
+Identity-only bump: Beta 47 ships the shared desktop-shell fixes and the APF
+alpha.80 surfaces; the 2K5 editing surface is unchanged from RC69. The
+updater reports beta-47 and the packaged runtime closure re-pins.
+
 This is the modder-facing record of functionality that is actually present in
 runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed
 build path.
+
+## v1.0 RC69 — updater identity beta-46 — 2026-08-15
+
+- Shared updater identity is `beta-46`. No 2K5 writer or importer changed.
+  The Playbooks repair, raw-export withdrawal, and APF packaged-import closure
+  check in this tag are APF-only.
+
+## v1.0 RC68 — updater identity beta-45 — 2026-08-15
+
+- Shared updater identity is `beta-45`. No 2K5 writer or importer changed.
+  Field Art extras, jersey numbers, jersey capacity, and the G12 pack in this
+  tag are APF-only.
+
+## v1.0 RC67 — updater identity beta-44 — 2026-08-14
+
+- Shared updater identity is `beta-44`. No 2K5 writer or importer changed.
+  The Fine-tune Plays, empty-formation, and build-folder work in this tag is
+  APF-only.
+
+## v1.0 RC66 — Check My Images, and a camera map — 2026-08-14
+
+- **New: Check My Images.** Sits directly above Build. Runs the real quantizer
+  and the real encoder against the real slot contract for every staged image and
+  reports, per slot: fits as authored, will be reduced to N colours, or will not
+  fit. The palette ladder added in Beta 41/42 is lossy and used to happen
+  silently; this is how you find out first. It changes nothing and starts no
+  build.
+- **The `sleeve` slot contract was wrong and is fixed.** It had been modelled as
+  512x256 with six mips like the torso; the real slot is 128x128, five mips,
+  with a 64-byte gap between the clean and mud palettes. Contracts are now
+  derived from the importers themselves and cross-checked at import time, so a
+  typed table cannot drift from the code that writes the bytes again.
+- **Jersey numbers: do not paint them into the art.** The torso, sleeve and
+  pants slot copy now says so. 2K5 draws numbers from separate digit textures in
+  the same uniform set — Jersey and Arm digits at 64x64, Helmet digits at 32x32,
+  and a 1024x32 nameplate atlas — so numbers baked into the jersey appear twice.
+- **The nameplate atlas is 1024x32 horizontal**, not 32x1024 vertical. The
+  transposed value came from a TXTR descriptor bug fixed long ago in the decoder,
+  and three user-facing places still carried it.
+- **New: `--inspect-camera-options nfl2k5`.** Seven named settings with their
+  shipped ranges and six named presets. Camera Distance is a dimensionless
+  multiplier and Camera Height is world units; only Camera Angle is 0..1. The
+  three sliders only move the camera while the preset is set to Custom — that is
+  how the shipped game works. Read-only: the values live in a signed save.
+- **The published slider snapshot was mislabelling 12 of 18 entries.** The save
+  stores each slider vector in its globals' address order, where Catching is
+  last, not the menu's display order, where it is fourth. If you read a slider
+  value out of this tool before, re-read it.
+
+## v1.0 RC65 — pants too, and a test that finds the next one — 2026-08-13
+
+- **The pants importer was missed in Beta 41 and is fixed here.** Building a
+  pants replacement still refused with `pants: VC-LZ stream needs more than the
+  75472-byte bound`. Beta 41 wired the palette ladder into live helmet, jersey,
+  scorebug and create-team field art but not pants, because the sweep that
+  found the offenders was truncated and the resulting list was then hard-coded
+  into the test that was supposed to guard it — so the test agreed with the
+  omission. Pants now uses the ladder like its siblings.
+- **That test now derives the set from the tree instead of trusting a list.**
+  Anything that compresses into a bounded VC-LZ span and still quantizes at a
+  flat 256 fails the suite, so a missed or newly added importer cannot inherit
+  this bug by being forgotten.
+- **A failing edit is named by the coordinates it was picked by.** Beta 41's
+  message said only `pants:` — a uniform edit carries no selector, so the label
+  fell back to the bare kind. It now reads
+  `pants (asset_code=NE, side=home, variant=0)`.
+
+## v1.0 RC64 — a fixed VC-LZ span fits the art down instead of refusing — 2026-08-13
+
+- **A texture that will not fit its retail compressed span is now quantized
+  down instead of failing the build.** Building could refuse with
+  `VC-LZ stream needs more than the 34416-byte bound` — 34,416 is a live
+  helmet TXTR — and the message named no team, no slot, and no image.
+
+  `quantize_levels_to_vc_lz_bound` has shipped for a while: it tries palettes
+  from 256 down to 2 and returns the first that fits, which is what the sleeve,
+  digit, all-texture and Crib importers already do. Four importers that
+  compress into a bounded span still called the plain 256-entry quantizer and
+  hard-failed: live helmet, jersey, scorebug, and the compressed create-team
+  field art. They now use the ladder. **The ladder starts at 256, so art that
+  already fit is byte-for-byte unchanged**; only art that used to fail steps
+  down. When even a two-colour version will not fit, the message says so and
+  says what to simplify.
+
+  The three P8 importers that write *uncompressed* fixed spans — team select
+  card, player portrait, Crib team photo — have no bound to overflow and are
+  deliberately left alone.
+
+- **Every build failure now names the edit that caused it.** The dispatcher
+  knew each edit's kind and selector and attached neither, so any importer's
+  message stood alone in a build carrying dozens of edits.
+
+  Reported against Beta 40.
+
+## v1.0 RC63 — Team Kit equipment edits can be built — 2026-08-13
+
+- **Swapping a sock, glove, shoe, wristband, elbow pad, or long-sleeve texture
+  no longer breaks the build.** Build Modded XISO refused with
+  `Unknown uniform asset ID: tset:3660:4:0:socks00`, and Save Project, Load
+  Project, Import Team Kit, Undo's restore and Revert All refused the same way.
+
+  Only the uniform *sets* live in the uniform catalog. The Team Kit's 45
+  package-local equipment parts are `tset:` assets minted by the extended
+  visual catalog, along with `p8:` textures, portraits, live faces,
+  create-field art and the scorebug — 47,237 assets the build could not name.
+  Staging worked because the panel hands `replace()` an already-resolved asset
+  object; every later step re-resolved the ID string through the wrong catalog.
+
+  Every one of those steps now resolves through `Nfl2k5ProductVisualCatalog`,
+  the aggregate that was written for exactly this and never handed to a
+  session. A uniform edit resolves to the identical object it always did, so
+  jersey, helmet and digit edits are unchanged.
+
+  Reported against Beta 39. The routing dates to the first public beta; it
+  became reachable in RC49, when Team Kit gained the equipment parts.
 
 ## v1.0 RC62 — no 2K5 changes — 2026-08-11
 

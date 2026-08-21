@@ -34,13 +34,13 @@ SOURCES = {
     ),
     "gameplay_draft_audit": (
         ROOT / "reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json",
-        53_996,
-        "c53522ee0f4151291f154720a1d457ff7368fb256fbf5845561f4ad68289524b",
+        54_545,
+        "0c1c47c7f025f9fbb303b9a7d78e7aaf8e9d3c4d603a47bc7819d5ded43557ec",
     ),
     "draft_integrity_probe": (
         ROOT / "reports/gameplay_tuning/nfl_draft_weight_xbe_integrity_probe.json",
         5_720,
-        "4e4aa2574c7e57f8adabb77b688dc12e879fb6009551afa3b1d76132fc26f7f8",
+        "4e96733fce37f07ec53ad9ab7f74b6ee6c7c693dfa153256c2899c3f7a4c270c",
     ),
     "disc_roster_audit": (
         ROOT / "reports/assets/nfl2k5_player_roster_audit.json",

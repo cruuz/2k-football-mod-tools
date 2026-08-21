@@ -40,7 +40,26 @@ import apf_outer
 
 SCENE_HEADER_MIN = 0x64
 SCENE_NODE_SIZE = 0xB0
-MATRIX_SIZE = 0x40
+#: One per-node transform record. 0x90 (144), not 0x40.
+#:
+#: The 0x40 reading was wrong for every SCNE in this title, and it is checkable
+#: two independent ways. Structurally, for all seven scorebug components and for
+#: the stadium, ``node_start + SCENE_NODE_SIZE*node_count == matrix_start`` and
+#: ``next_table_start - matrix_start == 144*matrix_count`` hold exactly. From
+#: code, two unrelated functions walk this array with ``addi r10,r10,144``
+#: (0x84ABE524 and 0x8472A358) and then reach the transform through a pointer at
+#: record +0x74.
+#:
+#: Reading it at 0x40 silently overlapped the records and produced values like
+#: 9.386e14 and -6.527e26 -- which is what the old non-finite PORTME was really
+#: reporting. Bytes +0x44/+0x64 of a record hold a node-name CRC-32, and a CRC
+#: that happens to begin 0x7F8 is a signalling NaN when misread as a float. At
+#: the correct stride every record in the eight files checked has m[15] == 1.0
+#: and zero non-finite components.
+MATRIX_SIZE = 0x90
+#: The 4x4 float32 matrix at the head of each record. The remaining 0x50 bytes
+#: are a name pointer, that name's CRC-32, and two constants.
+MATRIX_FLOAT_BYTES = 0x40
 # Deliberately no hierarchy-table header constant: the 0x20 once modelled as a
 # header is record 0's absolute and parent-relative vectors.
 JOINT_RECORD_SIZE = 0x30
@@ -587,13 +606,17 @@ def parse_scene_system_part(
     matrix_nonfinite_offsets: list[int] = []
     if matrix_start is not None:
         matrix_payload = data[matrix_start : matrix_start + matrix_count * MATRIX_SIZE]
-        # Most records are finite 4x4 float matrices.  A bounded set of stadium,
-        # sideline and UI variants contains NaN/Inf bit patterns; retain those
-        # offsets as PORTME evidence instead of rejecting the entire SCNE.
-        for i in range(matrix_count * 16):
-            value = struct.unpack_from(">f", matrix_payload, i * 4)[0]
-            if not math.isfinite(value):
-                matrix_nonfinite_offsets.append(matrix_start + i * 4)
+        # Only the first MATRIX_FLOAT_BYTES of each record are floats. Scanning
+        # the whole 0x90 record would report the name pointer and the name's
+        # CRC-32 as non-finite components, which is exactly the false PORTME the
+        # old 0x40 stride produced.
+        for record_index in range(matrix_count):
+            base = record_index * MATRIX_SIZE
+            for component in range(MATRIX_FLOAT_BYTES // 4):
+                offset = base + component * 4
+                value = struct.unpack_from(">f", matrix_payload, offset)[0]
+                if not math.isfinite(value):
+                    matrix_nonfinite_offsets.append(matrix_start + offset)
         matrix_sha256 = hashlib.sha256(matrix_payload).hexdigest()
 
     node_count = _u32be(data, 0x44, "scene-node count")
@@ -607,7 +630,8 @@ def parse_scene_system_part(
     if matrix_nonfinite_offsets:
         portme.append(
             f"PORTME: {len(matrix_nonfinite_offsets)} non-finite component(s) in the "
-            "0x40-byte matrix-like table; determine sentinel/variant semantics"
+            "4x4 float head of the 0x90-byte transform records; determine "
+            "sentinel/variant semantics"
         )
     if node_start is not None:
         for node_index in range(node_count):

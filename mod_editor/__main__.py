@@ -11,6 +11,7 @@ from typing import Sequence
 from .core.apf_digital_font import create_apf_digital_font_recipe
 from .core.apf_export import export_apf_jersey
 from .core.capabilities import CapabilityRegistryLoader
+from .core.camera_inspection import inspect_camera_options
 from .core.errors import ModEditorError
 from .core.gameplay_inspection import (
     inspect_draft_priority,
@@ -133,6 +134,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=int,
         metavar="ASSET_INDEX",
         help="list every APF team/bank selector affected by shoulder asset 0..23",
+    )
+    action.add_argument(
+        "--inspect-camera-options",
+        choices=("nfl2k5", "apf2k8"),
+        metavar="GAME",
+        help=(
+            "inspect the named camera settings, their shipped ranges and the "
+            "named presets for nfl2k5 or apf2k8 (read-only)"
+        ),
     )
     action.add_argument(
         "--inspect-gameplay-sliders",
@@ -407,6 +417,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.inspect_apf_shoulder_sharing is not None:
         try:
             result = inspect_apf_shoulder_sharing(args.inspect_apf_shoulder_sharing)
+        except (ModEditorError, OSError) as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 1
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.inspect_camera_options is not None:
+        try:
+            result = inspect_camera_options(args.inspect_camera_options)
         except (ModEditorError, OSError) as exc:
             print(f"error: {exc}", file=sys.stderr)
             return 1

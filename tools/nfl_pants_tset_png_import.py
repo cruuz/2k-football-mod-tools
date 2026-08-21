@@ -23,7 +23,7 @@ if _here not in _sys.path:
     _sys.path.insert(0, _here)
 
 from nfl_outer import parse_archive
-from nfl_txtr import HEADER, TxtrError, compress_vc_lz, decode_chunk, encode_rgba_png, \
+from nfl_txtr import HEADER, TxtrError, decode_chunk, encode_rgba_png, \
     minimum_vc_lz_overlap_scratch, rebuild_compressed_chunk_fixed_span, \
     swizzle_2d, unswizzle_2d
 import nfl_tset_png_import as legacy
@@ -251,35 +251,81 @@ def import_png(index: Path, inventory_path: Path, compatibility_path: Path,
 
     clean_width, clean_height, clean_rgba, clean_png_sha = read_rgba_png(clean_png)
     clean_mips = generate_mips(clean_rgba, clean_width, clean_height)
-    clean_palette, index_levels, quantization = legacy.quantize_levels(clean_mips)
-    clean_expected = [
-        legacy.MipLevel(level.level, level.width, level.height,
-                        legacy.rgba_from_indices(indices, clean_palette))
-        for level, indices in zip(clean_mips, index_levels)
-    ]
-
     if mud_png is not None:
         require(mud_mode == "identity",
                 "--mud-png cannot be combined with a derived non-identity mud mode")
         mud_width, mud_height, mud_rgba, mud_png_sha = read_rgba_png(mud_png)
         mud_mips = generate_mips(mud_rgba, mud_width, mud_height)
-        mud_palette_full = legacy.palette_for_shared_mud(index_levels, mud_mips)
-        highest_used = max(index for level in index_levels for index in level)
-        mud_palette = mud_palette_full[:highest_used + 1]
-        mud_expected = mud_mips
         mud_source = {
             "kind": "second_png_exact_shared_indices",
             "file_name": mud_png.name,
             "sha256": mud_png_sha,
         }
     else:
-        mud_palette = legacy.derive_mud_palette(clean_palette, mud_mode)
+        mud_mips = None
+        mud_source = {"kind": "derived_palette", "mode": mud_mode}
+
+    def mud_palette_for(
+        candidate_palette: list[tuple[int, int, int, int]],
+        candidate_levels: list[bytes],
+    ) -> list[tuple[int, int, int, int]]:
+        if mud_mips is None:
+            return legacy.derive_mud_palette(candidate_palette, mud_mode)
+        full = legacy.palette_for_shared_mud(candidate_levels, mud_mips)
+        highest_used = max(index for level in candidate_levels for index in level)
+        return full[:highest_used + 1]
+
+    def candidate_decoded(
+        candidate_palette: list[tuple[int, int, int, int]],
+        candidate_levels: list[bytes],
+    ) -> bytes:
+        candidate_chain = b"".join(
+            swizzle_2d(indices, level.width, level.height, 1)
+            for level, indices in zip(clean_mips, candidate_levels)
+        )
+        require(len(candidate_chain) == INDEX_CHAIN_BYTES,
+                "encoded shared mip index chain size mismatch")
+        rebuilt = bytearray(template_decoded)
+        rebuilt[256:256 + INDEX_CHAIN_BYTES] = candidate_chain
+        rebuilt[
+            256 + CLEAN_PALETTE_OFFSET:
+            256 + CLEAN_PALETTE_OFFSET + PALETTE_BYTES
+        ] = legacy.palette_bytes(candidate_palette)
+        rebuilt[
+            256 + MUD_PALETTE_OFFSET:
+            256 + MUD_PALETTE_OFFSET + PALETTE_BYTES
+        ] = legacy.palette_bytes(
+            mud_palette_for(candidate_palette, candidate_levels)
+        )
+        return bytes(rebuilt)
+
+    # The tier ladder starts at 256, so pants that already fit their retail span
+    # are byte-for-byte unchanged; only art that used to fail outright steps
+    # down to a smaller palette instead of refusing.
+    bounded = legacy.quantize_levels_to_vc_lz_bound(
+        clean_mips,
+        candidate_decoded,
+        stream_tag=target.stream_tag,
+        offset_bits=target.offset_bits,
+        max_encoded_size=target.stored_size,
+    )
+    clean_palette = bounded.palette
+    index_levels = bounded.index_levels
+    quantization = bounded.quantization
+    mud_palette = mud_palette_for(clean_palette, index_levels)
+    clean_expected = [
+        legacy.MipLevel(level.level, level.width, level.height,
+                        legacy.rgba_from_indices(indices, clean_palette))
+        for level, indices in zip(clean_mips, index_levels)
+    ]
+    if mud_mips is not None:
+        mud_expected = mud_mips
+    else:
         mud_expected = [
             legacy.MipLevel(level.level, level.width, level.height,
                             legacy.rgba_from_indices(indices, mud_palette))
             for level, indices in zip(clean_mips, index_levels)
         ]
-        mud_source = {"kind": "derived_palette", "mode": mud_mode}
 
     index_chain = b"".join(
         swizzle_2d(indices, level.width, level.height, 1)
@@ -287,17 +333,7 @@ def import_png(index: Path, inventory_path: Path, compatibility_path: Path,
     )
     require(len(index_chain) == INDEX_CHAIN_BYTES,
             "encoded shared mip index chain size mismatch")
-    rebuilt_decoded = bytearray(template_decoded)
-    rebuilt_decoded[256:256 + INDEX_CHAIN_BYTES] = index_chain
-    rebuilt_decoded[
-        256 + CLEAN_PALETTE_OFFSET:
-        256 + CLEAN_PALETTE_OFFSET + PALETTE_BYTES
-    ] = legacy.palette_bytes(clean_palette)
-    rebuilt_decoded[
-        256 + MUD_PALETTE_OFFSET:
-        256 + MUD_PALETTE_OFFSET + PALETTE_BYTES
-    ] = legacy.palette_bytes(mud_palette)
-    rebuilt_decoded_bytes = bytes(rebuilt_decoded)
+    rebuilt_decoded_bytes = bounded.decoded
     _, rebuilt_refs, _ = parse_tset(rebuilt_decoded_bytes, record, logical, None)
     template_descriptors = legacy.descriptor_projection(template_refs)
     rebuilt_descriptors = legacy.descriptor_projection(rebuilt_refs)
@@ -310,12 +346,7 @@ def import_png(index: Path, inventory_path: Path, compatibility_path: Path,
             ] == template_gap,
             "target system/descriptors/inter-palette gap changed")
 
-    compressed, compression_info = compress_vc_lz(
-        rebuilt_decoded_bytes,
-        stream_tag=target.stream_tag,
-        offset_bits=target.offset_bits,
-        max_encoded_size=target.stored_size,
-    )
+    compressed, compression_info = bounded.compressed, bounded.compression
     rebuilt_span, rebuild_info = rebuild_compressed_chunk_fixed_span(
         template_span, rebuilt_decoded_bytes
     )
@@ -426,6 +457,11 @@ def import_png(index: Path, inventory_path: Path, compatibility_path: Path,
             "algorithm": "weighted_median_cut_rgba_then_nearest_rgba_squared_error",
             "tie_breaks": "channel R,G,B,A; stable lexical colors; lowest palette index",
             **quantization,
+            # The bounded ladder can quantize a replacement down to fit its
+            # fixed VC-LZ span. That is lossy, so it is recorded here and
+            # reported to the user rather than applied silently.
+            "palette_fit_attempts": list(bounded.attempts),
+            "palette_was_reduced": len(bounded.attempts) > 1,
             "clean_palette_entries": len(clean_palette),
             "mud_palette_entries": len(mud_palette),
             "shared_index_chain": True,

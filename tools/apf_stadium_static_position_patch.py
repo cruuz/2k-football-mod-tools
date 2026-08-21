@@ -69,7 +69,7 @@ POSITION_SIZE = 12
 POSITION_FORMAT = 0x002A23B9
 
 TARGET_SPANS = {
-    "matrix_table": (38_912, 5_696, "5fa0a6f9aa4444ad14676e989a521963d32e1693559f288202ac1bb3b81d8828"),
+    "matrix_table": (38_912, 12_816, "a5a4835dab61fdaf6e35474e178346254691b998fcf00f93cca1feb91c99ff20"),
     "node_record": (26_240, 176, "24f8b734350d0447879ae0fd2899794fbcd3cc455ddbe064ad1da9dbce4ef428"),
     "hierarchy": (375_664, 48, "21df6a8e4e475144de905a555bad3799c61f10ee3a233f8d05d51025f3c8067a"),
     "draw_record": (375_712, 48, "161a2e06c0b875b6679423f490c2c89691d1da9899003768a0f4eac01cfe873f"),
@@ -748,7 +748,10 @@ def _copy_new_at(
                 raise PatchError("source 1A descriptor changed during copy")
             final_source = os.lstat(source)
             if (final_source.st_dev, final_source.st_ino) != expected_source_identity:
-                raise PatchError("source 1A pathname changed during copy")
+                raise PatchError(
+                "source 1A pathname changed during copy (a symlinked "
+                "source is the usual cause; stage a real copy instead)"
+            )
         finally:
             os.close(source_descriptor)
         os.fsync(descriptor)

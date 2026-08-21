@@ -9,7 +9,6 @@ assets and does not touch a user's source directly; every operation crosses the
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from datetime import datetime
 import html
 import json
 import math
@@ -133,10 +132,14 @@ from .facade import (
     TEAM_DISPLAY_NAME_EDIT_SCOPE_MESSAGE,
 )
 from .field_art import (
+    ENDZONE_IDENTITY_NOTE,
+    ENDZONE_MASK_CONTRACT,
     FieldArtInventory,
     FieldArtInventoryError,
     FieldArtKind,
     build_field_art_inventory,
+    endzone_team_labels,
+    export_endzone_contact_sheets,
 )
 from .inspectors import ApfInspectorService, ExportIdentity, InspectorRow, PagedModel
 from .helmet_crest_design import (
@@ -170,6 +173,10 @@ from .models import (
     UniformAsset,
     asset_action_binding,
 )
+from .number_targets import (
+    action_binding as number_action_binding,
+    budget_status_line as number_budget_status_line,
+)
 from .model_export_qt import PlayerEquipmentModelExportPanel
 from .project import (
     ProjectError,
@@ -183,6 +190,7 @@ from .roster_workspace_qt import RosterReservePlanner
 from .save_playbooks_qt import SavePlaybookAssignmentsPanel
 from .playbook_route_qt import PlayAssignmentRoutePanel
 from .playbook_membership_qt import ApfPlaybookMembershipPanel
+from .playbook_package_map_qt import ApfPackageMapPanel
 from .save_roster_players_qt import SaveRosterPlayersPanel
 from .scene_textures import SceneTexture, shared_texture_ids
 from .stadium import ApfStadiumPreview, ApfStadiumScene
@@ -231,7 +239,7 @@ CATEGORY_BLURBS: dict[ApfCategory, str] = {
     ApfCategory.TEAM_IDENTITY: "Browse team-facing resources; more identity editing unlocks here as each field is proven safe.",
     ApfCategory.LOGOS: "Replace the shared 512×512 team-logo crest and the 128×128 draft logo, and browse every indexed logo and team-art record.",
     ApfCategory.SCOREBUG: "See the field scorebug\u2019s own artwork \u2014 every graphic embedded in its seven scene parts plus the shared score-digit mask \u2014 and preview or export any of it. Only digital_font has a proved writer; geometry, layout, and timing are read-only.",
-    ApfCategory.FIELD_ART: "Browse 235 stock NFL endzone layers (118 endzone_l0 + 117 endzone_l1) plus practice/divot inventory. Per-team endzones are browsable under All Textures; only the two shared outer-6 layers are writable in the focused editor.",
+    ApfCategory.FIELD_ART: "Browse 235 stock endzone layers (118 endzone_l0 + 117 endzone_l1) plus practice/divot inventory. Every package is one team's own artwork — outer 6 is not a shared layer. Format-18 DXT1 endzones, package-659 weave/dirtmaps, and the original six bases are writable. Format-59 DXT5A endzones stay browse-only. Format-18 endzones are red/green/blue region masks, not paintable art.",
     ApfCategory.STADIUMS: "Explore stadium geometry in 3D, edit any of the 78 statically owned embedded textures, and round-trip same-topology POSITION edits for 77 catalog-authorized surfaces into a separately verified copied 1A.",
     ApfCategory.MENUS: "Search menu, layout, font, and localized text structures across the complete archive.",
     ApfCategory.AUDIO: "Browse soundtrack, commentary, stadium, presentation, and standalone XMA1 audio; play verified WAV previews, export original XMA, import ordinary audio through exact-slot conversion with your own XMA1 encoder, or batch-stage a retail-free XMA1 or PCM16 WAV folder or ZIP.",
@@ -361,7 +369,16 @@ def _spec_pill(text: str, *, emphasis: bool = False, tooltip: str = "") -> QLabe
 
 
 def _asset_product_action(asset: ApfAsset) -> AssetActionBinding | None:
-    return asset_action_binding(
+    action = asset_action_binding(
+        asset.asset_id,
+        asset.outer_index,
+        asset.inner_index,
+        asset.name,
+        asset.type_name,
+    )
+    if action is not None:
+        return action
+    return number_action_binding(
         asset.asset_id,
         asset.outer_index,
         asset.inner_index,
@@ -377,6 +394,47 @@ def _edit_id_for_asset(asset: ApfAsset) -> str:
 
 def _is_editable_png_asset(asset: ApfAsset) -> bool:
     return _asset_product_action(asset) is not None
+
+
+#: Names that mark a row as face/head/portrait art (see catalog._category_for).
+FACE_SCAN_NAME_TOKENS = ("face", "head", "portrait")
+FACE_SCAN_REFUSAL_TITLE = "Face scans can't be added in APF 2K8"
+FACE_SCAN_REFUSAL_BODY = (
+    "All-Pro Football 2K8 face/head art has no proved writer — only the "
+    "hi_head reference mesh can be exported. If your PNGs are 128×128 NFL "
+    "2K5-style portraits, use 2K5 Mod Studio → Rosters & Players → Portraits "
+    "& Faces."
+)
+
+
+def _face_scan_refusal(asset: ApfAsset | None) -> tuple[str, str] | None:
+    """Dedicated refusal copy for APF Rosters face/head rows.
+
+    APF 2K8's face capability is export-only, and the old generic "no proved
+    writer" sentence sent macOS portrait modders hunting for an import that
+    does not exist.  Rows outside APF Rosters keep the generic copy.
+    """
+
+    if asset is None or asset.category is not ApfCategory.ROSTERS:
+        return None
+    value = f"{asset.name} {asset.type_name}".casefold()
+    if not any(token in value for token in FACE_SCAN_NAME_TOKENS):
+        return None
+    return FACE_SCAN_REFUSAL_TITLE, FACE_SCAN_REFUSAL_BODY
+
+
+#: macOS copies files dropped from an archive or another volume with a hidden
+#: AppleDouble twin (``._name``) that carries the resource fork.  The twin has
+#: the same extension as the image, so it sails through the suffix check and
+#: then fails image decoding with jargon; name it plainly instead.
+APPLE_DOUBLE_DROP_REFUSAL = (
+    "That is a macOS resource-fork file (._name), not the image. Drop the "
+    "visible PNG instead."
+)
+
+
+def _is_apple_double_path(path: Path) -> bool:
+    return Path(path).name.startswith("._")
 
 
 def _workspace_route_for(
@@ -1173,6 +1231,48 @@ def _plain_image_formats() -> str:
     return "PNG, JPEG, BMP, GIF, WebP or TGA"
 
 
+# The permission-denied fix must name the actual OS.  A macOS user has no
+# "Run as administrator", no Program Files, and no "administrator mode"; the
+# Windows phrasing read as nonsense there (and sent one user hunting for a
+# sudo toggle the product does not have).
+if platform_compat.IS_MACOS:
+    _ADMIN_RIGHTS_FIX_HINT = (
+        "Fix: Mod Studio does not need sudo or elevated rights. Choose an "
+        "empty output folder you can write to, such as Documents or Desktop. "
+        "If the game is on another drive, the build may copy read-only "
+        "sibling packs instead of linking them; that is slower but still "
+        "needs no elevation."
+    )
+    _ACCESS_DENIED_FIX_HINT = (
+        "Fix: do not choose the game disc, a read-only volume, or another "
+        "protected folder for output. Choose a new empty folder under "
+        "Documents or Desktop; the installer and editor are designed to run "
+        "as your normal user account, without sudo."
+    )
+    _PERMISSION_DENIED_FIX_HINT = (
+        "Fix: choose a new empty output folder under Documents or Desktop. "
+        "Never build into the original game folder; Mod Studio always creates "
+        "a separate copy and never needs sudo."
+    )
+else:
+    _ADMIN_RIGHTS_FIX_HINT = (
+        "Fix: Mod Studio does not need Run as administrator. Choose an empty "
+        "output folder you can write to, such as Documents or Desktop. If the "
+        "game is on another drive, the build may copy read-only sibling packs "
+        "instead of linking them; that is slower but still needs no elevation."
+    )
+    _ACCESS_DENIED_FIX_HINT = (
+        "Fix: do not choose Program Files, the game disc, or another protected "
+        "folder for output. Choose a new empty folder under Documents/Desktop; "
+        "the installer and editor are designed to run as a normal Windows user."
+    )
+    _PERMISSION_DENIED_FIX_HINT = (
+        "Fix: choose a new empty output folder under Documents or Desktop. "
+        "Never build into the original game folder; Mod Studio always creates a "
+        "separate copy and does not require administrator mode."
+    )
+
+
 # Plain-language "what to do next" for the backend's exact-slot refusals.  The
 # fail-closed behaviour itself never changes -- the writer still rejects the
 # same bytes -- but the GUI pairs each refusal with the fix a first-time
@@ -1226,22 +1326,15 @@ _ERROR_FIX_HINTS: tuple[tuple[str, str], ...] = (
     ),
     (
         "administrator rights",
-        "Fix: Mod Studio does not need Run as administrator. Choose an empty "
-        "output folder you can write to, such as Documents or Desktop. If the "
-        "game is on another drive, the build may copy read-only sibling packs "
-        "instead of linking them; that is slower but still needs no elevation.",
+        _ADMIN_RIGHTS_FIX_HINT,
     ),
     (
         "Access is denied",
-        "Fix: do not choose Program Files, the game disc, or another protected "
-        "folder for output. Choose a new empty folder under Documents/Desktop; "
-        "the installer and editor are designed to run as a normal Windows user.",
+        _ACCESS_DENIED_FIX_HINT,
     ),
     (
         "Permission denied",
-        "Fix: choose a new empty output folder under Documents or Desktop. "
-        "Never build into the original game folder; Mod Studio always creates a "
-        "separate copy and does not require administrator mode.",
+        _PERMISSION_DENIED_FIX_HINT,
     ),
 )
 
@@ -1426,6 +1519,10 @@ class ImageDropLabel(QLabel):
             event.ignore()  # type: ignore[attr-defined]
             return
         path = Path(url.toLocalFile())
+        if _is_apple_double_path(path):
+            self._refuse_drop(APPLE_DOUBLE_DROP_REFUSAL)
+            event.ignore()  # type: ignore[attr-defined]
+            return
         if path.suffix.casefold() not in IMAGE_IMPORT_EXTENSIONS:
             self._refuse_drop(
                 f"That file is not an image this panel can read. Drop a "
@@ -1611,6 +1708,13 @@ def fit_slot_image(
         fit_to_png,
     )
 
+    if _is_apple_double_path(path):
+        QMessageBox.information(
+            parent,
+            "That file can't be used",
+            APPLE_DOUBLE_DROP_REFUSAL,
+        )
+        return None
     try:
         probe = fit_image(path, width, height, mode="auto")
     except ValidationError as exc:
@@ -2358,6 +2462,15 @@ class AssetBrowser(QWidget):
         action = _asset_product_action(asset)
         if action is not None:
             notes.insert(0, action.authoring_note)
+        if action is not None and action.replace_method == "replace_number":
+            # Show the package budget BEFORE authoring: retail sits at ~99.9%
+            # of each block, so the greedy/mips-regenerating build's real
+            # headroom is only visible here, not after authoring twenty PNGs.
+            try:
+                budget = self.facade.number_package_budget(asset.outer_index)
+                notes.insert(0, number_budget_status_line(budget))
+            except Exception:  # noqa: BLE001 - a budget line never breaks selection
+                pass
         if route is not None:
             notes.insert(0, route.summary)
         elif self.browse_export_only and self.action_lock_reason:
@@ -2397,8 +2510,14 @@ class AssetBrowser(QWidget):
             self.replace_button.setEnabled(True)
             self.revert_button.setVisible(True)
             self.revert_button.setEnabled(True)
-            lock = self.action_lock_reason or (
-                "Replacement is locked for this browse surface. Click explains why."
+            face = _face_scan_refusal(asset)
+            lock = (
+                face[1]
+                if face is not None
+                else self.action_lock_reason
+                or (
+                    "Replacement is locked for this browse surface. Click explains why."
+                )
             )
             self.replace_button.setToolTip(lock)
             self.replace_button.setProperty("disableReason", lock)
@@ -2419,7 +2538,8 @@ class AssetBrowser(QWidget):
                     f"Replace {asset.name} with any image (auto-resized to the slot)."
                 )
             else:
-                tip = (
+                face = _face_scan_refusal(asset)
+                tip = face[1] if face is not None else (
                     f"No proved writer owns {asset.name} yet, so this build "
                     "does not offer a replacement for it. Export raw/parts to "
                     "study it; editing unlocks when an exact writer exists."
@@ -2457,7 +2577,9 @@ class AssetBrowser(QWidget):
 
         def operation(progress: Callable[[str, int, int], None]) -> tuple[bool, object]:
             try:
-                if action is not None:
+                if action is not None and action.replace_method == "replace_number":
+                    path = self.facade.preview_asset(asset.asset_id, progress)
+                elif action is not None:
                     preview = getattr(self.facade, action.preview_method)
                     path = preview(progress)
                 else:
@@ -2603,6 +2725,8 @@ class AssetBrowser(QWidget):
                 if modification is not None:
                     progress(f"Exporting current {asset.name} PNG", 0, 0)
                     return _copy_new(modification.replacement_path, path)
+                if action.replace_method == "replace_number":
+                    return self.facade.export_asset(asset.asset_id, path, progress)
                 export = getattr(self.facade, action.export_method)
                 return export(path, progress)
             return self.facade.export_asset(asset.asset_id, path, progress)
@@ -2649,12 +2773,20 @@ class AssetBrowser(QWidget):
             return
         reason = str(self.replace_button.property("disableReason") or "").strip()
         if reason:
-            QMessageBox.information(
-                self,
-                "Cannot replace this texture yet",
-                reason
-                + "\n\nReplacement never mutates your original dump.",
-            )
+            face = _face_scan_refusal(asset)
+            if face is not None:
+                QMessageBox.information(
+                    self,
+                    face[0],
+                    face[1] + "\n\nReplacement never mutates your original dump.",
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "Cannot replace this texture yet",
+                    reason
+                    + "\n\nReplacement never mutates your original dump.",
+                )
             return
         if asset is None:
             return
@@ -2693,6 +2825,13 @@ class AssetBrowser(QWidget):
         if asset is not None and self._route is not None:
             self._hand_off(asset, self._route, Path(path))
             return
+        # Face/head rows are export-only in APF 2K8.  The old code fell through
+        # to a silent no-op here (action is None), which is exactly the dead end
+        # that stranded the macOS portrait modder; refuse with the real reason.
+        face = _face_scan_refusal(asset)
+        if face is not None:
+            QMessageBox.information(self, face[0], face[1])
+            return
         action = _asset_product_action(asset) if asset is not None else None
         if asset is None or action is None:
             return
@@ -2716,6 +2855,18 @@ class AssetBrowser(QWidget):
             prepared = _prepare_digital_font_mask(
                 self, Path(path), self._fitted_path(safe_name)
             )
+        elif replace_method == "replace_number":
+            prepared = fit_slot_image(
+                self,
+                Path(path),
+                512,
+                512,
+                f"The {asset.name} jersey digit",
+                mode="contain",
+                staged_destination=self._fitted_path(safe_name),
+            )
+            if prepared is not None:
+                prepared = _conform_number_png(prepared, asset.name)
         else:
             # draft_logo (and any future exact-size PNG editor) accepts any
             # image, contained onto the slot with transparent padding.
@@ -2730,7 +2881,12 @@ class AssetBrowser(QWidget):
             )
         if prepared is None:
             return
-        replace = getattr(self.facade, replace_method)
+        if replace_method == "replace_number":
+            replace = lambda png, progress, asset_id=asset.asset_id: (
+                self.facade.replace_number(asset_id, png, progress)
+            )
+        else:
+            replace = getattr(self.facade, replace_method)
         self.run_task(
             f"Replacing {asset.name}",
             lambda progress: replace(prepared, progress),
@@ -3163,7 +3319,16 @@ class UniformStudioPage(QWidget):
         self.modified_badge.setText("● Modified" if modified else _status_text(asset.status))
         color = "#39d98a" if modified else _status_color(asset.status)
         self.modified_badge.setStyleSheet(f"color: {color}; border-color: {color};")
-        self.contract.setText(f"PNG contract\n{asset.png_contract}")
+        # A fixed-allocation slot's budget is set by how detailed retail's own
+        # artwork there is, not by the free space around it, so the answer has
+        # to arrive while the slot is being chosen rather than 40 s into a
+        # build that refuses it (davidhbui, Beta 38).
+        capacity_line = self._capacity_summary(asset)
+        team_line = self._team_capacity_line(asset)
+        extra = "".join(
+            f"\n{line}" for line in (capacity_line, team_line) if line
+        )
+        self.contract.setText(f"PNG contract\n{asset.png_contract}{extra}")
         self.contract.setVisible(True)
         teams = ", ".join(asset.affected_teams) if asset.affected_teams else "No current team selector references this physical slot."
         self.teams.setText(f"Selector ownership\n{teams}")
@@ -3230,6 +3395,61 @@ class UniformStudioPage(QWidget):
             complete,
             False,
         )
+
+    def _capacity_summary(self, asset) -> str:
+        """The selected slot's replacement budget, or "" when there is no model."""
+
+        source = getattr(self.facade, "source", None)
+        index_0a = getattr(source, "index_0a", None) if source is not None else None
+        if index_0a is None:
+            return ""
+        try:
+            from . import uniform_targets
+
+            capacity = uniform_targets.slot_capacity(
+                Path(index_0a), str(asset.family), int(asset.asset_index)
+            )
+            return uniform_targets.capacity_summary(capacity)
+        except Exception:
+            return ""
+
+    def _team_capacity_line(self, asset) -> str:
+        """Per-team jersey+shoulder ranks when this slot names its owners."""
+
+        teams = tuple(getattr(asset, "affected_teams", ()) or ())
+        if not teams:
+            return ""
+        source = getattr(self.facade, "source", None)
+        index_0a = getattr(source, "index_0a", None) if source is not None else None
+        if index_0a is None:
+            return ""
+        try:
+            from . import uniform_targets
+
+            jersey_by_team: dict[str, int] = {}
+            shoulder_by_team: dict[str, int] = {}
+            for item in self._assets:
+                if item.family == "jersey":
+                    for team in item.affected_teams:
+                        jersey_by_team[team] = item.asset_index
+                elif item.family == "shoulder":
+                    for team in item.affected_teams:
+                        shoulder_by_team[team] = item.asset_index
+            lines: list[str] = []
+            for team in teams:
+                line = uniform_targets.team_capacity_line(
+                    Path(index_0a),
+                    jersey_by_team.get(team),
+                    shoulder_by_team.get(team),
+                )
+                if not line:
+                    continue
+                lines.append(f"{team}: {line}" if len(teams) > 1 else line)
+                if len(lines) >= 3:
+                    break
+            return "\n".join(lines)
+        except Exception:
+            return ""
 
     def _clear_detail(
         self,
@@ -3395,6 +3615,28 @@ class UniformStudioPage(QWidget):
     def _mutation_complete(self, asset_id: str) -> None:
         self.refresh(asset_id)
         self.modifiedChanged.emit()
+
+
+def _conform_number_png(path: Path, name: str) -> Path:
+    """Force the jersey-number channel contract the writer will validate.
+
+    Writes a sibling copy. The user's source file is never overwritten.
+    """
+
+    from PIL import Image
+
+    with Image.open(path) as image:
+        image.load()
+        size = image.size
+        rgba = bytearray(image.convert("RGBA").tobytes())
+    if not name.endswith("_normal"):
+        return path
+    for offset in range(0, len(rgba), 4):
+        rgba[offset + 2] = 0
+        rgba[offset + 3] = 255
+    destination = path.with_name(f"{path.stem}.apf-number-normal{path.suffix}")
+    Image.frombytes("RGBA", size, bytes(rgba)).save(destination)
+    return destination
 
 
 def _prepare_digital_font_mask(
@@ -4591,6 +4833,7 @@ class ApfTeamLogoPanel(QFrame):
                 crest_asset_index=int(crest.asset_index),
                 crest_outer_entry_index=int(crest.outer_entry_index),
                 fit_visible_mask=bool(self.fit_visible_mask.isChecked()),
+                detail_png=self._staged_detail_png,
             )
         except Exception as exc:  # facade/session errors are user-correctable
             QMessageBox.information(
@@ -5182,6 +5425,14 @@ class ApfTeamLogoPanel(QFrame):
         if self._staged_png is None:
             return
         self._staged_detail_png = staged_detail
+        # The base staging above committed before the detail layer existed;
+        # re-stage so the project crest edit carries both layers into Build.
+        if self._source_staged_png is not None and not self._commit_design(
+            self._source_staged_png, remember_source=False
+        ):
+            self._staged_detail_png = None
+            self.set_context()
+            return
         self.set_context()
         QMessageBox.information(
             self,
@@ -6619,13 +6870,22 @@ class _FieldArtTarget:
 FIELD_ART_COVERED_TARGETS: tuple[_FieldArtTarget, ...] = (
     _FieldArtTarget(
         6, 0, "endzone_l0", 2048, 512, "DXT1", False,
-        "Endzone base layer. The sibling endzone_l1 layer, the descriptor pad, "
-        "and the packed mip tail all stay byte-identical.",
+        "Endzone base layer for the one team that owns package 6 — not a "
+        "shared layer, so editing it repaints that team's endzone only. It is "
+        "structurally identical to the other 117 packages and is simply the "
+        "pair proved writable first. A red/green/blue region mask over black, "
+        "like jersey_color and shoulder_color: hard edges and flat colours, "
+        "because intermediate values are invalid region IDs, not blends. The "
+        "sibling endzone_l1 layer, the descriptor pad, and the packed mip tail "
+        "all stay byte-identical.",
     ),
     _FieldArtTarget(
         6, 1, "endzone_l1", 2048, 512, "DXT1", False,
-        "Endzone second layer. The sibling endzone_l0 layer, the descriptor pad, "
-        "and the packed mip tail all stay byte-identical.",
+        "Endzone second layer for the same single team as endzone_l0 above, "
+        "and not a shared layer either. Also a red/green/blue region mask over black; "
+        "author it with flat colours and no anti-aliasing. The sibling "
+        "endzone_l0 layer, the descriptor pad, and the packed mip tail all "
+        "stay byte-identical.",
     ),
     _FieldArtTarget(
         659, 18, "pc_field_goal", 256, 256, "DXT1", False,
@@ -6650,6 +6910,52 @@ FIELD_ART_COVERED_TARGETS: tuple[_FieldArtTarget, ...] = (
 )
 
 
+def _extra_field_art_targets() -> tuple[_FieldArtTarget, ...]:
+    """Descriptor-derived weave, dirtmap, and format-18 endzone slots."""
+
+    from .backend import ensure_tools_importable
+
+    ensure_tools_importable()
+    import apf_field_art_patch as field_art_writer
+
+    core = {(6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)}
+    codec_label = {"dxt1": "DXT1", "bc3": "BC3", "rgba8888": "8_8_8_8"}
+    notes = {
+        "UNIFORM_WEAVE": (
+            "Uniform weave/detail map. Layout comes from the retail descriptor, "
+            "not a typed table. Runtime visibility is unproved."
+        ),
+        "UNIFORM_DIRTMAP": (
+            "Uniform dirt/wear map. Layout comes from the retail descriptor. "
+            "Runtime visibility is unproved."
+        ),
+        "ENDZONE_TEXTURE": (
+            "Per-team endzone region mask, same DXT1 structure as package 6. "
+            "Format-59 DXT5A packages are not offered. Not a shared layer."
+        ),
+    }
+    extras: list[_FieldArtTarget] = []
+    for key, contract in sorted(field_art_writer._CONTRACTS.items()):
+        if key in core:
+            continue
+        extras.append(
+            _FieldArtTarget(
+                contract.entry_index,
+                contract.file_index,
+                contract.name,
+                contract.width,
+                contract.height,
+                codec_label[contract.codec],
+                contract.codec == "rgba8888",
+                notes.get(contract.kind, "Descriptor-derived writable texture."),
+            )
+        )
+    return tuple(extras)
+
+
+FIELD_ART_COVERED_TARGETS = FIELD_ART_COVERED_TARGETS + _extra_field_art_targets()
+
+
 class ApfFieldArtPanel(QFrame):
     """Focused editor for the offline-proved, writable field-art base textures.
 
@@ -6664,10 +6970,10 @@ class ApfFieldArtPanel(QFrame):
     rebuilt entry in RAM before it is written, and pairs the write with an
     independent verifier; the retail source is never opened for writing.
 
-    Only the six slots proved bit-exact offline are offered.  The deferred
-    field-art families (``field_radiance`` and the ``divot_Grass*`` weather
-    textures) and the SCNE/CurveAnim rows have no bounded writer and stay
-    locked in the inventory browser below.
+    The original six proved bases, package-659 weave/dirtmaps, and format-18
+    endzones are offered.  Format-59 DXT5A endzones, ``field_radiance``, the
+    ``divot_Grass*`` weather textures, and the SCNE/CurveAnim rows stay locked
+    in the inventory browser below.
 
     The panel never mutates the shared editing session, so it never marks
     unrelated project state modified, and it makes no in-game/runtime claim:
@@ -6742,18 +7048,36 @@ class ApfFieldArtPanel(QFrame):
         slot_row.setSpacing(8)
         slot_label = QLabel("Texture:")
         slot_label.setObjectName("metadataText")
+        self.slot_filter = QLineEdit()
+        self.slot_filter.setObjectName("searchField")
+        self.slot_filter.setPlaceholderText("Filter textures… (name, codec, outer)")
+        self.slot_filter.setClearButtonEnabled(True)
+        self.slot_filter.setAccessibleName("Filter writable field-art textures")
+        self.slot_filter.setProperty("studioSearch", True)
+        self.slot_filter.setToolTip(
+            "Filter the writable field-art list by name, codec, or outer/inner "
+            "index. Clear the box to see every proved slot. Format-59 DXT5A "
+            "endzones and the deferred codecs never appear here."
+        )
         self.slot = QComboBox()
         self.slot.setObjectName("comboField")
-        for target in FIELD_ART_COVERED_TARGETS:
-            self.slot.addItem(target.label)
-        self.slot.setToolTip(
-            "Only the field-art slots the offline writer proved bit-exact are "
-            "selectable. field_radiance (DXT5A) and the divot_Grass* weather "
-            "textures (5_6_5) are deferred codecs, and the SCNE/CurveAnim rows "
-            "have no serializer, so none of them are offered here."
+        self.slot.setMaxVisibleItems(24)
+        self.slot.setSizeAdjustPolicy(
+            QComboBox.AdjustToMinimumContentsLengthWithIcon
         )
+        self.slot.setMinimumContentsLength(24)
+        self.slot.setToolTip(
+            "Writable field-art slots: the original six proved bases, "
+            "package-659 weave/dirtmaps, and format-18 endzones. "
+            "field_radiance (DXT5A), format-59 endzones, and the "
+            "divot_Grass* weather textures (5_6_5) are deferred, and the "
+            "SCNE/CurveAnim rows have no serializer, so none of them are "
+            "offered here."
+        )
+        self._populate_slots()
         slot_row.addWidget(slot_label)
-        slot_row.addWidget(self.slot, 1)
+        slot_row.addWidget(self.slot_filter, 1)
+        slot_row.addWidget(self.slot, 2)
 
         self.description = QLabel("")
         self.description.setObjectName("cardBody")
@@ -6761,11 +7085,11 @@ class ApfFieldArtPanel(QFrame):
         self.lock_note = QLabel(
             "Stock NFL endzone packages (≈118 l0/l1 pairs) appear under All "
             "Textures / the Field Art inventory browser below — browse and "
-            "export every one. This focused editor only offers the six "
-            "offline-proved writable base slots (shared endzone layers, "
-            "practice overlays, base divots). Per-team endzone writers and "
-            "field_radiance / weather-divot codecs remain export-only until "
-            "proved; see docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md."
+            "export every one. This editor writes the original six proved "
+            "bases, package-659 weave/dirtmaps, and format-18 per-team "
+            "endzones. Format-59 DXT5A endzones and field_radiance / "
+            "weather-divot codecs remain export-only; see "
+            "docs/product/APF_FIELD_ART_STOCK_NFL_WALL.md."
         )
         self.lock_note.setObjectName("metadataText")
         self.lock_note.setWordWrap(True)
@@ -6805,25 +7129,81 @@ class ApfFieldArtPanel(QFrame):
         box.addLayout(content, 1)
         # Connected only once every widget set_context() touches exists.
         self.slot.currentIndexChanged.connect(self._target_changed)
+        self.slot_filter.textChanged.connect(self._filter_slots)
         self.set_context()
 
+    def _populate_slots(
+        self, preserve_key: tuple[int, int] | None = None
+    ) -> None:
+        """Fill the combo from the proved table, optionally filtered."""
+
+        needle = self.slot_filter.text().strip().casefold()
+        if preserve_key is None:
+            current = self.slot.currentData()
+            if isinstance(current, _FieldArtTarget):
+                preserve_key = current.key
+        if needle:
+            matches = tuple(
+                target
+                for target in FIELD_ART_COVERED_TARGETS
+                if needle
+                in (
+                    f"{target.name} {target.codec} {target.entry_index} "
+                    f"{target.file_index} {target.label}"
+                ).casefold()
+            )
+        else:
+            matches = FIELD_ART_COVERED_TARGETS
+        self.slot.blockSignals(True)
+        self.slot.clear()
+        selected = 0
+        for target in matches:
+            self.slot.addItem(target.label, target)
+            if target.key == preserve_key:
+                selected = self.slot.count() - 1
+        if self.slot.count():
+            self.slot.setCurrentIndex(selected)
+        self.slot.blockSignals(False)
+
+    def _filter_slots(self, _text: str = "") -> None:
+        self._populate_slots()
+        self._target_changed()
+
     def current_target(self) -> _FieldArtTarget:
-        index = self.slot.currentIndex()
-        if not 0 <= index < len(FIELD_ART_COVERED_TARGETS):
-            return FIELD_ART_COVERED_TARGETS[0]
-        return FIELD_ART_COVERED_TARGETS[index]
+        target = self.slot.currentData()
+        if isinstance(target, _FieldArtTarget):
+            return target
+        return FIELD_ART_COVERED_TARGETS[0]
 
     def staged_path(self, target: _FieldArtTarget) -> Path | None:
         return self._staged.get(target.key)
 
     def focus_target(self, name: str) -> bool:
-        """Select one writable base texture by its slot name."""
+        """Select one writable base texture by slot name or ``outer:inner``."""
 
-        for index, target in enumerate(FIELD_ART_COVERED_TARGETS):
-            if target.name == name:
-                self.slot.setCurrentIndex(index)
-                return True
-        return False
+        wanted: _FieldArtTarget | None = None
+        if name.count(":") == 1:
+            left, right = name.split(":")
+            if left.isdigit() and right.isdigit():
+                key = (int(left), int(right))
+                wanted = next(
+                    (target for target in FIELD_ART_COVERED_TARGETS if target.key == key),
+                    None,
+                )
+        if wanted is None:
+            wanted = next(
+                (target for target in FIELD_ART_COVERED_TARGETS if target.name == name),
+                None,
+            )
+        if wanted is None:
+            return False
+        if self.slot_filter.text():
+            self.slot_filter.blockSignals(True)
+            self.slot_filter.clear()
+            self.slot_filter.blockSignals(False)
+        self._populate_slots(preserve_key=wanted.key)
+        self._target_changed()
+        return self.current_target().key == wanted.key
 
     def stage_image(self, path: Path) -> None:
         """Stage one user image exactly as a drop onto the preview would."""
@@ -6837,8 +7217,10 @@ class ApfFieldArtPanel(QFrame):
         ready = self.facade.source_ready
         target = self.current_target()
         staged = self.staged_path(target)
-        self.slot.setEnabled(ready)
-        # Never silent-gray: export/replace/build/revert stay clickable.
+        # Never silent-gray: the 221-slot combo stays searchable even before
+        # a game is loaded, and export/replace/build/revert stay clickable.
+        self.slot.setEnabled(True)
+        self.slot_filter.setEnabled(True)
         load_tip = (
             "Load your APF game first. Field Art export/replace needs a source. "
             "Click still explains — buttons stay clickable."
@@ -7317,29 +7699,32 @@ class ApfFieldArtPanel(QFrame):
 class FieldArtStudioPage(QWidget):
     """Reviewed APF field-art families over the universal asset browser.
 
-    Authorship on this page is exactly the six base-texture slots the offline
-    writer proved bit-exact; :class:`ApfFieldArtPanel` owns them and routes
-    every write through ``tools/apf_field_art_patch.py``.  Everything else stays
-    discovery: each semantic row below is still the original catalog identity
-    consumed by :class:`AssetBrowser`, so preview and export keep using the
-    existing bounded I/O path, and the page never manufactures selector,
-    material, stadium, or team ownership.
+    Authorship on this page is the offline-proved writable set the field-art
+    writer owns — the original six bases, package-659 weave/dirtmaps, and
+    format-18 endzones.  :class:`ApfFieldArtPanel` routes every write through
+    ``tools/apf_field_art_patch.py``.  Format-59 DXT5A endzones and the
+    deferred codecs stay discovery: each semantic row below is still the
+    original catalog identity consumed by :class:`AssetBrowser`, so preview
+    and export keep using the existing bounded I/O path, and the page never
+    manufactures selector, material, stadium, or team ownership.
     """
 
     modifiedChanged = pyqtSignal()
 
     ACTION_LOCK_REASON = (
-        "This full Field Art inventory is browse and export-only. The six "
-        "offline-proved base textures are edited in the Field Art editor above; "
-        "here, archive-package co-location still does not prove the runtime "
-        "field material or its team/stadium selector, and the deferred codecs "
-        "(field_radiance, the divot_Grass* weather textures) and the "
+        "This full Field Art inventory is browse and export-only. Writable "
+        "bases, weave/dirtmaps, and format-18 endzones are edited in the "
+        "Field Art editor above; here, archive-package co-location still "
+        "does not prove the runtime field material or its team/stadium "
+        "selector, and the deferred codecs (field_radiance, format-59 "
+        "endzones, the divot_Grass* weather textures) and the "
         "SCNE/CurveAnim rows have no bounded writer at all."
     )
 
     def __init__(self, facade: ApfStudioFacade, run_task: TaskRunner):
         super().__init__()
         self.facade = facade
+        self.run_task = run_task
         self.inventory: FieldArtInventory | None = None
 
         layout = QVBoxLayout(self)
@@ -7371,21 +7756,36 @@ class FieldArtStudioPage(QWidget):
         self.group_filter.setToolTip(
             "Filter the exact catalog rows by a reviewed semantic family."
         )
-        self.stock_endzone_button = QPushButton("Stock NFL endzones")
+        self.stock_endzone_button = QPushButton("Stock team endzones")
         self.stock_endzone_button.setObjectName("secondaryButton")
         self.stock_endzone_button.setToolTip(
-            "Jump the ownership map + inventory to the stock NFL endzone family "
-            "(235 per-team layers). Browse/export only — per-team writers are not "
-            "proved. The focused editor writes only the two shared outer-6 layers."
+            "Jump the ownership map + inventory to the endzone family (235 "
+            "per-team layers in 118 packages). Browse/export only — per-team "
+            "writers are not proved. The focused editor writes package 6, which "
+            "is one team's own endzone rather than a shared layer."
         )
         self.stock_endzone_button.setProperty(
             "disableReason",
-            "Load your APF game first, then Stock NFL endzones filters the inventory.",
+            "Load your APF game first, then Stock team endzones filters the inventory.",
         )
         self.stock_endzone_button.clicked.connect(self._show_stock_endzones)
+        self.contact_sheet_button = QPushButton("Export endzone contact sheet…")
+        self.contact_sheet_button.setObjectName("secondaryButton")
+        self.contact_sheet_button.setToolTip(
+            "Render every endzone package into labelled sheets so you can find "
+            "a team's endzone by looking at it. A name search cannot work — the "
+            "nicknames are not on the disc at all, only in Roster.ROS. Your "
+            "game is opened read-only."
+        )
+        self.contact_sheet_button.setProperty(
+            "disableReason",
+            "Load your APF game first, then export the endzone contact sheet.",
+        )
+        self.contact_sheet_button.clicked.connect(self._export_endzone_contact_sheet)
         semantic_header.addWidget(semantic_title)
         semantic_header.addWidget(self.summary_label)
         semantic_header.addStretch(1)
+        semantic_header.addWidget(self.contact_sheet_button)
         semantic_header.addWidget(self.stock_endzone_button)
         semantic_header.addWidget(QLabel("Show"))
         semantic_header.addWidget(self.group_filter)
@@ -7457,17 +7857,25 @@ class FieldArtStudioPage(QWidget):
             "Semantic families are unavailable; the raw catalog remains visible below."
         )
         self.package_note.setText(
-            "This inventory stays browse/export-only; only the six offline-proved "
-            "base textures in the Field Art editor above are writable."
+            "This inventory stays browse/export-only. Writable bases, "
+            "weave/dirtmaps, and format-18 endzones are edited above; "
+            "format-59 DXT5A endzones stay export-only."
         )
         self.browser.set_included_asset_ids(None)
         load_tip = (
-            "Load your APF game first, then Stock NFL endzones filters the inventory "
+            "Load your APF game first, then Stock team endzones filters the inventory "
             "to ≈118 package pairs (browse/export only)."
         )
         self.stock_endzone_button.setEnabled(True)
         self.stock_endzone_button.setToolTip(load_tip)
         self.stock_endzone_button.setProperty("disableReason", load_tip)
+        sheet_tip = (
+            "Load your APF game first, then export the endzone contact sheet to "
+            "identify a team's endzone package by its artwork."
+        )
+        self.contact_sheet_button.setEnabled(True)
+        self.contact_sheet_button.setToolTip(sheet_tip)
+        self.contact_sheet_button.setProperty("disableReason", sheet_tip)
 
     def _show_stock_endzones(self) -> None:
         """Community path: surface stock NFL endzone packages without Discord help."""
@@ -7488,6 +7896,68 @@ class FieldArtStudioPage(QWidget):
             )
             return
         self.group_filter.setCurrentIndex(index)
+
+    def _export_endzone_contact_sheet(self) -> None:
+        """Turn "which package is my team's endzone" into one action.
+
+        The rows carry no team identity and the nicknames are not on the disc,
+        so no search can answer this. Rendering all 118 packages and looking is
+        the only route, and it was previously an afternoon of scripting.
+        """
+
+        reason = str(self.contact_sheet_button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Endzone contact sheet", reason)
+            return
+        source = getattr(self.facade, "source", None)
+        index_0a = getattr(source, "index_0a", None) if source is not None else None
+        if index_0a is None:
+            return
+        directory = QFileDialog.getExistingDirectory(
+            self, "Choose a folder for the endzone contact sheets", str(Path.home())
+        )
+        if not directory:
+            return
+        destination = Path(directory)
+        outer_indices: tuple[int, ...] = ()
+        if self.inventory is not None:
+            outer_indices = tuple(
+                sorted(
+                    {
+                        record.outer_index
+                        for record in self.inventory.records
+                        if record.kind is FieldArtKind.ENDZONE_TEXTURE
+                    }
+                )
+            )
+
+        def operation(progress) -> dict:
+            written = export_endzone_contact_sheets(
+                Path(index_0a),
+                destination,
+                progress=progress,
+                outer_indices=outer_indices or None,
+            )
+            return {"paths": written}
+
+        def done(result: object) -> None:
+            written = result["paths"]  # type: ignore[index]
+            labelled = len(endzone_team_labels())
+            QMessageBox.information(
+                self,
+                "Endzone contact sheets written",
+                f"Wrote {len(written)} sheet{'s' if len(written) != 1 else ''} to:\n"
+                f"{destination}\n\n"
+                f"Every endzone package is tiled and labelled with its package "
+                f"index; {labelled} of them also carry the team that has been "
+                "identified from the artwork so far. Find your team, note the "
+                "package number, and open that package under All Textures.\n\n"
+                + ENDZONE_MASK_CONTRACT
+                + "\n\n"
+                + ENDZONE_IDENTITY_NOTE,
+            )
+
+        self.run_task("Rendering endzone contact sheets", operation, done, False)
 
     def _populate_semantic_view(self, inventory: FieldArtInventory) -> None:
         self.inventory = inventory
@@ -7532,13 +8002,23 @@ class FieldArtStudioPage(QWidget):
         )
         # Never silent-gray stock jump: ready once inventory maps endzone family.
         stock_tip = (
-            "Filter to the 235 per-team stock NFL endzone layers. "
+            "Filter to the 235 per-team stock endzone layers. "
             "Browse and Export original PNG only — per-team writers are not "
-            "proved; the focused editor owns only the two shared outer-6 layers."
+            "proved; the focused editor owns package 6, which is one team's own "
+            "endzone and not a shared layer."
         )
         self.stock_endzone_button.setEnabled(True)
         self.stock_endzone_button.setToolTip(stock_tip)
         self.stock_endzone_button.setProperty("disableReason", "")
+        labelled = len(endzone_team_labels())
+        self.contact_sheet_button.setEnabled(True)
+        self.contact_sheet_button.setToolTip(
+            "Render all 118 endzone packages into labelled sheets so a team's "
+            f"endzone can be found by eye ({labelled} are already identified). "
+            "A name search cannot work: the nicknames are not on the disc, only "
+            "in Roster.ROS. Your game is opened read-only."
+        )
+        self.contact_sheet_button.setProperty("disableReason", "")
 
     def _selected_group(self):
         if self.inventory is None:
@@ -7604,9 +8084,11 @@ class FieldArtStudioPage(QWidget):
             self.capabilities.set_cards(())
             self._clear_semantic_view(
                 "Load your APF game to map Field Art.\n\n"
-                "Next: File → Load game, then open Field Art. Stock NFL endzones "
-                "appear in the semantic list (~118 read-only inventory) plus the "
-                "6 writable create-team slots when a source is loaded."
+                "Next: File → Load game, then open Field Art. Stock NFL "
+                "endzones appear in the semantic list (~118 packages). "
+                "Format-18 layers, package-659 weave/dirtmaps, and the "
+                "original six bases are writable; format-59 DXT5A layers "
+                "stay browse/export-only."
             )
             self.browser.set_context()
             return
@@ -18855,6 +19337,11 @@ class InspectorCategoryPage(QWidget):
             if category is ApfCategory.PLAYBOOKS
             else None
         )
+        self.playbook_package_maps = (
+            ApfPackageMapPanel(facade, run_task)
+            if category is ApfCategory.PLAYBOOKS
+            else None
+        )
         self.workspace_tabs: QTabWidget | None = None
         self.inspector.modifiedChanged.connect(self.modifiedChanged)
         self.inspector.audioAnnotationChanged.connect(
@@ -18866,6 +19353,8 @@ class InspectorCategoryPage(QWidget):
             self.playbook_routes.modifiedChanged.connect(self.modifiedChanged)
         if self.playbook_membership is not None:
             self.playbook_membership.modifiedChanged.connect(self.modifiedChanged)
+        if self.playbook_package_maps is not None:
+            self.playbook_package_maps.modifiedChanged.connect(self.modifiedChanged)
         if not include_assets:
             layout.addWidget(self.inspector, 1)
         elif category in {
@@ -18893,6 +19382,7 @@ class InspectorCategoryPage(QWidget):
             elif category is ApfCategory.PLAYBOOKS:
                 tabs.addTab(self.inspector, "PLAY / DRCT Inspector")
                 tabs.addTab(self.playbook_membership, "Fine-tune Plays")  # type: ignore[arg-type]
+                tabs.addTab(self.playbook_package_maps, "Who lines up")  # type: ignore[arg-type]
                 tabs.addTab(self.playbook_routes, "Assignment Routes")  # type: ignore[arg-type]
                 tabs.addTab(self.save_playbooks, "Save Assignments")  # type: ignore[arg-type]
                 tabs.addTab(self.assets, "Raw Playbook Assets")  # type: ignore[arg-type]
@@ -18922,12 +19412,18 @@ class InspectorCategoryPage(QWidget):
             target = 1
         elif normalized == "roster-planner" and self.category is ApfCategory.ROSTERS:
             target = 2
-        elif normalized in {"save-playbooks", "save-assignments"} \
+        elif normalized in {"fine-tune", "fine-tune-plays", "membership"} \
+                and self.category is ApfCategory.PLAYBOOKS:
+            target = 1
+        elif normalized in {"who-lines-up", "package-map", "personnel"} \
                 and self.category is ApfCategory.PLAYBOOKS:
             target = 2
         elif normalized in {"assignment-routes", "route-clone", "routes"} \
                 and self.category is ApfCategory.PLAYBOOKS:
-            target = 1
+            target = 3
+        elif normalized in {"save-playbooks", "save-assignments"} \
+                and self.category is ApfCategory.PLAYBOOKS:
+            target = 4
         elif normalized == "soundtrack" and self.category is ApfCategory.AUDIO:
             target = 0
         elif normalized == "raw-assets" and self.workspace_tabs is not None:
@@ -19008,6 +19504,8 @@ class InspectorCategoryPage(QWidget):
             self.inspector.set_model(model, summary)
             if self.playbook_routes is not None:
                 self.playbook_routes.set_model(model)
+            if self.playbook_package_maps is not None:
+                self.playbook_package_maps.set_context()
             if (
                 self._requested_workspace == "soundtrack"
                 and not self.inspector._soundtrack_album_mode
@@ -19035,6 +19533,15 @@ class InspectorCategoryPage(QWidget):
             self.assets.refresh()
         if self.playbook_routes is not None:
             self.playbook_routes.refresh()
+        if self.playbook_membership is not None:
+            # Without this the panel only ever loaded a book when the user
+            # changed the dropdown, because its one construction-time
+            # set_context() ran before a source existed. It also has to hear
+            # about an opened project so it can show the edits that project
+            # already carries.
+            self.playbook_membership.set_context()
+        if self.playbook_package_maps is not None:
+            self.playbook_package_maps.refresh()
 
 
 def _format_summary(values: dict[str, int] | object) -> str:
@@ -20109,6 +20616,8 @@ class ApfStudioMainWindow(QMainWindow):
         self.revert_all_button.setObjectName("dangerQuietButton")
         self.configure_xenia_button = QPushButton("Configure Xenia")
         self.configure_xenia_button.setObjectName("utilityButton")
+        self.title_update_button = QPushButton("Title Update 1.1…")
+        self.title_update_button.setObjectName("utilityButton")
         self.build_button = QPushButton("Build Game Folder")
         self.build_button.setObjectName("buildButton")
         self.launch_button = QPushButton("Launch in Xenia")
@@ -20116,6 +20625,11 @@ class ApfStudioMainWindow(QMainWindow):
         self.undo_button.setToolTip("Undo the most recent edit in this project.")
         self.revert_all_button.setToolTip("Nothing to revert—there are no active edits.")
         self.configure_xenia_button.setToolTip("Choose Xenia Canary and its Wine launcher.")
+        self.title_update_button.setToolTip(
+            "Choose the Xbox 360 APF 2K8 title update 1.1 LIVE package. It is "
+            "required on Xenia/Xbox and never shipped for PS3. Launch copies it "
+            "into this session's isolated Xenia content folder."
+        )
         self.build_button.setToolTip("Create a separate, verified modded game folder.")
         self.launch_button.setToolTip("Launch the most recently built game folder in Xenia.")
         self.undo_button.setAccessibleName("Undo the most recent project edit")
@@ -20128,6 +20642,10 @@ class ApfStudioMainWindow(QMainWindow):
         self.configure_xenia_button.setAccessibleDescription(
             self.configure_xenia_button.toolTip()
         )
+        self.title_update_button.setAccessibleName("Install APF title update 1.1")
+        self.title_update_button.setAccessibleDescription(
+            self.title_update_button.toolTip()
+        )
         self.build_button.setAccessibleName("Build a separate modded game folder")
         self.build_button.setAccessibleDescription(self.build_button.toolTip())
         self.launch_button.setAccessibleName("Launch the latest build in Xenia")
@@ -20135,6 +20653,7 @@ class ApfStudioMainWindow(QMainWindow):
         self.undo_button.clicked.connect(self._undo)
         self.revert_all_button.clicked.connect(self._revert_all)
         self.configure_xenia_button.clicked.connect(self._configure_xenia)
+        self.title_update_button.clicked.connect(self._configure_title_update)
         self.build_button.clicked.connect(self._build_game)
         self.launch_button.clicked.connect(self._launch_xenia)
         layout.addWidget(self.modified_count)
@@ -20142,6 +20661,7 @@ class ApfStudioMainWindow(QMainWindow):
         layout.addWidget(self.revert_all_button)
         layout.addSpacing(4)
         layout.addWidget(self.configure_xenia_button)
+        layout.addWidget(self.title_update_button)
         layout.addSpacing(4)
         layout.addWidget(self.build_button)
         layout.addWidget(self.launch_button)
@@ -20495,6 +21015,11 @@ class ApfStudioMainWindow(QMainWindow):
             "Xenia Configured"
             if self.facade.launcher.settings.configured
             else "Configure Xenia"
+        )
+        self.title_update_button.setEnabled(not blocking)
+        tu_ready = self.facade.launcher.settings.title_update_path is not None
+        self.title_update_button.setText(
+            "Title Update 1.1 ready" if tu_ready else "Title Update 1.1…"
         )
         self.build_button.setEnabled(ready and not blocking)
         self.build_button.setToolTip(
@@ -21040,24 +21565,51 @@ class ApfStudioMainWindow(QMainWindow):
     def _build_game(self) -> None:
         if not self.facade.source_ready:
             return
-        parent = QFileDialog.getExistingDirectory(
+        chosen = QFileDialog.getExistingDirectory(
             self,
-            "Choose where the new modded game folder should be created",
+            "Choose the folder Xenia should load",
             str(Path.home()),
             QFileDialog.ShowDirsOnly,
         )
-        if not parent:
+        if not chosen:
             return
-        timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
-        parent_path = Path(parent)
-        output = parent_path / f"APF2K8-Mod-{timestamp}"
-        suffix = 2
-        while output.exists():
-            output = parent_path / f"APF2K8-Mod-{timestamp}-{suffix}"
-            suffix += 1
+        output = Path(chosen)
+        source = getattr(self.facade, "source", None)
+        source_root = getattr(source, "game_root", None)
+        if source_root is not None:
+            try:
+                if output.resolve() == Path(source_root).resolve() or output.resolve().is_relative_to(
+                    Path(source_root).resolve()
+                ):
+                    QMessageBox.information(
+                        self,
+                        "That is the source game",
+                        "The build never writes into the loaded retail folder. "
+                        "Choose the folder Xenia already loads, or an empty one.",
+                    )
+                    return
+            except (OSError, ValueError):
+                pass
+        replace_existing = False
+        if output.exists() and any(output.iterdir()):
+            answer = QMessageBox.question(
+                self,
+                "Replace this folder's game files?",
+                f"Build into:\n{output}\n\n"
+                "The next build will replace the files in this folder so Xenia "
+                "can keep the same path. The retail source stays untouched.\n\n"
+                "Close Xenia first if it has this folder open.",
+                QMessageBox.Yes | QMessageBox.Cancel,
+                QMessageBox.Cancel,
+            )
+            if answer != QMessageBox.Yes:
+                return
+            replace_existing = True
         self._run_task(
             "Building a complete separate APF game folder",
-            lambda progress: self.facade.build(output, progress),
+            lambda progress, dest=output, replace=replace_existing: self.facade.build(
+                dest, progress, replace_existing=replace
+            ),
             self._build_complete,
             True,
         )
@@ -21070,8 +21622,9 @@ class ApfStudioMainWindow(QMainWindow):
         QMessageBox.information(
             self,
             "Modded game folder built",
-            f"Created:\n{output}\n\n"
+            f"Wrote:\n{output}\n\n"
             f"Applied {changed} edit{'s' if changed != 1 else ''}. The complete output was verified and your source stayed untouched.\n\n"
+            "Point Xenia at this folder. Rebuild into the same folder to keep that path.\n\n"
             "This folder contains your retail game data. Do not redistribute it; share the .apf2k8mod project instead.",
         )
 
@@ -21115,6 +21668,26 @@ class ApfStudioMainWindow(QMainWindow):
         self._last_detail = "Xenia Canary is configured. Build a game folder, then click Launch."
         self._update_product_state()
 
+    def _configure_title_update(self) -> None:
+        selected, _filter = QFileDialog.getOpenFileName(
+            self,
+            "Choose APF 2K8 title update 1.1",
+            str(Path.home()),
+            "Xbox LIVE package (TU_* *);;All files (*)",
+        )
+        if not selected:
+            return
+        try:
+            self.facade.configure_title_update(Path(selected))
+        except Exception as exc:
+            self._show_error(str(exc), traceback.format_exc())
+            return
+        self._last_detail = (
+            "Title update 1.1 is pinned. Launch will copy it into this session's "
+            "Xenia content folder. It never shipped for PS3."
+        )
+        self._update_product_state()
+
     def _launch_xenia(self) -> None:
         blocker = self.facade.xenia_blocker
         if blocker:
@@ -21133,6 +21706,25 @@ class ApfStudioMainWindow(QMainWindow):
                 return
             QMessageBox.information(self, "Cannot launch Xenia yet", blocker)
             return
+        if self.facade.launcher.settings.title_update_path is None:
+            answer = QMessageBox.question(
+                self,
+                "Title update 1.1 is not installed",
+                "APF 2K8 title update 1.1 is required on Xbox and Xenia; it never "
+                "shipped for PS3. This studio launches into an isolated Xenia "
+                "content folder, so a TU installed in a standalone Xenia folder "
+                "will not apply here.\n\n"
+                "Choose the LIVE STFS package now (the same file Xenia's "
+                "File → Install Content uses), or launch without it.",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
+                QMessageBox.Yes,
+            )
+            if answer == QMessageBox.Cancel:
+                return
+            if answer == QMessageBox.Yes:
+                self._configure_title_update()
+                if self.facade.launcher.settings.title_update_path is None:
+                    return
         self._run_task(
             "Starting the last verified build in Xenia Canary",
             lambda _progress: self.facade.launch_xenia(),

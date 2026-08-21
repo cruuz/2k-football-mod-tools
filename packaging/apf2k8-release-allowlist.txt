@@ -60,11 +60,13 @@ mod_editor/apf_studio/model_export.py
 mod_editor/apf_studio/model_export_qt.py
 mod_editor/apf_studio/model_import.py
 mod_editor/apf_studio/models.py
+mod_editor/apf_studio/number_targets.py
 mod_editor/apf_studio/player_positions.py
 mod_editor/apf_studio/player_rating_sheet.py
 mod_editor/apf_studio/player_ratings.py
 mod_editor/apf_studio/playbook_route_qt.py
 mod_editor/apf_studio/playbook_membership_qt.py
+mod_editor/apf_studio/playbook_package_map_qt.py
 mod_editor/apf_studio/product_findings.py
 mod_editor/apf_studio/project.py
 mod_editor/apf_studio/roster_workspace.py
@@ -93,6 +95,7 @@ mod_editor/capabilities/registry.v1.json
 mod_editor/capabilities/validate_registry.py
 mod_editor/core/audio_conform.py
 mod_editor/core/apf2k8_playbook_route_writer.py
+mod_editor/core/apf2k8_package_map_writer.py
 mod_editor/core/apf2k8_splb_writer.py
 mod_editor/core/capabilities.py
 mod_editor/core/errors.py
@@ -102,6 +105,9 @@ mod_editor/core/model.py
 mod_editor/core/platform_compat.py
 mod_editor/core/texture_master.py
 mod_editor/core/update_check.py
+mod_editor/data/apf2k8_endzone_labels.v1.json
+mod_editor/data/apf2k8_field_extra_targets.v1.json
+mod_editor/data/apf2k8_number_targets.v1.json
 mod_editor/data/apf2k8_player_positions.v1.json
 mod_editor/data/apf2k8_player_ratings.v1.json
 mod_editor/data/apf2k8_product_findings.v1.json
@@ -142,6 +148,7 @@ tools/apf_helmet_crest_wrap_verify.py
 tools/apf_inner.py
 tools/apf_jersey_selector_patch.py
 tools/apf_logo_patch.py
+tools/apf_number_texture_patch.py
 tools/apf_crest_box_patch.py
 tools/apf_logocache_patch.py
 tools/apf_logocache_verify.py

@@ -263,7 +263,15 @@ def _authoring_note(asset: UniformAsset) -> str:
             "UV atlas: paint over the exported islands; preserve seams, blank margins, "
             "orientation, dimensions, and RGBA channels. Exact front/back/left/right "
             "pixel regions are not decoded. The builder derives mud palettes from the "
-            "edited clean art."
+            "edited clean art. "
+            # A modern texture pack usually ships numbers painted into the
+            # jersey. 2K5 draws them separately and on top, so baked-in numbers
+            # come out doubled -- reported from a real macOS import.
+            "Do not paint jersey numbers into this art: 2K5 draws them from "
+            "separate digit textures in this same set (Jersey Digit 0-9 at "
+            "64x64, Arm / Shoulder Digit 0-9 at 64x64, Helmet Digit 0-9 at "
+            "32x32, and the 1024x32 Nameplate Atlas -- 31 editable components), "
+            "so numbers baked into the jersey will appear twice."
         )
     if asset.kind == "live_helmet":
         return (
@@ -273,8 +281,15 @@ def _authoring_note(asset: UniformAsset) -> str:
         )
     if asset.kind == "live_number_nameplate" and asset.family == "nameplate":
         return (
-            "32×1024 vertical alphabet/nameplate atlas. Glyph metrics remain read-only; "
-            "keep each glyph in its existing registered slot and preserve alpha."
+            # 1024x32 horizontal, not 32x1024 vertical. The transposed reading
+            # came from the TXTR descriptor bug fixed in nfl_txtr.parse_texture
+            # -- it is why an export once looked scrambled -- and this copy still
+            # carried it, which would send an author to paint a rotated strip.
+            # The compatibility report's own mip chain is [1024x32, 512x16,
+            # 256x8, 128x4, 64x2, 32x1].
+            "1024×32 horizontal alphabet/nameplate atlas. Glyph metrics remain "
+            "read-only; keep each glyph in its existing registered slot and "
+            "preserve alpha."
         )
     if asset.kind == "live_number_nameplate":
         return (

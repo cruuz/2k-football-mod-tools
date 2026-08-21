@@ -351,7 +351,7 @@ because unified provider v1 has no proved writer for them.
 | `03_LIVE_DIGITS/jersey/digit_0..9.png` | 10 | 64×64 | Front/back jersey digits |
 | `03_LIVE_DIGITS/helmet/digit_0..9.png` | 10 | 32×32 | Helmet digits |
 | `03_LIVE_DIGITS/arm/digit_0..9.png` | 10 | 64×64 | Arm/shoulder digits |
-| `04_NAMEPLATE/nameplate_atlas.png` | 1 | 32×1024 | Uniform name glyph atlas |
+| `04_NAMEPLATE/nameplate_atlas.png` | 1 | 1024×32 | Uniform name glyph atlas |
 | `05_TEAM_SELECT/uniform_card_256.png` | 1 | 256×256 | Baked uniform/menu card |
 | `05_TEAM_SELECT/helmet_card_256.png` | 1 | 256×256 | Large helmet/menu card |
 | `05_TEAM_SELECT/helmet_card_128.png` | 1 | 128×128 | Separate small helmet card |
@@ -400,7 +400,7 @@ resource suffix is ASCII-derived: `48` is digit 0 and `57` is digit 9. Jersey
 and arm glyph pixels currently match within a side, but their spans are
 independent and both must be targeted if the digit design changes.
 
-`names` is a 32×1024 vertical alphabet atlas, not one player's name strip. Its
+`names` is a 1024×32 horizontal alphabet atlas, not one player's name strip. Its
 29 metric entries are read-only: apostrophe at stored offset 32; hyphen at 64
 (space reuses its advance without drawing); A/a through Z/z at offsets 96–896
 in 32-pixel steps; entry 28 at 928 remains unmapped. Keep glyph registration

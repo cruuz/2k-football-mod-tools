@@ -83,7 +83,7 @@ sudo apt install ffmpeg
 The Audio tab inventories all 2,261 standalone sounds, all 45,514 addressable
 substreams, both 15-track soundtrack encodings, and all 19 named physical XMA1
 banks. Original XMA1/WAV export and exact raw-bank export are available. The
-current release candidate, **`0.1.0-alpha.68`**, gives the 2,261 standalone
+current release candidate, **`0.1.0-alpha.80`**, gives the 2,261 standalone
 rows and all 45,514 individually addressed AUSB rows an advanced exact-slot
 replacement route, selected-sound PCM16 authoring through a separately
 installed encoder, and v1 XMA1 plus v2 exact-PCM16 folder/ZIP batch hand-off.
@@ -582,14 +582,13 @@ remain unproved.
 **Field Art** gives 258 live records a seven-family semantic map across 125
 archive packages: endzone textures, field scenes, radiance textures,
 divot/weather textures, practice overlays, practice scenes, and penalty
-animation curves. Six exact base textures—`endzone_l0`, `endzone_l1`,
-`pc_field_goal`, `Field_Pass_text`, `Stride_number_field`, and `divots`—have
-Preview/Export, Replace/Revert, and copied-`0A` build routes through the bounded
-field-art writer and independent whole-volume verifier. Only the selected base
-mip is regenerated; its packed mip tail, siblings, and every unrelated archive
-entry remain exact. The other 252 semantic records stay browse/export-only and
-are locked for Replace/Revert/Build because their codec or resource ownership
-is not proved; no runtime visibility is claimed.
+animation curves. The Field Art editor writes the original six bases
+(`endzone_l0`, `endzone_l1`, `pc_field_goal`, `Field_Pass_text`,
+`Stride_number_field`, `divots`), 21 package-659 weave/dirtmaps, and 196
+format-18 DXT1 endzone layers through the bounded field-art writer.
+Thirty-nine format-59 DXT5A `endzone_l1` layers stay browse/export-only.
+Only the selected base mip is regenerated; its packed mip tail, siblings,
+and every unrelated archive entry remain exact. In-game look is not claimed.
 
 The application enforces capability-to-action parity. Its registry contains 37
 APF capabilities (70 across all three registered game/platform targets),

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+import contextlib
 import copy
 from dataclasses import asdict, dataclass, replace
 import hashlib
@@ -2417,6 +2418,54 @@ def build_crib_scene_texture_import(
     )
 
 
+#: Coordinate fields a user actually chose in the UI, in the order they read.
+#: A uniform edit carries no selector -- it is an asset code, a side and a
+#: variant -- so "pants:" alone is useless when a project holds several.
+_EDIT_COORDINATES = ("asset_code", "team", "side", "variant", "family", "slot")
+
+
+def describe_edit(edit: dict[str, Any]) -> str:
+    """Name one project edit the way the person who made it would recognize it.
+
+    A selector is the best label when a kind has one. Uniform edits do not, so
+    fall back to the coordinates they were picked by, and to the bare kind only
+    when there is genuinely nothing else to say.
+    """
+
+    kind = str(edit.get("kind") or "edit")
+    for field in ("selector", "asset_id", "target"):
+        value = edit.get(field)
+        if isinstance(value, str) and value.strip():
+            return f"{kind} {value.strip()}"
+    parts = [
+        f"{field}={edit[field]}"
+        for field in _EDIT_COORDINATES
+        if isinstance(edit.get(field), (str, int)) and str(edit[field]).strip()
+    ]
+    return f"{kind} ({', '.join(parts)})" if parts else kind
+
+
+@contextlib.contextmanager
+def _naming_the_failing_edit(edit: dict[str, Any]):
+    """Re-raise any import failure with the edit that caused it named.
+
+    Without this an importer's message stands alone, and the honest ones are
+    still useless in a multi-edit build: "VC-LZ stream needs more than the
+    34416-byte bound" does not say which texture to go and simplify.
+    """
+
+    try:
+        yield
+    except ProjectError as exc:
+        message = str(exc)
+        label = describe_edit(edit)
+        if message.startswith(label):
+            raise
+        raise ProjectError(f"{label}: {message}") from exc
+    except Exception as exc:
+        raise ProjectError(f"{describe_edit(edit)}: {exc}") from exc
+
+
 def build_one_import(order: int, edit: dict[str, Any], project: ProjectFile,
                      input_pins: dict[Path, InputPin], report_paths: dict[str, Path],
                      index: Path, inventory: Path, temp_root: ownership.OwnedPath,
@@ -3564,10 +3613,15 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     historical_import_reports.get(len(prepared))
                     if historical_import_reports is not None else None
                 )
-                built = [build_one_import(
-                    len(prepared), edit, project, input_pins, report_paths,
-                    index_pin.path, inventory_pin.path, temp_root, temp_files,
-                    source_fd, historical_import)]
+                # Whatever an importer refuses, the user has to be told which
+                # of their edits it was. A build carrying dozens of them once
+                # reported only "VC-LZ stream needs more than the 34416-byte
+                # bound", which names no team, no slot, and no image.
+                with _naming_the_failing_edit(edit):
+                    built = [build_one_import(
+                        len(prepared), edit, project, input_pins, report_paths,
+                        index_pin.path, inventory_pin.path, temp_root, temp_files,
+                        source_fd, historical_import)]
             for replacement, previews, report, selector, target in built:
                 order = len(prepared)
                 key = (kind, selector)

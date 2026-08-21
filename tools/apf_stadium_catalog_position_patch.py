@@ -38,12 +38,12 @@ import apf_stadium_static_position_patch as container
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG_PATH = ROOT / "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json"
 CATALOG_SCHEMA = "apf2k8_stadium_static_position_target_catalog/v1"
-CATALOG_SIZE = 456_821
-CATALOG_SHA256 = "e2b21ebf4d358358627d26b7d7ea3c6cf600ea3f9d1e139cb9caa8ff1748a424"
+CATALOG_SIZE = 456_898
+CATALOG_SHA256 = "c3122019b74645380052670f9fdce389277a454b440dd7b7f438276b05f57469"
 RECIPE_SCHEMA_PATH = ROOT / "mod_editor/data/apf2k8_stadium_position_recipe.v2.schema.json"
 RECIPE_SCHEMA = "apf2k8_scne_catalog_position_recipe/v2"
 RECIPE_SCHEMA_SIZE = 5_585
-RECIPE_SCHEMA_SHA256 = "41fcf955c65d81bb5da2d229d6a2ffee692a9c5ae80eda1c0849911c90950277"
+RECIPE_SCHEMA_SHA256 = "ff24b219f4d00a7342dcc41e37ef4d8afe487af8a23ce1c1fcf523fd498c28ac"
 MANIFEST_SCHEMA = "apf2k8_scne_catalog_position_patch/v2"
 MANIFEST_NAME = "apf2k8_scne_catalog_position_manifest.json"
 OUTPUT_PACK_NAME = "1A"

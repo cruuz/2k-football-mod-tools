@@ -636,32 +636,32 @@
           {
             "editable_global": "0x84F3F9C0",
             "label": "Human Catching",
-            "parameter_index": 4
+            "parameter_index": 9
           },
           {
             "editable_global": "0x84F3F9AC",
             "label": "Human Coverage",
-            "parameter_index": 5
+            "parameter_index": 4
           },
           {
             "editable_global": "0x84F3F9B0",
             "label": "Human Pursuit",
-            "parameter_index": 6
+            "parameter_index": 5
           },
           {
             "editable_global": "0x84F3F9B4",
             "label": "Human Tackling",
-            "parameter_index": 7
+            "parameter_index": 6
           },
           {
             "editable_global": "0x84F3F9B8",
             "label": "Human Kicking",
-            "parameter_index": 8
+            "parameter_index": 7
           },
           {
             "editable_global": "0x84F3F9BC",
             "label": "Human Fatigue",
-            "parameter_index": 9
+            "parameter_index": 8
           },
           {
             "editable_global": "0x84F3F9C4",
@@ -681,32 +681,32 @@
           {
             "editable_global": "0x84F3F9E4",
             "label": "CPU Catching",
-            "parameter_index": 13
+            "parameter_index": 18
           },
           {
             "editable_global": "0x84F3F9D0",
             "label": "CPU Coverage",
-            "parameter_index": 14
+            "parameter_index": 13
           },
           {
             "editable_global": "0x84F3F9D4",
             "label": "CPU Pursuit",
-            "parameter_index": 15
+            "parameter_index": 14
           },
           {
             "editable_global": "0x84F3F9D8",
             "label": "CPU Tackling",
-            "parameter_index": 16
+            "parameter_index": 15
           },
           {
             "editable_global": "0x84F3F9DC",
             "label": "CPU Kicking",
-            "parameter_index": 17
+            "parameter_index": 16
           },
           {
             "editable_global": "0x84F3F9E0",
             "label": "CPU Fatigue",
-            "parameter_index": 18
+            "parameter_index": 17
           },
           {
             "editable_global": "0x84F3F9E8",
@@ -719,6 +719,7 @@
             "parameter_index": 20
           }
         ],
+        "parameter_index_basis": "memory order: element = (editable_global - 0x84F3F99C) / 4. The exporter 0x8470A578 and importer 0x8470A630 are strictly monotone (21 lfs/stfs pairs, zero comparisons), so blob element order is the globals' address order, NOT the menu display order. 12 of 21 indices previously carried display order, which put Human Catching at 4 and CPU Catching at 13; a writer built on those would have written Coverage while claiming Catching. Human Catching is element 9 (byte 0x24); CPU Catching is element 18 (byte 0x48).",
         "range": "0x8470A630-0x8470A757",
         "range_clamp_observed": false,
         "serialized_size": 84,

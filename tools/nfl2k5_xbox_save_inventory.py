@@ -82,14 +82,36 @@ EXPECTED_GLOBALS = {
     "Interception": 0x00E6020C,
 }
 
+def _memory_order(labels: tuple[str, ...]) -> tuple[str, ...]:
+    """Order one slider group the way the SAVE stores it, not the way the menu
+    draws it.
+
+    The settings record is a flat memcpy of the RAM struct, so a vector's slot
+    order is its globals' ADDRESS order. That is not the menu's display order:
+    ``EXPECTED_GLOBALS`` above shows the human group running
+    ``D4 Blocking, D8 Passing, DC Running, E0 Coverage, E4 Pursuit, E8 Tackling,
+    EC Kicking, F0 Fatigue, F4 Catching`` -- Catching is stored LAST, while the
+    menu lists it fourth.
+
+    Enumerating ``LABELS`` directly assumed display order and therefore shifted
+    slots 3..8 of both vectors: 12 of the 18 were labelled as their neighbour,
+    so a reader of the published snapshot saw Human Coverage's value under the
+    heading "Human Catching". Derived here rather than re-typed as a second
+    list, because a hand-written order is exactly what went wrong the first
+    time.
+    """
+
+    return tuple(sorted(labels, key=lambda label: EXPECTED_GLOBALS[label]))
+
+
 SLIDER_LAYOUT = (
     ("Injury", 0x284, "standalone"),
     ("Fumble", 0x288, "standalone"),
     ("Interception", 0x28C, "standalone"),
     *((label, 0x298 + index * 4, "cpu_vector")
-      for index, label in enumerate(LABELS[9:18])),
+      for index, label in enumerate(_memory_order(LABELS[9:18]))),
     *((label, 0x2BC + index * 4, "human_vector")
-      for index, label in enumerate(LABELS[:9])),
+      for index, label in enumerate(_memory_order(LABELS[:9]))),
 )
 
 EXPECTED_SAVE_TYPE_COUNTS = {"USR": 1, "STG": 1, "FXG": 1, "TMM": 5}

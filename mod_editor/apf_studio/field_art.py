@@ -16,6 +16,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from functools import lru_cache
+import json
+from pathlib import Path
 from types import MappingProxyType
 from typing import Mapping, TYPE_CHECKING
 
@@ -76,6 +79,17 @@ class FieldArtRecord:
     status: ApfStatus
     export_label: str
     author_note: str
+    #: The team that owns this endzone package, where someone has identified
+    #: it from the artwork.  ``None`` means unidentified, never "shared".
+    team_label: str | None = None
+
+    @property
+    def display_name(self) -> str:
+        """What to show on the row: the team when known, else the package."""
+
+        if self.team_label:
+            return f"{self.name} — {self.team_label}"
+        return self.name
 
 
 @dataclass(frozen=True, slots=True)
@@ -129,6 +143,71 @@ class FieldArtInventory:
         raise FieldArtInventoryError(
             f"Unknown APF field-art package: {package_id}"
         )
+
+
+ENDZONE_LABELS_SCHEMA = "apf2k8_endzone_labels/v1"
+ENDZONE_LABELS = (
+    Path(__file__).resolve().parents[1] / "data" / "apf2k8_endzone_labels.v1.json"
+)
+#: What every endzone package is, and is not.  Decoding any of them gives pure
+#: red / green / blue region selectors over black with uniformly opaque alpha,
+#: exactly like ``jersey_color`` and ``shoulder_color``; the colours a player
+#: sees are shader-driven.  Someone who exports one expecting to repaint "the
+#: endzone art" gets a three-colour mask instead, so the panel says so first.
+ENDZONE_MASK_CONTRACT = (
+    "Endzone layers are region masks, not artwork: pure red / green / blue "
+    "region selectors over black, 2048×512 DXT1, with alpha uniformly opaque. "
+    "The colours in game are shader-driven. Author them like the uniform "
+    "masks — flat colours, hard edges, no anti-aliasing — because an "
+    "intermediate value is an invalid region ID, not a blend."
+)
+#: Why the discovery path is visual rather than a search box.
+ENDZONE_IDENTITY_NOTE = (
+    "Endzone packages carry no team identity, and the nicknames are not on the "
+    "disc: a team name appears zero times in 0A, 0B, 1A, 1B and default.xex in "
+    "ASCII, UTF-16BE and UTF-16LE — it lives only in Roster.ROS. Text search "
+    "therefore cannot find a team's endzone, by construction. Export the "
+    "contact sheet and identify the package by its artwork; identifications "
+    "confirmed so far are shown on the rows."
+)
+
+
+@lru_cache(maxsize=1)
+def endzone_team_labels() -> Mapping[int, str]:
+    """Which team owns each endzone package, for the packages anyone has named.
+
+    Missing is missing: a package nobody has identified stays an index rather
+    than being guessed from its neighbours.
+    """
+
+    try:
+        document = json.loads(ENDZONE_LABELS.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise FieldArtInventoryError(
+            f"The APF endzone label table could not be read: {exc}"
+        ) from exc
+    if (
+        not isinstance(document, dict)
+        or document.get("schema") != ENDZONE_LABELS_SCHEMA
+        or not isinstance(document.get("labels"), list)
+    ):
+        raise FieldArtInventoryError("The APF endzone label table has an unknown format")
+    labels: dict[int, str] = {}
+    for row in document["labels"]:
+        if (
+            not isinstance(row, dict)
+            or type(row.get("outer_index")) is not int
+            or not isinstance(row.get("team"), str)
+            or not row["team"].strip()
+        ):
+            raise FieldArtInventoryError("An APF endzone label row is malformed")
+        outer = int(row["outer_index"])
+        if outer in labels:
+            raise FieldArtInventoryError(
+                f"The APF endzone label table names package {outer} twice"
+            )
+        labels[outer] = str(row["team"]).strip()
+    return MappingProxyType(labels)
 
 
 @dataclass(frozen=True, slots=True)
@@ -407,6 +486,7 @@ def build_field_art_inventory(catalog: ApfCatalog) -> FieldArtInventory:
     _validate_exact_rows(assets)
     _validate_package_relationships(assets)
 
+    team_labels = endzone_team_labels()
     records: list[FieldArtRecord] = []
     for asset in assets:
         contract = _NAME_CONTRACTS[asset.name]
@@ -424,6 +504,11 @@ def build_field_art_inventory(catalog: ApfCatalog) -> FieldArtInventory:
                 status=asset.status,
                 export_label=asset.export_label,
                 author_note=_AUTHOR_NOTES[contract.kind],
+                team_label=(
+                    team_labels.get(asset.outer_index)
+                    if contract.kind is FieldArtKind.ENDZONE_TEXTURE
+                    else None
+                ),
             )
         )
     frozen_records = tuple(records)
@@ -493,13 +578,154 @@ def build_field_art_inventory(catalog: ApfCatalog) -> FieldArtInventory:
         findings=(
             "All 258 existing Field Art catalog rows are represented exactly once in seven semantic groups.",
             "The 235 endzone textures occupy 118 archive packages: 117 named l0/l1 pairs and one l0-only package.",
+            "Every endzone package is one team's own artwork. Package 6 is not "
+            "a shared layer — it is structurally identical to the other 117 and "
+            "is simply the pair whose writer was proved first, so editing it "
+            "repaints that one team's endzone.",
+            ENDZONE_MASK_CONTRACT,
+            ENDZONE_IDENTITY_NOTE,
+            f"{len(team_labels)} of the 118 endzone packages have been "
+            "identified by their artwork so far; the rest show their package "
+            "index rather than a guess.",
             _PACKAGE_OWNERSHIP_NOTE,
             "Every record remains browse/export-only until a bounded writer and runtime consumer are proved.",
         ),
     )
 
 
+#: One contact sheet holds this many packages, which keeps each sheet under a
+#: size an image viewer opens comfortably while staying big enough to read a
+#: mascot at a glance.
+CONTACT_SHEET_ROWS = 12
+CONTACT_SHEET_COLUMNS = 2
+CONTACT_TILE_WIDTH = 512
+CONTACT_TILE_HEIGHT = 128
+CONTACT_LABEL_HEIGHT = 18
+
+
+def export_endzone_contact_sheets(
+    index_0a: "Path",
+    destination: "Path",
+    progress=None,
+    outer_indices: "tuple[int, ...] | None" = None,
+) -> tuple["Path", ...]:
+    """Render every endzone package into labelled sheets for identification.
+
+    This is the supported answer to "which package is my team's endzone".
+    A name search cannot work -- the nicknames are not on the disc -- so the
+    only route is to look at the artwork, and doing that by hand meant writing
+    a decode script and eyeballing 118 PNGs.  One action now produces the same
+    thing: each tile carries its package index and, where someone has already
+    identified it, the team.
+
+    ``outer_indices`` lets a caller that already has the inventory name the 118
+    endzone packages instead of parsing all 1,543 archive entries to rediscover
+    them, which is most of the wall-clock cost.  Omitting it scans, so the
+    function still works standalone.
+
+    The user's volume is opened read-only and nothing is written back to it.
+    """
+
+    from PIL import Image, ImageDraw
+
+    from .backend import ensure_tools_importable
+
+    ensure_tools_importable()
+    import apf_inner  # type: ignore
+    import apf_outer  # type: ignore
+
+    destination = Path(destination)
+    destination.mkdir(parents=True, exist_ok=True)
+    labels = endzone_team_labels()
+    archive = apf_outer.parse_archive(Path(index_0a))
+    tiles: list[tuple[int, object]] = []
+    with apf_inner.ArchiveReader(archive) as reader:
+        if outer_indices:
+            wanted = {int(value) for value in outer_indices}
+            candidates = [
+                entry for entry in archive.entries if entry.table_index in wanted
+            ]
+        else:
+            candidates = list(archive.entries)
+        for position, entry in enumerate(candidates):
+            if progress is not None:
+                progress("Reading endzone packages", position, len(candidates))
+            try:
+                record = apf_inner.parse_iff(reader, entry, strict_footer=False)
+            except Exception:
+                continue
+            base_file = next(
+                (
+                    item
+                    for item in getattr(record, "files", ())
+                    if getattr(item, "name", "") == "endzone_l0"
+                ),
+                None,
+            )
+            if base_file is None:
+                continue
+            parts = list(base_file.parts)
+            header_part, base_part = parts[0], parts[-1]
+            header = apf_inner.decode_block(
+                reader, record, header_part.block_index, 64 << 20
+            )[header_part.offset : header_part.offset + header_part.length]
+            metadata = apf_inner.parse_txtr_metadata(header)
+            payload = apf_inner.decode_block(
+                reader, record, base_part.block_index, 64 << 20
+            )[base_part.offset : base_part.offset + base_part.length]
+            width, height, rgba = apf_inner.decode_txtr_base_rgba(metadata, payload)
+            image = (
+                Image.frombytes("RGBA", (width, height), rgba)
+                .convert("RGB")
+                .resize((CONTACT_TILE_WIDTH, CONTACT_TILE_HEIGHT), Image.LANCZOS)
+            )
+            tiles.append((entry.table_index, image))
+    if not tiles:
+        raise FieldArtInventoryError(
+            "No endzone packages were found in the selected volume"
+        )
+
+    per_sheet = CONTACT_SHEET_ROWS * CONTACT_SHEET_COLUMNS
+    written: list[Path] = []
+    tile_pitch = CONTACT_TILE_HEIGHT + CONTACT_LABEL_HEIGHT + 6
+    sheet_count = (len(tiles) + per_sheet - 1) // per_sheet
+    for sheet_index in range(sheet_count):
+        group = tiles[sheet_index * per_sheet : (sheet_index + 1) * per_sheet]
+        rows = (len(group) + CONTACT_SHEET_COLUMNS - 1) // CONTACT_SHEET_COLUMNS
+        sheet = Image.new(
+            "RGB",
+            (
+                CONTACT_SHEET_COLUMNS * (CONTACT_TILE_WIDTH + 8) + 8,
+                rows * tile_pitch + 8,
+            ),
+            (18, 18, 22),
+        )
+        draw = ImageDraw.Draw(sheet)
+        for position, (outer_index, image) in enumerate(group):
+            x = 8 + (position % CONTACT_SHEET_COLUMNS) * (CONTACT_TILE_WIDTH + 8)
+            y = 8 + (position // CONTACT_SHEET_COLUMNS) * tile_pitch
+            team = labels.get(outer_index)
+            draw.text(
+                (x, y),
+                f"package {outer_index}" + (f"  —  {team}" if team else ""),
+                fill=(236, 236, 240) if team else (168, 168, 176),
+            )
+            sheet.paste(image, (x, y + CONTACT_LABEL_HEIGHT))
+        path = destination / f"apf-endzone-contact-sheet-{sheet_index + 1:02d}.png"
+        sheet.save(path)
+        written.append(path)
+        if progress is not None:
+            progress("Writing contact sheets", sheet_index + 1, sheet_count)
+    return tuple(written)
+
+
 __all__ = [
+    "CONTACT_SHEET_COLUMNS",
+    "CONTACT_SHEET_ROWS",
+    "ENDZONE_IDENTITY_NOTE",
+    "ENDZONE_LABELS",
+    "ENDZONE_LABELS_SCHEMA",
+    "ENDZONE_MASK_CONTRACT",
     "FIELD_ART_PACKAGE_COUNT",
     "FIELD_ART_RECORD_COUNT",
     "FieldArtInventory",
@@ -509,4 +735,6 @@ __all__ = [
     "FieldArtRecord",
     "FieldArtSemanticGroup",
     "build_field_art_inventory",
+    "endzone_team_labels",
+    "export_endzone_contact_sheets",
 ]

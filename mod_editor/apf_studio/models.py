@@ -24,6 +24,8 @@ AUDO_EXACT_SLOT_KIND = "audo_exact_slot_xma1"
 AUDO_EXACT_SLOT_WRITER_SCHEMA = "apf2k8_audo_exact_slot_xma1/v1"
 AUSB_EXACT_SLOT_KIND = "ausb_exact_slot_xma1"
 AUSB_EXACT_SLOT_WRITER_SCHEMA = "apf2k8_ausb_exact_slot_xma1/v1"
+NUMBER_TEXTURE_KIND = "number_texture"
+NUMBER_TEXTURE_WRITER_SCHEMA = "apf_number_texture_patch/v1"
 
 
 class ApfProductAction(str, Enum):
@@ -241,17 +243,18 @@ CAPABILITY_ACTION_BINDINGS: Mapping[str, CapabilityActionBinding] = {
         replace_method="replace_field_art",
         revert_method="revert_field_art",
         product_note=(
-            "The Field Art editor writes exactly the six offline-proved base "
+            "The Field Art editor writes the original six offline-proved base "
             "textures (endzone_l0/l1, pc_field_goal, Field_Pass_text, "
-            "Stride_number_field, divots) into a copied 0A through "
+            "Stride_number_field, divots), package-659 weave/dirtmaps, and "
+            "format-18 endzones into a copied 0A through "
             "tools/apf_field_art_patch.py -- one texture per build. Each build "
             "regenerates only the selected base mip level; the descriptor pad, "
             "the packed mip tail, and every sibling inner part are verified "
             "unchanged against the whole volume, and the read-only source is "
-            "never opened for writing. The deferred field_radiance and "
-            "divot_Grass* codecs and the SCNE/CurveAnim rows have no bounded "
-            "writer and stay export-only. In-game appearance is not proved "
-            "without a Xenia capture."
+            "never opened for writing. Format-59 DXT5A endzones, the deferred "
+            "field_radiance and divot_Grass* codecs, and the SCNE/CurveAnim "
+            "rows have no bounded writer and stay export-only. In-game "
+            "appearance is not proved without a Xenia capture."
         ),
     ),
     "apf2k8.gameplay_tuning_sliders.roster_view": CapabilityActionBinding(

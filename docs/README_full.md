@@ -841,7 +841,7 @@ Live 3D player numbers and generated nameplates now have their own complete
 offline art pipeline. Across all 634 uniform selectors, chunks 13–42 contain
 19,020 context-local digit glyphs: `48..57` for front/back jersey numbers,
 `hn48..hn57` for helmets, and `an48..an57` for arm/shoulder numbers. Chunk 43
-is the 32×1024 six-mip linear `names` atlas; chunk 44 is its separate 29-record
+is the 1024×32 six-mip linear `names` atlas; chunk 44 is its separate 29-record
 metric object. The XBE trace closes digit composition and the
 `PLAYERNAME`/`PLAYERNAME_long` generated-texture route. All 19,654 pixel
 resources match the retail XISO, use one of four exact descriptor layouts, and

@@ -1,5 +1,297 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.80 — who lines up, CPU package levers, relayed copy, digits v2, two-layer crests and endzones — 2026-08-21
+
+- **New: two-layer helmet crests through the project build.** Staging a crest
+  with its `logo_l1` detail image now carries both layers through the session,
+  the shareable project archive, and Build; the retail side-decal profile
+  writes both region sets instead of silently clearing the detail masks. The
+  full-shell profile explains that it composes from one mark. The logo cache
+  writer gained `build_cache_patch_many`, rewriting several catalog slots in
+  ONE pass from the pinned retail cache state, so multi-crest volumes no
+  longer chain through earlier outputs.
+- **New: both endzone layers in one field-art pass.**
+  `apf_field_art_patch --file-index 0 --png l0 --file-index 1 --png l1`
+  rebuilds the entry once with every target; the retail entry pin no longer
+  blocks the second layer.
+- **Fixed: crest previews showed red/blue transposed.** The format-15
+  (4_4_4_4) preview decoder read nibbles in the wrong channel order relative
+  to the writer's retail-proven convention; previews now match what is
+  written.
+- **Digits v2.1.** Regenerated mip tails now downsample with a
+  region-majority filter (thin outline features survive the stride; ties go
+  to the rarer region); `--nearest-mips` restores the older sampler and
+  `--keep-mips` still preserves retail for bit-exactness testing.
+- **Clarity.** Emptying formations now also names the 2026-08-15 report where
+  a user book with its base packages emptied never booted (Xenia spin, then
+  exit); renamed APF indexes (`0A.mybuild`) are refused with the reason
+  instead of silently reading the sibling `0A`; symlinked source volumes get
+  a message that says symlink.
+- Everything from the staged alpha.79 below (who lines up, package levers,
+  relayed copy, removal+move composition, digits v2), which never published
+  on its own.
+
+## 0.1.0-alpha.79 — who lines up, CPU package levers, relayed copy, digits v2 — 2026-08-18 (staged, unpublished)
+
+- **New: Who lines up.** Playbooks & Plays gains a tab that stages the APF
+  MASTER formation `+0x11` 11-byte role maps as project edits; Build writes
+  them into the copied MASTER PLAY (outer 180), composed with any staged
+  assignment-route clones. Role 8 = TE, role 9 = WR; the other nine roles stay
+  numbered. Runtime look is unproved — check the formation in Xenia after
+  Build. This is not a 3rd-and-long director patch and does not touch
+  `default.xex`.
+- **New: formation/package levers (experimental).** Fine-tune Plays gains
+  **Change formation/package…** (repoint one record's trailer at any MASTER
+  formation and personnel package) and **Add a formation to this book…**
+  (fill the book's first empty record). The book's category mask gains the
+  package bit; the unproved 3-bit trailer situation fields and the trailer
+  low byte stay byte-exact. Static basis (Research pins): the lineup ladder
+  resolves a requested personnel row through exactly this mask and falls to
+  lighter rows when the book lacks the package. Whether the CPU director
+  chooses such a record on 3rd-and-long is runtime-unproved. Experimental on
+  purpose: test in Xenia with the Choose-Side protocol before treating any
+  package edit as a 3rd-and-long fix.
+- **New: relayed route copy.** Where a plain Copy would orphan a
+  game-authored assignment chain, Assignment Routes now offers a relayed copy
+  through an expendable assignment that shares its route elsewhere, so the
+  donor play keeps its route and the target receives the donor's.
+- **Fixed: staged removal + staged tagged-slot move naming the same play now
+  compose** in the writer's fixed order (adds, then moves, then removals)
+  instead of one of the two being silently lost at Save Project.
+- **Digits v2.** The jersey-digit writer now encodes the shared package with
+  the smaller of the retail-token-preserving and greedy H7A encoders and
+  regenerates the mip tail from the new art with NEAREST (removes the retail
+  mip blend artifact and is usually smaller; `--keep-mips` preserves the old
+  tail for bit-exactness testing). The picker shows each package's free budget
+  up front, and overflow advice is rewritten around the measured costs.
+- **Clarity.** APF face/head scans are stated to be export-only research, with
+  128×128 portrait workflows pointed at 2K5 Mod Studio; macOS AppleDouble
+  (`._*.png`) drops are detected and explained; the 3rd-and-long status copy
+  names the new package levers without claiming CPU behavior.
+
+## 0.1.0-alpha.78 — Playbooks repair and export withdrawal — 2026-08-15
+
+- **Fixed: 3rd-and-long editing status no longer crashes.** Beta 45 tried to
+  import a research module that was not included in the APF package. The first
+  click opened the crash reporter; later clicks repeated the same exception,
+  which the crash reporter suppressed, so the button appeared dead until
+  restart. The button now opens a normal explanation directly and remains
+  usable on every click.
+- **Withdrawn: the WR3↔TE raw `.bin` export.** It produced a 182,096-byte copy
+  of APF's internal formation table and a JSON verification report. It was not
+  a playable mod, could not be imported into Mod Studio, was not included by
+  Build Game Folder, and had no supported installation method. The byte-level
+  experiment remains developer research; the product no longer implies that a
+  modder can use the file.
+- **Clearer 3rd-and-long copy.** Mod Studio found no editable setting for the
+  reported user-team/CPU difference in MASTER PLAY, the stock playbooks, or the
+  director files. The behavior appears to live in `default.xex`, which Mod
+  Studio does not patch. Technical addresses remain under **Research pins**.
+- **New packaged-import closure check.** The clean APF release gate parses every
+  staged Python file and refuses any literal `mod_editor.*` import whose target
+  is absent from the package, including imports inside callbacks.
+- No game writer changed. Copied and studio-built `0A` folders still cannot be
+  opened as source. A future safe continuation feature would need the original
+  retail source, a matching project, and deterministic replay verification; it
+  is not part of alpha.78.
+
+## 0.1.0-alpha.77 — field extras, numbers, jersey capacity — 2026-08-15
+
+- **Field Art writable set is 221, not six.** The original six bases stay
+  pinned. Package 659 adds 21 weave/dirtmaps (ten 64×64 8_8_8_8 weaves,
+  two 256×256 BC3 `weave_skin_weights_*`, nine BC3 dirtmaps). Format-18
+  DXT1 endzones add 194 layers (118 `l0` + 78 `l1` beyond the core pair).
+  Thirty-nine format-59 DXT5A `endzone_l1` stay export-only. Mip tails
+  stay byte-preserved. In-game look is unproved.
+- **All Textures writes the 480 jersey digits.** 24 packages ×
+  `number_0_color`…`number_9_normal`, 512×512, 240 DXT1 + 240 DXN. One
+  shared compressed budget per package; overflow names the digit and the
+  package. Package 2 has 9 bytes of usable slack after the name footer.
+  Roster→package binding is unlocated. Runtime visibility is unproved.
+- **Jersey capacity** uses the same measured two-block IFF budget as
+  shoulder (24 slots, detailed/moderate/simple bands of 8). It is a picker
+  aid, never a replace gate.
+- **Export WR3↔TE package-map pack…** on Fine-tune Plays. This experimental
+  action copied the internal MASTER PLAY table with roles 8 and 9 swapped on
+  Ace-named formations at `+0x11`, plus a JSON verification report. Retail Ace
+  Empty is **not** an 8↔9 swap of Ace (slots 9/10 are 6↔7). Runtime G12 /
+  3rd-and-long stays unproved; `wr3_te_package_sub_proved` stays False. Alpha.78
+  withdraws the action because the exported file had no supported use.
+- **3rd-and-long user logic…** was intended to explain that no editable
+  setting was found in the game data and that executable patching is outside
+  Mod Studio's scope. Alpha.78 replaces the unclear wording and broken action.
+- Opening a copied `0A` still fails closed. A studio-built folder with
+  `.apf2k8-mod-studio-build.json` whose source hash is retail gets a
+  named refusal (Beta 44 multi-book + rebuild into the last folder).
+  Writers pin retail entry hashes, so a second pass from a copied `0A`
+  is unsafe. Arbitrary modified volumes stay refused.
+
+## 0.1.0-alpha.76 — Fine-tune Plays does not choose personnel — 2026-08-14
+
+- **Withdrawn: Fine-tune Plays as a way to change who lines up.** The panel
+  changes which MASTER plays a formation stores. It does not change who lines
+  up. Personnel comes from the formation package map (MASTER `+0x11`). A play
+  named `50 TE Corner` can live in I Spread (20 / 0 TE) because the play is
+  routes and assignments on whatever slots that formation plugs. Play names are
+  not personnel. Role 8 maps to roster TE and role 9 to WR in table
+  `0x820FC320`; whether a formation has a TE is whether its map contains role 8.
+  Swapping those bytes is not runtime-proved, so it is not offered. **Move
+  tagged slot…** only reassigns Y tags inside one record.
+- **A project can hold every stock book.** Switching books no longer discards
+  staged work. Build compiles each outer separately into one copied `0A`. The
+  writer is still one book per call.
+- **Emptying an exact ` Flip` twin empties both.** Ace / Ace Flip is a pair;
+  Weak I Jokers Flip Pair is not. Emptying only one hangs on load (Urianus,
+  2026-08-14). Emptying the pair is refused if that would clear the last
+  plays in the book. Defensive empties still let the director call something
+  the book never listed, except X-43Blitz 4-3 / Bear.
+- **Build writes into the folder you pick.** It no longer creates an
+  `APF2K8-Mod-TIMESTAMP` child. Rebuild into the same folder (confirm
+  replace) so Xenia can keep the path. Close Xenia first if the folder is
+  open. The retail source is still never written.
+
+## 0.1.0-alpha.75 — camera map, and a catalog that regenerates again — 2026-08-14
+
+- **New: `--inspect-camera-options apf2k8`.** Nine named settings — including a
+  **Camera Pitch** axis NFL 2K5 does not have, and separate Home and Away pivot
+  and zoom toggles — with their shipped ranges, plus the named presets.
+- **APF ships a sixth camera preset the menu cannot reach.** `Blimp` is fully
+  authored: a camera 3,750 units above the field, which is what its name says.
+  It is unreachable because three instructions hard-code the selection bound and
+  none of them reads the menu's own maximum. The inspector names it and marks it
+  not selectable. Nothing has been patched, and nobody has seen it render.
+- **No archive-only camera mod is possible.** Stated as a refusal rather than an
+  omission: every camera node in the APF archives belongs to an intro, cutscene,
+  menu or model-preview scene, and no stadium scene contains one.
+- **The stadium static target catalog can be regenerated again.** It had stopped:
+  the greedy H7A encoder is 2,599 bytes worse than retail on that block before
+  any edit, so rebuilding overflowed a slot retail itself fits. The generator now
+  preserves retail's own tokens instead, in pure Python, so the catalog is
+  byte-identical on Linux, macOS and Windows. The representative edit's growth
+  fell from 659 bytes to 59 and its slack rose from 1,367 to 1,967.
+- **The SCNE per-node transform record is 144 bytes, not 64.** The catalog had
+  been pinning a span covering 44% of the real table. At the correct stride every
+  record reads as a clean 4x4 matrix, and the long-standing "non-finite
+  components" note is explained and gone: those bytes are a node-name CRC-32.
+- **Correction for anyone building on the slider evidence:** the 84-byte settings
+  blob is in memory order, not menu order. Human Catching is element 9 (byte
+  0x24) and CPU Catching is element 18 (byte 0x48). The previously published
+  indices would have written Coverage while claiming Catching.
+
+## 0.1.0-alpha.74 — no APF changes — 2026-08-13
+
+Beta 42 completes the 2K5 VC-LZ work: the pants importer was missed in Beta 41
+and now uses the palette ladder, and the guard test derives its list from the
+tree rather than trusting a hand-written one. Nothing in APF changed; the shared
+update checker identifies this build as `beta-42`.
+
+## 0.1.0-alpha.73 — no APF changes — 2026-08-13
+
+Beta 41 fixes 2K5's fixed VC-LZ span handling: a texture that will not fit its
+retail compressed allocation is now quantized down instead of failing the
+build, and every build failure names the edit that caused it. Nothing in APF
+changed; the version moves so both products keep shipping from one release, and
+the shared update checker identifies this build as `beta-41`.
+
+## 0.1.0-alpha.72 — no APF changes — 2026-08-13
+
+Beta 40 fixes 2K5's Team Kit equipment routing: swapping a sock, glove, shoe,
+wristband, elbow pad or long-sleeve texture used to refuse at Build with
+`Unknown uniform asset ID`. Nothing in APF changed; the version moves so both
+products keep shipping from one release, and the shared update checker
+identifies this build as `beta-40`.
+
+## 0.1.0-alpha.71 — Save Project keeps Fine-tune Plays — 2026-08-13
+
+Beta 39 answers three community reports.
+
+**Save Project now saves Fine-tune Plays.** Since the panel shipped in Beta 32
+its staged edits lived only in the panel's own memory. Nothing wrote them into
+the session, so Save Project produced a file that silently did not contain
+them, and reopening that project showed an untouched playbook. Urianus reported
+it against alpha.69 and confirmed it was still there in alpha.70.
+
+Every staged change — a play ticked in or out, a tagged slot carried onto
+another play, a tagged slot moved — is now one `splb_book_membership`
+modification carrying only selectors: an outer entry, a record, and play
+indices. Never a byte of the user's SPLB resource. It round-trips through the
+project archive with the same canonical-JSON, hash-pinned handling the
+assignment-route writer uses, and the main build compiles the whole set into
+one rebuilt book, so playbook edits and uniform edits can finally land in the
+same volume. Opening a project selects the book its edits belong to instead of
+the first in the list. Switching books with work staged now asks, because the
+writer compiles one book at a time; it used to discard silently. Reverting one
+change proves the rest still compile rather than failing at build time.
+
+**Emptying a formation now leads with what it does in game.** Urianus emptied
+the formations without a TE in `O-ManBlock` and watched the CPU line up
+personnel packages that book does not contain (00, 10, 01, 12, 11) and one the
+game does not ship at all (02), running plays that are not in the book. It
+happened whenever the director selected an emptied formation; untouched books
+behaved normally. Plays are not bound to formations — he moved an offensive
+play into a defensive book and it ran — so a formation that stores nothing does
+not make the director skip it, it makes the director call something the book
+never listed.
+
+The static facts are unchanged: count `0x84a8ac30` returns 0 and get-nth
+`0x84a8bd20` returns null for an empty record, so the four tagged plays cannot
+come from it. That was never a proof that the director handles the null well,
+and the previous copy read as though it were. The confirmation dialog now opens
+with the report, the compile report carries
+`empty_record_runtime_safe: False`, and emptying **every** populated formation
+in a book is refused outright — that leaves the director nothing at all to
+select.
+
+To keep a formation and put TEs on its tagged slots, add those plays and use
+**Move tagged slot…**; nothing has been reported against that path.
+
+**The panel's static record moved behind “Research pins”.** All of it still
+ships — every address, including the withdrawn candidates — but 11,360
+characters of hex no longer word-wrap between the play list and the buttons.
+
+## 0.1.0-alpha.70 — tagged-slot compose, empty formations, title update 1.1 — 2026-08-12
+
+Beta 38 fixes the stock-playbook verifier so a tagged slot can move onto a play
+added in the same request (X-43Blitz Bear: play 542 → 560). Fine-tune Plays
+gains **Empty this formation…**, which sheds every stored play because
+`min(4, 0)` is 0 and leaves the record trailer untouched. The decompressed
+executable counts that list at `0x84a8ac30` and returns the nth play at
+`0x84a8bd20`; an empty record returns 0/null. Launch copies the hash-pinned
+Xbox 360 title update 1.1 LIVE package into this session's isolated Xenia
+content folder; the update never shipped for PS3. Automatic WR3→TE package
+substitution is not offered: APF MASTER has an 11-byte role permutation at
+formation `+0x11`. Role 8 is TE and role 9 is WR (`0x820FC320` / `0x84a9ae68`);
+the 11-player builder indexes that map by slot (`0x848605b4`). Swapping those
+two map bytes is not runtime-proved. MASTER categories at `+0x44` are
+personnel packages (Ace, 5 Wide, Flush); `0x8485bd38` extracts the SPLB
+trailer index. `0x84a472d0` is play-type UI, not down; `0x8486ce88` picks a
+play from situation word0 / `+0x2BC` (a tab). Eligibility ANDs map-role
+masks at `0x820FC380` with a personnel cell (also `0x84862580`);
+`0x844dbe00` is `.pdata`, not a script table; `0x84b694a8` stores 1 or 2 to
+situation `+8`. `0x84a89ea8` maps a play onto an SPLB record, not a
+situation; `+0x1F8` is a play-type filter. `0x848699d8` filters by type
+nibble, not down. `0x848699d8` reads the current book from playcall `+0x20`
+(global `0x851A2780`); `0x8493d968` registers that object. `0x8485e7f8` has 0 `bl` callers. `0x8466af70` loads `dir_ingame.iff`. `0x8466a818` relocates DRCT pointers (NFL `0x000dc700` analog); `0x8466aae0` walks the relocated fixed table, not the instruction consumer. `0x8466abc0` indexes fixed-record children via `+0x18`; `0x8466af28` indexes strings via `+0x14`. Picker `0x8486ce88` takes the playcall object as `r3` (`0x8470c2c4`). Jump-table `0x8470bf18` takes a small integer mode 0..19 (`0x84712498`); case 2 (`li r3, 2` at `0x847163d4`) is frontend, not CPU down/ytg. Find-by-slot's book singleton is `0x8520CDE0` (init `0x84a139d0`). Shadow `0x84887e18` writes bitmasks to `0x8516C908+0x20`, not a book. Slot `+0` can be type singleton `0x850F1218` (install `0x84ad0048`); init `0x847c6da8` copies live MASTER from `0x84F3F7D8+0x2C` (`0x849fd6a8`) onto type `+0x20`. Helper `0x8486cd80` is UI-only. Setter `0x849fd6c8` is bind/SPLB-select (table `0x851D9660` via `0x849fcf60`), not per-play. `0x849d81d0` is init-stored at `0x84E28670+0x2C94` (0 `bl`). `get_down` lives only in packed property blob `0x84EB0DE4`. Property-get-by-id `0x849c9c90` uses ids 997..999, not down. Relocator `0x8466a994` inlines the instruction directory at `+0x20`. NFL `0x000dca40` is a bitset/float lookup, not an instruction indexer. `dir_ingame.iff` (outer 153) has 1015 instruction records; 1014 begin `0B 00 01 00` then a token at +4 — bytecode, not a C++ vtable. The relocator rewrites only the inline directory words; it does not follow those pointers into record bodies. Packed `lhz +6` getter `0x84ab2010` has 0 `bl` and 0 inbound pointers. DRCT vtable[2] `0x8466ba30` unlinks a list. Byte-stream `0x8466bd38` compares 94/96/97 and 275–330, not instruction tokens. `0x84bcd760` is a string classifier (0 `bl`). 0 `addi 32`/`lwzx`/`lbz 0(record)` consumer. `dir_wrapup.iff` (outer 265) has 96 records, all `0B 00`. Groups are tagged fields (`0B 00` + u16 field + u8), not a VM opcode at +4. vtable[0] `0x8466b8b0` only relocates then walks the fixed table (`bl 0x8466aae0` at `0x8466b8fc`). Packed +0x14/+0x18 indexers have 0 `bl` and 0 inbound pointers. `0x8466af48` is a bounds check (r4 < +0x10), not a type mapper. `0x84b162a8` is an embedded C++ object at +0x20. `lbz`+`cmpwi 11` then 12 is a class-id, not tag `0x0B`. Field ids inside `0B 00` groups are BE u16 `0x0100`/`0x0200`, not 1/2. Nested lead bytes `0x03`..`0x09` appear after those groups. 0 `lhz`+`cmpwi 0x0100` parser (`0x84c381e8` is stack/float). 0 skip-`0B 00` then `lhz`. 0 `lhbrx` in TEXT. `0x84a87b38` is play-type nibble `srwi 28`. `0x84bdfb00` is ASCII Y/I. 0 `cmpwi 0x0B00` in TEXT. `0x848bb1a8` is RTTI class 2 vs 11. `0x8466b660` is a map count vs 256, not field `0x0100`. `0x8466c7f0` is a packed LE f32 (4×lbz, not lwbrx). 0 lis/addi of `0x84EE65C0`. `0x84671838` is C++ vt[2] on r4+0x20, not a property registrar. 0B groups are tag + u8 variant + BE u16 field + u8 (variant 0 is 3589/3621; variants 1–5 use field `0x0200`), not a 2-byte `0B00` tag. `0x84842f48` is RTTI class 3/4/5/6/7/11/12 via +0x14/+4. `0x8476ca80` counts 10×5-byte slots at object +0x13D9. `0x8492bb24` sums 5-byte windows then uses floats. `0x84b0a4c0` compact-int-indexes stride-12 table `0x84EE65A8` (max id `0x35`) then `bctrl` get/set; 0 `cmpwi 11` in those cases. `0x849e7790` copies a 12-byte record (`0xffff` sentinel), not a 0B group. `0x847e2818` is class-id 3/5/6/7/4 via +4, not leftover leads. `0x84abb590` copies 5 bytes with no tag check. `0x84a9d7a0` copies stride-32 floats at +0x1C, not NFL table `0xB73BD0`. NFL `dir_ingame` (outer 4) has 1310 instruction records, all starting `0B`; prefixes `0B 00 01 00` / `01 01` / `01 02` — same tag+variant+u16 encoding as APF. `0x84be2b48` is an ASCII/scanf 0..11 jump, not leftover leads. `0x848777cc` loads one float from `0x84F1A150+0x1C`, not a stride-32 bitset table. `0x84b93b10` reads a 5-byte header with no `0x0B` check; caller `0x84b94258` switches on first byte 0..4. Non-`0B` leftovers are concatenated typed groups: type `0x04` is tag + 4-byte LE float (size 5) on APF and NFL; types `0x05`/`0x06`/`0x07`/`0x08`/`0x09` are 1-byte tags (a following `00` is the terminator type, not a payload); type `0x03` is tag + u8 (size 2). That walk consumes APF ingame 1015/1015 and NFL ingame 1310/1310. `0x849277a8` switches on a presentation byte (cases 4/11 store floats), not those tags. `0x84c4c480` copies 1/2/4/8 bytes with endian swap (`cmplwi` 1/2/4/8 then `lwbrx` for width 4), not a type-4 float reader. `0x84ba2520` walks a stride-12 table in r4 from a packed descriptor (`mulli` 12 + `lbz` +8), not a property `bctrl` registrar. `0x846c2068` compares object +0x62 to 4 then stores 5, not float-group size. `0x8466c890` is a float-expression VM (opcodes 0..12, table `0x8466c91c`, cursor `0x84F1779C`); case 4 is the LE f32 immediate (helper `0x8466c7f0`); case 11 consumes 1 extra byte, not a leftover 0B group. Descriptor slot `0x844dd260`. `0x8477f950` switches on a UI byte 0..12 (cases 5-10 just return). `0x84a37850` loads situation down and ytg together and wraps ytg at 100, not a play picker. `0x848864b0` compares situation word0 to 4 (not down) and playcall+0x38 to 11. `0x84a5eb08` indexes 24-byte tables by type 3/4/8/9/11/12, not leftover. `0x8475b7b0` tweens `0x84D58C70` (`lfs` +0x258, counter +0x25C), not situation ytg. NFL xbe has 0 `add r32,5` within 80 bytes of `cmp al, 0x0B`; the only `.text` sites with both `cmp al,4` and `cmp al,0x0B` within 48 bytes are `0x1138e0` (object +0x35 enum) and killed play-type classifiers `0x133fd1` / `0x27e830`. `0x84a23bd0` cycles situation +0x1F8 through 0..7 (UI play-type filter), not CPU 3rd-and-long. The only PE pointer to picker `0x8486ce88` is its `.pdata` row `0x844e8568` (section `0x844DBE00`), not a `bctrl` dispatch slot. Situation +0x1F8 setter `0x849d36d8` has 0 `bl` and 0 PE pointers. NFL relocator `0x000dc700` returns after fixing +0x14/+0x0c/+0x08 and does not walk instruction bodies. `0x848631d0` is the +0x1F8 getter used by the "Offensive Play calling" widget (`0x845FE7D4`); `0x849d36d8` remains the packed setter (0 `bl`). NFL `0x168ad0` walks a SHAP list at +0x14 (stride 0xC, dword==3), not leftover TLV. The only `lhz` +6 then `addi` 32 is relocator `0x8466a994`. `0x84a2ccd8` reads situation +0x1F8 and +0x2BC (word0==2, filter==0, tab==3), not down/ytg. The only TEXT sites with cmp 4, addi 5, and cmp 11 together are occupancy `0x84961548` and bit-pack `0x849e3a24`, not leftover sizes. Picker-caller neighborhood `0x84814dcc` / `0x84816118` compares situation word0 to 4, not Fourth Down; the addi 5 is `srawi`-3 index math. `0x8485a04c` switches word0 0/1/2/3/4/9 into mode immediates. Real `addi r,r,5` (not `li 5`) plus cmp 4/11 is still not a leftover stream: `0x84869e60` is a 4-wide fill remainder and `0x84a9adcc` is an 11-slot `lbzx` at object+5 beside the role table. `0x84a21298` is a packed UI formatter (0 `bl`) that indexes the seven labels at `0x84E446C8` ("First Down" … "Third and Long" `0x845FD8B4` … "Fourth and Long"); every `lis`/`addi` of its object `0x85212B88` sits in the same `0x84a20xxx` widget cluster, not a CPU picker. `lbz`+`cmplwi` 9 then `bctr` at `0x84911750` / `0x849ecd48` switch object fields, not leftover tags. `0x847d7590` / `0x8480189c` compare playcall `0x851A2780+0x3C` to 3/6, not down. Every TEXT `lis`/`addi` of leftover cursor `0x84F1779C` / `0x84F177AC` sits in expr-VM `0x8466c778`–`0x8466d888`; the VM entry stores r5 to cursor+8 (`0x8466c8dc`). No TEXT site loads situation +0x254 and +0x25C together and yields D&D index 4; lookalikes `0x8499e420` / `0x849a3b58` compare script node +0x10/+0x14. Packed get_ytg `0x84b68cd8` (`lwz r3, +0x25C(r3)`) has 0 `bl` and 0 PE pointers; the situation property blob that holds get_down `0x84ad92e0` has no +0x25C getter. Expr VM `0x8466c890` has only desc slot `0x844dd260` (0 inbound PE ptrs, 0 TEXT `lis`/`addi`). 0 `lwz` +0x20 then `lbz` and cmp 4/11 leftover walk. `0x84879bc0` extracts ytg bit 1, not a D&D index. Packed object get_down `0x84b68cc8` sits next to get_ytg (0 PE ptrs). `0x84ad0348` copies situation +0x254/+0x258/+0x25C onto a stack blob (only PE is `.pdata` `0x844f72b0`); not a D&D index. 0 aligned inbound PE pointers into get_down blob `0x84EB0800`..`0x84EB0F00`. Other TEXT `lwz` +0x254/+0x25C pairs are stack slots, tween `0x8475b7b0`, status query `0x84b694a8`, or a non-situation object where +0x254 is a pointer (`0x84b39458`). TEXT `lis`/`addi` of the blob only hit row base `0x84EB02D0` (packed `0x84ad9f40`: `mulli` r4, 0x1C then `lwz` +4). get_down's row `0x84EB0DD0` is not 0x1C-aligned from that base. 0 `addi` 32 then `lwz` 0 then `lbz` 0(record) leftover walk. 8 `lwz` +0x20 then `lbz` 0 sites are string/ASCII. Only TEXT `lis 0x0B00` is bitmask `0x848ee750` (`li r4, 11`). `0x84b64c88` walks a 4-byte window with UTF-8 extra-byte table `0x844C69C8` (0xC0→1, 0xE0→2, 0xF0→3; 0x0B→0), not leftover sizes. Which play the CPU
+calls on 3rd-and-long
+remains runtime-unproved (down is object `+0x254` / Third Down = 3 at
+`0x848d96e4`; that helper is not a play picker). The shared update checker
+identifies this build as `beta-38`.
+
+## 0.1.0-alpha.69 — visible exports and honest playbook wording — 2026-08-12
+
+Beta 37 completes the Beta 36 mask-preview follow-up:
+
+- Preview cache entries retain their display-only alpha explanation across
+  cache hits instead of deriving it from already-opaqued pixels.
+- Uniform, generic TXTR, and embedded scene-texture PNG exports use the same
+  visible display pixels as the preview. The existing encode guard restores
+  retail all-zero alpha when an edited image returns through a proved writer.
+- A decoded source whose RGBA channels are all zero is identified as an empty
+  retail slot, not reported as a decoder failure.
+- Playbooks → Fine-tune Plays now describes the stored SPLB membership it edits;
+  runtime CPU consumption of an edited list remains unproved. The shared update
+  checker identifies this build as `beta-37`.
+
 ## 0.1.0-alpha.68 — previews and normal-user Windows builds — 2026-08-11
 
 Beta 36 makes `jersey_color` and `shoulder_color` previews visible when retail
@@ -64,11 +356,11 @@ layers; per-team replacement remains unproved and is labeled that way.
 
 ### Edit the CPU playbooks themselves
 
-- **Playbooks → Fine-tune Plays now edits the stock `SPLB` books.** These are
-  what the CPU actually calls from. Each is an on-disc resource of exactly
-  32,288 bytes holding a 176-record array; a populated record names a MASTER
-  formation and lists the plays the CPU may call from it. Pick a book, pick a
-  formation, tick plays in and out, build a copied `0A`.
+- **Playbooks → Fine-tune Plays now edits the stored membership in the stock
+  `SPLB` books.** Each is an on-disc resource of exactly 32,288 bytes holding a
+  176-record array; a populated record names a MASTER formation and stores its
+  play list. Pick a book, pick a formation, tick plays in and out, build a
+  copied `0A`. Runtime CPU consumption of an edited list remains unproved.
 - Fifteen books ship: seven offensive (`O-ZoneBlock`, `O-WestCoast`,
   `O-ManBlock`, `O-Shotgun`, `O-TwoBack`, `O-SinglebackAce`,
   `O-Singleback3WR`), four defensive (`X-43Cover2`, `X-43Blitz`, `X-34Base`,

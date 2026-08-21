@@ -15,15 +15,15 @@ python3 -m py_compile \
   mod_editor/core/gameplay_inspection.py \
   tests/mod_editor/test_gameplay_inspection.py
 
-test "$(wc -c < reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json)" = 53996
+test "$(wc -c < reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json)" = 54545
 test "$(sha256sum reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json | cut -d' ' -f1)" = \
-  'c53522ee0f4151291f154720a1d457ff7368fb256fbf5845561f4ad68289524b'
+  '0c1c47c7f025f9fbb303b9a7d78e7aaf8e9d3c4d603a47bc7819d5ded43557ec'
 test "$(wc -c < reports/gameplay_tuning/nfl_franchise_limit_feasibility.json)" = 17707
 test "$(sha256sum reports/gameplay_tuning/nfl_franchise_limit_feasibility.json | cut -d' ' -f1)" = \
-  'cabb89966a93bf3e067638be744f807f2f1ad4f152a742a8648e2a2f52ceb9dc'
+  '4d67e2d3009b7691a10eed4e1807371d3b80d6d0fafb5cb9cd62bcbf5cb8b4fd'
 test "$(wc -c < reports/gameplay_tuning/nfl2k5_xbox_save_inventory.json)" = 31477
 test "$(sha256sum reports/gameplay_tuning/nfl2k5_xbox_save_inventory.json | cut -d' ' -f1)" = \
-  '52cd53b218b9608197c43721f2e874865ed9cf29ef6d75e03e2c3b996bbc344d'
+  'e49d30bc9adb87faf1a592a9d3a529169659be8f926be9db9028c90009477e3c'
 test "$(wc -c < reports/gameplay_tuning/nfl2k5_ps2_fixture_availability.json)" = 6581
 test "$(sha256sum reports/gameplay_tuning/nfl2k5_ps2_fixture_availability.json | cut -d' ' -f1)" = \
   'f5fd78fecf5b4e3486a6aaed96b949b336507c3c3aa7ac9fed92b52d0074ee6b'
@@ -59,7 +59,10 @@ assert [row["name"] for row in nfl["sliders"]] == [row["name"] for row in apf["s
 assert nfl["stock_ui_range"] == {"minimum": 0.0, "maximum": 1.0, "step": 0.025}
 assert nfl["save_or_profile_writer_available"] is False
 assert nfl["observed_fixture_values_available"] is True
-assert nfl["sliders"][3]["observed_franchise1_value"] == 0.35
+# 1.0, not 0.35 -- the save stores each slider vector in its globals' address
+# order (Catching last), not the menu's display order (Catching fourth), so the
+# old layout published Human Coverage's 0.35 under Human Catching's name.
+assert nfl["sliders"][3]["observed_franchise1_value"] == 1.0
 assert apf["out_of_range_runtime_safety_proved"] is False
 
 assert nfl_draft["position_weight_count"] == apf_draft["position_weight_count"] == 17

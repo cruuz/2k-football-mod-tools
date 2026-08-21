@@ -33,6 +33,7 @@ mod_editor/core/apf_digital_font.py
 mod_editor/core/apf_digital_font_provider.py
 mod_editor/core/apf_export.py
 mod_editor/core/audio_conform.py
+mod_editor/core/camera_inspection.py
 mod_editor/core/capabilities.py
 mod_editor/core/controller.py
 mod_editor/core/errors.py
@@ -92,6 +93,7 @@ mod_editor/core/recipes.py
 mod_editor/core/sources.py
 mod_editor/core/uniform_sharing.py
 mod_editor/core/update_check.py
+mod_editor/data/camera_options_inspection.v1.json
 mod_editor/data/nfl2k5_crib_catalog.v1.json
 mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json
 mod_editor/data/nfl2k5_gameplay_inspection.v1.json

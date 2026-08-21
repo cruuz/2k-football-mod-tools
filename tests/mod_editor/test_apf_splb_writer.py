@@ -1,11 +1,11 @@
 """Editing APF 2K8's stock CPU playbooks.
 
-These are the books the CPU calls from. A roster save's 36 offensive and 33
-defensive playbook records are only labels -- they hold a name, a type and a
-side and no content pointer -- and they resolve to seven offensive and four
-defensive real books, which is why reassigning one so often changed nothing.
-The content is fifteen on-disc ``SPLB`` resources, and this is the writer for
-them.
+These are the stock playbook resources the game ships. A roster save's 36
+offensive and 33 defensive playbook records are only labels -- they hold a
+name, a type and a side and no content pointer -- and they resolve to seven
+offensive and four defensive real books, which is why reassigning one so often
+changed nothing. The stored membership is fifteen on-disc ``SPLB`` resources,
+and this is the writer for them. Runtime CPU consumption remains unproved.
 
 The layout is proved; two trailer fields and both tail regions are not. This
 writer is offerable anyway because it never touches them, and the tests below
@@ -228,14 +228,43 @@ class LayoutPinTests(unittest.TestCase):
         self.assertEqual(splb.FILLER & splb.PLAY_MASK, 1023)
         self.assertGreater(splb.FILLER & splb.PLAY_MASK, 585)
 
+    def test_flip_partner_name_is_an_exact_suffix_pair(self) -> None:
+        self.assertEqual(splb.flip_partner_name("Ace"), "Ace Flip")
+        self.assertEqual(splb.flip_partner_name("Ace Flip"), "Ace")
+        self.assertEqual(
+            splb.flip_partner_name("Weak I Jokers"), "Weak I Jokers Flip"
+        )
+        self.assertNotEqual(
+            splb.flip_partner_name("Weak I Jokers"),
+            "Weak I Jokers Flip Pair",
+        )
+        self.assertIsNone(splb.flip_partner_name(""))
+        self.assertIsNone(splb.flip_partner_name("   "))
+
+    def test_flip_partner_record_uses_the_exact_suffix(self) -> None:
+        book = splb.parse_book(_synthetic_book(), 943)
+        populated = [record for record in book.records if record.populated]
+        names = {
+            populated[0].formation_index: "Ace",
+            populated[1].formation_index: "Ace Flip",
+        }
+        partner = splb.find_flip_partner_record(book, populated[0], names)
+        self.assertIsNotNone(partner)
+        assert partner is not None
+        self.assertEqual(partner.record_index, populated[1].record_index)
+        names[populated[1].formation_index] = "Weak I Jokers Flip Pair"
+        self.assertIsNone(
+            splb.find_flip_partner_record(book, populated[0], names)
+        )
+
 
 class PanelContractTests(unittest.TestCase):
     def test_the_panel_states_the_unproved_boundary(self) -> None:
         from mod_editor.apf_studio.playbook_membership_qt import BOUNDARY
 
-        self.assertIn("NOT proved", BOUNDARY)
-        self.assertIn("SPLB", BOUNDARY)
-        self.assertIn("refused", BOUNDARY)
+        self.assertIn("does not guarantee", BOUNDARY)
+        self.assertIn("will not empty a whole book", BOUNDARY)
+        self.assertIn("Research pins", BOUNDARY)
 
 
 if __name__ == "__main__":  # pragma: no cover

@@ -532,6 +532,26 @@ class ApfStudioFacade:
             self.last_build = None
             return result
 
+    def replace_number(
+        self, asset_id: str, supplied_png: Path, progress: Progress = _noop
+    ) -> Modification:
+        with self._session_lock:
+            progress("Checking jersey-number PNG", 0, 0)
+            result = self.require_session().replace_number(asset_id, supplied_png)
+            self.last_build = None
+            return result
+
+    def number_package_budget(
+        self, entry_index: int, progress: Progress = _noop
+    ) -> dict[str, int]:
+        """One digit package's free compressed bytes, before authoring."""
+
+        progress("Reading jersey-number package budget", 0, 0)
+        from . import number_targets
+
+        source = self.require_session().source
+        return number_targets.package_budget(Path(source.index_0a), entry_index)
+
     def preview_digital_font(self, progress: Progress = _noop) -> Path:
         progress("Preparing digital_font preview", 0, 0)
         return self.require_session().asset_io.preview_digital_font()
@@ -591,6 +611,7 @@ class ApfStudioFacade:
         crest_asset_index: int,
         crest_outer_entry_index: int,
         fit_visible_mask: bool = False,
+        detail_png: Path | None = None,
         progress: Progress = _noop,
     ) -> Modification:
         """Stage the selected crest in the normal project/build transaction."""
@@ -603,6 +624,7 @@ class ApfStudioFacade:
                 crest_asset_index=crest_asset_index,
                 crest_outer_entry_index=crest_outer_entry_index,
                 fit_visible_mask=fit_visible_mask,
+                detail_png=detail_png,
             )
             self._staged_team_logo_png = result.replacement_path
             self.last_build = None
@@ -890,7 +912,7 @@ class ApfStudioFacade:
 
     @staticmethod
     def _field_art_target(target_key: tuple[int, int]):
-        """Resolve one of the six offered offline-proved field-art slots."""
+        """Resolve one offered offline-proved field-art slot."""
 
         from . import gui
 
@@ -1083,6 +1105,25 @@ class ApfStudioFacade:
             self.last_build = None
             return result
 
+    def apply_package_maps(
+        self,
+        changes,
+        progress: Progress = _noop,
+    ) -> int:
+        """Stage who-lines-up package maps for Build."""
+
+        with self._session_lock:
+            progress("Checking who-lines-up maps", 0, 1)
+            result = self.require_session().apply_package_map_batch(changes)
+            progress("Who-lines-up maps staged", 1, 1)
+            self.last_build = None
+            return result
+
+    def staged_package_maps(self) -> tuple:
+        with self._session_lock:
+            session = self.session
+            return session.staged_package_maps() if session is not None else ()
+
     def swap_play_assignment_routes(
         self,
         first_play_index: int,
@@ -1102,6 +1143,86 @@ class ApfStudioFacade:
             progress("Both APF assignment routes verified", 2, 2)
             self.last_build = None
             return result
+
+    def relay_play_assignment_route_candidates(
+        self,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+    ) -> tuple[tuple[int, int], ...]:
+        with self._session_lock:
+            session = self.session
+            if session is None:
+                return ()
+            return session.relay_play_assignment_route_candidates(
+                target_play_index,
+                target_slot_index,
+                donor_play_index,
+                donor_slot_index,
+            )
+
+    def copy_play_assignment_route_via_relay(
+        self,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+        relay_play_index: int,
+        relay_slot_index: int,
+        progress: Progress = _noop,
+    ) -> tuple[Modification, Modification]:
+        with self._session_lock:
+            progress("Checking relayed APF assignment routes", 0, 2)
+            result = self.require_session().copy_play_assignment_route_via_relay(
+                target_play_index,
+                target_slot_index,
+                donor_play_index,
+                donor_slot_index,
+                relay_play_index,
+                relay_slot_index,
+            )
+            progress("Both relayed APF assignment routes verified", 2, 2)
+            self.last_build = None
+            return result
+
+    def stage_splb_membership(
+        self,
+        changes,
+        progress: Progress = _noop,
+        *,
+        replace_outer: int | None = None,
+    ) -> int:
+        """Merge one book's Fine-tune Plays ticks into the project."""
+
+        with self._session_lock:
+            progress("Checking the stock playbook edits", 0, 1)
+            result = self.require_session().apply_splb_membership_batch(
+                changes, replace_outer=replace_outer
+            )
+            progress("Stock playbook edits staged", 1, 1)
+            self.last_build = None
+            return result
+
+    def staged_splb_changes(self) -> tuple:
+        with self._session_lock:
+            session = self.session
+            return session.staged_splb_changes() if session is not None else ()
+
+    def master_categories(self) -> tuple:
+        with self._session_lock:
+            session = self.session
+            return session.master_categories() if session is not None else ()
+
+    def staged_splb_outers(self) -> tuple:
+        with self._session_lock:
+            session = self.session
+            return session.staged_splb_outers() if session is not None else ()
+
+    def staged_splb_book(self) -> int | None:
+        with self._session_lock:
+            session = self.session
+            return session.staged_splb_book() if session is not None else None
 
     def export_localization_text_sheet(
         self,
@@ -1981,7 +2102,13 @@ class ApfStudioFacade:
             self.last_project_identity = current_identity
             return count
 
-    def build(self, output_game: Path, progress: Progress = _noop) -> BuildReceipt:
+    def build(
+        self,
+        output_game: Path,
+        progress: Progress = _noop,
+        *,
+        replace_existing: bool = False,
+    ) -> BuildReceipt:
         with self._session_lock:
             session = self.require_session()
             locked_roster_edits = tuple(
@@ -2000,13 +2127,19 @@ class ApfStudioFacade:
                 )
             assert self.source is not None
             receipt = ApfBuildService(self.source).build(
-                session.modifications, output_game, progress
+                session.modifications,
+                output_game,
+                progress,
+                replace_existing=replace_existing,
             )
             self.last_build = receipt
             return receipt
 
     def configure_xenia(self, executable: Path, wine: Path | None = None) -> None:
         self.launcher.settings.configure(executable, wine)
+
+    def configure_title_update(self, path: Path) -> None:
+        self.launcher.settings.configure_title_update(path)
 
     def launch_xenia(self) -> LaunchReceipt:
         if self.last_build is None:

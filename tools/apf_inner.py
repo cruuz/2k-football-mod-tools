@@ -1299,10 +1299,10 @@ def decode_txtr_base_rgba(
                 if len(raw) != 2:
                     raise FormatError("truncated 4_4_4_4 texel")
                 value = int.from_bytes(raw, "little")
-                a = (value >> 12) & 0xF
-                r = (value >> 8) & 0xF
+                r = value & 0xF
                 g = (value >> 4) & 0xF
-                b = value & 0xF
+                b = (value >> 8) & 0xF
+                a = (value >> 12) & 0xF
                 a8 = (a << 4) | a
                 r8 = (r << 4) | r
                 g8 = (g << 4) | g

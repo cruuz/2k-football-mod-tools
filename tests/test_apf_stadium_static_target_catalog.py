@@ -47,9 +47,21 @@ class CatalogTests(unittest.TestCase):
             handoff["new_structural_coverage"],
             {"draw_record_count": 3, "vertex_count": 24},
         )
+        # 1967, not 1367. The generator used to re-encode this block with the
+        # greedy encoder, which is 2,599 bytes WORSE than retail on it even
+        # before the edit -- so regenerating the catalog overflowed a slot
+        # retail itself fits, and this witness could not be reproduced at all.
+        # It now preserves retail's own H7A tokens (pure Python, so the bytes
+        # are identical on all three OS), which drops the representative edit's
+        # growth from 659 bytes to 59 and raises the slack accordingly. The
+        # safety property strengthened; it did not move.
         self.assertEqual(
             handoff["representative_local_only_fit_witness"]["allocation_slack_after_bytes"],
-            1367,
+            1967,
+        )
+        self.assertEqual(
+            handoff["representative_local_only_fit_witness"]["stored_block0_growth_bytes"],
+            59,
         )
 
     def test_every_target_is_hash_pinned_bounded_float32_and_never_runtime_rigid(self):

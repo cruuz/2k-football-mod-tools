@@ -288,7 +288,38 @@ def build_import(index_path: Path, inventory_path: Path, logo_code: int,
                                   int(target["mip_levels"]))
     png, png_payload, rgba = read_png(png_path, width, height)
     mips = generate_mips(rgba, width, height, level_count)
-    palette, linear_levels, quantization = palette_tools.quantize_levels(mips)
+    def candidate_decoded(
+        candidate_palette: list[tuple[int, int, int, int]],
+        candidate_levels: list[bytes],
+    ) -> bytes:
+        chain = b"".join(
+            swizzle_2d(indices, level.width, level.height, 1)
+            for indices, level in zip(candidate_levels, mips)
+        )
+        return (
+            template_decoded[:128]
+            + chain
+            + palette_tools.palette_bytes(candidate_palette)
+        )
+
+    if bool(target["compressed"]):
+        # Only the compressed targets have a VC-LZ span to overflow. The tier
+        # ladder starts at 256, so art that already fit is byte-for-byte
+        # unchanged; only art that used to fail outright steps down.
+        bounded = palette_tools.quantize_levels_to_vc_lz_bound(
+            mips,
+            candidate_decoded,
+            stream_tag=int(target["stream_tag"]),
+            offset_bits=int(target["offset_bits"]),
+            max_encoded_size=int(target["stored_size"]),
+        )
+        palette, linear_levels, quantization = (
+            bounded.palette, bounded.index_levels, bounded.quantization
+        )
+        palette_fit_attempts = list(bounded.attempts)
+    else:
+        palette, linear_levels, quantization = palette_tools.quantize_levels(mips)
+        palette_fit_attempts = []
     require(len(linear_levels) == level_count and
             sum(len(value) for value in linear_levels) == int(target["palette_offset"]),
             "quantized mip index allocation changed")
@@ -396,6 +427,9 @@ def build_import(index_path: Path, inventory_path: Path, logo_code: int,
         "quantization": {"algorithm":
                          "weighted_median_cut_rgba_then_nearest_squared_error",
                          **quantization, "palette_entries": len(palette),
+                         # Only the compressed branch runs the ladder.
+                         "palette_fit_attempts": palette_fit_attempts,
+                         "palette_was_reduced": len(palette_fit_attempts) > 1,
                          "unused_palette_entries_zero_filled": True},
         "compression": compression_record,
         "rebuild": {**rebuild_record, "span_size": len(rebuilt_span),

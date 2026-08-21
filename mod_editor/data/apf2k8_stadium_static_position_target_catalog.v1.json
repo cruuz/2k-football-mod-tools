@@ -83,10 +83,10 @@
                 "sha256": "288379b523cf295af0c74ff069cc3853251ab018015761a68d9bfb8e35b2ba9b"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
+                "length": 144,
                 "offset": 38912,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "9737f571a6b7395841fcab469c3595f33ad09279fa2fe7ec6b69d9260a8804d7"
+                "sha256": "cb6f4a5e585d91ba48a5e46903870fcd224e1157487d03a4661dd49d1a8feab8"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -215,10 +215,10 @@
                 "sha256": "ceb8ee3279c0fa48dc33ed37ce209f975c1b232ae2ab8149ad2590b5dd083dae"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 38976,
+                "length": 144,
+                "offset": 39056,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "fbedd196658c470384aba38b591e2b187fa0a20a53a621ff7842d683713aa986"
+                "sha256": "1114feb0e38e3ffe71c809071666684d1b278deb5d0625e324dcbc18f1e51e01"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -358,10 +358,10 @@
                 "sha256": "f3ccedc6edfed0fbba0f611a4b7720d0b6243da05719151cad5ef2ff44e8001a"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39040,
+                "length": 144,
+                "offset": 39200,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "04d94630c3c0d3a684149e78aaa3e33c0d230f7a85f71ca1cac3ed12bcedc559"
+                "sha256": "e06b93e5bf7bcd418f410e4cbab0ab33e6354b95c86a43b09668abdd60200f95"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -490,10 +490,10 @@
                 "sha256": "6a5072a65b9dd3f32959507486f3eda8f7faac7798422be3ef1489c8a6b0f6c7"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39104,
+                "length": 144,
+                "offset": 39344,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "0492ed5756ff8a4cebda59efc9e049d8a67df13cb0a0e670a46533dbaed98eea"
+                "sha256": "de355144e1051aff1eda7347a2c4737d1dd7ae9c4b70502db5c236cf1993f159"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -633,10 +633,10 @@
                 "sha256": "17403d0e7981bde0378d4d7f4add25181b142e5affe59fd6455780c05ff737c6"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39168,
+                "length": 144,
+                "offset": 39488,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "2c828cfb1364312bcdfdd01477842338e84583156044f39affb1b4e645e33be7"
+                "sha256": "fb4eb22708ac37cc16790413d2c20e1de317738b09464ac4119759c97f321422"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -765,10 +765,10 @@
                 "sha256": "6a5072a65b9dd3f32959507486f3eda8f7faac7798422be3ef1489c8a6b0f6c7"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39232,
+                "length": 144,
+                "offset": 39632,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "8a4fce8d744c2e62356596f5e481eac41059cde06ec86422b490dd2060c81c84"
+                "sha256": "dd7591e99c4e0b43bf5ba60068feb5329912c9ef94100a812055c262620bece4"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -908,10 +908,10 @@
                 "sha256": "17403d0e7981bde0378d4d7f4add25181b142e5affe59fd6455780c05ff737c6"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39296,
+                "length": 144,
+                "offset": 39776,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "b6ce38a67bd10be5b83b1fc1ffa404692765c517631d141574f589a3f29f0649"
+                "sha256": "a6dc89828bddd9645913f5f678fde37e80f151292955d059cfd4dc47038e9d29"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -1040,10 +1040,10 @@
                 "sha256": "6a5072a65b9dd3f32959507486f3eda8f7faac7798422be3ef1489c8a6b0f6c7"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39360,
+                "length": 144,
+                "offset": 39920,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "b5eef92a419f155290ecc6636ebe08be0b25a87b0a52cfa90b6aef073c7cbf3e"
+                "sha256": "d80b67f6753b26407dd0f75e042ea8278675afa49dbcae8549eef82a5fb379a0"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -1183,10 +1183,10 @@
                 "sha256": "17403d0e7981bde0378d4d7f4add25181b142e5affe59fd6455780c05ff737c6"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39424,
+                "length": 144,
+                "offset": 40064,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "0748453c5297b6624d9e45a6617a57bacef3e1dd9376d3d1d7ba679c619abc62"
+                "sha256": "ad8238aa1a954317165691c9add69af229d169dc84d0b04dc604c74b9c6fe48b"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -1315,10 +1315,10 @@
                 "sha256": "6a5072a65b9dd3f32959507486f3eda8f7faac7798422be3ef1489c8a6b0f6c7"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39488,
+                "length": 144,
+                "offset": 40208,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "9737f571a6b7395841fcab469c3595f33ad09279fa2fe7ec6b69d9260a8804d7"
+                "sha256": "bebf490ca6cf735f5cd2d5df0c75590a13fdef8c24ff15a2a06e69d917ad25da"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -1458,10 +1458,10 @@
                 "sha256": "17403d0e7981bde0378d4d7f4add25181b142e5affe59fd6455780c05ff737c6"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39552,
+                "length": 144,
+                "offset": 40352,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "1946a43603f31b65d6cfc138444f771270f9a195c75c926a6b461a709155a6b3"
+                "sha256": "b8b38c8fc2bece0a3219389855116fe209df45af8991e5162a49aa31c1e3c3de"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -1590,10 +1590,10 @@
                 "sha256": "e0fb4d7665e6406ba0df5ac66905653287d970098afa0be6376cf04e64bce230"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39616,
+                "length": 144,
+                "offset": 40496,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "425deb485ab0e2e8b5ace666e770e898b0cebfdb7cdf9f477fea4acb34a57577"
+                "sha256": "1f7784a9e02ac7aed17b941ddd0e2699bdc9ddb52a66db83713e4d46065d2655"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -1733,10 +1733,10 @@
                 "sha256": "f2871fcddd4ff1650b2cd67e50861194bad53c95393f4a19a28c9d6b0b7f8bfb"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39680,
+                "length": 144,
+                "offset": 40640,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "015950b06dee527eaac1636fda9ace46c08a780c3c461a3a3d8d5a127d4e884c"
+                "sha256": "00209432a9346386d05bacee84991c55d553b6a6b3fd940e90ede25fb200f460"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -1865,10 +1865,10 @@
                 "sha256": "a9cc43c295192add1af80a40c98eee57f915f01cc68eef459c14e18dae61d94b"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39744,
+                "length": 144,
+                "offset": 40784,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "6291d63297892389c015998be4455e2bb382f0c974951c3329ccaf44922bfd50"
+                "sha256": "f2bd4669de1ea241069f0838d51c7342ab7d8de7161604747207066088a9e600"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -2008,10 +2008,10 @@
                 "sha256": "17403d0e7981bde0378d4d7f4add25181b142e5affe59fd6455780c05ff737c6"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39808,
+                "length": 144,
+                "offset": 40928,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "170d9cc5365ad1682bef11a4c3bfe9640846db8515b55e96c14ae6e904d9cff9"
+                "sha256": "b97c2a176fd38af90a5db9bdcca7cb4e84dd8e2b9c9621a7fb3106cd48a5f70c"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -2140,10 +2140,10 @@
                 "sha256": "87c3bb0575ec31298406632796c8ae7e4d6df5fd7639ff930c7c809bea2fd6bf"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39872,
+                "length": 144,
+                "offset": 41072,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "1a7c85be6a2bc3f12acd06b16c3ee4456f278f1dc9f8423df50f9ea4b4fdcfca"
+                "sha256": "b98854ac827a9defbb1d8f2445c4c9d34fcca0abce539da56286d490dc97ecae"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -2283,10 +2283,10 @@
                 "sha256": "9e96b02dea731abdedb5e847d977e036cda939173d36a823f0d4351b2bcf46be"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 39936,
+                "length": 144,
+                "offset": 41216,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "75529739eaf6f2360fc0dbfec35d7d9cf0c6bc244e0957a8ba7e1c51de465dc0"
+                "sha256": "c18f8856fbd104cd020dc49b4946e92bd1c3bc8207566fff745949ce123de07d"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -2426,10 +2426,10 @@
                 "sha256": "9e96b02dea731abdedb5e847d977e036cda939173d36a823f0d4351b2bcf46be"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40064,
+                "length": 144,
+                "offset": 41504,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "9737f571a6b7395841fcab469c3595f33ad09279fa2fe7ec6b69d9260a8804d7"
+                "sha256": "040d4126385c61da018db9ce92436002f875686073be154281ed33f6217ba5f8"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -2558,10 +2558,10 @@
                 "sha256": "89ea4f9e77c8e2112c9a9df1f6bb9feca976800fb600b1eb3b01a16283b549ba"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40128,
+                "length": 144,
+                "offset": 41648,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "095c4c5296da6e3b5642f0fee10f12236dd2a05095339c6e375880cf36b348b2"
+                "sha256": "77e4f04ec1a635654f77a5afeef323950922a840403d88f06c436d0372bcc006"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -2701,10 +2701,10 @@
                 "sha256": "51ed07495d9b20988bab94169743ae8ff603fb5cc5b6fe03a7206c87c2ee3a08"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40192,
+                "length": 144,
+                "offset": 41792,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "cba2816922fccfa6c33af1f9b17002bd557622f2a9220c892bc017bb99c7d4e0"
+                "sha256": "f09e9e8322fd68960b5597bc7751e0448635bb1a2799620c4f0f93673c70ae77"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -2833,10 +2833,10 @@
                 "sha256": "57773fc5b0d050bd86913230b6683ba352297741db965a66bdeddb3bcbf38ce0"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40320,
+                "length": 144,
+                "offset": 42080,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "5a9892f5166d79bd538c0670372eee4d21c129f06377e8784a8ab4d576c0620b"
+                "sha256": "d20a06c5e3d4da356d8690969f9c6015215192029494c55cb25d2988971336bb"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -2976,10 +2976,10 @@
                 "sha256": "3eda9af8032721ff7bcda6c7fc51c27100fed62abf9e2197fa59a5be5fed7eb6"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40384,
+                "length": 144,
+                "offset": 42224,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "3d1dd3f178c5640e9ae0715dd00a12e48097c5fb5d500857ad87b8716135598d"
+                "sha256": "43f393bb7130fd7a2b59195223a716dc5b03403ce986c1682ec7ef3ffaa4217f"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -3119,10 +3119,10 @@
                 "sha256": "132e07aaa8fd7ab3851262d81a58025f0445e265a39b24e2d1d17189c1c59889"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40448,
+                "length": 144,
+                "offset": 42368,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "6bf974c10644774c9f71cfa4f0e43390c354a008e74dd313f27a377a6cd44080"
+                "sha256": "ea16f9b2291d3528c95f622514820758bd91aff7d5f7939596899c707eccade7"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -3262,10 +3262,10 @@
                 "sha256": "6ee594ac6ba3d20384ec3d57f43cf292e4d363184c6dce3fed13c612fead5344"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40512,
+                "length": 144,
+                "offset": 42512,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "22124f4a6ee68c26bdc7f503e6c2bd1cbe56061cca7721e298264f9f09edbc4e"
+                "sha256": "fae7b131b1096f4fb5791eb470d61a563bcd52f04f7d67a3f52ac34e765691b4"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -3394,10 +3394,10 @@
                 "sha256": "fa43d68816cca84976e1fbdeca1aa0b92c14efda15bff06fa6cc493e27e84d1a"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40576,
+                "length": 144,
+                "offset": 42656,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "fd1adc1e8ca1e1cecff5da113601e5d1e570aef4036e411f2e8790b1261b9dbc"
+                "sha256": "832d1b8838ffdf3e84c38cdc9a5824b9a9676616737ff9512451cc8e97a14c7b"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -3526,10 +3526,10 @@
                 "sha256": "719f83ef642f2833c3b0ae93acbf78967fa6a234ddbc3462970d30f2197ad455"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40640,
+                "length": 144,
+                "offset": 42800,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "9737f571a6b7395841fcab469c3595f33ad09279fa2fe7ec6b69d9260a8804d7"
+                "sha256": "2831111e10e3a687df23b8f2c6dcb50c4f978b96b506832bcc45c1d245085b9b"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -3658,10 +3658,10 @@
                 "sha256": "04fc925064253158ae9d341ac91bc1235c1bc45aea276a25e67deba35211bb02"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40704,
+                "length": 144,
+                "offset": 42944,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "374867905b71a3c418aae21d3516acc550f36d8bbf2ca7067f049bde2e8ed140"
+                "sha256": "45830dcc862ea6c342fb39664a71688600111f9d6169406ba742c12572bec065"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -3801,10 +3801,10 @@
                 "sha256": "4933c1e930e5015fdbae3b80d04803dcb3a4d7b795ade1901aaddbb7f2fe785e"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40768,
+                "length": 144,
+                "offset": 43088,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "fd2c13e674d836a1980b2b0d7207501af37fb588af0bc032a6a7693667e90c41"
+                "sha256": "78a313a884ac6b03a94b2a437d8a53de6e4ed1d784a7c40e08ffa218154722db"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -3933,10 +3933,10 @@
                 "sha256": "208b76fa3719474016742d4dbd44ad2c26874d3cd6302e67bef711e876b18b0e"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40832,
+                "length": 144,
+                "offset": 43232,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "0431d48b6d4780e398eb49e2220f090d453fdb2d16546ff1737b42e048079e04"
+                "sha256": "663d5b059cfde439d74e85022ab10d05ab21e0016ba72726acfcecda44900827"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -4065,10 +4065,10 @@
                 "sha256": "5fed7d614c8889020f8ab3eb87546ed457526f4425ab95083a8b26d8bbcc8415"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40896,
+                "length": 144,
+                "offset": 43376,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "8a59f516ade4987cbd06932951a915fde3017ca95a42169a926dfda25557f319"
+                "sha256": "59354cbfb0b97f2a8d131498b7accafe0e12259b9278fbb871ef010926055ebb"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -4208,10 +4208,10 @@
                 "sha256": "c1b1845b0fe53f78fd2864192fa4f2439b89086de0a9f737e92cf4a58318c567"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 40960,
+                "length": 144,
+                "offset": 43520,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "2e9a2b9959e558816475a06bf7c7e21d13695811f4f64ef48f122e8d0861ab99"
+                "sha256": "d493ba867533890e6965fb7ed6c50c8c5425224a73e9a4df3c5ecfa7bd1479b4"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -4340,10 +4340,10 @@
                 "sha256": "b5d7aa0eb1d2193eee3d57a04402225d56723745aea207338edbe495fcbbc00c"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41024,
+                "length": 144,
+                "offset": 43664,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "c50a9a120096a8ef29f7915ba79073cdbc5b03dbc6c00d70376cb6e70e63050b"
+                "sha256": "9619199b2617990773bdbf22029c9ea856d18945274b9c1c3308cd226b66b098"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -4483,10 +4483,10 @@
                 "sha256": "4eaa29433719ab333ab4089d7cce81ef801aa2935142d5f908359e329b146907"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41088,
+                "length": 144,
+                "offset": 43808,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "28bc4a7675aef867a3b6b80508da8cf062660e1f75a4ed2842e9f658ef40796d"
+                "sha256": "3e3d8c9303b28cae3c26c350c0f0a89954689781a76d71891a9477c8915b167d"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -4615,10 +4615,10 @@
                 "sha256": "78a79f83bf673680301bebfcf0e12b4359ba447d5f96df9a91fb896df6d3c341"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41152,
+                "length": 144,
+                "offset": 43952,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "f8d146b8dea17a7cd0712069a374c93f1701f031e5c69602ff9837ddd3ed7661"
+                "sha256": "89e15180943679d6cca373f0d62ed5dd4ef140632e39e9cb80d08b30be46cd0b"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -4758,10 +4758,10 @@
                 "sha256": "849ec4f5c0598f38d86c3ee508e45f364d72ceaafe0ec2f5b6ee4633c06e64c5"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41216,
+                "length": 144,
+                "offset": 44096,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "9737f571a6b7395841fcab469c3595f33ad09279fa2fe7ec6b69d9260a8804d7"
+                "sha256": "ac83d3dbae465e7e2fca403ac86909a2f80f4d13067f766dabbccef35d3a5db3"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -4890,10 +4890,10 @@
                 "sha256": "705526b0a40a703fc42968ce457d24779f49b90de6c60092829964ee304f01b4"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41280,
+                "length": 144,
+                "offset": 44240,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "f654dc0c3905c9e0b1d736f590d185cf27c223f378393941f727821c4f1602c3"
+                "sha256": "ce979c14708b48c0f3c015664228e9906a3522a34beff17bede34f7456772149"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -5033,10 +5033,10 @@
                 "sha256": "a696f0f85220766112aa84f4180e7f2f3c3c5aac3dbc183a44397cb022b18c35"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41344,
+                "length": 144,
+                "offset": 44384,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "43538feb99110b0117424d312e9d47c50cd24ddb4ec58feb0ac930be367c54f7"
+                "sha256": "781cd9a8c6603700513d298201de13626d5c848548706bbb6745679ecd1c507d"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -5176,10 +5176,10 @@
                 "sha256": "67dfbe2ccd647a91e0cf2e72609a127a7642cbf83fe7afad769b67a2200ac33a"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41408,
+                "length": 144,
+                "offset": 44528,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "8a167880da30535c5ed4938eb3ff16fcf671b5d74f423662af9cb686ca89e18e"
+                "sha256": "604d54fabcb2a778e60889f650cfbb5310d7032d8fbe19fba3468b5409a75023"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -5308,10 +5308,10 @@
                 "sha256": "1accc78f17256d1db61d3873dc98a94b963782f1c982e8be5d3077d26f465b2b"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41472,
+                "length": 144,
+                "offset": 44672,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "559ca5f39d128544ca85d8b3a15cb71f565c46e7640c9531deb107e51c2f4dae"
+                "sha256": "40326d8f2693c049ea27a467484392712232927a50371eff31987efa56769225"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -5451,10 +5451,10 @@
                 "sha256": "f433d4de8fd73ff6ff3d50b29988092eb5f5472d9c7dcc2bef2a601e48c18eb1"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41536,
+                "length": 144,
+                "offset": 44816,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "41220ca848d9c2c28aca8406ff6216ff262b71396f2f5fdaa45ee1c562df94f6"
+                "sha256": "c6f88a0417c1457c95cce59f11dfdbf34b7441335c8d605c6e6302c7597d934a"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -5583,10 +5583,10 @@
                 "sha256": "73a9ffd7e195365f86e0f9a0bde94c8740885c5ac026984485c7ae6fd8007a31"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41600,
+                "length": 144,
+                "offset": 44960,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "8eb3d6ca1751ced069e6b558062ecca2e67988bb88f2ba6bcb54d31263491ca5"
+                "sha256": "547db1f219a89cdd7744776ff8a01200cc7129ab260f3281d4f10a23cd32355c"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -5726,10 +5726,10 @@
                 "sha256": "0c1b92f88e4955f106a85d0ee9a87c633bf6eaaab308fa55ee142f3b40235a7c"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41664,
+                "length": 144,
+                "offset": 45104,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "8fa3322ffb5373c29b4039ef30c9d55de242fbf6ce4c58ab4be115f4c8f22a6b"
+                "sha256": "397398d77bfcb2e8df035ce316ba44ec8f1c16be00f068752add2cf07197701e"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -5869,10 +5869,10 @@
                 "sha256": "c7bdc4d1b008f8bf29051f0a756f8b80d033eb70b3a5fd02a87c317fe8a81858"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41728,
+                "length": 144,
+                "offset": 45248,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "93286dc3373e8ca17e85f00b84d1a39adeb1fa0a3fb572ceebf6fceabf0d111f"
+                "sha256": "3d1f25bc8b787112f196c8f57ca82bcc66d2a085159598609830881fa792dbda"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -6012,10 +6012,10 @@
                 "sha256": "c7bdc4d1b008f8bf29051f0a756f8b80d033eb70b3a5fd02a87c317fe8a81858"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41792,
+                "length": 144,
+                "offset": 45392,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "9737f571a6b7395841fcab469c3595f33ad09279fa2fe7ec6b69d9260a8804d7"
+                "sha256": "c2a84a99c0f49dfb03fc84e466dae697b922152105de438291fc0a7e4fc75f39"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -6155,10 +6155,10 @@
                 "sha256": "d391ea3ac0bde0cb9cc4245083a9ae87e41f59929dc285aed4dac88101ac4c26"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41856,
+                "length": 144,
+                "offset": 45536,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "e3a5b47bede2e6121156e90fdac3a54c18cc595b42b4cab595b84df0efa03221"
+                "sha256": "a2c6fdfd8f3280b54fe18222d9ce8d6e70fff2a8434a5cb3e721fdb783805006"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -6298,10 +6298,10 @@
                 "sha256": "5dc8c73792e2216d8fd5e0f4e169e96f6267d27b43d422abe2cb2a7f9ffd6dff"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41920,
+                "length": 144,
+                "offset": 45680,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "cd121a66143473cf99e6c0952dbf9ec805f37549cbd99c5478f62b2049f709de"
+                "sha256": "562eb68177e46a6ef6ee637d080bc18305faba07605e3597b08f216112fc5907"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -6441,10 +6441,10 @@
                 "sha256": "c7bdc4d1b008f8bf29051f0a756f8b80d033eb70b3a5fd02a87c317fe8a81858"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 41984,
+                "length": 144,
+                "offset": 45824,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "dbb6996c1f7fb7d2578dbc35ffa95e495c65fc93438586b53af08efc6eda7a1f"
+                "sha256": "71ba1fde9a39a9ba054bb4abe5f6ca330c87e5f6c7e3ea6d1da86843cae1d7fb"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -6584,10 +6584,10 @@
                 "sha256": "b13a8563d25e5d2cdf64dff4a6e6a060d334b88b94ad0c08f4be1e76e1dfbe10"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42048,
+                "length": 144,
+                "offset": 45968,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "c387edbcf3cf7d7b3fb094937cf15a11845e44a192c1c223a2675df556009f04"
+                "sha256": "3007ee056dd04642680d60f45f618dd30e8ee832cb5da5aa20fda81196628e6d"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -6727,10 +6727,10 @@
                 "sha256": "d53ead7fd68577f2e426095d1f06950b59309f3efa499a6f34f9678cdad09e90"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42112,
+                "length": 144,
+                "offset": 46112,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "e8a1f3bad1fde639374a0a21025d093d2eba7ae9c01c1313569068c1a8978ff3"
+                "sha256": "6f73e9864751da1d11396a3a3e63f465357fb377b150518d8b30b6455a5ba306"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -6870,10 +6870,10 @@
                 "sha256": "c7bdc4d1b008f8bf29051f0a756f8b80d033eb70b3a5fd02a87c317fe8a81858"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42176,
+                "length": 144,
+                "offset": 46256,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "f410b6e0841f052d69dd3308d7b577a0b4ccbaad0afa461c962f306e60eb5e50"
+                "sha256": "e87fbc615b1502e363af9a4e9d6c8c81be184a0bd606a840459ada9032538923"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -7013,10 +7013,10 @@
                 "sha256": "c7bdc4d1b008f8bf29051f0a756f8b80d033eb70b3a5fd02a87c317fe8a81858"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42240,
+                "length": 144,
+                "offset": 46400,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "37086ed39b30ea83b1b0aaf25f38e27ee9ed7a8553f89f76ea9abfd188a1fb97"
+                "sha256": "5f2c88201e4f098f1691b326f297cf0d088129f6ab176c77ee58d4a06171343b"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -7156,10 +7156,10 @@
                 "sha256": "d391ea3ac0bde0cb9cc4245083a9ae87e41f59929dc285aed4dac88101ac4c26"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42304,
+                "length": 144,
+                "offset": 46544,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "948c9dd06af5211d3d9fd4bbc83ba426efc63b887df6487f084dc2e604750069"
+                "sha256": "d5858cfe493d4a8fb8f11c2ad202b84451186a20860c7bf0dda2f1f8c3da1dd6"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -7299,10 +7299,10 @@
                 "sha256": "5dc8c73792e2216d8fd5e0f4e169e96f6267d27b43d422abe2cb2a7f9ffd6dff"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42368,
+                "length": 144,
+                "offset": 46688,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "9737f571a6b7395841fcab469c3595f33ad09279fa2fe7ec6b69d9260a8804d7"
+                "sha256": "3382ed043a76752b9db68b9954126860463ed3d2063fae9c486b4568e96b4fec"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -7442,10 +7442,10 @@
                 "sha256": "c7bdc4d1b008f8bf29051f0a756f8b80d033eb70b3a5fd02a87c317fe8a81858"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42432,
+                "length": 144,
+                "offset": 46832,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "83eb476b88e5bcd8457265558e15da80e09744f33e534c4fedc2e7300bccd69c"
+                "sha256": "260a0f32d0a04b43590b964b0151820cd4eb304aef8371d6917a49e93f0884ca"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -7585,10 +7585,10 @@
                 "sha256": "b13a8563d25e5d2cdf64dff4a6e6a060d334b88b94ad0c08f4be1e76e1dfbe10"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42496,
+                "length": 144,
+                "offset": 46976,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "4be17973efaa83b82839168b879a2dfd59e5cb5824f2fee0e3805689e7fb0fef"
+                "sha256": "93d1fa8cd245f85e6a55be9ff65299acb338a35242bbed1535a3781acca8eede"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -7728,10 +7728,10 @@
                 "sha256": "d53ead7fd68577f2e426095d1f06950b59309f3efa499a6f34f9678cdad09e90"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42560,
+                "length": 144,
+                "offset": 47120,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "9b07a75a0ef4fa6ad60ea8cdb5fb6f39899042ba65fe640ebfdf974fe04a2f8d"
+                "sha256": "0a2c50a5703ef1affb87b98ff858b806b9956274ff1ed970f068fc00b9837efd"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -7860,10 +7860,10 @@
                 "sha256": "f9644a79df66d25a6e809075bc764da7887481f331b4395a0679c10506e803dd"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42624,
+                "length": 144,
+                "offset": 47264,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "218e192517e3406135497fc9cd9f8d5df50dacfcc27cb8b8d07b1b8c68d1952c"
+                "sha256": "642d1c63014f6e9c528605f0e1fa5a9be97e11dff976c94b59e5606807c5c971"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -8003,10 +8003,10 @@
                 "sha256": "e15199bc463fb86f9b275db5497f57b884ac1823404d8a2dcd4c9fa56f5e67b0"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42688,
+                "length": 144,
+                "offset": 47408,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "9e592cc0ae09db8b17a2a20bba6faebd1e69525b75832a49d8e70f24b995a5ee"
+                "sha256": "3b9800417fe922dd77e09b961fbd4e4dfa6db9da51d474c86c65bdabfc88f7f7"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -8135,10 +8135,10 @@
                 "sha256": "d8b185de2598b340fe78c3c8681f7a427a2c2f1c9e451c8fe5d164b6d7c0fe7d"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42752,
+                "length": 144,
+                "offset": 47552,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "678e9823db1ebbf93deea6d327d9472c0ca09ec8906668e15347ca255d005ec6"
+                "sha256": "483291fffb33d9f48ac378dd298710a10b332fb0a92549ee51ccba26fcfdc12f"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -8278,10 +8278,10 @@
                 "sha256": "d3d9907f827ec1804ffc4607d021c622b54d22a14aa371cf5cb311cc90e6e217"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42816,
+                "length": 144,
+                "offset": 47696,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "3efe844402487a7e30b15c3715b32baa3821f2e830c2ec8e348a3bcdda85c0a6"
+                "sha256": "33dc405db53581fed9decf5776789f4b970768bdf21e99c8a8801cb4f8e59df5"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -8410,10 +8410,10 @@
                 "sha256": "854f4fdffb89726e3baf410a913d18ffbaa471c6937b93c5cb26035009839eea"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42880,
+                "length": 144,
+                "offset": 47840,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "a290d05d43ee6c4746f99dd26256550e6fd7d1fb11d3df07b0136a0ecffb3b9b"
+                "sha256": "f6f506c90c3119b4cccf765d8259069689db68f84802e4ae58a6fe794abc732c"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -8553,10 +8553,10 @@
                 "sha256": "78c40669c184856616f95369e3d3fdd5ec13dae08aa1e79fd4bcf7959f081ee6"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 42944,
+                "length": 144,
+                "offset": 47984,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "9737f571a6b7395841fcab469c3595f33ad09279fa2fe7ec6b69d9260a8804d7"
+                "sha256": "f219784fec4545120e54460ee238a89afbdd74e80ff1ee4f7750915879901ce2"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -8685,10 +8685,10 @@
                 "sha256": "e3b58b87c48e279773dc57400557a37a6b1001c4dc7bc5052d87ce37dee6d7ea"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 43008,
+                "length": 144,
+                "offset": 48128,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "720c81af7ae926164696cb9d782c0a37fba9f1a6b2624586eaa09b900c537ff9"
+                "sha256": "cab95fa08d5697c7ceec1c03c78c72a3ec99c39559fb4bf1251baf5108f421da"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -8828,10 +8828,10 @@
                 "sha256": "7a5046a5307741e49e4a116994049018b11ce4d379ba6fc6e45b1ff838867f37"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 43072,
+                "length": 144,
+                "offset": 48272,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "85c60e9c59c72bcdd714beba9f35a3cf03f07a7b0ee87284b92d9b1d54e363fc"
+                "sha256": "e83ce4db847b8a0200b106727dde966dadbda2f135b0b6fb6cc2471638df273e"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -8960,10 +8960,10 @@
                 "sha256": "3bcff3bd5872e6ad5c2cf96d3106bd282cea7bfff4eda2f77e8183ff67e5c304"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 43136,
+                "length": 144,
+                "offset": 48416,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "580a2d6bf2a24bcff045c8e1f68df6ff9b16970c7a484391c8f09326af44bc8e"
+                "sha256": "6cc5143493d225c8ab3ca06f9da25dcbc341842172310d6f195c80a52990434d"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -9070,10 +9070,10 @@
                 "sha256": "0278816a880ce5c17aef16eb720cd764e15376220f64fed04f0f8d2d340c01c3"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 43200,
+                "length": 144,
+                "offset": 48560,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "54b54983e549436888faea0e3a044bf2222105d4e88dba3cde7f54b26a6aac3d"
+                "sha256": "3ef8f4bd88caaf5bd01067238f47a95066b30b9084ab237a7845ce5ed6079614"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -9180,10 +9180,10 @@
                 "sha256": "0278816a880ce5c17aef16eb720cd764e15376220f64fed04f0f8d2d340c01c3"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 43264,
+                "length": 144,
+                "offset": 48704,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "22dd053caa07388cd3fb3c0e0742f887d76dbe04962ebad5de04176a22c4fb11"
+                "sha256": "ef58ea39645dcb05f34daae29349735f36528ac0ccf534bab236596b80a850eb"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -9290,10 +9290,10 @@
                 "sha256": "0278816a880ce5c17aef16eb720cd764e15376220f64fed04f0f8d2d340c01c3"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 43328,
+                "length": 144,
+                "offset": 48848,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "cc0d9cc9eebe2994a984d40d56819473dfacd17616139c0989531e9698b550d0"
+                "sha256": "f23564d291f161793b658e67b29ec044f6de1ddbab5c5ae3fb81a19721f65718"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -9400,10 +9400,10 @@
                 "sha256": "0278816a880ce5c17aef16eb720cd764e15376220f64fed04f0f8d2d340c01c3"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 43392,
+                "length": 144,
+                "offset": 48992,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "91207968ff6aa22c67f947a725a818e8259cbd6e9b5274ad7c559e4c32c27684"
+                "sha256": "c82098ffd531b1bef41e9c339e96c106f5a913be0fd7f0f9c65098e0ef277a66"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -9510,10 +9510,10 @@
                 "sha256": "0278816a880ce5c17aef16eb720cd764e15376220f64fed04f0f8d2d340c01c3"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 43456,
+                "length": 144,
+                "offset": 49136,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "f0260a704412a02e41a6f05ff05cee96c1c2092a7b5c2eae0637cf147b63be1a"
+                "sha256": "1356b2f97bd7878a637c7c0302ecac82ee324ae3a33f36a216be7f1b53dfaf84"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -9620,10 +9620,10 @@
                 "sha256": "0278816a880ce5c17aef16eb720cd764e15376220f64fed04f0f8d2d340c01c3"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 43520,
+                "length": 144,
+                "offset": 49280,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "9737f571a6b7395841fcab469c3595f33ad09279fa2fe7ec6b69d9260a8804d7"
+                "sha256": "6e2de5da48bc76e022f2e12040a5d779a5d318e094821016f4e4411089f20020"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -9730,10 +9730,10 @@
                 "sha256": "0278816a880ce5c17aef16eb720cd764e15376220f64fed04f0f8d2d340c01c3"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 43584,
+                "length": 144,
+                "offset": 49424,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "89b362fca571466174f5569268efe378e13d817f4bfc91ad77edd11241bb3e3b"
+                "sha256": "5c0ef4d49ec223d8d9453d553f8935c41a6b07c0cd71bf4c987ee7ef1b5b5cc1"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -9840,10 +9840,10 @@
                 "sha256": "0278816a880ce5c17aef16eb720cd764e15376220f64fed04f0f8d2d340c01c3"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 43648,
+                "length": 144,
+                "offset": 49568,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "f7897fe47b74771f520ce05a7fe75fa0a62be8da0cff79c7e66e93214311eece"
+                "sha256": "b24f55895340160e5e0d20bddc6e11dd0e4e0554c13d76ad544ab91580c541c9"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -9950,10 +9950,10 @@
                 "sha256": "0278816a880ce5c17aef16eb720cd764e15376220f64fed04f0f8d2d340c01c3"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 44352,
+                "length": 144,
+                "offset": 51152,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "ba087fee6dea2053098a23a03fa8a3ff2e8d8c052bc610f59b8ac45396255d94"
+                "sha256": "d3957ef28bd64624bb378bfb435a00b80e88edd0bb3b99e8610f297738c6798e"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -10060,10 +10060,10 @@
                 "sha256": "0278816a880ce5c17aef16eb720cd764e15376220f64fed04f0f8d2d340c01c3"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 44416,
+                "length": 144,
+                "offset": 51296,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "5f9abb2aa9148f2bd1fb20234bae05be52f8494920baa518bdd1ff0ca37643e5"
+                "sha256": "2a40e060ea5d57cde87b03c15b106cbb0d677853b24de7fcaf23d904dd23a141"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -10170,10 +10170,10 @@
                 "sha256": "0278816a880ce5c17aef16eb720cd764e15376220f64fed04f0f8d2d340c01c3"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 44480,
+                "length": 144,
+                "offset": 51440,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "8161b0af5378edd190d8ae942c514319f4089e2c12cd1a48b3021419c8ad1acd"
+                "sha256": "ab202aaa1e2120b28b1fc0292981db32c03bfebfc0d691ad696e8f4a55928979"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -10313,10 +10313,10 @@
                 "sha256": "f7d6e6f6f631b4e5e9a860d6e1f4df518f0500cb0378026ebff430929fccae7c"
             },
             "matrix_slot_by_serialized_node_ordinal": {
-                "length": 64,
-                "offset": 44544,
+                "length": 144,
+                "offset": 51584,
                 "semantic_attachment_interpretation_proved": false,
-                "sha256": "db63140103b8fca1bb22797e327699607596b7a9ce6ed0976be1dc261f4dfcdd"
+                "sha256": "763daaf2b2f68bed4f6f7e62dc32ff1638dadd9c9da63c38555968229259bb2a"
             },
             "mesh_descriptor_and_stream_records": {
                 "length": 44,
@@ -10674,9 +10674,9 @@
         "inner_type_hash": "0xe26c9b5d",
         "matrix_count": 89,
         "matrix_table": {
-            "length": 5696,
+            "length": 12816,
             "offset": 38912,
-            "sha256": "5fa0a6f9aa4444ad14676e989a521963d32e1693559f288202ac1bb3b81d8828"
+            "sha256": "a5a4835dab61fdaf6e35474e178346254691b998fcf00f93cca1feb91c99ff20"
         },
         "scene_node_count": 89,
         "system_part": {
@@ -10711,7 +10711,7 @@
         "node_name": "polySurface19821",
         "representative_local_only_fit_witness": {
             "all_twelve_non_target_parts_exact": true,
-            "allocation_slack_after_bytes": 1367,
+            "allocation_slack_after_bytes": 1967,
             "authored_position_payload_sha256": "bc8353e49c1268e1c76dee2fcc53dcbc9ea6ca64a8b62627f1983b1ff25ee5a1",
             "authorized_position_lane_bytes": 288,
             "changed_decoded_block0_bytes": 74,
@@ -10726,15 +10726,15 @@
             "footer_exact": true,
             "operation": "add exact +1 X, +2 Y, +3 Z to each serialized POSITION0",
             "output_or_replacement_bytes_committed": false,
-            "rebuilt_file_length": 12928751,
-            "rebuilt_outer_sha256": "d18f5632ff9b7a59ea591e8488e0d11401f4091955b70bd896301150509b5f1e",
+            "rebuilt_file_length": 12928151,
+            "rebuilt_outer_sha256": "fc72ab9f8fcc2bef32dfe311be3da064ce16ee7666d51f040dc1943835696bcb",
             "recipe_coordinates_committed": false,
             "runtime_rigid_attachment_proved": false,
             "runtime_visibility_proved": false,
-            "stored_block0_growth_bytes": 659,
-            "stored_block0_length_after": 3299741,
+            "stored_block0_growth_bytes": 59,
+            "stored_block0_length_after": 3299141,
             "stored_block0_length_before": 3299082,
-            "stored_block0_sha256": "21ff4728d30d0126e0a023e1afdf894d9889d1a0b62389edcbd7fc48dea4cac0",
+            "stored_block0_sha256": "25470cae713513e12e295f95850157c51b74661422696f116066c269538274d2",
             "stored_block1_exact": true,
             "zero_tail_exact": true
         },

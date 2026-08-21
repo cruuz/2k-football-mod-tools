@@ -1922,7 +1922,10 @@ def _write_copied_volume(
         if source_sha_after != source_sha_before:
             raise PatchError("source APF volume changed during copied-volume patch")
         if not _path_is_owned_inode(source_volume, source_identity):
-            raise PatchError("source APF volume pathname changed during copy")
+            raise PatchError(
+            "source APF volume pathname changed during copy (a symlinked "
+            "source is the usual cause; stage a real copy instead)"
+        )
 
         _copy_fd_metadata(
             source_descriptor, output_descriptor, source_metadata, output_volume

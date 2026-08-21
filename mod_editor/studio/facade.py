@@ -200,7 +200,7 @@ _GAMEPLAY_SNAPSHOT = (
 )
 _GAMEPLAY_SNAPSHOT_SIZE = 22_874
 _GAMEPLAY_SNAPSHOT_SHA256 = (
-    "864c785d3b0a689dace1ec9c37be0bc276519a334775c9df8953d6d62722dbe3"
+    "4657b4b9c81bf723d13849275d5469c74d3b4d2feccc033f0f06d2cd5e8d1793"
 )
 _GAMEPLAY_SNAPSHOT_SCHEMA = "nfl2k5_mod_studio_gameplay_inspection/v1"
 _MENU_SNAPSHOT = _PRODUCT_ROOT / "mod_editor/data/nfl2k5_main_menu_inspection.v1.json"
@@ -935,6 +935,31 @@ class Nfl2k5StudioFacade:
         with self._lock:
             return self._last_build.output_xiso if self._last_build else None
 
+    def preflight_visual_edits(
+        self, progress: ProgressSink = _quiet_progress
+    ) -> tuple[object, ...]:
+        """Predict what each staged PNG will become in its fixed slot.
+
+        Read-only, and safe to run at any time: it changes no session state and
+        tells the user which replacements come through untouched, which lose
+        palette entries to fit a fixed compressed span, and which cannot fit at
+        all -- before a build makes that decision silently.
+        """
+
+        from mod_editor.core import nfl2k5_import_preflight as preflight
+
+        with self._lock:
+            session = self._require_session()
+            staged = session.staged_preflight_inputs()
+        if not staged:
+            progress("Nothing staged to check", 1, 1)
+            return ()
+        # The ladder runs for seconds per slot, so it runs outside the lock --
+        # holding it would freeze every status field the window polls.
+        rows = preflight.predict_edits(staged, progress=progress)
+        progress("Image check complete", len(staged), len(staged))
+        return rows
+
     def inspect_gameplay(
         self, progress: ProgressSink = _quiet_progress
     ) -> dict[str, object]:
@@ -999,11 +1024,24 @@ class Nfl2k5StudioFacade:
         progress("Main Menu report exported", 1, 1)
         return output
 
+    def _attach_visual_catalog(self, session: object) -> None:
+        """Hand a new session the aggregate this facade already loaded.
+
+        The session can derive its own, but building the extended catalog costs
+        about 1.7 s and this one is already in memory. Duck-typed so a
+        stand-in session factory needs no new signature.
+        """
+
+        attach = getattr(session, "attach_visual_catalog", None)
+        if callable(attach):
+            attach(self.visual_catalog)
+
     def load_source(self, source_xiso: Path, progress: ProgressSink) -> object:
         cache = self.source_cache.index(source_xiso, progress)
         progress("Preparing the complete asset browser", 0, 1)
         universal_index = self._universal_index_factory(cache)
         session = self.session_factory(cache, self.uniform_catalog)
+        self._attach_visual_catalog(session)
         text_catalog = None
         attach_text = getattr(session, "attach_text_catalog", None)
         if callable(attach_text):
@@ -2895,6 +2933,7 @@ class Nfl2k5StudioFacade:
                 "Load your own NFL 2K5 XISO before opening a shared project."
             )
         candidate = self.session_factory(cache, self.uniform_catalog)
+        self._attach_visual_catalog(candidate)
         try:
             return self._load_project_candidate(
                 source=source,

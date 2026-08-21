@@ -169,6 +169,7 @@ class PanelTests(unittest.TestCase):
                     # the level below reassigning whole books, which the book
                     # table makes a coarse control.
                     "Fine-tune Plays",
+                    "Who lines up",
                     "Assignment Routes",
                     "Save Assignments",
                     "Raw Playbook Assets",
@@ -176,7 +177,7 @@ class PanelTests(unittest.TestCase):
             )
             self.assertIsInstance(page.save_playbooks, SavePlaybookAssignmentsPanel)
             page.open_workspace("save-playbooks")
-            self.assertEqual(page.workspace_tabs.currentIndex(), 2)  # type: ignore[union-attr]
+            self.assertEqual(page.workspace_tabs.currentIndex(), 4)  # type: ignore[union-attr]
         finally:
             page.deleteLater()
             self.application.processEvents()

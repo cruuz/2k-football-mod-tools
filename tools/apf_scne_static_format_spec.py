@@ -138,8 +138,8 @@ SOURCE_PINS = {
     },
     "stadium_static_target_catalog": {
         "path": "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json",
-        "size_bytes": 456_821,
-        "sha256": "e2b21ebf4d358358627d26b7d7ea3c6cf600ea3f9d1e139cb9caa8ff1748a424",
+        "size_bytes": 456_898,
+        "sha256": "c3122019b74645380052670f9fdce389277a454b440dd7b7f438276b05f57469",
         "schema": "apf2k8_stadium_static_position_target_catalog/v1",
         "role": "hashes-only outer14/inner8 catalog of 77 additional bounded FLOAT32x3/no-blend same-count targets and exact node3 handoff",
     },
@@ -160,7 +160,7 @@ SOURCE_PINS = {
     "catalog_position_recipe_schema": {
         "path": "mod_editor/data/apf2k8_stadium_position_recipe.v2.schema.json",
         "size_bytes": 5_585,
-        "sha256": "41fcf955c65d81bb5da2d229d6a2ffee692a9c5ae80eda1c0849911c90950277",
+        "sha256": "ff24b219f4d00a7342dcc41e37ef4d8afe487af8a23ce1c1fcf523fd498c28ac",
         "schema": None,
         "role": "canonical v2 recipe contract that pins the hashes-only catalog and derives count, stride, lane offset, and FLOAT32x3_BE encoding from target_id",
     },
@@ -753,7 +753,7 @@ def build_spec() -> dict[str, Any]:
                 "catalog_dispatcher": {
                     "recipe_schema": "apf2k8_scne_catalog_position_recipe/v2",
                     "catalog_schema": "apf2k8_stadium_static_position_target_catalog/v1",
-                    "catalog_sha256": "e2b21ebf4d358358627d26b7d7ea3c6cf600ea3f9d1e139cb9caa8ff1748a424",
+                    "catalog_sha256": "c3122019b74645380052670f9fdce389277a454b440dd7b7f438276b05f57469",
                     "authorized_target_count": 77,
                     "target_scope": "every additional_targets row in the frozen outer14/inner8/stadium catalog",
                     "selection": "canonical target_id; derive exact vertex_count, stream_index, stream_start, stride, byte_offset, lane width, format, and structural hashes from the catalog",

@@ -15,13 +15,18 @@ import os
 from pathlib import Path
 import shutil
 import stat
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 from uuid import UUID, uuid4
 
 from mod_editor.core import platform_compat
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.json_stream import read_bounded_regular_file
 from mod_editor.core.nfl2k5_asset_io import copy_user_asset_atomic, sha256_bytes
+from mod_editor.core.nfl2k5_extended_visual_catalog import (
+    Nfl2k5ProductVisualCatalog,
+    Nfl2k5UniformCatalog as _Nfl2k5UniformCatalog,
+    load_nfl2k5_extended_visual_catalog,
+)
 from mod_editor.core.nfl2k5_extended_visual_io import Nfl2k5ProductVisualIO
 from mod_editor.core.nfl2k5_source_cache import SourceCache
 from mod_editor.core.nfl2k5_playbook_inspector import (
@@ -356,6 +361,10 @@ class StudioSession:
     ) -> None:
         self.cache = cache
         self.catalog = uniform_catalog
+        # ``catalog`` owns the uniform set hierarchy and nothing else. A staged
+        # PNG edit can come from any visual browser, so resolving an edit by its
+        # ID needs the aggregate instead -- see :meth:`_visual_asset`.
+        self.visual_catalog: Any | None = None
         self.asset_io = Nfl2k5ProductVisualIO(cache)
         self.session_id = session_id or str(uuid4())
         parent = (root or default_session_root()).expanduser()
@@ -1238,7 +1247,7 @@ class StudioSession:
             seen.add(asset_id)
             # Resolve through this session's catalog so a caller cannot attach
             # foreign dimensions/provider selectors to a familiar-looking ID.
-            asset = self.catalog.get_asset(asset_id)
+            asset = self._visual_asset(asset_id)
             if not bool(getattr(asset, "editable", True)):
                 raise ValidationError(
                     f"{asset.label} is preview/export-only because its texture "
@@ -1850,7 +1859,7 @@ class StudioSession:
         for item in visual_action.items if visual_action is not None else ():
             if item.previous_snapshot is None:
                 raise ValidationError("The visual Revert-All snapshot is missing.")
-            asset = self.catalog.get_asset(item.asset_id)
+            asset = self._visual_asset(item.asset_id)
             payload, rgba = self.asset_io.validate_replacement(
                 asset, item.previous_snapshot
             )
@@ -2017,7 +2026,7 @@ class StudioSession:
             if current is not None:
                 current.replacement_path.unlink(missing_ok=True)
             if item.previous_snapshot is not None:
-                asset = self.catalog.get_asset(item.asset_id)
+                asset = self._visual_asset(item.asset_id)
                 payload, rgba = self.asset_io.validate_replacement(
                     asset, item.previous_snapshot
                 )
@@ -2885,6 +2894,46 @@ class StudioSession:
             f"{'s' if len(changed_ids) != 1 else ''} as one Undo action.",
         )
 
+    def staged_preflight_inputs(self) -> tuple[tuple[Any, ...], ...]:
+        """Snapshot every staged PNG edit as a prediction input.
+
+        Deliberately fast and side-effect free, so a caller can take it under a
+        lock and then run the slow prediction outside one. Resolving the fixed
+        allocation is a cached report lookup, not a build.
+        """
+
+        from mod_editor.core import nfl2k5_import_preflight as preflight
+
+        staged: list[tuple[Any, Path]] = []
+        for asset_id in sorted(self._edits):
+            asset = self._visual_asset(asset_id)
+            staged.append((asset, self._edits[asset_id].replacement_path))
+        return preflight.edits_for_assets(staged)
+
+    def preflight_visual_edits(
+        self,
+        progress: Callable[[str, int, int], None] | None = None,
+    ) -> tuple[Any, ...]:
+        """Say what each staged PNG will become before a build decides it.
+
+        Beta 41/42 replaced a hard build failure with a palette ladder that
+        quantizes art down until it fits its fixed VC-LZ span. That is lossy and
+        it shipped silent, so a jersey could lose 240 palette entries with
+        nothing said. This runs the real quantizer and encoder against the real
+        slot contract first, per staged edit.
+
+        It is read-only: no session state changes, and a family with no modelled
+        contract -- or one whose compatibility report is unavailable -- is
+        reported as unmodelled rather than guessed at.
+        """
+
+        from mod_editor.core import nfl2k5_import_preflight as preflight
+
+        rows = self.staged_preflight_inputs()
+        if not rows:
+            return ()
+        return preflight.predict_edits(rows, progress=progress)
+
     def preflight_audio_batch(
         self,
         replacements: Iterable[
@@ -3674,7 +3723,7 @@ class StudioSession:
             raise ValidationError("Replace at least one asset before building a modded XISO.")
         edits: list[dict[str, object]] = []
         for asset_id in sorted(self._edits):
-            asset = self.catalog.get_asset(asset_id)
+            asset = self._visual_asset(asset_id)
             edit = self._edits[asset_id]
             edits.append(asset.provider_edit(edit.replacement_path))
         if self._crib_edits:
@@ -4158,6 +4207,64 @@ class StudioSession:
         for asset_id in sorted(self._edits):
             yield self._edits[asset_id]
 
+    def attach_visual_catalog(self, catalog: Any) -> None:
+        """Give the session the aggregate that resolves every visual browser.
+
+        The facade already builds one; attaching it here just saves the
+        session from building its own.
+        """
+
+        self.visual_catalog = catalog
+
+    def _visual_asset(self, asset_id: str) -> Any:
+        """Resolve one staged PNG edit through the catalog that owns its ID.
+
+        Only the uniform sets live in ``self.catalog``.  Everything else a
+        visual browser can stage -- ``tset:`` uniform equipment (socks, elbow
+        pads, gloves, long sleeves, shoes, wristbands), ``p8:`` textures,
+        portraits, live faces, create-field art, the scorebug -- is minted by
+        the extended catalog, and asking the uniform catalog about one of those
+        IDs raises "Unknown uniform asset ID".
+
+        That is exactly what happened: ``replace()`` takes an already-resolved
+        asset *object* from the panel, so staging a Bengals sock worked, and
+        every later step re-resolved the ID *string* through the wrong catalog
+        and refused. Build, Save Project, Load Project, batch import, Undo's
+        restore and Revert All all funnel through here now, so a browser can
+        never again stage something the build cannot name.
+
+        ``Nfl2k5ProductVisualCatalog`` was written for this -- its own
+        docstring says a reversible session can use it "for either catalog
+        without knowing where the asset originated" -- and it is built from the
+        uniform catalog this session already holds, so a uniform edit resolves
+        to the identical object it always did.
+        """
+
+        catalog = self.visual_catalog
+        if catalog is None:
+            catalog = self._derive_visual_catalog()
+        return catalog.get_asset(asset_id)
+
+    def _derive_visual_catalog(self) -> Any:
+        """Build the aggregate from this session's own uniform catalog.
+
+        Deriving it rather than requiring a caller to attach one keeps the
+        "nobody wired it up" failure mode from existing at all. A session given
+        a stand-in catalog (tests, doubles) keeps using that stand-in.
+        """
+
+        if not isinstance(self.catalog, _Nfl2k5UniformCatalog):
+            return self.catalog
+        try:
+            self.visual_catalog = Nfl2k5ProductVisualCatalog(
+                self.catalog, load_nfl2k5_extended_visual_catalog()
+            )
+        except Exception:
+            # A missing or unreadable extended report must not take out uniform
+            # editing, which never needed it.
+            return self.catalog
+        return self.visual_catalog
+
     def iter_project_png_edits(self) -> Iterable[SessionEdit]:
         """Yield all user-authored PNG edits accepted by the project router."""
 
@@ -4388,7 +4495,7 @@ class StudioSession:
             return _ProjectStadiumAsset(self._stadium_texture_for_id(asset_id))
         if asset_id.startswith("nfl2k5.crib."):
             return self._require_crib_catalog().get(asset_id)
-        return self.catalog.get_asset(asset_id)
+        return self._visual_asset(asset_id)
 
     def _require_text_catalog(self) -> Nfl2k5TextCatalog:
         if self.text_catalog is None:

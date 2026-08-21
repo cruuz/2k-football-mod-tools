@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -32,6 +33,21 @@ from mod_editor.apf_studio.models import (  # noqa: E402
     ApfCategory,
     ApfStatus,
 )
+
+
+_FIELD_EXTRA_TARGETS = (
+    Path(__file__).resolve().parents[2]
+    / "mod_editor"
+    / "data"
+    / "apf2k8_field_extra_targets.v1.json"
+)
+_WRITABLE_XENOS_FORMATS = frozenset({6, 18, 20})
+_CORE_FIELD_ART_KEYS = ((6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0))
+
+
+def _field_extra_rows() -> list[dict[str, object]]:
+    document = json.loads(_FIELD_EXTRA_TARGETS.read_text(encoding="utf-8"))
+    return list(document["package_659"]) + list(document["endzones"])
 
 
 def _write_png(path: Path, width: int, height: int) -> Path:
@@ -384,17 +400,31 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             offered = tuple(
                 target.name for target in FIELD_ART_COVERED_TARGETS
             )
-            self.assertEqual(
-                offered,
-                (
-                    "endzone_l0",
-                    "endzone_l1",
-                    "pc_field_goal",
-                    "Field_Pass_text",
-                    "Stride_number_field",
-                    "divots",
-                ),
+            core = (
+                "endzone_l0",
+                "endzone_l1",
+                "pc_field_goal",
+                "Field_Pass_text",
+                "Stride_number_field",
+                "divots",
             )
+            self.assertEqual(offered[:6], core)
+            extra_rows = _field_extra_rows()
+            writable_extras = [
+                row
+                for row in extra_rows
+                if int(row["format"]) in _WRITABLE_XENOS_FORMATS
+            ]
+            refused_fmt59 = [
+                row for row in extra_rows if int(row["format"]) == 59
+            ]
+            # 6 core + 21 weave/dirt + 194 format-18 endzones (196 including
+            # the two core endzone layers). Format 59 stays out.
+            self.assertEqual(len(writable_extras), 21 + 196)
+            self.assertEqual(len(refused_fmt59), 39)
+            self.assertGreaterEqual(len(offered), 6 + 21 + 194)
+            self.assertIn("weave_jersey0", offered)
+            self.assertIn("dirtmap_helmet", offered)
             self.assertEqual(page.editor.slot.count(), len(offered))
             # The deferred codecs and the non-texture rows are never offered.
             for deferred in (
@@ -407,11 +437,73 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 "penalty_onthe_field",
             ):
                 self.assertNotIn(deferred, offered)
-            # Each offered slot is pinned to one exact archive identity.
-            self.assertEqual(
-                tuple(target.key for target in FIELD_ART_COVERED_TARGETS),
-                ((6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)),
+            keys = tuple(target.key for target in FIELD_ART_COVERED_TARGETS)
+            key_set = set(keys)
+            self.assertEqual(keys[:6], _CORE_FIELD_ART_KEYS)
+            self.assertEqual(len(keys), len(key_set))
+            self.assertNotIn((53, 3), key_set)
+            for row in writable_extras:
+                self.assertIn(
+                    (int(row["entry_index"]), int(row["file_index"])),
+                    key_set,
+                )
+            labels = [
+                page.editor.slot.itemText(index)
+                for index in range(page.editor.slot.count())
+            ]
+            for row in refused_fmt59:
+                key = (int(row["entry_index"]), int(row["file_index"]))
+                self.assertNotIn(key, key_set)
+                needle = f"outer {row['entry_index']} / inner {row['file_index']}"
+                self.assertFalse(
+                    any(needle in label for label in labels),
+                    msg=f"format-59 slot {key} leaked into the picker",
+                )
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_editor_filter_keeps_the_221_slot_combo_usable(self) -> None:
+        page = self._page()
+        try:
+            self.assertGreaterEqual(page.editor.slot.count(), 6 + 21 + 194)
+            self.assertTrue(page.editor.slot.isEnabled())
+            self.assertTrue(page.editor.slot_filter.isEnabled())
+            page.editor.slot_filter.setText("weave_jersey0")
+            self.application.processEvents()
+            self.assertEqual(page.editor.slot.count(), 1)
+            self.assertEqual(page.editor.current_target().name, "weave_jersey0")
+            self.assertTrue(page.editor.replace_button.isEnabled())
+            self.assertTrue(page.editor.build_button.isEnabled())
+            page.editor.slot_filter.setText("not-a-real-field-art-slot-zzzz")
+            self.application.processEvents()
+            self.assertEqual(page.editor.slot.count(), 0)
+            self.assertTrue(page.editor.slot.isEnabled())
+            self.assertTrue(page.editor.replace_button.isEnabled())
+            self.assertTrue(
+                str(page.editor.build_button.property("disableReason") or "").strip()
             )
+            page.editor.slot_filter.clear()
+            self.application.processEvents()
+            self.assertEqual(page.editor.slot.count(), len(FIELD_ART_COVERED_TARGETS))
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_editor_stock_copy_does_not_claim_all_118_teams_writable(self) -> None:
+        page = self._page()
+        try:
+            lock_note = page.editor.lock_note.text()
+            folded = lock_note.casefold()
+            self.assertIn("format-18", folded)
+            self.assertIn("format-59", folded)
+            self.assertIn("export-only", folded)
+            self.assertIn("weave", folded)
+            self.assertIn("browse", folded)
+            # Inventory may name ~118 packages; the writer does not own the
+            # 39 format-59 endzone_l1 layers, so "all 118 teams" is a lie.
+            self.assertNotIn("all 118 teams", folded)
+            self.assertNotIn("every team", folded)
         finally:
             page.deleteLater()
             self.application.processEvents()

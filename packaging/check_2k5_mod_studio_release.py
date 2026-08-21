@@ -126,7 +126,7 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
     ),
     "mod_editor/data/nfl2k5_gameplay_inspection.v1.json": (
         22_874,
-        "864c785d3b0a689dace1ec9c37be0bc276519a334775c9df8953d6d62722dbe3",
+        "4657b4b9c81bf723d13849275d5469c74d3b4d2feccc033f0f06d2cd5e8d1793",
         "nfl2k5_mod_studio_gameplay_inspection/v1",
     ),
     "mod_editor/data/nfl2k5_main_menu_inspection.v1.json": (

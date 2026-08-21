@@ -1,16 +1,16 @@
-# 2K5 Mod Studio — v1.0 RC62 Release Status
+# 2K5 Mod Studio — v1.0 RC71 Release Status
 
 ## Beta 33 — the stock CPU playbooks (2026-08-10)
 
 Source/UI versions are **2K5 RC60** and **APF alpha.65**; both use updater tag
 `beta-33`.
 
-- **Fine-tune Plays now edits APF's stock `SPLB` CPU playbooks** — the fifteen
-  on-disc resources the CPU actually calls from (seven offensive, four
-  defensive, four unnamed). Pick a book, pick a formation, tick plays in and
-  out. Only the selected record's entry list is rewritten; the trailer, every
-  other record, both unmapped tail regions and every other byte are preserved
-  and independently re-derived.
+- **Fine-tune Plays now edits APF's stock `SPLB` playbook membership** — the
+  fifteen on-disc resources the game ships (seven offensive, four defensive,
+  four unnamed). Pick a book, pick a formation, tick plays in and out. Only the
+  selected record's entry list is rewritten; the trailer, every other record,
+  both unmapped tail regions and every other byte are preserved and
+  independently re-derived. Runtime CPU consumption remains unproved.
 - **A Beta 32 claim is withdrawn.** alpha.64's Fine-tune Plays edited MASTER's
   0x54-stride bitmap and described it as "which plays each formation offers".
   Decoding the SPLB books refutes that: row 147 of that table yields "Big Pinch,
@@ -338,7 +338,111 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-33` — 2026-08-10 · CURRENT
+### `beta-47` — 2026-08-21 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-47>
+
+Beta 47 carries 2K5 RC71 (updater identity only) and APF alpha.80. It adds
+the Who lines up role-map tab, the experimental formation/package levers
+(trailer repoint + record add; runtime director behavior unproved, labeled as
+such), relayed route copy, the removal+tag-move Save-Project composition fix,
+digits v2 (smaller-of-two H7A encoders + region-majority mip regeneration),
+staged two-layer helmet crests through the project build, one-pass
+multi-crest logo-cache writes, both endzone layers in one field-art pass, the
+format-15 crest preview fix, renamed-index and symlink clarity, and the
+never-boots empties warning. No retail bytes; no `default.xex` patching.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC71-20260821.tar.gz` | 11,068,800 | `5e77ab3313893b123cc73047c5dc044a60456ca2676b6ec22aef6827aaab65f6` |
+| `2K5-Mod-Studio-v1.0-RC71-20260821.tar.gz.sha256` | 107 | `46826de251c32ee69d80900f0598860e57c78078470558c7b83fadfc34fa7967` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz` | 1,905,194 | `b600ba8019d4ab9cd54d4cf41479bdffffe815bc82e50c2c29f617f7e150e9ed` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz.sha256` | 115 | `89216e9c1cc7ae6d9956c61af375b6f060bbb8208be91974a247208cd18b4aa9` |
+| `2K5-Mod-Studio-1.0.0rc71-Setup.exe` | 56,704,278 | `45d99287ce945f69a43f041f051c3502ee4e20089c96cfa207d8e9779de4eb0d` |
+| `2K5-Mod-Studio-1.0.0rc71-Setup.exe.sha256` | 101 | `8ae00145dc5ebe58e505d2e7065f436602b995f60dfcc820609e60c245f59156` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe` | 52,740,465 | `d4dd682a49cbc9ac7da554486a5def9d0c2df6b20cbe8fe9989a4adfd7616d58` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe.sha256` | 110 | `a89588cd10474ccb60e80e80f1408bff38c6fc5973b18dcdc57bf0fde34b187f` |
+
+### `beta-46` — 2026-08-15 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-46>
+
+Beta 46 carries 2K5 RC69 (updater identity only) and APF alpha.78. It repairs
+the two Beta 45 Playbooks actions, withdraws the unusable raw WR3↔TE `.bin`
+export from the APF product, replaces the confusing 3rd-and-long copy, and
+adds a staged local-import closure gate. No game writer changed. All eight
+hosted CI jobs passed on Linux, macOS, and Windows with Python 3.11/3.12.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC69-20260815.tar.gz` | 11,067,647 | `beb2f97daa568a45fc35ccc56c9998c535f97e8cf483136b140c919db87b8cd1` |
+| `2K5-Mod-Studio-v1.0-RC69-20260815.tar.gz.sha256` | 107 | `196ccb9874c8d3c87140f477c0632a6ed1883a018d719dea161f718fb6a4167d` |
+| `apf2k8-mod-studio-0.1.0-alpha.78-20260815.tar.gz` | 1,877,078 | `5bb649124a9229500330ce1f4f60a7e206bf89bf04efd7c778d30b4e017ace33` |
+| `apf2k8-mod-studio-0.1.0-alpha.78-20260815.tar.gz.sha256` | 115 | `f86637ab88e37e89b335b2c8d1ea7614ad437843ecc76782fa1686cdd397599d` |
+| `2K5-Mod-Studio-1.0.0rc69-Setup.exe` | 56,702,060 | `cacabd63b66de0efe7d81499bb507bffabb2d0efa1fd3ff0d69fe620756ead0c` |
+| `2K5-Mod-Studio-1.0.0rc69-Setup.exe.sha256` | 101 | `d1d52ddf823d2f2a5fe7eed7bf3a6775ec7a64a1c902b4b0ae525196fdd70bbf` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.78-Setup.exe` | 52,724,180 | `afd199cd5f73d060e68df24f9393eab6ef9bbae26f28ff1e0577b70adf751e15` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.78-Setup.exe.sha256` | 110 | `4c02f8a4977976950bcf73982f6a40880dbb1f5b7f0fbf5b901619896b8a980b` |
+
+### `beta-45` — 2026-08-15 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-45>
+
+Beta 45 carries 2K5 RC68 (updater identity only) and APF alpha.77. Both
+retail-free gates pass (2K5 staged 206 files, APF staged 201). Field Art
+writes 221 textures, All Textures writes 480 jersey digits, jersey slots
+show the shoulder-style capacity rank, and Fine-tune Plays exports an
+experimental Ace-named WR3↔TE pack. Format-59 endzones, 3rd-and-long, and
+copied `0A` stay refused. Runtime visibility is unproved.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC68-20260815.tar.gz` | 11,068,034 | `823efeb487f6d3a91b555f79bd98958b18f5f49e4b218f2016762a489777611d` |
+| `2K5-Mod-Studio-v1.0-RC68-20260815.tar.gz.sha256` | 107 | `c205b08393e32d7b4e4a0175f7b7a36f54e980c92c9fc034264ad724a881f4cb` |
+| `apf2k8-mod-studio-0.1.0-alpha.77-20260815.tar.gz` | 1,878,392 | `0de8987e63538ff82f99a4f6fce8ed07d13eb6d00dfa2ce17c60e213395cfb39` |
+| `apf2k8-mod-studio-0.1.0-alpha.77-20260815.tar.gz.sha256` | 115 | `09e95cefdba72cfebcdafe8ceacd2b0c9866287ee1c2c969b2b2315e7d52baef` |
+| `2K5-Mod-Studio-1.0.0rc68-Setup.exe` | 56,703,798 | `c2321050493fe522fa6800888bf30dd0d226dca8d835931319def9394f0d6031` |
+| `2K5-Mod-Studio-1.0.0rc68-Setup.exe.sha256` | 101 | `2a3ed7fd4d2d79b900815d1e18b6b79324e2acab05859ebe80b81b34476ac2d2` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.77-Setup.exe` | 52,721,196 | `2630b91c4ea38eb03b04ac160c5cedf56f3444858264d8113b61f5fa18ab3b37` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.77-Setup.exe.sha256` | 110 | `6b6565fc7e058315fef39c9a300ff4ceee526f773a8789e7046f58ce38f3e745` |
+
+### `beta-44` — 2026-08-14 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-44>
+
+Beta 44 carries 2K5 RC67 (updater identity only) and APF alpha.76. Both
+retail-free gates pass (2K5 staged 206 files, APF staged 197). Fine-tune Plays
+holds every stock book, withdraws the TE-workaround copy, empties Flip twins
+together, and writes into the folder Xenia already loads.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC67-20260814.tar.gz` | 11,061,896 | `3d21945506a92077fedd1ea56aee15ac9192fb3ca58696ea5e0ba76e96e77466` |
+| `2K5-Mod-Studio-v1.0-RC67-20260814.tar.gz.sha256` | 107 | `9341b9f78893dddcbe93cee06975efd22fb7751b11a4161c7369efbcb7908807` |
+| `apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz` | 1,810,390 | `20bab375ce66bfd668768fce92f5cb903078ece6f4323c38e96df56fb9d37cda` |
+| `apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz.sha256` | 115 | `019ceb36b5e7939e9e9e2b1624fc1420378674901f986853b7462ffd859d51d4` |
+
+### `beta-43` — 2026-08-14 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-43>
+
+Beta 43 carries 2K5 RC66 and APF alpha.75. Both retail-free gates pass (2K5
+staged 206 files, APF staged 197); the local suite is **234 passed, 0 failed,
+0 skipped**, with the previously unrunnable files restored rather than skipped.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC66-20260814.tar.gz` | 11,309,218 | `60f094b756daa1853c7f417e04666022d77f89fdcf9ffa795600963bf4feaf7f` |
+| `2K5-Mod-Studio-v1.0-RC66-20260814.tar.gz.sha256` | 107 | `906949646fc4af60a1f7e3af30a9319e39ae609f167045306f91e873a5ed5126` |
+| `2K5-Mod-Studio-1.0.0rc66-Setup.exe` | 56,841,924 | `518772fb55c67829cd6e3ddabe54333b1d2a902ba856abb2398b21b5987399b8` |
+| `apf2k8-mod-studio-0.1.0-alpha.75-20260814.tar.gz` | 1,807,131 | `968dfb78945481bf76f6e2d9588d2034f4d45e56d7814c70f63824b0d0d6f07e` |
+| `apf2k8-mod-studio-0.1.0-alpha.75-20260814.tar.gz.sha256` | 115 | `7c90ca6af7054b2b9b5042cfcb2ace379266ef3c120948cbc3643dacec4bf034` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.75-Setup.exe` | 52,681,421 | `aab0231bb682410676b9bafbd33ae62ebae381a1305524cc4257a1373d207cec` |
+
+The Windows installers are unsigned; SmartScreen will warn. Verify the SHA-256
+before running.
+
+### `beta-33` — 2026-08-10 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-33>
 
