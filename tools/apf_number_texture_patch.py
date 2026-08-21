@@ -194,10 +194,15 @@ def raise_package_overflow(
         budget_bytes=budget_bytes,
         retail_bytes=retail_bytes,
         advice=(
-            "Jersey digits are DXT1 colour / DXN normal textures that share "
-            "one package budget, not region masks. Flatten or crop the "
-            "digit so the token-preserving H7A rebuild still fits, or stage "
-            "fewer digits in this package."
+            "This build already encodes the shared block with the smaller of "
+            "the preserving and greedy H7A encoders and regenerates the mip "
+            "tail with a region-majority downsample, so a self-similar digit set usually fits "
+            "inside retail's own budget. If it still overflows: stage the "
+            "digits as one consistent typeface (same palette, grid-aligned "
+            "regions) so the set references itself, stage more of the set "
+            "rather than one off-style digit, or use --keep-mips only for "
+            "testing. The remaining option is relocating the package into "
+            "appended space in the built copy — separate follow-up work."
         ),
     )
 
@@ -229,6 +234,47 @@ def package_capacity(
         "compressed_budget_bytes": budget,
         "retail_compressed_bytes": retail,
         "remaining_bytes": budget - retail,
+    }
+
+
+def number_package_budget(
+    arc: apf_outer.Archive,
+    entry: apf_outer.Entry,
+    rec: apf_inner.IFFRecord,
+    stored_blocks: Iterable[bytes] | None = None,
+) -> dict[str, int]:
+    """The shared compressed budget for one number package, without encoding.
+
+    This is the up-front inspector: it reads only the IFF header and block
+    table (``rec``) plus, optionally, the already-read stored blocks, and never
+    decodes or re-encodes any texture.  It exists because the budget for these
+    packages is usually *below* the cost of any custom digit art, so the answer
+    "this package cannot take a custom digit" must be visible before a modder
+    authors twenty 512×512 textures.  The arithmetic mirrors
+    :func:`package_capacity` exactly; ``stored_blocks`` is accepted only so an
+    already-loaded caller can skip re-deriving the stored lengths.
+    """
+
+    if rec.footer is None:
+        raise NumberPatchError("number package IFF has no name footer")
+    if rec.block_count != 2 or len(rec.blocks) != 2:
+        raise NumberPatchError("number package must have DRAM + VRAM H7A blocks")
+    if stored_blocks is not None:
+        stored = list(stored_blocks)
+        if len(stored) != 2:
+            raise NumberPatchError("number package must have DRAM + VRAM H7A blocks")
+        dram_stored = len(stored[0])
+        retail = len(stored[1])
+    else:
+        dram_stored = rec.blocks[0].stored_length
+        retail = rec.blocks[1].stored_length
+    footer_total = 8 + rec.footer.payload_size
+    budget = entry.size - (rec.header_size + dram_stored + footer_total)
+    return {
+        "outer_index": entry.table_index,
+        "free_bytes": budget - retail,
+        "retail_bytes": retail,
+        "budget_bytes": budget,
     }
 
 
@@ -622,13 +668,120 @@ def _load_png(path: Path, row: Mapping[str, object]) -> bytes:
         for offset in range(0, len(pixels), 4):
             pixels[offset + 2] = 0
             pixels[offset + 3] = 255
-        return bytes(pixels)
-    # Colour digits are punch-through DXT1 (alpha 0 or 255). Flattening
-    # would force a full re-encode of retail art and overflow the package.
-    return rgba
+        rgba = bytes(pixels)
+    # Digits are region masks; the image is kept so the mip tail can be
+    # regenerated with a region-majority downsample instead of retail's tail.
+    return rgba, Image.frombytes("RGBA", (width, height), rgba)
 
 
-def _encode_color(original: bytes, metadata: Mapping[str, object], wanted: bytes) -> bytes:
+def _majority_resize(image: Image.Image, size: tuple[int, int]) -> Image.Image:
+    """Region-preserving downsample for saturated-primary region masks.
+
+    Inside each footprint the majority colour wins; ties go to the region
+    that is rarer in the whole image, so thin outline features survive the
+    stride instead of dropping out (NEAREST) or inventing non-region values
+    (box filtering).
+    """
+
+    src_w, src_h = image.size
+    dst_w, dst_h = size
+    if (src_w, src_h) == size or src_w % dst_w or src_h % dst_h:
+        return image.resize(size, Image.NEAREST)
+    step_x, step_y = src_w // dst_w, src_h // dst_h
+    pixels = image.tobytes()
+    global_counts: dict[bytes, int] = {}
+    for offset in range(0, len(pixels), 4):
+        pixel = pixels[offset : offset + 4]
+        global_counts[pixel] = global_counts.get(pixel, 0) + 1
+    out = bytearray(dst_w * dst_h * 4)
+    for out_y in range(dst_h):
+        for out_x in range(dst_w):
+            counts: dict[bytes, int] = {}
+            for src_y in range(out_y * step_y, (out_y + 1) * step_y):
+                row = src_y * src_w * 4
+                base = row + out_x * step_x * 4
+                for src_x in range(out_x * step_x, (out_x + 1) * step_x):
+                    pixel = pixels[base : base + 4]
+                    counts[pixel] = counts.get(pixel, 0) + 1
+                    base += 4
+            winner = max(
+                counts,
+                key=lambda pixel: (counts[pixel], -global_counts[pixel]),
+            )
+            out[out_y * dst_w * 4 + out_x * 4 : out_y * dst_w * 4 + out_x * 4 + 4] = winner
+    return Image.frombytes("RGBA", size, bytes(out))
+
+
+def _regenerate_mip_tail_bc1(
+    texture: bytes,
+    locations: tuple,
+    wanted_image: Image.Image,
+    downsample: str = "majority",
+) -> bytes:
+    """Rewrite levels 1..N from the new art with a region-preserving downsample.
+
+    Retail digits are saturated-primary region masks; averaging two region
+    colours produces a non-region value that both corrupts the mask and
+    defeats the shared-block compressor.  A tail that agrees with the base
+    also compresses ~23 KB cheaper for a ten-digit set.  ``majority`` keeps
+    thin outline features that NEAREST can drop at the sampling stride.
+    """
+
+    resizer = _majority_resize if downsample == "majority" else (
+        lambda image, size: image.resize(size, Image.NEAREST)
+    )
+    for location in locations[1:]:
+        linear = bc1_mips.extract_linear_bc1(texture, location)
+        current = dxt1_transport.decode_linear_bc1(linear, location)
+        size = (location.width, location.height)
+        want = (
+            wanted_image
+            if wanted_image.size == size
+            else resizer(wanted_image, size)
+        )
+        encoded, indices, _info = dxt1_transport._encode_changed_blocks(
+            linear, current, want.tobytes(), location
+        )
+        if indices:
+            texture = bc1_mips.insert_linear_bc1(texture, location, encoded)
+    return texture
+
+
+def _regenerate_mip_tail_dxn(
+    texture: bytes,
+    locations: tuple,
+    wanted_image: Image.Image,
+    downsample: str = "majority",
+) -> bytes:
+    resizer = _majority_resize if downsample == "majority" else (
+        lambda image, size: image.resize(size, Image.NEAREST)
+    )
+    for location in locations[1:]:
+        linear = dxn_mips.extract_linear_dxn(texture, location)
+        current = dxn_transport.decode_linear_dxn(linear, location)
+        size = (location.width, location.height)
+        want = (
+            wanted_image
+            if wanted_image.size == size
+            else resizer(wanted_image, size)
+        )
+        encoded, indices, _info = dxn_transport._encode_changed_blocks(
+            linear, current, want.tobytes(), location
+        )
+        if indices:
+            texture = dxn_mips.insert_linear_dxn(texture, location, encoded)
+    return texture
+
+
+def _encode_color(
+    original: bytes,
+    metadata: Mapping[str, object],
+    wanted: bytes,
+    *,
+    wanted_image: Image.Image | None = None,
+    regenerate_mips: bool = True,
+    downsample: str = "majority",
+) -> bytes:
     locations = bc1_mips.derive_layout(dict(metadata))
     if bc1_mips.transport_roundtrip(original, locations) != original:
         raise NumberPatchError("retail number DXT1 transport is not bit-exact")
@@ -643,14 +796,26 @@ def _encode_color(original: bytes, metadata: Mapping[str, object], wanted: bytes
     if not indices:
         raise NumberPatchError("changed number colour PNG produced no DXT1 base edit")
     new_texture = bc1_mips.insert_linear_bc1(original, base, encoded)
-    if new_texture[int(metadata["vc_base_data_length"]) :] != original[
+    if regenerate_mips and wanted_image is not None:
+        new_texture = _regenerate_mip_tail_bc1(new_texture, locations, wanted_image, downsample)
+    if new_texture[int(metadata["vc_base_data_length"]) :] == original[
         int(metadata["vc_base_data_length"]) :
-    ]:
-        raise NumberPatchError("number DXT1 mip tail was not preserved")
+    ] and regenerate_mips:
+        raise NumberPatchError(
+            "number DXT1 mip tail regeneration produced no tail change"
+        )
     return new_texture
 
 
-def _encode_normal(original: bytes, metadata: Mapping[str, object], wanted: bytes) -> bytes:
+def _encode_normal(
+    original: bytes,
+    metadata: Mapping[str, object],
+    wanted: bytes,
+    *,
+    wanted_image: Image.Image | None = None,
+    regenerate_mips: bool = True,
+    downsample: str = "majority",
+) -> bytes:
     locations = dxn_mips.derive_layout(dict(metadata))
     if dxn_mips.transport_roundtrip(original, locations) != original:
         raise NumberPatchError("retail number DXN transport is not bit-exact")
@@ -665,10 +830,14 @@ def _encode_normal(original: bytes, metadata: Mapping[str, object], wanted: byte
     if not indices:
         raise NumberPatchError("changed number normal PNG produced no DXN base edit")
     new_texture = dxn_mips.insert_linear_dxn(original, base, encoded)
-    if new_texture[int(metadata["vc_base_data_length"]) :] != original[
+    if regenerate_mips and wanted_image is not None:
+        new_texture = _regenerate_mip_tail_dxn(new_texture, locations, wanted_image, downsample)
+    if new_texture[int(metadata["vc_base_data_length"]) :] == original[
         int(metadata["vc_base_data_length"]) :
-    ]:
-        raise NumberPatchError("number DXN mip tail was not preserved")
+    ] and regenerate_mips:
+        raise NumberPatchError(
+            "number DXN mip tail regeneration produced no tail change"
+        )
     return new_texture
 
 
@@ -679,15 +848,29 @@ def _choose_h7a(
     shift: int,
 ) -> tuple[bytes, dict[str, object]]:
     retail_payload = original_stored[apf_inner.H7A_HEADER_SIZE :]
+    candidates: list[tuple[str, bytes, dict[str, object]]] = []
     preserved, preserve_report = apf_inner.encode_h7a_preserving_tokens(
         retail_payload, original_decoded, changed_decoded, shift
     )
-    if apf_inner.decompress_h7a(preserved, len(changed_decoded), shift) != changed_decoded:
+    if apf_inner.decompress_h7a(preserved, len(changed_decoded), shift) == changed_decoded:
+        candidates.append(
+            ("retail_token_preserving", preserved, dict(preserve_report))
+        )
+    greedy = archive_patch.compress_h7a(changed_decoded, shift)
+    if apf_inner.decompress_h7a(greedy, len(changed_decoded), shift) == changed_decoded:
+        candidates.append(("greedy_retokenize", greedy, {"greedy": True}))
+    if not candidates:
         raise NumberPatchError("number H7A encode/decode round-trip failed")
-    return preserved, {
-        "selected_mode": "retail_token_preserving",
-        "selected_payload_length": len(preserved),
-        "selected_report": dict(preserve_report),
+    mode, payload, report = min(candidates, key=lambda item: len(item[1]))
+    # Whole-texture replacement destroys the retail cross-references the
+    # preserving encoder leans on; the greedy re-tokenization then wins and
+    # is typically smaller than retail.  Small byte edits still select the
+    # preserving mode.  Per-build choice, per DIGIT_BUDGET_REPORT2 §4.1.
+    return payload, {
+        "selected_mode": mode,
+        "selected_payload_length": len(payload),
+        "considered_modes": [name for name, _p, _r in candidates],
+        "selected_report": report,
     }
 
 
@@ -916,8 +1099,18 @@ def build_package_patch(
     index_path: Path,
     entry_index: int,
     replacements: Mapping[object, Path],
+    *,
+    regenerate_mips: bool = True,
+    downsample: str = "majority",
 ) -> archive_patch.PatchResult:
-    """Encode every staged digit in one package and rebuild the shared IFF."""
+    """Encode every staged digit in one package and rebuild the shared IFF.
+
+    ``regenerate_mips`` rewrites the mip tail from the new art instead of
+    keeping retail's lower levels; it removes the trilinear blend artifact
+    and compresses cheaper, so it is on by default.  ``downsample`` chooses
+    the region-preserving mip filter: ``majority`` (default) keeps thin
+    outline features; ``nearest`` is the older stride sampler.
+    """
 
     index_path = Path(index_path)
     source_digest = require_retail_0a(index_path)
@@ -952,11 +1145,25 @@ def build_package_patch(
         base = original_pixel[head : head + int(row["base_len"])]
         if _sha256(base) != row["base_sha256"]:
             raise NumberPatchError(f"source {row['name']} differs from its retail pin")
-        wanted = _load_png(Path(row["png_path"]), row)  # type: ignore[arg-type]
+        wanted, wanted_image = _load_png(Path(row["png_path"]), row)
         if str(row["codec"]) == "dxt1":
-            encoded = _encode_color(original_pixel, metadata, wanted)
+            encoded = _encode_color(
+                original_pixel,
+                metadata,
+                wanted,
+                wanted_image=wanted_image,
+                regenerate_mips=regenerate_mips,
+                downsample=downsample,
+            )
         else:
-            encoded = _encode_normal(original_pixel, metadata, wanted)
+            encoded = _encode_normal(
+                original_pixel,
+                metadata,
+                wanted,
+                wanted_image=wanted_image,
+                regenerate_mips=regenerate_mips,
+                downsample=downsample,
+            )
         if encoded != original_pixel:
             new_vram[pixel_part.offset : pixel_part.offset + pixel_part.length] = encoded
             encoded_rows.append(row)
@@ -974,6 +1181,11 @@ def build_package_patch(
     if mode == "no_op":
         iff = dict(iff)
         iff["changed_inner_parts"] = []
+    selected_h7a = (
+        str(iff.get("compression", {}).get("selected_mode", "no_op"))
+        if mode == "patched"
+        else "no_op"
+    )
     return archive_patch.PatchResult(
         rebuilt,
         {
@@ -999,16 +1211,25 @@ def build_package_patch(
             "validation": {
                 "sibling_parts_byte_identical": True,
                 "number_font_preserved": True,
-                "h7a_token_preserving": mode == "patched",
+                "h7a_token_preserving": selected_h7a == "retail_token_preserving",
+                "h7a_greedy_considered": mode == "patched",
+                "mips_regenerated": bool(regenerate_mips) and mode == "patched",
+            "mip_downsample": downsample if regenerate_mips else None,
                 "rebuilt_iff_reparsed": True,
                 "source_opened_read_only": True,
                 "runtime_visibility_claimed": False,
             },
             "backend": {
-                "png_and_mips": f"Pillow {PILLOW_VERSION}; BOX filter",
+                "png_and_mips": (
+                    f"Pillow {PILLOW_VERSION}; majority mip regeneration on by "
+                    "default (--keep-mips preserves the retail tail)"
+                    if regenerate_mips
+                    else f"Pillow {PILLOW_VERSION}; retail mip tail preserved "
+                    "(--keep-mips)"
+                ),
                 "dxt1": "apf_field_art_patch / pants DXT1 touched-block path",
                 "dxn": "apf_helmet_color_transport.encode_dxn",
-                "h7a": "retail-token-preserving",
+                "h7a": selected_h7a,
             },
             "runtime_boundary": (
                 "Package ownership and transport are offline-proved. Runtime "
@@ -1023,11 +1244,20 @@ def build_patch(
     png_path: Path,
     entry_index: int,
     file_index: int,
+    *,
+    regenerate_mips: bool = True,
+    downsample: str = "majority",
 ) -> archive_patch.PatchResult:
     """Stage one digit in its package. Other digits stay retail."""
 
     row = target_by_location(entry_index, file_index)
-    return build_package_patch(index_path, entry_index, {str(row["name"]): png_path})
+    return build_package_patch(
+        index_path,
+        entry_index,
+        {str(row["name"]): png_path},
+        regenerate_mips=regenerate_mips,
+        downsample=downsample,
+    )
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -1042,6 +1272,18 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--file-index", type=int, help="inner number TXTR index")
     parser.add_argument("--digit", help="digit name such as number_3_color")
     parser.add_argument("--png", type=Path, help="exact 512x512 RGBA PNG")
+    parser.add_argument(
+        "--keep-mips",
+        action="store_true",
+        help="preserve the retail mip tail instead of regenerating it "
+        "(bit-exactness testing only; costs size and shows a blend artifact)",
+    )
+    parser.add_argument(
+        "--nearest-mips",
+        action="store_true",
+        help="regenerate the mip tail with NEAREST instead of the default "
+        "region-majority downsample",
+    )
     parser.add_argument("--output-entry", type=Path, help="new rebuilt logical IFF")
     parser.add_argument("--output-volume", type=Path, help="new copied 0A")
     parser.add_argument("--manifest", type=Path)
@@ -1095,7 +1337,13 @@ def main(argv: list[str] | None = None) -> int:
         )
         reservation = archive_patch._reserve_new(manifest_path)
         try:
-            result = build_package_patch(index_path, args.entry_index, replacements)
+            result = build_package_patch(
+            index_path,
+            args.entry_index,
+            replacements,
+            regenerate_mips=not args.keep_mips,
+            downsample="nearest" if args.nearest_mips else "majority",
+        )
             document = result.manifest
             if output_entry is not None:
                 archive_patch._write_new(output_entry, result.entry_bytes)

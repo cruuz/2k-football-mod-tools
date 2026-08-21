@@ -1,12 +1,12 @@
 {
   "artifacts": {
     "test_sha256": "8bf2e04f538dc77354bec3b4209721a14c153e548fb1bb3a2ab5d968c298f1c1",
-    "verifier_sha256": "585da00868968d2c4070f8df82025ef70a46ee4081edf49761229fbec9406b69",
-    "writer_sha256": "f2b749fdd65d135ec809376ddefae4013b934b7179fb2facb2380e1ce05f2853"
+    "verifier_sha256": "a75ea25d0776fbe9dd1630ddb90ac0c0baeb067b8fd6aa7a8a2a92c8df15b5c3",
+    "writer_sha256": "20c901b08fdff38fe043a0d7eef2dae992ad0cb8e5ab671587cc3d86ff83a70d"
   },
   "authority": {
     "path": "reports/assets/apf_logocache_roundtrip.json",
-    "sha256": "a48b7b10c858716ee55ddf456665123afbfbcb635feb4b83d725a692f3b7c491"
+    "sha256": "abdee3de00f7492fe9d7bceec981314ceb1e2b003b7aba3ab3ffcbcab2594199"
   },
   "conclusion": {
     "copied_volume_roundtrip_proved": false,

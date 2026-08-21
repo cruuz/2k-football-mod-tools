@@ -171,6 +171,63 @@ class CacheWriterRoundTripTests(unittest.TestCase):
         self.assertGreaterEqual(result.manifest["payload"]["allocation_slack_after"], 0)
         self._assert_only_intended_changed(result, {"01_logo_l0", "01_logo_l1"})
 
+    def test_two_crests_one_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            png_a0 = Path(d) / "a0.png"
+            png_a1 = Path(d) / "a1.png"
+            png_b0 = Path(d) / "b0.png"
+            Image.new("RGBA", (512, 512), (255, 0, 255, 255)).save(png_a0)
+            Image.new("RGBA", (512, 512), (0, 255, 255, 255)).save(png_a1)
+            Image.new("RGBA", (512, 512), (255, 255, 0, 255)).save(png_b0)
+            result = cache_patch.build_cache_patch_many(
+                INDEX_PATH,
+                (
+                    cache_patch.CacheLayerSpec(CATALOG, png_a0, png_a1),
+                    cache_patch.CacheLayerSpec(
+                        (CATALOG + 7) % 118, png_b0, clear_l1=True
+                    ),
+                ),
+            )
+        self.assertEqual(result.manifest["mode"], "patched")
+        self.assertEqual(
+            result.manifest["source"]["catalog_indices"],
+            sorted({CATALOG, (CATALOG + 7) % 118}),
+        )
+        second = (CATALOG + 7) % 118
+        layer_names = set(result.manifest["layers"])
+        self.assertEqual(
+            layer_names,
+            {
+                f"{CATALOG:02d}_logo_l0",
+                f"{CATALOG:02d}_logo_l1",
+                f"{second:02d}_logo_l0",
+                f"{second:02d}_logo_l1",
+            },
+        )
+        changed_names = {
+            name
+            for name, report in result.manifest["layers"].items()
+            if report["changed"]
+        }
+        self.assertEqual(changed_names, layer_names)
+        structure = cache_verify.verify_cache_structure(
+            result.directory_bytes, result.payload_bytes
+        )
+        self.assertTrue(structure["verified"])
+
+    def test_duplicate_catalog_spec_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            png = Path(d) / "l0.png"
+            Image.new("RGBA", (512, 512), (255, 0, 255, 255)).save(png)
+            with self.assertRaisesRegex(cache_patch.PatchError, "twice"):
+                cache_patch.build_cache_patch_many(
+                    INDEX_PATH,
+                    (
+                        cache_patch.CacheLayerSpec(CATALOG, png),
+                        cache_patch.CacheLayerSpec(CATALOG, png),
+                    ),
+                )
+
     def test_no_op_returns_source_pair(self) -> None:
         _, _, _, dir_raw, pay_raw = cache_patch._read_pair(INDEX_PATH)
         directory = cache_patch.parse_cache_directory(dir_raw)

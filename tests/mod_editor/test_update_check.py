@@ -226,7 +226,7 @@ class BuildTagTests(unittest.TestCase):
         self.assertTrue(update_check._TAG.match(update_check.BUILD_RELEASE_TAG))
 
     def test_the_build_tag_matches_beta_37(self) -> None:
-        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-46")
+        self.assertEqual(update_check.BUILD_RELEASE_TAG, "beta-47")
 
 
 if __name__ == "__main__":

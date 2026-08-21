@@ -10,7 +10,9 @@ from unittest.mock import patch
 from mod_editor.core.apf2k8_playbook_route_writer import (
     MASTER_ASSET_ID,
     RouteCloneRequest,
+    build_relayed_copy_requests,
     compile_route_clones,
+    relay_candidates,
     request_from_mapping,
     verify_route_clones,
 )
@@ -71,6 +73,49 @@ def _synthetic_master() -> bytes:
             node = route_nodes[(play_index + slot) % 2]
             data[pointer : pointer + 4] = _relative(node, pointer)
     return bytes(data)
+
+
+def _slot_pointer(play_index: int, slot_index: int) -> int:
+    return (
+        playbook_inventory.APF_PLAY_BASE
+        + play_index * playbook_inventory.APF_PLAY_SIZE
+        + 0x0C
+        + slot_index * 8
+        + 4
+    )
+
+
+def _slot_fields(play_index: int, slot_index: int) -> range:
+    start = _slot_pointer(play_index, slot_index) - 4
+    return range(start, start + 8)
+
+
+def _route_node_offset(node_index: int) -> int:
+    return (
+        playbook_inventory.APF_ROUTE_BASE
+        + node_index * playbook_inventory.ROUTE_NODE_SIZE
+    )
+
+
+def _route_every_slot_to(node_index: int, keep: tuple[int, int]) -> bytes:
+    body = bytearray(_synthetic_master())
+    for play_index in range(2):
+        for slot in range(playbook_inventory.SLOT_COUNT):
+            if (play_index, slot) == keep:
+                continue
+            pointer = _slot_pointer(play_index, slot)
+            body[pointer : pointer + 4] = _relative(
+                _route_node_offset(node_index), pointer
+            )
+    return bytes(body)
+
+
+def _three_node_master(unique_on: tuple[int, int]) -> bytes:
+    body = bytearray(_synthetic_master())
+    struct.pack_into(">IIII", body, 0x34, 1, 2, 1, 3)
+    pointer = _slot_pointer(*unique_on)
+    body[pointer : pointer + 4] = _relative(_route_node_offset(2), pointer)
+    return bytes(body)
 
 
 class RouteWriterTests(unittest.TestCase):
@@ -184,6 +229,84 @@ class RouteWriterTests(unittest.TestCase):
                 bytes(source), formation_count=1, play_count=2
             )
 
+    def test_relayed_copy_batch_preserves_start_set_and_donor_bytes(self) -> None:
+        source = _route_every_slot_to(1, keep=(0, 0))
+        target = (0, 0)
+        donor = (1, 0)
+        relay = (0, 1)
+        requests = build_relayed_copy_requests(target, donor, relay)
+        self.assertEqual(
+            [(item.target_play_index, item.target_slot_index) for item in requests],
+            [target, relay],
+        )
+        self.assertEqual(
+            [(item.donor_play_index, item.donor_slot_index) for item in requests],
+            [donor, target],
+        )
+        result = compile_route_clones(source, requests)
+
+        def starts(parsed) -> list[int]:
+            return sorted(
+                int(slot["route_node_index"])
+                for play in parsed["plays"]
+                for slot in play["slots"]
+            )
+
+        self.assertEqual(
+            starts(result.parsed_replacement),
+            starts(playbook_inventory.parse_apf_body(source, 180, 0)),
+        )
+        # The target took the donor's route; the target's unique chain now
+        # survives on the relay slot.
+        self.assertEqual(
+            result.parsed_replacement["plays"][0]["slots"][0]["route_node_index"],
+            1,
+        )
+        self.assertEqual(
+            result.parsed_replacement["plays"][0]["slots"][1]["route_node_index"],
+            0,
+        )
+        donor_fields = playbook_inventory.APF_PLAY_BASE + playbook_inventory.APF_PLAY_SIZE + 0x0C
+        self.assertEqual(
+            result.replacement[donor_fields : donor_fields + 8],
+            source[donor_fields : donor_fields + 8],
+        )
+        allowed = set(_slot_fields(*target)) | set(_slot_fields(*relay))
+        self.assertTrue(
+            all(
+                index in allowed
+                for start, end in result.changed_ranges
+                for index in range(start, end)
+            )
+        )
+        self.assertTrue(
+            result.report["claims"]["assignment_chain_start_set_preserved"]
+        )
+        self.assertFalse(result.report["claims"]["contains_retail_bytes"])
+        self.assertFalse(
+            result.report["claims"][
+                "waypoint_coordinate_or_opcode_semantics_claimed"
+            ]
+        )
+        verify_route_clones(source, result.replacement, requests)
+
+    def test_relay_candidates_exclude_target_donor_and_unique(self) -> None:
+        source = _three_node_master(unique_on=(0, 5))
+        candidates = relay_candidates(source, 0, 0, 1, 0)
+        self.assertNotIn((0, 0), candidates)
+        self.assertNotIn((0, 5), candidates)
+        self.assertFalse(any(play_index == 1 for play_index, _slot in candidates))
+        self.assertEqual(
+            candidates,
+            tuple((0, slot) for slot in range(1, 11) if slot != 5),
+        )
+        from_parsed = relay_candidates(
+            playbook_inventory.parse_apf_body(source, 180, 0), 0, 0, 1, 0
+        )
+        self.assertEqual(from_parsed, candidates)
+        with self.assertRaisesRegex(ValidationError, "outside APF MASTER PLAY|between 0 and 10"):
+            relay_candidates(source, 99, 0, 1, 0)
+
 
 def _source(root: Path) -> ApfSource:
     path = root / "game" / "0A"
@@ -290,9 +413,100 @@ class SessionRouteWriterTests(unittest.TestCase):
                 return_value=bytes(body),
             ):
                 with self.assertRaisesRegex(
-                    Exception, "orphan a game-authored chain"
+                    Exception, "only used on the target play"
                 ):
                     session.replace_play_assignment_route(0, 0, 1, 0)
+            self.assertEqual(session.modified_count, 0)
+
+    def _relay_session(self, tmp_path: Path) -> ApfSession:
+        return ApfSession(
+            _source(tmp_path),
+            SimpleNamespace(),
+            cache_root=tmp_path / "cache",
+        )
+
+    def test_session_relayed_copy_stages_pair_and_preserves_set(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            tmp_path = Path(temporary)
+            body = _route_every_slot_to(1, keep=(0, 0))
+            session = self._relay_session(tmp_path)
+            with patch(
+                "mod_editor.apf_studio.session.read_master_play_body",
+                return_value=body,
+            ):
+                first, second = session.copy_play_assignment_route_via_relay(
+                    0, 0, 1, 0, 0, 1
+                )
+                self.assertEqual(
+                    first.asset_id, "play-route:apf:playbook:180:0:p0:s0"
+                )
+                self.assertEqual(
+                    second.asset_id, "play-route:apf:playbook:180:0:p0:s1"
+                )
+                # Both clones land as a single Undo step.
+                self.assertEqual(session.modified_count, 2)
+                self.assertTrue(session.undo())
+                self.assertEqual(session.modified_count, 0)
+
+    def test_session_relayed_copy_candidates_exclude_target_donor_unique(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            tmp_path = Path(temporary)
+            body = _three_node_master(unique_on=(0, 5))
+            session = self._relay_session(tmp_path)
+            with patch(
+                "mod_editor.apf_studio.session.read_master_play_body",
+                return_value=body,
+            ):
+                candidates = session.relay_play_assignment_route_candidates(
+                    0, 0, 1, 0
+                )
+                self.assertNotIn((0, 0), candidates)
+                self.assertNotIn((0, 5), candidates)
+                self.assertFalse(
+                    any(play_index == 1 for play_index, _slot in candidates)
+                )
+                self.assertEqual(
+                    candidates,
+                    tuple((0, slot) for slot in range(1, 11) if slot != 5),
+                )
+
+    def test_session_relayed_copy_refuses_target_donor_and_unique_relay(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            tmp_path = Path(temporary)
+            body = _three_node_master(unique_on=(0, 5))
+            session = self._relay_session(tmp_path)
+            with patch(
+                "mod_editor.apf_studio.session.read_master_play_body",
+                return_value=body,
+            ):
+                with self.assertRaisesRegex(
+                    Exception, "different from both the target"
+                ):
+                    session.copy_play_assignment_route_via_relay(
+                        0, 0, 1, 0, 0, 0
+                    )
+                with self.assertRaisesRegex(
+                    Exception, "different from both the target"
+                ):
+                    session.copy_play_assignment_route_via_relay(
+                        0, 0, 1, 0, 1, 0
+                    )
+                with self.assertRaisesRegex(
+                    Exception, "another play so the donor play stays"
+                ):
+                    session.copy_play_assignment_route_via_relay(
+                        0, 0, 1, 0, 1, 3
+                    )
+                with self.assertRaisesRegex(
+                    Exception, "relay slot's current route is only used"
+                ):
+                    session.copy_play_assignment_route_via_relay(
+                        0, 0, 1, 0, 0, 5
+                    )
             self.assertEqual(session.modified_count, 0)
 
 

@@ -177,9 +177,12 @@ class G12PanelHonestyTests(unittest.TestCase):
             excepthook.assert_not_called()
             for call in information.call_args_list:
                 title, body = call.args[1:3]
-                self.assertEqual(title, "3rd-and-long editing is not available")
+                self.assertEqual(
+                    title, "3rd-and-long: the XEX chooses; the ladder is data"
+                )
                 self.assertIn("default.xex", body)
-                self.assertIn("Nothing was changed", body)
+                self.assertIn("unproved at runtime", body)
+                self.assertIn("check it in Xenia", body)
                 self.assertNotIn("data-side", body.casefold())
                 self.assertNotIn("refuses a writer", body.casefold())
         finally:

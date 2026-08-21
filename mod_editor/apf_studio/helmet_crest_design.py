@@ -45,8 +45,14 @@ def metadata(
     fit_visible_mask: bool,
     source_horizontal_coverage: float,
     output_horizontal_coverage: float,
+    detail_sha256: str | None = None,
 ) -> dict[str, object]:
-    """Return canonical target metadata for a 512x512 RGBA crest payload."""
+    """Return canonical target metadata for a 512x512 RGBA crest payload.
+
+    ``detail_sha256`` optionally names the staged ``logo_l1`` companion payload
+    (regions 3-5); without it the build clears the detail layer so one supplied
+    mark draws exactly once.
+    """
 
     value: dict[str, object] = {
         "width": 512,
@@ -63,6 +69,8 @@ def metadata(
         "creates_xenia_patch": False,
         "edits_default_xex": False,
     }
+    if detail_sha256 is not None:
+        value["detail_sha256"] = detail_sha256
     return validate_metadata(
         HELMET_CREST_DESIGN_EDIT_ID,
         HELMET_CREST_DESIGN_KIND,
@@ -99,10 +107,19 @@ def validate_metadata(
     asset_index = value.get("crest_asset_index")
     outer_index = value.get("crest_outer_entry_index")
     fit = value.get("fit_visible_mask")
+    detail = value.get("detail_sha256")
     if (
         asset_id != HELMET_CREST_DESIGN_EDIT_ID
         or kind != HELMET_CREST_DESIGN_KIND
-        or set(value) != required
+        or not required <= set(value) <= required | {"detail_sha256"}
+        or (
+            detail is not None
+            and (
+                not isinstance(detail, str)
+                or len(detail) != 64
+                or any(ch not in "0123456789abcdef" for ch in detail)
+            )
+        )
         or value.get("width") != 512
         or value.get("height") != 512
         or value.get("storage_format") != "xenos_4_4_4_4"
@@ -132,6 +149,12 @@ def validate_metadata(
     if profile == RETAIL_CREST_PROFILE and fit:
         raise HelmetCrestDesignError(
             "Visible-mask fitting is available only for the full-shell profile"
+        )
+    if profile == FULL_SHELL_CREST_PROFILE and detail is not None:
+        raise HelmetCrestDesignError(
+            "A staged logo_l1 detail layer applies to the retail side-decal "
+            "profile only; the full-shell profile composes the crest from the "
+            "single logo_l0 mark"
         )
     if fit and float(output_coverage) != 1.0:
         raise HelmetCrestDesignError(

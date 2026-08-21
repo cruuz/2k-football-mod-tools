@@ -1,5 +1,74 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.80 — who lines up, CPU package levers, relayed copy, digits v2, two-layer crests and endzones — 2026-08-21
+
+- **New: two-layer helmet crests through the project build.** Staging a crest
+  with its `logo_l1` detail image now carries both layers through the session,
+  the shareable project archive, and Build; the retail side-decal profile
+  writes both region sets instead of silently clearing the detail masks. The
+  full-shell profile explains that it composes from one mark. The logo cache
+  writer gained `build_cache_patch_many`, rewriting several catalog slots in
+  ONE pass from the pinned retail cache state, so multi-crest volumes no
+  longer chain through earlier outputs.
+- **New: both endzone layers in one field-art pass.**
+  `apf_field_art_patch --file-index 0 --png l0 --file-index 1 --png l1`
+  rebuilds the entry once with every target; the retail entry pin no longer
+  blocks the second layer.
+- **Fixed: crest previews showed red/blue transposed.** The format-15
+  (4_4_4_4) preview decoder read nibbles in the wrong channel order relative
+  to the writer's retail-proven convention; previews now match what is
+  written.
+- **Digits v2.1.** Regenerated mip tails now downsample with a
+  region-majority filter (thin outline features survive the stride; ties go
+  to the rarer region); `--nearest-mips` restores the older sampler and
+  `--keep-mips` still preserves retail for bit-exactness testing.
+- **Clarity.** Emptying formations now also names the 2026-08-15 report where
+  a user book with its base packages emptied never booted (Xenia spin, then
+  exit); renamed APF indexes (`0A.mybuild`) are refused with the reason
+  instead of silently reading the sibling `0A`; symlinked source volumes get
+  a message that says symlink.
+- Everything from the staged alpha.79 below (who lines up, package levers,
+  relayed copy, removal+move composition, digits v2), which never published
+  on its own.
+
+## 0.1.0-alpha.79 — who lines up, CPU package levers, relayed copy, digits v2 — 2026-08-18 (staged, unpublished)
+
+- **New: Who lines up.** Playbooks & Plays gains a tab that stages the APF
+  MASTER formation `+0x11` 11-byte role maps as project edits; Build writes
+  them into the copied MASTER PLAY (outer 180), composed with any staged
+  assignment-route clones. Role 8 = TE, role 9 = WR; the other nine roles stay
+  numbered. Runtime look is unproved — check the formation in Xenia after
+  Build. This is not a 3rd-and-long director patch and does not touch
+  `default.xex`.
+- **New: formation/package levers (experimental).** Fine-tune Plays gains
+  **Change formation/package…** (repoint one record's trailer at any MASTER
+  formation and personnel package) and **Add a formation to this book…**
+  (fill the book's first empty record). The book's category mask gains the
+  package bit; the unproved 3-bit trailer situation fields and the trailer
+  low byte stay byte-exact. Static basis (Research pins): the lineup ladder
+  resolves a requested personnel row through exactly this mask and falls to
+  lighter rows when the book lacks the package. Whether the CPU director
+  chooses such a record on 3rd-and-long is runtime-unproved. Experimental on
+  purpose: test in Xenia with the Choose-Side protocol before treating any
+  package edit as a 3rd-and-long fix.
+- **New: relayed route copy.** Where a plain Copy would orphan a
+  game-authored assignment chain, Assignment Routes now offers a relayed copy
+  through an expendable assignment that shares its route elsewhere, so the
+  donor play keeps its route and the target receives the donor's.
+- **Fixed: staged removal + staged tagged-slot move naming the same play now
+  compose** in the writer's fixed order (adds, then moves, then removals)
+  instead of one of the two being silently lost at Save Project.
+- **Digits v2.** The jersey-digit writer now encodes the shared package with
+  the smaller of the retail-token-preserving and greedy H7A encoders and
+  regenerates the mip tail from the new art with NEAREST (removes the retail
+  mip blend artifact and is usually smaller; `--keep-mips` preserves the old
+  tail for bit-exactness testing). The picker shows each package's free budget
+  up front, and overflow advice is rewritten around the measured costs.
+- **Clarity.** APF face/head scans are stated to be export-only research, with
+  128×128 portrait workflows pointed at 2K5 Mod Studio; macOS AppleDouble
+  (`._*.png`) drops are detected and explained; the 3rd-and-long status copy
+  names the new package levers without claiming CPU behavior.
+
 ## 0.1.0-alpha.78 — Playbooks repair and export withdrawal — 2026-08-15
 
 - **Fixed: 3rd-and-long editing status no longer crashes.** Beta 45 tried to

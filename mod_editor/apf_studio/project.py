@@ -42,6 +42,11 @@ from .helmet_crest_design import (
 )
 from mod_editor.core import platform_compat
 from mod_editor.core.platform_compat import fsync_directory
+from mod_editor.core.apf2k8_package_map_writer import (
+    PROVIDER_KIND as PACKAGE_MAP_KIND,
+    change_from_mapping as package_map_from_mapping,
+    decode_package_map_payload,
+)
 from mod_editor.core.apf2k8_playbook_route_writer import (
     PROVIDER_KIND as PLAY_ASSIGNMENT_ROUTE_KIND,
     decode_route_clone_payload,
@@ -799,6 +804,7 @@ def _payload_name(asset_id: str, kind: str) -> str:
             "custom_team_appearance",
             "uniform_equipment_colors",
             PLAY_ASSIGNMENT_ROUTE_KIND,
+            PACKAGE_MAP_KIND,
             SPLB_MEMBERSHIP_KIND,
         }
         else ".xma1-packets"
@@ -806,6 +812,15 @@ def _payload_name(asset_id: str, kind: str) -> str:
         else ".png"
     )
     return f"replacements/{hashlib.sha256(asset_id.encode('utf-8')).hexdigest()}{suffix}"
+
+
+def _detail_payload_name(asset_id: str) -> str:
+    """Archive member for a crest edit's optional staged logo_l1 companion."""
+
+    digest = hashlib.sha256(
+        (asset_id + "|crest_detail_layer").encode("utf-8")
+    ).hexdigest()
+    return f"replacements/{digest}.png"
 
 
 @dataclass(frozen=True)
@@ -956,6 +971,11 @@ def _validate_payload_source(
     elif modification.kind == PLAY_ASSIGNMENT_ROUTE_KIND:
         try:
             decode_route_clone_payload(data, modification.asset_id)
+        except ValidationError as exc:
+            raise ProjectError(str(exc)) from exc
+    elif modification.kind == PACKAGE_MAP_KIND:
+        try:
+            decode_package_map_payload(data, modification.asset_id)
         except ValidationError as exc:
             raise ProjectError(str(exc)) from exc
     elif modification.kind == SPLB_MEMBERSHIP_KIND:
@@ -1687,6 +1707,16 @@ def _validated_metadata(
                 f"APF route-clone target metadata changed: {asset_id}"
             )
         return value
+    if kind == PACKAGE_MAP_KIND:
+        try:
+            change = package_map_from_mapping(value)
+        except ValidationError as exc:
+            raise ProjectError(str(exc)) from exc
+        if change.selector != asset_id:
+            raise ProjectError(
+                f"Who-lines-up target metadata changed: {asset_id}"
+            )
+        return value
     if kind == SPLB_MEMBERSHIP_KIND:
         try:
             change = splb_change_from_mapping(value)
@@ -1927,18 +1957,47 @@ def save_project(
         payload, metadata = _validate_payload_source(modification, protected_hashes)
         payload_sources.append(payload)
         replacement_bytes += payload.size
+        row: dict[str, object] = {
+            "asset_id": modification.asset_id,
+            "kind": modification.kind,
+            "payload": payload.member,
+            "sha256": payload.sha256,
+            "size": payload.size,
+            "metadata": metadata,
+        }
+        detail_digest = metadata.get("detail_sha256")
+        if modification.kind == HELMET_CREST_DESIGN_KIND and isinstance(
+            detail_digest, str
+        ):
+            detail_path = modification.replacement_path.parent / (
+                f"{detail_digest}.png"
+            )
+            detail_data = _read_replacement_for_validation(
+                detail_path, modification.asset_id
+            )
+            if hashlib.sha256(detail_data).hexdigest() != detail_digest:
+                raise ProjectError(
+                    f"Replacement changed after import: {modification.asset_id}"
+                )
+            if detail_digest in RETAIL_HASHES or detail_digest in protected_hashes:
+                raise ProjectError(
+                    "A project replacement matches protected source game data"
+                )
+            detail_payload = _ValidatedPayloadSource(
+                asset_id=modification.asset_id,
+                member=_detail_payload_name(modification.asset_id),
+                source_path=detail_path,
+                sha256=detail_digest,
+                size=len(detail_data),
+            )
+            payload_sources.append(detail_payload)
+            replacement_bytes += detail_payload.size
+            row["detail_payload"] = detail_payload.member
+            row["detail_sha256"] = detail_payload.sha256
+            row["detail_size"] = detail_payload.size
         if replacement_bytes > MAX_PROJECT_EXPANDED_BYTES:
             raise ProjectError("Project expands beyond the supported limit")
-        rows.append(
-            {
-                "asset_id": modification.asset_id,
-                "kind": modification.kind,
-                "payload": payload.member,
-                "sha256": payload.sha256,
-                "size": payload.size,
-                "metadata": metadata,
-            }
-        )
+        rows.append(row)
     manifest = {
         "schema": PROJECT_SCHEMA,
         "game": "apf2k8_xbox360",
@@ -2227,6 +2286,12 @@ def load_project(
                 except ValidationError as exc:
                     raise ProjectError(str(exc)) from exc
                 extension = ".json"
+            elif kind == PACKAGE_MAP_KIND:
+                try:
+                    decode_package_map_payload(data, asset_id)
+                except ValidationError as exc:
+                    raise ProjectError(str(exc)) from exc
+                extension = ".json"
             elif kind == SPLB_MEMBERSHIP_KIND:
                 try:
                     decode_splb_membership_payload(data, asset_id)
@@ -2260,6 +2325,56 @@ def load_project(
                     raise ProjectError(
                         f"Imported replacement cache conflicts with {output.name}"
                     )
+            if "detail_payload" in row or "detail_sha256" in row or (
+                "detail_size" in row
+            ):
+                detail_member = row.get("detail_payload")
+                detail_digest = row.get("detail_sha256")
+                detail_size = row.get("detail_size")
+                if (
+                    kind != HELMET_CREST_DESIGN_KIND
+                    or detail_member != _detail_payload_name(asset_id)
+                    or not isinstance(detail_digest, str)
+                    or detail_digest != metadata.get("detail_sha256")
+                    or not isinstance(detail_size, int)
+                ):
+                    raise ProjectError(f"Replacement {index} has invalid metadata")
+                expected_names.add(str(detail_member))
+                try:
+                    detail_info = archive.getinfo(str(detail_member))
+                except KeyError as exc:
+                    raise ProjectError(
+                        f"Replacement payload is missing: {asset_id}"
+                    ) from exc
+                if (
+                    detail_info.file_size != detail_size
+                    or not 0 < detail_size <= MAX_REPLACEMENT_BYTES
+                ):
+                    raise ProjectError(f"Replacement size is invalid: {asset_id}")
+                detail_data = archive.read(detail_info)
+                detail_actual = hashlib.sha256(detail_data).hexdigest()
+                if detail_actual != detail_digest or detail_actual in RETAIL_HASHES:
+                    raise ProjectError(
+                        f"Replacement payload failed validation: {asset_id}"
+                    )
+                detail_output = destination_dir / f"{detail_actual}.png"
+                try:
+                    with detail_output.open("xb") as stream:
+                        stream.write(detail_data)
+                        stream.flush()
+                        os.fsync(stream.fileno())
+                except FileExistsError:
+                    existing = detail_output.lstat()
+                    if (
+                        not stat.S_ISREG(existing.st_mode)
+                        or stat.S_ISLNK(existing.st_mode)
+                        or hashlib.sha256(detail_output.read_bytes()).hexdigest()
+                        != detail_actual
+                    ):
+                        raise ProjectError(
+                            "Imported replacement cache conflicts with "
+                            f"{detail_output.name}"
+                        )
             modifications.append(
                 Modification(
                     asset_id=asset_id,

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from types import SimpleNamespace
 import tempfile
@@ -152,6 +153,89 @@ class SessionAndProjectTests(unittest.TestCase):
                 self.assertEqual(
                     loaded[0].replacement_sha256, result.replacement_sha256
                 )
+            finally:
+                session.close()
+
+    def test_detail_layer_stages_saves_and_roundtrips_project(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = _source(root)
+            session = ApfSession(
+                source, mock.Mock(), cache_root=root / "cache"
+            )
+            try:
+                detail = Image.new("RGBA", (512, 512), (0, 0, 255, 255))
+                detail.save(root / "detail.png", "PNG")
+                with mock.patch(
+                    "mod_editor.apf_studio.session.apf_team_crests.crest_slots",
+                    return_value=(
+                        SimpleNamespace(asset_index=1, outer_entry_index=36),
+                    ),
+                ):
+                    result = session.replace_helmet_crest_design(
+                        _mask(root / "wing.png"),
+                        profile=RETAIL_CREST_PROFILE,
+                        crest_asset_index=1,
+                        crest_outer_entry_index=36,
+                        detail_png=root / "detail.png",
+                    )
+                detail_digest = str(result.metadata["detail_sha256"])
+                self.assertEqual(len(detail_digest), 64)
+                stored_detail = result.replacement_path.parent / (
+                    f"{detail_digest}.png"
+                )
+                self.assertTrue(stored_detail.is_file())
+
+                project = root / "crest_two_layer.apf2k8mod"
+                save_project(
+                    project,
+                    source_sha256=source.source_sha256,
+                    modifications=(result,),
+                )
+                _manifest, loaded, _annotations = load_project(
+                    project,
+                    expected_source_sha256=source.source_sha256,
+                    destination_dir=root / "loaded",
+                )
+                self.assertEqual(len(loaded), 1)
+                self.assertEqual(loaded[0].metadata, result.metadata)
+                loaded_detail = loaded[0].replacement_path.parent / (
+                    f"{detail_digest}.png"
+                )
+                self.assertTrue(loaded_detail.is_file())
+                self.assertEqual(
+                    hashlib.sha256(loaded_detail.read_bytes()).hexdigest(),
+                    detail_digest,
+                )
+            finally:
+                session.close()
+
+    def test_full_shell_profile_refuses_a_staged_detail_layer(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = _source(root)
+            session = ApfSession(
+                source, mock.Mock(), cache_root=root / "cache"
+            )
+            try:
+                detail = Image.new("RGBA", (512, 512), (0, 0, 255, 255))
+                detail.save(root / "detail.png", "PNG")
+                with mock.patch(
+                    "mod_editor.apf_studio.session.apf_team_crests.crest_slots",
+                    return_value=(
+                        SimpleNamespace(asset_index=30, outer_entry_index=1133),
+                    ),
+                ):
+                    with self.assertRaisesRegex(
+                        SessionError, "retail side-decal"
+                    ):
+                        session.replace_helmet_crest_design(
+                            _mask(root / "wing.png"),
+                            profile=FULL_SHELL_CREST_PROFILE,
+                            crest_asset_index=30,
+                            crest_outer_entry_index=1133,
+                            detail_png=root / "detail.png",
+                        )
             finally:
                 session.close()
 

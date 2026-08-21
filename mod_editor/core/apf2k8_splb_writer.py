@@ -338,7 +338,12 @@ a defensive book and it ran -- so a record that returns nothing does not make
 the director skip it, it makes the director call something the book never
 listed. Emptying a formation is therefore an edit that changes in-game
 behaviour in a way this project cannot yet predict, and the panel says so
-before it stages one. Emptying *every* populated record in a book is refused
+before it stages one. A second runtime report (2026-08-15, Xenia debug log)
+went further: emptying a user book's base packages -- every 20 and 10
+formation in USER-o -- left the game unable to boot at all, spinning in the
+display retrain loop and exiting. Emptied records are therefore treated as
+behaviour-changing and possibly boot-breaking, never as a silence the game
+skips. Emptying *every* populated record in a book is refused
 outright: that leaves the director nothing at all to select.
 
 A tag may never be duplicated or given a value the retail books never use.
@@ -374,6 +379,10 @@ RECORD_COUNT = 176
 ENTRY_BYTES = 168
 ENTRY_CAPACITY = ENTRY_BYTES // 2          # 84
 TRAILER_OFFSET = 0xA8
+TRAILER_WORD_B_DELTA = 4
+BOOK_CATEGORY_MASK_OFFSET = 0x7E04
+CATEGORY_COUNT = 28
+MASTER_FORMATION_INDEX_MAX = 162
 ARRAY_END = RECORD_BASE + RECORD_STRIDE * RECORD_COUNT   # 0x7970
 RESOURCE_SIZE = 32_288
 FILLER = 0x13FF
@@ -610,6 +619,21 @@ STATIC_CONSUMER_WORDS: Mapping[int, int] = {
     0x846302F0: 0x886B0034,  # lbz r3, 52(r11)  first .text fn +0x34 (not a VM opcode)
     0x846302F4: 0x892B0035,  # lbz r9, 53(r11)  first .text fn +0x35
     0x844DBE00: 0x846302D8,  # .pdata[0] start == first .text function
+    # Trailer consumption chain (trailer-replace feature): the lineup resolver
+    # asks the book for a record matching a personnel row; the book walk tests
+    # the category mask at book+0x7E04 and each record's word B; a miss walks
+    # the row ladder at 0x820B9080 (clamped 0..10 on offense) and re-asks, so
+    # a book lacking the requested package silently drops to a lighter row.
+    0x84860730: 0x7D8802A6,  # lineup personnel resolver mflr
+    0x8486076C: 0x4822ACCD,  # bl 0x84a8b438  book-row search
+    0x84860788: 0x3BAB9080,  # addi r29 → ladder 0x820B9080
+    0x84860790: 0x817E0000,  # lwz ladder offset word
+    0x848607B8: 0x3880000A,  # li r4, 0xa  offense row clamp
+    0x84A8B438: 0x7D8802A6,  # book-row search mflr
+    0x84A8B45C: 0x89630004,  # lbz first category +4  personnel row
+    0x84A8B46C: 0x83FE7E0C,  # lwz MASTER pointer book+0x7E0C
+    0x84A89680: 0x7CAB2E70,  # srawi  mask bit walk
+    0x84A896AC: 0x81470000,  # lwz mask word
 }
 
 #: outer entry -> book name, as shipped. Fifteen resources; four carry no name.
@@ -765,16 +789,60 @@ class TagMove:
 
 
 @dataclass(frozen=True, slots=True)
+class TrailerReplace:
+    """Repoint one record's trailer at another MASTER formation and package.
+
+    Word A carries the formation index (bits 31..24) and the personnel
+    category (bits 23..17); the director resolves a requested personnel row
+    through the book's category mask at +0x7E04 and the record's membership
+    bitmask (word B), so a retarget also ORs the category bit into both.
+    The three unproved 3-bit situation fields and the low byte are preserved
+    byte-exact.
+    """
+
+    outer_index: int
+    record_index: int
+    formation_index: int
+    category_index: int
+
+    def __post_init__(self) -> None:
+        _bounded_int(self.outer_index, "Playbook entry", minimum=0, maximum=1_542)
+        _bounded_int(
+            self.record_index, "Formation record", minimum=0,
+            maximum=RECORD_COUNT - 1,
+        )
+        _bounded_int(
+            self.formation_index, "MASTER formation", minimum=0,
+            maximum=MASTER_FORMATION_INDEX_MAX,
+        )
+        _bounded_int(
+            self.category_index, "Personnel package", minimum=0,
+            maximum=CATEGORY_COUNT - 1,
+        )
+
+    @property
+    def selector(self) -> str:
+        return trailer_selector(self.outer_index, self.record_index)
+
+
+def trailer_selector(outer_index: int, record_index: int) -> str:
+    return f"splb:{outer_index}:r{record_index}:trailer"
+
+
+@dataclass(frozen=True, slots=True)
 class _Request:
     outer_index: int
     memberships: tuple[MembershipChange, ...]
     moves: tuple[TagMove, ...]
+    trailers: tuple[TrailerReplace, ...] = ()
 
     @property
     def record_indices(self) -> set[int]:
-        return {change.record_index for change in self.memberships} | {
-            move.record_index for move in self.moves
-        }
+        return (
+            {change.record_index for change in self.memberships}
+            | {move.record_index for move in self.moves}
+            | {trailer.record_index for trailer in self.trailers}
+        )
 
 
 def _bounded_int(value: object, label: str, *, minimum: int, maximum: int) -> int:
@@ -804,6 +872,14 @@ def change_metadata(change: MembershipChange | TagMove) -> dict[str, object]:
             "record_index": change.record_index,
             "from_play": change.from_play,
             "to_play": change.to_play,
+        }
+    if isinstance(change, TrailerReplace):
+        return {
+            "change_kind": "trailer_replace",
+            "outer_index": change.outer_index,
+            "record_index": change.record_index,
+            "formation_index": change.formation_index,
+            "category_index": change.category_index,
         }
     raise ValidationError("A stock-playbook change is malformed")
 
@@ -875,6 +951,40 @@ def change_from_mapping(value: Mapping[str, object]) -> MembershipChange | TagMo
                 "Tagged-slot destination play",
                 minimum=0,
                 maximum=PLAY_MASK,
+            ),
+        )
+    if kind == "trailer_replace":
+        if set(value) != {
+            "change_kind",
+            "outer_index",
+            "record_index",
+            "formation_index",
+            "category_index",
+        }:
+            raise ValidationError(
+                "A stock-playbook trailer replace has unsupported fields"
+            )
+        return TrailerReplace(
+            outer_index=_bounded_int(
+                value.get("outer_index"), "Playbook entry", minimum=0, maximum=1_542
+            ),
+            record_index=_bounded_int(
+                value.get("record_index"),
+                "Formation record",
+                minimum=0,
+                maximum=RECORD_COUNT - 1,
+            ),
+            formation_index=_bounded_int(
+                value.get("formation_index"),
+                "MASTER formation",
+                minimum=0,
+                maximum=MASTER_FORMATION_INDEX_MAX,
+            ),
+            category_index=_bounded_int(
+                value.get("category_index"),
+                "Personnel package",
+                minimum=0,
+                maximum=CATEGORY_COUNT - 1,
             ),
         )
     raise ValidationError("A stock-playbook change is malformed")
@@ -1021,10 +1131,22 @@ def read_book(index_path: Path, outer_index: int) -> SplbBook:
     return parse_book(body, outer_index)
 
 
-def _normalize(changes: Iterable[MembershipChange | TagMove]) -> _Request:
+def _normalize(
+    changes: Iterable[MembershipChange | TagMove | TrailerReplace],
+) -> _Request:
     resolved: dict[tuple[int, int, int], MembershipChange] = {}
     moves: dict[tuple[int, int, int], TagMove] = {}
+    trailers: dict[tuple[int, int], TrailerReplace] = {}
     for change in changes:
+        if isinstance(change, TrailerReplace):
+            key = (change.outer_index, change.record_index)
+            if key in trailers and trailers[key] != change:
+                raise ValidationError(
+                    "One formation record is repointed twice with different "
+                    "outcomes in a single request"
+                )
+            trailers[key] = change
+            continue
         if isinstance(change, MembershipChange):
             key = (change.outer_index, change.record_index, change.play_index)
             if key in resolved and resolved[key] != change:
@@ -1046,30 +1168,26 @@ def _normalize(changes: Iterable[MembershipChange | TagMove]) -> _Request:
             moves[key] = change
         else:
             raise ValidationError("A stock-playbook change is malformed")
-    if not resolved and not moves:
+    if not resolved and not moves and not trailers:
         raise ValidationError("No stock-playbook changes were supplied")
     outers = {change.outer_index for change in resolved.values()}
     outers |= {move.outer_index for move in moves.values()}
+    outers |= {trailer.outer_index for trailer in trailers.values()}
     if len(outers) != 1:
         raise ValidationError("Compile one stock playbook at a time")
-    # A move that names a play the same request deletes has no honest reading:
-    # the user is asking for two different fates for one slot.
-    dropped = {
-        (change.record_index, change.play_index)
-        for change in resolved.values()
-        if not change.member
-    }
-    for move in moves.values():
-        for play in (move.from_play, move.to_play):
-            if (move.record_index, play) in dropped:
-                raise ValidationError(
-                    f"Play {play} is both removed and part of a tagged-slot move "
-                    f"in record {move.record_index}"
-                )
+    # A move and a removal naming the same play compose in the fixed order
+    # adds -> moves -> removals: the move first travels the tagged slot off
+    # (or onto) the play, then the removal phase's heir / tag-count rules
+    # decide what the record still owes.  Refusing the pair here punished
+    # users for doing exactly what the carry dialog recommends, and the
+    # panel's composable preview already accepted it, so Save Project and
+    # the panel disagreed.  Unsafe residue is still refused below, with
+    # actionable messages, by _check_tag_rule.
     return _Request(
         outers.pop(),
         tuple(resolved[key] for key in sorted(resolved)),
         tuple(moves[key] for key in sorted(moves)),
+        tuple(trailers[key] for key in sorted(trailers)),
     )
 
 
@@ -1317,6 +1435,54 @@ def compile_book(
             value = entries[slot].encode() if slot < len(entries) else FILLER
             struct.pack_into(">H", replacement, base + slot * 2, value)
 
+    trailer_replaced: list[dict[str, Any]] = []
+    category_bits_added = 0
+    for trailer in sorted(
+        request.trailers, key=lambda item: item.record_index
+    ):
+        record = book.records[trailer.record_index]
+        trailer_at = (
+            RECORD_BASE + trailer.record_index * RECORD_STRIDE + TRAILER_OFFSET
+        )
+        before_a, before_b = struct.unpack_from(">2I", book.body, trailer_at)
+        before_formation = before_a >> 24
+        before_category = (before_a >> 17) & 0x7F
+        if (
+            before_formation == trailer.formation_index
+            and before_category == trailer.category_index
+            and before_b & (1 << trailer.category_index)
+        ):
+            raise ValidationError(
+                f"Record {trailer.record_index} already lines up as MASTER "
+                f"formation {trailer.formation_index} under personnel package "
+                f"{trailer.category_index}; nothing to replace"
+            )
+        after_a = (before_a & 0x0001FFFF) | (
+            trailer.formation_index << 24
+        ) | (trailer.category_index << 17)
+        after_b = before_b | (1 << trailer.category_index)
+        struct.pack_into(">2I", replacement, trailer_at, after_a, after_b)
+        category_bits_added |= 1 << trailer.category_index
+        applied.append(
+            {
+                "kind": "trailer_replace",
+                "selector": trailer.selector,
+                "record_index": trailer.record_index,
+                "formation_before": before_formation,
+                "formation_after": trailer.formation_index,
+                "category_before": before_category,
+                "category_after": trailer.category_index,
+                "word_b_before": before_b,
+                "word_b_after": after_b,
+            }
+        )
+        trailer_replaced.append(applied[-1])
+    if request.trailers:
+        mask_at = BOOK_CATEGORY_MASK_OFFSET
+        before_mask = struct.unpack_from(">I", book.body, mask_at)[0]
+        after_mask = before_mask | category_bits_added
+        struct.pack_into(">I", replacement, mask_at, after_mask)
+
     if len(replacement) != len(book.body):
         raise ValidationError("A stock-playbook edit changed the resource length")
     populated_before = {
@@ -1338,6 +1504,43 @@ def compile_book(
             "produce out-of-book plays and personnel packages. Keep at least one "
             "formation populated."
         )
+    claims: dict[str, Any] = {
+        "entry_prefix_only": not bool(request.trailers),
+        "trailers_untouched": not bool(request.trailers),
+        "unmapped_tail_untouched": True,
+        "resource_length_unchanged": True,
+        "tag_count_rule_held": True,
+        "tag_meaning_proved": False,
+        "cpu_membership_static_proved": True,
+        "cpu_behaviour_runtime_proved": False,
+        "empty_record_returns_no_plays": True,
+        # Static count/get-nth returning 0/null was never a proof that the
+        # director handles an empty record gracefully, and a community
+        # runtime report says it does not.  Say so on every compile that
+        # empties one.
+        "empty_record_runtime_safe": False,
+        "empty_record_reported_out_of_book_calls": bool(emptied),
+        "wr3_te_package_sub_proved": False,
+    }
+    if request.trailers:
+        # The trailer is consumed by the lineup chain exactly as pinned:
+        # category extract 0x8485BD40, formation byte 0x84A8B8D4, book mask
+        # walk 0x84A8B438/0x84A89680.  Whether the director SELECTS the
+        # repointed record differently on any situation is runtime-unproved.
+        claims.update(
+            {
+                "trailer_replace_whitelisted_only": True,
+                "book_category_mask_untouched": False,
+                "trailer_cde_fields_preserved": True,
+                "trailer_low_byte_preserved": True,
+                "book_category_mask_only_gained_bits": True,
+                "formation_index_in_master": True,
+                "category_index_in_table": True,
+                "cpu_trailer_consumption_static_proved": True,
+                "director_formation_choice_proved": False,
+                "runtime_lineup_after_replace_proved": False,
+            }
+        )
     report = {
         "schema": REPORT_SCHEMA,
         "provider_kind": PROVIDER_KIND,
@@ -1349,49 +1552,44 @@ def compile_book(
         # quietly refusing or quietly shipping it.
         "records_outside_retail_tag_sets": off_distribution,
         "records_emptied": emptied,
+        "records_trailer_replaced": trailer_replaced,
         "populated_records_remaining": len(surviving),
-        "claims": {
-            "entry_prefix_only": True,
-            "trailers_untouched": True,
-            "unmapped_tail_untouched": True,
-            "resource_length_unchanged": True,
-            "tag_count_rule_held": True,
-            "tag_meaning_proved": False,
-            "cpu_membership_static_proved": True,
-            "cpu_behaviour_runtime_proved": False,
-            "empty_record_returns_no_plays": True,
-            # Static count/get-nth returning 0/null was never a proof that the
-            # director handles an empty record gracefully, and a community
-            # runtime report says it does not.  Say so on every compile that
-            # empties one.
-            "empty_record_runtime_safe": False,
-            "empty_record_reported_out_of_book_calls": bool(emptied),
-            "wr3_te_package_sub_proved": False,
-        },
+        "claims": claims,
     }
     return CompiledBook(book.outer_index, b"", bytes(replacement), report)
 
 
 def verify_book(
-    before: bytes, after: bytes, changes: Iterable[MembershipChange | TagMove]
+    before: bytes,
+    after: bytes,
+    changes: Iterable[MembershipChange | TagMove | TrailerReplace],
 ) -> Mapping[str, Any]:
     """Re-derive every changed byte without trusting the compiler.
 
     Every difference must fall inside the 168-byte entry region of a record a
-    change named. A trailer byte, either unmapped tail region, or any other
-    record fails here rather than in someone's game. The tagged-slot rule is
-    re-derived from the output bytes too, so a compiler that lost or duplicated
-    a slot cannot ship it.
+    change named, or inside the 8 trailer bytes / book category mask that a
+    trailer replace named. Any other trailer byte, either unmapped tail
+    region, or any other record fails here rather than in someone's game. The
+    tagged-slot rule is re-derived from the output bytes too, so a compiler
+    that lost or duplicated a slot cannot ship it.
     """
 
     request = _normalize(changes)
     if len(before) != len(after):
         raise ValidationError("Stock-playbook verification: resource length changed")
     touched = request.record_indices
+    trailer_records = {trailer.record_index for trailer in request.trailers}
     allowed: set[int] = set()
     for record_index in touched:
         base = RECORD_BASE + record_index * RECORD_STRIDE
         allowed.update(range(base, base + ENTRY_BYTES))
+    for record_index in trailer_records:
+        base = RECORD_BASE + record_index * RECORD_STRIDE + TRAILER_OFFSET
+        allowed.update(range(base, base + 8))
+    if trailer_records:
+        allowed.update(
+            range(BOOK_CATEGORY_MASK_OFFSET, BOOK_CATEGORY_MASK_OFFSET + 4)
+        )
     differing = [i for i in range(len(before)) if before[i] != after[i]]
     for offset in differing:
         if offset not in allowed:
@@ -1475,8 +1673,32 @@ def verify_book(
             f"Stock-playbook verification: record {record_index} entries do not "
             "match the requested edits"
         )
+    for trailer in request.trailers:
+        trailer_at = (
+            RECORD_BASE + trailer.record_index * RECORD_STRIDE + TRAILER_OFFSET
+        )
+        before_a, before_b = struct.unpack_from(">2I", before, trailer_at)
+        after_a, after_b = struct.unpack_from(">2I", after, trailer_at)
+        expected_a = (before_a & 0x0001FFFF) | (
+            trailer.formation_index << 24
+        ) | (trailer.category_index << 17)
+        expected_b = before_b | (1 << trailer.category_index)
+        if after_a != expected_a or after_b != expected_b:
+            raise ValidationError(
+                f"Stock-playbook verification: record {trailer.record_index} "
+                "trailer does not match the requested formation/package"
+            )
+    expected_mask = struct.unpack_from(">I", before, BOOK_CATEGORY_MASK_OFFSET)[0]
+    for trailer in request.trailers:
+        expected_mask |= 1 << trailer.category_index
+    after_mask = struct.unpack_from(">I", after, BOOK_CATEGORY_MASK_OFFSET)[0]
+    if after_mask != expected_mask:
+        raise ValidationError(
+            "Stock-playbook verification: the book category mask does not match "
+            "the requested packages"
+        )
     for index, (a, b) in enumerate(zip(parsed_before.records, parsed_after.records)):
-        if a.trailer != b.trailer:
+        if index not in trailer_records and a.trailer != b.trailer:
             raise ValidationError(
                 f"Stock-playbook verification: record {index} trailer changed"
             )
@@ -1490,6 +1712,7 @@ def verify_book(
         "schema": REPORT_SCHEMA,
         "changed_byte_count": len(differing),
         "changed_records": sorted(touched),
+        "trailer_records": sorted(trailer_records),
         "tag_rule_reverified": True,
         "independent_reparse": True,
     }
@@ -1624,8 +1847,13 @@ __all__ = [
     "STOCK_BOOKS",
     "TAG_PRIORITY",
     "FLIP_SUFFIX",
+    "BOOK_CATEGORY_MASK_OFFSET",
+    "CATEGORY_COUNT",
+    "MASTER_FORMATION_INDEX_MAX",
     "CompiledBook",
     "MembershipChange",
+    "TrailerReplace",
+    "trailer_selector",
     "find_flip_partner_record",
     "flip_partner_name",
     "SplbBook",

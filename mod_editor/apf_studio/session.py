@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import shutil
 import stat
+import struct
 import tempfile
 from typing import Callable, Iterable, Mapping
 from uuid import uuid4
@@ -20,19 +21,30 @@ from PIL import Image
 
 from mod_editor.core import audio_conform
 from mod_editor.core import platform_compat
+from mod_editor.core.apf2k8_package_map_writer import (
+    PROVIDER_KIND as PACKAGE_MAP_KIND,
+    PackageMapChange,
+    change_from_mapping as package_map_from_mapping,
+    compile_master_play_edits,
+    decode_package_map_payload,
+    encode_package_map_payload,
+)
 from mod_editor.core.apf2k8_playbook_route_writer import (
     PROVIDER_KIND as PLAY_ASSIGNMENT_ROUTE_KIND,
     RouteCloneRequest,
-    compile_route_clones,
+    build_relayed_copy_requests,
     decode_route_clone_payload,
     encode_route_clone_payload,
     read_master_play_body,
+    relay_candidates,
     request_from_mapping as route_clone_request_from_mapping,
 )
 from mod_editor.core.apf2k8_splb_writer import (
+    CATEGORY_COUNT as SPLB_CATEGORY_COUNT,
     PROVIDER_KIND as SPLB_MEMBERSHIP_KIND,
     MembershipChange as SplbMembershipChange,
     TagMove as SplbTagMove,
+    TrailerReplace as SplbTrailerReplace,
     change_from_mapping as splb_change_from_mapping,
     change_metadata as splb_change_metadata,
     compile_book as compile_splb_book,
@@ -1605,17 +1617,30 @@ class ApfSession:
         crest_asset_index: int,
         crest_outer_entry_index: int,
         fit_visible_mask: bool = False,
+        detail_png: Path | None = None,
     ) -> Modification:
         """Stage one selected-team crest plus its fixed helmet coverage profile.
 
         The project payload is always one normalized 512x512 RGBA PNG.  The
         full-shell profile changes the shared helmet model at build time; the
-        crest package and cache selection remain team-specific.
+        crest package and cache selection remain team-specific.  ``detail_png``
+        optionally stages the companion ``logo_l1`` art (regions 3-5) so the
+        retail-profile project build writes both layers instead of clearing the
+        detail masks.
         """
 
         data, _source_digest = self._validated_png(
             Path(supplied_png), width=512, height=512, contract="helmet_crest_design"
         )
+        detail_data: bytes | None = None
+        detail_digest: str | None = None
+        if detail_png is not None:
+            detail_data, detail_digest = self._validated_png(
+                Path(detail_png),
+                width=512,
+                height=512,
+                contract="helmet_crest_design",
+            )
         try:
             with Image.open(BytesIO(data)) as image:
                 image.load()
@@ -1686,6 +1711,7 @@ class ApfSession:
                 fit_visible_mask=fit_visible_mask,
                 source_horizontal_coverage=source_coverage,
                 output_horizontal_coverage=output_coverage,
+                detail_sha256=detail_digest,
             )
         except HelmetCrestDesignError as exc:
             raise SessionError(str(exc)) from exc
@@ -1693,6 +1719,10 @@ class ApfSession:
         stored = self._store_replacement(
             HELMET_CREST_DESIGN_EDIT_ID, digest, data
         )
+        if detail_data is not None and detail_digest is not None:
+            self._store_replacement(
+                HELMET_CREST_DESIGN_EDIT_ID, detail_digest, detail_data
+            )
         modification = Modification(
             asset_id=HELMET_CREST_DESIGN_EDIT_ID,
             kind=HELMET_CREST_DESIGN_KIND,
@@ -2252,6 +2282,104 @@ class ApfSession:
                 raise SessionError(str(exc)) from exc
         return self._master_play_source_body
 
+    def _active_package_maps(
+        self, modifications: Mapping[str, Modification] | None = None
+    ) -> tuple[PackageMapChange, ...]:
+        source = self._modifications if modifications is None else modifications
+        result: list[PackageMapChange] = []
+        for modification in source.values():
+            if modification.kind != PACKAGE_MAP_KIND:
+                continue
+            try:
+                change = decode_package_map_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+                metadata_change = package_map_from_mapping(modification.metadata)
+            except (OSError, ValidationError) as exc:
+                raise SessionError(
+                    f"The active who-lines-up edit is invalid: {exc}"
+                ) from exc
+            if change != metadata_change:
+                raise SessionError(
+                    "Who-lines-up edit target metadata changed: "
+                    f"{modification.asset_id}"
+                )
+            result.append(change)
+        return tuple(sorted(result, key=lambda item: item.formation_index))
+
+    def staged_package_maps(self) -> tuple[PackageMapChange, ...]:
+        return self._active_package_maps()
+
+    def _compile_master_play(
+        self, modifications: Mapping[str, Modification] | None = None
+    ) -> None:
+        maps = self._active_package_maps(modifications)
+        routes = self._active_route_requests(modifications)
+        if not maps and not routes:
+            return
+        compile_master_play_edits(
+            self._master_play_body(), package_maps=maps, routes=routes
+        )
+
+    def apply_package_map_batch(
+        self, changes: Iterable[PackageMapChange]
+    ) -> int:
+        """Replace the entire staged who-lines-up set with this batch.
+
+        Maps not named in ``changes`` are unstaged. The whole batch is one
+        Undo step; individual formations remain individually revert-able.
+        An empty batch clears every staged who-lines-up map.
+        """
+
+        normalized = tuple(changes)
+        prepared: list[Modification] = []
+        seen: set[int] = set()
+        for change in normalized:
+            if not isinstance(change, PackageMapChange):
+                raise SessionError("A who-lines-up edit is malformed")
+            if change.formation_index in seen:
+                raise SessionError(
+                    "A who-lines-up batch repeats one formation"
+                )
+            seen.add(change.formation_index)
+            try:
+                payload = encode_package_map_payload(change)
+            except ValidationError as exc:
+                raise SessionError(str(exc)) from exc
+            digest = hashlib.sha256(payload).hexdigest()
+            stored = self._store_payload(digest, payload, ".json")
+            prepared.append(
+                Modification(
+                    asset_id=change.selector,
+                    kind=PACKAGE_MAP_KIND,
+                    replacement_path=stored,
+                    replacement_sha256=digest,
+                    metadata=change.metadata(),
+                )
+            )
+        updated = {
+            asset_id: modification
+            for asset_id, modification in self._modifications.items()
+            if modification.kind != PACKAGE_MAP_KIND
+        }
+        for modification in prepared:
+            updated[modification.asset_id] = modification
+        try:
+            self._compile_master_play(updated)
+        except ValidationError as exc:
+            raise SessionError(str(exc)) from exc
+        if updated == self._modifications:
+            return 0
+        changed = {
+            key
+            for key in set(updated).union(self._modifications)
+            if updated.get(key) != self._modifications.get(key)
+        }
+        self._record_undo()
+        self._modifications = updated
+        return len(changed)
+
     @staticmethod
     def _route_request_metadata(request: RouteCloneRequest) -> dict[str, object]:
         return {
@@ -2342,9 +2470,7 @@ class ApfSession:
         for modification in prepared:
             updated[modification.asset_id] = modification
         try:
-            active = self._active_route_requests(updated)
-            if active:
-                compile_route_clones(self._master_play_body(), active)
+            self._compile_master_play(updated)
         except ValidationError as exc:
             raise SessionError(str(exc)) from exc
         if updated == self._modifications:
@@ -2406,6 +2532,69 @@ class ApfSession:
             self._modifications[second.selector],
         )
 
+    def relay_play_assignment_route_candidates(
+        self,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+    ) -> tuple[tuple[int, int], ...]:
+        """Slots whose shared current route can relay an otherwise-orphaning copy."""
+
+        try:
+            return relay_candidates(
+                self._master_play_body(),
+                target_play_index,
+                target_slot_index,
+                donor_play_index,
+                donor_slot_index,
+            )
+        except ValidationError as exc:
+            raise SessionError(str(exc)) from exc
+
+    def copy_play_assignment_route_via_relay(
+        self,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+        relay_play_index: int,
+        relay_slot_index: int,
+    ) -> tuple[Modification, Modification]:
+        """Copy donor->target and target's original route->relay as one Undo step."""
+
+        target = (target_play_index, target_slot_index)
+        donor = (donor_play_index, donor_slot_index)
+        relay = (relay_play_index, relay_slot_index)
+        if relay == target or relay == donor:
+            raise SessionError(
+                "The relay assignment must be different from both the target "
+                "and the donor."
+            )
+        if relay_play_index == donor_play_index:
+            raise SessionError(
+                "Pick a relay slot on another play so the donor play stays "
+                "untouched."
+            )
+        candidates = self.relay_play_assignment_route_candidates(
+            target_play_index,
+            target_slot_index,
+            donor_play_index,
+            donor_slot_index,
+        )
+        if relay not in candidates:
+            raise SessionError(
+                "The relay slot's current route is only used on that play, so "
+                "relaying through it would delete the route. Pick a relay slot "
+                "whose route at least one other assignment also uses."
+            )
+        first, second = build_relayed_copy_requests(target, donor, relay)
+        self.apply_play_assignment_route_batch((first, second))
+        return (
+            self._modifications[first.selector],
+            self._modifications[second.selector],
+        )
+
     # ------------------------------------------------ stock playbook membership
 
     def _active_splb_changes(
@@ -2454,6 +2643,33 @@ class ApfSession:
     def staged_splb_changes(self) -> tuple[SplbMembershipChange | SplbTagMove, ...]:
         return self._active_splb_changes()
 
+    def master_categories(self) -> tuple[dict[str, object], ...]:
+        """The MASTER personnel packages: index, name, row, eleven roles.
+
+        Byte layout mirrored from the pinned category getter 0x8485BD38:
+        records at +0x44, stride 0x10; byte +4 is the personnel row and the
+        next eleven bytes are the per-slot roles (8 = TE, 9 = WR).
+        """
+
+        body = self._master_play_body()
+        out: list[dict[str, object]] = []
+        for index in range(SPLB_CATEGORY_COUNT):
+            base = 0x44 + index * 0x10
+            stored = struct.unpack_from(">i", body, base)[0]
+            target = base - 1 + stored
+            cursor = target
+            while cursor + 2 <= len(body) and body[cursor : cursor + 2] != b"\0\0":
+                cursor += 2
+            out.append(
+                {
+                    "index": index,
+                    "name": body[target:cursor].decode("utf-16-be", errors="replace"),
+                    "row": int(body[base + 4]),
+                    "roles": tuple(int(body[base + 5 + s]) & 0x1F for s in range(11)),
+                }
+            )
+        return tuple(out)
+
     def _compile_splb_groups(
         self, active: Iterable[SplbMembershipChange | SplbTagMove]
     ) -> None:
@@ -2486,7 +2702,9 @@ class ApfSession:
         seen: set[str] = set()
         outers: set[int] = set()
         for change in normalized:
-            if not isinstance(change, (SplbMembershipChange, SplbTagMove)):
+            if not isinstance(
+                change, (SplbMembershipChange, SplbTagMove, SplbTrailerReplace)
+            ):
                 raise SessionError("A stock-playbook change is malformed")
             try:
                 payload = encode_splb_membership_payload(change)
@@ -2815,12 +3033,9 @@ class ApfSession:
             updated.pop(asset_id)
 
             def route_set_is_safe(candidate: Mapping[str, Modification]) -> bool:
-                requests = self._active_route_requests(candidate)
-                if not requests:
-                    return True
                 try:
-                    compile_route_clones(self._master_play_body(), requests)
-                except ValidationError:
+                    self._compile_master_play(candidate)
+                except (ValidationError, SessionError):
                     return False
                 return True
 
@@ -2863,6 +3078,20 @@ class ApfSession:
                         "Reverting this assignment pair would leave the staged "
                         "route set unsafe. Revert all route edits together."
                     )
+            self._record_undo()
+            self._modifications = updated
+            return True
+        if previous.kind == PACKAGE_MAP_KIND:
+            updated = dict(self._modifications)
+            updated.pop(asset_id)
+            try:
+                self._compile_master_play(updated)
+            except ValidationError as exc:
+                raise SessionError(
+                    "Reverting only this who-lines-up edit would leave the "
+                    f"rest unsafe ({exc}). Revert the other MASTER PLAY edits "
+                    "together."
+                ) from exc
             self._record_undo()
             self._modifications = updated
             return True
@@ -3153,6 +3382,26 @@ class ApfSession:
                     if request != metadata_request:
                         raise SessionError(
                             "Project APF route-clone target metadata changed: "
+                            f"{modification.asset_id}"
+                        )
+                    digest = hashlib.sha256(data).hexdigest()
+                    suffix = ".json"
+                elif modification.kind == PACKAGE_MAP_KIND:
+                    try:
+                        data = modification.replacement_path.read_bytes()
+                        change = decode_package_map_payload(
+                            data, modification.asset_id
+                        )
+                        metadata_change = package_map_from_mapping(
+                            modification.metadata
+                        )
+                    except (OSError, ValidationError) as exc:
+                        raise SessionError(
+                            f"Project who-lines-up edit is invalid: {exc}"
+                        ) from exc
+                    if change != metadata_change:
+                        raise SessionError(
+                            "Project who-lines-up target metadata changed: "
                             f"{modification.asset_id}"
                         )
                     digest = hashlib.sha256(data).hexdigest()
@@ -3464,20 +3713,17 @@ class ApfSession:
                         metadata=modification.metadata,
                     )
                 )
-            route_modifications = {
+            master_play_modifications = {
                 item.asset_id: item
                 for item in validated
-                if item.kind == PLAY_ASSIGNMENT_ROUTE_KIND
+                if item.kind in {PLAY_ASSIGNMENT_ROUTE_KIND, PACKAGE_MAP_KIND}
             }
-            if route_modifications:
+            if master_play_modifications:
                 try:
-                    compile_route_clones(
-                        self._master_play_body(),
-                        self._active_route_requests(route_modifications),
-                    )
+                    self._compile_master_play(master_play_modifications)
                 except ValidationError as exc:
                     raise SessionError(
-                        f"Project APF route-clone set is unsafe: {exc}"
+                        f"Project MASTER PLAY edit set is unsafe: {exc}"
                     ) from exc
             splb_modifications = {
                 item.asset_id: item

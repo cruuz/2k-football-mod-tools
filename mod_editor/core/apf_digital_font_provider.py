@@ -56,9 +56,9 @@ class Apf2k8DigitalFontProvider:
     max_manifest_bytes = 8 * 1024 * 1024
     max_pinned_file_bytes = 16 * 1024 * 1024
     module_pins: Mapping[str, str] = {
-        "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
-        "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_texture_patch.py": "65153c92d5fa734718a1f2e335ce55162fd19826404501f0353b3e68ddfb6eb4",
+        "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
+        "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
+        "tools/apf_texture_patch.py": "301cbea24825ddc914498d99befa4db633cb4cd4a47119dec698942f3cd40f18",
         "tools/apf_xenos_dxt5a.py": "063c4d564748019198b54898c3676f541a85319606f3ae9bd733d9340c7d66f6",
         "tools/apf_digital_font_layout.py": "df7ef3f9f5a664a0b5edce4e1dc15ccbca6fd9e3eb3579377f12abb0b392fcb4",
         "tools/apf_digital_font_transport.py": "4ed563c17df79df3f0bef6190546c5fbe82314ed71fc3bf7a965c845130a0bf8",

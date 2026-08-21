@@ -52,6 +52,7 @@ from pathlib import Path
 import stat
 import struct
 import sys
+from typing import Sequence
 import zlib
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -536,45 +537,68 @@ def _rewrite_directory(
     return bytes(new_dir)
 
 
-def build_cache_patch(
-    index_path: Path,
-    catalog_index: int,
-    png_l0: Path,
-    png_l1: Path | None = None,
-    clear_l1: bool = False,
-) -> CachePatchResult:
-    """Rewrite catalog ``N``'s logo_l0 (and optionally logo_l1) inside the cache.
+@dataclass(frozen=True)
+class CacheLayerSpec:
+    """One catalog slot's crest layers for a single-pass cache rewrite."""
 
-    ``clear_l1`` clears the cached detail layer's region masks while keeping its
-    alpha, matching the package writer's treatment of one supplied mark.  The
-    two copies of a crest have to agree, or the frontend tile and the helmet
-    disagree about how many times the mark is drawn.
+    catalog_index: int
+    png_l0: Path
+    png_l1: Path | None = None
+    clear_l1: bool = False
+
+
+def build_cache_patch_many(
+    index_path: Path, specs: "Sequence[CacheLayerSpec]"
+) -> CachePatchResult:
+    """Rewrite several catalog slots' crests inside the cache in ONE pass.
+
+    The retail directory pin stays: every spec's layers are staged into the
+    same retail cache state and repacked once, so any number of crests land in
+    a single copied volume without chaining through earlier outputs.  A scalar
+    :func:`build_cache_patch` call is exactly one spec.
     """
 
-    if png_l1 is not None and clear_l1:
-        raise PatchError(
-            "choose one detail-layer treatment: supply logo_l1 art, or clear it"
-        )
-    if not 0 <= catalog_index < CATALOG_COUNT:
-        raise PatchError(f"catalog index {catalog_index} is outside 0..{CATALOG_COUNT - 1}")
+    specs = tuple(specs)
+    if not specs:
+        raise PatchError("at least one crest spec is required")
+    seen_catalogs: set[int] = set()
+    for spec in specs:
+        if spec.png_l1 is not None and spec.clear_l1:
+            raise PatchError(
+                "choose one detail-layer treatment: supply logo_l1 art, or clear it"
+            )
+        if not 0 <= spec.catalog_index < CATALOG_COUNT:
+            raise PatchError(
+                f"catalog index {spec.catalog_index} is outside 0..{CATALOG_COUNT - 1}"
+            )
+        if spec.catalog_index in seen_catalogs:
+            raise PatchError(
+                f"catalog index {spec.catalog_index} appears twice in one pass"
+            )
+        seen_catalogs.add(spec.catalog_index)
 
     archive, dir_entry, pay_entry, dir_raw, pay_raw = _read_pair(index_path)
     directory = parse_cache_directory(dir_raw)
     if directory.total_stream_length > PAYLOAD_SIZE:
         raise PatchError("retail logo cache stream already exceeds its allocation")
 
-    name_l0 = f"{catalog_index:02d}_logo_l0"
-    name_l1 = f"{catalog_index:02d}_logo_l1"
     # A target's art is either a PNG the caller supplied or exact RGBA this
     # writer derived from the cached retail layer.
-    targets: list[tuple[_CacheLayerTarget, Path | bytes]] = [
-        (_extract_target(directory, pay_raw, name_l0, None), png_l0)
-    ]
-    if png_l1 is not None:
-        targets.append((_extract_target(directory, pay_raw, name_l1, None), png_l1))
-    elif clear_l1:
-        detail = _extract_target(directory, pay_raw, name_l1, None)
-        targets.append((detail, cleared_detail_rgba(detail.rgba)))
+    targets: list[tuple[_CacheLayerTarget, Path | bytes]] = []
+    for spec in specs:
+        name_l0 = f"{spec.catalog_index:02d}_logo_l0"
+        name_l1 = f"{spec.catalog_index:02d}_logo_l1"
+        targets.append(
+            (_extract_target(directory, pay_raw, name_l0, None), spec.png_l0)
+        )
+        if spec.png_l1 is not None:
+            targets.append(
+                (_extract_target(directory, pay_raw, name_l1, None), spec.png_l1)
+            )
+        elif spec.clear_l1:
+            detail = _extract_target(directory, pay_raw, name_l1, None)
+            targets.append((detail, cleared_detail_rgba(detail.rgba)))
+    catalog_index = specs[0].catalog_index
 
     edits: dict[int, bytes] = {}
     # (target, wanted_rgba, new_base, new_stored_b)
@@ -609,6 +633,7 @@ def build_cache_patch(
         "archive_index": str(index_path),
         "physical_volume": "0A",
         "catalog_index": catalog_index,
+        "catalog_indices": sorted(seen_catalogs),
         "directory_entry_index": DIR_TABLE_INDEX,
         "payload_entry_index": PAYLOAD_TABLE_INDEX,
         "directory_sha256": sha256_bytes(dir_raw),
@@ -776,6 +801,34 @@ def build_cache_patch(
     return CachePatchResult(new_dir, new_payload, manifest)
 
 
+def build_cache_patch(
+    index_path: Path,
+    catalog_index: int,
+    png_l0: Path,
+    png_l1: Path | None = None,
+    clear_l1: bool = False,
+) -> CachePatchResult:
+    """Rewrite catalog ``N``'s logo_l0 (and optionally logo_l1) inside the cache.
+
+    ``clear_l1`` clears the cached detail layer's region masks while keeping its
+    alpha, matching the package writer's treatment of one supplied mark.  The
+    two copies of a crest have to agree, or the frontend tile and the helmet
+    disagree about how many times the mark is drawn.
+    """
+
+    return build_cache_patch_many(
+        index_path,
+        (
+            CacheLayerSpec(
+                catalog_index=int(catalog_index),
+                png_l0=Path(png_l0),
+                png_l1=Path(png_l1) if png_l1 is not None else None,
+                clear_l1=bool(clear_l1),
+            ),
+        ),
+    )
+
+
 def _stream_length(directory: CacheDirectory) -> int:
     return max((e.stream_b + e.len_b for e in directory.entries), default=0)
 
@@ -922,7 +975,10 @@ def _write_copied_volume_extents(
         if source_sha_after != source_sha_before:
             raise PatchError("source APF volume changed during copied-volume patch")
         if not _path_is_owned_inode(source_volume, source_identity):
-            raise PatchError("source APF volume pathname changed during copy")
+            raise PatchError(
+            "source APF volume pathname changed during copy (a symlinked "
+            "source is the usual cause; stage a real copy instead)"
+        )
 
         _copy_fd_metadata(
             source_descriptor, output_descriptor, source_metadata, output_volume

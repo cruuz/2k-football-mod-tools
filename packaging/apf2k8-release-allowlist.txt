@@ -66,6 +66,7 @@ mod_editor/apf_studio/player_rating_sheet.py
 mod_editor/apf_studio/player_ratings.py
 mod_editor/apf_studio/playbook_route_qt.py
 mod_editor/apf_studio/playbook_membership_qt.py
+mod_editor/apf_studio/playbook_package_map_qt.py
 mod_editor/apf_studio/product_findings.py
 mod_editor/apf_studio/project.py
 mod_editor/apf_studio/roster_workspace.py
@@ -94,6 +95,7 @@ mod_editor/capabilities/registry.v1.json
 mod_editor/capabilities/validate_registry.py
 mod_editor/core/audio_conform.py
 mod_editor/core/apf2k8_playbook_route_writer.py
+mod_editor/core/apf2k8_package_map_writer.py
 mod_editor/core/apf2k8_splb_writer.py
 mod_editor/core/capabilities.py
 mod_editor/core/errors.py

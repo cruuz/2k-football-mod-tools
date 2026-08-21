@@ -15,6 +15,13 @@ from typing import Callable, Iterable, Mapping
 
 from mod_editor.core import platform_compat
 from mod_editor.core.platform_compat import try_reflink
+from mod_editor.core.apf2k8_package_map_writer import (
+    PROVIDER_KIND as PACKAGE_MAP_KIND,
+    REPORT_SCHEMA as PACKAGE_MAP_WRITER_SCHEMA,
+    build_master_play_edits,
+    change_from_mapping as package_map_from_mapping,
+    decode_package_map_payload,
+)
 from mod_editor.core.apf2k8_playbook_route_writer import (
     PROVIDER_KIND as PLAY_ASSIGNMENT_ROUTE_KIND,
     REPORT_SCHEMA as PLAY_ASSIGNMENT_ROUTE_WRITER_SCHEMA,
@@ -78,7 +85,7 @@ import apf_logocache_verify  # type: ignore  # noqa: E402
 import apf_team_crests  # type: ignore  # noqa: E402
 
 from .project import ProjectError, decode_text_payload
-from .number_targets import NumberPatchError
+from .number_targets import NumberPatchError, is_digit_overflow_target
 from .number_targets import compile_package_patch as compile_number_package_patch
 from .uniform_targets import compile_uniform_patch
 
@@ -854,6 +861,7 @@ class ApfBuildService:
         custom_team_appearance_group: list[Modification] = []
         uniform_equipment_color_group: list[Modification] = []
         play_assignment_route_group: list[Modification] = []
+        package_map_group: list[Modification] = []
         splb_membership_group: list[Modification] = []
         helmet_crest_design_group: list[Modification] = []
         audo_overlay_group: list[Modification] = []
@@ -896,6 +904,8 @@ class ApfBuildService:
                 uniform_equipment_color_group.append(modification)
             elif modification.kind == PLAY_ASSIGNMENT_ROUTE_KIND:
                 play_assignment_route_group.append(modification)
+            elif modification.kind == PACKAGE_MAP_KIND:
+                package_map_group.append(modification)
             elif modification.kind == SPLB_MEMBERSHIP_KIND:
                 splb_membership_group.append(modification)
             elif modification.kind == HELMET_CREST_DESIGN_KIND:
@@ -997,29 +1007,60 @@ class ApfBuildService:
             if len(overflowed) == 1:
                 raise BuildError(str(overflowed[0]))
             worst = min(item.overflow_bytes for item in overflowed)
+            digit_overflows = [
+                item for item in overflowed if is_digit_overflow_target(item.target)
+            ]
+            mask_overflows = [item for item in overflowed if item not in digit_overflows]
+
+            def _bullet(item: apf_texture_patch.AllocationOverflowError) -> str:
+                line = (
+                    f"• {item.target}: {item.overflow_bytes:,} bytes over"
+                )
+                if (
+                    item.budget_bytes is not None
+                    and item.retail_bytes is not None
+                ):
+                    free = item.budget_bytes - item.retail_bytes
+                    line += (
+                        f" a {item.budget_bytes:,}-byte compressed budget "
+                        f"(retail uses {item.retail_bytes:,}, leaving {free:,} free)"
+                    )
+                return line
+
+            guidance = ""
+            if digit_overflows:
+                guidance += (
+                    "\n\nJersey digits are DXT1/DXN textures, and all twenty in a "
+                    "package share one compressed budget. Retail already uses "
+                    "~99.9% of that allocation, so flattening or simplifying the "
+                    "art cannot fix this overflow — the cheapest non-blank digit "
+                    "costs ~1,800 compressed bytes, and every replacement destroys "
+                    "the cross-references the ten retail digits share inside the "
+                    "single H7A block. Growing a package's allocation would mean "
+                    "relocating the entry and rewriting the catalog — a repacker, "
+                    "not a patch-in-place writer — and that is separate follow-up "
+                    "work, not something this build can do."
+                )
+            if mask_overflows:
+                guidance += (
+                    "\n\nA region-mask slot's budget is set by how detailed "
+                    "retail's own artwork there is, not by how much free space it "
+                    "appears to have, so a near-flat retail slot cannot take busy "
+                    "art. Region-mask slots (jersey/shoulder/crest/endzone) need "
+                    "flat colours and hard edges, or a slot whose retail artwork "
+                    "is already detailed."
+                )
             raise BuildError(
                 f"{len(overflowed)} replacements do not fit their targets' fixed "
                 "allocations. Nothing was written. Every one of them is listed "
                 "here so you can fix them together rather than one build at a "
                 "time:\n\n"
                 + "\n\n".join(
-                    f"• {item.target}: {item.overflow_bytes:,} bytes over"
-                    + (
-                        f" a {item.budget_bytes:,}-byte compressed budget "
-                        f"(retail uses {item.retail_bytes:,})"
-                        if item.budget_bytes is not None
-                        and item.retail_bytes is not None
-                        else ""
-                    )
+                    _bullet(item)
                     for item in sorted(overflowed, key=lambda x: x.overflow_bytes)
                 )
-                + "\n\nA slot's budget is set by how detailed retail's own "
-                "artwork there is, not by how much free space it appears to "
-                "have, so a near-flat retail slot cannot take busy art. "
-                "Region-mask slots (jersey/shoulder/crest/endzone) need flat "
-                "colours and hard edges. Jersey digits are DXT1/DXN and "
-                "share one package budget — they are not masks. The closest "
-                f"one is {worst:,} bytes over."
+                + guidance
+                + f" The closest one is {worst:,} bytes over."
             )
         if audo_overlay_group:
             coordinates = tuple(
@@ -1226,13 +1267,14 @@ class ApfBuildService:
                 )
             compiled[outer_index] = (result.entry_bytes, row)
             edit_rows.append(row)
-        if play_assignment_route_group:
-            outer_index, entry_bytes, row = self._compile_play_assignment_routes(
-                tuple(play_assignment_route_group)
+        if play_assignment_route_group or package_map_group:
+            outer_index, entry_bytes, row = self._compile_master_play_edits(
+                routes=tuple(play_assignment_route_group),
+                package_maps=tuple(package_map_group),
             )
             if outer_index in compiled:
                 raise BuildError(
-                    "APF route clones collide with another edit at outer "
+                    "APF MASTER PLAY edits collide with another edit at outer "
                     f"{outer_index}"
                 )
             compiled[outer_index] = (entry_bytes, row)
@@ -2173,6 +2215,17 @@ class ApfBuildService:
                 "carrier_verification": full_shell.carrier_verification,
             }
             return full_shell.entries, row
+        detail_digest = metadata.get("detail_sha256")
+        detail_path: Path | None = None
+        if isinstance(detail_digest, str):
+            detail_path = modification.replacement_path.parent / (
+                f"{detail_digest}.png"
+            )
+            if not detail_path.is_file():
+                raise BuildError(
+                    "The staged crest detail layer (logo_l1) is missing from "
+                    "the project's private replacement cache"
+                )
         try:
             # A crest is six region masks split across two textures: logo_l0
             # carries regions 0-2 and logo_l1 regions 3-5, each filled from its
@@ -2181,18 +2234,21 @@ class ApfBuildService:
             # colours -- which is what a modder sees as a wrong-looking crest,
             # and it happened on all 118 packages (79 of which ship real detail
             # art of their own). One supplied mark goes in logo_l0 and the
-            # detail layer's masks are cleared, keeping its alpha exactly.
+            # detail layer's masks are cleared, keeping its alpha exactly; a
+            # staged two-layer crest writes both regions instead.
             package = apf_logo_patch.build_patch(
                 self.source.index_0a,
                 modification.replacement_path,
                 entry_index=outer_index,
-                clear_l1=True,
+                png_path_l1=detail_path,
+                clear_l1=detail_path is None,
             )
             cache = apf_logocache_patch.build_cache_patch(
                 self.source.index_0a,
                 asset_index,
                 modification.replacement_path,
-                clear_l1=True,
+                png_l1=detail_path,
+                clear_l1=detail_path is None,
             )
         except (
             OSError,
@@ -2232,15 +2288,18 @@ class ApfBuildService:
         }
         return entries, row
 
-    def _compile_play_assignment_routes(
-        self, modifications: tuple[Modification, ...]
+    def _compile_master_play_edits(
+        self,
+        *,
+        routes: tuple[Modification, ...] = (),
+        package_maps: tuple[Modification, ...] = (),
     ) -> tuple[int, bytes, dict[str, object]]:
-        """Compile logical selectors against the user's private MASTER PLAY."""
+        """Compile who-lines-up maps and/or route clones into outer 180."""
 
-        if not modifications:
-            raise BuildError("Select at least one APF assignment route to copy")
+        if not routes and not package_maps:
+            raise BuildError("Select at least one APF MASTER PLAY edit")
         requests = []
-        for modification in modifications:
+        for modification in routes:
             try:
                 request = decode_route_clone_payload(
                     modification.replacement_path.read_bytes(),
@@ -2258,32 +2317,100 @@ class ApfBuildService:
                     f"APF route-clone metadata changed: {modification.asset_id}"
                 )
             requests.append(request)
+        maps = []
+        for modification in package_maps:
+            try:
+                change = decode_package_map_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+                metadata_change = package_map_from_mapping(modification.metadata)
+            except (OSError, ValidationError) as exc:
+                raise BuildError(
+                    f"Could not read who-lines-up edit {modification.asset_id}: {exc}"
+                ) from exc
+            if change != metadata_change:
+                raise BuildError(
+                    f"Who-lines-up metadata changed: {modification.asset_id}"
+                )
+            maps.append(change)
+        if requests and not maps:
+            try:
+                result = build_play_route_patch(self.source.index_0a, requests)
+            except ValidationError as exc:
+                raise BuildError(f"Could not compile APF route clones: {exc}") from exc
+            if result.outer_index != 180:
+                raise BuildError("APF MASTER PLAY writer target changed")
+            row = {
+                "asset_ids": tuple(item.asset_id for item in routes),
+                "kind": "play_assignment_route_batch",
+                "outer_index": result.outer_index,
+                "replacement_payload_sha256s": {
+                    item.asset_id: item.replacement_sha256 for item in routes
+                },
+                "entry_size": len(result.entry_bytes),
+                "entry_sha256": _hash_bytes(result.entry_bytes),
+                "writer_schema": PLAY_ASSIGNMENT_ROUTE_WRITER_SCHEMA,
+                "writer_mode": "exact_stock_assignment_route_clone",
+                "resource_source_sha256": result.compiled_resource.source_sha256,
+                "resource_replacement_sha256": (
+                    result.compiled_resource.replacement_sha256
+                ),
+                "changed_byte_count": result.compiled_resource.changed_byte_count,
+                "changed_ranges": result.report["changed_ranges"],
+                "compiler_claims": result.report["claims"],
+            }
+            return result.outer_index, result.entry_bytes, row
         try:
-            result = build_play_route_patch(self.source.index_0a, requests)
+            outer_index, entry_bytes, report = build_master_play_edits(
+                self.source.index_0a,
+                package_maps=maps,
+                routes=requests,
+            )
         except ValidationError as exc:
-            raise BuildError(f"Could not compile APF route clones: {exc}") from exc
-        if result.outer_index != 180:
+            raise BuildError(f"Could not compile APF MASTER PLAY edits: {exc}") from exc
+        if outer_index != 180:
             raise BuildError("APF MASTER PLAY writer target changed")
-        row: dict[str, object] = {
-            "asset_ids": tuple(item.asset_id for item in modifications),
-            "kind": "play_assignment_route_batch",
-            "outer_index": result.outer_index,
+        all_mods = tuple(package_maps) + tuple(routes)
+        kind = (
+            "master_play_combined_batch"
+            if maps and requests
+            else "formation_package_map_batch"
+            if maps
+            else "play_assignment_route_batch"
+        )
+        writer_schema = (
+            PACKAGE_MAP_WRITER_SCHEMA if maps else PLAY_ASSIGNMENT_ROUTE_WRITER_SCHEMA
+        )
+        row = {
+            "asset_ids": tuple(item.asset_id for item in all_mods),
+            "kind": kind,
+            "outer_index": outer_index,
             "replacement_payload_sha256s": {
-                item.asset_id: item.replacement_sha256 for item in modifications
+                item.asset_id: item.replacement_sha256 for item in all_mods
             },
-            "entry_size": len(result.entry_bytes),
-            "entry_sha256": _hash_bytes(result.entry_bytes),
-            "writer_schema": PLAY_ASSIGNMENT_ROUTE_WRITER_SCHEMA,
-            "writer_mode": "exact_stock_assignment_route_clone",
-            "resource_source_sha256": result.compiled_resource.source_sha256,
-            "resource_replacement_sha256": (
-                result.compiled_resource.replacement_sha256
+            "entry_size": len(entry_bytes),
+            "entry_sha256": _hash_bytes(entry_bytes),
+            "writer_schema": writer_schema,
+            "writer_mode": (
+                "package_map_and_route_clone" if maps and requests else "who_lines_up"
             ),
-            "changed_byte_count": result.compiled_resource.changed_byte_count,
-            "changed_ranges": result.report["changed_ranges"],
-            "compiler_claims": result.report["claims"],
+            "component_writer_schemas": (
+                (PACKAGE_MAP_WRITER_SCHEMA, PLAY_ASSIGNMENT_ROUTE_WRITER_SCHEMA)
+                if maps and requests
+                else (writer_schema,)
+            ),
+            "resource_source_sha256": report["source_sha256"],
+            "resource_replacement_sha256": report["result_sha256"],
+            "changed_byte_count": report["changed_byte_count"],
+            "changed_ranges": tuple(
+                tuple(row_range) for row_range in report["changed_ranges"]
+            ),
+            "compiler_claims": report["claims"],
+            "honesty": report["honesty"],
+            "package_maps": report["package_maps"],
         }
-        return result.outer_index, result.entry_bytes, row
+        return outer_index, entry_bytes, row
 
     def _compile_splb_membership(
         self, modifications: tuple[Modification, ...]

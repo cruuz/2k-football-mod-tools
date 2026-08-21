@@ -1,4 +1,4 @@
-# 2K5 Mod Studio — v1.0 RC69 Release Status
+# 2K5 Mod Studio — v1.0 RC71 Release Status
 
 ## Beta 33 — the stock CPU playbooks (2026-08-10)
 
@@ -338,7 +338,32 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-46` — 2026-08-15 · CURRENT
+### `beta-47` — 2026-08-21 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-47>
+
+Beta 47 carries 2K5 RC71 (updater identity only) and APF alpha.80. It adds
+the Who lines up role-map tab, the experimental formation/package levers
+(trailer repoint + record add; runtime director behavior unproved, labeled as
+such), relayed route copy, the removal+tag-move Save-Project composition fix,
+digits v2 (smaller-of-two H7A encoders + region-majority mip regeneration),
+staged two-layer helmet crests through the project build, one-pass
+multi-crest logo-cache writes, both endzone layers in one field-art pass, the
+format-15 crest preview fix, renamed-index and symlink clarity, and the
+never-boots empties warning. No retail bytes; no `default.xex` patching.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC71-20260821.tar.gz` | 11,068,800 | `5e77ab3313893b123cc73047c5dc044a60456ca2676b6ec22aef6827aaab65f6` |
+| `2K5-Mod-Studio-v1.0-RC71-20260821.tar.gz.sha256` | 107 | `46826de251c32ee69d80900f0598860e57c78078470558c7b83fadfc34fa7967` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz` | 1,905,194 | `b600ba8019d4ab9cd54d4cf41479bdffffe815bc82e50c2c29f617f7e150e9ed` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz.sha256` | 115 | `89216e9c1cc7ae6d9956c61af375b6f060bbb8208be91974a247208cd18b4aa9` |
+| `2K5-Mod-Studio-1.0.0rc71-Setup.exe` | 56,704,278 | `45d99287ce945f69a43f041f051c3502ee4e20089c96cfa207d8e9779de4eb0d` |
+| `2K5-Mod-Studio-1.0.0rc71-Setup.exe.sha256` | 101 | `8ae00145dc5ebe58e505d2e7065f436602b995f60dfcc820609e60c245f59156` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe` | 52,740,465 | `d4dd682a49cbc9ac7da554486a5def9d0c2df6b20cbe8fe9989a4adfd7616d58` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe.sha256` | 110 | `a89588cd10474ccb60e80e80f1408bff38c6fc5973b18dcdc57bf0fde34b187f` |
+
+### `beta-46` — 2026-08-15 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-46>
 

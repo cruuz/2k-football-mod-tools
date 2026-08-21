@@ -184,11 +184,15 @@ That is still not the CPU 3rd-and-long picker.
 This panel therefore never drops a slot below ``min(4, plays)``: it moves one
 onto another play in the same formation, or carries it there when its play is
 removed, and it will empty a formation (zero stored plays, zero tags) because
-that is what the counted rule requires. The record trailer is left untouched.
-Count ``0x84a8ac30`` and get-nth ``0x84a8bd20`` return 0/null for an empty
-record, so the four tagged plays cannot come from it. Which formation the
-director selects next is still runtime-unproved. No claim is made about
-in-game CPU play-calling.
+that is what the counted rule requires.  Two record-level edits are offered:
+repoint a record's trailer at another MASTER formation and personnel package
+(the director resolves requested personnel rows through the book category
+mask and the ladder, so a book missing the 1TE/4WR "Straight" package falls
+to 0-TE packages on pass downs), and fill the book's first empty record slot.
+The whitelisted trailer bytes are the formation index, the category, and the
+category bit gained in word B and in the book mask; the unproved 3-bit
+situation fields and the low byte stay byte-exact.  Whether the director
+then selects the repointed record is runtime-unproved; the receipt says so.
 """
 
 from __future__ import annotations
@@ -202,6 +206,8 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QComboBox,
+    QDialog,
+    QDialogButtonBox,
     QFileDialog,
     QFrame,
     QHBoxLayout,
@@ -220,32 +226,25 @@ from mod_editor.core.errors import ValidationError
 
 
 TaskRunner = Callable[[str, object, object, bool], None]
-StagedChange = splb.MembershipChange | splb.TagMove
+StagedChange = splb.MembershipChange | splb.TagMove | splb.TrailerReplace
 
 #: What a user has to know before emptying a formation, in the order they need
 #: it.  The static consumer facts stay below in the research pins; this is the
 #: in-game consequence a real player measured, and it leads.
 EMPTY_FORMATION_WARNING = (
-    "Emptying a formation does not make the CPU skip it. The trailer still "
-    "names the formation; the director still selects it; count 0x84a8ac30 / "
-    "get-nth 0x84a8bd20 return 0/null; the CPU then calls something the book "
-    "never listed.\n\n"
-    "Urianus, alpha.70: emptied no-TE formations in O-ManBlock and the CPU "
-    "lined up packages that book does not contain (00, 10, 01, 12, 11) and "
-    "one the game does not ship (02).\n\n"
-    "Urianus, 2026-08-14: emptying any defensive formation does the same "
-    "random-call thing, except X-43Blitz between 4-3 and Bear — that pair "
-    "falls back to the other formation and the same play (e.g. 46 Whip Blast "
-    "1 Rubber). Emptying one of an exact “ Flip” twin (Ace / Ace Flip) "
-    "without the other hangs on load. Weak I Jokers Flip Pair is not the "
-    "twin of Weak I Jokers. Urianus: in O-SinglebackAce the 3rd/4th-and-long "
-    "call is Ace Empty; emptying the 2-RB Ace formations falls through to "
-    "that Ace Empty; emptying Ace Empty itself falls through to another Ace. "
-    "That look is XEX, not the package map — Ace Empty is a 6↔7 tail of Ace, "
-    "not an 8↔9 WR3↔TE swap, and its map still contains role 8.\n\n"
-    "Fine-tune Plays does not change who lines up. Personnel comes from the "
-    "formation package map (MASTER +0x11). Play names are not personnel. "
-    "Emptying every populated formation in a book is refused."
+    "Emptying a formation does not make the CPU skip it. The CPU still picks "
+    "that formation, then calls plays and personnel that were never in the "
+    "book.\n\n"
+    "Measured in-game: O-ManBlock lined up packages the book does not contain; "
+    "defense did the same except 4-3 / Bear in X-43Blitz; emptying only one "
+    "of an Ace / Ace Flip pair hangs the load; and emptying a user book's "
+    "base packages (every 20 and 10 formation in USER-o) left the game unable "
+    "to boot at all under Xenia (spin, then exit). Do not use Empty as a way "
+    "to get TEs on 3rd-and-long.\n\n"
+    "Play names are not personnel. Personnel comes from the formation package "
+    "map. The Who lines up tab edits those role bytes; whether the in-game "
+    "look changes is unproved, and it is not a 3rd-and-long fix. Emptying "
+    "every formation in a book is refused."
 )
 
 BOUNDARY = (
@@ -253,25 +252,27 @@ BOUNDARY = (
     "does not change the personnel who line up, and it does not guarantee which "
     "play the CPU will choose in a situation. A play name such as 50 TE Corner "
     "describes routes; it does not add a tight end to the formation.\n\n"
-    "Three tagged slots are the formation's audibles. Mod Studio preserves all "
-    "tagged slots unless you deliberately empty the formation. Empty formations "
-    "are risky: an in-game report found that the CPU then called plays and "
-    "personnel that were not in the book. Mod Studio warns before doing that, "
+    "To edit that role map, open Who lines up. Three tagged slots are the "
+    "formation's audibles. Mod Studio preserves all tagged slots unless you "
+    "deliberately empty the formation. Empty formations are risky: the CPU then "
+    "called plays that were not in the book. Mod Studio warns before doing that, "
     "will not empty a whole book, and keeps exact Flip twins together.\n\n"
-    "Changes stay in your project until Build. Build Game Folder applies every "
-    "edited book to the separate folder you choose; your original game remains "
-    "untouched. Technical addresses and byte-level evidence are under Research "
-    "pins."
+    "Changes stay in your project until Build. Your original game remains "
+    "untouched. Technical addresses are under Research pins."
 )
 
 THIRD_AND_LONG_STATUS = (
-    "Mod Studio cannot change how APF chooses formations on 3rd-and-long. "
-    "We found no editable setting for the reported user-team/CPU difference in "
-    "MASTER PLAY, the stock playbooks, or the director files.\n\n"
-    "The behavior appears to be implemented in default.xex, the game "
-    "executable. Mod Studio does not patch default.xex. Nothing was changed.\n\n"
-    "The technical addresses behind this conclusion remain available under "
-    "Research pins."
+    "Which formation the CPU calls on 3rd-and-long is decided in default.xex, "
+    "and Mod Studio does not patch the game program. But the lineup's "
+    "personnel ladder is data: on pass downs the game asks for the 0 RB / "
+    "1 TE / 4 WR row, and books without that Straight (01) package — like "
+    "O-Ace — fall back to a 0-TE package. That is the WR-for-TE sub you see. "
+    "'Change formation/package…' and 'Add a formation to this book…' give a "
+    "CPU book the 1 TE / 4 WR package. Whether the CPU then calls it on "
+    "3rd-and-long is unproved at runtime; after Build, check it in Xenia.\n\n"
+    "The Who lines up tab edits a formation's 11 role bytes with the same "
+    "caveat.\n\n"
+    "Technical addresses are under Research pins."
 )
 
 #: The full static reverse-engineering record behind :data:`BOUNDARY`.
@@ -662,6 +663,8 @@ class ApfPlaybookMembershipPanel(QFrame):
         self._staged_heirs: dict[int, dict[int, int]] = {}
         # record index -> {play a tagged slot leaves: play it lands on}
         self._staged_moves: dict[int, dict[int, int]] = {}
+        # record index -> (formation index, personnel category) trailer repoint
+        self._staged_trailers: dict[int, tuple[int, int]] = {}
         self._loading = False
 
         root = QVBoxLayout(self)
@@ -730,10 +733,9 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.play_list = QListWidget()
         self.play_list.setObjectName("assetList")
         self.play_list.setToolTip(
-            "Ticked plays are stored in this formation's SPLB record. The "
-            "executable reads that list (0x84a8ac30 / 0x84a8bd20); which play "
-            "the CPU calls on 3rd-and-long is still runtime-unproved. Tick to "
-            "add, untick to remove."
+            "Ticked plays are stored in this formation. Tick to add, untick "
+            "to remove. Audibles stay on the formation unless you move them "
+            "or empty it."
         )
         self.play_list.itemChanged.connect(self._play_toggled)
         self.play_header = QLabel("Plays")
@@ -771,6 +773,20 @@ class ApfPlaybookMembershipPanel(QFrame):
         )
         self.third_long_button.clicked.connect(self._refuse_third_and_long)
         tag_row.addWidget(self.move_tag_button)
+        self.retarget_button = QPushButton("Change formation/package…")
+        self.retarget_button.setObjectName("quietButton")
+        self.retarget_button.setAccessibleName(
+            "Repoint this record at another formation and personnel package"
+        )
+        self.retarget_button.clicked.connect(self._change_trailer)
+        tag_row.addWidget(self.retarget_button)
+        self.add_record_button = QPushButton("Add a formation to this book…")
+        self.add_record_button.setObjectName("quietButton")
+        self.add_record_button.setAccessibleName(
+            "Fill the book's first empty record with a formation and plays"
+        )
+        self.add_record_button.clicked.connect(self._add_record)
+        tag_row.addWidget(self.add_record_button)
         self.empty_button = QPushButton("Empty this formation…")
         self.empty_button.setObjectName("dangerQuietButton")
         self.empty_button.setAccessibleName("Remove every stored play from this formation")
@@ -932,12 +948,18 @@ class ApfPlaybookMembershipPanel(QFrame):
         row_to_select = -1
         if self._book is not None:
             for record in self._book.records:
-                if not record.populated:
+                staged = self._staged_count(record.record_index)
+                if not record.populated and not staged:
                     continue
-                name = self._formations.get(record.formation_index, "?")
+                trailer = self._staged_trailers.get(record.record_index)
+                if trailer is not None:
+                    name = self._formations.get(trailer[0], "?")
+                else:
+                    name = self._formations.get(record.formation_index, "?")
                 count = len(self._wanted_plays(record.record_index))
                 label = f"{name}  ·  {count} plays"
-                staged = self._staged_count(record.record_index)
+                if trailer is not None:
+                    label += f"   → repointed to {name}, package {trailer[1]}"
                 if staged:
                     label += f"   ✎ {staged} changed"
                 item = QListWidgetItem(label)
@@ -980,10 +1002,13 @@ class ApfPlaybookMembershipPanel(QFrame):
         self._staged = {}
         self._staged_heirs = {}
         self._staged_moves = {}
+        self._staged_trailers = {}
 
     def _staged_count(self, record_index: int) -> int:
-        return len(self._staged.get(record_index) or {}) + len(
-            self._staged_moves.get(record_index) or {}
+        return (
+            len(self._staged.get(record_index) or {})
+            + len(self._staged_moves.get(record_index) or {})
+            + (1 if record_index in self._staged_trailers else 0)
         )
 
     def _record_changes(
@@ -1205,6 +1230,205 @@ class ApfPlaybookMembershipPanel(QFrame):
         moves[from_play] = to_play
         self._after_stage()
 
+    # ------------------------------------------- record-level trailer staging
+
+    def stage_trailer_replace(
+        self, record_index: int, formation_index: int, category_index: int
+    ) -> None:
+        """Repoint one record's trailer at another formation and package."""
+
+        if self._book is None:
+            raise ValidationError("No playbook is loaded")
+        if self._staged_trailers.get(record_index) == (
+            formation_index,
+            category_index,
+        ):
+            return
+        self._staged_trailers[record_index] = (formation_index, category_index)
+        self._after_stage()
+
+    def stage_record_addition(
+        self,
+        record_index: int,
+        formation_index: int,
+        category_index: int,
+        play_indices: tuple[int, ...],
+    ) -> None:
+        """Fill an empty record slot: trailer repoint plus play additions."""
+
+        if self._book is None:
+            raise ValidationError("No playbook is loaded")
+        record = self._book.records[record_index]
+        if record.populated:
+            raise ValidationError(
+                f"Record {record_index} already holds plays; repoint it instead "
+                "or pick the first empty slot."
+            )
+        if not 1 <= len(play_indices) <= splb.ENTRY_CAPACITY:
+            raise ValidationError(
+                f"Pick 1..{splb.ENTRY_CAPACITY} plays for the new formation"
+            )
+        self._staged_trailers[record_index] = (formation_index, category_index)
+        staged = dict(self._staged.get(record_index) or {})
+        for play in play_indices:
+            staged[int(play)] = True
+        self._staged[record_index] = staged
+        self._after_stage()
+
+    def _package_labels(self) -> list[tuple[int, str]]:
+        reader = getattr(self.facade, "master_categories", None)
+        try:
+            categories = tuple(reader()) if reader is not None else ()
+        except Exception:
+            categories = ()
+        if not categories:
+            return [(index, f"package {index}") for index in range(splb.CATEGORY_COUNT)]
+        labels = []
+        for item in categories:
+            roles = tuple(item["roles"])
+            te = roles.count(8)
+            wr = roles.count(9)
+            backs = roles.count(10) + roles.count(11)
+            suffix = ""
+            if te == 1 and wr == 4 and backs == 0:
+                suffix = "  (the pass-friendly 01 set)"
+            labels.append(
+                (
+                    int(item["index"]),
+                    f"{int(item['index'])} {item['name']} — {backs} RB, "
+                    f"{te} TE, {wr} WR{suffix}",
+                )
+            )
+        return labels
+
+    def _trailer_dialog(
+        self,
+        title: str,
+        initial: tuple[int, int],
+        allow_plays: bool,
+    ) -> tuple[int, int, tuple[int, ...]] | None:
+        dialog = QDialog(self)
+        dialog.setWindowTitle(title)
+        dialog.setModal(True)
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(
+            QLabel(
+                "Changes which formation this record lines up in, and which "
+                "personnel package it joins. The game may then resolve pass-down "
+                "requests to it. Whether the CPU director selects the record on "
+                "3rd-and-long is unproved — check it in Xenia."
+            )
+        )
+        form = QVBoxLayout()
+        formation_combo = QComboBox()
+        for index in sorted(self._formations):
+            formation_combo.addItem(f"{index} {self._formations[index]}", index)
+        row = formation_combo.findData(initial[0])
+        if row >= 0:
+            formation_combo.setCurrentIndex(row)
+        package_combo = QComboBox()
+        for index, label in self._package_labels():
+            package_combo.addItem(label, index)
+        row = package_combo.findData(initial[1])
+        if row >= 0:
+            package_combo.setCurrentIndex(row)
+        form.addWidget(QLabel("MASTER formation"))
+        form.addWidget(formation_combo)
+        form.addWidget(QLabel("Personnel package"))
+        form.addWidget(package_combo)
+        plays_list: QListWidget | None = None
+        if allow_plays:
+            plays_list = QListWidget()
+            plays_list.setSelectionMode(QAbstractItemView.MultiSelection)
+            for index, name in enumerate(self._plays):
+                plays_list.addItem(f"{index} {name}")
+            plays_list.setMaximumHeight(180)
+            form.addWidget(QLabel("Plays the new formation stores (1-84)"))
+            form.addWidget(plays_list)
+        layout.addLayout(form)
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        )
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        layout.addWidget(buttons)
+        if dialog.exec() != QDialog.Accepted:
+            return None
+        chosen_plays: tuple[int, ...] = ()
+        if plays_list is not None:
+            chosen_plays = tuple(
+                sorted(item.row() for item in plays_list.selectedItems())
+            )
+        return (
+            int(formation_combo.currentData()),
+            int(package_combo.currentData()),
+            chosen_plays,
+        )
+
+    def _change_trailer(self) -> None:
+        record_index = self._selected_record_index()
+        record = (
+            self._record(record_index) if record_index is not None else None
+        )
+        if record is None:
+            QMessageBox.information(
+                self, "Pick a formation", "Select a formation first."
+            )
+            return
+        initial = self._staged_trailers.get(
+            record_index, (record.formation_index, record.category_index)
+        )
+        result = self._trailer_dialog(
+            "Change formation / personnel package", initial, allow_plays=False
+        )
+        if result is None:
+            return
+        try:
+            self.stage_trailer_replace(
+                record_index, result[0], result[1]
+            )
+        except ValidationError as exc:
+            QMessageBox.information(self, "Could not repoint the record", str(exc))
+
+    def _first_empty_record(self) -> int | None:
+        if self._book is None:
+            return None
+        used = [r.record_index for r in self._book.records if r.populated]
+        slot = (max(used) + 1) if used else 0
+        if slot in self._staged_trailers:
+            return None
+        return slot if slot < splb.RECORD_COUNT else None
+
+    def _add_record(self) -> None:
+        if self._book is None:
+            QMessageBox.information(
+                self, "Pick a playbook", "Choose a stock playbook first."
+            )
+            return
+        slot = self._first_empty_record()
+        if slot is None:
+            QMessageBox.information(
+                self,
+                "No free record slot",
+                "This book's first empty slot is already staged. Revert it "
+                "before adding another formation.",
+            )
+            return
+        result = self._trailer_dialog(
+            f"Add a formation (record {slot})", (133, 7), allow_plays=True
+        )
+        if result is None:
+            return
+        if not result[2]:
+            QMessageBox.information(
+                self, "Pick plays", "The new formation needs at least one play."
+            )
+            return
+        try:
+            self.stage_record_addition(slot, result[0], result[1], result[2])
+        except ValidationError as exc:
+            QMessageBox.information(self, "Could not add the formation", str(exc))
+
     def _after_stage(self) -> None:
         self._commit_to_project()
         self._refresh_formations()
@@ -1270,6 +1494,11 @@ class ApfPlaybookMembershipPanel(QFrame):
                 self._staged_moves.setdefault(change.record_index, {})[
                     change.from_play
                 ] = change.to_play
+            elif isinstance(change, splb.TrailerReplace):
+                self._staged_trailers[change.record_index] = (
+                    change.formation_index,
+                    change.category_index,
+                )
 
     # ------------------------------------------------------------------- plays
 
@@ -1299,12 +1528,16 @@ class ApfPlaybookMembershipPanel(QFrame):
                     Qt.Checked if play_index in wanted else Qt.Unchecked
                 )
                 if play_index in tagged:
+                    slot = tagged[play_index]
+                    audible = (
+                        f"audible {slot + 1}"
+                        if slot in {0, 1, 2}
+                        else f"tagged slot {slot}"
+                    )
                     item.setToolTip(
-                        f"This play holds tagged slot {tagged[play_index]} for this "
-                        "formation. The slot is never dropped: untick the play and "
-                        "the studio offers to carry it onto another play here, or "
-                        "use “Move tagged slot…” to hand it over now. What the slot "
-                        "denotes is not proved."
+                        f"This play is {audible} for this formation. Untick it "
+                        "and the studio will ask which other play should take "
+                        "the audible, or use Move tagged slot first."
                     )
                 self.play_list.addItem(item)
             self.play_header.setText(
@@ -1348,26 +1581,32 @@ class ApfPlaybookMembershipPanel(QFrame):
         tagged = self._effective_tags(record_index)
         slot = tagged.get(play_index)
         candidates = self._carry_candidates(record_index, play_index)
+        if slot is None:
+            QMessageBox.information(
+                self,
+                "This play cannot be removed yet",
+                f"{self._play_name(play_index)} is not an audible, but removing "
+                "it would leave this formation with more audibles than plays. "
+                "Add another play first, or move an audible with Move tagged "
+                "slot, then remove this one.",
+            )
+            return None
         if not candidates:
             QMessageBox.information(
                 self,
-                "Nothing here can carry that slot",
-                f"{self._play_name(play_index)} holds tagged slot {slot}, and no "
-                "other play in this formation can take it without breaking the "
-                "proved min(4, plays) rule. Tick another play into this formation "
-                "first, then untick this one. “Empty this formation…” sheds every "
-                "stored play at once, but it is reported to change what the CPU "
-                "calls — read the warning on that button first.",
+                "Move the audible first",
+                f"{self._play_name(play_index)} is an audible, and no other "
+                "play here can take it. Tick another play into this formation, "
+                "or use Move tagged slot, then remove this one. Emptying the "
+                "whole formation is a last resort and changes what the CPU "
+                "calls — read that button's warning first.",
             )
             return None
         answer = QMessageBox.question(
             self,
-            "Carry the tagged slot over?",
-            f"{self._play_name(play_index)} holds tagged slot {slot} for this "
-            f"formation, and the formation has to keep "
-            f"{splb.required_tag_count(len(self._staged_play_indices(record_index)) - 1)}"
-            " tagged slots. Hand the slot to another play here and the removal goes "
-            "through.\n\n" + TAG_BOUNDARY,
+            "Move the audible, then remove?",
+            f"{self._play_name(play_index)} is an audible for this formation. "
+            "Hand that audible to another play here and the removal goes through.",
             QMessageBox.Yes | QMessageBox.Cancel,
             QMessageBox.Yes,
         )
@@ -1516,9 +1755,8 @@ class ApfPlaybookMembershipPanel(QFrame):
             + (f" and {other}" if partner is not None else "")
             + f". {remaining} formation"
             f"{'s' if remaining != 1 else ''} in this book would still hold "
-            "plays. The tagged slots go with them because min(4, 0) is 0, and "
-            "the record trailer is not touched, so the formation is still "
-            "named in this book."
+            "plays. The audibles go with them. The formation name stays in "
+            "the book, so the CPU can still pick it."
             + extra,
             QMessageBox.Yes | QMessageBox.Cancel,
             QMessageBox.Cancel,
@@ -1560,6 +1798,17 @@ class ApfPlaybookMembershipPanel(QFrame):
                         self._book.outer_index, record_index, from_play, to_play
                     )
                 )
+        for record_index, (formation_index, category_index) in sorted(
+            self._staged_trailers.items()
+        ):
+            out.append(
+                splb.TrailerReplace(
+                    self._book.outer_index,
+                    record_index,
+                    formation_index,
+                    category_index,
+                )
+            )
         return tuple(out)
 
     def _refresh_actions(self) -> None:
@@ -1612,16 +1861,40 @@ class ApfPlaybookMembershipPanel(QFrame):
         self.revert_button.setToolTip(
             revert_block or f"Discard {len(staged)} staged change(s)."
         )
+        trailer_block = ""
+        if not bool(getattr(self.facade, "source_ready", False)):
+            trailer_block = "Load your APF game first, then pick a playbook."
+        elif self._book is None:
+            trailer_block = "Choose a stock playbook first."
+        self.retarget_button.setEnabled(True)
+        self.retarget_button.setProperty("disableReason", trailer_block)
+        self.retarget_button.setToolTip(
+            trailer_block
+            or "Repoint the selected record's trailer at another MASTER "
+            "formation and personnel package. Gives books like O-Ace the "
+            "1 TE / 4 WR package the pass-down ladder looks for."
+        )
+        add_block = trailer_block
+        if not add_block and self._first_empty_record() is None:
+            add_block = "This book's first empty record slot is already staged."
+        self.add_record_button.setEnabled(True)
+        self.add_record_button.setProperty("disableReason", add_block)
+        self.add_record_button.setToolTip(
+            add_block
+            or "Fill the book's first empty record with a formation, a "
+            "personnel package and stored plays."
+        )
         self.third_long_button.setEnabled(True)
         self.third_long_button.setToolTip(
-            "Mod Studio cannot change the reported user-team/CPU difference "
-            "through APF's playbook data. Click for a plain-language explanation."
+            "The CPU's 3rd-and-long choice itself stays in default.xex, but the "
+            "personnel ladder is data — click for a plain-language explanation "
+            "and the new package levers."
         )
 
     def _refuse_third_and_long(self) -> None:
         QMessageBox.information(
             self,
-            "3rd-and-long editing is not available",
+            "3rd-and-long: the XEX chooses; the ladder is data",
             THIRD_AND_LONG_STATUS,
         )
 

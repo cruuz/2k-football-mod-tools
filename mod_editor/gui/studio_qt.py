@@ -177,6 +177,18 @@ IMAGE_IMPORT_FILTER = (
     "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.tga);;All files (*)"
 )
 
+# macOS writes a hidden AppleDouble twin (``._name``) next to a file copied off
+# an archive or another volume.  The twin keeps the image's extension, so it
+# passes the suffix check and then fails decoding with jargon; name it plainly.
+APPLE_DOUBLE_DROP_REFUSAL = (
+    "That is a macOS resource-fork file (._name), not the image. Drop the "
+    "visible PNG instead."
+)
+
+
+def _is_apple_double_path(path: Path) -> bool:
+    return Path(path).name.startswith("._")
+
 
 # Plain-language "what to do next" for the writers' exact-slot refusals.  The
 # fail-closed behaviour never changes -- the same bytes are still refused --
@@ -1329,6 +1341,14 @@ class _PngDropPreview(QFrame):
             event.ignore()  # type: ignore[attr-defined]
             return
         path = Path(url.toLocalFile())
+        if _is_apple_double_path(path):
+            QMessageBox.information(
+                self,
+                "That drop can't be used yet",
+                APPLE_DOUBLE_DROP_REFUSAL,
+            )
+            event.ignore()  # type: ignore[attr-defined]
+            return
         if path.suffix.casefold() not in IMAGE_IMPORT_EXTENSIONS:
             QMessageBox.information(
                 self,
@@ -4502,6 +4522,9 @@ class StudioMainWindow(QMainWindow):
     def _replace_visual_from_drop(
         self, category: ProductCategory, supplied: object
     ) -> None:
+        if _is_apple_double_path(Path(str(supplied))):
+            self._show_error(APPLE_DOUBLE_DROP_REFUSAL)
+            return
         selected = self._selected_visual(category)
         if selected is None:
             self._show_error("Choose an asset before dropping a PNG.")

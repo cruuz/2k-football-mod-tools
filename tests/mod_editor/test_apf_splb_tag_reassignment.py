@@ -137,8 +137,52 @@ class TagMoveTests(unittest.TestCase):
                 ],
             )
 
-    def test_a_move_naming_a_play_the_same_request_removes_is_refused(self) -> None:
-        with self.assertRaisesRegex(ValidationError, "both removed"):
+    def test_a_move_then_remove_of_the_source_composes(self) -> None:
+        """Urianus's Save-Project loss: staged move + staged removal of the
+        same play compose in the fixed order adds -> moves -> removals."""
+
+        compiled = splb.compile_book(
+            self.book,
+            [
+                splb.TagMove(OUTER, FULL, 11, 40),
+                splb.MembershipChange(OUTER, FULL, 11, False),
+            ],
+        )
+        splb.verify_book(
+            self.body,
+            compiled.replacement,
+            [
+                splb.TagMove(OUTER, FULL, 11, 40),
+                splb.MembershipChange(OUTER, FULL, 11, False),
+            ],
+        )
+        after = splb.parse_book(compiled.replacement, OUTER).records[FULL]
+        self.assertEqual(_tags(after), {10: 0, 40: 1, 12: 2, 13: 3})
+        self.assertNotIn(11, [e.play_index for e in after.entries])
+
+    def test_a_move_then_remove_of_the_destination_with_heir_composes(self) -> None:
+        after = self._record_after(
+            [
+                splb.TagMove(OUTER, FULL, 11, 40),
+                splb.MembershipChange(OUTER, FULL, 40, False, tag_heir=41),
+            ]
+        )
+        self.assertEqual(_tags(after), {10: 0, 41: 1, 12: 2, 13: 3})
+        self.assertNotIn(40, [e.play_index for e in after.entries])
+
+    def test_a_move_then_remove_of_the_destination_sheds_a_slot_when_legal(self) -> None:
+        after = self._record_after(
+            [
+                splb.TagMove(OUTER, FOUR, 52, 53),
+                splb.MembershipChange(OUTER, FOUR, 52, False),
+            ],
+            record_index=FOUR,
+        )
+        self.assertEqual([e.play_index for e in after.entries], [50, 51, 53])
+        self.assertEqual(_tags(after), {50: 0, 51: 1, 53: 2})
+
+    def test_a_move_then_remove_that_would_drop_a_slot_is_still_refused(self) -> None:
+        with self.assertRaisesRegex(ValidationError, "carry the slot"):
             splb.compile_book(
                 self.book,
                 [
@@ -721,7 +765,7 @@ class PanelTests(unittest.TestCase):
         self.assertIn("Stored plays for", self.panel.play_header.text())
         self.assertNotIn("CPU may call", self.panel.play_header.text())
         self.assertIn("stored", self.panel.play_list.toolTip())
-        self.assertIn("unproved", self.panel.play_list.toolTip())
+        self.assertIn("Audibles", self.panel.play_list.toolTip())
 
     def test_the_panel_only_offers_heirs_that_actually_work(self) -> None:
         candidates = self.panel._carry_candidates(FULL, 11)
@@ -783,8 +827,7 @@ class PanelTests(unittest.TestCase):
             item.setCheckState(Qt.Unchecked)
         self.assertTrue(asked.called)
         self.assertTrue(picked.called)
-        # The offer quotes the same boundary text the panel shows everywhere else.
-        self.assertIn("Urianus", asked.call_args[0][2])
+        self.assertIn("audible", asked.call_args[0][2])
         changes = self.panel.staged_changes()
         self.assertEqual(len(changes), 1)
         self.assertFalse(changes[0].member)
@@ -962,6 +1005,37 @@ class PanelProjectHandoffTests(unittest.TestCase):
         self.assertTrue(self.stored)
         self.panel._revert()
         self.assertEqual(self.stored, ())
+
+    def test_staging_a_trailer_replace_reaches_and_restores(self) -> None:
+        from mod_editor.apf_studio.playbook_membership_qt import (
+            ApfPlaybookMembershipPanel,
+        )
+
+        self.panel.stage_trailer_replace(FULL, 133, 7)
+        self.assertEqual(len(self.stored), 1)
+        change = self.stored[0]
+        self.assertIsInstance(change, splb.TrailerReplace)
+        self.assertEqual((change.formation_index, change.category_index), (133, 7))
+        reopened = ApfPlaybookMembershipPanel(self.facade, lambda *_a: None)
+        try:
+            reopened._book = splb.parse_book(self.body, OUTER)
+            reopened._plays = [f"Play {index}" for index in range(586)]
+            reopened._formations = {62: "Ace", 133: "Gun: Straight"}
+            reopened._restore_from_project()
+            self.assertEqual(reopened._staged_trailers, {FULL: (133, 7)})
+        finally:
+            reopened.deleteLater()
+
+    def test_staging_a_record_addition_bundles_trailer_and_plays(self) -> None:
+        self.panel.stage_record_addition(4, 133, 7, (300, 301))
+        kinds = sorted(type(change).__name__ for change in self.stored)
+        self.assertEqual(
+            kinds, ["MembershipChange", "MembershipChange", "TrailerReplace"]
+        )
+
+    def test_record_addition_refuses_a_populated_slot(self) -> None:
+        with self.assertRaisesRegex(ValidationError, "already holds plays"):
+            self.panel.stage_record_addition(FULL, 133, 7, (300,))
 
     def test_a_reopened_project_restores_the_staged_ticks(self) -> None:
         self.panel.stage_membership(FULL, 11, False, heir=41)
@@ -1221,6 +1295,153 @@ class RealBookTests(unittest.TestCase):
         self.assertEqual(_tags(rebuilt)[target], 1)
         self.assertNotIn(holder, _tags(rebuilt))
         self.assertTrue(splb.follows_tag_rule(rebuilt.entries))
+
+
+class TrailerReplaceTests(unittest.TestCase):
+    """Repoint a record's trailer so a book gains a pass-friendly 1TE/4WR set.
+
+    The director resolves a requested personnel row through the book category
+    mask at +0x7E04 and each record's word B; O-Ace lacks the Straight (01)
+    package, so a pass-down request ladders down to 0-TE Flush personnel -- the
+    observed WR-for-TE sub.  Giving the book a category-7 record is the data-side
+    lever; these tests hold the writer to the whitelisted bytes only.
+    """
+
+    def setUp(self) -> None:
+        self.body = _book_bytes()
+        self.book = splb.parse_book(self.body, OUTER)
+
+    def _compiled(self, changes) -> bytes:
+        compiled = splb.compile_book(self.book, changes)
+        splb.verify_book(self.body, compiled.replacement, changes)
+        return compiled.replacement
+
+    def test_retarget_rewrites_formation_category_and_word_b_only(self) -> None:
+        change = splb.TrailerReplace(OUTER, FULL, 133, 7)
+        after = self._compiled([change])
+        trailer_at = splb.RECORD_BASE + FULL * splb.RECORD_STRIDE + splb.TRAILER_OFFSET
+        before_a, before_b = struct.unpack_from(">2I", self.body, trailer_at)
+        after_a, after_b = struct.unpack_from(">2I", after, trailer_at)
+        self.assertEqual(after_a >> 24, 133)
+        self.assertEqual((after_a >> 17) & 0x7F, 7)
+        self.assertEqual(after_a & 0x0001FFFF, before_a & 0x0001FFFF)
+        self.assertEqual(after_b, before_b | (1 << 7))
+        mask_at = splb.BOOK_CATEGORY_MASK_OFFSET
+        (before_mask,) = struct.unpack_from(">I", self.body, mask_at)
+        (after_mask,) = struct.unpack_from(">I", after, mask_at)
+        self.assertEqual(after_mask, before_mask | (1 << 7))
+        differing = {
+            i for i in range(len(self.body)) if self.body[i] != after[i]
+        }
+        whitelisted = set(range(trailer_at, trailer_at + 8)) | set(
+            range(mask_at, mask_at + 4)
+        )
+        self.assertTrue(differing <= whitelisted, sorted(differing))
+        self.assertIn(trailer_at, differing)
+        self.assertIn(trailer_at + 7, differing)
+        self.assertIn(mask_at + 3, differing)
+
+    def test_a_no_op_retarget_is_refused(self) -> None:
+        with self.assertRaisesRegex(ValidationError, "already lines up"):
+            splb.compile_book(self.book, [splb.TrailerReplace(OUTER, FULL, 62, 3)])
+
+    def test_bounds_are_enforced(self) -> None:
+        with self.assertRaisesRegex(ValidationError, "MASTER formation"):
+            splb.compile_book(
+                self.book, [splb.TrailerReplace(OUTER, FULL, 163, 7)]
+            )
+        with self.assertRaisesRegex(ValidationError, "Personnel package"):
+            splb.compile_book(
+                self.book, [splb.TrailerReplace(OUTER, FULL, 133, 28)]
+            )
+
+    def test_a_forged_cde_drift_is_refused(self) -> None:
+        change = splb.TrailerReplace(OUTER, FULL, 133, 7)
+        compiled = splb.compile_book(self.book, [change])
+        forged = bytearray(compiled.replacement)
+        trailer_at = splb.RECORD_BASE + FULL * splb.RECORD_STRIDE + splb.TRAILER_OFFSET
+        (after_a,) = struct.unpack_from(">I", forged, trailer_at)
+        struct.pack_into(">I", forged, trailer_at, after_a | (1 << 14))
+        with self.assertRaisesRegex(ValidationError, "trailer does not match"):
+            splb.verify_book(self.body, bytes(forged), [change])
+
+    def test_a_forged_word_b_bit_clear_is_refused(self) -> None:
+        change = splb.TrailerReplace(OUTER, FULL, 133, 7)
+        compiled = splb.compile_book(self.book, [change])
+        forged = bytearray(compiled.replacement)
+        trailer_at = (
+            splb.RECORD_BASE + FULL * splb.RECORD_STRIDE + splb.TRAILER_OFFSET + 4
+        )
+        (after_b,) = struct.unpack_from(">I", forged, trailer_at)
+        struct.pack_into(">I", forged, trailer_at, after_b & ~(1 << 3))
+        with self.assertRaisesRegex(ValidationError, "trailer does not match"):
+            splb.verify_book(self.body, bytes(forged), [change])
+
+    def test_record_addition_fills_the_first_empty_slot(self) -> None:
+        used = max(
+            (r.record_index for r in self.book.records if r.populated), default=-1
+        )
+        slot = used + 1
+        plays = [100, 101, 102, 103]
+        changes = [
+            splb.TrailerReplace(OUTER, slot, 133, 7),
+            *(splb.MembershipChange(OUTER, slot, play, True) for play in plays),
+        ]
+        after = self._compiled(changes)
+        record = splb.parse_book(after, OUTER).records[slot]
+        self.assertEqual([e.play_index for e in record.entries], plays)
+        self.assertEqual(record.formation_index, 133)
+        self.assertEqual(record.category_index, 7)
+        self.assertTrue(splb.follows_tag_rule(record.entries))
+
+    def test_payload_round_trip(self) -> None:
+        change = splb.TrailerReplace(OUTER, FULL, 133, 7)
+        payload = splb.encode_membership_payload(change)
+        decoded = splb.decode_membership_payload(payload, change.selector)
+        self.assertEqual(decoded, change)
+
+    @unittest.skipUnless(DISC_AVAILABLE, "extracted APF 0A not present")
+    def test_retarget_retail_oace_into_the_01_package(self) -> None:
+        """The Urianus fix against pristine retail: O-Ace's Ace record gains
+        the Straight (01) package and only the whitelisted bytes change."""
+
+        book = splb.read_book(INDEX_PATH, OUTER)
+        ace = next(
+            record
+            for record in book.records
+            if record.formation_index == 62 and record.populated
+        )
+        change = splb.TrailerReplace(OUTER, ace.record_index, 133, 7)
+        compiled = splb.build_book_patch(INDEX_PATH, [change])
+        claims = compiled.report["claims"]
+        self.assertFalse(claims["trailers_untouched"])
+        self.assertTrue(claims["trailer_cde_fields_preserved"])
+        self.assertTrue(claims["book_category_mask_only_gained_bits"])
+        self.assertFalse(claims["director_formation_choice_proved"])
+        self.assertFalse(claims["runtime_lineup_after_replace_proved"])
+        before, after = book.body, compiled.replacement
+        trailer_at = (
+            splb.RECORD_BASE + ace.record_index * splb.RECORD_STRIDE + splb.TRAILER_OFFSET
+        )
+        whitelisted = set(range(trailer_at, trailer_at + 8)) | set(
+            range(splb.BOOK_CATEGORY_MASK_OFFSET, splb.BOOK_CATEGORY_MASK_OFFSET + 4)
+        )
+        differing = {i for i in range(len(before)) if before[i] != after[i]}
+        self.assertTrue(differing <= whitelisted, sorted(differing))
+        replaced = compiled.report["records_trailer_replaced"][0]
+        self.assertEqual(replaced["formation_after"], 133)
+        self.assertEqual(replaced["category_after"], 7)
+
+    def test_honesty_claims_name_the_runtime_gap(self) -> None:
+        compiled = splb.compile_book(
+            self.book, [splb.TrailerReplace(OUTER, FULL, 133, 7)]
+        )
+        claims = compiled.report["claims"]
+        self.assertTrue(claims["trailers_untouched"] is False)
+        self.assertTrue(claims["trailer_cde_fields_preserved"])
+        self.assertTrue(claims["director_formation_choice_proved"] is False)
+        self.assertTrue(claims["runtime_lineup_after_replace_proved"] is False)
+        self.assertTrue(claims["cpu_trailer_consumption_static_proved"])
 
 
 if __name__ == "__main__":  # pragma: no cover

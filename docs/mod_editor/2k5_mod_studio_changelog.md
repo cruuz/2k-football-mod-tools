@@ -1,5 +1,11 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC71 — Beta 47 identity (2026-08-21)
+
+Identity-only bump: Beta 47 ships the shared desktop-shell fixes and the APF
+alpha.80 surfaces; the 2K5 editing surface is unchanged from RC69. The
+updater reports beta-47 and the packaged runtime closure re-pins.
+
 This is the modder-facing record of functionality that is actually present in
 runnable builds. A mapped resource is not listed as editable unless its product
 writer is connected to Replace, Revert, project save/load, and the composed

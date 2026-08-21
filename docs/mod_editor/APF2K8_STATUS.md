@@ -1,6 +1,46 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.78`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.80`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.80 — Who lines up + CPU package levers (beta-47)
+
+Runtime look of the package levers is unproved; they ship as an
+experimental surface per the honesty policy.
+
+Alpha 80 also lands the August community findings: staged two-layer helmet
+crests now survive the project build (session, shareable project, and Build
+write `logo_l0` and `logo_l1`; the full-shell profile explains its one-mark
+contract), the logo-cache writer batches several catalog slots in one pass
+(`build_cache_patch_many`), both endzone layers write in one field-art pass,
+crest previews no longer transpose red/blue (format-15 decoder fixed), digit
+mip tails downsample with a region-majority filter (`--nearest-mips` opts
+back), renamed `0A` indexes are refused instead of silently reading the
+sibling pack, symlinked sources get a message that says symlink, and the
+empty-formation warning now names the 2026-08-15 never-boots report.
+
+Playbooks & Plays now has a **Who lines up** tab that stages APF MASTER
+formation `+0x11` maps as project edits. Role 8 is TE, role 9 is WR. Build
+writes the 11 bytes into the copied MASTER PLAY (outer 180), composed with
+any staged assignment-route clones. Runtime look is unproved. This is not a
+3rd-and-long director patch and does not touch `default.xex`. Fine-tune Plays
+copy now talks about audibles and points at Who lines up. Assignment Routes
+uses readable table colors and offers a relayed copy when a plain Copy would
+orphan a game-authored chain.
+
+Fine-tune Plays gained two record-level levers. **Change formation/package…**
+repoints one record's trailer at another MASTER formation and personnel
+category; **Add a formation to this book…** fills the book's first empty
+record. The writer touches only the whitelisted bytes (formation index,
+category, the gained category bit in the record's word B and in the book
+mask at `+0x7E04`); the unproved 3-bit situation fields and the trailer low
+byte stay byte-exact. The lever exists because the pass-down personnel
+ladder is data: a request for the 0 RB / 1 TE / 4 WR row falls to a 0-TE row
+in books that lack a Straight (01) package — the WR-for-TE sub reported on
+O-Ace. Whether the CPU director then selects a repointed record on
+3rd-and-long is runtime-unproved; the receipt says so. A staged removal and
+a staged tagged-slot move naming the same play now compose in the writer's
+fixed order (adds → moves → removals) instead of being silently lost at
+Save Project.
 
 ## 0.1.0-alpha.78 release validation
 

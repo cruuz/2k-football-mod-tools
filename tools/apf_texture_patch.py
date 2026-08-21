@@ -113,7 +113,8 @@ def allocation_overflow(
     if budget_bytes is not None and retail_bytes is not None:
         detail += (
             f" This slot's compressed budget is {budget_bytes:,} bytes and "
-            f"retail already uses {retail_bytes:,} of it."
+            f"retail already uses {retail_bytes:,} of it, leaving "
+            f"{budget_bytes - retail_bytes:,} bytes free."
         )
         if advice is None:
             detail += (

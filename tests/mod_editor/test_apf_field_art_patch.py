@@ -342,6 +342,42 @@ class FieldArtEditTests(unittest.TestCase):
             ):
                 fa.build_field_art_patch(INDEX_PATH, png, 6, 0)
 
+    def test_both_endzone_layers_land_in_one_pass(self) -> None:
+        """The retail entry pin no longer blocks the second layer.
+
+        Writing endzone_l0 then endzone_l1 as two passes could never work: the
+        first pass changes the entry, so the second pass's retail pin refuses.
+        One rebuild with both targets is the fix.
+        """
+        sources = {0: _extract(6, 0), 1: _extract(6, 1)}
+        with tempfile.TemporaryDirectory() as directory:
+            targets = []
+            for file_index, source in sources.items():
+                contract = source["contract"]
+                edited = _paint_rect(
+                    source["rgba"], contract.width, 24, (255, 0, 255, 255)
+                )
+                png = Path(directory) / f"layer{file_index}.png"
+                _save_png(png, contract.width, contract.height, edited)
+                targets.append((file_index, png))
+            result = fa.build_field_art_patch_many(INDEX_PATH, 6, tuple(targets))
+        manifest = result.manifest
+        self.assertEqual(manifest["mode"], "patched")
+        self.assertEqual(len(manifest["targets"]), 2)
+        self.assertEqual(
+            sorted(
+                (part["file_index"], part["part_index"])
+                for part in manifest["validation"]["changed_inner_parts"]
+            ),
+            sorted(
+                (file_index, source["contract"].pixel_part_index)
+                for file_index, source in sources.items()
+            ),
+        )
+        self.assertGreaterEqual(manifest["iff"]["allocation_slack_after"], 0)
+        self.assertTrue(manifest["iff"]["footer_bit_exact"])
+        self.assertFalse(manifest["binary_patch_manifest"]["contains_replacement_bytes"])
+
     def test_endzone_l1_edit_changes_only_its_base(self) -> None:
         # l1 has room where l0 does not, so the endzone DXT1 edit path stays
         # covered on a real 2048x512 endzone slot.

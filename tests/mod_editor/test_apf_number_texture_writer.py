@@ -11,10 +11,12 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import struct
 import sys
 import tempfile
 import unittest
 from unittest import mock
+import zlib
 
 from PIL import Image
 
@@ -170,8 +172,13 @@ class NumberBudgetTests(unittest.TestCase):
         self.assertIn("number_3_color", message)
         self.assertIn("package 2", message)
         self.assertIn("uniform_number_02.iff", message)
-        self.assertIn("DXT1", message)
-        self.assertIn("not region masks", message)
+        # DIGIT_BUDGET_REPORT2 §4.4: the advice names the two-encoder build
+        # and self-similarity, never the withdrawn flattening guidance.
+        self.assertIn("greedy", message)
+        self.assertIn("mip tail", message)
+        self.assertIn("consistent typeface", message)
+        self.assertNotIn("not region masks", message)
+        self.assertNotIn("Flatten or crop", message)
         self.assertNotIn("flatten colours to the retail palette", message)
         self.assertEqual(ctx.exception.target, "number_3_color in package 2 (uniform_number_02.iff)")
 
@@ -213,6 +220,45 @@ class NumberBudgetTests(unittest.TestCase):
                 "apf:outer:2:inner:0", NUMBER_TEXTURE_KIND, metadata
             ),
             metadata,
+        )
+
+    def test_the_digit_band_floor_is_the_measured_solid_cost(self) -> None:
+        # DIGIT_BUDGET_REPORT §2.1: the cheapest non-blank glyph is 1,792
+        # bytes, and an outlined glyph is ~2,975.  The bands key off those.
+        self.assertEqual(number_targets.SOLID_DIGIT_COST_BYTES, 1_792)
+        self.assertEqual(number_targets.budget_band(1_792), "loose")
+        self.assertEqual(number_targets.budget_band(2_044), "loose")
+        self.assertEqual(number_targets.budget_band(1_791), "tight")
+        self.assertEqual(number_targets.budget_band(917), "tight")
+
+    def test_the_budget_status_line_names_free_bytes_and_the_new_encoder(self) -> None:
+        line = number_targets.budget_status_line(
+            {"free_bytes": 917, "retail_bytes": 5, "budget_bytes": 922}
+        )
+        self.assertIn("Free in this package: 917 bytes", line)
+        self.assertIn("Band: tight", line)
+        self.assertIn("overflow check", line)
+
+        roomy = number_targets.budget_status_line(
+            {"free_bytes": 2_044, "retail_bytes": 5, "budget_bytes": 2_049}
+        )
+        self.assertIn("Band: loose", roomy)
+        self.assertIn("Free in this package: 2,044 bytes", roomy)
+
+    def test_overflow_classifier_tells_digits_from_region_masks(self) -> None:
+        self.assertTrue(
+            number_targets.is_digit_overflow_target(
+                "number_3_color in package 2 (uniform_number_02.iff)"
+            )
+        )
+        self.assertTrue(
+            number_targets.is_digit_overflow_target(
+                "number_1_color+number_7_color in package 862 "
+                "(uniform_number_04.iff)"
+            )
+        )
+        self.assertFalse(
+            number_targets.is_digit_overflow_target("jersey_color outer 400")
         )
 
 
@@ -349,6 +395,56 @@ class NumberDiscTests(unittest.TestCase):
             result.manifest["source"]["source_0a_sha256"], numbers.SOURCE_0A_SHA256
         )
 
+    def test_a_solid_colour_digit_uses_greedy_encoding_and_regenerated_mips(self) -> None:
+        """DIGIT_BUDGET_REPORT2: the preserving encoder is wrong for whole
+        texture replacement; the build must pick the smaller round-tripping
+        payload and a regenerated mip tail must never be smaller than the
+        preserved one for self-similar art."""
+
+        import apf_inner
+        import apf_outer
+        import apf_pants_color_transport as dxt1
+        import apf_xenos_bc1_mip_layout as bc1
+
+        archive = apf_outer.parse_archive(GAME_0A)
+        entry = archive.entries[2]
+        with apf_inner.ArchiveReader(archive) as reader:
+            record = apf_inner.parse_iff(reader, entry)
+            blocks = [
+                apf_inner.decode_block(reader, record, index, 1 << 30)
+                for index in range(record.block_count)
+            ]
+        target = record.files[0]
+        metadata = apf_inner.parse_txtr_metadata(
+            blocks[0][target.parts[0].offset : target.parts[0].offset + target.parts[0].length]
+        )
+        pixel = blocks[1][target.parts[1].offset : target.parts[1].offset + target.parts[1].length]
+        base = bc1.derive_layout(dict(metadata))[0]
+        rgba = dxt1.decode_linear_bc1(bc1.extract_linear_bc1(pixel, base), base)
+        pattern = (255, 0, 0, 255)
+        solid = bytes(pattern[offset % 4] for offset in range(len(rgba)))
+        with tempfile.TemporaryDirectory() as directory:
+            png = Path(directory) / "solid.png"
+            Image.frombytes("RGBA", (512, 512), solid).save(png)
+            regenerated = numbers.build_patch(GAME_0A, png, 2, int(target.index))
+            kept = numbers.build_patch(
+                GAME_0A, png, 2, int(target.index), regenerate_mips=False
+            )
+        self.assertEqual(regenerated.manifest["mode"], "patched")
+        validation = regenerated.manifest["validation"]
+        self.assertTrue(validation["mips_regenerated"])
+        self.assertIn(
+            regenerated.manifest["backend"]["h7a"],
+            ("retail_token_preserving", "greedy_retokenize"),
+        )
+        self.assertFalse(kept.manifest["validation"]["mips_regenerated"])
+        # Regenerating the tail never costs more than keeping retail's for
+        # self-similar art (DIGIT_BUDGET_REPORT2 §2.3 measured ~23 KB cheaper
+        # on real sets).
+        self.assertLessEqual(
+            len(regenerated.entry_bytes), len(kept.entry_bytes)
+        )
+
     def test_a_small_edit_preserves_siblings_in_a_roomier_package(self) -> None:
         import apf_inner
         import apf_outer
@@ -390,13 +486,225 @@ class NumberDiscTests(unittest.TestCase):
         self.assertTrue(result.manifest["validation"]["sibling_parts_byte_identical"])
         self.assertTrue(result.manifest["validation"]["number_font_preserved"])
 
-    def test_an_over_budget_digit_names_the_digit_and_package(self) -> None:
+    def test_a_solid_digit_now_fits_the_tightest_package(self) -> None:
+        """DIGIT_BUDGET_REPORT2: under the greedy encoder plus regenerated
+        mips, self-similar art that overflowed package 2 by thousands of
+        bytes under the preserving encoder now fits its 9 free bytes."""
+
+        with tempfile.TemporaryDirectory() as directory:
+            png = Path(directory) / "solid.png"
+            Image.new("RGBA", (512, 512), (255, 0, 0, 255)).save(png)
+            result = numbers.build_patch(GAME_0A, png, 2, 0)
+        self.assertEqual(result.manifest["mode"], "patched")
+
+    def test_an_incompressible_digit_still_overflows_and_names_itself(self) -> None:
+        import random
+
+        rng = random.Random(42)
+        noise = bytes(rng.randrange(256) for _ in range(512 * 512 * 4))
         with tempfile.TemporaryDirectory() as directory:
             png = Path(directory) / "busy.png"
-            Image.new("RGBA", (512, 512), (255, 0, 0, 255)).save(png)
+            Image.frombytes("RGBA", (512, 512), noise).save(png)
             with self.assertRaises(archive_patch.AllocationOverflowError) as ctx:
                 numbers.build_patch(GAME_0A, png, 2, 0)
         message = str(ctx.exception)
         self.assertIn("number_0_color", message)
         self.assertIn("package 2", message)
         self.assertIn("uniform_number_02.iff", message)
+
+    def test_the_budget_inspector_matches_package_capacity_on_disc(self) -> None:
+        import apf_inner
+        import apf_outer
+
+        archive = apf_outer.parse_archive(GAME_0A)
+        entry = archive.entries[2]
+        with apf_inner.ArchiveReader(archive) as reader:
+            record = apf_inner.parse_iff(reader, entry)
+            stored = [
+                reader.read(entry, block.start_offset, block.stored_length)
+                for block in record.blocks
+            ]
+        capacity = numbers.package_capacity(entry, record, stored)
+        # Header + block table only: never read the stored blocks.
+        budget = numbers.number_package_budget(archive, entry, record)
+        self.assertEqual(budget["outer_index"], 2)
+        self.assertEqual(
+            budget["budget_bytes"], capacity["compressed_budget_bytes"]
+        )
+        self.assertEqual(budget["retail_bytes"], capacity["retail_compressed_bytes"])
+        self.assertEqual(budget["free_bytes"], capacity["remaining_bytes"])
+        # ...and the same numbers when the caller already holds the blocks.
+        budget_with_blocks = numbers.number_package_budget(
+            archive, entry, record, stored
+        )
+        self.assertEqual(budget_with_blocks, budget)
+        # Package 2 is the tightest allocation on the disc: 9 free bytes.
+        self.assertEqual(budget["free_bytes"], 9)
+
+
+class NumberBudgetInspectorTests(unittest.TestCase):
+    """The up-front inspector, on a hand-built minimal number IFF.
+
+    No retail volume is required: the entry carries a valid IFF header, one
+    DRAM block, one VRAM block, one named TXTR, and a name footer, and its
+    fixed allocation is deliberately larger than the stored file so the free
+    budget is non-zero and exactly known.
+    """
+
+    OUTER_INDEX = 862
+    DRAM_LENGTH = 100
+    VRAM_LENGTH = 200
+    ALLOCATION_SIZE = 512
+
+    @staticmethod
+    def _utf16z(value: str) -> bytes:
+        return value.encode("utf-16le") + b"\x00\x00"
+
+    def _synthetic_package(self) -> tuple[bytes, object]:
+        import apf_inner
+        import apf_outer
+
+        header_size = 0x20 + 2 * 0x20 + 4 + 12 + 2 * 4  # 0x78
+        file_length = header_size + self.DRAM_LENGTH + self.VRAM_LENGTH
+        name = self._utf16z("number_0_color")
+        type_name = self._utf16z("TXTR")
+        name_offset = 20
+        type_offset = name_offset + len(name)
+        payload = (
+            struct.pack("<I", 1)          # one name
+            + struct.pack("<I", 5)        # pointer table at payload offset 8
+            + struct.pack("<I", 5)        # record at payload offset 12
+            + struct.pack("<I", 9)        # name at payload offset 20
+            + struct.pack("<I", 35)       # type at payload offset 50
+            + name
+            + type_name
+        )
+        self.assertEqual(len(payload), type_offset + len(type_name))
+
+        header = bytearray(header_size)
+        struct.pack_into(
+            ">8I",
+            header,
+            0,
+            apf_inner.IFF_MAGIC,
+            header_size,
+            file_length,
+            0,
+            2,          # block_count
+            0x0D,       # resolves the block table to 0x20
+            1,          # file_count
+            0x45,       # resolves the file pointer table to 0x60
+        )
+        dram_start = header_size
+        vram_start = dram_start + self.DRAM_LENGTH
+        struct.pack_into(
+            ">8I",
+            header,
+            0x20,
+            0,
+            0,
+            0,
+            self.DRAM_LENGTH,
+            0,
+            dram_start,
+            self.DRAM_LENGTH,
+            0,
+        )
+        struct.pack_into(
+            ">8I",
+            header,
+            0x40,
+            0,
+            0,
+            0,
+            self.VRAM_LENGTH,
+            0,
+            vram_start,
+            self.VRAM_LENGTH,
+            0,
+        )
+        struct.pack_into(">I", header, 0x60, 5)  # descriptor at 0x64
+        struct.pack_into(
+            ">3I",
+            header,
+            0x64,
+            zlib.crc32(b"number_0_color") & 0xFFFFFFFF,
+            zlib.crc32(b"TXTR") & 0xFFFFFFFF,
+            2,
+        )
+        struct.pack_into(">2I", header, 0x64 + 12, 0, 0)
+
+        entry_bytes = bytes(
+            header
+            + bytes(self.DRAM_LENGTH)
+            + bytes(self.VRAM_LENGTH)
+            + struct.pack(">I", apf_inner.NAME_FOOTER_MAGIC)
+            + struct.pack("<I", len(payload))
+            + payload
+        )
+        entry = apf_outer.Entry(
+            table_index=self.OUTER_INDEX,
+            name_id=0,
+            offset_blocks=0,
+            size_blocks=0,
+            virtual_offset=0,
+            size=self.ALLOCATION_SIZE,
+            head_hex="",
+            segments=(),
+        )
+        return entry_bytes, entry
+
+    def test_free_bytes_come_from_the_block_table_alone(self) -> None:
+        import apf_inner
+        import apf_outer
+
+        entry_bytes, entry = self._synthetic_package()
+        archive = apf_outer.Archive(
+            index_path=Path("synthetic-0A"),
+            alignment=2048,
+            reserved_0c=0,
+            reserved_14=0,
+            table_start=0,
+            table_end=0,
+            packs=(),
+            entries=(entry,),
+        )
+        record = apf_inner.parse_iff(archive_patch.BytesReader(entry_bytes), entry)
+        self.assertEqual(record.warnings, [])
+        self.assertEqual(record.block_count, 2)
+
+        budget = numbers.number_package_budget(archive, entry, record)
+        footer_total = 8 + record.footer.payload_size
+        expected_budget = self.ALLOCATION_SIZE - (
+            record.header_size + self.DRAM_LENGTH + footer_total
+        )
+        self.assertEqual(budget["outer_index"], self.OUTER_INDEX)
+        self.assertEqual(budget["budget_bytes"], expected_budget)
+        self.assertEqual(budget["retail_bytes"], self.VRAM_LENGTH)
+        self.assertEqual(budget["free_bytes"], expected_budget - self.VRAM_LENGTH)
+        self.assertEqual(budget["free_bytes"], 24)
+
+        stored = [entry_bytes[b.start_offset:b.start_offset + b.stored_length] for b in record.blocks]
+        with_blocks = numbers.number_package_budget(archive, entry, record, stored)
+        self.assertEqual(with_blocks, budget)
+        # The arithmetic must agree with the writer's own capacity model.
+        capacity = numbers.package_capacity(entry, record, stored)
+        self.assertEqual(budget["budget_bytes"], capacity["compressed_budget_bytes"])
+        self.assertEqual(budget["retail_bytes"], capacity["retail_compressed_bytes"])
+        self.assertEqual(budget["free_bytes"], capacity["remaining_bytes"])
+
+    def test_the_studio_bridge_formats_the_authoring_warning(self) -> None:
+        # 917 free bytes is package 862's measured retail slack
+        # (DIGIT_BUDGET_REPORT §1). The line must name it, keep the old
+        # encoder's band for context, and point at the new encoders instead
+        # of declaring the package dead (DIGIT_BUDGET_REPORT2 §4.3).
+        line = number_targets.budget_status_line(
+            {"free_bytes": 917, "retail_bytes": 1_650_077, "budget_bytes": 1_650_994}
+        )
+        self.assertIn("Free in this package: 917 bytes", line)
+        self.assertIn("Band: tight", line)
+        self.assertIn("overflow check", line)
+
+
+if __name__ == "__main__":  # pragma: no cover
+    unittest.main()

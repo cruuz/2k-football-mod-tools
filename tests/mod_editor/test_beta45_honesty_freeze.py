@@ -16,19 +16,19 @@ import validate_apf_field_art_product as field_gate  # noqa: E402
 
 
 class Beta45HonestyFreezeTests(unittest.TestCase):
-    def test_product_identity_is_beta_46(self) -> None:
+    def test_product_identity_is_beta_47(self) -> None:
         import mod_editor
         from mod_editor.apf_studio import __version__ as apf_version
         from mod_editor.core.update_check import BUILD_RELEASE_TAG
 
-        self.assertEqual(mod_editor.__version__, "1.0.0rc69")
-        self.assertEqual(apf_version, "0.1.0-alpha.78")
-        self.assertEqual(BUILD_RELEASE_TAG, "beta-46")
+        self.assertEqual(mod_editor.__version__, "1.0.0rc71")
+        self.assertEqual(apf_version, "0.1.0-alpha.80")
+        self.assertEqual(BUILD_RELEASE_TAG, "beta-47")
 
     def test_ci_hydrate_tag_is_a_published_beta(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         self.assertIn("gh release download beta-", workflow)
-        self.assertRegex(workflow, r"2K5-Mod-Studio-v1.0-RC6[0-9]-")
+        self.assertRegex(workflow, r"2K5-Mod-Studio-v1.0-RC[0-9]{2}-")
         self.assertRegex(workflow, r"apf2k8-mod-studio-0.1.0-alpha\.[0-9]+-")
 
     def test_live_copy_does_not_make_the_four_forbidden_claims(self) -> None:

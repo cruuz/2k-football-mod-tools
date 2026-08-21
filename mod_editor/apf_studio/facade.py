@@ -541,6 +541,17 @@ class ApfStudioFacade:
             self.last_build = None
             return result
 
+    def number_package_budget(
+        self, entry_index: int, progress: Progress = _noop
+    ) -> dict[str, int]:
+        """One digit package's free compressed bytes, before authoring."""
+
+        progress("Reading jersey-number package budget", 0, 0)
+        from . import number_targets
+
+        source = self.require_session().source
+        return number_targets.package_budget(Path(source.index_0a), entry_index)
+
     def preview_digital_font(self, progress: Progress = _noop) -> Path:
         progress("Preparing digital_font preview", 0, 0)
         return self.require_session().asset_io.preview_digital_font()
@@ -600,6 +611,7 @@ class ApfStudioFacade:
         crest_asset_index: int,
         crest_outer_entry_index: int,
         fit_visible_mask: bool = False,
+        detail_png: Path | None = None,
         progress: Progress = _noop,
     ) -> Modification:
         """Stage the selected crest in the normal project/build transaction."""
@@ -612,6 +624,7 @@ class ApfStudioFacade:
                 crest_asset_index=crest_asset_index,
                 crest_outer_entry_index=crest_outer_entry_index,
                 fit_visible_mask=fit_visible_mask,
+                detail_png=detail_png,
             )
             self._staged_team_logo_png = result.replacement_path
             self.last_build = None
@@ -1092,6 +1105,25 @@ class ApfStudioFacade:
             self.last_build = None
             return result
 
+    def apply_package_maps(
+        self,
+        changes,
+        progress: Progress = _noop,
+    ) -> int:
+        """Stage who-lines-up package maps for Build."""
+
+        with self._session_lock:
+            progress("Checking who-lines-up maps", 0, 1)
+            result = self.require_session().apply_package_map_batch(changes)
+            progress("Who-lines-up maps staged", 1, 1)
+            self.last_build = None
+            return result
+
+    def staged_package_maps(self) -> tuple:
+        with self._session_lock:
+            session = self.session
+            return session.staged_package_maps() if session is not None else ()
+
     def swap_play_assignment_routes(
         self,
         first_play_index: int,
@@ -1109,6 +1141,48 @@ class ApfStudioFacade:
                 second_slot_index,
             )
             progress("Both APF assignment routes verified", 2, 2)
+            self.last_build = None
+            return result
+
+    def relay_play_assignment_route_candidates(
+        self,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+    ) -> tuple[tuple[int, int], ...]:
+        with self._session_lock:
+            session = self.session
+            if session is None:
+                return ()
+            return session.relay_play_assignment_route_candidates(
+                target_play_index,
+                target_slot_index,
+                donor_play_index,
+                donor_slot_index,
+            )
+
+    def copy_play_assignment_route_via_relay(
+        self,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+        relay_play_index: int,
+        relay_slot_index: int,
+        progress: Progress = _noop,
+    ) -> tuple[Modification, Modification]:
+        with self._session_lock:
+            progress("Checking relayed APF assignment routes", 0, 2)
+            result = self.require_session().copy_play_assignment_route_via_relay(
+                target_play_index,
+                target_slot_index,
+                donor_play_index,
+                donor_slot_index,
+                relay_play_index,
+                relay_slot_index,
+            )
+            progress("Both relayed APF assignment routes verified", 2, 2)
             self.last_build = None
             return result
 
@@ -1134,6 +1208,11 @@ class ApfStudioFacade:
         with self._session_lock:
             session = self.session
             return session.staged_splb_changes() if session is not None else ()
+
+    def master_categories(self) -> tuple:
+        with self._session_lock:
+            session = self.session
+            return session.master_categories() if session is not None else ()
 
     def staged_splb_outers(self) -> tuple:
         with self._session_lock:

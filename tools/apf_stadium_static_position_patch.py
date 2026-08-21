@@ -748,7 +748,10 @@ def _copy_new_at(
                 raise PatchError("source 1A descriptor changed during copy")
             final_source = os.lstat(source)
             if (final_source.st_dev, final_source.st_ino) != expected_source_identity:
-                raise PatchError("source 1A pathname changed during copy")
+                raise PatchError(
+                "source 1A pathname changed during copy (a symlinked "
+                "source is the usual cause; stage a real copy instead)"
+            )
         finally:
             os.close(source_descriptor)
         os.fsync(descriptor)

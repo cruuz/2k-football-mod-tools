@@ -173,7 +173,10 @@ from .models import (
     UniformAsset,
     asset_action_binding,
 )
-from .number_targets import action_binding as number_action_binding
+from .number_targets import (
+    action_binding as number_action_binding,
+    budget_status_line as number_budget_status_line,
+)
 from .model_export_qt import PlayerEquipmentModelExportPanel
 from .project import (
     ProjectError,
@@ -187,6 +190,7 @@ from .roster_workspace_qt import RosterReservePlanner
 from .save_playbooks_qt import SavePlaybookAssignmentsPanel
 from .playbook_route_qt import PlayAssignmentRoutePanel
 from .playbook_membership_qt import ApfPlaybookMembershipPanel
+from .playbook_package_map_qt import ApfPackageMapPanel
 from .save_roster_players_qt import SaveRosterPlayersPanel
 from .scene_textures import SceneTexture, shared_texture_ids
 from .stadium import ApfStadiumPreview, ApfStadiumScene
@@ -390,6 +394,47 @@ def _edit_id_for_asset(asset: ApfAsset) -> str:
 
 def _is_editable_png_asset(asset: ApfAsset) -> bool:
     return _asset_product_action(asset) is not None
+
+
+#: Names that mark a row as face/head/portrait art (see catalog._category_for).
+FACE_SCAN_NAME_TOKENS = ("face", "head", "portrait")
+FACE_SCAN_REFUSAL_TITLE = "Face scans can't be added in APF 2K8"
+FACE_SCAN_REFUSAL_BODY = (
+    "All-Pro Football 2K8 face/head art has no proved writer — only the "
+    "hi_head reference mesh can be exported. If your PNGs are 128×128 NFL "
+    "2K5-style portraits, use 2K5 Mod Studio → Rosters & Players → Portraits "
+    "& Faces."
+)
+
+
+def _face_scan_refusal(asset: ApfAsset | None) -> tuple[str, str] | None:
+    """Dedicated refusal copy for APF Rosters face/head rows.
+
+    APF 2K8's face capability is export-only, and the old generic "no proved
+    writer" sentence sent macOS portrait modders hunting for an import that
+    does not exist.  Rows outside APF Rosters keep the generic copy.
+    """
+
+    if asset is None or asset.category is not ApfCategory.ROSTERS:
+        return None
+    value = f"{asset.name} {asset.type_name}".casefold()
+    if not any(token in value for token in FACE_SCAN_NAME_TOKENS):
+        return None
+    return FACE_SCAN_REFUSAL_TITLE, FACE_SCAN_REFUSAL_BODY
+
+
+#: macOS copies files dropped from an archive or another volume with a hidden
+#: AppleDouble twin (``._name``) that carries the resource fork.  The twin has
+#: the same extension as the image, so it sails through the suffix check and
+#: then fails image decoding with jargon; name it plainly instead.
+APPLE_DOUBLE_DROP_REFUSAL = (
+    "That is a macOS resource-fork file (._name), not the image. Drop the "
+    "visible PNG instead."
+)
+
+
+def _is_apple_double_path(path: Path) -> bool:
+    return Path(path).name.startswith("._")
 
 
 def _workspace_route_for(
@@ -1186,6 +1231,48 @@ def _plain_image_formats() -> str:
     return "PNG, JPEG, BMP, GIF, WebP or TGA"
 
 
+# The permission-denied fix must name the actual OS.  A macOS user has no
+# "Run as administrator", no Program Files, and no "administrator mode"; the
+# Windows phrasing read as nonsense there (and sent one user hunting for a
+# sudo toggle the product does not have).
+if platform_compat.IS_MACOS:
+    _ADMIN_RIGHTS_FIX_HINT = (
+        "Fix: Mod Studio does not need sudo or elevated rights. Choose an "
+        "empty output folder you can write to, such as Documents or Desktop. "
+        "If the game is on another drive, the build may copy read-only "
+        "sibling packs instead of linking them; that is slower but still "
+        "needs no elevation."
+    )
+    _ACCESS_DENIED_FIX_HINT = (
+        "Fix: do not choose the game disc, a read-only volume, or another "
+        "protected folder for output. Choose a new empty folder under "
+        "Documents or Desktop; the installer and editor are designed to run "
+        "as your normal user account, without sudo."
+    )
+    _PERMISSION_DENIED_FIX_HINT = (
+        "Fix: choose a new empty output folder under Documents or Desktop. "
+        "Never build into the original game folder; Mod Studio always creates "
+        "a separate copy and never needs sudo."
+    )
+else:
+    _ADMIN_RIGHTS_FIX_HINT = (
+        "Fix: Mod Studio does not need Run as administrator. Choose an empty "
+        "output folder you can write to, such as Documents or Desktop. If the "
+        "game is on another drive, the build may copy read-only sibling packs "
+        "instead of linking them; that is slower but still needs no elevation."
+    )
+    _ACCESS_DENIED_FIX_HINT = (
+        "Fix: do not choose Program Files, the game disc, or another protected "
+        "folder for output. Choose a new empty folder under Documents/Desktop; "
+        "the installer and editor are designed to run as a normal Windows user."
+    )
+    _PERMISSION_DENIED_FIX_HINT = (
+        "Fix: choose a new empty output folder under Documents or Desktop. "
+        "Never build into the original game folder; Mod Studio always creates a "
+        "separate copy and does not require administrator mode."
+    )
+
+
 # Plain-language "what to do next" for the backend's exact-slot refusals.  The
 # fail-closed behaviour itself never changes -- the writer still rejects the
 # same bytes -- but the GUI pairs each refusal with the fix a first-time
@@ -1239,22 +1326,15 @@ _ERROR_FIX_HINTS: tuple[tuple[str, str], ...] = (
     ),
     (
         "administrator rights",
-        "Fix: Mod Studio does not need Run as administrator. Choose an empty "
-        "output folder you can write to, such as Documents or Desktop. If the "
-        "game is on another drive, the build may copy read-only sibling packs "
-        "instead of linking them; that is slower but still needs no elevation.",
+        _ADMIN_RIGHTS_FIX_HINT,
     ),
     (
         "Access is denied",
-        "Fix: do not choose Program Files, the game disc, or another protected "
-        "folder for output. Choose a new empty folder under Documents/Desktop; "
-        "the installer and editor are designed to run as a normal Windows user.",
+        _ACCESS_DENIED_FIX_HINT,
     ),
     (
         "Permission denied",
-        "Fix: choose a new empty output folder under Documents or Desktop. "
-        "Never build into the original game folder; Mod Studio always creates a "
-        "separate copy and does not require administrator mode.",
+        _PERMISSION_DENIED_FIX_HINT,
     ),
 )
 
@@ -1439,6 +1519,10 @@ class ImageDropLabel(QLabel):
             event.ignore()  # type: ignore[attr-defined]
             return
         path = Path(url.toLocalFile())
+        if _is_apple_double_path(path):
+            self._refuse_drop(APPLE_DOUBLE_DROP_REFUSAL)
+            event.ignore()  # type: ignore[attr-defined]
+            return
         if path.suffix.casefold() not in IMAGE_IMPORT_EXTENSIONS:
             self._refuse_drop(
                 f"That file is not an image this panel can read. Drop a "
@@ -1624,6 +1708,13 @@ def fit_slot_image(
         fit_to_png,
     )
 
+    if _is_apple_double_path(path):
+        QMessageBox.information(
+            parent,
+            "That file can't be used",
+            APPLE_DOUBLE_DROP_REFUSAL,
+        )
+        return None
     try:
         probe = fit_image(path, width, height, mode="auto")
     except ValidationError as exc:
@@ -2371,6 +2462,15 @@ class AssetBrowser(QWidget):
         action = _asset_product_action(asset)
         if action is not None:
             notes.insert(0, action.authoring_note)
+        if action is not None and action.replace_method == "replace_number":
+            # Show the package budget BEFORE authoring: retail sits at ~99.9%
+            # of each block, so the greedy/mips-regenerating build's real
+            # headroom is only visible here, not after authoring twenty PNGs.
+            try:
+                budget = self.facade.number_package_budget(asset.outer_index)
+                notes.insert(0, number_budget_status_line(budget))
+            except Exception:  # noqa: BLE001 - a budget line never breaks selection
+                pass
         if route is not None:
             notes.insert(0, route.summary)
         elif self.browse_export_only and self.action_lock_reason:
@@ -2410,8 +2510,14 @@ class AssetBrowser(QWidget):
             self.replace_button.setEnabled(True)
             self.revert_button.setVisible(True)
             self.revert_button.setEnabled(True)
-            lock = self.action_lock_reason or (
-                "Replacement is locked for this browse surface. Click explains why."
+            face = _face_scan_refusal(asset)
+            lock = (
+                face[1]
+                if face is not None
+                else self.action_lock_reason
+                or (
+                    "Replacement is locked for this browse surface. Click explains why."
+                )
             )
             self.replace_button.setToolTip(lock)
             self.replace_button.setProperty("disableReason", lock)
@@ -2432,7 +2538,8 @@ class AssetBrowser(QWidget):
                     f"Replace {asset.name} with any image (auto-resized to the slot)."
                 )
             else:
-                tip = (
+                face = _face_scan_refusal(asset)
+                tip = face[1] if face is not None else (
                     f"No proved writer owns {asset.name} yet, so this build "
                     "does not offer a replacement for it. Export raw/parts to "
                     "study it; editing unlocks when an exact writer exists."
@@ -2666,12 +2773,20 @@ class AssetBrowser(QWidget):
             return
         reason = str(self.replace_button.property("disableReason") or "").strip()
         if reason:
-            QMessageBox.information(
-                self,
-                "Cannot replace this texture yet",
-                reason
-                + "\n\nReplacement never mutates your original dump.",
-            )
+            face = _face_scan_refusal(asset)
+            if face is not None:
+                QMessageBox.information(
+                    self,
+                    face[0],
+                    face[1] + "\n\nReplacement never mutates your original dump.",
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "Cannot replace this texture yet",
+                    reason
+                    + "\n\nReplacement never mutates your original dump.",
+                )
             return
         if asset is None:
             return
@@ -2709,6 +2824,13 @@ class AssetBrowser(QWidget):
         asset = self._selected_asset()
         if asset is not None and self._route is not None:
             self._hand_off(asset, self._route, Path(path))
+            return
+        # Face/head rows are export-only in APF 2K8.  The old code fell through
+        # to a silent no-op here (action is None), which is exactly the dead end
+        # that stranded the macOS portrait modder; refuse with the real reason.
+        face = _face_scan_refusal(asset)
+        if face is not None:
+            QMessageBox.information(self, face[0], face[1])
             return
         action = _asset_product_action(asset) if asset is not None else None
         if asset is None or action is None:
@@ -4711,6 +4833,7 @@ class ApfTeamLogoPanel(QFrame):
                 crest_asset_index=int(crest.asset_index),
                 crest_outer_entry_index=int(crest.outer_entry_index),
                 fit_visible_mask=bool(self.fit_visible_mask.isChecked()),
+                detail_png=self._staged_detail_png,
             )
         except Exception as exc:  # facade/session errors are user-correctable
             QMessageBox.information(
@@ -5302,6 +5425,14 @@ class ApfTeamLogoPanel(QFrame):
         if self._staged_png is None:
             return
         self._staged_detail_png = staged_detail
+        # The base staging above committed before the detail layer existed;
+        # re-stage so the project crest edit carries both layers into Build.
+        if self._source_staged_png is not None and not self._commit_design(
+            self._source_staged_png, remember_source=False
+        ):
+            self._staged_detail_png = None
+            self.set_context()
+            return
         self.set_context()
         QMessageBox.information(
             self,
@@ -19206,6 +19337,11 @@ class InspectorCategoryPage(QWidget):
             if category is ApfCategory.PLAYBOOKS
             else None
         )
+        self.playbook_package_maps = (
+            ApfPackageMapPanel(facade, run_task)
+            if category is ApfCategory.PLAYBOOKS
+            else None
+        )
         self.workspace_tabs: QTabWidget | None = None
         self.inspector.modifiedChanged.connect(self.modifiedChanged)
         self.inspector.audioAnnotationChanged.connect(
@@ -19217,6 +19353,8 @@ class InspectorCategoryPage(QWidget):
             self.playbook_routes.modifiedChanged.connect(self.modifiedChanged)
         if self.playbook_membership is not None:
             self.playbook_membership.modifiedChanged.connect(self.modifiedChanged)
+        if self.playbook_package_maps is not None:
+            self.playbook_package_maps.modifiedChanged.connect(self.modifiedChanged)
         if not include_assets:
             layout.addWidget(self.inspector, 1)
         elif category in {
@@ -19244,6 +19382,7 @@ class InspectorCategoryPage(QWidget):
             elif category is ApfCategory.PLAYBOOKS:
                 tabs.addTab(self.inspector, "PLAY / DRCT Inspector")
                 tabs.addTab(self.playbook_membership, "Fine-tune Plays")  # type: ignore[arg-type]
+                tabs.addTab(self.playbook_package_maps, "Who lines up")  # type: ignore[arg-type]
                 tabs.addTab(self.playbook_routes, "Assignment Routes")  # type: ignore[arg-type]
                 tabs.addTab(self.save_playbooks, "Save Assignments")  # type: ignore[arg-type]
                 tabs.addTab(self.assets, "Raw Playbook Assets")  # type: ignore[arg-type]
@@ -19273,12 +19412,18 @@ class InspectorCategoryPage(QWidget):
             target = 1
         elif normalized == "roster-planner" and self.category is ApfCategory.ROSTERS:
             target = 2
-        elif normalized in {"save-playbooks", "save-assignments"} \
+        elif normalized in {"fine-tune", "fine-tune-plays", "membership"} \
+                and self.category is ApfCategory.PLAYBOOKS:
+            target = 1
+        elif normalized in {"who-lines-up", "package-map", "personnel"} \
                 and self.category is ApfCategory.PLAYBOOKS:
             target = 2
         elif normalized in {"assignment-routes", "route-clone", "routes"} \
                 and self.category is ApfCategory.PLAYBOOKS:
-            target = 1
+            target = 3
+        elif normalized in {"save-playbooks", "save-assignments"} \
+                and self.category is ApfCategory.PLAYBOOKS:
+            target = 4
         elif normalized == "soundtrack" and self.category is ApfCategory.AUDIO:
             target = 0
         elif normalized == "raw-assets" and self.workspace_tabs is not None:
@@ -19359,6 +19504,8 @@ class InspectorCategoryPage(QWidget):
             self.inspector.set_model(model, summary)
             if self.playbook_routes is not None:
                 self.playbook_routes.set_model(model)
+            if self.playbook_package_maps is not None:
+                self.playbook_package_maps.set_context()
             if (
                 self._requested_workspace == "soundtrack"
                 and not self.inspector._soundtrack_album_mode
@@ -19393,6 +19540,8 @@ class InspectorCategoryPage(QWidget):
             # about an opened project so it can show the edits that project
             # already carries.
             self.playbook_membership.set_context()
+        if self.playbook_package_maps is not None:
+            self.playbook_package_maps.refresh()
 
 
 def _format_summary(values: dict[str, int] | object) -> str:

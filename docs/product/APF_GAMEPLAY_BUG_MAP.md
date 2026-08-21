@@ -44,6 +44,9 @@ Sources: Discord (Urianus Magnus Ursulinus [PLOT], 2026-08-07), GitHub issue #2
   WR3↔TE table export was withdrawn in alpha.78 because it had no importer,
   Build path, or supported installation method. APF instead provides a plain
   **3rd-and-long editing status…** explanation; it does not patch `default.xex`.
+- **Who lines up (unreleased)** — staged APF `+0x11` package-map editor.
+  Offline-writer-proved for the 11 map bytes. Runtime G12 / 3rd-and-long
+  still unproved. Not an XEX patch.
 - **Save Players** — 149 fields including 77 ability bits (G10/G11 research surface); G6 VO / G10 charge honesty labels in the panel.
 - **2K5 formation package-map writer** — `build_formation_package_map_patch` /
   `verify_formation_package_map_patch` (11 bytes @ formation `+0x0D`);

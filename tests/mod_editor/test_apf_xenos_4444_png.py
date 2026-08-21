@@ -23,7 +23,9 @@ import apf_inner  # noqa: E402
 
 
 def _pack_4444(a: int, r: int, g: int, b: int) -> int:
-    return ((a & 0xF) << 12) | ((r & 0xF) << 8) | ((g & 0xF) << 4) | (b & 0xF)
+    # The writer's retail-proven convention (apf_logo_patch round-trip):
+    # red in the LOW nibble, blue at bits 8-11.
+    return ((a & 0xF) << 12) | ((b & 0xF) << 8) | ((g & 0xF) << 4) | (r & 0xF)
 
 
 def _tile_linear(

@@ -548,8 +548,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
         "mod_editor/core/sources.py": "d47ef48a21d0cb4bb47e2b0f5ace029e68c3dc8906caa7d48e19e6dea4341375",
-        "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
-        "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
+        "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
+        "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
         "tools/nfl2k5_jersey_png_workflow.py": "e7af6773a07085da33745e62bfccc59c2f013e833f2aa1ae9009c965938f5832",
         backend_module: backend_module_sha256,
         "tools/nfl_all_texture_xiso_workflow.py": "61d0574ae5320cb7b12b96f1be0b34dcf1fdef363091b00de0fd0fac7130bd91",
@@ -1562,11 +1562,11 @@ class Apf2k8JerseyColorProvider:
     verifier_module_sha256 = "559c3b8d5125ad7e31a4a3212249d35846b8c143f693503accbae7d32868e09f"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
-        "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
+        "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
-        "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_texture_patch.py": "65153c92d5fa734718a1f2e335ce55162fd19826404501f0353b3e68ddfb6eb4",
+        "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
+        "tools/apf_texture_patch.py": "301cbea24825ddc914498d99befa4db633cb4cd4a47119dec698942f3cd40f18",
         "tools/apf_uniform_mip_patch.py": "c93c95c8441ab074eedc83776fda88204a9c68c40ea0455fc619d162825c20f9",
         "tools/apf_xenos_mip_layout.py": "ec07ea62ad67b3fff7e92fb8779c0cf85f65bc9f196c39b374dd19455619f9d7",
     }
@@ -2087,12 +2087,12 @@ class Apf2k8PantsColorProvider(Apf2k8JerseyColorProvider):
     verifier_module_sha256 = "4a253a09389c62919e921eb6a9771acf319dc0486ac9b22e0c2c5a4bfe8325a8"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
-        "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
-        "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
+        "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
+        "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
         "tools/apf_pants_color_transport.py": "658a124fef839e5252dc89dc6fcd4736698cd2b6a6b053c6f9935bbc75e12871",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
-        "tools/apf_texture_patch.py": "65153c92d5fa734718a1f2e335ce55162fd19826404501f0353b3e68ddfb6eb4",
+        "tools/apf_texture_patch.py": "301cbea24825ddc914498d99befa4db633cb4cd4a47119dec698942f3cd40f18",
         "tools/apf_xenos_bc1_mip_layout.py": "56f53603e73e563ff66305430956373468160fb0af9380fe0257c5a5edde9234",
         "tools/nfl_dxt1.py": "bce75aca68acbfaa5112927e228672d4d77c58fc27cd3ce047751d8875dcb9a2",
     }
@@ -2120,9 +2120,9 @@ class Apf2k8HelmetColorProvider(Apf2k8JerseyColorProvider):
         "tools/apf_helmet_color_transport.py": "86d4fbf1b43b2dfb02b6d3e35c4829ccaf3b0818edf5bab60903595269a933cb",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
-        "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
-        "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
-        "tools/apf_texture_patch.py": "65153c92d5fa734718a1f2e335ce55162fd19826404501f0353b3e68ddfb6eb4",
+        "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
+        "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
+        "tools/apf_texture_patch.py": "301cbea24825ddc914498d99befa4db633cb4cd4a47119dec698942f3cd40f18",
         "tools/apf_xenos_dxn_mip_layout.py": "85eba338384d518b111dab153120dc937ed45a898d348f4d1548d5f8d8672431",
     }
     recipe_schema_file = "mod_editor/apf_helmet_recipe.schema.json"
@@ -2148,12 +2148,12 @@ class Apf2k8ShoulderColorProvider(Apf2k8JerseyColorProvider):
     verifier_module_sha256 = "9481262b3bcaa112bcb83c74f596bc09c98b6081a5d3c78162ad35599ae2fbd9"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
-        "tools/apf_inner.py": "4a7014fe79cc445d83d86e9e06b68468931bb29d5018b0e91d5c2772ed64cedf",
-        "tools/apf_outer.py": "7e86c0e5fb6338e14d7dab5d45f408655d456beeb9d10c6f28f5bc5c1bb088ac",
+        "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
+        "tools/apf_outer.py": "e9ce600393f9c9f6b372bb385e9486a655167bf6cc9ef256cc96c8439957cd31",
         "tools/apf_shoulder_color_transport.py": "ba654154c990fad1b45760cfd325b352def357e5f1030915323591128e0a9b46",
         backend_module: backend_module_sha256,
         verifier_module: verifier_module_sha256,
-        "tools/apf_texture_patch.py": "65153c92d5fa734718a1f2e335ce55162fd19826404501f0353b3e68ddfb6eb4",
+        "tools/apf_texture_patch.py": "301cbea24825ddc914498d99befa4db633cb4cd4a47119dec698942f3cd40f18",
         "tools/apf_uniform_mip_patch.py": "c93c95c8441ab074eedc83776fda88204a9c68c40ea0455fc619d162825c20f9",
         "tools/apf_xenos_mip_layout.py": "ec07ea62ad67b3fff7e92fb8779c0cf85f65bc9f196c39b374dd19455619f9d7",
     }

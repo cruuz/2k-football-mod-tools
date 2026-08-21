@@ -5,11 +5,13 @@ from __future__ import annotations
 from typing import Callable
 
 from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (
     QComboBox,
     QFrame,
     QGridLayout,
     QHBoxLayout,
+    QInputDialog,
     QLabel,
     QMessageBox,
     QPushButton,
@@ -19,7 +21,10 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from mod_editor.core.apf2k8_playbook_route_writer import PROVIDER_KIND
+from mod_editor.core.apf2k8_playbook_route_writer import (
+    PROVIDER_KIND,
+    ROUTE_ORPHAN_MESSAGE,
+)
 
 from .inspectors import PagedModel
 
@@ -45,9 +50,10 @@ class PlayAssignmentRoutePanel(QWidget):
         title.setObjectName("panelTitle")
         explanation = QLabel(
             "Copy or swap one of the 11 player-assignment routes between stock "
-            "plays. Mod Studio copies the exact assignment descriptor and points "
-            "to an existing game-authored chain; it does not guess route-node "
-            "coordinates or opcodes. A shareable project stores only play/slot IDs."
+            "plays. Copy keeps both routes only when the target's current route "
+            "is also used elsewhere. If Copy refuses, use Swap — that trades "
+            "the two routes and deletes nothing. The project stores play and "
+            "slot numbers, not retail bytes."
         )
         explanation.setObjectName("findingText")
         explanation.setWordWrap(True)
@@ -88,8 +94,8 @@ class PlayAssignmentRoutePanel(QWidget):
         self.swap_button = QPushButton("Swap both assignment routes")
         self.swap_button.setObjectName("secondaryButton")
         self.copy_button.setToolTip(
-            "Safe when the target's current chain is still used by another stock "
-            "assignment. Otherwise use Swap so no game-authored chain is orphaned."
+            "Copy the donor route onto the target. If that route is only used "
+            "once, use Swap instead so it is not deleted."
         )
         self.swap_button.setToolTip(
             "Stage both reciprocal route copies as one verified Undo action."
@@ -111,11 +117,14 @@ class PlayAssignmentRoutePanel(QWidget):
         staged_heading.addWidget(self.revert_button)
         root.addLayout(staged_heading)
         self.table = QTableWidget(0, 3)
+        self.table.setObjectName("assetTable")
         self.table.setHorizontalHeaderLabels(("Target", "Donor", "Action"))
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.setSelectionMode(QTableWidget.SingleSelection)
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.table.setAlternatingRowColors(True)
         self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.verticalHeader().setVisible(False)
         self.table.itemSelectionChanged.connect(self._update_buttons)
         root.addWidget(self.table, 1)
         self.status = QLabel("Load a game to choose stock plays.")
@@ -186,6 +195,84 @@ class PlayAssignmentRoutePanel(QWidget):
             ),
             lambda _result: self._mutation_complete(
                 "Stock assignment route staged and independently verified."
+            ),
+            True,
+            show_errors=False,
+            on_error=lambda message: self._copy_failed(coordinates, message),
+        )
+
+    def _copy_failed(self, coordinates, message: str) -> None:
+        if message.strip() != ROUTE_ORPHAN_MESSAGE.strip():
+            QMessageBox.critical(self, "Could not copy route", message)
+            return
+        self._offer_relay_copy(coordinates)
+
+    def _offer_relay_copy(self, coordinates) -> None:
+        candidates = tuple(
+            self.facade.relay_play_assignment_route_candidates(*coordinates)
+        )
+        if not candidates:
+            QMessageBox.warning(
+                self,
+                "No relay available",
+                ROUTE_ORPHAN_MESSAGE
+                + "\n\nNo other assignment shares a spare route that could "
+                "carry the target's route, so use Swap instead.",
+            )
+            return
+        relay = candidates[0]
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Warning)
+        box.setWindowTitle("Copy would delete a route")
+        box.setText(ROUTE_ORPHAN_MESSAGE)
+        box.setInformativeText(
+            "You can copy through a relay instead: the donor route moves to "
+            "the target, and the target's original route moves to a relay "
+            "slot that already shares it. Nothing is deleted, and it stages "
+            "as one Undo action."
+        )
+        relay_play, relay_slot = relay
+        confirm = box.addButton(
+            f"Copy via relay play {self._play_name(relay_play)} "
+            f"(slot {relay_slot + 1})",
+            QMessageBox.AcceptRole,
+        )
+        pick = box.addButton("Pick relay…", QMessageBox.ActionRole)
+        box.addButton("Cancel", QMessageBox.RejectRole)
+        box.exec_()
+        clicked = box.clickedButton()
+        if clicked is confirm:
+            self._relay_copy(coordinates, relay)
+        elif clicked is pick:
+            self._pick_relay(coordinates, candidates)
+
+    def _relay_label(self, relay) -> str:
+        relay_play, relay_slot = relay
+        return f"{self._play_name(relay_play)} · slot {relay_slot + 1}"
+
+    def _pick_relay(self, coordinates, candidates) -> None:
+        labels = [self._relay_label(relay) for relay in candidates]
+        label, accepted = QInputDialog.getItem(
+            self,
+            "Pick a relay slot",
+            "Relay assignment that will take the target's route:",
+            labels,
+            0,
+            False,
+        )
+        if not accepted or label not in labels:
+            return
+        self._relay_copy(coordinates, candidates[labels.index(label)])
+
+    def _relay_copy(self, coordinates, relay) -> None:
+        relay_play, relay_slot = relay
+        self.run_task(
+            "Copying stock APF assignment route via relay",
+            lambda progress: self.facade.copy_play_assignment_route_via_relay(
+                *coordinates, relay_play, relay_slot, progress=progress
+            ),
+            lambda _result: self._mutation_complete(
+                "Relayed route copy staged and independently verified."
             ),
             True,
         )
@@ -266,6 +353,8 @@ class PlayAssignmentRoutePanel(QWidget):
             for column, value in enumerate(values):
                 item = QTableWidgetItem(value)
                 item.setData(Qt.UserRole, modification.asset_id)
+                item.setForeground(QColor("#dce8f5"))
+                item.setBackground(QColor("#0c1421"))
                 self.table.setItem(row_index, column, item)
         self.status.setText(
             f"{len(rows)} route target{'s' if len(rows) != 1 else ''} staged. "
@@ -306,8 +395,8 @@ class PlayAssignmentRoutePanel(QWidget):
             block
             if block
             else (
-                "Safe when the target's current chain is still used by another stock "
-                "assignment. Otherwise use Swap so no game-authored chain is orphaned."
+                "Copy the donor route onto the target. If Copy says the route "
+                "is only used once, use Swap."
             )
         )
         swap_tip = (
