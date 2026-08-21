@@ -92,9 +92,9 @@ jobs:
         run: |
           set -euo pipefail
           inputs="$(mktemp -d)"
-          gh release download beta-48 \
+          gh release download beta-49 \
             --repo "$GITHUB_REPOSITORY" \
-            --pattern '2K5-Mod-Studio-v1.0-RC72-20260821.tar.gz' \
+            --pattern '2K5-Mod-Studio-v1.0-RC73-20260821.tar.gz' \
             --pattern 'apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz' \
             --dir "$inputs"
           python - "$inputs" "$GITHUB_WORKSPACE" <<'PY'
@@ -110,8 +110,8 @@ jobs:
           inputs = Path(sys.argv[1])
           checkout = Path(sys.argv[2]).resolve(strict=True)
           archives = {
-              "2K5-Mod-Studio-v1.0-RC72-20260821.tar.gz":
-                  "4aefa1e4d7817ff4631bb30811101b569257604591b1b7cd3b2cc08c98756b66",
+              "2K5-Mod-Studio-v1.0-RC73-20260821.tar.gz":
+                  "a640d6a1efafcf5f94081016edafd14401fba76d275d757e4f7ee892ebf174f1",
               "apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz":
                   "b600ba8019d4ab9cd54d4cf41479bdffffe815bc82e50c2c29f617f7e150e9ed",
           }
@@ -320,9 +320,9 @@ jobs:
         run: |
           set -euo pipefail
           inputs="$(mktemp -d)"
-          gh release download beta-48 \
+          gh release download beta-49 \
             --repo "$GITHUB_REPOSITORY" \
-            --pattern '2K5-Mod-Studio-v1.0-RC72-20260821.tar.gz' \
+            --pattern '2K5-Mod-Studio-v1.0-RC73-20260821.tar.gz' \
             --pattern 'apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz' \
             --dir "$inputs"
           python - "$inputs" "$GITHUB_WORKSPACE" <<'PY'
@@ -338,8 +338,8 @@ jobs:
           inputs = Path(sys.argv[1])
           checkout = Path(sys.argv[2]).resolve(strict=True)
           archives = {
-              "2K5-Mod-Studio-v1.0-RC72-20260821.tar.gz":
-                  "4aefa1e4d7817ff4631bb30811101b569257604591b1b7cd3b2cc08c98756b66",
+              "2K5-Mod-Studio-v1.0-RC73-20260821.tar.gz":
+                  "a640d6a1efafcf5f94081016edafd14401fba76d275d757e4f7ee892ebf174f1",
               "apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz":
                   "b600ba8019d4ab9cd54d4cf41479bdffffe815bc82e50c2c29f617f7e150e9ed",
           }

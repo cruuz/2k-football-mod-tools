@@ -1,5 +1,36 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC73 — Create Formation / Create Play, authorized end to end (2026-08-21)
+
+The clone-based creation writer that shipped quietly in RC54-RC56 is now a
+first-class, capability-authorized, project-persisted feature, and it gained
+two bounded Stage-2 steps — all inside the proved empty capacity of the fixed
+0x13390 PLAY bodies (317 empty formation slots and 739 empty play slots
+corpus-wide; nothing relocates or grows):
+
+- **Create Formation / Create Play** are authorized kinds
+  (`play_formation_create`, `play_create`) in the unified backend and the
+  capability registry, so projects that stage creates now Build instead of
+  being refused at the provider gate.
+- **Custom names (optional):** a created formation or play may carry a
+  1-40-character printable-ASCII name appended to the name pool's verified
+  zero tail; the pool count word at 0x1083C is checked against the retail
+  invariant (37/37 books) and kept consistent. Donor-name reuse remains the
+  default.
+- **List Play in Formation** (`play_formation_link`): writes one play index
+  into the formation's first empty 0x1FF menu slot so a created play is
+  actually callable; the selection group inherits the formation's existing
+  slots (or an explicit 0-3). Group-bit gameplay semantics remain unproved
+  and are labeled as such.
+- **One-pass composition:** creates, links, and stock route copies for one
+  book compile against a single intermediate body into one pack-0 slice.
+- **Projects persist creates and links:** Save Project writes
+  `playbook_creates`/`playbook_links`; load re-validates per book through the
+  writer before staging. No silent drops.
+- Honesty: registry and panel copy state that runtime visibility of created
+  formations/plays is not captured (no emulator gate in this release),
+  freehand node synthesis stays refused, and the XBE is never touched.
+
 ## v1.0 RC72 — jersey digits that fit (2026-08-21)
 
 Community report: "can't edit numbers in 2k5." The number *values* were

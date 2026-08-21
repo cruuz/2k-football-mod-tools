@@ -55,6 +55,7 @@ from mod_editor.core.nfl2k5_playbook_route_writer import (
     route_selector as play_route_selector,
 )
 from mod_editor.core.nfl2k5_formation_play_writer import (
+    FormationLinkRequest,
     FormationCreateRequest,
     PlayCreateRequest,
 )
@@ -2442,10 +2443,11 @@ class Nfl2k5StudioFacade:
         self,
         asset_id: str,
         donor_formation_index: int,
+        custom_name: str | None = None,
         progress: ProgressSink = _quiet_progress,
     ) -> object:
         progress("Creating formation", 0, 2)
-        request = FormationCreateRequest(asset_id, donor_formation_index)
+        request = FormationCreateRequest(asset_id, donor_formation_index, custom_name)
         with self._lock:
             inspector = self._require_playbook_inspector()
             session = self._require_session()
@@ -2461,10 +2463,11 @@ class Nfl2k5StudioFacade:
         self,
         asset_id: str,
         donor_play_index: int,
+        custom_name: str | None = None,
         progress: ProgressSink = _quiet_progress,
     ) -> object:
         progress("Creating play", 0, 2)
-        request = PlayCreateRequest(asset_id, donor_play_index)
+        request = PlayCreateRequest(asset_id, donor_play_index, custom_name)
         with self._lock:
             inspector = self._require_playbook_inspector()
             session = self._require_session()
@@ -2489,6 +2492,34 @@ class Nfl2k5StudioFacade:
             changed = self._require_session().revert_play_create(selector)
         progress("Play reverted", 1, 1)
         return StudioOperationResult("Play reverted." if changed else "Already original.")
+
+    def create_formation_link(
+        self,
+        asset_id: str,
+        formation_index: int,
+        play_index: int,
+        group: int | None = None,
+        progress: ProgressSink = _quiet_progress,
+    ) -> object:
+        progress("Listing play in formation", 0, 2)
+        request = FormationLinkRequest(asset_id, formation_index, play_index, group)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            session.attach_playbook_inspector(inspector)
+            changed = session.create_formation_link(request)
+        progress("Play listed", 2, 2)
+        return StudioOperationResult(
+            "Play listed in the formation's first empty menu slot."
+            if changed else "That link is already staged."
+        )
+
+    def revert_formation_link(self, selector: str, progress: ProgressSink = _quiet_progress) -> object:
+        progress("Reverting link", 0, 1)
+        with self._lock:
+            changed = self._require_session().revert_formation_link(selector)
+        progress("Link reverted", 1, 1)
+        return StudioOperationResult("Link reverted." if changed else "Already original.")
 
     @property
     def stadium_available(self) -> bool:

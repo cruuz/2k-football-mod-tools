@@ -2836,7 +2836,7 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
+            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, play_formation_create, play_create, play_formation_link, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
             "name": "kind",
             "required": true
           },
@@ -2907,7 +2907,7 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
+            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, play_formation_create, play_create, play_formation_link, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
             "name": "kind",
             "required": true
           },
@@ -3264,7 +3264,7 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
+            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, play_formation_create, play_create, play_formation_link, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
             "name": "kind",
             "required": true
           },
@@ -4616,21 +4616,25 @@
         "docs/research/playbook_format.md",
         "docs/product/PLAY_EDITOR_FINDINGS.md",
         "mod_editor/core/nfl2k5_playbook_route_writer.py",
-        "tests/mod_editor/test_nfl2k5_playbook_route_writer.py"
+        "mod_editor/core/nfl2k5_formation_play_writer.py",
+        "tests/mod_editor/test_nfl2k5_playbook_route_writer.py",
+        "tests/mod_editor/test_nfl2k5_formation_play_writer.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "The dedicated viewer parses all 37 private PLAY books and can copy any stock assignment descriptor and existing node-chain pointer to another assignment in the same book, with Revert and project-build support."
+        "reason": "The dedicated viewer parses all 37 private PLAY books and can copy any stock assignment descriptor and existing node-chain pointer to another assignment in the same book, with Revert and project-build support. Create Formation and Create Play clone a donor record into the book's proved-empty slots (counts bump at +0x34/+0x38), optionally with a custom name appended to the name pool's verified zero tail, and a menu link can list a play in one empty 0x1FF slot; every create is write-masked and fully reparsed."
       },
       "id": "nfl2k5.scripts.director_playbook",
       "input_constraints": [
         "Every PLAY value is read from the user's private cache; stock names, records, nodes, descriptor words, pointers, and raw exports never enter a shareable project or release.",
         "A route edit may select only a donor and target assignment from the same canonical PLAY resource. The writer copies the donor descriptor word and repoints the target to the donor's existing stock chain.",
         "The compiler reparses the complete replacement, changes only the target's two four-byte fields, refuses duplicate targets and orphaned source chains, and never authors, moves, or resizes node data.",
-        "Player-slot roles, coordinate axes and scale, opcode and operand meanings, freehand waypoints, cross-book chains, count changes, and custom-play save ownership remain unsupported."
+        "Creates inhabit only the fixed 0x13390 body: proved-empty formation, aux, and play slots plus the name pool's verified zero tail; capacities 50/270 are enforced and no allocation grows or relocates.",
+        "A created formation or play reuses its donor's bytes and name pointer unless a custom name is supplied; a menu link inherits the formation's existing selection group unless one is chosen explicitly (0-3), and group-bit gameplay semantics are not claimed.",
+        "Player-slot roles, coordinate axes and scale, opcode and operand meanings, freehand waypoints, cross-book chains, and custom-play save ownership remain unsupported."
       ],
       "portme": [
         "Create controlled game-authored X-only, Y-only, added-waypoint, and route-type-change fixtures and diff their private save containers.",
@@ -4644,7 +4648,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "Same-book stock assignment-route copying, source binding, exact write-mask enforcement, project reopen, copied-XISO transport, and independent PLAY reparse are offline-proved; runtime route behavior is not captured.",
+        "scope": "Same-book stock assignment-route copying, clone-based formation/play creation with optional custom names and menu links, source binding, exact write-mask enforcement, project reopen, copied-XISO transport, and independent PLAY reparse are offline-proved; runtime route or create behavior is not captured.",
         "status": "not-tested"
       },
       "selectors": {
@@ -4665,7 +4669,7 @@
         "resource": "five inspected DRCT graphs and 37 fixed-capacity PLAY books; write-back changes descriptor/pointer fields only",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Browse and raw-export all 37 NFL PLAY books, copy exact stock assignment routes within one book, Revert them, and build a verified copied XISO; freehand route authoring remains unsupported.",
+      "summary": "Browse and raw-export all 37 NFL PLAY books, copy exact stock assignment routes within one book, create formations/plays as bounded clones into proved-empty slots (optionally named, optionally menu-linked), Revert them, and build a verified copied XISO; freehand route authoring remains unsupported.",
       "surface": "scripts_config",
       "title": "NFL 2K5 stock route copier and playbook viewer",
       "validation_command": "bash tools/validate_director_inventory.sh"
@@ -4959,7 +4963,7 @@
       "selectors": {
         "fields": [
           {
-            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
+            "allowed": "torso, sleeve, pants, live_helmet, live_number_nameplate, team_select, live_face, create_team_field_art, team_identity, player_roster, player_portrait, crib_team_photo, crib_standalone_texture, crib_scene_texture, crib_scene_geometry, play_assignment_route, play_formation_create, play_create, play_formation_link, scorebug_texture, stadium_texture, stadium_geometry, p8_texture, uniform_equipment_texture, unif_color, roster_team_text, roster_player_text, universal_fixed_text, menu_back_audio, audo_audio, ausb_audio",
             "name": "kind",
             "required": true
           },

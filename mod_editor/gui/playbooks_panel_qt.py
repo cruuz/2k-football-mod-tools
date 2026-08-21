@@ -688,6 +688,22 @@ class PlaybooksPanel(QWidget):
         create_row.addStretch(1)
         inspector_layout.addLayout(create_row)
 
+        name_row = QHBoxLayout()
+        self.custom_name_edit = QLineEdit()
+        self.custom_name_edit.setPlaceholderText(
+            "Custom name for a created formation/play (optional, 40 chars)"
+        )
+        self.custom_name_edit.setMaxLength(40)
+        self.create_link_button = QPushButton("List Selected Play in Selected Formation")
+        self.create_link_button.setToolTip(
+            "Writes the selected play into the selected formation's first empty "
+            "menu slot (0x1FF). The selection group is inherited from the "
+            "formation's existing slots; group-bit gameplay meaning is unproved."
+        )
+        name_row.addWidget(self.custom_name_edit, 1)
+        name_row.addWidget(self.create_link_button)
+        inspector_layout.addLayout(name_row)
+
         # Experimental G2-class menu composition export (offline only).
         self.link_copy_banner = QLabel(
             "⚠ Experimental offline export only — copies another formation’s "
@@ -842,6 +858,7 @@ class PlaybooksPanel(QWidget):
         self.copy_route_button.clicked.connect(self._copy_selected_route)
         self.revert_route_button.clicked.connect(self._revert_selected_route)
         self.create_formation_button.clicked.connect(self._create_formation)
+        self.create_link_button.clicked.connect(self._create_link)
         self.export_link_copy_button.clicked.connect(self._export_link_table_copy)
         self.export_pkgmap_copy_button.clicked.connect(self._export_package_map_copy)
         self.link_donor_combo.currentIndexChanged.connect(
@@ -1373,6 +1390,34 @@ class PlaybooksPanel(QWidget):
         self.create_play_button.setToolTip(play_tip)
         self.create_formation_button.setProperty("disableReason", form_block)
         self.create_play_button.setProperty("disableReason", play_block)
+        link_ok = bool(
+            can_create
+            and self.formation_combo.currentData() is not None
+            and linked is not None
+        )
+        if link_ok:
+            link_tip = (
+                "List the selected play in the selected formation's first empty "
+                "menu slot (0x1FF). Group inherits the formation's existing slots."
+            )
+            link_block = ""
+        elif not self.host.source_ready:
+            link_tip = link_block = (
+                "Load your NFL 2K5 XISO first. Listing a play needs a source."
+            )
+        elif book is None:
+            link_tip = link_block = "Select a playbook book first, then list a play."
+        elif self.formation_combo.currentData() is None:
+            link_tip = link_block = "Select the formation whose menu should list the play."
+        elif linked is None:
+            link_tip = link_block = (
+                "Select the play to list (a formation play row) first."
+            )
+        else:
+            link_tip = link_block = "Wait for the current operation to finish."
+        self.create_link_button.setEnabled(True)
+        self.create_link_button.setToolTip(link_tip)
+        self.create_link_button.setProperty("disableReason", link_block)
         target_form = self.formation_combo.currentData()
         donor_form = self.link_donor_combo.currentData()
         can_link_export = bool(
@@ -1583,13 +1628,16 @@ class PlaybooksPanel(QWidget):
         donor_idx = self.formation_combo.currentData()
         if book is None or donor_idx is None:
             return
+        name = self.custom_name_edit.text().strip() or None
 
         def ready(_value: object) -> None:
             self.progress_label.setText(f"Created formation from {book.formations[donor_idx].name} — refresh to see new slot {len(book.formations)}")
             self._refresh_after_task = True
 
         self._run(
-            lambda progress: self.host.create_formation(book.asset_id, int(donor_idx), progress),
+            lambda progress: self.host.create_formation(
+                book.asset_id, int(donor_idx), name, progress
+            ),
             ready,
         )
 
@@ -1908,13 +1956,47 @@ class PlaybooksPanel(QWidget):
         if book is None or linked is None:
             return
         donor_idx = linked.play.index
+        name = self.custom_name_edit.text().strip() or None
 
         def ready(_value: object) -> None:
             self.progress_label.setText(f"Created play from {linked.play.name} — new index {len(book.plays)}")
             self._refresh_after_task = True
 
         self._run(
-            lambda progress: self.host.create_play(book.asset_id, int(donor_idx), progress),
+            lambda progress: self.host.create_play(
+                book.asset_id, int(donor_idx), name, progress
+            ),
+            ready,
+        )
+
+    def _create_link(self) -> None:
+        reason = str(
+            self.create_link_button.property("disableReason") or ""
+        ).strip()
+        if reason:
+            QMessageBox.information(
+                self,
+                "Cannot list play yet",
+                reason
+                + "\n\nFix: load XISO → select book → select formation and play row → list.",
+            )
+            return
+        book = self._selected_book()
+        formation_index = self.formation_combo.currentData()
+        linked = self._selected_linked_play()
+        if book is None or formation_index is None or linked is None:
+            return
+
+        def ready(_value: object) -> None:
+            self.progress_label.setText(
+                f"Listed {linked.play.name} in {book.formations[int(formation_index)].name} — refresh to see the menu slot."
+            )
+            self._refresh_after_task = True
+
+        self._run(
+            lambda progress: self.host.create_formation_link(
+                book.asset_id, int(formation_index), linked.play.index, None, progress
+            ),
             ready,
         )
 
