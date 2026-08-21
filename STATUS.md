@@ -1,4 +1,4 @@
-# 2K5 Mod Studio — v1.0 RC72 Release Status
+# 2K5 Mod Studio — v1.0 RC73 Release Status
 
 ## Beta 33 — the stock CPU playbooks (2026-08-10)
 
@@ -338,7 +338,30 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-48` — 2026-08-21 · CURRENT
+### `beta-49` — 2026-08-21 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-49>
+
+Beta 49 carries 2K5 RC73 (APF alpha.80 assets reused byte-for-byte). Create
+Formation / Create Play become capability-authorized, project-persisted
+kinds; optional custom names append to the name pool's verified zero tail;
+List Play in Formation writes one empty 0x1FF menu slot (group inherited);
+creates, links, and route copies compose in one pack-0 slice. Runtime
+visibility of created records remains uncaptured and is labeled so; freehand
+node synthesis stays refused; the XBE is never touched.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC73-20260821.tar.gz` | 11,075,262 | `a640d6a1efafcf5f94081016edafd14401fba76d275d757e4f7ee892ebf174f1` |
+| `2K5-Mod-Studio-v1.0-RC73-20260821.tar.gz.sha256` | 107 | `34134ab133eaa91c3628a16be33be839fc24543db84425ff2bbdcafa90f2edd8` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz` | 1,905,194 | `b600ba8019d4ab9cd54d4cf41479bdffffe815bc82e50c2c29f617f7e150e9ed` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz.sha256` | 115 | `89216e9c1cc7ae6d9956c61af375b6f060bbb8208be91974a247208cd18b4aa9` |
+| `2K5-Mod-Studio-1.0.0rc73-Setup.exe` | 56,710,446 | `68b7b6ef9d09061d47ad327a265576c45474178d7bd37dbd90a4810453f6b7e7` |
+| `2K5-Mod-Studio-1.0.0rc73-Setup.exe.sha256` | 101 | `6d28eb82e0c37fc3d761e2f6f7711d543901ea9c3a2c6333d54494a697c88d21` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe` | 52,740,465 | `d4dd682a49cbc9ac7da554486a5def9d0c2df6b20cbe8fe9989a4adfd7616d58` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe.sha256` | 110 | `a89588cd10474ccb60e80e80f1408bff38c6fc5973b18dcdc57bf0fde34b187f` |
+
+### `beta-48` — 2026-08-21 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-48>
 

@@ -32,6 +32,14 @@ from mod_editor.core.nfl2k5_playbook_route_writer import (
     PROVIDER_KIND as PLAY_ROUTE_KIND,
     request_from_mapping as play_route_request_from_mapping,
 )
+from mod_editor.core.nfl2k5_formation_play_writer import (
+    PROVIDER_KIND_FORMATION as FORMATION_CREATE_KIND,
+    PROVIDER_KIND_LINK as FORMATION_LINK_KIND,
+    PROVIDER_KIND_PLAY as PLAY_CREATE_KIND,
+    formation_request_from_mapping,
+    link_request_from_mapping,
+    play_request_from_mapping,
+)
 from mod_editor.studio.audio_annotations import (
     AudioCueAnnotation,
     MAX_AUDIO_ANNOTATIONS,
@@ -209,6 +217,7 @@ class LoadedProject:
     play_route_edits: tuple[Mapping[str, object], ...] = ()
     formation_creates: tuple[Mapping[str, object], ...] = ()
     play_creates: tuple[Mapping[str, object], ...] = ()
+    formation_links: tuple[Mapping[str, object], ...] = ()
 
     def cleanup(self) -> None:
         shutil.rmtree(self.staging_root, ignore_errors=True)
@@ -334,6 +343,9 @@ def save_project_archive(
     audio_annotations: Mapping[str, object] | Iterable[AudioCueAnnotation] = (),
     uniform_colors: Iterable[Mapping[str, str]] = (),
     play_route_edits: Iterable[Mapping[str, object]] = (),
+    formation_creates: Iterable[Mapping[str, object]] = (),
+    play_creates: Iterable[Mapping[str, object]] = (),
+    formation_links: Iterable[Mapping[str, object]] = (),
 ) -> Path:
     """Atomically save only user-authored replacements and annotation metadata."""
 
@@ -354,9 +366,14 @@ def save_project_archive(
     visual_edits = tuple(edits)
     supplied_audio_edits = tuple(audio_edits)
     supplied_play_route_edits = tuple(play_route_edits)
+    supplied_formation_creates = tuple(formation_creates)
+    supplied_play_creates = tuple(play_creates)
+    supplied_formation_links = tuple(formation_links)
     if (
         len(visual_edits) + len(supplied_audio_edits)
-        + len(supplied_play_route_edits) > MAX_PROJECT_EDITS
+        + len(supplied_play_route_edits)
+        + len(supplied_formation_creates) + len(supplied_play_creates)
+        + len(supplied_formation_links) > MAX_PROJECT_EDITS
     ):
         raise ValidationError(
             f"A project can contain at most {MAX_PROJECT_EDITS:,} combined "
@@ -504,6 +521,24 @@ def save_project_archive(
         str(row["asset_id"]), int(row["target_play_index"]),
         int(row["target_slot_index"]),
     ))
+    create_rows: list[dict[str, object]] = []
+    for number, supplied in enumerate(supplied_formation_creates, 1):
+        request = formation_request_from_mapping(supplied)
+        create_rows.append(request.provider_edit())
+    for number, supplied in enumerate(supplied_play_creates, 1):
+        request = play_request_from_mapping(supplied)
+        create_rows.append(request.provider_edit())
+    link_rows: list[dict[str, object]] = []
+    for number, supplied in enumerate(supplied_formation_links, 1):
+        request = link_request_from_mapping(supplied)
+        link_rows.append(request.provider_edit())
+    create_rows.sort(key=lambda row: (
+        str(row["asset_id"]), str(row["kind"]),
+        json.dumps(row, sort_keys=True),
+    ))
+    link_rows.sort(key=lambda row: (
+        str(row["asset_id"]), int(row["formation_index"]), int(row["play_index"]),
+    ))
     empty_project = (
         not rows
         and text_payload is None
@@ -511,6 +546,8 @@ def save_project_archive(
         and annotations_payload is None
         and not uniform_rows
         and not play_route_rows
+        and not create_rows
+        and not link_rows
     )
     if empty_project and not allow_empty:
         raise ValidationError(
@@ -546,6 +583,10 @@ def save_project_archive(
         manifest["uniform_colors"] = uniform_rows
     if play_route_rows:
         manifest["play_route_edits"] = play_route_rows
+    if create_rows:
+        manifest["playbook_creates"] = create_rows
+    if link_rows:
+        manifest["playbook_links"] = link_rows
     manifest_payload = _canonical_json(manifest)
     replacement_bytes = sum(len(payload) for _row, payload in rows) + sum(
         len(payload) for _row, payload in audio_rows
@@ -672,7 +713,7 @@ def load_project_archive(
             optional_fields = {
                 "text_replacements", "audio_edits", "audio_annotations",
                 "uniform_colors", "empty_project",
-                "play_route_edits",
+                "play_route_edits", "playbook_creates", "playbook_links",
             }
             if not isinstance(document, dict) or not (
                 base_fields <= set(document) <= base_fields | optional_fields
@@ -824,10 +865,6 @@ def load_project_archive(
             if not isinstance(play_route_rows, list) or len(play_route_rows) \
                     > MAX_PROJECT_EDITS:
                 raise ValidationError("Project PLAY route edit count is outside the limit.")
-            if len(rows) + len(audio_rows) + len(play_route_rows) > MAX_PROJECT_EDITS:
-                raise ValidationError(
-                    f"Project exceeds the {MAX_PROJECT_EDITS:,} combined edit limit."
-                )
             play_route_seen: set[tuple[str, int, int]] = set()
             for number, raw_route in enumerate(play_route_rows, 1):
                 if not isinstance(raw_route, dict) or raw_route.get("kind") \
@@ -848,6 +885,67 @@ def load_project_archive(
                     )
                 play_route_seen.add(target_key)
                 loaded_play_routes.append(request.provider_edit())
+            create_rows = document.get("playbook_creates", [])
+            if not isinstance(create_rows, list) or len(create_rows) \
+                    > MAX_PROJECT_EDITS:
+                raise ValidationError(
+                    "Project playbook create count is outside the limit."
+                )
+            loaded_creates: list[Mapping[str, object]] = []
+            create_seen: set[tuple[str, str, int]] = set()
+            for number, raw_create in enumerate(create_rows, 1):
+                if not isinstance(raw_create, dict) or raw_create.get("kind") \
+                    not in (FORMATION_CREATE_KIND, PLAY_CREATE_KIND):
+                    raise ValidationError(
+                        f"Project playbook create row {number} has an invalid kind."
+                    )
+                mapper = (
+                    formation_request_from_mapping
+                    if raw_create["kind"] == FORMATION_CREATE_KIND
+                    else play_request_from_mapping
+                )
+                request = mapper({
+                    key: value for key, value in raw_create.items() if key != "kind"
+                })
+                donor = (
+                    request.donor_formation_index
+                    if raw_create["kind"] == FORMATION_CREATE_KIND
+                    else request.donor_play_index
+                )
+                key = (request.asset_id, str(raw_create["kind"]), donor)
+                if key in create_seen:
+                    raise ValidationError("Project repeats one playbook create.")
+                create_seen.add(key)
+                loaded_creates.append(request.provider_edit())
+            link_rows = document.get("playbook_links", [])
+            if not isinstance(link_rows, list) or len(link_rows) \
+                    > MAX_PROJECT_EDITS:
+                raise ValidationError(
+                    "Project playbook link count is outside the limit."
+                )
+            loaded_links: list[Mapping[str, object]] = []
+            link_seen: set[tuple[str, int, int]] = set()
+            for number, raw_link in enumerate(link_rows, 1):
+                if not isinstance(raw_link, dict) or raw_link.get("kind") \
+                        != FORMATION_LINK_KIND:
+                    raise ValidationError(
+                        f"Project playbook link row {number} has an invalid kind."
+                    )
+                request = link_request_from_mapping({
+                    key: value for key, value in raw_link.items() if key != "kind"
+                })
+                key = (request.asset_id, request.formation_index, request.play_index)
+                if key in link_seen:
+                    raise ValidationError("Project repeats one playbook link.")
+                link_seen.add(key)
+                loaded_links.append(request.provider_edit())
+            if (
+                len(rows) + len(audio_rows) + len(play_route_rows)
+                + len(loaded_creates) + len(loaded_links) > MAX_PROJECT_EDITS
+            ):
+                raise ValidationError(
+                    f"Project exceeds the {MAX_PROJECT_EDITS:,} combined edit limit."
+                )
             seen_audio: set[str] = set()
             for row in audio_rows:
                 if not isinstance(row, dict) or set(row) != {
@@ -984,6 +1082,13 @@ def load_project_archive(
         loaded_annotations,
         tuple(loaded_uniform_colors),
         tuple(loaded_play_routes),
+        formation_creates=tuple(
+            row for row in loaded_creates if row["kind"] == FORMATION_CREATE_KIND
+        ),
+        play_creates=tuple(
+            row for row in loaded_creates if row["kind"] == PLAY_CREATE_KIND
+        ),
+        formation_links=tuple(loaded_links),
     )
 
 

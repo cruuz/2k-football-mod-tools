@@ -39,8 +39,10 @@ from mod_editor.core.nfl2k5_playbook_route_writer import (
 )
 from mod_editor.core.nfl2k5_formation_play_writer import (
     FormationCreateRequest,
+    FormationLinkRequest,
     PlayCreateRequest,
     formation_request_from_mapping,
+    link_request_from_mapping,
     play_request_from_mapping as formation_play_request_from_mapping,
 )
 from mod_editor.core.nfl2k5_audio_catalog import (
@@ -399,6 +401,7 @@ class StudioSession:
         self._play_route_edits: dict[str, PlayRouteCloneRequest] = {}
         self._formation_creates: dict[str, FormationCreateRequest] = {}
         self._play_creates: dict[str, PlayCreateRequest] = {}
+        self._formation_links: dict[str, FormationLinkRequest] = {}
         self.stadium_writer: Nfl2k5StadiumTextureWriter | None = None
         self.stadium_texture: StadiumTexture | None = None
         self._stadium_textures: dict[str, StadiumTexture] = {}
@@ -483,6 +486,7 @@ class StudioSession:
             + len(self._play_route_edits)
             + len(self._formation_creates)
             + len(self._play_creates)
+            + len(self._formation_links)
             + (self.text_edits.modified_count if self.text_edits is not None else 0)
         )
 
@@ -820,6 +824,10 @@ class StudioSession:
     def play_creates(self) -> tuple[PlayCreateRequest, ...]:
         return tuple(self._play_creates[key] for key in sorted(self._play_creates))
 
+    @property
+    def formation_links(self) -> tuple[FormationLinkRequest, ...]:
+        return tuple(self._formation_links[key] for key in sorted(self._formation_links))
+
     def create_formation(self, request: FormationCreateRequest) -> bool:
         inspector = self.playbook_inspector
         if inspector is None:
@@ -847,6 +855,7 @@ class StudioSession:
             raw,
             formation_requests=list(candidate.values()),
             play_requests=list(self._play_creates.values()),
+            link_requests=list(self._formation_links.values()),
         )
         self._formation_creates = candidate
         self._undo_order.append(_SessionUndo("formation_create", f"Create formation from {request.donor_formation_index}", (key, previous)))
@@ -885,6 +894,7 @@ class StudioSession:
             raw,
             formation_requests=list(self._formation_creates.values()),
             play_requests=list(candidate.values()),
+            link_requests=list(self._formation_links.values()),
         )
         self._play_creates = candidate
         self._undo_order.append(_SessionUndo("play_create", f"Create play from {request.donor_play_index}", (key, previous)))
@@ -924,6 +934,59 @@ class StudioSession:
         except BaseException:
             self._undo_order.pop()
             self._play_creates[selector] = previous
+            raise
+        return True
+
+    def create_formation_link(self, request: FormationLinkRequest) -> bool:
+        inspector = self.playbook_inspector
+        if inspector is None:
+            raise ValidationError("Open the Playbooks & Plays editor first.")
+        key = request.selector
+        previous = self._formation_links.get(key)
+        if previous == request:
+            return False
+        candidate = dict(self._formation_links)
+        candidate[key] = request
+        from nfl_outer import read_entry_range
+
+        raw = read_entry_range(
+            inspector.index.archive,
+            inspector.index.archive.entries[inspector.index.get(request.asset_id).outer_index],
+            inspector.index.get(request.asset_id).chunk_offset,
+            inspector.index.get(request.asset_id).raw_size,
+        )
+        from mod_editor.core.nfl2k5_formation_play_writer import compile_formation_play_creations
+
+        compile_formation_play_creations(
+            raw,
+            formation_requests=list(self._formation_creates.values()),
+            play_requests=list(self._play_creates.values()),
+            link_requests=list(candidate.values()),
+        )
+        self._formation_links = candidate
+        self._undo_order.append(_SessionUndo("formation_link", f"List play {request.play_index} in formation {request.formation_index}", (key, previous)))
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._undo_order.pop()
+            if previous is None:
+                self._formation_links.pop(key, None)
+            else:
+                self._formation_links[key] = previous
+            raise
+        return True
+
+    def revert_formation_link(self, selector: str) -> bool:
+        previous = self._formation_links.get(selector)
+        if previous is None:
+            return False
+        del self._formation_links[selector]
+        self._undo_order.append(_SessionUndo("formation_link", f"Revert link {selector}", (selector, previous)))
+        try:
+            self._write_manifest()
+        except BaseException:
+            self._undo_order.pop()
+            self._formation_links[selector] = previous
             raise
         return True
 
@@ -3719,6 +3782,7 @@ class StudioSession:
             and not self._play_route_edits
             and not self._formation_creates
             and not self._play_creates
+            and not self._formation_links
         ):
             raise ValidationError("Replace at least one asset before building a modded XISO.")
         edits: list[dict[str, object]] = []
@@ -3769,6 +3833,9 @@ class StudioSession:
         )
         edits.extend(
             request.provider_edit() for request in self.play_creates
+        )
+        edits.extend(
+            request.provider_edit() for request in self.formation_links
         )
         if self._audio_edits:
             audio_service = self._require_audio_service()
@@ -3889,6 +3956,15 @@ class StudioSession:
             play_route_edits=(
                 request.provider_edit() for request in self.play_route_edits
             ),
+            formation_creates=(
+                request.provider_edit() for request in self.formation_creates
+            ),
+            play_creates=(
+                request.provider_edit() for request in self.play_creates
+            ),
+            formation_links=(
+                request.provider_edit() for request in self.formation_links
+            ),
         )
 
     def load_shareable_project(self, source: Path) -> int:
@@ -3926,6 +4002,66 @@ class StudioSession:
                     by_book.setdefault(request.asset_id, []).append(request)
                 for asset_id, requests in by_book.items():
                     self._validate_play_route_set(inspector.load(asset_id), requests)
+            new_formation_creates: dict[str, FormationCreateRequest] = {}
+            new_play_creates: dict[str, PlayCreateRequest] = {}
+            for raw in loaded.formation_creates:
+                request = formation_request_from_mapping({
+                    key: value for key, value in raw.items() if key != "kind"
+                })
+                new_formation_creates[request.selector] = request
+            for raw in loaded.play_creates:
+                request = formation_play_request_from_mapping({
+                    key: value for key, value in raw.items() if key != "kind"
+                })
+                new_play_creates[request.selector] = request
+            new_links: dict[str, FormationLinkRequest] = {}
+            for raw in loaded.formation_links:
+                request = link_request_from_mapping({
+                    key: value for key, value in raw.items() if key != "kind"
+                })
+                new_links[request.selector] = request
+            if new_formation_creates or new_play_creates or new_links:
+                inspector = self.playbook_inspector
+                if inspector is None:
+                    raise ValidationError(
+                        "This project includes playbook creates, but the private "
+                        "playbook source is not attached."
+                    )
+                from nfl_outer import read_entry_range
+                from mod_editor.core.nfl2k5_formation_play_writer import (
+                    compile_formation_play_creations,
+                )
+                books: set[str] = (
+                    {r.asset_id for r in new_formation_creates.values()}
+                    | {r.asset_id for r in new_play_creates.values()}
+                    | {r.asset_id for r in new_links.values()}
+                )
+                for asset_id in sorted(books):
+                    record = inspector.index.get(asset_id)
+                    raw = read_entry_range(
+                        inspector.index.archive,
+                        inspector.index.archive.entries[record.outer_index],
+                        record.chunk_offset,
+                        record.raw_size,
+                    )
+                    compile_formation_play_creations(
+                        raw,
+                        formation_requests=[
+                            r for r in new_formation_creates.values()
+                            if r.asset_id == asset_id
+                        ],
+                        play_requests=[
+                            r for r in new_play_creates.values()
+                            if r.asset_id == asset_id
+                        ],
+                        link_requests=[
+                            r for r in new_links.values()
+                            if r.asset_id == asset_id
+                        ],
+                    )
+                self._formation_creates = new_formation_creates
+                self._play_creates = new_play_creates
+                self._formation_links = new_links
             if self.audio_service is not None:
                 for annotation in loaded.audio_annotations:
                     self.audio_service.resolve_playable_audio(annotation.cue_id)

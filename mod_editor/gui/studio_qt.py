@@ -502,6 +502,15 @@ class StudioFacade(Protocol):
         self, selector: str, progress: ProgressSink,
     ) -> object: ...
 
+    def create_formation_link(
+        self, asset_id: str, formation_index: int, play_index: int,
+        group: int | None = None, progress: ProgressSink = ...,
+    ) -> object: ...
+
+    def revert_formation_link(
+        self, selector: str, progress: ProgressSink,
+    ) -> object: ...
+
     @property
     def stadium_available(self) -> bool: ...
 
@@ -858,6 +867,8 @@ class BrowseOnlyFacade:
     create_play = _unavailable
     revert_formation_create = _unavailable
     revert_play_create = _unavailable
+    create_formation_link = _unavailable
+    revert_formation_link = _unavailable
     stadium_scenes = _unavailable
     stadium_details = _unavailable
     preview_stadium_texture = _unavailable
