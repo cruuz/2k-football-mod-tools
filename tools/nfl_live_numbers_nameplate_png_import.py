@@ -111,7 +111,56 @@ def read_png(path: Path, dimensions: tuple[int, int]) -> tuple[Path, bytes, byte
     return resolved, payload, rgba
 
 
-def make_mips(rgba: bytes, width: int, height: int, count: int) -> list[MipLevel]:
+def _majority_downsample(
+    current: bytes, current_width: int, current_height: int,
+    next_width: int, next_height: int,
+) -> bytes:
+    """Region-preserving 2x2 downsample for palettized region masks.
+
+    Digits and nameplates are flat-region art; box-averaging two region
+    colours invents a third colour that is not in the artwork, which spends
+    palette entries on blends and raises index entropy, so the VC-LZ stream
+    stops fitting the tightest retail spans.  Inside each footprint the
+    majority colour wins; ties go to the region that is rarer in the whole
+    level, so thin outline features survive the stride.
+    """
+    global_counts: dict[bytes, int] = {}
+    for offset in range(0, len(current), 4):
+        pixel = current[offset:offset + 4]
+        global_counts[pixel] = global_counts.get(pixel, 0) + 1
+    down = bytearray(next_width * next_height * 4)
+    for out_y in range(next_height):
+        for out_x in range(next_width):
+            counts: dict[bytes, int] = {}
+            for src_y in range(out_y * 2, out_y * 2 + 2):
+                row = src_y * current_width * 4
+                base = row + out_x * 2 * 4
+                for src_x in range(2):
+                    pixel = current[base:base + 4]
+                    counts[pixel] = counts.get(pixel, 0) + 1
+                    base += 4
+            winner = max(
+                counts, key=lambda pixel: (counts[pixel], -global_counts[pixel])
+            )
+            target = (out_y * next_width + out_x) * 4
+            down[target:target + 4] = winner
+    return bytes(down)
+
+
+def make_mips(
+    rgba: bytes, width: int, height: int, count: int,
+    downsample: str = "majority",
+) -> list[MipLevel]:
+    """Build the mip chain for one palettized target.
+
+    ``downsample`` selects the mip filter: ``majority`` (default) keeps every
+    level inside the artwork's own regions so the shared palette and the
+    fixed VC-LZ span are spent on authored colours only; ``box`` is the
+    historical channel average kept for byte-stability checks; ``nearest``
+    takes one texel per footprint.
+    """
+    require(downsample in ("majority", "box", "nearest"),
+            "make_mips downsample must be majority, box, or nearest")
     require(len(rgba) == width * height * 4 and count > 0,
             "base image/mip count mismatch")
     result = [MipLevel(0, width, height, rgba)]
@@ -123,21 +172,34 @@ def make_mips(rgba: bytes, width: int, height: int, count: int) -> list[MipLevel
                 "mip dimensions cannot be halved exactly")
         next_width = current_width // 2
         next_height = current_height // 2
-        down = bytearray(next_width * next_height * 4)
-        for y in range(next_height):
-            for x in range(next_width):
-                sources = (
-                    ((y * 2) * current_width + x * 2) * 4,
-                    ((y * 2) * current_width + x * 2 + 1) * 4,
-                    (((y * 2) + 1) * current_width + x * 2) * 4,
-                    (((y * 2) + 1) * current_width + x * 2 + 1) * 4,
-                )
-                target = (y * next_width + x) * 4
-                for channel in range(4):
-                    down[target + channel] = (
-                        sum(current[source + channel] for source in sources) + 2
-                    ) // 4
-        current = bytes(down)
+        if downsample == "majority":
+            current = _majority_downsample(
+                current, current_width, current_height, next_width, next_height
+            )
+        elif downsample == "nearest":
+            down = bytearray(next_width * next_height * 4)
+            for y in range(next_height):
+                for x in range(next_width):
+                    source = ((y * 2) * current_width + x * 2) * 4
+                    target = (y * next_width + x) * 4
+                    down[target:target + 4] = current[source:source + 4]
+            current = bytes(down)
+        else:
+            down = bytearray(next_width * next_height * 4)
+            for y in range(next_height):
+                for x in range(next_width):
+                    sources = (
+                        ((y * 2) * current_width + x * 2) * 4,
+                        ((y * 2) * current_width + x * 2 + 1) * 4,
+                        (((y * 2) + 1) * current_width + x * 2) * 4,
+                        (((y * 2) + 1) * current_width + x * 2 + 1) * 4,
+                    )
+                    target = (y * next_width + x) * 4
+                    for channel in range(4):
+                        down[target + channel] = (
+                            sum(current[source + channel] for source in sources) + 2
+                        ) // 4
+            current = bytes(down)
         current_width = next_width
         current_height = next_height
         result.append(MipLevel(level, current_width, current_height, current))
@@ -414,7 +476,7 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
                       "strict_rgba8_noninterlaced": True},
         "mips": {"level_count": target.mip_levels,
                  "dimensions": [[level.width, level.height] for level in input_mips],
-                 "filter": "unpremultiplied_rgba_2x2_box_round_nearest",
+                 "filter": "unpremultiplied_rgba_2x2_majority_ties_to_rarer_region",
                  "storage": target.mip_storage,
                  "index_bytes": [len(level) for level in index_levels]},
         "quantization": quantization,

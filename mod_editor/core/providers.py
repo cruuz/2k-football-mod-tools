@@ -566,7 +566,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl_live_face_texture_targets.py": "c9748ee6cbb0441fded6c961ef25ec913e3294218c7892eacb731456c315f8d4",
         "tools/nfl_live_helmet_txtr_png_import.py": "2f2c7eaf1bb7f0c374b685baaee8844a3c6ceb8a62fa31ee43e74e2469030aa4",
         "tools/nfl_live_helmet_txtr_targets.py": "26b18b9aa8f0afd71e0b137eef52f2cbfd0f2108cb63546979883446bc93325f",
-        "tools/nfl_live_numbers_nameplate_png_import.py": "c7407bbfd17768acd6910194f7d5fea79dc0ee924c0516fd80dd5dd7fabfc0b9",
+        "tools/nfl_live_numbers_nameplate_png_import.py": "31bdc6a24906af8f83c12dcb16637ad9450f52eccae79fa283056b265c543f7c",
         "tools/nfl_live_numbers_nameplate_targets.py": "e122e41055e4d3b02ab35041db2e3cbd828fcf90c1b8f258abeb8718c20fc6a4",
         "tools/nfl_outer.py": "affbb92ea9fcce81b5d3502b2946fc0cf275b660c1ea93492730267110d49b46",
         "tools/nfl_roster.py": "8b5268787b072888d24be13952732b302ce41d648f7c59a1dd1a89a3aad56511",
