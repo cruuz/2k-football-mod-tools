@@ -1,4 +1,4 @@
-# 2K5 Mod Studio — v1.0 RC71 Release Status
+# 2K5 Mod Studio — v1.0 RC72 Release Status
 
 ## Beta 33 — the stock CPU playbooks (2026-08-10)
 
@@ -338,7 +338,32 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-47` — 2026-08-21 · CURRENT
+### `beta-48` — 2026-08-21 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-48>
+
+Beta 48 carries 2K5 RC72 and reuses the Beta 47 APF alpha.80 assets byte for
+byte (the APF surface is unchanged). RC72 fixes the reported "can't edit
+numbers in 2k5" art path: digit/nameplate mip chains now use a
+region-majority downsample instead of a channel-box average, so blends no
+longer spend the fixed VC-LZ spans; the retail proof chain compresses the
+same four fixtures from 12,084 to 11,684 changed bytes and thin-outline
+digits that overflowed under box mips now fit. Number values were already
+editable; a loaded roster/franchise save still overrides the disc seed, as
+the panel says. No retail bytes; no executable patching.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC72-20260821.tar.gz` | 11,070,142 | `4aefa1e4d7817ff4631bb30811101b569257604591b1b7cd3b2cc08c98756b66` |
+| `2K5-Mod-Studio-v1.0-RC72-20260821.tar.gz.sha256` | 107 | `5a060ab0ec050e83ddb8e62494b98734adb0375c71c04347fd13e913bd2bac7d` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz` | 1,905,194 | `b600ba8019d4ab9cd54d4cf41479bdffffe815bc82e50c2c29f617f7e150e9ed` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz.sha256` | 115 | `89216e9c1cc7ae6d9956c61af375b6f060bbb8208be91974a247208cd18b4aa9` |
+| `2K5-Mod-Studio-1.0.0rc72-Setup.exe` | 56,709,109 | `3c17769ce2a82a3f07d633566e708f9e318a2fed867b9e3b3726142dfaa34a77` |
+| `2K5-Mod-Studio-1.0.0rc72-Setup.exe.sha256` | 101 | `89bfd6372285532b55e1e267fc6bb41028b233cab2b9ceb77a55be89b63dfc3f` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe` | 52,740,465 | `d4dd682a49cbc9ac7da554486a5def9d0c2df6b20cbe8fe9989a4adfd7616d58` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe.sha256` | 110 | `a89588cd10474ccb60e80e80f1408bff38c6fc5973b18dcdc57bf0fde34b187f` |
+
+### `beta-47` — 2026-08-21 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-47>
 

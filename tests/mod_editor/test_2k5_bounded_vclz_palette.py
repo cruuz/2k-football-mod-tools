@@ -132,6 +132,75 @@ class Exact1568BytePaletteFitTests(unittest.TestCase):
         self.assertEqual(len(fit.attempts), 1)
         self.assertEqual(fit.attempts[0]["result"], "fit")
 
+    def test_box_mips_spend_the_span_on_blends_the_majority_filter_saves(self):
+        """A thin-outline digit is the art users actually author.
+
+        Box-averaging the 2x2 footprints of a region mask invents blend
+        colours that are not in the artwork; they spend palette entries and
+        index entropy, so the VC-LZ stream stops fitting spans the same art
+        fits under the region-majority filter.  The majority chain must fit a
+        bound the box chain overflows.
+        """
+        width = height = 64
+        pixels = bytearray((0, 0, 0, 0) * (width * height))
+        for y in range(12, 52):
+            for x in range(16, 48):
+                glyph = (x - 16) + (y - 12) * 2 < 40 or (x - 16) > 24
+                edge = x in (16, 47) or y in (12, 51)
+                colour = (
+                    (10, 10, 10, 255) if edge
+                    else (245, 245, 245, 255) if glyph
+                    else (0, 0, 0, 0)
+                )
+                pixels[(y * width + x) * 4:(y * width + x) * 4 + 4] = bytes(colour)
+        rgba = bytes(pixels)
+
+        def fit_with(downsample: str):
+            levels = make_mips(rgba, width, height, 4, downsample=downsample)
+
+            def decoded(palette, index_levels) -> bytes:
+                chain = b"".join(
+                    swizzle_2d(indices, level.width, level.height, 1)
+                    for indices, level in zip(index_levels, levels)
+                )
+                return bytes(128) + chain + palette_bytes(palette)
+
+            return levels, quantize_levels_to_vc_lz_bound(
+                levels, decoded, stream_tag=1, offset_bits=12,
+                max_encoded_size=1_568,
+            )
+
+        majority_levels, majority_fit = fit_with("majority")
+        box_levels, box_fit = fit_with("box")
+
+        majority_unique = {
+            level_color
+            for level in majority_levels[1:]
+            for offset in range(0, len(level.rgba), 4)
+            for level_color in (level.rgba[offset:offset + 4],)
+        }
+        box_unique = {
+            level_color
+            for level in box_levels[1:]
+            for offset in range(0, len(level.rgba), 4)
+            for level_color in (level.rgba[offset:offset + 4],)
+        }
+        # The box chain mints blend colours the artwork never contains; the
+        # majority chain stays inside the three authored regions.
+        self.assertLessEqual(len(majority_unique), 3)
+        self.assertGreater(len(box_unique), 3)
+        self.assertLess(
+            len(majority_fit.compressed), len(box_fit.compressed),
+            "majority mips should compress cheaper than box mips",
+        )
+        with self.assertRaisesRegex(TxtrError, "VC-LZ stream needs more than"):
+            compress_vc_lz(
+                box_fit.decoded,
+                stream_tag=1,
+                offset_bits=12,
+                max_encoded_size=len(majority_fit.compressed),
+            )
+
     def test_number_and_sleeve_importers_use_the_same_bounded_path(self) -> None:
         for relative in (
             "tools/nfl_live_numbers_nameplate_png_import.py",

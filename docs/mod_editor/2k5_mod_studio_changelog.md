@@ -1,5 +1,31 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC72 — jersey digits that fit (2026-08-21)
+
+Community report: "can't edit numbers in 2k5." The number *values* were
+always editable; the digit *art* imports were refusing typical authored
+sheets on the tightest retail VC-LZ spans. Root cause, same family as the
+2K8 digit finding shipped in APF alpha.79: the mip chain was built with a
+channel-box average, and averaging two flat region colours mints a blend
+colour that is not in the artwork. The blends spend palette entries and
+index entropy, so the compressed stream stops fitting fixed spans that the
+same art fits with region-clean mips.
+
+The digit/nameplate mip filter is now a region-majority downsample (majority
+colour wins each 2x2 footprint; ties go to the rarer region, so thin
+outlines survive). The palette ladder, fixed-span rebuild, and every gate
+are unchanged; the importer manifest now names the filter. Measured on the
+retail proof chain: the four Detroit fixtures compress from 12,084 changed
+bytes to 11,684, and a thin-outline digit that overflowed its span under
+box mips now fits (pinned by
+`test_box_mips_spend_the_span_on_blends_the_majority_filter_saves`).
+
+Also closed a stale-fixture hazard: the retained 32x1024 nameplate PNG stays
+as the pinned historical proof input, and the pipeline now consumes the
+generator's corrected 1024x32 atlas from
+`reports/assets/nfl2k5_live_numbers_nameplate_fixtures/current/`, so the
+live-art XISO proof chain runs green end to end again.
+
 ## v1.0 RC71 — Beta 47 identity (2026-08-21)
 
 Identity-only bump: Beta 47 ships the shared desktop-shell fixes and the APF
