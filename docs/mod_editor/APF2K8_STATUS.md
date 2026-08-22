@@ -1,6 +1,6 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.80`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.81`.** Historical sealed packages below retain prior alpha numbers.
 
 ## 0.1.0-alpha.80 — Who lines up + CPU package levers (beta-47)
 

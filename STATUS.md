@@ -338,7 +338,34 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-49` — 2026-08-21 · CURRENT
+### `beta-50` — 2026-08-22 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-50>
+
+Beta 50 is the APF 2K8 Mod Studio maintenance beta. The Add / Change
+formation dialog now carries the studio dark theme end to end (its labels,
+play list, and buttons were near-invisible on the light Windows dialog),
+its accept button says Add formation / Apply change instead of a bare OK,
+and the add-formation crash on `QListWidgetItem.row()` is fixed. The roster
+alias owners dialog's Close button lost its duplicated low-contrast color.
+Who lines up now explains its model in plain language: 11 on-field slots per
+formation, one stored route per play slot shared by every formation that
+stores the play, a role as the roster position plugged into a slot, only
+8 = TE and 9 = WR proved, and the stock Weak Dive / Gun: Pair Slot Left
+TE-runs-FB-route oversight named. 2K5 RC74 carries no 2K5 functional change.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC74-20260822.tar.gz` | 11,074,879 | `1dd5762329203dcde152b48e8f1543c6eff26ad067f25ed1124642c48bdcba1f` |
+| `2K5-Mod-Studio-v1.0-RC74-20260822.tar.gz.sha256` | 107 | `975276c9a54a893e0b8e0108a7260ce37bdc5bf3598348e4bba540e2df46ed59` |
+| `apf2k8-mod-studio-0.1.0-alpha.81-20260822.tar.gz` | 1,906,328 | `8e4fe2ac2b0adc521dd2606e0cf5da67d357220e1ecc9904600d831c024bc8b7` |
+| `apf2k8-mod-studio-0.1.0-alpha.81-20260822.tar.gz.sha256` | 115 | `db6b336387e4d666a6e1392f521e4a1c845f646867a5153b8e637d2d56cf1b0f` |
+| `2K5-Mod-Studio-1.0.0rc74-Setup.exe` | 56,714,295 | `1792f739f6fd71b70405c0018717d71d6be7c61c4b483b705eb2fbda41651c50` |
+| `2K5-Mod-Studio-1.0.0rc74-Setup.exe.sha256` | 101 | `c72bf8c2a0444bce3f38c38bd9d67abfbe65cd1bbb8de85f19747b7e80bb52e0` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.81-Setup.exe` | 52,746,903 | `2d17aa20b5b79f1fe6cd806a0e37bd52d918497474fc639cb3afa3444e31ece8` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.81-Setup.exe.sha256` | 110 | `87ee3d6844b16be73e2e3e19fc9147c852a17ca4a06fe69065e1cfdf633966a6` |
+
+### `beta-49` — 2026-08-21 · superseded
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-49>
 

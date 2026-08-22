@@ -1306,8 +1306,10 @@ class ApfPlaybookMembershipPanel(QFrame):
         title: str,
         initial: tuple[int, int],
         allow_plays: bool,
+        accept_label: str = "OK",
     ) -> tuple[int, int, tuple[int, ...]] | None:
         dialog = QDialog(self)
+        dialog.setObjectName("formationTrailerDialog")
         dialog.setWindowTitle(title)
         dialog.setModal(True)
         layout = QVBoxLayout(dialog)
@@ -1349,6 +1351,10 @@ class ApfPlaybookMembershipPanel(QFrame):
         buttons = QDialogButtonBox(
             QDialogButtonBox.Ok | QDialogButtonBox.Cancel
         )
+        ok_button = buttons.button(QDialogButtonBox.Ok)
+        if ok_button is not None:
+            ok_button.setText(accept_label)
+            ok_button.setDefault(True)
         buttons.accepted.connect(dialog.accept)
         buttons.rejected.connect(dialog.reject)
         layout.addWidget(buttons)
@@ -1357,7 +1363,7 @@ class ApfPlaybookMembershipPanel(QFrame):
         chosen_plays: tuple[int, ...] = ()
         if plays_list is not None:
             chosen_plays = tuple(
-                sorted(item.row() for item in plays_list.selectedItems())
+                sorted(plays_list.row(item) for item in plays_list.selectedItems())
             )
         return (
             int(formation_combo.currentData()),
@@ -1379,7 +1385,10 @@ class ApfPlaybookMembershipPanel(QFrame):
             record_index, (record.formation_index, record.category_index)
         )
         result = self._trailer_dialog(
-            "Change formation / personnel package", initial, allow_plays=False
+            "Change formation / personnel package",
+            initial,
+            allow_plays=False,
+            accept_label="Apply change",
         )
         if result is None:
             return
@@ -1415,7 +1424,10 @@ class ApfPlaybookMembershipPanel(QFrame):
             )
             return
         result = self._trailer_dialog(
-            f"Add a formation (record {slot})", (133, 7), allow_plays=True
+            f"Add a formation (record {slot})",
+            (133, 7),
+            allow_plays=True,
+            accept_label="Add formation",
         )
         if result is None:
             return

@@ -1,3 +1,50 @@
+# beta-50 — RC74 / alpha.81
+
+**Date:** 2026-08-22
+
+**2K5 Mod Studio:** `v1.0-RC74` (updater identity only; no 2K5 functional
+change)
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.81`
+
+## Fixed: the Add / Change formation dialog was unreadable
+
+The dialog kept the studio's light-on-dark text on top of Windows' light
+dialog background, so its explanation, play list, and OK / Cancel buttons
+were nearly invisible. It now carries the studio dark theme end to end, the
+play list selection is visible, and the accept button is highlighted and
+labeled with what it does: Add formation, or Apply change. No more blind
+clicking for the confirm button.
+
+## Fixed: Add a formation crashed after picking plays
+
+Choosing plays and confirming raised `AttributeError: 'QListWidgetItem'
+object has no attribute 'row'`. The dialog now resolves selected rows
+through the list widget, so adding a formation to a stock CPU book works
+again.
+
+## Fixed: dim Close button in the roster alias owners dialog
+
+A duplicated color in that dialog's button style let a low-contrast gray
+win. The button is now readable and gains a hover state like the rest of
+the studio.
+
+## Clarity: Who lines up finally explains itself
+
+The tab now says what its words mean. Every formation stores 11 on-field
+slots; every play stores one route per slot, even when the play uses no TE.
+A role is the roster position the engine plugs into a slot; only role 8 =
+TE and role 9 = WR are proved, the rest stay numbered. Routes belong to the
+play's slots and are shared by every formation that stores the play, which
+is why the stock Weak Dive out of Gun: Pair Slot Left (the same oversight
+ships in 2K5) sends the TE on the FB's fake-handoff route, and why
+Assignment Routes cannot fix one formation alone. Runtime visibility of the
+role map remains unproved and is labeled so; Build, then check in Xenia.
+
+Your original game remains untouched by every change above.
+
+---
+
 # beta-46 — RC69 / alpha.78
 
 **Date:** 2026-08-15

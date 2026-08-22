@@ -34,7 +34,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc73"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc74"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
