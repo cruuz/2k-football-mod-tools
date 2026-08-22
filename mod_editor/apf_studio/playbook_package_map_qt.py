@@ -63,12 +63,23 @@ class ApfPackageMapPanel(QWidget):
         title = QLabel("Who lines up")
         title.setObjectName("panelTitle")
         explanation = QLabel(
-            "Each formation has 11 on-field slots. This map assigns a role to "
-            "each slot. Role 8 is TE. Role 9 is WR. The other roles are "
-            "numbered until we prove their names.\n\n"
-            "This does not change which formation the CPU picks on 3rd-and-long. "
-            "Whether the game's on-field look changes at runtime is unproved. "
-            "Build, then check it in Xenia."
+            "Every formation stores 11 on-field slots, and every play stores "
+            "one route per slot — all 11, even when the play uses no TE. A "
+            "role is the engine's word for the roster position that fills a "
+            "slot, and this map records which role sits in which slot. Only "
+            "two roles are proved: role 8 = TE and role 9 = WR. The rest stay "
+            "numbered until their names are proved.\n\n"
+            "Routes belong to the play's slots, not to a position, and are "
+            "shared by every formation that stores that play. That is why the "
+            "stock Weak Dive out of Gun: Pair Slot Left (same oversight in "
+            "2K5) sends the TE on the FB's fake-handoff route: the formation "
+            "plugs him into a slot whose stored route is the FB's. Assignment "
+            "Routes edits that play's slot routes for every formation at "
+            "once, so a stock quirk like that cannot be fixed for one "
+            "formation here.\n\n"
+            "This does not change which formation the CPU picks on "
+            "3rd-and-long. Whether the game's on-field look changes at "
+            "runtime is unproved. Build, then check it in Xenia."
         )
         explanation.setObjectName("findingText")
         explanation.setWordWrap(True)

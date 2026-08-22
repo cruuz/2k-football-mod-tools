@@ -1,5 +1,30 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.81 — readable dialogs, add-formation crash fix, who-lines-up model clarity — 2026-08-22
+
+- **Fixed: the Add / Change formation dialog was nearly unreadable.** The
+  dialog inherited the light Windows background while keeping the studio's
+  light-on-dark text, so its labels, play list, and OK / Cancel buttons were
+  almost invisible. It now carries the studio dark theme end to end: dark
+  background, legible labels, dark combo and play list with a visible
+  selection, and a highlighted accept button.
+- **Fixed: Add a formation crashed after picking plays.** The dialog read the
+  chosen plays with `QListWidgetItem.row()`, which does not exist; it now
+  resolves rows through the list widget.
+- **Fixed: dim Close button in the roster alias owners dialog.** A duplicated
+  `color:` in its button style let a low-contrast gray win; the button now
+  matches the studio's readable button style with a hover state.
+- **Clarity: Who lines up now explains its own model.** Slots are the 11
+  on-field slots every play stores a route for; a role is the roster position
+  the engine plugs into a slot; only 8 = TE and 9 = WR are proved. The note
+  also explains why routes cannot differ per formation (they belong to the
+  play's slots and are shared by every formation storing the play), including
+  the stock Weak Dive / Gun: Pair Slot Left TE-runs-FB-route oversight that
+  exists in 2K5 too.
+- **Clarity: dialog accept buttons say what they do.** Add-a-formation now
+  confirms with Add formation, change-formation with Apply change, both
+  visible and defaulted, instead of an unstyled bare OK.
+
 ## 0.1.0-alpha.80 — who lines up, CPU package levers, relayed copy, digits v2, two-layer crests and endzones — 2026-08-21
 
 - **New: two-layer helmet crests through the project build.** Staging a crest

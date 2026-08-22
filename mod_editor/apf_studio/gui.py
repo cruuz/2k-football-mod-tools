@@ -22013,6 +22013,45 @@ class ApfStudioMainWindow(QMainWindow):
             QDialog#rosterAliasOwnersDialog QDialogButtonBox QPushButton:hover {
                 background: #31445e; border-color: #7d94b1;
             }
+            QDialog#formationTrailerDialog {
+                background: #101827; color: #eef4ff;
+            }
+            QDialog#formationTrailerDialog QLabel {
+                background: transparent; color: #dce7f5;
+            }
+            QDialog#formationTrailerDialog QComboBox {
+                background: #16233a; color: #eef4ff;
+                border: 1px solid #33455f; border-radius: 7px;
+                padding: 5px 8px;
+            }
+            QDialog#formationTrailerDialog QComboBox QAbstractItemView {
+                background: #101827; color: #eef4ff;
+                selection-background-color: #263850;
+                selection-color: #ffb77e;
+            }
+            QDialog#formationTrailerDialog QListWidget {
+                background: #080f19; color: #dce8f5;
+                border: 1px solid #40516a; border-radius: 8px; padding: 4px;
+            }
+            QDialog#formationTrailerDialog QListWidget::item {
+                color: #dce8f5; padding: 3px 6px;
+            }
+            QDialog#formationTrailerDialog QListWidget::item:selected {
+                color: #ffb77e; background: #263850;
+            }
+            QDialog#formationTrailerDialog QDialogButtonBox QPushButton {
+                min-width: 96px; color: #eef4ff; background: #25354b;
+                border: 1px solid #526984;
+            }
+            QDialog#formationTrailerDialog QDialogButtonBox QPushButton:hover {
+                background: #31445e; border-color: #7d94b1;
+            }
+            QDialog#formationTrailerDialog QDialogButtonBox QPushButton:default {
+                color: #111827; background: #f29a60; border-color: #f29a60;
+            }
+            QDialog#rosterAliasOwnersDialog QDialogButtonBox QPushButton:hover {
+                background: #31445e; border-color: #7d94b1;
+            }
             QLineEdit, QComboBox, QSpinBox {
                 background: #101a2a; color: #f0f5fc; border: 1px solid #40516a;
                 border-radius: 8px; min-height: 36px; padding: 0 10px;
