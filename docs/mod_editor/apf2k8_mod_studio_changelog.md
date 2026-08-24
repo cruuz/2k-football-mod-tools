@@ -1,5 +1,12 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.83 — maintenance identity for the Beta 52 hotfix — 2026-08-24
+
+No APF feature change. This identity rides along with Beta 52, the Windows
+binary-open hotfix for the 2K5 bump/strength/save file paths (see the 2K5
+changelog). The APF studio is byte-for-byte the beta-51 surface plus the
+version string.
+
 ## 0.1.0-alpha.82 — add many formations at once, shared-play honesty, package-model clarity — 2026-08-23
 
 - **New: Add Formation no longer stops at one.** Beta-50 fixed the dialog

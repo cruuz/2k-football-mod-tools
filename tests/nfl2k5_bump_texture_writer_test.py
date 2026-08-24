@@ -7,6 +7,7 @@ dimensions) inside an extracted index/pack-B pair. No game file is touched.
 
 from __future__ import annotations
 
+import ast
 import hashlib
 import os
 from pathlib import Path
@@ -621,6 +622,56 @@ class XisoIndexCacheTests(unittest.TestCase):
         _width, _height, rgba = decode_rgba_png(png, (WIDTH, HEIGHT))
         self.assertEqual(rgba, retail_rgba)
         self.assertEqual(metadata["rgba_sha256"], _digest(retail_rgba))
+
+
+class BinaryOpenFlagTests(unittest.TestCase):
+    """Every os.open in the binary writers must carry O_BINARY.
+
+    On Windows a descriptor opened without O_BINARY is a text-mode handle:
+    os.read stops at the first 0x1A (Ctrl-Z) byte, silently truncating game
+    payloads. The synthetic fixtures above are deliberately rich in 0x1A, so
+    they only pass on Windows when the flag is present; this AST guard keeps a
+    future os.open from dropping it again on any platform.
+    """
+
+    MODULES = (
+        ROOT / "mod_editor" / "core" / "nfl2k5_bump_texture_writer.py",
+        ROOT / "mod_editor" / "core" / "nfl2k5_bump_strength.py",
+        ROOT / "mod_editor" / "core" / "nfl2k5_save_writer.py",
+    )
+
+    @staticmethod
+    def _mentions_binary(node: ast.AST) -> bool:
+        for sub in ast.walk(node):
+            if isinstance(sub, ast.Attribute) and sub.attr == "O_BINARY":
+                return True
+            if isinstance(sub, ast.Constant) and sub.value == "O_BINARY":
+                return True
+        return False
+
+    def test_every_os_open_is_binary(self) -> None:
+        offenders: list[str] = []
+        for path in self.MODULES:
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.Call):
+                    continue
+                func = node.func
+                is_os_open = (
+                    isinstance(func, ast.Attribute)
+                    and func.attr == "open"
+                    and isinstance(func.value, ast.Name)
+                    and func.value.id == "os"
+                )
+                if not is_os_open:
+                    continue
+                if not self._mentions_binary(node):
+                    offenders.append(f"{path.name}:{node.lineno}")
+        self.assertEqual(
+            offenders, [],
+            "os.open without O_BINARY truncates binary reads on Windows "
+            f"(stops at 0x1A): {offenders}",
+        )
 
 
 if __name__ == "__main__":

@@ -514,7 +514,7 @@ class _Image:
         descriptor = os.open(
             index_path,
             os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_CLOEXEC", 0),
+            | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         )
         try:
             index_size = os.fstat(descriptor).st_size
@@ -537,7 +537,8 @@ class _Image:
         flags = os.O_RDWR if writable else os.O_RDONLY
         descriptor = os.open(
             image_path,
-            flags | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+            flags | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_BINARY", 0),
         )
         try:
             opened = os.fstat(descriptor)
@@ -612,7 +613,7 @@ class _Image:
             cached = os.open(
                 path,
                 flags | getattr(os, "O_NOFOLLOW", 0)
-                | getattr(os, "O_CLOEXEC", 0),
+                | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
             )
             self._pack_fds[ordinal] = cached
             self._pack_paths[ordinal] = path

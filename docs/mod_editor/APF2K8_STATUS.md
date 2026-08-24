@@ -1,6 +1,12 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.82`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.83`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.83 — maintenance identity (beta-52)
+
+Rides along with the Beta 52 Windows binary-open hotfix (2K5 side). No APF
+surface change beyond the version string.
+
 
 ## 0.1.0-alpha.82 — multi-add formations, shared-play honesty (beta-51)
 
