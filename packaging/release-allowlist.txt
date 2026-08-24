@@ -56,6 +56,8 @@ mod_editor/core/nfl2k5_audo_fixed_slots.py
 mod_editor/core/nfl2k5_ausb_build_adapter.py
 mod_editor/core/nfl2k5_ausb_fixed_slots.py
 mod_editor/core/nfl2k5_build_service.py
+mod_editor/core/nfl2k5_bump_strength.py
+mod_editor/core/nfl2k5_bump_texture_writer.py
 mod_editor/core/nfl2k5_crib.py
 mod_editor/core/nfl2k5_crib_electronics_targets.py
 mod_editor/core/nfl2k5_crib_geometry_writer.py
@@ -71,6 +73,7 @@ mod_editor/core/nfl2k5_playbook_route_writer.py
 mod_editor/core/nfl2k5_player_assets.py
 mod_editor/core/playbook_package_rule_spike.py
 mod_editor/core/nfl2k5_safe_text_banks.py
+mod_editor/core/nfl2k5_save_writer.py
 mod_editor/core/nfl2k5_scorebug_unified_adapter.py
 mod_editor/core/nfl2k5_source_cache.py
 mod_editor/core/nfl2k5_stadium_cache.py
@@ -103,11 +106,13 @@ mod_editor/gui/__init__.py
 mod_editor/gui/audio_panel_qt.py
 mod_editor/gui/audio_waveform_qt.py
 mod_editor/gui/branding.py
+mod_editor/gui/bump_panel_qt.py
 mod_editor/gui/crash_report.py
 mod_editor/gui/crib_panel_qt.py
 mod_editor/gui/gameplay_panel_qt.py
 mod_editor/gui/menus_panel_qt.py
 mod_editor/gui/playbooks_panel_qt.py
+mod_editor/gui/save_panel_qt.py
 mod_editor/gui/stadium_viewer.py
 mod_editor/gui/studio_qt.py
 mod_editor/gui/text_rosters_panel.py
@@ -155,6 +160,7 @@ tools/apf_xenos_mip_layout.py
 tools/game_audio_convert.py
 tools/launch_2k5_mod_studio.sh
 tools/make_app_icons.py
+tools/nfl2k5_franchise_schedule_probe.py
 tools/nfl2k5_jersey_png_workflow.py
 tools/nfl2k5_ps2_save.py
 tools/nfl2k5_ps2_save_verify.py
@@ -163,6 +169,7 @@ tools/nfl2k5_visual_mod_project.py
 tools/nfl_all_texture_xiso_workflow.py
 tools/nfl_audo_wav_xiso_workflow.py
 tools/nfl_audo_wav_xiso_verify.py
+tools/nfl_coach_roster_name_workflow.py
 tools/nfl_create_team_field_art_inventory.py
 tools/nfl_create_team_field_art_png_import.py
 tools/nfl_crib_bar_monitor_png_xiso.py
@@ -196,6 +203,7 @@ tools/nfl_sleeve_tset_targets.py
 tools/nfl_stadium_gltf_roundtrip.py
 tools/nfl_stadium_studio_cache.py
 tools/nfl_static_gltf.py
+tools/nfl_team_identity_xiso_workflow.py
 tools/nfl_team_identity_xiso_verify.py
 tools/nfl_team_select_card_png_import.py
 tools/nfl_team_select_card_targets.py
@@ -212,6 +220,8 @@ tools/nfl_uniform_inventory.py
 tools/string_table_inventory.py
 tools/validate_nfl2k5_ps2_save.bat
 tools/validate_nfl2k5_ps2_save.sh
+tools/validate_nfl_coach_roster_name.sh
+tools/validate_nfl2k5_franchise_schedule_probe.sh
 tools/validate_nfl_all_texture_lane.sh
 tools/xbe_info.py
 tools/xbox_ima_encoder.py

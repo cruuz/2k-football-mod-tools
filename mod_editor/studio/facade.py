@@ -61,6 +61,7 @@ from mod_editor.core.nfl2k5_formation_play_writer import (
 )
 from mod_editor.core.nfl2k5_stadium_studio import (
     Nfl2k5StadiumStudio,
+    StadiumGltfTextureWriteBack,
     StadiumScene,
     StadiumSceneDetails,
 )
@@ -201,7 +202,7 @@ _GAMEPLAY_SNAPSHOT = (
 )
 _GAMEPLAY_SNAPSHOT_SIZE = 22_874
 _GAMEPLAY_SNAPSHOT_SHA256 = (
-    "4657b4b9c81bf723d13849275d5469c74d3b4d2feccc033f0f06d2cd5e8d1793"
+    "e613180ecb825187aabd0ece2c70d3fc42fa01756a7920981d2c2bccbe53feb7"
 )
 _GAMEPLAY_SNAPSHOT_SCHEMA = "nfl2k5_mod_studio_gameplay_inspection/v1"
 _MENU_SNAPSHOT = _PRODUCT_ROOT / "mod_editor/data/nfl2k5_main_menu_inspection.v1.json"
@@ -2637,6 +2638,26 @@ class Nfl2k5StudioFacade:
             )
         progress("Edited stadium model staged", 1, 1)
         return result
+
+    def replace_stadium_textures_from_gltf(
+        self, scene_id: str, source: Path, progress: ProgressSink
+    ) -> tuple[StadiumGltfTextureWriteBack, ...]:
+        """Write Blender-edited glTF images back to their stadium texture slots.
+
+        Export embeds every game texture into the glTF under its canonical
+        ``nfl2k5_texture_id``; a modder edits those images in Blender, and this
+        routes the edited bytes back through the same bounded replace route the
+        Stadiums page uses. Returns one receipt per written texture slot.
+        """
+
+        progress("Applying edited stadium textures", 0, 1)
+        with self._lock:
+            self._require_session()
+            results = self._require_stadium_studio().replace_textures_from_gltf(
+                scene_id, source
+            )
+        progress("Edited stadium textures applied", 1, 1)
+        return results
 
     def uniform_colors(
         self, selector: str, progress: ProgressSink

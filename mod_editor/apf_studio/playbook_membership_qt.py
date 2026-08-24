@@ -1264,6 +1264,11 @@ class ApfPlaybookMembershipPanel(QFrame):
                 f"Record {record_index} already holds plays; repoint it instead "
                 "or pick the first empty slot."
             )
+        if record_index in self._staged_trailers:
+            raise ValidationError(
+                f"Record {record_index} is already staged as a new formation. "
+                "Pick the next free slot, or revert the staged add first."
+            )
         if not 1 <= len(play_indices) <= splb.ENTRY_CAPACITY:
             raise ValidationError(
                 f"Pick 1..{splb.ENTRY_CAPACITY} plays for the new formation"
@@ -1316,9 +1321,12 @@ class ApfPlaybookMembershipPanel(QFrame):
         layout.addWidget(
             QLabel(
                 "Changes which formation this record lines up in, and which "
-                "personnel package it joins. The game may then resolve pass-down "
-                "requests to it. Whether the CPU director selects the record on "
-                "3rd-and-long is unproved — check it in Xenia."
+                "personnel package it joins. The game resolves a requested "
+                "personnel row through the book's package mask, and a stored "
+                "play per record entry — a play this record shares with other "
+                "records can still resolve there. Which row the CPU requests, "
+                "when, and which record it finally uses is runtime-unproved. "
+                "Check it in Xenia."
             )
         )
         form = QVBoxLayout()
@@ -1400,13 +1408,23 @@ class ApfPlaybookMembershipPanel(QFrame):
             QMessageBox.information(self, "Could not repoint the record", str(exc))
 
     def _first_empty_record(self) -> int | None:
+        """The first free record slot after the book's populated run.
+
+        New formations append past the last populated record -- never into a
+        gap between populated records -- so every retail record stays exactly
+        where the game expects it.  A slot already staged by an earlier add is
+        taken, so several formations can be added in one session, one slot
+        each (Urianus, 2026-08-22: the flow used to stop at one).
+        """
+
         if self._book is None:
             return None
         used = [r.record_index for r in self._book.records if r.populated]
-        slot = (max(used) + 1) if used else 0
-        if slot in self._staged_trailers:
-            return None
-        return slot if slot < splb.RECORD_COUNT else None
+        start = (max(used) + 1) if used else 0
+        for slot in range(start, splb.RECORD_COUNT):
+            if slot not in self._staged_trailers:
+                return slot
+        return None
 
     def _add_record(self) -> None:
         if self._book is None:
@@ -1419,8 +1437,9 @@ class ApfPlaybookMembershipPanel(QFrame):
             QMessageBox.information(
                 self,
                 "No free record slot",
-                "This book's first empty slot is already staged. Revert it "
-                "before adding another formation.",
+                "Every record slot after this book's last formation is already "
+                "staged as a new formation. Build or revert those additions "
+                "before adding another one.",
             )
             return
         result = self._trailer_dialog(
@@ -1888,13 +1907,17 @@ class ApfPlaybookMembershipPanel(QFrame):
         )
         add_block = trailer_block
         if not add_block and self._first_empty_record() is None:
-            add_block = "This book's first empty record slot is already staged."
+            add_block = (
+                "Every record slot after this book's last formation is already "
+                "staged as a new formation."
+            )
         self.add_record_button.setEnabled(True)
         self.add_record_button.setProperty("disableReason", add_block)
         self.add_record_button.setToolTip(
             add_block
-            or "Fill the book's first empty record with a formation, a "
-            "personnel package and stored plays."
+            or "Append a formation to the book's first free record slot. Each "
+            "add takes the next slot, so several formations can be added one "
+            "after another, each with a personnel package and stored plays."
         )
         self.third_long_button.setEnabled(True)
         self.third_long_button.setToolTip(
@@ -1958,6 +1981,21 @@ class ApfPlaybookMembershipPanel(QFrame):
             payload = result  # type: ignore[assignment]
             report = payload["report"]  # type: ignore[index]
             verification = report.get("verification", {})
+            shared = [
+                row
+                for row in report.get("trailer_record_play_sharing", [])
+                if row.get("shared_with_records")
+            ]
+            sharing_note = ""
+            if shared:
+                sharing_note = (
+                    f"\n\n{len(shared)} of the repointed/added records store "
+                    "plays that other records in this book store too. The game "
+                    "resolves a stored play per record entry, and a personnel "
+                    "row through the book's package mask — which record it "
+                    "finally uses for a shared play is runtime-unproved, so "
+                    "check this book in Xenia."
+                )
             QMessageBox.information(
                 self,
                 "Modded playbook built",
@@ -1966,7 +2004,7 @@ class ApfPlaybookMembershipPanel(QFrame):
                 f"{'s' if len(report['changes']) != 1 else ''} to "
                 f"{report['book_name'] or 'an unnamed book'} · "
                 f"{verification.get('changed_byte_count', 0)} byte(s) differ from "
-                "your source.\n\n" + BOUNDARY,
+                "your source." + sharing_note + "\n\n" + BOUNDARY,
             )
 
         self.run_task("Building the modded playbook", operation, done, True)

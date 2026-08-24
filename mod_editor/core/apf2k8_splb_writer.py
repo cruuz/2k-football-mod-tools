@@ -829,6 +829,53 @@ def trailer_selector(outer_index: int, record_index: int) -> str:
     return f"splb:{outer_index}:r{record_index}:trailer"
 
 
+def book_category_rows(body: bytes) -> tuple[int, ...]:
+    """The personnel rows a book's mask at +0x7E04 promises, sorted.
+
+    The lineup resolver asks the book for a personnel row and tests this mask
+    first (book-row search ``0x84A8B438``, mask-bit walk ``0x84A89680``), so
+    the mask is the book's supply list.  Which row the game asks for, and
+    when, is runtime-unproved.
+    """
+
+    if len(body) != RESOURCE_SIZE:
+        raise ValidationError(
+            f"An APF stock playbook is {RESOURCE_SIZE} bytes; this one is {len(body)}"
+        )
+    mask = struct.unpack_from(">I", body, BOOK_CATEGORY_MASK_OFFSET)[0]
+    return tuple(index for index in range(CATEGORY_COUNT) if mask & (1 << index))
+
+
+def record_play_sharing(
+    book: SplbBook, record_index: int, entries: Iterable[SplbEntry] | None = None
+) -> dict[int, int]:
+    """Other populated records holding at least one of this record's plays.
+
+    Returns ``{other record index: shared play count}``.  ``entries`` may
+    supply the record's staged future entries; the other records are read as
+    they stand.  A play shared with an untouched record can still resolve to
+    that record in-game — play→record resolution is per stored entry
+    (``0x84A89EA8`` maps an entry pointer onto its record), so sharing bounds
+    how much of a one-record edit the game can see.
+    """
+
+    record = book.records[record_index]
+    mine = {
+        entry.play_index
+        for entry in (tuple(entries) if entries is not None else record.entries)
+    }
+    if not mine:
+        return {}
+    sharing: dict[int, int] = {}
+    for other in book.records:
+        if other.record_index == record_index or not other.populated:
+            continue
+        overlap = len(mine & {entry.play_index for entry in other.entries})
+        if overlap:
+            sharing[other.record_index] = overlap
+    return sharing
+
+
 @dataclass(frozen=True, slots=True)
 class _Request:
     outer_index: int
@@ -1386,6 +1433,7 @@ def compile_book(
     applied: list[dict[str, Any]] = []
     off_distribution: list[int] = []
     emptied: list[int] = []
+    final_entries: dict[int, tuple[SplbEntry, ...]] = {}
 
     for record_index in sorted(request.record_indices):
         if not 0 <= record_index < RECORD_COUNT:
@@ -1400,6 +1448,7 @@ def compile_book(
             move for move in request.moves if move.record_index == record_index
         )
         entries = apply_record_changes(book, record, memberships, moves)
+        final_entries[record_index] = entries
         if not retail_tag_shape(entries):
             off_distribution.append(record_index)
         if record.populated and not entries:
@@ -1483,6 +1532,28 @@ def compile_book(
         after_mask = before_mask | category_bits_added
         struct.pack_into(">I", replacement, mask_at, after_mask)
 
+    # The lineup resolver reaches a record through the personnel rows the book
+    # promises (book-row search 0x84A8B438 over the +0x7E04 mask), and a play
+    # stored in several records can resolve to any of them (entry->record map
+    # 0x84A89EA8).  Report both facts for every repointed/added record so the
+    # receipt can say how much of the edit the game can actually see.  Which
+    # row the game requests, and which record it finally uses, stays
+    # runtime-unproved.
+    trailer_play_sharing: list[dict[str, Any]] = []
+    for trailer in sorted(request.trailers, key=lambda item: item.record_index):
+        sharing = record_play_sharing(
+            book,
+            trailer.record_index,
+            final_entries.get(trailer.record_index),
+        )
+        trailer_play_sharing.append(
+            {
+                "record_index": trailer.record_index,
+                "shared_with_records": sorted(sharing),
+                "shared_play_count": sum(sharing.values()),
+            }
+        )
+
     if len(replacement) != len(book.body):
         raise ValidationError("A stock-playbook edit changed the resource length")
     populated_before = {
@@ -1539,6 +1610,12 @@ def compile_book(
                 "cpu_trailer_consumption_static_proved": True,
                 "director_formation_choice_proved": False,
                 "runtime_lineup_after_replace_proved": False,
+                # Row lookup through the book mask is a pinned static chain
+                # (resolver 0x84860730, search 0x84A8B438, ladder 0x820B9080);
+                # which row the game asks for in which situation is not.
+                "personnel_row_lookup_static_proved": True,
+                "personnel_row_request_policy_proved": False,
+                "record_resolution_per_stored_entry_static_proved": True,
             }
         )
     report = {
@@ -1553,6 +1630,9 @@ def compile_book(
         "records_outside_retail_tag_sets": off_distribution,
         "records_emptied": emptied,
         "records_trailer_replaced": trailer_replaced,
+        "trailer_record_play_sharing": trailer_play_sharing,
+        "book_category_rows_before": list(book_category_rows(book.body)),
+        "book_category_rows_after": list(book_category_rows(bytes(replacement))),
         "populated_records_remaining": len(surviving),
         "claims": claims,
     }
@@ -1861,6 +1941,7 @@ __all__ = [
     "SplbRecord",
     "TagMove",
     "apply_record_changes",
+    "book_category_rows",
     "build_book_patch",
     "change_from_mapping",
     "change_metadata",
@@ -1871,6 +1952,7 @@ __all__ = [
     "follows_tag_rule",
     "parse_book",
     "read_book",
+    "record_play_sharing",
     "required_tag_count",
     "retail_tag_shape",
     "tag_selector",

@@ -8,7 +8,7 @@ import bisect
 import json
 import struct
 import sys
-from collections import Counter
+from collections import Counter, OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import BinaryIO
@@ -128,13 +128,49 @@ def read_head(packs: tuple[Pack, ...], segments: tuple[Segment, ...]) -> bytes:
         return read_exact(stream, min(4, first.size), "entry head")
 
 
+# A multi-edit build resolves targets against the same canonical index volume
+# once per edit; the entry table and pack layout are image-constant, so the
+# parsed Archive is memoized per index-volume identity (path, device, inode,
+# size, mtime).  Every Archive/Entry/Pack/Segment is a frozen dataclass, so a
+# shared instance cannot be observably mutated.  Span bytes are never cached:
+# downstream readers always read the live packs and hash-check what they read.
+_PARSE_CACHE_LIMIT = 8
+_PARSE_CACHE: "OrderedDict[tuple[object, ...], Archive]" = OrderedDict()
+
+
+def clear_parse_cache() -> None:
+    """Forget every memoized archive parse (tests and fresh sessions)."""
+
+    _PARSE_CACHE.clear()
+
+
 def parse_archive(index_path: Path) -> Archive:
     index_path = index_path.expanduser()
     if not index_path.is_file():
         raise FormatError(f"index is not a regular file: {index_path}")
     if index_path.name != "0":
         raise FormatError("NFL index must be the first volume named '0'")
+    info = index_path.stat()
+    key = (
+        str(index_path),
+        info.st_dev,
+        info.st_ino,
+        info.st_size,
+        info.st_mtime_ns,
+    )
+    cached = _PARSE_CACHE.get(key)
+    if cached is not None:
+        _PARSE_CACHE.move_to_end(key)
+        return cached
+    archive = _parse_archive_uncached(index_path)
+    _PARSE_CACHE[key] = archive
+    _PARSE_CACHE.move_to_end(key)
+    while len(_PARSE_CACHE) > _PARSE_CACHE_LIMIT:
+        _PARSE_CACHE.popitem(last=False)
+    return archive
 
+
+def _parse_archive_uncached(index_path: Path) -> Archive:
     with index_path.open("rb") as stream:
         entry_count, reserved, populated_pack_count = struct.unpack(
             "<III", read_exact(stream, 12, "fixed header")

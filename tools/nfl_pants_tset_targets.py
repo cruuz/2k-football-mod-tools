@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from dataclasses import dataclass
 import hashlib
 import json
@@ -92,11 +93,34 @@ def normalize_selector(asset_code: str, side: str, variant: int) -> tuple[str, s
     return code, normalized_side, variant
 
 
+# A multi-edit build selects one target per edit from this hash-pinned
+# report; the report itself is image-constant, so the validated document is
+# memoized per file identity (path, device, inode, size, mtime).  Every
+# caller treats the returned document as read-only.
+_REPORT_CACHE_LIMIT = 4
+_REPORT_CACHE: "OrderedDict[tuple[object, ...], tuple[Path, dict[str, object], bytes]]" = (
+    OrderedDict()
+)
+
+
+def clear_report_cache() -> None:
+    """Forget every memoized compatibility report (tests and fresh sessions)."""
+
+    _REPORT_CACHE.clear()
+
+
 def load_report(path: Path = DEFAULT_REPORT) -> tuple[Path, dict[str, object], bytes]:
     supplied = path.lstat()
     require(not stat.S_ISLNK(supplied.st_mode) and stat.S_ISREG(supplied.st_mode),
             "compatibility report must be a non-symlink regular file")
     resolved = path.resolve(strict=True)
+    info = resolved.stat(follow_symlinks=False)
+    cache_key = (str(resolved), info.st_dev, info.st_ino, info.st_size,
+                 info.st_mtime_ns)
+    cached = _REPORT_CACHE.get(cache_key)
+    if cached is not None:
+        _REPORT_CACHE.move_to_end(cache_key)
+        return cached
     payload = resolved.read_bytes()
     require(sha256_bytes(payload) == REPORT_SHA256,
             "compatibility report SHA-256 mismatch")
@@ -176,7 +200,12 @@ def load_report(path: Path = DEFAULT_REPORT) -> tuple[Path, dict[str, object], b
                 isinstance(row.get("span_segments"), list) and
                 len(row["span_segments"]) == 1,
                 f"selector {key} is not in the proved compatible class")
-    return resolved, value, payload
+    entry = (resolved, value, payload)
+    _REPORT_CACHE[cache_key] = entry
+    _REPORT_CACHE.move_to_end(cache_key)
+    while len(_REPORT_CACHE) > _REPORT_CACHE_LIMIT:
+        _REPORT_CACHE.popitem(last=False)
+    return entry
 
 
 def target_from_row(report: dict[str, object], row: dict[str, object]) -> PantsTarget:

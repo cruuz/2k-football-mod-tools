@@ -1,5 +1,29 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.82 — add many formations at once, shared-play honesty, package-model clarity — 2026-08-23
+
+- **New: Add Formation no longer stops at one.** Beta-50 fixed the dialog
+  crash but still staged only a single candidate slot and refused the second
+  add. Each add now takes the next free formation slot, and the SPLB writer
+  is proven to ship N additions in ONE build: verified end-to-end on the
+  retail disc with two formations added to O-SinglebackAce (H7A encoder
+  exact, verifier green). 14 new tests pin the multi-add path.
+- **New: build receipts now flag shared-play records and book supply rows.**
+  Urianus reported personnel packages working in Practice but only rarely in
+  Quick Game. The investigation byte-confirmed his `Gun: Split Spread`
+  example (category 6 "Queens" in O-Shotgun vs category 3 "Pro Set" in
+  O-ManBlock) and traced the Quick Game path: it resolves plays by row
+  lookup over SHARED play instances (up to 27 records share one play), which
+  is why an edited package appears only when the CPU happens to call a record
+  that owns its own instance. Receipts now say when a staged record shares
+  its play, instead of implying the edit covers every formation using it.
+- **Honest boundary: user-playbook (U.S.E.R) cut/CPU-only content and the
+  O-Shotgun WR depth flip remain unproven offline.** The first needs a
+  clean-vs-one-play-changed ROS pair plus the crashing save to localize; the
+  second has no writable lever in the SPLB structures (formation maps carry
+  exactly one WR role; the personnel table is XEX-resident). Both are
+  documented with the decisive in-game experiments in the follow-up report.
+
 ## 0.1.0-alpha.81 — readable dialogs, add-formation crash fix, who-lines-up model clarity — 2026-08-22
 
 - **Fixed: the Add / Change formation dialog was nearly unreadable.** The

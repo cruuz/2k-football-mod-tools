@@ -27,7 +27,8 @@ from nfl_txtr import HEADER, TxtrError, decode_chunk, encode_rgba_png, \
     minimum_vc_lz_overlap_scratch, rebuild_compressed_chunk_fixed_span, \
     swizzle_2d, unswizzle_2d
 import nfl_tset_png_import as legacy
-from nfl_uniform_inventory import inventory_record, logical_name_candidates, parse_tset, \
+from nfl_uniform_inventory import inventory_chunk_rows, inventory_record, \
+    load_inventory_document, logical_name_candidates, parse_tset, \
     read_and_validate_span
 from nfl_pants_tset_targets import DEFAULT_REPORT, PantsTarget, TargetError, select_target
 
@@ -156,11 +157,9 @@ def target_record(inventory_value: dict[str, object], target: PantsTarget) \
         -> tuple[dict[str, object], object]:
     require(inventory_value.get("schema") == INVENTORY_SCHEMA,
             "chunk inventory schema mismatch")
-    rows = [
-        row for row in inventory_value["chunks"]
-        if int(row["outer_index"]) == target.outer_index and
-        int(row["chunk_index"]) == target.chunk_index
-    ]
+    rows = inventory_chunk_rows(
+        inventory_value, target.outer_index, target.chunk_index
+    )
     require(len(rows) == 1, "selected target inventory row absent or ambiguous")
     item = rows[0]
     record = inventory_record(item)
@@ -191,7 +190,7 @@ def import_png(index: Path, inventory_path: Path, compatibility_path: Path,
         target.asset_code, target.side, target.variant, compatibility_path
     )
     require(selected == target, "selected compatibility target changed")
-    inventory_value = json.loads(inventory_path.read_bytes())
+    inventory_value = load_inventory_document(inventory_path)
     item, record = target_record(inventory_value, target)
 
     archive = parse_archive(index)

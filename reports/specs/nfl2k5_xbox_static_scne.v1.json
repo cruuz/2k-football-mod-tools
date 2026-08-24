@@ -1150,8 +1150,8 @@
     },
     "outer_archive_parser": {
       "path": "tools/nfl_outer.py",
-      "sha256": "affbb92ea9fcce81b5d3502b2946fc0cf275b660c1ea93492730267110d49b46",
-      "size": 15895
+      "sha256": "0f27ac4157f13704e4303dbf2e146427cc56d1d910a3e242fac4081a04d9ee6d",
+      "size": 17176
     },
     "resource_inventory_report": {
       "path": "reports/assets/nfl2k5_resource_chunks_v2.json",

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import OrderedDict
 from dataclasses import asdict
 import hashlib
 import json
@@ -51,11 +52,40 @@ def digest(payload: bytes) -> str:
 
 
 def file_digest(path: Path) -> str:
+    info = path.stat()
+    key = (str(path), info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
+    cached = _FILE_DIGEST_CACHE.get(key)
+    if cached is not None:
+        _FILE_DIGEST_CACHE.move_to_end(key)
+        return cached
+    digest = _file_digest_uncached(path)
+    _FILE_DIGEST_CACHE[key] = digest
+    _FILE_DIGEST_CACHE.move_to_end(key)
+    while len(_FILE_DIGEST_CACHE) > _FILE_DIGEST_CACHE_LIMIT:
+        _FILE_DIGEST_CACHE.popitem(last=False)
+    return digest
+
+
+def _file_digest_uncached(path: Path) -> str:
     value = hashlib.sha256()
     with path.open("rb") as stream:
         for block in iter(lambda: stream.read(16 * 1024 * 1024), b""):
             value.update(block)
     return value.hexdigest()
+
+
+# The canonical index volume is hash-pinned and image-constant, but a
+# multi-edit build used to re-hash its ~193 MB once per edit.  The digest is
+# memoized per file identity (path, device, inode, size, mtime); a rewrite
+# moves size/mtime and re-hashes.
+_FILE_DIGEST_CACHE_LIMIT = 8
+_FILE_DIGEST_CACHE: "OrderedDict[tuple[object, ...], str]" = OrderedDict()
+
+
+def clear_file_digest_cache() -> None:
+    """Forget every memoized file digest (tests and fresh sessions)."""
+
+    _FILE_DIGEST_CACHE.clear()
 
 
 def canonical_json(value: object) -> bytes:

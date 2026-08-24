@@ -1,5 +1,69 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC75 — bump maps, bump strength, saves & sliders, stadium glTF loop, speed (2026-08-23)
+
+RC75 is the biggest 2K5-side release to date: four new native workspaces or
+routes, all retail-free and fail-closed, plus an editor-wide speed pass for
+projects with hundreds of edits.
+
+- **New: Jersey Bump Maps workspace (Uniforms & Equipment → Bump Maps).**
+  Every one of the 634 uniform packages carries four tangent-space bump maps
+  (bump_jersey, bump_pants, bump_sleeve, bump_sock). The new panel browses
+  them from the entry tables (no hardcoded offsets), exports any slot to PNG,
+  previews a replacement before/after, and writes it into a COPY of the disc
+  image at the exact retail footprint: box-filter mip chain, NV2A swizzle,
+  VC-LZ recompressed into the fixed span, wrapper preserved except the
+  loader scratch word, then independently re-decoded and verified. The
+  retail image itself is browse/export-only and is recognized by full SHA.
+- **New: cross-extent uniform packages are editable too.** Three retail
+  packages (outers 3625, 3832, 4136) cross a pack boundary and were
+  previously refused. Reads and writes are now segmented at pack boundaries
+  while still touching only the exact span, so all 634/634 packages are
+  first-class.
+- **New: bump authoring templates.** One click writes a flat-normal starter
+  PNG at the slot's exact size with the retail collar/shield UV zones
+  outlined and labeled on bump_jersey (front V-neck band, NFL shield tab,
+  back round collar) — the positions the retail art actually uses, graded
+  honestly in the metadata.
+- **New: bump strength editing.** The per-material detail-scale floats that
+  control how strong each bump renders live in default.xbe (jersey 0.1,
+  pants 0.3, sleeve shares jersey's float, sock fixed 0). The Bump Maps
+  panel now finds those sites by byte pattern, reads them, and patches a
+  COPY of the XBE with the touched section digest recomputed and byte-diff
+  confinement verified. Honesty: the RSA signature cannot be regenerated,
+  so patched XBEs are xemu-only, and sock stays read-only (its retail
+  encoding has no room for a float).
+- **New: Saves & Sliders workspace.** The settings block proven at RAM
+  0xE5FF80 (the first 0x2E0 bytes of Settings1 and Franchise1 saves) is now
+  editable: all 21 gameplay sliders (Human/CPU Blocking..Catching plus
+  Injury, Fumble, Interception) with editable/mirror/consistent write modes,
+  and the Franchise1 year field for franchise saves. Output is always a
+  COPY: a mutated SAVEGAME.DAT plus a fresh 20-byte EXTRA signature
+  (HMAC-SHA1 with the title-static key derived from your own default.xbe),
+  verified at load by the game. A CLI (read/edit/writeback) covers the same
+  lane, including write-back of a save container's extents inside a copied
+  raw Xbox HDD image, which refuses saves whose stored EXTRA does not verify.
+- **New: stadium glTF texture loop closed.** Stadium scenes already exported
+  to glTF with every game texture embedded (tagged by canonical texture id)
+  and re-imported same-topology vertex moves. Now the edited glTF's images
+  come BACK too: Apply textures from glTF maps each Blender-edited image to
+  its stadium texture slot (by id, falling back to material name) and writes
+  it through the same fixed-allocation P8 route the Stadiums page uses.
+  Export → edit in Blender → apply back, entirely in the GUI.
+- **Speed: hundreds of edits no longer re-parse the world.** Identity-keyed
+  memoization (path + device + inode + size + mtime) now caches the bump
+  index volume parse, the retail-image probe verdict, the outer-archive
+  parse used by every texture adapter, the 55MB uniform-inventory load plus
+  an O(1) (outer, chunk) row index, the compatibility-report digest, and the
+  large-file digests the helmet/nameplate/face/field-art/portrait importers
+  recomputed PER EDIT. Per-edit structural cost drops to O(1) after the
+  first edit; measured ~0.9-2s per edit → sub-second across 30 edit-shaped
+  cycles, with deterministic cache tests instead of wall-clock asserts.
+- **Flexibility without losing fail-closed guards.** Patched-XBE and
+  edited-save outputs can now be re-generated in place with an explicit
+  overwrite confirmation; same-file-as-source writes, retail-image writes,
+  and unverified saves are still refused outright.
+
 ## v1.0 RC73 — Create Formation / Create Play, authorized end to end (2026-08-21)
 
 The clone-based creation writer that shipped quietly in RC54-RC56 is now a

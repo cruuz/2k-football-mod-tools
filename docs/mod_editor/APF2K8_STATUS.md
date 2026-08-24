@@ -1,6 +1,23 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.81`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.82`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.82 — multi-add formations, shared-play honesty (beta-51)
+
+Add Formation now stages as many formations as the book has room for in one
+build (proven on the retail disc with two additions to O-SinglebackAce), and
+build receipts flag records whose plays are shared across formations — the
+mechanism behind "my package edit only sometimes shows in Quick Game". The
+user-playbook crash and the O-Shotgun depth flip remain bounded as
+offline-unproven, with the decisive experiments documented.
+
+## 0.1.0-alpha.81 — readable dialogs, add-formation crash fix (beta-50)
+
+The Add / Change formation dialog carries the studio dark theme end to end
+with a highlighted, labeled accept button; the QListWidgetItem.row crash is
+fixed; Who lines up explains slots vs roles vs shared play routes, including
+the stock Weak Dive TE-runs-FB-route oversight shared with 2K5.
+
 
 ## 0.1.0-alpha.80 — Who lines up + CPU package levers (beta-47)
 

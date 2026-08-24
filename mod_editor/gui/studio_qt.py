@@ -94,6 +94,7 @@ from mod_editor.core.nfl2k5_extended_visual_catalog import (
 from mod_editor.core.nfl2k5_universal_asset_index import UniversalAssetRecord
 from mod_editor.core.nfl2k5_stadium_studio import (
     EDITABLE as STADIUM_EDITABLE,
+    StadiumGltfTextureWriteBack,
     StadiumScene,
     StadiumSceneDetails,
     StadiumTexture,
@@ -106,6 +107,8 @@ from mod_editor.core.nfl2k5_text_catalog import (
 from mod_editor.core.nfl2k5_crib import CribAsset
 from mod_editor.gui.stadium_viewer import GltfWireframeModel, StadiumViewport
 from mod_editor.gui.audio_panel_qt import AudioPanel
+from mod_editor.gui.bump_panel_qt import BumpPanel
+from mod_editor.gui.save_panel_qt import SavePanel
 from mod_editor.gui.crib_panel_qt import CribPanel
 from mod_editor.gui.gameplay_panel_qt import GameplayPanel
 from mod_editor.gui.menus_panel_qt import MenusPanel
@@ -536,6 +539,10 @@ class StudioFacade(Protocol):
         self, scene_id: str, source: Path, progress: ProgressSink,
     ) -> object: ...
 
+    def replace_stadium_textures_from_gltf(
+        self, scene_id: str, source: Path, progress: ProgressSink,
+    ) -> tuple[StadiumGltfTextureWriteBack, ...]: ...
+
     def replace_stadium_texture(
         self, texture_id: str, supplied_png: Path, progress: ProgressSink,
     ) -> object: ...
@@ -875,6 +882,7 @@ class BrowseOnlyFacade:
     export_stadium_texture = _unavailable
     export_stadium_scene_gltf = _unavailable
     import_stadium_scene_gltf = _unavailable
+    replace_stadium_textures_from_gltf = _unavailable
     replace_stadium_texture = _unavailable
     revert_stadium_texture = _unavailable
     stadium_scene_people_texture_ids = _unavailable
@@ -1097,10 +1105,10 @@ _WORKSPACE_CAPABILITIES = {
     "nfl2k5.scorebug_presentation.inventory": "Scorebug & Presentation",
     "nfl2k5.crib.assets": "The Crib",
     "nfl2k5.audio.audo_wav": "Audio",
-    # NOT mapped: the Stadiums viewport renders private glTF exports but
-    # has no save-to-file control, so geometry export is command-line
-    # only and the card must say so rather than pointing at a page that
-    # cannot do it.
+    # The Stadiums page exports the pinned scene to glTF, imports same-topology
+    # vertex moves, and applies Blender-edited glTF textures back, so the card
+    # points at that workspace instead of the command line.
+    "nfl2k5.stadiums.geometry": "Stadiums",
     "nfl2k5.textures.all_p8": "All Textures",
 }
 
@@ -1452,6 +1460,8 @@ class StudioMainWindow(QMainWindow):
         self._universal_browser: _UniversalBrowserState | None = None
         self._stadium_browser: _StadiumBrowserState | None = None
         self._audio_panel: AudioPanel | None = None
+        self._bump_panel: BumpPanel | None = None
+        self._save_panel: SavePanel | None = None
         self._text_roster_panel: TextRosterPanel | None = None
         self._roster_panel: TextRosterPanel | None = None
         self._crib_panel: CribPanel | None = None
@@ -2156,6 +2166,10 @@ class StudioMainWindow(QMainWindow):
                 uniform_tabs.addTab(
                     self._build_colors_page(section), "Colours & Other Tools"
                 )
+                self._bump_panel = BumpPanel(self.facade)
+                uniform_tabs.addTab(self._bump_panel, "Bump Maps")
+                self._save_panel = SavePanel(self.facade)
+                uniform_tabs.addTab(self._save_panel, "Saves & Sliders")
                 # The uniform browser is why people open this page; never let a
                 # newly added tab take the landing position away from it.
                 uniform_tabs.setCurrentIndex(0)
@@ -3616,6 +3630,15 @@ class StudioMainWindow(QMainWindow):
             "original UV, material, collision, selector, and other stream bytes."
         )
         scenes_layout.addWidget(import_scene_button)
+        apply_textures_button = QPushButton("Apply textures from glTF…")
+        apply_textures_button.setObjectName("primaryButton")
+        apply_textures_button.setToolTip(
+            "Apply the textures you edited in Blender back into the game. Export "
+            "embeds each stadium texture into the glTF; edit those images in "
+            "Blender, re-export, and this writes them back through the bounded "
+            "writer, matched by nfl2k5_texture_id or material name."
+        )
+        scenes_layout.addWidget(apply_textures_button)
         scenes_note = QLabel(
             "Models are private glTF exports generated from the user's own game."
         )
@@ -3726,6 +3749,7 @@ class StudioMainWindow(QMainWindow):
         export_button.clicked.connect(self._export_stadium_texture)
         export_scene_button.clicked.connect(self._export_stadium_scene_gltf)
         import_scene_button.clicked.connect(self._import_stadium_scene_gltf)
+        apply_textures_button.clicked.connect(self._apply_stadium_textures_from_gltf)
         replace_button.clicked.connect(self._choose_stadium_texture_replacement)
         revert_button.clicked.connect(self._revert_stadium_texture)
         # Never silent-gray texture export/replace/revert at construction either.
@@ -3737,11 +3761,12 @@ class StudioMainWindow(QMainWindow):
             button.setEnabled(True)
             button.setToolTip(tex_boot)
             button.setProperty("disableReason", tex_boot)
-        # Model export/import stay clickable so blocked states are never silent gray;
-        # tooltips + disableReason + click explain Load XISO / pick scene.
+        # Model export/import/texture-apply stay clickable so blocked states are
+        # never silent gray; tooltips + disableReason + click explain Load XISO /
+        # pick scene.
         model_boot = (
             "Load your NFL 2K5 XISO and select a stadium scene first. "
-            "Import/Export stay clickable so blocked states explain themselves."
+            "These model tools stay clickable so blocked states explain themselves."
         )
         export_scene_button.setEnabled(True)
         export_scene_button.setToolTip(model_boot)
@@ -3749,8 +3774,12 @@ class StudioMainWindow(QMainWindow):
         import_scene_button.setEnabled(True)
         import_scene_button.setToolTip(model_boot)
         import_scene_button.setProperty("disableReason", model_boot)
+        apply_textures_button.setEnabled(True)
+        apply_textures_button.setToolTip(model_boot)
+        apply_textures_button.setProperty("disableReason", model_boot)
         self._stadium_export_scene_button = export_scene_button
         self._stadium_import_scene_button = import_scene_button
+        self._stadium_apply_textures_button = apply_textures_button
         if not bool(getattr(self.facade, "stadium_available", False)):
             count_label.setText("Load XISO")
             scene_metadata.setText(
@@ -5134,6 +5163,9 @@ class StudioMainWindow(QMainWindow):
         import_button = getattr(self, "_stadium_import_scene_button", None)
         if import_button is not None:
             import_button.setEnabled(True)
+        apply_textures_button = getattr(self, "_stadium_apply_textures_button", None)
+        if apply_textures_button is not None:
+            apply_textures_button.setEnabled(True)
         state.scene_label.setText(f"Outer {scene.outer_index} • Stadium scene")
         state.scene_metadata.setText("Preparing 3D geometry and surface ownership…")
         state.viewport.set_model(None)
@@ -5328,6 +5360,30 @@ class StudioMainWindow(QMainWindow):
                 )
             import_scene.setToolTip(tip)
             import_scene.setProperty(
+                "disableReason", "" if (ready and scene is not None) else tip
+            )
+        apply_textures = getattr(self, "_stadium_apply_textures_button", None)
+        if apply_textures is not None:
+            apply_textures.setEnabled(True)
+            if not ready:
+                tip = (
+                    "Load your NFL 2K5 XISO first — Apply textures from glTF needs "
+                    "a prepared Stadium Studio scene."
+                )
+            elif scene is None:
+                tip = (
+                    "Select a stadium scene first, then apply the textures you "
+                    "edited in its exported glTF."
+                )
+            else:
+                tip = (
+                    "Apply the textures you edited in Blender back into the game. "
+                    "Export embeds each stadium texture into the glTF; edit those "
+                    "images, re-export, and this writes them back through the "
+                    "bounded writer, matched by nfl2k5_texture_id or material name."
+                )
+            apply_textures.setToolTip(tip)
+            apply_textures.setProperty(
                 "disableReason", "" if (ready and scene is not None) else tip
             )
         # Never silent-gray texture export/replace/revert.
@@ -5562,6 +5618,66 @@ class StudioMainWindow(QMainWindow):
             ),
             success,
             label="Importing edited stadium model",
+            blocking=True,
+        )
+
+    def _apply_stadium_textures_from_gltf(self) -> None:
+        """Write Blender-edited glTF images back to their stadium texture slots."""
+
+        apply_textures = getattr(self, "_stadium_apply_textures_button", None)
+        reason = ""
+        if apply_textures is not None:
+            reason = str(apply_textures.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Apply textures from glTF", reason)
+            return
+        state = self._stadium_browser
+        if state is None or state.selected_scene_id is None:
+            QMessageBox.information(
+                self,
+                "Apply textures from glTF",
+                "Select a stadium scene first, then apply the textures you edited "
+                "in its exported glTF.",
+            )
+            return
+        scene_id = state.selected_scene_id
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            "Apply edited stadium textures from glTF",
+            str(Path.home()),
+            "glTF model (*.gltf)",
+        )
+        if not filename:
+            return
+        supplied = Path(filename)
+
+        def success(result: object) -> None:
+            receipts = result if isinstance(result, tuple) else ()
+            lines = "\n".join(
+                f"{receipt.texture_id}: "
+                f"{_result_message(receipt.write_result, 'written')}"
+                for receipt in receipts
+            )
+            box = QMessageBox(self)
+            box.setWindowTitle("Stadium textures applied")
+            box.setIcon(QMessageBox.Information)
+            box.setText(
+                f"Wrote {len(receipts)} edited stadium texture(s) through the "
+                "bounded writer."
+            )
+            box.setInformativeText(lines)
+            box.addButton("Close", QMessageBox.RejectRole)
+            box.exec_()
+            self._set_status(f"Applied {len(receipts)} edited stadium texture(s).")
+            self._mark_workspace_changed()
+            self._select_stadium_texture(state.texture_list.currentItem(), None)
+
+        self._start_task(
+            lambda progress: self.facade.replace_stadium_textures_from_gltf(
+                scene_id, supplied, progress
+            ),
+            success,
+            label="Applying edited stadium textures",
             blocking=True,
         )
 

@@ -31,9 +31,9 @@ TUNING_REPORT_SCHEMA = "vc_gameplay_tuning_ai_draft_audit/v1"
 DEFAULT_FRANCHISE_REPORT = (
     ROOT / "reports/gameplay_tuning/nfl_franchise_limit_feasibility.json"
 )
-FRANCHISE_REPORT_SIZE = 17_707
+FRANCHISE_REPORT_SIZE = 19_555
 FRANCHISE_REPORT_SHA256 = (
-    "4d67e2d3009b7691a10eed4e1807371d3b80d6d0fafb5cb9cd62bcbf5cb8b4fd"
+    "a5d8e4ad78b0baf89063796df1250cbb774b4b058a9dba008fc3682a838b8af9"
 )
 FRANCHISE_REPORT_SCHEMA = "nfl2k5_franchise_limit_feasibility/v1"
 
