@@ -10,6 +10,7 @@ from unittest import mock
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_build_service import BuildResult
+from mod_editor.core.nfl2k5_stadium_studio import StadiumGltfTextureWriteBack
 from mod_editor.studio.facade import Nfl2k5StudioFacade
 from mod_editor.studio.project_archive import (
     ProjectTargetIdentity,
@@ -200,6 +201,43 @@ class _PreparedStadiumCoordinator(_StadiumCoordinator):
 class _StadiumStudio:
     def list_scenes(self, *, search: str) -> tuple[str, ...]:
         return (f"stadium:{search}",)
+
+
+class _TextureWriteBackStudio(_StadiumStudio):
+    """Hands back one receipt per mapped glTF image and proves the facade lock."""
+
+    SCENE_ID = "nfl2k5.stadium.o0042.c0003.scene0077"
+
+    def __init__(self, lock: object) -> None:
+        self.lock = lock
+        self.calls: list[tuple[object, Path]] = []
+        self.receipts = (
+            StadiumGltfTextureWriteBack(
+                texture_id=f"{self.SCENE_ID}.texture0000",
+                scene_id=self.SCENE_ID,
+                texture_index=0,
+                supplied_png_sha256="a" * 64,
+                write_result=SimpleNamespace(message="Stadium texture replaced"),
+            ),
+            StadiumGltfTextureWriteBack(
+                texture_id=f"{self.SCENE_ID}.texture0001",
+                scene_id=self.SCENE_ID,
+                texture_index=1,
+                supplied_png_sha256="b" * 64,
+                write_result=SimpleNamespace(message="Stadium texture replaced"),
+            ),
+        )
+
+    def replace_textures_from_gltf(
+        self, scene_or_id: object, edited_gltf: Path
+    ) -> tuple[StadiumGltfTextureWriteBack, ...]:
+        checker = getattr(self.lock, "_is_owned", None)
+        if callable(checker) and not checker():
+            raise AssertionError(
+                "stadium texture write-back escaped the facade source lock"
+            )
+        self.calls.append((scene_or_id, edited_gltf))
+        return self.receipts
 
 
 class _CribCatalog:
@@ -447,6 +485,39 @@ class StudioFacadeTests(unittest.TestCase):
         self.assertEqual(coordinator.ensure_calls, 1)
         self.assertEqual(facade.stadium_scenes("jets", progress), ("stadium:jets",))
         self.assertEqual(coordinator.ensure_calls, 1)
+
+    def test_replace_stadium_textures_from_gltf_routes_to_the_studio(self) -> None:
+        progress = lambda *_args: None
+        self.facade.load_source(self.root / "NFL2K5.iso", progress)
+        studio = _TextureWriteBackStudio(self.facade._lock)
+        self.facade._stadium_studio = studio  # type: ignore[assignment]
+        edited = self.root / "edited-stadium.gltf"
+        edited.write_bytes(b"edited stadium gltf")
+        events: list[tuple[str, int, int]] = []
+        progress = lambda stage, done, total: events.append((stage, done, total))
+
+        receipts = self.facade.replace_stadium_textures_from_gltf(
+            _TextureWriteBackStudio.SCENE_ID, edited, progress
+        )
+
+        self.assertEqual(studio.calls, [(_TextureWriteBackStudio.SCENE_ID, edited)])
+        self.assertEqual(receipts, studio.receipts)
+        self.assertEqual(
+            [receipt.texture_id for receipt in receipts],
+            [
+                f"{_TextureWriteBackStudio.SCENE_ID}.texture0000",
+                f"{_TextureWriteBackStudio.SCENE_ID}.texture0001",
+            ],
+        )
+        self.assertIn(("Applying edited stadium textures", 0, 1), events)
+        self.assertIn(("Edited stadium textures applied", 1, 1), events)
+
+        # Fail-closed: an unprepared studio is a readable refusal, not a crash.
+        self.facade._stadium_studio = None
+        with self.assertRaisesRegex(ValidationError, "Stadium previews"):
+            self.facade.replace_stadium_textures_from_gltf(
+                _TextureWriteBackStudio.SCENE_ID, edited, progress
+            )
 
     def test_shareable_project_save_and_load_swap_the_working_session(self) -> None:
         progress = lambda *_args: None

@@ -20,7 +20,7 @@ import math
 import struct
 import sys
 import zlib
-from collections import Counter, defaultdict
+from collections import Counter, OrderedDict, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
@@ -205,6 +205,9 @@ def uniform_name_id(name: str) -> int:
 
 
 def logical_name_candidates() -> dict[int, LogicalName]:
+    global _LOGICAL_NAME_CANDIDATES
+    if _LOGICAL_NAME_CANDIDATES is not None:
+        return _LOGICAL_NAME_CANDIDATES
     result: dict[int, LogicalName] = {}
     for code in range(100):
         for side_code, context in (("H", "HOME"), ("A", "AWAY")):
@@ -226,7 +229,100 @@ def logical_name_candidates() -> dict[int, LogicalName]:
                         f"{result[name_id].name}/{name}"
                     )
                 result[name_id] = item
+    # Pure function of nothing: computed once per process and shared.  Every
+    # caller treats the table as read-only.
+    _LOGICAL_NAME_CANDIDATES = result
     return result
+
+
+_LOGICAL_NAME_CANDIDATES: dict[int, LogicalName] | None = None
+
+
+class _InventoryRows:
+    """The chunk rows of one memoized inventory document, indexed on demand.
+
+    The index is built by the first lookup -- which happens after the caller's
+    schema check, exactly where the historical linear scan ran -- and applies
+    the very same coercions, so a malformed row raises the very same
+    KeyError/TypeError/ValueError it always did.  Later lookups answer in
+    O(1).
+    """
+
+    def __init__(self, value: dict[str, object]) -> None:
+        self._value = value
+        self._index: "dict[tuple[int, int], list[dict[str, object]]] | None" = (
+            None
+        )
+
+    def rows_for(
+        self, outer_index: int, chunk_index: int
+    ) -> list[dict[str, object]]:
+        if self._index is None:
+            index: dict[tuple[int, int], list[dict[str, object]]] = {}
+            for row in self._value["chunks"]:
+                chunk_key = (int(row["outer_index"]), int(row["chunk_index"]))
+                index.setdefault(chunk_key, []).append(row)
+            self._index = index
+        return list(self._index.get((outer_index, chunk_index), ()))
+
+
+# The canonical chunk inventory is ~55 MB of JSON.  A multi-edit build used to
+# re-read and re-parse it once per edit and then linearly scan all ~87k chunk
+# rows per edit.  The parsed document is memoized per file identity and its
+# row index is built once on first use, so N edits pay one parse and O(1) row
+# lookups.  A rewrite moves size/mtime and misses the cache.
+_INVENTORY_CACHE_LIMIT = 4
+_INVENTORY_CACHE: "OrderedDict[tuple[object, ...], dict[str, object]]" = (
+    OrderedDict()
+)
+_INVENTORY_ROWS_BY_ID: dict[int, _InventoryRows] = {}
+
+
+def clear_inventory_cache() -> None:
+    """Forget every memoized inventory document (tests and fresh sessions)."""
+
+    _INVENTORY_ROWS_BY_ID.clear()
+    _INVENTORY_CACHE.clear()
+
+
+def load_inventory_document(path: Path) -> dict[str, object]:
+    """The parsed chunk inventory at *path*, memoized per file identity."""
+
+    info = path.stat()
+    key = (str(path), info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
+    cached = _INVENTORY_CACHE.get(key)
+    if cached is not None:
+        _INVENTORY_CACHE.move_to_end(key)
+        return cached
+    value = json.loads(path.read_bytes())
+    _INVENTORY_CACHE[key] = value
+    _INVENTORY_CACHE.move_to_end(key)
+    _INVENTORY_ROWS_BY_ID[id(value)] = _InventoryRows(value)
+    while len(_INVENTORY_CACHE) > _INVENTORY_CACHE_LIMIT:
+        _key, evicted = _INVENTORY_CACHE.popitem(last=False)
+        _INVENTORY_ROWS_BY_ID.pop(id(evicted), None)
+    return value
+
+
+def inventory_chunk_rows(
+    inventory_value: dict[str, object], outer_index: int, chunk_index: int
+) -> list[dict[str, object]]:
+    """The chunk rows for one (outer_index, chunk_index) pair.
+
+    Documents produced by :func:`load_inventory_document` answer in O(1) from
+    their memoized row index; any other dict keeps the historical linear scan
+    with exactly the same filter semantics.
+    """
+
+    rows = _INVENTORY_ROWS_BY_ID.get(id(inventory_value))
+    if rows is not None:
+        return rows.rows_for(outer_index, chunk_index)
+    chunks = inventory_value["chunks"]
+    return [
+        row for row in chunks
+        if int(row["outer_index"]) == outer_index
+        and int(row["chunk_index"]) == chunk_index
+    ]
 
 
 def load_inventory(path: Path) -> tuple[dict[str, object], list[dict[str, object]]]:

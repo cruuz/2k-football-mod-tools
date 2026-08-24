@@ -1,3 +1,102 @@
+# beta-51 — RC75 / alpha.82
+
+**Date:** 2026-08-23
+
+**2K5 Mod Studio:** `v1.0-RC75`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.82`
+
+## New: the jersey bump-map workspace
+
+NFL 2K5 ships a tangent-space bump map for every uniform — jersey, pants,
+sleeve, sock — and until now nothing in the editor could touch them. Uniforms
+& Equipment → **Bump Maps** changes that:
+
+- Browse all **634 uniform packages** and their four bump slots, discovered
+  from the disc's own entry tables (no hardcoded offsets).
+- **Export** any slot to PNG; **import** an authored PNG with a before/after
+  preview; **write** it into a COPY of your disc image at the exact retail
+  footprint — mip chain rebuilt with box filtering, NV2A swizzle, VC-LZ
+  recompressed to fit the fixed span, wrapper preserved except the loader
+  scratch word, then independently re-decoded and verified pixel-for-pixel.
+- The three packages whose entries **cross a pack boundary** (outers 3625,
+  3832, 4136) are segmented at the boundary and fully editable — the whole
+  uniform corpus, 634/634.
+- The retail image is recognized by full SHA and stays browse/export-only.
+
+## New: bump authoring templates
+
+"Save authoring template" writes a flat-normal starter PNG at the slot's exact
+size. For bump_jersey it marks the retail collar/shield UV positions — front
+V-neck collar band, NFL shield tab, back round collar — so FUSE-collar detail
+can be authored where the retail art puts it. Zone labels carry their honest
+grade (observed pixels proven; semantic labels inferred) in the metadata.
+
+## New: bump strength editing
+
+How strongly a bump renders is a per-material detail-scale float in
+default.xbe (jersey 0.1, pants 0.3, sleeve shares jersey's float, sock fixed
+at 0). The Bump Maps panel reads those values by byte pattern (never blind
+offsets) and can patch a COPY of the XBE: float immediates rewritten, the
+touched section digest recomputed, byte-diff confinement verified. Honesty
+labels are built in: the RSA signature cannot be regenerated, so a patched
+XBE is xemu-only, and sock stays read-only because its retail encoding has no
+room for a float. Jersey/sleeve share one float and are kept in sync in the
+UI for the same reason.
+
+## New: Saves & Sliders
+
+Uniforms & Equipment → **Saves & Sliders** edits the settings block that both
+Settings1 and Franchise1 saves carry:
+
+- All **21 gameplay sliders** — Human/CPU Blocking, Passing, Running,
+  Coverage, Pursuit, Tackling, Kicking, Fatigue, Catching plus Injury,
+  Fumble, Interception — with editable / mirror / consistent write modes.
+- The **franchise year field** on Franchise1 saves.
+- Output is always a copy: a mutated SAVEGAME.DAT plus a fresh 20-byte EXTRA
+  signature, computed with the title-static key derived from your own
+  default.xbe — the game verifies this signature at load, so both files must
+  go back into the container together.
+- The same lane ships as a CLI (`read` / `edit` / `writeback`), including
+  write-back into a copied raw Xbox HDD image that touches only the
+  container's own extents and refuses saves whose stored EXTRA does not
+  verify.
+
+## New: the stadium glTF loop closes
+
+Stadium scenes already export to glTF with every game texture embedded and
+tagged by its canonical id, and same-topology vertex edits already import
+back. Now the textures come back too: **Apply textures from glTF** maps each
+Blender-edited image to its stadium texture slot (by id, falling back to the
+material name when extras were stripped) and writes it through the same
+fixed-allocation P8 route the Stadiums page uses. Export → edit in Blender →
+apply back, entirely in the GUI — no terminal.
+
+## Speed: hundreds of edits no longer re-parse the world
+
+Every structural parse that used to repeat per edit is now memoized behind an
+identity key (path + device + inode + size + mtime): the bump index volume,
+the retail-image probe verdict, the outer-archive parse shared by every
+texture adapter, the 55MB uniform inventory (now with an O(1) row index), the
+compatibility-report digest, and the large-file hashes the helmet/nameplate/
+face/field-art/portrait importers recomputed per edit. Per-edit structural
+cost is O(1) after the first edit; the caches are pinned by deterministic
+reuse/invalidation tests, not wall-clock timing.
+
+## APF 2K8: add many formations, shared-play honesty
+
+- **Add Formation no longer stops at one.** Each add takes the next free
+  slot; the writer is proven to ship N additions in one build (verified on
+  the retail disc with two formations added to O-SinglebackAce).
+- **Build receipts flag shared-play records and book supply rows** — the
+  mechanism behind "my package edit works in Practice but only rarely in
+  Quick Game": Quick Game resolves plays by row lookup over shared play
+  instances, so an edited record only shows when the CPU calls a record
+  owning its own instance.
+- Honest boundaries: the user-playbook crash with cut/CPU-only content and
+  the O-Shotgun WR depth flip are not provable offline; both ship with their
+  decisive in-game experiments documented.
+
 # beta-50 — RC74 / alpha.81
 
 **Date:** 2026-08-22

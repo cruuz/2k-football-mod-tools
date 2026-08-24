@@ -1,4 +1,33 @@
-# 2K5 Mod Studio — v1.0 RC73 Release Status
+# 2K5 Mod Studio — v1.0 RC75 Release Status
+
+## Beta 51 — bump maps end to end, bump strength, saves & sliders, stadium glTF loop, hundreds-of-edits speed (2026-08-23)
+
+Source/UI versions are **2K5 RC75** and **APF alpha.82**; both use updater
+tag `beta-51`.
+
+- **Jersey bump maps are a native workspace.** Uniforms & Equipment → Bump
+  Maps browses all 634 uniform packages' four bump slots from the entry
+  tables, exports PNGs, previews replacements, and writes them into a copy
+  of the disc image at the exact retail span (mip chain + swizzle + VC-LZ
+  refit, wrapper preserved, independent re-decode verification). The three
+  packages that cross pack extents are segmented and fully editable now.
+- **Bump strength is editable.** The detail-scale floats in default.xbe
+  (jersey/pants/sleeve; sock fixed) are found by byte pattern and patched on
+  a copy with digest recompute — xemu-only by honest design. Authoring
+  templates mark the retail collar/shield UV zones.
+- **Saves & Sliders edits the 21 gameplay sliders and franchise year**, and
+  re-signs the copy (title-static HMAC) so the game loads it; write-back can
+  patch a container's extents inside a copied raw HDD image.
+- **The stadium glTF loop closes.** Apply textures from glTF brings
+  Blender-edited images back through the fixed-allocation P8 writer.
+- **Speed for hundreds of edits.** Identity-keyed caches remove the per-edit
+  re-parse of the index volume, outer archives, the 55MB inventory, report
+  digests, and large-file hashes: per-edit structural cost is O(1) after the
+  first edit, with deterministic cache tests.
+- **APF: Add Formation takes as many formations as the book can hold** in one
+  build, and receipts flag shared-play records (the Quick Game
+  sometimes-applies mechanism).
+
 
 ## Beta 33 — the stock CPU playbooks (2026-08-10)
 

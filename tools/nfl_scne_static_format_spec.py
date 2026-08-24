@@ -45,8 +45,8 @@ SOURCE_PINS = {
         "2423528567e0e9a24bd2e07767ad225ed737e86e87e4c5286eb1f4dbc0af5672",
     ),
     "outer_archive_parser": (
-        "tools/nfl_outer.py", 15895,
-        "affbb92ea9fcce81b5d3502b2946fc0cf275b660c1ea93492730267110d49b46",
+        "tools/nfl_outer.py", 17176,
+        "0f27ac4157f13704e4303dbf2e146427cc56d1d910a3e242fac4081a04d9ee6d",
     ),
     "resource_probe": (
         "tools/nfl_scene_probe.py", 40326,
