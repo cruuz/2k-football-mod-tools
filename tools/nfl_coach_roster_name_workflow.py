@@ -110,7 +110,8 @@ def read_regular_json(path: Path, label: str) -> tuple[Path, bytes, tuple[int, i
     info = path.lstat()
     require(not stat.S_ISLNK(info.st_mode), f"{label} must not be a symlink")
     resolved = path.resolve(strict=True)
-    fd = os.open(resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    fd = os.open(resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+                 | getattr(os, "O_BINARY", 0))
     try:
         opened = os.fstat(fd)
         require(stat.S_ISREG(opened.st_mode), f"{label} is not a regular file")

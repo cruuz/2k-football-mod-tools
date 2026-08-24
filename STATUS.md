@@ -1,4 +1,17 @@
-# 2K5 Mod Studio — v1.0 RC75 Release Status
+# 2K5 Mod Studio — v1.0 RC76 Release Status
+
+## Beta 52 — Windows binary-open hotfix (2026-08-24)
+
+Source/UI versions are **2K5 RC76** and **APF alpha.83**; both use updater tag
+`beta-52`.
+
+- Beta 51's bump/strength/save file paths opened binary files without
+  `O_BINARY`; on Windows that means text-mode descriptors whose reads stop at
+  the first `0x1A` byte, truncating payloads. All `os.open` call sites in the
+  new writers (and the coach-name tool) now carry the flag, matching the
+  long-shipped uniform-color route, and an AST guard keeps it that way.
+  Linux/macOS behavior is unchanged; Windows CI was red on the bump suite in
+  beta-51 and this is the fix.
 
 ## Beta 51 — bump maps end to end, bump strength, saves & sliders, stadium glTF loop, hundreds-of-edits speed (2026-08-23)
 

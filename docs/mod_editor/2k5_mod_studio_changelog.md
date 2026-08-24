@@ -1,5 +1,18 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC76 — Windows binary-open hotfix for the bump workspace (2026-08-24)
+
+Beta 51's new file paths opened disc images, extracted packs, XBE copies and
+raw HDD images with `os.open` but without `O_BINARY`. POSIX ignores the flag;
+Windows opens such descriptors in TEXT mode, where reads stop at the first
+`0x1A` byte — silently truncating payloads (the synthetic uniform fixtures hit
+this at byte 58 of the pack). Every `os.open` in the bump-map writer, the
+bump-strength writer, the save writer, and the coach-name tool now carries
+`getattr(os, "O_BINARY", 0)`, matching the long-shipped uniform-color patch
+route. A new AST guard fails any future `os.open` in these modules that drops
+the flag. No behavior change on Linux/macOS; the Bump Maps, Bump strength, and
+Saves & Sliders workspaces now work on Windows exactly as they do elsewhere.
+
 ## v1.0 RC75 — bump maps, bump strength, saves & sliders, stadium glTF loop, speed (2026-08-23)
 
 RC75 is the biggest 2K5-side release to date: four new native workspaces or

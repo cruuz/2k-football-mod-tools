@@ -512,7 +512,7 @@ def _open_volume(image_path: Path, partition: str, *, writable: bool):
     flags = os.O_RDWR if writable else os.O_RDONLY
     descriptor = os.open(
         image_path, flags | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_CLOEXEC", 0),
+        | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
     )
     try:
         volume = _FatXVolume(descriptor, offset, length)
