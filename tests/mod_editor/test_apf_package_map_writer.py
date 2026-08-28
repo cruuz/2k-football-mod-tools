@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+from pathlib import Path
 import struct
 import tempfile
 import unittest
@@ -35,6 +37,20 @@ from mod_editor.core.errors import ValidationError
 
 IDENTITY_MAP = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 ACE_MAP = (0, 10, 8, 9, 1, 4, 3, 5, 2, 6, 7)
+
+WORKSPACE = Path(__file__).resolve().parents[2]
+EXTRACTED_0A = WORKSPACE / "extracted" / "All-Pro Football 2K8 (USA)" / "0A"
+STORAGE_0A = Path(
+    "/media/noah/Storage/for codex 1.0/extracted/All-Pro Football 2K8 (USA)/0A"
+)
+_ENV_0A = os.environ.get("APF_2K8_0A")
+GAME_0A = Path(_ENV_0A) if _ENV_0A else (
+    EXTRACTED_0A if EXTRACTED_0A.is_file() else STORAGE_0A
+)
+DISC_AVAILABLE = GAME_0A.is_file()
+
+# The five ids that move together through every offensive formation.
+OL_BLOCK = (1, 4, 3, 5, 2)
 
 
 def _synthetic_apf_master() -> bytes:
@@ -108,7 +124,24 @@ class PackageMapWriterTests(unittest.TestCase):
         self.assertIn("TE", role_label(8))
         self.assertIn("WR", role_label(9))
         self.assertIn("role 3", role_label(3))
-        self.assertIn("TE is stored in map slot 3", slot_summary((0, 10, 8, 9, 1, 4, 3, 5, 2, 6, 7)))
+        self.assertIn(
+            "role 8 (TE) is at map position 3",
+            slot_summary((0, 10, 8, 9, 1, 4, 3, 5, 2, 6, 7)),
+        )
+
+    def test_summary_does_not_call_a_map_position_a_field_slot(self) -> None:
+        """A football reader took "map slot 2 = TE" as "the TE lines up
+        second". The five ids that behave like the line never sit at map
+        positions 2..6, so the copy must not invite that reading."""
+
+        summary = slot_summary((0, 10, 8, 9, 1, 4, 3, 5, 2, 6, 7))
+        self.assertIn("map position", summary)
+        self.assertNotIn("map slot", summary)
+        self.assertIn("not the play's route slots", summary)
+        folded = HONESTY.casefold()
+        self.assertIn("once each", folded)
+        self.assertIn("default.xex", folded)
+        self.assertNotIn("runtime proved", folded)
 
     def test_list_formations_reads_names(self) -> None:
         rows = list_apf_formations(_synthetic_apf_master())
@@ -499,7 +532,6 @@ class PackageMapPanelActionTests(unittest.TestCase):
         panel._copy_from()
         self.assertEqual(panel._draft.get(0), IDENTITY_MAP)
         panel._stage()
-        self.assertEqual(len(facade.apply_calls), 1)
         staged = facade.apply_calls[-1]
         self.assertEqual([change.formation_index for change in staged], [0])
         self.assertEqual(staged[0].new_map, IDENTITY_MAP)
@@ -535,18 +567,18 @@ class PackageMapPanelActionTests(unittest.TestCase):
         panel.table.setCurrentCell(3, 0)
         panel._put_role(APF_PACKAGE_MAP_ROLE_TE)
         panel._stage()
-        self.assertEqual(len(facade.apply_calls), 1)
+        applied = len(facade.apply_calls)
         with patch.object(
             QMessageBox, "question", return_value=QMessageBox.No
         ):
             panel._revert_all()
-        self.assertEqual(len(facade.apply_calls), 1)
+        self.assertEqual(len(facade.apply_calls), applied)
         self.assertEqual(len(facade.staged_package_maps()), 1)
         with patch.object(
             QMessageBox, "question", return_value=QMessageBox.Yes
         ):
             panel._revert_all()
-        self.assertEqual(len(facade.apply_calls), 2)
+        self.assertEqual(len(facade.apply_calls), applied + 1)
         self.assertEqual(facade.apply_calls[-1], ())
         self.assertEqual(facade.staged_package_maps(), ())
 
@@ -560,7 +592,7 @@ class PackageMapPanelActionTests(unittest.TestCase):
         panel.table.setCurrentCell(3, 0)
         panel._put_role(APF_PACKAGE_MAP_ROLE_TE)
         panel._stage()
-        self.assertEqual(len(facade.apply_calls), 1)
+        applied = len(facade.apply_calls)
         kept_draft = dict(panel._draft)
         facade._broken_reads = True
         panel.set_context()
@@ -573,7 +605,276 @@ class PackageMapPanelActionTests(unittest.TestCase):
             panel._stage()
             panel._revert_all()
             panel._revert_one()
+        self.assertEqual(len(facade.apply_calls), applied)
+
+
+class UnstagedDraftRegressionTests(unittest.TestCase):
+    """Urianus, 2026-08-24: "Who Lines Up always says 'applied 0 edits'".
+
+    The panel marked a formation edited, the status line said "ready to stage
+    or already staged", and Build -- which only ever reads the session -- wrote
+    a plain copy and reported nothing applied."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        from PyQt5.QtWidgets import QApplication
+
+        cls.app = QApplication.instance() or QApplication([])
+
+    def _make_panel(self, facade, run_task=None):
+        from unittest.mock import patch
+
+        from mod_editor.apf_studio.playbook_package_map_qt import (
+            ApfPackageMapPanel,
+        )
+
+        def run_sync(label, work, done, *args, **kwargs):
+            done(work(None))
+            return True
+
+        patcher = patch(
+            "mod_editor.apf_studio.playbook_package_map_qt.read_master_play_body",
+            return_value=_synthetic_apf_master(),
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        panel = ApfPackageMapPanel(facade, run_task or run_sync)
+        self.addCleanup(panel.deleteLater)
+        panel.set_context()
+        return panel
+
+    def test_editing_a_map_reaches_the_session_without_a_stage_click(self) -> None:
+        facade = _FakePackageMapFacade("synthetic-0A")
+        panel = self._make_panel(facade)
+        panel.table.setCurrentCell(3, 0)
+        panel._put_role(APF_PACKAGE_MAP_ROLE_TE)
         self.assertEqual(len(facade.apply_calls), 1)
+        self.assertEqual(
+            [change.formation_index for change in facade.staged_package_maps()], [0]
+        )
+        self.assertEqual(panel.unstaged_maps(), ())
+
+    def test_status_never_conflates_staged_with_merely_drafted(self) -> None:
+        facade = _FakePackageMapFacade("synthetic-0A")
+        panel = self._make_panel(facade)
+        panel.table.setCurrentCell(3, 0)
+        panel._put_role(APF_PACKAGE_MAP_ROLE_TE)
+        self.assertIn("staged", panel.status.text())
+        self.assertNotIn("ready to stage or already staged", panel.status.text())
+
+    def test_a_refused_stage_keeps_the_draft_and_says_it_is_not_staged(self) -> None:
+        """The window refuses a second blocking task and returns False. The
+        panel used to drop that click silently."""
+
+        facade = _FakePackageMapFacade("synthetic-0A")
+        panel = self._make_panel(facade, run_task=lambda *_a, **_k: False)
+        panel.table.setCurrentCell(3, 0)
+        panel._put_role(APF_PACKAGE_MAP_ROLE_TE)
+        self.assertEqual(facade.apply_calls, [])
+        self.assertIn(0, panel._draft)
+        self.assertEqual(panel.unstaged_maps(), (0,))
+        self.assertIn("NOT staged", panel.status.text())
+
+    def test_a_plain_refresh_does_not_discard_an_unstaged_map(self) -> None:
+        facade = _FakePackageMapFacade("synthetic-0A")
+        panel = self._make_panel(facade, run_task=lambda *_a, **_k: False)
+        panel.table.setCurrentCell(3, 0)
+        panel._put_role(APF_PACKAGE_MAP_ROLE_TE)
+        kept = dict(panel._draft)
+        panel.refresh()
+        self.assertEqual(panel._draft, kept)
+        self.assertEqual(panel.unstaged_maps(), (0,))
+
+    def test_build_refuses_while_a_who_lines_up_map_is_unstaged(self) -> None:
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        from mod_editor.apf_studio import gui as apf_gui
+        from mod_editor.apf_studio.models import ApfCategory
+
+        window = SimpleNamespace(
+            facade=SimpleNamespace(source_ready=True),
+            _unstaged_who_lines_up=lambda: apf_gui.ApfStudioMainWindow.
+            _unstaged_who_lines_up(window),
+            _pages={
+                ApfCategory.PLAYBOOKS: SimpleNamespace(
+                    playbook_package_maps=SimpleNamespace(
+                        unstaged_maps=lambda: (0, 4)
+                    )
+                )
+            },
+        )
+        shown: list[tuple[str, str]] = []
+        with patch.object(
+            apf_gui.QMessageBox,
+            "information",
+            staticmethod(lambda _p, title, text, *a, **k: shown.append((title, text))),
+        ), patch.object(
+            apf_gui.QFileDialog,
+            "getExistingDirectory",
+            staticmethod(lambda *a, **k: self.fail("Build must not start")),
+        ):
+            apf_gui.ApfStudioMainWindow._build_game(window)
+        self.assertEqual(len(shown), 1)
+        self.assertIn("not staged", shown[0][1])
+        self.assertIn("Stage this map", shown[0][1])
+
+    def test_zero_edit_build_message_explains_itself(self) -> None:
+        from types import SimpleNamespace
+
+        from mod_editor.apf_studio.gui import ApfStudioMainWindow
+
+        empty = SimpleNamespace(modified_assets=(), manifest="/nonexistent")
+        text = ApfStudioMainWindow._build_edit_detail(empty)
+        self.assertIn("Applied 0 edits", text)
+        self.assertIn("nothing was staged", text)
+        self.assertIn("plain copy", text)
+
+    def test_build_message_reports_the_changed_regions(self) -> None:
+        import json as _json
+        from pathlib import Path as _Path
+        from types import SimpleNamespace
+
+        from mod_editor.apf_studio.gui import ApfStudioMainWindow
+
+        with tempfile.TemporaryDirectory() as temporary:
+            manifest = _Path(temporary) / "manifest.json"
+            manifest.write_text(
+                _json.dumps(
+                    {
+                        "edits": [
+                            {
+                                "kind": "formation_package_map_batch",
+                                "changed_byte_count": 2,
+                                "changed_ranges": [[597, 608]],
+                                "package_maps": [{"formation_index": 0}],
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            receipt = SimpleNamespace(
+                modified_assets=("apf:pkgmap:apf:playbook:180:0:f0",),
+                manifest=manifest,
+            )
+            text = ApfStudioMainWindow._build_edit_detail(receipt)
+        self.assertIn("Applied 1 edit.", text)
+        self.assertIn("1 who-lines-up formation map written", text)
+        self.assertIn("1 byte region changed (2 bytes)", text)
+
+
+@unittest.skipUnless(DISC_AVAILABLE, "extracted APF 0A not present")
+class RetailVocabularyTests(unittest.TestCase):
+    """What the eleven bytes are, read off the user's own game.
+
+    Urianus, 2026-08-25: "the WRs/TEs are 100% NOT on slots 2-6 (OL on every
+    play I've edited in Assignment Routes) ... QB in slot 1 and OL in 2-6 ...
+    are set in stone". He is right about the play's route slots, and these
+    tests pin why that does not describe this map."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        from mod_editor.core.apf2k8_playbook_route_writer import (
+            read_master_play_body,
+        )
+
+        cls.body = read_master_play_body(GAME_0A)
+        cls.rows = list_apf_formations(cls.body)
+
+    def test_every_retail_formation_map_is_a_permutation_of_0_to_10(self) -> None:
+        """So a byte cannot be a headcount: no set can hold two receivers."""
+
+        self.assertEqual(len(self.rows), 163)
+        for index, name, package_map in self.rows:
+            self.assertEqual(
+                sorted(package_map), list(range(11)), f"{index} {name}"
+            )
+
+    def test_defences_and_special_teams_carry_the_same_eleven_numbers(self) -> None:
+        """A legend that reads 8 as TE and 9 as WR puts both in a 4-3."""
+
+        named = {name: package_map for _index, name, package_map in self.rows}
+        for name in ("4-3", "Nickel", "Dime", "3-4", "Prevent", "Kickoff", "Punt"):
+            self.assertIn(name, named)
+            self.assertIn(APF_PACKAGE_MAP_ROLE_TE, named[name], name)
+            self.assertIn(APF_PACKAGE_MAP_ROLE_WR3, named[name], name)
+
+    def test_the_line_block_never_sits_at_map_positions_two_to_six(self) -> None:
+        """The play's slots 2..6 are the offensive line on every play. The
+        five ids that travel as a block here start at map position 3, 4, 5 or
+        6 (1-based) depending on the formation, never at 2, so the block never
+        fills positions 2..6. Map position is not the play's route slot."""
+
+        starts: dict[int, int] = {}
+        for index, name, package_map in self.rows[:141]:
+            found = [
+                start
+                for start in range(len(package_map) - 4)
+                if tuple(package_map[start : start + 5]) == OL_BLOCK
+            ]
+            self.assertEqual(len(found), 1, f"{index} {name} {list(package_map)}")
+            starts[found[0]] = starts.get(found[0], 0) + 1
+        self.assertNotIn(1, starts)
+        self.assertEqual(sum(starts.values()), 141)
+        # Zero-based starts. 1 would be the only one that puts the block on
+        # map positions 2..6, and no retail formation does that.
+        self.assertEqual(sorted(starts), [2, 3, 4, 5])
+
+    def test_pinned_maps_still_match_the_disc(self) -> None:
+        named = {name: package_map for _index, name, package_map in self.rows}
+        self.assertEqual(named["I Pro"], (0, 9, 10, 8, 1, 4, 3, 5, 2, 6, 7))
+        self.assertEqual(named["Ace"], ACE_MAP)
+        self.assertEqual(named["Ace Empty"], (0, 10, 8, 9, 1, 4, 3, 5, 2, 7, 6))
+        self.assertEqual(named["4-3"], (0, 2, 3, 1, 4, 5, 6, 9, 7, 8, 10))
+
+
+@unittest.skipUnless(DISC_AVAILABLE, "extracted APF 0A not present")
+class RetailBuildRegionTests(unittest.TestCase):
+    """A staged map changes exactly its own eleven-byte region in outer 180."""
+
+    def test_one_edit_changes_only_that_formations_region(self) -> None:
+        from mod_editor.core.apf2k8_package_map_writer import (
+            apf_formation_package_map_offset,
+            build_master_play_edits,
+            compile_master_play_edits,
+        )
+        from mod_editor.core.apf2k8_playbook_route_writer import (
+            read_master_play_body,
+        )
+
+        original = read_master_play_body(GAME_0A)
+        stock = read_apf_formation_package_map(original, 0)
+        change = PackageMapChange(0, put_role_in_slot(stock, 0, APF_PACKAGE_MAP_ROLE_WR3))
+        built = compile_master_play_edits(original, package_maps=(change,))
+        offset = apf_formation_package_map_offset(0)
+        self.assertEqual(
+            offset,
+            APF_FORMATION_BASE + 0 * APF_FORMATION_SIZE
+            + APF_PACKAGE_MAP_OFFSET_IN_FORMATION,
+        )
+        self.assertEqual(offset, 0x0255)
+        differing = [
+            index
+            for index, (left, right) in enumerate(zip(original, built, strict=True))
+            if left != right
+        ]
+        self.assertTrue(differing)
+        self.assertTrue(
+            all(offset <= index < offset + 11 for index in differing), differing
+        )
+        self.assertEqual(read_apf_formation_package_map(built, 0), change.new_map)
+
+        outer_index, _entry_bytes, report = build_master_play_edits(
+            GAME_0A, package_maps=(change,)
+        )
+        self.assertEqual(outer_index, 180)
+        self.assertEqual(report["changed_ranges"], [[offset, offset + 11]])
+        self.assertEqual(report["package_maps_already_matching"], 0)
+        self.assertEqual(report["package_maps"][0]["formation_name"], "I Pro")
+        self.assertEqual(report["package_maps"][0]["resource_offset"], offset)
+        self.assertFalse(report["claims"]["runtime_proved"])
+        self.assertFalse(report["claims"]["third_and_long_director_changed"])
 
 
 if __name__ == "__main__":

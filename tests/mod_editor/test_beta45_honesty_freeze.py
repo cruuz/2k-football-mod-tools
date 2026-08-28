@@ -25,6 +25,39 @@ class Beta45HonestyFreezeTests(unittest.TestCase):
         self.assertEqual(apf_version, "0.1.0-alpha.84")
         self.assertEqual(BUILD_RELEASE_TAG, "beta-63.1")
 
+    def test_the_shell_shows_both_release_identities(self) -> None:
+        """Beta 34, 35 and the Beta 36 preview all shipped with
+        BUILD_RELEASE_TAG left at "beta-33" while __version__ moved 65 -> 68,
+        so the update banner told users they were on beta-33 whatever they had
+        installed. A 2026-08-25 screenshot showed "Alpha 68" beside "You are
+        running beta-33" in a window that also had the Who lines up tab, which
+        did not exist at alpha.68 -- only a spliced install produces that.
+        Printing both identities makes such a screenshot self-diagnosing."""
+
+        import os
+
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        from PyQt5.QtWidgets import QApplication, QLabel
+
+        from mod_editor.apf_studio import __version__ as apf_version
+        from mod_editor.apf_studio.gui import ApfStudioMainWindow
+        from mod_editor.core.update_check import BUILD_RELEASE_TAG
+
+        application = QApplication.instance() or QApplication([])
+        window = ApfStudioMainWindow()
+        try:
+            shown = [
+                label.text()
+                for label in window.findChildren(QLabel)
+                if label.objectName() == "mutedLabel" and "retail-free" in label.text()
+            ]
+            self.assertEqual(len(shown), 1, shown)
+            self.assertIn(apf_version.replace("0.1.0-alpha.", "Alpha "), shown[0])
+            self.assertIn(BUILD_RELEASE_TAG, shown[0])
+        finally:
+            window.deleteLater()
+            application.processEvents()
+
     def test_ci_hydrate_tag_is_a_published_beta(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         self.assertIn("gh release download beta-", workflow)

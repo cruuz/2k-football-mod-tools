@@ -19929,8 +19929,20 @@ class ApfStudioMainWindow(QMainWindow):
         brand_title = QLabel("APF MOD STUDIO")
         brand_title.setObjectName("brandTitle")
         release_label = __version__.replace("0.1.0-alpha.", "Alpha ")
-        version = QLabel(f"{release_label} • retail-free")
+        # Both identities, because they come from two different modules and a
+        # mixed install shows a pair that never shipped together. A screenshot
+        # of this line is enough to tell a real release from a spliced tree.
+        version = QLabel(
+            f"{release_label} • {update_check.BUILD_RELEASE_TAG} • retail-free"
+        )
         version.setObjectName("mutedLabel")
+        version.setWordWrap(True)
+        version.setToolTip(
+            f"APF 2K8 Mod Studio {__version__}, built from release "
+            f"{update_check.BUILD_RELEASE_TAG}. Both come from this install; "
+            "if they are not a pair the release notes list together, the "
+            "install has files from more than one build."
+        )
         titles.addWidget(brand_title)
         titles.addWidget(version)
         brand.addWidget(mark)
@@ -21567,8 +21579,37 @@ class ApfStudioMainWindow(QMainWindow):
             True,
         )
 
+    def _unstaged_who_lines_up(self) -> tuple[int, ...]:
+        """Who-lines-up maps a user can see edited that Build would skip."""
+
+        page = self._pages.get(ApfCategory.PLAYBOOKS)
+        panel = getattr(page, "playbook_package_maps", None)
+        reader = getattr(panel, "unstaged_maps", None)
+        if reader is None:
+            return ()
+        try:
+            return tuple(int(index) for index in reader())
+        except Exception:
+            return ()
+
     def _build_game(self) -> None:
         if not self.facade.source_ready:
+            return
+        pending = self._unstaged_who_lines_up()
+        if pending:
+            # Building here would write a plain copy and then report "Applied
+            # 0 edits" while the Who lines up list still showed the formation
+            # marked edited. Say what is missing instead.
+            QMessageBox.information(
+                self,
+                "Stage the who-lines-up maps first",
+                f"{len(pending)} formation map"
+                f"{'s are' if len(pending) != 1 else ' is'} edited on the Who "
+                "lines up tab but not staged, so this build would leave "
+                f"{'them' if len(pending) != 1 else 'it'} out.\n\n"
+                "Open Playbooks & Plays → Who lines up, click Stage this map, "
+                "then Build again.",
+            )
             return
         chosen = QFileDialog.getExistingDirectory(
             self,
@@ -21619,16 +21660,60 @@ class ApfStudioMainWindow(QMainWindow):
             True,
         )
 
+    @staticmethod
+    def _build_edit_detail(receipt: object) -> str:
+        """Name what the build actually wrote, from the build's own manifest.
+
+        "Applied 0 edits" on its own reads like a failure and says nothing
+        about why, so a zero build explains itself and a non-zero build
+        reports the regions the writers changed rather than a bare count."""
+
+        changed = len(getattr(receipt, "modified_assets", ()))
+        if not changed:
+            return (
+                "Applied 0 edits: nothing was staged, so this folder is a "
+                "plain copy of your game. Stage an edit first, then Build."
+            )
+        lines = [f"Applied {changed} edit{'s' if changed != 1 else ''}."]
+        try:
+            manifest = Path(getattr(receipt, "manifest", ""))
+            document = json.loads(manifest.read_text(encoding="utf-8"))
+            rows = document.get("edits") or []
+        except (AttributeError, OSError, ValueError, TypeError):
+            rows = []
+        maps = 0
+        regions = 0
+        bytes_changed = 0
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            maps += len(row.get("package_maps") or ())
+            regions += len(row.get("changed_ranges") or ())
+            try:
+                bytes_changed += int(row.get("changed_byte_count") or 0)
+            except (TypeError, ValueError):
+                continue
+        if maps:
+            lines.append(
+                f"{maps} who-lines-up formation map"
+                f"{'s' if maps != 1 else ''} written."
+            )
+        if regions:
+            lines.append(
+                f"{regions} byte region{'s' if regions != 1 else ''} changed "
+                f"({bytes_changed:,} byte{'s' if bytes_changed != 1 else ''})."
+            )
+        return " ".join(lines)
+
     def _build_complete(self, receipt: object) -> None:
         output = Path(receipt.output_game)  # type: ignore[attr-defined]
-        changed = len(receipt.modified_assets)  # type: ignore[attr-defined]
         self._last_detail = f"Build complete: {output.name}"
         self._update_product_state()
         QMessageBox.information(
             self,
             "Modded game folder built",
             f"Wrote:\n{output}\n\n"
-            f"Applied {changed} edit{'s' if changed != 1 else ''}. The complete output was verified and your source stayed untouched.\n\n"
+            f"{self._build_edit_detail(receipt)} The complete output was verified and your source stayed untouched.\n\n"
             "Point Xenia at this folder. Rebuild into the same folder to keep that path.\n\n"
             "This folder contains your retail game data. Do not redistribute it; share the .apf2k8mod project instead.",
         )

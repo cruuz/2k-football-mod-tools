@@ -943,7 +943,11 @@ class PanelReadabilityTests(unittest.TestCase):
             with self.subTest(copy=name):
                 self.assertNotIn("put TEs on", copy)
                 self.assertNotIn("TE-using plays", copy)
-                self.assertIn("Personnel comes from the formation package map", copy)
+                self.assertIn(
+                    "counts on the play-call screen come from a personnel table",
+                    " ".join(copy.split()),
+                )
+                self.assertIn("default.xex", copy)
                 self.assertIn("Play names are not personnel", copy)
         self.assertNotIn("put TEs on", self.panel.BOUNDARY)
         self.assertNotIn("TE-using plays", self.panel.BOUNDARY)

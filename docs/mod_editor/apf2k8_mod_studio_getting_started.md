@@ -804,18 +804,33 @@ Open **Playbooks & Plays → Fine-tune Plays**. This edits the on-disc `SPLB`
 membership lists, not the save-assignment labels.
 
 Fine-tune Plays changes which MASTER plays a formation **stores**. It does
-not change who lines up. Personnel comes from the formation package map
-(MASTER `+0x11`). A play named `50 TE Corner` can live in I Spread (20 / 0 TE)
-because the play is routes and assignments on whatever slots that formation
-plugs. Play names are not personnel. **Move tagged slot…** only reassigns Y
-tags inside one record.
+not change who lines up. Play names are not personnel. The TE / RB / WR counts
+on the play-call screen come from a personnel table inside `default.xex`,
+which Mod Studio does not write. A play named `50 TE Corner` can live in
+I Spread (20 / 0 TE) because the play is routes and assignments on whatever
+slots that formation plugs. **Move tagged slot…** only reassigns Y tags
+inside one record.
 
-Open **Playbooks & Plays → Who lines up** to edit that package map. Role 8 is
-TE and role 9 is WR. The other nine roles stay numbered. The project stores
-the 11 role bytes per formation; Build writes them into the copied MASTER
-PLAY. Runtime look is unproved — check the formation in Xenia after Build.
-This is not a 3rd-and-long director patch. The old raw WR3↔TE `.bin` export
-is still gone: it was not a playable mod.
+Open **Playbooks & Plays → Who lines up** to edit the formation package map
+(MASTER `+0x11`). Read it carefully before editing:
+
+- Every one of the 163 retail formations carries the numbers 0 to 10 exactly
+  once, in a different order — offence, defence and special teams alike. A
+  number is an ordering entry, not a headcount, so this map cannot give a set
+  a third receiver, and role 8 and role 9 both appear in the 4-3 defence.
+- Role 8 resolves to the roster's TE and role 9 to its WR through the game's
+  own byte table. The other nine stay numbered.
+- **A map position is not a route slot.** On the Assignment Routes tab slot 1
+  is the quarterback and slots 2 to 6 are the offensive line on every play. In
+  this map the five numbers that travel as a block through all 141 offensive
+  formations — 1, 4, 3, 5, 2 — never start at position 2, so the block never
+  fills positions 2 to 6, and where it does start shifts from formation to
+  formation.
+
+The project stores the 11 role bytes per formation; Build writes them into the
+copied MASTER PLAY. Runtime look is unproved — check the formation in Xenia
+after Build. This is not a 3rd-and-long director patch. The old raw WR3↔TE
+`.bin` export is still gone: it was not a playable mod.
 
 The reported user-team/CPU difference on 3rd-and-long also has no editable
 setting in MASTER PLAY, the stock playbooks, or the director files. The
@@ -860,9 +875,12 @@ anything. Technical addresses remain under **Research pins**.
   back to the other formation.
 - **Research pins** shows every executable address behind these statements,
   including the candidates that were checked and withdrawn.
-- **Who lines up** stages the 11-byte `+0x11` map as a project edit. Role 8
-  is TE and role 9 is WR. Runtime look is unproved. Retail Ace Empty is not
-  an 8↔9 swap of Ace (slots 9/10 are 6↔7). The former raw WR3↔TE export had
+- **Who lines up** stages the 11-byte `+0x11` map as a project edit. Every
+  edit is staged as you make it, so the edit count in the footer moves the
+  moment a map changes. Role 8 is TE and role 9 is WR; each map is a
+  permutation of 0..10, and a map position is not a route slot. Runtime look
+  is unproved. Retail Ace Empty is not an 8↔9 swap of Ace (positions 10/11
+  are 6↔7). The former raw WR3↔TE export had
   no import, Build, or installation path and is no longer in the product.
   **3rd-and-long editing status…** explains that the reported CPU/user-team
   fork appears to live in `default.xex`, which Mod Studio does not patch.

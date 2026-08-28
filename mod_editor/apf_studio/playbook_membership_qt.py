@@ -241,10 +241,13 @@ EMPTY_FORMATION_WARNING = (
     "base packages (every 20 and 10 formation in USER-o) left the game unable "
     "to boot at all under Xenia (spin, then exit). Do not use Empty as a way "
     "to get TEs on 3rd-and-long.\n\n"
-    "Play names are not personnel. Personnel comes from the formation package "
-    "map. The Who lines up tab edits those role bytes; whether the in-game "
-    "look changes is unproved, and it is not a 3rd-and-long fix. Emptying "
-    "every formation in a book is refused."
+    "Play names are not personnel. The TE / RB / WR counts on the play-call "
+    "screen come from a personnel table inside default.xex, which this studio "
+    "does not write. The Who lines up tab edits a formation's eleven role "
+    "bytes; every retail formation carries the numbers 0 to 10 once each, so "
+    "that map reorders roles and cannot add a position to a set. Whether the "
+    "in-game look changes is unproved, and it is not a 3rd-and-long fix. "
+    "Emptying every formation in a book is refused."
 )
 
 BOUNDARY = (
