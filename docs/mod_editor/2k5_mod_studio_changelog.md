@@ -1,5 +1,46 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC77 — Create a Formation / Create a Play, Play Designer, Throw Distance & Arc (2026-09-02)
+
+- **New: ★ Create a Play (last navigation entry).** A five-step wizard: pick
+  a playbook, lay out a formation on a field canvas (modern templates; drag a
+  player to move him, click to swap or change his position — RB2 instead of
+  the FB, a WR instead of the TE), choose run or pass, draw routes by dragging
+  from a player or pick a job from his menu, then replace outdated stock plays
+  and build. Under it, the Play Designer and Design Formation panels edit
+  assignments from the game's own route/block/coverage opcodes. The PLAY
+  resource is decoded end to end — eleven 14-byte formation slot records in
+  signed centimetres, 29 node opcodes with bit-exact operand encoders (round
+  trip on all 91,833 stock nodes), and the retail validator (chain grammar,
+  side nibble, feature byte, ball-possession simulation, handoff pairing)
+  ported so nothing the game would reject is ever staged.
+- **Fixed: authored passes no longer play as QB draws.** The game plays a play
+  as the class in its header word (bits 12–15: pass / quick game / run, plus
+  play-action, trick and specials bits — 139/139 stock ATL offensive plays
+  obey it). The wizard now picks its donor and header from a stock play with
+  the same QB-chain shape and writes `play_flags` end to end (writer, facade,
+  build validator, Playbooks panel, designer, wizard); bits 0–8 must stay the
+  donor's or the build is refused.
+- **New: Throw Distance & Arc workspace (Sliders & Gameplay → Throw Distance
+  && Arc).** NFL 2K5 caps every throw at a distance that is a curve of the
+  passer's effective arm strength, read from five `count + (x, y)` float
+  tables in default.xbe through one interpolator; deep balls are forced lobs
+  and the accuracy pass re-clamps the target to the bullet curve (55 yd at 99
+  arm in retail), then the launch is an exact ballistic solve with no velocity
+  cap. Two sliders re-shape those tables on a COPY: the deep-ball ceiling
+  (55–100 yd, scaled so a 70 arm gains ~2 yd at 80 while a 99 arm gets the
+  full 80) and the pass arc (slows the last 25 yards of the ceiling so long
+  balls hang and climb; 40 % at 80 yd is a 5.0 s, 33-yard-high bomb). The
+  panel reads a default.xbe or a disc image, previews ceiling / hang / apex
+  per arm live, refuses to write when the sliders already match, and verifies
+  by read-back and byte diff. Witnessed in xemu with gdb breakpoints on the
+  clamp and launch: retail launches pinned at 55.0 yd; the tuned copy launched
+  80.0-yard, 5.00-second balls. `tools/nfl2k5_throw_distance.py` is the CLI
+  (`read`, `sliders`, `curves`, `preview`).
+- The browse-only facade shown before a disc is loaded now implements the
+  extended Playbooks contract; the formation/play writer test file gained the
+  `unittest` entry point CI's per-file runner needs.
+
 ## v1.0 RC76 — Windows binary-open hotfix for the bump workspace (2026-08-24)
 
 Beta 51's new file paths opened disc images, extracted packs, XBE copies and

@@ -892,7 +892,7 @@ def load_project_archive(
                     "Project playbook create count is outside the limit."
                 )
             loaded_creates: list[Mapping[str, object]] = []
-            create_seen: set[tuple[str, str, int]] = set()
+            create_seen: set[tuple[str, str, int, str]] = set()
             for number, raw_create in enumerate(create_rows, 1):
                 if not isinstance(raw_create, dict) or raw_create.get("kind") \
                     not in (FORMATION_CREATE_KIND, PLAY_CREATE_KIND):
@@ -912,7 +912,10 @@ def load_project_archive(
                     if raw_create["kind"] == FORMATION_CREATE_KIND
                     else request.donor_play_index
                 )
-                key = (request.asset_id, str(raw_create["kind"]), donor)
+                key = (
+                    request.asset_id, str(raw_create["kind"]), donor,
+                    json.dumps(request.provider_edit(), sort_keys=True, default=list),
+                )
                 if key in create_seen:
                     raise ValidationError("Project repeats one playbook create.")
                 create_seen.add(key)

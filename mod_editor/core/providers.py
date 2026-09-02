@@ -511,7 +511,7 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "6c6c2c34c6bd943280bcf2fb384f9829d07631bea01ab47d85c5bd661bd4ab55"
+    backend_module_sha256 = "e2cc7bcbc91902e9f2d2dbb1a81dc25b2256c490fb790b258dda13b305e6aadd"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
@@ -537,7 +537,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_crib_scene_texture_writer.py": "4f72f59fab6f116c164a2acafb110829a46eb18dc5abcc5cd2c05978a0f0cdbd",
         "mod_editor/core/nfl2k5_crib_standalone_texture_writer.py": "95cab3bb2d666fa4f4dfddfb25816c443b17a51bb97abbe90d9532a5f117bae6",
         "mod_editor/core/nfl2k5_playbook_route_writer.py": "9607daa8b63b0afac400c34e82ad98a0253c2dd95b88aa3468aa86e82bd50698",
-        "mod_editor/core/nfl2k5_formation_play_writer.py": "db1c83097c8f4692b83dffd7fd535f85f36b3fc5368a5ec058d0e36bb36e21f7",
+        "mod_editor/core/nfl2k5_formation_play_writer.py": "dd808fa33257c4cdc30e3ab5cc74f3fd7834e6ccad77b3c862d67e3f3ec314a7",
+        "mod_editor/core/nfl2k5_play_codec.py": "6102d406bb8738ff78f65ce19fa455f0af2284ad27687b3c9b7de5ce9cebf2d2",
         "mod_editor/core/nfl2k5_playbook_inspector.py": "f77f94c4d926d9fb5de55626bec8106e9c7a9b124e0553b724913922d8d3099f",
         "mod_editor/core/nfl2k5_universal_asset_index.py": "3bf99afe588f381d4604a883ad92a5bfbb1bb39391bce4acb5b97eda54bc27d7",
         "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "aea43c39b8101e9507930f6a9014cfebd966189bef1f96c297702bfb62acb7b9",

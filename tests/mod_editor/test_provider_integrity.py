@@ -190,7 +190,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [81, 9, 8, 9, 8, 9],
+            [82, 9, 8, 9, 8, 9],
         )
         for provider in providers:
             entries = [provider.backend_module]

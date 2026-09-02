@@ -102,6 +102,15 @@ class KeyboardSearchPolishTests(unittest.TestCase):
             def revert_play_create(self, *a, **k):
                 raise RuntimeError
 
+            def playbook_raw_body(self, *a, **k):
+                raise RuntimeError
+
+            def stage_formation_selector(self, *a, **k):
+                raise RuntimeError
+
+            def create_authored_play(self, *a, **k):
+                raise RuntimeError
+
         panel = PlaybooksPanel(_Host())
         try:
             self.assertTrue(bool(panel.search.property("studioSearch")))

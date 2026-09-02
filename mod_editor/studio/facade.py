@@ -58,6 +58,8 @@ from mod_editor.core.nfl2k5_formation_play_writer import (
     FormationLinkRequest,
     FormationCreateRequest,
     PlayCreateRequest,
+    formation_request_from_mapping,
+    play_request_from_mapping,
 )
 from mod_editor.core.nfl2k5_stadium_studio import (
     Nfl2k5StadiumStudio,
@@ -2446,9 +2448,21 @@ class Nfl2k5StudioFacade:
         donor_formation_index: int,
         custom_name: str | None = None,
         progress: ProgressSink = _quiet_progress,
+        slot_positions: object = None,
+        category_index: int | None = None,
+        replace_index: int | None = None,
+        category_positions: object = None,
     ) -> object:
         progress("Creating formation", 0, 2)
-        request = FormationCreateRequest(asset_id, donor_formation_index, custom_name)
+        request = formation_request_from_mapping({
+            "asset_id": asset_id,
+            "donor_formation_index": donor_formation_index,
+            "custom_name": custom_name,
+            "slot_positions": slot_positions,
+            "category_index": category_index,
+            "replace_index": replace_index,
+            "category_positions": category_positions,
+        })
         with self._lock:
             inspector = self._require_playbook_inspector()
             session = self._require_session()
@@ -2466,9 +2480,15 @@ class Nfl2k5StudioFacade:
         donor_play_index: int,
         custom_name: str | None = None,
         progress: ProgressSink = _quiet_progress,
+        assignments: object = None,
     ) -> object:
         progress("Creating play", 0, 2)
-        request = PlayCreateRequest(asset_id, donor_play_index, custom_name)
+        request = play_request_from_mapping({
+            "asset_id": asset_id,
+            "donor_play_index": donor_play_index,
+            "custom_name": custom_name,
+            "assignments": assignments,
+        })
         with self._lock:
             inspector = self._require_playbook_inspector()
             session = self._require_session()
@@ -2479,6 +2499,89 @@ class Nfl2k5StudioFacade:
             "Play created as clone — new play appears at end of book."
             if changed else "That play clone is already staged."
         )
+
+    def playbook_raw_body(self, asset_id: str) -> bytes:
+        """The fixed 0x13390 PLAY body of one private book (for the designers)."""
+        from nfl_outer import read_entry_range
+
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            record = inspector.index.get(asset_id)
+            entry = inspector.index.archive.entries[record.outer_index]
+            raw = read_entry_range(inspector.index.archive, entry, record.chunk_offset, record.raw_size)
+        return raw[0x20:]
+
+    def staged_replace_targets(self, asset_id: str) -> tuple[set[int], set[int]]:
+        """Stock (formation, play) indices already replaced by staged creates in this book."""
+        with self._lock:
+            session = self._session
+            if session is None:
+                return set(), set()
+            forms = {r.replace_index for r in session.formation_creates
+                     if r.asset_id == asset_id and r.replace_index is not None}
+            plays = {r.replace_index for r in session.play_creates
+                     if r.asset_id == asset_id and r.replace_index is not None}
+        return forms, plays
+
+    def stage_formation_selector(self, asset_id: str, donor_formation_index: int, custom_name: str | None,
+                                 slot_positions: object, category_index: int | None,
+                                 replace_index: int | None = None, category_positions: object = None) -> str:
+        request = formation_request_from_mapping({
+            "asset_id": asset_id, "donor_formation_index": donor_formation_index, "custom_name": custom_name,
+            "slot_positions": slot_positions, "category_index": category_index, "replace_index": replace_index,
+            "category_positions": category_positions,
+        })
+        return request.selector
+
+    def create_authored_play(
+        self,
+        asset_id: str,
+        donor_play_index: int,
+        custom_name: str | None,
+        assignments: object,
+        link_formation_index: int | None = None,
+        link_formation_selector: str | None = None,
+        progress: ProgressSink = _quiet_progress,
+        replace_index: int | None = None,
+        play_flags: int | None = None,
+    ) -> object:
+        """Stage an authored play and, optionally, list it in a formation.
+
+        ``link_formation_selector`` names a formation create staged in this
+        session (its Build index is derived from the build's row order);
+        ``link_formation_index`` names an existing formation; ``replace_index``
+        overwrites a stock play in place (its existing menu listings stay).
+        """
+        progress("Creating play", 0, 3)
+        mapping: dict[str, object] = {
+            "asset_id": asset_id, "donor_play_index": donor_play_index,
+            "custom_name": custom_name, "assignments": assignments, "replace_index": replace_index,
+        }
+        if play_flags is not None:
+            mapping["play_flags"] = int(play_flags)
+        request = play_request_from_mapping(mapping)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            session.attach_playbook_inspector(inspector)
+            book = inspector.load(asset_id)
+            changed = session.create_play(request)
+            message = "Play staged with authored assignments."
+            if link_formation_index is not None or link_formation_selector is not None:
+                progress("Listing play", 1, 3)
+                play_index = (
+                    replace_index if replace_index is not None
+                    else session.staged_play_index(request.selector, len(book.plays))
+                )
+                formation_index = (
+                    session.staged_formation_index(link_formation_selector, len(book.formations))
+                    if link_formation_selector is not None else int(link_formation_index)
+                )
+                link = FormationLinkRequest(asset_id, formation_index, play_index, None)
+                session.create_formation_link(link)
+                message += f" Listed as play {play_index} in formation {formation_index}."
+        progress("Play created", 3, 3)
+        return StudioOperationResult(message if changed else "That authored play is already staged.")
 
     def revert_formation_create(self, selector: str, progress: ProgressSink = _quiet_progress) -> object:
         progress("Reverting formation", 0, 1)

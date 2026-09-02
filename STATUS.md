@@ -1,4 +1,35 @@
-# 2K5 Mod Studio — v1.0 RC76 Release Status
+# 2K5 Mod Studio — v1.0 RC77 Release Status
+
+## Beta 53 — Create a Formation / Create a Play, Play Designer, Throw Distance & Arc (2026-09-02)
+
+Source/UI versions are **2K5 RC77** and **APF alpha.84**; both use updater tag
+`beta-53`.
+
+- **★ Create a Play is a native workspace (last nav entry).** Five steps: pick
+  a team's playbook, lay out a formation (modern templates, drag to move, click
+  to swap or change a position — RB2 instead of the FB, a WR instead of the
+  TE), choose run or pass, draw routes by dragging from a player (or click him
+  for a menu of jobs), then replace outdated stock plays and build the disc.
+  The PLAY format is decoded end to end (formation slot records, the 29 node
+  opcodes with their operand layouts, the retail validator ported) and every
+  authored play must pass that validator before it is staged.
+- **Authored passes play as passes.** The play header's class bits (`0x6000`
+  pass, `0x8000` run, quick game, play-action, trick, specials) are written end
+  to end from a stock play of the same QB-chain shape; the earlier wizard
+  cloned a run header under a pass chain, which the game played as a QB draw.
+- **Throw Distance & Arc (Sliders & Gameplay → Throw Distance && Arc).** Two
+  sliders over the game's own arm-strength curve tables in default.xbe: the
+  deep-ball ceiling (55 = retail .. 100 yards at 99 arm, re-spaced as a scale so
+  mid-tier arms gain a few yards and only elite arms reach the top) and the
+  pass arc (deep balls hang longer and climb higher). Live per-arm preview of
+  ceiling / hang time / apex, read from a default.xbe or a disc image, written
+  to a COPY with the section digest recomputed and byte-diff verified —
+  xemu-only, the same contract as Bump strength. Witnessed in xemu with gdb:
+  retail Vick capped at 55.0 yd; ceiling 80 / arc 40 % launched 80.0-yard,
+  5.00 s bombs on the log. CLI: `tools/nfl2k5_throw_distance.py`.
+- The pre-source browse-only facade now satisfies the extended Playbooks
+  panel contract (raw body, formation selector staging, authored plays), and
+  the formation/play writer tests run under CI's per-file runner.
 
 ## Beta 52 — Windows binary-open hotfix (2026-08-24)
 

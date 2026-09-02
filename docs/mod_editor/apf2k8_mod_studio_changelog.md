@@ -1,5 +1,12 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.84 — maintenance identity for Beta 53 — 2026-09-02
+
+No APF feature change. This identity rides along with Beta 53, the 2K5 release
+that adds Create a Formation / Create a Play, the Play Designer and the Throw
+Distance & Arc workspace (see the 2K5 changelog). The APF studio is
+byte-for-byte the beta-52 surface plus the version string.
+
 ## 0.1.0-alpha.83 — maintenance identity for the Beta 52 hotfix — 2026-08-24
 
 No APF feature change. This identity rides along with Beta 52, the Windows

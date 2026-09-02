@@ -1,6 +1,13 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.83`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.84`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.84 — maintenance identity (beta-53)
+
+Rides along with Beta 53 (2K5 Create a Formation / Create a Play, Play
+Designer, Throw Distance & Arc). No APF surface change beyond the version
+string.
+
 
 ## 0.1.0-alpha.83 — maintenance identity (beta-52)
 

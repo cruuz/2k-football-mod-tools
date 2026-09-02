@@ -828,6 +828,44 @@ class StudioSession:
     def formation_links(self) -> tuple[FormationLinkRequest, ...]:
         return tuple(self._formation_links[key] for key in sorted(self._formation_links))
 
+    @staticmethod
+    def _build_order_key(row: Mapping[str, object]) -> tuple[str, str, str]:
+        import json as _json
+
+        return (str(row["asset_id"]), str(row["kind"]), _json.dumps(row, sort_keys=True, default=list))
+
+    def staged_formation_index(self, selector: str, book_formation_count: int) -> int:
+        """Index a staged formation create occupies after Build.
+
+        The project archive sorts create rows by (asset, kind, canonical JSON) and the
+        build compiles a book's creates in that order, so the same key is used here.
+        """
+        request = self._formation_creates.get(selector)
+        if request is None:
+            raise ValidationError("That formation is not staged in this session.")
+        if request.replace_index is not None:
+            return request.replace_index
+        rows = sorted(
+            (r.provider_edit() for r in self._formation_creates.values()
+             if r.asset_id == request.asset_id and r.replace_index is None),
+            key=self._build_order_key,
+        )
+        return book_formation_count + rows.index(request.provider_edit())
+
+    def staged_play_index(self, selector: str, book_play_count: int) -> int:
+        """Index a staged play create occupies after Build (same ordering rule as formations)."""
+        request = self._play_creates.get(selector)
+        if request is None:
+            raise ValidationError("That play is not staged in this session.")
+        if request.replace_index is not None:
+            return request.replace_index
+        rows = sorted(
+            (r.provider_edit() for r in self._play_creates.values()
+             if r.asset_id == request.asset_id and r.replace_index is None),
+            key=self._build_order_key,
+        )
+        return book_play_count + rows.index(request.provider_edit())
+
     def create_formation(self, request: FormationCreateRequest) -> bool:
         inspector = self.playbook_inspector
         if inspector is None:

@@ -423,6 +423,19 @@ class PlaybooksPanelHost(Protocol):
     def revert_formation_create(self, selector: str, progress: ProgressSink) -> object: ...
     def revert_play_create(self, selector: str, progress: ProgressSink) -> object: ...
 
+    def playbook_raw_body(self, asset_id: str) -> bytes: ...
+
+    def stage_formation_selector(
+        self, asset_id: str, donor_formation_index: int, custom_name: str | None,
+        slot_positions: object, category_index: int | None,
+    ) -> str: ...
+
+    def create_authored_play(
+        self, asset_id: str, donor_play_index: int, custom_name: str | None, assignments: object,
+        link_formation_index: int | None, link_formation_selector: str | None, progress: ProgressSink,
+        replace_index: int | None = None, play_flags: int | None = None,
+    ) -> object: ...
+
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, pyqtSignal
 from PyQt5.QtWidgets import (
@@ -685,6 +698,18 @@ class PlaybooksPanel(QWidget):
         create_row.addWidget(create_label)
         create_row.addWidget(self.create_formation_button)
         create_row.addWidget(self.create_play_button)
+        self.design_formation_button = QPushButton("Design Formation…")
+        self.design_formation_button.setToolTip(
+            "Open the Formation Designer: drag the eleven players to new spots (pistol, wildcat, "
+            "anything NFL-legal), then stage the result as a new formation cloned from the selected one."
+        )
+        self.design_play_button = QPushButton("Design Play…")
+        self.design_play_button.setToolTip(
+            "Open the Play Designer: build routes, blocks and coverages from the game's own route "
+            "opcodes for any player, checked live against the retail play validator, then stage it."
+        )
+        create_row.addWidget(self.design_formation_button)
+        create_row.addWidget(self.design_play_button)
         create_row.addStretch(1)
         inspector_layout.addLayout(create_row)
 
@@ -858,6 +883,8 @@ class PlaybooksPanel(QWidget):
         self.copy_route_button.clicked.connect(self._copy_selected_route)
         self.revert_route_button.clicked.connect(self._revert_selected_route)
         self.create_formation_button.clicked.connect(self._create_formation)
+        self.design_formation_button.clicked.connect(self._design_formation)
+        self.design_play_button.clicked.connect(self._design_play)
         self.create_link_button.clicked.connect(self._create_link)
         self.export_link_copy_button.clicked.connect(self._export_link_table_copy)
         self.export_pkgmap_copy_button.clicked.connect(self._export_package_map_copy)
@@ -1386,6 +1413,8 @@ class PlaybooksPanel(QWidget):
             play_tip = play_block = "Wait for the current operation to finish."
         self.create_formation_button.setEnabled(True)
         self.create_play_button.setEnabled(True)
+        self.design_formation_button.setEnabled(True)
+        self.design_play_button.setEnabled(True)
         self.create_formation_button.setToolTip(form_tip)
         self.create_play_button.setToolTip(play_tip)
         self.create_formation_button.setProperty("disableReason", form_block)
@@ -1637,6 +1666,113 @@ class PlaybooksPanel(QWidget):
         self._run(
             lambda progress: self.host.create_formation(
                 book.asset_id, int(donor_idx), name, progress
+            ),
+            ready,
+        )
+
+    def _design_formation(self) -> None:
+        book = self._selected_book()
+        donor_idx = self.formation_combo.currentData()
+        if book is None or donor_idx is None:
+            QMessageBox.information(self, "Design Formation", "Load the XISO, pick a book and select a donor formation first.")
+            return
+        from mod_editor.gui.play_designer_qt import FormationDesignerDialog
+
+        try:
+            body = self.host.playbook_raw_body(book.asset_id)
+        except Exception as exc:  # noqa: BLE001 - shown to the user
+            QMessageBox.warning(self, "Design Formation", str(exc))
+            return
+        dialog = FormationDesignerDialog(book, body, int(donor_idx), self)
+        if dialog.exec_() != dialog.Accepted or dialog.result_payload is None:
+            return
+        payload = dialog.result_payload
+        try:
+            selector = self.host.stage_formation_selector(
+                book.asset_id, int(donor_idx), payload["custom_name"], payload["slot_positions"], payload["category_index"]
+            )
+        except Exception as exc:  # noqa: BLE001
+            QMessageBox.warning(self, "Design Formation", str(exc))
+            return
+        designed = {
+            "asset_id": book.asset_id, "selector": selector, "donor": int(donor_idx),
+            "name": payload["custom_name"] or book.formations[int(donor_idx)].name,
+            "positions": payload["slot_positions"], "category_index": payload["category_index"],
+        }
+        self._designed_formations = [d for d in getattr(self, "_designed_formations", []) if d["selector"] != selector]
+        self._designed_formations.append(designed)
+        self._last_designed_formation = designed
+
+        def ready(_value: object) -> None:
+            names = ", ".join(d["name"] for d in self._designed_formations if d["asset_id"] == book.asset_id)
+            self.progress_label.setText(
+                f"Staged designed formation “{designed['name']}” (staged this session: {names}). "
+                "It appears at the end of the formation list after Build. Use Design Play… to give it plays."
+            )
+            self._refresh_after_task = True
+
+        self._run(
+            lambda progress: self.host.create_formation(
+                book.asset_id, int(donor_idx), payload["custom_name"], progress,
+                slot_positions=payload["slot_positions"], category_index=payload["category_index"],
+            ),
+            ready,
+        )
+
+    def _design_play(self) -> None:
+        book = self._selected_book()
+        formation_index = self.formation_combo.currentData()
+        linked = self._selected_linked_play()
+        if book is None or formation_index is None or linked is None:
+            QMessageBox.information(self, "Design Play", "Select a book, a formation and a donor play (the play list) first.")
+            return
+        from mod_editor.gui.play_designer_qt import PlayDesignerDialog
+
+        try:
+            body = self.host.playbook_raw_body(book.asset_id)
+        except Exception as exc:  # noqa: BLE001
+            QMessageBox.warning(self, "Design Play", str(exc))
+            return
+        candidates = [d for d in getattr(self, "_designed_formations", []) if d["asset_id"] == book.asset_id]
+        designed = None
+        use_designed = False
+        if candidates:
+            from PyQt5.QtWidgets import QInputDialog
+
+            stock_label = f"Stock formation: {book.formations[int(formation_index)].name}"
+            labels = [stock_label] + [f"Designed: {d['name']}" for d in candidates]
+            choice, ok = QInputDialog.getItem(
+                self, "Design Play — which formation?",
+                "The play's players line up in this formation and the play is listed in its menu:",
+                labels, len(labels) - 1, False,
+            )
+            if not ok:
+                return
+            if choice != stock_label:
+                designed = candidates[labels.index(choice) - 1]
+                use_designed = True
+        if use_designed:
+            dialog = PlayDesignerDialog(
+                book, body, designed["donor"], linked.play.index,
+                formation_positions=[tuple(p) for p in designed["positions"]], formation_name=designed["name"],
+                category_index=designed["category_index"], parent=self,
+            )
+        else:
+            dialog = PlayDesignerDialog(book, body, int(formation_index), linked.play.index, parent=self)
+        if dialog.exec_() != dialog.Accepted or dialog.result_payload is None:
+            return
+        payload = dialog.result_payload
+        link_index = None if not payload["link"] or use_designed else int(formation_index)
+        link_selector = designed["selector"] if payload["link"] and use_designed else None
+
+        def ready(value: object) -> None:
+            self.progress_label.setText(str(getattr(value, "message", value)))
+            self._refresh_after_task = True
+
+        self._run(
+            lambda progress: self.host.create_authored_play(
+                book.asset_id, linked.play.index, payload["custom_name"], payload["assignments"],
+                link_index, link_selector, progress, play_flags=payload.get("play_flags"),
             ),
             ready,
         )

@@ -70,7 +70,7 @@ class FormationPlayPackIntegrationTests(unittest.TestCase):
                  "custom_name": "ZZ TEST ACE"}
             ],
         )
-        self.assertEqual(report["custom_names"], ("ZZ TEST ACE",))
+        self.assertEqual(report["custom_names"], ["ZZ TEST ACE"])
         body = repl[0x20:]
         # pool count word grew by exactly the appended u16 count
         from mod_editor.core.nfl2k5_playbook_inspector import parse_playbook_resource
@@ -112,7 +112,7 @@ class FormationPlayPackIntegrationTests(unittest.TestCase):
             play_requests=[{"asset_id": asset_id, "donor_play_index": 0}],
             link_requests=[{"asset_id": asset_id, "formation_index": 39, "play_index": 254}],
         )
-        self.assertEqual(report["links"], ((39, 254, report["links"][0][2], report["links"][0][3]),))
+        self.assertEqual(report["links"], [[39, 254, report["links"][0][2], report["links"][0][3]]])
         from mod_editor.core.nfl2k5_playbook_inspector import parse_playbook_resource
         parsed = parse_playbook_resource(repl, asset_id=asset_id)
         linked = parsed.formations[39].play_links
@@ -152,3 +152,7 @@ def _read_atl_span() -> bytes:
     record = index.get("nfl2k5.resource.o0308.c0000.k504c4159")
     entry = index.archive.entries[record.outer_index]
     return read_entry_range(index.archive, entry, record.chunk_offset, record.raw_size)
+
+
+if __name__ == "__main__":
+    unittest.main()

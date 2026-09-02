@@ -23,6 +23,14 @@ unproved and are never claimed; freehand node synthesis stays refused.
 The writer preserves every byte outside the newly inhabited formation/play
 records and the two count fields at 0x34/0x38.  Node bodies, string pools, and
 all other tables remain exact.
+
+Stage 3 (2026-09-02, authoring): a created formation may carry
+``slot_positions`` (eleven ``(x_cm, depth_cm)`` pairs written into the slot
+records the retail lineup reader ``FUN_0017fe60`` consumes, with mirror-partner
+nibbles recomputed) and a ``category_index`` personnel swap; a created play may
+carry ``assignments`` (per-slot node chains encoded with the retail opcode codec,
+appended to the node pool with the count word at +0x40 bumped, descriptors
+rebuilt) and must pass the ported game validator before it is written.
 """
 
 from __future__ import annotations
@@ -34,9 +42,11 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 from .errors import ValidationError
+from . import nfl2k5_play_codec as codec
 from .nfl2k5_playbook_inspector import (
     BODY_SIZE,
     CATEGORY_BASE,
+    CATEGORY_CAPACITY,
     CATEGORY_SIZE,
     FORMATION_AUX_BASE,
     FORMATION_AUX_SIZE,
@@ -45,6 +55,7 @@ from .nfl2k5_playbook_inspector import (
     FORMATION_PLAY_LINKS,
     FORMATION_SIZE,
     NODE_BASE,
+    NODE_SIZE,
     PLAY_BASE,
     PLAY_CAPACITY,
     PLAY_SIZE,
@@ -62,6 +73,7 @@ except ImportError as exc:  # pragma: no cover - installation boundary
 
 PROVIDER_KIND_FORMATION = "play_formation_create"
 PROVIDER_KIND_PLAY = "play_create"
+PLAY_FLAGS_KEEP_MASK = 0x1FF   # play header bits 0-8: type code + family (game-validated)
 PROVIDER_KIND_LINK = "play_formation_link"
 REPORT_SCHEMA = "nfl2k5_formation_play_create/v1"
 
@@ -97,33 +109,84 @@ def _clean_custom_name(value: object) -> str | None:
     return name
 
 
+def _payload_tag(payload: object) -> str:
+    import json
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, default=list).encode()).hexdigest()[:10]
+
+
 @dataclass(frozen=True, slots=True)
 class FormationCreateRequest:
     asset_id: str
     donor_formation_index: int
     custom_name: str | None = None
+    slot_positions: tuple[tuple[int, int], ...] | None = None
+    category_index: int | None = None
+    replace_index: int | None = None
+    category_positions: tuple[int, ...] | None = None
 
     @property
     def selector(self) -> str:
         # selector is resolved after compilation (needs new_index); placeholder
-        return f"formation-create:{self.asset_id}:donor{self.donor_formation_index}"
+        base = f"formation-create:{self.asset_id}:donor{self.donor_formation_index}"
+        if (self.slot_positions is not None or self.category_index is not None or self.replace_index is not None
+                or self.category_positions is not None):
+            payload: list[object] = [self.slot_positions, self.category_index, self.custom_name, self.replace_index]
+            if self.category_positions is not None:
+                payload.append(list(self.category_positions))
+            base += ":" + _payload_tag(payload)
+        return base
 
     def provider_edit(self) -> dict[str, object]:
-        return {"kind": PROVIDER_KIND_FORMATION, **asdict(self)}
+        row: dict[str, object] = {"kind": PROVIDER_KIND_FORMATION, "asset_id": self.asset_id,
+                                  "donor_formation_index": self.donor_formation_index,
+                                  "custom_name": self.custom_name}
+        if self.slot_positions is not None:
+            row["slot_positions"] = [list(pair) for pair in self.slot_positions]
+        if self.category_index is not None:
+            row["category_index"] = self.category_index
+        if self.replace_index is not None:
+            row["replace_index"] = self.replace_index
+        if self.category_positions is not None:
+            row["category_positions"] = list(self.category_positions)
+        return row
 
 
 @dataclass(frozen=True, slots=True)
 class PlayCreateRequest:
+    """``assignments``: eleven entries, each ``None`` (keep the donor chain) or a
+    tuple of ``(opcode, operands)`` nodes in retail units (cm / seconds / ints)."""
+
     asset_id: str
     donor_play_index: int
     custom_name: str | None = None
+    assignments: tuple[tuple[tuple[int, tuple[float, ...]], ...] | None, ...] | None = None
+    replace_index: int | None = None
+    play_flags: int | None = None   # header word (+4); None keeps the donor's
 
     @property
     def selector(self) -> str:
-        return f"play-create:{self.asset_id}:donor{self.donor_play_index}"
+        base = f"play-create:{self.asset_id}:donor{self.donor_play_index}"
+        if self.assignments is not None or self.replace_index is not None or self.play_flags is not None:
+            payload: list[object] = [self.assignments, self.custom_name, self.replace_index]
+            if self.play_flags is not None:
+                payload.append(self.play_flags)
+            base += ":" + _payload_tag(payload)
+        return base
 
     def provider_edit(self) -> dict[str, object]:
-        return {"kind": PROVIDER_KIND_PLAY, **asdict(self)}
+        row: dict[str, object] = {"kind": PROVIDER_KIND_PLAY, "asset_id": self.asset_id,
+                                  "donor_play_index": self.donor_play_index,
+                                  "custom_name": self.custom_name}
+        if self.assignments is not None:
+            row["assignments"] = [
+                None if chain is None else [[int(op), list(vals)] for op, vals in chain]
+                for chain in self.assignments
+            ]
+        if self.replace_index is not None:
+            row["replace_index"] = self.replace_index
+        if self.play_flags is not None:
+            row["play_flags"] = self.play_flags
+        return row
 
 
 @dataclass(frozen=True, slots=True)
@@ -176,35 +239,130 @@ def _integer(value: object, label: str, *, maximum: int | None = None) -> int:
     return value
 
 
+def _slot_positions_from(value: object) -> tuple[tuple[int, int], ...] | None:
+    if value is None:
+        return None
+    if not isinstance(value, (list, tuple)) or len(value) != 11:
+        raise ValidationError("slot_positions needs exactly eleven (x, depth) pairs.")
+    out: list[tuple[int, int]] = []
+    for pair in value:
+        if not isinstance(pair, (list, tuple)) or len(pair) != 2:
+            raise ValidationError("Each slot position must be an (x_cm, depth_cm) pair.")
+        x, z = pair
+        if type(x) is bool or type(z) is bool or not all(isinstance(v, (int, float)) for v in (x, z)):
+            raise ValidationError("Slot positions must be numbers (centimetres).")
+        xi, zi = int(round(x)), int(round(z))
+        if not -3000 <= xi <= 3000 or not -3000 <= zi <= 3000:
+            raise ValidationError("A slot position is outside the field (±30 m).")
+        out.append((xi, zi))
+    return tuple(out)
+
+
+def _assignments_from(value: object) -> tuple | None:
+    if value is None:
+        return None
+    if not isinstance(value, (list, tuple)) or len(value) != 11:
+        raise ValidationError("assignments needs exactly eleven entries (None keeps the donor chain).")
+    chains: list = []
+    for chain in value:
+        if chain is None:
+            chains.append(None)
+            continue
+        if not isinstance(chain, (list, tuple)) or not 1 <= len(chain) <= 15:
+            raise ValidationError("An authored chain needs 1 through 15 nodes.")
+        nodes: list = []
+        for node in chain:
+            if not isinstance(node, (list, tuple)) or len(node) != 2:
+                raise ValidationError("Each node must be [opcode, [operands...]].")
+            op, vals = node
+            if type(op) is bool or not isinstance(op, int) or not 0 <= op < codec.OPCODE_COUNT or op == 0x19:
+                raise ValidationError(f"Opcode {op!r} is not a usable PLAY node opcode.")
+            if not isinstance(vals, (list, tuple)) or any(
+                type(v) is bool or not isinstance(v, (int, float)) for v in vals
+            ):
+                raise ValidationError("Node operands must be numbers.")
+            specs = codec.OPERAND_SCHEMAS.get(op, ())
+            if len(vals) > len(specs):
+                raise ValidationError(f"Opcode {op:#x} takes at most {len(specs)} operands.")
+            nodes.append((op, tuple(float(v) for v in vals)))
+        chains.append(tuple(nodes))
+    return tuple(chains)
+
+
+def _position_codes_from(value: object) -> tuple[int, ...] | None:
+    """Eleven personnel codes (kind | rank << 5) for one category record."""
+    if value is None:
+        return None
+    if not isinstance(value, (list, tuple)) or len(value) != 11:
+        raise ValidationError("Personnel codes must list exactly eleven positions.")
+    codes: list[int] = []
+    for item in value:
+        if isinstance(item, bool) or not isinstance(item, int) or not 0 <= item <= 255:
+            raise ValidationError("Each personnel code must be a byte.")
+        if (item & 0x1F) not in codec.POSITION_KINDS:
+            raise ValidationError(f"Personnel code 0x{item:02x} names no known position.")
+        codes.append(item)
+    return tuple(codes)
+
+
 def formation_request_from_mapping(value: Mapping[str, object]) -> FormationCreateRequest:
-    fields = {"asset_id", "donor_formation_index", "custom_name"}
+    if value.get("kind") == PROVIDER_KIND_FORMATION:
+        value = {k: v for k, v in value.items() if k != "kind"}
+    fields = {"asset_id", "donor_formation_index", "custom_name", "slot_positions", "category_index", "replace_index",
+              "category_positions"}
     if not set(value) <= fields or not {"asset_id", "donor_formation_index"} <= set(value):
         raise ValidationError("A formation create has unsupported fields.")
     asset_id = value.get("asset_id")
     if not isinstance(asset_id, str) or not asset_id:
         raise ValidationError("A formation create needs a private asset selector.")
+    category = value.get("category_index")
+    if category is not None:
+        category = _integer(category, "Category index", maximum=CATEGORY_CAPACITY - 1)
+    replace = value.get("replace_index")
+    if replace is not None:
+        replace = _integer(replace, "Replace formation index", maximum=FORMATION_CAPACITY - 1)
+    codes = _position_codes_from(value.get("category_positions"))
+    if codes is not None and category is None:
+        raise ValidationError("Personnel codes need the personnel group (category index) they are written into.")
     return FormationCreateRequest(
         asset_id,
         _integer(value.get("donor_formation_index"), "Donor formation index"),
         _clean_custom_name(value.get("custom_name")),
+        _slot_positions_from(value.get("slot_positions")),
+        category,
+        replace,
+        codes,
     )
 
 
 def play_request_from_mapping(value: Mapping[str, object]) -> PlayCreateRequest:
-    fields = {"asset_id", "donor_play_index", "custom_name"}
+    if value.get("kind") == PROVIDER_KIND_PLAY:
+        value = {k: v for k, v in value.items() if k != "kind"}
+    fields = {"asset_id", "donor_play_index", "custom_name", "assignments", "replace_index", "play_flags"}
     if not set(value) <= fields or not {"asset_id", "donor_play_index"} <= set(value):
         raise ValidationError("A play create has unsupported fields.")
     asset_id = value.get("asset_id")
     if not isinstance(asset_id, str) or not asset_id:
         raise ValidationError("A play create needs a private asset selector.")
+    replace = value.get("replace_index")
+    if replace is not None:
+        replace = _integer(replace, "Replace play index", maximum=PLAY_CAPACITY - 1)
+    play_flags = value.get("play_flags")
+    if play_flags is not None:
+        play_flags = _integer(play_flags, "Play flags", maximum=0xFFFFFFFF)
     return PlayCreateRequest(
         asset_id,
         _integer(value.get("donor_play_index"), "Donor play index"),
         _clean_custom_name(value.get("custom_name")),
+        _assignments_from(value.get("assignments")),
+        replace,
+        play_flags,
     )
 
 
 def link_request_from_mapping(value: Mapping[str, object]) -> FormationLinkRequest:
+    if value.get("kind") == PROVIDER_KIND_LINK:
+        value = {k: v for k, v in value.items() if k != "kind"}
     fields = {"asset_id", "formation_index", "play_index", "group"}
     if not set(value) <= fields or not {"asset_id", "formation_index", "play_index"} <= set(value):
         raise ValidationError("A formation link has unsupported fields.")
@@ -294,8 +452,20 @@ def compile_formation_play_creations(
     source = parse_playbook_resource(raw_resource, asset_id=asset_id)
     old_formation_count = len(source.formations)
     old_play_count = len(source.plays)
-    new_formation_count = old_formation_count + len(norm_formations)
-    new_play_count = old_play_count + len(norm_plays)
+    appended_formations = [r for r in norm_formations if r.replace_index is None]
+    appended_plays = [r for r in norm_plays if r.replace_index is None]
+    new_formation_count = old_formation_count + len(appended_formations)
+    new_play_count = old_play_count + len(appended_plays)
+    for req in norm_formations:
+        if req.replace_index is not None and not 0 <= req.replace_index < old_formation_count:
+            raise ValidationError("The formation chosen for replacement does not exist in this book.")
+    for req in norm_plays:
+        if req.replace_index is not None and not 0 <= req.replace_index < old_play_count:
+            raise ValidationError("The play chosen for replacement does not exist in this book.")
+    if len({r.replace_index for r in norm_formations if r.replace_index is not None}) != len([r for r in norm_formations if r.replace_index is not None]):
+        raise ValidationError("Two designed formations replace the same stock formation.")
+    if len({r.replace_index for r in norm_plays if r.replace_index is not None}) != len([r for r in norm_plays if r.replace_index is not None]):
+        raise ValidationError("Two designed plays replace the same stock play.")
 
     if new_formation_count > FORMATION_CAPACITY:
         raise ValidationError(
@@ -371,16 +541,27 @@ def compile_formation_play_creations(
         return struct.pack("<i", new_stored)
 
     # Clone formations first (need to re-encode formation name pointer, which is at offset 0 of record)
+    next_formation_index = old_formation_count
     for i, req in enumerate(norm_formations):
-        dst_idx = old_formation_count + i
+        if req.replace_index is None:
+            dst_idx = next_formation_index
+            next_formation_index += 1
+        else:
+            dst_idx = req.replace_index
         src_f = FORMATION_BASE + req.donor_formation_index * FORMATION_SIZE
         dst_f = FORMATION_BASE + dst_idx * FORMATION_SIZE
         src_aux = FORMATION_AUX_BASE + req.donor_formation_index * FORMATION_AUX_SIZE
         dst_aux = FORMATION_AUX_BASE + dst_idx * FORMATION_AUX_SIZE
-        # Copy aux 0x50 verbatim (no relative fields inside awx – its entries are packed H not relative)
-        replacement[body_off + dst_aux : body_off + dst_aux + FORMATION_AUX_SIZE] = raw_resource[
-            body_off + src_aux : body_off + src_aux + FORMATION_AUX_SIZE
-        ]
+        if req.replace_index is None:
+            # Copy aux 0x50 verbatim (no relative fields inside aux – its entries are packed H not relative)
+            replacement[body_off + dst_aux : body_off + dst_aux + FORMATION_AUX_SIZE] = raw_resource[
+                body_off + src_aux : body_off + src_aux + FORMATION_AUX_SIZE
+            ]
+        else:
+            # Replacing in place keeps the target's play menu but takes the donor's personnel words.
+            replacement[body_off + dst_aux + 0x48 : body_off + dst_aux + 0x50] = raw_resource[
+                body_off + src_aux + 0x48 : body_off + src_aux + 0x50
+            ]
         # Copy formation 0xB4 but re-encode name pointer at +0
         src_name_field = src_f
         dst_name_field = dst_f
@@ -406,14 +587,29 @@ def compile_formation_play_creations(
         allowed.append(range(body_off + dst_aux, body_off + dst_aux + FORMATION_AUX_SIZE))
 
     # Clone plays – need to re-encode 1 name pointer + 11 route pointers (relative)
+    next_play_index = old_play_count
     for i, req in enumerate(norm_plays):
-        dst_idx = old_play_count + i
+        if req.replace_index is None:
+            dst_idx = next_play_index
+            next_play_index += 1
+        else:
+            dst_idx = req.replace_index
         src_p = PLAY_BASE + req.donor_play_index * PLAY_SIZE
         dst_p = PLAY_BASE + dst_idx * PLAY_SIZE
         # Copy whole play then patch relatives
         replacement[body_off + dst_p : body_off + dst_p + PLAY_SIZE] = raw_resource[
             body_off + src_p : body_off + src_p + PLAY_SIZE
         ]
+        if req.play_flags is not None:
+            # The header word carries the class the game plays the play as (bits 12-15:
+            # 0x6000 pass, 0x8000 run); the type code and family (bits 0-8) are what the
+            # validator checks and must stay the donor's.
+            src_flags = struct.unpack_from("<I", raw_resource, body_off + src_p + 4)[0]
+            if (req.play_flags & PLAY_FLAGS_KEEP_MASK) != (src_flags & PLAY_FLAGS_KEEP_MASK):
+                raise ValidationError(
+                    "Play flags must keep the donor play's family and type code (bits 0-8)."
+                )
+            struct.pack_into("<I", replacement, body_off + dst_p + 4, req.play_flags)
         # Name pointer at +0
         src_name_field = src_p
         dst_name_field = dst_p
@@ -439,6 +635,154 @@ def compile_formation_play_creations(
             )
         new_play_indices.append(dst_idx)
         allowed.append(range(body_off + dst_p, body_off + dst_p + PLAY_SIZE))
+
+    # ---- Stage 3: authoring (formation geometry, personnel, node chains) ----
+    node_count = struct.unpack_from("<I", raw_resource, body_off + 0x40)[0]
+    node_cursor = node_count
+    node_capacity = (STRING_BASE - NODE_BASE) // NODE_SIZE
+    authored_node_start = NODE_BASE + node_count * NODE_SIZE
+    category_positions: dict[int, bytes] = {}
+    for cat_index in range(len(source.categories)):
+        c_off = CATEGORY_BASE + cat_index * CATEGORY_SIZE
+        category_positions[cat_index] = bytes(raw_resource[body_off + c_off + 5: body_off + c_off + 16])
+    authored_formations: list[dict[str, Any]] = []
+    authored_plays: list[dict[str, Any]] = []
+
+    # Personnel groups written by designed formations (an unused / replaced group
+    # gets the designer's eleven position codes; the record's name stays).
+    written_categories: dict[int, tuple[int, ...]] = {}
+    for req in norm_formations:
+        if req.category_positions is None:
+            continue
+        cat = req.category_index
+        assert cat is not None
+        if cat >= len(source.categories):
+            raise ValidationError(
+                f"This book has {len(source.categories)} personnel groups; "
+                f"index {cat} does not exist."
+            )
+        if cat in written_categories and written_categories[cat] != tuple(req.category_positions):
+            raise ValidationError("Two designed formations write different personnel into the same group.")
+        written_categories[cat] = tuple(req.category_positions)
+        c_off = CATEGORY_BASE + cat * CATEGORY_SIZE
+        replacement[body_off + c_off + 5: body_off + c_off + 16] = bytes(req.category_positions)
+        category_positions[cat] = bytes(req.category_positions)
+        allowed.append(range(body_off + c_off + 5, body_off + c_off + 16))
+
+    for i, req in enumerate(norm_formations):
+        if req.slot_positions is None and req.category_index is None:
+            continue
+        dst_idx = new_formation_indices[i]
+        dst_f = FORMATION_BASE + dst_idx * FORMATION_SIZE
+        dst_aux = FORMATION_AUX_BASE + dst_idx * FORMATION_AUX_SIZE
+        if req.category_index is not None:
+            if req.category_index >= len(source.categories):
+                raise ValidationError(
+                    f"This book has {len(source.categories)} personnel groups; "
+                    f"index {req.category_index} does not exist."
+                )
+            word = struct.unpack_from("<I", replacement, body_off + dst_aux + 0x48)[0]
+            struct.pack_into("<I", replacement, body_off + dst_aux + 0x48, (word & ~0x3F) | req.category_index)
+            struct.pack_into("<I", replacement, body_off + dst_aux + 0x4C, 1 << req.category_index)
+        cat_index = struct.unpack_from("<I", replacement, body_off + dst_aux + 0x48)[0] & 0x3F
+        poscodes = category_positions.get(cat_index)
+        if req.slot_positions is not None:
+            record = codec.FormationRecord.from_bytes(
+                bytes(replacement[body_off + dst_f: body_off + dst_f + FORMATION_SIZE])
+            )
+            for slot_index, (x_cm, z_cm) in enumerate(req.slot_positions):
+                record.set_position(slot_index, x_cm, z_cm)
+            record.recompute_mirrors(poscodes)
+            if record.type_code < 4 and record.qb_alignment in (1, 2):
+                # The lineup places the QB (and picks the snap) from this flag, not from
+                # the depth alone: every retail gun formation carries bit 19, every
+                # under-center one bit 18.
+                record.set_qb_alignment(record.slots[0].z[0] <= codec.SHOTGUN_DEPTH_THRESHOLD_CM)
+            replacement[body_off + dst_f: body_off + dst_f + FORMATION_SIZE] = record.to_bytes()
+            authored_formations.append({
+                "formation_index": dst_idx,
+                "slot_positions": [list(pair) for pair in req.slot_positions],
+                "mirror_partners": [slot.mirror_partner for slot in record.slots],
+                "category_index": cat_index,
+                "position_codes": list(poscodes) if poscodes else None,
+                "qb_alignment": record.qb_alignment,
+                "flags": f"0x{record.flags:08x}",
+            })
+        else:
+            authored_formations.append({"formation_index": dst_idx, "category_index": cat_index})
+
+    for i, req in enumerate(norm_plays):
+        if req.assignments is None:
+            continue
+        dst_idx = new_play_indices[i]
+        dst_p = PLAY_BASE + dst_idx * PLAY_SIZE
+        play_flags = struct.unpack_from("<I", replacement, body_off + dst_p + 4)[0]
+        assignments: list[tuple[int, list[bytes]]] = []
+        donor_descriptors: list[int] = []
+        for slot_index in range(11):
+            desc_field = dst_p + 8 + slot_index * 8
+            ptr_field = dst_p + 0x0C + slot_index * 8
+            desc = struct.unpack_from("<I", replacement, body_off + desc_field)[0]
+            stored = struct.unpack_from("<i", replacement, body_off + ptr_field)[0]
+            target = ptr_field - 1 + stored
+            count = desc & 0xF
+            nodes = [
+                bytes(replacement[body_off + target + k * NODE_SIZE: body_off + target + (k + 1) * NODE_SIZE])
+                for k in range(count)
+            ]
+            assignments.append((desc, nodes))
+            donor_descriptors.append(desc)
+        for slot_index, chain in enumerate(req.assignments):
+            if chain is None:
+                continue
+            nodes = []
+            for op, vals in chain:
+                specs = codec.OPERAND_SCHEMAS.get(op, ())
+                operands = list(vals) + [0.0] * (len(specs) - len(vals))
+                nodes.append(codec.Node(op, 0, operands))
+            codec.assign_node_flags(nodes)
+            raw_nodes = [node.to_bytes() for node in nodes]
+            need = len(raw_nodes)
+            if node_cursor + need > node_capacity:
+                raise ValidationError(
+                    f"This book's node pool is full ({node_capacity} nodes); the authored "
+                    "chains do not fit. Shorten routes or pick another book."
+                )
+            start_off = NODE_BASE + node_cursor * NODE_SIZE
+            if any(replacement[body_off + start_off: body_off + start_off + need * NODE_SIZE]):
+                raise ValidationError(
+                    "The node pool tail is not the expected zero padding, so new "
+                    "chains cannot be appended safely."
+                )
+            replacement[body_off + start_off: body_off + start_off + need * NODE_SIZE] = b"".join(raw_nodes)
+            ptr_field = dst_p + 0x0C + slot_index * 8
+            struct.pack_into("<i", replacement, body_off + ptr_field, start_off - ptr_field + 1)
+            assignments[slot_index] = (donor_descriptors[slot_index], raw_nodes)
+            node_cursor += need
+        for slot_index, chain in enumerate(req.assignments):
+            if chain is None:
+                continue
+            desc = codec.build_descriptor(
+                play_flags, assignments, slot_index, donor_descriptors[slot_index] >> 24
+            )
+            assignments[slot_index] = (desc, assignments[slot_index][1])
+            struct.pack_into("<I", replacement, body_off + dst_p + 8 + slot_index * 8, desc)
+        error = codec.validate_play(play_flags, assignments)
+        if error:
+            raise ValidationError(
+                f"The game would reject the authored play “{req.custom_name or source.plays[req.donor_play_index].name}”: {error}"
+            )
+        authored_plays.append({
+            "play_index": dst_idx,
+            "authored_slots": [k for k, chain in enumerate(req.assignments) if chain is not None],
+            "descriptors": [f"0x{d:08x}" for d, _ in assignments],
+            "node_counts": [len(n) for _, n in assignments],
+        })
+
+    if node_cursor != node_count:
+        struct.pack_into("<I", replacement, body_off + 0x40, node_cursor)
+        allowed.append(range(body_off + 0x40, body_off + 0x44))
+        allowed.append(range(body_off + authored_node_start, body_off + NODE_BASE + node_cursor * NODE_SIZE))
 
     if pool_tail_range is not None and pool_word_range is not None:
         struct.pack_into(
@@ -520,7 +864,8 @@ def compile_formation_play_creations(
         if dst_name != expected_name:
             raise ValidationError("Cloned formation name did not match its request.")
         # Verify aux links preserved (plus any links this call applied here)
-        src_links = source.formations[req.donor_formation_index].play_links
+        link_source = req.replace_index if req.replace_index is not None else req.donor_formation_index
+        src_links = source.formations[link_source].play_links
         expected_links = sorted(
             [(s.link_index, s.play_index, s.group) for s in src_links]
             + [
@@ -541,13 +886,30 @@ def compile_formation_play_creations(
         dst_play = reparsed.plays[dst]
         if dst_play.name != (req.custom_name or src_play.name):
             raise ValidationError("Cloned play name did not match its request.")
-        if dst_play.flags_or_id != src_play.flags_or_id:
-            raise ValidationError("Cloned play flags did not match donor.")
+        expected_flags = req.play_flags if req.play_flags is not None else src_play.flags_or_id
+        if dst_play.flags_or_id != expected_flags:
+            raise ValidationError("Cloned play flags did not match the request.")
         if len(dst_play.assignments) != len(src_play.assignments):
             raise ValidationError("Cloned play assignments did not match donor.")
-        for sa, da in zip(src_play.assignments, dst_play.assignments):
+        for slot_index, (sa, da) in enumerate(zip(src_play.assignments, dst_play.assignments)):
+            authored = req.assignments is not None and req.assignments[slot_index] is not None
+            if authored:
+                if da.chain_start_index < node_count:
+                    raise ValidationError("Authored chain did not land in the appended node region.")
+                continue
             if sa.descriptor_word != da.descriptor_word or sa.chain_start_index != da.chain_start_index:
                 raise ValidationError("Cloned play assignment did not match donor.")
+    for i, req in enumerate(norm_formations):
+        if req.slot_positions is None:
+            continue
+        dst = new_formation_indices[i]
+        rec = codec.FormationRecord.from_bytes(
+            rebuilt[RESOURCE_HEADER_SIZE + FORMATION_BASE + dst * FORMATION_SIZE:
+                    RESOURCE_HEADER_SIZE + FORMATION_BASE + (dst + 1) * FORMATION_SIZE]
+        )
+        for slot_index, (x_cm, z_cm) in enumerate(req.slot_positions):
+            if rec.slots[slot_index].x[0] != int(round(x_cm)) or rec.slots[slot_index].z[0] != int(round(z_cm)):
+                raise ValidationError("Authored formation position did not survive reparse.")
 
     for link in applied_links:
         rep_links = reparsed.formations[link["formation_index"]].play_links
@@ -568,24 +930,32 @@ def compile_formation_play_creations(
         "new_formation_count": new_formation_count,
         "old_play_count": old_play_count,
         "new_play_count": new_play_count,
-        "new_formation_indices": tuple(new_formation_indices),
-        "new_play_indices": tuple(new_play_indices),
-        "formation_donors": tuple(r.donor_formation_index for r in norm_formations),
-        "play_donors": tuple(r.donor_play_index for r in norm_plays),
-        "links": tuple(
-            (l["formation_index"], l["play_index"], l["group"], l["slot_index"])
+        "new_formation_indices": list(new_formation_indices),
+        "new_play_indices": list(new_play_indices),
+        "replaced_formation_indices": [r.replace_index for r in norm_formations if r.replace_index is not None],
+        "replaced_play_indices": [r.replace_index for r in norm_plays if r.replace_index is not None],
+        "formation_donors": [r.donor_formation_index for r in norm_formations],
+        "play_donors": [r.donor_play_index for r in norm_plays],
+        "links": [
+            [l["formation_index"], l["play_index"], l["group"], l["slot_index"]]
             for l in applied_links
-        ),
-        "custom_names": tuple(
+        ],
+        "custom_names": [
             r.custom_name for r in (*norm_formations, *norm_plays) if r.custom_name
-        ),
-        "changed_ranges": changed,
+        ],
+        "authored_formations": list(authored_formations),
+        "authored_plays": list(authored_plays),
+        "old_node_count": node_count,
+        "new_node_count": node_cursor,
+        "changed_ranges": [list(pair) for pair in changed],
         "claims": {
             "source_and_replacement_fully_reparsed": True,
             "only_owned_formation_play_records_and_counts_changed": True,
             "aux_link_group_semantics_claimed": False,
             "custom_name_runtime_visibility_claimed": False,
-            "node_or_opcode_authoring_claimed": False,
+            "node_or_opcode_authoring_claimed": bool(authored_plays),
+            "authored_plays_pass_ported_game_validator": bool(authored_plays),
+            "formation_geometry_authored": bool(authored_formations),
         },
     }
 

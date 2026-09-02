@@ -4618,14 +4618,17 @@
         "mod_editor/core/nfl2k5_playbook_route_writer.py",
         "mod_editor/core/nfl2k5_formation_play_writer.py",
         "tests/mod_editor/test_nfl2k5_playbook_route_writer.py",
-        "tests/mod_editor/test_nfl2k5_formation_play_writer.py"
+        "tests/mod_editor/test_nfl2k5_formation_play_writer.py",
+        "mod_editor/core/nfl2k5_play_codec.py",
+        "mod_editor/gui/play_designer_qt.py",
+        "tests/mod_editor/test_nfl2k5_play_author.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "The dedicated viewer parses all 37 private PLAY books and can copy any stock assignment descriptor and existing node-chain pointer to another assignment in the same book, with Revert and project-build support. Create Formation and Create Play clone a donor record into the book's proved-empty slots (counts bump at +0x34/+0x38), optionally with a custom name appended to the name pool's verified zero tail, and a menu link can list a play in one empty 0x1FF slot; every create is write-masked and fully reparsed."
+        "reason": "The dedicated viewer parses all 37 private PLAY books and can copy any stock assignment descriptor and existing node-chain pointer to another assignment in the same book, with Revert and project-build support. Create Formation and Create Play clone a donor record into the book's proved-empty slots (counts bump at +0x34/+0x38), optionally with a custom name appended to the name pool's verified zero tail, and a menu link can list a play in one empty 0x1FF slot; every create is write-masked and fully reparsed. Design Formation opens a field canvas where the eleven players are dragged to new positions (the retail lineup reader FUN_0017fe60 consumes exactly these centimetre slot records; mirror partners are recomputed for flipped plays) with an NFL alignment check. Design Play builds each player's assignment from the game's own route/block/coverage opcodes (retail opcode table 0x521078 decoded end to end: operand bit layouts, draw handlers, validator), previews the play art, and refuses anything the ported retail validator (FUN_001a9840) would reject before staging."
       },
       "id": "nfl2k5.scripts.director_playbook",
       "input_constraints": [
@@ -4634,11 +4637,13 @@
         "The compiler reparses the complete replacement, changes only the target's two four-byte fields, refuses duplicate targets and orphaned source chains, and never authors, moves, or resizes node data.",
         "Creates inhabit only the fixed 0x13390 body: proved-empty formation, aux, and play slots plus the name pool's verified zero tail; capacities 50/270 are enforced and no allocation grows or relocates.",
         "A created formation or play reuses its donor's bytes and name pointer unless a custom name is supplied; a menu link inherits the formation's existing selection group unless one is chosen explicitly (0-3), and group-bit gameplay semantics are not claimed.",
-        "Player-slot roles, coordinate axes and scale, opcode and operand meanings, freehand waypoints, cross-book chains, and custom-play save ownership remain unsupported."
+        "Authored formations write the eleven 14-byte slot records (three x and three depth columns, all set equal, signed centimetres) plus the mirror-partner nibble; the record's header, eligible-slot list, package map, flags and aux link table stay the donor's unless a personnel category swap is requested (aux +0x48/+0x4C).",
+        "Authored plays append new 8-byte node chains to the book's node pool (count word at +0x40 bumped, zero tail verified, 3,500-node capacity), rewrite only the eleven descriptor/pointer fields of the created play, and must pass the ported retail validator (chain grammar, side nibble, feature byte, ball-possession simulation, handoff pairing); the descriptor high byte is inherited from the donor slot.",
+        "Node operands are encoded with the retail per-opcode encoders (bit-exact round trip on all 91,833 stock nodes); opcode 0x19 is refused because the game refuses it, and motion/link chains (0x1A) are editable only as raw operands."
       ],
       "portme": [
-        "Create controlled game-authored X-only, Y-only, added-waypoint, and route-type-change fixtures and diff their private save containers.",
-        "Confirm coordinate, opcode, operand, slot-role, and save ownership with runtime read watchpoints before adding freehand route authoring."
+        "Capture the authored formation lining up and the authored routes running in xemu (play-call art plus post-snap frames) to move runtime status from offline-proved to runtime-witnessed.",
+        "Name the remaining raw operands of Dropback/Pass, Zone, Man and Motion nodes from the AI consumers (FUN_001ace40 family) so the designer can label them."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -4648,7 +4653,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "Same-book stock assignment-route copying, clone-based formation/play creation with optional custom names and menu links, source binding, exact write-mask enforcement, project reopen, copied-XISO transport, and independent PLAY reparse are offline-proved; runtime route or create behavior is not captured.",
+        "scope": "Same-book stock assignment-route copying, clone-based formation/play creation with optional custom names and menu links, source binding, exact write-mask enforcement, project reopen, copied-XISO transport, and independent PLAY reparse are offline-proved; runtime route or create behavior is not captured; authored formation geometry and node-chain plays are offline-proved (validator port accepts 9,251/9,251 stock plays, codec round-trips every stock node) and their in-game behaviour is captured only by a local xemu run, not by CI.",
         "status": "not-tested"
       },
       "selectors": {
@@ -4659,7 +4664,7 @@
             "required": true
           }
         ],
-        "notes": "The GUI exposes exact stock assignment copying and Revert without inventing opcode, waypoint, or player-role semantics. Freehand route drawing is explicitly unsupported."
+        "notes": "The GUI exposes exact stock assignment copying, clone creates, and the Formation/Play Designers (slot coordinates and node chains built from the retail opcode vocabulary). Freehand pixel drawing is not offered; routes are composed from the game's route segments."
       },
       "source_container": {
         "format": "little-endian fixed-capacity NFL DRCT/PLAY resources inside a layout-identical copied XISO",
@@ -4669,7 +4674,7 @@
         "resource": "five inspected DRCT graphs and 37 fixed-capacity PLAY books; write-back changes descriptor/pointer fields only",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Browse and raw-export all 37 NFL PLAY books, copy exact stock assignment routes within one book, create formations/plays as bounded clones into proved-empty slots (optionally named, optionally menu-linked), Revert them, and build a verified copied XISO; freehand route authoring remains unsupported.",
+      "summary": "Browse and raw-export all 37 NFL PLAY books, copy exact stock assignment routes within one book, create formations/plays as bounded clones into proved-empty slots (optionally named, optionally menu-linked), design new formations by repositioning the eleven players, design new plays from the game's own route/block/coverage opcodes with a live retail-validator check, Revert them, and build a verified copied XISO.",
       "surface": "scripts_config",
       "title": "NFL 2K5 stock route copier and playbook viewer",
       "validation_command": "bash tools/validate_director_inventory.sh"

@@ -111,6 +111,7 @@ from mod_editor.gui.bump_panel_qt import BumpPanel
 from mod_editor.gui.save_panel_qt import SavePanel
 from mod_editor.gui.crib_panel_qt import CribPanel
 from mod_editor.gui.gameplay_panel_qt import GameplayPanel
+from mod_editor.gui.throw_tuning_panel_qt import ThrowTuningPanel
 from mod_editor.gui.menus_panel_qt import MenusPanel
 from mod_editor.gui.playbooks_panel_qt import PlaybooksPanel
 from mod_editor.gui.text_rosters_panel import TextRosterPanel
@@ -876,6 +877,9 @@ class BrowseOnlyFacade:
     revert_play_create = _unavailable
     create_formation_link = _unavailable
     revert_formation_link = _unavailable
+    playbook_raw_body = _unavailable
+    stage_formation_selector = _unavailable
+    create_authored_play = _unavailable
     stadium_scenes = _unavailable
     stadium_details = _unavailable
     preview_stadium_texture = _unavailable
@@ -1467,6 +1471,7 @@ class StudioMainWindow(QMainWindow):
         self._crib_panel: CribPanel | None = None
         self._playbooks_panel: PlaybooksPanel | None = None
         self._gameplay_panel: GameplayPanel | None = None
+        self._throw_tuning_panel: ThrowTuningPanel | None = None
         self._menus_panel: MenusPanel | None = None
         self.workspace_store = workspace_store
         self._workspace_dirty = False
@@ -2092,6 +2097,11 @@ class StudioMainWindow(QMainWindow):
             item.setSizeHint(QSize(210, 40))
             item.setToolTip(display_title)
             self.navigation.addItem(item)
+        create_item = QListWidgetItem("  ★ Create a Play")
+        create_item.setData(Qt.UserRole, "create_play")
+        create_item.setSizeHint(QSize(210, 44))
+        create_item.setToolTip("Step-by-step: pick a playbook, lay out a formation, choose run or pass, hand out jobs, replace outdated plays, build, launch.")
+        self.navigation.addItem(create_item)
         side_layout.addWidget(self.navigation, 1)
 
         safety = QLabel(
@@ -2270,15 +2280,23 @@ class StudioMainWindow(QMainWindow):
                 self._playbooks_panel = PlaybooksPanel(self.facade)
                 page = self._playbooks_panel
             elif category == ProductCategory.SLIDERS_GAMEPLAY:
+                # Throw Distance & Arc is the one writable workspace on this
+                # page: two sliders over the game's own arm-strength curve
+                # tables, written to a COPY of default.xbe (xemu-only), the
+                # same contract Bump strength ships under.
+                self._throw_tuning_panel = ThrowTuningPanel(self.facade)
                 self._gameplay_panel = GameplayPanel(
                     self.facade,
                     capability_page=self._build_capability_page(section),
+                    extra_tabs=((self._throw_tuning_panel, "Throw Distance && Arc"),),
                 )
                 page = self._gameplay_panel
             else:
                 page = self._build_capability_page(section)
             self._category_pages[category] = page
             self.pages.addWidget(self._page_scroll_host(page))
+        self._create_play_page = self._build_create_play_page()
+        self.pages.addWidget(self._page_scroll_host(self._create_play_page))
         workspace_layout.addWidget(self.pages, 1)
         workspace_layout.addWidget(footer)
         root_layout.addWidget(workspace, 1)
@@ -7502,10 +7520,47 @@ class StudioMainWindow(QMainWindow):
                 and not global_busy
             )
 
+    def _build_create_play_page(self) -> QWidget:
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.setContentsMargins(32, 28, 32, 28)
+        layout.setSpacing(16)
+        title = QLabel("Create a Play")
+        title.setStyleSheet("font-size: 28px; font-weight: 700;")
+        layout.addWidget(title)
+        blurb = QLabel(
+            "Five simple steps: pick a team's playbook, lay out a formation (modern templates, drag to move, "
+            "click to swap or change a position — RB2 instead of the FB, a WR instead of the TE), choose run or "
+            "pass, draw routes by dragging from a player (or click him for a menu of jobs), then replace "
+            "outdated stock plays and build the disc. Every play is checked against the game's own rules "
+            "before it goes in.\n\nLoad your NFL 2K5 disc first (File → Open)."
+        )
+        blurb.setWordWrap(True)
+        blurb.setStyleSheet("font-size: 15px;")
+        layout.addWidget(blurb)
+        button = QPushButton("Start the Create a Play wizard")
+        button.setStyleSheet("font-size: 20px; font-weight: 600; padding: 14px 26px;")
+        button.setMinimumHeight(60)
+        button.clicked.connect(self._open_create_play_wizard)
+        layout.addWidget(button, 0, Qt.AlignLeft)
+        layout.addStretch(1)
+        return page
+
+    def _open_create_play_wizard(self) -> None:
+        if not bool(getattr(self.facade, "source_ready", False)):
+            QMessageBox.information(self, "Create a Play", "Load your NFL 2K5 XISO first (File → Open XISO).")
+            return
+        from mod_editor.gui.create_play_wizard_qt import CreatePlayWizard
+
+        wizard = CreatePlayWizard(self.facade, self)
+        wizard.exec_()
+        self._mark_workspace_changed()
+        self._refresh_edit_state()
+
     def _refresh_entered_page(
         self, row: int, *, refresh_embedded: bool = True
     ) -> None:
-        if row <= 0:
+        if row <= 0 or row - 1 >= len(PRODUCT_CATEGORY_ORDER):
             return
         category = PRODUCT_CATEGORY_ORDER[row - 1]
         if category in self._visual_browsers:
@@ -7540,6 +7595,9 @@ class StudioMainWindow(QMainWindow):
     def _update_header_title(self, row: int) -> None:
         if row <= 0:
             self.page_title.setText("Getting Started")
+            return
+        if row - 1 >= len(PRODUCT_CATEGORY_ORDER):
+            self.page_title.setText("Create a Play")
             return
         category = PRODUCT_CATEGORY_ORDER[row - 1]
         self.page_title.setText(
