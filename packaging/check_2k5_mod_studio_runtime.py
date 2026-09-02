@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "b25f669bdbdf8e893db792f1af42c3bf9787a708b7b9d62f1124ef6e4a47b290",
     "mod_editor/gui/studio_qt.py":
-        "7ae0be69c43119f0f34b8d421c867dcb1483f167d45f3b5a7a12c89a7c8e61d7",
+        "a978c6c5f55efbf3a32af3b3f596470554924a3b0a7413e403c11c6fde7d6d95",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1695,6 +1695,10 @@ def main() -> int:
         "mod_editor.core.nfl2k5_ausb_fixed_slots",
         "mod_editor.core.nfl2k5_crib",
         "mod_editor.core.nfl2k5_formation_play_writer",
+        "nfl2k5_ps2_save_verify",
+        "nfl2k5_ps2_save",
+        "mod_editor.core.ps2_save_service",
+        "mod_editor.gui.ps2_save_dialog_qt",
         "mod_editor.core.nfl2k5_playbook_inspector",
         "mod_editor.core.playbook_package_rule_spike",
         "mod_editor.core.nfl2k5_universal_asset_index",
