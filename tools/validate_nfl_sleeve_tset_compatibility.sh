@@ -33,7 +33,7 @@ done
 }
 
 printf '%s  %s\n' \
-  cb2e9d34bd355ed4508de187b234070d22d6f7c2c78ea26fb6c6d779056dca6d \
+  72a25d908135322a6c15c1f19f2f575224ab224c8b8c4c6969f5b4ba2359ae2b \
   "$compatibility" | sha256sum -c - >/dev/null
 printf '%s  %s\n' \
   df1a26c99d8dcad097bc5ea6a35933ee8d616984f03e5fc9fa497af45faaa924 \
@@ -110,4 +110,4 @@ printf '%s  %s\n' \
   34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d \
   'extracted/ESPN NFL 2K5 (USA)/vc_53450030/0' | sha256sum -c - >/dev/null
 
-echo "NFL_SLEEVE_TSET_COMPATIBILITY_VALIDATION_PASS packages=634 pairs=317 home=317 away=317 layouts=1 allocations=275 compatible=634 incompatible=0 packs=9,A,B,C offsets=466 stored_classes=193 stored=5648..20496 target=06H2 output_sha=a955674cecdfea0b70c50141c21ef941b71d565d7889bc192c68fdbb967be14d span_sha=70b5abb8a8d6ea309ae86546c7d3b12ecdc0fff8a70df98645b429581130f981 changed_bytes=5229 runs=233 encoded=1837/5648 zero_pad=3811 mips=5 previews=10 fixture_all_634=true source=unchanged xbe=unchanged pack0=unchanged overflow_refused=true forged_rejected=true symlink_refused=true o_excl=true v3_loader_alias_guard=true runtime_visibility=false xemu_started=false title_executed=false"
+echo "NFL_SLEEVE_TSET_COMPATIBILITY_VALIDATION_PASS packages=634 pairs=317 home=317 away=317 layouts=1 allocations=275 compatible=634 incompatible=0 packs=9,A,B,C offsets=466 stored_classes=193 stored=5648..20496 target=06H2 output_sha=a955674cecdfea0b70c50141c21ef941b71d565d7889bc192c68fdbb967be14d span_sha=70b5abb8a8d6ea309ae86546c7d3b12ecdc0fff8a70df98645b429581130f981 changed_bytes=5229 runs=233 encoded=1837/5648 zero_pad=3811 mips=5 previews=10 fixture_all_634=true source=unchanged xbe=unchanged pack0=unchanged overflow_fitted=true forged_rejected=true symlink_refused=true o_excl=true v3_loader_alias_guard=true runtime_visibility=false xemu_started=false title_executed=false"

@@ -8,7 +8,7 @@ Date: 2026-07-18
 game folder in which English localization allocation
 `apf:text-pool:1127:0:11` changed from `Artist Biography` to the
 user-authored value `MOD BIOGRAPHY`. Xenia Canary booted that output. On the
-2K Beats artist-biography page, Spark Hands read the centered header exactly
+2K Beats artist-biography page, isolated visual inspection read the centered header exactly
 as **MOD BIOGRAPHY**. The biography body and portrait rendered normally, with
 no visible corruption, missing textures, or layout damage.
 
@@ -48,7 +48,7 @@ atomic publication.
 5. Observe the `2k_beats_bio` page. Its centered title reads
    `MOD BIOGRAPHY`; the unchanged body and portrait remain intact.
 
-All visual inspection and emulator operation used Spark Hands on the isolated
+All visual inspection and emulator operation used the isolated graphical
 desktop. No action touched the operator's `DISPLAY=:0`, mouse, or keyboard.
 
 ## Bounded negative retained from the first candidate

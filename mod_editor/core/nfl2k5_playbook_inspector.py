@@ -120,11 +120,19 @@ class FormationPlayLink:
     packed_value: int
 
 
+# Formation package role map — 11-byte permutation of 0..10 at formation+0x0D
+# (o0308 G1 census: Nickel vs Dime differ here; see playbook_package_rule_spike).
+PACKAGE_MAP_OFFSET_IN_FORMATION = 0x0D
+PACKAGE_MAP_SIZE = 11
+
+
 @dataclass(frozen=True)
 class PlaybookFormation:
     index: int
     name: str
     play_links: tuple[FormationPlayLink, ...]
+    # role-id order for the 11 assignment slots (body FORMATION+0x0D); empty if unknown
+    package_map: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -339,8 +347,14 @@ def _parse_body(
             links.append(FormationPlayLink(
                 link_index, play_index, (packed >> 9) & 0x3, packed
             ))
+        map_off = offset + PACKAGE_MAP_OFFSET_IN_FORMATION
+        package_map = tuple(body[map_off : map_off + PACKAGE_MAP_SIZE])
+        if len(package_map) != PACKAGE_MAP_SIZE:
+            raise ValidationError(
+                f"PLAY formation {formation_index} package map is truncated."
+            )
         formation_rows.append(PlaybookFormation(
-            formation_index, formation_name, tuple(links)
+            formation_index, formation_name, tuple(links), package_map
         ))
 
     categories = tuple(

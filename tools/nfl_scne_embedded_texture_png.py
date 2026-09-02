@@ -21,6 +21,16 @@ from collections import Counter, defaultdict
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import parse_archive, read_entry_range
 from nfl_scene_probe import decode_resource, parse_inventory
 from nfl_scne_inventory import pointer_name, resolve_relative, texture_info
@@ -689,8 +699,9 @@ def main() -> int:
     write_tsv(args.pngs_tsv, PNG_FIELDS, png_rows)
     args.manifest_json.parent.mkdir(parents=True, exist_ok=True)
     args.manifest_json.write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8",
+    newline="\n",
+)
     check_disk(args.asset_dir, minimum_free, "after export")
     print(
         "NFL_SCNE_EMBEDDED_TEXTURE_PNG_EXPORT_PASS "

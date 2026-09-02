@@ -37,7 +37,7 @@ check_hash "extracted/ESPN NFL 2K5 (USA)/vc_53450030/2" \
 check_hash "extracted/ESPN NFL 2K5 (USA)/vc_53450030/3" \
   921a139a9fd1a9470cc77f78455a6282e426376d4c201635b97a512d1f947aa7
 check_hash reports/assets/nfl2k5_live_face_texture_compatibility.json \
-  3929bbab1240e9d53c5ba836e189226ccbe84cbe02c565dc86bc0bf019bf4a0e
+  812db90df6b50b4491d8701a0ceb13b54a26ea7afadc2fbd86c4715b15aa9e09
 check_hash reports/assets/nfl2k5_live_face_texture_compatibility.tsv \
   a16a4579227cfd944803a8a6e5823a6a1ab6b2408daf109ff14d6e4aab03666a
 check_hash assets/fixtures/nfl2k5/live_face/live_face_fixture.png \
@@ -51,6 +51,9 @@ python3 -m py_compile \
   tools/nfl_live_face_texture_fixture.py \
   tools/nfl_live_face_texture_xiso_workflow.py \
   tools/nfl_live_face_texture_xiso_verify.py
+
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest \
+  tests.test_nfl_live_face_texture_virtual_xiso_verify
 
 python3 tools/nfl_live_face_texture_compatibility.py \
   --json "$TMP/compatibility.json" --tsv "$TMP/compatibility.tsv"
@@ -173,7 +176,20 @@ for path, expected in ((Path(sys.argv[1]), "fields/types"),
 PY
 
 PROOF="$ROOT/.codex-tmp/nfl-live-face-xiso-proof-20260712"
+: > "$TMP/present-output.xiso.iso"
+ln -s "$ROOT/ESPN NFL 2K5 (USA).xiso.iso" "$TMP/symlink-output.xiso.iso"
+for hostile_output in present-output.xiso.iso symlink-output.xiso.iso; do
+  expect_fail "virtual_${hostile_output%%.*}" \
+    python3 tools/nfl_live_face_texture_xiso_verify.py \
+      --virtual-output \
+      --source-xiso "ESPN NFL 2K5 (USA).xiso.iso" \
+      --output-xiso "$TMP/$hostile_output" \
+      --manifest "$PROOF/workflow.json" \
+      --preview-dir "$PROOF/previews" \
+      --plan assets/fixtures/nfl2k5/live_face/face_0124_all_texture_families_plan.json
+done
 python3 tools/nfl_live_face_texture_xiso_verify.py \
+  --virtual-output \
   --source-xiso "ESPN NFL 2K5 (USA).xiso.iso" \
   --output-xiso "$PROOF/nfl2k5-live-face-proof.xiso.iso" \
   --manifest "$PROOF/workflow.json" \

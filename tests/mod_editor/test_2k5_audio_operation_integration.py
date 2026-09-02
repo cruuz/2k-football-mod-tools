@@ -616,6 +616,7 @@ class StudioAudioOperationFenceTests(unittest.TestCase):
             project.write_bytes(b"retail-free recovery fixture")
             tasks = self._install_captured_shell_pool()
             errors: list[str] = []
+            colour_reads: list[tuple[str, bool]] = []
             self.window._show_error = errors.append  # type: ignore[method-assign]
 
             def load_source(path: Path, _progress: object) -> object:
@@ -625,6 +626,12 @@ class StudioAudioOperationFenceTests(unittest.TestCase):
                 return "indexed"
 
             self.facade.load_source = load_source  # type: ignore[method-assign]
+            self.facade.uniform_colors = (  # type: ignore[method-assign]
+                lambda selector, _progress: (
+                    colour_reads.append((selector, self.window._blocking))
+                    or ("FF101820", "FF203040", False)
+                )
+            )
             candidate = RecoveryCandidate(source, "b" * 64, project)
             self.window._load_source_path(source, recovery=candidate)
             self.assertEqual(len(tasks), 1)
@@ -632,12 +639,19 @@ class StudioAudioOperationFenceTests(unittest.TestCase):
             tasks[0].run()  # type: ignore[attr-defined]
             self.application.processEvents()
 
-            self.assertEqual(len(tasks), 1)
+            # The new source refresh includes an asynchronous read of the
+            # selected physical set's facemask/turtleneck record. It must be
+            # queued only after the source worker releases the blocking shell.
+            self.assertEqual(len(tasks), 2)
             self.assertFalse(self.window._blocking)
             self.assertEqual(self.deferred_audio_reset_states, [False])
             self.assertEqual(self.deferred_crib_refresh_states, [False])
             self.assertEqual(len(errors), 1)
             self.assertIn("does not match", errors[0])
+            tasks[1].run()  # type: ignore[attr-defined]
+            self.application.processEvents()
+            self.assertEqual(len(colour_reads), 1)
+            self.assertFalse(colour_reads[0][1])
             # Resolve both sides: the window stores the facade's raw source path,
             # which denotes the same file as source under a symlinked (macOS) or
             # short-name (Windows) temp root.

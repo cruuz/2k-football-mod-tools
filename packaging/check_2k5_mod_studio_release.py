@@ -24,6 +24,21 @@ MAX_RELEASE_FILE_BYTES = 8 * 1024 * 1024
 # product data instead of ``reports/``, but are held to the same immutable
 # contract so a release cannot silently acquire retail payloads.
 REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
+    "reports/assets/menu_state_trace.json": (
+        39_938,
+        "ecd93117a3a808a16697c23ae10e3225953bcb4dabda30afabdc5c02911974f1",
+        "vc_menu_state_trace/v1",
+    ),
+    "reports/assets/nfl_main_menu_live_state.json": (
+        18_483,
+        "a5d4b64962fefb2e5dbee4768d120172c0642405df2a0137759e2bce3737b89a",
+        "nfl2k5_main_menu_live_state/v1",
+    ),
+    "reports/assets/nfl2k5_p8_texture_inventory.json": (
+        8_338_553,
+        "01b030e9f7b58786a76ba23a66d59a485024e7001656b03d595991aec0c8cf3f",
+        "nfl2k5_p8_texture_inventory/v1",
+    ),
     "reports/assets/nfl2k5_jersey_tset_compatibility.json": (
         2_155_779,
         "046d03546242c11478d39b48d7f6f80b5f2009c85641b5c81abdaa6f8171cacd",
@@ -45,8 +60,8 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
         "nfl2k5_live_helmet_txtr_compatibility/v1",
     ),
     "reports/assets/nfl2k5_live_numbers_nameplate_compatibility.json": (
-        63_407_338,
-        "e22215b2db5c93f6098cd2d12b344f62abbc02a2e805605a2a180f13e5dd7aea",
+        63_407_409,
+        "d122c1e7de4fbad42c725969dce3473fc16a100e75d68ae5fb5d64077f536cd4",
         "nfl2k5_live_numbers_nameplate_compatibility/v1",
     ),
     "reports/assets/nfl2k5_team_select_card_inventory.json": (
@@ -79,14 +94,39 @@ REVIEWED_METADATA: dict[str, tuple[int, str, str]] = {
         "1d9ebb31a8822d113ae0fc8ec028e4ff652ccb7cbcf9d6d1d870aa58ef65f556",
         "nfl2k5_audo_import_capacity/v1",
     ),
+    "reports/assets/nfl2k5_audo_family_labels.json": (
+        72_257,
+        "ea66da8ea539114563de5694599a6046bde78661556846a34f8addeb31d544dd",
+        "nfl2k5_audo_family_labels/v2",
+    ),
+    "reports/assets/uniform_texture_sharing.v2.json": (
+        415_528,
+        "9e137a17d0a5faaf6c12f35b7503193f583f4a97e7370deced28fefadf7c26cf",
+        "uniform_texture_sharing_audit/v2",
+    ),
     "mod_editor/data/nfl2k5_crib_catalog.v1.json": (
-        709_752,
-        "2f862fc6602bb23d433f0599c519839be9cd43ca6cd42bc22aeb7b94d56d305a",
+        735_928,
+        "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8",
         "2k5_mod_studio_crib_catalog/v1",
+    ),
+    "mod_editor/data/nfl2k5_uniform_equipment_export_catalog.v1.json": (
+        5_851_450,
+        "fa2c9ca9bcc267b6981735347bf6daf6243d6ab8b83fba268804c280cfd94173",
+        "nfl2k5_uniform_equipment_export_catalog/v1",
+    ),
+    "reports/specs/nfl2k5_crib_static_position_targets.v1.json": (
+        14_024,
+        "90f955166c8582f7041bd0d936bacbef1f44b3869487f71535acec1caeb44b4f",
+        "nfl2k5_crib_static_position_targets/v1",
+    ),
+    "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json": (
+        858_600,
+        "f44472856044a5d8a50d18476a4c7af18ef98bcc3f7cf1d567db2b33d5336bfa",
+        "nfl2k5_stadium_static_target_catalog/v1",
     ),
     "mod_editor/data/nfl2k5_gameplay_inspection.v1.json": (
         22_874,
-        "864c785d3b0a689dace1ec9c37be0bc276519a334775c9df8953d6d62722dbe3",
+        "e613180ecb825187aabd0ece2c70d3fc42fa01756a7920981d2c2bccbe53feb7",
         "nfl2k5_mod_studio_gameplay_inspection/v1",
     ),
     "mod_editor/data/nfl2k5_main_menu_inspection.v1.json": (
@@ -227,6 +267,23 @@ RETAIL_MAGIC = (
     b"XEX2",
 )
 
+# The one binary asset in this release: the application icon Windows puts on the
+# Start Menu shortcut. Icons are the classic hiding place for a payload someone
+# renamed, so this file is not merely allowlisted -- it is pinned to an exact
+# size and SHA-256 and required to still be a Windows icon image, the same
+# treatment the APF release gives its reviewed extractor binaries.
+#
+# The bytes are original work generated from geometry by tools/make_app_icons.py
+# (also in this release), which is deterministic: anyone can re-run it and get
+# this exact file back. Update the pin only from that script's --print-pins
+# output, never by hand.
+ICO_MAGIC = b"\x00\x00\x01\x00"
+REVIEWED_ICON = "packaging/icons/2k5-mod-studio.ico"
+REVIEWED_ICON_SIZE = 24_127
+REVIEWED_ICON_SHA256 = (
+    "76fdffd1de77aa7ed53ba87076e995b7443f3cc379981c1241f7c9c108f5a18f"
+)
+
 # Reject only the two known workstation prefixes.  Build the strings from
 # fragments so this allowlisted checker does not contain the private paths it
 # is designed to detect in staged text.
@@ -326,6 +383,23 @@ def _iter_tree(root: Path) -> Iterable[tuple[Path, os.stat_result]]:
             yield path, info
             if stat.S_ISDIR(info.st_mode):
                 pending.append(path)
+
+
+def _validate_reviewed_icon(path: Path, relative: str, info: os.stat_result) -> str:
+    """Confirm the staged icon is byte-for-byte the reviewed one."""
+    if info.st_size != REVIEWED_ICON_SIZE:
+        raise ReleaseCheckError(f"reviewed application icon size changed: {relative}")
+    payload = path.read_bytes()
+    if len(payload) != REVIEWED_ICON_SIZE:
+        raise ReleaseCheckError(f"release file changed while being read: {relative}")
+    digest = hashlib.sha256(payload).hexdigest()
+    if digest != REVIEWED_ICON_SHA256:
+        raise ReleaseCheckError(f"reviewed application icon hash changed: {relative}")
+    if not payload.startswith(ICO_MAGIC):
+        raise ReleaseCheckError(
+            f"reviewed application icon is no longer a Windows icon: {relative}"
+        )
+    return digest
 
 
 def _hash_and_validate_text(
@@ -440,6 +514,7 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
     folded_paths: set[str] = set()
     total_bytes = 0
     reviewed_metadata_count = 0
+    reviewed_icon_count = 0
     for path, info in _iter_tree(release_root):
         relative_path = PurePosixPath(path.relative_to(release_root).as_posix())
         relative = relative_path.as_posix()
@@ -467,6 +542,17 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
             raise ReleaseCheckError(f"world-writable release file is forbidden: {relative}")
         if not _is_allowed(relative, exact, prefixes):
             raise ReleaseCheckError(f"file is absent from the release allowlist: {relative}")
+        if relative == REVIEWED_ICON:
+            # The only non-text file here, and the exemption is anchored to this
+            # one path: ".ico" stays an unapproved suffix everywhere else, so
+            # nothing can ship simply by taking the extension.  Whether the icon
+            # is *present* is not decided here -- the allowlist declares it, and
+            # the completeness check below refuses a release that omits it.
+            _validate_reviewed_icon(path, relative, info)
+            reviewed_icon_count += 1
+            seen_files.add(relative)
+            total_bytes += info.st_size
+            continue
         suffix = path.suffix.casefold()
         if suffix in FORBIDDEN_SUFFIXES:
             raise ReleaseCheckError(f"retail/container/media suffix is forbidden: {relative}")
@@ -532,6 +618,7 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
         "directory_count": len(seen_directories),
         "total_bytes": total_bytes,
         "reviewed_metadata_file_count": reviewed_metadata_count,
+        "reviewed_icon_count": reviewed_icon_count,
         "private_generated_inventories_included": False,
         "retail_payloads_included": False,
         "symlinks_included": False,

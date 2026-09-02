@@ -12,7 +12,7 @@ import json
 import os
 from pathlib import Path
 import tempfile
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Mapping
 
 from mod_editor.core.capabilities import CapabilityRegistryLoader, Classification
 from mod_editor.core.model import GameId
@@ -38,7 +38,11 @@ ensure_tools_importable()
 import apf_inner  # type: ignore  # noqa: E402
 import apf_outer  # type: ignore  # noqa: E402
 import apf_uniform_inventory  # type: ignore  # noqa: E402
+import apf_textlogo_patch  # type: ignore  # noqa: E402
+import apf_field_art_patch  # type: ignore  # noqa: E402
 
+from .number_targets import action_binding as number_action_binding
+from .number_targets import writable_locations as number_writable_locations
 from .uniform_targets import load_targets
 
 
@@ -68,13 +72,28 @@ def _category_for(name: str, type_name: str) -> ApfCategory:
         return ApfCategory.ROSTERS
     if "uniform" in value or any(
         token in value
-        for token in ("jersey", "pants", "helmet", "shoulder", "sock", "shoe", "glove", "numberfont", "namefont")
+        for token in (
+            "jersey",
+            "pants",
+            "helmet",
+            "shoulder",
+            "sock",
+            "shoe",
+            "glove",
+            "number_",
+            "numberfont",
+            "namefont",
+        )
     ):
         return ApfCategory.UNIFORMS
-    if any(token in value for token in ("logo", "teamcard", "team_card")):
-        return ApfCategory.LOGOS
+    # Presentation is tested before the generic "logo" token: the field
+    # scorebug's own team-logo component is named ``scorebug_team_logos``, and
+    # matching "logo" first filed one of the seven components under Logos &
+    # Team Art, where the Scorebug workspace could never show it.
     if any(token in value for token in ("scorebug", "scoreboard", "gamecast", "digital_font", "halftime", "replay")):
         return ApfCategory.SCOREBUG
+    if any(token in value for token in ("logo", "teamcard", "team_card")):
+        return ApfCategory.LOGOS
     if any(token in value for token in ("field", "turf", "endzone", "midfield", "grass", "divot")):
         return ApfCategory.FIELD_ART
     if any(token in value for token in ("stadium", "stad_")):
@@ -99,10 +118,16 @@ def _status_for(
     action = asset_action_binding(
         asset_id, outer_index, inner_index, name, type_name
     )
+    if action is None:
+        action = number_action_binding(
+            asset_id, outer_index, inner_index, name, type_name
+        )
     capability = (
         capability_action_binding(action.capability_id) if action else None
     )
     if capability is not None and capability.has_complete_editor:
+        return ApfStatus.EDITABLE
+    if action is not None and action.replace_method == "replace_number":
         return ApfStatus.EDITABLE
     if type_name in {"TXTR", "SCNE", "AUDO", "AUSB", "CurveAnim", "SingleMoCap"}:
         return ApfStatus.EXPORT_ONLY
@@ -120,12 +145,43 @@ def _status_for(
     return ApfStatus.EXPORT_ONLY
 
 
+#: Which dedicated workspace owns the proved writer for a record the universal
+#: browser cannot write itself.  Two kinds of ownership appear here: the helmet
+#: crest layers, which are recognised structurally because every
+#: ``uniform_logo_NN`` package stores exactly ``logo_l0`` and ``logo_l1``; and
+#: fixed archive locations supplied by the writers' own tables.
+CREST_LAYER_NAMES = ("logo_l0", "logo_l1")
+
+
+def _workspace_owner(
+    outer_index: int,
+    inner_index: int | None,
+    type_name: str,
+    name: str,
+    owned_locations: Mapping[tuple[int, int], str] | None,
+) -> str:
+    """The workspace that edits this record, or ``""`` when none does.
+
+    Saying "no validated replacement writer owns this target yet" about a
+    record that Uniforms, Logos, or Field Art writes every day was the single
+    most misleading sentence in the browser: it sent modders away from a door
+    that was already open, and it was reported as a bug against two releases.
+    """
+
+    if type_name == "TXTR" and name in CREST_LAYER_NAMES:
+        return "Logos & Team Art → Team Logo"
+    if owned_locations and inner_index is not None:
+        return owned_locations.get((outer_index, inner_index), "")
+    return ""
+
+
 def _notes_for(
     outer_index: int,
     inner_index: int | None,
     type_name: str,
     name: str,
     status: ApfStatus,
+    owned_locations: Mapping[tuple[int, int], str] | None = None,
 ) -> tuple[str, ...]:
     asset_id = (
         f"apf:outer:{outer_index}"
@@ -135,8 +191,22 @@ def _notes_for(
     action = asset_action_binding(
         asset_id, outer_index, inner_index, name, type_name
     )
+    if action is None:
+        action = number_action_binding(
+            asset_id, outer_index, inner_index, name, type_name
+        )
     if action is not None:
         return action.notes
+    owner = _workspace_owner(
+        outer_index, inner_index, type_name, name, owned_locations
+    )
+    if owner:
+        return (
+            "PNG export is attempted for decoded formats; an exact raw-parts "
+            "ZIP is always available.",
+            f"A proved writer owns this target: edit it in {owner}. Selecting "
+            "this row offers that hand-off directly.",
+        )
     if status is ApfStatus.PREVIEW:
         return ("This structure is mapped for browsing; replacement is not yet safe.",)
     if status is ApfStatus.EXPORT_ONLY:
@@ -154,6 +224,30 @@ def _notes_for(
             "Only an exact raw export is available here; no decoded authoring format or validated writer owns this target yet.",
         )
     return ()
+
+
+def _owned_locations(
+    uniforms: Iterable[UniformAsset],
+) -> dict[tuple[int, int], str]:
+    """Archive locations a dedicated workspace already writes.
+
+    The tables come from the writers themselves -- the uniform/wordmark
+    inventory and the field-art patcher's pinned contracts -- so this map can
+    never claim an authorship the product does not have.
+    """
+
+    owners: dict[tuple[int, int], str] = {}
+    for uniform in uniforms:
+        owners[(uniform.outer_index, uniform.inner_index)] = (
+            "Logos & Team Art → Wordmarks"
+            if uniform.family == "textlogo"
+            else "Uniforms & Equipment → Editable Materials"
+        )
+    for location in apf_field_art_patch.writable_locations():
+        owners[location] = "Field Art → base texture editor"
+    for location in number_writable_locations():
+        owners[location] = "All Textures → jersey digits"
+    return owners
 
 
 def _external_audio_catalog_identities(
@@ -322,6 +416,10 @@ class CatalogBuilder:
                 pass
         cache.mkdir(parents=True, exist_ok=True)
         archive = apf_outer.parse_archive(source.index_0a)
+        # Resolved before the walk so every indexed row can name the workspace
+        # that already writes it instead of claiming nothing does.
+        uniforms = build_uniform_assets(source.index_0a)
+        owned_locations = _owned_locations(uniforms)
         assets: list[ApfAsset] = []
         iff_entries: list[dict[str, object]] = []
         iff_count = 0
@@ -384,6 +482,7 @@ class CatalogBuilder:
                                 type_name,
                                 name,
                                 status,
+                                owned_locations,
                             ),
                             metadata={
                                 "file_id": f"0x{item.file_id:08x}",
@@ -413,7 +512,6 @@ class CatalogBuilder:
             "iff_entries": iff_entries,
         }
         self._write_json_atomic(selection_path, selection_payload)
-        uniforms = build_uniform_assets(source.index_0a)
         capabilities = build_capability_cards()
         document = {
             "schema": CATALOG_SCHEMA,
@@ -477,6 +575,8 @@ class CatalogBuilder:
             != 10_394
         ):
             raise CatalogError("Cached APF inner selection is stale")
+        uniforms = build_uniform_assets(source.index_0a)
+        owned_locations = _owned_locations(uniforms)
         loaded_assets: list[ApfAsset] = []
         for row in document["assets"]:
             outer_index = int(row["outer_index"])
@@ -507,7 +607,12 @@ class CatalogBuilder:
                     outer_size=int(row["outer_size"]),
                     part_count=int(row["part_count"]),
                     notes=_notes_for(
-                        outer_index, inner_index, type_name, name, status
+                        outer_index,
+                        inner_index,
+                        type_name,
+                        name,
+                        status,
+                        owned_locations,
                     ),
                     metadata=dict(row.get("metadata", {})),
                 )
@@ -524,7 +629,7 @@ class CatalogBuilder:
             non_iff_count=70,
             inner_count=10_394,
             assets=assets,
-            uniform_assets=build_uniform_assets(source.index_0a),
+            uniform_assets=uniforms,
             capabilities=build_capability_cards(),
             audio_selection_manifest=selection,
         )
@@ -552,7 +657,7 @@ class CatalogBuilder:
 
 
 def build_uniform_assets(index_0a: Path) -> tuple[UniformAsset, ...]:
-    """Return all 96 publicly editable physical uniform color assets."""
+    """Return the uniform-material assets plus all rectangular wordmarks."""
 
     _source, team_rows = apf_uniform_inventory._load_team_selectors(index_0a)  # type: ignore[attr-defined]
     team_uses: dict[tuple[str, int], set[str]] = {}
@@ -596,7 +701,17 @@ def build_uniform_assets(index_0a: Path) -> tuple[UniformAsset, ...]:
             256,
             1024,
             "256x1024 RGBA PNG. R and G are the two stored DXN channels; B must be 0 and A must be 255.",
-            ("R/G shader meanings are not yet named; edit them as two numeric mask planes.",),
+            (
+                "This is the helmet's centre stripe, not the shell. R and G are "
+                "region masks the game fills with team colours -- R renders "
+                "light, G renders dark -- the same scheme the team crest uses.",
+                "Only a narrow front-to-crown band of this map reaches the "
+                "helmet. A full-coverage probe showed the rest is off-model "
+                "padding, so art painted outside the lit column renders nowhere.",
+                "APF helmets have no shell texture at all: the package holds "
+                "only this stripe and a normal map, both DXN (two channels, so "
+                "no RGB is possible). Shell colour comes from the team palette.",
+            ),
         ),
         (
             "shoulder",
@@ -606,11 +721,25 @@ def build_uniform_assets(index_0a: Path) -> tuple[UniformAsset, ...]:
             "1024x1024 RGBA PNG. This changes shoulder_color only and preserves the paired normal package.",
             ("Material-mask behavior may differ from a normal color texture.",),
         ),
+        (
+            "textlogo",
+            apf_textlogo_patch.load_targets(),
+            512,
+            128,
+            "512x128 opaque RGBA PNG. The Logos → Wordmarks importer can contain or cover-fit ordinary art and flattens transparency onto black.",
+            (
+                "Selector slot 6: rectangular team/menu wordmark, not the square helmet crest.",
+                "All six tiled BC1 mip levels are regenerated inside the selected fixed package allocation.",
+            ),
+        ),
     )
     result: list[UniformAsset] = []
     for family, rows, width, height, contract, notes in definitions:
-        if len(rows) != 24:
-            raise CatalogError(f"{family} catalog no longer contains 24 assets")
+        expected_count = 206 if family == "textlogo" else 24
+        if len(rows) != expected_count:
+            raise CatalogError(
+                f"{family} catalog no longer contains {expected_count} assets"
+            )
         capability_id = UNIFORM_FAMILY_CAPABILITY_IDS[family]
         action = capability_action_binding(capability_id)
         product_status = (
@@ -641,6 +770,10 @@ def build_uniform_assets(index_0a: Path) -> tuple[UniformAsset, ...]:
 
 
 def _capability_category(surface: str, capability_id: str) -> ApfCategory:
+    if capability_id == "apf2k8.models.scne_gltf":
+        return ApfCategory.UNIFORMS
+    if capability_id == "apf2k8.colors.uniform_selector_appearance_custom_team":
+        return ApfCategory.UNIFORMS
     if capability_id.startswith("apf2k8.colors.uniform_selector"):
         return ApfCategory.TEAM_IDENTITY
     if surface == "uniforms":
@@ -676,11 +809,25 @@ def build_capability_cards() -> tuple[CapabilityCard, ...]:
         gui = capability.raw.get("gui", {})
         action = capability_action_binding(capability.capability_id)
         status = ApfStatus.COMING_SOON
-        if action is not None and gui.get("expose") is True:
+        exposed = gui.get("expose") is True
+        if not exposed:
+            status = (
+                ApfStatus.EVIDENCE
+                if capability.classification
+                in {
+                    Classification.RUNTIME_PROVED,
+                    Classification.OFFLINE_WRITER_PROVED,
+                }
+                else ApfStatus.RESEARCH
+            )
+        elif action is not None:
             mode = gui.get("mode")
             if (
                 mode == "edit"
-                and action.has_complete_editor
+                and (
+                    action.has_complete_editor
+                    or action.has_verified_one_shot_writer
+                )
                 and capability.classification
                 in {
                     Classification.RUNTIME_PROVED,
@@ -709,7 +856,7 @@ def build_capability_cards() -> tuple[CapabilityCard, ...]:
             findings.append(runtime.strip())
         for item in capability.raw.get("portme", ())[:2]:
             if isinstance(item, str):
-                findings.append(f"Next: {item}")
+                findings.append(f"Boundary: {item}")
         cards.append(
             CapabilityCard(
                 capability_id=capability.capability_id,

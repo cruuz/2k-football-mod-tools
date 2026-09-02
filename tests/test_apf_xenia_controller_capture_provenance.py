@@ -63,22 +63,16 @@ class ApfXeniaControllerCaptureProvenanceTest(unittest.TestCase):
                 provenance.FROZEN_SOURCE_SHA256,
             )
 
-    @unittest.skipUnless(
-        (
-            Path.home()
-            / provenance.EXPECTED_RECOVERY["session_log_home_relative"]
-        ).is_file(),
-        "private recovery session is not retained on this host",
-    )
-    def test_later_preserved_session_output_recovers_exact_frozen_bytes(self) -> None:
-        session_log = (
-            Path.home()
-            / provenance.EXPECTED_RECOVERY["session_log_home_relative"]
+    def test_public_corroboration_omits_private_record_identifiers(self) -> None:
+        published = repr(provenance.EXPECTED_CORROBORATION).lower()
+        for marker in (".codex", "rollout-", "call_", "session_log", "/home/"):
+            self.assertNotIn(marker, published)
+        self.assertTrue(
+            provenance.EXPECTED_CORROBORATION["frozen_repository_copy_is_authority"]
         )
-        recovered = provenance.recover_source_from_session_record(session_log)
-        frozen = (ROOT / provenance.FROZEN_SOURCE).read_bytes()
-        self.assertEqual(recovered, frozen)
-        self.assertEqual(len(recovered), provenance.FROZEN_SOURCE_SIZE)
+        self.assertFalse(
+            provenance.EXPECTED_CORROBORATION["corroborating_record_is_authority"]
+        )
 
     def test_manifest_byte_mutation_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

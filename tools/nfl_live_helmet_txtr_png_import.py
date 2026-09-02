@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import OrderedDict
 from dataclasses import asdict
 import hashlib
 import json
@@ -13,8 +14,18 @@ import stat
 import sys
 from typing import Any
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import parse_archive, read_entry_range
-from nfl_txtr import (COMPRESSED_SENTINEL, HEADER, Chunk, compress_vc_lz,
+from nfl_txtr import (COMPRESSED_SENTINEL, HEADER, Chunk,
                       decode_chunk, encode_rgba_png,
                       minimum_vc_lz_overlap_scratch, parse_texture,
                       rebuild_compressed_chunk_fixed_span, swizzle_2d,
@@ -51,11 +62,40 @@ def digest(value: bytes) -> str:
 
 
 def file_digest(path: Path) -> str:
+    info = path.stat()
+    key = (str(path), info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
+    cached = _FILE_DIGEST_CACHE.get(key)
+    if cached is not None:
+        _FILE_DIGEST_CACHE.move_to_end(key)
+        return cached
+    digest = _file_digest_uncached(path)
+    _FILE_DIGEST_CACHE[key] = digest
+    _FILE_DIGEST_CACHE.move_to_end(key)
+    while len(_FILE_DIGEST_CACHE) > _FILE_DIGEST_CACHE_LIMIT:
+        _FILE_DIGEST_CACHE.popitem(last=False)
+    return digest
+
+
+def _file_digest_uncached(path: Path) -> str:
     result = hashlib.sha256()
     with path.open("rb") as stream:
         for block in iter(lambda: stream.read(16 * 1024 * 1024), b""):
             result.update(block)
     return result.hexdigest()
+
+
+# The canonical index volume is hash-pinned and image-constant, but a
+# multi-edit build used to re-hash its ~193 MB once per edit.  The digest is
+# memoized per file identity (path, device, inode, size, mtime); a rewrite
+# moves size/mtime and re-hashes.
+_FILE_DIGEST_CACHE_LIMIT = 8
+_FILE_DIGEST_CACHE: "OrderedDict[tuple[object, ...], str]" = OrderedDict()
+
+
+def clear_file_digest_cache() -> None:
+    """Forget every memoized file digest (tests and fresh sessions)."""
+
+    _FILE_DIGEST_CACHE.clear()
 
 
 def canonical_json(value: object) -> bytes:
@@ -245,7 +285,35 @@ def build_import(index_path: Path, compatibility_path: Path,
         index_path, target)
     png, png_payload, rgba = read_png(png_path)
     mips = generate_mips(rgba)
-    palette, linear_levels, quantization = palette_tools.quantize_levels(mips)
+    def candidate_decoded(
+        candidate_palette: list[tuple[int, int, int, int]],
+        candidate_levels: list[bytes],
+    ) -> bytes:
+        chain = b"".join(
+            swizzle_2d(indices, level.width, level.height, 1)
+            for indices, level in zip(candidate_levels, mips)
+        )
+        return (
+            template_decoded[:128]
+            + chain
+            + palette_tools.palette_bytes(candidate_palette)
+        )
+
+    # A perfectly valid P8 helmet can be impossible to encode with a 256-entry
+    # palette even though a visually equivalent lower-colour version fits the
+    # retail span. The tier ladder starts at 256, so art that already fit is
+    # byte-for-byte unchanged; only art that used to fail outright now steps
+    # down instead of refusing.
+    bounded = palette_tools.quantize_levels_to_vc_lz_bound(
+        mips,
+        candidate_decoded,
+        stream_tag=target.stream_tag,
+        offset_bits=target.offset_bits,
+        max_encoded_size=target.stored_size,
+    )
+    palette = bounded.palette
+    linear_levels = bounded.index_levels
+    quantization = bounded.quantization
     require(len(linear_levels) == 6 and
             sum(len(value) for value in linear_levels) == INDEX_CHAIN_BYTES,
             "quantized mip index chain has the wrong size")
@@ -262,15 +330,15 @@ def build_import(index_path: Path, compatibility_path: Path,
     palette_bgra = palette_tools.palette_bytes(palette)
     require(len(index_chain) == INDEX_CHAIN_BYTES and len(palette_bgra) == 1024,
             "encoded index/palette allocation changed")
-    rebuilt_decoded = template_decoded[:128] + index_chain + palette_bgra
+    rebuilt_decoded = bounded.decoded
+    require(rebuilt_decoded == template_decoded[:128] + index_chain + palette_bgra,
+            "bounded quantizer decoded layout disagrees with the rebuilt chain")
     require(len(rebuilt_decoded) == target.decoded_size and
             rebuilt_decoded[:128] == template_decoded[:128],
             "rebuilt system/decoded allocation changed")
     validate_texture(rebuilt_decoded, target)
 
-    compressed, compression_info = compress_vc_lz(
-        rebuilt_decoded, stream_tag=target.stream_tag,
-        offset_bits=target.offset_bits, max_encoded_size=target.stored_size)
+    compressed, compression_info = bounded.compressed, bounded.compression
     rebuilt_span, rebuild_info = rebuild_compressed_chunk_fixed_span(
         template_span, rebuilt_decoded)
     require(rebuild_info.recompressed_bytes == len(compressed) and
@@ -355,6 +423,11 @@ def build_import(index_path: Path, compatibility_path: Path,
         },
         "quantization": {
             "algorithm": "weighted_median_cut_rgba_then_nearest_squared_error",
+            # The bounded ladder can quantize a replacement down to fit its
+            # fixed VC-LZ span. That is lossy, so it is recorded here and
+            # reported to the user rather than applied silently.
+            "palette_fit_attempts": list(bounded.attempts),
+            "palette_was_reduced": len(bounded.attempts) > 1,
             **quantization, "palette_entries": len(palette),
             "unused_palette_entries_zero_filled": True,
         },

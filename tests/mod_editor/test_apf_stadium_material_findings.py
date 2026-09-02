@@ -27,53 +27,42 @@ class ApfStadiumMaterialFindingsTests(unittest.TestCase):
         self.payload = FINDINGS.read_text(encoding="utf-8")
         self.document = json.loads(self.payload)
 
-    def test_records_the_completed_negative_ownership_experiment(self) -> None:
+    def test_records_the_completed_static_ownership_join(self) -> None:
         self.assertEqual(
             self.document["schema"],
             "apf2k8_mod_studio_stadium_material_findings/v1",
         )
-        self.assertEqual(self.document["outcome"], "texture_owner_unresolved")
+        self.assertEqual(
+            self.document["outcome"], "embedded_texture_ownership_proved"
+        )
         experiment = self.document["experiment"]
-        self.assertEqual(experiment["scene_mesh_nodes"], 116)
-        self.assertEqual(experiment["draw_records"], 328)
-        self.assertEqual(experiment["serialized_material_records"], 113)
-        self.assertEqual(experiment["shader_family_records"], 13)
-        self.assertEqual(
-            (experiment["minimum_material_slot"], experiment["maximum_material_slot"]),
-            (0, 112),
-        )
-        self.assertEqual(experiment["out_of_range_material_slots"], 0)
-        self.assertEqual(experiment["known_named_texture_identities_checked"], 737)
-        self.assertEqual(
-            experiment["named_texture_identity_matches_in_scene_system_part"], 0
-        )
-        self.assertEqual(experiment["same_package_named_texture_candidates"], 3)
-        self.assertEqual(
-            experiment["same_package_identity_matches_in_scene_system_part"], 0
-        )
+        self.assertEqual(experiment["scene_surface_nodes"], 89)
+        self.assertEqual(experiment["serialized_material_records"], 84)
+        self.assertEqual(experiment["shader_family_records"], 20)
+        self.assertEqual(experiment["embedded_texture_descriptors"], 78)
+        self.assertEqual(experiment["material_slots_referenced"], 84)
+        self.assertEqual(experiment["orphaned_material_slots"], 0)
+        self.assertEqual(experiment["orphaned_embedded_textures"], 0)
+        self.assertEqual(experiment["editable_texture_descriptors"], 78)
+        self.assertEqual(experiment["retail_format_classes"], 8)
 
-    def test_withholds_texture_actions_and_names_the_runtime_join(self) -> None:
+    def test_exposes_bounded_texture_actions_and_keeps_runtime_honest(self) -> None:
         proof = self.document["proved"]
         self.assertTrue(proof["draw_to_serialized_material_slot"])
-        self.assertTrue(proof["material_slot_to_serialized_material_record"])
-        self.assertTrue(proof["serialized_material_to_shader_family"])
-        self.assertFalse(proof["mesh_to_named_texture_identity"])
-        self.assertFalse(proof["texture_writer_safe_to_expose"])
+        self.assertTrue(proof["material_slot_to_embedded_texture"])
+        self.assertTrue(proof["all_embedded_textures_have_material_owners"])
+        self.assertTrue(proof["full_declared_mip_transport_for_every_texture"])
+        self.assertTrue(proof["fixed_allocation_copy_only_writer"])
+        self.assertTrue(proof["texture_writer_safe_to_expose"])
+        self.assertFalse(proof["runtime_visibility_proved"])
         runtime_capture = self.document["runtime_capture"]
-        self.assertEqual(
-            runtime_capture["outcome"], "host_breakpoint_intercepted"
-        )
-        self.assertFalse(runtime_capture["game_frame_rendered"])
-        self.assertFalse(runtime_capture["guest_registers_captured"])
-        self.assertTrue(runtime_capture["configuration_restored"])
-        self.assertEqual(len(self.document["missing_runtime_fields"]), 4)
+        self.assertEqual(runtime_capture["outcome"], "offline_writer_proved")
+        self.assertFalse(runtime_capture["emulator_used"])
+        self.assertTrue(runtime_capture["source_opened_read_only"])
+        self.assertTrue(runtime_capture["copied_output_reopened"])
+        self.assertEqual(len(self.document["missing_runtime_fields"]), 3)
         next_experiment = self.document["best_next_experiment"]
-        for required in (
-            "material-array base",
-            "pixel-shader mapping",
-            "texture-object pointer",
-            "guest allocation",
-        ):
+        for required in ("Xbox 360 hardware", "additional stadium scene"):
             self.assertIn(required, next_experiment)
 
     def test_payload_contains_no_retail_bytes_or_research_provenance(self) -> None:
@@ -103,22 +92,20 @@ class ApfStadiumMaterialFindingsLoaderTests(unittest.TestCase):
 
     def test_loads_immutable_product_boundary_and_author_summary(self) -> None:
         findings = load_stadium_material_findings()
-        self.assertEqual(findings.outcome, "texture_owner_unresolved")
-        self.assertEqual(findings.experiment["draw_records"], 328)
-        self.assertTrue(findings.proof["serialized_material_to_shader_family"])
-        self.assertFalse(findings.proof["mesh_to_named_texture_identity"])
-        self.assertFalse(findings.proof["texture_writer_safe_to_expose"])
-        self.assertEqual(
-            findings.runtime_capture["outcome"], "host_breakpoint_intercepted"
-        )
-        self.assertEqual(len(findings.missing_runtime_fields), 4)
-        self.assertIn("116 scene meshes and 328 draws", findings.author_summary)
-        self.assertIn("737 known named texture identities", findings.author_summary)
-        self.assertIn("Replace/Revert stays disabled", findings.author_summary)
-        self.assertIn("did not test ownership", findings.author_summary)
-        self.assertIn("material-array base", findings.best_next_experiment)
+        self.assertEqual(findings.outcome, "embedded_texture_ownership_proved")
+        self.assertEqual(findings.experiment["embedded_texture_descriptors"], 78)
+        self.assertTrue(findings.proof["material_slot_to_embedded_texture"])
+        self.assertTrue(findings.proof["texture_writer_safe_to_expose"])
+        self.assertFalse(findings.proof["runtime_visibility_proved"])
+        self.assertEqual(findings.runtime_capture["outcome"], "offline_writer_proved")
+        self.assertEqual(len(findings.missing_runtime_fields), 3)
+        self.assertIn("89 exact scene surfaces", findings.author_summary)
+        self.assertIn("all 78 embedded textures", findings.author_summary)
+        self.assertIn("Replace, Revert", findings.author_summary)
+        self.assertIn("Runtime visibility", findings.author_summary)
+        self.assertIn("Xbox 360 hardware", findings.best_next_experiment)
         with self.assertRaises(TypeError):
-            findings.experiment["draw_records"] = 0  # type: ignore[index]
+            findings.experiment["scene_surface_nodes"] = 0  # type: ignore[index]
 
     def test_rejects_schema_addresses_and_research_provenance(self) -> None:
         with tempfile.TemporaryDirectory(prefix="apf-stadium-findings-") as directory:
@@ -148,21 +135,21 @@ class ApfStadiumMaterialFindingsLoaderTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="apf-stadium-findings-") as directory:
             root = Path(directory)
             changed_count = json.loads(json.dumps(self.document))
-            changed_count["experiment"]["draw_records"] = 329
+            changed_count["experiment"]["scene_surface_nodes"] = 90
             with self.assertRaisesRegex(StadiumMaterialFindingsError, "counts"):
                 load_stadium_material_findings(
                     self._write(root, "count.json", changed_count)
                 )
 
             changed_proof = json.loads(json.dumps(self.document))
-            changed_proof["proved"]["mesh_to_named_texture_identity"] = True
+            changed_proof["proved"]["runtime_visibility_proved"] = True
             with self.assertRaisesRegex(StadiumMaterialFindingsError, "booleans"):
                 load_stadium_material_findings(
                     self._write(root, "proof.json", changed_proof)
                 )
 
             changed_runtime = json.loads(json.dumps(self.document))
-            changed_runtime["runtime_capture"]["guest_registers_captured"] = True
+            changed_runtime["runtime_capture"]["emulator_used"] = True
             with self.assertRaisesRegex(StadiumMaterialFindingsError, "capture"):
                 load_stadium_material_findings(
                     self._write(root, "runtime.json", changed_runtime)

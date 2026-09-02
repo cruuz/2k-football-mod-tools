@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 import unittest
 
 from mod_editor.apf_studio.catalog import _status_for, build_capability_cards
@@ -24,6 +25,7 @@ from mod_editor.apf_studio.models import (
 )
 from mod_editor.core.capabilities import CapabilityRegistryLoader, Classification
 from mod_editor.core.model import GameId
+from mod_editor.core.audio_conform import SUPPORTED_SUFFIXES
 
 
 class CapabilityActionParityTests(unittest.TestCase):
@@ -48,7 +50,11 @@ class CapabilityActionParityTests(unittest.TestCase):
         for capability_id, card in self.cards.items():
             binding = capability_action_binding(capability_id)
             with self.subTest(capability=capability_id):
-                if card.status is ApfStatus.COMING_SOON:
+                if card.status in {
+                    ApfStatus.COMING_SOON,
+                    ApfStatus.EVIDENCE,
+                    ApfStatus.RESEARCH,
+                }:
                     continue
                 self.assertIsNotNone(binding)
                 assert binding is not None
@@ -65,17 +71,32 @@ class CapabilityActionParityTests(unittest.TestCase):
             self.assertIsNotNone(binding)
             assert binding is not None
             with self.subTest(capability=capability_id):
-                self.assertTrue(binding.has_complete_editor)
-                self.assertIn(ApfProductAction.REPLACE, binding.actions)
-                self.assertIn(ApfProductAction.REVERT, binding.actions)
                 self.assertTrue(
-                    hasattr(ApfStudioFacade, str(binding.replace_method))
+                    binding.has_complete_editor
+                    or binding.has_verified_one_shot_writer
                 )
-                self.assertTrue(
-                    hasattr(ApfStudioFacade, str(binding.revert_method))
-                )
-                for method in binding.additional_replace_methods:
-                    self.assertTrue(hasattr(ApfStudioFacade, method))
+                if binding.has_verified_one_shot_writer:
+                    self.assertIn(ApfProductAction.BUILD_COPY, binding.actions)
+                    module_name, separator, function_name = str(
+                        binding.one_shot_target
+                    ).partition(":")
+                    self.assertEqual(separator, ":")
+                    self.assertTrue(function_name)
+                    self.assertTrue(
+                        hasattr(importlib.import_module(module_name), function_name)
+                    )
+                    self.assertIn("copied", binding.output_kind)
+                else:
+                    self.assertIn(ApfProductAction.REPLACE, binding.actions)
+                    self.assertIn(ApfProductAction.REVERT, binding.actions)
+                    self.assertTrue(
+                        hasattr(ApfStudioFacade, str(binding.replace_method))
+                    )
+                    self.assertTrue(
+                        hasattr(ApfStudioFacade, str(binding.revert_method))
+                    )
+                    for method in binding.additional_replace_methods:
+                        self.assertTrue(hasattr(ApfStudioFacade, method))
                 capability = self.capabilities[capability_id]
                 self.assertIn(
                     capability.classification,
@@ -99,6 +120,57 @@ class CapabilityActionParityTests(unittest.TestCase):
             CAPABILITY_ACTION_BINDINGS[capability_id].has_complete_editor
         )
 
+    def test_audio_cards_match_the_common_file_conformer(self) -> None:
+        self.assertTrue(
+            {".wav", ".mp3", ".flac", ".ogg", ".m4a"}
+            <= set(SUPPORTED_SUFFIXES)
+        )
+        for capability_id in (
+            "apf2k8.audio.ausb_xma_export",
+            "apf2k8.audio.xma_export",
+        ):
+            capability = self.capabilities[capability_id]
+            card = self.cards[capability_id]
+            copy = " ".join(
+                (
+                    capability.summary,
+                    str(capability.raw["gui"]["reason"]),
+                    *card.findings,
+                )
+            )
+            portme = " ".join(capability.raw["portme"])
+            with self.subTest(capability=capability_id):
+                for name in ("WAV", "MP3", "FLAC", "OGG", "M4A"):
+                    self.assertIn(name, copy)
+                self.assertNotIn("FLAC/MP3 and batch PCM input remain unsupported", copy)
+                self.assertIn("external XMA1 encoder", copy)
+                self.assertIn("selected ordinary WAV/MP3/FLAC/OGG/M4A", portme)
+                self.assertIn("folder/ZIP packs", portme)
+                self.assertIn("mixed-format ordinary-audio packs remain unsupported", portme)
+
+    def test_logo_cards_disclose_linked_cache_and_independent_wordmark_ownership(self) -> None:
+        team_logo = CAPABILITY_ACTION_BINDINGS[
+            "apf2k8.logos_cards.team_logo"
+        ].product_note.casefold()
+        cache = CAPABILITY_ACTION_BINDINGS[
+            "apf2k8.logos_cards.team_logo_cache"
+        ].product_note.casefold()
+        wordmark = CAPABILITY_ACTION_BINDINGS[
+            "apf2k8.logos_cards.textlogo_wordmarks"
+        ].product_note.casefold()
+
+        for claims in (team_logo, cache):
+            self.assertIn("selector-slot-5", claims)
+            self.assertIn("frontend", claims)
+            self.assertIn("team select", claims)
+            self.assertIn("selector-slot-6", claims)
+            self.assertIn("uniform_textlogo", claims)
+            self.assertIn("unproved", claims)
+        self.assertIn("selector-slot-6", wordmark)
+        self.assertIn("selector-slot-5", wordmark)
+        self.assertIn("frontend/team select", wordmark)
+        self.assertIn("never squeezes", wordmark)
+
     def test_roster_capability_names_all_bounded_editors_and_keeps_boundaries(self) -> None:
         capability_id = "apf2k8.players.roster"
         binding = CAPABILITY_ACTION_BINDINGS[capability_id]
@@ -113,7 +185,7 @@ class CapabilityActionParityTests(unittest.TestCase):
             binding.additional_replace_methods,
             ("replace_player_base_rating", "replace_player_position"),
         )
-        self.assertIn("28 independent native base ratings", binding.product_note)
+        self.assertIn("31 independent native base ratings", binding.product_note)
         self.assertIn("native 100", binding.product_note)
         self.assertIn("player first/last-name", binding.product_note)
         self.assertIn("Dan CODEX", binding.product_note)
@@ -121,47 +193,62 @@ class CapabilityActionParityTests(unittest.TestCase):
         self.assertIn("paired semantic +0x34", binding.product_note)
         self.assertIn("desktop dropdown", binding.product_note)
         self.assertIn("spot check", binding.product_note)
-        self.assertIn("exact native 0–99", capability.summary)
-        self.assertIn("nonempty player first/last names", capability.summary)
-        self.assertIn("disclose shared-allocation owners", capability.summary)
-        self.assertIn("source native 100", capability.summary)
-        self.assertIn("exact 0–16 player positions", capability.summary)
+        self.assertIn("bounded on-disc team/player names", capability.summary)
+        self.assertIn("31 native base ratings", capability.summary)
+        self.assertIn("exact mirrored positions", capability.summary)
+        self.assertIn("149 proved raw-save", capability.summary)
+        self.assertIn("15 bounded text fields", capability.summary)
+        self.assertIn("count-preserving populated memberships", capability.summary)
+        self.assertIn("source native rating 100", capability.summary)
         self.assertIn("Dan CODEX", capability.raw["runtime"]["scope"])
         self.assertIn("abbreviations", capability.raw["runtime"]["scope"])
         self.assertIn(
-            "no numeric rating readout",
+            "without a numeric readout",
             capability.raw["runtime"]["scope"],
         )
-        findings = " ".join(card.findings)
-        self.assertIn("+0x120..+0x126", findings)
-        self.assertIn("Safe extension storage is unresolved", findings)
-        self.assertIn("ordinary no-input boot did not enter the exact consumer", findings)
-        self.assertIn("path_not_reached", findings)
+        portme = " ".join(capability.raw["portme"])
+        constraints = " ".join(capability.raw["input_constraints"])
+        self.assertIn("+0x120..+0x126", constraints)
+        self.assertIn("path_not_reached", portme)
         self.assertIn("membership", capability.raw["gui"]["reason"])
-        self.assertIn("depth charts", capability.raw["gui"]["reason"])
+        self.assertIn("depth", capability.raw["gui"]["reason"])
         self.assertIn("+0x34", capability.raw["gui"]["reason"])
-        self.assertIn("17-choice semantic dropdown", capability.raw["gui"]["reason"])
+        self.assertIn("exact 0–16 positions", capability.raw["gui"]["reason"])
         self.assertIn("spot check remains pending", capability.raw["gui"]["reason"])
+        self.assertIn("Save Players", capability.raw["gui"]["reason"])
+        self.assertIn("signed-container reinjection", capability.raw["gui"]["reason"])
 
-    def test_unbound_semantic_promises_are_downgraded(self) -> None:
-        unbound = {
-            "apf2k8.cross_title_model_conversion.nfl_to_apf",
-            "apf2k8.logos_cards.uniform_catalog",
-            "apf2k8.mode_state_routing.state_graph",
-            "apf2k8.models.scne_gltf",
-            "apf2k8.portraits_faces.hi_head",
-            "apf2k8.schedules_franchise.retained",
+    def test_inspectors_exports_and_internal_evidence_are_not_fake_promises(self) -> None:
+        expected = {
+            "apf2k8.cross_title_model_conversion.nfl_to_apf": ApfStatus.PREVIEW,
+            "apf2k8.mode_state_routing.state_graph": ApfStatus.PREVIEW,
+            "apf2k8.portraits_faces.hi_head": ApfStatus.EXPORT_ONLY,
+            "apf2k8.schedules_franchise.retained": ApfStatus.PREVIEW,
         }
-        for capability_id in unbound:
+        for capability_id, status in expected.items():
             with self.subTest(capability=capability_id):
-                self.assertIsNone(capability_action_binding(capability_id))
-                self.assertIs(
-                    self.cards[capability_id].status, ApfStatus.COMING_SOON
-                )
-                self.assertIn(
-                    "No dedicated Mod Studio semantic handler",
-                    self.cards[capability_id].findings[0],
-                )
+                self.assertIsNotNone(capability_action_binding(capability_id))
+                self.assertIs(self.cards[capability_id].status, status)
+
+        hidden = {
+            capability_id: card.status
+            for capability_id, card in self.cards.items()
+            if self.capabilities[capability_id].raw["gui"].get("expose") is False
+        }
+        self.assertTrue(hidden)
+        self.assertLessEqual(
+            set(hidden.values()),
+            {ApfStatus.EVIDENCE, ApfStatus.RESEARCH},
+        )
+        self.assertNotIn(ApfStatus.COMING_SOON, hidden.values())
+        self.assertNotIn(
+            ApfStatus.COMING_SOON,
+            {card.status for card in self.cards.values()},
+        )
+
+        logo_catalog = "apf2k8.logos_cards.uniform_catalog"
+        self.assertIsNotNone(capability_action_binding(logo_catalog))
+        self.assertIs(self.cards[logo_catalog].status, ApfStatus.EXPORT_ONLY)
 
     def test_draft_logo_registry_and_exact_asset_route_are_complete(self) -> None:
         capability_id = "apf2k8.logos_cards.draft_logo"
@@ -216,7 +303,57 @@ class CapabilityActionParityTests(unittest.TestCase):
             self.cards["apf2k8.stadiums.geometry"].status,
             ApfStatus.EXPORT_ONLY,
         )
-        self.assertIsNone(capability_action_binding("apf2k8.models.scne_gltf"))
+        texture = capability_action_binding("apf2k8.stadiums.textures")
+        self.assertIsNotNone(texture)
+        assert texture is not None
+        self.assertEqual(texture.handler_id, "stadium.embedded_texture_editor")
+        self.assertTrue(texture.has_complete_editor)
+        self.assertIs(
+            self.cards["apf2k8.stadiums.textures"].status,
+            ApfStatus.EDITABLE,
+        )
+        model = capability_action_binding("apf2k8.models.scne_gltf")
+        self.assertIsNotNone(model)
+        assert model is not None
+        self.assertEqual(model.handler_id, "uniforms.model_position_roundtrip")
+        self.assertEqual(
+            model.actions,
+            frozenset(
+                {
+                    ApfProductAction.PREVIEW,
+                    ApfProductAction.EXPORT,
+                    ApfProductAction.BUILD_COPY,
+                }
+            ),
+        )
+        self.assertTrue(model.has_verified_one_shot_writer)
+        self.assertIs(
+            self.cards["apf2k8.models.scne_gltf"].status,
+            ApfStatus.EDITABLE,
+        )
+        # Release-gap audit (2026-08-04): the helmet/player round trip lives in
+        # the Uniforms & Equipment workspace, so its capability card must render
+        # there too -- not under Stadiums via the models_shap_scne surface
+        # default. The stadium mesh round trip stays in Stadium Studio.
+        self.assertIs(
+            self.cards["apf2k8.models.scne_gltf"].category,
+            ApfCategory.UNIFORMS,
+        )
+        stadium_model = capability_action_binding(
+            "apf2k8.models.scne_same_count_position"
+        )
+        self.assertIsNotNone(stadium_model)
+        assert stadium_model is not None
+        self.assertTrue(stadium_model.has_verified_one_shot_writer)
+        self.assertEqual(stadium_model.output_kind, "verified copied 1A")
+        self.assertIs(
+            self.cards["apf2k8.models.scne_same_count_position"].status,
+            ApfStatus.EDITABLE,
+        )
+        self.assertIs(
+            self.cards["apf2k8.models.scne_same_count_position"].category,
+            ApfCategory.STADIUMS,
+        )
         raw_scene = ApfAsset(
             asset_id="apf:outer:2:inner:3",
             outer_index=2,

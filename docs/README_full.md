@@ -841,7 +841,7 @@ Live 3D player numbers and generated nameplates now have their own complete
 offline art pipeline. Across all 634 uniform selectors, chunks 13–42 contain
 19,020 context-local digit glyphs: `48..57` for front/back jersey numbers,
 `hn48..hn57` for helmets, and `an48..an57` for arm/shoulder numbers. Chunk 43
-is the 32×1024 six-mip linear `names` atlas; chunk 44 is its separate 29-record
+is the 1024×32 six-mip linear `names` atlas; chunk 44 is its separate 29-record
 metric object. The XBE trace closes digit composition and the
 `PLAYERNAME`/`PLAYERNAME_long` generated-texture route. All 19,654 pixel
 resources match the retail XISO, use one of four exact descriptor layouts, and
@@ -1593,7 +1593,7 @@ all remain inside the 288 authorized POSITION0 bytes. The changed rebuild has
 the catalog target, IFF/H7A bytes, and complete manifest. Run
 `bash tools/validate_apf_stadium_static_target_catalog.sh`; see
 `docs/research/apf_stadium_static_target_catalog.md` and
-`reports/assets/apf_stadium_static_position_target_catalog.json`, then run
+`mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json`, then run
 `bash tools/validate_apf_stadium_catalog_position_patch.sh`; see
 `docs/research/apf_stadium_catalog_position_writeback.md` and
 `reports/assets/apf_scne_catalog_position_roundtrip.json`.

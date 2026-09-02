@@ -265,9 +265,15 @@ def load_scene_inventory(path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
 
 def parse_hierarchy(system: bytes, inventory_scene: dict[str, Any]) -> list[dict[str, Any]]:
     node = inventory_scene["nodes"][0]
-    old_hierarchy = node["hierarchy"]
-    require(old_hierarchy["offset"] == HIERARCHY_OFFSET, "hierarchy offset changed")
-    require(old_hierarchy["count"] == HIERARCHY_COUNT, "hierarchy count changed")
+    inventory_hierarchy = node["hierarchy"]
+    require(inventory_hierarchy["offset"] == HIERARCHY_OFFSET,
+            "hierarchy offset changed")
+    require(inventory_hierarchy["record_offset"] == HIERARCHY_OFFSET,
+            "hierarchy record offset changed")
+    require(inventory_hierarchy["byte_length"] == HIERARCHY_COUNT * HIERARCHY_STRIDE,
+            "hierarchy byte length changed")
+    require(inventory_hierarchy["count"] == HIERARCHY_COUNT,
+            "hierarchy count changed")
     rows: list[dict[str, Any]] = []
     recursive_globals: list[tuple[float, float, float]] = []
     for joint in range(HIERARCHY_COUNT):
@@ -293,17 +299,16 @@ def parse_hierarchy(system: bytes, inventory_scene: dict[str, Any]) -> list[dict
             )
         recursive_globals.append(recursive)  # type: ignore[arg-type]
         error = max(abs(recursive[axis] - bind[axis]) for axis in range(3))
-        legacy = old_hierarchy["records"][joint]
-        require(legacy["name"] == name and legacy["parent"] == parent,
+        inventory_record = inventory_hierarchy["records"][joint]
+        require(inventory_record["name"] == name and
+                inventory_record["parent"] == parent,
                 f"joint {joint} metadata disagrees with scene inventory")
-        if joint + 1 < HIERARCHY_COUNT:
-            require(tuple(legacy["vector_a"]) == f32x4(system, record + 0x30),
-                    f"legacy shifted vector_a cross-check failed at joint {joint}")
-            require(tuple(legacy["vector_b"]) == f32x4(system, record + 0x40),
-                    f"legacy shifted vector_b cross-check failed at joint {joint}")
-        else:
-            require(legacy["vector_a"] is None and legacy["vector_b"] is None,
-                    "legacy terminal hierarchy sentinel changed")
+        require(inventory_record["offset"] == record,
+                f"joint {joint} inventory record offset changed")
+        require(tuple(inventory_record["vector_a"]) == bind,
+                f"inventory vector_a cross-check failed at joint {joint}")
+        require(tuple(inventory_record["vector_b"]) == local,
+                f"inventory vector_b cross-check failed at joint {joint}")
         bind_m = [component * 0.01 for component in bind[:3]]
         local_m = [component * 0.01 for component in local[:3]]
         inverse_bind_column_major = [
@@ -746,7 +751,7 @@ def main(argv: list[str] | None = None) -> int:
                 "+0x2c": "i16 next sibling",
                 "+0x2e": "u16 reserved",
             },
-            "legacy_inventory_correction": "apf_scene_inventory/v1 called the first two float4s a header and attached each following joint's vectors to the previous metadata row; 20 shifted pairs and the terminal omission are byte-cross-checked here",
+            "scene_inventory_cross_check": "apf_scene_inventory/v1 starts at the first 0x30-byte record, keeps each record's two vectors with its own metadata, and includes both vectors on the terminal row; all 21 rows are byte-cross-checked here",
             "recursive_global_max_error_cm": max_recursive_error,
             "rest_rotation": "identity for all 21 rows; bind_global = parent bind_global + local translation exactly in float32",
         },

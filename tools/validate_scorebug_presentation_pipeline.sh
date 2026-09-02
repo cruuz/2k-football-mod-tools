@@ -4,12 +4,25 @@ set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
 
-temporary="$(mktemp -d)"
+temporary="$(mktemp -d /tmp/scorebug-presentation-validation.XXXXXX)"
 trap 'rm -rf "$temporary"' EXIT
+
+# The independent whole-XISO gate below builds a fresh 6.3 GB copy.  Refuse
+# before creating it when the temporary filesystem cannot hold the copy plus a
+# bounded 1 GiB safety margin.  This keeps the validator self-cleaning without
+# risking a nearly full system drive.
+source_xiso='ESPN NFL 2K5 (USA).xiso.iso'
+source_xiso_bytes="$(stat -c '%s' "$source_xiso")"
+temporary_available_kib="$(df -Pk "$temporary" | awk 'NR == 2 { print $4 }')"
+required_temporary_kib="$(( (source_xiso_bytes + 1073741824 + 1023) / 1024 ))"
+if (( temporary_available_kib < required_temporary_kib )); then
+  echo "scorebug validation needs ${required_temporary_kib} KiB of temporary space; only ${temporary_available_kib} KiB is available" >&2
+  exit 1
+fi
 
 before_nfl_xbe="$(sha256sum 'extracted/ESPN NFL 2K5 (USA)/default.xbe' | cut -d' ' -f1)"
 before_nfl_index="$(sha256sum 'extracted/ESPN NFL 2K5 (USA)/vc_53450030/0' | cut -d' ' -f1)"
-before_nfl_xiso="$(sha256sum 'ESPN NFL 2K5 (USA).xiso.iso' | cut -d' ' -f1)"
+before_nfl_xiso="$(sha256sum "$source_xiso" | cut -d' ' -f1)"
 before_apf_xex="$(sha256sum 'extracted/All-Pro Football 2K8 (USA)/default.xex' | cut -d' ' -f1)"
 before_apf_index="$(sha256sum 'extracted/All-Pro Football 2K8 (USA)/0A' | cut -d' ' -f1)"
 
@@ -114,8 +127,8 @@ if python3 tools/nfl_scorebug_png_import.py \
 fi
 
 if python3 tools/nfl_scorebug_xiso_workflow.py \
-    --source-xiso 'ESPN NFL 2K5 (USA).xiso.iso' \
-    --output-xiso 'ESPN NFL 2K5 (USA).xiso.iso' \
+    --source-xiso "$source_xiso" \
+    --output-xiso "$source_xiso" \
     --manifest "$temporary/alias.json" --preview "$temporary/alias.png" \
     --target score_buga \
     --png "$temporary/fixtures/score_buga_diagnostic.png" >/dev/null 2>&1; then
@@ -123,19 +136,35 @@ if python3 tools/nfl_scorebug_xiso_workflow.py \
   exit 1
 fi
 
-python3 tools/nfl_scorebug_xiso_verify.py \
-  --source-xiso 'ESPN NFL 2K5 (USA).xiso.iso' \
-  --output-xiso \
-    build/nfl2k5-scorebug-workflow-20260712/ESPN-NFL-2K5-scorebug-magenta.xiso.iso \
-  --manifest build/nfl2k5-scorebug-workflow-20260712/workflow.json \
-  --preview build/nfl2k5-scorebug-workflow-20260712/preview.png \
+# Rebuild the historical score_buga proof into this run's private temporary
+# directory.  The old validator pointed at a retained build/ ISO that was never
+# a release input and could disappear independently of the source tree.  A
+# fresh build is stronger: it re-exercises exclusive creation, the retail pins,
+# fixed-span writer, XDVDFS copy, and whole-image difference ledger every run.
+scorebug_output="$temporary/scorebug-magenta.xiso.iso"
+scorebug_manifest="$temporary/workflow.json"
+scorebug_preview="$temporary/preview.png"
+python3 tools/nfl_scorebug_xiso_workflow.py \
+  --source-xiso "$source_xiso" \
+  --output-xiso "$scorebug_output" \
+  --manifest "$scorebug_manifest" \
+  --preview "$scorebug_preview" \
   --target score_buga \
   --png reports/assets/nfl2k5_scorebug_fixtures/score_buga_diagnostic.png
 
-python3 - <<'PY'
+python3 tools/nfl_scorebug_xiso_verify.py \
+  --source-xiso "$source_xiso" \
+  --output-xiso "$scorebug_output" \
+  --manifest "$scorebug_manifest" \
+  --preview "$scorebug_preview" \
+  --target score_buga \
+  --png reports/assets/nfl2k5_scorebug_fixtures/score_buga_diagnostic.png
+
+python3 - "$scorebug_manifest" <<'PY'
 import hashlib
 import json
 from pathlib import Path
+import sys
 
 audit_path = Path("reports/assets/scorebug_presentation_audit.json")
 audit = json.loads(audit_path.read_text())
@@ -171,7 +200,7 @@ font_roundtrip_path = Path(
     "reports/assets/apf_digital_font_patch_roundtrip.json")
 font_roundtrip = json.loads(font_roundtrip_path.read_text())
 assert hashlib.sha256(font_roundtrip_path.read_bytes()).hexdigest() == \
-    "c1ccb433832fe4c3465c2f9632e3a31887133cc5f8cf811cdff71ec9b36cd06e"
+    "96ee9a01eec320011154531272c570cbf2227c3d7ef9d1fe9ff5638baeac3b70"
 assert font_roundtrip["schema"] == "apf_digital_font_patch_roundtrip/v1"
 font_conclusion = font_roundtrip["conclusion"]
 assert font_conclusion["copy_only_global_digital_font_cli_exposed"] is True
@@ -181,8 +210,7 @@ assert font_conclusion["full_shared_vram_h7a_rebuild_proved"] is True
 assert font_conclusion["all_750_unrelated_inner_parts_preserved"] is True
 assert font_conclusion["xenia_runtime_visibility_proved"] is False
 
-workflow = json.loads(Path(
-    "build/nfl2k5-scorebug-workflow-20260712/workflow.json").read_text())
+workflow = json.loads(Path(sys.argv[1]).read_text())
 assert workflow["schema"] == "nfl2k5_scorebug_xiso_workflow/v1"
 assert workflow["output"]["xiso_sha256"] == \
     "852901f79ae3368b1e0663106dffdfd5c3576c1ebd6579022c58277ed2a60a83"
@@ -205,7 +233,7 @@ PY
 
 after_nfl_xbe="$(sha256sum 'extracted/ESPN NFL 2K5 (USA)/default.xbe' | cut -d' ' -f1)"
 after_nfl_index="$(sha256sum 'extracted/ESPN NFL 2K5 (USA)/vc_53450030/0' | cut -d' ' -f1)"
-after_nfl_xiso="$(sha256sum 'ESPN NFL 2K5 (USA).xiso.iso' | cut -d' ' -f1)"
+after_nfl_xiso="$(sha256sum "$source_xiso" | cut -d' ' -f1)"
 after_apf_xex="$(sha256sum 'extracted/All-Pro Football 2K8 (USA)/default.xex' | cut -d' ' -f1)"
 after_apf_index="$(sha256sum 'extracted/All-Pro Football 2K8 (USA)/0A' | cut -d' ' -f1)"
 

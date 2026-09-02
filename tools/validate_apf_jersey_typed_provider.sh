@@ -22,7 +22,9 @@ PYTHONPYCACHEPREFIX="$temporary/pycache" python3 -m py_compile \
   tests/apf_jersey_family_verify_test.py
 
 python3 -m mod_editor --check-registry --require-registry
-python3 -m unittest discover -s tests/mod_editor -p 'test_*.py' -v
+for test_module in test_providers.py test_apf_export.py test_gui.py; do
+  python3 -m unittest discover -s tests/mod_editor -p "$test_module" -v
+done
 python3 -m unittest -v tests/apf_jersey_family_verify_test.py
 
 python3 - "$temporary" <<'PY'

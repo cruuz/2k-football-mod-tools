@@ -38,14 +38,26 @@ from mod_editor.core.nfl2k5_crib import (
     CribStorage,
     load_nfl2k5_crib_catalog,
 )
-from mod_editor.core.nfl2k5_stadium_studio import StadiumTexture
+from mod_editor.core.nfl2k5_crib_geometry_writer import (
+    CompiledCribGeometryRecipe,
+    list_editable_scenes as list_editable_crib_geometry_scenes,
+)
+from mod_editor.core.nfl2k5_stadium_studio import (
+    StadiumGeometryTarget,
+    StadiumScene,
+    StadiumTexture,
+)
 from mod_editor.core.nfl2k5_stadium_texture_writer import (
+    CompiledStadiumGeometryRecipe,
     CompiledStadiumTextureEdit,
     FIXED_ALLOCATION_ERROR,
     TARGET_SCENE_ID,
     TARGET_TEXTURE_ID,
     StadiumTextureWriterError,
 )
+from mod_editor.core.nfl2k5_playbook_inspector import parse_playbook_resource
+from mod_editor.core.nfl2k5_playbook_route_writer import PlayRouteCloneRequest
+from tests.mod_editor.test_nfl2k5_playbook_inspector import _fixture as _play_fixture
 from tests.mod_editor.test_nfl2k5_audio_catalog import AudioFixture, _valid_menu_wav
 
 
@@ -219,7 +231,12 @@ class StudioSessionTests(unittest.TestCase):
         self.original.write_bytes(b"ORIGINAL-CONTAINER")
         _AssetIO.original = self.original
         source = SimpleNamespace(sha256="a" * 64)
-        self.cache = SimpleNamespace(source=source, root=self.root / "private-source-cache")
+        self.cache = SimpleNamespace(
+            source=source,
+            root=self.root / "private-source-cache",
+            pack0=self.root / "private-source-cache" / "pack0.bin",
+            inventory=self.root / "private-source-cache" / "inventory.json",
+        )
         self.patcher = mock.patch(
             "mod_editor.studio.session.Nfl2k5ProductVisualIO", _AssetIO
         )
@@ -317,6 +334,48 @@ class StudioSessionTests(unittest.TestCase):
         self.assertEqual(loaded.load_shareable_project(project), 1)
         self.assertEqual(loaded.current_path(self.asset).read_bytes(), b"USER-A-CONTAINER")
         self.assertFalse(loaded.can_undo)
+
+    def test_play_route_copy_undo_revert_and_project_roundtrip(self) -> None:
+        asset_id = "nfl2k5.resource.test.PLAY"
+        book = parse_playbook_resource(_play_fixture(), asset_id=asset_id)
+        inspector = SimpleNamespace(load=lambda selected: (
+            book if selected == asset_id else (_ for _ in ()).throw(
+                ValidationError("unknown playbook")
+            )
+        ))
+        self.session.attach_playbook_inspector(inspector)  # type: ignore[arg-type]
+        request = PlayRouteCloneRequest(asset_id, 0, 3, 1, 7)
+        self.assertTrue(self.session.copy_play_assignment_route(request))
+        self.assertEqual(self.session.modified_count, 1)
+        self.assertEqual(
+            self.session.canonical_document()["edits"],
+            [request.provider_edit()],
+        )
+        self.assertIn("Copy assignment route", self.session.undo())
+        self.assertEqual(self.session.modified_count, 0)
+
+        self.session.copy_play_assignment_route(request)
+        project = self.root / "route-only.2k5mod"
+        self.session.save_shareable_project(project)
+        with zipfile.ZipFile(project) as archive:
+            self.assertEqual(archive.namelist(), ["project.json"])
+            manifest = json.loads(archive.read("project.json"))
+            self.assertEqual(manifest["edits"], [])
+            self.assertEqual(manifest["play_route_edits"], [request.provider_edit()])
+            self.assertNotIn("descriptor", json.dumps(manifest))
+            self.assertNotIn("chain_start", json.dumps(manifest))
+
+        loaded = StudioSession(
+            self.cache, self.catalog, root=self.root / "sessions",
+            session_id="route-loaded",
+        )
+        loaded.attach_playbook_inspector(inspector)  # type: ignore[arg-type]
+        self.assertEqual(loaded.load_shareable_project(project), 1)
+        self.assertEqual(loaded.play_route_edits, (request,))
+        self.assertTrue(loaded.revert_play_assignment_route(request.selector))
+        self.assertEqual(loaded.modified_count, 0)
+        self.assertIn("Revert assignment route", loaded.undo())
+        self.assertEqual(loaded.play_route_edits, (request,))
 
     def test_scorebug_uses_unified_project_and_shareable_png_route(self) -> None:
         asset = _ScorebugAsset()
@@ -733,6 +792,73 @@ class StudioSessionTests(unittest.TestCase):
         self.assertEqual(loaded.canonical_document()["edits"][0]["selector"],
                          asset.selector)
 
+    def test_crib_geometry_is_preflighted_private_buildable_and_reversible(self) -> None:
+        catalog = load_nfl2k5_crib_catalog()
+        crib_io = SimpleNamespace(catalog=catalog, cache=self.cache)
+        self.session.attach_crib(catalog, crib_io)  # type: ignore[arg-type]
+        scene_id = str(list_editable_crib_geometry_scenes()[0]["scene_id"])
+        first_payload = b'{"crib-recipe":1}'
+        first = CompiledCribGeometryRecipe(
+            scene_id,
+            first_payload,
+            hashlib.sha256(first_payload).hexdigest(),
+            1, 2, 1,
+        )
+        second_payload = b'{"crib-recipe":2}'
+        second = CompiledCribGeometryRecipe(
+            scene_id,
+            second_payload,
+            hashlib.sha256(second_payload).hexdigest(),
+            1, 3, 1,
+        )
+        with mock.patch(
+            "mod_editor.studio.session.build_unified_crib_geometry_import",
+            return_value=(b"span", [], {}, f"{scene_id}.geometry", {}),
+        ) as preflight:
+            result = self.session.replace_crib_geometry(first)
+            self.assertTrue(result.modified)
+            preflight.assert_called_once()
+            self.session.replace_crib_geometry(second)
+
+        self.assertEqual(self.session.modified_count, 1)
+        self.assertEqual(self.session.modified_crib_model_scene_ids, {scene_id})
+        row = self.session.canonical_document()["edits"][0]
+        self.assertEqual(row["kind"], "crib_scene_geometry")
+        self.assertEqual(row["target"], scene_id)
+        self.assertEqual(Path(row["recipe"]).read_bytes(), second_payload)
+        with self.assertRaisesRegex(ValidationError, "private working session"):
+            self.session.save_shareable_project(self.root / "crib-geometry.2k5mod")
+
+        self.assertEqual(self.session.undo(), "Import edited Crib model")
+        self.assertEqual(
+            Path(self.session.canonical_document()["edits"][0]["recipe"]).read_bytes(),
+            first_payload,
+        )
+        self.assertEqual(self.session.revert_all(), 1)
+        self.assertEqual(self.session.modified_count, 0)
+        self.assertEqual(self.session.undo(), "Revert all assets")
+        self.assertEqual(self.session.modified_crib_model_scene_ids, {scene_id})
+
+    def test_crib_geometry_fit_failure_is_not_staged(self) -> None:
+        catalog = load_nfl2k5_crib_catalog()
+        crib_io = SimpleNamespace(catalog=catalog, cache=self.cache)
+        self.session.attach_crib(catalog, crib_io)  # type: ignore[arg-type]
+        scene_id = str(list_editable_crib_geometry_scenes()[0]["scene_id"])
+        payload = b'{"crib-recipe":"too-large"}'
+        compiled = CompiledCribGeometryRecipe(
+            scene_id, payload, hashlib.sha256(payload).hexdigest(), 1, 2, 1
+        )
+        with mock.patch(
+            "mod_editor.studio.session.build_unified_crib_geometry_import",
+            side_effect=ValidationError(
+                "This edit cannot fit the scene's fixed SCNE allocation."
+            ),
+        ):
+            with self.assertRaisesRegex(ValidationError, "cannot fit"):
+                self.session.replace_crib_geometry(compiled)
+        self.assertEqual(self.session.modified_count, 0)
+        self.assertFalse(any(self.session.replacements.iterdir()))
+
     def test_stadium_texture_composes_through_project_build_revert_and_undo(self) -> None:
         stock = self.root / "private-source-cache" / "cement01.png"
         stock.write_bytes(b"STADIUM-STOCK")
@@ -826,6 +952,68 @@ class StudioSessionTests(unittest.TestCase):
             self.session.replace_stadium_texture(texture, second)
         self.assertEqual(self.session.current_stadium_png(texture), previous_preview)
         self.assertEqual(previous_preview.read_bytes(), b"STADIUM-PREVIEW:STADIUM-USER-RGBA")
+
+    def test_stadium_geometry_is_private_buildable_and_reversible(self) -> None:
+        stock = self.root / "private-source-cache" / "stadium-stock.png"
+        stock.write_bytes(b"STADIUM-STOCK")
+        stock_rgba = b"STADIUM-STOCK-RGBA"
+        texture = StadiumTexture(
+            TARGET_TEXTURE_ID, TARGET_SCENE_ID, 2, 64, 64, "P8",
+            hashlib.sha256(stock_rgba).hexdigest(),
+            hashlib.sha256(stock.read_bytes()).hexdigest(),
+            stock, ("cement01",), 1, "Editable",
+        )
+        self.session.attach_stadium_texture(
+            _StadiumWriter(self.cache), texture  # type: ignore[arg-type]
+        )
+        target = StadiumGeometryTarget(
+            "stadium-target", 1, "roof", 3,
+            "catalog-same-count-position-v2", False,
+        )
+        scene = StadiumScene(
+            TARGET_SCENE_ID, 3280, 5, 2648, "Stadium",
+            self.root / "source.gltf", self.root / "source.bin",
+            "a" * 64, "b" * 64, 1, 1, 3, (target,),
+        )
+        first_payload = b'{"recipe":1}\n'
+        first = CompiledStadiumGeometryRecipe(
+            TARGET_SCENE_ID,
+            first_payload,
+            hashlib.sha256(first_payload).hexdigest(),
+            1, 2, 1,
+        )
+        result = self.session.replace_stadium_geometry(scene, first)
+        self.assertTrue(result.modified)
+        self.assertEqual(self.session.modified_count, 1)
+        self.assertIn(f"{TARGET_SCENE_ID}.geometry", self.session.modified_asset_ids)
+        row = self.session.canonical_document()["edits"][0]
+        self.assertEqual(row["kind"], "stadium_geometry")
+        self.assertEqual(row["target"], TARGET_SCENE_ID)
+        self.assertEqual(Path(row["recipe"]).read_bytes(), first_payload)
+        with self.assertRaisesRegex(ValidationError, "private working session"):
+            self.session.save_shareable_project(self.root / "geometry.2k5mod")
+
+        second_payload = b'{"recipe":2}\n'
+        second = CompiledStadiumGeometryRecipe(
+            TARGET_SCENE_ID,
+            second_payload,
+            hashlib.sha256(second_payload).hexdigest(),
+            1, 3, 1,
+        )
+        self.session.replace_stadium_geometry(scene, second)
+        self.assertEqual(
+            Path(self.session.canonical_document()["edits"][0]["recipe"]).read_bytes(),
+            second_payload,
+        )
+        self.assertEqual(self.session.undo(), "Import edited Stadium model")
+        self.assertEqual(
+            Path(self.session.canonical_document()["edits"][0]["recipe"]).read_bytes(),
+            first_payload,
+        )
+        self.assertEqual(self.session.revert_all(), 1)
+        self.assertEqual(self.session.modified_count, 0)
+        self.assertEqual(self.session.undo(), "Revert all assets")
+        self.assertEqual(self.session.modified_count, 1)
 
 
 if __name__ == "__main__":

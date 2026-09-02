@@ -1254,7 +1254,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
                 "replacements/002__selected-audio.wav",
             )
             self.assertIn("exact Menu Back slot", panel.table.item(0, 5).toolTip())
-            self.assertFalse(panel.revert_button.isEnabled())
+            self.assertTrue(panel.revert_button.isEnabled())
+
+            self.assertTrue(str(panel.revert_button.property("disableReason") or "").strip())
             self.assertGreaterEqual(panel.status_filter.findData("Modified"), 0)
             self.assertIn("staged WAVs", panel.status_filter.toolTip())
             panel._next_page()
@@ -1263,7 +1265,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertTrue(panel.play_button.isEnabled())
             self.assertTrue(panel.export_button.isEnabled())
             self.assertTrue(panel.replace_button.isEnabled())
-            self.assertFalse(panel.revert_button.isEnabled())
+            self.assertTrue(panel.revert_button.isEnabled())
+
+            self.assertTrue(str(panel.revert_button.property("disableReason") or "").strip())
             self.assertTrue(panel.load_waveform_button.isEnabled())
             self.assertEqual(panel.export_button.text(), "Export WAV / Raw")
             panel.family_filter.setCurrentIndex(
@@ -1291,13 +1295,23 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             host = CatalogAudioPanelHost(catalog, service, root / "replacements")
             panel = AudioPanel(host, page_size=2)
 
-            self.assertEqual(panel.meaning_filter.count(), 4)
+            self.assertEqual(panel.meaning_filter.count(), 5)
             self.assertEqual(
                 panel.meaning_filter.accessibleName(),
                 "Standalone audio meaning confidence filter",
             )
             self.assertIn("Separate from edit status", panel.meaning_filter.accessibleDescription())
+            self.assertIn(
+                "one family-reviewed",
+                panel.meaning_filter.accessibleDescription(),
+            )
             self.assertEqual(panel.meaning_filter.itemText(0), "All meaning confidence (850)")
+            self.assertEqual(
+                panel.meaning_filter.itemText(3), "Family-reviewed labels (1)"
+            )
+            self.assertEqual(
+                panel.meaning_filter.itemText(4), "Provisional labels (696)"
+            )
             self.assertEqual(
                 panel.meaning_filter.itemData(1),
                 "menu_back_route_runtime_unproved",
@@ -1308,6 +1322,10 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             )
             self.assertEqual(
                 panel.meaning_filter.itemData(3),
+                "family_reviewed_label_runtime_meaning_unproved",
+            )
+            self.assertEqual(
+                panel.meaning_filter.itemData(4),
                 "provisional_label_runtime_meaning_unproved",
             )
             self.assertEqual(panel.scope_filter.currentData(), PLAYABLE_AUDIO_SCOPE_ID)
@@ -1547,7 +1565,8 @@ class AudioPanelOffscreenTests(unittest.TestCase):
 
             panel.page = AudioPage(panel.page.assets, 257, 0, panel.page.limit)
             panel._update_audio_shortlist_actions()
-            self.assertFalse(panel.shortlist_matching_button.isEnabled())
+            self.assertTrue(panel.shortlist_matching_button.isEnabled())
+            self.assertTrue(str(panel.shortlist_matching_button.property("disableReason") or "").strip())
             self.assertIn("narrow search", panel.shortlist_matching_button.toolTip())
             self.assertIn("256 or fewer", panel.shortlist_matching_button.toolTip())
 
@@ -1559,7 +1578,8 @@ class AudioPanelOffscreenTests(unittest.TestCase):
                     panel.scope_filter.findData(scope)
                 )
                 application.processEvents()
-                self.assertFalse(panel.shortlist_matching_button.isEnabled())
+                self.assertTrue(panel.shortlist_matching_button.isEnabled())
+                self.assertTrue(str(panel.shortlist_matching_button.property("disableReason") or "").strip())
                 self.assertIn(tooltip_text, panel.shortlist_matching_button.toolTip())
                 before = panel._shortlisted_audio_ids()
                 panel._add_all_matching_audio_to_shortlist()
@@ -1625,7 +1645,8 @@ class AudioPanelOffscreenTests(unittest.TestCase):
 
             panel._toggle_audio_shortlist_review()
             self.assertTrue(panel._shortlist_reviewing)
-            self.assertFalse(panel.shortlist_matching_button.isEnabled())
+            self.assertTrue(panel.shortlist_matching_button.isEnabled())
+            self.assertTrue(str(panel.shortlist_matching_button.property("disableReason") or "").strip())
             self.assertIn("Return to the audio browser", panel.shortlist_matching_button.toolTip())
             panel._add_all_matching_audio_to_shortlist()
             self.assertEqual(panel._shortlisted_audio_ids(), selected)
@@ -1633,7 +1654,8 @@ class AudioPanelOffscreenTests(unittest.TestCase):
 
             panel._busy = True
             panel._update_audio_shortlist_actions()
-            self.assertFalse(panel.shortlist_matching_button.isEnabled())
+            self.assertTrue(panel.shortlist_matching_button.isEnabled())
+            self.assertTrue(str(panel.shortlist_matching_button.property("disableReason") or "").strip())
             self.assertIn("current audio task", panel.shortlist_matching_button.toolTip())
             panel._busy = False
             panel.reset_for_source()
@@ -1642,7 +1664,8 @@ class AudioPanelOffscreenTests(unittest.TestCase):
 
             host.source_ready = False
             panel._update_audio_shortlist_actions()
-            self.assertFalse(panel.shortlist_matching_button.isEnabled())
+            self.assertTrue(panel.shortlist_matching_button.isEnabled())
+            self.assertTrue(str(panel.shortlist_matching_button.property("disableReason") or "").strip())
             self.assertIn("Load your NFL 2K5 XISO", panel.shortlist_matching_button.toolTip())
             self.assertEqual(host._replacements, {})
             panel.deleteLater()
@@ -1726,11 +1749,15 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel.table.item(0, 5).text(), "Export-only")
             self.assertEqual(
                 panel.table.item(0, 5).toolTip(),
-                "Export-only • Replace Coming Soon",
+                "Export-only • raw aggregate; edit individual indexed ranges",
             )
-            self.assertFalse(panel.replace_button.isEnabled())
+            self.assertTrue(panel.replace_button.isEnabled())
+
+            self.assertTrue(str(panel.replace_button.property("disableReason") or "").strip())
             self.assertTrue(panel.pack_path_card.isHidden())
-            self.assertFalse(panel.copy_pack_path_button.isEnabled())
+            self.assertTrue(panel.copy_pack_path_button.isEnabled())
+
+            self.assertTrue(str(panel.copy_pack_path_button.property("disableReason") or "").strip())
             self.assertNotEqual(panel.note_label.text(), bank.action_note)
             self.assertEqual(panel.note_label.toolTip(), bank.action_note)
 
@@ -1745,7 +1772,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertIn("Hz", panel.table.item(0, 2).toolTip())
             self.assertTrue(panel.replace_button.isEnabled())
             self.assertTrue(panel.pack_path_card.isHidden())
-            self.assertFalse(panel.copy_pack_path_button.isEnabled())
+            self.assertTrue(panel.copy_pack_path_button.isEnabled())
+
+            self.assertTrue(str(panel.copy_pack_path_button.property("disableReason") or "").strip())
             self.assertEqual(panel.note_label.text(), audio_range.action_note)
             self.assertEqual(panel.note_label.toolTip(), audio_range.action_note)
             self.assertEqual(panel.table.item(0, 5).text(), "Editable")
@@ -2390,12 +2419,20 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel.table.item(0, 3).text(), "192 bytes")
             self.assertIn(selected.asset_id, panel.table.item(0, 0).toolTip())
             self.assertEqual(panel.table.item(0, 5).text(), "Export-only")
-            self.assertFalse(panel.play_button.isEnabled())
-            self.assertFalse(panel.replace_button.isEnabled())
+            self.assertTrue(panel.play_button.isEnabled())
+
+            self.assertTrue(str(panel.play_button.property("disableReason") or "").strip())
+            self.assertTrue(panel.replace_button.isEnabled())
+            self.assertTrue(str(panel.replace_button.property("disableReason") or "").strip())
             self.assertTrue(panel.pack_path_card.isHidden())
-            self.assertFalse(panel.copy_pack_path_button.isEnabled())
-            self.assertFalse(panel.shortlist_toggle_button.isEnabled())
-            self.assertFalse(panel.shortlist_page_button.isEnabled())
+            self.assertTrue(panel.copy_pack_path_button.isEnabled())
+
+            self.assertTrue(str(panel.copy_pack_path_button.property("disableReason") or "").strip())
+            self.assertTrue(panel.shortlist_toggle_button.isEnabled())
+
+            self.assertTrue(str(panel.shortlist_toggle_button.property("disableReason") or "").strip())
+            self.assertTrue(panel.shortlist_page_button.isEnabled())
+            self.assertTrue(str(panel.shortlist_page_button.property("disableReason") or "").strip())
             self.assertEqual(panel.export_button.text(), "Export Raw Container")
             self.assertIn("cannot be played", panel.note_label.text())
 
@@ -2565,8 +2602,13 @@ class AudioPanelOffscreenTests(unittest.TestCase):
 
             panel.page = AudioPage((), 257, 0, 1)
             panel._update_collection_actions()
-            self.assertFalse(panel.export_matching_button.isEnabled())
+            # Never silent-gray: button stays clickable; disableReason teaches 256 wall.
+            self.assertTrue(panel.export_matching_button.isEnabled())
             self.assertIn("256 or fewer", panel.export_matching_button.toolTip())
+            self.assertIn(
+                "256 or fewer",
+                str(panel.export_matching_button.property("disableReason") or ""),
+            )
             panel.deleteLater()
             application.processEvents()
 
@@ -2597,11 +2639,24 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertTrue(panel._search_timer.isActive())
             self.assertEqual(panel._selected_asset().asset_id, old_selected)
             self.assertEqual(panel.count_label.text(), "Updating audio results…")
-            self.assertFalse(panel.previous_button.isEnabled())
-            self.assertFalse(panel.next_button.isEnabled())
-            self.assertFalse(panel.export_matching_button.isEnabled())
-            self.assertFalse(panel.shortlist_page_button.isEnabled())
-            self.assertFalse(panel.shortlist_matching_button.isEnabled())
+            # Never silent-gray: pagination stays clickable while query pending.
+            self.assertTrue(panel.previous_button.isEnabled())
+            self.assertTrue(panel.next_button.isEnabled())
+            self.assertTrue(
+                str(panel.previous_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(
+                str(panel.next_button.property("disableReason") or "").strip()
+            )
+            # Never silent-gray: Export matching stays clickable while query pending.
+            self.assertTrue(panel.export_matching_button.isEnabled())
+            self.assertTrue(
+                str(panel.export_matching_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(panel.shortlist_page_button.isEnabled())
+            self.assertTrue(str(panel.shortlist_page_button.property("disableReason") or "").strip())
+            self.assertTrue(panel.shortlist_matching_button.isEnabled())
+            self.assertTrue(str(panel.shortlist_matching_button.property("disableReason") or "").strip())
             self.assertTrue(panel.play_button.isEnabled())
             self.assertTrue(panel.export_button.isEnabled())
             self.assertTrue(panel.replace_button.isEnabled())
@@ -2612,6 +2667,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel.page.total, 1)
             self.assertTrue(panel._catalog_query_is_current())
             self.assertTrue(panel.export_matching_button.isEnabled())
+            self.assertFalse(
+                str(panel.export_matching_button.property("disableReason") or "").strip()
+            )
             self.assertTrue(panel.shortlist_page_button.isEnabled())
             self.assertTrue(panel.shortlist_matching_button.isEnabled())
             panel.deleteLater()
@@ -2669,7 +2727,10 @@ class AudioPanelOffscreenTests(unittest.TestCase):
 
             panel.search.setText("c0101")
             self.assertTrue(panel._search_timer.isActive())
-            self.assertFalse(panel.next_button.isEnabled())
+            self.assertTrue(panel.next_button.isEnabled())
+            self.assertTrue(
+                str(panel.next_button.property("disableReason") or "").strip()
+            )
             panel.search.clear()
 
             self.assertFalse(panel._search_timer.isActive())
@@ -2677,6 +2738,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel.count_label.text(), original_count)
             self.assertEqual(panel.range_label.text(), original_range)
             self.assertTrue(panel.next_button.isEnabled())
+            self.assertFalse(
+                str(panel.next_button.property("disableReason") or "").strip()
+            )
             self.assertTrue(panel.export_matching_button.isEnabled())
             self.assertTrue(panel.shortlist_page_button.isEnabled())
             self.assertTrue(panel.shortlist_matching_button.isEnabled())
@@ -2760,9 +2824,17 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             panel.search.setText("c0101")
             with patch(
                 "mod_editor.gui.audio_panel_qt.QFileDialog.getSaveFileName"
-            ) as stale_dialog:
+            ) as stale_dialog, patch(
+                "mod_editor.gui.audio_panel_qt.QMessageBox.information"
+            ) as blocked_info:
                 panel._export_matching_audio()
             stale_dialog.assert_not_called()
+            # Never silent-gray: stale query surfaces disableReason via click-to-explain.
+            blocked_info.assert_called_once()
+            self.assertIn(
+                "Updating results",
+                str(blocked_info.call_args.args[2]),
+            )
             self.assertEqual(captured, {})
 
             panel._filters_changed()
@@ -2900,8 +2972,11 @@ class AudioPanelOffscreenTests(unittest.TestCase):
                 panel.scope_filter.findData("streaming")
             )
             application.processEvents()
-            self.assertFalse(panel.shortlist_toggle_button.isEnabled())
-            self.assertFalse(panel.shortlist_page_button.isEnabled())
+            self.assertTrue(panel.shortlist_toggle_button.isEnabled())
+
+            self.assertTrue(str(panel.shortlist_toggle_button.property("disableReason") or "").strip())
+            self.assertTrue(panel.shortlist_page_button.isEnabled())
+            self.assertTrue(str(panel.shortlist_page_button.property("disableReason") or "").strip())
             self.assertIn("Complete banks", panel.shortlist_page_button.toolTip())
             panel._toggle_audio_shortlist()
             self.assertEqual(
@@ -2929,7 +3004,8 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             panel.reset_for_source()
             self.assertEqual(panel._shortlisted_audio_ids(), ())
             self.assertEqual(panel.shortlist_count_label.text(), "Selected 0 / 256")
-            self.assertFalse(panel.export_shortlist_button.isEnabled())
+            self.assertTrue(panel.export_shortlist_button.isEnabled())
+            self.assertTrue(str(panel.export_shortlist_button.property("disableReason") or "").strip())
             self.assertEqual(project_mutations, [])
             panel.deleteLater()
             application.processEvents()
@@ -2980,7 +3056,8 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             application.processEvents()
             panel._add_visible_audio_to_shortlist()
             self.assertEqual(panel._shortlisted_audio_ids(), ())
-            self.assertFalse(panel.shortlist_page_button.isEnabled())
+            self.assertTrue(panel.shortlist_page_button.isEnabled())
+            self.assertTrue(str(panel.shortlist_page_button.property("disableReason") or "").strip())
             panel.deleteLater()
             application.processEvents()
 
@@ -3130,7 +3207,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel._cleared_audio_shortlist, ())
             panel._toggle_audio_shortlist()
             self.assertEqual(panel._shortlisted_audio_ids(), ())
-            self.assertFalse(panel.shortlist_clear_button.isEnabled())
+            self.assertTrue(panel.shortlist_clear_button.isEnabled())
+
+            self.assertTrue(str(panel.shortlist_clear_button.property("disableReason") or "").strip())
             panel._clear_audio_shortlist()
             self.assertEqual(panel._shortlisted_audio_ids(), ())
 
@@ -3140,7 +3219,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             panel.reset_for_source()
             self.assertEqual(panel._cleared_audio_shortlist, ())
             self.assertEqual(panel._shortlisted_audio_ids(), ())
-            self.assertFalse(panel.shortlist_clear_button.isEnabled())
+            self.assertTrue(panel.shortlist_clear_button.isEnabled())
+
+            self.assertTrue(str(panel.shortlist_clear_button.property("disableReason") or "").strip())
             panel.deleteLater()
             application.processEvents()
 
@@ -3216,8 +3297,9 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             self.assertEqual(panel.count_label.text(), "Reviewing 4 selected sounds")
             self.assertEqual(panel.shortlist_review_button.text(), "Back to browser")
             self.assertTrue(panel.shortlist_move_down_button.isEnabled())
-            self.assertFalse(panel.shortlist_move_up_button.isEnabled())
+            self.assertTrue(panel.shortlist_move_up_button.isEnabled())
 
+            self.assertTrue(str(panel.shortlist_move_up_button.property("disableReason") or "").strip())
             panel._move_shortlisted_audio(1)
             reordered = (
                 second_standalone,
@@ -3259,7 +3341,8 @@ class AudioPanelOffscreenTests(unittest.TestCase):
             panel._clear_audio_shortlist()
             self.assertFalse(panel._shortlist_reviewing)
             self.assertEqual(panel._shortlisted_audio_ids(), ())
-            self.assertFalse(panel.shortlist_review_button.isEnabled())
+            self.assertTrue(panel.shortlist_review_button.isEnabled())
+            self.assertTrue(str(panel.shortlist_review_button.property("disableReason") or "").strip())
 
             panel._toggle_audio_shortlist()
             self.assertEqual(panel._shortlisted_audio_ids(), (second_range,))

@@ -201,7 +201,7 @@ packet 0 even though the older whole-payload-only check admitted it. No source
 fingerprint, packet hash, retail byte, preimage, or private path is stored in a
 shareable project or public receipt.
 
-## Current boundary and what remains Coming Soon
+## Current boundary
 
 ### PCM16 authoring and external XMA1 encoding
 
@@ -214,9 +214,12 @@ privately, bounds and cleans the process group, supports cancellation, and
 hands the result to the existing exact-slot validator.
 
 No real XMA1 encoder was available in the build environment. Fake-process tests
-prove selected and batch plumbing only. FLAC/MP3, mixed-format packs, and more
-than 256 supplied WAVs per import remain unsupported, and exact slot fit can
-still reject otherwise valid XMA1 output. See the
+prove selected and batch plumbing only. One selected WAV, MP3, FLAC, OGG, M4A,
+or other FFmpeg-decodable file is conformed through the current ordinary-audio
+route; folder/ZIP packs accept only pre-encoded XMA1 or exact PCM16 WAV.
+Mixed-format ordinary-audio packs and more than 256 supplied files per import
+remain unsupported, and exact slot fit can still reject otherwise valid XMA1
+output. See the
 [external encoder guide](../mod_editor/apf2k8_external_xma1_encoder.md).
 
 ### AUSB commentary, soundtrack, and music replacement
@@ -298,5 +301,6 @@ to prove that the tested menu box was actually the sound heard. The Track 12
 AUSB capture likewise proved stability but neither modified playback nor stock
 fallback. Alpha.28 can hand one selected exact-shape PCM16 WAV or a v2 pack of
 up to 256 supplied WAVs to a separately installed encoder. Real-tool
-compatibility and authored-audio consumption remain unproved; FLAC/MP3 and
-mixed-format packs remain unimplemented.
+compatibility and authored-audio consumption remain unproved. One selected
+FLAC/MP3/OGG/M4A file is supported through conformance; mixed-format
+ordinary-audio packs remain unsupported.

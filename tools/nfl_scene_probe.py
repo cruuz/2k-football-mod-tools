@@ -28,6 +28,16 @@ from collections import Counter
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import Archive, Entry, FormatError, parse_archive
 from nfl_txtr import (
     COMPRESSED_SENTINEL,
@@ -1001,7 +1011,7 @@ def main() -> int:
     text = json.dumps(report, indent=2) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(text, encoding="utf-8")
+        args.output.write_text(text, encoding="utf-8", newline="\n")
         print(
             f"wrote {len(results)} probe record(s) to {args.output}; "
             f"statuses={report['summary']['status_counts']}"

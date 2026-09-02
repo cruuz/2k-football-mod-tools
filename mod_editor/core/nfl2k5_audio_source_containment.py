@@ -340,10 +340,11 @@ class Nfl2k5AudioSourceContainmentStore:
 
     def _validate_cache(self, cache: SourceCache) -> Path:
         _require(isinstance(cache, SourceCache), "Containment needs a source cache")
+        # No container-hash equality: the user's image legitimately differs from
+        # the project's own rip. The sibling fingerprint store dropped this same
+        # comparison; this one kept it and became the next wall behind it.
         _require(
-            cache.source.sha256 == self.expected_source_sha256
-            and cache.source.recognized
-            and cache.source.kind == "xiso",
+            cache.source.recognized and cache.source.kind == "xiso",
             "Containment cache belongs to a different or unsupported source",
         )
         root = _regular_directory(cache.root, "NFL 2K5 source cache")
@@ -951,18 +952,11 @@ class Nfl2k5AudioSourceContainmentScanner:
         scan_progress = self._scan_progress(progress)
         source = scanner._open_source(source_xiso, cache)
         try:
-            digest = _sha256_fd(
-                source.descriptor,
-                offset=0,
-                length=pins.source_size,
-                stage="Authenticating source XISO for PCM containment",
-                progress=scan_progress,
-                cancelled=cancelled,
-            )
-            _require(
-                digest == pins.source_sha256,
-                "Source XISO SHA-256 is not the supported retail dump",
-            )
+            # No whole-image hash here; see the note in nfl2k5_audio_source_scan.
+            # The container legitimately varies between dumps of one disc, and
+            # everything this path reads is authenticated extent by extent --
+            # pack-0 straight out of the XISO, then each cached artefact against
+            # its own pin. Hashing the wrapper proved nothing those do not.
             scanner._verify_source_identity(
                 source, "initial containment source authentication"
             )
@@ -1009,14 +1003,19 @@ class Nfl2k5AudioSourceContainmentScanner:
             )
             assert capacity_payload is not None
             try:
+                # Parse the container the user actually opened.  Valid raw-disc
+                # and repacked layouts can be larger than the canonical dump;
+                # the authenticated pack extents below, not wrapper padding,
+                # define the retail content this scanner consumes.
                 entries, _directory = scanner.xdvdfs_parser(
-                    source.descriptor, pins.source_size
+                    source.descriptor, os.fstat(source.descriptor).st_size
                 )
             except (OSError, ValueError) as exc:
                 raise AudioSourceContainmentError(
                     f"Could not parse source XDVDFS for containment: {exc}"
                 ) from exc
-            extents = scanner._pack_extents(entries)
+            extents = scanner._pack_extents(
+                entries, os.fstat(source.descriptor).st_size)
             pack0_digest = _sha256_fd(
                 source.descriptor,
                 offset=extents["0"].byte_offset,

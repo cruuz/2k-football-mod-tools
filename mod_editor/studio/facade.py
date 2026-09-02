@@ -15,9 +15,13 @@ import shutil
 import subprocess
 import stat
 import threading
-from typing import Callable, Iterable, Sequence
+from typing import Callable, Iterable, Mapping, Sequence
 
 from mod_editor.core.errors import ValidationError
+from mod_editor.core.texture_master import (
+    AuthoringTransform,
+    save_texture_master_bundle,
+)
 from mod_editor.core.gameplay_inspection import (
     DEFAULT_FRANCHISE_REPORT,
     DEFAULT_NFL_SAVE_REPORT,
@@ -46,8 +50,20 @@ from mod_editor.core.nfl2k5_playbook_inspector import (
     Nfl2k5Playbook,
     Nfl2k5PlaybookInspector,
 )
+from mod_editor.core.nfl2k5_playbook_route_writer import (
+    PlayRouteCloneRequest,
+    route_selector as play_route_selector,
+)
+from mod_editor.core.nfl2k5_formation_play_writer import (
+    FormationLinkRequest,
+    FormationCreateRequest,
+    PlayCreateRequest,
+    formation_request_from_mapping,
+    play_request_from_mapping,
+)
 from mod_editor.core.nfl2k5_stadium_studio import (
     Nfl2k5StadiumStudio,
+    StadiumGltfTextureWriteBack,
     StadiumScene,
     StadiumSceneDetails,
 )
@@ -94,6 +110,11 @@ from mod_editor.core.nfl2k5_crib import (
     Nfl2k5CribIO,
     load_nfl2k5_crib_catalog,
 )
+from mod_editor.core.nfl2k5_crib_geometry_writer import (
+    compile_crib_geometry_recipe,
+    export_crib_scene_gltf,
+    list_editable_scenes as list_editable_crib_geometry_scenes,
+)
 
 from .session import (
     AudioProjectPreparationRequired,
@@ -109,6 +130,7 @@ from .audio_bundle import (
 )
 from .audio_replacement_pack import (
     AudioReplacementPackService,
+    FAMILY_REVIEWED_MEANING_STATUS,
     complete_standalone_pack_path,
     standalone_runtime_meaning_status,
 )
@@ -174,12 +196,15 @@ def _publish_new_export(payload: bytes, destination: Path) -> Path:
 
 
 _PRODUCT_ROOT = Path(__file__).resolve().parents[2]
+_STADIUM_GEOMETRY_CATALOG = (
+    _PRODUCT_ROOT / "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json"
+)
 _GAMEPLAY_SNAPSHOT = (
     _PRODUCT_ROOT / "mod_editor/data/nfl2k5_gameplay_inspection.v1.json"
 )
 _GAMEPLAY_SNAPSHOT_SIZE = 22_874
 _GAMEPLAY_SNAPSHOT_SHA256 = (
-    "864c785d3b0a689dace1ec9c37be0bc276519a334775c9df8953d6d62722dbe3"
+    "e613180ecb825187aabd0ece2c70d3fc42fa01756a7920981d2c2bccbe53feb7"
 )
 _GAMEPLAY_SNAPSHOT_SCHEMA = "nfl2k5_mod_studio_gameplay_inspection/v1"
 _MENU_SNAPSHOT = _PRODUCT_ROOT / "mod_editor/data/nfl2k5_main_menu_inspection.v1.json"
@@ -535,6 +560,8 @@ def _audio_search_haystack(asset: AudioCatalogItem) -> str:
         extra = (
             "stereo" if asset.channels == 2 else "mono",
         )
+        if asset.family_reviewed_label is not None:
+            extra = (*extra, asset.family_reviewed_label)
     elif isinstance(asset, Nfl2k5StreamingAudioBank):
         extra = (
             asset.role_class,
@@ -602,6 +629,12 @@ def _build_audio_search_index(catalog: Nfl2k5AudioCatalog) -> AudioSearchIndex:
     }
 
 
+#: Where a chosen xemu executable is remembered between sessions, matching the
+#: APF editor's ``~/.config/apf2k8-mod-studio/settings.json``.
+XEMU_SETTINGS_PATH = Path.home() / ".config" / "2k5-mod-studio" / "settings.json"
+XEMU_SETTINGS_SCHEMA = "2k5_mod_studio_xemu_settings/v1"
+
+
 def _detect_xemu_command() -> tuple[str, ...]:
     direct = shutil.which("xemu")
     if direct:
@@ -621,6 +654,58 @@ def _detect_xemu_command() -> tuple[str, ...]:
     except (OSError, subprocess.TimeoutExpired):
         return ()
     return (flatpak, "run", "app.xemu.xemu") if found.returncode == 0 else ()
+
+
+def _stored_xemu_command(path: Path | None = None) -> tuple[str, ...]:
+    """The xemu executable the user chose, if it is still runnable."""
+
+    settings = path or XEMU_SETTINGS_PATH
+    try:
+        document = json.loads(settings.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return ()
+    if not isinstance(document, dict) or document.get("schema") != XEMU_SETTINGS_SCHEMA:
+        return ()
+    chosen = document.get("xemu_path")
+    if not isinstance(chosen, str) or not chosen:
+        return ()
+    executable = Path(chosen)
+    if not executable.is_file() or not os.access(executable, os.X_OK):
+        return ()
+    return (str(executable),)
+
+
+def _store_xemu_command(executable: Path, path: Path | None = None) -> None:
+    settings = path or XEMU_SETTINGS_PATH
+    settings.parent.mkdir(parents=True, exist_ok=True)
+    payload = json.dumps(
+        {"schema": XEMU_SETTINGS_SCHEMA, "xemu_path": str(executable)},
+        indent=2,
+        sort_keys=True,
+    ) + "\n"
+    temporary = settings.with_name(f".{settings.name}.{os.getpid()}.tmp")
+    # Explicit newline: this file is compared byte-for-byte across platforms,
+    # so the host must never choose CRLF for it.
+    temporary.write_text(payload, encoding="utf-8", newline="\n")
+    os.replace(temporary, settings)
+
+
+def _xemu_launch_argv(command: Sequence[str], xiso: Path) -> tuple[str, ...]:
+    """The exact argv to start, including sandbox access for a Flatpak xemu.
+
+    A Flatpak xemu can only open paths its sandbox exposes, and a modded XISO
+    normally lands somewhere it has no permission for -- an external drive, a
+    project folder outside home. The launch then failed with an I/O error that
+    read like a bad build rather than a sandbox refusal. Granting read-only
+    access to that one directory for this one run is the narrowest fix, and
+    nothing is ever written back through it.
+    """
+
+    argv = tuple(command)
+    if len(argv) >= 3 and Path(argv[0]).name == "flatpak" and argv[1] == "run":
+        share = f"--filesystem={xiso.parent}:ro"
+        return (*argv[:2], share, *argv[2:], "-dvd_path", str(xiso))
+    return (*argv, "-dvd_path", str(xiso))
 
 
 class Nfl2k5StudioFacade:
@@ -670,8 +755,13 @@ class Nfl2k5StudioFacade:
         self.source_cache = source_cache or Nfl2k5SourceCache()
         self.build_service = build_service or Nfl2k5BuildService()
         self.session_factory = session_factory
+        # A caller-supplied command wins (tests, packaging). Otherwise the
+        # user's own choice comes first and auto-detection is the fallback.
+        self._xemu_command_pinned = xemu_command is not None
         self._xemu_command = (
-            tuple(xemu_command) if xemu_command is not None else _detect_xemu_command()
+            tuple(xemu_command)
+            if xemu_command is not None
+            else (_stored_xemu_command() or _detect_xemu_command())
         )
         self._process_launcher = process_launcher
         self._universal_index_factory = universal_index_factory
@@ -767,19 +857,112 @@ class Nfl2k5StudioFacade:
 
     @property
     def can_launch_xemu(self) -> bool:
+        return not self.xemu_blocker
+
+    @property
+    def xemu_blocker(self) -> str:
+        """Why one-click launch is unavailable, or ``""`` when it is ready.
+
+        The button used to gray out with one message covering two unrelated
+        causes -- no build yet, and no emulator found -- so a modder could not
+        tell which one applied to them. Naming the exact blocker is what makes
+        the control honest.
+        """
+
+        if not self.xemu_command:
+            return (
+                "xemu was not found. Install it (or its app.xemu.xemu Flatpak), "
+                "or choose the xemu executable yourself with Configure xemu."
+            )
         with self._lock:
             result = self._last_build
-            return bool(
-                self._xemu_command
-                and result is not None
-                and result.output_xiso.is_file()
-                and not result.output_xiso.is_symlink()
+        if result is None:
+            return (
+                "Build a modded XISO first — Launch starts the most recent "
+                "build, and there is not one yet in this session."
             )
+        if not result.output_xiso.is_file() or result.output_xiso.is_symlink():
+            return (
+                f"The last build is no longer at {result.output_xiso}. Build "
+                "again, then launch."
+            )
+        return ""
+
+    @property
+    def xemu_command(self) -> tuple[str, ...]:
+        """The resolved xemu invocation, re-detected while it is still unknown.
+
+        Detection used to run once, when the app started. Someone who installed
+        xemu because the editor told them to then had to restart the editor
+        before the button believed them.
+        """
+
+        with self._lock:
+            if self._xemu_command or self._xemu_command_pinned:
+                return self._xemu_command
+        found = _stored_xemu_command() or _detect_xemu_command()
+        with self._lock:
+            if not self._xemu_command and not self._xemu_command_pinned:
+                self._xemu_command = found
+            return self._xemu_command
+
+    def configure_xemu(self, executable: Path) -> tuple[str, ...]:
+        """Remember the xemu executable the user picked, for every session."""
+
+        chosen = Path(executable).expanduser()
+        try:
+            chosen = chosen.resolve(strict=True)
+        except OSError as exc:
+            raise ValidationError(f"That xemu path could not be opened: {exc}") from exc
+        if not chosen.is_file():
+            raise ValidationError(
+                "Choose the xemu program itself, not a folder or a shortcut."
+            )
+        if not os.access(chosen, os.X_OK):
+            raise ValidationError(
+                f"{chosen.name} is not executable. Choose the xemu binary, or "
+                "mark it executable first."
+            )
+        try:
+            _store_xemu_command(chosen)
+        except OSError as exc:
+            raise ValidationError(
+                f"The xemu choice could not be saved: {exc}"
+            ) from exc
+        with self._lock:
+            self._xemu_command = (str(chosen),)
+            self._xemu_command_pinned = False
+        return (str(chosen),)
 
     @property
     def last_build_output(self) -> Path | None:
         with self._lock:
             return self._last_build.output_xiso if self._last_build else None
+
+    def preflight_visual_edits(
+        self, progress: ProgressSink = _quiet_progress
+    ) -> tuple[object, ...]:
+        """Predict what each staged PNG will become in its fixed slot.
+
+        Read-only, and safe to run at any time: it changes no session state and
+        tells the user which replacements come through untouched, which lose
+        palette entries to fit a fixed compressed span, and which cannot fit at
+        all -- before a build makes that decision silently.
+        """
+
+        from mod_editor.core import nfl2k5_import_preflight as preflight
+
+        with self._lock:
+            session = self._require_session()
+            staged = session.staged_preflight_inputs()
+        if not staged:
+            progress("Nothing staged to check", 1, 1)
+            return ()
+        # The ladder runs for seconds per slot, so it runs outside the lock --
+        # holding it would freeze every status field the window polls.
+        rows = preflight.predict_edits(staged, progress=progress)
+        progress("Image check complete", len(staged), len(staged))
+        return rows
 
     def inspect_gameplay(
         self, progress: ProgressSink = _quiet_progress
@@ -845,11 +1028,24 @@ class Nfl2k5StudioFacade:
         progress("Main Menu report exported", 1, 1)
         return output
 
+    def _attach_visual_catalog(self, session: object) -> None:
+        """Hand a new session the aggregate this facade already loaded.
+
+        The session can derive its own, but building the extended catalog costs
+        about 1.7 s and this one is already in memory. Duck-typed so a
+        stand-in session factory needs no new signature.
+        """
+
+        attach = getattr(session, "attach_visual_catalog", None)
+        if callable(attach):
+            attach(self.visual_catalog)
+
     def load_source(self, source_xiso: Path, progress: ProgressSink) -> object:
         cache = self.source_cache.index(source_xiso, progress)
         progress("Preparing the complete asset browser", 0, 1)
         universal_index = self._universal_index_factory(cache)
-        session = self.session_factory(cache, self.visual_catalog)
+        session = self.session_factory(cache, self.uniform_catalog)
+        self._attach_visual_catalog(session)
         text_catalog = None
         attach_text = getattr(session, "attach_text_catalog", None)
         if callable(attach_text):
@@ -1077,6 +1273,86 @@ class Nfl2k5StudioFacade:
             "That Crib texture was already original."
         )
 
+    def list_crib_model_scenes(self) -> tuple[dict[str, object], ...]:
+        """Return the seven scenes with bounded position-only model import."""
+
+        with self._lock:
+            if self._session is None:
+                return ()
+            return list_editable_crib_geometry_scenes()
+
+    @property
+    def modified_crib_model_scene_ids(self) -> frozenset[str]:
+        with self._lock:
+            session = self._session
+            if session is None or not hasattr(
+                session, "modified_crib_model_scene_ids"
+            ):
+                return frozenset()
+            return frozenset(session.modified_crib_model_scene_ids)
+
+    def export_crib_model(
+        self, scene_id: str, destination: Path, progress: ProgressSink
+    ) -> tuple[Path, Path]:
+        """Export one source-derived Crib scene glTF and adjacent buffer."""
+
+        progress("Exporting Crib model", 0, 1)
+        with self._lock:
+            cache = self._cache
+            self._require_session()
+            if cache is None:
+                raise ValidationError("Load your NFL 2K5 XISO first.")
+            paths = export_crib_scene_gltf(
+                cache.pack0, cache.inventory, scene_id, destination
+            )
+        progress("Crib model exported", 1, 1)
+        return paths
+
+    def _crib_model_source_export(self, scene_id: str) -> Path:
+        cache = self._cache
+        self._require_session()
+        if cache is None:
+            raise ValidationError("Load your NFL 2K5 XISO first.")
+        key = hashlib.sha256(scene_id.encode("utf-8")).hexdigest()
+        directory = cache.originals / "crib-models" / key
+        source = directory / "source.gltf"
+        if not source.exists():
+            directory.mkdir(parents=True, exist_ok=True)
+            export_crib_scene_gltf(
+                cache.pack0, cache.inventory, scene_id, source
+            )
+        # The compiler revalidates the source positions/topology against the
+        # pinned retail-free catalog; a modified private cache cannot stage.
+        return source
+
+    def import_crib_model(
+        self, scene_id: str, edited_gltf: Path, progress: ProgressSink
+    ) -> object:
+        """Stage same-topology vertex moves after a full fixed-span preflight."""
+
+        progress("Validating edited Crib model", 0, 2)
+        with self._lock:
+            source = self._crib_model_source_export(scene_id)
+            compiled = compile_crib_geometry_recipe(
+                scene_id, source, edited_gltf
+            )
+            progress("Checking fixed Crib scene allocation", 1, 2)
+            result = self._require_session().replace_crib_geometry(compiled)
+        progress("Edited Crib model staged", 2, 2)
+        return result
+
+    def revert_crib_model(
+        self, scene_id: str, progress: ProgressSink
+    ) -> object:
+        progress("Reverting edited Crib model", 0, 1)
+        with self._lock:
+            changed = self._require_session().revert_crib_geometry(scene_id)
+        progress("Crib model reverted", 1, 1)
+        return StudioOperationResult(
+            "Original Crib model positions restored." if changed else
+            "That Crib model was already original."
+        )
+
     @property
     def modified_audio_asset_ids(self) -> Iterable[str]:
         with self._lock:
@@ -1177,6 +1453,7 @@ class Nfl2k5StudioFacade:
         meaning_domain = {
             "menu_back_route_runtime_unproved",
             "reviewed_label_runtime_meaning_unproved",
+            FAMILY_REVIEWED_MEANING_STATUS,
             "provisional_label_runtime_meaning_unproved",
         }
         if meaning_status is not None and (
@@ -1814,6 +2091,11 @@ class Nfl2k5StudioFacade:
 
         with self._lock:
             inspector = self._require_playbook_inspector()
+            attach_playbooks = getattr(
+                self._require_session(), "attach_playbook_inspector", None
+            )
+            if callable(attach_playbooks):
+                attach_playbooks(inspector)
             records = inspector.records()
         books: list[Nfl2k5Playbook] = []
         total = len(records)
@@ -1866,6 +2148,482 @@ class Nfl2k5StudioFacade:
         path = index.export_raw(asset_id, destination)
         progress("Raw PLAY resource exported", 2, 2)
         return path
+
+    def export_playbook_link_table_copy(
+        self,
+        asset_id: str,
+        target_formation_index: int,
+        donor_formation_index: int,
+        destination: Path,
+        progress: ProgressSink = _quiet_progress,
+    ) -> Path:
+        """Export a PLAY with one formation's play-link table copied from a donor.
+
+        **Experimental / offline-only.** Writes a private copy under
+        ``destination``. Does **not** stage a project edit, does **not** claim
+        runtime G2 (TE→WR) fix, and never mutates the loaded source archive.
+        Independent byte-diff verifier runs inside the patch builder.
+        """
+
+        from mod_editor.core.playbook_package_rule_spike import (
+            build_formation_link_table_copy_patch,
+            verify_formation_link_table_copy_patch,
+        )
+
+        progress("Reading stock PLAY for experimental link-table copy", 0, 3)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            index = self._require_universal_index()
+        book = inspector.load(asset_id)
+        if not 0 <= target_formation_index < len(book.formations):
+            raise ValidationError(
+                f"Target formation {target_formation_index} is outside this book."
+            )
+        if not 0 <= donor_formation_index < len(book.formations):
+            raise ValidationError(
+                f"Donor formation {donor_formation_index} is outside this book."
+            )
+        if target_formation_index == donor_formation_index:
+            raise ValidationError("Donor and target formations must differ.")
+
+        # Same raw path as export_playbook, into a temp buffer then patch.
+        progress("Building offline link-table copy (menu composition only)", 1, 3)
+        import tempfile
+
+        dest = Path(destination)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="2k5-play-link-copy-") as tmpdir:
+            src_path = Path(tmpdir) / "source.PLAY.bin"
+            index.export_raw(asset_id, src_path)
+            source_bytes = src_path.read_bytes()
+            patch = build_formation_link_table_copy_patch(
+                source_bytes, target_formation_index, donor_formation_index
+            )
+            verify_formation_link_table_copy_patch(
+                source_bytes,
+                patch.raw_resource,
+                target_formation_index,
+                donor_formation_index,
+            )
+            dest.write_bytes(patch.raw_resource)
+        progress(
+            "Experimental patched PLAY exported "
+            f"(links {patch.target_link_count_before}→{patch.target_link_count_after}; "
+            "runtime unproved)",
+            3,
+            3,
+        )
+        return dest
+
+    def export_playbook_package_map_copy(
+        self,
+        asset_id: str,
+        target_formation_index: int,
+        donor_formation_index: int,
+        destination: Path,
+        progress: ProgressSink = _quiet_progress,
+    ) -> Path:
+        """Export a PLAY with one formation package map copied from a donor.
+
+        **Experimental / offline-only.** Private file only. Does not stage a
+        project edit. Does not claim a runtime G1 (Dime ILB→OLB) fix. Source
+        archive never mutated. Independent verifier inside the patch path.
+        """
+
+        from mod_editor.core.playbook_package_rule_spike import (
+            build_formation_package_map_patch,
+            read_formation_package_map,
+            verify_formation_package_map_patch,
+        )
+
+        progress("Reading stock PLAY for experimental package-map copy", 0, 3)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            index = self._require_universal_index()
+        book = inspector.load(asset_id)
+        if not 0 <= target_formation_index < len(book.formations):
+            raise ValidationError(
+                f"Target formation {target_formation_index} is outside this book."
+            )
+        if not 0 <= donor_formation_index < len(book.formations):
+            raise ValidationError(
+                f"Donor formation {donor_formation_index} is outside this book."
+            )
+        if target_formation_index == donor_formation_index:
+            raise ValidationError("Donor and target formations must differ.")
+
+        progress("Building offline package-map copy (G1 surface; runtime unproved)", 1, 3)
+        import tempfile
+
+        dest = Path(destination)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="2k5-play-pkgmap-copy-") as tmpdir:
+            src_path = Path(tmpdir) / "source.PLAY.bin"
+            index.export_raw(asset_id, src_path)
+            source_bytes = src_path.read_bytes()
+            donor_map = read_formation_package_map(
+                source_bytes, donor_formation_index
+            )
+            patch = build_formation_package_map_patch(
+                source_bytes, target_formation_index, donor_map
+            )
+            verify_formation_package_map_patch(
+                source_bytes,
+                patch.raw_resource,
+                target_formation_index,
+                donor_map,
+            )
+            dest.write_bytes(patch.raw_resource)
+        progress(
+            "Experimental package-map PLAY exported "
+            f"(formation {target_formation_index} ← {donor_formation_index}; "
+            "runtime unproved)",
+            3,
+            3,
+        )
+        return dest
+
+    def export_g1_dime_from_nickel_package_map_pack(
+        self,
+        asset_id: str,
+        destination: Path,
+        progress: ProgressSink = _quiet_progress,
+    ) -> Path:
+        """Export a PLAY with every Dime package map copied from Nickel.
+
+        **Experimental / offline-only multi-formation G1 pack.** Private PLAY
+        + honesty JSON sidecar. Does not stage a project edit. Does not claim a
+        runtime G1 fix. Source archive never mutated.
+        """
+
+        import json
+        import tempfile
+
+        from mod_editor.core.playbook_package_rule_spike import (
+            build_g1_dime_from_nickel_package_map_pack,
+        )
+
+        progress("Reading stock PLAY for G1 multi-Dime package-map pack", 0, 3)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            index = self._require_universal_index()
+        # Ensure the book is loadable (raises if missing).
+        inspector.load(asset_id)
+
+        progress(
+            "Building offline G1 pack (all Dime ← Nickel map; runtime unproved)",
+            1,
+            3,
+        )
+        dest = Path(destination)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="2k5-g1-dime-pack-") as tmpdir:
+            src_path = Path(tmpdir) / "source.PLAY.bin"
+            index.export_raw(asset_id, src_path)
+            source_bytes = src_path.read_bytes()
+            pack = build_g1_dime_from_nickel_package_map_pack(source_bytes)
+            dest.write_bytes(pack.raw_resource)
+            sidecar = dest.with_suffix(dest.suffix + ".g1_manifest.json")
+            if not sidecar.suffix.endswith(".json"):
+                sidecar = Path(str(dest) + ".g1_manifest.json")
+            sidecar.write_text(
+                json.dumps(pack.manifest, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+        progress(
+            "Experimental G1 multi-Dime package-map PLAY exported "
+            f"({len(pack.targets)} Dime target(s); runtime unproved)",
+            3,
+            3,
+        )
+        return dest
+
+    def export_g2_ace_from_quads_link_table_pack(
+        self,
+        asset_id: str,
+        destination: Path,
+        progress: ProgressSink = _quiet_progress,
+    ) -> Path:
+        """Export a PLAY with every Ace play-link table copied from Quads.
+
+        **Experimental / offline-only multi-formation G2 pack.** Private PLAY
+        + honesty JSON sidecar. Does not stage a project edit. Does not claim a
+        runtime G2 fix. Source archive never mutated. Menu composition only —
+        package maps and play assignments are untouched.
+        """
+
+        import json
+        import tempfile
+
+        from mod_editor.core.playbook_package_rule_spike import (
+            build_g2_ace_from_quads_link_table_pack,
+        )
+
+        progress("Reading stock PLAY for G2 multi-Ace link-table pack", 0, 3)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            index = self._require_universal_index()
+        inspector.load(asset_id)
+
+        progress(
+            "Building offline G2 pack (all Ace ← Quads menu; runtime unproved)",
+            1,
+            3,
+        )
+        dest = Path(destination)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="2k5-g2-ace-pack-") as tmpdir:
+            src_path = Path(tmpdir) / "source.PLAY.bin"
+            index.export_raw(asset_id, src_path)
+            source_bytes = src_path.read_bytes()
+            pack = build_g2_ace_from_quads_link_table_pack(source_bytes)
+            dest.write_bytes(pack.raw_resource)
+            sidecar = dest.with_suffix(dest.suffix + ".g2_manifest.json")
+            if not sidecar.suffix.endswith(".json"):
+                sidecar = Path(str(dest) + ".g2_manifest.json")
+            sidecar.write_text(
+                json.dumps(pack.manifest, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+        progress(
+            "Experimental G2 multi-Ace link-table PLAY exported "
+            f"({len(pack.targets)} Ace target(s); runtime unproved)",
+            3,
+            3,
+        )
+        return dest
+
+    def copy_play_assignment_route(
+        self,
+        asset_id: str,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+        progress: ProgressSink = _quiet_progress,
+    ) -> object:
+        """Copy one exact stock assignment route inside the same PLAY book."""
+
+        progress("Checking source and target assignment routes", 0, 2)
+        request = PlayRouteCloneRequest(
+            asset_id, target_play_index, target_slot_index,
+            donor_play_index, donor_slot_index,
+        )
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            session.attach_playbook_inspector(inspector)
+            changed = session.copy_play_assignment_route(request)
+        progress("Assignment route copied", 2, 2)
+        return StudioOperationResult(
+            "Assignment route copied. Build uses the donor's exact existing "
+            "descriptor and chain; waypoint drawing is not implied."
+            if changed else "That assignment route copy is already staged."
+        )
+
+    def revert_play_assignment_route(
+        self,
+        asset_id: str,
+        target_play_index: int,
+        target_slot_index: int,
+        progress: ProgressSink = _quiet_progress,
+    ) -> object:
+        progress("Reverting assignment route", 0, 1)
+        selector = play_route_selector(
+            asset_id, target_play_index, target_slot_index
+        )
+        with self._lock:
+            changed = self._require_session().revert_play_assignment_route(selector)
+        progress("Assignment route reverted", 1, 1)
+        return StudioOperationResult(
+            "Assignment route reverted."
+            if changed else "That assignment route is already original."
+        )
+
+    def create_formation(
+        self,
+        asset_id: str,
+        donor_formation_index: int,
+        custom_name: str | None = None,
+        progress: ProgressSink = _quiet_progress,
+        slot_positions: object = None,
+        category_index: int | None = None,
+        replace_index: int | None = None,
+        category_positions: object = None,
+    ) -> object:
+        progress("Creating formation", 0, 2)
+        request = formation_request_from_mapping({
+            "asset_id": asset_id,
+            "donor_formation_index": donor_formation_index,
+            "custom_name": custom_name,
+            "slot_positions": slot_positions,
+            "category_index": category_index,
+            "replace_index": replace_index,
+            "category_positions": category_positions,
+        })
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            session.attach_playbook_inspector(inspector)
+            changed = session.create_formation(request)
+        progress("Formation created", 2, 2)
+        return StudioOperationResult(
+            "Formation created as clone — new formation appears at end of book."
+            if changed else "That formation clone is already staged."
+        )
+
+    def create_play(
+        self,
+        asset_id: str,
+        donor_play_index: int,
+        custom_name: str | None = None,
+        progress: ProgressSink = _quiet_progress,
+        assignments: object = None,
+    ) -> object:
+        progress("Creating play", 0, 2)
+        request = play_request_from_mapping({
+            "asset_id": asset_id,
+            "donor_play_index": donor_play_index,
+            "custom_name": custom_name,
+            "assignments": assignments,
+        })
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            session.attach_playbook_inspector(inspector)
+            changed = session.create_play(request)
+        progress("Play created", 2, 2)
+        return StudioOperationResult(
+            "Play created as clone — new play appears at end of book."
+            if changed else "That play clone is already staged."
+        )
+
+    def playbook_raw_body(self, asset_id: str) -> bytes:
+        """The fixed 0x13390 PLAY body of one private book (for the designers)."""
+        from nfl_outer import read_entry_range
+
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            record = inspector.index.get(asset_id)
+            entry = inspector.index.archive.entries[record.outer_index]
+            raw = read_entry_range(inspector.index.archive, entry, record.chunk_offset, record.raw_size)
+        return raw[0x20:]
+
+    def staged_replace_targets(self, asset_id: str) -> tuple[set[int], set[int]]:
+        """Stock (formation, play) indices already replaced by staged creates in this book."""
+        with self._lock:
+            session = self._session
+            if session is None:
+                return set(), set()
+            forms = {r.replace_index for r in session.formation_creates
+                     if r.asset_id == asset_id and r.replace_index is not None}
+            plays = {r.replace_index for r in session.play_creates
+                     if r.asset_id == asset_id and r.replace_index is not None}
+        return forms, plays
+
+    def stage_formation_selector(self, asset_id: str, donor_formation_index: int, custom_name: str | None,
+                                 slot_positions: object, category_index: int | None,
+                                 replace_index: int | None = None, category_positions: object = None) -> str:
+        request = formation_request_from_mapping({
+            "asset_id": asset_id, "donor_formation_index": donor_formation_index, "custom_name": custom_name,
+            "slot_positions": slot_positions, "category_index": category_index, "replace_index": replace_index,
+            "category_positions": category_positions,
+        })
+        return request.selector
+
+    def create_authored_play(
+        self,
+        asset_id: str,
+        donor_play_index: int,
+        custom_name: str | None,
+        assignments: object,
+        link_formation_index: int | None = None,
+        link_formation_selector: str | None = None,
+        progress: ProgressSink = _quiet_progress,
+        replace_index: int | None = None,
+        play_flags: int | None = None,
+    ) -> object:
+        """Stage an authored play and, optionally, list it in a formation.
+
+        ``link_formation_selector`` names a formation create staged in this
+        session (its Build index is derived from the build's row order);
+        ``link_formation_index`` names an existing formation; ``replace_index``
+        overwrites a stock play in place (its existing menu listings stay).
+        """
+        progress("Creating play", 0, 3)
+        mapping: dict[str, object] = {
+            "asset_id": asset_id, "donor_play_index": donor_play_index,
+            "custom_name": custom_name, "assignments": assignments, "replace_index": replace_index,
+        }
+        if play_flags is not None:
+            mapping["play_flags"] = int(play_flags)
+        request = play_request_from_mapping(mapping)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            session.attach_playbook_inspector(inspector)
+            book = inspector.load(asset_id)
+            changed = session.create_play(request)
+            message = "Play staged with authored assignments."
+            if link_formation_index is not None or link_formation_selector is not None:
+                progress("Listing play", 1, 3)
+                play_index = (
+                    replace_index if replace_index is not None
+                    else session.staged_play_index(request.selector, len(book.plays))
+                )
+                formation_index = (
+                    session.staged_formation_index(link_formation_selector, len(book.formations))
+                    if link_formation_selector is not None else int(link_formation_index)
+                )
+                link = FormationLinkRequest(asset_id, formation_index, play_index, None)
+                session.create_formation_link(link)
+                message += f" Listed as play {play_index} in formation {formation_index}."
+        progress("Play created", 3, 3)
+        return StudioOperationResult(message if changed else "That authored play is already staged.")
+
+    def revert_formation_create(self, selector: str, progress: ProgressSink = _quiet_progress) -> object:
+        progress("Reverting formation", 0, 1)
+        with self._lock:
+            changed = self._require_session().revert_formation_create(selector)
+        progress("Formation reverted", 1, 1)
+        return StudioOperationResult("Formation reverted." if changed else "Already original.")
+
+    def revert_play_create(self, selector: str, progress: ProgressSink = _quiet_progress) -> object:
+        progress("Reverting play", 0, 1)
+        with self._lock:
+            changed = self._require_session().revert_play_create(selector)
+        progress("Play reverted", 1, 1)
+        return StudioOperationResult("Play reverted." if changed else "Already original.")
+
+    def create_formation_link(
+        self,
+        asset_id: str,
+        formation_index: int,
+        play_index: int,
+        group: int | None = None,
+        progress: ProgressSink = _quiet_progress,
+    ) -> object:
+        progress("Listing play in formation", 0, 2)
+        request = FormationLinkRequest(asset_id, formation_index, play_index, group)
+        with self._lock:
+            inspector = self._require_playbook_inspector()
+            session = self._require_session()
+            session.attach_playbook_inspector(inspector)
+            changed = session.create_formation_link(request)
+        progress("Play listed", 2, 2)
+        return StudioOperationResult(
+            "Play listed in the formation's first empty menu slot."
+            if changed else "That link is already staged."
+        )
+
+    def revert_formation_link(self, selector: str, progress: ProgressSink = _quiet_progress) -> object:
+        progress("Reverting link", 0, 1)
+        with self._lock:
+            changed = self._require_session().revert_formation_link(selector)
+        progress("Link reverted", 1, 1)
+        return StudioOperationResult("Link reverted." if changed else "Already original.")
 
     @property
     def stadium_available(self) -> bool:
@@ -1950,6 +2708,97 @@ class Nfl2k5StudioFacade:
             )
         progress("Stadium texture exported", 1, 1)
         return path
+
+    def export_stadium_scene_gltf(
+        self, scene_id: str, destination: Path, progress: ProgressSink
+    ) -> tuple[Path, Path]:
+        """Save the selected stadium model as glTF, with its buffer beside it.
+
+        The viewport could already draw a stadium; this is what lets a modder
+        take it into Blender. Returns the ``(gltf, bin)`` pair, which the caller
+        needs because the buffer keeps its own name.
+        """
+
+        progress("Exporting stadium model", 0, 1)
+        with self._lock:
+            self._require_session()
+            paths = self._require_stadium_studio().export_scene_gltf(
+                scene_id, destination
+            )
+        progress("Stadium model exported", 1, 1)
+        return paths
+
+    def import_stadium_scene_gltf(
+        self, scene_id: str, source: Path, progress: ProgressSink
+    ) -> object:
+        """Stage same-topology vertex moves from an edited Stadium glTF."""
+
+        progress("Validating edited stadium model", 0, 1)
+        with self._lock:
+            self._require_session()
+            result = self._require_stadium_studio().import_scene_gltf(
+                scene_id, source
+            )
+        progress("Edited stadium model staged", 1, 1)
+        return result
+
+    def replace_stadium_textures_from_gltf(
+        self, scene_id: str, source: Path, progress: ProgressSink
+    ) -> tuple[StadiumGltfTextureWriteBack, ...]:
+        """Write Blender-edited glTF images back to their stadium texture slots.
+
+        Export embeds every game texture into the glTF under its canonical
+        ``nfl2k5_texture_id``; a modder edits those images in Blender, and this
+        routes the edited bytes back through the same bounded replace route the
+        Stadiums page uses. Returns one receipt per written texture slot.
+        """
+
+        progress("Applying edited stadium textures", 0, 1)
+        with self._lock:
+            self._require_session()
+            results = self._require_stadium_studio().replace_textures_from_gltf(
+                scene_id, source
+            )
+        progress("Edited stadium textures applied", 1, 1)
+        return results
+
+    def uniform_colors(
+        self, selector: str, progress: ProgressSink
+    ) -> tuple[str, str, bool]:
+        """Read one set's current facemask/faceshield and turtleneck pair."""
+        progress(f"Reading {selector} uniform colours", 0, 1)
+        with self._lock:
+            chosen = self._require_session().uniform_colors(selector)
+        progress(f"{selector} uniform colours ready", 1, 1)
+        return chosen
+
+    def set_uniform_colors(
+        self, selector: str, facemask: str, turtleneck: str,
+        progress: ProgressSink,
+    ) -> tuple[str, str, bool]:
+        """Stage one set's facemask/faceshield and HI_turtleneck tints.
+
+        This is a project edit like any other: nothing touches the source, and
+        the colours only reach a disc when Build Modded XISO runs.
+        """
+        progress(f"Setting {selector} uniform colours", 0, 1)
+        with self._lock:
+            session = self._require_session()
+            chosen = session.set_uniform_colors(
+                selector, facemask, turtleneck
+            )
+        progress(f"{selector} uniform colours set", 1, 1)
+        return chosen
+
+    def clear_uniform_colors(
+        self, selector: str, progress: ProgressSink
+    ) -> bool:
+        """Revert one selected set and leave every other set unchanged."""
+        progress(f"Reverting {selector} uniform colours", 0, 1)
+        with self._lock:
+            had = self._require_session().clear_uniform_colors(selector)
+        progress(f"{selector} uniform colours reverted", 1, 1)
+        return had
 
     def replace_stadium_texture(
         self, texture_id: str, supplied_png: Path, progress: ProgressSink
@@ -2042,6 +2891,41 @@ class Nfl2k5StudioFacade:
             path = self._require_session().export_asset(asset, destination)
         progress(f"Exported {asset.label}", 1, 1)
         return path
+
+    def save_texture_authoring_master(
+        self,
+        asset: UniformAsset,
+        *,
+        source_image: Path,
+        source_sha256: str,
+        destination: Path,
+        transform: AuthoringTransform,
+        editor_transform: Mapping[str, object],
+        high_resolution_scale: int,
+        native_baseline_png: Path | None = None,
+        progress: ProgressSink = _quiet_progress,
+    ) -> Path:
+        """Save one imported full-res source beside its staged native PNG."""
+
+        progress(f"Validating {asset.label} authoring master", 0, 2)
+        with self._lock:
+            native = self._require_session().current_path(asset)
+            output = save_texture_master_bundle(
+                source_image=source_image,
+                destination=destination,
+                asset_id=asset.asset_id,
+                editor_target="nfl2k5_xbox",
+                native_width=asset.width,
+                native_height=asset.height,
+                transform=transform,
+                high_resolution_scale=high_resolution_scale,
+                compiled_native_png=native,
+                compiled_native_baseline_png=native_baseline_png,
+                expected_source_sha256=source_sha256,
+                editor_transform=editor_transform,
+            )
+        progress(f"Saved {asset.label} authoring master", 2, 2)
+        return output
 
     def export_team_kit_sets(
         self,
@@ -2203,7 +3087,8 @@ class Nfl2k5StudioFacade:
             raise ValidationError(
                 "Load your own NFL 2K5 XISO before opening a shared project."
             )
-        candidate = self.session_factory(cache, self.visual_catalog)
+        candidate = self.session_factory(cache, self.uniform_catalog)
+        self._attach_visual_catalog(candidate)
         try:
             return self._load_project_candidate(
                 source=source,
@@ -2262,6 +3147,10 @@ class Nfl2k5StudioFacade:
             attach_crib = getattr(candidate, "attach_crib", None)
             if callable(attach_crib):
                 attach_crib(crib_catalog, crib_io)
+        attach_playbooks = getattr(candidate, "attach_playbook_inspector", None)
+        if callable(attach_playbooks):
+            with self._lock:
+                attach_playbooks(self._require_playbook_inspector())
         candidate_stadium = None
         if stadium_result is not None:
             candidate_stadium = self._studio_for_session(
@@ -2374,18 +3263,19 @@ class Nfl2k5StudioFacade:
         return result
 
     def launch_xemu(self, progress: ProgressSink) -> object:
+        command = self.xemu_command
         with self._lock:
             result = self._last_build
-            command = self._xemu_command
         if not command:
             raise ValidationError(
-                "xemu is not configured. Install xemu or its app.xemu.xemu Flatpak."
+                "xemu is not configured. Install xemu or its app.xemu.xemu "
+                "Flatpak, or choose the xemu program with Configure xemu."
             )
         if result is None or not result.output_xiso.is_file() \
                 or result.output_xiso.is_symlink():
             raise ValidationError("Build a modded XISO before launching xemu.")
         progress("Starting xemu", 0, 1)
-        argv = (*command, "-dvd_path", str(result.output_xiso))
+        argv = _xemu_launch_argv(command, result.output_xiso)
         try:
             self._process_launcher(
                 argv,
@@ -2427,7 +3317,7 @@ class Nfl2k5StudioFacade:
             result.gltf_manifest,
             result.texture_manifest,
             result.texture_root,
-            geometry_catalog=None,
+            geometry_catalog=_STADIUM_GEOMETRY_CATALOG,
         )
 
     def _studio_for_session(
@@ -2457,7 +3347,7 @@ class Nfl2k5StudioFacade:
             result.gltf_manifest,
             result.texture_manifest,
             result.texture_root,
-            geometry_catalog=None,
+            geometry_catalog=_STADIUM_GEOMETRY_CATALOG,
             edit_delegate=session.stadium_delegate,
         )
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+from dataclasses import replace
 import json
 import os
 from pathlib import Path
@@ -215,7 +216,8 @@ class FakeBackendRunner:
                     "slot. Add a small amount of repeated visual detail and try "
                     "again.\n",
                 )
-            _sparse(output, SOURCE_SIZE, b"verified-synthetic-output")
+            output_size = source.stat().st_size
+            _sparse(output, output_size, b"verified-synthetic-output")
             artifact_dir.mkdir()
             (artifact_dir / "derived.bin").write_bytes(b"private derived artifact")
             info = output.stat()
@@ -231,7 +233,7 @@ class FakeBackendRunner:
                 },
                 "output": {
                     "xiso_path": str(output.resolve()),
-                    "xiso_size": SOURCE_SIZE,
+                    "xiso_size": output_size,
                     "xiso_sha256": "a" * 64,
                     "device": info.st_dev,
                     "inode": info.st_ino,
@@ -454,6 +456,46 @@ class Nfl2k5BuildServiceTests(unittest.TestCase):
             )
             with fixture.source.open("rb") as stream:
                 self.assertEqual(stream.read(64), source_prefix)
+
+    def test_alternate_container_layout_build_reports_its_actual_size(self) -> None:
+        for actual_size in (6_300_958_720, 7_825_162_240):
+            with self.subTest(actual_size=actual_size), tempfile.TemporaryDirectory(
+                prefix="2k5-build-layout-test-"
+            ) as temporary:
+                fixture = SyntheticFixture(Path(temporary))
+                with fixture.source.open("r+b") as stream:
+                    stream.truncate(actual_size)
+                fixture.cache = replace(
+                    fixture.cache,
+                    source=replace(
+                        fixture.cache.source,
+                        sha256=("a" if actual_size < 7_000_000_000 else "b") * 64,
+                        size=actual_size,
+                    ),
+                )
+                source_before = fixture.source.stat()
+
+                result = Nfl2k5BuildService(runner=FakeBackendRunner()).build(
+                    fixture.cache, fixture.project, fixture.output
+                )
+
+                self.assertEqual(result.output_size, actual_size)
+                self.assertEqual(fixture.output.stat().st_size, actual_size)
+                source_after = fixture.source.stat()
+                self.assertEqual(
+                    (
+                        source_after.st_dev,
+                        source_after.st_ino,
+                        source_after.st_size,
+                        source_after.st_mtime_ns,
+                    ),
+                    (
+                        source_before.st_dev,
+                        source_before.st_ino,
+                        source_before.st_size,
+                        source_before.st_mtime_ns,
+                    ),
+                )
 
     def test_each_audio_kind_passes_exact_private_inputs_to_build_and_verify(self) -> None:
         for kind in ("menu_back_audio", "audo_audio", "ausb_audio"):

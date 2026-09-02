@@ -4,11 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import errno
+import hashlib
 import json
 import os
 from pathlib import Path
 import shutil
 import stat
+import struct
 import subprocess
 import tempfile
 from typing import Mapping
@@ -18,6 +20,95 @@ from mod_editor.core import platform_compat
 
 class LaunchError(ValueError):
     """A Xenia setup or launch problem a non-expert can correct."""
+
+
+# Xbox 360 All-Pro Football 2K8 title update 1.1 (LIVE STFS installer).
+# Never shipped for PS3. The bytes are not in this repository; the user
+# supplies the package and launch copies it into this session's isolated
+# Xenia content root. Hash-pinned so a wrong file cannot be installed.
+APF_TITLE_ID = 0x54540807
+APF_TITLE_UPDATE_CONTENT_TYPE = 0x000B0000
+APF_TITLE_UPDATE_SIZE = 839_680
+APF_TITLE_UPDATE_SHA256 = (
+    "5f71cdf4ec679f8e33fd95e02ff2b67981fbf918d4d03a2099576734c5cfb42b"
+)
+APF_TITLE_UPDATE_FILENAME = "TU_1A58207_0000008000000.0000000000082"
+
+
+def title_update_content_dir(content_root: Path) -> Path:
+    return (
+        content_root
+        / f"{APF_TITLE_ID:08X}"
+        / f"{APF_TITLE_UPDATE_CONTENT_TYPE:08X}"
+    )
+
+
+def inspect_title_update(path: Path) -> bytes:
+    """Read and pin-check the APF 1.1 LIVE title-update package."""
+
+    path = path.expanduser()
+    try:
+        info = path.lstat()
+    except OSError as exc:
+        raise LaunchError(f"Title update 1.1 could not be opened: {exc}") from exc
+    if not stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode):
+        raise LaunchError("Title update 1.1 must be a regular, non-symlink file")
+    if info.st_size != APF_TITLE_UPDATE_SIZE:
+        raise LaunchError(
+            "That file is not the APF 2K8 title update 1.1 package this studio "
+            f"recognizes (expected {APF_TITLE_UPDATE_SIZE} bytes)."
+        )
+    payload = path.read_bytes()
+    digest = hashlib.sha256(payload).hexdigest()
+    if digest != APF_TITLE_UPDATE_SHA256:
+        raise LaunchError(
+            "That file is not the hash-pinned APF 2K8 title update 1.1 package. "
+            "On Xbox/Xenia this update is required; it never shipped for PS3. "
+            "Install the LIVE STFS package (File → Install Content in Xenia, or "
+            "choose it here) whose SHA-256 matches the pinned 1.1 installer."
+        )
+    if payload[:4] != b"LIVE":
+        raise LaunchError("Title update 1.1 must be a LIVE STFS package")
+    title_id = struct.unpack_from(">I", payload, 0x360)[0]
+    content_type = struct.unpack_from(">I", payload, 0x344)[0]
+    if title_id != APF_TITLE_ID or content_type != APF_TITLE_UPDATE_CONTENT_TYPE:
+        raise LaunchError(
+            "That LIVE package is not All-Pro Football 2K8 title update 1.1 "
+            f"(title {APF_TITLE_ID:08X}, content type "
+            f"{APF_TITLE_UPDATE_CONTENT_TYPE:08X})."
+        )
+    return payload
+
+
+def install_title_update(content_root: Path, source: Path) -> Path:
+    """Copy the pinned 1.1 package into a Xenia content root."""
+
+    payload = inspect_title_update(source)
+    destination_dir = title_update_content_dir(content_root)
+    destination_dir.mkdir(parents=True, exist_ok=True)
+    destination = destination_dir / APF_TITLE_UPDATE_FILENAME
+    if destination.exists() and not destination.is_symlink():
+        try:
+            if hashlib.sha256(destination.read_bytes()).hexdigest() == APF_TITLE_UPDATE_SHA256:
+                return destination
+        except OSError:
+            pass
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{APF_TITLE_UPDATE_FILENAME}.",
+        suffix=".tmp",
+        dir=destination_dir,
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, destination)
+    except BaseException:
+        temporary.unlink(missing_ok=True)
+        raise
+    return destination
 
 
 @dataclass(frozen=True)
@@ -37,6 +128,7 @@ class XeniaSettings:
         )
         self.xenia_path: Path | None = None
         self.wine_path: Path | None = None
+        self.title_update_path: Path | None = None
         self._load()
 
     @property
@@ -44,6 +136,12 @@ class XeniaSettings:
         if self.xenia_path is None or not self.xenia_path.is_file():
             return False
         if self.xenia_path.suffix.casefold() == ".exe":
+            # A ``.exe`` is the native direct mode on Windows, where Xenia
+            # Canary only ships as one; demanding a Wine loader there would
+            # make the emulator unconfigurable on its primary OS.  Wine stays
+            # mandatory for a ``.exe`` on every other platform.
+            if platform_compat.IS_WINDOWS:
+                return True
             return (
                 self.wine_path is not None
                 and self.wine_path.is_file()
@@ -54,7 +152,7 @@ class XeniaSettings:
     def configure(self, xenia_path: Path, wine_path: Path | None = None) -> None:
         xenia = self._regular(xenia_path, "Xenia Canary")
         wine: Path | None = None
-        if xenia.suffix.casefold() == ".exe":
+        if xenia.suffix.casefold() == ".exe" and not platform_compat.IS_WINDOWS:
             candidate = wine_path
             if candidate is None:
                 found = shutil.which("wine")
@@ -66,10 +164,18 @@ class XeniaSettings:
             wine = self._regular(candidate, "Wine")
             if not os.access(wine, os.X_OK):
                 raise LaunchError("The selected Wine file is not executable")
-        elif not os.access(xenia, os.X_OK):
+        elif not platform_compat.IS_WINDOWS and not os.access(xenia, os.X_OK):
+            # Windows has no executable permission bit to check; CreateProcess
+            # reports an unloadable image at launch time instead.
             raise LaunchError("The selected Xenia file is not executable")
         self.xenia_path = xenia
         self.wine_path = wine
+        self._save()
+
+    def configure_title_update(self, path: Path) -> None:
+        payload_path = self._regular(path, "Title update 1.1")
+        inspect_title_update(payload_path)
+        self.title_update_path = payload_path
         self._save()
 
     def _load(self) -> None:
@@ -85,18 +191,30 @@ class XeniaSettings:
                 return
             xenia_candidate = self._regular(Path(xenia), "Xenia Canary")
             if xenia_candidate.suffix.casefold() == ".exe":
-                if not isinstance(wine, str):
-                    return
-                wine_candidate = self._regular(Path(wine), "Wine")
-                if not os.access(wine_candidate, os.X_OK):
-                    return
-                self.wine_path = wine_candidate
+                # On Windows a ``.exe`` loads natively and no Wine loader is
+                # persisted; elsewhere the saved Wine path is mandatory.
+                if not platform_compat.IS_WINDOWS:
+                    if not isinstance(wine, str):
+                        return
+                    wine_candidate = self._regular(Path(wine), "Wine")
+                    if not os.access(wine_candidate, os.X_OK):
+                        return
+                    self.wine_path = wine_candidate
             elif not os.access(xenia_candidate, os.X_OK):
                 return
             self.xenia_path = xenia_candidate
+            update = value.get("title_update_path")
+            if isinstance(update, str) and update:
+                try:
+                    update_path = self._regular(Path(update), "Title update 1.1")
+                    inspect_title_update(update_path)
+                    self.title_update_path = update_path
+                except LaunchError:
+                    self.title_update_path = None
         except (OSError, ValueError, TypeError, LaunchError):
             self.xenia_path = None
             self.wine_path = None
+            self.title_update_path = None
 
     def _save(self) -> None:
         self.config_path.parent.mkdir(parents=True, exist_ok=True)
@@ -118,6 +236,9 @@ class XeniaSettings:
                                 else None,
                                 "wine_path": str(self.wine_path)
                                 if self.wine_path
+                                else None,
+                                "title_update_path": str(self.title_update_path)
+                                if self.title_update_path
                                 else None,
                             },
                             indent=2,
@@ -180,11 +301,13 @@ class XeniaLauncher:
         logs = run_root / "logs"
         for path in (storage, content, cache, logs):
             path.mkdir(parents=True, exist_ok=True)
+        if self.settings.title_update_path is not None:
+            install_title_update(content, self.settings.title_update_path)
         log_path = logs / "xenia-latest.log"
         environment = os.environ.copy()
         if extra_env:
             environment.update(extra_env)
-        if xenia.suffix.casefold() == ".exe":
+        if xenia.suffix.casefold() == ".exe" and not platform_compat.IS_WINDOWS:
             wine = self.settings.wine_path
             if wine is None:
                 raise LaunchError("Wine is not configured")
@@ -209,6 +332,7 @@ class XeniaLauncher:
                 "--fullscreen=false",
                 "--license_mask=1",
                 "--readback_resolve=fast",
+                "--apply_title_update=true",
                 f"--storage_root={converted['storage']}",
                 f"--content_root={converted['content']}",
                 f"--cache_root={converted['cache']}",
@@ -223,6 +347,7 @@ class XeniaLauncher:
                 "--fullscreen=false",
                 "--license_mask=1",
                 "--readback_resolve=fast",
+                "--apply_title_update=true",
                 f"--storage_root={storage}",
                 f"--content_root={content}",
                 f"--cache_root={cache}",

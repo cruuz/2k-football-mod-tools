@@ -19,9 +19,11 @@ catalog index N contributes ``N_logo_l0`` and ``N_logo_l1``, Xenos ``4_4_4_4``,
 The decompressed VRAM sub-blocks are byte-identical to the package logo layers
 (proven: cache ``01_logo_l0`` VRAM base hash equals the pinned package
 ``EXPECTED_BASE_SHA256``).  This writer rewrites the base level(s) of one catalog
-index inside a COPY of the volume, byte-preserves every DRAM part, every packed
-mip tail, and every other catalog entry, updates only the affected auxiliary
-records, recompresses each edited VRAM part once (with that part's original H7A
+index inside a COPY of the volume and regenerates that entry's packed mip tail
+from the new base -- byte-preserving the tail leaves the RETAIL crest in every
+level below mip 0, so a modded crest still showed the old logo on any surface
+that drew it small.  It byte-preserves every DRAM part and every other catalog
+entry, updates only the affected auxiliary records, recompresses each edited VRAM part once (with that part's original H7A
 shift), and fails closed if the repacked payload would exceed its fixed
 ``0x9E0800`` allocation.  The retail source is never opened for writing, and the
 copied volume is byte-diffed against the source so only the two fixed extents
@@ -50,6 +52,7 @@ from pathlib import Path
 import stat
 import struct
 import sys
+from typing import Sequence
 import zlib
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -73,6 +76,8 @@ import apf_outer  # noqa: E402
 from apf_logo_patch import (  # noqa: E402
     BASE_LEN,
     MIP_LEN,
+    cleared_detail_rgba,
+    rebuild_mip_tail,
     OutputReservation,
     PatchError,
     _abort_reserved,
@@ -142,8 +147,6 @@ _PORTME = [
     "the package-only / cache-only / both Xenia differential identifies, per "
     "surface (frontend team-select grid, in-game scorebug, on-field helmet crest), "
     "whether the live source is the uniform_logo package or this cache aggregate",
-    "implement 4_4_4_4 packed MIP regeneration (the 0x2C000 mip tail is "
-    "byte-preserved/stale here, not regenerated from the new base)",
     "the greedy H7A encoder does not reproduce retail compressed bytes; edited "
     "VRAM parts are proved by round-trip (decompress==intended) + fixed-allocation "
     "fail-closed, not by matching retail's compressor output",
@@ -534,35 +537,74 @@ def _rewrite_directory(
     return bytes(new_dir)
 
 
-def build_cache_patch(
-    index_path: Path,
-    catalog_index: int,
-    png_l0: Path,
-    png_l1: Path | None = None,
-) -> CachePatchResult:
-    """Rewrite catalog ``N``'s logo_l0 (and optionally logo_l1) inside the cache."""
+@dataclass(frozen=True)
+class CacheLayerSpec:
+    """One catalog slot's crest layers for a single-pass cache rewrite."""
 
-    if not 0 <= catalog_index < CATALOG_COUNT:
-        raise PatchError(f"catalog index {catalog_index} is outside 0..{CATALOG_COUNT - 1}")
+    catalog_index: int
+    png_l0: Path
+    png_l1: Path | None = None
+    clear_l1: bool = False
+
+
+def build_cache_patch_many(
+    index_path: Path, specs: "Sequence[CacheLayerSpec]"
+) -> CachePatchResult:
+    """Rewrite several catalog slots' crests inside the cache in ONE pass.
+
+    The retail directory pin stays: every spec's layers are staged into the
+    same retail cache state and repacked once, so any number of crests land in
+    a single copied volume without chaining through earlier outputs.  A scalar
+    :func:`build_cache_patch` call is exactly one spec.
+    """
+
+    specs = tuple(specs)
+    if not specs:
+        raise PatchError("at least one crest spec is required")
+    seen_catalogs: set[int] = set()
+    for spec in specs:
+        if spec.png_l1 is not None and spec.clear_l1:
+            raise PatchError(
+                "choose one detail-layer treatment: supply logo_l1 art, or clear it"
+            )
+        if not 0 <= spec.catalog_index < CATALOG_COUNT:
+            raise PatchError(
+                f"catalog index {spec.catalog_index} is outside 0..{CATALOG_COUNT - 1}"
+            )
+        if spec.catalog_index in seen_catalogs:
+            raise PatchError(
+                f"catalog index {spec.catalog_index} appears twice in one pass"
+            )
+        seen_catalogs.add(spec.catalog_index)
 
     archive, dir_entry, pay_entry, dir_raw, pay_raw = _read_pair(index_path)
     directory = parse_cache_directory(dir_raw)
     if directory.total_stream_length > PAYLOAD_SIZE:
         raise PatchError("retail logo cache stream already exceeds its allocation")
 
-    name_l0 = f"{catalog_index:02d}_logo_l0"
-    name_l1 = f"{catalog_index:02d}_logo_l1"
-    targets: list[tuple[_CacheLayerTarget, Path]] = [
-        (_extract_target(directory, pay_raw, name_l0, None), png_l0)
-    ]
-    if png_l1 is not None:
-        targets.append((_extract_target(directory, pay_raw, name_l1, None), png_l1))
+    # A target's art is either a PNG the caller supplied or exact RGBA this
+    # writer derived from the cached retail layer.
+    targets: list[tuple[_CacheLayerTarget, Path | bytes]] = []
+    for spec in specs:
+        name_l0 = f"{spec.catalog_index:02d}_logo_l0"
+        name_l1 = f"{spec.catalog_index:02d}_logo_l1"
+        targets.append(
+            (_extract_target(directory, pay_raw, name_l0, None), spec.png_l0)
+        )
+        if spec.png_l1 is not None:
+            targets.append(
+                (_extract_target(directory, pay_raw, name_l1, None), spec.png_l1)
+            )
+        elif spec.clear_l1:
+            detail = _extract_target(directory, pay_raw, name_l1, None)
+            targets.append((detail, cleared_detail_rgba(detail.rgba)))
+    catalog_index = specs[0].catalog_index
 
     edits: dict[int, bytes] = {}
     # (target, wanted_rgba, new_base, new_stored_b)
-    changed: list[tuple[_CacheLayerTarget, bytes, bytes, bytes]] = []
-    for target, png in targets:
-        wanted = _load_png(png, 512, 512)
+    changed: list[tuple[_CacheLayerTarget, bytes, bytes, bytes, bytes]] = []
+    for target, art in targets:
+        wanted = art if isinstance(art, bytes) else _load_png(art, 512, 512)
         if wanted == target.rgba:
             continue
         new_base = encode_4444_base(target.metadata, wanted)
@@ -571,19 +613,27 @@ def build_cache_patch(
                 f"no-op detection inconsistent for {target.entry.name}: encode "
                 "reproduced retail base"
             )
-        new_vram = new_base + target.mip_tail
-        if new_vram[BASE_LEN:] != target.mip_tail or len(new_vram) != VRAM_STRIDE:
-            raise PatchError(f"mip-tail preservation invariant failed for {target.entry.name}")
+        # Regenerate the packed mip levels from the new base.  Preserving
+        # them keeps the RETAIL logo in every level below mip 0, so the cached
+        # copy still serves the old crest to any surface that draws it small --
+        # exactly the bug that made modded crests look like they had not
+        # applied.  The package writer does the same, so both copies of a crest
+        # stay identical.
+        new_tail = rebuild_mip_tail(target.metadata, wanted, target.mip_tail)
+        new_vram = new_base + new_tail
+        if len(new_vram) != VRAM_STRIDE:
+            raise PatchError(f"VRAM stride invariant failed for {target.entry.name}")
         new_stored_b = _compress_part(
             new_vram, target.shift, target.unknown, f"{target.entry.name} VRAM part"
         )
         edits[target.entry.index] = new_stored_b
-        changed.append((target, wanted, new_base, new_stored_b))
+        changed.append((target, wanted, new_base, new_stored_b, new_tail))
 
     common_source = {
         "archive_index": str(index_path),
         "physical_volume": "0A",
         "catalog_index": catalog_index,
+        "catalog_indices": sorted(seen_catalogs),
         "directory_entry_index": DIR_TABLE_INDEX,
         "payload_entry_index": PAYLOAD_TABLE_INDEX,
         "directory_sha256": sha256_bytes(dir_raw),
@@ -626,10 +676,18 @@ def build_cache_patch(
         if new_entry.index in edited_indices:
             old_vram, _, _ = _decompress_part(old_b, VRAM_STRIDE, f"{new_entry.name} old VRAM")
             new_vram, _, _ = _decompress_part(new_b, VRAM_STRIDE, f"{new_entry.name} new VRAM")
-            if new_vram[BASE_LEN:] != old_vram[BASE_LEN:]:
-                raise PatchError(f"{new_entry.name} mip tail changed; refusing")
+            expected_tail = next(
+                tail for t, _w, _base, _s, tail in changed
+                if t.entry.index == new_entry.index
+            )
+            if new_vram[BASE_LEN:] != expected_tail:
+                raise PatchError(
+                    f"{new_entry.name} mip tail is not the intended regeneration; "
+                    "refusing"
+                )
             expected_base = next(
-                base for t, _w, base, _s in changed if t.entry.index == new_entry.index
+                base for t, _w, base, _s, _tail in changed
+                if t.entry.index == new_entry.index
             )
             if new_vram[:BASE_LEN] != expected_base:
                 raise PatchError(f"{new_entry.name} base is not the intended edit; refusing")
@@ -655,13 +713,16 @@ def build_cache_patch(
             "h7a_shift": target.shift,
             "base_sha256_before": sha256_bytes(target.base),
             "mip_tail_sha256": sha256_bytes(target.mip_tail),
-            "mip_tail_preserved": True,
+            "mip_tail_preserved": False,
+            "mip_tail_regenerated": True,
             "changed": edited,
             "stored_part_b_len_before": target.entry.len_b,
         }
         if edited:
             wanted, new_base, new_stored_b = next(
-                (w, base, stored) for t, w, base, stored in changed if t is target
+                (w, base, stored)
+                for t, w, base, stored, _tail in changed
+                if t is target
             )
             decoded_back = decode_4444_base(target.metadata, new_base)
             report["base_sha256_after"] = sha256_bytes(new_base)
@@ -720,7 +781,8 @@ def build_cache_patch(
             "directory_reparsed": True,
             "every_dram_part_preserved": True,
             "every_unedited_vram_part_preserved": True,
-            "edited_mip_tails_preserved": True,
+            "edited_mip_tails_preserved": False,
+            "edited_mip_tails_regenerated": True,
             "descriptors_aggregate_footer_preserved": True,
             "fixed_outer_allocation": True,
             "changed_cache_entries": sorted(edited_indices),
@@ -737,6 +799,34 @@ def build_cache_patch(
         "portme": _PORTME,
     }
     return CachePatchResult(new_dir, new_payload, manifest)
+
+
+def build_cache_patch(
+    index_path: Path,
+    catalog_index: int,
+    png_l0: Path,
+    png_l1: Path | None = None,
+    clear_l1: bool = False,
+) -> CachePatchResult:
+    """Rewrite catalog ``N``'s logo_l0 (and optionally logo_l1) inside the cache.
+
+    ``clear_l1`` clears the cached detail layer's region masks while keeping its
+    alpha, matching the package writer's treatment of one supplied mark.  The
+    two copies of a crest have to agree, or the frontend tile and the helmet
+    disagree about how many times the mark is drawn.
+    """
+
+    return build_cache_patch_many(
+        index_path,
+        (
+            CacheLayerSpec(
+                catalog_index=int(catalog_index),
+                png_l0=Path(png_l0),
+                png_l1=Path(png_l1) if png_l1 is not None else None,
+                clear_l1=bool(clear_l1),
+            ),
+        ),
+    )
 
 
 def _stream_length(directory: CacheDirectory) -> int:
@@ -885,9 +975,14 @@ def _write_copied_volume_extents(
         if source_sha_after != source_sha_before:
             raise PatchError("source APF volume changed during copied-volume patch")
         if not _path_is_owned_inode(source_volume, source_identity):
-            raise PatchError("source APF volume pathname changed during copy")
+            raise PatchError(
+            "source APF volume pathname changed during copy (a symlinked "
+            "source is the usual cause; stage a real copy instead)"
+        )
 
-        _copy_fd_metadata(source_descriptor, output_descriptor, source_metadata)
+        _copy_fd_metadata(
+            source_descriptor, output_descriptor, source_metadata, output_volume
+        )
         os.fsync(output_descriptor)
         if not _path_is_owned_inode(output_volume, output_identity):
             raise PatchError("output volume pathname changed during copied-volume patch")
@@ -918,6 +1013,14 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--catalog-index", required=True, type=int, help="team logo catalog index 0..117")
     parser.add_argument("--png", required=True, type=Path, help="edited 512x512 RGBA PNG for N_logo_l0")
     parser.add_argument("--png-l1", type=Path, help="optional edited 512x512 RGBA PNG for N_logo_l1")
+    parser.add_argument(
+        "--clear-l1",
+        action="store_true",
+        help="clear the cached detail layer's region masks (keeping its alpha) "
+             "so one supplied mark renders exactly once; use instead of "
+             "--png-l1 when you have a single image, and pair it with the same "
+             "flag on apf_logo_patch.py so the package and the cache agree",
+    )
     parser.add_argument("--output-directory-entry", type=Path, help="write rebuilt uniform_logocache.iff")
     parser.add_argument("--output-payload-entry", type=Path, help="write rebuilt uniform_logocache.cdf")
     parser.add_argument(
@@ -961,7 +1064,13 @@ def main(argv: list[str] | None = None) -> int:
             ],
         )
         manifest_reservation = _reserve_new(manifest_path)
-        result = build_cache_patch(index_path, args.catalog_index, png_path, png_l1)
+        result = build_cache_patch(
+            index_path,
+            args.catalog_index,
+            png_path,
+            png_l1,
+            clear_l1=args.clear_l1,
+        )
         document = result.manifest
         if output_dir_entry is not None:
             _write_new(output_dir_entry, result.directory_bytes)

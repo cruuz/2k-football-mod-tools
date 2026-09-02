@@ -12,13 +12,47 @@ import os
 from pathlib import Path
 import shutil
 import stat
+import struct
 import tempfile
 from typing import Callable, Iterable, Mapping
 from uuid import uuid4
 
 from PIL import Image
 
+from mod_editor.core import audio_conform
 from mod_editor.core import platform_compat
+from mod_editor.core.apf2k8_package_map_writer import (
+    PROVIDER_KIND as PACKAGE_MAP_KIND,
+    PackageMapChange,
+    change_from_mapping as package_map_from_mapping,
+    compile_master_play_edits,
+    decode_package_map_payload,
+    encode_package_map_payload,
+)
+from mod_editor.core.apf2k8_playbook_route_writer import (
+    PROVIDER_KIND as PLAY_ASSIGNMENT_ROUTE_KIND,
+    RouteCloneRequest,
+    build_relayed_copy_requests,
+    decode_route_clone_payload,
+    encode_route_clone_payload,
+    read_master_play_body,
+    relay_candidates,
+    request_from_mapping as route_clone_request_from_mapping,
+)
+from mod_editor.core.apf2k8_splb_writer import (
+    CATEGORY_COUNT as SPLB_CATEGORY_COUNT,
+    PROVIDER_KIND as SPLB_MEMBERSHIP_KIND,
+    MembershipChange as SplbMembershipChange,
+    TagMove as SplbTagMove,
+    TrailerReplace as SplbTrailerReplace,
+    change_from_mapping as splb_change_from_mapping,
+    change_metadata as splb_change_metadata,
+    compile_book as compile_splb_book,
+    decode_membership_payload as decode_splb_membership_payload,
+    encode_membership_payload as encode_splb_membership_payload,
+    read_book as read_splb_book,
+)
+from mod_editor.core.errors import ValidationError
 
 from .asset_io import ApfAssetIO, AssetIoError, AudioPreviewCancelled
 from .audio_annotations import (
@@ -46,10 +80,25 @@ from .audio_encoding import (
     Pcm16TemplateReceipt,
     export_pcm16_template,
     validate_pcm16_target,
+    verify_xma1_signal_quality,
 )
 from .backend import ensure_tools_importable
 from .catalog import ApfCatalog
 from .inspectors import ExportIdentity
+from .helmet_crest_design import (
+    FULL_SHELL_CREST_PROFILE,
+    HELMET_CREST_DESIGN_EDIT_ID,
+    HELMET_CREST_DESIGN_KIND,
+    HelmetCrestDesignError,
+    metadata as helmet_crest_metadata,
+    validate_metadata as validate_helmet_crest_metadata,
+)
+from .helmet_logo_regions import (
+    HelmetLogoRegionError,
+    opaque_shell_body_rgba,
+    validate_full_shell_region_mask_rgba,
+    validate_region_mask_rgba,
+)
 from .models import (
     AUDO_EXACT_SLOT_KIND,
     AUDO_EXACT_SLOT_WRITER_SCHEMA,
@@ -59,6 +108,7 @@ from .models import (
     DRAFT_LOGO_EDIT_ID,
     DRAFT_LOGO_INNER_INDEX,
     DRAFT_LOGO_OUTER_INDEX,
+    NUMBER_TEXTURE_KIND,
     ApfSource,
     ApfStatus,
     Modification,
@@ -72,18 +122,23 @@ from .project import (
     load_project as read_project_archive,
     save_project as write_project_archive,
 )
+from .number_targets import lookup as lookup_number_target
 from .player_positions import PlayerPositionsError
 
 
 ensure_tools_importable()
 import apf_player_rating_patch  # type: ignore  # noqa: E402
 import apf_player_position_patch  # type: ignore  # noqa: E402
+import apf_custom_team_appearance_patch  # type: ignore  # noqa: E402
+import apf_uniform_equipment_color_patch  # type: ignore  # noqa: E402
 import apf_audio  # type: ignore  # noqa: E402
 import apf_audo_exact_slot  # type: ignore  # noqa: E402
 import apf_ausb_exact_slot  # type: ignore  # noqa: E402
 import apf_roster  # type: ignore  # noqa: E402
 import apf_txt_loc_patch  # type: ignore  # noqa: E402
 import apf_roster_identity_patch  # type: ignore  # noqa: E402
+import apf_helmet_crest_mask_fit  # type: ignore  # noqa: E402
+import apf_team_crests  # type: ignore  # noqa: E402
 
 
 class SessionError(ValueError):
@@ -152,6 +207,16 @@ class ApfSession:
             str, apf_roster_identity_patch.RosterIdentityAllocation
         ] | None = None
         self._player_rating_source_body: bytes | None = None
+        self._custom_team_appearances: dict[
+            int, apf_custom_team_appearance_patch.CustomTeamAppearance
+        ] | None = None
+        self._custom_team_appearance_targets: dict[
+            int, apf_custom_team_appearance_patch.AppearanceTarget
+        ] | None = None
+        self._uniform_equipment_color_inspections: dict[
+            int, apf_uniform_equipment_color_patch.UniformEquipmentColorInspection
+        ] | None = None
+        self._master_play_source_body: bytes | None = None
         self._audo_source_fingerprints: (
             apf_audo_exact_slot.SourceAudioFingerprints | None
         ) = None
@@ -697,17 +762,51 @@ class ApfSession:
             frame_count=target.declared_sample_count,
             encoded_size=target.encoded_size,
         )
+        # Conform first, so a modder can supply an ordinary audio file instead of
+        # a WAV they had to shape by hand in an audio editor. A file that already
+        # matches the target exactly is passed straight through untouched, which
+        # keeps the long-standing path byte-identical. Anything else is converted
+        # and then meets every check the encoder already ran -- the link count,
+        # the RIFF structure, the five-way shape match and the exact data size
+        # are all still applied to whatever it is handed, so a bad conversion
+        # fails closed in exactly the way a bad hand-made WAV does.
         try:
-            encoded = encoder.encode(
-                supplied_pcm_wav,
-                pcm_target,
-                progress=progress,
-                cancel_requested=cancel_requested,
+            audio_shape = audio_conform.shape_for(
+                pcm_target.channels, pcm_target.sample_rate, pcm_target.frame_count
             )
+        except audio_conform.AudioConformError as exc:
+            raise SessionError(str(exc)) from exc
+        try:
+            with tempfile.TemporaryDirectory(prefix="apf-audio-conform-") as workspace:
+                try:
+                    encode_input = audio_conform.conform(
+                        supplied_pcm_wav, audio_shape, Path(workspace)
+                    ).path
+                except audio_conform.AudioConformError:
+                    # Strictly additive: if the file cannot be converted -- it is
+                    # not audio, or FFmpeg is absent -- hand the encoder the
+                    # original exactly as before, so its own validation produces
+                    # the same refusal it always did. Conversion may add a route,
+                    # never take one away or reword an existing failure.
+                    encode_input = supplied_pcm_wav
+                encoded = encoder.encode(
+                    encode_input,
+                    pcm_target,
+                    progress=progress,
+                    cancel_requested=cancel_requested,
+                )
+                if not isinstance(encoded, ExternalEncodingResult):
+                    raise SessionError(
+                        "The external XMA1 encoder returned an invalid result"
+                    )
+                verify_xma1_signal_quality(
+                    encode_input,
+                    encoded.xma1_riff,
+                    pcm_target,
+                    cancel_requested=cancel_requested,
+                )
         except AudioEncodingError as exc:
             raise SessionError(str(exc)) from exc
-        if not isinstance(encoded, ExternalEncodingResult):
-            raise SessionError("The external XMA1 encoder returned an invalid result")
         existing_payload_paths = frozenset(self.replacements_root.iterdir())
         self._require_audio_pcm_not_cancelled(cancel_requested)
         modification: Modification | None = None
@@ -1489,6 +1588,151 @@ class ApfSession:
             input_kind=plan.input_kind,
         )
 
+    def _require_helmet_crest_slot(
+        self, crest_asset_index: int, crest_outer_entry_index: int
+    ) -> None:
+        """Bind a project target to the crest package declared by this disc."""
+
+        try:
+            matches = tuple(
+                slot
+                for slot in apf_team_crests.crest_slots(self.source.index_0a)
+                if slot.asset_index == crest_asset_index
+            )
+        except Exception as exc:  # tool parsers use format-specific errors
+            raise SessionError(f"Could not resolve the selected crest slot: {exc}") from exc
+        if (
+            len(matches) != 1
+            or matches[0].outer_entry_index != crest_outer_entry_index
+        ):
+            raise SessionError(
+                "The selected crest package no longer matches this APF game"
+            )
+
+    def replace_helmet_crest_design(
+        self,
+        supplied_png: Path,
+        *,
+        profile: str,
+        crest_asset_index: int,
+        crest_outer_entry_index: int,
+        fit_visible_mask: bool = False,
+        detail_png: Path | None = None,
+    ) -> Modification:
+        """Stage one selected-team crest plus its fixed helmet coverage profile.
+
+        The project payload is always one normalized 512x512 RGBA PNG.  The
+        full-shell profile changes the shared helmet model at build time; the
+        crest package and cache selection remain team-specific.  ``detail_png``
+        optionally stages the companion ``logo_l1`` art (regions 3-5) so the
+        retail-profile project build writes both layers instead of clearing the
+        detail masks.
+        """
+
+        data, _source_digest = self._validated_png(
+            Path(supplied_png), width=512, height=512, contract="helmet_crest_design"
+        )
+        detail_data: bytes | None = None
+        detail_digest: str | None = None
+        if detail_png is not None:
+            detail_data, detail_digest = self._validated_png(
+                Path(detail_png),
+                width=512,
+                height=512,
+                contract="helmet_crest_design",
+            )
+        try:
+            with Image.open(BytesIO(data)) as image:
+                image.load()
+                rgba = image.tobytes()
+        except Exception as exc:  # already decoded above; retain a clear boundary
+            raise SessionError(f"Could not decode the helmet crest PNG: {exc}") from exc
+        if not any(rgba[index] for index in range(3, len(rgba), 4)):
+            raise SessionError("The helmet crest PNG is fully transparent")
+        active_x = [
+            (offset // 4) % 512
+            for offset in range(0, len(rgba), 4)
+            if rgba[offset] or rgba[offset + 1] or rgba[offset + 2]
+        ]
+        if not active_x:
+            raise SessionError(
+                "The helmet crest has no visible RGB mask regions; use flat red, "
+                "green, or blue mask art"
+            )
+        source_coverage = (max(active_x) - min(active_x) + 1) / 512
+        output_coverage = source_coverage
+        if fit_visible_mask:
+            if profile != FULL_SHELL_CREST_PROFILE:
+                raise SessionError(
+                    "Fit visible mask to full helmet wrap requires the full-shell "
+                    "coverage profile"
+                )
+            try:
+                fitted = apf_helmet_crest_mask_fit.fit_visible_mask_rgba(rgba)
+                # Keep the semantic, pre-guard fitted design as the project
+                # payload.  The sampler guard is a build-time transport detail;
+                # persisting it here would compress the art again on every
+                # project reload/build cycle.
+                rgba = fitted.output_rgba
+                data = apf_helmet_crest_mask_fit.encode_rgba_png(
+                    512, 512, rgba
+                )
+            except apf_helmet_crest_mask_fit.MaskFitError as exc:
+                raise SessionError(f"Could not fit the helmet crest mask: {exc}") from exc
+            output_coverage = fitted.output_horizontal_coverage
+        if profile == FULL_SHELL_CREST_PROFILE:
+            # The routed whole shell draws through the crest material, where a
+            # translucent shell body renders see-through in game.  GUI-authored
+            # canvases (transparent placement background or the bounded-crest
+            # 8/15 transport alpha) are normalized to the opaque full-shell
+            # contract before storage; the writer rejects anything else.
+            normalized = opaque_shell_body_rgba(rgba)
+            if normalized != rgba:
+                rgba = normalized
+                data = apf_helmet_crest_mask_fit.encode_rgba_png(
+                    512, 512, rgba
+                )
+            try:
+                validate_full_shell_region_mask_rgba(rgba)
+            except HelmetLogoRegionError as exc:
+                raise SessionError(
+                    "Full-shell helmet crests must be semantic APF region masks "
+                    "with an opaque shell body; convert normal artwork or fix "
+                    f"the advanced mask first: {exc}"
+                ) from exc
+        self._require_helmet_crest_slot(
+            crest_asset_index, crest_outer_entry_index
+        )
+        try:
+            target_metadata = helmet_crest_metadata(
+                profile=profile,
+                crest_asset_index=crest_asset_index,
+                crest_outer_entry_index=crest_outer_entry_index,
+                fit_visible_mask=fit_visible_mask,
+                source_horizontal_coverage=source_coverage,
+                output_horizontal_coverage=output_coverage,
+                detail_sha256=detail_digest,
+            )
+        except HelmetCrestDesignError as exc:
+            raise SessionError(str(exc)) from exc
+        digest = hashlib.sha256(data).hexdigest()
+        stored = self._store_replacement(
+            HELMET_CREST_DESIGN_EDIT_ID, digest, data
+        )
+        if detail_data is not None and detail_digest is not None:
+            self._store_replacement(
+                HELMET_CREST_DESIGN_EDIT_ID, detail_digest, detail_data
+            )
+        modification = Modification(
+            asset_id=HELMET_CREST_DESIGN_EDIT_ID,
+            kind=HELMET_CREST_DESIGN_KIND,
+            replacement_path=stored,
+            replacement_sha256=digest,
+            metadata=target_metadata,
+        )
+        self._set(HELMET_CREST_DESIGN_EDIT_ID, modification)
+        return modification
+
     def replace_uniform(self, asset: UniformAsset | str, supplied_png: Path) -> Modification:
         item = self.catalog.uniform(asset) if isinstance(asset, str) else asset
         # Preserve a verified local original before accepting an edit.
@@ -1512,6 +1756,44 @@ class ApfSession:
                 "height": item.height,
                 "outer_index": item.outer_index,
                 "inner_index": item.inner_index,
+            },
+        )
+        self._set(item.asset_id, modification)
+        return modification
+
+    def replace_number(self, asset: str, supplied_png: Path) -> Modification:
+        item = self.catalog.get(asset)
+        target = lookup_number_target(
+            item.outer_index, item.inner_index, item.name, item.type_name
+        )
+        if target is None or item.status is not ApfStatus.EDITABLE:
+            raise SessionError(
+                f"{item.name} is not a writable jersey-number texture"
+            )
+        self.asset_io.preview_texture(item)
+        contract = (
+            "number_normal" if str(target["codec"]) == "dxn" else "number_color"
+        )
+        data, digest = self._validated_png(
+            supplied_png,
+            width=512,
+            height=512,
+            contract=contract,
+        )
+        stored = self._store_replacement(item.asset_id, digest, data)
+        modification = Modification(
+            asset_id=item.asset_id,
+            kind=NUMBER_TEXTURE_KIND,
+            replacement_path=stored,
+            replacement_sha256=digest,
+            metadata={
+                "slot_index": int(target["slot_index"]),
+                "entry_index": int(target["entry_index"]),
+                "file_index": int(target["file_index"]),
+                "name": str(target["name"]),
+                "codec": str(target["codec"]),
+                "width": 512,
+                "height": 512,
             },
         )
         self._set(item.asset_id, modification)
@@ -1834,6 +2116,670 @@ class ApfSession:
             self._player_rating_source_body = body
         return self._player_rating_source_body
 
+    def _load_custom_team_appearances(self) -> None:
+        if self._custom_team_appearances is not None:
+            return
+        try:
+            rows = apf_custom_team_appearance_patch.inspect_appearances(
+                self.source.index_0a
+            )
+        except apf_custom_team_appearance_patch.CustomTeamAppearanceError as exc:
+            raise SessionError(str(exc)) from exc
+        self._custom_team_appearance_targets = {
+            target.slot: target for target, _appearance in rows
+        }
+        self._custom_team_appearances = {
+            appearance.slot: appearance for _target, appearance in rows
+        }
+
+    def custom_team_appearance_source_value(
+        self, slot: int
+    ) -> apf_custom_team_appearance_patch.CustomTeamAppearance:
+        self._load_custom_team_appearances()
+        assert self._custom_team_appearances is not None
+        try:
+            return self._custom_team_appearances[slot]
+        except KeyError as exc:
+            raise SessionError(
+                "APF custom-team appearance slot must be an integer from 32 to 39"
+            ) from exc
+
+    def custom_team_appearance_value(
+        self, slot: int
+    ) -> apf_custom_team_appearance_patch.CustomTeamAppearance:
+        source = self.custom_team_appearance_source_value(slot)
+        target_id = apf_custom_team_appearance_patch.asset_id(slot)
+        modification = self._modifications.get(target_id)
+        if modification is None:
+            return source
+        if modification.kind != "custom_team_appearance":
+            raise SessionError(f"The active edit type is invalid for {target_id}")
+        try:
+            return apf_custom_team_appearance_patch.decode_replacement_payload(
+                modification.replacement_path.read_bytes(), target_id
+            )
+        except (
+            OSError,
+            apf_custom_team_appearance_patch.CustomTeamAppearanceError,
+        ) as exc:
+            raise SessionError(
+                f"The active custom-team appearance replacement is invalid: {exc}"
+            ) from exc
+
+    def replace_custom_team_appearance(
+        self,
+        appearance: apf_custom_team_appearance_patch.CustomTeamAppearance,
+    ) -> Modification:
+        try:
+            appearance = apf_custom_team_appearance_patch.validate_appearance(
+                appearance
+            )
+            self.custom_team_appearance_source_value(appearance.slot)
+            assert self._custom_team_appearance_targets is not None
+            target = self._custom_team_appearance_targets[appearance.slot]
+            payload = apf_custom_team_appearance_patch.encode_replacement_payload(
+                appearance
+            )
+        except apf_custom_team_appearance_patch.CustomTeamAppearanceError as exc:
+            raise SessionError(str(exc)) from exc
+        digest = hashlib.sha256(payload).hexdigest()
+        stored = self._store_payload(digest, payload, ".json")
+        modification = Modification(
+            asset_id=target.asset_id,
+            kind="custom_team_appearance",
+            replacement_path=stored,
+            replacement_sha256=digest,
+            metadata=apf_custom_team_appearance_patch.target_metadata(target),
+        )
+        self._set(modification.asset_id, modification)
+        return modification
+
+    def _load_uniform_equipment_colors(self) -> None:
+        if self._uniform_equipment_color_inspections is not None:
+            return
+        try:
+            rows = apf_uniform_equipment_color_patch.inspect_colors(
+                self.source.index_0a
+            )
+        except apf_uniform_equipment_color_patch.UniformEquipmentColorError as exc:
+            raise SessionError(str(exc)) from exc
+        self._uniform_equipment_color_inspections = {
+            row.target.team_index: row for row in rows
+        }
+
+    def uniform_equipment_color_inspection(
+        self, team_index: int
+    ) -> apf_uniform_equipment_color_patch.UniformEquipmentColorInspection:
+        try:
+            apf_uniform_equipment_color_patch.asset_id(team_index)
+        except apf_uniform_equipment_color_patch.UniformEquipmentColorError as exc:
+            raise SessionError(str(exc)) from exc
+        self._load_uniform_equipment_colors()
+        assert self._uniform_equipment_color_inspections is not None
+        try:
+            return self._uniform_equipment_color_inspections[team_index]
+        except KeyError as exc:
+            raise SessionError("APF team index must be an integer from 0 to 39") from exc
+
+    def uniform_equipment_color_source_value(
+        self, team_index: int
+    ) -> apf_uniform_equipment_color_patch.UniformEquipmentColors:
+        return self.uniform_equipment_color_inspection(team_index).value
+
+    def uniform_equipment_color_value(
+        self, team_index: int
+    ) -> apf_uniform_equipment_color_patch.UniformEquipmentColors:
+        source = self.uniform_equipment_color_source_value(team_index)
+        target_id = apf_uniform_equipment_color_patch.asset_id(team_index)
+        modification = self._modifications.get(target_id)
+        if modification is None:
+            return source
+        if modification.kind != "uniform_equipment_colors":
+            raise SessionError(f"The active edit type is invalid for {target_id}")
+        try:
+            return apf_uniform_equipment_color_patch.decode_replacement_payload(
+                modification.replacement_path.read_bytes(), target_id
+            )
+        except (
+            OSError,
+            apf_uniform_equipment_color_patch.UniformEquipmentColorError,
+        ) as exc:
+            raise SessionError(
+                f"The active uniform equipment-color replacement is invalid: {exc}"
+            ) from exc
+
+    def replace_uniform_equipment_colors(
+        self,
+        value: apf_uniform_equipment_color_patch.UniformEquipmentColors,
+    ) -> Modification:
+        try:
+            value = apf_uniform_equipment_color_patch.validate_colors(value)
+            inspection = self.uniform_equipment_color_inspection(value.team_index)
+            payload = apf_uniform_equipment_color_patch.encode_replacement_payload(value)
+        except apf_uniform_equipment_color_patch.UniformEquipmentColorError as exc:
+            raise SessionError(str(exc)) from exc
+        digest = hashlib.sha256(payload).hexdigest()
+        stored = self._store_payload(digest, payload, ".json")
+        modification = Modification(
+            asset_id=inspection.target.asset_id,
+            kind="uniform_equipment_colors",
+            replacement_path=stored,
+            replacement_sha256=digest,
+            metadata=apf_uniform_equipment_color_patch.target_metadata(
+                inspection.target
+            ),
+        )
+        self._set(modification.asset_id, modification)
+        return modification
+
+    def _master_play_body(self) -> bytes:
+        if self._master_play_source_body is None:
+            try:
+                self._master_play_source_body = read_master_play_body(
+                    self.source.index_0a
+                )
+            except ValidationError as exc:
+                raise SessionError(str(exc)) from exc
+        return self._master_play_source_body
+
+    def _active_package_maps(
+        self, modifications: Mapping[str, Modification] | None = None
+    ) -> tuple[PackageMapChange, ...]:
+        source = self._modifications if modifications is None else modifications
+        result: list[PackageMapChange] = []
+        for modification in source.values():
+            if modification.kind != PACKAGE_MAP_KIND:
+                continue
+            try:
+                change = decode_package_map_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+                metadata_change = package_map_from_mapping(modification.metadata)
+            except (OSError, ValidationError) as exc:
+                raise SessionError(
+                    f"The active who-lines-up edit is invalid: {exc}"
+                ) from exc
+            if change != metadata_change:
+                raise SessionError(
+                    "Who-lines-up edit target metadata changed: "
+                    f"{modification.asset_id}"
+                )
+            result.append(change)
+        return tuple(sorted(result, key=lambda item: item.formation_index))
+
+    def staged_package_maps(self) -> tuple[PackageMapChange, ...]:
+        return self._active_package_maps()
+
+    def _compile_master_play(
+        self, modifications: Mapping[str, Modification] | None = None
+    ) -> None:
+        maps = self._active_package_maps(modifications)
+        routes = self._active_route_requests(modifications)
+        if not maps and not routes:
+            return
+        compile_master_play_edits(
+            self._master_play_body(), package_maps=maps, routes=routes
+        )
+
+    def apply_package_map_batch(
+        self, changes: Iterable[PackageMapChange]
+    ) -> int:
+        """Replace the entire staged who-lines-up set with this batch.
+
+        Maps not named in ``changes`` are unstaged. The whole batch is one
+        Undo step; individual formations remain individually revert-able.
+        An empty batch clears every staged who-lines-up map.
+        """
+
+        normalized = tuple(changes)
+        prepared: list[Modification] = []
+        seen: set[int] = set()
+        for change in normalized:
+            if not isinstance(change, PackageMapChange):
+                raise SessionError("A who-lines-up edit is malformed")
+            if change.formation_index in seen:
+                raise SessionError(
+                    "A who-lines-up batch repeats one formation"
+                )
+            seen.add(change.formation_index)
+            try:
+                payload = encode_package_map_payload(change)
+            except ValidationError as exc:
+                raise SessionError(str(exc)) from exc
+            digest = hashlib.sha256(payload).hexdigest()
+            stored = self._store_payload(digest, payload, ".json")
+            prepared.append(
+                Modification(
+                    asset_id=change.selector,
+                    kind=PACKAGE_MAP_KIND,
+                    replacement_path=stored,
+                    replacement_sha256=digest,
+                    metadata=change.metadata(),
+                )
+            )
+        updated = {
+            asset_id: modification
+            for asset_id, modification in self._modifications.items()
+            if modification.kind != PACKAGE_MAP_KIND
+        }
+        for modification in prepared:
+            updated[modification.asset_id] = modification
+        try:
+            self._compile_master_play(updated)
+        except ValidationError as exc:
+            raise SessionError(str(exc)) from exc
+        if updated == self._modifications:
+            return 0
+        changed = {
+            key
+            for key in set(updated).union(self._modifications)
+            if updated.get(key) != self._modifications.get(key)
+        }
+        self._record_undo()
+        self._modifications = updated
+        return len(changed)
+
+    @staticmethod
+    def _route_request_metadata(request: RouteCloneRequest) -> dict[str, object]:
+        return {
+            "asset_id": request.asset_id,
+            "target_play_index": request.target_play_index,
+            "target_slot_index": request.target_slot_index,
+            "donor_play_index": request.donor_play_index,
+            "donor_slot_index": request.donor_slot_index,
+        }
+
+    def _active_route_requests(
+        self, modifications: Mapping[str, Modification] | None = None
+    ) -> tuple[RouteCloneRequest, ...]:
+        source = self._modifications if modifications is None else modifications
+        result: list[RouteCloneRequest] = []
+        for modification in source.values():
+            if modification.kind != PLAY_ASSIGNMENT_ROUTE_KIND:
+                continue
+            try:
+                payload = modification.replacement_path.read_bytes()
+                request = decode_route_clone_payload(
+                    payload, modification.asset_id
+                )
+                metadata_request = route_clone_request_from_mapping(
+                    modification.metadata
+                )
+            except (OSError, ValidationError) as exc:
+                raise SessionError(
+                    f"The active APF route clone is invalid: {exc}"
+                ) from exc
+            if request != metadata_request:
+                raise SessionError(
+                    f"APF route-clone target metadata changed: {modification.asset_id}"
+                )
+            result.append(request)
+        return tuple(sorted(result, key=lambda item: item.selector))
+
+    def apply_play_assignment_route_batch(
+        self,
+        requests: Iterable[RouteCloneRequest],
+        *,
+        revert_asset_ids: Iterable[str] = (),
+    ) -> int:
+        """Stage route copies atomically so a two-way swap is one Undo action."""
+
+        normalized = tuple(requests)
+        revert_ids = tuple(dict.fromkeys(str(value) for value in revert_asset_ids))
+        if not normalized and not revert_ids:
+            return 0
+        prepared: list[Modification] = []
+        seen: set[str] = set()
+        for request in normalized:
+            if not isinstance(request, RouteCloneRequest):
+                raise SessionError("An APF route-copy request is malformed")
+            try:
+                payload = encode_route_clone_payload(request)
+            except ValidationError as exc:
+                raise SessionError(str(exc)) from exc
+            if request.selector in seen:
+                raise SessionError(
+                    "An APF route-copy batch repeats one target assignment slot"
+                )
+            seen.add(request.selector)
+            digest = hashlib.sha256(payload).hexdigest()
+            stored = self._store_payload(digest, payload, ".json")
+            prepared.append(
+                Modification(
+                    asset_id=request.selector,
+                    kind=PLAY_ASSIGNMENT_ROUTE_KIND,
+                    replacement_path=stored,
+                    replacement_sha256=digest,
+                    metadata=self._route_request_metadata(request),
+                )
+            )
+        overlap = seen.intersection(revert_ids)
+        if overlap:
+            raise SessionError(
+                "A route-copy batch cannot replace and revert the same target"
+            )
+        updated = dict(self._modifications)
+        for asset_id in revert_ids:
+            existing = updated.get(asset_id)
+            if existing is not None and existing.kind != PLAY_ASSIGNMENT_ROUTE_KIND:
+                raise SessionError(
+                    f"The active edit type is invalid for route target {asset_id}"
+                )
+            updated.pop(asset_id, None)
+        for modification in prepared:
+            updated[modification.asset_id] = modification
+        try:
+            self._compile_master_play(updated)
+        except ValidationError as exc:
+            raise SessionError(str(exc)) from exc
+        if updated == self._modifications:
+            return 0
+        changed = {
+            key
+            for key in set(updated).union(self._modifications)
+            if updated.get(key) != self._modifications.get(key)
+        }
+        self._record_undo()
+        self._modifications = updated
+        return len(changed)
+
+    def replace_play_assignment_route(
+        self,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+    ) -> Modification:
+        """Copy one stock assignment when it preserves every chain start."""
+
+        request = RouteCloneRequest(
+            target_play_index,
+            target_slot_index,
+            donor_play_index,
+            donor_slot_index,
+        )
+        self.apply_play_assignment_route_batch((request,))
+        modification = self._modifications.get(request.selector)
+        if modification is None:
+            raise SessionError("The APF route copy was not staged")
+        return modification
+
+    def swap_play_assignment_routes(
+        self,
+        first_play_index: int,
+        first_slot_index: int,
+        second_play_index: int,
+        second_slot_index: int,
+    ) -> tuple[Modification, Modification]:
+        """Safely swap two source assignments while preserving the chain set."""
+
+        first = RouteCloneRequest(
+            first_play_index,
+            first_slot_index,
+            second_play_index,
+            second_slot_index,
+        )
+        second = RouteCloneRequest(
+            second_play_index,
+            second_slot_index,
+            first_play_index,
+            first_slot_index,
+        )
+        self.apply_play_assignment_route_batch((first, second))
+        return (
+            self._modifications[first.selector],
+            self._modifications[second.selector],
+        )
+
+    def relay_play_assignment_route_candidates(
+        self,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+    ) -> tuple[tuple[int, int], ...]:
+        """Slots whose shared current route can relay an otherwise-orphaning copy."""
+
+        try:
+            return relay_candidates(
+                self._master_play_body(),
+                target_play_index,
+                target_slot_index,
+                donor_play_index,
+                donor_slot_index,
+            )
+        except ValidationError as exc:
+            raise SessionError(str(exc)) from exc
+
+    def copy_play_assignment_route_via_relay(
+        self,
+        target_play_index: int,
+        target_slot_index: int,
+        donor_play_index: int,
+        donor_slot_index: int,
+        relay_play_index: int,
+        relay_slot_index: int,
+    ) -> tuple[Modification, Modification]:
+        """Copy donor->target and target's original route->relay as one Undo step."""
+
+        target = (target_play_index, target_slot_index)
+        donor = (donor_play_index, donor_slot_index)
+        relay = (relay_play_index, relay_slot_index)
+        if relay == target or relay == donor:
+            raise SessionError(
+                "The relay assignment must be different from both the target "
+                "and the donor."
+            )
+        if relay_play_index == donor_play_index:
+            raise SessionError(
+                "Pick a relay slot on another play so the donor play stays "
+                "untouched."
+            )
+        candidates = self.relay_play_assignment_route_candidates(
+            target_play_index,
+            target_slot_index,
+            donor_play_index,
+            donor_slot_index,
+        )
+        if relay not in candidates:
+            raise SessionError(
+                "The relay slot's current route is only used on that play, so "
+                "relaying through it would delete the route. Pick a relay slot "
+                "whose route at least one other assignment also uses."
+            )
+        first, second = build_relayed_copy_requests(target, donor, relay)
+        self.apply_play_assignment_route_batch((first, second))
+        return (
+            self._modifications[first.selector],
+            self._modifications[second.selector],
+        )
+
+    # ------------------------------------------------ stock playbook membership
+
+    def _active_splb_changes(
+        self, modifications: Mapping[str, Modification] | None = None
+    ) -> tuple[SplbMembershipChange | SplbTagMove, ...]:
+        """Every staged Fine-tune Plays edit, re-read from its stored payload."""
+
+        source = self._modifications if modifications is None else modifications
+        result: list[SplbMembershipChange | SplbTagMove] = []
+        for modification in source.values():
+            if modification.kind != SPLB_MEMBERSHIP_KIND:
+                continue
+            try:
+                change = decode_splb_membership_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+                metadata_change = splb_change_from_mapping(modification.metadata)
+            except (OSError, ValidationError) as exc:
+                raise SessionError(
+                    f"The active stock-playbook edit is invalid: {exc}"
+                ) from exc
+            if change != metadata_change:
+                raise SessionError(
+                    "Stock-playbook edit target metadata changed: "
+                    f"{modification.asset_id}"
+                )
+            result.append(change)
+        return tuple(sorted(result, key=lambda item: item.selector))
+
+    def staged_splb_outers(self) -> tuple[int, ...]:
+        """Every stock playbook that currently has Fine-tune Plays edits."""
+
+        return tuple(
+            sorted({change.outer_index for change in self._active_splb_changes()})
+        )
+
+    def staged_splb_book(self) -> int | None:
+        """The only staged stock playbook, or None if none or more than one."""
+
+        outers = self.staged_splb_outers()
+        if len(outers) == 1:
+            return outers[0]
+        return None
+
+    def staged_splb_changes(self) -> tuple[SplbMembershipChange | SplbTagMove, ...]:
+        return self._active_splb_changes()
+
+    def master_categories(self) -> tuple[dict[str, object], ...]:
+        """The MASTER personnel packages: index, name, row, eleven roles.
+
+        Byte layout mirrored from the pinned category getter 0x8485BD38:
+        records at +0x44, stride 0x10; byte +4 is the personnel row and the
+        next eleven bytes are the per-slot roles (8 = TE, 9 = WR).
+        """
+
+        body = self._master_play_body()
+        out: list[dict[str, object]] = []
+        for index in range(SPLB_CATEGORY_COUNT):
+            base = 0x44 + index * 0x10
+            stored = struct.unpack_from(">i", body, base)[0]
+            target = base - 1 + stored
+            cursor = target
+            while cursor + 2 <= len(body) and body[cursor : cursor + 2] != b"\0\0":
+                cursor += 2
+            out.append(
+                {
+                    "index": index,
+                    "name": body[target:cursor].decode("utf-16-be", errors="replace"),
+                    "row": int(body[base + 4]),
+                    "roles": tuple(int(body[base + 5 + s]) & 0x1F for s in range(11)),
+                }
+            )
+        return tuple(out)
+
+    def _compile_splb_groups(
+        self, active: Iterable[SplbMembershipChange | SplbTagMove]
+    ) -> None:
+        """Compile each named book separately. The writer is still one book."""
+
+        groups: dict[int, list[SplbMembershipChange | SplbTagMove]] = {}
+        for change in active:
+            groups.setdefault(change.outer_index, []).append(change)
+        for outer_index, group in sorted(groups.items()):
+            compile_splb_book(
+                read_splb_book(self.source.index_0a, outer_index), tuple(group)
+            )
+
+    def apply_splb_membership_batch(
+        self,
+        changes: Iterable[SplbMembershipChange | SplbTagMove],
+        *,
+        replace_outer: int | None = None,
+    ) -> int:
+        """Merge Fine-tune Plays edits for one book, keeping every other book.
+
+        One call still names one stock playbook — the writer compiles one book
+        at a time. ``replace_outer`` is the book whose previous ticks are
+        replaced. An empty batch with ``replace_outer=None`` clears every book
+        (Revert-all). An empty batch with ``replace_outer=N`` clears only N.
+        """
+
+        normalized = tuple(changes)
+        prepared: list[Modification] = []
+        seen: set[str] = set()
+        outers: set[int] = set()
+        for change in normalized:
+            if not isinstance(
+                change, (SplbMembershipChange, SplbTagMove, SplbTrailerReplace)
+            ):
+                raise SessionError("A stock-playbook change is malformed")
+            try:
+                payload = encode_splb_membership_payload(change)
+            except ValidationError as exc:
+                raise SessionError(str(exc)) from exc
+            if change.selector in seen:
+                raise SessionError(
+                    "A stock-playbook batch repeats one formation slot"
+                )
+            seen.add(change.selector)
+            outers.add(change.outer_index)
+            digest = hashlib.sha256(payload).hexdigest()
+            stored = self._store_payload(digest, payload, ".json")
+            prepared.append(
+                Modification(
+                    asset_id=change.selector,
+                    kind=SPLB_MEMBERSHIP_KIND,
+                    replacement_path=stored,
+                    replacement_sha256=digest,
+                    metadata=splb_change_metadata(change),
+                )
+            )
+        if len(outers) > 1:
+            raise SessionError(
+                "A Fine-tune Plays batch must name one stock playbook"
+            )
+        if normalized:
+            batch_outer = next(iter(outers))
+            if replace_outer is None:
+                replace_outer = batch_outer
+            elif replace_outer != batch_outer:
+                raise SessionError(
+                    "replace_outer does not match the Fine-tune Plays batch"
+                )
+        updated: dict[str, Modification] = {}
+        for asset_id, modification in self._modifications.items():
+            if modification.kind != SPLB_MEMBERSHIP_KIND:
+                updated[asset_id] = modification
+                continue
+            if replace_outer is None:
+                continue
+            try:
+                existing = splb_change_from_mapping(modification.metadata)
+            except ValidationError:
+                existing = decode_splb_membership_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+            if existing.outer_index == replace_outer:
+                continue
+            updated[asset_id] = modification
+        for modification in prepared:
+            updated[modification.asset_id] = modification
+        active = self._active_splb_changes(updated)
+        if active:
+            try:
+                self._compile_splb_groups(active)
+            except ValidationError as exc:
+                raise SessionError(str(exc)) from exc
+        if updated == self._modifications:
+            return 0
+        changed = {
+            key
+            for key in set(updated).union(self._modifications)
+            if updated.get(key) != self._modifications.get(key)
+        }
+        self._record_undo()
+        self._modifications = updated
+        return len(changed)
+
+    def clear_splb_membership(self) -> int:
+        """Drop every staged Fine-tune Plays edit as one Undo action."""
+
+        return self.apply_splb_membership_batch(())
+
     def player_base_rating_value(self, player_index: int, field_id: str) -> int:
         """Return the active authored value or the untouched on-disc integer."""
 
@@ -1902,7 +2848,9 @@ class ApfSession:
 
         try:
             target = apf_player_rating_patch.target_for(player_index, field_id)
-            rating = apf_player_rating_patch.validate_value(value)
+            rating = apf_player_rating_patch.validate_field_value(
+                target.field_id, value
+            )
             self.player_base_rating_source_value(
                 target.player_index, target.field_id
             )
@@ -2080,6 +3028,93 @@ class ApfSession:
         previous = self._modifications.get(asset_id)
         if previous is None:
             return False
+        if previous.kind == PLAY_ASSIGNMENT_ROUTE_KIND:
+            updated = dict(self._modifications)
+            updated.pop(asset_id)
+
+            def route_set_is_safe(candidate: Mapping[str, Modification]) -> bool:
+                try:
+                    self._compile_master_play(candidate)
+                except (ValidationError, SessionError):
+                    return False
+                return True
+
+            if not route_set_is_safe(updated):
+                try:
+                    selected = decode_route_clone_payload(
+                        previous.replacement_path.read_bytes(), previous.asset_id
+                    )
+                except (OSError, ValidationError) as exc:
+                    raise SessionError(
+                        f"The active APF route clone is invalid: {exc}"
+                    ) from exc
+                reciprocal = RouteCloneRequest(
+                    selected.donor_play_index,
+                    selected.donor_slot_index,
+                    selected.target_play_index,
+                    selected.target_slot_index,
+                )
+                partner = updated.get(reciprocal.selector)
+                if partner is None or partner.kind != PLAY_ASSIGNMENT_ROUTE_KIND:
+                    raise SessionError(
+                        "Reverting only this assignment would orphan a stock "
+                        "chain, and no reciprocal swap partner is staged."
+                    )
+                try:
+                    partner_request = decode_route_clone_payload(
+                        partner.replacement_path.read_bytes(), partner.asset_id
+                    )
+                except (OSError, ValidationError) as exc:
+                    raise SessionError(
+                        f"The reciprocal APF route clone is invalid: {exc}"
+                    ) from exc
+                if partner_request != reciprocal:
+                    raise SessionError(
+                        "Reverting only this assignment would orphan a stock chain."
+                    )
+                updated.pop(reciprocal.selector)
+                if not route_set_is_safe(updated):
+                    raise SessionError(
+                        "Reverting this assignment pair would leave the staged "
+                        "route set unsafe. Revert all route edits together."
+                    )
+            self._record_undo()
+            self._modifications = updated
+            return True
+        if previous.kind == PACKAGE_MAP_KIND:
+            updated = dict(self._modifications)
+            updated.pop(asset_id)
+            try:
+                self._compile_master_play(updated)
+            except ValidationError as exc:
+                raise SessionError(
+                    "Reverting only this who-lines-up edit would leave the "
+                    f"rest unsafe ({exc}). Revert the other MASTER PLAY edits "
+                    "together."
+                ) from exc
+            self._record_undo()
+            self._modifications = updated
+            return True
+        if previous.kind == SPLB_MEMBERSHIP_KIND:
+            # One staged change can depend on another: a removal names an heir
+            # that a staged add put in the record. Dropping one in isolation can
+            # leave a set the writer would refuse, so prove the remainder still
+            # compiles rather than discovering it at build time.
+            updated = dict(self._modifications)
+            updated.pop(asset_id)
+            active = self._active_splb_changes(updated)
+            if active:
+                try:
+                    self._compile_splb_groups(active)
+                except ValidationError as exc:
+                    raise SessionError(
+                        "Reverting only this Fine-tune Plays edit would leave the "
+                        f"rest outside the proved rule ({exc}). Use Revert changes "
+                        "in Fine-tune Plays to drop them together."
+                    ) from exc
+            self._record_undo()
+            self._modifications = updated
+            return True
         self._record_undo()
         del self._modifications[asset_id]
         return True
@@ -2142,7 +3177,71 @@ class ApfSession:
             validated: list[Modification] = []
             for modification in modifications:
                 suffix = ".png"
-                if modification.kind == "uniform":
+                if (
+                    modification.kind == HELMET_CREST_DESIGN_KIND
+                    and modification.asset_id == HELMET_CREST_DESIGN_EDIT_ID
+                ):
+                    data, digest = self._validated_png(
+                        modification.replacement_path,
+                        width=512,
+                        height=512,
+                        contract="helmet_crest_design",
+                    )
+                    try:
+                        target_metadata = validate_helmet_crest_metadata(
+                            modification.asset_id,
+                            modification.kind,
+                            modification.metadata,
+                        )
+                    except HelmetCrestDesignError as exc:
+                        raise SessionError(str(exc)) from exc
+                    self._require_helmet_crest_slot(
+                        int(target_metadata["crest_asset_index"]),
+                        int(target_metadata["crest_outer_entry_index"]),
+                    )
+                    with Image.open(BytesIO(data)) as image:
+                        image.load()
+                        rgba = image.tobytes()
+                    if not any(rgba[index] for index in range(3, len(rgba), 4)):
+                        raise SessionError(
+                            "Project helmet crest PNG is fully transparent"
+                        )
+                    if not any(
+                        rgba[offset] or rgba[offset + 1] or rgba[offset + 2]
+                        for offset in range(0, len(rgba), 4)
+                    ):
+                        raise SessionError(
+                            "Project helmet crest has no visible RGB mask regions"
+                        )
+                    active_x = [
+                        (offset // 4) % 512
+                        for offset in range(0, len(rgba), 4)
+                        if rgba[offset] or rgba[offset + 1] or rgba[offset + 2]
+                    ]
+                    actual_coverage = (max(active_x) - min(active_x) + 1) / 512
+                    if actual_coverage != float(
+                        target_metadata["output_horizontal_coverage"]
+                    ):
+                        raise SessionError(
+                            "Project helmet crest mask coverage does not match its "
+                            "payload"
+                        )
+                    if target_metadata["fit_visible_mask"] is True and (
+                        min(active_x), max(active_x)
+                    ) != (0, 511):
+                        raise SessionError(
+                            "Project fitted helmet crest does not span the full "
+                            "horizontal range"
+                        )
+                    if target_metadata["profile"] == FULL_SHELL_CREST_PROFILE:
+                        try:
+                            validate_region_mask_rgba(rgba)
+                        except HelmetLogoRegionError as exc:
+                            raise SessionError(
+                                "Project full-shell helmet crest is not a semantic "
+                                f"APF region mask: {exc}"
+                            ) from exc
+                elif modification.kind == "uniform":
                     asset = self.catalog.uniform(modification.asset_id)
                     data, digest = self._validated_png(
                         modification.replacement_path,
@@ -2266,6 +3365,66 @@ class ApfSession:
                             "Project roster-name allocation changed: "
                             f"{modification.asset_id}"
                         )
+                    suffix = ".json"
+                elif modification.kind == PLAY_ASSIGNMENT_ROUTE_KIND:
+                    try:
+                        data = modification.replacement_path.read_bytes()
+                        request = decode_route_clone_payload(
+                            data, modification.asset_id
+                        )
+                        metadata_request = route_clone_request_from_mapping(
+                            modification.metadata
+                        )
+                    except (OSError, ValidationError) as exc:
+                        raise SessionError(
+                            f"Project APF route clone is invalid: {exc}"
+                        ) from exc
+                    if request != metadata_request:
+                        raise SessionError(
+                            "Project APF route-clone target metadata changed: "
+                            f"{modification.asset_id}"
+                        )
+                    digest = hashlib.sha256(data).hexdigest()
+                    suffix = ".json"
+                elif modification.kind == PACKAGE_MAP_KIND:
+                    try:
+                        data = modification.replacement_path.read_bytes()
+                        change = decode_package_map_payload(
+                            data, modification.asset_id
+                        )
+                        metadata_change = package_map_from_mapping(
+                            modification.metadata
+                        )
+                    except (OSError, ValidationError) as exc:
+                        raise SessionError(
+                            f"Project who-lines-up edit is invalid: {exc}"
+                        ) from exc
+                    if change != metadata_change:
+                        raise SessionError(
+                            "Project who-lines-up target metadata changed: "
+                            f"{modification.asset_id}"
+                        )
+                    digest = hashlib.sha256(data).hexdigest()
+                    suffix = ".json"
+                elif modification.kind == SPLB_MEMBERSHIP_KIND:
+                    try:
+                        data = modification.replacement_path.read_bytes()
+                        change = decode_splb_membership_payload(
+                            data, modification.asset_id
+                        )
+                        metadata_change = splb_change_from_mapping(
+                            modification.metadata
+                        )
+                    except (OSError, ValidationError) as exc:
+                        raise SessionError(
+                            f"Project stock-playbook edit is invalid: {exc}"
+                        ) from exc
+                    if change != metadata_change:
+                        raise SessionError(
+                            "Project stock-playbook target metadata changed: "
+                            f"{modification.asset_id}"
+                        )
+                    digest = hashlib.sha256(data).hexdigest()
                     suffix = ".json"
                 elif modification.kind == AUDO_EXACT_SLOT_KIND:
                     fields = modification.asset_id.split(":")
@@ -2436,6 +3595,105 @@ class ApfSession:
                     self.player_position_source_value(target.player_index)
                     digest = hashlib.sha256(data).hexdigest()
                     suffix = ".json"
+                elif modification.kind == "custom_team_appearance":
+                    try:
+                        slot = apf_custom_team_appearance_patch.parse_asset_id(
+                            modification.asset_id
+                        )
+                        data = modification.replacement_path.read_bytes()
+                        appearance = (
+                            apf_custom_team_appearance_patch.decode_replacement_payload(
+                                data, modification.asset_id
+                            )
+                        )
+                        self.custom_team_appearance_source_value(slot)
+                        assert self._custom_team_appearance_targets is not None
+                        target = self._custom_team_appearance_targets[slot]
+                    except (
+                        OSError,
+                        apf_custom_team_appearance_patch.CustomTeamAppearanceError,
+                    ) as exc:
+                        raise SessionError(
+                            f"Project custom-team appearance replacement is invalid: {exc}"
+                        ) from exc
+                    if appearance.slot != slot or modification.metadata != (
+                        apf_custom_team_appearance_patch.target_metadata(target)
+                    ):
+                        raise SessionError(
+                            "Project custom-team appearance target changed: "
+                            f"{modification.asset_id}"
+                        )
+                    digest = hashlib.sha256(data).hexdigest()
+                    suffix = ".json"
+                elif modification.kind == "uniform_equipment_colors":
+                    try:
+                        team_index = apf_uniform_equipment_color_patch.parse_asset_id(
+                            modification.asset_id
+                        )
+                        data = modification.replacement_path.read_bytes()
+                        value = apf_uniform_equipment_color_patch.decode_replacement_payload(
+                            data, modification.asset_id
+                        )
+                        inspection = self.uniform_equipment_color_inspection(team_index)
+                    except (
+                        OSError,
+                        apf_uniform_equipment_color_patch.UniformEquipmentColorError,
+                    ) as exc:
+                        raise SessionError(
+                            f"Project uniform equipment-color replacement is invalid: {exc}"
+                        ) from exc
+                    if value.team_index != team_index or modification.metadata != (
+                        apf_uniform_equipment_color_patch.target_metadata(
+                            inspection.target
+                        )
+                    ):
+                        raise SessionError(
+                            "Project uniform equipment-color target changed: "
+                            f"{modification.asset_id}"
+                        )
+                    digest = hashlib.sha256(data).hexdigest()
+                    suffix = ".json"
+                elif modification.kind == NUMBER_TEXTURE_KIND:
+                    item = self.catalog.get(modification.asset_id)
+                    target = lookup_number_target(
+                        item.outer_index,
+                        item.inner_index,
+                        item.name,
+                        item.type_name,
+                    )
+                    if target is None or item.status is not ApfStatus.EDITABLE:
+                        raise SessionError(
+                            "The project jersey-number target changed in this game"
+                        )
+                    self.asset_io.preview_texture(item)
+                    contract = (
+                        "number_normal"
+                        if str(target["codec"]) == "dxn"
+                        else "number_color"
+                    )
+                    data, digest = self._validated_png(
+                        modification.replacement_path,
+                        width=512,
+                        height=512,
+                        contract=contract,
+                    )
+                    expected = {
+                        "slot_index": int(target["slot_index"]),
+                        "entry_index": int(target["entry_index"]),
+                        "file_index": int(target["file_index"]),
+                        "name": str(target["name"]),
+                        "codec": str(target["codec"]),
+                        "width": 512,
+                        "height": 512,
+                    }
+                    if any(
+                        modification.metadata.get(key) != value
+                        for key, value in expected.items()
+                    ):
+                        raise SessionError(
+                            "Project jersey-number target metadata changed: "
+                            f"{modification.asset_id}"
+                        )
                 else:
                     raise SessionError(
                         "Project contains an unsupported editable target: "
@@ -2455,6 +3713,31 @@ class ApfSession:
                         metadata=modification.metadata,
                     )
                 )
+            master_play_modifications = {
+                item.asset_id: item
+                for item in validated
+                if item.kind in {PLAY_ASSIGNMENT_ROUTE_KIND, PACKAGE_MAP_KIND}
+            }
+            if master_play_modifications:
+                try:
+                    self._compile_master_play(master_play_modifications)
+                except ValidationError as exc:
+                    raise SessionError(
+                        f"Project MASTER PLAY edit set is unsafe: {exc}"
+                    ) from exc
+            splb_modifications = {
+                item.asset_id: item
+                for item in validated
+                if item.kind == SPLB_MEMBERSHIP_KIND
+            }
+            if splb_modifications:
+                active = self._active_splb_changes(splb_modifications)
+                try:
+                    self._compile_splb_groups(active)
+                except ValidationError as exc:
+                    raise SessionError(
+                        f"Project stock-playbook edit set is unsafe: {exc}"
+                    ) from exc
             self._record_undo()
             self._modifications = {item.asset_id: item for item in validated}
             self._audio_annotations = {
@@ -2672,11 +3955,27 @@ class ApfSession:
             raise SessionError(f"Could not read replacement PNG: {exc}") from exc
         if contract == "pants" and any(rgba[index] != 255 for index in range(3, len(rgba), 4)):
             raise SessionError("Pants PNG alpha must be 255 (fully opaque) everywhere")
+        if contract == "textlogo" and any(
+            rgba[index] != 255 for index in range(3, len(rgba), 4)
+        ):
+            raise SessionError(
+                "Wordmark PNG alpha must be 255 everywhere; use the Logos → "
+                "Wordmarks importer to flatten transparent art onto black."
+            )
         if contract == "helmet":
             if any(rgba[index] != 0 for index in range(2, len(rgba), 4)):
                 raise SessionError("Helmet PNG blue must be 0; only the R/G mask channels are stored")
             if any(rgba[index] != 255 for index in range(3, len(rgba), 4)):
                 raise SessionError("Helmet PNG alpha must be 255 everywhere")
+        if contract == "number_normal":
+            if any(rgba[index] != 0 for index in range(2, len(rgba), 4)):
+                raise SessionError(
+                    "Jersey-number normal PNG blue must be 0; only the R/G DXN channels are stored"
+                )
+            if any(rgba[index] != 255 for index in range(3, len(rgba), 4)):
+                raise SessionError(
+                    "Jersey-number normal PNG alpha must be 255 everywhere"
+                )
         if contract == "digital_font" and any(
             rgba[index] != 255 or rgba[index + 1] != 255 or rgba[index + 2] != 255
             for index in range(0, len(rgba), 4)

@@ -22,4 +22,8 @@ if [[ ! -f "$installer" || -L "$installer" ]]; then
     exit 1
 fi
 
+# Importing the installer loads the packaged compatibility module before the
+# release audit runs.  Keep that bootstrap read-only so it cannot create a
+# __pycache__ entry that the fail-closed audit would correctly reject.
+export PYTHONDONTWRITEBYTECODE=1
 exec python3 "$installer" install --source-root "$release_root" "$@"

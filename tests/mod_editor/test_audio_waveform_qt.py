@@ -278,7 +278,14 @@ class Nfl2k5AudioWaveformPanelTests(unittest.TestCase):
                     "complete streaming bank",
                     panel.waveform_preview.toolTip().casefold(),
                 )
-                self.assertFalse(panel.load_waveform_button.isEnabled())
+                # Never silent-gray: Load waveform stays clickable and teaches bank wall.
+                self.assertTrue(panel.load_waveform_button.isEnabled())
+                self.assertTrue(
+                    str(
+                        panel.load_waveform_button.property("disableReason") or ""
+                    ).strip()
+                    or "bank" in panel.load_waveform_button.toolTip().casefold()
+                )
 
                 panel.scope_filter.setCurrentIndex(
                     panel.scope_filter.findData("standalone")

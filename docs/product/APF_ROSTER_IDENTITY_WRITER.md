@@ -15,7 +15,9 @@ The evidence is intentionally family-specific:
   has not yet been visually consumed at runtime;
 - team abbreviations and secondary abbreviations: mapped and offline-proved,
   but not yet runtime-proved through the repaired route; and
-- jersey numbers: read-only/unmapped as a consumer-backed field.
+- jersey numbers: unavailable in this on-disc token-preserving writer; exact
+  packed authoring is separately available for raw `Roster.ROS` / verified
+  STFS-extraction handoffs in Save Players.
 
 ## Offline mapping boundary
 
@@ -126,17 +128,18 @@ directory atomically. A built game necessarily contains the user's retail data
 and must not be distributed. Mod Studio, its templates, and shareable projects
 must contain zero retail bytes.
 
-## Jersey-number boundary
+## Jersey-number boundary for this on-disc writer
 
-No APF jersey-number writer is exposed. The decoded on-disc roster evidence maps
+No jersey-number writer is exposed through this decoded on-disc ROST transport.
+The decoded on-disc roster evidence maps
 names, positions, biography fields, teams, stadiums, and membership pointers,
 but it does not identify a consumer-backed jersey-number field. A packed byte is
 not promoted merely because a value resembles a uniform number.
 
-The best next jersey-number experiment remains a controlled one-variable
-save/profile comparison: change one player's displayed number, locate the exact
-packed field, and trace an executable accessor that consumes it. Until ownership
-and consumer evidence agree, jersey numbers remain explicitly read-only.
+That separate experiment has now mapped raw-save byte `0x23` bits 1–7 through
+APFe's read/write path. Save Players can author that field in a new raw payload
+while preserving bit 0 and all unrelated bytes. This does not retroactively
+authorize the compressed on-disc ROST writer or prove runtime consumption.
 
 ## Best next identity proof
 

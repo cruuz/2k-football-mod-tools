@@ -12,6 +12,16 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Iterable
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 import apf_inner
 
 
@@ -98,7 +108,83 @@ def get_packed_tile_offset(
     return True, offset_x_pixels // 4, offset_y_pixels // 4
 
 
+def _base_location(
+    width: int, height: int, pitch_pixels: int, base_length: int
+) -> MipLocation:
+    """Shared base-level DXN location for helmet-chain and base-only classes."""
+
+    if width <= 0 or height <= 0:
+        raise MipLayoutError("PORTME: DXN dimensions must be positive")
+    if pitch_pixels < width or pitch_pixels % 4:
+        raise MipLayoutError("PORTME: base pitch cannot be routed as DXN blocks")
+    base_pitch_blocks = _align_up(pitch_pixels // 4, 32)
+    base_height_blocks = _align_up((height + 3) // 4, 32)
+    calculated_base = base_pitch_blocks * base_height_blocks * 16
+    if calculated_base != base_length:
+        raise MipLayoutError(
+            "PORTME: declared DXN base allocation differs from tiled extent "
+            f"(0x{base_length:x} != 0x{calculated_base:x})"
+        )
+    return MipLocation(
+        0, width, height, 0, base_length, base_pitch_blocks, 0, 0, False
+    )
+
+
+def derive_base_only_layout(metadata: dict[str, object]) -> tuple[MipLocation, ...]:
+    """Base-only DXN class used by APF nameplate ``font_albedo`` / ``font_normal``.
+
+    Real-dump pins (NameFont outers e.g. 114, 1383):
+      format=49 DXN, tiled 2D, packed_mips=False, mip_max_level=0,
+      mip_address_pages=0, vc_mip_data_length=0, non-power-of-two widths
+      (e.g. 1681×128 pitch 1792 → base 0x38000).
+
+    Returns a single base MipLocation. Does not invent a mip chain.
+    """
+
+    required = {
+        "format": 49,
+        "endianness": 1,
+        "tiled": True,
+        "stacked": False,
+        "dimension": 1,
+        "mip_min_level": 0,
+        "packed_mips": False,
+        "mip_max_level": 0,
+        "mip_address_pages": 0,
+        "vc_mip_data_length": 0,
+    }
+    disagreements = {
+        key: (metadata.get(key), wanted)
+        for key, wanted in required.items()
+        if metadata.get(key) != wanted
+    }
+    if disagreements:
+        raise MipLayoutError(
+            f"PORTME: unsupported Xenos DXN base-only descriptor fields: "
+            f"{disagreements}"
+        )
+    location = _base_location(
+        int(metadata["width"]),
+        int(metadata["height"]),
+        int(metadata["pitch_pixels"]),
+        int(metadata["vc_base_data_length"]),
+    )
+    return (location,)
+
+
 def derive_layout(metadata: dict[str, object]) -> tuple[MipLocation, ...]:
+    """Helmet-class packed mip chain, or base-only nameplate class.
+
+    * **Helmet / multi-mip** (``packed_mips=True``): original proved path.
+    * **Base-only** (``packed_mips=False``, ``mip_max_level=0``): nameplate
+      ``font_albedo`` / ``font_normal`` — see :func:`derive_base_only_layout`.
+    """
+
+    packed = bool(metadata.get("packed_mips"))
+    mip_max = int(metadata.get("mip_max_level", -1))
+    if not packed and mip_max == 0:
+        return derive_base_only_layout(metadata)
+
     required = {
         "format": 49,
         "endianness": 1,
@@ -122,25 +208,14 @@ def derive_layout(metadata: dict[str, object]) -> tuple[MipLocation, ...]:
     pitch_pixels = int(metadata["pitch_pixels"])
     base_length = int(metadata["vc_base_data_length"])
     mip_length = int(metadata["vc_mip_data_length"])
-    mip_max = int(metadata["mip_max_level"])
     if width <= 0 or height <= 0 or mip_max <= 0:
         raise MipLayoutError("PORTME: descriptor does not contain a mip chain")
-    if pitch_pixels < width or pitch_pixels % 4:
-        raise MipLayoutError("PORTME: base pitch cannot be routed as DXN blocks")
 
-    base_pitch_blocks = _align_up(pitch_pixels // 4, 32)
-    base_height_blocks = _align_up((height + 3) // 4, 32)
-    calculated_base = base_pitch_blocks * base_height_blocks * 16
-    if calculated_base != base_length:
-        raise MipLayoutError(
-            "PORTME: declared DXN base allocation differs from tiled extent "
-            f"(0x{base_length:x} != 0x{calculated_base:x})"
-        )
+    base = _base_location(width, height, pitch_pixels, base_length)
     if int(metadata["mip_address_pages"]) << 12 != base_length:
         raise MipLayoutError("PORTME: DXN mip address does not follow the base")
 
-    result = [MipLocation(0, width, height, 0, base_length,
-                          base_pitch_blocks, 0, 0, False)]
+    result = [base]
     width_pow2, height_pow2 = _next_pow2(width), _next_pow2(height)
     for mip in range(1, mip_max + 1):
         address_offset = 0
@@ -154,14 +229,14 @@ def derive_layout(metadata: dict[str, object]) -> tuple[MipLocation, ...]:
             packed_mip_base += 1
         mip_width = max(width_pow2 >> mip, 1)
         mip_height = max(height_pow2 >> mip, 1)
-        packed, origin_x, origin_y = get_packed_tile_offset(
+        is_packed, origin_x, origin_y = get_packed_tile_offset(
             mip_width, mip_height, mip - packed_mip_base
         )
-        allocation = 32 * 32 * 16 if packed else _extent_bytes(mip_width, mip_height)
-        pitch_blocks = 32 if packed else _align_up((mip_width + 3) // 4, 32)
+        allocation = 32 * 32 * 16 if is_packed else _extent_bytes(mip_width, mip_height)
+        pitch_blocks = 32 if is_packed else _align_up((mip_width + 3) // 4, 32)
         result.append(MipLocation(
             mip, mip_width, mip_height, base_length + address_offset,
-            allocation, pitch_blocks, origin_x, origin_y, packed,
+            allocation, pitch_blocks, origin_x, origin_y, is_packed,
         ))
     calculated_end = max(item.data_offset + item.allocation_length
                          for item in result[1:])

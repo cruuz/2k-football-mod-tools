@@ -17,28 +17,41 @@ NEW_OUTPUT=.codex-tmp/nfl2k5-unified-eleven-family-proof-20260712.xiso.iso
 NEW_MANIFEST=.codex-tmp/nfl2k5-unified-eleven-family-proof-20260712.manifest.json
 NEW_ARTIFACTS=.codex-tmp/nfl2k5-unified-eleven-family-proof-20260712-artifacts
 
+verify_mode() {
+  local output=$1
+  if [[ ! -e "$output" && ! -L "$output" ]]; then
+    printf '%s\n' --virtual-output
+  fi
+}
+
 python3 tools/test_nfl2k5_visual_mod_project.py
 python3 tools/nfl2k5_visual_mod_project.py validate --project "$OLD_PROJECT" >/dev/null
 python3 tools/nfl2k5_visual_mod_project.py validate --project "$PROJECT" >/dev/null
 python3 tools/nfl2k5_visual_mod_project.py validate --project "$NEW_PROJECT" >/dev/null
+mapfile -t OLD_VERIFY_MODE < <(verify_mode "$OLD_OUTPUT")
+mapfile -t VERIFY_MODE < <(verify_mode "$OUTPUT")
+mapfile -t NEW_VERIFY_MODE < <(verify_mode "$NEW_OUTPUT")
 python3 tools/nfl2k5_visual_mod_project.py verify \
   --project "$OLD_PROJECT" \
   --source-xiso 'ESPN NFL 2K5 (USA).xiso.iso' \
   --output-xiso "$OLD_OUTPUT" \
   --manifest "$OLD_MANIFEST" \
-  --artifact-dir "$OLD_ARTIFACTS"
+  --artifact-dir "$OLD_ARTIFACTS" \
+  "${OLD_VERIFY_MODE[@]}"
 python3 tools/nfl2k5_visual_mod_project.py verify \
   --project "$PROJECT" \
   --source-xiso 'ESPN NFL 2K5 (USA).xiso.iso' \
   --output-xiso "$OUTPUT" \
   --manifest "$MANIFEST" \
-  --artifact-dir "$ARTIFACTS"
+  --artifact-dir "$ARTIFACTS" \
+  "${VERIFY_MODE[@]}"
 python3 tools/nfl2k5_visual_mod_project.py verify \
   --project "$NEW_PROJECT" \
   --source-xiso 'ESPN NFL 2K5 (USA).xiso.iso' \
   --output-xiso "$NEW_OUTPUT" \
   --manifest "$NEW_MANIFEST" \
-  --artifact-dir "$NEW_ARTIFACTS"
+  --artifact-dir "$NEW_ARTIFACTS" \
+  "${NEW_VERIFY_MODE[@]}"
 
 python3 - "$OLD_MANIFEST" "$MANIFEST" "$NEW_MANIFEST" <<'PY'
 import hashlib
@@ -190,4 +203,4 @@ assert hashlib.sha256(new_payload).hexdigest() == (
 PY
 
 printf '%s\n' \
-  'NFL2K5_VISUAL_MOD_PROJECT_VALIDATION_PASS schema=v1 families=11 project_edits=13 spans=19 changed=428469 old_v1_compatible=true nine_family_compatible=true shap_read_only=true team_identity_fixed_size=true player_roster_fixed_size=true player_portrait_cross_pack=true executable_patches=false xdvdfs_identical=true default_xbe_unchanged=true source_unchanged=true no_intermediate_xisos=true runtime=false'
+  'NFL2K5_VISUAL_MOD_PROJECT_VALIDATION_PASS schema=v1 families=11 project_edits=13 spans=19 changed=428469 old_v1_compatible=true nine_family_compatible=true shap_read_only=true team_identity_fixed_size=true player_roster_fixed_size=true player_portrait_cross_pack=true executable_patches=false xdvdfs_identical=true default_xbe_unchanged=true source_unchanged=true absent_outputs_virtualized=true no_intermediate_xisos=true runtime=false'

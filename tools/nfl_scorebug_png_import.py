@@ -23,6 +23,16 @@ import struct
 import sys
 from typing import Any
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import parse_archive, read_entry_range
 from nfl_txtr import (COMPRESSED_SENTINEL, HEADER, Chunk, decode_chunk,
                       encode_rgba_png, parse_texture,
@@ -223,7 +233,28 @@ def build_import(index_path: Path, audit_path: Path, target_name: str,
     width, height = int(target["width"]), int(target["height"])
     png, png_payload, rgba = read_png(png_path, width, height)
     source_level = palette_tools.MipLevel(0, width, height, rgba)
-    palette, levels, quantization = palette_tools.quantize_levels([source_level])
+    def candidate_decoded(
+        candidate_palette: list[tuple[int, int, int, int]],
+        candidate_levels: list[bytes],
+    ) -> bytes:
+        return (
+            template_decoded[:128]
+            + swizzle_2d(candidate_levels[0], width, height, 1)
+            + palette_tools.palette_bytes(candidate_palette)
+        )
+
+    # The tier ladder starts at 256, so art that already fit the retail span is
+    # byte-for-byte unchanged; only art that used to fail outright steps down.
+    bounded = palette_tools.quantize_levels_to_vc_lz_bound(
+        [source_level],
+        candidate_decoded,
+        stream_tag=int(target["lz_stream_tag"]),
+        offset_bits=int(target["lz_offset_bits"]),
+        max_encoded_size=int(target["stored_size"]),
+    )
+    palette, levels, quantization = (
+        bounded.palette, bounded.index_levels, bounded.quantization
+    )
     require(len(levels) == 1 and len(levels[0]) == width * height and
             len(levels[0]) == int(target["palette_offset"]),
             "scorebug P8 index allocation changed")
@@ -231,7 +262,9 @@ def build_import(index_path: Path, audit_path: Path, target_name: str,
     palette_bgra = palette_tools.palette_bytes(palette)
     require(len(index_chain) == int(target["palette_offset"]) and
             len(palette_bgra) == 1024, "scorebug P8 video allocation changed")
-    rebuilt_decoded = template_decoded[:128] + index_chain + palette_bgra
+    rebuilt_decoded = bounded.decoded
+    require(rebuilt_decoded == template_decoded[:128] + index_chain + palette_bgra,
+            "bounded quantizer decoded layout disagrees with the rebuilt chain")
     require(len(rebuilt_decoded) == len(template_decoded) and
             rebuilt_decoded[:128] == template_decoded[:128],
             "scorebug decoded/system allocation changed")
@@ -274,6 +307,11 @@ def build_import(index_path: Path, audit_path: Path, target_name: str,
                       "strict_rgba8_noninterlaced": True},
         "quantization": {
             "algorithm": "weighted_median_cut_rgba_then_nearest_squared_error",
+            # The bounded ladder can quantize a replacement down to fit its
+            # fixed VC-LZ span. That is lossy, so it is recorded here and
+            # reported to the user rather than applied silently.
+            "palette_fit_attempts": list(bounded.attempts),
+            "palette_was_reduced": len(bounded.attempts) > 1,
             **quantization, "palette_entries": len(palette),
             "unused_palette_entries_zero_filled": True,
         },

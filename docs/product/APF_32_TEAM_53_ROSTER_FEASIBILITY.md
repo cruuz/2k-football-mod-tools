@@ -370,7 +370,7 @@ APF 2K8 Mod Studio's current bounded on-disc roster writers cover:
 - all 40 team display-name allocations;
 - player positions as exact native codes `0..16`, including the required
   `+0x34` / `+0x35` mirror update; and
-- all 28 mapped base-rating bytes per player as exact native `0..99` values.
+- all 31 mapped base-rating bytes per player as exact native `0..99` values.
 
 This is **63,112 independently editable rating cells** (`2,254 * 28`), not a
 tier-to-number approximation. Existing native source value `100` remains

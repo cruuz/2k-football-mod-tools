@@ -236,6 +236,29 @@ class Nfl2k5AudioSourceFingerprintTests(unittest.TestCase):
         regenerated = self.fixture.ensure()
         self.assertEqual(regenerated.path.read_bytes(), payload)
 
+    def test_canonical_inventory_reuses_for_an_alternate_source_record(self) -> None:
+        first = self.fixture.ensure()
+        alternate_source = replace(self.fixture.cache.source, sha256="e" * 64)
+        alternate_cache = replace(self.fixture.cache, source=alternate_source)
+
+        reused = self.fixture.store.ensure(
+            alternate_cache,
+            self.fixture.assets,
+            self.fixture.slots,
+            self.fixture.hash_slot,
+        )
+        self.assertEqual(reused, first)
+        document = json.loads(first.path.read_text(encoding="utf-8"))
+        self.assertEqual(document["source"], {"xiso_sha256": SOURCE_SHA256})
+
+        tampered = json.loads(first.path.read_text(encoding="utf-8"))
+        tampered["source"] = {"xiso_sha256": "e" * 64}
+        first.path.write_bytes(_canonical(tampered))
+        with self.assertRaisesRegex(AudioSourceFingerprintError, "different XISO"):
+            self.fixture.store.load_existing(
+                alternate_cache, self.fixture.assets, self.fixture.slots
+            )
+
     def test_exact_pcm_lookup_and_rejection_cover_both_audio_families(self) -> None:
         inventory = self.fixture.ensure()
         matches = inventory.matches_pcm(

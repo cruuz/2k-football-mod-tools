@@ -27,7 +27,7 @@ class RegistryTests(unittest.TestCase):
         canonical = json.dumps(self.data, indent=2, sort_keys=True) + "\n"
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "registry.json"
-            path.write_text(canonical, encoding="utf-8")
+            path.write_text(canonical, encoding="utf-8", newline="\n")
             registry.load_and_validate(path, check_files=False)
 
     def test_duplicate_id_rejected(self) -> None:

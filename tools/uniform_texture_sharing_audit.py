@@ -55,19 +55,19 @@ EXPECTED_SHA256 = {
     "nfl_standalone_textures":
         "2775f97c840af6ddc7af6a5b705ed902518a6e912aca79603e78d47fd6f603b8",
     "nfl_jersey_compatibility":
-        "ba54bc19604f5cc2ca80d6524f3b2fb93d66924ddf0d3704132578f4ae33ee82",
+        "046d03546242c11478d39b48d7f6f80b5f2009c85641b5c81abdaa6f8171cacd",
     "nfl_sleeve_compatibility":
-        "cb2e9d34bd355ed4508de187b234070d22d6f7c2c78ea26fb6c6d779056dca6d",
+        "72a25d908135322a6c15c1f19f2f575224ab224c8b8c4c6969f5b4ba2359ae2b",
     "nfl_pants_compatibility":
-        "423f082f09f3678185663cac1a4dd74fb2094d992e82c92180e7319e486b5d53",
+        "cab15d4f03c69f5143edd40f567ec038d2425bba80bf9dd1a85b642e144ac1ac",
     "nfl_helmet_compatibility":
-        "123944e70066a3b3053e76d33dc28703a36d9b3f22f31d792e215c05351f2bea",
+        "1b7bdbb67a28b9d70531c3af80ff67574a7d60ef421bcf42ba9422f0f278e6ff",
     "apf_uniform_inventory":
         "b3ad0e44af0163b30857e20c7c4e90ceb89cbc3dbc8cc41508fce3aaf1c136c7",
     "apf_team_assets":
         "d112710582b223d32425a79eedf321a2d9f61a01152c1c9d03b74f250231d82b",
     "apf_jersey_layout":
-        "f359a2ecd92e2305e29f2a34f1d0084ee8b2bb277a2f0bd43a1c76e12abb55dc",
+        "b60783b9c47b57e9b9f545e95f5c17d3c850e263e0d7d453aa6c3be4a0f809e4",
 }
 
 TSET_FAMILIES = {

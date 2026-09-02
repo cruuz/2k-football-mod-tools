@@ -1,0 +1,36 @@
+{
+  "artifacts": {
+    "test_sha256": "8bf2e04f538dc77354bec3b4209721a14c153e548fb1bb3a2ab5d968c298f1c1",
+    "verifier_sha256": "a75ea25d0776fbe9dd1630ddb90ac0c0baeb067b8fd6aa7a8a2a92c8df15b5c3",
+    "writer_sha256": "20c901b08fdff38fe043a0d7eef2dae992ad0cb8e5ab671587cc3d86ff83a70d"
+  },
+  "authority": {
+    "path": "reports/assets/apf_logocache_roundtrip.json",
+    "sha256": "abdee3de00f7492fe9d7bceec981314ceb1e2b003b7aba3ab3ffcbcab2594199"
+  },
+  "conclusion": {
+    "copied_volume_roundtrip_proved": false,
+    "copy_only_writer_exposed": true,
+    "hardware_runtime_validation": false,
+    "independent_verifier_ran": false,
+    "offline_cache_base_write_proved": true,
+    "xenia_runtime_validation": false
+  },
+  "safety_validation": {
+    "directory_changes_confined_to_auxiliary_records": true,
+    "edited_mip_tails_regenerated": true,
+    "every_dram_part_preserved": true,
+    "every_other_catalog_entry_preserved": true,
+    "every_unedited_mip_tail_preserved": true,
+    "existing_output_refused": true,
+    "fixed_outer_allocations": true,
+    "replacement_bytes_embedded_in_report": false,
+    "retail_source_modified": false,
+    "source_path_as_output_refused": true
+  },
+  "schema": "apf_logocache_roundtrip_validation/v1",
+  "source": {
+    "directory_sha256": "3ddd89aabd6ba3b39ef9b1571ef8a9f1d3009baefd43aaa61c066a45d0ef09e5",
+    "payload_sha256": "572111c49e32dc341a1111ac7f420b3fa4396fff8fe0db3c965fbfccd98d7982"
+  }
+}

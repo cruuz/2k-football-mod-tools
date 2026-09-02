@@ -1,12 +1,187 @@
-# 2K5 Mod Studio — v1.0 RC30 Release Status
+# 2K5 Mod Studio — v1.0 RC77 Release Status
+
+## Beta 53 — Create a Formation / Create a Play, Play Designer, Throw Distance & Arc (2026-09-02)
+
+Source/UI versions are **2K5 RC77** and **APF alpha.84**; both use updater tag
+`beta-53`.
+
+- **★ Create a Play is a native workspace (last nav entry).** Five steps: pick
+  a team's playbook, lay out a formation (modern templates, drag to move, click
+  to swap or change a position — RB2 instead of the FB, a WR instead of the
+  TE), choose run or pass, draw routes by dragging from a player (or click him
+  for a menu of jobs), then replace outdated stock plays and build the disc.
+  The PLAY format is decoded end to end (formation slot records, the 29 node
+  opcodes with their operand layouts, the retail validator ported) and every
+  authored play must pass that validator before it is staged.
+- **Authored passes play as passes.** The play header's class bits (`0x6000`
+  pass, `0x8000` run, quick game, play-action, trick, specials) are written end
+  to end from a stock play of the same QB-chain shape; the earlier wizard
+  cloned a run header under a pass chain, which the game played as a QB draw.
+- **Throw Distance & Arc (Sliders & Gameplay → Throw Distance && Arc).** Two
+  sliders over the game's own arm-strength curve tables in default.xbe: the
+  deep-ball ceiling (55 = retail .. 100 yards at 99 arm, re-spaced as a scale so
+  mid-tier arms gain a few yards and only elite arms reach the top) and the
+  pass arc (deep balls hang longer and climb higher). Live per-arm preview of
+  ceiling / hang time / apex, read from a default.xbe or a disc image, written
+  to a COPY with the section digest recomputed and byte-diff verified —
+  xemu-only, the same contract as Bump strength. Witnessed in xemu with gdb:
+  retail Vick capped at 55.0 yd; ceiling 80 / arc 40 % launched 80.0-yard,
+  5.00 s bombs on the log. CLI: `tools/nfl2k5_throw_distance.py`.
+- The pre-source browse-only facade now satisfies the extended Playbooks
+  panel contract (raw body, formation selector staging, authored plays), and
+  the formation/play writer tests run under CI's per-file runner.
+
+## Beta 52 — Windows binary-open hotfix (2026-08-24)
+
+Source/UI versions are **2K5 RC76** and **APF alpha.83**; both use updater tag
+`beta-52`.
+
+- Beta 51's bump/strength/save file paths opened binary files without
+  `O_BINARY`; on Windows that means text-mode descriptors whose reads stop at
+  the first `0x1A` byte, truncating payloads. All `os.open` call sites in the
+  new writers (and the coach-name tool) now carry the flag, matching the
+  long-shipped uniform-color route, and an AST guard keeps it that way.
+  Linux/macOS behavior is unchanged; Windows CI was red on the bump suite in
+  beta-51 and this is the fix.
+
+## Beta 51 — bump maps end to end, bump strength, saves & sliders, stadium glTF loop, hundreds-of-edits speed (2026-08-23)
+
+Source/UI versions are **2K5 RC75** and **APF alpha.82**; both use updater
+tag `beta-51`.
+
+- **Jersey bump maps are a native workspace.** Uniforms & Equipment → Bump
+  Maps browses all 634 uniform packages' four bump slots from the entry
+  tables, exports PNGs, previews replacements, and writes them into a copy
+  of the disc image at the exact retail span (mip chain + swizzle + VC-LZ
+  refit, wrapper preserved, independent re-decode verification). The three
+  packages that cross pack extents are segmented and fully editable now.
+- **Bump strength is editable.** The detail-scale floats in default.xbe
+  (jersey/pants/sleeve; sock fixed) are found by byte pattern and patched on
+  a copy with digest recompute — xemu-only by honest design. Authoring
+  templates mark the retail collar/shield UV zones.
+- **Saves & Sliders edits the 21 gameplay sliders and franchise year**, and
+  re-signs the copy (title-static HMAC) so the game loads it; write-back can
+  patch a container's extents inside a copied raw HDD image.
+- **The stadium glTF loop closes.** Apply textures from glTF brings
+  Blender-edited images back through the fixed-allocation P8 writer.
+- **Speed for hundreds of edits.** Identity-keyed caches remove the per-edit
+  re-parse of the index volume, outer archives, the 55MB inventory, report
+  digests, and large-file hashes: per-edit structural cost is O(1) after the
+  first edit, with deterministic cache tests.
+- **APF: Add Formation takes as many formations as the book can hold** in one
+  build, and receipts flag shared-play records (the Quick Game
+  sometimes-applies mechanism).
+
+
+## Beta 33 — the stock CPU playbooks (2026-08-10)
+
+Source/UI versions are **2K5 RC60** and **APF alpha.65**; both use updater tag
+`beta-33`.
+
+- **Fine-tune Plays now edits APF's stock `SPLB` playbook membership** — the
+  fifteen on-disc resources the game ships (seven offensive, four defensive,
+  four unnamed). Pick a book, pick a formation, tick plays in and out. Only the
+  selected record's entry list is rewritten; the trailer, every other record,
+  both unmapped tail regions and every other byte are preserved and
+  independently re-derived. Runtime CPU consumption remains unproved.
+- **A Beta 32 claim is withdrawn.** alpha.64's Fine-tune Plays edited MASTER's
+  0x54-stride bitmap and described it as "which plays each formation offers".
+  Decoding the SPLB books refutes that: row 147 of that table yields "Big Pinch,
+  Big Fan…" where the 3-4 defence is "Base, Fan, Razor Left…", coverage is
+  24–25%, and no record is fully covered. The writer is removed and the relation
+  is now recorded as unidentified. The bytes were bounded and verified; the
+  description was wrong, which is the same defect by this project's standard.
+
+## Beta 32 — two-layer crests, stadium cache recovery, playbook fine-tuning (2026-08-10)
+
+Source/UI versions are **2K5 RC59** and **APF alpha.64**; both use updater tag
+`beta-32`.
+
+- **Crest replacement was writing one image into both layers.** A crest is six
+  region masks across two textures (`logo_l0` = regions 0-2, `logo_l1` =
+  regions 3-5), so mirroring drew the mark twice in the wrong colours. Measured
+  over all 118 packages: none have identical layers, 79 carry real detail art,
+  and 39 ship a cleared detail layer — retail's own shape, which is what one
+  supplied image now produces. Export both layers was added.
+- **A stadium cache from an older build no longer dead-ends.** Beta 30's
+  identity fix left previously derived caches failing their own marker check
+  with no recovery; they are now re-derived automatically, while safety
+  refusals still refuse.
+- **Playbooks → Fine-tune Plays** adds or removes plays from any of MASTER's
+  163 formations — one bit per play inside a fixed allocation, independently
+  verified. The 36/33 book names in a save resolve to only 7 offensive and 4
+  defensive real books, so book assignment alone often changed nothing.
+
+## Beta 31 — browsed rows reach their editor, findable stadium geometry (2026-08-10)
+
+Source/UI versions are **2K5 RC58** and **APF alpha.63**; both use updater tag
+`beta-31`.
+
+- **Reported Beta 29/30 bug fixed.** The APF universal browser answered
+  `logo_l0 is not an editable PNG slot in this browser` on rows the product
+  writes every day. Selecting such a row now offers **Edit in Team Logo… /
+  Uniforms… / Wordmarks… / Field Art…**, opens that workspace with the exact
+  slot selected, and carries a chosen or dropped image across already staged.
+  236 crest layers, 96 uniform materials, 206 wordmarks, and six field-art base
+  textures are covered; rows with no proved writer say that instead, and keep
+  raw/parts export.
+- **Stadium geometry is findable in both editors.** 2K5 marks the one scene of
+  477 whose geometry Import can write, opens on it, and offers an
+  editable-geometry-only filter; APF lists all 77 catalog-authorized POSITION
+  targets in a picker instead of requiring the right click in the 3D view. Both
+  round trips were re-proved end to end against real games for this release.
+- **Emulator launch stops overstating.** 2K5 gains **Configure xemu** (remembered
+  between sessions), re-detects xemu instead of deciding once at startup, and
+  grants a Flatpak xemu read-only access to the built XISO's directory. Both
+  editors' Launch buttons stay clickable and name the single missing piece.
+- **Update identity.** The check refuses to advertise a release older than the
+  running build and reads the highest published beta rather than trusting
+  GitHub's list order, so a Beta 31 build is never told to "update" to Beta 31
+  or to anything behind it.
+
+## Beta 30 — valid-container cache repair (2026-08-09)
+
+Source/UI versions were **2K5 RC57** and **APF alpha.62**; both used updater tag
+`beta-30`.
+
+- Every recognized USA retail 2K5 container layout now reduces to one canonical,
+  independently verified game-content cache. Stadium Studio results and visual,
+  Crib, standalone-audio, streaming-audio, exact-fingerprint, and containment
+  data no longer bind to irrelevant wrapper padding or partition placement.
+- The containment scanner parses the size of the image actually opened. Build
+  results and free-space checks use that same real source/output size, while
+  direct source reads, sessions, recovery, and source-change guards remain tied
+  to the exact selected file.
+- APF alpha.62 revalidates its shipped ISO recognition, extraction, load, and
+  read-only source path against a real USA image. No private source path, image
+  hash, extracted game data, or retail payload is published here.
+
+## RC56 / alpha.61 product-completion note (2026-08-08)
+
+The preceding RC56/alpha.61 work included
+nameplate DXN (font_albedo), linear TXTR (uncompressed + DXT), G1 package-map +
+G2 link-table offline writers, playbook annotations, keyboard/search polish,
+shell recommended path, equipment Stage explain, click-to-explain model import
+(APF + 2K5 Crib + Stadium), **expanded never-silent-gray** (stadium mesh/package,
+wordmark, AssetBrowser, Uniform, Field Art locks, text/roster Apply/Revert,
+audio bulk+shortlist+replace, ratings sheet, player rating/position, Play,
+soundtrack album, Team Logo master, reserve Assign, **Menus Export**, **Export Number**,
+**pagination** (2K5 audio/All Resources, APF All Textures + Complete audio),
+**Field Art Stock NFL endzones button**, helmet Place/Save), **45s preview watchdogs**
+(AssetBrowser/Uniform/Wordmark/stadium package), Crib drop-parity hang fixed.
+E2 depth includes playbook community legend + G1 donor tip + empty search
+teaching. G1 multi-Dime + G2 multi-Ace offline packs ship (runtime unproved). Broader
+suite evidence is **batched** (monorepo single-run hang residual; APF audio GUI 32p
+in 8-at-a-time batches). — do not treat this note as a sealed public release.
+
 
 > **APF 2K8 parallel product status:** read
 > [`docs/mod_editor/APF2K8_STATUS.md`](docs/mod_editor/APF2K8_STATUS.md). The
-> source code and UI identify as the **`0.1.0-alpha.35`** release, whose
-> published asset is `apf2k8-mod-studio-0.1.0-alpha.35-20260727.tar.gz`
-> (`1,110,239` bytes, SHA-256
-> `dc9e149a107f8111601483382c080eff72ae81e4f0d386c802c7614fc9d2c596`).
-> The previous
+> source code and UI identify as the retail-free **`0.1.0-alpha.66` release**,
+> paired with 2K5 RC60 for `beta-33`. Download receipts are recorded
+> in the Published releases section below; older immutable archive receipts are
+> retained as release history.
+> An older
 > sealed package is `0.1.0-alpha.34`; its `815,213`-byte archive checksum is
 > `beb8b1409b83e052e6c432a9ddc4a79f9f990820c79e0b67dea894dc869393f4`
 > and is authenticated by the adjacent mode-`0444` `.sha256` sidecar.
@@ -32,7 +207,7 @@
 > bounded Audio waveforms, atomic 47,814-row audio export, a 258-record Field
 > Art inventory, exact team display-name and player first/last-name editing,
 > complete shared-name alias disclosure, true independent 0–99
-> Replace/Revert for all 28 base ratings on all 2,254 player records, and a
+> Replace/Revert for all 31 base ratings on all 2,254 player records, and a
 > source-bound 63,112-cell ratings-sheet importer with conflict preview, a
 > separate atomic export for all 19 original physical audio banks, and a
 > self-describing 47,814-row cue archive with deterministic CSV, ordered
@@ -134,8 +309,8 @@
 > passes 11/11 synthetic tests, and its real-source dry-run preserved all six
 > source files / 3,919,218,688 bytes while launching no GUI. A log-only control
 > must still prove the exact defensive consumer before the one-player override
-> is enabled; the required Spark desktop operator is unavailable in this
-> session. A completed post-hook static census now shows why that first test
+> is enabled; the required controlled desktop validation remains pending. A
+> completed post-hook static census now shows why that first test
 > cannot be widened casually: the XEX has 93 direct calls to the two primary
 > position count/getter helpers, at least 25 direct roster-class consumers,
 > two explicit append caps at 42, and a separate 17-position-by-42-player
@@ -153,9 +328,77 @@
 > write-only. The native binary SHA-256 is
 > `712df8acf4886bbc917713a7b5e120140d57b3a59a0c98e4f5ff6b5f8a47187d`.
 > It is default-off and has not been launched; the live scenario matrix still
-> requires the designated Spark desktop operator.
+> requires controlled isolated-desktop validation.
 
-Last updated: 2026-07-25 (America/New_York)
+Last updated: 2026-08-09 (America/New_York)
+
+## Unreleased RC50 closure
+
+- The standalone browser inventory rises from 9,640 to **11,395 editable
+  targets**: the existing catalog of standalone P8 targets plus the 4,080
+  reviewed explicit-size A1R5G5B5 `p001`…`p006` / `p011`…`p016` player
+  strips, plus a +1,755 delta of team-linked presentation surfaces outside
+  the uniform packages: 317 full 256×256 menu logos, 317 compact logos, 317
+  shared flip chips, 634 home/away mini cards, 85 franchise-office logos,
+  and 85 draft/PDA logos. Every row carries its exact team asset code,
+  owners, archive, and statically established consumer scope; a complete
+  screen-by-screen consumer map is not proved, so these keep the honest
+  presentation/menu umbrella label.
+- `logos.cdf`, `mini.cdf`, and `flipchip.cdf` are raw P8 fixed-slot arrays,
+  not VC-LZ streams: Replace preserves the wrapper, descriptor/system region,
+  exact resource span, and 96-byte zero slot padding, regenerating only the
+  swizzled indices and palette. Franchise and draft logos keep the bounded
+  compressed-P8 path. Outer 581 `p005` still crosses packs 0 and 1 as exact
+  53,888-byte and 21,008-byte slices; the composed build stages both, writes
+  only a fresh output, verifies each slice, and reassembles the complete
+  logical TXTR before accepting the result.
+- The A1 writer regenerates five linear mips, preserves the measured opaque
+  video tail and exact resource span, bounds VC-LZ size with deterministic
+  colour-bit tiers, and verifies the rebuilt decode before returning it.
+- All 2,547 current-player jersey numbers are Editable, including the 68
+  secondary-pool rows that previously errored or stayed disabled; the writer
+  patches only the masked number bits, and secondary names remain read-only
+  because their text allocation is zero. Every current and historical player
+  also has a Face shield control authoring only player word `+0x20` bits
+  15..16 with exact choices **None**, **Clear**, and **Dark**; reserved value
+  `3` is refused, jersey and face-shield changes compose into one four-byte
+  replacement, and a loaded roster or franchise save may override the disc
+  seed. This is a per-player equipment type, not a HOME/AWAY visor tint.
+- Team Kit gains **Browse 45 Equipment Textures**: one selected physical set
+  opens the existing All Textures browser filtered to its exact 45 socks,
+  elbow-pad, glove, long-sleeve, shoe, and wristband records, reusing the
+  canonical asset IDs and existing handlers rather than a second writer.
+- All 498 catalogued Crib textures are Editable: 242 raw Team Item P8
+  textures (including all 128 Team Photos), 68 standalone P8 textures, and
+  188 material/submesh-owned P8 surfaces across 36 SCNE scenes, preserving
+  the reflection texture's 109,440-byte source gap and the ticker's 1024x32
+  linear layout. The Crib Models tab exports seven proved scenes and imports
+  same-count, same-topology position changes for ten exact electronics
+  meshes; changed topology and arbitrary model swaps remain unsupported.
+- Stadium Studio imports edited glTF vertex positions for the proved full
+  scene: exact vertex counts and equivalent triangles are required, only the
+  75 catalogued fixed `FLOAT3` position lanes can change, UVs, materials,
+  collision, selectors, LOD/other streams, and the opaque SCNE tail stay
+  source bytes, and the position recipe stays private (local builds, Undo,
+  and Revert All, but excluded from shareable `.2k5mod` files). Offline
+  topology and byte preservation are proved; visible in-game runtime
+  ownership remains labeled unproved until a matched capture exists.
+- Playbooks & Plays can copy exact stock assignment routes within one PLAY
+  book: the writer changes only the target descriptor word and relative
+  pointer to the donor's existing node chain, reparses the full PLAY
+  resource, and refuses orphaning or count changes. Freehand waypoint/opcode
+  authoring remains unsupported.
+- Stock midfield ownership is not overclaimed: all 126 exact `center_logo`
+  rows are create-team packages. The separate 85 `NN_teamlogo_00_h0` rasters
+  are statically bound to the `FRANCHISE2` / `coach_desk` scene's `teamlogo`
+  element, not proved stock midfield art; as stock team-logo candidates they
+  remain inspection/export-only, and the editor does not relabel
+  franchise-office art as field art.
+- The local NFL2K27 tree is an incomplete directory skeleton with only four
+  distinct cyberface PNGs repeated three times and no PCSX2 hash/manifest
+  mapping. NFL 2K3/2K4 source discs/packs are also absent, so neither
+  cross-console mapping nor earlier-title write authorization can be proved
+  from the available source.
 
 ## Published releases — the assets actually on GitHub
 
@@ -168,7 +411,641 @@ they are not interchangeable. This section records the asset identities so the
 repository's receipts describe what a user actually downloads, rather than only
 what was sealed.
 
-### `beta-5` — 2026-07-27 · CURRENT
+### `beta-50` — 2026-08-22 · CURRENT
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-50>
+
+Beta 50 is the APF 2K8 Mod Studio maintenance beta. The Add / Change
+formation dialog now carries the studio dark theme end to end (its labels,
+play list, and buttons were near-invisible on the light Windows dialog),
+its accept button says Add formation / Apply change instead of a bare OK,
+and the add-formation crash on `QListWidgetItem.row()` is fixed. The roster
+alias owners dialog's Close button lost its duplicated low-contrast color.
+Who lines up now explains its model in plain language: 11 on-field slots per
+formation, one stored route per play slot shared by every formation that
+stores the play, a role as the roster position plugged into a slot, only
+8 = TE and 9 = WR proved, and the stock Weak Dive / Gun: Pair Slot Left
+TE-runs-FB-route oversight named. 2K5 RC74 carries no 2K5 functional change.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC74-20260822.tar.gz` | 11,074,879 | `1dd5762329203dcde152b48e8f1543c6eff26ad067f25ed1124642c48bdcba1f` |
+| `2K5-Mod-Studio-v1.0-RC74-20260822.tar.gz.sha256` | 107 | `975276c9a54a893e0b8e0108a7260ce37bdc5bf3598348e4bba540e2df46ed59` |
+| `apf2k8-mod-studio-0.1.0-alpha.81-20260822.tar.gz` | 1,906,328 | `8e4fe2ac2b0adc521dd2606e0cf5da67d357220e1ecc9904600d831c024bc8b7` |
+| `apf2k8-mod-studio-0.1.0-alpha.81-20260822.tar.gz.sha256` | 115 | `db6b336387e4d666a6e1392f521e4a1c845f646867a5153b8e637d2d56cf1b0f` |
+| `2K5-Mod-Studio-1.0.0rc74-Setup.exe` | 56,714,295 | `1792f739f6fd71b70405c0018717d71d6be7c61c4b483b705eb2fbda41651c50` |
+| `2K5-Mod-Studio-1.0.0rc74-Setup.exe.sha256` | 101 | `c72bf8c2a0444bce3f38c38bd9d67abfbe65cd1bbb8de85f19747b7e80bb52e0` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.81-Setup.exe` | 52,746,903 | `2d17aa20b5b79f1fe6cd806a0e37bd52d918497474fc639cb3afa3444e31ece8` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.81-Setup.exe.sha256` | 110 | `87ee3d6844b16be73e2e3e19fc9147c852a17ca4a06fe69065e1cfdf633966a6` |
+
+### `beta-49` — 2026-08-21 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-49>
+
+Beta 49 carries 2K5 RC73 (APF alpha.80 assets reused byte-for-byte). Create
+Formation / Create Play become capability-authorized, project-persisted
+kinds; optional custom names append to the name pool's verified zero tail;
+List Play in Formation writes one empty 0x1FF menu slot (group inherited);
+creates, links, and route copies compose in one pack-0 slice. Runtime
+visibility of created records remains uncaptured and is labeled so; freehand
+node synthesis stays refused; the XBE is never touched.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC73-20260821.tar.gz` | 11,075,262 | `a640d6a1efafcf5f94081016edafd14401fba76d275d757e4f7ee892ebf174f1` |
+| `2K5-Mod-Studio-v1.0-RC73-20260821.tar.gz.sha256` | 107 | `34134ab133eaa91c3628a16be33be839fc24543db84425ff2bbdcafa90f2edd8` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz` | 1,905,194 | `b600ba8019d4ab9cd54d4cf41479bdffffe815bc82e50c2c29f617f7e150e9ed` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz.sha256` | 115 | `89216e9c1cc7ae6d9956c61af375b6f060bbb8208be91974a247208cd18b4aa9` |
+| `2K5-Mod-Studio-1.0.0rc73-Setup.exe` | 56,710,446 | `68b7b6ef9d09061d47ad327a265576c45474178d7bd37dbd90a4810453f6b7e7` |
+| `2K5-Mod-Studio-1.0.0rc73-Setup.exe.sha256` | 101 | `6d28eb82e0c37fc3d761e2f6f7711d543901ea9c3a2c6333d54494a697c88d21` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe` | 52,740,465 | `d4dd682a49cbc9ac7da554486a5def9d0c2df6b20cbe8fe9989a4adfd7616d58` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe.sha256` | 110 | `a89588cd10474ccb60e80e80f1408bff38c6fc5973b18dcdc57bf0fde34b187f` |
+
+### `beta-48` — 2026-08-21 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-48>
+
+Beta 48 carries 2K5 RC72 and reuses the Beta 47 APF alpha.80 assets byte for
+byte (the APF surface is unchanged). RC72 fixes the reported "can't edit
+numbers in 2k5" art path: digit/nameplate mip chains now use a
+region-majority downsample instead of a channel-box average, so blends no
+longer spend the fixed VC-LZ spans; the retail proof chain compresses the
+same four fixtures from 12,084 to 11,684 changed bytes and thin-outline
+digits that overflowed under box mips now fit. Number values were already
+editable; a loaded roster/franchise save still overrides the disc seed, as
+the panel says. No retail bytes; no executable patching.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC72-20260821.tar.gz` | 11,070,142 | `4aefa1e4d7817ff4631bb30811101b569257604591b1b7cd3b2cc08c98756b66` |
+| `2K5-Mod-Studio-v1.0-RC72-20260821.tar.gz.sha256` | 107 | `5a060ab0ec050e83ddb8e62494b98734adb0375c71c04347fd13e913bd2bac7d` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz` | 1,905,194 | `b600ba8019d4ab9cd54d4cf41479bdffffe815bc82e50c2c29f617f7e150e9ed` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz.sha256` | 115 | `89216e9c1cc7ae6d9956c61af375b6f060bbb8208be91974a247208cd18b4aa9` |
+| `2K5-Mod-Studio-1.0.0rc72-Setup.exe` | 56,709,109 | `3c17769ce2a82a3f07d633566e708f9e318a2fed867b9e3b3726142dfaa34a77` |
+| `2K5-Mod-Studio-1.0.0rc72-Setup.exe.sha256` | 101 | `89bfd6372285532b55e1e267fc6bb41028b233cab2b9ceb77a55be89b63dfc3f` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe` | 52,740,465 | `d4dd682a49cbc9ac7da554486a5def9d0c2df6b20cbe8fe9989a4adfd7616d58` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe.sha256` | 110 | `a89588cd10474ccb60e80e80f1408bff38c6fc5973b18dcdc57bf0fde34b187f` |
+
+### `beta-47` — 2026-08-21 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-47>
+
+Beta 47 carries 2K5 RC71 (updater identity only) and APF alpha.80. It adds
+the Who lines up role-map tab, the experimental formation/package levers
+(trailer repoint + record add; runtime director behavior unproved, labeled as
+such), relayed route copy, the removal+tag-move Save-Project composition fix,
+digits v2 (smaller-of-two H7A encoders + region-majority mip regeneration),
+staged two-layer helmet crests through the project build, one-pass
+multi-crest logo-cache writes, both endzone layers in one field-art pass, the
+format-15 crest preview fix, renamed-index and symlink clarity, and the
+never-boots empties warning. No retail bytes; no `default.xex` patching.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC71-20260821.tar.gz` | 11,068,800 | `5e77ab3313893b123cc73047c5dc044a60456ca2676b6ec22aef6827aaab65f6` |
+| `2K5-Mod-Studio-v1.0-RC71-20260821.tar.gz.sha256` | 107 | `46826de251c32ee69d80900f0598860e57c78078470558c7b83fadfc34fa7967` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz` | 1,905,194 | `b600ba8019d4ab9cd54d4cf41479bdffffe815bc82e50c2c29f617f7e150e9ed` |
+| `apf2k8-mod-studio-0.1.0-alpha.80-20260821.tar.gz.sha256` | 115 | `89216e9c1cc7ae6d9956c61af375b6f060bbb8208be91974a247208cd18b4aa9` |
+| `2K5-Mod-Studio-1.0.0rc71-Setup.exe` | 56,704,278 | `45d99287ce945f69a43f041f051c3502ee4e20089c96cfa207d8e9779de4eb0d` |
+| `2K5-Mod-Studio-1.0.0rc71-Setup.exe.sha256` | 101 | `8ae00145dc5ebe58e505d2e7065f436602b995f60dfcc820609e60c245f59156` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe` | 52,740,465 | `d4dd682a49cbc9ac7da554486a5def9d0c2df6b20cbe8fe9989a4adfd7616d58` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.80-Setup.exe.sha256` | 110 | `a89588cd10474ccb60e80e80f1408bff38c6fc5973b18dcdc57bf0fde34b187f` |
+
+### `beta-46` — 2026-08-15 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-46>
+
+Beta 46 carries 2K5 RC69 (updater identity only) and APF alpha.78. It repairs
+the two Beta 45 Playbooks actions, withdraws the unusable raw WR3↔TE `.bin`
+export from the APF product, replaces the confusing 3rd-and-long copy, and
+adds a staged local-import closure gate. No game writer changed. All eight
+hosted CI jobs passed on Linux, macOS, and Windows with Python 3.11/3.12.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC69-20260815.tar.gz` | 11,067,647 | `beb2f97daa568a45fc35ccc56c9998c535f97e8cf483136b140c919db87b8cd1` |
+| `2K5-Mod-Studio-v1.0-RC69-20260815.tar.gz.sha256` | 107 | `196ccb9874c8d3c87140f477c0632a6ed1883a018d719dea161f718fb6a4167d` |
+| `apf2k8-mod-studio-0.1.0-alpha.78-20260815.tar.gz` | 1,877,078 | `5bb649124a9229500330ce1f4f60a7e206bf89bf04efd7c778d30b4e017ace33` |
+| `apf2k8-mod-studio-0.1.0-alpha.78-20260815.tar.gz.sha256` | 115 | `f86637ab88e37e89b335b2c8d1ea7614ad437843ecc76782fa1686cdd397599d` |
+| `2K5-Mod-Studio-1.0.0rc69-Setup.exe` | 56,702,060 | `cacabd63b66de0efe7d81499bb507bffabb2d0efa1fd3ff0d69fe620756ead0c` |
+| `2K5-Mod-Studio-1.0.0rc69-Setup.exe.sha256` | 101 | `d1d52ddf823d2f2a5fe7eed7bf3a6775ec7a64a1c902b4b0ae525196fdd70bbf` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.78-Setup.exe` | 52,724,180 | `afd199cd5f73d060e68df24f9393eab6ef9bbae26f28ff1e0577b70adf751e15` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.78-Setup.exe.sha256` | 110 | `4c02f8a4977976950bcf73982f6a40880dbb1f5b7f0fbf5b901619896b8a980b` |
+
+### `beta-45` — 2026-08-15 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-45>
+
+Beta 45 carries 2K5 RC68 (updater identity only) and APF alpha.77. Both
+retail-free gates pass (2K5 staged 206 files, APF staged 201). Field Art
+writes 221 textures, All Textures writes 480 jersey digits, jersey slots
+show the shoulder-style capacity rank, and Fine-tune Plays exports an
+experimental Ace-named WR3↔TE pack. Format-59 endzones, 3rd-and-long, and
+copied `0A` stay refused. Runtime visibility is unproved.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC68-20260815.tar.gz` | 11,068,034 | `823efeb487f6d3a91b555f79bd98958b18f5f49e4b218f2016762a489777611d` |
+| `2K5-Mod-Studio-v1.0-RC68-20260815.tar.gz.sha256` | 107 | `c205b08393e32d7b4e4a0175f7b7a36f54e980c92c9fc034264ad724a881f4cb` |
+| `apf2k8-mod-studio-0.1.0-alpha.77-20260815.tar.gz` | 1,878,392 | `0de8987e63538ff82f99a4f6fce8ed07d13eb6d00dfa2ce17c60e213395cfb39` |
+| `apf2k8-mod-studio-0.1.0-alpha.77-20260815.tar.gz.sha256` | 115 | `09e95cefdba72cfebcdafe8ceacd2b0c9866287ee1c2c969b2b2315e7d52baef` |
+| `2K5-Mod-Studio-1.0.0rc68-Setup.exe` | 56,703,798 | `c2321050493fe522fa6800888bf30dd0d226dca8d835931319def9394f0d6031` |
+| `2K5-Mod-Studio-1.0.0rc68-Setup.exe.sha256` | 101 | `2a3ed7fd4d2d79b900815d1e18b6b79324e2acab05859ebe80b81b34476ac2d2` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.77-Setup.exe` | 52,721,196 | `2630b91c4ea38eb03b04ac160c5cedf56f3444858264d8113b61f5fa18ab3b37` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.77-Setup.exe.sha256` | 110 | `6b6565fc7e058315fef39c9a300ff4ceee526f773a8789e7046f58ce38f3e745` |
+
+### `beta-44` — 2026-08-14 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-44>
+
+Beta 44 carries 2K5 RC67 (updater identity only) and APF alpha.76. Both
+retail-free gates pass (2K5 staged 206 files, APF staged 197). Fine-tune Plays
+holds every stock book, withdraws the TE-workaround copy, empties Flip twins
+together, and writes into the folder Xenia already loads.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC67-20260814.tar.gz` | 11,061,896 | `3d21945506a92077fedd1ea56aee15ac9192fb3ca58696ea5e0ba76e96e77466` |
+| `2K5-Mod-Studio-v1.0-RC67-20260814.tar.gz.sha256` | 107 | `9341b9f78893dddcbe93cee06975efd22fb7751b11a4161c7369efbcb7908807` |
+| `apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz` | 1,810,390 | `20bab375ce66bfd668768fce92f5cb903078ece6f4323c38e96df56fb9d37cda` |
+| `apf2k8-mod-studio-0.1.0-alpha.76-20260814.tar.gz.sha256` | 115 | `019ceb36b5e7939e9e9e2b1624fc1420378674901f986853b7462ffd859d51d4` |
+
+### `beta-43` — 2026-08-14 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-43>
+
+Beta 43 carries 2K5 RC66 and APF alpha.75. Both retail-free gates pass (2K5
+staged 206 files, APF staged 197); the local suite is **234 passed, 0 failed,
+0 skipped**, with the previously unrunnable files restored rather than skipped.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC66-20260814.tar.gz` | 11,309,218 | `60f094b756daa1853c7f417e04666022d77f89fdcf9ffa795600963bf4feaf7f` |
+| `2K5-Mod-Studio-v1.0-RC66-20260814.tar.gz.sha256` | 107 | `906949646fc4af60a1f7e3af30a9319e39ae609f167045306f91e873a5ed5126` |
+| `2K5-Mod-Studio-1.0.0rc66-Setup.exe` | 56,841,924 | `518772fb55c67829cd6e3ddabe54333b1d2a902ba856abb2398b21b5987399b8` |
+| `apf2k8-mod-studio-0.1.0-alpha.75-20260814.tar.gz` | 1,807,131 | `968dfb78945481bf76f6e2d9588d2034f4d45e56d7814c70f63824b0d0d6f07e` |
+| `apf2k8-mod-studio-0.1.0-alpha.75-20260814.tar.gz.sha256` | 115 | `7c90ca6af7054b2b9b5042cfcb2ace379266ef3c120948cbc3643dacec4bf034` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.75-Setup.exe` | 52,681,421 | `aab0231bb682410676b9bafbd33ae62ebae381a1305524cc4257a1373d207cec` |
+
+The Windows installers are unsigned; SmartScreen will warn. Verify the SHA-256
+before running.
+
+### `beta-33` — 2026-08-10 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-33>
+
+Beta 33 carries 2K5 RC60 and APF alpha.65. Both retail-free gates pass (2K5
+staged 201 files, APF staged 192); the local suite is 223 of 223 files green.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC60-20260810.tar.gz` | 10,993,449 | `0c801ddfc7932eeb013bdc2d12fbe5c1bab32bd4559d465d5b57efdc842eb4bc` |
+| `2K5-Mod-Studio-v1.0-RC60-20260810.tar.gz.sha256` | 107 | `a2f0a010edba1ba2debbc6f44b9e4064bfc59cba91f0675559315a30ddd6532c` |
+| `2K5-Mod-Studio-1.0-RC60-Setup.exe` | 56,728,111 | `47865a08253a6ee9b0af6edb11a4d4fa8fe5af88cfa3956c2a9a6590e776171e` |
+| `apf2k8-mod-studio-0.1.0-alpha.66-20260810.tar.gz` | 1,677,933 | `8f11dd50542ac8a321bbf82f6d6602c73fea0af9c8a865382b42c26e361aa71a` |
+| `apf2k8-mod-studio-0.1.0-alpha.66-20260810.tar.gz.sha256` | 115 | `45ec2865da317abf3166a44d3abdf2c5a64a55712791344853adc8a431ee0400` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.66-Setup.exe` | 52,705,870 | `26846c7294756b1109ebf0d2670f50d95bb7efa9a724213b31b72e19899b2256` |
+
+### `beta-32` — 2026-08-10 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-32>
+
+Beta 32 carries 2K5 RC59 and APF alpha.64. Both retail-free release gates pass
+(2K5 staged 201 files, APF staged 192).
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC59-20260810.tar.gz` | 10,993,241 | `5048eda1bef446bc5ee893aaced4222446b987a59848e1004537f2c61888d384` |
+| `2K5-Mod-Studio-v1.0-RC59-20260810.tar.gz.sha256` | 107 | `e733354a48943354f2026ef51ff04624a2a1d1a2f8276540e708b6052f7c04d4` |
+| `2K5-Mod-Studio-1.0-RC59-Setup.exe` | 56,727,634 | `c1ce238da1fa9a69d0bbd0b029310117dcf21264b2736a235f0a003c00f6bc5a` |
+| `apf2k8-mod-studio-0.1.0-alpha.64-20260810.tar.gz` | 1,675,531 | `c6e9f94ad2dfc89c7183d1bf898431c2d295822f0cb1c715c00b982a652637c2` |
+| `apf2k8-mod-studio-0.1.0-alpha.64-20260810.tar.gz.sha256` | 115 | `f1bf33d4666089e108c5859dd23e11ebec9d6260dc588d9973e4c6163ecbd11f` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.64-Setup.exe` | 52,705,992 | `59533e7cea506c4eee84a1dcec23ecb7ca082e029359b3ea4c24a7e492bc47c4` |
+
+### `beta-31` — 2026-08-10 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-31>
+
+Beta 31 carries 2K5 RC58 and APF alpha.63. Both Linux archives reproduce
+byte-for-byte from their staged trees, and both retail-free release gates pass
+(2K5 staged 201 files, APF staged 190).
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC58-20260810.tar.gz` | 10,991,308 | `029ce61e922d9aeb7df1363591623cac0ce34e67dce6425c95697863c568470a` |
+| `2K5-Mod-Studio-v1.0-RC58-20260810.tar.gz.sha256` | 107 | `42a6516d88780ad826d1c12b501a2c5d2d1ab2117e1bb1c07165929ea92546ba` |
+| `2K5-Mod-Studio-1.0-RC58-Setup.exe` | 56,728,573 | `6878d82f2ee78312a35e1c23cb273312b49145548bc067f0a3f51f6170c36547` |
+| `apf2k8-mod-studio-0.1.0-alpha.63-20260810.tar.gz` | 1,664,367 | `6c83945f896dde704c84bf5da5b85a6f8730e68db62cda7d5cff02c0332ac2fc` |
+| `apf2k8-mod-studio-0.1.0-alpha.63-20260810.tar.gz.sha256` | 115 | `a8b00030325eb3d5de7d3fb383b6b641b4d282cab29bb7fc7d4f918a4769b22a` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.63-Setup.exe` | 52,702,500 | `226877e6ab54ca4a76b912afb24d46496c08145b3ac09213a79a1c66a5ccb5b4` |
+
+### `beta-30` — 2026-08-09 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-30>
+
+Beta 30 carries 2K5 RC57 and APF alpha.62. All six assets were independently
+rebuilt byte-for-byte before publication.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC57-20260809.tar.gz` | 10,986,486 | `915f03e49c78b0eac48c4d20665611cb5395ac76d961e551d21a148da77079a4` |
+| `2K5-Mod-Studio-v1.0-RC57-20260809.tar.gz.sha256` | 107 | `0fa346ec12c70791ef0b100214413e91f6759d821708430b3efd68b98b43b340` |
+| `2K5-Mod-Studio-1.0-RC57-Setup.exe` | 56,727,599 | `75e49a34ee9ab91835b504935ec36f655d6785a478b08d7c8b41064ed6c509a2` |
+| `apf2k8-mod-studio-0.1.0-alpha.62-20260809.tar.gz` | 1,651,432 | `0c6d68209ccba7ad744343079793211e8c5c341396d0fd3ea7cfe7bdd2418deb` |
+| `apf2k8-mod-studio-0.1.0-alpha.62-20260809.tar.gz.sha256` | 115 | `c694e897775276186b1b6ce91a0cfad35617641e8c856f84e752f669468bff17` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.62-Setup.exe` | 52,699,449 | `3e5291d16fb429cc3a64da8951f5c5184a2fa6a217b75b9816775ec1d9c32f99` |
+
+### `beta-29` — 2026-08-09 · superseded (refreshed in place)
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-29>
+
+The refresh keeps the public Beta 29 / RC56 / alpha.61 identities and corrects
+the shared updater build tag from `beta-22` to `beta-29` in both products.
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz` | 10,985,098 | `7ec2a1916efd8bb2deb47493e18a12035c982d398b2c4e5ec6f26cc1adb75cb9` |
+| `2K5-Mod-Studio-v1.0-RC56-20260809.tar.gz.sha256` | 107 | `9d0fc23c219f2e32d469c4c8ac87da9bea359b61362c4280ddb7257e8d16fe0f` |
+| `2K5-Mod-Studio-1.0-RC56-Setup.exe` | 56,722,195 | `64d783446f0297bbb26ab9c6fa44d5bf10a5e5a1fb49369014d32c28c9c46cc8` |
+| `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz` | 1,651,940 | `34768b81845d8feb6c5ba891be4d8c1a880ea3169312003254aa5081e474bb26` |
+| `apf2k8-mod-studio-0.1.0-alpha.61-20260809.tar.gz.sha256` | 115 | `0122a5ce9746da1f9f644ff3d4472b1253315d0957610d8902ce2e55c3a1f394` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.61-Setup.exe` | 52,688,569 | `7d5a909d45847f4845814d16239cd981171abd9f48d07a62cf3a97b143bb9388` |
+
+### `beta-22` — 2026-07-28 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-22>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC47-20260728.tar.gz` | 9,643,511 | `4897126de1c5ba00033f36650d782a7a379a2014ce9fe3d9ac998edacdce4839` |
+| `apf2k8-mod-studio-0.1.0-alpha.50-20260728.tar.gz` | 1,146,436 | `92050b9044aa89b2f81de855645c1a0a93743401600b178b0dc979c56ceb1817` |
+| `2K5-Mod-Studio-1.0-RC47-Setup.exe` | 56,011,866 | `6221d28dfc362d3049cf2e82197d7dc95b7cbfec1275a54b3b31432040cb09d2` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.50-Setup.exe` | 52,369,218 | `0f3c3f5d6c27107fbb587694fe037c5de8364a5c1427ad9c5f0d5dbc43e0dfac` |
+
+Stadium geometry round-trips through Blender: an edited glTF becomes the recipe
+the proved position writer validates. Proved on the real disc -- the retail
+574-vertex roof raised five units, 670 decoded bytes changed, topology and
+every unrelated stream preserved. Moves vertices; cannot add or remove them.
+
+Player Assets joins a player to their face textures and portrait, stating which
+link is real (face_id, from the roster record) and which is a name match
+(portraits). Equipment is listed once as five shared textures.
+
+Roster names import from a PS2 memory-card save into a normal project. A name
+too long for its fixed slot is skipped and reported, never truncated.
+
+The rating-slot disagreement is settled statistically by APFe's own
+SFLSettings.csv, which maps 1:1 onto bytes 0xBA..0xD8 and scores 0.649 against
+Star defaults where our ordering scores 0.436, identically on two roster files.
+The registry is deliberately not rewritten until a save-diff confirms it.
+
+> **Correction (2026-07-30):** that prediction was wrong, and the decision not to
+> rewrite the registry on it was right. APFe's row *order* is the byte order, but
+> its row *names* are misassigned. The executable's own attribute descriptor table
+> at `0x820E4D94` pairs each UI name with the setter that writes its byte, and it
+> confirms the mapping this project already shipped. See
+> `docs/research/apf_rating_slot_settlement.md`.
+
+> **RC50 correction candidate (under test):** package-local socks, elbow
+> pads, gloves, long sleeves, shoes, and wristbands are no longer hidden. All
+> 28,530 reviewed P8 equipment occurrences are searchable, PNG-exportable, and
+> palette-editable from All Textures. The composed writer groups edits sharing a
+> TSET, preserves its retail shape/mip indices and every unselected palette, and
+> refits the complete resource to its fixed VC-LZ span. The same correction repairs stale Team Kit original
+> caches without accepting changed source bytes, restores target-authored digit
+> dimensions such as the Titans' 32x32 sleeve/shoulder numbers, and keeps every
+> export-only selector outside the writer path.
+
+### `beta-21` — 2026-07-28 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-21>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC46-20260728.tar.gz` | 9,634,076 | `fe3da70618305c5f2b701ca374cfffb9783cc78c0bf655dfd479fdf77e6e8157` |
+| `apf2k8-mod-studio-0.1.0-alpha.49-20260728.tar.gz` | 1,145,950 | `14777605a743b3090cd07851bf064330f07496f7064a96a8e03a6f533075dfff` |
+| `2K5-Mod-Studio-1.0-RC46-Setup.exe` | 55,998,899 | `435e03d90ee58ea7fd9938d041b5dcb87e454f4f4bb16e584d14e6fb0b3bcece` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.49-Setup.exe` | 52,372,747 | `3e446a934a2ee904b0ba7c0d3e75ee62a64b836389ab856cf1cae8b314b74cfc` |
+
+A built-in pixel editor in both products: pencil, eraser, fill, eyedropper,
+colour picker with alpha, zoom to 16x with a pixel grid, 24-step undo. The
+canvas has no resize control -- it is the slot's exact size -- so a saved
+result can never be the wrong shape.
+
+Any image can now be imported at any size. A crest pads and keeps its whole
+shape; a jersey or field panel crops to fill; an already-exact image is passed
+through untouched. JPEG/BMP/GIF/WebP/TGA are read as well as PNG.
+`tools/nfl_fit_image.py` does the same for whole folders.
+
+Caught while doing it: the APF field-art test drove the staging path with a
+wrong-sized PNG and hit the new modal, hanging forever. It now drives both
+answers.
+
+### `beta-19` — 2026-07-28 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-19>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC44-20260728.tar.gz` | 9,621,947 | `cd5433623a2e5b608d720c378c266daf2d310d716e9d79a0fa13151a2ed33b93` |
+| `apf2k8-mod-studio-0.1.0-alpha.47-20260728.tar.gz` | 1,133,882 | `f4b3803f116a3dea3859c86fa917e6b79a6446196b536a5e7d306ba5c224c63b` |
+| `2K5-Mod-Studio-1.0-RC44-Setup.exe` | 55,995,790 | `d02c86a4ba157c18feb1b10058abc5f5688aecd5ca7c44b9b7545f51f60c9c03` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.47-Setup.exe` | 52,353,778 | `18b1d78019c91921a7bcb75bec5e086157b8975835c912ad2596187e9a86fef9` |
+
+The facemask/faceshield and `HI_turtleneck` colours are per physical uniform in
+Uniforms & Equipment -> Colours & Other Tools. The searchable selector covers
+all 634 sets. A shareable project stores a logical selector and two authored
+ARGB words; Build resolves that selector from the pinned source archive and
+changes exactly one eight-byte record. Multiple HOME, AWAY, alternate, and
+throwback sets can coexist in one project. The former fixed A/B targets were
+Detroit current HOME (`09H0`) and AWAY (`09A0`), not a global pair.
+
+Tests walk the whole chain -- picker, session, canonical project, composed
+build -- and check producer against consumer, which is the join this lane kept
+dying at across three previous attempts.
+
+### `beta-18` — 2026-07-28 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-18>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC43-20260728.tar.gz` | 9,617,797 | `7079bf7a00a89f3bf6c764f91e25d554c5038b2f40e5f9b8a88dcce9071ebf8f` |
+| `apf2k8-mod-studio-0.1.0-alpha.46-20260728.tar.gz` | 1,133,158 | `a81ab72379ca1644dc06f8aea8b6ad5b32a1c605a8017479db7eef88e0e6c6d4` |
+| `2K5-Mod-Studio-1.0-RC43-Setup.exe` | 55,991,319 | `555ce2e2aa2b4d9cdb56fb4c40b1c1d6e76599130aaca6c113b7e9c4b0824330` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.46-Setup.exe` | 52,363,159 | `10bd0cd4b6b27c8b9e594cd440b4ecc3363de1e238c614e24f6f428fe60aa641` |
+
+All Textures shipped able to neither preview nor export. Export PNG suggested
+the asset id as a filename and `:` is reserved on Windows; suggested names are
+now sanitised for every illegal character, trailing dots/spaces and reserved
+device names, across all asset kinds. The per-kind decoder dispatch had no
+`p8_texture` branch, so previews raised and the swallowed error left the panel
+on "Preparing..." forever; the decoder is implemented and a failed preview now
+reports itself.
+
+Tests assert the rules: every published kind must have a decoder, and no
+catalog id may produce a filename Windows rejects.
+
+### `beta-17` — 2026-07-28 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-17>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC42-20260728.tar.gz` | 9,616,358 | `c45ea25e0b763cf932b327cc9d237fa81d2a057ea7b1a5aa96c91e404d1f396c` |
+| `apf2k8-mod-studio-0.1.0-alpha.45-20260728.tar.gz` | 1,133,134 | `6cdff11f3e7ec03a5f3dfe2225dae3526d86a5e3a435bc6ee68bea1c12822d62` |
+| `2K5-Mod-Studio-1.0-RC42-Setup.exe` | 55,990,350 | `c5a2a0c78f6a4be9279e209a851bd871188d6a15b98234b730416e72a9a182e2` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.45-Setup.exe` | 52,363,680 | `5d9e52caf6db404ca2e30aae0203c2ecbb461be85e9f930929dcc30ba72f0f4b` |
+
+All Textures is a real workspace: 3,024 standalone P8 targets (1,770 end-zone
+panels, 1,024 goalpost pads, 225 divots overlays, 5 shared equipment textures)
+with search, preview, Export/Replace PNG and Revert.
+
+The route that mattered is the composed build. A `p8_texture` edit kind binds
+per-extent -- the build locates each pack in the user's own image, re-derives
+the offset, and verifies the pack and span hashes. Proved on three differently
+packed dumps: identical 31,652 changed bytes on all three.
+
+The Nameplate Atlas decoded transposed (32x1024 instead of 1024x32) and shredded
+every letterform; only VC_P8_LINEAR orders its size halfwords that way, so the
+4,081 A1R5G5B5 player strips are untouched.
+
+Stadium geometry export is command-line only and its card says so. Whole-model
+stadium import still does not exist.
+
+### `beta-16` — 2026-07-28 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-16>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC41-20260728.tar.gz` | 9,488,302 | `b59a0d0220be7b6cb5e08379bd4c447fa2420565f29ce8202196f3ed354cf497` |
+| `apf2k8-mod-studio-0.1.0-alpha.44-20260728.tar.gz` | 1,132,787 | `3b6cc0ea56aa97b9b3ebdaacef234761703e5a93d26dc704628943e7f36cedd7` |
+| `2K5-Mod-Studio-1.0-RC41-Setup.exe` | 55,916,430 | `9f472c6d7ef8891f7f26a35d811c6eadc3af2b2822cad92c77a2bd1958b40fce` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.44-Setup.exe` | 52,363,061 | `9f0332669d7fac5107fddeb06e4d0c0a3dc053396a9de919b875c5199f185c11` |
+
+Fixes a regression beta-15 introduced: QTabWidget carried no stylesheet rules,
+so the new Uniforms & Equipment tab strip rendered in the platform light style
+with unreadable labels and put the uniform browser behind it. The strip is
+styled and Uniform Sets is pinned as the landing tab.
+
+Capability cards are labels with no controls, so an "Editable" pill on one
+reads as a broken button. Seven of nineteen NFL 2K5 writers have an in-app
+workspace; each card now names that workspace or states it is command-line only
+and prints the command.
+
+Still ahead: the All Textures workspace and stadium model import. Stadium
+geometry export to glTF works today; whole-model import does not exist.
+
+### `beta-15` — 2026-07-28 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-15>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC40-20260728.tar.gz` | 9,486,881 | `287ba54f734bf91acc7fea279dfcf83342414f9d3ae083fc239088f229efb56f` |
+| `apf2k8-mod-studio-0.1.0-alpha.43-20260728.tar.gz` | 1,132,681 | `187f66c642ea8708601b248e1625777d8de9a974fc3e90649191dd4b763e77f5` |
+| `2K5-Mod-Studio-1.0-RC40-Setup.exe` | 55,917,960 | `3f5d7dbf1d5c261b332927f8a014faaad1ec27ca6b3f6438dab881f0468edca7` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.43-Setup.exe` | 52,361,519 | `0ef084513f5bdc4c49b796c69dd673a405161b4db06c26d1feb12fb52c5c7c08` |
+
+Uniforms & Equipment built its browser around one capability and dropped the
+other three filed under that category, so the facemask/turtleneck colours were
+enabled and still unreachable. The category is now two tabs, Uniform Sets and
+Colours & Other Tools. Verified headless against the shipped build.
+
+`mod_editor.__version__` had not moved since RC36, so the window reported a
+version three releases old. It is now asserted against STATUS.md and the newest
+changelog heading.
+
+### `beta-14` — 2026-07-28 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-14>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC39-20260728.tar.gz` | 9,486,332 | `4e282225464c93f96e2b7e63f78eb49c94560fa87f8e8ed5b98dfb12bf8c89f1` |
+| `apf2k8-mod-studio-0.1.0-alpha.42-20260728.tar.gz` | 1,132,573 | `f727ee9db33de0415fff7b38cd6c651f785d43db3f1d12145ecb8747d4628bad` |
+| `2K5-Mod-Studio-1.0-RC39-Setup.exe` | 55,908,087 | `77786e55b69cee53dc580e52c6595f4f8905b79b1a5bd1370dee941159f18d55` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.42-Setup.exe` | 52,359,139 | `a9487afa79c1f31c1ca58c8205c3228be5b9c5ee801e4b29648fddb375cc06f5` |
+
+The shared PNG importer accepted only colour type 6 at bit depth 8,
+non-interlaced, so an image editor's ordinary export -- usually colour type 2
+(RGB) or 3 (indexed) -- was rejected as if the file were wrong. Every colour
+type and bit depth the specification defines now decodes and is widened to
+RGBA internally, interlaced or not, with `tRNS` honoured. Verified pixel-exact
+against Pillow on every variant.
+
+The exact-dimensions rule stays: a texture fills a fixed byte span, so a
+differently sized image cannot occupy it. The message now says so.
+
+### `beta-13` — 2026-07-28 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-13>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC38-20260728.tar.gz` | 9,483,708 | `088dad57b92b147b27ac337a645e57025bb27276bb1bd781a1bcd2463b155d9d` |
+| `apf2k8-mod-studio-0.1.0-alpha.41-20260728.tar.gz` | 1,132,386 | `2f8b7f7d072327360e52c8b6343b468f4a34d040e94b5d654256104fd4b4b61c` |
+| `2K5-Mod-Studio-1.0-RC38-Setup.exe` | 55,915,151 | `7e424a6ed2ca4f4765757e3cadcf68b682108ea3fc26c1f04122b39d6f1195da` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.41-Setup.exe` | 52,359,113 | `6fa468fbfcd8ec85819885e8133e5fc79c79ec5a86779a156777c73b99ee2825` |
+
+New All Textures workspace: 36,761 of the disc's 57,208 textures are editable
+from a PNG, recompressed into the original byte span. Covers the real teams'
+end-zone art, goalpost pads, `divots`, the `mark*` overlays and the shared
+equipment textures. P8 only; other Xbox formats are refused by name.
+
+Four shipped writers -- audio, generic texture import, Crib bar-monitor and
+uniform colours -- stopped gating on the whole container's size and SHA-256,
+which had made them unusable on any legally dumped disc that differed from the
+project's own copy. Identity is per-extent everywhere now.
+
+Proved on three differently packed images of the same game: identical 31,652
+changed bytes at three different absolute offsets.
+
+### `beta-12` — 2026-07-28 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-12>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC37-20260728.tar.gz` | 9,475,714 | `b269206ded978509500544f322ff7fe6383bbbe6d25e927a11a5adf85d060349` |
+| `apf2k8-mod-studio-0.1.0-alpha.40-20260728.tar.gz` | 1,131,263 | `8df1f32890f1f5ba0488ad7addb262f62f2bb4ebb67e223015eddafa45ba5d6c` |
+| `2K5-Mod-Studio-1.0-RC37-Setup.exe` | 55,900,578 | `a0f10b019ac385ad3eb481c87bf529e0b7c9d807d7d518faa32e4bd09155a5b1` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.40-Setup.exe` | 52,357,508 | `f66e9272cdeece95191ffb2194a5c1b099ed7b6cb9dc21acc4a05f70baca1803` |
+
+A legally dumped APF disc could be refused with "does not appear to be a valid
+xbox iso image". The bundled `extract-xiso` probes four fixed partition offsets
+and rejects anything else -- the 2K5 layout defect, hidden inside a vendored
+binary. The disc is now read with the project's own searching XDVDFS reader
+first. The report that prompted it was the PlayStation 3 release of the same
+game named `.iso`, so containers are now identified by structure and named:
+ISO 9660 volumes, PS3 and PlayStation discs, STFS packages, ZIP/RAR/7z.
+
+On the 2K5 side the two `Unif` colour words now say what they own: word 0 is
+the facemask/faceshield tint and word 1 is `HI_turtleneck`. Repainting the
+coloured square on a helmet texture cannot move the facemask, because the
+facemask is a separate material fed by that value.
+
+### `beta-11` — 2026-07-28 · superseded
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-11>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC36-20260728.tar.gz` | 9,473,398 | `028959b26e991e9ef5ec0a75d48d7ba19afa79f2b712cc96a577c705c9cf3cc4` |
+| `apf2k8-mod-studio-0.1.0-alpha.39-20260728.tar.gz` | 1,118,445 | `db613a4e0b1929600335357bf152b3bb3004204d7638550ee803e6bbca6fb03f` |
+| `2K5-Mod-Studio-1.0-RC36-Setup.exe` | 55,900,541 | `79a3c5ec3a114febad6914065763b70e9676571c3f0f979f122a693375379f06` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.39-Setup.exe` | 52,351,553 | `5a2b14f212d99e1a3beb280c37b7cec7e874a5f1aedf3386acb30aeb1f6d4bf8` |
+
+Export Team Kit as a folder failed on Windows for everyone: the export reserved
+its destination with `mkdir` and renamed the staged tree onto it, which POSIX
+allows and Windows cannot do for a directory at all. It now publishes through
+`platform_compat.publish_no_replace`, as three other publishers in the tree
+already did. The ZIP export's hard-link publish is routed the same way, since
+`os.link` needs NTFS and an external drive holding disc images is often exFAT.
+No disc, indexing or build behaviour changed; the beta-10 fixes were re-verified
+against the reporter's pressed-disc read from this published tarball.
+
+### `beta-10` — 2026-07-27 · superseded by beta-11
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-10>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC35-20260727.tar.gz` | 9,472,304 | `6ee4d6f8922fe1ebd4636af45b7e4aa632c65643d3b0d5dfb26acd08ee241a7a` |
+| `apf2k8-mod-studio-0.1.0-alpha.39-20260727.tar.gz` | 1,118,430 | `89416520a43dab0a94b2f3fcad465ac54a4bf5c539b9f0dbd32e6397db792b37` |
+| `2K5-Mod-Studio-1.0-RC35-Setup.exe` | 55,901,479 | `1e64ab600d59454f74185cd4f51a25333aac998c8e032d6f4e2d2546943a6b44` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.39-Setup.exe` | 52,351,553 | `5a2b14f212d99e1a3beb280c37b7cec7e874a5f1aedf3386acb30aeb1f6d4bf8` |
+
+beta-9 loaded a user's disc but could not build from it: the build path pinned
+sector numbers and absolute byte offsets, both of which are properties of
+whoever assembled the image rather than of the game. All nineteen files sit at
+different sectors in a pressed disc, an extract-xiso rebuild and a repack while
+being byte-identical. Files are located by name now and offsets derived from the
+image in hand. Verified by building real mods from both of the reporter's images
+and again from this published tarball.
+
+### `beta-9` — 2026-07-27 · superseded by beta-10
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-9>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC34-20260727.tar.gz` | 9,471,005 | `646ebd0d04eb715df6daa37daa6582ee6bd4f1697369d25057607646f6b24aeb` |
+| `apf2k8-mod-studio-0.1.0-alpha.39-20260727.tar.gz` | 1,118,430 | `89416520a43dab0a94b2f3fcad465ac54a4bf5c539b9f0dbd32e6397db792b37` |
+| `2K5-Mod-Studio-1.0-RC34-Setup.exe` | 55,900,424 | `c59e6306275f6793468fcdd86dde5d91604f1fda7d7b0d635813862d6ae33126` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.39-Setup.exe` | 52,351,553 | `5a2b14f212d99e1a3beb280c37b7cec7e874a5f1aedf3386acb30aeb1f6d4bf8` |
+
+Developed against a reporter's own two disc images rather than this project's
+copy, which is what exposed the two causes our extract-xiso-normalised image
+could not contain: a raw read carries two filesystems, and a pressed disc marks
+files `0x80` where a rebuild marks them `0x20`. Container equality is also gone
+from the build, audio and stadium lanes, so an image that loads can now finish a
+build. See `CHANGELOG.md`.
+
+Verified from the published tarball against both of his images: recognised,
+fully indexed (16 packs, index byte-identical to its pin), build-gate accepted.
+
+### `beta-8` — 2026-07-27 · superseded by beta-9
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-8>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC33-20260727.tar.gz` | 9,467,197 | `67c073f7fdca3cf3be9861bf49dd32f29dd66151b2adfe1aa7a59044295c4143` |
+| `apf2k8-mod-studio-0.1.0-alpha.38-20260727.tar.gz` | 1,117,824 | `decba035e9536d201ebf50852aab5d104e41a1fbd3d2898597c747f028156839` |
+| `2K5-Mod-Studio-1.0-RC33-Setup.exe` | 55,894,637 | `98f3b6da5b0ba7b7020f0be2c6de18af100612630014f07e58beed241638f81e` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.38-Setup.exe` | 52,347,030 | `a44bae57aa64d7959d31ba8fb29c0ec0e51c3b2c87c74160c8b7a9a924475d30` |
+
+The index the editor builds from a user's disc was written in text mode, so
+Windows rewrote every line ending and the result could never match its pinned
+size or hash. Unconditional: every Windows user, every image. Fixed repo-wide --
+38 text writes across 29 shipped files now pin the line ending, held at zero by
+a test. See `CHANGELOG.md`.
+
+### `beta-7` — 2026-07-27 · superseded by beta-8
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-7>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC32-20260727.tar.gz` | 9,466,662 | `ddc23b37676e8f9efc0941d0d298c7de5a048ea681dd2a4c342f11a9d02be5fb` |
+| `apf2k8-mod-studio-0.1.0-alpha.37-20260727.tar.gz` | 1,117,404 | `fc1fce34c50ddce003923307172ac6be9d4eed5dc6a055a2c51801717338b46f` |
+| `2K5-Mod-Studio-1.0-RC32-Setup.exe` | 55,889,723 | `8927f974689b8d95abb672a805eb0b64b77d3107d6afbd7a7efdec842fd7624f` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.37-Setup.exe` | 52,353,300 | `3400ce01378ae134b7c31becbbc2bdc78569af25f8612746cb9f6c5050a31b6e` |
+
+beta-6 fixed only half of the dump-acceptance problem and shipped anyway. Two
+follow-on failures came back from the same users: a raw disc read whose
+partition offset was not in the list beta-6 probed, and -- reaching only people
+who *install* rather than unzip -- `ModuleNotFoundError: No module named
+'nfl_outer'` immediately after loading, because the embeddable runtime's `._pth`
+defines `sys.path` without adding a script's own directory. Both are fixed here
+and both are pinned by tests that need neither game data nor Windows. See
+`CHANGELOG.md`.
+
+**Every digest in this table was generated from the built files, not
+transcribed.** The two installer digests in the beta-6 notes were written out by
+hand from a truncated printout and the tail was wrong; they were corrected in
+place, and this table is now produced mechanically so that cannot recur.
+
+### `beta-6` — 2026-07-27 · superseded by beta-7
+
+<https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-6>
+
+| Asset | Bytes | SHA-256 |
+| --- | --- | --- |
+| `2K5-Mod-Studio-v1.0-RC31-20260727.tar.gz` | 9,459,810 | `c0809e38418f4e1a54706a30a2ad0a6c73fe5f42c46e4e2540fd3c398db160ce` |
+| `apf2k8-mod-studio-0.1.0-alpha.36-20260727.tar.gz` | 1,113,374 | `2872293000b7d7e972393313cfeb6ac2c4f26df9ba3d9e1cf5fc376a732b7ca0` |
+| `2K5-Mod-Studio-1.0-RC31-Setup.exe` | 55,896,204 | `85e50378fc1be69224205ced4639819523966cd5e2d2c1701f7a451528502bbc` |
+| `APF-2K8-Mod-Studio-0.1.0-alpha.36-Setup.exe` | 52,351,547 | `7714ff418a6f832b185529ffcb4adf77db70f8f533d53d7dc9d473befaa5a247` |
+
+The 2K5 editor now accepts any legal dump of the disc rather than only the
+project's own rip; see `CHANGELOG.md`. **This is the first release whose
+installers are byte-reproducible**: the mtime normalisation added after beta-5
+works, and two from-scratch builds of each installer were compared byte for
+byte, as were both tarballs.
+
+### `beta-5` — 2026-07-27 · superseded by beta-6
 
 <https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-5>
 
@@ -557,13 +1434,12 @@ editor renders—four 2K5 and four APF—covering dashboards, Giants away unifor
 jerseys, Stadium Studio, and soundtrack/audio browsers. Their manifest verifies
 dimensions, hashes, file sizes, and nonblank headless rendering, and the entire
 34-file kit passes its refreshed `SHA256SUMS`. No visible desktop or pointer was
-used. Spark Hands was unavailable, so the eight filenames honestly retain
-`HEADLESS_UNVERIFIED`; the two earlier dashboard captures remain the
-Spark-reviewed fallback.
+used. The eight filenames honestly retain `HEADLESS_UNVERIFIED`; the two
+earlier reviewed dashboard captures remain the fallback.
 
 - **Shipped:** 2K5 Mod Studio `v1.0 RC26`, with explicit bounded waveforms for 54,421 playable sounds, same-ID media invalidation, and one safe Audio/Crib worker lane; eight current editor teaser renders are also in the Desktop proof kit.
 - **Experiment result:** 1088/1088 combined, 601/601 2K5, 107/107 release-focused, and 24/24 lifecycle tests pass; stage/extraction gates are retail-free, the rebuild is byte-identical, and independent review is GO with no P0/P1.
-- **Blocked on the user:** nothing blocks continued headless product work; audibility/meaning of provisional cues still needs a controller-driven xemu listen A/B, and the new teaser candidates need one quick human visual look because Spark was unavailable.
+- **Blocked on the user:** nothing blocks continued headless product work; audibility/meaning of provisional cues still needs a controller-driven xemu listen A/B, and the new teaser candidates need one quick human visual look.
 - **Next step:** ship RC27's one default **All Playable Audio (54,421)** search spanning standalone cues and streaming ranges, then carry the best bounded batch ergonomics back to APF.
 - **Deliberately not done:** no visible desktop, pointer control, audio device, emulator, external player, retail bytes, recovered song-title claim, or audible-runtime claim was used or added.
 
@@ -1035,17 +1911,6 @@ available, required, and upward-rounded shortfall without creating a partial
 output. The focused build-safety suite passes 32/32 and the direct unit-boundary
 matrix passes 16/16.
 
-## Headless operation — active
-
-The managed Codex remote-control service is running as `noah-desktop`. A
-read-only process audit found 42 stale Mod Studio GUI test sessions left from
-July 18–19 (12 2K5 and 30 APF), including broken-X11 error dialogs and five
-still-running APF Python windows. Their exact process groups were terminated
-so they can no longer take focus or the mouse. No project, source, release, or
-game file was deleted; the test apps can be relaunched normally if needed.
-Current product work is terminal-only. No new GUI or emulator process will be
-launched without the designated Spark desktop operator.
-
 ## RC13 collection parity and keyboard search — shipped
 
 RC13 fixes a product-path mismatch exposed only after RC11 made fixed AUSB
@@ -1428,11 +2293,11 @@ with `PYTHONDONTWRITEBYTECODE=1` and `QT_QPA_PLATFORM=offscreen`. RC8 was
 assembled headlessly: no visible GUI or emulator was launched, and the user's
 desktop was not touched.
 
-The sealed checkpoint then passed its separate visual gate through Spark Hands
+The sealed checkpoint then passed its separate isolated-display visual gate
 on isolated `DISPLAY=:99`. The fresh `v1.0 RC8 • Xbox Edition` window loaded
 the user's XISO and showed the 39-component **Complete Team Kit** panel with
 paired `HOME + AWAY`, editable-folder selection, Export/Import actions, the
-private-retail-art warning, and the normal build footer. Spark found no
+private-retail-art warning, and the normal build footer. Visual QA found no
 clipping, overlap, inconsistent padding, or footer obstruction. The user's
 active desktop and pointer were never used.
 
@@ -1584,7 +2449,7 @@ The preserved sealed non-overwriting RC5 release is:
 - Runtime closure imports **36 product modules** and **22 tool modules**. The
   canonical product surface remains **60 registry capabilities**, **11
   sections**, and **30 NFL 2K5 capabilities**.
-- The clean isolated Spark check passed the File-menu shortcut, disabled-state,
+- The clean isolated-display check passed the File-menu shortcut, disabled-state,
   spacing, and clipping review on `DISPLAY=:99`.
 - Empty documents remain replacement-only: the explicit archive contains only
   `project.json`, `edits: []`, and the existing `user-replacements-only` policy.
@@ -1601,7 +2466,7 @@ The preserved sealed non-overwriting RC5 release is:
   registry validation passed all 60 rows.
 - The complete current desktop-tool selection passed **419/419 tests**,
   including both title backends and shared-provider cases. The new 2K5 and APF
-  Audio layouts then passed through Spark Hands on the isolated display.
+  Audio layouts then passed visual QA on the isolated display.
 - The exact release allowlist now includes the new metadata-only Audio bundle
   module. The fresh stage passed with **134 files**, **13 internal directories**
   (**14 including the release root**), and **101,736,199 file bytes**, with no
@@ -1632,8 +2497,9 @@ The preserved sealed non-overwriting RC5 release is:
 - Empty, family-filtered, and targeted real-catalog range pages completed in
   1.4 ms, 12.4 ms, and 14.3 ms respectively in the headless timing spot check.
 - All 76 applicable headless audio/product integration tests passed. The one
-  visual Qt test was deliberately not run because desktop operation is assigned
-  to Spark Hands; capability-registry validation separately passed all 60 rows.
+  visual Qt test was deliberately not run because it required separate
+  isolated-display operation; capability-registry validation separately passed
+  all 60 rows.
 
 ### AUSB Xbox IMA decode closure
 
@@ -1703,12 +2569,15 @@ All 11 product tabs exist from the first launch:
 1. **Uniforms & Equipment** — searchable PNG previews and bounded
    Export/Replace/Revert/Build for proved jerseys/torsos, sleeves, pants,
    helmets, digits/nameplates, and separate Team Select cards.
-2. **Rosters & Players** — complete current/historical name and jersey-number
+2. **Rosters & Players** — complete current/historical name, jersey-number, and
+   per-player None/Clear/Dark face-shield-type
    workflows under **Players & Numbers**, plus searchable portrait and
    live-face texture workflows under **Portraits & Faces**. All 6,522 indexed
    jersey-number assets have exactly one current or historical player row;
-   proved primary rows are editable and unsafe secondary-pool rows remain
-   Preview/Export-only.
+   all jersey numbers and face-shield selectors are editable, including
+   secondary-pool rows. Face shield is not a HOME/AWAY tint, and loaded saves
+   may override the disc seed. Secondary names remain read-only because their
+   text allocation is zero.
 3. **Text & Team Identity** — the universal fixed-allocation text browser,
    including team identity and all safely owned strings. Roster editing is no
    longer filed here.
@@ -1722,8 +2591,8 @@ All 11 product tabs exist from the first launch:
 7. **Menus & UI** — all seven named Main Menu rows/transitions, layout and
    rendering ownership, actionable limitations, JSON/CSV export, capability
    cards, and the complete archive-resource raw fallback.
-8. **The Crib** — all 498 catalogued textures, with 128 Team Photos and the
-   exact `room:22 / bar_monitor` surface editable.
+8. **The Crib** — all 498 catalogued textures editable, plus bounded
+   same-topology position import for ten exact meshes across seven scenes.
 9. **Audio** — browse/play/export for all 850 standalone AUDO resources, with
    all 850 exact physical slots editable and honest semantic warnings on 697
    alias-related rows; searchable raw export for all 17 AUSB soundtrack/
@@ -1739,21 +2608,22 @@ All 11 product tabs exist from the first launch:
     presets or writers.
 11. **Playbooks & Plays** — a structured viewer for every decoded PLAY book,
     formation, play, assignment chain, node, and player-slot reference, plus
-    raw resource export. Route authoring remains Coming Soon.
+    raw resource export and exact same-book stock assignment-route copy/revert.
+    Freehand waypoint/opcode authoring remains unsupported.
 
 The archive-resource browser remains the universal fallback: no resource in
 that index is hidden merely because a specialized editor has not been built.
-Registry-derived **Editable**, **Preview/Export-only**, or **Coming Soon**
-states appear on capability cards; raw fallback rows retain their explicit
+Registry-derived **Editable**, **Preview/Export-only**, **Proof boundary**, or
+**Research boundary** states appear on capability cards; raw fallback rows retain their explicit
 Export-only boundary instead of pretending that registry status is an action.
 
 ## Exact v1.0 inventory
 
 | Product surface | Exact release-candidate coverage |
 | --- | ---: |
-| Capability registry | 62 rows total; 31 NFL 2K5 rows |
+| Capability registry | 70 rows total; 32 Xbox NFL 2K5 rows; 1 NFL 2K5 PS2 save-import row |
 | Sidebar tabs | 11 |
-| Specialized visual assets | 32,038 |
+| Specialized visual assets | 63,592 total; all 63,592 Editable, including 28,530 package-local equipment P8 palettes |
 | Text banks | 716 |
 | Decoded strings | 23,346 |
 | Editable strings | 20,074 |
@@ -1761,7 +2631,7 @@ Export-only boundary instead of pretending that registry status is an action.
 | Jersey-number assets | 6,522 |
 | Standalone AUDO resources | 850 total; 850 Editable; 0 Export-only; 697 carry semantic/runtime-selector warnings |
 | Streaming AUSB audio | 17 descriptors; 16 external `.bin` owners; 53,571 Editable logical Xbox IMA ranges through 53,570 fixed physical slots; complete banks Export-only |
-| Crib assets | 498 total; 129 Editable; 369 Export-only |
+| Crib assets | 498 total; 498 Editable; 0 Export-only |
 | Stadium scenes | 477 |
 | Editable Stadium P8 occurrences | 23,838 |
 | PLAY books | 37 |
@@ -1777,13 +2647,13 @@ Export-only boundary instead of pretending that registry status is an action.
 | --- | --- | --- |
 | Uniforms and equipment | Shipped | Fixed owned allocations only; gameplay textures and Team Select cards remain separate assets. |
 | Portraits and live faces | Shipped | Exact proved formats/dimensions; the importer rejects incompatible PNGs. |
-| Names, team identity, and jersey numbers | Shipped for every proved allocation | All 6,522 numbers are browsable; unsafe secondary-pool writeback stays read-only. Ratings, membership, position, and depth charts are not implied. |
+| Names, team identity, jersey numbers, and face-shield type | Shipped for every proved allocation | All 6,522 jersey numbers and per-player None/Clear/Dark face-shield selectors are editable through masked player-word writeback. Reserved value 3 is refused. Face shield is not a HOME/AWAY tint; loaded saves may override the disc seed. Secondary names with zero text capacity stay read-only. Ratings, membership, position, and depth charts are not implied. |
 | Historical rosters | Shipped | All 75 historical ROST resources and 3,975 historical players are present. Proved same-allocation names/numbers are editable. |
 | Field art and scorebug | Shipped | Only owned fixed-allocation visual classes are writable; `digital_font` is shared presentation art. |
 | Universal text | Shipped | 20,074 fixed-allocation strings are editable. The 3,272 unsafe/zero-capacity entries remain visible and read-only with a reason. |
 | Audio | Shipped at the proved boundary | All 850 standalone physical AUDO slots and all 53,571 logical AUSB ranges are writable under each row's exact PCM contract. Alias-related standalone rows remain distinct physical edits; AUSB aliases share one of 53,570 fixed physical slots. Complete raw banks remain Export-only; runtime audibility and semantic cue ownership are not claimed. |
 | Stadium Studio texture swaps | Shipped | All 23,838 P8 occurrences are editable on existing geometry. A replacement that cannot fit the original compressed SCNE allocation is refused. |
-| Crib photos | Shipped | All 128 Team Photos are editable. The proved `bar_monitor` object reskin also ships as a bonus bounded surface. |
+| Crib textures and bounded models | Shipped | All 498 textures are editable in fixed allocations. Ten exact meshes across seven scenes support same-count, same-topology position import; arbitrary topology remains unsupported. |
 | Project, undo, revert, and build safety | Shipped | Projects contain user replacements and logical metadata only; source XISOs are read-only; output creation is exclusive and published only after success. |
 
 ## Composed Tier 1 smoke result
@@ -1798,7 +2668,7 @@ after the build:
 
 `7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9`
 
-Headless Spark inspected xemu only on the private Xvfb display `:99`; the test
+Headless visual QA inspected xemu only on the private Xvfb display `:99`; the test
 never moved, clicked, or typed on the user's real desktop. It saw the ESPN
 splash, a stable attract sequence, and a clean NFL 2K5 title / **Press START**
 screen with no visible corruption.
@@ -1828,31 +2698,32 @@ v1.0 does not claim a clean long-duration gameplay session from this smoke.
 
 ## Complete post-v1 triage ledger
 
-Every item below is either partially delivered, visible as Preview/Export-only,
-or represented by an in-app Coming Soon boundary and its findings note. These
+Every item below is delivered at its named bounded scope, visible as
+Preview/Export-only, or represented by an in-app Proof/Research boundary and
+its findings note. These
 items did not block v1.0.
 
 ### Tier 2 — best effort
 
 | Item | v1.0 disposition | Why it is not fully shipped | Single best next step |
 | --- | --- | --- | --- |
-| Catch-strength presets | Coming Soon; private 125/150/200 executable transports exist | Offline transport does not prove polarity or drop-rate effect. | Run matched stock/125/150/200 same-play samples in xemu, count catchable-target drops, and promote only presets with a repeatable effect. |
-| Draft-AI presets | Fantasy Draft control remains experimental; Franchise Draft remains Coming Soon | The known 17-float table is consumed by Fantasy Draft, not the Franchise rookie draft. | Runtime A/B the extreme Fantasy control first, then trace the separate Franchise rookie prospect-scoring call chain. |
+| Catch-strength presets | Research boundary; private 125/150/200 executable transports exist | Offline transport does not prove polarity or drop-rate effect. | Run matched stock/125/150/200 same-play samples in xemu, count catchable-target drops, and promote only presets with a repeatable effect. |
+| Draft-AI presets | Fantasy Draft control remains experimental; Franchise Draft is a Research boundary | The known 17-float table is consumed by Fantasy Draft, not the Franchise rookie draft. | Runtime A/B the extreme Fantasy control first, then trace the separate Franchise rookie prospect-scoring call chain. |
 | Additional AUDO replacement | Shipped: 850 of 850 physical resources Editable | Physical ownership is complete; semantic names/runtime selector owners remain uncertain for 697 alias-related rows. | Runtime-trace one alias family so provisional labels can be replaced with confirmed in-game meanings. |
 | Music/commentary and other banked audio | All 53,571 logical ranges are Editable through 53,570 exact physical fixed slots; complete raw banks remain Export-only | Cue names, loops, gain/pan/priority, mixer routing, and whole-bank repacking are still unresolved; audible runtime consumption is not yet claimed. | Runtime spot-check one clearly authored range, then map its cue/loop/mixer owner without weakening the shipped fixed-slot boundary. |
-| Crib object reskins | `bar_monitor` shipped; 24 other electronics-like rows Export-only | Catalog ownership is mapped, but their fixed-span writers have not been proved individually. | Choose one uniquely owned electronics surface, prove a same-allocation texture rebuild, and generalize only if the scene reparse stays exact. |
-| Bounded Stadium geometry | Coming Soon; texture editing shipped | General mesh serialization, draw commands, transforms/collision, and relocation are not owned as one safe contract. | Productize one already bounded vertex/plane edit as an explicitly narrow tool before attempting broader geometry. |
+| Crib object reskins | Shipped for all 498 catalogued textures | Every raw, standalone, and embedded P8 row has a bounded writer; this does not add or replace object topology. | Runtime-capture representative aggregate, reflection, ticker, embedded-scene, and position-only changes. |
+| Bounded Stadium geometry | Shipped for the proved full scene: same-topology POSITION-only glTF import | Exact vertex counts and equivalent triangles are required; UV/material/collision/LOD/other streams stay source-exact, while runtime visibility remains unproved. | Capture a matched in-game view of a distinctive vertex move before promoting runtime ownership. |
 | ESPN 25th moment text | Shipped | All four display strings for each of 25 moments are editable; no remaining Tier 2 text gap is hidden. | Use the shipped text editor; keep scenario state and unlock behavior in the Tier 3 lane below. |
-| Deeper roster editing | Coming Soon beyond proved names/numbers | Position codes/labels and selected read-only metadata are already decoded in research, but are not yet surfaced in the product form; ratings, membership, depth charts, and secondary-pool writeback do not share the proved fixed-text contract. | First wire the already-decoded team/position/face metadata into the roster browser, then isolate and runtime-check one writable field family. |
+| Deeper roster editing | Unsupported beyond proved names and all jersey numbers | Position codes/labels and selected read-only metadata are decoded for inspection, but ratings, membership, depth charts, and zero-capacity secondary-pool names do not share the proved fixed-field contract. | Isolate and runtime-check one additional writable field family before exposing it. |
 
 ### Tier 3 — spike-only
 
 | Item | v1.0 disposition | Why it is not fully shipped | Single best next step |
 | --- | --- | --- | --- |
-| Visual Play Editor | Structured viewer/inspector shipped; authoring Coming Soon | Coordinates, player roles, opcode operands, custom-save ownership, and inverse compilation remain undecoded. | Create four controlled game-authored custom-play fixtures, diff X/Y/waypoint/route-type changes, then correlate them with runtime reads. |
-| Stadium/Crib model import or swapping | Coming Soon | UV/normal registers, inverse draw-command serialization, transforms, collision, and relocation are not safely decoded. | Try one same-allocation mesh swap with identical topology and prove render plus collision before considering arbitrary import. |
-| ESPN 25th scenario logic and unlocks | Coming Soon; display text shipped | SITU numeric fields and persistent-profile unlock ownership are not semantically mapped. | Trace one moment while loading its score, clock, possession, field position, and completion state; name fields only when the runtime consumer agrees. |
-| Franchise/save-backed structural features | Coming Soon | Save ownership, integrity, and mode-state precedence are not bounded enough for product writeback. | Use an isolated xemu profile to produce one clean single-field save differential and identify its integrity owner before writing anything. |
+| Visual Play Editor | Structured viewer plus exact stock assignment copy/revert shipped | Same-book descriptor/pointer reuse is proved; freehand coordinates, player roles, opcode operands, custom-save ownership, and inverse compilation remain undecoded. | Create four controlled game-authored custom-play fixtures, diff X/Y/waypoint/route-type changes, then correlate them with runtime reads. |
+| Arbitrary Stadium/Crib model swapping | Bounded position-only imports shipped for Stadium and ten Crib meshes; arbitrary topology unsupported | New topology, UV/material authoring, transforms, collision, and relocation are not safely decoded. | Runtime-capture the shipped bounded edits, then prove relocation and complete attribute serialization before widening either boundary. |
+| ESPN 25th scenario logic and unlocks | Research boundary; display text shipped | SITU numeric fields and persistent-profile unlock ownership are not semantically mapped. | Trace one moment while loading its score, clock, possession, field position, and completion state; name fields only when the runtime consumer agrees. |
+| Franchise/save-backed structural features | Research boundary | Save ownership, integrity, and mode-state precedence are not bounded enough for product writeback. | Use an isolated xemu profile to produce one clean single-field save differential and identify its integrity owner before writing anything. |
 
 ## Deliberate non-claims
 
@@ -1862,24 +2733,24 @@ items did not block v1.0.
 - Catching values are not presented as finished presets before a measured A/B.
 - The Playbooks tab does not pretend raw route bytes are understood well enough
   to draw and save new plays.
-- Stadium Studio edits textures on existing geometry; it is not a general model
-  importer.
+- Stadium Studio imports same-topology position moves for its proved full scene;
+  it is not a general new-topology, UV/material, or collision importer.
 - The release does not ship experimental XISOs, source extracts, originals,
   preview caches, research screenshots, or other retail-derived payloads.
 
-## Five-line 2K5 status
+## Five-line current 2K5 status
 
-- **Shipped:** RC28 is sealed with fully validated read-only Audio-pack Preview followed by explicit token-bound Apply/revalidation.
-- **Experiment result:** 609/609 2K5, 162/162 release-focused, and 90/90 pack/panel checks pass; clean stage/extraction gates, deterministic rebuild, and independent review are all green.
-- **Blocked on user:** nothing blocks headless closure; cue audibility/meaning still needs a later controller-driven xemu listen A/B, and teaser candidates still need one human visual look.
-- **Next:** seal APF Alpha32, then continue the next bounded Audio/UX improvement without changing RC28's reviewed bytes.
-- **Deliberately not done:** no audible-runtime claim, retail payload, visible desktop, pointer control, emulator, external player, recovered song titles, or whole-bank replacement claim is asserted for RC28.
+- **Current candidate:** RC50 source and UI, with the complete product surface represented as Editable, Preview, Export-only, Proof, or Research—never a placeholder promise.
+- **Headless result:** the exact allowlist, retail/private-data release gate, staged runtime closure, desktop-entry validation, launcher syntax, and repeated post-runtime release gate pass from a clean stage.
+- **Runtime evidence:** boot-level proofs remain separate from causal feature proofs; a successful launch never gets relabeled as proof that a changed texture, model, or cue was consumed.
+- **Release boundary:** this working tree is a candidate only until its owner explicitly authorizes commit, push, packaging, or publication.
+- **Deliberate non-claims:** no authored-audio causality, changed-topology model import, arbitrary stadium geometry, or unverified in-game helmet screenshot is claimed.
 
 ## Definition-of-Done tracking
 
 - [x] All 11 sidebar tabs exist; every indexed resource has at least a browsable/exportable home through a specialized panel or the universal fallback browser.
 - [x] Every admitted Tier 1 class is replaceable/revertible/buildable; all 6,522 current and historical jersey-number assets are now covered by explicit player rows, with unsafe rows visibly read-only.
-- [x] Every Tier 2/3 surface is editable, Preview/Export-only, or Coming Soon with an in-app reason/findings note.
+- [x] Every Tier 2/3 surface is editable, Preview/Export-only, or an explicit Proof/Research boundary with an in-app reason/findings note.
 - [x] One 19-edit Tier 1 project built, preserved the source, booted in xemu, and passed the agreed boot-level visual spot check.
 - [x] Getting Started documentation and a v1.0 modder-facing capability changelog are present.
 - [x] RC26 is sealed as a 145-file, 9,825,591-byte portable archive. Its stage

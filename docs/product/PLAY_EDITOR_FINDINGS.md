@@ -1,10 +1,27 @@
 # Play Editor timeboxed findings
 
-Status: six-hour spike stopped early with a partial structural result; visual
-route authoring remains Coming Soon  
+Status: freehand visual route authoring remains unavailable; exact stock
+assignment-route reuse now ships for APF 2K8, with the same bounded primitive
+implemented for NFL 2K5
 Date: 2026-07-18
 
 ## Shipping decision
+
+### 2026-08-04 bounded authoring update
+
+The original decision below still applies to drawing or compiling new waypoint
+routes. It no longer describes the complete editor surface. Both titles now
+have an exact same-resource stock-assignment primitive: copy the donor's
+four-byte assignment descriptor and re-encode the target field-relative pointer
+to the donor's existing game-authored node chain. The node bytes are neither
+interpreted nor changed.
+
+APF 2K8 exposes this in **Playbooks & Plays → Assignment Routes** across its 586
+MASTER plays × 11 slots, with logical-only project selectors,
+Undo/Revert/Build, safe reciprocal swap, full source/output reparse, exact
+formation/play membership preservation, and a guard that refuses any batch
+which changes the distinct chain-start set. This is stock route reuse, not a
+claim about waypoint, opcode, or custom-play semantics.
 
 The v1.0 Playbooks & Plays tab ships as a viewer/inspector, not a route-drawing
 editor. The spike materially improved the inspector model, but it did not

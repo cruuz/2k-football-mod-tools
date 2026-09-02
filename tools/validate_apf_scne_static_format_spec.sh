@@ -4,8 +4,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SPEC='reports/specs/apf2k8_scne_static_serializer.v1.json'
-EXPECTED_SIZE=75274
-EXPECTED_SHA256='e7eeaf35d897d188d6a0c2faa5e0300a741d751204bc4fae1222460bc980802b'
+EXPECTED_SIZE=75227
+EXPECTED_SHA256='8c945740e987b1a27786b29858e46d6a99da65fa96abb019b7e1f28cc1f92b0c'
 
 test "$(stat -c %s "$SPEC")" = "$EXPECTED_SIZE"
 test "$(sha256sum "$SPEC" | cut -d' ' -f1)" = "$EXPECTED_SHA256"
@@ -24,7 +24,11 @@ jq -e '
   .corpus_proof.scne_sram_part_count == 0 and
   .scne.system_part.minimum_header_bytes == 100 and
   .scne.mesh_node.size_bytes == 176 and
+  .scne.hierarchy_table.header_size_bytes == 0 and
+  .scne.hierarchy_table.byte_length_formula == "count * 0x30" and
   .scne.hierarchy_table.ordinary_record_size_bytes == 48 and
+  .scne.hierarchy_table.terminal_rule == "all records, including the last, contain vector_a and vector_b" and
+  (.scne.hierarchy_table.core_fields | map([.name,.offset_bytes])) == [["vector_a",0],["vector_b",16],["name",32],["name_crc32",36],["parent",40],["first_child",42],["next_sibling",44],["reserved",46]] and
   .scne.vertex_declaration.size_bytes == 64 and
   .scne.mesh_descriptor.stream_record.size_bytes == 24 and
   (.scne.position0_formats | map(.format_code_hex)) == ["0x002a23b9","0x001a215a","0x002a2187"] and
@@ -44,15 +48,15 @@ jq -e '
   .outer14_stadium_static_target_catalog.additional_target_count == 77 and
   .outer14_stadium_static_target_catalog.selected_second_target_handoff.node_index == 3 and
   .outer14_stadium_static_target_catalog.selected_second_target_handoff.draw_record_count == 3 and
-  .outer14_stadium_static_target_catalog.selected_second_target_handoff.allocation_slack_after_bytes == 1367 and
+  .outer14_stadium_static_target_catalog.selected_second_target_handoff.allocation_slack_after_bytes == 1967 and
   .outer14_stadium_static_target_catalog.selected_second_target_handoff.historical_catalog_generation_time_writer_complete == false and
   .outer14_stadium_static_target_catalog.selected_second_target_handoff.downstream_catalog_dispatcher_now_implemented == true and
   .outer14_stadium_static_target_catalog.selected_second_target_handoff.runtime_rigid_attachment_proved == false and
-  .catalog_dispatcher_implementation_witness.changed_all_zero_node3.output_1a_sha256 == "bae670cdc1f07a5201a21c6a7ecadb5499c7c2d46dff2a78f4342cf9ce8a7e33" and
-  .catalog_dispatcher_implementation_witness.changed_all_zero_node3.output_outer_sha256 == "ad58fc4b0adee1044c3c55df987d04d24875eb0f042e146ccd032f18a3664505" and
+  .catalog_dispatcher_implementation_witness.changed_all_zero_node3.output_1a_sha256 == "cf8cd039e6ef3f078f193c1563bce76d3983372cd67b30a0b051487699378022" and
+  .catalog_dispatcher_implementation_witness.changed_all_zero_node3.output_outer_sha256 == "23e15b372b7e3be49a2b0a475232c4f44b9c4de9d4a7a572e5e98a8df9d7af9e" and
   .catalog_dispatcher_implementation_witness.changed_all_zero_node3.changed_decoded_block0_bytes == 284 and
   .catalog_dispatcher_implementation_witness.changed_all_zero_node3.authorized_lane_bytes == 288 and
-  .catalog_dispatcher_implementation_witness.changed_all_zero_node3.allocation_slack_after_bytes == 1513 and
+  .catalog_dispatcher_implementation_witness.changed_all_zero_node3.allocation_slack_after_bytes == 21907 and
   .catalog_dispatcher_implementation_witness.preservation.independent_verifier_imports_any_position_writer == false and
   .catalog_dispatcher_implementation_witness.retail_or_retail_derived_recipe_coordinates_committed == false and
   .pinned_implementation_witness.retail_or_retail_derived_recipe_coordinates_committed == false and

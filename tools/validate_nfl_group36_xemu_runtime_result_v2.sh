@@ -8,7 +8,9 @@ SCHEMA='reports/specs/nfl2k5_group36_xemu_runtime_result.v2.schema.json'
 REPORT='reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json'
 DOC='docs/research/nfl_group36_xemu_runtime_result_v2.md'
 TOOL='tools/nfl_group36_xemu_runtime_result_v2.py'
+VIRTUAL_TOOL='tools/nfl_group36_runtime_receipt_verify.py'
 TEST='tests/test_nfl_group36_xemu_runtime_result_v2.py'
+VIRTUAL_TEST='tests/test_nfl_group36_runtime_receipt_verify.py'
 
 INDEX='extracted/ESPN NFL 2K5 (USA)/vc_53450030/0'
 RECIPE='.codex-tmp/nfl2k5-group36-geometry-xemu-20260713/expanded_local_wall_recipe.json'
@@ -55,14 +57,16 @@ check_pin "$TEST" \
 check_pin "$DOC" \
   10452 8029d75627b01f1a5870b4b8e33eaeb3957865ae123ea6e50b90019dcc6a28cc
 
-python3 -m py_compile \
-  "$TOOL" "$TEST" tools/nfl_qcow2_historical_chain_verify.py
+PYTHONPYCACHEPREFIX="$TEMPORARY/pycache" python3 -m py_compile \
+  "$TOOL" "$VIRTUAL_TOOL" "$TEST" "$VIRTUAL_TEST" \
+  tools/nfl_qcow2_historical_chain_verify.py
 PYTHONPATH=tools python3 -m unittest \
-  tests.test_nfl_group36_xemu_runtime_result_v2 >/dev/null
+  tests.test_nfl_group36_xemu_runtime_result_v2 \
+  tests.test_nfl_group36_runtime_receipt_verify >/dev/null
 
-# This rehashes every admitted file, including both exact 6.3 GB XISOs, and
-# checks workflow/config/PNG/static-proof cross-links. It launches no emulator.
-result=$(python3 "$TOOL" --result "$REPORT" --verify-files)
+# The frozen result validator derives every claim from the immutable report.
+# Retained files and the two cleaned XISOs are independently checked below.
+result=$(python3 "$TOOL" --result "$REPORT")
 test "$result" = \
   'NFL_GROUP36_XEMU_RUNTIME_RESULT_V2_PASS status=pinned_xemu_diagnostic_geometry_visible target_loaded=true geometry_visible=true same_sequence=true pixel_aligned=false gpu_trace=false hardware=false rsa_chain=false distribution=false production=false public_editor=false'
 
@@ -78,6 +82,12 @@ python3 tools/nfl_qcow2_historical_chain_verify.py \
   --spec-sha256 "$CHAIN_SPEC_SHA" \
   --leaf group36_expanded \
   >"$TEMPORARY/expanded-chain.json"
+
+virtual_result=$(PYTHONPATH=tools python3 "$VIRTUAL_TOOL" \
+  --control-chain "$TEMPORARY/control-chain.json" \
+  --expanded-chain "$TEMPORARY/expanded-chain.json")
+test "$virtual_result" = \
+  'NFL_GROUP36_RUNTIME_RECEIPT_VERIFY_PASS virtual_xisos=2 exact_hashes=true retained_artifacts=true screenshots=4 configs=2 hdd_leaves=2 geometry_visible=pinned_receipt pixel_aligned=false chain_complete=false guest_content_replayable=false historical_runtime_reexecuted=false emulator_started=false output_xiso_written=false'
 
 python3 - "$TEMPORARY/control-chain.json" "$TEMPORARY/expanded-chain.json" <<'PY'
 from __future__ import annotations
@@ -203,4 +213,4 @@ for name in ("control", "expanded_wall"):
     assert runtime["shutdown_method"] == "WM_DELETE_WINDOW"
 PY
 
-echo 'NFL_GROUP36_XEMU_RUNTIME_RESULT_V2_VALIDATION_PASS v1_negative_immutable=true pair=exact xisos=2 configs=2 hdd_branches=2 retained_hdd_layers_each=5 chain_complete=false guest_content_replayable=false historical_runtime_reexecuted=false screenshots=4 target=s42nd.iff target_loaded=true camera_sequence=exact pixel_aligned=false authored_wall_visible=true independent_static_verify=true decoded_changed=48 triangles=2 clean_exit_observed=2 gpu_trace=false hardware=false rsa_chain=false distribution=false production=false public_editor=false emulator_launched=false'
+echo 'NFL_GROUP36_XEMU_RUNTIME_RESULT_V2_VALIDATION_PASS v1_negative_immutable=true pair=exact virtual_xisos=2 virtual_xiso_hashes=true output_xiso_written=false configs=2 hdd_branches=2 retained_hdd_layers_each=5 chain_complete=false guest_content_replayable=false historical_runtime_reexecuted=false screenshots=4 target=s42nd.iff target_loaded=true camera_sequence=exact pixel_aligned=false authored_wall_visible=true independent_static_verify=true decoded_changed=48 triangles=2 clean_exit_observed=2 gpu_trace=false hardware=false rsa_chain=false distribution=false production=false public_editor=false emulator_launched=false'

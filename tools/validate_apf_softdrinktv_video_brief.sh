@@ -127,7 +127,7 @@ expected_hashes = {
     "reports/cut_content/apf_nfl_lineage/apf_2k6_animation_lineage.json":
         "f2e348386dc4c042252f766f5cf4046760ff6723e101ac9ab84b27bee9a33f4d",
     "reports/cut_content/apf_nfl_lineage/apf_2k6_animation_runtime.json":
-        "3861da491a2f033ef5fe2d9cb6d8c663b5a0c0c55fd16585a533f228700b918c",
+        "150c77bb0184e19f15920d912e3dd8e820356b7bbb06a67622c971b78abbbbd6",
     "reports/cut_content/apf_nfl_lineage/apf_xex_identity_card.png":
         "247d8431696bb91e3d6b9781a93b252df2378028e5bb16956cc5ca7ba28724f5",
     "reports/cut_content/apf_nfl_lineage/reference_remnants/apf_reference_nfl_shield.png":

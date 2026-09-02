@@ -7,7 +7,7 @@
     },
     "draft_integrity_probe": {
       "path": "reports/gameplay_tuning/nfl_draft_weight_xbe_integrity_probe.json",
-      "sha256": "4e4aa2574c7e57f8adabb77b688dc12e879fb6009551afa3b1d76132fc26f7f8",
+      "sha256": "4e96733fce37f07ec53ad9ab7f74b6ee6c7c693dfa153256c2899c3f7a4c270c",
       "size": 5720
     },
     "function_ledger": {
@@ -17,8 +17,8 @@
     },
     "gameplay_draft_audit": {
       "path": "reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json",
-      "sha256": "c53522ee0f4151291f154720a1d457ff7368fb256fbf5845561f4ad68289524b",
-      "size": 53996
+      "sha256": "0c1c47c7f025f9fbb303b9a7d78e7aaf8e9d3c4d603a47bc7819d5ded43557ec",
+      "size": 54545
     },
     "pseudo_cap_validator": {
       "path": "research/functions/nfl2k5/pseudo_c/shard_011776_012287.c",
@@ -235,6 +235,36 @@
       "user_limitation": "Super Bowl stadium assignment five years in the future"
     }
   ],
+  "lane_assignment_a7_2026_08_23": {
+    "basis": "A7 runtime triple 2026-08-23 (control accepted hub year 2011; resigned-mutated accepted hub year 2012; stale-signature rejected 'Unable to load Franchise1') plus A2 xemu-OPEN XBE patch lane; load path OPTIONS->LOAD/SAVE (GAME MODES->FRANCHISE is new-franchise only)",
+    "rows": {
+      "cpu_fantasy_draft_priority": {
+        "lane": "XBE-side: A2 lane, xemu-OPEN (digest-recomputed patch boots and runs)",
+        "save_side": "none",
+        "grade": "A_PROVEN (localization); lane open on xemu; retail-hw boundary unchanged"
+      },
+      "cpu_trade_evaluation": {
+        "lane": "threshold XBE-side: A2 lane xemu-OPEN; valuation inputs save/runtime: A4 lane (schema open)",
+        "save_side": "A4 save lane available (load integrity runtime-proven); trade records unmapped",
+        "grade": "B_INFERENCE (split lane)"
+      },
+      "salary_cap_enforcement": {
+        "lane": "constants XBE-side: A2 lane xemu-OPEN; current cap total save-fed: A4 lane",
+        "save_side": "A4 lane runtime-proven for load/accept; cap file offset still UNKNOWN",
+        "grade": "A_PROVEN (code path + save-lane integrity); UNKNOWN (cap file offset)"
+      },
+      "contract_model_and_serialization": {
+        "lane": "save-side: A4 lane (schema recovery open); XBE negotiation: A2 lane",
+        "save_side": "A4 writer proven (byte writeback + resign verified at runtime); contract fields unmapped",
+        "grade": "UNKNOWN (schema)"
+      },
+      "future_super_bowl_stadium_assignment": {
+        "lane": "selector XBE-side: A2 lane xemu-OPEN; season/year index save-fed: A4 lane",
+        "save_side": "year field @0x91326 runtime-proven (7->2011 ctrl, 8->2012 mut; displayed year = 2004 + field)",
+        "grade": "A_PROVEN (selector + save year field runtime effect)"
+      }
+    }
+  },
   "platform_boundary": {
     "canonical_binary": "retail original-Xbox default.xbe",
     "canonical_binary_sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",

@@ -1,0 +1,528 @@
+{
+  "apf2k8": {
+    "game": "All-Pro Football 2K8",
+    "menu_bound_note": "the increment and decrement bounds are hard-coded immediates and do not read maximum(), which is why an authored preset above the bound is unreachable",
+    "menu_bound_sites": {
+      "decrement_wrap": "0x84A15D5C",
+      "increment_compare": "0x84A15D00",
+      "maximum_callback": "0x84A15540"
+    },
+    "menu_reachable_preset_count": 5,
+    "platform": "Xbox 360",
+    "preset_block_table_virtual_address": "0x84E11E00",
+    "preset_count_evidence": "bounded by authored parameter data, not by the pointer run: the name pointers continue into the next enum label table. The first names beyond the camera enum are 'Broadcast', 'Realistic', 'Quick', 'Default' -- the replay-camera enum, which also appears verbatim in 2K5's .rdata. Reading past this bound is the same off-by-table error on both products.",
+    "preset_name_count": 6,
+    "preset_name_table_virtual_address": "0x820D9FA0",
+    "presets": [
+      {
+        "authored": true,
+        "block_virtual_address": "0x84E11E00",
+        "index": 0,
+        "name": "Standard",
+        "populated_slots": 17,
+        "slot0_eye": [
+          0.0,
+          500.0,
+          -1325.0
+        ],
+        "slot0_kind": 4,
+        "slot_count": 17
+      },
+      {
+        "authored": true,
+        "block_virtual_address": "0x84E12240",
+        "index": 1,
+        "name": "Far",
+        "populated_slots": 17,
+        "slot0_eye": [
+          0.0,
+          500.0,
+          -1325.0
+        ],
+        "slot0_kind": 4,
+        "slot_count": 17
+      },
+      {
+        "authored": true,
+        "block_virtual_address": "0x84E12680",
+        "index": 2,
+        "name": "Side",
+        "populated_slots": 17,
+        "slot0_eye": [
+          1400.0,
+          900.0,
+          0.0
+        ],
+        "slot0_kind": 4,
+        "slot_count": 17
+      },
+      {
+        "authored": true,
+        "block_virtual_address": "0x84E12AC0",
+        "index": 3,
+        "name": "Iso",
+        "populated_slots": 17,
+        "slot0_eye": [
+          600.0,
+          350.0,
+          -950.0
+        ],
+        "slot0_kind": 4,
+        "slot_count": 17
+      },
+      {
+        "authored": true,
+        "block_virtual_address": "0x84E12F00",
+        "index": 4,
+        "name": "Custom",
+        "populated_slots": 17,
+        "slot0_eye": [
+          0.0,
+          500.0,
+          -1325.0
+        ],
+        "slot0_kind": 4,
+        "slot_count": 17
+      },
+      {
+        "authored": true,
+        "block_virtual_address": "0x84E13340",
+        "index": 5,
+        "name": "Blimp",
+        "populated_slots": 17,
+        "slot0_eye": [
+          0.0,
+          3750.0,
+          -20.0
+        ],
+        "slot0_kind": 4,
+        "slot_count": 17
+      }
+    ],
+    "row_stride": 96,
+    "row_table_virtual_address": "0x84E40940",
+    "rows": [
+      {
+        "callbacks": {
+          "current": "0x84A15548",
+          "decrement": "0x84A15D48",
+          "increment": "0x84A15CE0",
+          "maximum": "0x84A15540",
+          "minimum": "0x84A15538"
+        },
+        "index": 0,
+        "kind": 7,
+        "label": "Camera",
+        "label_virtual_address": "0x845F9EBC",
+        "maximum": 4,
+        "minimum": 0,
+        "row_virtual_address": "0x84E40940",
+        "stored_type": "int32"
+      },
+      {
+        "callbacks": {
+          "current": "0x849D3508",
+          "decrement": "0x84A14F80",
+          "increment": "0x84A14F60",
+          "maximum": "0x84A14FA0",
+          "minimum": "0x84A14FA8"
+        },
+        "index": 1,
+        "kind": 5,
+        "label": "QB Pivot Mode (Home)",
+        "label_virtual_address": "0x845F9ECC",
+        "maximum": 1,
+        "minimum": 0,
+        "row_virtual_address": "0x84E409A0",
+        "stored_type": "int32"
+      },
+      {
+        "callbacks": {
+          "current": "0x849D3528",
+          "decrement": "0x84A15008",
+          "increment": "0x84A14FE8",
+          "maximum": "0x84A15028",
+          "minimum": "0x84A15030"
+        },
+        "index": 2,
+        "kind": 5,
+        "label": "Pass Play Zoom Out (Home)",
+        "label_virtual_address": "0x845F9EF8",
+        "maximum": 1,
+        "minimum": 0,
+        "row_virtual_address": "0x84E40A00",
+        "stored_type": "int32"
+      },
+      {
+        "callbacks": {
+          "current": "0x849D3538",
+          "decrement": "0x84A15090",
+          "increment": "0x84A15070",
+          "maximum": "0x84A150B0",
+          "minimum": "0x84A150B8"
+        },
+        "index": 3,
+        "kind": 5,
+        "label": "QB Pivot Mode (Away)",
+        "label_virtual_address": "0x845F9F2C",
+        "maximum": 1,
+        "minimum": 0,
+        "row_virtual_address": "0x84E40A60",
+        "stored_type": "int32"
+      },
+      {
+        "callbacks": {
+          "current": "0x849D3558",
+          "decrement": "0x84A15118",
+          "increment": "0x84A150F8",
+          "maximum": "0x84A15138",
+          "minimum": "0x84A15140"
+        },
+        "index": 4,
+        "kind": 5,
+        "label": "Pass Play Zoom Out (Away)",
+        "label_virtual_address": "0x845F9F58",
+        "maximum": 1,
+        "minimum": 0,
+        "row_virtual_address": "0x84E40AC0",
+        "stored_type": "int32"
+      },
+      {
+        "callbacks": {
+          "current": "0x84A155B0",
+          "decrement": "0x84A15E50",
+          "increment": "0x84A15DB0",
+          "maximum": "0x84A155A0",
+          "minimum": "0x84A15590"
+        },
+        "index": 5,
+        "kind": 4,
+        "label": "Camera Distance",
+        "label_virtual_address": "0x845F9F8C",
+        "maximum": 2500.0,
+        "minimum": 500.0,
+        "row_virtual_address": "0x84E40B20",
+        "stored_type": "float32"
+      },
+      {
+        "callbacks": {
+          "current": "0x84A155E0",
+          "decrement": "0x84A15F90",
+          "increment": "0x84A15EF0",
+          "maximum": "0x84A155D0",
+          "minimum": "0x84A155C0"
+        },
+        "index": 6,
+        "kind": 4,
+        "label": "Camera Pitch",
+        "label_virtual_address": "0x845F9FAC",
+        "maximum": 1.0,
+        "minimum": 0.0,
+        "row_virtual_address": "0x84E40B80",
+        "stored_type": "float32"
+      },
+      {
+        "callbacks": {
+          "current": "0x84A15610",
+          "decrement": "0x84A160C8",
+          "increment": "0x84A16028",
+          "maximum": "0x84A15600",
+          "minimum": "0x84A155F0"
+        },
+        "index": 7,
+        "kind": 4,
+        "label": "Camera Angle",
+        "label_virtual_address": "0x845F9FC8",
+        "maximum": 1.0,
+        "minimum": 0.0,
+        "row_virtual_address": "0x84E40BE0",
+        "stored_type": "float32"
+      },
+      {
+        "callbacks": {
+          "current": "0x84A15640",
+          "decrement": "0x84A16200",
+          "increment": "0x84A16160",
+          "maximum": "0x84A15630",
+          "minimum": "0x84A15620"
+        },
+        "index": 8,
+        "kind": 4,
+        "label": "Camera Height",
+        "label_virtual_address": "0x845F9FE4",
+        "maximum": 500.0,
+        "minimum": 50.0,
+        "row_virtual_address": "0x84E40C40",
+        "stored_type": "float32"
+      }
+    ],
+    "writer_available": false,
+    "writer_boundary": "no serializer for the camera block exists anywhere in the image; the 21-slider blob stops one dword short of the first camera global, so there is no camera file to edit and the only route is a XEX patch"
+  },
+  "inputs": {
+    "apf_decompressed_pe": {
+      "sha256": "cde5b9224c6f999060df7372eea1bfd6463d63b4e59a87b2801826f76d52b1cf",
+      "size": 54001664
+    },
+    "nfl_xbe": {
+      "sha256": "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9",
+      "size": 11948032
+    }
+  },
+  "nfl2k5": {
+    "callback_slot_order": [
+      "maximum",
+      "minimum",
+      "current",
+      "increment",
+      "decrement"
+    ],
+    "custom_preset_index": 5,
+    "float_settings_apply_only_in_custom": true,
+    "game": "ESPN NFL 2K5",
+    "platform": "original Xbox",
+    "preset_count": 6,
+    "preset_count_evidence": "the enum row's MAX callback returns this immediate; .rdata here is a run of adjacent enum label tables, so reading past it walks into the next enum (which begins '1st Person', 'Broadcast')",
+    "preset_label_table_virtual_address": "0x004F25BC",
+    "presets": [
+      {
+        "descriptor_kind": 2,
+        "descriptor_virtual_address": "0x00A88A00",
+        "field_0x20": 35.0,
+        "index": 0,
+        "name": "Standard",
+        "position": [
+          0.0,
+          100.0,
+          -150.0
+        ],
+        "record_virtual_address": "0x004F047C",
+        "update_function": "0x000A4990"
+      },
+      {
+        "descriptor_kind": 2,
+        "descriptor_virtual_address": "0x00A88D20",
+        "field_0x20": 28.0,
+        "index": 1,
+        "name": "Far",
+        "position": [
+          0.0,
+          100.0,
+          -150.0
+        ],
+        "record_virtual_address": "0x004F0564",
+        "update_function": "0x000A4BC0"
+      },
+      {
+        "descriptor_kind": 2,
+        "descriptor_virtual_address": "0x00A89090",
+        "field_0x20": 35.0,
+        "index": 2,
+        "name": "Side",
+        "position": [
+          -350.0,
+          40.0,
+          250.0
+        ],
+        "record_virtual_address": "0x004F064C",
+        "update_function": "0x000A4DC0"
+      },
+      {
+        "descriptor_kind": 2,
+        "descriptor_virtual_address": "0x00A88F00",
+        "field_0x20": 50.0,
+        "index": 3,
+        "name": "Iso",
+        "position": [
+          100.0,
+          0.0,
+          0.0
+        ],
+        "record_virtual_address": "0x004F0734",
+        "update_function": "0x000A4D90"
+      },
+      {
+        "descriptor_kind": 2,
+        "descriptor_virtual_address": "0x00A87F60",
+        "field_0x20": 40.0,
+        "index": 4,
+        "name": "Blimp",
+        "position": [
+          0.0,
+          0.0,
+          400.0
+        ],
+        "record_virtual_address": "0x004F081C",
+        "update_function": "0x000A4080"
+      },
+      {
+        "descriptor_kind": 2,
+        "descriptor_virtual_address": "0x00A893B0",
+        "field_0x20": 35.0,
+        "index": 5,
+        "name": "Custom",
+        "position": [
+          0.0,
+          100.0,
+          -150.0
+        ],
+        "record_virtual_address": "0x004F0904",
+        "update_function": "0x000A6B20"
+      }
+    ],
+    "row_stride": 52,
+    "row_table_virtual_address": "0x0052B700",
+    "rows": [
+      {
+        "callbacks": {
+          "current": "0x002C66B0",
+          "decrement": "0x002C6B40",
+          "increment": "0x002C6B00",
+          "maximum": "0x002C66A0",
+          "minimum": "0x002C6690"
+        },
+        "index": 0,
+        "kind": 7,
+        "label": "Camera",
+        "label_lookup": "0x002C66C0",
+        "label_virtual_address": "0x00E9C9D4",
+        "label_width_helper": "0x002C66D0",
+        "maximum": 5,
+        "minimum": 0,
+        "row_virtual_address": "0x0052B700",
+        "stored_type": "int32"
+      },
+      {
+        "callbacks": {
+          "current": "0x002C6130",
+          "decrement": "0x002C6100",
+          "increment": "0x002C60E0",
+          "maximum": "0x002C6140",
+          "minimum": "0x002C6150"
+        },
+        "index": 1,
+        "kind": 5,
+        "label": "QB Pivot Mode",
+        "label_lookup": "0x002C65B0",
+        "label_virtual_address": "0x00E9C9E4",
+        "label_width_helper": "0x002C6160",
+        "maximum": 1,
+        "minimum": 0,
+        "row_virtual_address": "0x0052B734",
+        "stored_type": "int32"
+      },
+      {
+        "callbacks": {
+          "current": "0x002C61C0",
+          "decrement": "0x002C6190",
+          "increment": "0x002C6170",
+          "maximum": "0x002C61D0",
+          "minimum": "0x002C61E0"
+        },
+        "index": 2,
+        "kind": 5,
+        "label": "Runner Pivot Mode",
+        "label_lookup": "0x002C65C0",
+        "label_virtual_address": "0x00E9CA00",
+        "label_width_helper": "0x002C61F0",
+        "maximum": 1,
+        "minimum": 0,
+        "row_virtual_address": "0x0052B768",
+        "stored_type": "int32"
+      },
+      {
+        "callbacks": {
+          "current": "0x002C6250",
+          "decrement": "0x002C6220",
+          "increment": "0x002C6200",
+          "maximum": "0x002C6260",
+          "minimum": "0x002C6270"
+        },
+        "index": 3,
+        "kind": 5,
+        "label": "Pass Play Zoom Out",
+        "label_lookup": "0x002C65D0",
+        "label_virtual_address": "0x00E9CA24",
+        "label_width_helper": "0x002C6280",
+        "maximum": 1,
+        "minimum": 0,
+        "row_virtual_address": "0x0052B79C",
+        "stored_type": "int32"
+      },
+      {
+        "callbacks": {
+          "current": "0x002C6700",
+          "decrement": "0x002C6C00",
+          "increment": "0x002C6B80",
+          "maximum": "0x002C66F0",
+          "minimum": "0x002C66E0"
+        },
+        "index": 4,
+        "kind": 4,
+        "label": "Camera Distance",
+        "label_virtual_address": "0x00E9C97C",
+        "maximum": 3.0,
+        "maximum_constant_virtual_address": "0x004E6D4C",
+        "maximum_operand_file_offset": "0x2B66F2",
+        "minimum": 0.20000000298023224,
+        "minimum_constant_virtual_address": "0x004E6C58",
+        "minimum_operand_file_offset": "0x2B66E2",
+        "row_virtual_address": "0x0052B7D0",
+        "stored_type": "float32"
+      },
+      {
+        "callbacks": {
+          "current": "0x002C6730",
+          "decrement": "0x002C6D00",
+          "increment": "0x002C6C80",
+          "maximum": "0x002C6720",
+          "minimum": "0x002C6710"
+        },
+        "index": 5,
+        "kind": 4,
+        "label": "Camera Angle",
+        "label_virtual_address": "0x00E9C99C",
+        "maximum": 1.0,
+        "maximum_constant_virtual_address": "0x004E419C",
+        "maximum_operand_file_offset": "0x2B6722",
+        "minimum": 0.0,
+        "minimum_constant_virtual_address": "0x004E4180",
+        "minimum_operand_file_offset": "0x2B6712",
+        "row_virtual_address": "0x0052B804",
+        "stored_type": "float32"
+      },
+      {
+        "callbacks": {
+          "current": "0x002C6760",
+          "decrement": "0x002C6E00",
+          "increment": "0x002C6D80",
+          "maximum": "0x002C6750",
+          "minimum": "0x002C6740"
+        },
+        "index": 6,
+        "kind": 4,
+        "label": "Camera Height",
+        "label_virtual_address": "0x00E9C9B8",
+        "maximum": 300.0,
+        "maximum_constant_virtual_address": "0x004E4188",
+        "maximum_operand_file_offset": "0x2B6752",
+        "minimum": 50.0,
+        "minimum_constant_virtual_address": "0x004E72A4",
+        "minimum_operand_file_offset": "0x2B6742",
+        "row_virtual_address": "0x0052B838",
+        "stored_type": "float32"
+      }
+    ],
+    "writer_available": false,
+    "writer_boundary": "camera values live in the save, not the executable; the save is covered by a 20-byte XCalculateSignature EXTRA that is compared exactly on load, and every menu constant is inside a digested XBE section"
+  },
+  "schema": "vc_camera_options_audit/v1",
+  "scope": {
+    "asset_side_camera_representation_found": false,
+    "emulator_or_game_launched": false,
+    "originals_modified": false,
+    "read_only": true,
+    "runtime_behaviour_claimed": false
+  },
+  "shared_boundary": "Neither product exposes a camera writer. Every camera constant is inside a signed executable, and the gameplay camera has no asset-side representation in either archive."
+}

@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 
 SPEC='reports/specs/2k_static_topology_conformance_requirements.v1.json'
 EXPECTED_SIZE=41139
-EXPECTED_SHA256='a14511e61813d93de0c23288ce4299c20d7300b2bfb7d320c504c0b276135bed'
+EXPECTED_SHA256='9412a862689ba2bddca3c934df1345c218c5a75080793b6bb1c92330132a49cd'
 
 test "$(stat -c %s "$SPEC")" = "$EXPECTED_SIZE"
 test "$(sha256sum "$SPEC" | cut -d' ' -f1)" = "$EXPECTED_SHA256"

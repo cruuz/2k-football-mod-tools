@@ -62,7 +62,7 @@ AUTHORITIES = (
         "changed_count_boundary",
         "reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json",
         25_285,
-        "54e6d20dcf9c525a5248d94b4f45516425f0e69702df31dfd93fc351efd43eab",
+        "e583dde9bca86971eb7355fd07b6a6646a09af8356623b4114c3003998ea4bdb",
     ),
     (
         "source_subset_recipe_schema",
@@ -74,7 +74,7 @@ AUTHORITIES = (
         "source_subset_writeback_closure",
         "reports/specs/nfl2k5_upper_deck_source_subset_writeback_closure.v1.json",
         13_933,
-        "38a4b176fb39cab86b134d3b1c6d03043513771229cdf1e444ef6baa01912fba",
+        "6f9b18450cef7b2fea6d64fd7972cb3381170f3b453885519c5407622e29f026",
     ),
     (
         "source_triangle_mesh_schema",
@@ -86,19 +86,19 @@ AUTHORITIES = (
         "source_subset_writer",
         "tools/nfl_stadium_upper_deck_subset_patch.py",
         49_632,
-        "0b20b0d365fa2bb99745b305a52c0372c1db2214d8986b1e409fb2aa09a2ea10",
+        "a3fdd538d9d8873d20e45739b85df65684f4674f576b74afab2c78e571d35740",
     ),
     (
         "source_subset_verifier",
         "tools/nfl_stadium_upper_deck_subset_verify.py",
         64_069,
-        "8eaf78f4a0a4a26777d2b9d672e50d4298b3b4f3afd2565c84947ceb799e1585",
+        "bd8a7561e809fcd29296fcaa8123176b1bc7a3bbe3ac3ad1d30457d03404799c",
     ),
     (
         "source_triangle_conformer",
         "tools/nfl_upper_deck_source_triangle_conform.py",
         21_016,
-        "804379c61667c981b95559743ea7bef06801e52a2596259b6e0896539a7322eb",
+        "4d42c3947130951491351ea16f838f349248778f3485d9403d10f0142bf9951c",
     ),
 )
 

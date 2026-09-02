@@ -56,7 +56,7 @@ class ProductShellAccessibilityTests(unittest.TestCase):
         self.assertEqual(self.two_k5.uniform_search.selectedText(), "Giants away")
         self.assertEqual(
             self.two_k5.operation_status.text(),
-            "Search ready • type to filter this page",
+            "Search ready • type to filter • Esc clears • Ctrl+/ keyboard help",
         )
         self.assertTrue(self.two_k5.uniform_search.property("studioSearch"))
         self.assertIn("Ctrl+F", self.two_k5.uniform_search.accessibleDescription())
@@ -88,7 +88,7 @@ class ProductShellAccessibilityTests(unittest.TestCase):
                 self.assertEqual(field.selectedText(), query)
                 self.assertEqual(
                     self.two_k5.operation_status.text(),
-                    "Search ready • type to filter this page",
+                    "Search ready • type to filter • Esc clears • Ctrl+/ keyboard help",
                 )
 
     def test_2k5_roster_editors_live_with_players_not_team_identity(self) -> None:
@@ -104,7 +104,10 @@ class ProductShellAccessibilityTests(unittest.TestCase):
                 rosters_page.tabText(index)
                 for index in range(rosters_page.count())
             ],
-            ["Players & Numbers", "Portraits & Faces"],
+            # Player Assets joins a player to the face textures and
+            # portrait that belong to them, which the app could not
+            # answer before.
+            ["Players & Numbers", "Portraits & Faces", "Player Assets"],
         )
         self.assertIs(rosters_page.widget(0), self.two_k5._roster_panel)
         self.assertEqual(

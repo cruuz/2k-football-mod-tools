@@ -4,7 +4,8 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict, dataclass
+from collections import OrderedDict
+from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
 import os
@@ -13,12 +14,23 @@ import stat
 import sys
 from typing import Any
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import parse_archive, read_entry_range
 from nfl_txtr import (HEADER, decode_chunk, encode_rgba_png, parse_chunks,
                       parse_texture, rebuild_compressed_chunk_fixed_span,
                       swizzle_2d, unswizzle_2d)
 from nfl_tset_png_import import (MipLevel, decode_rgba_png, palette_bytes,
-                                 quantize_levels, rgba_from_indices)
+                                 quantize_levels_to_vc_lz_bound,
+                                 rgba_from_indices)
 from nfl_live_numbers_nameplate_targets import (DEFAULT_REPORT, LiveArtTarget,
                                                   select_target)
 
@@ -43,11 +55,40 @@ def digest(payload: bytes) -> str:
 
 
 def file_digest(path: Path) -> str:
+    info = path.stat()
+    key = (str(path), info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
+    cached = _FILE_DIGEST_CACHE.get(key)
+    if cached is not None:
+        _FILE_DIGEST_CACHE.move_to_end(key)
+        return cached
+    digest = _file_digest_uncached(path)
+    _FILE_DIGEST_CACHE[key] = digest
+    _FILE_DIGEST_CACHE.move_to_end(key)
+    while len(_FILE_DIGEST_CACHE) > _FILE_DIGEST_CACHE_LIMIT:
+        _FILE_DIGEST_CACHE.popitem(last=False)
+    return digest
+
+
+def _file_digest_uncached(path: Path) -> str:
     result = hashlib.sha256()
     with path.open("rb") as stream:
         for block in iter(lambda: stream.read(16 * 1024 * 1024), b""):
             result.update(block)
     return result.hexdigest()
+
+
+# The canonical index volume is hash-pinned and image-constant, but a
+# multi-edit build used to re-hash its ~193 MB once per edit.  The digest is
+# memoized per file identity (path, device, inode, size, mtime); a rewrite
+# moves size/mtime and re-hashes.
+_FILE_DIGEST_CACHE_LIMIT = 8
+_FILE_DIGEST_CACHE: "OrderedDict[tuple[object, ...], str]" = OrderedDict()
+
+
+def clear_file_digest_cache() -> None:
+    """Forget every memoized file digest (tests and fresh sessions)."""
+
+    _FILE_DIGEST_CACHE.clear()
 
 
 def canonical_json(value: object) -> bytes:
@@ -100,7 +141,56 @@ def read_png(path: Path, dimensions: tuple[int, int]) -> tuple[Path, bytes, byte
     return resolved, payload, rgba
 
 
-def make_mips(rgba: bytes, width: int, height: int, count: int) -> list[MipLevel]:
+def _majority_downsample(
+    current: bytes, current_width: int, current_height: int,
+    next_width: int, next_height: int,
+) -> bytes:
+    """Region-preserving 2x2 downsample for palettized region masks.
+
+    Digits and nameplates are flat-region art; box-averaging two region
+    colours invents a third colour that is not in the artwork, which spends
+    palette entries on blends and raises index entropy, so the VC-LZ stream
+    stops fitting the tightest retail spans.  Inside each footprint the
+    majority colour wins; ties go to the region that is rarer in the whole
+    level, so thin outline features survive the stride.
+    """
+    global_counts: dict[bytes, int] = {}
+    for offset in range(0, len(current), 4):
+        pixel = current[offset:offset + 4]
+        global_counts[pixel] = global_counts.get(pixel, 0) + 1
+    down = bytearray(next_width * next_height * 4)
+    for out_y in range(next_height):
+        for out_x in range(next_width):
+            counts: dict[bytes, int] = {}
+            for src_y in range(out_y * 2, out_y * 2 + 2):
+                row = src_y * current_width * 4
+                base = row + out_x * 2 * 4
+                for src_x in range(2):
+                    pixel = current[base:base + 4]
+                    counts[pixel] = counts.get(pixel, 0) + 1
+                    base += 4
+            winner = max(
+                counts, key=lambda pixel: (counts[pixel], -global_counts[pixel])
+            )
+            target = (out_y * next_width + out_x) * 4
+            down[target:target + 4] = winner
+    return bytes(down)
+
+
+def make_mips(
+    rgba: bytes, width: int, height: int, count: int,
+    downsample: str = "majority",
+) -> list[MipLevel]:
+    """Build the mip chain for one palettized target.
+
+    ``downsample`` selects the mip filter: ``majority`` (default) keeps every
+    level inside the artwork's own regions so the shared palette and the
+    fixed VC-LZ span are spent on authored colours only; ``box`` is the
+    historical channel average kept for byte-stability checks; ``nearest``
+    takes one texel per footprint.
+    """
+    require(downsample in ("majority", "box", "nearest"),
+            "make_mips downsample must be majority, box, or nearest")
     require(len(rgba) == width * height * 4 and count > 0,
             "base image/mip count mismatch")
     result = [MipLevel(0, width, height, rgba)]
@@ -112,21 +202,34 @@ def make_mips(rgba: bytes, width: int, height: int, count: int) -> list[MipLevel
                 "mip dimensions cannot be halved exactly")
         next_width = current_width // 2
         next_height = current_height // 2
-        down = bytearray(next_width * next_height * 4)
-        for y in range(next_height):
-            for x in range(next_width):
-                sources = (
-                    ((y * 2) * current_width + x * 2) * 4,
-                    ((y * 2) * current_width + x * 2 + 1) * 4,
-                    (((y * 2) + 1) * current_width + x * 2) * 4,
-                    (((y * 2) + 1) * current_width + x * 2 + 1) * 4,
-                )
-                target = (y * next_width + x) * 4
-                for channel in range(4):
-                    down[target + channel] = (
-                        sum(current[source + channel] for source in sources) + 2
-                    ) // 4
-        current = bytes(down)
+        if downsample == "majority":
+            current = _majority_downsample(
+                current, current_width, current_height, next_width, next_height
+            )
+        elif downsample == "nearest":
+            down = bytearray(next_width * next_height * 4)
+            for y in range(next_height):
+                for x in range(next_width):
+                    source = ((y * 2) * current_width + x * 2) * 4
+                    target = (y * next_width + x) * 4
+                    down[target:target + 4] = current[source:source + 4]
+            current = bytes(down)
+        else:
+            down = bytearray(next_width * next_height * 4)
+            for y in range(next_height):
+                for x in range(next_width):
+                    sources = (
+                        ((y * 2) * current_width + x * 2) * 4,
+                        ((y * 2) * current_width + x * 2 + 1) * 4,
+                        (((y * 2) + 1) * current_width + x * 2) * 4,
+                        (((y * 2) + 1) * current_width + x * 2 + 1) * 4,
+                    )
+                    target = (y * next_width + x) * 4
+                    for channel in range(4):
+                        down[target + channel] = (
+                            sum(current[source + channel] for source in sources) + 2
+                        ) // 4
+            current = bytes(down)
         current_width = next_width
         current_height = next_height
         result.append(MipLevel(level, current_width, current_height, current))
@@ -172,14 +275,40 @@ def decode_levels(decoded: bytes, chunk: Any, texture: Any) -> list[MipLevel]:
     return result
 
 
-def validate_template(span: bytes, target: LiveArtTarget) -> tuple[Any, bytes, Any]:
+def target_texture_dimensions(texture: Any, target: LiveArtTarget,
+                              legacy_linear_dimensions: bool) -> Any:
+    """Return the descriptor view used by one explicitly requested replay.
+
+    Builds made before the linear-P8 dimension fix interpreted the two explicit
+    size halfwords in the generic order.  Historical proof verification must be
+    able to reproduce those bytes, but normal imports must continue using the
+    corrected wide nameplate atlas.  Keep that compatibility interpretation
+    opt-in and require the exact transposed VC_P8_LINEAR relationship.
+    """
+
+    if not legacy_linear_dimensions:
+        return texture
+    require(
+        target.format_name == texture.format_name == "VC_P8_LINEAR"
+        and target.width == texture.height
+        and target.height == texture.width,
+        "legacy linear-P8 dimensions are not the exact descriptor transpose",
+    )
+    return replace(texture, width=target.width, height=target.height)
+
+
+def validate_template(span: bytes, target: LiveArtTarget,
+                      legacy_linear_dimensions: bool = False) \
+        -> tuple[Any, bytes, Any]:
     require(len(span) == target.span_size and digest(span) == target.span_sha256,
             "retail target span hash/size mismatch")
     chunks = parse_chunks(span)
     require(len(chunks) == 1, "isolated span is not exactly one resource")
     chunk = chunks[0]
     decoded, info = decode_chunk(span, chunk)
-    texture = parse_texture(decoded, chunk)
+    texture = target_texture_dimensions(
+        parse_texture(decoded, chunk), target, legacy_linear_dimensions
+    )
     require(info is not None and chunk.compressed and chunk.kind == "TXTR" and
             chunk.stored_size == target.stored_size and
             chunk.system_bytes == target.system_bytes and
@@ -208,10 +337,34 @@ def validate_template(span: bytes, target: LiveArtTarget) -> tuple[Any, bytes, A
 
 def build_import(index_path: Path, compatibility_path: Path, family: str,
                  asset_code: str, side: str, variant: int, digit: int | None,
-                 png_path: Path, output_names: dict[str, str] | None = None) \
+                 png_path: Path, output_names: dict[str, str] | None = None,
+                 *, target_override: LiveArtTarget | None = None,
+                 legacy_linear_dimensions: bool = False) \
         -> tuple[bytes, bytes, dict[str, Any]]:
-    compatibility, compatibility_payload, target = select_target(
+    compatibility, compatibility_payload, selected_target = select_target(
         family, asset_code, side, variant, digit, compatibility_path)
+    target = selected_target
+    if target_override is not None:
+        selected_record = asdict(selected_target)
+        override_record = asdict(target_override)
+        differences = {
+            name for name in selected_record
+            if selected_record[name] != override_record.get(name)
+        }
+        require(
+            legacy_linear_dimensions
+            and differences == {"width", "height", "layout_signature_sha256"}
+            and target_override.width == selected_target.height
+            and target_override.height == selected_target.width
+            and target_override.format_name == selected_target.format_name
+            == "VC_P8_LINEAR",
+            "historical target override changes more than the proved linear-P8 "
+            "dimension interpretation",
+        )
+        target = target_override
+    else:
+        require(not legacy_linear_dimensions,
+                "legacy linear-P8 dimensions require an explicit target")
     supplied_index = index_path.lstat()
     require(stat.S_ISREG(supplied_index.st_mode) and
             not stat.S_ISLNK(supplied_index.st_mode),
@@ -227,7 +380,9 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
     require(entry.name_id == target.outer_id and entry.size == target.outer_size,
             "target outer identity changed")
     span = read_entry_range(archive, entry, target.chunk_offset, target.span_size)
-    chunk, decoded, texture = validate_template(span, target)
+    chunk, decoded, texture = validate_template(
+        span, target, legacy_linear_dimensions
+    )
     current_index = index.stat(follow_symlinks=False)
     require((current_index.st_dev, current_index.st_ino, current_index.st_size) ==
             (index_info.st_dev, index_info.st_ino, index_info.st_size),
@@ -235,33 +390,59 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
 
     png, png_payload, rgba = read_png(png_path, (target.width, target.height))
     input_mips = make_mips(rgba, target.width, target.height, target.mip_levels)
-    palette, index_levels, quantization = quantize_levels(input_mips)
-    require(len(index_levels) == target.mip_levels and
-            sum(len(level) for level in index_levels) == target.index_chain_bytes,
-            "quantized mip chain differs from target allocation")
-    encoded_levels = []
-    for level, indices in zip(input_mips, index_levels):
-        if target.mip_storage == "xbox_morton_swizzled":
-            encoded_levels.append(swizzle_2d(indices, level.width, level.height, 1))
-        else:
-            require(target.mip_storage == "linear", "unknown mip storage class")
-            encoded_levels.append(indices)
-    index_chain = b"".join(encoded_levels)
-    require(len(index_chain) == target.index_chain_bytes,
-            "encoded index chain size mismatch")
     template_video = decoded[target.system_bytes:]
     gap_first = target.index_chain_bytes
     gap_after = gap_first + target.pre_palette_gap_bytes
     gap = template_video[gap_first:gap_after]
     require(gap_after == target.palette_offset and len(gap) == target.pre_palette_gap_bytes,
             "template pre-palette gap differs from report")
-    rebuilt_video = index_chain + gap + palette_bytes(palette)
-    require(len(rebuilt_video) == target.video_bytes,
-            "rebuilt video allocation size mismatch")
-    rebuilt_decoded = decoded[:target.system_bytes] + rebuilt_video
+
+    def candidate_decoded(
+        candidate_palette: list[tuple[int, int, int, int]],
+        candidate_levels: list[bytes],
+    ) -> bytes:
+        require(len(candidate_levels) == target.mip_levels and
+                sum(len(level) for level in candidate_levels) ==
+                target.index_chain_bytes,
+                "quantized mip chain differs from target allocation")
+        encoded_levels = []
+        for level, indices in zip(input_mips, candidate_levels):
+            if target.mip_storage == "xbox_morton_swizzled":
+                encoded_levels.append(
+                    swizzle_2d(indices, level.width, level.height, 1)
+                )
+            else:
+                require(target.mip_storage == "linear",
+                        "unknown mip storage class")
+                encoded_levels.append(indices)
+        candidate_chain = b"".join(encoded_levels)
+        require(len(candidate_chain) == target.index_chain_bytes,
+                "encoded index chain size mismatch")
+        rebuilt_video = candidate_chain + gap + palette_bytes(candidate_palette)
+        require(len(rebuilt_video) == target.video_bytes,
+                "rebuilt video allocation size mismatch")
+        return decoded[:target.system_bytes] + rebuilt_video
+
+    bounded = quantize_levels_to_vc_lz_bound(
+        input_mips,
+        candidate_decoded,
+        stream_tag=target.stream_tag,
+        offset_bits=target.offset_bits,
+        max_encoded_size=target.stored_size,
+    )
+    palette = bounded.palette
+    index_levels = bounded.index_levels
+    quantization = bounded.quantization
+    rebuilt_decoded = bounded.decoded
+    compressed = bounded.compressed
+    index_chain = rebuilt_decoded[
+        target.system_bytes:target.system_bytes + target.index_chain_bytes
+    ]
     rebuilt_span, rebuild = rebuild_compressed_chunk_fixed_span(span, rebuilt_decoded)
     require(len(rebuilt_span) == len(span) and
             rebuilt_span[:20] == span[:20] and rebuilt_span[24:32] == span[24:32] and
+            rebuild.recompressed_bytes == len(compressed) and
+            rebuilt_span[HEADER.size:HEADER.size + len(compressed)] == compressed and
             rebuild.loader_in_place_end_guard and rebuild.loader_in_place_alias_guard and
             rebuild.recompressed_bytes <= target.stored_size,
             "fixed-span rebuild contract failed")
@@ -269,7 +450,10 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
     require(len(rebuilt_chunks) == 1, "rebuilt span is not one TXTR")
     rebuilt_chunk = rebuilt_chunks[0]
     roundtrip, info = decode_chunk(rebuilt_span, rebuilt_chunk)
-    rebuilt_texture = parse_texture(roundtrip, rebuilt_chunk)
+    rebuilt_texture = target_texture_dimensions(
+        parse_texture(roundtrip, rebuilt_chunk), target,
+        legacy_linear_dimensions,
+    )
     require(info is not None and roundtrip == rebuilt_decoded and
             roundtrip[:target.system_bytes] == decoded[:target.system_bytes] and
             rebuilt_texture == texture and
@@ -322,10 +506,16 @@ def build_import(index_path: Path, compatibility_path: Path, family: str,
                       "strict_rgba8_noninterlaced": True},
         "mips": {"level_count": target.mip_levels,
                  "dimensions": [[level.width, level.height] for level in input_mips],
-                 "filter": "unpremultiplied_rgba_2x2_box_round_nearest",
+                 "filter": "unpremultiplied_rgba_2x2_majority_ties_to_rarer_region",
                  "storage": target.mip_storage,
                  "index_bytes": [len(level) for level in index_levels]},
         "quantization": quantization,
+        **({"bounded_palette_fit": {
+            "attempts": list(bounded.attempts),
+            "selected_palette_entries": len(palette),
+            "selected_encoded_bytes": len(compressed),
+            "stored_size_bound": target.stored_size,
+        }} if len(bounded.attempts) > 1 else {}),
         "template": {"span_sha256": digest(span), "decoded_sha256": digest(decoded),
                      "system_sha256": digest(decoded[:target.system_bytes]),
                      "pre_palette_gap_sha256": digest(gap),

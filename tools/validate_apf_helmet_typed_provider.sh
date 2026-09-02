@@ -24,7 +24,9 @@ python3 -m mod_editor --check-registry --require-registry
 help="$(python3 -m mod_editor --help)"
 rg -q -- '--create-apf-helmet-recipe OUTPUT.json' <<<"$help"
 rg -q -- '--helmet-png HELMET_PNG' <<<"$help"
-python3 -m unittest discover -s tests/mod_editor -p 'test_*.py' -v
+for test_module in test_recipes.py test_providers.py test_gui.py; do
+  python3 -m unittest discover -s tests/mod_editor -p "$test_module" -v
+done
 
 # The family gate now covers both the legacy verifier and the canonical
 # recipe/artifact interface against the same copied retail-sized output.

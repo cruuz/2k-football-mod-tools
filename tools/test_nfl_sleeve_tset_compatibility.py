@@ -27,7 +27,7 @@ from nfl_sleeve_tset_targets import (
     target_from_row,
 )
 import nfl_tset_png_import as legacy
-from nfl_txtr import HEADER, TxtrError, encode_rgba_png, \
+from nfl_txtr import HEADER, encode_rgba_png, \
     rebuild_compressed_chunk_fixed_span, swizzle_2d
 import nfl_uniform_color_xiso_direct_patch as common
 
@@ -292,18 +292,22 @@ def main() -> int:
         noise = temporary / "incompressible.png"
         noise.write_bytes(noise_fixture())
         *_, smallest = select_target("06", "H", 2, COMPATIBILITY)
-        expect_failure(
-            lambda: importer.run(
-                INDEX, INVENTORY, COMPATIBILITY, smallest,
-                noise, None, "identity",
-                temporary / "oversize.bin", temporary / "oversize.json",
-                temporary / "oversize-previews",
-            ),
-            (TxtrError, importer.ImportError), "smallest allocation overflow",
+        bounded_manifest = temporary / "bounded.json"
+        bounded_result = importer.run(
+            INDEX, INVENTORY, COMPATIBILITY, smallest,
+            noise, None, "identity",
+            temporary / "bounded.bin", bounded_manifest,
+            temporary / "bounded-previews",
         )
-        assert not (temporary / "oversize.bin").exists()
-        assert not (temporary / "oversize.json").exists()
-        assert not (temporary / "oversize-previews").exists()
+        fit = bounded_result["bounded_palette_fit"]
+        assert fit["stored_size_bound"] == 5648
+        assert fit["selected_encoded_bytes"] <= 5648
+        assert fit["selected_palette_entries"] >= 2
+        assert fit["attempts"][0]["result"] == "vc_lz_overflow"
+        assert fit["attempts"][-1]["result"] == "fit"
+        assert (temporary / "bounded.bin").is_file()
+        assert bounded_manifest.is_file()
+        assert (temporary / "bounded-previews").is_dir()
 
         symlink_report = temporary / "compatibility-link.json"
         symlink_report.symlink_to(COMPATIBILITY)
@@ -343,7 +347,7 @@ def main() -> int:
     print(
         "NFL_SLEEVE_TSET_COMPATIBILITY_TESTS_PASS packages=634 pairs=317 "
         "layouts=1 allocations=275 compatible=634 offsets=466 stored_classes=193 "
-        "fixture_all_634=true smallest=06H2 strict_mud=true overflow_refused=true "
+        "fixture_all_634=true smallest=06H2 strict_mud=true overflow_fitted=true "
         "forged_rejected=true symlink_refused=true o_excl=true "
         "v3_loader_alias_guard=true runtime=false"
     )

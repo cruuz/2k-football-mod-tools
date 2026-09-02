@@ -20,8 +20,8 @@ from typing import Any
 
 SCHEMA = "2k5_mod_studio_crib_catalog/v1"
 DEFAULT_REPORT = Path("mod_editor/data/nfl2k5_crib_catalog.v1.json")
-REPORT_SHA256 = "2f862fc6602bb23d433f0599c519839be9cd43ca6cd42bc22aeb7b94d56d305a"
-REPORT_SIZE = 709_752
+REPORT_SHA256 = "c78801144df2f070e003ba458c5affa15a52cc00221cc1a3d9983f1fbf172cd8"
+REPORT_SIZE = 735_928
 SELECTOR_RE = re.compile(r"^crib_team_photo:(\d\d)_photo_(0[0-3])$", re.ASCII)
 
 PHOTO_COUNT = 128

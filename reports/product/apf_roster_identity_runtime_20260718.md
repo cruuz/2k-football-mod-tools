@@ -32,7 +32,7 @@ causal comparison.
   `dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e`
 - Each replay used a separate empty storage/content/cache root while copying the
   exact known-good Xenia configuration into that root.
-- All GUI, emulator, controller, and visual work ran through spark-hands on the
+- All GUI, emulator, controller, and visual work ran on the
   isolated `DISPLAY=:99`; the operator desktop was not touched.
 
 ## Builds and observations

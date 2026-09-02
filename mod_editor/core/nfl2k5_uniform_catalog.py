@@ -19,9 +19,15 @@ from functools import lru_cache
 import json
 import os
 from pathlib import Path
+import sys
 from typing import Any, Iterable
 
 from .errors import ValidationError
+
+
+_TOOLS = Path(__file__).resolve().parents[2] / "tools"
+if str(_TOOLS) not in sys.path:
+    sys.path.insert(0, str(_TOOLS))
 
 
 CAPABILITY_ID = "nfl2k5.uniforms.all_visual"
@@ -31,6 +37,20 @@ DEFAULT_REPORT = ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
 EXPECTED_SET_COUNT = 634
 EXPECTED_REPORT_TARGET_COUNT = EXPECTED_SET_COUNT * 3
 ASSETS_PER_SET = 39
+
+#: Digit dimensions are not a property of the family.  Retail authored 380 of the
+#: 6,340 arm digits at 32x32 rather than 64x64, and 200 of the helmet digits at
+#: 64x64 rather than 32x32, so one constant per family is wrong for 580 targets.
+#: That is what a modder saw as Titans arm/shoulder numbers "missing" -- 28H0,
+#: 28H7 and 28H8 are three of the 32x32 packages, and everything downstream of
+#: this catalog was handed the wrong size for them.  Resolving against the same
+#: compatibility report the decoder uses means the two cannot drift apart.
+#:
+#: ``nameplate_atlas`` is deliberately absent.  The catalog ships 1024x32 because
+#: that is the real horizontal character strip; the report still carries the
+#: pre-fix transposed 32x1024, and letting it win here would reintroduce the
+#: scrambled export that transposition originally caused.
+DIGIT_DIMENSION_FAMILIES = frozenset({"jersey_digit", "helmet_digit", "arm_digit"})
 
 
 class UniformCatalogError(ValidationError):
@@ -49,7 +69,10 @@ def _path_text(path: str | os.PathLike[str]) -> str:
         raise UniformCatalogError("Replacement PNG path must be a string or path") from exc
     _require(isinstance(value, str), "Replacement PNG path must be text, not bytes")
     _require(bool(value) and "\0" not in value, "Replacement PNG path cannot be empty")
-    return value
+    # Provider edit records are portable JSON contracts.  Preserve relative or
+    # absolute spelling while canonicalizing Windows separators so identical
+    # input emits identical manifest bytes on every supported host.
+    return value.replace("\\", "/")
 
 
 def _split_owners(value: object) -> tuple[str, ...]:
@@ -215,7 +238,10 @@ def _component_specs() -> tuple[_ComponentSpec, ...]:
     specs.extend((
         _ComponentSpec(
             "nameplate", "Nameplate Atlas", "Nameplate",
-            "live_number_nameplate", 32, 1024, family="nameplate",
+            # 1024x32, not 32x1024: this is a horizontal character strip.
+            # The transposed value came from the descriptor bug fixed in
+            # nfl_txtr.parse_texture and is why the export looked scrambled.
+            "live_number_nameplate", 1024, 32, family="nameplate",
         ),
         _ComponentSpec(
             "team-select.unif.256", "Uniform Card", "Team Select Cards",
@@ -237,6 +263,25 @@ def _component_specs() -> tuple[_ComponentSpec, ...]:
 COMPONENT_SPECS = _component_specs()
 
 
+#: Component family -> the family name used by the live-art compatibility report
+#: and by every target selector.  Shared so a selector and a dimension lookup can
+#: never disagree about what to call the same family.
+_REPORT_FAMILIES = {
+    "jersey": "jersey_digit",
+    "helmet": "helmet_digit",
+    "arm": "arm_digit",
+    "nameplate": "nameplate_atlas",
+}
+
+
+def _target_selector_family(spec: "_ComponentSpec") -> str | None:
+    """The report's family name for one component, or None if it has none."""
+
+    if spec.kind != "live_number_nameplate":
+        return None
+    return _REPORT_FAMILIES.get(str(spec.family))
+
+
 def _target_selector(set_selector: str, spec: _ComponentSpec,
                      asset_code: str, side_name: str, variant: int) -> str:
     if spec.kind in {"torso", "sleeve", "pants"}:
@@ -244,12 +289,8 @@ def _target_selector(set_selector: str, spec: _ComponentSpec,
     if spec.kind == "live_helmet":
         return f"{set_selector}:{spec.family}"
     if spec.kind == "live_number_nameplate":
-        family = {
-            "jersey": "jersey_digit",
-            "helmet": "helmet_digit",
-            "arm": "arm_digit",
-            "nameplate": "nameplate_atlas",
-        }[str(spec.family)]
+        family = _target_selector_family(spec)
+        assert family is not None
         suffix = "" if spec.digit is None else f":{spec.digit}"
         return f"{set_selector}:{family}{suffix}"
     _require(spec.kind == "team_select", "Internal component kind is invalid")
@@ -259,11 +300,62 @@ def _target_selector(set_selector: str, spec: _ComponentSpec,
     )
 
 
+@lru_cache(maxsize=1)
+def _authored_digit_dimensions() -> dict[tuple[str, str, int, str, int], tuple[int, int]]:
+    """Real per-target digit dimensions, keyed ``(code, side, variant, family, digit)``.
+
+    Read from the hash-pinned live-art compatibility report, which is the same
+    source the decoder resolves a target against.  Returns an empty mapping when
+    that report is unavailable -- it lives under the gitignored ``reports/assets``
+    tree, exactly like this catalog's own inventory report -- so a tree without it
+    keeps the previous per-family constants instead of failing to build a catalog.
+    """
+
+    try:
+        import nfl_live_numbers_nameplate_targets as live_targets
+    except Exception:  # pragma: no cover - report/tooling absent
+        return {}
+    try:
+        report = json.loads(
+            Path(live_targets.DEFAULT_REPORT).read_text(encoding="utf-8"))
+        resources = report["resources"]
+    except (OSError, ValueError, KeyError):  # pragma: no cover - absent or changed
+        return {}
+    dimensions: dict[tuple[str, str, int, str, int], tuple[int, int]] = {}
+    for row in resources:
+        family = row.get("family")
+        if family not in DIGIT_DIMENSION_FAMILIES or row.get("digit") is None:
+            continue
+        selector = row.get("selector") or {}
+        layout = row.get("layout") or {}
+        try:
+            key = (str(selector["asset_code"]), str(selector["side"]),
+                   int(selector["variant"]), str(family), int(row["digit"]))
+            dimensions[key] = (int(layout["width"]), int(layout["height"]))
+        except (KeyError, TypeError, ValueError):  # pragma: no cover - malformed row
+            continue
+    return dimensions
+
+
+def _digit_dimensions_for(asset_code: str, side_code: str, variant: int,
+                          spec: "_ComponentSpec") -> tuple[int, int]:
+    """The authored size for one digit target, or the family default."""
+
+    family = _target_selector_family(spec)
+    if family is None or spec.digit is None:
+        return (spec.width, spec.height)
+    authored = _authored_digit_dimensions().get(
+        (asset_code, side_code, variant, family, spec.digit))
+    return authored or (spec.width, spec.height)
+
+
 def _assets_for_seed(asset_code: str, side_code: str, side_name: str,
                      variant: int, set_selector: str) -> tuple[UniformAsset, ...]:
     result = []
     prefix = f"nfl2k5.uniform.{set_selector.lower()}"
     for spec in COMPONENT_SPECS:
+        width, height = _digit_dimensions_for(
+            asset_code, side_code, variant, spec)
         result.append(UniformAsset(
             asset_id=f"{prefix}.{spec.key}",
             set_selector=set_selector,
@@ -277,8 +369,8 @@ def _assets_for_seed(asset_code: str, side_code: str, side_name: str,
             family=spec.family,
             digit=spec.digit,
             resolution=spec.resolution,
-            width=spec.width,
-            height=spec.height,
+            width=width,
+            height=height,
             target_selector=_target_selector(
                 set_selector, spec, asset_code, side_name, variant),
         ))

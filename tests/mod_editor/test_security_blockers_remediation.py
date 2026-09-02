@@ -254,7 +254,7 @@ class Finding2JunctionRefusalTests(unittest.TestCase):
         # The primary Finding-2 site: the private "derived" parent that holds the
         # whole cache and its single-writer lock must not be a junction.
         with tempfile.TemporaryDirectory() as name:
-            root = Path(name).resolve() / "private-source-cache"
+            root = Path(name).resolve() / SOURCE_SHA256
             cache = _make_source_cache(root)
             derived_parent = root / "derived"
             coordinator = Nfl2k5StadiumCacheCoordinator(

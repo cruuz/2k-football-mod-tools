@@ -740,7 +740,7 @@
       "opened_read_only": true,
       "partition": "E",
       "path": "xemu-hdd-readonly.raw",
-      "sha256": "a495f735a6ca39ca7f476757d832fab5f535270cc675552c8c1ae9e32263fa13",
+      "sha256": "12f3246680e035e144fee6fc3076943a8ba3938820083f61ea31fa932a7619b9",
       "size": 8589934592
     },
     "retail_xbe": {
@@ -790,21 +790,21 @@
       "CPU Blocking",
       "CPU Passing",
       "CPU Running",
-      "CPU Catching",
       "CPU Coverage",
       "CPU Pursuit",
       "CPU Tackling",
       "CPU Kicking",
       "CPU Fatigue",
+      "CPU Catching",
       "Human Blocking",
       "Human Passing",
       "Human Running",
-      "Human Catching",
       "Human Coverage",
       "Human Pursuit",
       "Human Tackling",
       "Human Kicking",
-      "Human Fatigue"
+      "Human Fatigue",
+      "Human Catching"
     ],
     "rows": [
       {
@@ -864,18 +864,9 @@
       {
         "franchise1": 0.5,
         "group": "cpu_vector",
-        "label": "CPU Catching",
+        "label": "CPU Coverage",
         "offset": "0x2A4",
         "physical_index": 6,
-        "semantic_index": 12,
-        "settings1": 0.5
-      },
-      {
-        "franchise1": 0.5,
-        "group": "cpu_vector",
-        "label": "CPU Coverage",
-        "offset": "0x2A8",
-        "physical_index": 7,
         "semantic_index": 13,
         "settings1": 0.5
       },
@@ -883,8 +874,8 @@
         "franchise1": 0.5,
         "group": "cpu_vector",
         "label": "CPU Pursuit",
-        "offset": "0x2AC",
-        "physical_index": 8,
+        "offset": "0x2A8",
+        "physical_index": 7,
         "semantic_index": 14,
         "settings1": 0.5
       },
@@ -892,27 +883,36 @@
         "franchise1": 0.5,
         "group": "cpu_vector",
         "label": "CPU Tackling",
+        "offset": "0x2AC",
+        "physical_index": 8,
+        "semantic_index": 15,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.5,
+        "group": "cpu_vector",
+        "label": "CPU Kicking",
         "offset": "0x2B0",
         "physical_index": 9,
-        "semantic_index": 15,
+        "semantic_index": 16,
         "settings1": 0.5
       },
       {
         "franchise1": 0.475,
         "group": "cpu_vector",
-        "label": "CPU Kicking",
+        "label": "CPU Fatigue",
         "offset": "0x2B4",
         "physical_index": 10,
-        "semantic_index": 16,
+        "semantic_index": 17,
         "settings1": 0.5
       },
       {
         "franchise1": 0.8,
         "group": "cpu_vector",
-        "label": "CPU Fatigue",
+        "label": "CPU Catching",
         "offset": "0x2B8",
         "physical_index": 11,
-        "semantic_index": 17,
+        "semantic_index": 12,
         "settings1": 0.5
       },
       {
@@ -945,18 +945,9 @@
       {
         "franchise1": 0.35,
         "group": "human_vector",
-        "label": "Human Catching",
+        "label": "Human Coverage",
         "offset": "0x2C8",
         "physical_index": 15,
-        "semantic_index": 3,
-        "settings1": 0.5
-      },
-      {
-        "franchise1": 0.35,
-        "group": "human_vector",
-        "label": "Human Coverage",
-        "offset": "0x2CC",
-        "physical_index": 16,
         "semantic_index": 4,
         "settings1": 0.5
       },
@@ -964,36 +955,45 @@
         "franchise1": 0.35,
         "group": "human_vector",
         "label": "Human Pursuit",
+        "offset": "0x2CC",
+        "physical_index": 16,
+        "semantic_index": 5,
+        "settings1": 0.5
+      },
+      {
+        "franchise1": 0.35,
+        "group": "human_vector",
+        "label": "Human Tackling",
         "offset": "0x2D0",
         "physical_index": 17,
-        "semantic_index": 5,
+        "semantic_index": 6,
         "settings1": 0.5
       },
       {
         "franchise1": 0.5,
         "group": "human_vector",
-        "label": "Human Tackling",
+        "label": "Human Kicking",
         "offset": "0x2D4",
         "physical_index": 18,
-        "semantic_index": 6,
+        "semantic_index": 7,
         "settings1": 0.5
       },
       {
         "franchise1": 0.525,
         "group": "human_vector",
-        "label": "Human Kicking",
+        "label": "Human Fatigue",
         "offset": "0x2D8",
         "physical_index": 19,
-        "semantic_index": 7,
+        "semantic_index": 8,
         "settings1": 0.5
       },
       {
         "franchise1": 1.0,
         "group": "human_vector",
-        "label": "Human Fatigue",
+        "label": "Human Catching",
         "offset": "0x2DC",
         "physical_index": 20,
-        "semantic_index": 8,
+        "semantic_index": 3,
         "settings1": 0.5
       }
     ],

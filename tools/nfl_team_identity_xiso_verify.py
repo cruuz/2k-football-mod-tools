@@ -87,7 +87,16 @@ EDITS = (
 def pread_exact(fd: int, offset: int, size: int) -> bytes:
     result = bytearray()
     while len(result) < size:
-        chunk = os.pread(fd, size - len(result), offset + len(result))
+        positional = getattr(os, "pread", None)
+        if positional is not None:
+            chunk = positional(fd, size - len(result), offset + len(result))
+        else:
+            saved = os.lseek(fd, 0, os.SEEK_CUR)
+            try:
+                os.lseek(fd, offset + len(result), os.SEEK_SET)
+                chunk = os.read(fd, size - len(result))
+            finally:
+                os.lseek(fd, saved, os.SEEK_SET)
         require(bool(chunk), f"short read at 0x{offset + len(result):x}")
         result.extend(chunk)
     return bytes(result)
@@ -97,7 +106,7 @@ def hash_extent(fd: int, offset: int, size: int) -> str:
     digest = hashlib.sha256()
     position = 0
     while position < size:
-        chunk = os.pread(fd, min(CHUNK, size - position), offset + position)
+        chunk = pread_exact(fd, offset + position, min(CHUNK, size - position))
         require(bool(chunk), f"short hash read at 0x{offset + position:x}")
         digest.update(chunk)
         position += len(chunk)
@@ -108,7 +117,10 @@ def open_regular(path: Path) -> tuple[Path, int]:
     info = path.lstat()
     require(not stat.S_ISLNK(info.st_mode), f"symlink refused: {path}")
     resolved = path.resolve(strict=True)
-    fd = os.open(resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    fd = os.open(
+        resolved,
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
+    )
     opened = os.fstat(fd)
     require(stat.S_ISREG(opened.st_mode), f"not a regular file: {path}")
     require((opened.st_dev, opened.st_ino) ==
@@ -123,7 +135,10 @@ def read_regular_bytes(
     info = path.lstat()
     require(not stat.S_ISLNK(info.st_mode), f"{label} symlink refused: {path}")
     resolved = path.resolve(strict=True)
-    fd = os.open(resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    fd = os.open(
+        resolved,
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0),
+    )
     try:
         opened = os.fstat(fd)
         require(stat.S_ISREG(opened.st_mode), f"{label} is not a regular file")

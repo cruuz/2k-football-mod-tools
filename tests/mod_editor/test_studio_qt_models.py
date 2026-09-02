@@ -45,7 +45,7 @@ class StudioQtViewModelTests(unittest.TestCase):
                 for category in PRODUCT_CATEGORY_ORDER
             ),
         )
-        self.assertEqual(len(sidebar_category_titles(self.product)), 11)
+        self.assertEqual(len(sidebar_category_titles(self.product)), 12)
         self.assertEqual(
             category_display_title(self.product, ProductCategory.TEAM_IDENTITY),
             "Text & Team Identity",
@@ -138,14 +138,26 @@ class StudioQtViewModelTests(unittest.TestCase):
         self.assertTrue(rows)
         self.assertTrue(all(not row.team_names for row in rows))
 
-    def test_every_coming_soon_card_can_surface_a_findings_note(self) -> None:
+    def test_research_and_proof_cards_replace_false_coming_soon_promises(self) -> None:
         coming_soon = [
             binding
             for binding in self.product.capabilities
             if binding.status == ProductStatus.COMING_SOON
         ]
-        self.assertTrue(coming_soon)
-        for binding in coming_soon:
+        self.assertFalse(coming_soon)
+        research = [
+            binding
+            for binding in self.product.capabilities
+            if binding.status == ProductStatus.RESEARCH
+        ]
+        evidence = [
+            binding
+            for binding in self.product.capabilities
+            if binding.status == ProductStatus.EVIDENCE
+        ]
+        self.assertEqual(len(research), 2)
+        self.assertEqual(len(evidence), 6)
+        for binding in research:
             # Some reviewed registry rows intentionally have no porting list,
             # but this helper must remain deterministic and string-only.
             self.assertIsInstance(capability_findings(binding), tuple)

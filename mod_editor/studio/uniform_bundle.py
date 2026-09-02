@@ -34,6 +34,7 @@ from mod_editor.core.nfl2k5_uniform_catalog import (
     UniformAsset,
     UniformSet,
 )
+from mod_editor.core import platform_compat
 from mod_editor.core.platform_compat import fsync_path
 
 from .session import BatchReplaceResult, StudioSession
@@ -262,7 +263,15 @@ def _authoring_note(asset: UniformAsset) -> str:
             "UV atlas: paint over the exported islands; preserve seams, blank margins, "
             "orientation, dimensions, and RGBA channels. Exact front/back/left/right "
             "pixel regions are not decoded. The builder derives mud palettes from the "
-            "edited clean art."
+            "edited clean art. "
+            # A modern texture pack usually ships numbers painted into the
+            # jersey. 2K5 draws them separately and on top, so baked-in numbers
+            # come out doubled -- reported from a real macOS import.
+            "Do not paint jersey numbers into this art: 2K5 draws them from "
+            "separate digit textures in this same set (Jersey Digit 0-9 at "
+            "64x64, Arm / Shoulder Digit 0-9 at 64x64, Helmet Digit 0-9 at "
+            "32x32, and the 1024x32 Nameplate Atlas -- 31 editable components), "
+            "so numbers baked into the jersey will appear twice."
         )
     if asset.kind == "live_helmet":
         return (
@@ -272,8 +281,15 @@ def _authoring_note(asset: UniformAsset) -> str:
         )
     if asset.kind == "live_number_nameplate" and asset.family == "nameplate":
         return (
-            "32×1024 vertical alphabet/nameplate atlas. Glyph metrics remain read-only; "
-            "keep each glyph in its existing registered slot and preserve alpha."
+            # 1024x32 horizontal, not 32x1024 vertical. The transposed reading
+            # came from the TXTR descriptor bug fixed in nfl_txtr.parse_texture
+            # -- it is why an export once looked scrambled -- and this copy still
+            # carried it, which would send an author to paint a rotated strip.
+            # The compatibility report's own mip chain is [1024x32, 512x16,
+            # 256x8, 128x4, 64x2, 32x1].
+            "1024×32 horizontal alphabet/nameplate atlas. Glyph metrics remain "
+            "read-only; keep each glyph in its existing registered slot and "
+            "preserve alpha."
         )
     if asset.kind == "live_number_nameplate":
         return (
@@ -385,7 +401,8 @@ nameplate atlas, and three independent Team Select cards.
 
 1. Edit PNGs under `SETS/`; leave `{TEAM_KIT_MANIFEST}` unchanged.
 2. Keep every image at its exact dimensions as an 8-bit RGBA PNG with
-   interlacing off. Do not crop, rotate, rename, or flatten transparency.
+   any standard PNG (RGB, RGBA, greyscale, indexed, interlaced all work).
+   Do not crop, rotate, rename, or flatten transparency.
 3. Paint over existing UV islands and preserve seams, registration, blank
    margins, and orientation. Exact body-region UV coordinates are not decoded.
 4. Edit both `helmet00` and `helmet02` for full player-model coverage. Team
@@ -589,19 +606,27 @@ class TeamKitBundleService:
             )
 
             if normalized == "folder":
-                # Reserve the destination with mkdir(O_EXCL semantics), prove it
-                # is still our empty directory, then atomically replace only that
-                # reservation with the fully prepared tree.
-                requested.mkdir(mode=0o700)
-                reservation = requested.lstat()
-                _require(stat.S_ISDIR(reservation.st_mode), "Could not reserve export folder")
+                # Published through platform_compat, NOT by reserving the name
+                # with mkdir and renaming onto it. That reserve-then-replace
+                # sequence is POSIX-only: os.rename replaces an existing empty
+                # directory there, but Windows MoveFileEx cannot replace a
+                # directory at all, so it failed with
+                # "[WinError 5] Access is denied" on every folder export. The
+                # helper already knows the right primitive per platform --
+                # renameat2(RENAME_NOREPLACE) on Linux, renamex_np(RENAME_EXCL)
+                # on macOS, a plain os.rename on Windows where that IS the
+                # no-clobber publish -- and raises FileExistsError rather than
+                # ever overwriting. require_atomic=False keeps the two-step
+                # reserve available on the exotic POSIX filesystems that offer
+                # nothing better, which is exactly what this code did before.
                 try:
-                    _require(not any(requested.iterdir()), "Export folder reservation changed")
-                    os.replace(stage, requested)
-                except BaseException:
-                    if requested.exists() and not any(requested.iterdir()):
-                        requested.rmdir()
-                    raise
+                    platform_compat.publish_no_replace(
+                        stage, requested, is_directory=True, require_atomic=False
+                    )
+                except FileExistsError as exc:
+                    raise TeamKitBundleError(
+                        f"A file or folder already exists there: {requested}"
+                    ) from exc
                 published = True
             else:
                 archive_path = stage.with_suffix(".zip")
@@ -618,7 +643,12 @@ class TeamKitBundleService:
                     # opens read-write there and ``O_RDONLY`` everywhere else.
                     fsync_path(archive_path)
                     try:
-                        os.link(archive_path, requested, follow_symlinks=False)
+                        # Also via platform_compat: a hard link is the right
+                        # no-clobber publish on POSIX but needs NTFS on Windows,
+                        # and an external drive holding disc images is often
+                        # exFAT, where os.link fails outright. The helper uses
+                        # os.rename there, which is itself no-clobber.
+                        platform_compat.publish_no_replace(archive_path, requested)
                     except FileExistsError as exc:
                         raise TeamKitBundleError(
                             f"A file already exists there: {requested}"

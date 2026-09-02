@@ -1,0 +1,42 @@
+{
+  "schema": "apf2k8_retail_crest_channel_audit/v1",
+  "source": "pinned retail All-Pro Football 2K8 (USA) 0A",
+  "scope": {
+    "catalog_slots": 118,
+    "layers_per_slot": [
+      "logo_l0",
+      "logo_l1"
+    ],
+    "base_dimensions": [
+      512,
+      512
+    ]
+  },
+  "method": {
+    "archive_open_count": 1,
+    "source_opened_read_only": true,
+    "decoded_iff_blocks": true,
+    "display_blue_counted_after_txtr_swizzle": true,
+    "display_blue_raw_selector_values": [
+      0
+    ]
+  },
+  "result": {
+    "slots_with_nonzero_display_blue_logo_l0": 114,
+    "slots_with_nonzero_display_blue_logo_l1": 19,
+    "nonzero_display_blue_texels_logo_l0": 4864531,
+    "nonzero_display_blue_texels_logo_l1": 243204,
+    "slots_with_zero_display_blue_in_both_layers": [
+      9,
+      24,
+      65,
+      82
+    ],
+    "unique_layer_blue_count_pairs": 115
+  },
+  "contract": {
+    "new_full_shell_semantic_art_requires_blue_zero": true,
+    "retail_compatibility_migration_preserves_arbitrary_rgba": true,
+    "globally_zeroing_retail_blue_is_forbidden": true
+  }
+}

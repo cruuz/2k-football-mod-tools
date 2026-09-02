@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import ctypes
 import json
+import math
 import os
 from pathlib import Path
 import struct
+import subprocess
 import sys
 import time
 import tempfile
@@ -18,7 +20,9 @@ from mod_editor.apf_studio.audio_encoding import (
     AudioEncodingError,
     ExternalXma1Encoder,
     Pcm16Target,
+    compare_pcm16_signal,
     export_pcm16_template,
+    verify_xma1_signal_quality,
 )
 from mod_editor.core import platform_compat
 
@@ -103,6 +107,137 @@ def _fixture_invocation(script: Path) -> tuple[Path, tuple[str, ...]]:
         # installs.  It is a no-op for a plain python.exe.
         return Path(sys.executable).resolve(), (str(script),)
     return script, ()
+
+
+def _authored_pcm(target: Pcm16Target) -> bytes:
+    samples: list[int] = []
+    for frame in range(target.frame_count):
+        fade = min(1.0, (target.frame_count - frame) / 384)
+        if frame >= target.frame_count - 256:
+            fade = 0.0
+        left = 0.55 * math.sin(2 * math.pi * 337 * frame / target.sample_rate) * fade
+        right = 0.42 * math.sin(2 * math.pi * 733 * frame / target.sample_rate) * fade
+        samples.append(round(left * 32767))
+        if target.channels == 2:
+            samples.append(round(right * 32767))
+    return struct.pack(f"<{len(samples)}h", *samples)
+
+
+class ApfAudioSignalQualityTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.target = Pcm16Target(2, 48_000, 4096, 0x800)
+        self.reference = _authored_pcm(self.target)
+
+    def _samples(self, payload: bytes) -> list[int]:
+        return list(struct.unpack(f"<{len(payload) // 2}h", payload))
+
+    def test_alignment_aware_lossy_signal_passes(self) -> None:
+        lag = 11
+        shifted = (b"\0" * (lag * self.target.block_align)) + self.reference[
+            : -lag * self.target.block_align
+        ]
+        values = self._samples(shifted)
+        # Deterministic low-level reconstruction error, much larger than a
+        # bit-exact test allows but comfortably inside a real lossy-codec gate.
+        for index, value in enumerate(values):
+            values[index] = max(-32768, min(32767, round(value * 0.94) + ((index % 7) - 3)))
+        decoded = struct.pack(f"<{len(values)}h", *values)
+        receipt = compare_pcm16_signal(self.reference, decoded, self.target)
+        self.assertEqual(receipt["status"], "signal_quality_verified")
+        self.assertEqual(receipt["alignment_lag_frames"], lag)
+        self.assertTrue(all(value > 0.9 for value in receipt["same_channel_correlations"]))
+
+    def test_silence_and_wrong_pitch_are_rejected(self) -> None:
+        with self.assertRaisesRegex(AudioEncodingError, "collapsed to silence"):
+            compare_pcm16_signal(
+                self.reference, bytes(self.target.data_size), self.target
+            )
+        wrong = bytearray()
+        for frame in range(self.target.frame_count):
+            fade = 0.0 if frame >= self.target.frame_count - 256 else 1.0
+            for frequency in (997, 1301):
+                value = 0.5 * math.sin(
+                    2 * math.pi * frequency * frame / self.target.sample_rate
+                ) * fade
+                wrong.extend(struct.pack("<h", round(value * 32767)))
+        with self.assertRaisesRegex(AudioEncodingError, "rate, pitch, and channel"):
+            compare_pcm16_signal(self.reference, bytes(wrong), self.target)
+
+    def test_swapped_or_interleaved_stereo_is_rejected(self) -> None:
+        source = self._samples(self.reference)
+        swapped: list[int] = []
+        for offset in range(0, len(source), 2):
+            swapped.extend((source[offset + 1], source[offset]))
+        payload = struct.pack(f"<{len(swapped)}h", *swapped)
+        with self.assertRaisesRegex(AudioEncodingError, "swapped or interleaved"):
+            compare_pcm16_signal(self.reference, payload, self.target)
+
+        one_sided: list[int] = []
+        duplicated: list[int] = []
+        for offset in range(0, len(source), 2):
+            one_sided.extend((source[offset], 0))
+            duplicated.extend((source[offset], source[offset]))
+        with self.assertRaisesRegex(AudioEncodingError, "leaked or interleaved"):
+            compare_pcm16_signal(
+                struct.pack(f"<{len(one_sided)}h", *one_sided),
+                struct.pack(f"<{len(duplicated)}h", *duplicated),
+                self.target,
+            )
+
+    def test_clipping_dc_and_bad_tail_are_rejected(self) -> None:
+        base = self._samples(self.reference)
+        clipped = list(base)
+        for block, index in enumerate(range(0, len(clipped), 12)):
+            clipped[index] = 32767 if block % 2 else -32768
+            clipped[index + 1] = -32768 if block % 2 else 32767
+        with self.assertRaisesRegex(AudioEncodingError, "clipping"):
+            compare_pcm16_signal(
+                self.reference,
+                struct.pack(f"<{len(clipped)}h", *clipped),
+                self.target,
+            )
+
+        dc = [max(-32768, min(32767, value + 7000)) for value in base]
+        with self.assertRaisesRegex(AudioEncodingError, "DC offset"):
+            compare_pcm16_signal(
+                self.reference, struct.pack(f"<{len(dc)}h", *dc), self.target
+            )
+
+        tail = list(base)
+        for index in range(len(tail) - 512, len(tail)):
+            tail[index] = 22000 if index % 2 else -22000
+        with self.assertRaisesRegex(AudioEncodingError, "tail discontinuity"):
+            compare_pcm16_signal(
+                self.reference, struct.pack(f"<{len(tail)}h", *tail), self.target
+            )
+
+    def test_external_xma_route_decodes_then_compares_before_acceptance(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="apf-signal-runner-") as name:
+            source = Path(name) / "source.wav"
+            export_pcm16_template(source, self.target)
+            source.write_bytes(source.read_bytes()[:44] + self.reference)
+
+            def decoded_fixture(command, **kwargs):
+                self.assertIn("pcm_s16le", command)
+                self.assertEqual(kwargs["input"], b"RIFF synthetic XMA1")
+                kwargs["stdout"].write(self.reference)
+                return subprocess.CompletedProcess(command, 0)
+
+            with (
+                patch(
+                    "mod_editor.apf_studio.audio_encoding.shutil.which",
+                    return_value="/usr/bin/ffmpeg",
+                ),
+                patch(
+                    "mod_editor.apf_studio.audio_encoding.subprocess.run",
+                    side_effect=decoded_fixture,
+                ) as run,
+            ):
+                receipt = verify_xma1_signal_quality(
+                    source, b"RIFF synthetic XMA1", self.target
+                )
+            self.assertEqual(receipt["status"], "signal_quality_verified")
+            run.assert_called_once()
 
 
 class ApfAudioEncodingTests(unittest.TestCase):

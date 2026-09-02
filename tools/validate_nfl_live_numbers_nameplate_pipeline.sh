@@ -30,7 +30,7 @@ required_files=(
   reports/assets/nfl2k5_live_numbers_nameplate_xiso_verify.json
   reports/assets/nfl2k5_live_numbers_nameplate_ghidra/nfl_live_numbers_nameplate_trace.txt
   reports/assets/nfl2k5_live_numbers_nameplate_ghidra/nfl_live_numbers_nameplate_pseudo_c.c
-  "$output_xiso" "$workflow"
+  "$workflow"
 )
 for required in "${required_files[@]}"; do
   [[ -f "$required" && ! -L "$required" ]] || {
@@ -38,17 +38,20 @@ for required in "${required_files[@]}"; do
     exit 1
   }
 done
+[[ ! -e "$output_xiso" && ! -L "$output_xiso" ]] || {
+  echo "historical live-art proof XISO must be absent for virtual verification" >&2
+  exit 1
+}
 [[ -d "$previews" && ! -L "$previews" ]] || {
   echo "missing/non-regular live-art preview directory" >&2
   exit 1
 }
 
-printf '%s  %s\n' bf2cd1550d5157ad254eb488b4f58cd1f10efda56e98787f8117aec6902bcea2 "$compatibility" | sha256sum -c - >/dev/null
-printf '%s  %s\n' 2c5c67eae6cb907f25d85bf96303707175621092311146cee27c00e8a9af6d74 "$compatibility_tsv" | sha256sum -c - >/dev/null
-printf '%s  %s\n' 86061df661918711ef59a7d27a65a92b335b568dfd1b023b61cc99cb8aaaff6e "$plan" | sha256sum -c - >/dev/null
-printf '%s  %s\n' c6ef65b753d1df2accb49c37eab6a1cb375e48bfe79f11c4b8743bfc73b4279f reports/assets/nfl2k5_live_numbers_nameplate_xiso_workflow.json | sha256sum -c - >/dev/null
-printf '%s  %s\n' 8fdef46069bd44bf2e03258564bb8b694fab4a202f7382c39b11f3b7734f2fba reports/assets/nfl2k5_live_numbers_nameplate_xiso_verify.json | sha256sum -c - >/dev/null
-printf '%s  %s\n' 905a395131a86d6a8c7ef36fb6b9b463e80b37e0816d88eb17527fb9229cc6a2 "$output_xiso" | sha256sum -c - >/dev/null
+printf '%s  %s\n' d122c1e7de4fbad42c725969dce3473fc16a100e75d68ae5fb5d64077f536cd4 "$compatibility" | sha256sum -c - >/dev/null
+printf '%s  %s\n' 214f95b2179141cc973cfb90ec1f2284ec85b7dae193f8e9b4ea0116a10f0ef0 "$compatibility_tsv" | sha256sum -c - >/dev/null
+printf '%s  %s\n' 4b8045cd0ae9a117f150be3dffa6e589db66523fcf635abeb94618821cb19635 "$plan" | sha256sum -c - >/dev/null
+printf '%s  %s\n' 4b4c36dcb7556cf6123479ebce26be31c496ba8a0a42bb4820a0c69f63380e98 reports/assets/nfl2k5_live_numbers_nameplate_xiso_workflow.json | sha256sum -c - >/dev/null
+printf '%s  %s\n' 0b9f02aed003977a5a141c1413e76bf2019ad7c7105af55be2e080659c8d9bc0 reports/assets/nfl2k5_live_numbers_nameplate_xiso_verify.json | sha256sum -c - >/dev/null
 
 python3 -m py_compile \
   tools/nfl_live_numbers_nameplate_compatibility.py \
@@ -63,11 +66,15 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools \
     --output-dir "$temporary/fixtures"
 for name in \
   detroit_away_style0_digit5_32_nonretail.png \
-  detroit_away_style0_digit5_64_nonretail.png \
-  detroit_away_style0_nameplate_nonretail.png \
-  fixture_manifest.json; do
+  detroit_away_style0_digit5_64_nonretail.png; do
   cmp -- "$temporary/fixtures/$name" "$fixtures/$name"
 done
+# The retained 32x1024 PNG is historical proof input.  The current fixture and
+# normal importer must stay on the corrected 1024x32 atlas instead.
+printf '%s  %s\n' e5dba9aa1e1906cebd20d6c2cf9818023ae5df6cce81eb73a243b97635c5c6e7 "$temporary/fixtures/detroit_away_style0_nameplate_nonretail.png" | sha256sum -c - >/dev/null
+printf '%s  %s\n' 9e121fbc2fe2835b0b5d4dd3d3c281dd1130b928470cf9ff0d71d20f7047e54f "$temporary/fixtures/fixture_manifest.json" | sha256sum -c - >/dev/null
+printf '%s  %s\n' 3e96fcfb4f46b06fbfe1b3636fbf3c7b6b4fdfefc35e87a3debc3ac2da963578 "$fixtures/detroit_away_style0_nameplate_nonretail.png" | sha256sum -c - >/dev/null
+printf '%s  %s\n' ca15e1c9cd7c9036d941d03a30d034b00ce4eb0f4f01416cc433b46babeca571 "$fixtures/fixture_manifest.json" | sha256sum -c - >/dev/null
 
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools \
   python3 tools/nfl_live_numbers_nameplate_compatibility.py \
@@ -87,7 +94,7 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools \
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools \
   python3 tools/nfl_live_numbers_nameplate_png_import.py \
     --family nameplate --asset-code 09 --side A --variant 0 \
-    --png "$fixtures/detroit_away_style0_nameplate_nonretail.png" \
+    --png "$temporary/fixtures/detroit_away_style0_nameplate_nonretail.png" \
     --output-span "$temporary/nameplate/replacement.bin" \
     --output-manifest "$temporary/nameplate/import.json" \
     --output-preview "$temporary/nameplate/preview.png"
@@ -101,8 +108,42 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools \
     --plan "$plan" \
     --index "$index" \
     --compatibility "$compatibility" \
+    --virtual-output \
     --output-report "$temporary/verification.json"
 cmp -- "$temporary/verification.json" reports/assets/nfl2k5_live_numbers_nameplate_xiso_verify.json
+
+# Virtual mode is never a shortcut around an existing file or a symlinked path.
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools python3 - "$temporary" <<'PY'
+import os
+from pathlib import Path
+import sys
+
+from nfl_live_numbers_nameplate_xiso_verify import (
+    VerificationError, absent_virtual_output_path,
+)
+
+root = Path(sys.argv[1])
+absent = root / "absent-proof.xiso.iso"
+assert absent_virtual_output_path(absent) == absent.absolute()
+occupied = root / "occupied-proof.xiso.iso"
+occupied.write_bytes(b"sentinel")
+try:
+    absent_virtual_output_path(occupied)
+except VerificationError as exc:
+    assert "requires an absent" in str(exc)
+else:
+    raise AssertionError("occupied virtual output was accepted")
+real = root / "real-parent"
+real.mkdir()
+linked = root / "linked-parent"
+os.symlink(real, linked)
+try:
+    absent_virtual_output_path(linked / "proof.xiso.iso")
+except VerificationError as exc:
+    assert "symlink" in str(exc)
+else:
+    raise AssertionError("symlinked virtual output parent was accepted")
+PY
 
 # A 32x32 helmet fixture must not be accepted by the 64x64 jersey target.
 set +e
@@ -145,7 +186,7 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools \
 overflow_status=$?
 set -e
 [[ $overflow_status -ne 0 ]]
-rg -q 'exceeds 384|more than the 384-byte bound' "$temporary/overflow.stderr"
+rg -q 'usable two-color version.*384-byte bound' "$temporary/overflow.stderr"
 [[ ! -e "$temporary/overflow.bin" && ! -e "$temporary/overflow.json" && ! -e "$temporary/overflow-preview.png" ]]
 
 # Compatibility metadata is hash-pinned; even harmless appended whitespace is refused.
@@ -167,8 +208,7 @@ set -e
 rg -q 'compatibility report SHA-256 mismatch' "$temporary/forged.stderr"
 [[ ! -e "$temporary/forged.bin" && ! -e "$temporary/forged-manifest.json" && ! -e "$temporary/forged.png" ]]
 
-# Existing final outputs stop the workflow before any copied-disc mutation.
-before_xiso=$(stat -c '%d:%i:%s:%Y:%Z' "$output_xiso")
+# The retained manifest still stops a build before any copied-disc mutation.
 before_workflow=$(sha256sum "$workflow" | awk '{print $1}')
 set +e
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools \
@@ -185,7 +225,7 @@ o_excl_status=$?
 set -e
 [[ $o_excl_status -ne 0 ]]
 rg -q 'outputs exist' "$temporary/o-excl.stderr"
-[[ $(stat -c '%d:%i:%s:%Y:%Z' "$output_xiso") == "$before_xiso" ]]
+[[ ! -e "$output_xiso" && ! -L "$output_xiso" ]]
 [[ $(sha256sum "$workflow" | awk '{print $1}') == "$before_workflow" ]]
 
 if [[ ${NFL_LIVE_ART_FULL_GHIDRA:-0} == 1 ]]; then
@@ -204,10 +244,10 @@ if [[ ${NFL_LIVE_ART_FULL_GHIDRA:-0} == 1 ]]; then
 fi
 
 rg -q '19,654' docs/research/nfl_live_numbers_nameplate_pipeline.md README.md docs/phases/phase3.md docs/phases/phase4.md
-rg -q 'runtime visibility.*not claimed|visibility of the new fixtures is not claimed' docs/research/nfl_live_numbers_nameplate_pipeline.md README.md
+rg -U -q 'runtime visibility is untested|visibility of the new fixtures is not[[:space:]]+claimed' docs/research/nfl_live_numbers_nameplate_pipeline.md README.md
 
 printf '%s  %s\n' 7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9 "$source_xiso" | sha256sum -c - >/dev/null
 printf '%s  %s\n' 73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9 'extracted/ESPN NFL 2K5 (USA)/default.xbe' | sha256sum -c - >/dev/null
 printf '%s  %s\n' 34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d "$index" | sha256sum -c - >/dev/null
 
-echo "NFL_LIVE_NUMBERS_NAMEPLATE_PIPELINE_VALIDATION_PASS packages=634 pairs=317 home=317 away=317 digits=19020 atlases=634 metrics_objects=634 metric_records=18386 art_resources=19654 layouts=4 compatible=19654 incompatible=0 families=jersey,helmet,arm,nameplate source_xiso=unchanged xbe=unchanged pack0=unchanged proof_edits=4 proof_changed_bytes=12084 output_sha=905a395131a86d6a8c7ef36fb6b9b463e80b37e0816d88eb17527fb9229cc6a2 xdvdfs_identical=true all_mips=true vc_lz_alias_guard=true metrics_writer=false forged_refused=true wrong_size_refused=true overflow_refused=true o_excl=true runtime_visibility=false xemu_started=false title_executed=false"
+echo "NFL_LIVE_NUMBERS_NAMEPLATE_PIPELINE_VALIDATION_PASS packages=634 pairs=317 home=317 away=317 digits=19020 atlases=634 metrics_objects=634 metric_records=18386 art_resources=19654 layouts=4 compatible=19654 incompatible=0 families=jersey,helmet,arm,nameplate source_xiso=unchanged xbe=unchanged pack0=unchanged proof_edits=4 proof_changed_bytes=11684 output_sha=118e336d1c84f6292b7fa50538a437de34c0dd6a5d973ba57abe859bf5d304ad proof_output_virtual=true xdvdfs_identical=true all_mips=true vc_lz_alias_guard=true metrics_writer=false forged_refused=true wrong_size_refused=true overflow_refused=true virtual_absent_hostile_refused=true o_excl=true runtime_visibility=false xemu_started=false title_executed=false"

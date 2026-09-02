@@ -21,50 +21,50 @@
     {
       "id": "jersey_layout",
       "path": "reports/assets/apf_jersey_family_layout.json",
-      "size": 366329,
-      "sha256": "f359a2ecd92e2305e29f2a34f1d0084ee8b2bb277a2f0bd43a1c76e12abb55dc",
+      "size": 366327,
+      "sha256": "b60783b9c47b57e9b9f545e95f5c17d3c850e263e0d7d453aa6c3be4a0f809e4",
       "schema": "apf_jersey_family_layout/v1"
     },
     {
       "id": "pants_layout",
       "path": "reports/assets/apf_pants_family_layout.json",
-      "size": 274896,
-      "sha256": "82241aefe6728a7426552663ee69ecffbdabca01f4359e8322edf75775adf293",
+      "size": 274895,
+      "sha256": "707d916213f04499608b492ce2ea37a0e33b770af0f69c57248755d71ef5c32a",
       "schema": "apf_pants_family_layout/v1"
     },
     {
       "id": "helmet_layout",
       "path": "reports/assets/apf_helmet_family_layout.json",
-      "size": 280394,
-      "sha256": "72bf3efd4495e03fb856e0fb776313c842ebfafeb8d20d19f91318d7161aba03",
+      "size": 280392,
+      "sha256": "29c3f097f63105f0ae2067d8f99f0ce8666e447d8bf13de4b1cb071e9638ed4c",
       "schema": "apf_helmet_family_layout/v1"
     },
     {
       "id": "jersey_roundtrip",
       "path": "reports/assets/apf_jersey_family_patch_roundtrip.json",
-      "size": 5199,
-      "sha256": "e46ca976517b736ffb7b181f1ea812d9146cc1ff660bf789cdb3454d9e179e68",
+      "size": 5198,
+      "sha256": "1273cb27f9869affa3fd4fb69b6ee2b3a3282dafc9e55e918159b6620ff4834a",
       "schema": "apf_jersey_family_patch_roundtrip/v1"
     },
     {
       "id": "pants_roundtrip",
       "path": "reports/assets/apf_pants_family_patch_roundtrip.json",
       "size": 4568,
-      "sha256": "28fa3fe162eea2eb11a152f96b045b324f816b5a512bedabdfc9735bba7c43ca",
+      "sha256": "57faf1c600a306d50c298dc6810640fe886078c789ea0d174df740e9b7b29d08",
       "schema": "apf_pants_family_patch_roundtrip/v1"
     },
     {
       "id": "helmet_roundtrip",
       "path": "reports/assets/apf_helmet_family_patch_roundtrip.json",
-      "size": 5225,
-      "sha256": "ee9980d8d163e247f12a658d570d6a10575ec9000d9e4ab802a4f16800fb1df5",
+      "size": 5224,
+      "sha256": "f85e37695b3b118f2a555e260dbfb6f207165677b68741a5b4c099fad811eb5c",
       "schema": "apf_helmet_family_patch_roundtrip/v1"
     },
     {
       "id": "selector_sharing",
       "path": "reports/assets/uniform_texture_sharing.json",
       "size": 414887,
-      "sha256": "eb37c92a2e2aeaf6d458028e5e5273110c80b3cdbaeb2b5925af99327f4cec6a",
+      "sha256": "4c6557f8e9732267a078ecf42f2d8e8696d7207c9ed6aacd9a76a3e1c67c9910",
       "schema": "uniform_texture_sharing_audit/v1"
     },
     {

@@ -44,7 +44,7 @@ cmp "$temporary/pairs.tsv" "$pairs"
 cmp "$temporary/apf-packed.tsv" "$packed"
 
 test "$(sha256sum "$apf_inventory" | cut -d' ' -f1)" = \
-  e477214f818be01891253683d731551c98a06bf3da0b396dc9de968b031dfb69
+  adf7554d9fb1745048a044aa25462e9b11eb860ea788b9e6e1db82d346f0aa2b
 test "$(sha256sum "$apf_corpus" | cut -d' ' -f1)" = \
   ba6ddcddd018f579e4ddbe385d63b31b45cca3c2aaf450850cf0fce20344d15f
 test "$(sha256sum "$nfl_sampler" | cut -d' ' -f1)" = \
@@ -56,7 +56,7 @@ test "$(sha256sum "$apf_pseudo" | cut -d' ' -f1)" = \
 test "$(sha256sum "$nfl_pseudo" | cut -d' ' -f1)" = \
   38ceebe3cb09d1fcd653a3f28a15d59b1052924668f076b04739bbc34a54a453
 test "$(sha256sum "$report" | cut -d' ' -f1)" = \
-  a7231d984918df907ef7c2fff949dd81c4b8026b29756296f40ee8f2841c2d4b
+  edc59cd5a3fd570b6b683d06aa24e601652ad93e9bc0206d5120ac43bf4286cd
 test "$(sha256sum "$pairs" | cut -d' ' -f1)" = \
   cf345cc187dc79f7270817c714abe2ad8329aafd881d0cc7cca695ba1340473c
 test "$(sha256sum "$packed" | cut -d' ' -f1)" = \
@@ -206,6 +206,6 @@ rg -q '155,642 eight-byte units' "$doc"
 rg -q '50,704 invalid radicands' "$doc"
 rg -q '35,785 after byte swapping' "$doc"
 rg -q 'identity L1 difference is 50,731' "$doc"
-rg -q '^// PORTME: recover the APF 8-byte packed pose decoder' "$doc"
+rg -q '^// PORTME: bind APF logical packed units to exact skeleton bones' "$doc"
 
 echo 'MOTION_LINEAGE_VALIDATION_PASS pairs=7 paired_frames=2591 apf_units=155642'

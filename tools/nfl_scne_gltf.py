@@ -15,6 +15,16 @@ import math
 import struct
 from pathlib import Path
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import parse_archive, read_entry_range
 from nfl_scene_probe import decode_resource, parse_inventory
 from nfl_scne_inventory import ScneError, parse_scene, u32
@@ -352,7 +362,7 @@ def main() -> int:
             ],
         },
     }
-    args.output.write_text(json.dumps(gltf, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.output.write_text(json.dumps(gltf, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     print(
         f"NFL2K5_GLTF_EXPORT_COMPLETE scene={scene['name']!r} shape={shape['name']!r} "
         f"vertices={vertex_count} primitives={len(primitives)} -> {args.output}"

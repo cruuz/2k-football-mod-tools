@@ -52,7 +52,7 @@ from pathlib import Path
 import stat
 import struct
 import sys
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Mapping
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
@@ -73,7 +73,12 @@ import apf_outer  # noqa: E402
 
 
 SCHEMA = "apf_field_art_patch/v1"
-MAX_H7A_CANDIDATES = 256
+# Field art's blocks are over a megabyte and their fixed allocation has almost
+# no slack, so the encoder has to search harder here than elsewhere.  At 256 the
+# no-overlap rule costs 162 bytes against retail and the rebuild overflows by
+# 185; at 1024 it comes in 4 bytes *under* retail's own compressor.  Raising it
+# further changes nothing, so this is the knee of the curve, not a guess.
+MAX_H7A_CANDIDATES = 1024
 
 
 # ---------------------------------------------------------------------------
@@ -178,6 +183,82 @@ _CONTRACTS: dict[tuple[int, int], FieldArtContract] = {
     ),
 }
 
+_EXTRA_TARGETS = (
+    Path(__file__).resolve().parents[1]
+    / "mod_editor"
+    / "data"
+    / "apf2k8_field_extra_targets.v1.json"
+)
+_CORE_CONTRACT_KEYS = frozenset(_CONTRACTS)
+
+
+def _contract_from_row(row: Mapping[str, object]) -> FieldArtContract:
+    swizzle = row["swizzle"]
+    if not isinstance(swizzle, (list, tuple)) or len(swizzle) != 4:
+        raise PatchError("extra field-art contract swizzle is malformed")
+    sibling = row.get("sibling_name")
+    return FieldArtContract(
+        entry_index=int(row["entry_index"]),
+        file_index=int(row["file_index"]),
+        name=str(row["name"]),
+        type_name=str(row["type_name"]),
+        kind=str(row["kind"]),
+        codec=str(row["codec"]),
+        format=int(row["format"]),
+        width=int(row["width"]),
+        height=int(row["height"]),
+        pitch_pixels=int(row["pitch_pixels"]),
+        endianness=int(row["endianness"]),
+        swizzle=(int(swizzle[0]), int(swizzle[1]), int(swizzle[2]), int(swizzle[3])),
+        base_len=int(row["base_len"]),
+        mip_len=int(row["mip_len"]),
+        part_layout=str(row["part_layout"]),
+        head_len=int(row["head_len"]),
+        entry_sha256=str(row["entry_sha256"]),
+        base_sha256=str(row["base_sha256"]),
+        sibling_name=None if sibling in (None, "") else str(sibling),
+    )
+
+
+def _load_extra_contracts() -> None:
+    """Merge descriptor-derived weave/dirtmap/endzone pins. Skip format 59."""
+
+    document = json.loads(_EXTRA_TARGETS.read_text(encoding="utf-8"))
+    if document.get("schema") != "apf2k8_field_extra_targets/v1":
+        raise PatchError("field extra target catalog schema changed")
+    if document.get("source_0a_sha256") != (
+        "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
+    ):
+        raise PatchError("field extra target catalog is not for the pinned retail 0A")
+    for group in ("package_659", "endzones"):
+        rows = document.get(group)
+        if not isinstance(rows, list):
+            raise PatchError(f"field extra target catalog missing {group}")
+        for row in rows:
+            if int(row["format"]) != int(row["format"]):
+                continue
+            if int(row["format"]) not in {6, 18, 20}:
+                continue
+            if str(row["codec"]) not in {"rgba8888", "dxt1", "bc3"}:
+                continue
+            key = (int(row["entry_index"]), int(row["file_index"]))
+            if key in _CONTRACTS:
+                continue
+            _CONTRACTS[key] = _contract_from_row(row)
+
+
+def writable_locations() -> dict[tuple[int, int], str]:
+    """``(outer entry, inner file) -> slot name`` for every writable slot.
+
+    The editor's asset browser lists these rows beside thousands it cannot
+    write, and it has to tell a modder which ones a proved writer already owns.
+    Reading the pinned contract keys is the only honest way to answer that: the
+    answer moves with this table instead of with a copy of it.
+    """
+
+    return {key: contract.name for key, contract in _CONTRACTS.items()}
+
+
 # Named refusals for the field-art families intentionally not shipped tonight.
 _UNSUPPORTED_KINDS = {
     "field_radiance": "format 59 DXT5A + broadcast/const-channel swizzle [0,0,0,5]",
@@ -208,6 +289,9 @@ _PORTME = [
 # ---------------------------------------------------------------------------
 class PatchError(ValueError):
     """Raised when a proposed patch cannot be proved safe."""
+
+
+_load_extra_contracts()
 
 
 class BytesReader:
@@ -304,8 +388,24 @@ def compress_h7a(
                             candidate,
                             min(max_length, len(data) - cursor),
                         )
+                        # Never emit a match that reads bytes it is still
+                        # writing.  Our decoder copies one byte at a time and so
+                        # reproduces an overlapping run correctly, which is why
+                        # this round-trips offline while the rebuilt asset comes
+                        # back as fine speckle in game.  Retail settles it: the
+                        # shipped 512x512 crest block holds 36,099 matches and
+                        # not one overlaps, where a plain greedy encoder emits
+                        # nearly eleven thousand, almost all at distance 2.
+                        if length > distance:
+                            length = distance
+                        if length < 3:
+                            continue
+                        # On a tie prefer the FARTHER match: both encode to the
+                        # same two bytes, but the reachable length at the next
+                        # position is now bounded by the distance, so the near
+                        # copy caps every following match.
                         if length > best_length or (
-                            length == best_length and distance < best_distance
+                            length == best_length and distance > best_distance
                         ):
                             best_length = length
                             best_distance = distance
@@ -327,6 +427,86 @@ def compress_h7a(
             cursor += consumed
         output[descriptor_offset] = descriptor
     return bytes(output)
+
+
+# The optional minimum-cost encoder.  Greedy parsing lands 21 bytes over
+# endzone_l0's fixed allocation once overlapping matches are (correctly)
+# forbidden, and no candidate-limit setting closes that gap -- greedy simply
+# cannot trade a shorter match now for a longer one immediately after.
+# tools/apf_h7a_optimal.c does that trade as a shortest path and recovers about
+# 585 bytes on that block, which is what makes endzone_l0 editable at all.  It is
+# used when the exact reviewed Linux helper bundled in the release is available
+# and its output round-trips; otherwise the greedy encoder is used unchanged.
+#
+# The gain is ~0.5%, so it only decides fit for edits near the allocation.  See
+# docs/research/apf_h7a_allocation_budget.md for the measured budget: a 900x220
+# region tolerates 16 distinct 4x4 blocks with this parse and 12 with greedy.
+_OPTIMAL_BINARY = Path(__file__).resolve().parent / "apf_h7a_optimal"
+_OPTIMAL_BINARY_SIZE = 14_472
+_OPTIMAL_BINARY_SHA256 = (
+    "9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab"
+)
+
+
+def _optimal_binary() -> Path | None:
+    """Return the exact reviewed Linux encoder bundled with the editor."""
+    import platform
+
+    if not sys.platform.startswith("linux") or platform.machine() not in {
+        "x86_64",
+        "amd64",
+    }:
+        return None
+    try:
+        info = _OPTIMAL_BINARY.lstat()
+    except OSError:
+        return None
+    if (
+        not stat.S_ISREG(info.st_mode)
+        or stat.S_ISLNK(info.st_mode)
+        or info.st_nlink != 1
+        or info.st_size != _OPTIMAL_BINARY_SIZE
+        or info.st_mode & 0o022
+        or not info.st_mode & stat.S_IXUSR
+    ):
+        return None
+    if hashlib.sha256(_OPTIMAL_BINARY.read_bytes()).hexdigest() != _OPTIMAL_BINARY_SHA256:
+        return None
+    return _OPTIMAL_BINARY
+
+
+def compress_h7a_best(data: bytes, shift: int) -> bytes:
+    """The smaller of the greedy and minimum-cost parses, both verified.
+
+    Never returns a stream that does not decode back to ``data``, and never
+    returns the optimal parse unless it is actually smaller, so this can only
+    improve on the greedy result or match it.
+    """
+    greedy = compress_h7a(data, shift)
+    binary = _optimal_binary()
+    if binary is None:
+        return greedy
+    import subprocess
+
+    try:
+        finished = subprocess.run(
+            # The largest real block, endzone_l0 at 1.44 MB, takes about 30s, so
+            # this is a generous ceiling.  Kept low deliberately: exceeding it
+            # falls back to greedy rather than stalling a caller or a test run.
+            [str(binary), str(shift)], input=data,
+            capture_output=True, timeout=180,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return greedy
+    candidate = finished.stdout
+    if finished.returncode != 0 or not candidate or len(candidate) >= len(greedy):
+        return greedy
+    try:
+        if apf_inner.decompress_h7a(candidate, len(data), shift) != data:
+            return greedy
+    except Exception:  # noqa: BLE001 - any decode failure means fall back
+        return greedy
+    return candidate
 
 
 def _inverse_swizzle_pixels(
@@ -757,13 +937,48 @@ def build_field_art_patch(
 ) -> PatchResult:
     """Build a bit-exact copied-volume patch for one pinned field-art TXTR."""
 
-    contract = _CONTRACTS.get((entry_index, file_index))
-    if contract is None:
-        raise PatchError(
-            f"PORTME: (entry {entry_index}, file {file_index}) is not a pinned, "
-            "writable field-art slot; supported slots are "
-            f"{sorted(_CONTRACTS)} (field_radiance / weather divots need new codecs)"
+    return build_field_art_patch_many(
+        index_path, entry_index, ((int(file_index), Path(png_path)),)
+    )
+
+
+def build_field_art_patch_many(
+    index_path: Path,
+    entry_index: int,
+    targets: "Sequence[tuple[int, Path]]",
+) -> PatchResult:
+    """Build one bit-exact copied-volume patch for several pinned field-art
+    TXTRs of the SAME entry (e.g. both endzone layers) in a single rebuild.
+
+    The retail entry pin is checked once and every target's pixel part is
+    replaced into the same decoded block buffer, so two-layer art that only
+    fits jointly still lands in one copied volume.
+    """
+
+    specs: list[dict[str, object]] = []
+    seen_files: set[int] = set()
+    for file_index, png_path in targets:
+        file_index = int(file_index)
+        if file_index in seen_files:
+            raise PatchError(f"file index {file_index} is targeted twice")
+        seen_files.add(file_index)
+        contract = _CONTRACTS.get((entry_index, file_index))
+        if contract is None:
+            raise PatchError(
+                f"PORTME: (entry {entry_index}, file {file_index}) is not a pinned, "
+                "writable field-art slot; supported slots are "
+                f"{sorted(_CONTRACTS)} (field_radiance / weather divots need new codecs)"
+            )
+        specs.append(
+            {
+                "contract": contract,
+                "file_index": file_index,
+                "png_path": Path(png_path),
+            }
         )
+    if not specs:
+        raise PatchError("at least one field-art target is required")
+    first_contract = specs[0]["contract"]
 
     archive = apf_outer.parse_archive(index_path)
     try:
@@ -771,7 +986,7 @@ def build_field_art_patch(
     except IndexError as exc:
         raise PatchError(f"outer archive has no entry {entry_index}") from exc
     if len(entry.segments) != 1 or entry.segments[0].pack_name != "0A":
-        raise PatchError(f"PORTME: {contract.name} target is not in one 0A segment")
+        raise PatchError(f"PORTME: {first_contract.name} target is not in one 0A segment")
 
     with apf_inner.ArchiveReader(archive) as reader:
         record = apf_inner.parse_iff(reader, entry)
@@ -785,40 +1000,66 @@ def build_field_art_patch(
             for block in record.blocks
         ]
 
-    if sha256_bytes(original_entry) != contract.entry_sha256:
-        raise PatchError(
-            f"source entry hash is not the pinned retail {contract.name} package; refusing"
+    for spec in specs:
+        contract = spec["contract"]
+        if sha256_bytes(original_entry) != contract.entry_sha256:
+            raise PatchError(
+                f"source entry hash is not the pinned retail {contract.name} package; refusing"
+            )
+
+    for spec in specs:
+        contract = spec["contract"]
+        (
+            spec["target"],
+            spec["pixel_part"],
+            descriptor_bytes,
+            pixel_bytes,
+            spec["metadata"],
+        ) = _resolve_target(record, original_blocks, contract)
+        _validate_descriptor(contract, spec["metadata"])
+
+        if len(pixel_bytes) != spec["pixel_part"].length:
+            raise PatchError("pixel part length mismatch")
+        head_len = len(pixel_bytes) - contract.base_len - contract.mip_len
+        if head_len != contract.head_len:
+            raise PatchError(
+                f"PORTME: {contract.name} head/base/mip split is 0x{head_len:x}, "
+                f"expected 0x{contract.head_len:x}"
+            )
+        spec["head_len"] = head_len
+        spec["pixel_bytes"] = pixel_bytes
+        spec["preserved_head"] = pixel_bytes[:head_len]
+        spec["base"] = pixel_bytes[head_len : head_len + contract.base_len]
+        spec["mip_tail"] = pixel_bytes[head_len + contract.base_len :]
+        if len(spec["base"]) != contract.base_len or len(spec["mip_tail"]) != contract.mip_len:
+            raise PatchError(f"{contract.name} base/mip lengths do not cover the pixel part")
+        if sha256_bytes(spec["base"]) != contract.base_sha256:
+            raise PatchError(f"decoded {contract.name} base hash is not the pinned retail data")
+
+        block_width, block_height, bytes_per_block = contract.block_dims
+        if not _transport_roundtrip_ok(
+            spec["metadata"], spec["base"], block_width, block_height, bytes_per_block
+        ):
+            raise PatchError(
+                f"Xenos untile/endian/tile transport for {contract.name} is not bit-exact"
+            )
+
+        _, _, spec["original_rgba"] = apf_inner.decode_txtr_base_rgba(
+            spec["metadata"], spec["base"]
+        )
+        spec["wanted_rgba"] = _load_png(
+            spec["png_path"], contract.width, contract.height
         )
 
-    target, pixel_part, descriptor_bytes, pixel_bytes, metadata = _resolve_target(
-        record, original_blocks, contract
-    )
-    _validate_descriptor(contract, metadata)
-
-    if len(pixel_bytes) != pixel_part.length:
-        raise PatchError("pixel part length mismatch")
-    head_len = len(pixel_bytes) - contract.base_len - contract.mip_len
-    if head_len != contract.head_len:
-        raise PatchError(
-            f"PORTME: {contract.name} head/base/mip split is 0x{head_len:x}, "
-            f"expected 0x{contract.head_len:x}"
-        )
-    preserved_head = pixel_bytes[:head_len]
-    base = pixel_bytes[head_len : head_len + contract.base_len]
-    mip_tail = pixel_bytes[head_len + contract.base_len :]
-    if len(base) != contract.base_len or len(mip_tail) != contract.mip_len:
-        raise PatchError(f"{contract.name} base/mip lengths do not cover the pixel part")
-    if sha256_bytes(base) != contract.base_sha256:
-        raise PatchError(f"decoded {contract.name} base hash is not the pinned retail data")
-
-    block_width, block_height, bytes_per_block = contract.block_dims
-    if not _transport_roundtrip_ok(metadata, base, block_width, block_height, bytes_per_block):
-        raise PatchError(
-            f"Xenos untile/endian/tile transport for {contract.name} is not bit-exact"
-        )
-
-    _, _, original_rgba = apf_inner.decode_txtr_base_rgba(metadata, base)
-    wanted_rgba = _load_png(png_path, contract.width, contract.height)
+    contract = first_contract
+    file_index = int(specs[0]["file_index"])
+    base = specs[0]["base"]
+    mip_tail = specs[0]["mip_tail"]
+    preserved_head = specs[0]["preserved_head"]
+    head_len = int(specs[0]["head_len"])
+    metadata = specs[0]["metadata"]
+    original_rgba = specs[0]["original_rgba"]
+    wanted_rgba = specs[0]["wanted_rgba"]
 
     common_source = {
         "archive_index": str(index_path),
@@ -832,8 +1073,20 @@ def build_field_art_patch(
         "base_sha256": sha256_bytes(base),
         "png_rgba_sha256": sha256_bytes(wanted_rgba),
     }
+    if len(specs) > 1:
+        common_source["targets"] = [
+            {
+                "inner_file_index": int(spec["file_index"]),
+                "inner_name": spec["contract"].name,
+                "kind": spec["contract"].kind,
+                "codec": spec["contract"].codec,
+                "base_sha256": sha256_bytes(spec["base"]),
+                "png_rgba_sha256": sha256_bytes(spec["wanted_rgba"]),
+            }
+            for spec in specs
+        ]
 
-    if wanted_rgba == original_rgba:
+    if all(spec["wanted_rgba"] == spec["original_rgba"] for spec in specs):
         manifest = {
             "schema": SCHEMA,
             "mode": "no_op",
@@ -857,50 +1110,95 @@ def build_field_art_patch(
         }
         return PatchResult(original_entry, manifest)
 
-    # Encode the edit into a new base, preserving head, mip tail, and siblings.
-    if contract.codec == "rgba8888":
-        new_base = encode_8888_base(metadata, wanted_rgba, contract.base_len)
-        changed_block_count = _changed_pixels(original_rgba, wanted_rgba)
-    else:
-        new_base, changed_blocks = _encode_bc_base(
-            contract, metadata, base, original_rgba, wanted_rgba
-        )
-        changed_block_count = len(changed_blocks)
-
-    if new_base == base:
-        raise PatchError("no-op detection was inconsistent: encode reproduced retail base")
-    new_pixel = preserved_head + new_base + mip_tail
-    if (
-        len(new_pixel) != pixel_part.length
-        or new_pixel[:head_len] != preserved_head
-        or new_pixel[head_len + contract.base_len :] != mip_tail
-    ):
-        raise PatchError("head/base/mip preservation invariant failed")
-
+    # Encode every changed target into a new base, preserving head, mip tail,
+    # and siblings.  Several targets of one entry may live in the same decoded
+    # block (both endzone layers do), so each changed pixel part is written
+    # into a shared per-block buffer and the block is compressed once.
     new_blocks = list(original_blocks)
-    patched_block = bytearray(new_blocks[pixel_part.block_index])
-    patched_block[pixel_part.offset : pixel_part.offset + pixel_part.length] = new_pixel
-    new_blocks[pixel_part.block_index] = bytes(patched_block)
+    buffers: dict[int, bytearray] = {}
+    encoded_specs: list[dict[str, object]] = []
+    for spec in specs:
+        spec_contract = spec["contract"]
+        spec_base = spec["base"]
+        if spec["wanted_rgba"] == spec["original_rgba"]:
+            continue
+        if spec_contract.codec == "rgba8888":
+            spec_new_base = encode_8888_base(
+                spec["metadata"], spec["wanted_rgba"], spec_contract.base_len
+            )
+            spec_changed_blocks = _changed_pixels(
+                spec["original_rgba"], spec["wanted_rgba"]
+            )
+        else:
+            spec_new_base, _touched = _encode_bc_base(
+                spec_contract,
+                spec["metadata"],
+                spec_base,
+                spec["original_rgba"],
+                spec["wanted_rgba"],
+            )
+            spec_changed_blocks = len(_touched)
+        if spec_new_base == spec_base:
+            raise PatchError(
+                "no-op detection was inconsistent: encode reproduced retail base"
+            )
+        spec_head_len = int(spec["head_len"])
+        spec_pixel_part = spec["pixel_part"]
+        new_pixel = spec["preserved_head"] + spec_new_base + spec["mip_tail"]
+        if (
+            len(new_pixel) != spec_pixel_part.length
+            or new_pixel[:spec_head_len] != spec["preserved_head"]
+            or new_pixel[spec_head_len + spec_contract.base_len :] != spec["mip_tail"]
+        ):
+            raise PatchError("head/base/mip preservation invariant failed")
+        buffer = buffers.setdefault(
+            spec_pixel_part.block_index,
+            bytearray(new_blocks[spec_pixel_part.block_index]),
+        )
+        buffer[
+            spec_pixel_part.offset : spec_pixel_part.offset + spec_pixel_part.length
+        ] = new_pixel
+        spec["new_base"] = spec_new_base
+        spec["changed_block_count"] = spec_changed_blocks
+        encoded_specs.append(spec)
 
-    changed_block_descriptor = record.blocks[pixel_part.block_index]
-    if not changed_block_descriptor.is_compressed or changed_block_descriptor.wrapper is None:
-        raise PatchError(f"PORTME: {contract.name} pixel block is not H7A-compressed")
-    shift = changed_block_descriptor.wrapper.shift
-    compressed = compress_h7a(new_blocks[pixel_part.block_index], shift)
-    if apf_inner.decompress_h7a(
-        compressed, len(new_blocks[pixel_part.block_index]), shift
-    ) != new_blocks[pixel_part.block_index]:
-        raise PatchError("H7A encode/decode round-trip failed")
-    encoded_stored = struct.pack(
-        ">5I",
-        apf_inner.H7A_MAGIC,
-        len(new_blocks[pixel_part.block_index]),
-        apf_inner.H7A_HEADER_SIZE + len(compressed),
-        changed_block_descriptor.unknown_10,
-        shift,
-    ) + compressed
+    if not encoded_specs:
+        raise PatchError("no-op detection was inconsistent: nothing changed")
+
     new_stored = list(original_stored)
-    new_stored[pixel_part.block_index] = encoded_stored
+    shifts: dict[int, int] = {}
+    for block_index in sorted(buffers):
+        block_bytes = bytes(buffers[block_index])
+        changed_block_descriptor = record.blocks[block_index]
+        if (
+            not changed_block_descriptor.is_compressed
+            or changed_block_descriptor.wrapper is None
+        ):
+            raise PatchError(f"PORTME: pixel block {block_index} is not H7A-compressed")
+        block_shift = changed_block_descriptor.wrapper.shift
+        shifts[block_index] = block_shift
+        compressed = compress_h7a_best(block_bytes, block_shift)
+        if apf_inner.decompress_h7a(compressed, len(block_bytes), block_shift) != block_bytes:
+            raise PatchError("H7A encode/decode round-trip failed")
+        encoded_stored = struct.pack(
+            ">5I",
+            apf_inner.H7A_MAGIC,
+            len(block_bytes),
+            apf_inner.H7A_HEADER_SIZE + len(compressed),
+            changed_block_descriptor.unknown_10,
+            block_shift,
+        ) + compressed
+        new_stored[block_index] = encoded_stored
+        new_blocks[block_index] = block_bytes
+    shift: object = (
+        shifts[next(iter(shifts))] if len(shifts) == 1 else dict(sorted(shifts.items()))
+    )
+    first_encoded = encoded_specs[0]
+    new_base = first_encoded["new_base"]
+    changed_block_count = int(first_encoded["changed_block_count"])
+    _, _, decoded_new_rgba = apf_inner.decode_txtr_base_rgba(
+        first_encoded["metadata"], new_base
+    )
 
     # Rebuild the IFF inside the fixed outer allocation.
     header = bytearray(original_entry[: record.header_size])
@@ -970,14 +1268,17 @@ def build_field_art_patch(
         raise PatchError(f"rebuilt {contract.name} IFF does not decode as intended")
     before_parts = _file_part_hashes(record, original_blocks)
     after_parts = _file_part_hashes(rebuilt_record, rebuilt_blocks)
-    changed_parts = [key for key in before_parts if before_parts[key] != after_parts[key]]
-    expected_changed_part = (file_index, contract.pixel_part_index)
-    if changed_parts != [expected_changed_part]:
+    changed_parts = sorted(
+        key for key in before_parts if before_parts[key] != after_parts[key]
+    )
+    expected_changed_parts = sorted(
+        (int(spec["file_index"]), spec["contract"].pixel_part_index)
+        for spec in encoded_specs
+    )
+    if changed_parts != expected_changed_parts:
         raise PatchError(
             f"unrelated inner payload changed; changed part keys are {changed_parts}"
         )
-
-    _, _, decoded_new_rgba = apf_inner.decode_txtr_base_rgba(metadata, new_base)
     footer_after = rebuilt_entry[new_file_length : new_file_length + footer_total]
     manifest = {
         "schema": SCHEMA,
@@ -1008,6 +1309,25 @@ def build_field_art_patch(
             "sha256": sha256_bytes(preserved_head),
             "bit_exact": True,
         },
+        **(
+            {
+                "targets": [
+                    {
+                        "file_index": int(spec["file_index"]),
+                        "name": spec["contract"].name,
+                        "type": spec["contract"].type_name,
+                        "changed": bool(spec.get("new_base")),
+                        "base_sha256_before": sha256_bytes(spec["base"]),
+                        "base_sha256_after": sha256_bytes(
+                            spec["new_base"] if spec.get("new_base") else spec["base"]
+                        ),
+                    }
+                    for spec in specs
+                ]
+            }
+            if len(specs) > 1
+            else {}
+        ),
         "iff": {
             "allocation_size": entry.size,
             "file_length_before": record.file_length,
@@ -1034,26 +1354,44 @@ def build_field_art_patch(
             "rebuilt_iff_reparsed": True,
             "footer_bit_exact": footer_after == footer_bytes,
             "mip_tail_preserved": True,
-            "descriptor_pad_preserved": head_len == 0 or preserved_head == pixel_bytes[:head_len],
-            "unrelated_inner_part_count": len(before_parts) - 1,
+            "descriptor_pad_preserved": all(
+                int(spec["head_len"]) == 0
+                or spec["preserved_head"] == spec["pixel_bytes"][: int(spec["head_len"])]
+                for spec in specs
+            ),
+            "unrelated_inner_part_count": len(before_parts) - len(
+                expected_changed_parts
+            ),
             "unrelated_inner_parts_preserved": True,
             "changed_inner_parts": [
                 {
-                    "file_index": file_index,
-                    "part_index": contract.pixel_part_index,
-                    "block_index": pixel_part.block_index,
+                    "file_index": int(spec["file_index"]),
+                    "part_index": spec["contract"].pixel_part_index,
+                    "block_index": spec["pixel_part"].block_index,
                 }
+                for spec in encoded_specs
             ],
             "fixed_outer_allocation": True,
             "source_opened_read_only": True,
         },
         "backend": {
             "png": f"Pillow {PILLOW_VERSION}",
-            "encoder": {
-                "dxt1": "project-native deterministic touched-block DXT1 encoder (provisional)",
-                "bc3": "project-native deterministic touched-block BC3 encoder (provisional)",
-                "rgba8888": "exact 8_8_8_8 permutation+endian+tile (lossless)",
-            }[contract.codec],
+            "encoder": (
+                {
+                    "dxt1": "project-native deterministic touched-block DXT1 encoder (provisional)",
+                    "bc3": "project-native deterministic touched-block BC3 encoder (provisional)",
+                    "rgba8888": "exact 8_8_8_8 permutation+endian+tile (lossless)",
+                }[contract.codec]
+                if len(specs) == 1
+                else {
+                    spec["contract"].codec: {
+                        "dxt1": "project-native deterministic touched-block DXT1 encoder (provisional)",
+                        "bc3": "project-native deterministic touched-block BC3 encoder (provisional)",
+                        "rgba8888": "exact 8_8_8_8 permutation+endian+tile (lossless)",
+                    }[spec["contract"].codec]
+                    for spec in encoded_specs
+                }
+            ),
             "h7a": "project-native greedy H7A encoder",
         },
         "portme": _PORTME,
@@ -1230,10 +1568,22 @@ def _copy_fd_metadata(
     source_descriptor: int,
     output_descriptor: int,
     source_metadata: os.stat_result,
+    output_path: Path | None,
 ) -> None:
-    """Copy mode, available extended attributes, and timestamps by fd."""
+    """Copy mode, available extended attributes, and timestamps by fd.
+
+    ``output_path`` is the name ``output_descriptor`` was opened as.  POSIX never
+    consults it -- every step here addresses the descriptor, so the metadata
+    cannot be redirected to another file by a swap of that name.  It exists for
+    the platforms whose ``chmod``/``utime`` have no descriptor form at all
+    (Windows), where it is the difference between copying this metadata and
+    silently dropping it; the fallbacks it enables are metadata-only and each
+    caller re-checks that the output name still resolves to the descriptor's
+    inode before reporting success, so a redirected stamp fails the build rather
+    than passing for a clean one.  The bytes are never written through the name.
+    """
     platform_compat.fchmod(
-        output_descriptor, stat.S_IMODE(source_metadata.st_mode), path=None
+        output_descriptor, stat.S_IMODE(source_metadata.st_mode), path=output_path
     )
     if all(hasattr(os, name) for name in ("listxattr", "getxattr", "setxattr")):
         try:
@@ -1246,8 +1596,11 @@ def _copy_fd_metadata(
                 os.setxattr(output_descriptor, name, value)
             except OSError:
                 continue
-    os.utime(
+    # Timestamps are cosmetic: utime_ns reports a skip rather than raising, and a
+    # skip must not fail a transaction whose bytes and mode are already correct.
+    platform_compat.utime_ns(
         output_descriptor,
+        output_path,
         ns=(source_metadata.st_atime_ns, source_metadata.st_mtime_ns),
     )
 
@@ -1324,9 +1677,14 @@ def _write_copied_volume(
         if source_sha_after != source_sha_before:
             raise PatchError("source APF volume changed during copied-volume patch")
         if not _path_is_owned_inode(source_volume, source_identity):
-            raise PatchError("source APF volume pathname changed during copy")
+            raise PatchError(
+            "source APF volume pathname changed during copy (a symlinked "
+            "source is the usual cause; stage a real copy instead)"
+        )
 
-        _copy_fd_metadata(source_descriptor, output_descriptor, source_metadata)
+        _copy_fd_metadata(
+            source_descriptor, output_descriptor, source_metadata, output_volume
+        )
         os.fsync(output_descriptor)
         if not _path_is_owned_inode(output_volume, output_identity):
             raise PatchError("output volume pathname changed during copied-volume patch")
@@ -1360,9 +1718,21 @@ def _write_copied_volume(
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--index", required=True, type=Path, help="user-owned APF 0A")
-    parser.add_argument("--png", required=True, type=Path, help="exact-dimension RGBA PNG")
+    parser.add_argument(
+        "--png",
+        required=True,
+        action="append",
+        type=Path,
+        help="exact-dimension RGBA PNG; repeat with --file-index for more layers",
+    )
     parser.add_argument("--entry-index", required=True, type=int)
-    parser.add_argument("--file-index", required=True, type=int)
+    parser.add_argument(
+        "--file-index",
+        required=True,
+        action="append",
+        type=int,
+        help="pinned inner file slot; repeat to write several layers in one pass",
+    )
     parser.add_argument("--output-entry", type=Path, help="write rebuilt logical IFF entry")
     parser.add_argument(
         "--output-volume",
@@ -1379,7 +1749,11 @@ def main(argv: list[str] | None = None) -> int:
     manifest_path = args.manifest.expanduser()
     try:
         index_path = args.index.expanduser()
-        png_path = args.png.expanduser()
+        if len(args.png) != len(args.file_index):
+            raise PatchError(
+                "every --png needs its own --file-index (paired in order)"
+            )
+        png_paths = [path.expanduser() for path in args.png]
         output_entry = (
             args.output_entry.expanduser() if args.output_entry is not None else None
         )
@@ -1387,13 +1761,15 @@ def main(argv: list[str] | None = None) -> int:
             args.output_volume.expanduser() if args.output_volume is not None else None
         )
         _preflight_output_paths(
-            [index_path, png_path],
+            [index_path, *png_paths],
             [("manifest", manifest_path), ("output entry", output_entry),
              ("output volume", output_volume)],
         )
         manifest_reservation = _reserve_new(manifest_path)
-        result = build_field_art_patch(
-            index_path, png_path, args.entry_index, args.file_index
+        result = build_field_art_patch_many(
+            index_path,
+            args.entry_index,
+            tuple(zip(args.file_index, png_paths)),
         )
         archive = apf_outer.parse_archive(index_path)
         entry = archive.entries[args.entry_index]
@@ -1418,7 +1794,8 @@ def main(argv: list[str] | None = None) -> int:
         manifest_reservation = None
         print(
             "APF_FIELD_ART_PATCH_PASS "
-            f"mode={document['mode']} entry={args.entry_index} file={args.file_index} "
+            f"mode={document['mode']} entry={args.entry_index} "
+            f"files={','.join(str(index) for index in args.file_index)} "
             f"sha256={sha256_bytes(result.entry_bytes)}"
         )
     except (PatchError, apf_inner.FormatError, apf_outer.FormatError, OSError) as exc:

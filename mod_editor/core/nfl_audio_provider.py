@@ -38,6 +38,7 @@ from .nfl_audio import (
 )
 from .providers import (
     CommandRunner,
+    ContainedSourceValidator,
     Nfl2k5UnifiedVisualProvider,
     ProviderCommandResult,
     ProviderError,
@@ -47,6 +48,7 @@ from .providers import (
     ProviderStage,
     SourceHasher,
     SubprocessCommandRunner,
+    _is_supported_nfl2k5_container,
 )
 
 
@@ -164,16 +166,16 @@ class Nfl2k5MenuBackAudioProvider:
         "<retail.xiso.iso> --input-wav <menu-back.wav> --output-xiso "
         "<new.xiso.iso> --manifest <manifest.json>"
     )
-    backend_module_sha256 = "c3621004576b64a5a0f93cd8c54321791c3cca4c36e5e5086fea0450e273577e"
+    backend_module_sha256 = "d684cbe7b30f77caf808bcef3d0219777b333336ae5bee4837d10f69cc1d13c6"
     verifier_module = "tools/nfl_audo_wav_xiso_verify.py"
-    verifier_module_sha256 = "2b6d159334a00fa18fc0276eb1f400bd49069a68e6e478be2c7a9b50e1371d00"
+    verifier_module_sha256 = "66e05cf34e96fd95689a0be402f3671701a887b6725e22575915b7cb64f4f3db"
     writer_dependency_module = "tools/nfl_uniform_color_xiso_direct_patch.py"
     writer_dependency_module_sha256 = (
-        "5d70905f9aa6129a3a52580eeed1434e5f3589578eabc16837bc1e24ba9e9130"
+        "8615a75b2943a119c8cc9244f4934a7eb9c95610dd0d8431ff7cf3dfb5977d06"
     )
     verifier_dependency_module = "tools/nfl_team_identity_xiso_verify.py"
     verifier_dependency_module_sha256 = (
-        "dcbe2001f3f2f292bad88ae85657f28a5564496f37b561b33548eecf1e9d8f8a"
+        "acd9eec7408e33f6a68c7964491c841056778a49c2f49ff9bb35210681146dbf"
     )
     recipe_schema_file = "mod_editor/nfl_menu_back_audio_recipe.schema.json"
     recipe_schema_file_sha256 = "3548ea8b9614c2d6de1251000661fd512f7605675ef02ad34bb1a35e36c850d9"
@@ -203,10 +205,14 @@ class Nfl2k5MenuBackAudioProvider:
         runner: CommandRunner | None = None,
         source_hasher: SourceHasher | None = None,
         workspace: Path | None = None,
+        contained_source_validator: ContainedSourceValidator | None = None,
     ):
         self.runner = runner or SubprocessCommandRunner()
         self.workspace = workspace or Path(__file__).resolve().parents[2]
         self.source_hasher = source_hasher or Nfl2k5UnifiedVisualProvider._hash_source
+        self.contained_source_validator = (
+            contained_source_validator or _is_supported_nfl2k5_container
+        )
 
     def _writer_members(
         self,
@@ -272,10 +278,17 @@ class Nfl2k5MenuBackAudioProvider:
                 )
 
         digest, size = self.source_hasher(source, progress)
-        if digest != self.source_sha256 or digest != request.source.sha256:
-            raise ProviderError("NFL XISO changed or does not match the pinned retail SHA-256")
-        if size != self.source_size or size != request.source.size:
+        if digest != request.source.sha256:
+            raise ProviderError("NFL XISO changed after editor recognition")
+        if size != request.source.size:
             raise ProviderError("NFL XISO size changed after editor recognition")
+        if (
+            digest != self.source_sha256
+            and not self.contained_source_validator(source)
+        ):
+            raise ProviderError(
+                "NFL audio source no longer contains the reviewed NFL 2K5 USA default.xbe"
+            )
         emit(
             ProviderEvent(
                 ProviderStage.PREFLIGHT,
@@ -904,10 +917,10 @@ class Nfl2k5MenuBackAudioProvider:
             or request.source.detected_game != GameId.NFL2K5.value
             or request.source.fingerprint_id != "nfl2k5-usa-retail-xiso"
             or request.source.kind != "xiso"
-            or request.source.sha256 != self.source_sha256
-            or request.source.size != self.source_size
         ):
-            raise ProviderError("Fixed NFL audio build requires the recognized retail XISO")
+            raise ProviderError(
+                "Fixed NFL audio build requires the recognized NFL 2K5 USA retail XISO"
+            )
         resolved = Nfl2k5UnifiedVisualProvider._regular_non_symlink(source, "source XISO")
         if Path(request.source.inspected_path).resolve(strict=True) != resolved:
             raise ProviderError("NFL audio source inspection path does not match the selected XISO")

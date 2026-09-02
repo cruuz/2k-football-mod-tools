@@ -33,6 +33,16 @@ if str(_REPO_ROOT) not in sys.path:
 
 from mod_editor.core import platform_compat  # noqa: E402
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import FormatError, parse_archive, read_entry_range  # noqa: E402
 from nfl_scene_probe import (  # noqa: E402
     ProbeError,

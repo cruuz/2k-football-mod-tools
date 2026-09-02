@@ -765,10 +765,26 @@ def _new_output_path(path: Path) -> Path:
     )
 
 
-def _require_build_space(parent: Path) -> None:
-    """Refuse before staging when one complete XISO cannot fit safely."""
+def _require_build_space(parent: Path, source: Path | None = None) -> None:
+    """Refuse before staging when one complete XISO cannot fit safely.
 
-    required = SOURCE_SIZE + BUILD_SPACE_MARGIN
+    ``source`` is the user's own XISO.  Measure it rather than assuming
+    ``SOURCE_SIZE``: ``_validate_cache`` deliberately stopped pinning the source
+    size because a legal dump's container legitimately differs from this
+    project's own rip, so the constant is the wrong number to budget against. A
+    larger dump would have been under-budgeted and could then fail part-way
+    through staging on a full disk instead of refusing cleanly up front, which is
+    the whole point of checking here. Falls back to the constant when the size
+    cannot be read, which keeps the old behaviour rather than skipping the check.
+    """
+
+    output_size = SOURCE_SIZE
+    if source is not None:
+        try:
+            output_size = source.stat().st_size
+        except OSError:
+            output_size = SOURCE_SIZE
+    required = output_size + BUILD_SPACE_MARGIN
     try:
         free = shutil.disk_usage(parent).free
     except OSError as exc:
@@ -1222,7 +1238,7 @@ class Nfl2k5BuildService:
         _emit(progress, BuildStage.PREPARING, 0, 4, "Preparing a safe build")
         source = self._validate_cache(cache)
         output = _new_output_path(output_xiso)
-        _require_build_space(output.parent)
+        _require_build_space(output.parent, source)
         backend, _ = _regular_file(self.backend, "2K5 ISO builder")
         stage = Path(tempfile.mkdtemp(
             prefix=f".{output.name}.2k5mod-", dir=output.parent))
@@ -1353,16 +1369,19 @@ class Nfl2k5BuildService:
         if (
             not record.recognized
             or record.fingerprint_id != EXPECTED_FINGERPRINT
-            or record.sha256 != SOURCE_SHA256
-            or record.size != SOURCE_SIZE
             or record.kind != "xiso"
             or record.detected_game != "nfl2k5"
         ):
             raise ValidationError(
                 "Load the supported USA retail NFL 2K5 Xbox XISO before building."
             )
+        # No expected size: the user's container legitimately differs from the
+        # project's own rip, and pinning it here refused every legal dump at the
+        # moment of Build -- after it had already loaded, indexed and been edited,
+        # which is the worst possible place to say no. The cache's pack-0 and
+        # index below are still pinned, and those are the bytes a build consumes.
         source, _ = _regular_file(
-            Path(record.inspected_path), "NFL 2K5 source XISO", SOURCE_SIZE)
+            Path(record.inspected_path), "NFL 2K5 source XISO")
         _regular_file(cache.pack0, "private NFL 2K5 archive cache", PACK0_SIZE)
         _regular_file(
             cache.inventory, "private NFL 2K5 asset index", INVENTORY_SIZE)
@@ -1470,8 +1489,14 @@ class Nfl2k5BuildService:
     ) -> tuple[BuildResult, tuple[int, int]]:
         manifest, _ = _regular_file(
             manifest_path, "internal build receipt", maximum_size=512 * 1024 * 1024)
+        # The build copies the user's container and patches it in place, so the
+        # output is the size of THEIR source -- not of the project's own dump.
+        # Requiring SOURCE_SIZE here rejected every legal rip that is packaged
+        # differently, while checking nothing the source-size comparison below
+        # does not already check.
+        source_size = source.stat().st_size
         staged, staged_info = _regular_file(
-            staged_xiso, "staged modded XISO", expected_size=SOURCE_SIZE)
+            staged_xiso, "staged modded XISO", expected_size=source_size)
         try:
             value = json.loads(manifest.read_bytes())
         except (OSError, json.JSONDecodeError) as exc:
@@ -1486,12 +1511,12 @@ class Nfl2k5BuildService:
         if (
             value.get("schema") != BUILD_SCHEMA
             or source_row.get("path") != str(source)
-            or source_row.get("sha256_before") != SOURCE_SHA256
-            or source_row.get("sha256_after") != SOURCE_SHA256
+            or not isinstance(source_row.get("sha256_before"), str)
+            or source_row.get("sha256_after") != source_row.get("sha256_before")
             or source_row.get("opened_read_only") is not True
             or source_row.get("modified") is not False
             or output_row.get("xiso_path") != str(staged)
-            or output_row.get("xiso_size") != SOURCE_SIZE
+            or output_row.get("xiso_size") != source_size
             or output_row.get("device") != staged_info.st_dev
             or output_row.get("inode") != staged_info.st_ino
             or not isinstance(output_row.get("xiso_sha256"), str)
@@ -1505,7 +1530,7 @@ class Nfl2k5BuildService:
             )
         return BuildResult(
             output_xiso=final_output,
-            output_size=SOURCE_SIZE,
+            output_size=source_size,
             output_sha256=output_row["xiso_sha256"],
             edit_count=project_row["edit_count"],
             changed_byte_count=patch_row["changed_byte_count"],

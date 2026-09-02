@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import OrderedDict
 from dataclasses import asdict
 import hashlib
 import json
@@ -12,6 +13,16 @@ from pathlib import Path
 import stat
 import sys
 from typing import Any
+
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
 
 from nfl_outer import parse_archive, read_entry_range
 from nfl_txtr import (COMPRESSED_SENTINEL, HEADER, Chunk, decode_chunk,
@@ -43,11 +54,40 @@ def digest(data: bytes) -> str:
 
 
 def file_digest(path: Path) -> str:
+    info = path.stat()
+    key = (str(path), info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
+    cached = _FILE_DIGEST_CACHE.get(key)
+    if cached is not None:
+        _FILE_DIGEST_CACHE.move_to_end(key)
+        return cached
+    digest = _file_digest_uncached(path)
+    _FILE_DIGEST_CACHE[key] = digest
+    _FILE_DIGEST_CACHE.move_to_end(key)
+    while len(_FILE_DIGEST_CACHE) > _FILE_DIGEST_CACHE_LIMIT:
+        _FILE_DIGEST_CACHE.popitem(last=False)
+    return digest
+
+
+def _file_digest_uncached(path: Path) -> str:
     result = hashlib.sha256()
     with path.open("rb") as stream:
         for block in iter(lambda: stream.read(16 * 1024 * 1024), b""):
             result.update(block)
     return result.hexdigest()
+
+
+# The canonical index volume is hash-pinned and image-constant, but a
+# multi-edit build used to re-hash its ~193 MB once per edit.  The digest is
+# memoized per file identity (path, device, inode, size, mtime); a rewrite
+# moves size/mtime and re-hashes.
+_FILE_DIGEST_CACHE_LIMIT = 8
+_FILE_DIGEST_CACHE: "OrderedDict[tuple[object, ...], str]" = OrderedDict()
+
+
+def clear_file_digest_cache() -> None:
+    """Forget every memoized file digest (tests and fresh sessions)."""
+
+    _FILE_DIGEST_CACHE.clear()
 
 
 def canonical_json(value: object) -> bytes:
@@ -278,7 +318,38 @@ def build_import(index_path: Path, inventory_path: Path, logo_code: int,
                                   int(target["mip_levels"]))
     png, png_payload, rgba = read_png(png_path, width, height)
     mips = generate_mips(rgba, width, height, level_count)
-    palette, linear_levels, quantization = palette_tools.quantize_levels(mips)
+    def candidate_decoded(
+        candidate_palette: list[tuple[int, int, int, int]],
+        candidate_levels: list[bytes],
+    ) -> bytes:
+        chain = b"".join(
+            swizzle_2d(indices, level.width, level.height, 1)
+            for indices, level in zip(candidate_levels, mips)
+        )
+        return (
+            template_decoded[:128]
+            + chain
+            + palette_tools.palette_bytes(candidate_palette)
+        )
+
+    if bool(target["compressed"]):
+        # Only the compressed targets have a VC-LZ span to overflow. The tier
+        # ladder starts at 256, so art that already fit is byte-for-byte
+        # unchanged; only art that used to fail outright steps down.
+        bounded = palette_tools.quantize_levels_to_vc_lz_bound(
+            mips,
+            candidate_decoded,
+            stream_tag=int(target["stream_tag"]),
+            offset_bits=int(target["offset_bits"]),
+            max_encoded_size=int(target["stored_size"]),
+        )
+        palette, linear_levels, quantization = (
+            bounded.palette, bounded.index_levels, bounded.quantization
+        )
+        palette_fit_attempts = list(bounded.attempts)
+    else:
+        palette, linear_levels, quantization = palette_tools.quantize_levels(mips)
+        palette_fit_attempts = []
     require(len(linear_levels) == level_count and
             sum(len(value) for value in linear_levels) == int(target["palette_offset"]),
             "quantized mip index allocation changed")
@@ -386,6 +457,9 @@ def build_import(index_path: Path, inventory_path: Path, logo_code: int,
         "quantization": {"algorithm":
                          "weighted_median_cut_rgba_then_nearest_squared_error",
                          **quantization, "palette_entries": len(palette),
+                         # Only the compressed branch runs the ladder.
+                         "palette_fit_attempts": palette_fit_attempts,
+                         "palette_was_reduced": len(palette_fit_attempts) > 1,
                          "unused_palette_entries_zero_filled": True},
         "compression": compression_record,
         "rebuild": {**rebuild_record, "span_size": len(rebuilt_span),

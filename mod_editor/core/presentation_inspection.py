@@ -22,9 +22,19 @@ FONT_LAYOUT_SIZE = 4_920
 FONT_LAYOUT_SHA256 = "1d5e83d476dee76b4013c957cb450b316ab2251d0337907e269855ac8c800a02"
 FONT_LAYOUT_SCHEMA = "apf_digital_font_layout/v1"
 FONT_ROUNDTRIP = ROOT / "reports/assets/apf_digital_font_patch_roundtrip.json"
-FONT_ROUNDTRIP_SIZE = 4_737
-FONT_ROUNDTRIP_SHA256 = "c1ccb433832fe4c3465c2f9632e3a31887133cc5f8cf811cdff71ec9b36cd06e"
+FONT_ROUNDTRIP_SIZE = 4_738
+FONT_ROUNDTRIP_SHA256 = "96ee9a01eec320011154531272c570cbf2227c3d7ef9d1fe9ff5638baeac3b70"
 FONT_ROUNDTRIP_SCHEMA = "apf_digital_font_patch_roundtrip/v1"
+
+_SCOREBUG_TEXTURE_OWNERSHIP = {
+    "scorebug_bottombar": (8, 0),
+    "scorebug_titlebar": (1, 0),
+    "scorebug_team_logos": (0, 2),
+    "scorebug_infobar": (1, 0),
+    "scorebug_messages": (0, 0),
+    "scorebug_blackbar": (0, 0),
+    "scorebug_statbar": (1, 0),
+}
 
 
 def _read(path: Path, size: int, digest: str, schema: str, label: str) -> dict[str, Any]:
@@ -108,6 +118,12 @@ def inspect_apf_scorebug_presentation(
             "mesh_count": row["gltf"]["mesh_count"],
             "triangle_count": row["gltf"]["triangle_count"],
             "writer_available": False,
+            "embedded_texture_count": _SCOREBUG_TEXTURE_OWNERSHIP[row["name"]][0],
+            "dynamic_logo_sampler_count": _SCOREBUG_TEXTURE_OWNERSHIP[row["name"]][1],
+            "draw_material_texture_ownership_proved": True,
+            "runtime_source_texture_family_proved": (
+                row["name"] != "scorebug_team_logos"
+            ),
         }
         for row in apf["field_scorebug_package"]["resources"]
     ]
@@ -138,6 +154,8 @@ def inspect_apf_scorebug_presentation(
             "components": components,
             "geometry_writer_available": False,
             "runtime_behavior_writer_available": False,
+            "team_logo_textures_are_runtime_injected": True,
+            "team_logo_runtime_cache_layer_proved": False,
         },
         "season_gamecast_is_separate": True,
         "digital_font": {
@@ -169,9 +187,10 @@ def inspect_apf_scorebug_presentation(
         "safe_writer_count": 1,
         "warning": (
             "Only the shared alpha-only digital_font has a proved copied-volume "
-            "writer. The seven SCNE components, clocks, identity, visibility, "
-            "timing, GameCast, replay/halftime, and audio remain separate and "
-            "read-only."
+            "writer. The scorebug team-logo scene owns two exact dynamic logo "
+            "samplers rather than embedded textures; the runtime cache layer that "
+            "feeds them is not statically proved. Clocks, identity, visibility, "
+            "timing, GameCast, replay/halftime, and audio remain separate and read-only."
         ),
     }
 

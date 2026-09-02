@@ -16,6 +16,16 @@ import struct
 
 from PIL import Image, __version__ as PILLOW_VERSION
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 import apf_inner
 import apf_outer
 import apf_texture_patch as archive_patch
@@ -193,6 +203,18 @@ def hash_inactive(data: bytes, mask: bytearray) -> str:
     return sha256(bytes(value for index, value in enumerate(data) if not mask[index]))
 
 
+def target_label(row: dict[str, object]) -> str:
+    """Name one pants target the way a user picked it, not by entry index."""
+
+    try:
+        slot = int(row["asset_index"])          # type: ignore[index]
+        outer = int(row["outer_table_index"])   # type: ignore[index]
+    except (KeyError, TypeError, ValueError):
+        return "Pants target"
+    name = str(row.get("outer_name") or "").strip()
+    return f"Pants slot {slot} (outer {outer}" + (f", {name}" if name else "") + ")"
+
+
 def _rebuild_entry(
     entry: apf_outer.Entry,
     record: apf_inner.IFFRecord,
@@ -200,6 +222,7 @@ def _rebuild_entry(
     original_blocks: list[bytes],
     original_stored: list[bytes],
     new_color_texture: bytes,
+    target: str = "Pants target",
 ) -> tuple[bytes, dict[str, object]]:
     if len(original_blocks) != 2 or len(original_stored) != 2:
         raise PantsTransportError("PORTME: pants IFF must have exactly two blocks")
@@ -282,9 +305,13 @@ def _rebuild_entry(
         raise PantsTransportError("PORTME: pants outer allocation tail is nonzero")
     active = bytes(header) + bytes(body) + footer
     if len(active) > entry.size:
-        raise PantsTransportError(
-            "rebuilt pants IFF exceeds fixed allocation by "
-            f"{len(active) - entry.size} bytes"
+        fixed = record.header_size + len(original_stored[0]) + footer_total
+        raise archive_patch.allocation_overflow(
+            target=target,
+            overflow_bytes=len(active) - entry.size,
+            allocation_size=entry.size,
+            budget_bytes=entry.size - fixed,
+            retail_bytes=len(original_stored[1]),
         )
     rebuilt = active + bytes(entry.size - len(active))
 
@@ -515,6 +542,7 @@ def build_patch(
         original_blocks,
         original_stored,
         new_texture,
+        target_label(row),
     )
     return archive_patch.PatchResult(
         rebuilt,

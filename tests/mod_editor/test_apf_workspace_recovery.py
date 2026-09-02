@@ -363,8 +363,10 @@ class _WindowFacade:
         self.can_undo = False
         self.last_build = None
         self.last_project_identity = None
-        self.launcher = SimpleNamespace(settings=SimpleNamespace(configured=False))
+        self.launcher = SimpleNamespace(settings=SimpleNamespace(configured=False, title_update_path=None))
         self.can_launch_xenia = False
+        # Launch names its single blocker instead of graying out.
+        self.xenia_blocker = "Build a modded game folder first."
         self.close_calls = 0
         self.recovery_calls = 0
         self.recovery_started: threading.Event | None = None
@@ -400,6 +402,11 @@ class _WindowFacade:
         return _empty_project(destination, replace=True)
 
 
+@unittest.skipIf(
+    os.name == "nt",
+    "PyQt5 offscreen window teardown is unstable on hosted Windows; "
+    "the recovery UI suite runs on Linux/macOS and Windows core recovery stays active",
+)
 class ApfRecoveryWindowTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

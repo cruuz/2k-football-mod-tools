@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Mapping, Protocol, runtime_checkable
+from typing import Callable, Mapping, Protocol, Sequence, runtime_checkable
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QPalette
@@ -220,6 +220,7 @@ class GameplayPanel(QWidget):
         host: GameplayPanelHost,
         *,
         capability_page: QWidget | None = None,
+        extra_tabs: Sequence[tuple[QWidget, str]] = (),
         parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
@@ -228,6 +229,7 @@ class GameplayPanel(QWidget):
         self.host = host
         self.model: GameplayInspectionModel | None = None
         self.setObjectName("gameplayInspectorPanel")
+        self._extra_tabs = tuple(extra_tabs)
         self._build_ui(capability_page)
         self._apply_style()
         self.reload()
@@ -278,9 +280,11 @@ class GameplayPanel(QWidget):
         root.addLayout(header)
 
         boundary = QLabel(
-            "READ-ONLY INSPECTOR  •  No preset, save writeback, or executable "
-            "patch is enabled. Displayed save values are pinned research fixtures, "
-            "not values read from your current profile."
+            "READ-ONLY INSPECTOR  •  The three inspector tabs enable no preset, save "
+            "writeback, or executable patch. Displayed save values are pinned research "
+            "fixtures, not values read from your current profile."
+            + ("  The extra workspace tab(s) write a patched COPY of default.xbe "
+               "(xemu-only), never the source." if self._extra_tabs else "")
         )
         boundary.setObjectName("inspectionBoundary")
         boundary.setWordWrap(True)
@@ -290,6 +294,8 @@ class GameplayPanel(QWidget):
         self.tabs.addTab(self._build_sliders_page(), "21 Sliders")
         self.tabs.addTab(self._build_draft_page(), "17 Fantasy Draft Weights")
         self.tabs.addTab(self._build_save_page(), "Saves && Franchise")
+        for widget, label in self._extra_tabs:
+            self.tabs.addTab(widget, label)
         if capability_page is not None:
             self.tabs.addTab(capability_page, "Capabilities && Limits")
         root.addWidget(self.tabs, 1)
@@ -396,8 +402,15 @@ class GameplayPanel(QWidget):
         except BaseException as exc:
             message = str(exc).strip() or exc.__class__.__name__
             self.status_label.setText(f"Gameplay findings unavailable: {message}")
-            self.export_json_button.setEnabled(False)
-            self.export_csv_button.setEnabled(False)
+            # Never silent-gray: exports stay clickable and teach the reload wall.
+            tip = (
+                f"Gameplay findings unavailable: {message}. "
+                "Reload after Load XISO succeeds, then export."
+            )
+            for button in (self.export_json_button, self.export_csv_button):
+                button.setEnabled(True)
+                button.setToolTip(tip)
+                button.setProperty("disableReason", tip)
             self.error_raised.emit(message)
 
     def _set_progress(self, stage: str, _completed: int, _total: int) -> None:
@@ -470,8 +483,12 @@ class GameplayPanel(QWidget):
             "Read-only map ready • 21 sliders • 17 Fantasy Draft weights • "
             f"{len(model.save_containers)} observed save containers • 5 franchise findings"
         )
-        self.export_json_button.setEnabled(True)
-        self.export_csv_button.setEnabled(True)
+        for button in (self.export_json_button, self.export_csv_button):
+            button.setEnabled(True)
+            button.setToolTip(
+                "Export the private, read-only gameplay inspection report."
+            )
+            button.setProperty("disableReason", "")
 
     def _show_franchise_details(self, row_index: int) -> None:
         if self.model is None or not 0 <= row_index < len(self.model.franchise_findings):
@@ -487,6 +504,15 @@ class GameplayPanel(QWidget):
         )
 
     def _choose_export(self, export_format: str) -> None:
+        button = (
+            self.export_json_button
+            if export_format == "json"
+            else self.export_csv_button
+        )
+        reason = str(button.property("disableReason") or "").strip()
+        if reason:
+            QMessageBox.information(self, "Cannot export gameplay report yet", reason)
+            return
         suffix = ".json" if export_format == "json" else ".csv"
         label = "JSON document (*.json)" if export_format == "json" else "CSV table (*.csv)"
         filename, _ = QFileDialog.getSaveFileName(

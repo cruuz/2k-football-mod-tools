@@ -100,16 +100,32 @@ class ApfTextSheetGuiTests(unittest.TestCase):
             text_mode=True,
         )
         try:
-            self.assertFalse(browser.export_text_sheet_button.isEnabled())
-            self.assertFalse(browser.import_text_sheet_button.isEnabled())
+            # Never silent-gray: unload state stays clickable with disableReason.
+            self.assertTrue(browser.export_text_sheet_button.isEnabled())
+            self.assertTrue(browser.import_text_sheet_button.isEnabled())
+            self.assertTrue(
+                str(browser.export_text_sheet_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(
+                str(browser.import_text_sheet_button.property("disableReason") or "").strip()
+            )
             browser.set_model(self._model(), "fixture")
             self.assertTrue(browser.export_text_sheet_button.isEnabled())
             self.assertTrue(browser.import_text_sheet_button.isEnabled())
+            self.assertFalse(
+                str(browser.export_text_sheet_button.property("disableReason") or "").strip()
+            )
             self.assertIn("every owned", browser.export_text_sheet_button.toolTip())
             self.assertIn("one Undo", browser.import_text_sheet_button.toolTip())
             browser.set_unavailable("unavailable")
-            self.assertFalse(browser.export_text_sheet_button.isEnabled())
-            self.assertFalse(browser.import_text_sheet_button.isEnabled())
+            self.assertTrue(browser.export_text_sheet_button.isEnabled())
+            self.assertTrue(browser.import_text_sheet_button.isEnabled())
+            self.assertTrue(
+                str(browser.export_text_sheet_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(
+                str(browser.import_text_sheet_button.property("disableReason") or "").strip()
+            )
         finally:
             browser.deleteLater()
             self.application.processEvents()
@@ -165,6 +181,29 @@ class ApfTextSheetGuiTests(unittest.TestCase):
                 )
                 self.assertIn("keep it private", messages)
                 self.assertIn("one Undo action", messages)
+        finally:
+            browser.deleteLater()
+            self.application.processEvents()
+
+
+
+    def test_text_apply_and_sheet_buttons_never_silent_gray_at_construction(self) -> None:
+        facade = _TextFacade()
+        browser = InspectorBrowser(
+            "Universal text",
+            facade,  # type: ignore[arg-type]
+            lambda *_args, **_kwargs: None,
+            text_mode=True,
+        )
+        try:
+            self.assertTrue(browser.apply_text_button.isEnabled())
+            self.assertTrue(
+                str(browser.apply_text_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(browser.export_text_sheet_button.isEnabled())
+            self.assertTrue(
+                str(browser.export_text_sheet_button.property("disableReason") or "").strip()
+            )
         finally:
             browser.deleteLater()
             self.application.processEvents()

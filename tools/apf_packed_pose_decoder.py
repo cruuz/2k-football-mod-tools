@@ -29,7 +29,7 @@ from typing import Iterable
 SCHEMA = "apf_packed_pose_decoder/v1"
 APF_SCHEMA = "apf_mocap_inventory/v1"
 EXPECTED_APF_INVENTORY_SHA256 = (
-    "e477214f818be01891253683d731551c98a06bf3da0b396dc9de968b031dfb69"
+    "adf7554d9fb1745048a044aa25462e9b11eb860ea788b9e6e1db82d346f0aa2b"
 )
 EXPECTED_APF_CORPUS_SHA256 = (
     "ba6ddcddd018f579e4ddbe385d63b31b45cca3c2aaf450850cf0fce20344d15f"

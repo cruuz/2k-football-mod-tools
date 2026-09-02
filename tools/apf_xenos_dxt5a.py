@@ -12,6 +12,16 @@ from __future__ import annotations
 
 import hashlib
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 import apf_inner
 
 
@@ -123,16 +133,35 @@ def strict_descriptor(metadata: dict[str, object]) -> None:
         raise DXT5AError(f"PORTME: digital_font descriptor changed: {disagreements}")
 
 
+def extract_linear_general(
+    tiled: bytes,
+    width: int,
+    height: int,
+    pitch_pixels: int,
+    *,
+    endian_mode: int = ENDIAN_MODE,
+) -> bytes:
+    """Untile an arbitrary DXT5A base level (not only digital_font 128×128)."""
+
+    if width <= 0 or height <= 0 or width % 4 or height % 4:
+        raise DXT5AError("DXT5A dimensions must be positive multiples of 4")
+    if pitch_pixels < width or pitch_pixels % 4:
+        raise DXT5AError("DXT5A pitch must cover width and be a multiple of 4")
+    try:
+        stored_endian = apf_inner._untile_2d(  # type: ignore[attr-defined]
+            tiled, width, height, pitch_pixels, 4, 4, BLOCK_BYTES
+        )
+        return apf_inner._endian_swap(stored_endian, endian_mode)  # type: ignore[attr-defined]
+    except apf_inner.FormatError as exc:
+        raise DXT5AError(str(exc)) from exc
+
+
 def extract_linear(tiled: bytes) -> bytes:
     if len(tiled) != ALLOCATION_BYTES:
         raise DXT5AError("digital_font tiled allocation must be exactly 8192 bytes")
-    try:
-        stored_endian = apf_inner._untile_2d(  # type: ignore[attr-defined]
-            tiled, WIDTH, HEIGHT, PITCH_PIXELS, 4, 4, BLOCK_BYTES
-        )
-        return apf_inner._endian_swap(stored_endian, ENDIAN_MODE)  # type: ignore[attr-defined]
-    except apf_inner.FormatError as exc:
-        raise DXT5AError(str(exc)) from exc
+    return extract_linear_general(
+        tiled, WIDTH, HEIGHT, PITCH_PIXELS, endian_mode=ENDIAN_MODE
+    )
 
 
 def insert_linear(linear: bytes) -> bytes:
@@ -158,26 +187,47 @@ def insert_linear(linear: bytes) -> bytes:
     return bytes(result)
 
 
-def decode_linear_alpha(linear: bytes) -> bytes:
-    if len(linear) != ALLOCATION_BYTES:
-        raise DXT5AError("linear DXT5A length changed")
-    alpha = bytearray(WIDTH * HEIGHT)
-    width_blocks = WIDTH // 4
-    for block_y in range(HEIGHT // 4):
+def decode_linear_alpha_general(
+    linear: bytes, width: int, height: int
+) -> bytes:
+    expected = (width // 4) * (height // 4) * BLOCK_BYTES
+    if len(linear) < expected:
+        raise DXT5AError(
+            f"linear DXT5A is {len(linear)} bytes; need at least {expected}"
+        )
+    alpha = bytearray(width * height)
+    width_blocks = width // 4
+    for block_y in range(height // 4):
         for block_x in range(width_blocks):
             block_index = block_y * width_blocks + block_x
             pixels = decode_block(linear[block_index * 8 : block_index * 8 + 8])
             for local_y in range(4):
                 for local_x in range(4):
-                    destination = (block_y * 4 + local_y) * WIDTH + block_x * 4 + local_x
+                    destination = (
+                        (block_y * 4 + local_y) * width + block_x * 4 + local_x
+                    )
                     alpha[destination] = pixels[local_y * 4 + local_x]
     return bytes(alpha)
+
+
+def decode_linear_alpha(linear: bytes) -> bytes:
+    if len(linear) != ALLOCATION_BYTES:
+        raise DXT5AError("linear DXT5A length changed")
+    return decode_linear_alpha_general(linear, WIDTH, HEIGHT)
+
+
+def alpha_to_rgba_general(alpha: bytes, width: int, height: int) -> bytes:
+    if len(alpha) != width * height:
+        raise DXT5AError(
+            f"alpha plane is {len(alpha)} bytes; expected {width * height}"
+        )
+    return b"".join(bytes((255, 255, 255, value)) for value in alpha)
 
 
 def alpha_to_rgba(alpha: bytes) -> bytes:
     if len(alpha) != WIDTH * HEIGHT:
         raise DXT5AError("digital_font alpha plane length changed")
-    return b"".join(bytes((255, 255, 255, value)) for value in alpha)
+    return alpha_to_rgba_general(alpha, WIDTH, HEIGHT)
 
 
 def rgba_to_alpha(rgba: bytes) -> bytes:

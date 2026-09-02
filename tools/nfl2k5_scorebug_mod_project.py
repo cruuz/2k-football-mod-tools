@@ -391,14 +391,13 @@ def validate_source(path: Path) \
     try:
         info = os.fstat(descriptor)
         identity = common.fd_identity(descriptor)
+        # Container not pinned -- see the note in nfl2k5_visual_mod_project. The
+        # game partition, its file count and default.xbe are still exact below.
         require(stat.S_ISREG(info.st_mode) and
-                info.st_size == common.EXPECTED_XISO_SIZE and
                 identity == (supplied.st_dev, supplied.st_ino) and
                 common.path_identity(resolved) == identity,
-                "source XISO identity/type/size changed")
+                "source XISO identity/type changed")
         sha = common.sha256_fd(descriptor)
-        require(sha == common.EXPECTED_XISO_SHA256,
-                "retail source XISO SHA-256 mismatch")
         entries, directory = common.parse_xdvdfs(descriptor, info.st_size)
         files = [entry for entry in entries.values() if not (entry.attributes & 0x10)]
         xbe = entries.get("default.xbe")
@@ -422,9 +421,11 @@ def bind_to_source(edits: list[PreparedEdit], source_fd: int,
         target = edit.target
         path = str(target["pack_path"])
         pack = entries.get(path.casefold())
+        # Neither sector nor absolute byte offset is compared: both are pure
+        # layout, and differ between a pressed disc, an extract-xiso rebuild and
+        # a repack even though every file is byte-identical. Size is checked
+        # here and the pack's content hash immediately below.
         require(pack is not None and
-                pack.sector == int(target["xiso_pack_sector"]) and
-                pack.byte_offset == int(target["xiso_pack_byte_offset"]) and
                 pack.size == int(target["pack_size"]),
                 f"retail target pack extent changed: {edit.name}")
         if path not in pack_hashes:
@@ -461,9 +462,10 @@ def write_all(descriptor: int, offset: int, payload: bytes) -> None:
 
 
 def union_record(edits: list[PreparedEdit], source_fd: int, output_fd: int,
-                 source_sha: str, allowed: set[int]) -> dict[str, Any]:
+                 source_sha: str, allowed: set[int],
+                 source_size: int) -> dict[str, Any]:
     source_after, output_sha, actual = common.compare_and_hash(
-        source_fd, output_fd, common.EXPECTED_XISO_SIZE, allowed)
+        source_fd, output_fd, source_size, allowed)
     require(source_after == source_sha and actual == sorted(allowed),
             "source changed or full-XISO difference union mismatch")
     return {
@@ -636,7 +638,8 @@ def make_manifest(project: ProjectFile, edits: list[PreparedEdit], source: Path,
                   output: Path, output_identity: tuple[int, int],
                   copy_method: str, manifest: Path, artifact_dir: Path,
                   artifact_identity: tuple[int, int], artifact_ledger: dict[str, Any],
-                  directory: dict[str, int], union: dict[str, Any]) -> dict[str, Any]:
+                  directory: dict[str, int], union: dict[str, Any],
+                  source_size: int) -> dict[str, Any]:
     return {
         "artifacts": {
             "device": artifact_identity[0],
@@ -661,7 +664,7 @@ def make_manifest(project: ProjectFile, edits: list[PreparedEdit], source: Path,
             "manifest_path": str(manifest),
             "xiso_path": str(output),
             "xiso_sha256": union["output_sha256"],
-            "xiso_size": common.EXPECTED_XISO_SIZE,
+            "xiso_size": source_size,
         },
         "patch": union,
         "project": {
@@ -681,7 +684,7 @@ def make_manifest(project: ProjectFile, edits: list[PreparedEdit], source: Path,
             "path": str(source),
             "sha256_before": source_sha,
             "sha256_after": union["source_sha256_after"],
-            "size": common.EXPECTED_XISO_SIZE,
+            "size": source_size,
         },
         "xdvdfs": {
             **directory,
@@ -758,10 +761,15 @@ def _build_pinned(project: ProjectFile,
         require(len(fixed) == 7 + len({edit.pin.path for edit in edits}),
                 "project/source/input/output paths alias")
         allowed = bind_to_source(edits, source_fd, entries)
+        # The build copies the user's container and patches it in place, so
+        # every length here is the size of THEIR file. Using the project's own
+        # EXPECTED_XISO_SIZE truncated or over-read any legal dump packaged
+        # differently, which is why Build refused images that had loaded fine.
+        source_size = os.fstat(source_fd).st_size
         output_owned = common.reserve_file(output)
         require(output_owned.identity != source_identity, "output aliases source")
         copy_method = common.copy_fd_exact(
-            source_fd, output_owned.descriptor, common.EXPECTED_XISO_SIZE)
+            source_fd, output_owned.descriptor, source_size)
         for edit in edits:
             write_all(output_owned.descriptor, edit.absolute_offset, edit.replacement)
             require(common.read_exact(output_owned.descriptor, edit.absolute_offset,
@@ -773,7 +781,7 @@ def _build_pinned(project: ProjectFile,
         union = union_record(edits, source_fd, output_owned.descriptor,
                              source_sha, allowed)
         output_entries, output_directory = common.parse_xdvdfs(
-            output_owned.descriptor, common.EXPECTED_XISO_SIZE)
+            output_owned.descriptor, source_size)
         require(output_entries == entries and output_directory == directory and
                 common.sha256_fd(output_owned.descriptor,
                                  xbe.byte_offset, xbe.size) ==
@@ -786,7 +794,7 @@ def _build_pinned(project: ProjectFile,
             project, edits, source, source_identity, source_sha,
             output, output_owned.identity, copy_method, manifest,
             artifacts_root, artifacts_identity, artifact_ledger,
-            directory, union)
+            directory, union, source_size)
         manifest_owned = common.reserve_file(manifest)
         common.write_owned_json(manifest_owned, result)
         for edit in edits:
@@ -829,8 +837,8 @@ def read_manifest(path: Path) \
     return resolved, payload, value, identity
 
 
-def open_output(path: Path, source_identity: tuple[int, int]) \
-        -> tuple[Path, int, tuple[int, int]]:
+def open_output(path: Path, source_identity: tuple[int, int],
+                source_size: int) -> tuple[Path, int, tuple[int, int]]:
     supplied = path.lstat()
     require(stat.S_ISREG(supplied.st_mode) and not stat.S_ISLNK(supplied.st_mode),
             "output XISO must be a non-symlink regular file")
@@ -841,7 +849,7 @@ def open_output(path: Path, source_identity: tuple[int, int]) \
         info = os.fstat(descriptor)
         identity = common.fd_identity(descriptor)
         require(stat.S_ISREG(info.st_mode) and
-                info.st_size == common.EXPECTED_XISO_SIZE and
+                info.st_size == source_size and
                 identity == (supplied.st_dev, supplied.st_ino) and
                 identity != source_identity and
                 common.path_identity(resolved) == identity,
@@ -875,7 +883,7 @@ def _verify_pinned(project: ProjectFile,
     output_fd: int | None = None
     try:
         output, output_fd, output_identity = open_output(
-            output_path, source_identity)
+            output_path, source_identity, os.fstat(source_fd).st_size)
         require(len({project.path, source, output, manifest_path_resolved,
                      CANONICAL_INDEX.resolve(strict=True),
                      CANONICAL_AUDIT.resolve(strict=True),
@@ -883,9 +891,10 @@ def _verify_pinned(project: ProjectFile,
                 6 + len({edit.pin.path for edit in edits}),
                 "project/source/input/output/manifest paths alias")
         allowed = bind_to_source(edits, source_fd, entries)
-        union = union_record(edits, source_fd, output_fd, source_sha, allowed)
+        union = union_record(edits, source_fd, output_fd, source_sha, allowed,
+                             os.fstat(source_fd).st_size)
         output_entries, output_directory = common.parse_xdvdfs(
-            output_fd, common.EXPECTED_XISO_SIZE)
+            output_fd, os.fstat(source_fd).st_size)
         require(output_entries == entries and output_directory == directory and
                 common.sha256_fd(output_fd, xbe.byte_offset, xbe.size) ==
                     common.EXPECTED_XBE_SHA256,
@@ -899,7 +908,8 @@ def _verify_pinned(project: ProjectFile,
         expected = make_manifest(
             project, edits, source, source_identity, source_sha,
             output, output_identity, copy_method, manifest_path_resolved,
-            artifact_dir, artifact_identity, artifact_ledger, directory, union)
+            artifact_dir, artifact_identity, artifact_ledger, directory, union,
+            os.fstat(source_fd).st_size)
         require(manifest_value == expected,
                 "build manifest differs from independently reconstructed proof")
         for edit in edits:

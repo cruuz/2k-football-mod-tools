@@ -26,6 +26,16 @@ if str(_REPO_ROOT) not in sys.path:
 
 from mod_editor.core import platform_compat  # noqa: E402
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 import nfl_crib_team_photo_png_import as photo
 from nfl_scene_probe import ResourceRecord, decode_resource
 from nfl_scne_inventory import parse_scene
@@ -59,6 +69,9 @@ OUTER_SHA256 = "b1237a4d43ff6cbbe8de0b40c1f623a32a7f77e900873d6b4fb4f4527ad10bb2
 CHUNK_INDEX = 2
 CHUNK_OFFSET = 114_960
 SPAN_PACK_OFFSET = OUTER_PACK_OFFSET + CHUNK_OFFSET
+# Where this span sits in the project's own rebuild. Documentation and test
+# fixture only -- NEVER a gate: a differently packed dump puts it elsewhere,
+# so the writer derives the offset from pack C's actual position instead.
 SPAN_ABSOLUTE = 5_399_363_856
 STORED_SIZE = 1_588_496
 SPAN_SIZE = HEADER.size + STORED_SIZE
@@ -567,15 +580,17 @@ def compare_images(source_fd: int, output_fd: int, size: int,
 
 def validate_xiso_source(source_fd: int) -> tuple[dict[str, common.XdvdfsEntry], dict[str, int], common.XdvdfsEntry]:
     info = os.fstat(source_fd)
-    require(stat.S_ISREG(info.st_mode) and info.st_size == common.EXPECTED_XISO_SIZE,
-            "source XISO size/type mismatch")
-    require(common.sha256_fd(source_fd) == common.EXPECTED_XISO_SHA256,
-            "source must be the pinned untouched NFL 2K5 retail XISO")
+    # Identity is per-extent, never the whole container. The image size, the
+    # sector a file landed on, and therefore its absolute byte offset are all
+    # artifacts of how the disc was dumped or repacked -- extract-xiso
+    # relocates every file. Pack C's and default.xbe's exact sizes and hashes
+    # below are what actually identify this game, and gating on the container
+    # refused legal dumps before they could run.
+    require(stat.S_ISREG(info.st_mode), "source XISO must be a regular file")
     entries, directory = common.parse_xdvdfs(source_fd, info.st_size)
     pack = entries.get(PACK_PATH.casefold())
     xbe = entries.get("default.xbe")
-    require(pack is not None and (pack.sector, pack.size) == (PACK_SECTOR, PACK_SIZE),
-            "pack C extent changed")
+    require(pack is not None and pack.size == PACK_SIZE, "pack C extent changed")
     require(xbe is not None and xbe.size == common.EXPECTED_XBE_SIZE,
             "default.xbe extent changed")
     assert pack is not None and xbe is not None
@@ -584,8 +599,8 @@ def validate_xiso_source(source_fd: int) -> tuple[dict[str, common.XdvdfsEntry],
     require(common.sha256_fd(source_fd, xbe.byte_offset, xbe.size) ==
             common.EXPECTED_XBE_SHA256, "retail default.xbe hash changed")
     absolute = pack.byte_offset + SPAN_PACK_OFFSET
-    require(absolute == SPAN_ABSOLUTE,
-            "bar_monitor SCNE absolute offset arithmetic changed")
+    require(absolute + SPAN_SIZE <= pack.byte_offset + pack.size,
+            "bar_monitor SCNE span does not lie inside pack C")
     require(common.sha256_fd(source_fd, pack.byte_offset + OUTER_PACK_OFFSET,
                              OUTER_SIZE) == OUTER_SHA256,
             "room aggregate identity changed")
@@ -609,7 +624,10 @@ def build_xiso(source_path: Path, png_path: Path, output_path: Path,
     success = False
     try:
         entries, directory, pack = validate_xiso_source(source_fd)
-        source_span = common.read_exact(source_fd, SPAN_ABSOLUTE, SPAN_SIZE)
+        source_size = os.fstat(source_fd).st_size
+        source_sha_before = common.sha256_fd(source_fd)
+        span_absolute = pack.byte_offset + SPAN_PACK_OFFSET
+        source_span = common.read_exact(source_fd, span_absolute, SPAN_SIZE)
         png, png_payload, rgba = read_png(png_path)
         replacement, preview, compile_report = compile_replacement(source_span, rgba)
         require(common.path_identity(source) == source_identity,
@@ -619,29 +637,29 @@ def build_xiso(source_path: Path, png_path: Path, output_path: Path,
         require(common.fd_identity(output_owned.descriptor) != source_identity,
                 "output XISO aliases source inode")
         copy_method = common.copy_fd_exact(
-            source_fd, output_owned.descriptor, common.EXPECTED_XISO_SIZE
+            source_fd, output_owned.descriptor, source_size
         )
-        pwrite_all(output_owned.descriptor, SPAN_ABSOLUTE, replacement)
+        pwrite_all(output_owned.descriptor, span_absolute, replacement)
         os.fsync(output_owned.descriptor)
         require(common.owned_path_matches(output_owned),
                 "output XISO pathname changed during build")
         require(common.path_identity(source) == source_identity,
                 "source XISO pathname changed during build")
         source_sha, output_sha, changed, changed_runs = compare_images(
-            source_fd, output_owned.descriptor, common.EXPECTED_XISO_SIZE,
-            SPAN_ABSOLUTE, replacement,
+            source_fd, output_owned.descriptor, source_size,
+            span_absolute, replacement,
         )
-        require(source_sha == common.EXPECTED_XISO_SHA256,
+        require(source_sha == source_sha_before,
                 "source XISO changed during build")
         output_entries, output_directory = common.parse_xdvdfs(
-            output_owned.descriptor, common.EXPECTED_XISO_SIZE
+            output_owned.descriptor, source_size
         )
         require(output_entries == entries and output_directory == directory,
                 "copied XISO filesystem tree/layout changed")
         xbe = entries["default.xbe"]
         require(common.sha256_fd(output_owned.descriptor, xbe.byte_offset, xbe.size) ==
                 common.EXPECTED_XBE_SHA256, "copied XISO default.xbe changed")
-        output_span = common.read_exact(output_owned.descriptor, SPAN_ABSOLUTE, SPAN_SIZE)
+        output_span = common.read_exact(output_owned.descriptor, span_absolute, SPAN_SIZE)
         output_decoded, _ = decode_chunk(
             output_span,
             resource_record(HEADER.unpack_from(output_span)[5]).as_chunk(),
@@ -673,7 +691,7 @@ def build_xiso(source_path: Path, png_path: Path, output_path: Path,
             },
             "source": {
                 "path": str(source),
-                "size": common.EXPECTED_XISO_SIZE,
+                "size": source_size,
                 "sha256_before_and_after": source_sha,
                 "opened_read_only": True,
                 "modified": False,
@@ -689,10 +707,10 @@ def build_xiso(source_path: Path, png_path: Path, output_path: Path,
             "compile": compile_report,
             "output": {
                 "path": str(output),
-                "size": common.EXPECTED_XISO_SIZE,
+                "size": source_size,
                 "sha256": output_sha,
                 "copy_method": copy_method,
-                "target_absolute_offset": SPAN_ABSOLUTE,
+                "target_absolute_offset": span_absolute,
                 "target_span_bytes": SPAN_SIZE,
                 "changed_byte_count": changed,
                 "changed_run_count": changed_runs,

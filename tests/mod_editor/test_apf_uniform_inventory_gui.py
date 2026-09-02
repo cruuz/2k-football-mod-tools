@@ -205,9 +205,15 @@ class ApfUniformInventoryGuiTests(unittest.TestCase):
     def test_page_partitions_all_408_records_without_duplicate_coordinates(self) -> None:
         facade, page = self._page()
         try:
-            self.assertEqual(page.tabs.count(), 2)
+            # Five: two record workspaces plus the three specialized whole-game
+            # tools, which do not partition the 408 records at all.
+            self.assertEqual(page.tabs.count(), 6)
             self.assertEqual(page.tabs.tabText(0), "Editable Materials (96)")
             self.assertEqual(page.tabs.tabText(1), "Additional Assets (312)")
+            self.assertEqual(page.tabs.tabText(2), "Team Independence")
+            self.assertEqual(page.tabs.tabText(3), "Custom Team Appearance")
+            self.assertEqual(page.tabs.tabText(4), "Model Round Trip")
+            self.assertEqual(page.tabs.tabText(5), "Equipment Colors")
             self.assertEqual(page.tabs.objectName(), "workspaceTabs")
             self.assertEqual(page.list.count(), 96)
             self.assertEqual(len(page.inventory_browser._matches), 312)
@@ -277,7 +283,11 @@ class ApfUniformInventoryGuiTests(unittest.TestCase):
             self.assertEqual(browser.page_label.text(), "Page 4 of 4")
             self.assertEqual(browser.table.rowCount(), 12)
             self.assertTrue(browser.previous_button.isEnabled())
-            self.assertFalse(browser.next_button.isEnabled())
+            # Never silent-gray: last page stays clickable with disableReason.
+            self.assertTrue(browser.next_button.isEnabled())
+            self.assertTrue(
+                str(browser.next_button.property("disableReason") or "").strip()
+            )
         finally:
             page.deleteLater()
             self.application.processEvents()
@@ -342,8 +352,18 @@ class ApfUniformInventoryGuiTests(unittest.TestCase):
             self.assertIsNotNone(selected)
             assert selected is not None
             self.assertEqual(selected.type_name, "TXTR")
-            self.assertTrue(browser.replace_button.isHidden())
-            self.assertTrue(browser.revert_button.isHidden())
+            # Never silent-gray: Replace/Revert stay visible+clickable but locked.
+            self.assertFalse(browser.replace_button.isHidden())
+            self.assertFalse(browser.revert_button.isHidden())
+            self.assertTrue(browser.replace_button.isEnabled())
+            self.assertTrue(
+                str(browser.replace_button.property("disableReason") or "").strip()
+            )
+            # helmet_normal has no proved writer anywhere in the product, so
+            # the refusal names that fact instead of blaming this browser, and
+            # no workspace hand-off is offered for it.
+            self.assertIn("No proved writer owns", browser.replace_button.toolTip())
+            self.assertIsNone(browser._route)
             browser.run_task = _run_task_now  # type: ignore[assignment]
             with tempfile.TemporaryDirectory() as directory:
                 destination = Path(directory) / "helmet-normal.png"
@@ -368,16 +388,45 @@ class ApfUniformInventoryGuiTests(unittest.TestCase):
     def test_unloaded_page_keeps_both_workspaces_safe_and_empty(self) -> None:
         _facade, page = self._page(ready=False)
         try:
-            self.assertEqual(page.tabs.count(), 2)
+            self.assertEqual(page.tabs.count(), 6)
             self.assertEqual(page.tabs.tabText(0), "Editable Materials (96)")
             self.assertEqual(page.tabs.tabText(1), "Additional Assets")
+            self.assertEqual(page.tabs.tabText(2), "Team Independence")
+            self.assertEqual(page.tabs.tabText(3), "Custom Team Appearance")
+            self.assertEqual(page.tabs.tabText(4), "Model Round Trip")
+            self.assertEqual(page.tabs.tabText(5), "Equipment Colors")
+            # Team Independence describes the shipped game without Load; Apply
+            # stays clickable and teaches the Load wall (never silent-gray).
+            self.assertTrue(page.independence_panel.apply_button.isEnabled())
+            self.assertTrue(
+                str(
+                    page.independence_panel.apply_button.property("disableReason")
+                    or ""
+                ).strip()
+            )
             self.assertEqual(page.list.count(), 0)
             self.assertEqual(page.inventory_browser.table.rowCount(), 0)
             self.assertEqual(page.inventory_browser.page_label.text(), "Page 0 of 0")
-            self.assertFalse(page.export_button.isEnabled())
-            self.assertFalse(page.replace_button.isEnabled())
-            self.assertFalse(page.revert_button.isEnabled())
-            self.assertFalse(page.inventory_browser.export_button.isEnabled())
+            self.assertTrue(page.export_button.isEnabled())
+            self.assertTrue(page.replace_button.isEnabled())
+            self.assertTrue(page.revert_button.isEnabled())
+            self.assertTrue(
+                str(page.export_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(page.inventory_browser.export_button.isEnabled())
+            self.assertTrue(
+                str(
+                    page.inventory_browser.export_button.property("disableReason")
+                    or ""
+                ).strip()
+            )
+            self.assertTrue(page.inventory_browser.previous_button.isEnabled())
+            self.assertTrue(
+                str(
+                    page.inventory_browser.previous_button.property("disableReason")
+                    or ""
+                ).strip()
+            )
         finally:
             page.deleteLater()
             self.application.processEvents()

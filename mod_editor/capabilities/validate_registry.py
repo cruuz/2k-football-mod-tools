@@ -41,10 +41,14 @@ SURFACES = (
     "scorebug_presentation",
     "scripts_config",
     "stadiums_fields",
+    "textures",
     "uniforms",
 )
 SURFACE_GAMES = {surface: _LEGACY_GAMES for surface in SURFACES}
 SURFACE_GAMES["crib_assets"] = ("nfl2k5_xbox",)
+# The general P8 texture lane is NFL 2K5 only: APF 2K8 keeps its own
+# field-art and uniform writers and has no equivalent corpus mapped.
+SURFACE_GAMES["textures"] = ("nfl2k5_xbox",)
 # PS2 staged surfaces (each must carry at least one nfl2k5_ps2 row):
 SURFACE_GAMES["saves"] = GAMES
 CLASSIFICATIONS = (
@@ -135,6 +139,28 @@ def _command_module(command: str, where: str) -> str | None:
     for token in tokens:
         if token.startswith("tools/") or token.startswith("mod_editor/"):
             return token
+    # Product modules that use package-relative imports must be launched with
+    # ``python -m package.module``.  Resolve that spelling to the same
+    # repository-relative file identity used by backend.module instead of
+    # forcing an unexecutable direct-path command into the registry.
+    dotted_module = re.compile(
+        r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+$"
+    )
+    for index, token in enumerate(tokens[:-1]):
+        if token != "-m":
+            continue
+        module_name = tokens[index + 1]
+        if dotted_module.fullmatch(module_name) is None:
+            return None
+        module_path = Path(*module_name.split("."))
+        candidates = (
+            module_path.with_suffix(".py"),
+            module_path / "__main__.py",
+        )
+        for candidate in candidates:
+            if (ROOT / candidate).is_file():
+                return candidate.as_posix()
+        return None
     return None
 
 

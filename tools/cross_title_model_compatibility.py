@@ -47,7 +47,7 @@ EXPECTED_SHA256 = {
     "reports/asset_samples/nfl_static_gltf/3161_0006_stadium.bin":
         "ef1a7a3780e9397defe0a437085e0d064365a008ffa728e171905fc2ed2281e1",
     "assets/intermediate/apf2k8/models/0290_0008_stadium.gltf":
-        "3b4969d212adac18ad013f01edcdef1b19157dcc47b831c3e8c7e89a0277a846",
+        "dcb2705d0e40e0888d37a98eaccf12d09d90b909114b0867f04ed4158cac17be",
     "assets/intermediate/apf2k8/models/0290_0008_stadium.bin":
         "84682243df160dce169e98daa6d12ba285985780907036ea78dbc4bda071ec0c",
     "assets/intermediate/nfl2k5/hi_body_skin/0003_0114_hi_body_meter_skin.gltf":
@@ -55,7 +55,7 @@ EXPECTED_SHA256 = {
     "assets/intermediate/nfl2k5/hi_body_skin/0003_0114_hi_body_meter_skin.bin":
         "3e53c4e335553f2ed4800c0664b563bec468abdca8ae162731f370c15686b75d",
     "assets/intermediate/apf2k8/skinned/1310_0415_player_shadow_surface.gltf":
-        "e245811657d4808053a244996b9850dcc607ee70ab6eafa87194e6917d2ae30f",
+        "ffc5570c6205ea3bbaa7714eba6bee0ba5f4df7196996ae5a9473e0c4525abfc",
     "assets/intermediate/apf2k8/skinned/1310_0415_player_shadow_surface.bin":
         "d72016179707c752979d8e079295b1e2ed28a33031b6c5d5ac7176f59aaf9029",
     "reports/assets/nfl_hi_body_skin_transforms.tsv":

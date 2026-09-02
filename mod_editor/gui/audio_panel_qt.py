@@ -27,8 +27,10 @@ from pathlib import Path
 import re
 import shutil
 import stat
+import tempfile
 from typing import Callable, Iterable, Protocol, Sequence, runtime_checkable
 
+from mod_editor.core import audio_conform
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_audio_catalog import (
     AudioReplacementMetadata,
@@ -55,6 +57,7 @@ from mod_editor.studio.audio_bundle import (
     export_audio_bundle as publish_audio_bundle,
 )
 from mod_editor.studio.audio_replacement_pack import (
+    FAMILY_REVIEWED_MEANING_STATUS,
     complete_standalone_pack_path,
     standalone_runtime_meaning_status,
 )
@@ -97,6 +100,7 @@ PROVISIONAL_LABEL_MEANING_STATUS = "provisional_label_runtime_meaning_unproved"
 STANDALONE_MEANING_STATUSES = (
     MENU_BACK_MEANING_STATUS,
     REVIEWED_LABEL_MEANING_STATUS,
+    FAMILY_REVIEWED_MEANING_STATUS,
     PROVISIONAL_LABEL_MEANING_STATUS,
 )
 
@@ -276,25 +280,26 @@ class AudioPanelHost(Protocol):
 def audio_search_text(asset: Nfl2k5AudioAsset) -> str:
     """Return the product-facing metadata searched by the panel."""
 
-    return " ".join(
-        (
-            asset.name,
-            asset.asset_id,
-            asset.outer_id,
-            asset.edit_status,
-            asset.alias_status,
-            asset.ownership_status,
-            asset.family_id,
-            asset.family_label,
-            asset.container_label,
-            asset.format_label,
-            str(asset.outer_index),
-            str(asset.chunk_index),
-            str(asset.sample_rate),
-            f"{asset.channels} channel",
-            "stereo" if asset.channels == 2 else "mono" if asset.channels == 1 else "",
-        )
-    ).casefold()
+    fields = [
+        asset.name,
+        asset.asset_id,
+        asset.outer_id,
+        asset.edit_status,
+        asset.alias_status,
+        asset.ownership_status,
+        asset.family_id,
+        asset.family_label,
+        asset.container_label,
+        asset.format_label,
+        str(asset.outer_index),
+        str(asset.chunk_index),
+        str(asset.sample_rate),
+        f"{asset.channels} channel",
+        "stereo" if asset.channels == 2 else "mono" if asset.channels == 1 else "",
+    ]
+    if asset.family_reviewed_label is not None:
+        fields.append(asset.family_reviewed_label)
+    return " ".join(fields).casefold()
 
 
 def filter_audio_assets(
@@ -306,9 +311,9 @@ def filter_audio_assets(
 ) -> tuple[Nfl2k5AudioAsset, ...]:
     """Filter the complete catalog without touching Qt or audio payloads."""
 
-    if status not in (None, "Editable", "Export-only", "Coming Soon"):
+    if status not in (None, "Editable", "Export-only"):
         raise ValidationError(
-            "Audio status filter must be All, Editable, Export-only, or Coming Soon"
+            "Audio status filter must be All, Editable, or Export-only"
         )
     valid_families = {family_id for family_id, _label in STANDALONE_AUDIO_FAMILIES}
     if family is not None and family not in valid_families:
@@ -351,7 +356,7 @@ def audio_bank_search_text(asset: Nfl2k5StreamingAudioBank) -> str:
         str(asset.external_outer_index),
         str(asset.entry_count),
         str(asset.sample_rate),
-        "raw bin opaque undecoded replace replacement coming soon",
+        "raw bin aggregate undecoded edit individual indexed ranges",
     )).casefold()
 
 
@@ -364,9 +369,9 @@ def filter_audio_banks(
 ) -> tuple[Nfl2k5StreamingAudioBank, ...]:
     """Filter streaming banks without decoding or reading bank payloads."""
 
-    if status not in (None, "Editable", "Export-only", "Coming Soon"):
+    if status not in (None, "Editable", "Export-only"):
         raise ValidationError(
-            "Audio status filter must be All, Editable, Export-only, or Coming Soon"
+            "Audio status filter must be All, Editable, or Export-only"
         )
     valid_families = {family_id for family_id, _label in STREAMING_AUDIO_FAMILIES}
     if family is not None and family not in valid_families:
@@ -427,9 +432,9 @@ def filter_audio_ranges(
 ) -> tuple[Nfl2k5StreamingAudioRange, ...]:
     """Filter indexed streaming ranges without reading their retail bytes."""
 
-    if status not in (None, "Editable", "Export-only", "Coming Soon"):
+    if status not in (None, "Editable", "Export-only"):
         raise ValidationError(
-            "Audio status filter must be All, Editable, Export-only, or Coming Soon"
+            "Audio status filter must be All, Editable, or Export-only"
         )
     valid_families = {family_id for family_id, _label in STREAMING_AUDIO_FAMILIES}
     if family is not None and family not in valid_families:
@@ -713,9 +718,9 @@ class CatalogAudioPanelHost:
         | Nfl2k5StreamingAudioRange,
         ...,
     ]:
-        if status not in (None, "Editable", "Export-only", "Coming Soon", "Modified"):
+        if status not in (None, "Editable", "Export-only", "Modified"):
             raise ValidationError(
-                "Audio status must be All, Modified, Editable, Export-only, or Coming Soon"
+                "Audio status must be All, Modified, Editable, or Export-only"
             )
         if meaning_status not in (None, *STANDALONE_MEANING_STATUSES):
             raise ValidationError("Audio meaning-confidence filter is invalid")
@@ -1177,7 +1182,7 @@ if PYQT5_AVAILABLE:
             self.setMinimumHeight(86)
             layout = QVBoxLayout(self)
             layout.setContentsMargins(16, 12, 16, 12)
-            self.title = QLabel("Drop replacement WAV here")
+            self.title = QLabel("Drop replacement audio here")
             self.title.setObjectName("audioDropTitle")
             self.hint = QLabel("Select an Editable standalone sound first")
             self.hint.setWordWrap(True)
@@ -1193,18 +1198,49 @@ if PYQT5_AVAILABLE:
         def dragEnterEvent(self, event: object) -> None:  # type: ignore[override]
             mime = event.mimeData()  # type: ignore[attr-defined]
             urls = mime.urls() if mime.hasUrls() else []
-            if (
-                self._accepting
-                and len(urls) == 1
-                and urls[0].isLocalFile()
-                and urls[0].toLocalFile().lower().endswith(".wav")
-            ):
+            if not self._accepting:
+                event.ignore()  # type: ignore[attr-defined]
+                return
+            if urls:
+                # Accept the drag so an unusable drop can explain itself with
+                # a plain message instead of silently bouncing off the zone.
                 event.acceptProposedAction()  # type: ignore[attr-defined]
             else:
                 event.ignore()  # type: ignore[attr-defined]
 
         def dropEvent(self, event: object) -> None:  # type: ignore[override]
-            path = Path(event.mimeData().urls()[0].toLocalFile())  # type: ignore[attr-defined]
+            urls = event.mimeData().urls()  # type: ignore[attr-defined]
+            if len(urls) != 1:
+                QMessageBox.information(
+                    self,
+                    "That drop can't be used yet",
+                    "Drop one audio file at a time. Pick the single sound you "
+                    "want to use and drop it here again.",
+                )
+                event.ignore()  # type: ignore[attr-defined]
+                return
+            url = urls[0]
+            if not url.isLocalFile() or url.host():
+                QMessageBox.information(
+                    self,
+                    "That drop can't be used yet",
+                    "That drop is a link or a web address, not a file on this "
+                    "computer. Save or download the audio first, then drop the "
+                    "real file here.",
+                )
+                event.ignore()  # type: ignore[attr-defined]
+                return
+            path = Path(url.toLocalFile())
+            if not audio_conform.is_supported_suffix(str(path)):
+                QMessageBox.information(
+                    self,
+                    "That drop can't be used yet",
+                    "Drop one local audio file — WAV, MP3, FLAC, OGG, M4A and "
+                    "similar. It is converted to this sound's exact shape for "
+                    "you.",
+                )
+                event.ignore()  # type: ignore[attr-defined]
+                return
             self.wav_dropped.emit(path)
             event.acceptProposedAction()  # type: ignore[attr-defined]
 
@@ -1400,7 +1436,10 @@ if PYQT5_AVAILABLE:
                 "Reviewed labels (152)", REVIEWED_LABEL_MEANING_STATUS
             )
             self.meaning_filter.addItem(
-                "Provisional labels (697)", PROVISIONAL_LABEL_MEANING_STATUS
+                "Family-reviewed labels (1)", FAMILY_REVIEWED_MEANING_STATUS
+            )
+            self.meaning_filter.addItem(
+                "Provisional labels (696)", PROVISIONAL_LABEL_MEANING_STATUS
             )
             self.meaning_filter.setMinimumWidth(205)
             self.meaning_filter.setAccessibleName(
@@ -1408,7 +1447,8 @@ if PYQT5_AVAILABLE:
             )
             self.meaning_filter.setAccessibleDescription(
                 "Separate from edit status. Limit standalone sounds to the one "
-                "Menu Back writer route, 152 reviewed labels, or 697 provisional "
+                "Menu Back writer route, 152 reviewed labels, one family-reviewed "
+                "label inferred from a reviewed sibling, or 696 provisional "
                 "labels whose exact runtime cue meanings remain unproved."
             )
             self.meaning_filter.setToolTip(
@@ -1453,10 +1493,11 @@ if PYQT5_AVAILABLE:
             self.export_matching_button.setAccessibleName(
                 "Export all matching audio as a ZIP"
             )
-            self.export_matching_button.setEnabled(False)
-            self.export_matching_button.setToolTip(
-                "Narrow the current filters to 1–256 audio rows."
-            )
+            # Never silent-gray: stay clickable; disableReason teaches 1–256 wall.
+            export_tip = "Narrow the current filters to 1–256 audio rows."
+            self.export_matching_button.setEnabled(True)
+            self.export_matching_button.setToolTip(export_tip)
+            self.export_matching_button.setProperty("disableReason", export_tip)
             collection_actions.addWidget(self.soundtrack_button)
             collection_actions.addWidget(self.labeled_only_filter)
             collection_actions.addStretch(1)
@@ -1604,19 +1645,26 @@ if PYQT5_AVAILABLE:
                 "matching the current search, family, edit-status, and meaning-"
                 "confidence filters. Existing shortlist sounds are kept once."
             )
-            self.shortlist_matching_button.setEnabled(False)
-            self.shortlist_matching_button.setToolTip(
+            # Never silent-gray shortlist bulk actions — disableReason teaches walls.
+            _shortlist_boot = (
                 "Narrow the current filters to 1–256 standalone sounds or playable "
                 "streaming ranges."
+            )
+            self.shortlist_matching_button.setEnabled(True)
+            self.shortlist_matching_button.setToolTip(_shortlist_boot)
+            self.shortlist_matching_button.setProperty(
+                "disableReason", _shortlist_boot
             )
             self.shortlist_review_button = QPushButton("Review selected")
             self.shortlist_review_button.setAccessibleName(
                 "Review selected audio sounds or return to the audio browser"
             )
-            self.shortlist_review_button.setEnabled(False)
-            self.shortlist_review_button.setToolTip(
+            _review_boot = (
                 "Add sounds first, then review the complete ordered shortlist."
             )
+            self.shortlist_review_button.setEnabled(True)
+            self.shortlist_review_button.setToolTip(_review_boot)
+            self.shortlist_review_button.setProperty("disableReason", _review_boot)
             self.shortlist_count_label = QLabel("Selected 0 / 256")
             self.shortlist_count_label.setObjectName("audioCountPill")
             self.shortlist_count_label.setAccessibleName("Audio shortlist count")
@@ -1897,7 +1945,16 @@ if PYQT5_AVAILABLE:
                 "route and draws a bounded waveform. It never starts playback or "
                 "changes the mod project."
             )
-            self.load_waveform_button.setEnabled(False)
+            # Never silent-gray at construction: click teaches Load/select walls.
+            _waveform_boot_tip = (
+                "Load your NFL 2K5 XISO and choose a standalone sound or playable "
+                "streaming range first."
+            )
+            self.load_waveform_button.setEnabled(True)
+            self.load_waveform_button.setToolTip(_waveform_boot_tip)
+            self.load_waveform_button.setProperty(
+                "disableReason", _waveform_boot_tip
+            )
             detail_content_layout.addWidget(self.waveform_heading)
             detail_content_layout.addWidget(self.waveform_preview)
             detail_content_layout.addWidget(
@@ -2268,6 +2325,12 @@ if PYQT5_AVAILABLE:
         def _show_soundtrack(self) -> None:
             """Open the complete, truthfully named soundtrack/music collection."""
 
+            reason = str(
+                self.soundtrack_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy or self._shortlist_reviewing:
                 return
             self._search_timer.stop()
@@ -2441,8 +2504,14 @@ if PYQT5_AVAILABLE:
                     self._show_asset(None)
                     self.count_label.setText("Raw bank inventory unavailable")
                     self.range_label.setText("No raw containers were assumed")
-                    self.previous_button.setEnabled(False)
-                    self.next_button.setEnabled(False)
+                    tip = (
+                        "Raw bank inventory is unavailable for this source. "
+                        "Switch scope or reload the XISO, then page results."
+                    )
+                    for button in (self.previous_button, self.next_button):
+                        button.setEnabled(True)
+                        button.setToolTip(tip)
+                        button.setProperty("disableReason", tip)
                     self._update_collection_actions()
                     self.error_raised.emit(str(exc).strip() or exc.__class__.__name__)
                     return
@@ -2658,10 +2727,45 @@ if PYQT5_AVAILABLE:
                 f"{self.page.first_number:,}–{self.page.last_number:,} "
                 f"of {self.page.total:,}" if self.page.total else "No matching audio"
             )
-            pagination_ready = self._pagination_query_ready()
-            self.previous_button.setEnabled(self.page.has_previous and pagination_ready)
-            self.next_button.setEnabled(self.page.has_next and pagination_ready)
+            self._sync_pagination_buttons()
             self._update_collection_actions()
+
+        def _sync_pagination_buttons(self) -> None:
+            """Never silent-gray Previous/Next — teach first-page / last-page walls."""
+
+            pagination_ready = self._pagination_query_ready()
+            if not pagination_ready:
+                if self._busy:
+                    tip = "Wait for the current audio worker to finish, then page."
+                elif not self.host.source_ready:
+                    tip = "Load your NFL 2K5 XISO first, then browse audio pages."
+                else:
+                    tip = (
+                        "Wait for search/filters to finish updating results, then page."
+                    )
+                for button in (self.previous_button, self.next_button):
+                    button.setEnabled(True)
+                    button.setToolTip(tip)
+                    button.setProperty("disableReason", tip)
+                return
+            if self.page.has_previous:
+                self.previous_button.setEnabled(True)
+                self.previous_button.setToolTip("Show the previous page of results.")
+                self.previous_button.setProperty("disableReason", "")
+            else:
+                tip = "Already on the first page of matching audio."
+                self.previous_button.setEnabled(True)
+                self.previous_button.setToolTip(tip)
+                self.previous_button.setProperty("disableReason", tip)
+            if self.page.has_next:
+                self.next_button.setEnabled(True)
+                self.next_button.setToolTip("Show the next page of results.")
+                self.next_button.setProperty("disableReason", "")
+            else:
+                tip = "Already on the last page of matching audio."
+                self.next_button.setEnabled(True)
+                self.next_button.setToolTip(tip)
+                self.next_button.setProperty("disableReason", tip)
 
         def _current_audio_query_token(
             self,
@@ -2715,8 +2819,11 @@ if PYQT5_AVAILABLE:
                 return
             self.count_label.setText("Updating audio results…")
             self.range_label.setText("Waiting for the new search and filters…")
-            self.previous_button.setEnabled(False)
-            self.next_button.setEnabled(False)
+            tip = "Wait for search/filters to finish updating results, then page."
+            for button in (self.previous_button, self.next_button):
+                button.setEnabled(True)
+                button.setToolTip(tip)
+                button.setProperty("disableReason", tip)
             self._update_collection_actions()
 
         def _search_text_changed(self, _text: str) -> None:
@@ -2735,34 +2842,68 @@ if PYQT5_AVAILABLE:
             self._mark_catalog_query_pending()
 
         def _update_collection_actions(self) -> None:
+            # Never silent-gray: Export matching stays clickable; disableReason
+            # + click-to-explain teach shortlist/raw/count walls.
             if self._shortlist_reviewing:
-                self.soundtrack_button.setEnabled(False)
-                self.export_matching_button.setEnabled(False)
-                self.export_matching_button.setText("Export matching audio…")
-                self.export_matching_button.setToolTip(
-                    "Return to the audio browser to export its filtered results."
+                tip = "Return to the audio browser to export its filtered results."
+                self.soundtrack_button.setEnabled(True)
+                self.soundtrack_button.setToolTip(
+                    "Return to the audio browser first (exit shortlist review)."
                 )
+                self.soundtrack_button.setProperty(
+                    "disableReason",
+                    "Return to the audio browser first (exit shortlist review).",
+                )
+                self.export_matching_button.setEnabled(True)
+                self.export_matching_button.setText("Export matching audio…")
+                self.export_matching_button.setToolTip(tip)
+                self.export_matching_button.setProperty("disableReason", tip)
                 self._update_audio_shortlist_actions()
                 return
             if self.scope_filter.currentData() == "raw_containers":
-                self.soundtrack_button.setEnabled(
-                    self.host.source_ready and not self._busy
+                ready = self.host.source_ready and not self._busy
+                tip = (
+                    "Show all soundtrack and music ranges."
+                    if ready
+                    else (
+                        "Load your NFL 2K5 XISO first."
+                        if not self.host.source_ready
+                        else "Wait for the current audio operation to finish."
+                    )
                 )
-                self.export_matching_button.setEnabled(False)
-                self.export_matching_button.setText("Export matching audio…")
-                self.export_matching_button.setToolTip(
+                self.soundtrack_button.setEnabled(True)
+                self.soundtrack_button.setToolTip(tip)
+                self.soundtrack_button.setProperty(
+                    "disableReason", "" if ready else tip
+                )
+                tip = (
                     "Raw BANK/ABNK/WBNK wrappers export one at a time through "
                     "the verified universal-resource path."
                 )
+                self.export_matching_button.setEnabled(True)
+                self.export_matching_button.setText("Export matching audio…")
+                self.export_matching_button.setToolTip(tip)
+                self.export_matching_button.setProperty("disableReason", tip)
                 self._update_audio_shortlist_actions()
                 return
-            self.soundtrack_button.setEnabled(
-                self.host.source_ready and not self._busy
+            ready = self.host.source_ready and not self._busy
+            tip = (
+                "Show all soundtrack and music ranges."
+                if ready
+                else (
+                    "Load your NFL 2K5 XISO first."
+                    if not self.host.source_ready
+                    else "Wait for the current audio operation to finish."
+                )
+            )
+            self.soundtrack_button.setEnabled(True)
+            self.soundtrack_button.setToolTip(tip)
+            self.soundtrack_button.setProperty(
+                "disableReason", "" if ready else tip
             )
             count = self.page.total if self.host.source_ready else 0
             query_current = self._catalog_query_is_current()
             enabled = self._catalog_page_actions_ready() and 1 <= count <= 256
-            self.export_matching_button.setEnabled(enabled)
             soundtrack = (
                 self.scope_filter.currentData() == "streaming_ranges"
                 and self.family_filter.currentData() == "music"
@@ -2774,8 +2915,7 @@ if PYQT5_AVAILABLE:
                     "Export soundtrack && music"
                     if soundtrack else "Export matching audio"
                 )
-                self.export_matching_button.setText(f"{label} ({count:,})…")
-                self.export_matching_button.setToolTip(
+                tip = (
                     f"Export all {count:,} filtered rows as one all-or-nothing ZIP. "
                     "The manifest distinguishes staged user WAVs from audio "
                     "derived from your own game copy."
@@ -2786,9 +2926,12 @@ if PYQT5_AVAILABLE:
                         if soundtrack else ""
                     )
                 )
+                self.export_matching_button.setText(f"{label} ({count:,})…")
+                self.export_matching_button.setEnabled(True)
+                self.export_matching_button.setToolTip(tip)
+                self.export_matching_button.setProperty("disableReason", "")
             else:
-                self.export_matching_button.setText("Export matching audio…")
-                self.export_matching_button.setToolTip(
+                tip = (
                     "Load your NFL 2K5 XISO first."
                     if not self.host.source_ready else
                     "Updating results. This action will unlock when the visible page "
@@ -2799,6 +2942,10 @@ if PYQT5_AVAILABLE:
                     f"{count:,} rows match; narrow search, family, or status to "
                     "256 or fewer before exporting."
                 )
+                self.export_matching_button.setText("Export matching audio…")
+                self.export_matching_button.setEnabled(True)
+                self.export_matching_button.setToolTip(tip)
+                self.export_matching_button.setProperty("disableReason", tip)
             self._update_audio_shortlist_actions()
 
         def _audio_status_texts(
@@ -2830,11 +2977,11 @@ if PYQT5_AVAILABLE:
                     if asset.selector == MENU_BACK_SELECTOR else
                     f"{base} • exact physical slot • runtime cue meaning unproved"
                     if asset.editable else
-                    "Export-only • Replace Coming Soon"
+                    "Export-only • no exact-slot writer"
                 )
             elif isinstance(asset, Nfl2k5StreamingAudioBank):
                 base = "Export-only"
-                detail = "Export-only • Replace Coming Soon"
+                detail = "Export-only • raw aggregate; edit individual indexed ranges"
             else:
                 base = (
                     "Modified" if asset.asset_id in modified_ids
@@ -2850,7 +2997,7 @@ if PYQT5_AVAILABLE:
                     if asset.editable and shared else
                     "Editable • strict PCM16 WAV • fixed streaming slot"
                     if asset.editable else
-                    "Export-only • Replace Coming Soon"
+                    "Export-only • no exact-range writer"
                 )
             annotation = (
                 self._annotation_for(asset.asset_id)
@@ -2935,6 +3082,14 @@ if PYQT5_AVAILABLE:
             )
 
         def _toggle_audio_shortlist_review(self) -> None:
+            reason = str(
+                self.shortlist_review_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                # Status-line teach (avoid modal hang under headless tests).
+                self.progress_label.setText(reason)
+                return
+
             if self._busy:
                 return
             if self._shortlist_reviewing:
@@ -2960,6 +3115,15 @@ if PYQT5_AVAILABLE:
             self.refresh(keep_selection=True)
 
         def _move_shortlisted_audio(self, delta: int) -> None:
+            button = (
+                self.shortlist_move_up_button
+                if delta < 0
+                else self.shortlist_move_down_button
+            )
+            reason = str(button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy or not self._shortlist_reviewing or delta not in {-1, 1}:
                 return
             selected = self._selected_asset()
@@ -3179,9 +3343,7 @@ if PYQT5_AVAILABLE:
             ready = self.host.source_ready and not self._busy
             catalog_ready = self._catalog_page_actions_ready()
             self.shortlist_count_label.setText(f"Selected {count} / 256")
-            self.shortlist_clear_button.setEnabled(
-                ready and (count > 0 or cleared_count > 0)
-            )
+            clear_ready = ready and (count > 0 or cleared_count > 0)
             self.shortlist_clear_button.setText(
                 "Clear" if count else
                 "Undo" if cleared_count else
@@ -3191,16 +3353,22 @@ if PYQT5_AVAILABLE:
                 "Clear audio shortlist" if count or not cleared_count else
                 f"Restore the {cleared_count} sounds cleared from the audio shortlist"
             )
-            self.shortlist_clear_button.setToolTip(
+            clear_tip = (
                 f"Clear these {count} selected sounds. You can undo this until the "
                 "next shortlist change or source load."
                 if count else
                 f"Restore all {cleared_count} cleared sounds in their original order."
                 if cleared_count else
+                "Load your NFL 2K5 XISO first."
+                if not self.host.source_ready else
+                "Wait for the current audio task to finish."
+                if self._busy else
                 "Add sounds before clearing the shortlist."
             )
-            self.shortlist_review_button.setEnabled(
-                ready and (count > 0 or self._shortlist_reviewing)
+            self.shortlist_clear_button.setEnabled(True)
+            self.shortlist_clear_button.setToolTip(clear_tip)
+            self.shortlist_clear_button.setProperty(
+                "disableReason", "" if clear_ready else clear_tip
             )
             self.shortlist_review_button.setText(
                 "Back to browser"
@@ -3208,31 +3376,52 @@ if PYQT5_AVAILABLE:
                 f"Review selected ({count})" if count else
                 "Review selected"
             )
-            self.shortlist_review_button.setToolTip(
-                "Return to the catalog with its search, filters, page, and selection restored."
-                if self._shortlist_reviewing else
-                f"Review, play, remove, and reorder these {count} selected sounds."
-                if count else
-                "Add sounds first, then review the complete ordered shortlist."
-            )
-            self.export_shortlist_button.setEnabled(ready and count > 0)
+            if ready and (count > 0 or self._shortlist_reviewing):
+                review_tip = (
+                    "Return to the catalog with its search, filters, page, and selection restored."
+                    if self._shortlist_reviewing else
+                    f"Review, play, remove, and reorder these {count} selected sounds."
+                )
+                review_block = ""
+            else:
+                review_tip = review_block = (
+                    "Load your NFL 2K5 XISO first."
+                    if not self.host.source_ready else
+                    "Wait for the current audio task to finish."
+                    if self._busy else
+                    "Add sounds first, then review the complete ordered shortlist."
+                )
+            self.shortlist_review_button.setEnabled(True)
+            self.shortlist_review_button.setToolTip(review_tip)
+            self.shortlist_review_button.setProperty("disableReason", review_block)
             self.export_shortlist_button.setText(
                 f"Export selected WAVs ({count})…"
                 if count else "Export selected WAVs…"
             )
-            self.export_shortlist_button.setToolTip(
-                f"Export these {count} hand-picked sounds as one transactional "
-                "WAV ZIP."
-                if count else
-                "Add up to 256 standalone sounds or playable streaming ranges first."
-            )
+            if ready and count > 0:
+                export_tip = (
+                    f"Export these {count} hand-picked sounds as one transactional "
+                    "WAV ZIP."
+                )
+                export_block = ""
+            else:
+                export_tip = export_block = (
+                    "Load your NFL 2K5 XISO first."
+                    if not self.host.source_ready else
+                    "Wait for the current audio task to finish."
+                    if self._busy else
+                    "Add up to 256 standalone sounds or playable streaming ranges first."
+                )
+            self.export_shortlist_button.setEnabled(True)
+            self.export_shortlist_button.setToolTip(export_tip)
+            self.export_shortlist_button.setProperty("disableReason", export_block)
             self.shortlist_toggle_button.setText(
                 "Remove selected sound" if selected_added else "Add selected sound"
             )
-            self.shortlist_toggle_button.setEnabled(
+            toggle_ready = (
                 ready and selected_playable and (selected_added or count < 256)
             )
-            self.shortlist_toggle_button.setToolTip(
+            toggle_tip = (
                 "Remove this sound from the session-only shortlist."
                 if selected_added else
                 "The shortlist is full. Remove a sound before adding another."
@@ -3246,7 +3435,16 @@ if PYQT5_AVAILABLE:
                 "Complete streaming banks are excluded; choose a standalone sound "
                 "or an indexed streaming range."
                 if isinstance(selected, Nfl2k5StreamingAudioBank) else
+                "Load your NFL 2K5 XISO first."
+                if not self.host.source_ready else
+                "Wait for the current audio task to finish."
+                if self._busy else
                 "Choose a playable sound first."
+            )
+            self.shortlist_toggle_button.setEnabled(True)
+            self.shortlist_toggle_button.setToolTip(toggle_tip)
+            self.shortlist_toggle_button.setProperty(
+                "disableReason", "" if toggle_ready else toggle_tip
             )
             additions = tuple(
                 asset for asset in self._visible_playable_audio_assets()
@@ -3260,11 +3458,10 @@ if PYQT5_AVAILABLE:
                 f"Add this page ({len(additions)})"
                 if additions else "Add this page"
             )
-            self.shortlist_page_button.setEnabled(
-                catalog_ready
-                and bool(additions) and count < 256
+            page_ready = (
+                catalog_ready and bool(additions) and count < 256
             )
-            self.shortlist_page_button.setToolTip(
+            page_tip = (
                 "Return to the audio browser to add another page."
                 if self._shortlist_reviewing else
                 "Updating results. This action will unlock when the visible page "
@@ -3282,24 +3479,29 @@ if PYQT5_AVAILABLE:
                 if self.page.assets else
                 "No playable sounds are visible on this page."
             )
+            self.shortlist_page_button.setEnabled(True)
+            self.shortlist_page_button.setToolTip(page_tip)
+            self.shortlist_page_button.setProperty(
+                "disableReason", "" if page_ready else page_tip
+            )
             scope = str(self.scope_filter.currentData())
             matching_count = self.page.total if self.host.source_ready else 0
             matching_scope = scope in {
                 PLAYABLE_AUDIO_SCOPE_ID, "standalone", "streaming_ranges",
             }
+            matching_ready = (
+                catalog_ready
+                and matching_scope
+                and 1 <= matching_count <= MAX_SHORTLIST_SIZE
+                and count < MAX_SHORTLIST_SIZE
+            )
             self.shortlist_matching_button.setText(
                 f"Add all matching ({matching_count:,})"
                 if self._catalog_query_is_current()
                 and matching_scope and 1 <= matching_count <= MAX_SHORTLIST_SIZE
                 else "Add all matching"
             )
-            self.shortlist_matching_button.setEnabled(
-                catalog_ready
-                and matching_scope
-                and 1 <= matching_count <= MAX_SHORTLIST_SIZE
-                and count < MAX_SHORTLIST_SIZE
-            )
-            self.shortlist_matching_button.setToolTip(
+            matching_tip = (
                 "Return to the audio browser to add its filtered results."
                 if self._shortlist_reviewing else
                 "Load your NFL 2K5 XISO first."
@@ -3325,18 +3527,54 @@ if PYQT5_AVAILABLE:
                 f"Add all {matching_count:,} matching sounds in canonical filtered "
                 "order. Sounds already selected stay selected once."
             )
+            self.shortlist_matching_button.setEnabled(True)
+            self.shortlist_matching_button.setToolTip(matching_tip)
+            self.shortlist_matching_button.setProperty(
+                "disableReason", "" if matching_ready else matching_tip
+            )
             self.shortlist_move_up_button.setVisible(self._shortlist_reviewing)
             self.shortlist_move_down_button.setVisible(self._shortlist_reviewing)
             selected_index = (
                 tuple(self._audio_shortlist).index(selected.asset_id)
                 if selected_added and selected is not None else -1
             )
-            self.shortlist_move_up_button.setEnabled(
-                ready and self._shortlist_reviewing and selected_index > 0
-            )
-            self.shortlist_move_down_button.setEnabled(
-                ready and self._shortlist_reviewing
+            can_up = ready and self._shortlist_reviewing and selected_index > 0
+            can_down = (
+                ready
+                and self._shortlist_reviewing
                 and 0 <= selected_index < count - 1
+            )
+            up_tip = (
+                "Move the selected shortlist sound earlier in export order."
+                if can_up
+                else (
+                    "Enter Review selected first, then pick a sound to reorder."
+                    if not self._shortlist_reviewing
+                    else "Already at the top of the shortlist."
+                    if selected_index == 0
+                    else "Select a shortlisted sound first."
+                )
+            )
+            down_tip = (
+                "Move the selected shortlist sound later in export order."
+                if can_down
+                else (
+                    "Enter Review selected first, then pick a sound to reorder."
+                    if not self._shortlist_reviewing
+                    else "Already at the bottom of the shortlist."
+                    if selected_index == count - 1 and count > 0
+                    else "Select a shortlisted sound first."
+                )
+            )
+            self.shortlist_move_up_button.setEnabled(True)
+            self.shortlist_move_up_button.setToolTip(up_tip)
+            self.shortlist_move_up_button.setProperty(
+                "disableReason", "" if can_up else up_tip
+            )
+            self.shortlist_move_down_button.setEnabled(True)
+            self.shortlist_move_down_button.setToolTip(down_tip)
+            self.shortlist_move_down_button.setProperty(
+                "disableReason", "" if can_down else down_tip
             )
             self._update_replacement_pack_actions()
 
@@ -3346,8 +3584,17 @@ if PYQT5_AVAILABLE:
             if self._busy:
                 self.replacement_pack_contents.setEnabled(False)
                 self.replacement_pack_container.setEnabled(False)
-                self.export_replacement_template_button.setEnabled(False)
-                self.import_replacement_pack_button.setEnabled(False)
+                busy_tip = "Wait for the current audio operation to finish."
+                self.export_replacement_template_button.setEnabled(True)
+                self.export_replacement_template_button.setToolTip(busy_tip)
+                self.export_replacement_template_button.setProperty(
+                    "disableReason", busy_tip
+                )
+                self.import_replacement_pack_button.setEnabled(True)
+                self.import_replacement_pack_button.setToolTip(busy_tip)
+                self.import_replacement_pack_button.setProperty(
+                    "disableReason", busy_tip
+                )
                 return
             count = len(self._audio_shortlist)
             ineligible_count = len(self._replacement_pack_ineligible_audio_ids())
@@ -3391,7 +3638,6 @@ if PYQT5_AVAILABLE:
                 and batch_export
                 and (not selected_mode or (count > 0 and ineligible_count == 0))
             )
-            self.export_replacement_template_button.setEnabled(can_export)
             self.export_replacement_template_button.setText(
                 f"Export shortlist template ({count})…"
                 if selected_mode else
@@ -3448,11 +3694,24 @@ if PYQT5_AVAILABLE:
                     "remain import-compatible; use All standalone sounds for the current "
                     "complete 850-sound workflow."
                 )
-            self.export_replacement_template_button.setToolTip(export_tooltip)
-            self.import_replacement_pack_button.setEnabled(
-                batch_ready and batch_import and batch_preflight
-            )
-            self.import_replacement_pack_button.setToolTip(
+            # Never silent-gray: export stays clickable; disableReason when blocked.
+            if can_export:
+                self.export_replacement_template_button.setEnabled(True)
+                self.export_replacement_template_button.setToolTip(export_tooltip)
+                self.export_replacement_template_button.setProperty(
+                    "disableReason", ""
+                )
+            else:
+                block = export_tooltip
+                if not self.host.source_ready:
+                    block = "Load your NFL 2K5 XISO first."
+                self.export_replacement_template_button.setEnabled(True)
+                self.export_replacement_template_button.setToolTip(block)
+                self.export_replacement_template_button.setProperty(
+                    "disableReason", block
+                )
+            import_ready = batch_ready and batch_import and batch_preflight
+            import_tip = (
                 "Choose the folder or ZIP format above. The manifest automatically "
                 "detects current v4 all-850 packs, old v3 all-850 packs, v2 shortlists, "
                 "and v1 legacy packs. Preview fully validates the read-only cue map, "
@@ -3464,6 +3723,21 @@ if PYQT5_AVAILABLE:
                 "This host does not provide the safe preview-and-confirm replacement-pack "
                 "workflow."
             )
+            if import_ready:
+                self.import_replacement_pack_button.setEnabled(True)
+                self.import_replacement_pack_button.setToolTip(import_tip)
+                self.import_replacement_pack_button.setProperty("disableReason", "")
+            else:
+                block = (
+                    "Load your NFL 2K5 XISO first."
+                    if not self.host.source_ready
+                    else import_tip
+                )
+                self.import_replacement_pack_button.setEnabled(True)
+                self.import_replacement_pack_button.setToolTip(block)
+                self.import_replacement_pack_button.setProperty(
+                    "disableReason", block
+                )
 
         @staticmethod
         def _duration(seconds: float) -> str:
@@ -3535,8 +3809,20 @@ if PYQT5_AVAILABLE:
                 and self.waveform_preview.state == "ready"
             ):
                 self.load_waveform_button.setText("Reload waveform")
-                self.load_waveform_button.setEnabled(
-                    bool(self.host.source_ready and not self._busy)
+                ready = bool(self.host.source_ready and not self._busy)
+                tip = (
+                    "Reload this sound's private waveform."
+                    if ready
+                    else (
+                        "Wait for the current audio operation to finish."
+                        if self._busy
+                        else "Load your NFL 2K5 XISO before preparing a waveform."
+                    )
+                )
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty(
+                    "disableReason", "" if ready else tip
                 )
                 return
             self._waveform_selected_asset_id = asset_id
@@ -3545,46 +3831,64 @@ if PYQT5_AVAILABLE:
                     "The previous private request was cancelled and is finishing. "
                     "You can keep browsing; its result will be discarded."
                 )
+                # Cancel-in-flight may briefly lock; not a silent "pick a sound" gray.
                 self.load_waveform_button.setText("Cancelling previous…")
                 self.load_waveform_button.setEnabled(False)
+                self.load_waveform_button.setProperty("disableReason", "")
                 return
             self.load_waveform_button.setText("Load waveform")
             if not self.host.source_ready:
-                self.waveform_preview.set_unavailable(
-                    "Load your NFL 2K5 XISO before preparing a waveform."
-                )
-                self.load_waveform_button.setEnabled(False)
+                tip = "Load your NFL 2K5 XISO before preparing a waveform."
+                self.waveform_preview.set_unavailable(tip)
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty("disableReason", tip)
                 return
             if asset is None:
-                self.waveform_preview.set_unavailable(
-                    "Choose a standalone sound or playable streaming range."
-                )
-                self.load_waveform_button.setEnabled(False)
+                tip = "Choose a standalone sound or playable streaming range."
+                self.waveform_preview.set_unavailable(tip)
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty("disableReason", tip)
                 return
             if isinstance(asset, UniversalAssetRecord):
-                self.waveform_preview.set_unavailable(
+                tip = (
                     "This opaque raw container has no decoded playable-sound route."
                 )
-                self.load_waveform_button.setEnabled(False)
+                self.waveform_preview.set_unavailable(tip)
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty("disableReason", tip)
                 return
             if isinstance(asset, Nfl2k5StreamingAudioBank):
-                self.waveform_preview.set_unavailable(
+                tip = (
                     "A complete streaming bank contains many sounds and is not one "
                     "waveform. Choose one of its Playable Streaming Ranges."
                 )
-                self.load_waveform_button.setEnabled(False)
+                self.waveform_preview.set_unavailable(tip)
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty("disableReason", tip)
                 return
             self.waveform_preview.set_empty(
                 "Waveforms are never loaded automatically. Click Load waveform to "
                 "read this sound through the private current-WAV route; playback "
                 "will not start and your project will not change."
             )
-            self.load_waveform_button.setToolTip(
+            ready_tip = (
                 "Draw a bounded, read-only waveform from this sound's private current "
                 "PCM16 WAV. Source decoding runs in-process and cannot be interrupted; "
                 "Cancel discards the result at the next safe boundary."
             )
-            self.load_waveform_button.setEnabled(not self._busy)
+            busy_tip = "Wait for the current audio operation to finish."
+            ready = not self._busy
+            self.load_waveform_button.setEnabled(True)
+            self.load_waveform_button.setToolTip(
+                ready_tip if ready else busy_tip
+            )
+            self.load_waveform_button.setProperty(
+                "disableReason", "" if ready else busy_tip
+            )
 
         def _load_audio_waveform(self) -> None:
             """Start or cancel one explicit, selection-owned waveform request."""
@@ -3597,6 +3901,17 @@ if PYQT5_AVAILABLE:
                 )
                 self.load_waveform_button.setText("Cancelling…")
                 self.load_waveform_button.setEnabled(False)
+                self.load_waveform_button.setProperty("disableReason", "")
+                return
+            reason = str(
+                self.load_waveform_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                QMessageBox.information(
+                    self,
+                    "Cannot load waveform yet",
+                    reason,
+                )
                 return
             asset = self._selected_asset()
             if (
@@ -3773,8 +4088,11 @@ if PYQT5_AVAILABLE:
             self._show_asset(None)
             self.count_label.setText("Load your NFL 2K5 XISO")
             self.range_label.setText("0 results")
-            self.previous_button.setEnabled(False)
-            self.next_button.setEnabled(False)
+            tip = "Load your NFL 2K5 XISO first, then browse audio pages."
+            for button in (self.previous_button, self.next_button):
+                button.setEnabled(True)
+                button.setToolTip(tip)
+                button.setProperty("disableReason", tip)
             self._update_collection_actions()
 
         def _set_selected_asset_id(self, asset_id: str | None) -> bool:
@@ -4077,8 +4395,14 @@ if PYQT5_AVAILABLE:
         def _copy_selected_pack_path(self) -> None:
             """Copy on explicit activation; selection changes never touch clipboard."""
 
+            reason = str(
+                self.copy_pack_path_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             path = self._selected_complete_pack_path()
-            if path is None or not self.copy_pack_path_button.isEnabled():
+            if path is None:
                 return
             QApplication.clipboard().setText(path)
             self.progress_label.setText("Copied all-850 replacement pack path")
@@ -4145,7 +4469,7 @@ if PYQT5_AVAILABLE:
                 )
                 self.status_label.setText(
                     "Modified • Editable" if modified else (
-                        "Export-only • Replace Coming Soon"
+                        "Export-only • raw aggregate; edit individual indexed ranges"
                         if isinstance(asset, Nfl2k5StreamingAudioBank)
                         else asset.edit_status
                     )
@@ -4234,14 +4558,33 @@ if PYQT5_AVAILABLE:
             if pack_path is None:
                 self.pack_path_label.clear()
                 self.pack_path_card.hide()
-                self.copy_pack_path_button.setEnabled(False)
+                tip = (
+                    "Export a v4 all-850 replacement template first so its path "
+                    "can be copied."
+                )
+                self.copy_pack_path_button.setEnabled(True)
+                self.copy_pack_path_button.setToolTip(tip)
+                self.copy_pack_path_button.setProperty("disableReason", tip)
             else:
                 self.pack_path_label.setText(pack_path)
                 self.pack_path_label.setAccessibleDescription(
                     f"Exact v4 all-850 template path: {pack_path}"
                 )
                 self.pack_path_card.show()
-                self.copy_pack_path_button.setEnabled(ready)
+                tip = (
+                    "Copy the exact v4 all-850 template path."
+                    if ready
+                    else (
+                        "Load your NFL 2K5 XISO first."
+                        if not self.host.source_ready
+                        else "Wait for the current audio operation to finish."
+                    )
+                )
+                self.copy_pack_path_button.setEnabled(True)
+                self.copy_pack_path_button.setToolTip(tip)
+                self.copy_pack_path_button.setProperty(
+                    "disableReason", "" if ready else tip
+                )
             modified = bool(
                 asset and asset.asset_id in set(self.host.modified_audio_asset_ids)
             )
@@ -4263,45 +4606,74 @@ if PYQT5_AVAILABLE:
                 and asset is not None
                 and asset.asset_id == self._waveform_selected_asset_id
             ):
-                self.load_waveform_button.setEnabled(ready)
+                tip = (
+                    "Reload this sound's private waveform."
+                    if ready
+                    else "Load your NFL 2K5 XISO first."
+                    if not self.host.source_ready
+                    else "Wait for the current audio operation to finish."
+                )
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty(
+                    "disableReason", "" if ready else tip
+                )
             else:
-                self.load_waveform_button.setEnabled(False)
+                # configure path already never-gray for most walls; keep clickable
+                tip = (
+                    "Choose a standalone sound or playable streaming range."
+                    if asset is None or not playable
+                    else "Load your NFL 2K5 XISO first."
+                    if not ready
+                    else "Load waveform for this sound."
+                )
+                self.load_waveform_button.setEnabled(True)
+                self.load_waveform_button.setToolTip(tip)
+                self.load_waveform_button.setProperty(
+                    "disableReason",
+                    "" if (ready and playable) else tip,
+                )
             audio_editing_ready = bool(
                 getattr(self.host, "audio_editing_ready", True)
             )
-            self.play_button.setEnabled(ready and playable)
-            self.export_button.setEnabled(ready)
-            editable = bool(
-                ready and (standalone or streaming_range)
-                and asset and asset.editable
-            )
-            self.replace_button.setEnabled(editable)
-            self.revert_button.setEnabled(editable and modified)
-            self.export_button.setText(
-                "Export"
-                if asset is None else
-                "Export Raw Container"
+            # Never silent-gray primary row actions.
+            can_play = ready and playable
+            play_tip = (
+                "Play the privately decoded WAV"
+                if can_play else
+                "Load your NFL 2K5 XISO first."
+                if not ready else
+                "This opaque raw container has no decoded playable-cue contract."
                 if raw_container else
-                "Export WAV" if standalone else
-                "Export WAV / Raw"
-                if isinstance(asset, Nfl2k5StreamingAudioRange) else
-                "Export Raw Bank"
+                "A complete bank is not one cue; choose an indexed range to play it."
+                if not playable else
+                "Select a playable sound first."
             )
-            self.export_button.setToolTip(
+            self.play_button.setEnabled(True)
+            self.play_button.setToolTip(play_tip)
+            self.play_button.setProperty(
+                "disableReason", "" if can_play else play_tip
+            )
+            can_export = ready and asset is not None
+            export_tip = (
                 "Select an audio item"
                 if asset is None else
+                "Load your NFL 2K5 XISO first."
+                if not ready else
                 "Export this exact opaque resource wrapper/body as .bin."
                 if raw_container else
                 asset.export_format_label
             )
-            self.play_button.setToolTip(
-                "Play the privately decoded WAV"
-                if playable else
-                "This opaque raw container has no decoded playable-cue contract."
-                if raw_container else
-                "A complete bank is not one cue; choose an indexed range to play it."
+            self.export_button.setEnabled(True)
+            self.export_button.setToolTip(export_tip)
+            self.export_button.setProperty(
+                "disableReason", "" if can_export else export_tip
             )
-            self.replace_button.setToolTip(
+            editable = bool(
+                ready and (standalone or streaming_range)
+                and asset and asset.editable
+            )
+            replace_tip = (
                 "Raw BANK/ABNK/WBNK replacement is not decoded or exposed."
                 if raw_container else
                 (
@@ -4312,30 +4684,54 @@ if PYQT5_AVAILABLE:
                     + asset.action_note
                 )
                 if editable and not audio_editing_ready and asset is not None else
-                asset.action_note if asset is not None else "Select an audio item"
+                asset.action_note if asset is not None and editable else
+                "Select an Editable fixed-allocation sound or range first."
+                if asset is not None else
+                "Select an audio item"
             )
-            self.revert_button.setToolTip(
+            self.replace_button.setEnabled(True)
+            self.replace_button.setToolTip(replace_tip)
+            self.replace_button.setProperty(
+                "disableReason", "" if editable else replace_tip
+            )
+            can_revert = editable and modified
+            revert_tip = (
                 "Restore the private original for this staged WAV"
-                if modified else
+                if can_revert else
                 "This audio item has no staged replacement"
+                if editable else
+                replace_tip
+            )
+            self.revert_button.setEnabled(True)
+            self.revert_button.setToolTip(revert_tip)
+            self.revert_button.setProperty(
+                "disableReason", "" if can_revert else revert_tip
+            )
+            self.export_button.setText(
+                "Export"
+                if asset is None else
+                "Export Raw Container"
+                if raw_container else
+                "Export WAV" if standalone else
+                "Export WAV / Raw"
+                if isinstance(asset, Nfl2k5StreamingAudioRange) else
+                "Export Raw Bank"
             )
             hint = (
                 "Opaque raw container: export-only; decoding and replacement are unavailable"
                 if raw_container else
-                "Streaming-bank replacement is Coming Soon; use Export Raw Bank"
+                "A complete bank is an export-only aggregate; edit its individual indexed ranges"
                 if isinstance(asset, Nfl2k5StreamingAudioBank) else
                 "The first audio replacement may take roughly 20–35 minutes while "
                 "Mod Studio reads your XISO and builds private safety indexes. This "
                 "happens once; your XISO stays read-only."
                 if editable and not audio_editing_ready else
-                asset.action_note if asset is not None else
+                self._replacement_hint(asset) if asset is not None else
                 "Select one of the Editable fixed-allocation sounds or ranges"
             )
             self.drop_zone.set_accepting(editable, hint)
             self._update_replacement_pack_actions()
-            pagination_ready = self._pagination_query_ready()
-            self.previous_button.setEnabled(self.page.has_previous and pagination_ready)
-            self.next_button.setEnabled(self.page.has_next and pagination_ready)
+            self._sync_pagination_buttons()
             self._update_collection_actions()
             self._apply_operation_interlock()
 
@@ -4364,18 +4760,34 @@ if PYQT5_AVAILABLE:
             self.refresh(keep_selection=False)
 
         def _previous_page(self) -> None:
-            if not self._pagination_query_ready():
+            reason = str(self.previous_button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                self.progress_label.setToolTip(reason)
+                return
+            if not self._pagination_query_ready() or not self.page.has_previous:
                 return
             self.offset = max(0, self.offset - self.page_size)
             self.refresh(keep_selection=False)
 
         def _next_page(self) -> None:
-            if not self._pagination_query_ready():
+            reason = str(self.next_button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                self.progress_label.setToolTip(reason)
+                return
+            if not self._pagination_query_ready() or not self.page.has_next:
                 return
             self.offset += self.page_size
             self.refresh(keep_selection=False)
 
         def _toggle_audio_shortlist(self) -> None:
+            reason = str(
+                self.shortlist_toggle_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             asset = self._selected_asset()
@@ -4417,6 +4829,12 @@ if PYQT5_AVAILABLE:
             self._update_audio_shortlist_actions()
 
         def _add_visible_audio_to_shortlist(self) -> None:
+            reason = str(
+                self.shortlist_page_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if not self._catalog_page_actions_ready():
                 return
             additions = tuple(
@@ -4445,6 +4863,12 @@ if PYQT5_AVAILABLE:
         def _add_all_matching_audio_to_shortlist(self) -> None:
             """Append one complete, safely revalidated filtered result set."""
 
+            reason = str(
+                self.shortlist_matching_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if (
                 self._shortlist_reviewing
                 or self._busy
@@ -4496,6 +4920,12 @@ if PYQT5_AVAILABLE:
             self._update_audio_shortlist_actions()
 
         def _clear_audio_shortlist(self) -> None:
+            reason = str(
+                self.shortlist_clear_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy or not self.host.source_ready:
                 return
             if not self._audio_shortlist:
@@ -4525,6 +4955,10 @@ if PYQT5_AVAILABLE:
             self._update_audio_shortlist_actions()
 
         def _play_selected(self) -> None:
+            reason = str(self.play_button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             asset = self._selected_asset()
             if asset is None or not isinstance(
                 asset, (Nfl2k5AudioAsset, Nfl2k5StreamingAudioRange)
@@ -4581,6 +5015,10 @@ if PYQT5_AVAILABLE:
             )
 
         def _export_selected(self) -> None:
+            reason = str(self.export_button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             asset = self._selected_asset()
@@ -4679,6 +5117,12 @@ if PYQT5_AVAILABLE:
                 )
 
         def _export_shortlisted_audio(self) -> None:
+            reason = str(
+                self.export_shortlist_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             asset_ids = self._shortlisted_audio_ids()
@@ -4722,6 +5166,16 @@ if PYQT5_AVAILABLE:
             )
 
         def _export_matching_audio(self) -> None:
+            reason = str(
+                self.export_matching_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                QMessageBox.information(
+                    self,
+                    "Cannot export matching audio yet",
+                    reason,
+                )
+                return
             if self._busy:
                 return
             if not self._catalog_page_actions_ready():
@@ -4833,6 +5287,13 @@ if PYQT5_AVAILABLE:
             )
 
         def _export_audio_replacement_template(self) -> None:
+            reason = str(
+                self.export_replacement_template_button.property("disableReason")
+                or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             export_method = getattr(
@@ -4989,6 +5450,12 @@ if PYQT5_AVAILABLE:
             )
 
         def _import_audio_replacement_pack(self) -> None:
+            reason = str(
+                self.import_replacement_pack_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             import_method = getattr(self.host, "import_audio_replacement_pack", None)
@@ -5211,6 +5678,12 @@ if PYQT5_AVAILABLE:
             )
 
         def _choose_replacement(self) -> None:
+            reason = str(
+                self.replace_button.property("disableReason") or ""
+            ).strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             asset = self._selected_asset()
@@ -5220,12 +5693,46 @@ if PYQT5_AVAILABLE:
                 return
             selected, _filter = QFileDialog.getOpenFileName(
                 self,
-                f"Choose replacement WAV for {asset.name}",
+                f"Choose replacement audio for {asset.name}",
                 "",
-                "Wave audio (*.wav)",
+                audio_conform.file_dialog_filter(),
             )
             if selected:
                 self._replace_with_path(Path(selected))
+
+        def _replacement_hint(self, asset: object) -> str:
+            """Say what this sound needs, and that the app will handle it.
+
+            The slot's shape is fixed and unforgiving, which used to mean the
+            modder had to build a file to match it by hand. It no longer does,
+            but only if the panel says so -- otherwise "exactly 10,624 frames"
+            reads like a wall rather than something already taken care of.
+            """
+
+            note = getattr(asset, "action_note", "") or ""
+            channels = getattr(asset, "channels", None)
+            sample_rate = getattr(asset, "sample_rate", None)
+            frame_count = getattr(asset, "frame_count", None)
+            if not isinstance(channels, int) or not isinstance(sample_rate, int) \
+                    or not isinstance(frame_count, int) or sample_rate <= 0:
+                return note
+
+            layout = {1: "mono", 2: "stereo"}.get(channels, f"{channels}-channel")
+            seconds = frame_count / sample_rate
+            shape = f"{layout}, {sample_rate:,} Hz, {seconds:.2f} seconds"
+            if audio_conform.conversion_available():
+                lead = (
+                    f"Drop any common audio file here (MP3, WAV, FLAC, OGG, M4A) — "
+                    f"it is converted automatically to fit this sound: {shape}. "
+                    f"Longer audio is trimmed, shorter is padded with silence."
+                )
+            else:
+                lead = (
+                    f"This sound needs a PCM16 WAV that is exactly {shape}. "
+                    f"Install FFmpeg to drop other formats and have them "
+                    f"converted for you."
+                )
+            return f"{lead}\n\n{note}" if note else lead
 
         def _replace_with_path(self, supplied: Path) -> None:
             if self._busy:
@@ -5241,20 +5748,81 @@ if PYQT5_AVAILABLE:
                 )
                 return
 
+            # Anything that is not already the slot's exact shape is converted
+            # first, so a modder can drop an ordinary mp3 or a 48 kHz stereo WAV
+            # instead of hand-building a file in an audio editor. The conversion
+            # runs inside the worker because the largest slots take a few
+            # seconds, and its output then goes through `replace_audio` and every
+            # validation behind it exactly as a hand-made file would -- nothing
+            # downstream is relaxed to accommodate it.
+            conformed_notes: list[str] = []
+
+            def operation(progress: ProgressSink) -> object:
+                try:
+                    shape = audio_conform.shape_for(
+                        asset.channels, asset.sample_rate, asset.frame_count
+                    )
+                except audio_conform.AudioConformError:
+                    return self.host.replace_audio(asset.asset_id, supplied, progress)
+
+                with tempfile.TemporaryDirectory(
+                    prefix="nfl2k5-audio-conform-"
+                ) as workspace:
+                    try:
+                        result = audio_conform.conform(supplied, shape, Path(workspace))
+                    except audio_conform.AudioConformError:
+                        # Strictly additive: a file that cannot be converted goes
+                        # through untouched, so the existing importer produces the
+                        # same refusal it always did. Conversion adds a route; it
+                        # never removes one or rewords an existing failure.
+                        return self.host.replace_audio(
+                            asset.asset_id, supplied, progress
+                        )
+                    if result.converted:
+                        conformed_notes.extend(result.notes)
+                    return self.host.replace_audio(
+                        asset.asset_id, result.path, progress
+                    )
+
             def complete(_value: object) -> None:
                 self.audio_modified.emit(asset.asset_id)
-                self.progress_label.setText("Replacement staged")
+                if conformed_notes:
+                    # Reported, not hidden: someone who hears something
+                    # unexpected should be able to see that the file was
+                    # resampled or trimmed, and why. It is not an error, so it
+                    # does not go to error_raised. The status line names the
+                    # changes; the tooltip carries the full sentences.
+                    changes: list[str] = []
+                    joined = " ".join(conformed_notes)
+                    if "Resampled" in joined:
+                        changes.append("resampled")
+                    if "Channels" in joined:
+                        changes.append("channels changed")
+                    if "trimmed" in joined:
+                        changes.append("trimmed to fit")
+                    if "padded" in joined:
+                        changes.append("padded with silence")
+                    if "headroom" in joined:
+                        changes.append("level lowered to avoid clipping")
+                    summary = ", ".join(changes) if changes else "converted"
+                    self.progress_label.setText(
+                        f"Replacement staged. Your file was {summary}. "
+                        "Hover for details."
+                    )
+                    self.progress_label.setToolTip("\n".join(conformed_notes))
+                else:
+                    self.progress_label.setText("Replacement staged")
+                    self.progress_label.setToolTip("")
                 self.invalidate_audio_content()
                 self.refresh()
 
-            self._run(
-                lambda progress: self.host.replace_audio(
-                    asset.asset_id, supplied, progress
-                ),
-                complete,
-            )
+            self._run(operation, complete)
 
         def _revert_selected(self) -> None:
+            reason = str(self.revert_button.property("disableReason") or "").strip()
+            if reason:
+                self.progress_label.setText(reason)
+                return
             if self._busy:
                 return
             asset = self._selected_asset()

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
@@ -130,7 +131,7 @@ class StadiumCacheCoordinatorTests(unittest.TestCase):
         # Resolve the temp root so paths the coordinator canonicalises compare
         # equal to ours under a symlinked (macOS /private/var) or short-name
         # (Windows) temp location.
-        self.root = Path(self.temporary.name).resolve() / "private-source-cache"
+        self.root = Path(self.temporary.name).resolve() / SOURCE_SHA256
         self.root.mkdir()
         self.pack0 = self.root / "extracted" / "game" / "0"
         self.pack0.parent.mkdir(parents=True)
@@ -198,6 +199,114 @@ class StadiumCacheCoordinatorTests(unittest.TestCase):
         }
         for raw in supplied_paths:
             Path(raw).resolve().relative_to(self.root.resolve())
+
+    def test_a_cache_from_an_older_build_rebuilds_instead_of_dead_ending(self) -> None:
+        """The exact failure a user hit on a game that used to work.
+
+        Beta 30 rebound derived stadium assets to the canonical game-content
+        identity. Every cache published before that carries the old marker, and
+        validating it raised "result marker is incompatible or incomplete" with
+        no way back -- on every launch, for the same XISO that had worked.
+        """
+
+        runner = SyntheticSuccessfulRunner()
+        coordinator = Nfl2k5StadiumCacheCoordinator(runner=runner, free_space_reserve=0)
+        first = coordinator.ensure(self.cache)
+        self.assertEqual(len(runner.calls), 1)
+
+        marker_path = first.root / "result.json"
+        marker = json.loads(marker_path.read_text(encoding="utf-8"))
+        marker["source_sha256"] = "0" * 64  # what an older build wrote
+        marker_path.write_text(json.dumps(marker), encoding="utf-8")
+
+        progress: list[tuple[str, int, int]] = []
+        rebuilt = coordinator.ensure(self.cache, lambda *event: progress.append(event))
+
+        self.assertEqual(len(runner.calls), 2, "the stale cache must be re-derived")
+        self.assertEqual(rebuilt.scene_count, EXPECTED_STADIUM_SCENES)
+        self.assertEqual(rebuilt.root, first.root)
+        self.assertIn(
+            ("Rebuilding out-of-date private Stadium Studio assets", 0, 1), progress
+        )
+        # No wreckage from the discard.
+        derived = self.root / "derived"
+        self.assertFalse((derived / ".stadium-studio-v1.stale").exists())
+        self.assertFalse((derived / ".stadium-studio-v1.staging").exists())
+        # The user's own game is still untouched.
+        self.assertEqual(self.pack0.read_bytes(), self.pack0_before)
+        self.assertEqual(self.inventory.read_bytes(), self.inventory_before)
+
+    def test_a_stale_cache_reads_as_not_built_rather_than_raising(self) -> None:
+        runner = SyntheticSuccessfulRunner()
+        coordinator = Nfl2k5StadiumCacheCoordinator(runner=runner, free_space_reserve=0)
+        result = coordinator.ensure(self.cache)
+        self.assertIsNotNone(coordinator.load_existing(self.cache))
+
+        marker_path = result.root / "result.json"
+        marker = json.loads(marker_path.read_text(encoding="utf-8"))
+        marker["schema"] = "2k5_mod_studio_stadium_cache_result/v0"
+        marker_path.write_text(json.dumps(marker), encoding="utf-8")
+
+        # "Already built?" must answer no, not explode: the caller's next step
+        # is ensure(), which rebuilds it.
+        self.assertIsNone(coordinator.load_existing(self.cache))
+
+    def test_a_symlinked_published_cache_is_never_removed_automatically(self) -> None:
+        """Staleness rebuilds; a safety refusal stays a refusal."""
+
+        runner = SyntheticSuccessfulRunner()
+        coordinator = Nfl2k5StadiumCacheCoordinator(runner=runner, free_space_reserve=0)
+        published = coordinator.ensure(self.cache).root
+        elsewhere = self.root / "derived" / "elsewhere"
+        elsewhere.mkdir()
+        with self.assertRaises(StadiumCacheError):
+            coordinator._discard_stale_final(elsewhere)
+        self.assertTrue(elsewhere.is_dir())
+        self.assertTrue(published.is_dir())
+
+    def test_shared_cache_reuses_stadiums_across_legal_container_layouts(self) -> None:
+        """XISO padding/layout is not the identity of derived game content."""
+
+        runner = SyntheticSuccessfulRunner()
+        coordinator = Nfl2k5StadiumCacheCoordinator(
+            runner=runner,
+            free_space_reserve=0,
+        )
+        first_container = replace(
+            self.cache,
+            source=replace(
+                self.cache.source,
+                selected_path="/private/user/alternate-6gb.iso",
+                inspected_path="/private/user/alternate-6gb.iso",
+                sha256="a" * 64,
+                size=6_300_958_720,
+            ),
+        )
+        second_container = replace(
+            self.cache,
+            source=replace(
+                self.cache.source,
+                selected_path="/private/user/alternate-7gb.iso",
+                inspected_path="/private/user/alternate-7gb.iso",
+                sha256="b" * 64,
+                size=7_825_162_240,
+            ),
+        )
+
+        first = coordinator.ensure(first_container)
+        loaded = coordinator.load_existing(second_container)
+        second = coordinator.ensure(second_container)
+
+        self.assertEqual(first, loaded)
+        self.assertEqual(first, second)
+        self.assertEqual(len(runner.calls), 1)
+        command = runner.calls[0]
+        self.assertEqual(
+            command[command.index("--source-sha256") + 1],
+            SOURCE_SHA256,
+        )
+        marker = json.loads((first.root / "result.json").read_text())
+        self.assertEqual(marker["source_sha256"], SOURCE_SHA256)
 
     def test_existing_staging_checkpoints_are_preserved_for_worker_resume(self) -> None:
         staging = self.root / "derived" / ".stadium-studio-v1.staging"

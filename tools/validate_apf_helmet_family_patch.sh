@@ -139,11 +139,11 @@ roundtrip = json.loads(roundtrip_path.read_text(encoding="utf-8"))
 verify = json.loads(verify_path.read_text(encoding="utf-8"))
 
 assert hashlib.sha256(layout_path.read_bytes()).hexdigest() == \
-    "72bf3efd4495e03fb856e0fb776313c842ebfafeb8d20d19f91318d7161aba03"
+    "29c3f097f63105f0ae2067d8f99f0ce8666e447d8bf13de4b1cb071e9638ed4c"
 assert hashlib.sha256(tsv_path.read_bytes()).hexdigest() == \
-    "a1619a129d070599bcb22f326746c3824d70fd012f63b60141c7e7263aceced7"
+    "1189ab49301c84b3b2d3edb7d1965ee0182d37f6a2d34da020311dc5b8cd2c1f"
 assert hashlib.sha256(roundtrip_path.read_bytes()).hexdigest() == \
-    "ee9980d8d163e247f12a658d570d6a10575ec9000d9e4ab802a4f16800fb1df5"
+    "f85e37695b3b118f2a555e260dbfb6f207165677b68741a5b4c099fad811eb5c"
 assert layout["schema"] == "apf_helmet_family_layout/v1"
 assert layout["source"]["sha256_before"] == layout["source"]["sha256_after"] == \
     "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
@@ -162,7 +162,7 @@ for key in (
 ):
     assert eq[key] is True, key
 assert eq["h7a_shift_profile_counts"] == {"8,10": 24}
-assert eq["minimum_controlled_allocation_slack"] == 1452
+assert eq["minimum_controlled_allocation_slack"] == 980
 descriptor = eq["canonical_txtr_descriptor"]
 assert (descriptor["width"], descriptor["height"], descriptor["format"]) == (256, 1024, 49)
 assert descriptor["vc_base_data_length"] == 0x40000
@@ -213,7 +213,7 @@ assert roundtrip["target_selection"]["accepted"] == list(range(24))
 assert roundtrip["target_selection"]["rejected"] == [-1, 24]
 assert roundtrip["controlled_edit"]["representative_asset_indices"] == [0, 16, 23]
 assert [row["allocation_slack_after"] for row in roundtrip["controlled_edit"]["results"]] == \
-    [6736, 24953, 1452]
+    [6280, 24475, 980]
 assert roundtrip["copied_volume"]["outside_replacement"]["source_and_output_match"] is True
 assert roundtrip["conclusion"]["copy_only_all_24_target_cli_exposed"] is True
 assert roundtrip["conclusion"]["all_24_controlled_rebuilds_proved_by_catalog"] is True
@@ -244,7 +244,7 @@ doc = doc_path.read_text(encoding="utf-8")
 for phrase in (
     "## Worked", "## Failed or unproved", "## Blocking broader release",
     "All 24 retail", "Team selector sharing", "--asset-index",
-    "1,452 bytes", "helmet_normal", "not yet a production art",
+    "980 bytes", "helmet_normal", "not yet a production art",
     "Runtime visibility is not proved", "APF_HELMET_FAMILY_PATCH_VALIDATION_PASS",
 ):
     assert phrase in doc, phrase
@@ -253,4 +253,4 @@ PY
 test "$(sha256sum "$source_volume" | cut -d' ' -f1)" = \
   dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e
 
-echo 'APF_HELMET_FAMILY_PATCH_VALIDATION_PASS targets=24 levels=7 h7a_profile=8,10 controlled=24 representative=3 copied_volume=true independent_verify=true team_bank_uses=80 used_assets=6 normal_preserved=true min_slack=1452 two_channel_png=true production_dxn=false runtime_visibility=false retail_unchanged=true'
+echo 'APF_HELMET_FAMILY_PATCH_VALIDATION_PASS targets=24 levels=7 h7a_profile=8,10 controlled=24 representative=3 copied_volume=true independent_verify=true team_bank_uses=80 used_assets=6 normal_preserved=true min_slack=980 two_channel_png=true production_dxn=false runtime_visibility=false retail_unchanged=true'

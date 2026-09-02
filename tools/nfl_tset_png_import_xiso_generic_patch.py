@@ -20,6 +20,16 @@ if str(_REPO_ROOT) not in sys.path:
 
 from mod_editor.core import platform_compat  # noqa: E402
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_tset_png_import_dynamic_validate import validate_dynamic_import
 import nfl_uniform_color_xiso_direct_patch as common
 
@@ -212,15 +222,17 @@ def run(
     success = False
     try:
         source_info = os.fstat(source_fd)
-        common.require(stat.S_ISREG(source_info.st_mode) and
-                       source_info.st_size == common.EXPECTED_XISO_SIZE,
-                       "retail source XISO size/type mismatch")
+        # Identity is per-extent, never the whole container: image size,
+        # sector numbers and absolute offsets are artifacts of how the disc
+        # was dumped or repacked. The exact per-file hashes below are the
+        # real check, and gating on the container refused legal dumps before
+        # they could run -- the defect the load path was already fixed for.
+        common.require(stat.S_ISREG(source_info.st_mode),
+                       "retail source XISO must be a regular file")
         source_identity = common.fd_identity(source_fd)
         common.require(common.path_identity(source) == source_identity,
                        "retail source pathname changed")
         source_sha_before = common.sha256_fd(source_fd)
-        common.require(source_sha_before == common.EXPECTED_XISO_SHA256,
-                       "retail source XISO SHA-256 mismatch")
         entries, directory = common.parse_xdvdfs(source_fd, source_info.st_size)
         files = [entry for entry in entries.values() if not (entry.attributes & 0x10)]
         common.require(len(files) == 19, "retail XDVDFS file count mismatch")
@@ -228,8 +240,7 @@ def run(
         pack_b = entries.get(PACK_B_PATH.casefold())
         pack0 = entries.get(PACK0_PATH.casefold())
         xbe = entries.get("default.xbe")
-        common.require(pack_a is not None and
-                       (pack_a.sector, pack_a.size) == (PACK_A_SECTOR, PACK_A_SIZE),
+        common.require(pack_a is not None and pack_a.size == PACK_A_SIZE,
                        "pack A extent mismatch")
         common.require(pack_b is not None and pack0 is not None and xbe is not None,
                        "required retail files absent")
@@ -243,8 +254,8 @@ def run(
         common.require(common.sha256_fd(source_fd, xbe.byte_offset, xbe.size)
                        == common.EXPECTED_XBE_SHA256, "retail default.xbe hash mismatch")
         target_absolute = pack_a.byte_offset + TARGET_SPAN_PACK_OFFSET
-        common.require(target_absolute == TARGET_ABSOLUTE,
-                       "target absolute span arithmetic mismatch")
+        common.require(target_absolute + SPAN_SIZE <= pack_a.byte_offset + pack_a.size,
+                       "target span does not lie inside pack A")
         source_span = common.read_exact(source_fd, target_absolute, SPAN_SIZE)
         common.require(sha256_bytes(source_span) == SOURCE_SPAN_SHA256,
                        "retail target span hash mismatch")

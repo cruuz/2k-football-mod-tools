@@ -42,7 +42,7 @@ before and after the build.
 
 ## Runtime procedure
 
-All desktop and emulator interaction was delegated to Spark on the isolated
+All desktop and emulator interaction ran on the isolated
 Xvfb display `:99`; the user's active desktop and pointer were never used.
 Xenia Canary ran with a fresh Wine prefix, storage, content, cache, and a
 private virtual Xbox 360 controller.

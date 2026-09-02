@@ -8,6 +8,7 @@ import ast
 import hashlib
 import json
 from pathlib import Path
+import stat
 import subprocess
 import sys
 from typing import Any
@@ -18,10 +19,8 @@ import apf_uniform_selector_xenia_match as pose_match
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "reports/assets/apf_uniform_selector_mod_release.v1.json"
-RETAIL_GAME = ROOT / "extracted/All-Pro Football 2K8 (USA)"
-RUNTIME = Path(
-    "/media/noah/Storage/.codex-tmp/apf-all-family-selector-runtime-20260716"
-)
+REPORT_SIZE = 8707
+REPORT_SHA256 = "e2cc3662d4fa09524127ab6c86ff34e989e02837cdfe79ef5cebed6f1de98b4f"
 SCHEMA = "apf_uniform_selector_mod_release/v1"
 
 
@@ -68,6 +67,36 @@ def _validate_hash_record(root: Path, record: dict[str, Any], label: str) -> Pat
     require(path.is_file() and not path.is_symlink(), f"{label} is not a regular file")
     require(path.stat().st_size == record["size_bytes"], f"{label} size differs")
     require(digest(path) == record["sha256"], f"{label} hash differs")
+    return path
+
+
+def _validate_writer_compatibility(root: Path, record: dict[str, Any]) -> Path:
+    """Accept only the pinned writer plus its audited direct-launch bootstrap.
+
+    The frozen full-volume proof predates the Windows embeddable-Python path
+    bootstrap.  Removing that exact import-only block must reproduce the
+    report-pinned writer byte for byte; any functional drift still fails.
+    """
+
+    path = root / record["path"]
+    require(path.is_file() and not path.is_symlink(), "tooling writer is not a regular file")
+    source = path.read_text(encoding="utf-8")
+    bootstrap = (
+        "# The installed Windows runtime uses an embeddable CPython ``._pth`` file,\n"
+        "# which does not automatically add this script's directory to ``sys.path``.\n"
+        "# Restore it before importing sibling tools so direct subprocess launches work\n"
+        "# the same way as a normal Python installation.\n"
+        "_here = str(Path(__file__).resolve().parent)\n"
+        "if _here not in sys.path:\n"
+        "    sys.path.insert(0, _here)\n\n"
+    )
+    require(source.count(bootstrap) == 1, "tooling writer bootstrap differs")
+    normalized = source.replace(bootstrap, "", 1).encode("utf-8")
+    require(len(normalized) == record["size_bytes"], "normalized tooling writer size differs")
+    require(
+        hashlib.sha256(normalized).hexdigest() == record["sha256"],
+        "normalized tooling writer hash differs",
+    )
     return path
 
 
@@ -127,16 +156,24 @@ def _validate_replay_queue(root: Path, release: dict[str, Any]) -> dict[str, Any
         "d2823acba35284dc35f08d3a9706476d08aba95120ccbbd168b987904f643d5a",
     ]
     for run, wanted in zip(queue["runs"], expected_0a):
-        for key in ("emulator", "game_xex", "game_0a"):
-            require(Path(run[key]).is_file(), f"queued {run['role']} {key} is missing")
-        require(digest(Path(run["emulator"])) == toolchain["emulator_sha256"],
-                f"queued {run['role']} emulator differs")
-        require(digest(Path(run["game_xex"])) == "981a57143b0a665b2220f72366e1368c5374b91c77a22d93945439d51a2cd28f",
-                f"queued {run['role']} executable differs")
-        require(digest(Path(run["game_0a"])) == run["game_0a_sha256"] == wanted,
-                f"queued {run['role']} 0A differs")
-        require(Path(run["capture_directory"]).is_dir(),
-                f"queued {run['role']} capture directory is missing")
+        # These are historical reproduction coordinates, not distributable
+        # release inputs.  The hash-pinned queue and execution report preserve
+        # them as metadata; the default gate must not stat cleaned emulator,
+        # capture, or copied-game paths.  Explicit --full-volume verification
+        # accepts caller-supplied source/output files below.
+        for key in (
+            "emulator_working_directory",
+            "emulator",
+            "game_xex",
+            "game_0a",
+            "capture_directory",
+        ):
+            require(
+                isinstance(run.get(key), str) and Path(run[key]).is_absolute(),
+                f"queued {run['role']} {key} is not an absolute reproduction coordinate",
+            )
+        require(run["game_0a_sha256"] == wanted,
+                f"queued {run['role']} 0A identity differs")
     commands = [row["command"] for row in queue["ordered_inputs"]]
     require(commands == [
         "TAP START 5.00", "TAP A 0.50", "TAP A 0.50", "TAP A 0.50",
@@ -154,7 +191,39 @@ def _validate_replay_queue(root: Path, release: dict[str, Any]) -> dict[str, Any
     return queue
 
 
-def verify(root: Path, report_path: Path, *, full_volume: bool) -> dict[str, Any]:
+def _regular_volume(path: Path | None, label: str) -> Path:
+    require(path is not None, f"--{label} is required with --full-volume")
+    assert path is not None
+    try:
+        metadata = path.lstat()
+    except OSError as exc:
+        raise ReleaseVerifyError(f"{label} is unavailable: {path}") from exc
+    require(stat.S_ISREG(metadata.st_mode), f"{label} is not a regular file")
+    require(metadata.st_nlink == 1, f"{label} must have one hard link")
+    return path
+
+
+def verify(
+    root: Path,
+    report_path: Path,
+    *,
+    full_volume: bool,
+    source_volume: Path | None = None,
+    output_volume: Path | None = None,
+) -> dict[str, Any]:
+    if full_volume:
+        source_volume = _regular_volume(source_volume, "source-volume")
+        output_volume = _regular_volume(output_volume, "output-volume")
+        require(source_volume.resolve() != output_volume.resolve(),
+                "source and output volumes alias")
+    else:
+        require(source_volume is None and output_volume is None,
+                "source/output volumes require --full-volume")
+    report_metadata = report_path.lstat()
+    require(stat.S_ISREG(report_metadata.st_mode), "mod release report is not a regular file")
+    require(report_metadata.st_nlink == 1, "mod release report must have one hard link")
+    require(report_metadata.st_size == REPORT_SIZE, "mod release report size differs")
+    require(digest(report_path) == REPORT_SHA256, "mod release report hash differs")
     release = load_json(report_path, "mod release report")
     require(release["schema"] == SCHEMA, "mod release schema differs")
     require(release["version"] == "1.0.0", "mod release version differs")
@@ -177,10 +246,17 @@ def verify(root: Path, report_path: Path, *, full_volume: bool) -> dict[str, Any
         "$SystemUpdate/su20076000_00000000",
     ], "source-game membership differs")
     for row in source_rows:
-        path = RETAIL_GAME / row["path"]
-        require(path.is_file() and not path.is_symlink(), f"retail source is missing {row['path']}")
-        require(path.stat().st_size == row["size_bytes"], f"retail source size differs: {row['path']}")
-        require(digest(path) == row["sha256"], f"retail source hash differs: {row['path']}")
+        require(
+            isinstance(row.get("size_bytes"), int) and row["size_bytes"] > 0,
+            f"source-game size pin is invalid: {row['path']}",
+        )
+        source_sha = row.get("sha256")
+        require(
+            isinstance(source_sha, str)
+            and len(source_sha) == 64
+            and all(character in "0123456789abcdef" for character in source_sha),
+            f"source-game hash pin is invalid: {row['path']}",
+        )
 
     recipe = release["recipe"]
     recipe_path = _validate_hash_record(root, recipe, "release recipe")
@@ -200,7 +276,10 @@ def verify(root: Path, report_path: Path, *, full_volume: bool) -> dict[str, Any
 
     tooling_paths: dict[str, Path] = {}
     for label, record in release["tooling"].items():
-        tooling_paths[label] = _validate_hash_record(root, record, f"tooling {label}")
+        if label == "writer":
+            tooling_paths[label] = _validate_writer_compatibility(root, record)
+        else:
+            tooling_paths[label] = _validate_hash_record(root, record, f"tooling {label}")
     _validate_builder(tooling_paths["builder"])
     verifier_tree = ast.parse(tooling_paths["independent_verifier"].read_text(encoding="utf-8"))
     imported: set[str] = set()
@@ -308,10 +387,20 @@ def verify(root: Path, report_path: Path, *, full_volume: bool) -> dict[str, Any
     }, "release claim boundary differs")
 
     if full_volume:
+        assert source_volume is not None and output_volume is not None
+        require(
+            digest(source_volume)
+            == "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e",
+            "explicit source volume differs from pinned retail",
+        )
+        require(
+            digest(output_volume) == result["copied_0a_sha256"],
+            "explicit output volume differs from the frozen copied output",
+        )
         fresh = selector_verify.verify(
-            RUNTIME / "game-retail/0A",
+            source_volume,
             recipe_path,
-            RUNTIME / "game-all-family/0A",
+            output_volume,
             manifest_path,
         )
         require(fresh == frozen_verify, "fresh complete-volume verification differs")
@@ -331,10 +420,28 @@ def verify(root: Path, report_path: Path, *, full_volume: bool) -> dict[str, Any
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--report", type=Path, default=REPORT)
-    parser.add_argument("--metadata-only", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--metadata-only",
+        action="store_true",
+        help="validate durable release metadata/evidence without replay inputs (default)",
+    )
+    mode.add_argument(
+        "--full-volume",
+        action="store_true",
+        help="also verify caller-supplied real source and copied-output 0A volumes",
+    )
+    parser.add_argument("--source-volume", type=Path)
+    parser.add_argument("--output-volume", type=Path)
     args = parser.parse_args(argv)
     try:
-        result = verify(ROOT, args.report, full_volume=not args.metadata_only)
+        result = verify(
+            ROOT,
+            args.report,
+            full_volume=args.full_volume,
+            source_volume=args.source_volume,
+            output_volume=args.output_volume,
+        )
         print(
             "APF_UNIFORM_SELECTOR_MOD_RELEASE_PASS "
             f"version={result['version']} changed_assignments={result['changed_assignments']} "

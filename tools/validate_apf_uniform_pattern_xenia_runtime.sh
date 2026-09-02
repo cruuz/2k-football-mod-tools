@@ -4,8 +4,8 @@ set -euo pipefail
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$root"
 controller_provenance="$root/tools/apf_xenia_controller_capture_provenance.py"
-controller_provenance_size=18480
-controller_provenance_sha256=23243743b1855a840025a031824b291a8c1f80ed41c87a87fa128137732a9c54
+controller_provenance_size=14939
+controller_provenance_sha256=29215981cdfa420f0c4d92f8be49a327f86457e71fe8f97e51ef4f9bdc7e40c5
 
 test ! -L "$controller_provenance"
 test "$(stat -c %h "$controller_provenance")" = 1

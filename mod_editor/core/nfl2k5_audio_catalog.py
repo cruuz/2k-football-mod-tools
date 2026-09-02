@@ -24,7 +24,7 @@ still unavailable, and runtime cue identity/consumption remains unproved.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import io
 import json
@@ -46,11 +46,17 @@ from .json_stream import (
     read_bounded_regular_file,
     require_regular_file,
 )
+from .nfl2k5_audo_family_labels import (
+    AudoFamilyLabelPromotion,
+    FAMILY_LABEL_REPORT,
+    FAMILY_LABEL_REPORT_SHA256,
+    load_family_label_promotions,
+)
 from .nfl2k5_audo_fixed_slots import (
     EDITABLE_CLASSIFICATION,
     generic_fixed_slot_warning,
 )
-from .nfl2k5_source_cache import SourceCache
+from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
 from .nfl_audio import (
     NFL_MENU_BACK_AUDIO_CHANNELS,
     NFL_MENU_BACK_AUDIO_FRAME_COUNT,
@@ -279,6 +285,10 @@ class Nfl2k5AudioAsset:
     payload_sha256: str
     decoded_pcm_sha256: str
     replacement_contract: AudioReplacementContract | None
+    # Never set for a reviewed label or the Menu Back proof; ``None`` keeps
+    # the row provisional.  Defaulted so every existing constructor and
+    # ``dataclasses.replace`` call site stays valid.
+    family_label_promotion: AudoFamilyLabelPromotion | None = None
 
     @property
     def selector(self) -> tuple[int, int]:
@@ -299,6 +309,24 @@ class Nfl2k5AudioAsset:
     @property
     def family_label(self) -> str:
         return _standalone_family(self.outer_index)[1]
+
+    @property
+    def family_reviewed_label(self) -> str | None:
+        """The disclosed family-inference label, or ``None`` when not promoted."""
+
+        promotion = self.family_label_promotion
+        return promotion.label if promotion is not None else None
+
+    @property
+    def label_text(self) -> str:
+        """The human-facing cue label.
+
+        A promoted provisional cue shows its disclosed ``family: `` inference;
+        every reviewed label, the Menu Back proof, and every unpromoted cue
+        keep the unchanged game name.
+        """
+
+        return self.family_reviewed_label or self.name
 
     @property
     def format_label(self) -> str:
@@ -472,7 +500,7 @@ class Nfl2k5StreamingAudioBank:
 
     @property
     def replacement_status(self) -> str:
-        return "Coming Soon"
+        return "Edit individual indexed ranges"
 
     @property
     def export_format_label(self) -> str:
@@ -1117,6 +1145,33 @@ def _normalize_asset(raw: object, inventory: dict[str, Any]) -> Nfl2k5AudioAsset
     )
 
 
+def apply_family_label_promotions(
+    assets: Iterable[Nfl2k5AudioAsset],
+    promotions: dict[str, AudoFamilyLabelPromotion] | None,
+) -> tuple[Nfl2k5AudioAsset, ...]:
+    """Attach fail-closed family-label promotions to provisional cues only.
+
+    Reviewed labels and the Menu Back proof are immutable: their rows pass
+    through untouched even if a promotion somehow names them.  An absent or
+    empty promotion map leaves every label provisional.
+    """
+
+    if not promotions:
+        return tuple(assets)
+    result: list[Nfl2k5AudioAsset] = []
+    for asset in assets:
+        if asset.selector == MENU_BACK_SELECTOR or asset.legacy_complete_pack_editable:
+            result.append(asset)
+            continue
+        key = f"outer_{asset.outer_index:04d}_chunk_{asset.chunk_index:04d}"
+        promotion = promotions.get(key)
+        if promotion is None or promotion.selector != asset.selector:
+            result.append(asset)
+            continue
+        result.append(replace(asset, family_label_promotion=promotion))
+    return tuple(result)
+
+
 class Nfl2k5AudioCatalog:
     """Immutable metadata catalog for standalone, streaming, and playable audio."""
 
@@ -1127,6 +1182,8 @@ class Nfl2k5AudioCatalog:
         capacity_report: Path = CAPACITY_REPORT,
         expected_count: int = EXPECTED_AUDIO_COUNT,
         expected_report_sha256: str | None = CAPACITY_REPORT_SHA256,
+        family_label_report: Path | None = None,
+        expected_family_label_sha256: str | None = FAMILY_LABEL_REPORT_SHA256,
         require_menu_back: bool = True,
     ) -> None:
         self.cache = cache
@@ -1187,7 +1244,16 @@ class Nfl2k5AudioCatalog:
         _require(seen_selectors == set(inventory),
                  "The private AUDO index and ownership metadata do not cover the same rows")
         assets.sort(key=lambda asset: (asset.outer_index, asset.chunk_index))
-        self.assets = tuple(assets)
+        family_promotions = load_family_label_promotions(
+            self.capacity_report,
+            report=(
+                family_label_report
+                if family_label_report is not None
+                else FAMILY_LABEL_REPORT
+            ),
+            expected_sha256=expected_family_label_sha256,
+        )
+        self.assets = apply_family_label_promotions(assets, family_promotions)
         self._by_id = {asset.asset_id: asset for asset in self.assets}
         self._by_selector = {asset.selector: asset for asset in self.assets}
         _require(len(self._by_id) == len(self.assets), "Stable audio asset IDs are duplicated")
@@ -1945,13 +2011,13 @@ class Nfl2k5AudioService:
             + [owner.asset_id for slot in slots for owner in slot.owners]
         ))
         exact_store = Nfl2k5AudioSourceFingerprintStore(
-            expected_source_sha256=self.cache.source.sha256,
+            expected_source_sha256=SOURCE_SHA256,
             expected_standalone_count=len(self.catalog.assets),
             expected_streaming_slot_count=len(slots),
             expected_streaming_owner_count=sum(len(slot.owners) for slot in slots),
         )
         containment_store = Nfl2k5AudioSourceContainmentStore(
-            expected_source_sha256=self.cache.source.sha256,
+            expected_source_sha256=SOURCE_SHA256,
             expected_cue_count=len(self.catalog.assets) + len(slots),
             expected_owner_count=len(owner_ids),
         )
@@ -1982,7 +2048,7 @@ class Nfl2k5AudioService:
         if not (
             exact.source_sha256
             == containment.source_binding_sha256
-            == self.cache.source.sha256
+            == SOURCE_SHA256
         ):
             raise Nfl2k5AudioCatalogError(
                 "Private audio safety inventories belong to a different game copy"
@@ -2043,7 +2109,7 @@ class Nfl2k5AudioService:
                     "frame_count": selected.frame_count,
                     "sample_rate": selected.sample_rate,
                     "schema": ORIGINAL_SCHEMA,
-                    "source_sha256": self.cache.source.sha256,
+                    "source_sha256": SOURCE_SHA256,
                     "wav_sha256": hashlib.sha256(payload).hexdigest(),
                     "wav_size": len(payload),
                 } and (
@@ -2079,7 +2145,7 @@ class Nfl2k5AudioService:
             "frame_count": selected.frame_count,
             "sample_rate": selected.sample_rate,
             "schema": ORIGINAL_SCHEMA,
-            "source_sha256": self.cache.source.sha256,
+            "source_sha256": SOURCE_SHA256,
             "wav_sha256": hashlib.sha256(wav_payload).hexdigest(),
             "wav_size": len(wav_payload),
         }
@@ -2120,7 +2186,7 @@ class Nfl2k5AudioService:
             "frame_count": selected.frame_count,
             "sample_rate": selected.sample_rate,
             "schema": STREAMING_RANGE_ORIGINAL_SCHEMA,
-            "source_sha256": self.cache.source.sha256,
+            "source_sha256": SOURCE_SHA256,
             "wav_sha256": hashlib.sha256(wav_payload).hexdigest(),
             "wav_size": len(wav_payload),
         }
@@ -2481,7 +2547,7 @@ class Nfl2k5AudioService:
                     continue
                 if not isinstance(record, dict) or (
                     record.get("schema") != STREAMING_RANGE_ORIGINAL_SCHEMA
-                    or record.get("source_sha256") != self.cache.source.sha256
+                    or record.get("source_sha256") != SOURCE_SHA256
                     or _SHA256_RE.fullmatch(
                         str(record.get("decoded_pcm_sha256", ""))
                     ) is None
@@ -2711,6 +2777,7 @@ class Nfl2k5AudioService:
 
 
 __all__ = [
+    "apply_family_label_promotions",
     "AudioAliasGroup",
     "AudioReplacementContract",
     "AudioReplacementMetadata",

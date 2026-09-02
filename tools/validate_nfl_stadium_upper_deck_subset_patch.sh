@@ -32,17 +32,17 @@ test "$(sha256sum "$catalog" | cut -d' ' -f1)" = \
   'f44472856044a5d8a50d18476a4c7af18ef98bcc3f7cf1d567db2b33d5336bfa'
 test "$(stat -c %s "$boundary")" = 25285
 test "$(sha256sum "$boundary" | cut -d' ' -f1)" = \
-  '54e6d20dcf9c525a5248d94b4f45516425f0e69702df31dfd93fc351efd43eab'
+  'e583dde9bca86971eb7355fd07b6a6646a09af8356623b4114c3003998ea4bdb'
 test "$(stat -c %s "$recipe_schema")" = 2209
 test "$(sha256sum "$recipe_schema" | cut -d' ' -f1)" = \
   '4fac01c6cffe03481b456899ec2b2f3cd25f74954d5db94ccb3b8351f841ca4b'
 
 test "$(stat -c %s tools/nfl_stadium_upper_deck_subset_patch.py)" = 49632
 test "$(sha256sum tools/nfl_stadium_upper_deck_subset_patch.py | cut -d' ' -f1)" = \
-  '0b20b0d365fa2bb99745b305a52c0372c1db2214d8986b1e409fb2aa09a2ea10'
+  'a3fdd538d9d8873d20e45739b85df65684f4674f576b74afab2c78e571d35740'
 test "$(stat -c %s tools/nfl_stadium_upper_deck_subset_verify.py)" = 64069
 test "$(sha256sum tools/nfl_stadium_upper_deck_subset_verify.py | cut -d' ' -f1)" = \
-  '8eaf78f4a0a4a26777d2b9d672e50d4298b3b4f3afd2565c84947ceb799e1585'
+  'bd8a7561e809fcd29296fcaa8123176b1bc7a3bbe3ac3ad1d30457d03404799c'
 test "$(stat -c %s tests/test_nfl_stadium_upper_deck_subset_patch.py)" = 15840
 test "$(sha256sum tests/test_nfl_stadium_upper_deck_subset_patch.py | cut -d' ' -f1)" = \
   '741ed78b40871d0f8fda68031852a37407b28eef697970583fce4ea0eda340f3'
@@ -61,10 +61,10 @@ test "$(sha256sum "$nonidentity4" | cut -d' ' -f1)" = \
   '546700178dfd2bf116beaa9bcd534c4be38a0b2f2d450590c809d605b428b311'
 test "$(stat -c %s "$roundtrip")" = 12554
 test "$(sha256sum "$roundtrip" | cut -d' ' -f1)" = \
-  'b3fde5789a6a499073d13c6deba1d5ceb3b228126154ccbba1bbb62ca88fd40b'
+  'dd9858e01e571a6bfc7fc9577caa1cf218390cb1f19b1436d1bb099805aeb4e0'
 test "$(stat -c %s "$closure")" = 13933
 test "$(sha256sum "$closure" | cut -d' ' -f1)" = \
-  '38a4b176fb39cab86b134d3b1c6d03043513771229cdf1e444ef6baa01912fba'
+  '6f9b18450cef7b2fea6d64fd7972cb3381170f3b453885519c5407622e29f026'
 test "$(stat -c %s "$doc")" = 7025
 test "$(sha256sum "$doc" | cut -d' ' -f1)" = \
   'eb8254c3ed5939377010d9e4966b501dd36ad2410505ed3f860080ecce3d2ec8'
@@ -134,7 +134,10 @@ PYTHONDONTWRITEBYTECODE=1 python3 tests/nfl_stadium_upper_deck_subset_patch_test
   --report "$temporary/roundtrip.json" >/dev/null
 cmp "$roundtrip" "$temporary/roundtrip.json"
 
-bash tools/validate_nfl_upper_deck_changed_count_spec.sh >/dev/null
+if ! bash tools/validate_nfl_upper_deck_changed_count_spec.sh; then
+  echo 'upper-deck changed-count authority validation failed' >&2
+  exit 1
+fi
 
 test "$(sha256sum "$index" | cut -d' ' -f1)" = \
   '34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d'

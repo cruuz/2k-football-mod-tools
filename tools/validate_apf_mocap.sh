@@ -53,11 +53,11 @@ cmp "$temporary/mocap.bin" "$mocap_bin"
 cmp "$temporary/bone.bin" "$bone_bin"
 
 test "$(sha256sum "$scene" | cut -d' ' -f1)" = \
-  2243b5a3eb4dfcdebdda055e1a6fd9399b12b2704338f80ae4529d8476e85a17
+  93269dbc2fbace97890af389cd97a35e5291fec39bdfd1ed411639550e4dac36
 test "$(sha256sum "$nfl" | cut -d' ' -f1)" = \
   7b1af7c95d3c2774c2129f2832c4a760c3c9df8330ed38c00ed5e00646210c1e
 test "$(sha256sum "$report" | cut -d' ' -f1)" = \
-  e477214f818be01891253683d731551c98a06bf3da0b396dc9de968b031dfb69
+  adf7554d9fb1745048a044aa25462e9b11eb860ea788b9e6e1db82d346f0aa2b
 test "$(sha256sum "$mocap_bin" | cut -d' ' -f1)" = \
   ba6ddcddd018f579e4ddbe385d63b31b45cca3c2aaf450850cf0fce20344d15f
 test "$(sha256sum "$bone_bin" | cut -d' ' -f1)" = \
@@ -199,7 +199,7 @@ assert [item["apf_name"] for item in cross["matches"]] == [
 assert all(item["nfl_kind"] == "SMCD" and item["nfl_outer_index"] == 346
            for item in cross["matches"])
 assert report["scene_inventory_source"]["sha256"] == (
-    "2243b5a3eb4dfcdebdda055e1a6fd9399b12b2704338f80ae4529d8476e85a17"
+    "93269dbc2fbace97890af389cd97a35e5291fec39bdfd1ed411639550e4dac36"
 )
 assert all("PORTME:" in item for item in report["portme"])
 

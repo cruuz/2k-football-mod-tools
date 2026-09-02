@@ -15,6 +15,28 @@ from typing import Callable, Iterable, Mapping
 
 from mod_editor.core import platform_compat
 from mod_editor.core.platform_compat import try_reflink
+from mod_editor.core.apf2k8_package_map_writer import (
+    PROVIDER_KIND as PACKAGE_MAP_KIND,
+    REPORT_SCHEMA as PACKAGE_MAP_WRITER_SCHEMA,
+    build_master_play_edits,
+    change_from_mapping as package_map_from_mapping,
+    decode_package_map_payload,
+)
+from mod_editor.core.apf2k8_playbook_route_writer import (
+    PROVIDER_KIND as PLAY_ASSIGNMENT_ROUTE_KIND,
+    REPORT_SCHEMA as PLAY_ASSIGNMENT_ROUTE_WRITER_SCHEMA,
+    build_play_route_patch,
+    decode_route_clone_payload,
+    request_from_mapping as route_clone_request_from_mapping,
+)
+from mod_editor.core.apf2k8_splb_writer import (
+    PROVIDER_KIND as SPLB_MEMBERSHIP_KIND,
+    REPORT_SCHEMA as SPLB_MEMBERSHIP_WRITER_SCHEMA,
+    build_book_patch as build_splb_book_patch,
+    change_from_mapping as splb_change_from_mapping,
+    decode_membership_payload as decode_splb_membership_payload,
+)
+from mod_editor.core.errors import ValidationError
 
 from .backend import ensure_tools_importable
 from .models import (
@@ -25,9 +47,18 @@ from .models import (
     DRAFT_LOGO_EDIT_ID,
     DRAFT_LOGO_INNER_INDEX,
     DRAFT_LOGO_OUTER_INDEX,
+    NUMBER_TEXTURE_KIND,
+    NUMBER_TEXTURE_WRITER_SCHEMA,
     ApfSource,
     BuildReceipt,
     Modification,
+)
+from .helmet_crest_design import (
+    FULL_SHELL_CREST_PROFILE,
+    HELMET_CREST_DESIGN_EDIT_ID,
+    HELMET_CREST_DESIGN_KIND,
+    HelmetCrestDesignError,
+    validate_metadata as validate_helmet_crest_metadata,
 )
 from .source import EXPECTED_0A_SHA256, sha256_file
 
@@ -40,17 +71,34 @@ import apf_inner  # type: ignore  # noqa: E402
 import apf_outer  # type: ignore  # noqa: E402
 import apf_player_rating_patch  # type: ignore  # noqa: E402
 import apf_player_position_patch  # type: ignore  # noqa: E402
+import apf_custom_team_appearance_patch  # type: ignore  # noqa: E402
+import apf_uniform_equipment_color_patch  # type: ignore  # noqa: E402
 import apf_roster_composite_patch  # type: ignore  # noqa: E402
 import apf_texture_patch  # type: ignore  # noqa: E402
 import apf_txt_loc_patch  # type: ignore  # noqa: E402
 import apf_roster_identity_patch  # type: ignore  # noqa: E402
+import apf_helmet_crest_wrap_patch  # type: ignore  # noqa: E402
+import apf_helmet_crest_wrap_verify  # type: ignore  # noqa: E402
+import apf_logo_patch  # type: ignore  # noqa: E402
+import apf_logocache_patch  # type: ignore  # noqa: E402
+import apf_logocache_verify  # type: ignore  # noqa: E402
+import apf_team_crests  # type: ignore  # noqa: E402
 
 from .project import ProjectError, decode_text_payload
+from .number_targets import NumberPatchError, is_digit_overflow_target
+from .number_targets import compile_package_patch as compile_number_package_patch
 from .uniform_targets import compile_uniform_patch
 
 
 Progress = Callable[[str, int, int], None]
 BUILD_SCHEMA = "apf2k8_mod_studio_build/v1"
+HELMET_CREST_COMPOSITE_SCHEMA = "apf2k8_helmet_crest_design_composite/v3"
+RAW_LOGOCACHE_OUTER_INDICES = frozenset(
+    {
+        apf_logocache_verify.DIR_TABLE_INDEX,
+        apf_logocache_verify.PAYLOAD_TABLE_INDEX,
+    }
+)
 BUILD_SPACE_MARGIN = 512 * 1024 * 1024
 EXPECTED_TREE: dict[str, tuple[int, str]] = {
     "0A": (
@@ -78,6 +126,177 @@ EXPECTED_TREE: dict[str, tuple[int, str]] = {
         "39a492de1d957e767657dfe7fb5ff3b315a22c10aa8e9d4009c524362d851fc8",
     ),
 }
+
+
+@dataclass(frozen=True)
+class FullShellCrestCompilation:
+    """Every in-memory outer edit required by the shared shell-atlas route."""
+
+    entries: dict[int, bytes]
+    report: dict[str, object]
+    carrier_manifest: dict[str, object]
+    carrier_verification: dict[str, object]
+    atlas_rgba: bytes
+    cache_manifest: dict[str, object]
+    cache_structure_verification: dict[str, object]
+
+
+def compile_full_shell_crest_entries(
+    index_path: Path,
+    semantic_png: Path,
+    *,
+    selected_asset_index: int,
+    selected_outer_index: int,
+    progress: Progress | None = None,
+    package_workers: int | None = None,
+) -> FullShellCrestCompilation:
+    """Compile all 118 packages, selected menu cache, and global shell in RAM.
+
+    The helmet material route is shared by every team.  Consequently every
+    retail package must be migrated before outer 1310 can be enabled.  This
+    function finishes and reparses every fixed-allocation package first; its
+    caller receives no partial result and can safely mutate one private copy
+    only after all compression bounds have passed.
+    """
+
+    notify = progress or (lambda _stage, _completed, _total: None)
+    design_rgba = apf_helmet_crest_wrap_patch._read_rgba_png(
+        Path(semantic_png), "semantic design PNG"
+    )
+    # Fail at the product boundary, before any expensive archive pass.
+    apf_helmet_crest_wrap_patch._validate_design_mask(design_rgba)
+    source_outer = apf_helmet_crest_wrap_patch.read_source_outer(Path(index_path))
+    carrier = apf_helmet_crest_wrap_patch.build_patch(
+        source_outer, design_rgba=design_rgba
+    )
+    carrier_verification = apf_helmet_crest_wrap_verify.verify_outer(
+        source_outer,
+        carrier.rebuilt_entry,
+        carrier.manifest,
+        design_rgba=design_rgba,
+        atlas_rgba=carrier.atlas_rgba,
+    )
+    slots = tuple(apf_team_crests.crest_slots(Path(index_path)))
+    if (
+        len(slots) != apf_team_crests.CATALOG_SLOT_COUNT
+        or len({slot.asset_index for slot in slots}) != len(slots)
+        or len({slot.outer_entry_index for slot in slots}) != len(slots)
+    ):
+        raise BuildError("The 118-package retail crest catalog is incomplete")
+    selected = tuple(
+        slot for slot in slots if slot.asset_index == selected_asset_index
+    )
+    if len(selected) != 1 or selected[0].outer_entry_index != selected_outer_index:
+        raise BuildError("The selected crest package no longer matches the catalog")
+
+    slot_by_outer = {slot.outer_entry_index: slot for slot in slots}
+    migration_rows: dict[int, tuple[dict[str, object], dict[str, object]]] = {}
+    completed = 0
+
+    # Parse the source SCNE only once for all package transforms.
+    parsed_source = apf_helmet_crest_wrap_patch._parse_outer(source_outer, source=True)
+
+    def cached_transform(
+        entry_index: int, retail_l0: bytes, retail_l1: bytes
+    ) -> tuple[bytes, bytes]:
+        nonlocal completed
+        slot = slot_by_outer[entry_index]
+        if slot.asset_index == selected_asset_index:
+            # One supplied mark belongs in one layer. A crest is six region
+            # masks -- logo_l0 carries regions 0-2 and logo_l1 regions 3-5 --
+            # so putting the same art in both draws it a second time in the
+            # other three palette colours. Clear the detail layer's masks and
+            # keep its alpha: exactly the shape 39 retail packages already ship
+            # for a crest that uses no detail layer.
+            output = (
+                carrier.atlas_rgba,
+                apf_logo_patch.cleared_detail_rgba(retail_l1),
+            )
+        else:
+            atlas_l0, report_l0 = apf_helmet_crest_wrap_patch.bake_retail_crest_atlas(
+                parsed_source.system, retail_l0
+            )
+            atlas_l1, report_l1 = apf_helmet_crest_wrap_patch.bake_retail_crest_atlas(
+                parsed_source.system, retail_l1
+            )
+            migration_rows[slot.asset_index] = (report_l0, report_l1)
+            output = (atlas_l0, atlas_l1)
+        completed += 1
+        notify("Migrating every team crest to the shared helmet shell", completed, len(slots))
+        return output
+
+    if package_workers is None:
+        package_workers = min(2, os.cpu_count() or 1)
+    packages = apf_logo_patch.build_patch_rgba_batch(
+        Path(index_path),
+        (slot.outer_entry_index for slot in slots),
+        cached_transform,
+        max_workers=package_workers,
+    )
+    # The cached copy must agree with the package copy about how many times the
+    # mark is drawn, or the frontend tile and the helmet disagree.
+    cache = apf_logocache_patch.build_cache_patch(
+        Path(index_path),
+        selected_asset_index,
+        Path(semantic_png),
+        clear_l1=True,
+    )
+    cache_structure_verification = apf_logocache_verify.verify_cache_structure(
+        cache.directory_bytes, cache.payload_bytes
+    )
+    entries = {index: result.entry_bytes for index, result in packages.items()}
+    entries[apf_logocache_patch.DIR_TABLE_INDEX] = cache.directory_bytes
+    entries[apf_logocache_patch.PAYLOAD_TABLE_INDEX] = cache.payload_bytes
+    entries[apf_helmet_crest_wrap_patch.OUTER_INDEX] = carrier.rebuilt_entry
+    package_hashes = {
+        str(slot.asset_index): _hash_bytes(packages[slot.outer_entry_index].entry_bytes)
+        for slot in slots
+    }
+    package_headroom = {
+        str(slot.asset_index): int(
+            packages[slot.outer_entry_index].manifest.get("iff", {}).get(
+                "allocation_slack_after",
+                len(packages[slot.outer_entry_index].entry_bytes),
+            )
+        )
+        for slot in slots
+    }
+    worst_asset = min(package_headroom, key=package_headroom.__getitem__)
+    report: dict[str, object] = {
+        "schema": HELMET_CREST_COMPOSITE_SCHEMA,
+        "all_packages_compiled_before_stage_mutation": True,
+        "source_opened_read_only": True,
+        "catalog_slot_count": len(slots),
+        "selected_asset_index": selected_asset_index,
+        "selected_outer_index": selected_outer_index,
+        "selected_package_layers_identical_shell_atlas": True,
+        "selected_cache_layers_semantic_not_atlas": True,
+        "nonselected_package_count": len(migration_rows),
+        "nonselected_cache_entries_unchanged": True,
+        "cache_structure_reparsed": True,
+        "retail_rgba_channels_preserved_by_nearest_sampling": True,
+        "package_entry_sha256_by_asset_index": package_hashes,
+        "package_allocation_headroom_by_asset_index": package_headroom,
+        "minimum_package_allocation_headroom_bytes": package_headroom[worst_asset],
+        "worst_headroom_asset_index": int(worst_asset),
+        "h7a_candidate_limit": apf_logo_patch.MAX_H7A_CANDIDATES,
+        "package_rebuild_workers": package_workers,
+        "component_writer_schemas": {
+            "package": apf_logo_patch.SCHEMA,
+            "cache": apf_logocache_patch.SCHEMA,
+            "shell": apf_helmet_crest_wrap_patch.SCHEMA,
+            "shell_verify": apf_helmet_crest_wrap_verify.VERIFY_SCHEMA,
+        },
+    }
+    return FullShellCrestCompilation(
+        entries=entries,
+        report=report,
+        carrier_manifest=carrier.manifest,
+        carrier_verification=carrier_verification,
+        atlas_rgba=carrier.atlas_rgba,
+        cache_manifest=cache.manifest,
+        cache_structure_verification=cache_structure_verification,
+    )
 COMPILED_SPAN_PACKS = frozenset({"0A", "0B", "1A", "1B"})
 
 
@@ -128,6 +347,16 @@ class _CompiledBuildSpan:
             raise BuildError("Compiled APF span has an invalid writer schema")
         if type(self.reparse_owner) is not bool:
             raise BuildError("Compiled APF span has an invalid reparse policy")
+        if self.outer_index in RAW_LOGOCACHE_OUTER_INDICES and (
+            self.pack_name != "0A"
+            or self.kind != HELMET_CREST_DESIGN_KIND
+            or self.writer_schema != HELMET_CREST_COMPOSITE_SCHEMA
+            or not self.reparse_owner
+        ):
+            raise BuildError(
+                "Raw uniform_logocache spans require the typed helmet-crest "
+                "composite contract"
+            )
         if self.source_span_sha256 is not None and (
             not isinstance(self.source_span_sha256, str)
             or len(self.source_span_sha256) != 64
@@ -308,6 +537,140 @@ def _copy_regular(
     return copied
 
 
+def publish_compiled_outer_entries(
+    source_volume: Path,
+    output_volume: Path,
+    entries: Mapping[int, bytes],
+    *,
+    progress: Progress | None = None,
+) -> dict[str, object]:
+    """Create one private copy, pwrite bounded outer entries, and reopen all."""
+
+    if not entries:
+        raise BuildError("No compiled outer entries were supplied")
+    source_volume = Path(source_volume)
+    output_volume = Path(output_volume)
+    if output_volume.exists() or output_volume.is_symlink():
+        raise BuildError(f"Refusing to overwrite output volume: {output_volume}")
+    archive = apf_outer.parse_archive(source_volume)
+    targets: list[tuple[int, int, bytes]] = []
+    for outer_index, payload in sorted(entries.items()):
+        try:
+            entry = archive.entries[outer_index]
+        except IndexError as exc:
+            raise BuildError(f"Compiled outer index {outer_index} is absent") from exc
+        if (
+            len(entry.segments) != 1
+            or entry.segments[0].pack_name != source_volume.name
+            or len(payload) != entry.size
+        ):
+            raise BuildError(
+                f"Compiled outer {outer_index} does not match its 0A allocation"
+            )
+        targets.append((outer_index, entry.segments[0].pack_offset, bytes(payload)))
+    spans = sorted((offset, offset + len(payload), index) for index, offset, payload in targets)
+    if any(left[1] > right[0] for left, right in zip(spans, spans[1:])):
+        raise BuildError("Compiled outer allocations overlap")
+    notify = progress or _noop
+    created = False
+    try:
+        _copy_regular(
+            source_volume,
+            output_volume,
+            notify,
+            0,
+            source_volume.stat().st_size,
+        )
+        created = True
+        metadata = output_volume.lstat()
+        if (
+            not stat.S_ISREG(metadata.st_mode)
+            or stat.S_ISLNK(metadata.st_mode)
+            or metadata.st_nlink != 1
+            or metadata.st_size != source_volume.stat().st_size
+        ):
+            raise BuildError("Private output volume failed its identity gate")
+        descriptor = os.open(
+            output_volume,
+            os.O_RDWR
+            | getattr(os, "O_NOFOLLOW", 0)
+            | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_BINARY", 0),
+        )
+        try:
+            opened = os.fstat(descriptor)
+            if (opened.st_dev, opened.st_ino, opened.st_size) != (
+                metadata.st_dev, metadata.st_ino, metadata.st_size
+            ) or opened.st_nlink != 1:
+                raise BuildError("Private output changed while opening")
+            for number, (outer_index, offset, payload) in enumerate(targets, 1):
+                cursor = 0
+                while cursor < len(payload):
+                    written = platform_compat.pwrite(
+                        descriptor, payload[cursor:], offset + cursor
+                    )
+                    if written <= 0:
+                        raise BuildError(
+                            f"Short write while applying outer {outer_index}"
+                        )
+                    cursor += written
+                notify("Writing compiled helmet crest entries", number, len(targets))
+            os.fsync(descriptor)
+            reopened_hashes: dict[str, str] = {}
+            for outer_index, offset, payload in targets:
+                reopened = platform_compat.pread(descriptor, len(payload), offset)
+                if reopened != payload:
+                    raise BuildError(f"Reopened outer {outer_index} differs")
+                reopened_hashes[str(outer_index)] = _hash_bytes(reopened)
+        finally:
+            os.close(descriptor)
+    except BaseException:
+        if created:
+            output_volume.unlink(missing_ok=True)
+        raise
+    return {
+        "schema": "apf2k8_compiled_outer_copy/v1",
+        "source_opened_read_only": True,
+        "output_created_new": True,
+        "output_reflink_attempted": True,
+        "compiled_entry_count": len(targets),
+        "reopened_entry_sha256": reopened_hashes,
+    }
+
+
+def _replace_directory_with_staging(staging: Path, destination: Path) -> None:
+    """Swap a previous build folder for a newly staged one.
+
+    The source game is never this destination. Close anything that has the
+    folder open (Xenia) or the aside-rename fails and nothing is replaced.
+    """
+
+    aside = destination.with_name(destination.name + ".apf-replacing")
+    if aside.exists() or aside.is_symlink():
+        if aside.is_dir() and not aside.is_symlink():
+            shutil.rmtree(aside)
+        else:
+            aside.unlink()
+    try:
+        destination.rename(aside)
+    except OSError as exc:
+        raise BuildError(
+            f"Could not replace {destination}. Close Xenia or any other "
+            f"program using that folder and try again ({exc})."
+        ) from exc
+    try:
+        _publish_directory_noreplace(staging, destination)
+    except BaseException:
+        if destination.exists():
+            shutil.rmtree(destination, ignore_errors=True)
+        try:
+            aside.rename(destination)
+        except OSError:
+            pass
+        raise
+    shutil.rmtree(aside, ignore_errors=True)
+
+
 def _publish_directory_noreplace(staging: Path, destination: Path) -> None:
     """Publish the staged build folder to its final name, never overwriting one.
 
@@ -434,6 +797,8 @@ class ApfBuildService:
         modifications: Iterable[Modification],
         output_game: Path,
         progress: Progress = _noop,
+        *,
+        replace_existing: bool = False,
     ) -> BuildReceipt:
         output_game = output_game.expanduser().absolute().resolve(strict=False)
         source_root = self.source.game_root.resolve(strict=True)
@@ -441,10 +806,17 @@ class ApfBuildService:
             raise BuildError(
                 "Choose an output folder outside the untouched source game folder"
             )
+        replacing = False
         if output_game.exists():
-            raise FileExistsError(
-                f"Choose a new output folder; this already exists: {output_game}"
-            )
+            if not replace_existing:
+                raise FileExistsError(
+                    f"Choose a new output folder; this already exists: {output_game}"
+                )
+            if not output_game.is_dir() or output_game.is_symlink():
+                raise BuildError(
+                    f"Replace target must be a regular directory: {output_game}"
+                )
+            replacing = True
         output_game.parent.mkdir(parents=True, exist_ok=True)
         _require_build_space(output_game.parent)
         source_before = sha256_file(
@@ -455,6 +827,29 @@ class ApfBuildService:
         edits = tuple(sorted(modifications, key=lambda item: item.asset_id))
         if len({item.asset_id for item in edits}) != len(edits):
             raise BuildError("The same APF asset was selected more than once")
+        crest_designs = tuple(
+            item for item in edits if item.kind == HELMET_CREST_DESIGN_KIND
+        )
+        if len(crest_designs) > 1:
+            raise BuildError("Only one helmet crest design can be built at a time")
+        if crest_designs:
+            try:
+                crest_metadata = validate_helmet_crest_metadata(
+                    crest_designs[0].asset_id,
+                    crest_designs[0].kind,
+                    crest_designs[0].metadata,
+                )
+            except HelmetCrestDesignError as exc:
+                raise BuildError(str(exc)) from exc
+            if (
+                crest_metadata["profile"] == FULL_SHELL_CREST_PROFILE
+                and any(item.kind == "digital_font" for item in edits)
+            ):
+                raise BuildError(
+                    "The full-shell helmet crest wrap and digital_font both edit "
+                    "outer 1310. Revert one before building; combining them needs "
+                    "the future outer-1310 composite compiler."
+                )
         progress("Compiling mod edits", 0, max(1, len(edits)))
         compiled: dict[int, tuple[bytes, dict[str, object]]] = {}
         raw_overlays: list[_CompiledBuildSpan] = []
@@ -463,9 +858,17 @@ class ApfBuildService:
         roster_identity_group: list[Modification] = []
         player_rating_group: list[Modification] = []
         player_position_group: list[Modification] = []
+        custom_team_appearance_group: list[Modification] = []
+        uniform_equipment_color_group: list[Modification] = []
+        play_assignment_route_group: list[Modification] = []
+        package_map_group: list[Modification] = []
+        splb_membership_group: list[Modification] = []
+        helmet_crest_design_group: list[Modification] = []
         audo_overlay_group: list[Modification] = []
         ausb_overlay_group: list[Modification] = []
+        number_groups: dict[int, list[Modification]] = {}
         replacement_hashes: dict[str, str] = {}
+        overflowed: list[apf_texture_patch.AllocationOverflowError] = []
         for index, modification in enumerate(edits, start=1):
             try:
                 replacement_before = sha256_file(
@@ -495,12 +898,42 @@ class ApfBuildService:
                 player_rating_group.append(modification)
             elif modification.kind == "player_position":
                 player_position_group.append(modification)
+            elif modification.kind == "custom_team_appearance":
+                custom_team_appearance_group.append(modification)
+            elif modification.kind == "uniform_equipment_colors":
+                uniform_equipment_color_group.append(modification)
+            elif modification.kind == PLAY_ASSIGNMENT_ROUTE_KIND:
+                play_assignment_route_group.append(modification)
+            elif modification.kind == PACKAGE_MAP_KIND:
+                package_map_group.append(modification)
+            elif modification.kind == SPLB_MEMBERSHIP_KIND:
+                splb_membership_group.append(modification)
+            elif modification.kind == HELMET_CREST_DESIGN_KIND:
+                helmet_crest_design_group.append(modification)
             elif modification.kind == AUDO_EXACT_SLOT_KIND:
                 audo_overlay_group.append(modification)
             elif modification.kind == AUSB_EXACT_SLOT_KIND:
                 ausb_overlay_group.append(modification)
+            elif modification.kind == NUMBER_TEXTURE_KIND:
+                entry_index = modification.metadata.get("entry_index")
+                if type(entry_index) is not int:
+                    raise BuildError(
+                        f"Jersey-number edit is missing its package: {modification.asset_id}"
+                    )
+                number_groups.setdefault(entry_index, []).append(modification)
             else:
-                outer_index, entry_bytes, writer_schema = self._compile(modification)
+                try:
+                    outer_index, entry_bytes, writer_schema = self._compile(
+                        modification
+                    )
+                except apf_texture_patch.AllocationOverflowError as exc:
+                    # Every fixed-allocation target is independent, so stopping
+                    # at the first over-budget one hides the rest and turns a
+                    # multi-target build into one guess per attempt at ~40 s
+                    # each. Collect them and report the whole set once.
+                    overflowed.append(exc)
+                    progress("Compiling mod edits", index, max(1, len(edits)))
+                    continue
                 if outer_index in compiled:
                     raise BuildError(
                         f"Two edits resolve to the same APF outer entry {outer_index}"
@@ -519,6 +952,116 @@ class ApfBuildService:
                 )
                 edit_rows.append(compiled[outer_index][1])
             progress("Compiling mod edits", index, max(1, len(edits)))
+        for outer_index, group in sorted(number_groups.items()):
+            replacements: dict[str, Path] = {}
+            for modification in group:
+                name = modification.metadata.get("name")
+                if not isinstance(name, str) or name in replacements:
+                    raise BuildError(
+                        f"Jersey-number edit identity changed: {modification.asset_id}"
+                    )
+                if (
+                    modification.metadata.get("entry_index") != outer_index
+                    or type(modification.metadata.get("file_index")) is not int
+                    or type(modification.metadata.get("slot_index")) is not int
+                ):
+                    raise BuildError(
+                        f"Jersey-number target metadata changed: {modification.asset_id}"
+                    )
+                replacements[name] = modification.replacement_path
+            try:
+                result = compile_number_package_patch(
+                    self.source.index_0a, outer_index, replacements
+                )
+            except apf_texture_patch.AllocationOverflowError as exc:
+                overflowed.append(exc)
+                continue
+            except NumberPatchError as exc:
+                raise BuildError(
+                    f"Could not compile jersey-number package {outer_index}: {exc}"
+                ) from exc
+            if outer_index in compiled:
+                raise BuildError(
+                    f"Jersey-number edits collide with another APF outer entry {outer_index} edit"
+                )
+            compiled[outer_index] = (
+                result.entry_bytes,
+                {
+                    "asset_ids": tuple(item.asset_id for item in group),
+                    "kind": NUMBER_TEXTURE_KIND,
+                    "outer_index": outer_index,
+                    "staged_digits": list(result.manifest.get("staged_digits", ())),
+                    "replacement_png_sha256s": {
+                        item.asset_id: item.replacement_sha256 for item in group
+                    },
+                    "entry_size": len(result.entry_bytes),
+                    "entry_sha256": _hash_bytes(result.entry_bytes),
+                    "writer_schema": NUMBER_TEXTURE_WRITER_SCHEMA,
+                    "remaining_package_budget_bytes": result.manifest.get(
+                        "remaining_package_budget_bytes"
+                    ),
+                },
+            )
+            edit_rows.append(compiled[outer_index][1])
+        if overflowed:
+            if len(overflowed) == 1:
+                raise BuildError(str(overflowed[0]))
+            worst = min(item.overflow_bytes for item in overflowed)
+            digit_overflows = [
+                item for item in overflowed if is_digit_overflow_target(item.target)
+            ]
+            mask_overflows = [item for item in overflowed if item not in digit_overflows]
+
+            def _bullet(item: apf_texture_patch.AllocationOverflowError) -> str:
+                line = (
+                    f"• {item.target}: {item.overflow_bytes:,} bytes over"
+                )
+                if (
+                    item.budget_bytes is not None
+                    and item.retail_bytes is not None
+                ):
+                    free = item.budget_bytes - item.retail_bytes
+                    line += (
+                        f" a {item.budget_bytes:,}-byte compressed budget "
+                        f"(retail uses {item.retail_bytes:,}, leaving {free:,} free)"
+                    )
+                return line
+
+            guidance = ""
+            if digit_overflows:
+                guidance += (
+                    "\n\nJersey digits are DXT1/DXN textures, and all twenty in a "
+                    "package share one compressed budget. Retail already uses "
+                    "~99.9% of that allocation, so flattening or simplifying the "
+                    "art cannot fix this overflow — the cheapest non-blank digit "
+                    "costs ~1,800 compressed bytes, and every replacement destroys "
+                    "the cross-references the ten retail digits share inside the "
+                    "single H7A block. Growing a package's allocation would mean "
+                    "relocating the entry and rewriting the catalog — a repacker, "
+                    "not a patch-in-place writer — and that is separate follow-up "
+                    "work, not something this build can do."
+                )
+            if mask_overflows:
+                guidance += (
+                    "\n\nA region-mask slot's budget is set by how detailed "
+                    "retail's own artwork there is, not by how much free space it "
+                    "appears to have, so a near-flat retail slot cannot take busy "
+                    "art. Region-mask slots (jersey/shoulder/crest/endzone) need "
+                    "flat colours and hard edges, or a slot whose retail artwork "
+                    "is already detailed."
+                )
+            raise BuildError(
+                f"{len(overflowed)} replacements do not fit their targets' fixed "
+                "allocations. Nothing was written. Every one of them is listed "
+                "here so you can fix them together rather than one build at a "
+                "time:\n\n"
+                + "\n\n".join(
+                    _bullet(item)
+                    for item in sorted(overflowed, key=lambda x: x.overflow_bytes)
+                )
+                + guidance
+                + f" The closest one is {worst:,} bytes over."
+            )
         if audo_overlay_group:
             coordinates = tuple(
                 self._audo_coordinates(modification)
@@ -552,6 +1095,18 @@ class ApfBuildService:
             )
             raw_overlays.extend(overlays)
             edit_rows.extend(rows)
+        if helmet_crest_design_group:
+            crest_entries, crest_row = self._compile_helmet_crest_design(
+                helmet_crest_design_group[0], progress
+            )
+            for outer_index, entry_bytes in crest_entries.items():
+                if outer_index in compiled:
+                    raise BuildError(
+                        "The helmet crest design collides with another APF edit at "
+                        f"outer {outer_index}"
+                    )
+                compiled[outer_index] = (entry_bytes, crest_row)
+            edit_rows.append(crest_row)
         for outer_index, group in sorted(localization_groups.items()):
             if outer_index in compiled:
                 raise BuildError(
@@ -636,6 +1191,8 @@ class ApfBuildService:
                 roster_identity_group,
                 player_rating_group,
                 player_position_group,
+                custom_team_appearance_group,
+                uniform_equipment_color_group,
             )
         )
         if roster_group_count >= 2:
@@ -643,6 +1200,8 @@ class ApfBuildService:
                 tuple(roster_identity_group),
                 tuple(player_rating_group),
                 tuple(player_position_group),
+                tuple(custom_team_appearance_group),
+                tuple(uniform_equipment_color_group),
             )
             outer_index = result.outer_index
             if outer_index in compiled:
@@ -684,6 +1243,53 @@ class ApfBuildService:
                 )
             compiled[outer_index] = (result.entry_bytes, row)
             edit_rows.append(row)
+        elif custom_team_appearance_group:
+            result, row = self._compile_custom_team_appearance_group(
+                tuple(custom_team_appearance_group)
+            )
+            outer_index = result.outer_index
+            if outer_index in compiled:
+                raise BuildError(
+                    "Custom-team appearance edits collide with another APF "
+                    f"outer entry {outer_index} edit"
+                )
+            compiled[outer_index] = (result.entry_bytes, row)
+            edit_rows.append(row)
+        elif uniform_equipment_color_group:
+            result, row = self._compile_uniform_equipment_color_group(
+                tuple(uniform_equipment_color_group)
+            )
+            outer_index = result.outer_index
+            if outer_index in compiled:
+                raise BuildError(
+                    "Uniform equipment-color edits collide with another APF "
+                    f"outer entry {outer_index} edit"
+                )
+            compiled[outer_index] = (result.entry_bytes, row)
+            edit_rows.append(row)
+        if play_assignment_route_group or package_map_group:
+            outer_index, entry_bytes, row = self._compile_master_play_edits(
+                routes=tuple(play_assignment_route_group),
+                package_maps=tuple(package_map_group),
+            )
+            if outer_index in compiled:
+                raise BuildError(
+                    "APF MASTER PLAY edits collide with another edit at outer "
+                    f"{outer_index}"
+                )
+            compiled[outer_index] = (entry_bytes, row)
+            edit_rows.append(row)
+        if splb_membership_group:
+            for outer_index, entry_bytes, row in self._compile_splb_membership(
+                tuple(splb_membership_group)
+            ):
+                if outer_index in compiled:
+                    raise BuildError(
+                        "Fine-tune Plays edits collide with another edit at outer "
+                        f"{outer_index}"
+                    )
+                compiled[outer_index] = (entry_bytes, row)
+                edit_rows.append(row)
         for modification in edits:
             try:
                 replacement_after = sha256_file(
@@ -865,7 +1471,10 @@ class ApfBuildService:
                 )
                 stream.flush()
                 os.fsync(stream.fileno())
-            _publish_directory_noreplace(staging, output_game)
+            if replacing:
+                _replace_directory_with_staging(staging, output_game)
+            else:
+                _publish_directory_noreplace(staging, output_game)
             final_manifest = output_game / manifest_stage.name
             return BuildReceipt(
                 output_game=output_game,
@@ -1529,13 +2138,360 @@ class ApfBuildService:
             )
         return outer_index, inner_index, substream_index
 
+    def _compile_helmet_crest_design(
+        self, modification: Modification, progress: Progress = _noop
+    ) -> tuple[dict[int, bytes], dict[str, object]]:
+        """Compile selected package, coupled cache, and optional global carrier."""
+
+        try:
+            metadata = validate_helmet_crest_metadata(
+                modification.asset_id,
+                modification.kind,
+                modification.metadata,
+            )
+        except HelmetCrestDesignError as exc:
+            raise BuildError(str(exc)) from exc
+        asset_index = int(metadata["crest_asset_index"])
+        outer_index = int(metadata["crest_outer_entry_index"])
+        try:
+            slots = tuple(
+                slot
+                for slot in apf_team_crests.crest_slots(self.source.index_0a)
+                if slot.asset_index == asset_index
+            )
+        except Exception as exc:  # source parser errors have several concrete types
+            raise BuildError(f"Could not resolve the selected crest slot: {exc}") from exc
+        if len(slots) != 1 or slots[0].outer_entry_index != outer_index:
+            raise BuildError(
+                "The helmet crest package no longer matches the loaded APF game"
+            )
+        profile = str(metadata["profile"])
+        if profile == FULL_SHELL_CREST_PROFILE:
+            try:
+                full_shell = compile_full_shell_crest_entries(
+                    self.source.index_0a,
+                    modification.replacement_path,
+                    selected_asset_index=asset_index,
+                    selected_outer_index=outer_index,
+                    progress=progress,
+                )
+            except BuildError:
+                raise
+            except (
+                OSError,
+                apf_logo_patch.PatchError,
+                apf_logocache_patch.PatchError,
+                apf_helmet_crest_wrap_patch.PatchError,
+                apf_helmet_crest_wrap_verify.VerifyError,
+            ) as exc:
+                raise BuildError(
+                    f"Could not compile the full-shell helmet crest: {exc}"
+                ) from exc
+            row: dict[str, object] = {
+                "asset_ids": (HELMET_CREST_DESIGN_EDIT_ID,),
+                "kind": HELMET_CREST_DESIGN_KIND,
+                "outer_indices": tuple(sorted(full_shell.entries)),
+                "replacement_png_sha256": modification.replacement_sha256,
+                "profile": profile,
+                "coverage_scope": metadata["coverage_scope"],
+                "crest_asset_index": asset_index,
+                "crest_outer_entry_index": outer_index,
+                "fit_visible_mask": metadata["fit_visible_mask"],
+                "source_horizontal_coverage": metadata[
+                    "source_horizontal_coverage"
+                ],
+                "output_horizontal_coverage": metadata[
+                    "output_horizontal_coverage"
+                ],
+                "writer_schema": HELMET_CREST_COMPOSITE_SCHEMA,
+                "component_writer_schemas": tuple(
+                    full_shell.report["component_writer_schemas"].values()  # type: ignore[union-attr]
+                ),
+                "mirrored_sides": True,
+                "creates_xenia_patch": False,
+                "edits_default_xex": False,
+                "shell_atlas_compilation": full_shell.report,
+                "carrier_manifest": full_shell.carrier_manifest,
+                "carrier_verification": full_shell.carrier_verification,
+            }
+            return full_shell.entries, row
+        detail_digest = metadata.get("detail_sha256")
+        detail_path: Path | None = None
+        if isinstance(detail_digest, str):
+            detail_path = modification.replacement_path.parent / (
+                f"{detail_digest}.png"
+            )
+            if not detail_path.is_file():
+                raise BuildError(
+                    "The staged crest detail layer (logo_l1) is missing from "
+                    "the project's private replacement cache"
+                )
+        try:
+            # A crest is six region masks split across two textures: logo_l0
+            # carries regions 0-2 and logo_l1 regions 3-5, each filled from its
+            # own palette entry. Mirroring one staged mark into both layers
+            # therefore drew it twice, the second time in the other three
+            # colours -- which is what a modder sees as a wrong-looking crest,
+            # and it happened on all 118 packages (79 of which ship real detail
+            # art of their own). One supplied mark goes in logo_l0 and the
+            # detail layer's masks are cleared, keeping its alpha exactly; a
+            # staged two-layer crest writes both regions instead.
+            package = apf_logo_patch.build_patch(
+                self.source.index_0a,
+                modification.replacement_path,
+                entry_index=outer_index,
+                png_path_l1=detail_path,
+                clear_l1=detail_path is None,
+            )
+            cache = apf_logocache_patch.build_cache_patch(
+                self.source.index_0a,
+                asset_index,
+                modification.replacement_path,
+                png_l1=detail_path,
+                clear_l1=detail_path is None,
+            )
+        except (
+            OSError,
+            apf_logo_patch.PatchError,
+        ) as exc:
+            raise BuildError(f"Could not compile the helmet crest art: {exc}") from exc
+        entries = {
+            outer_index: package.entry_bytes,
+            apf_logocache_patch.DIR_TABLE_INDEX: cache.directory_bytes,
+            apf_logocache_patch.PAYLOAD_TABLE_INDEX: cache.payload_bytes,
+        }
+        schemas = [
+            str(package.manifest.get("schema")),
+            str(cache.manifest.get("schema")),
+        ]
+        row: dict[str, object] = {
+            "asset_ids": (HELMET_CREST_DESIGN_EDIT_ID,),
+            "kind": HELMET_CREST_DESIGN_KIND,
+            "outer_indices": tuple(sorted(entries)),
+            "replacement_png_sha256": modification.replacement_sha256,
+            "profile": profile,
+            "coverage_scope": metadata["coverage_scope"],
+            "crest_asset_index": asset_index,
+            "crest_outer_entry_index": outer_index,
+            "fit_visible_mask": metadata["fit_visible_mask"],
+            "source_horizontal_coverage": metadata[
+                "source_horizontal_coverage"
+            ],
+            "output_horizontal_coverage": metadata[
+                "output_horizontal_coverage"
+            ],
+            "writer_schema": HELMET_CREST_COMPOSITE_SCHEMA,
+            "component_writer_schemas": tuple(schemas),
+            "mirrored_sides": True,
+            "creates_xenia_patch": False,
+            "edits_default_xex": False,
+        }
+        return entries, row
+
+    def _compile_master_play_edits(
+        self,
+        *,
+        routes: tuple[Modification, ...] = (),
+        package_maps: tuple[Modification, ...] = (),
+    ) -> tuple[int, bytes, dict[str, object]]:
+        """Compile who-lines-up maps and/or route clones into outer 180."""
+
+        if not routes and not package_maps:
+            raise BuildError("Select at least one APF MASTER PLAY edit")
+        requests = []
+        for modification in routes:
+            try:
+                request = decode_route_clone_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+                metadata_request = route_clone_request_from_mapping(
+                    modification.metadata
+                )
+            except (OSError, ValidationError) as exc:
+                raise BuildError(
+                    f"Could not read APF route clone {modification.asset_id}: {exc}"
+                ) from exc
+            if request != metadata_request:
+                raise BuildError(
+                    f"APF route-clone metadata changed: {modification.asset_id}"
+                )
+            requests.append(request)
+        maps = []
+        for modification in package_maps:
+            try:
+                change = decode_package_map_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+                metadata_change = package_map_from_mapping(modification.metadata)
+            except (OSError, ValidationError) as exc:
+                raise BuildError(
+                    f"Could not read who-lines-up edit {modification.asset_id}: {exc}"
+                ) from exc
+            if change != metadata_change:
+                raise BuildError(
+                    f"Who-lines-up metadata changed: {modification.asset_id}"
+                )
+            maps.append(change)
+        if requests and not maps:
+            try:
+                result = build_play_route_patch(self.source.index_0a, requests)
+            except ValidationError as exc:
+                raise BuildError(f"Could not compile APF route clones: {exc}") from exc
+            if result.outer_index != 180:
+                raise BuildError("APF MASTER PLAY writer target changed")
+            row = {
+                "asset_ids": tuple(item.asset_id for item in routes),
+                "kind": "play_assignment_route_batch",
+                "outer_index": result.outer_index,
+                "replacement_payload_sha256s": {
+                    item.asset_id: item.replacement_sha256 for item in routes
+                },
+                "entry_size": len(result.entry_bytes),
+                "entry_sha256": _hash_bytes(result.entry_bytes),
+                "writer_schema": PLAY_ASSIGNMENT_ROUTE_WRITER_SCHEMA,
+                "writer_mode": "exact_stock_assignment_route_clone",
+                "resource_source_sha256": result.compiled_resource.source_sha256,
+                "resource_replacement_sha256": (
+                    result.compiled_resource.replacement_sha256
+                ),
+                "changed_byte_count": result.compiled_resource.changed_byte_count,
+                "changed_ranges": result.report["changed_ranges"],
+                "compiler_claims": result.report["claims"],
+            }
+            return result.outer_index, result.entry_bytes, row
+        try:
+            outer_index, entry_bytes, report = build_master_play_edits(
+                self.source.index_0a,
+                package_maps=maps,
+                routes=requests,
+            )
+        except ValidationError as exc:
+            raise BuildError(f"Could not compile APF MASTER PLAY edits: {exc}") from exc
+        if outer_index != 180:
+            raise BuildError("APF MASTER PLAY writer target changed")
+        all_mods = tuple(package_maps) + tuple(routes)
+        kind = (
+            "master_play_combined_batch"
+            if maps and requests
+            else "formation_package_map_batch"
+            if maps
+            else "play_assignment_route_batch"
+        )
+        writer_schema = (
+            PACKAGE_MAP_WRITER_SCHEMA if maps else PLAY_ASSIGNMENT_ROUTE_WRITER_SCHEMA
+        )
+        row = {
+            "asset_ids": tuple(item.asset_id for item in all_mods),
+            "kind": kind,
+            "outer_index": outer_index,
+            "replacement_payload_sha256s": {
+                item.asset_id: item.replacement_sha256 for item in all_mods
+            },
+            "entry_size": len(entry_bytes),
+            "entry_sha256": _hash_bytes(entry_bytes),
+            "writer_schema": writer_schema,
+            "writer_mode": (
+                "package_map_and_route_clone" if maps and requests else "who_lines_up"
+            ),
+            "component_writer_schemas": (
+                (PACKAGE_MAP_WRITER_SCHEMA, PLAY_ASSIGNMENT_ROUTE_WRITER_SCHEMA)
+                if maps and requests
+                else (writer_schema,)
+            ),
+            "resource_source_sha256": report["source_sha256"],
+            "resource_replacement_sha256": report["result_sha256"],
+            "changed_byte_count": report["changed_byte_count"],
+            "changed_ranges": tuple(
+                tuple(row_range) for row_range in report["changed_ranges"]
+            ),
+            "compiler_claims": report["claims"],
+            "honesty": report["honesty"],
+            "package_maps": report["package_maps"],
+        }
+        return outer_index, entry_bytes, row
+
+    def _compile_splb_membership(
+        self, modifications: tuple[Modification, ...]
+    ) -> list[tuple[int, bytes, dict[str, object]]]:
+        """Compile Fine-tune Plays edits, one rebuilt book per outer."""
+
+        if not modifications:
+            raise BuildError("Select at least one stock-playbook change")
+        grouped: dict[int, list[tuple[Modification, object]]] = {}
+        for modification in modifications:
+            try:
+                change = decode_splb_membership_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+                metadata_change = splb_change_from_mapping(modification.metadata)
+            except (OSError, ValidationError) as exc:
+                raise BuildError(
+                    f"Could not read stock-playbook edit {modification.asset_id}: "
+                    f"{exc}"
+                ) from exc
+            if change != metadata_change:
+                raise BuildError(
+                    f"Stock-playbook edit metadata changed: {modification.asset_id}"
+                )
+            grouped.setdefault(change.outer_index, []).append((modification, change))
+        compiled_rows: list[tuple[int, bytes, dict[str, object]]] = []
+        for outer_index, items in sorted(grouped.items()):
+            book_modifications = tuple(item[0] for item in items)
+            changes = [item[1] for item in items]
+            try:
+                result = build_splb_book_patch(self.source.index_0a, changes)
+            except ValidationError as exc:
+                raise BuildError(
+                    f"Could not compile stock playbook {outer_index}: {exc}"
+                ) from exc
+            if result.outer_index != outer_index:
+                raise BuildError("The stock-playbook writer target changed")
+            row = {
+                "asset_ids": tuple(item.asset_id for item in book_modifications),
+                "kind": "splb_book_membership_batch",
+                "outer_index": result.outer_index,
+                "replacement_payload_sha256s": {
+                    item.asset_id: item.replacement_sha256
+                    for item in book_modifications
+                },
+                "entry_size": len(result.entry_bytes),
+                "entry_sha256": _hash_bytes(result.entry_bytes),
+                "writer_schema": SPLB_MEMBERSHIP_WRITER_SCHEMA,
+                "writer_mode": "stock_book_entry_prefix_rewrite",
+                "book_name": result.report["book_name"],
+                "changed_byte_count": result.report["verification"][
+                    "changed_byte_count"
+                ],
+                "changed_records": result.report["verification"]["changed_records"],
+                "records_emptied": result.report["records_emptied"],
+                "populated_records_remaining": result.report[
+                    "populated_records_remaining"
+                ],
+                "compiler_claims": result.report["claims"],
+            }
+            compiled_rows.append((result.outer_index, result.entry_bytes, row))
+        return compiled_rows
+
     def _compile(self, modification: Modification) -> tuple[int, bytes, str]:
         if modification.kind == "uniform":
             family = modification.metadata.get("family")
             asset_index = modification.metadata.get("asset_index")
-            if not isinstance(asset_index, int) or not 0 <= asset_index <= 23:
+            maximum_index = 205 if family == "textlogo" else 23
+            if (
+                type(asset_index) is not int
+                or not 0 <= asset_index <= maximum_index
+            ):
                 raise BuildError(f"Invalid uniform asset index: {modification.asset_id}")
-            if str(family) not in {"jersey", "pants", "helmet", "shoulder"}:
+            if str(family) not in {
+                "jersey",
+                "pants",
+                "helmet",
+                "shoulder",
+                "textlogo",
+            }:
                 raise BuildError(f"Unsupported APF uniform family: {family}")
             expected_asset_id = f"apf:uniform:{family}:{asset_index:02d}"
             if modification.asset_id != expected_asset_id:
@@ -1870,16 +2826,181 @@ class ApfBuildService:
         }
         return result, row
 
+    def _compile_custom_team_appearance_group(
+        self, modifications: tuple[Modification, ...]
+    ) -> tuple[
+        apf_custom_team_appearance_patch.CustomTeamAppearancePatchResult,
+        dict[str, object],
+    ]:
+        """Compile exact user-slot palettes and helmet/crest selectors."""
+
+        if not modifications:
+            raise BuildError("Select at least one APF custom-team appearance")
+        replacements: dict[
+            int, apf_custom_team_appearance_patch.CustomTeamAppearance
+        ] = {}
+        for modification in modifications:
+            try:
+                slot = apf_custom_team_appearance_patch.parse_asset_id(
+                    modification.asset_id
+                )
+                value = apf_custom_team_appearance_patch.decode_replacement_payload(
+                    modification.replacement_path.read_bytes(),
+                    modification.asset_id,
+                )
+            except (
+                OSError,
+                apf_custom_team_appearance_patch.CustomTeamAppearanceError,
+            ) as exc:
+                raise BuildError(
+                    "Could not read custom-team appearance replacement "
+                    f"{modification.asset_id}: {exc}"
+                ) from exc
+            if value.slot != slot:
+                raise BuildError(
+                    f"Custom-team appearance payload target changed: {modification.asset_id}"
+                )
+            if slot in replacements:
+                raise BuildError(
+                    f"Custom-team appearance was edited twice: {modification.asset_id}"
+                )
+            replacements[slot] = value
+        try:
+            result = apf_custom_team_appearance_patch.build_patch(
+                self.source.index_0a, replacements
+            )
+        except apf_custom_team_appearance_patch.CustomTeamAppearanceError as exc:
+            raise BuildError(
+                f"Could not compile APF custom-team appearances: {exc}"
+            ) from exc
+        receipt_rows = {
+            str(item["asset_id"]): item
+            for item in result.manifest.get("edits", ())
+            if isinstance(item, dict) and "asset_id" in item
+        }
+        for modification in modifications:
+            receipt = receipt_rows.get(modification.asset_id)
+            if receipt is None or any(
+                modification.metadata.get(key) != receipt.get(key)
+                for key in modification.metadata
+            ):
+                raise BuildError(
+                    f"Custom-team appearance target changed: {modification.asset_id}"
+                )
+            if receipt.get("replacement_value_sha256") != (
+                modification.replacement_sha256
+            ):
+                raise BuildError(
+                    "Custom-team appearance replacement receipt changed: "
+                    f"{modification.asset_id}"
+                )
+        row: dict[str, object] = {
+            "asset_ids": tuple(item.asset_id for item in modifications),
+            "kind": "custom_team_appearance_batch",
+            "outer_index": result.outer_index,
+            "replacement_payload_sha256s": {
+                item.asset_id: item.replacement_sha256 for item in modifications
+            },
+            "entry_size": len(result.entry_bytes),
+            "entry_sha256": _hash_bytes(result.entry_bytes),
+            "writer_schema": str(result.manifest.get("schema")),
+            "writer_mode": str(result.manifest.get("mode")),
+            "runtime_status": "offline_proved_runtime_spot_check_pending",
+        }
+        return result, row
+
+    def _compile_uniform_equipment_color_group(
+        self, modifications: tuple[Modification, ...]
+    ) -> tuple[
+        apf_uniform_equipment_color_patch.UniformEquipmentColorPatchResult,
+        dict[str, object],
+    ]:
+        """Compile exact HOME/AWAY facemask and Team-turtleneck selectors."""
+
+        if not modifications:
+            raise BuildError("Select at least one APF uniform equipment-color edit")
+        replacements: dict[
+            int, apf_uniform_equipment_color_patch.UniformEquipmentColors
+        ] = {}
+        for modification in modifications:
+            try:
+                team_index = apf_uniform_equipment_color_patch.parse_asset_id(
+                    modification.asset_id
+                )
+                value = apf_uniform_equipment_color_patch.decode_replacement_payload(
+                    modification.replacement_path.read_bytes(), modification.asset_id
+                )
+            except (
+                OSError,
+                apf_uniform_equipment_color_patch.UniformEquipmentColorError,
+            ) as exc:
+                raise BuildError(
+                    "Could not read uniform equipment-color replacement "
+                    f"{modification.asset_id}: {exc}"
+                ) from exc
+            if value.team_index != team_index:
+                raise BuildError(
+                    f"Uniform equipment-color payload target changed: {modification.asset_id}"
+                )
+            if team_index in replacements:
+                raise BuildError(
+                    f"Uniform equipment colors were edited twice: {modification.asset_id}"
+                )
+            replacements[team_index] = value
+        try:
+            result = apf_uniform_equipment_color_patch.build_patch(
+                self.source.index_0a, replacements
+            )
+        except apf_uniform_equipment_color_patch.UniformEquipmentColorError as exc:
+            raise BuildError(
+                f"Could not compile APF uniform equipment colors: {exc}"
+            ) from exc
+        receipt_rows = {
+            str(item["asset_id"]): item
+            for item in result.manifest.get("edits", ())
+            if isinstance(item, dict) and "asset_id" in item
+        }
+        for modification in modifications:
+            receipt = receipt_rows.get(modification.asset_id)
+            if receipt is None or any(
+                modification.metadata.get(key) != receipt.get(key)
+                for key in modification.metadata
+            ):
+                raise BuildError(
+                    f"Uniform equipment-color target changed: {modification.asset_id}"
+                )
+            if receipt.get("replacement_value_sha256") != modification.replacement_sha256:
+                raise BuildError(
+                    "Uniform equipment-color replacement receipt changed: "
+                    f"{modification.asset_id}"
+                )
+        row: dict[str, object] = {
+            "asset_ids": tuple(item.asset_id for item in modifications),
+            "kind": "uniform_equipment_color_batch",
+            "outer_index": result.outer_index,
+            "replacement_payload_sha256s": {
+                item.asset_id: item.replacement_sha256 for item in modifications
+            },
+            "entry_size": len(result.entry_bytes),
+            "entry_sha256": _hash_bytes(result.entry_bytes),
+            "writer_schema": str(result.manifest.get("schema")),
+            "writer_mode": str(result.manifest.get("mode")),
+            "runtime_status": "offline_proved_runtime_spot_check_pending",
+        }
+        return result, row
+
     def _compile_roster_composite_groups(
         self,
         identity_modifications: tuple[Modification, ...] = (),
         rating_modifications: tuple[Modification, ...] = (),
         position_modifications: tuple[Modification, ...] = (),
+        appearance_modifications: tuple[Modification, ...] = (),
+        equipment_color_modifications: tuple[Modification, ...] = (),
     ) -> tuple[
         apf_roster_composite_patch.RosterCompositePatchResult,
         dict[str, object],
     ]:
-        """Compile any two or three ROST edit classes into one safe span."""
+        """Compile any two or more ROST edit classes into one safe span."""
 
         if sum(
             bool(group)
@@ -1887,6 +3008,8 @@ class ApfBuildService:
                 identity_modifications,
                 rating_modifications,
                 position_modifications,
+                appearance_modifications,
+                equipment_color_modifications,
             )
         ) < 2:
             raise BuildError(
@@ -1895,6 +3018,8 @@ class ApfBuildService:
         identity_result = identity_row = None
         rating_result = rating_row = None
         position_result = position_row = None
+        appearance_result = appearance_row = None
+        equipment_color_result = equipment_color_row = None
         if identity_modifications:
             identity_result, identity_row = self._compile_roster_identity_group(
                 identity_modifications
@@ -1907,12 +3032,26 @@ class ApfBuildService:
             position_result, position_row = self._compile_player_position_group(
                 position_modifications
             )
+        if appearance_modifications:
+            appearance_result, appearance_row = (
+                self._compile_custom_team_appearance_group(
+                    appearance_modifications
+                )
+            )
+        if equipment_color_modifications:
+            equipment_color_result, equipment_color_row = (
+                self._compile_uniform_equipment_color_group(
+                    equipment_color_modifications
+                )
+            )
         try:
             result = apf_roster_composite_patch.compose_components(
                 self.source.index_0a,
                 identity=identity_result,
                 ratings=rating_result,
                 positions=position_result,
+                appearances=appearance_result,
+                equipment_colors=equipment_color_result,
             )
         except apf_roster_composite_patch.RosterCompositeError as exc:
             raise BuildError(
@@ -1920,7 +3059,13 @@ class ApfBuildService:
             ) from exc
         component_rows = tuple(
             row
-            for row in (identity_row, rating_row, position_row)
+            for row in (
+                identity_row,
+                rating_row,
+                position_row,
+                appearance_row,
+                equipment_color_row,
+            )
             if row is not None
         )
         replacement_hashes: dict[str, object] = {}
@@ -1938,6 +3083,8 @@ class ApfBuildService:
                 *identity_modifications,
                 *rating_modifications,
                 *position_modifications,
+                *appearance_modifications,
+                *equipment_color_modifications,
             )
         )
         if len(set(asset_ids)) != len(asset_ids):
@@ -1961,6 +3108,10 @@ class ApfBuildService:
             "runtime_status": (
                 "offline_proved_position_runtime_spot_check_pending"
                 if position_modifications
+                else "offline_proved_custom_team_appearance_runtime_pending"
+                if appearance_modifications
+                else "offline_proved_uniform_equipment_colors_runtime_pending"
+                if equipment_color_modifications
                 else "runtime_proved_token_preserving_roster_consumers"
             ),
         }
@@ -2083,16 +3234,89 @@ class ApfBuildService:
         reparsed_outer_indices = sorted(
             {span.outer_index for span in ordered if span.reparse_owner}
         )
-        if reparsed_outer_indices:
+        cache_spans = {
+            span.outer_index: span
+            for span in ordered
+            if span.outer_index in RAW_LOGOCACHE_OUTER_INDICES
+        }
+        if cache_spans:
+            if (
+                set(cache_spans) != RAW_LOGOCACHE_OUTER_INDICES
+                or sum(
+                    span.outer_index in RAW_LOGOCACHE_OUTER_INDICES
+                    for span in ordered
+                )
+                != len(RAW_LOGOCACHE_OUTER_INDICES)
+            ):
+                raise BuildError(
+                    "Composed helmet crest must contain exactly one raw logo-cache "
+                    "directory and payload span"
+                )
+            expected_cache_entries = {
+                apf_logocache_verify.DIR_TABLE_INDEX: (
+                    apf_logocache_verify.DIR_NAME_ID,
+                    apf_logocache_verify.DIR_PACK_OFFSET,
+                    apf_logocache_verify.DIR_SIZE,
+                ),
+                apf_logocache_verify.PAYLOAD_TABLE_INDEX: (
+                    apf_logocache_verify.PAYLOAD_NAME_ID,
+                    apf_logocache_verify.PAYLOAD_PACK_OFFSET,
+                    apf_logocache_verify.PAYLOAD_SIZE,
+                ),
+            }
+            for outer_index, (name_id, offset, size) in expected_cache_entries.items():
+                try:
+                    entry = output_archive.entries[outer_index]
+                except IndexError as exc:
+                    raise BuildError(
+                        f"Compiled edit targets missing raw cache outer {outer_index}"
+                    ) from exc
+                span = cache_spans[outer_index]
+                if (
+                    entry.table_index != outer_index
+                    or entry.name_id != name_id
+                    or entry.size != size
+                    or len(entry.segments) != 1
+                    or entry.segments[0].pack_name != "0A"
+                    or entry.segments[0].pack_offset != offset
+                    or entry.segments[0].size != size
+                    or span.pack_name != "0A"
+                    or span.offset != offset
+                    or span.size != size
+                ):
+                    raise BuildError(
+                        f"Raw logo-cache outer {outer_index} ownership changed"
+                    )
+            try:
+                apf_logocache_verify.verify_cache_structure(
+                    cache_spans[apf_logocache_verify.DIR_TABLE_INDEX].data,
+                    cache_spans[apf_logocache_verify.PAYLOAD_TABLE_INDEX].data,
+                )
+            except apf_logocache_verify.VerifyError as exc:
+                raise BuildError(
+                    f"Rebuilt raw uniform_logocache structure is invalid: {exc}"
+                ) from exc
+
+        iff_outer_indices = [
+            outer_index
+            for outer_index in reparsed_outer_indices
+            if outer_index not in RAW_LOGOCACHE_OUTER_INDICES
+        ]
+        if iff_outer_indices:
             with apf_inner.ArchiveReader(output_archive) as reader:
-                for outer_index in reparsed_outer_indices:
+                for outer_index in iff_outer_indices:
                     try:
                         entry = output_archive.entries[outer_index]
                     except IndexError as exc:
                         raise BuildError(
                             f"Compiled edit targets missing outer {outer_index}"
                         ) from exc
-                    record = apf_inner.parse_iff(reader, entry)
+                    try:
+                        record = apf_inner.parse_iff(reader, entry)
+                    except apf_inner.FormatError as exc:
+                        raise BuildError(
+                            f"Rebuilt outer {outer_index} is not a valid VC-IFF: {exc}"
+                        ) from exc
                     if record.warnings:
                         raise BuildError(
                             f"Rebuilt outer {outer_index} has IFF warnings"

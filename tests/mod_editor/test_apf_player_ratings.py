@@ -31,8 +31,8 @@ class PlayerRatingSchemaTests(unittest.TestCase):
     def setUp(self) -> None:
         self.schema = load_player_rating_schema()
 
-    def test_exact_28_field_contract_and_excluded_neighbors(self) -> None:
-        self.assertEqual(len(self.schema.fields), 28)
+    def test_exact_31_field_contract_and_excluded_neighbor(self) -> None:
+        self.assertEqual(len(self.schema.fields), 31)
         self.assertEqual(sum(field.named for field in self.schema.fields), 27)
         self.assertEqual(
             (self.schema.native_minimum, self.schema.native_maximum), (0, 100)
@@ -45,49 +45,111 @@ class PlayerRatingSchemaTests(unittest.TestCase):
             (0, 99),
         )
         self.assertEqual(
-            [field.display_order for field in self.schema.fields], list(range(28))
+            [field.display_order for field in self.schema.fields], list(range(31))
         )
+        # Every rating byte 0xBA..0xD8 appears exactly once; height (0xD9) is the
+        # single excluded neighbour.
         self.assertEqual(
-            {field.formula_modifier_index for field in self.schema.fields},
-            set(range(28)),
-        )
-        unknown = next(
-            field
-            for field in self.schema.fields
-            if field.field_id == "unknown_rating_24"
-        )
-        self.assertEqual(
-            (unknown.label, unknown.relative_offset_hex, unknown.label_status),
-            ("Unknown Rating 24", "0xD4", "neutral_unresolved"),
+            sorted(field.relative_offset for field in self.schema.fields),
+            list(range(0xBA, 0xD9)),
         )
         self.assertEqual(
             [item.relative_offset_hex for item in self.schema.excluded_neighbor_bytes],
-            ["0xBD", "0xC5", "0xD2", "0xD9"],
+            ["0xD9"],
         )
         self.assertEqual(
-            self.schema.excluded_neighbor_bytes[-1].status,
+            self.schema.excluded_neighbor_bytes[0].status,
             "height_in_inches_consumer_proved",
         )
+
+    def test_only_the_engine_exposed_bytes_carry_a_formula_slot(self) -> None:
+        """The engine's accessor family skips 0xBD, 0xC5 and 0xD2.
+
+        Those three bytes are real and editable, so they are fields, but they own
+        no formula-table slot and must not claim one.  The other 28 own one exact
+        0..27 set.
+        """
+
+        outside = {
+            field.relative_offset_hex
+            for field in self.schema.fields
+            if not field.in_xex_attribute_interface
+        }
+        self.assertEqual(outside, {"0xBD", "0xC5", "0xD2"})
         self.assertEqual(
-            [item.status for item in self.schema.excluded_neighbor_bytes[:3]],
-            ["unknown_unassigned"] * 3,
+            {
+                field.formula_modifier_index
+                for field in self.schema.fields
+                if field.in_xex_attribute_interface
+            },
+            set(range(28)),
         )
+
+    def test_the_four_unnamed_bytes_stay_neutrally_named(self) -> None:
+        """0xBD, 0xC5, 0xD2 and 0xD4 are editable but the executable never names them.
+
+        The attribute descriptor table at 0x820E4D94 holds exactly 27 records, and
+        none of them points at these four bytes' setters.  They are real, editable
+        and position-proved, so they are fields -- but no name is adopted for them,
+        including the plausible ones APFe offers, because APFe's own labels are
+        demonstrably misassigned in the tail.
+        """
+
+        unresolved = {
+            field.relative_offset_hex: field.label
+            for field in self.schema.fields
+            if field.label_status == "neutral_unresolved"
+        }
+        self.assertEqual(
+            unresolved,
+            {
+                "0xBD": "Unknown Rating (0xBD)",
+                "0xC5": "Unknown Rating (0xC5)",
+                "0xD2": "Unknown Rating (0xD2)",
+                "0xD4": "Unknown Rating (0xD4)",
+            },
+        )
+        self.assertFalse(
+            any(
+                field.named
+                for field in self.schema.fields
+                if field.label_status == "neutral_unresolved"
+            )
+        )
+
+    def test_every_relabelled_slot_records_its_evidence(self) -> None:
+        """A corrected label must carry its basis, not just a new string."""
+
+        document = json.loads(DEFAULT_SCHEMA_PATH.read_text(encoding="utf-8"))
+        for status in ("xex_descriptor_proved", "neutral_unresolved"):
+            self.assertIn(status, document["label_provenance"])
+        # Slots that moved or were newly named during the settlement.  Each has to
+        # say why, so a later reader can re-check the reasoning instead of
+        # trusting it.
+        settled = {"0xBD", "0xC5", "0xD1", "0xD2", "0xD3", "0xD4", "0xD7"}
+        with_basis = {
+            field["relative_offset_hex"]
+            for field in document["fields"]
+            if field.get("basis")
+        }
+        self.assertEqual(sorted(settled - with_basis), [])
 
     def test_record_decode_preserves_zero_99_and_native_100(self) -> None:
         record = bytearray(self.schema.record_stride)
         offsets = {field.field_id: field.relative_offset for field in self.schema.fields}
         record[offsets["speed"]] = 0
         record[offsets["catch"]] = 99
-        record[offsets["unknown_rating_24"]] = 100
+        record[offsets["unknown_rating_d4"]] = 100
         values = self.schema.decode_record(record)
         self.assertEqual(values["speed"], 0)
         self.assertEqual(values["catch"], 99)
-        self.assertEqual(values["unknown_rating_24"], 100)
+        self.assertEqual(values["unknown_rating_d4"], 100)
         rows = self.schema.field_rows(values)
-        self.assertEqual(len(rows), 28)
+        self.assertEqual(len(rows), 31)
         self.assertEqual(rows[17]["label"], "Catch")
         self.assertEqual(rows[17]["value"], 99)
         self.assertEqual(rows[25]["relative_offset_hex"], "0xD4")
+        self.assertEqual(rows[25]["value"], 100)
 
     def test_record_decode_rejects_101_and_wrong_length(self) -> None:
         with self.assertRaisesRegex(PlayerRatingsError, "expected exactly 332"):
@@ -102,7 +164,7 @@ class PlayerRatingSchemaTests(unittest.TestCase):
             field.field_id: (99 if field.field_id == "speed" else 50)
             for field in self.schema.fields
         }
-        values["unknown_rating_24"] = 100
+        values["unknown_rating_d4"] = 100
         ratings = self.schema.field_rows(values)
         return PagedModel(
             tuple(
@@ -155,10 +217,10 @@ class PlayerRatingSchemaTests(unittest.TestCase):
             self.assertEqual(rows[0]["native_rating_maximum"], "100")
             self.assertEqual(rows[0]["stock_observed_maximum"], "99")
             self.assertEqual(rows[0]["rating.speed"], "99")
-            self.assertEqual(rows[0]["rating.unknown_rating_24"], "100")
+            self.assertEqual(rows[0]["rating.unknown_rating_d4"], "100")
             self.assertEqual(
                 len([name for name in rows[0] if name.startswith("rating.")]),
-                28,
+                len(self.schema.fields),
             )
             with self.assertRaisesRegex(InspectorError, "already exists"):
                 export_player_rating_sheet(
@@ -235,8 +297,13 @@ class PlayerRatingSchemaTests(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0]["rating_speed"], "0")
         self.assertEqual(rows[0]["rating_catch"], "17")
-        self.assertEqual(rows[0]["rating_unknown_rating_24"], "25")
+        self.assertEqual(rows[0]["rating_unknown_rating_d4"], "25")
         self.assertEqual(rows[0]["rating_scramble"], "27")
+        # The three bytes the engine's attribute interface skips still have to
+        # reach the sheet; they were previously dropped as excluded neighbours.
+        self.assertEqual(rows[0]["rating_unknown_rating_bd"], "28")
+        self.assertEqual(rows[0]["rating_unknown_rating_c5"], "29")
+        self.assertEqual(rows[0]["rating_unknown_rating_d2"], "30")
 
 
 if __name__ == "__main__":

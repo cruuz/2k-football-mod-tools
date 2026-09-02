@@ -20,4 +20,5 @@ if [[ ! -f "$installer" || -L "$installer" ]]; then
     exit 1
 fi
 
+export PYTHONDONTWRITEBYTECODE=1
 exec python3 "$installer" uninstall "$@"

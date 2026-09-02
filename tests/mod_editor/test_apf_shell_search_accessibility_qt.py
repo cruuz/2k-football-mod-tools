@@ -71,7 +71,7 @@ class ApfShellSearchAccessibilityTests(unittest.TestCase):
                 self.assertEqual(field.selectedText(), query)
                 self.assertEqual(
                     self.window.operation_status.text(),
-                    "Search ready • type to filter this workspace",
+                    "Search ready • type to filter • Esc clears • tips: logo_l0, number_0_color, font_albedo",
                 )
 
     def test_ctrl_f_reports_when_workspace_has_no_search(self) -> None:

@@ -59,6 +59,12 @@ WHAT THIS PROGRAM DOES AND DOES NOT DO
 
   - It installs only into your own user folder. It never asks for
     administrator rights, and it does not touch Windows itself.
+  - The editor also runs as a normal user. Do not choose Program Files, the
+    original game folder, or a read-only disc as the output location. Choose a
+    new empty folder under Documents or Desktop. If your source game and output
+    are on different drives, a build may copy read-only sibling packs instead
+    of linking them; that can take longer, but it still needs no administrator
+    rights.
   - It contains no game data of any kind. You supply your own legally
     obtained disc or disc image.
   - It never writes to your original disc image. Edits are always written to

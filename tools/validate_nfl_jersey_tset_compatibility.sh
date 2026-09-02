@@ -32,7 +32,7 @@ done
 }
 
 printf '%s  %s\n' \
-  ba54bc19604f5cc2ca80d6524f3b2fb93d66924ddf0d3704132578f4ae33ee82 \
+  046d03546242c11478d39b48d7f6f80b5f2009c85641b5c81abdaa6f8171cacd \
   "$compatibility" | sha256sum -c - >/dev/null
 printf '%s  %s\n' \
   5f074fe299a2d23c10cca2b61a2ff9695684eeba0c134b32f9e82863051bbbb0 \

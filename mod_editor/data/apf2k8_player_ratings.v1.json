@@ -23,278 +23,410 @@
     "default_ui_maximum": 99,
     "display_policy": "Show the stored integer exactly. Never rescale, clip, or silently translate a native value of 100 to 99."
   },
-  "field_count": 28,
+  "field_count": 31,
   "named_field_count": 27,
   "fields": [
     {
       "id": "speed",
       "label": "Speed",
+      "ui_abbreviation": "SPD",
       "relative_offset": 186,
       "relative_offset_hex": "0xBA",
       "display_order": 0,
       "formula_modifier_index": 0,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "agility",
       "label": "Agility",
+      "ui_abbreviation": "AGL",
       "relative_offset": 187,
       "relative_offset_hex": "0xBB",
       "display_order": 1,
       "formula_modifier_index": 1,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "strength",
       "label": "Strength",
+      "ui_abbreviation": "STR",
       "relative_offset": 193,
       "relative_offset_hex": "0xC1",
       "display_order": 2,
       "formula_modifier_index": 2,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "jumping",
       "label": "Jumping",
+      "ui_abbreviation": "JMP",
       "relative_offset": 194,
       "relative_offset_hex": "0xC2",
       "display_order": 3,
       "formula_modifier_index": 3,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "pass_arm_strength",
       "label": "Pass Arm Strength",
+      "ui_abbreviation": "PST",
       "relative_offset": 188,
       "relative_offset_hex": "0xBC",
       "display_order": 4,
       "formula_modifier_index": 6,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "stamina",
       "label": "Stamina",
+      "ui_abbreviation": "STM",
       "relative_offset": 190,
       "relative_offset_hex": "0xBE",
       "display_order": 5,
       "formula_modifier_index": 9,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "aggressiveness",
       "label": "Aggressiveness",
+      "ui_abbreviation": "AGG",
       "relative_offset": 216,
       "relative_offset_hex": "0xD8",
       "display_order": 6,
       "formula_modifier_index": 27,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "consistency",
       "label": "Consistency",
+      "ui_abbreviation": "CON",
       "relative_offset": 215,
       "relative_offset_hex": "0xD7",
       "display_order": 7,
       "formula_modifier_index": 22,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "constant",
+      "observed_stock_values": [
+        50,
+        99
+      ],
+      "basis": "Consistency per the descriptor table. 1,435 of 1,437 populated records read 99; the other two are the malformed pair."
     },
     {
       "id": "kick_power",
       "label": "Kick Power",
+      "ui_abbreviation": "KPW",
       "relative_offset": 191,
       "relative_offset_hex": "0xBF",
       "display_order": 8,
       "formula_modifier_index": 7,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "kicking_style",
       "label": "Kicking Style",
+      "ui_abbreviation": "KST",
       "relative_offset": 209,
       "relative_offset_hex": "0xD1",
       "display_order": 9,
       "formula_modifier_index": 26,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "enumerated",
+      "observed_stock_values": [
+        1,
+        49,
+        50,
+        99
+      ],
+      "basis": "Kicking Style per the descriptor table. Stock holds 49 at every field position, 99 for the 30 kickers and 1 for the 30 punters, so it is an index rather than a magnitude."
     },
     {
       "id": "durability",
       "label": "Durability",
+      "ui_abbreviation": "DUR",
       "relative_offset": 192,
       "relative_offset_hex": "0xC0",
       "display_order": 10,
       "formula_modifier_index": 11,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "coverage",
       "label": "Coverage",
+      "ui_abbreviation": "CVR",
       "relative_offset": 195,
       "relative_offset_hex": "0xC3",
       "display_order": 11,
       "formula_modifier_index": 20,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "run_route",
       "label": "Run Route",
+      "ui_abbreviation": "RRT",
       "relative_offset": 196,
       "relative_offset_hex": "0xC4",
       "display_order": 12,
       "formula_modifier_index": 14,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "tackle",
       "label": "Tackle",
+      "ui_abbreviation": "TKL",
       "relative_offset": 198,
       "relative_offset_hex": "0xC6",
       "display_order": 13,
       "formula_modifier_index": 17,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "break_tackle",
       "label": "Break Tackle",
+      "ui_abbreviation": "BTK",
       "relative_offset": 199,
       "relative_offset_hex": "0xC7",
       "display_order": 14,
       "formula_modifier_index": 12,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "pass_accuracy",
       "label": "Pass Accuracy",
+      "ui_abbreviation": "PAC",
       "relative_offset": 200,
       "relative_offset_hex": "0xC8",
       "display_order": 15,
       "formula_modifier_index": 5,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "pass_read_coverage",
       "label": "Pass Read Coverage",
+      "ui_abbreviation": "PRC",
       "relative_offset": 201,
       "relative_offset_hex": "0xC9",
       "display_order": 16,
       "formula_modifier_index": 13,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "catch",
       "label": "Catch",
+      "ui_abbreviation": "CAT",
       "relative_offset": 202,
       "relative_offset_hex": "0xCA",
       "display_order": 17,
       "formula_modifier_index": 4,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "run_blocking",
       "label": "Run Blocking",
+      "ui_abbreviation": "RBK",
       "relative_offset": 203,
       "relative_offset_hex": "0xCB",
       "display_order": 18,
       "formula_modifier_index": 15,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "pass_blocking",
       "label": "Pass Blocking",
+      "ui_abbreviation": "PBK",
       "relative_offset": 204,
       "relative_offset_hex": "0xCC",
       "display_order": 19,
       "formula_modifier_index": 16,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "secure_ball",
       "label": "Secure Ball",
+      "ui_abbreviation": "SEC",
       "relative_offset": 205,
       "relative_offset_hex": "0xCD",
       "display_order": 20,
       "formula_modifier_index": 10,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "pass_rush",
       "label": "Pass Rush",
+      "ui_abbreviation": "PRS",
       "relative_offset": 206,
       "relative_offset_hex": "0xCE",
       "display_order": 21,
       "formula_modifier_index": 18,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "run_coverage",
       "label": "Run Coverage",
+      "ui_abbreviation": "RCO",
       "relative_offset": 207,
       "relative_offset_hex": "0xCF",
       "display_order": 22,
       "formula_modifier_index": 19,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "kick_accuracy",
       "label": "Kick Accuracy",
+      "ui_abbreviation": "KAC",
       "relative_offset": 208,
       "relative_offset_hex": "0xD0",
       "display_order": 23,
       "formula_modifier_index": 8,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "leadership",
       "label": "Leadership",
+      "ui_abbreviation": "LDR",
       "relative_offset": 211,
       "relative_offset_hex": "0xD3",
       "display_order": 24,
       "formula_modifier_index": 23,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "constant",
+      "observed_stock_values": [
+        50
+      ],
+      "basis": "Leadership per the descriptor table. Every one of the 1,437 populated records reads 50, so APF shipped it unvaried -- the name is proved, the effect of changing it is not."
     },
     {
-      "id": "unknown_rating_24",
-      "label": "Unknown Rating 24",
+      "id": "unknown_rating_d4",
+      "label": "Unknown Rating (0xD4)",
       "relative_offset": 212,
       "relative_offset_hex": "0xD4",
       "display_order": 25,
       "formula_modifier_index": 24,
-      "label_status": "neutral_unresolved"
+      "xex_attribute_interface": true,
+      "label_status": "neutral_unresolved",
+      "value_domain": "quantized_axis",
+      "observed_stock_values": [
+        1,
+        25,
+        50,
+        99
+      ],
+      "basis": "Absent from the descriptor table, but it does own formula slot 24 and a getter in the engine's attribute accessor family. Stock uses 99 (817 records), 1 (347), 50 (272) and 25 (1). APFe surfaces this column as a run-style bucket, but APFe's tail labels are demonstrably misassigned, so no name is adopted."
     },
     {
       "id": "composure",
       "label": "Composure",
+      "ui_abbreviation": "COM",
       "relative_offset": 213,
       "relative_offset_hex": "0xD5",
       "display_order": 26,
       "formula_modifier_index": 21,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
     },
     {
       "id": "scramble",
       "label": "Scramble",
+      "ui_abbreviation": "SCR",
       "relative_offset": 214,
       "relative_offset_hex": "0xD6",
       "display_order": 27,
       "formula_modifier_index": 25,
-      "label_status": "xex_ui_named"
+      "xex_attribute_interface": true,
+      "label_status": "xex_descriptor_proved",
+      "value_domain": "rating_0_99"
+    },
+    {
+      "id": "unknown_rating_bd",
+      "label": "Unknown Rating (0xBD)",
+      "relative_offset": 189,
+      "relative_offset_hex": "0xBD",
+      "display_order": 28,
+      "formula_modifier_index": null,
+      "xex_attribute_interface": false,
+      "label_status": "neutral_unresolved",
+      "value_domain": "rating_0_99",
+      "basis": "Editable and position-proved, but absent from the executable's attribute descriptor table, so the game's own UI has no name for it. Stock holds 8 distinct values across 10..90, so it behaves like an ordinary rating."
+    },
+    {
+      "id": "unknown_rating_c5",
+      "label": "Unknown Rating (0xC5)",
+      "relative_offset": 197,
+      "relative_offset_hex": "0xC5",
+      "display_order": 29,
+      "formula_modifier_index": null,
+      "xex_attribute_interface": false,
+      "label_status": "neutral_unresolved",
+      "value_domain": "rating_0_99",
+      "basis": "Absent from the descriptor table. Stock holds 17 distinct values; the per-position profile (skill players, linebackers and defensive backs high; line, QB, K and P low) looks like a special-teams unit rating, but no executable string supports a name."
+    },
+    {
+      "id": "unknown_rating_d2",
+      "label": "Unknown Rating (0xD2)",
+      "relative_offset": 210,
+      "relative_offset_hex": "0xD2",
+      "display_order": 30,
+      "formula_modifier_index": null,
+      "xex_attribute_interface": false,
+      "label_status": "neutral_unresolved",
+      "value_domain": "enumerated",
+      "observed_stock_values": [
+        0,
+        1,
+        50
+      ],
+      "basis": "Absent from the descriptor table. Stock holds 0 in 1,433 records and 1 in 2, plus 50 in the two malformed records, so it is a two-value enum and writing an unobserved value is unproved."
     }
   ],
   "excluded_neighbor_bytes": [
-    {
-      "relative_offset": 189,
-      "relative_offset_hex": "0xBD",
-      "status": "unknown_unassigned"
-    },
-    {
-      "relative_offset": 197,
-      "relative_offset_hex": "0xC5",
-      "status": "unknown_unassigned"
-    },
-    {
-      "relative_offset": 210,
-      "relative_offset_hex": "0xD2",
-      "status": "unknown_unassigned"
-    },
     {
       "relative_offset": 217,
       "relative_offset_hex": "0xD9",
@@ -316,5 +448,17 @@
     "contains_retail_bytes": false,
     "contains_player_values": false,
     "metadata_contents": "field names, integer offsets, scale contracts, and findings only"
+  },
+  "label_provenance": {
+    "xex_descriptor_proved": "The executable's attribute descriptor table at 0x820E4D94 (27 records, stride 0x60) holds this display name at +0x0C, its 3-letter UI abbreviation at +0x00, and a pointer at +0x18 to this attribute's own setter. That setter's stb displacement names the byte, so the name-to-byte pairing is read from the executable rather than inferred.",
+    "neutral_unresolved": "An editable, position-proved byte the descriptor table does not name. No guess is adopted.",
+    "superseded_evidence": "APFe's SFLSettings.csv row ORDER is the record's byte order -- under the identity mapping 11 slots reproduce all 61 stock Gold players exactly across 17 positions -- but its row NAMES are misassigned in the tail, and its Attributes panel disagrees with its own CSV on three of the passing attributes. Neither APFe artifact is used for naming. See docs/research/apf_rating_slot_settlement.md."
+  },
+  "value_domains": {
+    "rating_0_99": "An ordinary rating. Any exact integer 0..99 is authorable.",
+    "quantized_axis": "Numeric, but stock uses only a few widely separated values that the game surfaces as named buckets. Intermediate values are unobserved and unproved.",
+    "enumerated": "A small set of index values, not a magnitude. Writing a value outside observed_stock_values is unproved and may be invalid.",
+    "constant": "Every populated stock record holds the same value. Editing it has no demonstrated effect and no name is derivable from the data.",
+    "measured_over": "1,437 stock player records with a populated 0xBA..0xD9 block, read from the supported USA disc."
   }
 }

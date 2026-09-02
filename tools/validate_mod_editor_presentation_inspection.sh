@@ -19,9 +19,9 @@ test "$(sha256sum reports/assets/scorebug_presentation_audit.json | cut -d' ' -f
 test "$(wc -c < reports/assets/apf_digital_font_layout.json)" = 4920
 test "$(sha256sum reports/assets/apf_digital_font_layout.json | cut -d' ' -f1)" = \
   1d5e83d476dee76b4013c957cb450b316ab2251d0337907e269855ac8c800a02
-test "$(wc -c < reports/assets/apf_digital_font_patch_roundtrip.json)" = 4737
+test "$(wc -c < reports/assets/apf_digital_font_patch_roundtrip.json)" = 4738
 test "$(sha256sum reports/assets/apf_digital_font_patch_roundtrip.json | cut -d' ' -f1)" = \
-  c1ccb433832fe4c3465c2f9632e3a31887133cc5f8cf811cdff71ec9b36cd06e
+  96ee9a01eec320011154531272c570cbf2227c3d7ef9d1fe9ff5638baeac3b70
 
 python3 -m unittest -v tests/mod_editor/test_presentation_inspection.py
 python3 -m mod_editor --inspect-apf-scorebug > "$temporary/inspection.json"

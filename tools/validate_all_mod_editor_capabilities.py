@@ -23,6 +23,7 @@ import json
 import os
 from pathlib import Path
 import shlex
+import shutil
 import signal
 import stat
 import subprocess
@@ -57,10 +58,10 @@ REPORT_RESIDUAL_LIMITATION = (
     "runner does not print its success marker."
 )
 ALLOWED_LAUNCHERS = {"bash", "python3"}
-EXPECTED_CAPABILITIES = 66
-EXPECTED_COVERED_CAPABILITIES = 61
+EXPECTED_CAPABILITIES = 70
+EXPECTED_COVERED_CAPABILITIES = 65
 EXPECTED_DEFERRED_CAPABILITIES = 5
-EXPECTED_UNIQUE_VALIDATORS = 49
+EXPECTED_UNIQUE_VALIDATORS = 52
 EXPECTED_DEFERRED_IDS = (
     "apf2k8.catching_drops.behavior",
     "apf2k8.franchise_restoration_cross_title.mode",
@@ -68,19 +69,72 @@ EXPECTED_DEFERRED_IDS = (
     "nfl2k5.catching_drops.behavior",
     "nfl2k5.franchise_restoration_cross_title.port",
 )
-PINNED_RG_PATH = Path(
-    "/home/noah/.nvm/versions/node/v22.22.0/lib/node_modules/@openai/codex/"
-    "node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/"
-    "codex-path/rg"
-)
-# Keep the user-writable Codex vendor directory last.  It supplies only ``rg``;
-# putting it first would let a newly added sibling shadow a system command even
-# though the captured provenance for that command still pointed into /usr/bin.
-FIXED_PATH = f"/usr/bin:/bin:{PINNED_RG_PATH.parent}"
+def _discover_rg_path() -> Path:
+    """Return the host's ripgrep without embedding a workstation path."""
+
+    for directory in (Path("/usr/bin"), Path("/bin")):
+        candidate = directory / "rg"
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return candidate.absolute()
+    discovered = shutil.which("rg")
+    if discovered is not None:
+        # Preserve the PATH lookup leaf.  The provenance capture below records
+        # and verifies its complete symlink chain as well as the resolved file.
+        return Path(os.path.abspath(discovered))
+    # Keep imports usable on hosts without ripgrep so the focused suite can
+    # report its existing named skip.  A real run still fails closed when the
+    # executable provenance is captured.
+    return Path("/usr/bin/rg")
+
+
+def _isolated_rg_directory(resolved: Path) -> Path:
+    """A directory holding ripgrep and nothing else, for the fixed PATH tail.
+
+    The tail of the fixed PATH must expose exactly one command.  When ripgrep
+    comes from ``/usr/bin`` that is already true, but a ripgrep discovered
+    through ``PATH`` often lives in a shared vendor bin beside other
+    executables -- and putting that whole directory on the validation PATH lets
+    any of them shadow an audited command.
+
+    So when the discovered directory holds anything besides ripgrep, expose it
+    through a private single-entry directory instead.  Any failure falls back to
+    the discovered directory, where the caller's own single-entry assertion
+    still catches the problem rather than hiding it.
+    """
+
+    try:
+        siblings = sorted(entry.name for entry in resolved.parent.iterdir())
+    except OSError:
+        return resolved.parent
+    if siblings == [resolved.name]:
+        return resolved.parent
+    private = Path.home() / ".cache" / "2k-mod-tools" / "validation-bin"
+    try:
+        private.mkdir(parents=True, exist_ok=True)
+        for stale in private.iterdir():
+            if stale.name != resolved.name:
+                stale.unlink()
+        link = private / resolved.name
+        if link.is_symlink() or link.exists():
+            if link.resolve() == resolved:
+                return private
+            link.unlink()
+        link.symlink_to(resolved)
+    except OSError:
+        return resolved.parent
+    return private
+
+
+PINNED_RG_PATH = _discover_rg_path()
+# Keep a single-command directory last.  System commands therefore win normal
+# lookup, the exact ripgrep executable is still captured and verified before
+# and after the validation run, and nothing else on the host can shadow an
+# audited command through this entry.
+FIXED_PATH = f"/usr/bin:/bin:{_isolated_rg_directory(PINNED_RG_PATH.resolve())}"
 FIXED_ENVIRONMENT = {
     "GIT_CONFIG_GLOBAL": "/dev/null",
     "GIT_CONFIG_NOSYSTEM": "1",
-    "HOME": "/home/noah",
+    "HOME": str(Path.home().resolve()),
     "LANG": "C.UTF-8",
     "LC_ALL": "C.UTF-8",
     "PATH": FIXED_PATH,

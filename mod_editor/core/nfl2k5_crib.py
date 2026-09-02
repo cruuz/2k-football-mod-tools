@@ -6,9 +6,10 @@ This module deliberately separates three concerns:
   retail pixels;
 * original PNG exports are decoded lazily from the user's private source
   cache; and
-* the writable classes are the code-owned ``##_photo_##`` Team Photo family
-  and the one proved ``room:22`` ``bar_monitor`` scene texture.  Both rebuild
-  five P8 mip levels without changing their owning allocation.
+* every catalogued Crib texture has a fixed-allocation write route: raw Team
+  Item P8 resources, standalone VC-LZ P8 resources, and embedded SCNE P8
+  allocations.  Every route rebuilds the complete declared mip chain without
+  moving its owning resource.
 
 Compiled spans contain wrapper/system bytes copied from the user's own dump.
 They are build-time values only and must never be serialized into a shareable
@@ -36,7 +37,8 @@ from .json_stream import (
     iter_top_level_array,
     require_regular_file,
 )
-from .nfl2k5_source_cache import SourceCache
+from .nfl2k5_source_cache import SOURCE_SHA256, SourceCache
+from .nfl2k5_crib_electronics_targets import TARGETS as CRIB_ELECTRONICS_TARGETS
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -272,20 +274,25 @@ class CribAsset:
 
         if not self.editable:
             raise CribCatalogError(
-                f"{self.label} is Preview/Export-only; replacement is Coming Soon"
+                f"{self.label} is Preview/Export-only; replacement is outside "
+                "the proved fixed-allocation boundary"
             )
-        if self.storage is CribStorage.TEAM_ITEM_AGGREGATE:
-            _require(
-                PHOTO_NAME.fullmatch(self.selector.split(":", 1)[-1]) is not None,
-                "Crib photo selector is invalid",
-            )
+        if (
+            self.storage is CribStorage.TEAM_ITEM_AGGREGATE
+            and PHOTO_NAME.fullmatch(self.selector.split(":", 1)[-1]) is not None
+        ):
+            # Preserve the original public project kind for backwards
+            # compatibility with projects made before the full Crib writer.
             kind = "crib_team_photo"
+        elif self.storage in {
+            CribStorage.TEAM_ITEM_AGGREGATE,
+            CribStorage.EXTERNAL_TEXTURE,
+        }:
+            kind = "crib_standalone_texture"
         else:
             _require(
-                self.storage is CribStorage.SCENE_EMBEDDED
-                and self.selector == BAR_MONITOR_SELECTOR
-                and self.asset_id == BAR_MONITOR_ASSET_ID,
-                "Crib scene-texture selector is not a proved writable target",
+                self.storage is CribStorage.SCENE_EMBEDDED,
+                "Crib texture storage is unsupported",
             )
             kind = "crib_scene_texture"
         return {
@@ -547,7 +554,23 @@ class Nfl2k5CribCatalog:
                     row.get(name) is None or isinstance(row.get(name), str),
                     f"compact Crib asset {index} {name} is malformed",
                 )
-            assets.append(CribAsset(**row))
+            asset = CribAsset(**row)
+            if asset.selector in CRIB_ELECTRONICS_TARGETS:
+                expected_asset_id, expected_chunk, expected_texture = \
+                    CRIB_ELECTRONICS_TARGETS[asset.selector]
+                _require(
+                    asset.storage is CribStorage.SCENE_EMBEDDED
+                    and asset.asset_id == expected_asset_id
+                    and asset.chunk_index == expected_chunk
+                    and asset.texture_index == expected_texture
+                    and asset.format_name == "P8",
+                    f"compact Crib electronics target changed: {asset.selector}",
+                )
+            _require(
+                asset.status is CribAssetStatus.EDITABLE,
+                f"compact Crib asset is unexpectedly export-only: {asset.selector}",
+            )
+            assets.append(asset)
         # Report paths are retained only for diagnostics and development
         # regeneration; release-time catalog loading never opens them.
         return cls(assets, CribReportPaths(), expectations)
@@ -584,8 +607,8 @@ class Nfl2k5CribCatalog:
     def _aggregate_asset(row: dict[str, Any], owner: dict[str, Any] | None) -> CribAsset:
         name = _text(row.get("name"), "Crib aggregate texture name")
         photo_match = PHOTO_NAME.fullmatch(name)
-        editable = owner is not None
-        _require(editable == (photo_match is not None),
+        is_photo = owner is not None
+        _require(is_photo == (photo_match is not None),
                  f"Crib photo ownership mismatch for {name}")
         if owner is not None:
             _require(owner.get("selector") == f"crib_team_photo:{name}",
@@ -607,20 +630,21 @@ class Nfl2k5CribCatalog:
             variant = None
         return CribAsset(
             asset_id=f"nfl2k5.crib.aggregate.{name}",
-            selector=(f"crib_team_photo:{name}" if editable
+            selector=(f"crib_team_photo:{name}" if is_photo
                       else f"crib_item_texture:{name}"),
-            label=(f"Team {asset_code} — Photo {variant}" if editable
+            label=(f"Team {asset_code} — Photo {variant}" if is_photo
                    else _title(name)),
             group=_asset_group(name),
-            status=(CribAssetStatus.EDITABLE if editable
-                    else CribAssetStatus.EXPORT_ONLY),
+            status=CribAssetStatus.EDITABLE,
             storage=CribStorage.TEAM_ITEM_AGGREGATE,
             authoring_note=(
                 "Paint the complete 128×128 RGBA image. Mod Studio regenerates "
                 "all five P8 mip levels and keeps the fixed slot size."
-                if editable else
-                "Preview/Export-only: ownership is known, but this item class "
-                "does not yet have a reviewed import route."
+                if is_photo else
+                f"Editable fixed-allocation Crib item. Paint the complete "
+                f"{int(row['width'])}×{int(row['height'])} RGBA image; Mod "
+                "Studio regenerates every P8 mip and preserves its wrapper, "
+                "descriptor, and slot extent."
             ),
             width=_integer(row.get("width"), f"{name} width", minimum=1),
             height=_integer(row.get("height"), f"{name} height", minimum=1),
@@ -652,22 +676,36 @@ class Nfl2k5CribCatalog:
     @staticmethod
     def _external_asset(row: dict[str, Any]) -> CribAsset:
         name = _text(row.get("name"), "Crib external texture name")
+        format_name = _text(row.get("format_name"), f"{name} format")
+        packed_size = int(_text(row.get("packed_size"), f"{name} packed size"), 0)
+        if format_name == "VC_P8_LINEAR":
+            # The linear descriptor stores width in the high halfword and
+            # height in the low halfword.  The original research inventory
+            # predates that decoder fix and reports ticker_src transposed.
+            width = (packed_size >> 16) & 0xFFFF
+            height = packed_size & 0xFFFF
+            _require(width > 0 and height > 0,
+                     f"{name} linear dimensions are invalid")
+        else:
+            width = _integer(row.get("width"), f"{name} width", minimum=1)
+            height = _integer(row.get("height"), f"{name} height", minimum=1)
         return CribAsset(
             asset_id=(f"nfl2k5.crib.external.o{int(row['outer_index']):04d}."
                       f"c{int(row['chunk_index']):04d}.{name}"),
             selector=f"crib_external_texture:{int(row['chunk_index'])}:{name}",
             label=_title(name),
             group=_asset_group(name),
-            status=CribAssetStatus.EXPORT_ONLY,
+            status=CribAssetStatus.EDITABLE,
             storage=CribStorage.EXTERNAL_TEXTURE,
             authoring_note=(
-                "Preview/Export-only: this compressed standalone texture has "
-                "known ownership, but no reviewed Crib import route yet."
+                "Editable fixed-allocation standalone Crib texture. Mod Studio "
+                "regenerates its complete P8 mip chain, preserves source-owned "
+                "video gaps, and refits the original VC-LZ span."
             ),
-            width=_integer(row.get("width"), f"{name} width", minimum=1),
-            height=_integer(row.get("height"), f"{name} height", minimum=1),
+            width=width,
+            height=height,
             mip_levels=_integer(row.get("mip_levels"), f"{name} mip count", minimum=1),
-            format_name=_text(row.get("format_name"), f"{name} format"),
+            format_name=format_name,
             outer_index=_integer(row.get("outer_index"), f"{name} outer index"),
             outer_id=_text(row.get("outer_id"), f"{name} outer ID"),
             outer_size=_integer(row.get("outer_size"), f"{name} outer size", minimum=1),
@@ -681,7 +719,7 @@ class Nfl2k5CribCatalog:
             pixel_offset=_integer(row.get("pixel_offset"), f"{name} pixel offset"),
             palette_offset=_integer(row.get("palette_offset"), f"{name} palette offset"),
             packed_format=int(_text(row.get("packed_format"), f"{name} packed format"), 0),
-            packed_size=int(_text(row.get("packed_size"), f"{name} packed size"), 0),
+            packed_size=packed_size,
             decoded_sha256=_sha(row.get("decoded_sha256"), f"{name} decoded hash"),
             rgba_sha256=_sha(row.get("rgba_sha256"), f"{name} RGBA hash"),
         )
@@ -702,26 +740,28 @@ class Nfl2k5CribCatalog:
         selector = f"crib_scene_texture:{scene}:{texture_index}"
         asset_id = (f"nfl2k5.crib.scene.c{chunk_index:04d}."
                     f"t{texture_index:03d}")
-        editable = selector == BAR_MONITOR_SELECTOR and asset_id == BAR_MONITOR_ASSET_ID
+        if selector in CRIB_ELECTRONICS_TARGETS:
+            _require(
+                CRIB_ELECTRONICS_TARGETS[selector][0] == asset_id,
+                f"Crib electronics target changed: {selector}",
+            )
+        width = _tsv_integer(row.get("width"), "embedded texture width", minimum=1)
+        height = _tsv_integer(row.get("height"), "embedded texture height", minimum=1)
         return CribAsset(
             asset_id=asset_id,
             selector=selector,
             label=f"{_title(scene)} — {label}",
             group=f"Scene Textures / {_title(scene)}",
-            status=(CribAssetStatus.EDITABLE if editable
-                    else CribAssetStatus.EXPORT_ONLY),
+            status=CribAssetStatus.EDITABLE,
             storage=CribStorage.SCENE_EMBEDDED,
             authoring_note=(
-                "Editable 128×128 Crib wall-screen texture. Paint the complete "
-                "RGBA image; Mod Studio regenerates five P8 mips and safely "
-                "recompresses the owning room scene. Very flat or heavily "
-                "dithered/noisy art may exceed the scene's safe compression envelope."
-                if editable else
-                "Preview/Export-only: ownership is mapped, but this compressed "
-                "SCNE texture does not yet have a reviewed import route."
+                "Editable fixed-allocation scene surface. Paint the complete "
+                f"{width}×{height} RGBA image; Mod Studio regenerates every P8 "
+                "mip and safely recompresses its owning scene. Same-scene edits "
+                "are composed together."
             ),
-            width=_tsv_integer(row.get("width"), "embedded texture width", minimum=1),
-            height=_tsv_integer(row.get("height"), "embedded texture height", minimum=1),
+            width=width,
+            height=height,
             mip_levels=_tsv_integer(row.get("mip_levels"),
                                     "embedded texture mip count", minimum=1),
             format_name=_text(row.get("format_name"), "embedded texture format"),
@@ -852,8 +892,10 @@ def _read_png(path: Path, dimensions: tuple[int, int]) -> tuple[bytes, bytes]:
         width, height, rgba = palette_tools.decode_rgba_png(payload, dimensions)
     except ValueError as exc:
         raise ValidationError(
-            f"This Crib asset needs an exact {dimensions[0]}×{dimensions[1]} "
-            f"8-bit RGBA PNG with interlacing off. {exc}"
+            f"This Crib asset needs a PNG that is exactly "
+            f"{dimensions[0]}×{dimensions[1]}. Any standard PNG works -- RGB, "
+            f"RGBA, greyscale, indexed, interlaced -- but the size is fixed "
+            f"by the disc and cannot be scaled. {exc}"
         ) from exc
     if (width, height) != dimensions:
         raise ValidationError(
@@ -1018,6 +1060,11 @@ class Nfl2k5CribIO:
     def ensure_original(self, asset: CribAsset) -> Path:
         path = self.original_path(asset)
         metadata = path.with_suffix(".json")
+        tampered = ValidationError(
+            "A private Crib original changed outside Mod Studio. "
+            "Remove the source cache and load the XISO again."
+        )
+        stale = False
         if path.is_file() and metadata.is_file() and not path.is_symlink() \
                 and not metadata.is_symlink():
             try:
@@ -1026,21 +1073,31 @@ class Nfl2k5CribIO:
                     payload, asset.dimensions
                 )
                 record = json.loads(metadata.read_text(encoding="utf-8"))
-                if (
-                    record.get("schema") == ORIGINAL_SCHEMA
-                    and record.get("asset_id") == asset.asset_id
-                    and record.get("source_sha256") == self.cache.source.sha256
-                    and record.get("png_sha256") == _sha256(payload)
-                    and record.get("rgba_sha256") == _sha256(rgba)
-                    and (width, height) == asset.dimensions
-                ):
-                    return path
             except (OSError, ValueError, json.JSONDecodeError):
-                pass
-            raise ValidationError(
-                "A private Crib original changed outside Mod Studio. "
-                "Remove the source cache and load the XISO again."
-            )
+                raise tampered from None
+            # Verify the pair against its own hashes before interpreting an old
+            # source binding as stale.  A different legal XISO wrapper changes
+            # no extracted game bytes, while an altered PNG remains fatal.
+            if (
+                not isinstance(record, dict)
+                or record.get("png_sha256") != _sha256(payload)
+                or record.get("rgba_sha256") != _sha256(rgba)
+                or (width, height) != asset.dimensions
+                or record.get("schema") != ORIGINAL_SCHEMA
+                or record.get("asset_id") != asset.asset_id
+            ):
+                raise tampered
+            binding = record.get("source_sha256")
+            if binding == SOURCE_SHA256:
+                return path
+            if not isinstance(binding, str) or HEX_SHA256.fullmatch(binding) is None:
+                raise tampered
+            stale = True
+        elif os.path.lexists(path) or os.path.lexists(metadata):
+            # Never turn an incomplete pair, link, or directory into a valid
+            # cache entry.  Only a complete, internally verified legacy pair is
+            # eligible for the refresh path above.
+            raise tampered
         _span, _chunk, _decoded, _texture, rgba = self._decode_asset(asset)
         png = encode_rgba_png(asset.width, asset.height, rgba)
         try:
@@ -1049,18 +1106,24 @@ class Nfl2k5CribIO:
             raise ValidationError("Exported Crib PNG failed its strict recheck") from exc
         if reparsed != (asset.width, asset.height, rgba):
             raise ValidationError("Exported Crib PNG failed its pixel round-trip")
-        _atomic_write(path, png)
         record = {
             "asset_id": asset.asset_id,
             "dimensions": [asset.width, asset.height],
             "png_sha256": _sha256(png),
             "rgba_sha256": _sha256(rgba),
             "schema": ORIGINAL_SCHEMA,
-            "source_sha256": self.cache.source.sha256,
+            # All admitted XISO layouts reduce to the same independently pinned
+            # source cache.  Bind its private originals to that canonical cache
+            # identity, not to padding/layout bytes in the selected container.
+            "source_sha256": SOURCE_SHA256,
         }
+        # Preserve an intact legacy pair until fresh decoding and PNG
+        # verification both succeed, then replace each pathname atomically.
+        _atomic_write(path, png, replace=stale)
         _atomic_write(
             metadata,
             (json.dumps(record, indent=2, sort_keys=True) + "\n").encode("utf-8"),
+            replace=stale,
         )
         return path
 
@@ -1078,7 +1141,8 @@ class Nfl2k5CribIO:
     def validate_replacement(asset: CribAsset, path: Path) -> tuple[bytes, bytes]:
         if not asset.editable:
             raise ValidationError(
-                f"{asset.label} is Preview/Export-only; replacement is Coming Soon"
+                f"{asset.label} is Preview/Export-only; replacement is outside "
+                "the proved fixed-allocation boundary"
             )
         return _read_png(path.expanduser(), asset.dimensions)
 

@@ -1,24 +1,14 @@
 {
-  "authority": {
-    "agents_md": {
-      "path": "/home/noah/AGENTS.md",
-      "sha256": "cab188a632ec34f2a40814da13dda7fdaeaad04646915d08b77e611fd4ba9008",
-      "size": 1052
-    },
-    "required_gui_policy": "Every GUI launch, operation, screenshot, and visual judgment must use the spark-hands MCP. Shell-driven or guessed desktop interaction is prohibited.",
-    "spark_hands_exposed_to_root": false,
-    "spark_hands_exposed_to_subagent": false
-  },
   "claims": {
-    "controller_lane_released": true,
     "direct_upper_deck_visibility_proved": false,
-    "emulator_launched_for_this_queue": false,
+    "emulator_capture_completed": false,
+    "manual_runtime_capture_pending": true,
+    "manual_visual_review_completed": false,
     "matched_runtime_pair_captured": false,
     "original_xbox_hardware_proved": false,
     "production_ready": false,
     "retail_xbe_boot_runtime_proved_for_wide_overlay8": false,
-    "runtime_launch_prepared": true,
-    "spark_visual_verification_completed": false
+    "runtime_launch_prepared": true
   },
   "date": "2026-07-16",
   "emulator": {
@@ -30,54 +20,69 @@
     "xemu_git_commit_from_prior_pinned_run": "fc24584ce88f0915ad7f04775bb7712c2e3f49ee"
   },
   "expected_evidence": {
-    "log_directory": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs",
+    "log_directory": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs",
     "screenshots": [
       {
-        "path": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/retail-wide-overlay8-main-menu.png",
+        "path": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/retail-wide-overlay8-main-menu.png",
         "role": "retail-XBE candidate boot acceptance"
       },
       {
-        "path": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-control-target-selection.png",
+        "path": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-control-target-selection.png",
         "role": "Giants Stadium / Night / Clear diagnostic-route selection"
       },
       {
-        "path": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-control-board-frame.png",
+        "path": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-control-board-frame.png",
         "role": "retail-geometry suspended-board control"
       },
       {
-        "path": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-wide-overlay8-target-selection.png",
+        "path": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-wide-overlay8-target-selection.png",
         "role": "wide-overlay candidate diagnostic-route selection"
       },
       {
-        "path": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-wide-overlay8-board-frame.png",
+        "path": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-wide-overlay8-board-frame.png",
         "role": "wide-overlay suspended-board candidate"
       }
     ],
     "text_logs": [
-      ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/retail-wide-overlay8.stdout.txt",
-      ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/retail-wide-overlay8.stderr.txt",
-      ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-control.stdout.txt",
-      ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-control.stderr.txt",
-      ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-wide-overlay8.stdout.txt",
-      ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-wide-overlay8.stderr.txt"
+      "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/retail-wide-overlay8.stdout.txt",
+      "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/retail-wide-overlay8.stderr.txt",
+      "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-control.stdout.txt",
+      "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-control.stderr.txt",
+      "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-wide-overlay8.stdout.txt",
+      "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/logs/s42-wide-overlay8.stderr.txt"
     ]
+  },
+  "manual_capture_plan": {
+    "camera_protocol": "For both s42 captures, enter instant replay on the same play state, hold left stick down for 4.00 seconds, tap D-pad Up 15 times with 0.05-second gaps, then tap Xbox B 30 times with 0.04-second gaps. Continue only until the complete suspended top-center board is in frame.",
+    "capture_sequence": [
+      "Launch xemu-retail-wide-overlay8.toml, confirm the retail-XBE candidate reaches the title or main menu, save retail-wide-overlay8-main-menu.png, then close xemu cleanly.",
+      "Launch xemu-s42-control.toml with the prepared state, select Giants Stadium / Night / Clear, save s42-control-target-selection.png, follow the camera protocol, save s42-control-board-frame.png, then close xemu cleanly.",
+      "Launch xemu-s42-wide-overlay8.toml with the same selection, teams, play state, replay entry, and camera protocol; save s42-wide-overlay8-target-selection.png and s42-wide-overlay8-board-frame.png, then close xemu cleanly."
+    ],
+    "comparison_questions": [
+      "In s42-control-board-frame.png, is the entire suspended top-center video board visible, with a full-width base and distinct left and right inset sign regions? Describe only visible geometry and signage.",
+      "Comparing s42-control-board-frame.png and s42-wide-overlay8-board-frame.png, does the candidate visibly contain one new continuous wide overlay spanning from the outer left inset corner to the outer right inset corner while the full-width base remains? Is that feature absent from the control?",
+      "Are the control and candidate evidence frames sufficiently matched in stadium, teams, play state, replay camera direction, zoom, and board coverage to attribute a board difference to the candidate? List any mismatch or uncertainty."
+    ],
+    "scope": "Use only the three prepared NFL 2K5 xemu configurations on the isolated display, run them sequentially, and keep unrelated Backbreaker artifacts outside the capture workflow.",
+    "uncertainty_policy": "Record only what is visible in the captured frames and preserve every mismatch or uncertainty."
   },
   "prepared_runs": {
     "retail_wide_overlay8": {
       "config": {
-        "path": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xemu-retail-wide-overlay8.toml",
+        "path": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xemu-retail-wide-overlay8.toml",
         "sha256": "6c915bb2198225a4d4e224c5152b8afb888a6540cdf0c3917bf6466b9daba40a",
         "size": 960
       },
       "hdd": {
-        "backing_path": ".codex-tmp/nfl2k5-group36-geometry-xemu-20260713/xbox_hdd.qcow2",
+        "backing_path": "nfl2k5-group36-geometry-xemu-20260713/xbox_hdd.qcow2",
         "backing_sha256": "d8a7ff3f9df84a630472776100ed53a6478d3739ebda37c3727d94ac5196eff6",
-        "path": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xbox_hdd-retail-wide-overlay8.qcow2",
+        "path": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xbox_hdd-retail-wide-overlay8.qcow2",
         "qemu_img_check": "no errors",
         "sha256": "db334f5ecfc8482de234beda3a03ee1810ee388809725afadbfa08e90bb304be",
         "size": 196736
       },
-      "runtime_scope": "Boot the exact layout-identical retail-XBE image to the title or main menu and close cleanly. Retail Quick Game does not expose locked s42, so this run alone cannot prove direct board visibility.",
+      "runtime_scope": "Boot the exact layout-identical retail-XBE image to the title or main menu and close cleanly. Retail Quick Game does not expose locked s42, so that boot check cannot by itself prove direct board visibility.",
       "xiso": {
         "path": "build/nfl2k5-stadium-upper-deck-wide-overlay8-20260716/ESPN-NFL-2K5-upper-deck-wide-overlay8-retail.xiso.iso",
         "sha256": "c24c543e4518862b4de4886a1432a99c5a7651291653457927c9a9f3165f6ddc",
@@ -86,14 +91,14 @@
     },
     "s42_control": {
       "config": {
-        "path": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xemu-s42-control.toml",
+        "path": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xemu-s42-control.toml",
         "sha256": "26aed2b8c01acf4b8d36485de8a37d6b6dd205edcb574575af1733286fa4a890",
         "size": 942
       },
       "hdd": {
-        "backing_path": ".codex-tmp/nfl2k5-group36-geometry-xemu-20260713/xbox_hdd-s42-selection-seed.qcow2",
+        "backing_path": "nfl2k5-group36-geometry-xemu-20260713/xbox_hdd-s42-selection-seed.qcow2",
         "backing_sha256": "c9cc3689794a9b5d0b7cb470607db701f4807d7116d0666f5470af456a291800",
-        "path": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xbox_hdd-s42-control.qcow2",
+        "path": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xbox_hdd-s42-control.qcow2",
         "qemu_img_check": "no errors",
         "sha256": "fef19f29b911d51ade74a39e788c78de8b7dca03eefd6b55ba0c8cb2495ec519",
         "size": 196736
@@ -107,14 +112,14 @@
     },
     "s42_wide_overlay8": {
       "config": {
-        "path": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xemu-s42-wide-overlay8.toml",
+        "path": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xemu-s42-wide-overlay8.toml",
         "sha256": "f2203bed8925f0dddc22c873f9026d6e6854f3dab34ee9ec388190e7169559ea",
         "size": 968
       },
       "hdd": {
-        "backing_path": ".codex-tmp/nfl2k5-group36-geometry-xemu-20260713/xbox_hdd-s42-selection-seed.qcow2",
+        "backing_path": "nfl2k5-group36-geometry-xemu-20260713/xbox_hdd-s42-selection-seed.qcow2",
         "backing_sha256": "c9cc3689794a9b5d0b7cb470607db701f4807d7116d0666f5470af456a291800",
-        "path": ".codex-tmp/nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xbox_hdd-s42-wide-overlay8.qcow2",
+        "path": "nfl2k5-upper-deck-wide-overlay8-runtime-20260716/xbox_hdd-s42-wide-overlay8.qcow2",
         "qemu_img_check": "no errors",
         "sha256": "fef19f29b911d51ade74a39e788c78de8b7dca03eefd6b55ba0c8cb2495ec519",
         "size": 196736
@@ -127,29 +132,16 @@
       }
     }
   },
-  "runtime_gate": {
-    "blocking_condition": "The controller/event19 lane is released and all Xenia/xemu processes are closed, but the mandatory spark-hands MCP tools are absent from both root and subagent tool registries.",
-    "desktop_processes_observed_at_preparation": [
+  "runtime_capture_status": {
+    "desktop_environment": [
       "Xvfb :99",
       "metacity --display=:99"
     ],
-    "forbidden_workaround": "Do not launch xemu, inject keyboard/controller input, capture the desktop, or judge a screenshot with shell or non-Spark tools.",
-    "state": "blocked_before_gui_launch"
+    "emulator_capture_completed": false,
+    "state": "manual_capture_pending"
   },
   "schema": "nfl2k5_upper_deck_wide_overlay8_runtime_queue/v1",
-  "spark_handoff": {
-    "desktop_task_goal": "Operate only the prepared NFL 2K5 xemu runtime lane on Xvfb display :99; never open Xenia and never read, modify, or launch anything in a Backbreaker path. Run the three prepared configs sequentially, never concurrently. First launch xemu with xemu-retail-wide-overlay8.toml, verify the exact retail-XBE candidate reaches the title or main menu, save retail-wide-overlay8-main-menu.png, close xemu through its window, and confirm the process exits. Second launch xemu-s42-control.toml. Use the seeded state and select Giants Stadium, Night, Clear; save s42-control-target-selection.png. Start the same teams and game state, reach instant replay, and use the prior proved end-zone camera protocol: hold left stick down for 4.00 seconds, tap D-pad Up 15 times with 0.05-second gaps, then tap Xbox B 30 times with 0.04-second gaps to zoom out. Continue only until the complete suspended top-center board is in frame; save s42-control-board-frame.png. Close xemu through the window and confirm exit. Third launch xemu-s42-wide-overlay8.toml and repeat the exact same selection, teams, play state, replay entry, and camera inputs; save s42-wide-overlay8-target-selection.png and s42-wide-overlay8-board-frame.png. Close xemu and confirm exit. Use Spark-native screenshots, or if a file save is required, execute the screenshot command through Spark-controlled desktop interaction. Do not infer any visual result: report exactly what is visible, including uncertainty.",
-    "look_questions": [
-      "In s42-control-board-frame.png, is the entire suspended top-center video board visible, with a full-width base and distinct left and right inset sign regions? Describe only visible geometry and signage.",
-      "Comparing s42-control-board-frame.png and s42-wide-overlay8-board-frame.png, does the candidate visibly contain one new continuous wide overlay spanning from the outer left inset corner to the outer right inset corner while the full-width base remains? Is that feature absent from the control?",
-      "Are the control and candidate evidence frames sufficiently matched in stadium, teams, play state, replay camera direction, zoom, and board coverage to attribute a board difference to the candidate? List any mismatch or uncertainty."
-    ],
-    "required_tools": [
-      "spark_desktop_task",
-      "spark_look"
-    ]
-  },
-  "status": "offline_runtime_lane_fully_prepared_spark_mcp_unavailable",
+  "status": "offline_runtime_lane_prepared_manual_capture_pending",
   "target": {
     "outer_filename": "s42nd.iff",
     "outer_id": "0xe4d6b0bc",

@@ -31,6 +31,9 @@ DIRECTION_AXES = {
     "LS_DOWN": (ecodes.ABS_Y, 32767),
     "LS_LEFT": (ecodes.ABS_X, -32768),
     "LS_RIGHT": (ecodes.ABS_X, 32767),
+    # Keep the canonical Linux Xbox layout. Wine recognizes this VID/PID as an
+    # XInput pad and converts RX/RY to SDL's post-Wine a2/a3 right-stick axes.
+    # Those SDL axis indices are not raw Linux EV_ABS axis numbers.
     "RS_UP": (ecodes.ABS_RY, -32768),
     "RS_DOWN": (ecodes.ABS_RY, 32767),
     "RS_LEFT": (ecodes.ABS_RX, -32768),
@@ -49,6 +52,7 @@ STICK_DIRECTIONS = {
 }
 
 TRIGGER_AXES = {
+    # Wine converts the canonical Linux Z/RZ trigger axes to SDL a4/a5.
     "LT": ecodes.ABS_Z,
     "RT": ecodes.ABS_RZ,
 }
@@ -143,7 +147,15 @@ with UInput(
     version=0x0114,
     bustype=ecodes.BUS_USB,
 ) as controller:
-    print(f"READY {controller.device.path}", flush=True)
+    # ``evdev.UInput.device`` is a convenience lookup, not the creation
+    # contract.  On hosts where udev has not yet published the new event node,
+    # or where the desktop user may write /dev/uinput but may not open the
+    # event node directly, it legitimately returns ``None`` even though the
+    # virtual controller is live and SDL can enumerate its joystick node.
+    # Older proof harnesses crashed here before the emulator was even started.
+    device = controller.device
+    device_path = getattr(device, "path", None)
+    print(f"READY {device_path or 'uinput-device-created'}", flush=True)
     for raw_line in sys.stdin:
         parts = raw_line.strip().upper().split()
         if not parts:

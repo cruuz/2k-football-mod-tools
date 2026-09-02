@@ -24,6 +24,14 @@ import struct
 import sys
 from typing import Any
 
+# The installed Windows runtime uses an embeddable CPython ``._pth`` file,
+# which does not automatically add this script's directory to ``sys.path``.
+# Restore it before importing sibling tools so direct subprocess launches work
+# the same way as a normal Python installation.
+_here = str(Path(__file__).resolve().parent)
+if _here not in sys.path:
+    sys.path.insert(0, _here)
+
 import apf_inner
 import apf_outer
 import apf_roster
@@ -531,6 +539,7 @@ def _write_bound_copied_volume(
         source.descriptor,
         output.descriptor,
         source.metadata,
+        output.path,
     )
     os.fsync(output.descriptor)
     output_metadata = _assert_bound_output(

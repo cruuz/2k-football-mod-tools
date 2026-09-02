@@ -140,19 +140,21 @@ class ScorebugProjectTests(unittest.TestCase):
             output_path.write_bytes(output)
             source_fd = os.open(source_path, os.O_RDONLY)
             output_fd = os.open(output_path, os.O_RDONLY)
-            original_size = project.common.EXPECTED_XISO_SIZE
-            project.common.EXPECTED_XISO_SIZE = len(source)
+            # The size is an argument rather than a pinned module constant, so
+            # the comparison follows whatever disc the user actually supplied.
+            # This test patched that constant instead, which stopped describing
+            # the code once the size became explicit.
             try:
                 record = project.union_record(
-                    [], source_fd, output_fd, hashlib.sha256(source).hexdigest(), allowed)
+                    [], source_fd, output_fd, hashlib.sha256(source).hexdigest(),
+                    allowed, len(source))
                 self.assertEqual(record["actual_changed_byte_count"], len(allowed))
                 self.assertTrue(record["all_bytes_outside_union_identical"])
                 with self.assertRaises(ValueError):
                     project.union_record(
                         [], source_fd, output_fd,
-                        hashlib.sha256(source).hexdigest(), {4})
+                        hashlib.sha256(source).hexdigest(), {4}, len(source))
             finally:
-                project.common.EXPECTED_XISO_SIZE = original_size
                 os.close(source_fd)
                 os.close(output_fd)
 

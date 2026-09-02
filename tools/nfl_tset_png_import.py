@@ -20,10 +20,22 @@ from pathlib import Path
 import stat
 import struct
 import sys
+from typing import Callable
 import zlib
+
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
 
 from nfl_outer import parse_archive
 from nfl_txtr import (
+    CompressInfo,
     HEADER,
     TxtrError,
     compress_vc_lz,
@@ -104,6 +116,8 @@ def decode_rgba_png(
     offset = len(PNG_SIGNATURE)
     ihdr: tuple[int, int, int, int, int, int, int] | None = None
     idat = bytearray()
+    plte: bytes | None = None
+    trns: bytes | None = None
     saw_iend = False
     saw_idat = False
     idat_closed = False
@@ -121,6 +135,16 @@ def decode_rgba_png(
             require(ihdr is None and offset == len(PNG_SIGNATURE) and length == 13,
                     "PNG IHDR placement/size mismatch")
             ihdr = struct.unpack(">IIBBBBB", data)
+        elif kind == b"PLTE":
+            require(ihdr is not None and not saw_idat and plte is None,
+                    "PNG PLTE placement mismatch")
+            require(length % 3 == 0 and 3 <= length <= 768,
+                    "PNG PLTE size is not 1..256 RGB triples")
+            plte = bytes(data)
+        elif kind == b"tRNS":
+            require(ihdr is not None and not saw_idat and trns is None,
+                    "PNG tRNS placement mismatch")
+            trns = bytes(data)
         elif kind == b"IDAT":
             require(ihdr is not None and not idat_closed,
                     "PNG IDAT placement mismatch")
@@ -144,31 +168,47 @@ def decode_rgba_png(
     if expected_dimensions is not None:
         require((width, height) == expected_dimensions,
                 f"PNG must be exactly {expected_dimensions[0]}x{expected_dimensions[1]}")
-    require((bit_depth, color_type, compression, filtering, interlace) ==
-            (8, 6, 0, 0, 0),
-            "PNG must be non-interlaced RGBA8 with standard compression/filtering")
-    row_bytes = width * 4
-    expected = (row_bytes + 1) * height
-    decompressor = zlib.decompressobj()
-    raw = decompressor.decompress(bytes(idat), expected + 1)
-    require(len(raw) <= expected and not decompressor.unconsumed_tail,
-            "PNG inflated data exceeds expected RGBA scanlines")
-    raw += decompressor.flush()
-    require(decompressor.eof and not decompressor.unused_data and len(raw) == expected,
-            "PNG IDAT stream is truncated, trailing, or wrong-sized")
+    require(compression == 0 and filtering == 0,
+            "PNG uses a non-standard compression or filtering method")
+    require(interlace in (0, 1), "PNG declares an unknown interlace method")
+    # Colour types and the bit depths the specification allows for each.
+    allowed_depths = {0: (1, 2, 4, 8, 16), 2: (8, 16), 3: (1, 2, 4, 8),
+                      4: (8, 16), 6: (8, 16)}
+    require(color_type in allowed_depths,
+            f"PNG colour type {color_type} is not a PNG colour type")
+    require(bit_depth in allowed_depths[color_type],
+            f"PNG colour type {color_type} cannot carry {bit_depth}-bit samples")
+    require(color_type != 3 or plte is not None,
+            "PNG is palette-coloured but carries no PLTE")
+    rgba = _png_samples_to_rgba(
+        bytes(idat), width, height, bit_depth, color_type, interlace, plte, trns)
+    return width, height, rgba
 
-    rgba = bytearray(width * height * 4)
+
+_PNG_CHANNELS = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}
+# Adam7: (x origin, y origin, x step, y step) for each of the seven passes.
+_ADAM7 = ((0, 0, 8, 8), (4, 0, 8, 8), (0, 4, 4, 8), (2, 0, 4, 4),
+          (0, 2, 2, 4), (1, 0, 2, 2), (0, 1, 1, 2))
+
+
+def _png_unfilter(raw: bytes, width: int, height: int, bits_per_pixel: int) -> bytes:
+    """Reverse the five PNG row filters for one (sub)image."""
+    row_bytes = (width * bits_per_pixel + 7) // 8
+    step = max(1, bits_per_pixel // 8)
+    expected = (row_bytes + 1) * height
+    require(len(raw) == expected, "PNG scanline block is the wrong size")
+    out = bytearray(row_bytes * height)
     previous = bytearray(row_bytes)
     for y in range(height):
-        row_start = y * (row_bytes + 1)
-        filter_type = raw[row_start]
+        start = y * (row_bytes + 1)
+        filter_type = raw[start]
         require(filter_type <= 4, f"unsupported PNG filter {filter_type}")
-        encoded = raw[row_start + 1:row_start + 1 + row_bytes]
+        encoded = raw[start + 1:start + 1 + row_bytes]
         row = bytearray(row_bytes)
         for x, value in enumerate(encoded):
-            left = row[x - 4] if x >= 4 else 0
+            left = row[x - step] if x >= step else 0
             up = previous[x]
-            upper_left = previous[x - 4] if x >= 4 else 0
+            upper_left = previous[x - step] if x >= step else 0
             if filter_type == 0:
                 predictor = 0
             elif filter_type == 1:
@@ -188,9 +228,123 @@ def decode_rgba_png(
                     else upper_left
                 )
             row[x] = (value + predictor) & 0xFF
-        rgba[y * row_bytes:(y + 1) * row_bytes] = row
+        out[y * row_bytes:(y + 1) * row_bytes] = row
         previous = row
-    return width, height, bytes(rgba)
+    return bytes(out)
+
+
+def _png_read_samples(row: bytes, width: int, channels: int,
+                      bit_depth: int) -> list[tuple[int, ...]]:
+    """One unfiltered row to per-pixel sample tuples, scaled to 0..255."""
+    pixels: list[tuple[int, ...]] = []
+    if bit_depth == 8:
+        for x in range(width):
+            base = x * channels
+            pixels.append(tuple(row[base:base + channels]))
+    elif bit_depth == 16:
+        for x in range(width):
+            base = x * channels * 2
+            pixels.append(tuple(row[base + c * 2] for c in range(channels)))
+    else:
+        mask = (1 << bit_depth) - 1
+        per_byte = 8 // bit_depth
+        for x in range(width):
+            values = []
+            for channel in range(channels):
+                index = x * channels + channel
+                byte = row[index // per_byte]
+                shift = 8 - bit_depth * (index % per_byte + 1)
+                values.append((byte >> shift) & mask)
+            pixels.append(tuple(values))
+    return pixels
+
+
+def _png_samples_to_rgba(compressed: bytes, width: int, height: int, bit_depth: int,
+                         color_type: int, interlace: int, plte: bytes | None,
+                         trns: bytes | None) -> bytes:
+    """Inflate, unfilter and widen any standard PNG to 8-bit RGBA.
+
+    The importer used to demand colour type 6 at depth 8 and reject everything
+    else, which is why a perfectly good jersey exported straight out of an image
+    editor -- usually colour type 2 (RGB) or 3 (palette) -- came back as "PNG
+    must be 8-bit RGBA with interlacing off". Every colour type and bit depth
+    the specification defines is accepted here and widened internally; nothing
+    about the retail side changes, because the importer always worked in RGBA.
+    """
+    channels = _PNG_CHANNELS[color_type]
+    bits_per_pixel = channels * bit_depth
+    if interlace == 0:
+        blocks = [(width, height, _ADAM7[0])]
+        expected = ((width * bits_per_pixel + 7) // 8 + 1) * height
+    else:
+        blocks = []
+        expected = 0
+        for pass_index, (x0, y0, dx, dy) in enumerate(_ADAM7):
+            pass_width = (width - x0 + dx - 1) // dx if width > x0 else 0
+            pass_height = (height - y0 + dy - 1) // dy if height > y0 else 0
+            blocks.append((pass_width, pass_height, _ADAM7[pass_index]))
+            if pass_width and pass_height:
+                expected += ((pass_width * bits_per_pixel + 7) // 8 + 1) * pass_height
+
+    decompressor = zlib.decompressobj()
+    raw = decompressor.decompress(compressed, expected + 1)
+    require(len(raw) <= expected and not decompressor.unconsumed_tail,
+            "PNG inflated data exceeds its declared image size")
+    raw += decompressor.flush()
+    require(decompressor.eof and not decompressor.unused_data and len(raw) == expected,
+            "PNG IDAT stream is truncated, trailing, or wrong-sized")
+
+    palette_entries = len(plte) // 3 if plte else 0
+    scale = {1: 255, 2: 85, 4: 17, 8: 1, 16: 1}[bit_depth]
+
+    def widen(sample: int) -> int:
+        return sample * scale if bit_depth < 8 else sample
+
+    rgba = bytearray(width * height * 4)
+    consumed = 0
+    for pass_width, pass_height, (x0, y0, dx, dy) in blocks:
+        if not pass_width or not pass_height:
+            continue
+        row_bytes = (pass_width * bits_per_pixel + 7) // 8
+        block_size = (row_bytes + 1) * pass_height
+        block = _png_unfilter(raw[consumed:consumed + block_size],
+                              pass_width, pass_height, bits_per_pixel)
+        consumed += block_size
+        for y in range(pass_height):
+            row = block[y * row_bytes:(y + 1) * row_bytes]
+            target_y = y0 + y * dy if interlace else y
+            for x, sample in enumerate(
+                    _png_read_samples(row, pass_width, channels, bit_depth)):
+                target_x = x0 + x * dx if interlace else x
+                if color_type == 3:
+                    index = sample[0]
+                    require(index < palette_entries,
+                            "PNG palette index is outside the PLTE")
+                    red, green, blue = plte[index * 3:index * 3 + 3]
+                    alpha = trns[index] if trns and index < len(trns) else 255
+                elif color_type == 0:
+                    red = green = blue = widen(sample[0])
+                    alpha = 255
+                    if trns and len(trns) >= 2:
+                        grey = struct.unpack(">H", trns[:2])[0]
+                        alpha = 0 if sample[0] == (grey if bit_depth == 16 else grey & 0xFF) else 255
+                elif color_type == 4:
+                    red = green = blue = widen(sample[0])
+                    alpha = widen(sample[1])
+                elif color_type == 2:
+                    red, green, blue = (widen(value) for value in sample[:3])
+                    alpha = 255
+                    if trns and len(trns) >= 6:
+                        keys = struct.unpack(">HHH", trns[:6])
+                        if bit_depth == 8:
+                            keys = tuple(value & 0xFF for value in keys)
+                        if tuple(sample[:3]) == keys:
+                            alpha = 0
+                else:
+                    red, green, blue, alpha = (widen(value) for value in sample[:4])
+                base = (target_y * width + target_x) * 4
+                rgba[base:base + 4] = bytes((red, green, blue, alpha))
+    return bytes(rgba)
 
 
 def read_rgba_png(path: Path) -> tuple[int, int, bytes, str]:
@@ -291,16 +445,26 @@ def median_cut_palette(histogram: Counter[tuple[int, int, int, int]],
     return palette
 
 
-def quantize_levels(levels: list[MipLevel]) -> tuple[
+def quantize_levels(levels: list[MipLevel], maximum: int = 256) -> tuple[
     list[tuple[int, int, int, int]], list[bytes], dict[str, int]
 ]:
+    """Quantize one mip chain into at most ``maximum`` shared RGBA entries.
+
+    The default remains 256 so existing proved importers are byte-for-byte
+    stable.  Small fixed VC-LZ allocations can ask for fewer entries when a
+    full palette does not fit; reducing the palette also reduces index entropy
+    and keeps the replacement inside the retail span.
+    """
+
+    require(1 <= maximum <= 256,
+            "quantizer maximum must be from 1 through 256 entries")
     histogram: Counter[tuple[int, int, int, int]] = Counter()
     level_colors: list[list[tuple[int, int, int, int]]] = []
     for level in levels:
         colors = rgba_tuples(level.rgba)
         level_colors.append(colors)
         histogram.update(colors)
-    palette = median_cut_palette(histogram, 256)
+    palette = median_cut_palette(histogram, maximum)
     color_to_index: dict[tuple[int, int, int, int], int] = {}
     total_squared_error = 0
     maximum_channel_error = 0
@@ -333,6 +497,116 @@ def quantize_levels(levels: list[MipLevel]) -> tuple[
         "differing_pixel_count": differing_pixels,
         "total_pixel_count": sum(histogram.values()),
     }
+
+
+@dataclass(frozen=True)
+class BoundedPaletteFit:
+    """Highest-quality deterministic palette tier that fits one VC-LZ span."""
+
+    palette: list[tuple[int, int, int, int]]
+    index_levels: list[bytes]
+    quantization: dict[str, int]
+    decoded: bytes
+    compressed: bytes
+    compression: CompressInfo
+    attempts: tuple[dict[str, object], ...]
+
+
+_BOUNDED_PALETTE_LIMITS = (256, 128, 64, 32, 16, 8, 4, 2)
+
+
+def _is_vc_lz_size_overflow(exc: TxtrError) -> bool:
+    message = str(exc)
+    return (
+        message.startswith("VC-LZ stream needs more than the ")
+        or (message.startswith("VC-LZ stream is ") and " exceeds " in message)
+    )
+
+
+def quantize_levels_to_vc_lz_bound(
+    levels: list[MipLevel],
+    build_decoded: Callable[
+        [list[tuple[int, int, int, int]], list[bytes]], bytes
+    ],
+    *,
+    stream_tag: int,
+    offset_bits: int,
+    max_encoded_size: int,
+) -> BoundedPaletteFit:
+    """Quantize art as richly as practical while honoring a retail VC-LZ cap.
+
+    NFL 2K5's small digit and sleeve resources have fixed compressed spans.
+    A perfectly valid P8 image can therefore be impossible to encode with a
+    256-entry palette even though a visually equivalent lower-color version
+    fits.  Try deterministic quality tiers from richest to smallest and return
+    the first complete stream that independently round-trips inside the cap.
+
+    Only an encoded-size overflow advances to the next tier.  A malformed
+    decoded layout, search guard, or any other codec error still fails closed.
+    """
+
+    require(bool(levels), "bounded quantizer needs at least one mip level")
+    require(max_encoded_size >= 10,
+            "bounded quantizer VC-LZ span is shorter than a usable stream")
+    attempts: list[dict[str, object]] = []
+    tried_entry_counts: set[int] = set()
+    last_overflow: TxtrError | None = None
+    for maximum in _BOUNDED_PALETTE_LIMITS:
+        palette, index_levels, quantization = quantize_levels(levels, maximum)
+        actual_entries = len(palette)
+        # If the input already contains fewer colours than this tier, the same
+        # palette was just tested at the preceding tier.  Do not recompress it.
+        if actual_entries in tried_entry_counts:
+            continue
+        tried_entry_counts.add(actual_entries)
+        decoded = build_decoded(palette, index_levels)
+        try:
+            compressed, compression = compress_vc_lz(
+                decoded,
+                stream_tag=stream_tag,
+                offset_bits=offset_bits,
+                max_encoded_size=max_encoded_size,
+            )
+        except TxtrError as exc:
+            if not _is_vc_lz_size_overflow(exc):
+                raise
+            last_overflow = exc
+            attempts.append({
+                "maximum_palette_entries": maximum,
+                "palette_entries": actual_entries,
+                "result": "vc_lz_overflow",
+            })
+            continue
+        attempts.append({
+            "maximum_palette_entries": maximum,
+            "palette_entries": actual_entries,
+            "result": "fit",
+            "encoded_bytes": len(compressed),
+        })
+        selected_quantization = dict(quantization)
+        if len(attempts) > 1:
+            selected_quantization["requested_palette_limit"] = maximum
+        return BoundedPaletteFit(
+            palette=palette,
+            index_levels=index_levels,
+            quantization=selected_quantization,
+            decoded=decoded,
+            compressed=compressed,
+            compression=compression,
+            attempts=tuple(attempts),
+        )
+
+    # Do not silently turn authored number art into one flat colour just to make
+    # a pathological allocation pass. A genuinely one-colour input was already
+    # attempted at the first tier (its actual palette has one entry); reaching
+    # here means even the minimally useful two-colour representation cannot fit.
+    if last_overflow is not None:
+        raise TxtrError(
+            f"VC-LZ target cannot fit a usable two-color version inside its "
+            f"{max_encoded_size}-byte bound; simplify the image by removing "
+            "texture, noise, or extra transparency detail"
+        ) from last_overflow
+    raise TxtrError("bounded palette quantizer did not produce a candidate")
 
 
 def palette_bytes(palette: list[tuple[int, int, int, int]]) -> bytes:

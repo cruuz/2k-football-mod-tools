@@ -14,7 +14,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PyQt5 import sip  # noqa: E402
 from PyQt5.QtCore import QMimeData, QSettings, QUrl  # noqa: E402
-from PyQt5.QtWidgets import QApplication  # noqa: E402
+from PyQt5.QtWidgets import QApplication, QMessageBox  # noqa: E402
 
 from mod_editor.apf_studio.audio_encoding import ExternalXma1Encoder  # noqa: E402
 from mod_editor.apf_studio.gui import (  # noqa: E402
@@ -258,7 +258,7 @@ class ApfAudioDropZoneGuiTests(unittest.TestCase):
 
         self.assertEqual(
             AUDIO_DIRECT_DROP_CONTRACT,
-            "selected_exact_slot_xma1_or_pcm16_wav",
+            "selected_exact_slot_xma1_or_conformed_audio",
         )
         self.assertFalse(zone.isHidden())
         self.assertTrue(zone.isVisibleTo(browser))
@@ -289,7 +289,15 @@ class ApfAudioDropZoneGuiTests(unittest.TestCase):
         mixed_wav = self.root / "replacement.WaV"
         upper_xma.write_bytes(b"synthetic XMA")
         mixed_wav.write_bytes(b"synthetic WAV")
-        for path in (upper_xma, mixed_wav):
+        # Ordinary audio formats are admitted now and conformed to the slot's
+        # exact shape downstream. Case folding has to keep working for them too.
+        ordinary = []
+        for name in ("replacement.mp3", "replacement.FLAC", "replacement.m4a",
+                     "replacement.Ogg"):
+            candidate = self.root / name
+            candidate.write_bytes(b"synthetic audio")
+            ordinary.append(candidate)
+        for path in (upper_xma, mixed_wav, *ordinary):
             with self.subTest(accepted=path.name):
                 drag = _DropEvent(_local_mime(path))
                 zone.dragEnterEvent(drag)
@@ -299,32 +307,56 @@ class ApfAudioDropZoneGuiTests(unittest.TestCase):
                 self.assertTrue(drop.accepted)
                 self.assertEqual(dropped[-1], path)
 
-        wrong = self.root / "replacement.mp3"
-        wrong.write_bytes(b"synthetic MP3")
+        # An .mp3 is deliberately absent from the rejection list now. The drop
+        # zone accepts ordinary audio and converts it to the slot's exact shape,
+        # so refusing mp3 would be refusing the feature itself. What must still
+        # be refused is a file that is not audio at all -- and now with a plain
+        # explanation instead of a silent bounce.
+        wrong = self.root / "replacement.txt"
+        wrong.write_bytes(b"not audio at all")
         directory = self.root / "folder.xma"
         directory.mkdir()
         symlink = self.root / "linked.wav"
         symlink.symlink_to(mixed_wav)
         invalid = {
-            "multiple local URLs": _local_mime(upper_xma, mixed_wav),
-            "remote URL": _mime(QUrl("https://example.invalid/replacement.xma")),
-            "remote-host file URL": _mime(
-                QUrl("file://remote-host/tmp/replacement.xma")
+            "multiple local URLs": (
+                _local_mime(upper_xma, mixed_wav), "one audio file at a time"
             ),
-            "wrong extension": _local_mime(wrong),
-            "directory": _local_mime(directory),
-            "symlink": _local_mime(symlink),
+            "remote URL": (
+                _mime(QUrl("https://example.invalid/replacement.xma")),
+                "link or a web address",
+            ),
+            "remote-host file URL": (
+                _mime(QUrl("file://remote-host/tmp/replacement.xma")),
+                "link or a web address",
+            ),
+            "wrong extension": (
+                _local_mime(wrong), "Drop one local audio file"
+            ),
+            "directory": (
+                _local_mime(directory), "Drop one local audio file"
+            ),
+            "symlink": (
+                _local_mime(symlink), "Drop one local audio file"
+            ),
         }
         admitted_count = len(dropped)
-        for label, mime in invalid.items():
+        for label, (mime, hint) in invalid.items():
             with self.subTest(rejected=label):
                 self.assertIsNone(AudioReplacementDropZone.local_audio_path(mime))
-                drag = _DropEvent(mime)
-                zone.dragEnterEvent(drag)
-                self.assertTrue(drag.ignored)
-                drop = _DropEvent(mime)
-                zone.dropEvent(drop)
+                with patch(
+                    "mod_editor.apf_studio.gui.QMessageBox.information"
+                ) as information:
+                    drag = _DropEvent(mime)
+                    zone.dragEnterEvent(drag)
+                    # The drag is admitted so the drop can explain itself.
+                    self.assertTrue(drag.accepted)
+                    drop = _DropEvent(mime)
+                    zone.dropEvent(drop)
                 self.assertTrue(drop.ignored)
+                self.assertEqual(information.call_args.args[1],
+                                 "That drop can't be used yet")
+                self.assertIn(hint, information.call_args.args[2])
                 self.assertEqual(len(dropped), admitted_count)
 
     def test_xma_drop_captures_selected_identity_and_matches_button_route(self) -> None:
@@ -395,28 +427,69 @@ class ApfAudioDropZoneGuiTests(unittest.TestCase):
         self.assertTrue(callable(call["cancel_requested"]))
         self.assertTrue(browser.audio_replacement_drop_zone.isEnabled())
 
-    def test_wav_drop_without_encoder_refuses_without_task_or_mutation(self) -> None:
+    def test_wav_drop_without_encoder_offers_guided_setup_and_stays_closed_when_declined(self) -> None:
         row = _editable_row(15)
         browser, facade, tasks, errors = self._browser((row,))
         source = self.root / "user-authored.wav"
         source.write_bytes(b"synthetic PCM16 fixture")
 
         with patch(
-            "mod_editor.apf_studio.gui.QMessageBox.information"
-        ) as information:
+            "mod_editor.apf_studio.gui.QMessageBox.question",
+            return_value=QMessageBox.No,
+        ) as question:
             drop = _DropEvent(_local_mime(source))
             browser.audio_replacement_drop_zone.dropEvent(drop)
 
         self.assertTrue(drop.accepted)
+        # The first-use offer explains the encoder situation plainly.
+        self.assertEqual(
+            question.call_args.args[1], "Set up your XMA1 encoder now?"
+        )
+        self.assertIn("one-second tone", question.call_args.args[2])
+        self.assertIn("No project data changes either way",
+                      question.call_args.args[2])
+        # Declining stays fail-closed: no task, no mutation.
         self.assertEqual(tasks, [])
         self.assertEqual(errors, [])
         self.assertEqual(facade.pcm_calls, [])
         self.assertEqual(facade.audo_calls, [])
         self.assertEqual(facade.modified_asset_ids, frozenset())
-        self.assertEqual(
-            information.call_args.args[1], "Configure an XMA1 encoder first"
-        )
-        self.assertIn("no project data changed", information.call_args.args[2])
+
+    def test_wav_drop_without_encoder_continues_after_successful_setup(self) -> None:
+        row = _editable_row(16)
+        browser, facade, tasks, errors = self._browser((row,))
+        source = self.root / "user-authored-setup.wav"
+        source.write_bytes(b"synthetic PCM16 fixture")
+        encoder_tool = self.root / "wizard-encoder"
+        encoder_tool.write_bytes(b"synthetic executable")
+        encoder_tool.chmod(0o700)
+        wizard_encoder = ExternalXma1Encoder(encoder_tool)
+
+        with patch(
+            "mod_editor.apf_studio.gui.QMessageBox.question",
+            return_value=QMessageBox.Yes,
+        ), patch.object(
+            browser,
+            "_run_xma1_encoder_setup_wizard",
+            return_value=wizard_encoder,
+        ) as wizard, patch(
+            "mod_editor.apf_studio.gui.QMessageBox.information"
+        ):
+            drop = _DropEvent(_local_mime(source))
+            browser.audio_replacement_drop_zone.dropEvent(drop)
+
+        self.assertTrue(drop.accepted)
+        wizard.assert_called_once()
+        # The wizard result is saved to PC-local settings and the drop
+        # continues straight into the PCM bridge with the new encoder.
+        restored = browser._external_xma1_encoder()
+        self.assertIsNotNone(restored)
+        assert restored is not None
+        self.assertEqual(restored.executable, encoder_tool)
+        self.assertEqual(len(tasks), 1)
+        self.assertEqual(len(facade.pcm_calls), 1)
+        self.assertEqual(facade.pcm_calls[0]["encoder"].executable, encoder_tool)  # type: ignore[union-attr]
+        self.assertEqual(errors, [])
 
     def test_active_pcm_or_pack_import_blocks_drop_and_direct_dispatch(self) -> None:
         row = _editable_row(18)
@@ -434,18 +507,25 @@ class ApfAudioDropZoneGuiTests(unittest.TestCase):
             with self.subTest(active_operation=flag):
                 setattr(browser, flag, True)
                 browser._configure_audio_replacement(row)
+                # Drop target hard-disables while a worker owns the facade.
                 self.assertFalse(browser.audio_replacement_drop_zone.isEnabled())
-                self.assertFalse(browser.export_pcm_template_button.isEnabled())
-                self.assertFalse(browser.replace_pcm_audio_button.isEnabled())
-                self.assertFalse(browser.configure_audio_encoder_button.isEnabled())
-                self.assertFalse(browser.replace_audio_button.isEnabled())
-                self.assertFalse(browser.revert_audio_button.isEnabled())
-                self.assertFalse(
-                    browser.export_audio_replacement_template_button.isEnabled()
-                )
-                self.assertFalse(
-                    browser.import_audio_replacement_pack_button.isEnabled()
-                )
+                # Busy wall: each action is either hard-disabled (legacy lock) or
+                # never-silent-gray with disableReason. No silent half-state.
+                for button in (
+                    browser.export_pcm_template_button,
+                    browser.replace_pcm_audio_button,
+                    browser.configure_audio_encoder_button,
+                    browser.replace_audio_button,
+                    browser.revert_audio_button,
+                    browser.export_audio_replacement_template_button,
+                    browser.import_audio_replacement_pack_button,
+                ):
+                    if button.isEnabled():
+                        self.assertTrue(
+                            str(button.property("disableReason") or "").strip(),
+                            msg=f"{button.text()} clickable but missing disableReason",
+                        )
+                    # disabled is also acceptable for busy workers
                 self.assertFalse(browser.audio_replacement_pack_format.isEnabled())
                 self.assertFalse(browser.audio_replacement_pack_input.isEnabled())
                 drop = _DropEvent(_local_mime(source))

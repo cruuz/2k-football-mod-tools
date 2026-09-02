@@ -10,11 +10,13 @@ import struct
 import sys
 import time
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import MagicMock, patch
 
 from mod_editor.apf_studio.audio_encoding import (
     AudioEncodingCancelled,
+    AudioEncodingError,
     ExternalEncodingResult,
     ExternalXma1Encoder,
     Pcm16Target,
@@ -187,6 +189,12 @@ class ApfAudioPcmProductBackendTests(unittest.TestCase):
         self.wav = self.root / "user.wav"
         self.wav.write_bytes(b"synthetic PCM fixture")
         self.encoder = ExternalXma1Encoder(Path("/not-run-user-encoder"))
+        self.signal_quality_patcher = patch(
+            "mod_editor.apf_studio.session.verify_xma1_signal_quality",
+            return_value={"status": "signal_quality_verified"},
+        )
+        self.signal_quality = self.signal_quality_patcher.start()
+        self.addCleanup(self.signal_quality_patcher.stop)
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
@@ -250,6 +258,12 @@ class ApfAudioPcmProductBackendTests(unittest.TestCase):
                 progress=None,
                 cancel_requested=None,
             )
+            self.signal_quality.assert_called_once_with(
+                self.wav,
+                b"RIFF user XMA1",
+                expected_target,
+                cancel_requested=None,
+            )
             validate.assert_called_once_with(
                 b"RIFF user XMA1", self.audo_resolved.target, fingerprints.return_value
             )
@@ -299,6 +313,56 @@ class ApfAudioPcmProductBackendTests(unittest.TestCase):
         finally:
             session.close()
 
+    def test_ordinary_audio_is_conformed_before_encode_and_signal_compare(self) -> None:
+        session = ApfSession(self.source, self.catalog, cache_root=self.root / "cache")
+        conformed = self.root / "conformed.wav"
+        conformed.write_bytes(b"strict conformed PCM fixture")
+        prepared = Modification(
+            asset_id=self.audo_resolved.asset_id,
+            kind="audo_exact_slot_xma1",
+            replacement_path=self.root / "prepared.xma1-packets",
+            replacement_sha256="7" * 64,
+            metadata={},
+        )
+        try:
+            with (
+                patch(
+                    "mod_editor.apf_studio.session.apf_audo_exact_slot.resolve_target",
+                    return_value=self.audo_resolved,
+                ),
+                patch(
+                    "mod_editor.apf_studio.session.audio_conform.conform",
+                    return_value=SimpleNamespace(path=conformed),
+                ) as conform,
+                patch.object(
+                    self.encoder, "encode", return_value=self._encoding_result()
+                ) as encode,
+                patch.object(
+                    session,
+                    "_prepare_audo_exact_slot_data",
+                    return_value=prepared,
+                ),
+            ):
+                result = session._prepare_audio_from_pcm(
+                    self.audo_identity, self.wav, self.encoder
+                )
+            self.assertIs(result, prepared)
+            conform.assert_called_once()
+            encode.assert_called_once_with(
+                conformed,
+                Pcm16Target(1, 22_050, 16, 0x800),
+                progress=None,
+                cancel_requested=None,
+            )
+            self.signal_quality.assert_called_once_with(
+                conformed,
+                b"RIFF user XMA1",
+                Pcm16Target(1, 22_050, 16, 0x800),
+                cancel_requested=None,
+            )
+        finally:
+            session.close()
+
     def test_validator_failure_or_cancel_never_changes_edit_map_or_undo(self) -> None:
         session = ApfSession(self.source, self.catalog, cache_root=self.root / "cache")
         try:
@@ -342,6 +406,34 @@ class ApfAudioPcmProductBackendTests(unittest.TestCase):
                     session.replace_audio_from_pcm(
                         self.audo_identity, self.wav, self.encoder
                     )
+            self.assertEqual(session.modified_count, 0)
+            self.assertFalse(session.can_undo)
+        finally:
+            session.close()
+
+    def test_signal_quality_failure_never_reaches_slot_validator_or_edit_map(self) -> None:
+        session = ApfSession(self.source, self.catalog, cache_root=self.root / "cache")
+        self.signal_quality.side_effect = AudioEncodingError(
+            "Encoded XMA1 does not match the authored signal"
+        )
+        try:
+            with (
+                patch.object(
+                    self.encoder, "encode", return_value=self._encoding_result()
+                ),
+                patch(
+                    "mod_editor.apf_studio.session.apf_audo_exact_slot.resolve_target",
+                    return_value=self.audo_resolved,
+                ),
+                patch(
+                    "mod_editor.apf_studio.session.apf_audo_exact_slot.validate_exact_slot_import"
+                ) as validate,
+            ):
+                with self.assertRaisesRegex(SessionError, "authored signal"):
+                    session.replace_audio_from_pcm(
+                        self.audo_identity, self.wav, self.encoder
+                    )
+            validate.assert_not_called()
             self.assertEqual(session.modified_count, 0)
             self.assertFalse(session.can_undo)
         finally:

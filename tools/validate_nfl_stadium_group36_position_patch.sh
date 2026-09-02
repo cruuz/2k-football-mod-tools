@@ -34,7 +34,7 @@ test "$(sha256sum "$roundtrip" | cut -d' ' -f1)" = \
   '45f65c16b4b4d25a30fb63643d3ec1a8f7476a8993e3ca370df33c244cbbef05'
 test "$(stat -c %s "$spec")" = 47126
 test "$(sha256sum "$spec" | cut -d' ' -f1)" = \
-  'd1e684a0b86c3a933355217174938cb95c5192eb2680c8b9698f7eb15ac39884'
+  '5947b18a7f9fe4b4f6895ca4ea37e5aadd55edb5d365128f46561011fdf8a01e'
 test "$(stat -c %s "$doc")" = 7365
 test "$(sha256sum "$doc" | cut -d' ' -f1)" = \
   'e42f5bb608b65ad0b8e11f81f910f555c6fd1924f23906c154f6edb7c32af4d1'
@@ -145,4 +145,4 @@ test "$(sha256sum "$index" | cut -d' ' -f1)" = \
 test "$(sha256sum "$pack" | cut -d' ' -f1)" = \
   '779b37455fc44cd7eb60674b926d7ccaf9cd6bd9d894157a1d68119281790c7a'
 
-echo 'NFL_GROUP36_POSITION_PATCH_VALIDATION_PASS target=3280/5/2648/4:group36 vertices=4 format=FLOAT3 noop_pack_exact=true changed_decoded_bytes=48 changed_consumed=908825/908864 zero_gap=39 scratch=64 fixed_tail=16 outside_chunk_exact=true growth_refused=true hardlink_refused=true symlink_parent_refused=true publication_races_refused=true independent_verify=true output_pack_sha256=c48117938862fa03b5b3d871db87cb7d3c32a9653be497d46dc188ba51993fca report_sha256=45f65c16b4b4d25a30fb63643d3ec1a8f7476a8993e3ca370df33c244cbbef05 spec_sha256=d1e684a0b86c3a933355217174938cb95c5192eb2680c8b9698f7eb15ac39884 runtime=false production=false originals_unchanged=yes'
+echo 'NFL_GROUP36_POSITION_PATCH_VALIDATION_PASS target=3280/5/2648/4:group36 vertices=4 format=FLOAT3 noop_pack_exact=true changed_decoded_bytes=48 changed_consumed=908825/908864 zero_gap=39 scratch=64 fixed_tail=16 outside_chunk_exact=true growth_refused=true hardlink_refused=true symlink_parent_refused=true publication_races_refused=true independent_verify=true output_pack_sha256=c48117938862fa03b5b3d871db87cb7d3c32a9653be497d46dc188ba51993fca report_sha256=45f65c16b4b4d25a30fb63643d3ec1a8f7476a8993e3ca370df33c244cbbef05 spec_sha256=5947b18a7f9fe4b4f6895ca4ea37e5aadd55edb5d365128f46561011fdf8a01e runtime=false production=false originals_unchanged=yes'

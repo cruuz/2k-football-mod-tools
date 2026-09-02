@@ -139,7 +139,14 @@ def run(report_path: Path, full_copy: bool) -> None:
         assert manifest["family_target"]["runtime_visibility_proved"] is False
         assert manifest["target"]["changed_dxt5a_blocks"]["count"] == 702
         assert manifest["target"]["decode_back_metrics"]["different_pixels"] == 0
-        assert manifest["iff"]["allocation_slack_after"] == 78773
+        # The exact figure moves whenever the H7A encoder changes.  It
+        # dropped when the encoder stopped emitting matches that overlap
+        # their own output -- a stream the console does not decode the way
+        # ours does -- and recovered when lazy matching was added to pay
+        # that back.  What matters is that the rebuilt entry still fits
+        # inside its fixed allocation with room to spare, so this asserts
+        # the property rather than one encoder's byte count.
+        assert manifest["iff"]["allocation_slack_after"] > 0
         assert manifest["iff"]["all_750_unrelated_inner_parts_preserved"] is True
         assert manifest["iff"]["decoded_vram_outside_target_bit_exact"] is True
         assert manifest["iff"]["dram_block_stored_bit_exact"] is True

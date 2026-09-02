@@ -60,7 +60,10 @@ class Nfl2k5UniformCatalogTests(unittest.TestCase):
         self.assertEqual(torso.set_selector, "18H0")
         self.assertEqual((torso.side_code, torso.side_name), ("H", "HOME"))
         nameplate = self.catalog.get_asset("nfl2k5.uniform.18h0.nameplate")
-        self.assertEqual(nameplate.dimensions, (32, 1024))
+        # 1024x32: a horizontal character strip. The transposed value was
+        # the descriptor bug that made the Nameplate Atlas export as
+        # confetti; decoded correctly it reads "` - A B C D E F G H ...".
+        self.assertEqual(nameplate.dimensions, (1024, 32))
         small_card = self.catalog.get_asset(
             "nfl2k5.uniform.18h0.team-select.helm.128"
         )

@@ -28,9 +28,8 @@ Xenia; no post-fix spaced-path Xenia run is claimed.
 | APF title ID | `0x54540807` |
 | Loaded-module hash | `0x5447E5428AA2D52A` |
 
-The reviewed source is retained on the private research host as branch
-`codex/apf-slot43-experiment-reviewed`. The compiled binary is an experiment
-artifact, not part of the public Mod Studio package.
+The reviewed source is retained on the private research host. The compiled
+binary is an experiment artifact, not part of the public Mod Studio package.
 
 ## What the hook does
 
@@ -156,9 +155,9 @@ argument alone.
 
 The completed passive control used private Xvfb plus null graphics/audio/input
 and never addressed the user's active display or pointer. Any future hands-on
-navigation must use the designated isolated desktop operator. A reviewed
-scripted virtual-controller route is also acceptable if it remains bound to the
-private run and exact observe-only mode.
+navigation must remain on the isolated test desktop. A reviewed scripted
+virtual-controller route is also acceptable if it remains bound to the private
+run and exact observe-only mode.
 
 ## Claim boundary and next work
 

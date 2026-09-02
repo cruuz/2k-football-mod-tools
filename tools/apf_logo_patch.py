@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Safely replace the proven APF 2K8 team-logo base texture in a copied volume.
 
-This is an evidence-bounded writer for exactly outer entry 36
-(``uniform_logo_01.iff``), inner file 1 (``logo_l0``): a tiled, uncompressed
-Xenos ``4_4_4_4`` (16-bit RGBA, one nibble per channel) 512x512 base level with
-a packed mip tail.  It rewrites only the ``logo_l0`` base level, byte-preserves
-the 0x2C000 packed mip tail and the entire sibling ``logo_l1`` layer, recompresses
-only the single VRAM H7A block, rebuilds the IFF block offsets/footer inside the
-fixed outer allocation, independently reparses the rebuilt entry in RAM, and can
-only write a newly copied ``0A`` volume.  The retail source is never opened for
-writing.
+This is an evidence-bounded writer for one selected ``uniform_logo_NN.iff``
+package and its ``logo_l0`` layer: a tiled, uncompressed Xenos ``4_4_4_4``
+(16-bit RGBA, one nibble per channel) 512x512 base level with a packed mip tail.
+It rewrites the selected base level, regenerates the 0x2C000 packed mip tail,
+and byte-preserves the entire sibling ``logo_l1`` layer unless a second PNG is
+explicitly supplied.  It recompresses only the affected VRAM H7A block, rebuilds
+the IFF block offsets/footer inside the fixed outer allocation, independently
+reparses the rebuilt entry in RAM, and can only write a newly copied ``0A``
+volume.  The retail source is never opened for writing.
 
 In All-Pro Football 2K8 the helmet crest is this same shared team-logo texture
 (the helmet family carries only ``helmet_color`` + ``helmet_normal``; there is no
@@ -31,16 +31,19 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict, deque
+from concurrent.futures import Future, ProcessPoolExecutor
 from dataclasses import dataclass
 import hashlib
 import json
 import math
+import multiprocessing
 import os
 from pathlib import Path
 import stat
 import struct
 import sys
-from typing import Iterable
+from typing import Callable, Iterable
+import zlib
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
@@ -58,6 +61,7 @@ except ImportError as exc:  # pragma: no cover - exercised by the CLI error path
 
 import apf_inner  # noqa: E402
 import apf_outer  # noqa: E402
+import apf_xenos_4444_mip_layout as mip4444  # noqa: E402
 
 
 SCHEMA = "apf_logo_patch/v1"
@@ -72,6 +76,23 @@ EXPECTED_ENTRY_SHA256 = (
 EXPECTED_BASE_SHA256 = (
     "5683fb638cf72e4532149f757ac49d702a6d158043faa930c58745a1b81f9037"
 )
+# The pinned hashes above describe uniform_logo_01 and only uniform_logo_01.
+# There are 236 team crests on the disc and every one of them has the identical
+# structure, so requiring logo_01's bytes made the writer refuse the other 235
+# targets -- including uniform_logo_30, the crest the Americans actually wear.
+# The pin is therefore checked when the caller is working on logo_01 and
+# skipped otherwise; what does the real work on any entry is the per-extent
+# evidence that follows, which is stronger than a whole-container hash:
+# the strict Xenos descriptor, the exact DRAM/VRAM part lengths, and the
+# transport gate that must reproduce that entry's own retail base bit-for-bit
+# before a single byte is written.  The observed hashes are recorded in the
+# manifest either way, so provenance survives.
+PINNED_ENTRIES: dict[int, dict[str, str]] = {
+    ENTRY_INDEX: {
+        "entry": EXPECTED_ENTRY_SHA256,
+        INNER_NAME: EXPECTED_BASE_SHA256,
+    },
+}
 # The sibling ``logo_l1`` base level (inner file 0, VRAM at block1 offset
 # 0xAC000).  Its Xenos descriptor is byte-for-byte identical to ``logo_l0`` (both
 # tiled 4_4_4_4 512x512), so the same encoder writes it.
@@ -79,6 +100,49 @@ SIBLING_FILE_INDEX = 0
 EXPECTED_BASE_L1_SHA256 = (
     "5462580af5374c8b18ae35f43d517408bcc446ceb0d6a339f87c3db7703b3b03"
 )
+PINNED_ENTRIES[ENTRY_INDEX][SIBLING_NAME] = EXPECTED_BASE_L1_SHA256
+
+
+def pinned_base_sha(entry_index: int, inner_name: str) -> str | None:
+    """The retail base hash for this exact layer, when one has been pinned."""
+
+    return PINNED_ENTRIES.get(entry_index, {}).get(inner_name)
+
+
+def resolve_outer_name(entry: apf_outer.Entry) -> str:
+    """Recover the crest package's real name from its stored name id.
+
+    The manifest is evidence, so it must not label uniform_logo_30 as
+    uniform_logo_01.  Outer names are stored only as a CRC32 of the uppercase
+    ASCII filename, and the crest family is a known template, so the name comes
+    back by matching the checksum rather than by assuming the target.
+    """
+
+    for asset_index in range(0, 256):
+        candidate = f"uniform_logo_{asset_index:02d}.iff"
+        if zlib.crc32(candidate.upper().encode("ascii")) & 0xFFFFFFFF == entry.name_id:
+            return candidate
+    return f"<outer entry {entry.table_index}, name id 0x{entry.name_id:08x}>"
+
+
+def resolve_layer_indices(record: apf_inner.IFFRecord) -> tuple[int, int]:
+    """Find logo_l0 and logo_l1 by name rather than by position.
+
+    The two inner files are not stored in a consistent order across the crest
+    packages, so a fixed index silently reads the wrong layer on some teams.
+    """
+
+    found: dict[str, int] = {}
+    for index, inner in enumerate(record.files):
+        if inner.name in (INNER_NAME, SIBLING_NAME):
+            found[inner.name] = index
+    missing = {INNER_NAME, SIBLING_NAME} - set(found)
+    if missing:
+        raise PatchError(
+            f"PORTME: crest IFF is missing {sorted(missing)}; found "
+            f"{[inner.name for inner in record.files]}"
+        )
+    return found[INNER_NAME], found[SIBLING_NAME]
 BASE_LEN = 0x80000
 MIP_LEN = 0x2C000
 PAYLOAD_LEN = 0xAC000
@@ -119,8 +183,6 @@ _PORTME = [
     "helmet crest) samples this package texture vs the uniform_logocache aggregate; "
     "the cache is separately writable via tools/apf_logocache_patch.py and the "
     "package-vs-cache-vs-both Xenia differential closes which source each surface reads",
-    "implement 4_4_4_4 packed MIP regeneration (currently the 0x2C000 mip tail is "
-    "byte-preserved/stale, not regenerated from the new base)",
     PRODUCTION_ENCODER_CAVEAT,
 ]
 
@@ -236,8 +298,30 @@ def compress_h7a(
                             candidate,
                             min(max_length, len(data) - cursor),
                         )
+                        # Never emit a match that reads bytes it is still
+                        # writing.  Our decoder copies one byte at a time and
+                        # so reproduces an overlapping run correctly, which is
+                        # why this round-tripped perfectly offline while the
+                        # rebuilt texture came back as fine speckle in game.
+                        # Retail settles it: the shipped 512x512 crest block
+                        # holds 36,099 matches and not one overlaps, where a
+                        # plain greedy encoder emits nearly eleven thousand --
+                        # almost all at distance 2, the run-length idiom.
+                        # Clamping to the distance costs a little ratio and
+                        # buys a stream the console decodes the way it decodes
+                        # retail's.
+                        if length > distance:
+                            length = distance
+                        if length < 3:
+                            continue
+                        # On a tie prefer the FARTHER match.  Both encode to
+                        # the same two bytes, but since a match may no longer
+                        # overlap, the reachable length at the next position is
+                        # bounded by the distance -- so taking the near copy
+                        # caps every following match at the same short length
+                        # and a run ramps up far more slowly.
                         if length > best_length or (
-                            length == best_length and distance < best_distance
+                            length == best_length and distance > best_distance
                         ):
                             best_length = length
                             best_distance = distance
@@ -438,6 +522,77 @@ def encode_4444_base(metadata: dict[str, object], rgba_display: bytes) -> bytes:
     return _tile_2d(on_disc, WIDTH, HEIGHT, PITCH, 1, 1, 2, BASE_LEN)
 
 
+def encode_4444_linear(
+    metadata: dict[str, object], rgba_display: bytes, texels: int
+) -> bytes:
+    """Encode display-order RGBA into row-major on-disc 4_4_4_4 halfwords.
+
+    Same transport as :func:`encode_4444_base` but without the base level's
+    fixed dimensions, so a mip level can be encoded before being tiled into
+    its own place in the packed tail.
+    """
+
+    if len(rgba_display) != texels * 4:
+        raise PatchError(
+            f"RGBA buffer is 0x{len(rgba_display):x}, expected 0x{texels * 4:x}"
+        )
+    raw_pixels = _inverse_swizzle_pixels(
+        rgba_display, metadata["swizzle_components"]  # type: ignore[arg-type]
+    )
+    quantize = lambda value: (value * 15 + 127) // 255  # noqa: E731
+    linear = bytearray(texels * 2)
+    for index, (raw_r, raw_g, raw_b, raw_a) in enumerate(raw_pixels):
+        packed = (
+            quantize(raw_r)
+            | quantize(raw_g) << 4
+            | quantize(raw_b) << 8
+            | quantize(raw_a) << 12
+        )
+        linear[index * 2 : index * 2 + 2] = packed.to_bytes(2, "little")
+    return apf_inner._endian_swap(  # type: ignore[attr-defined]
+        bytes(linear), int(metadata["endianness"])
+    )
+
+
+def rebuild_mip_tail(
+    metadata: dict[str, object], rgba_base: bytes, original_tail: bytes
+) -> bytes:
+    """Regenerate every stored mip level from a replacement base level.
+
+    Byte-preserving the tail looks conservative, but it is the reason modded
+    crests appear not to work: the tail still holds the *retail* logo, and the
+    GPU samples it for every draw smaller than full size -- the team-select
+    tile, the logo carousel, and a helmet more than a few yards out.  Only the
+    levels the descriptor actually addresses are written; the page-rounded
+    slack at the end of the allocation stays byte-identical to retail.
+    """
+
+    locations = mip4444.derive_layout(metadata)
+    padding = mip4444.tail_padding(locations, int(metadata["vc_mip_data_length"]))
+    if len(original_tail) != int(metadata["vc_mip_data_length"]):
+        raise PatchError("mip tail length does not match the descriptor")
+
+    base = Image.frombytes(
+        "RGBA", (int(metadata["width"]), int(metadata["height"])), rgba_base
+    )
+    # The payload buffer the layout addresses starts at the base level, so the
+    # tail is written through a full-length view and sliced back off at the end.
+    payload = bytearray(locations[0].allocation_length) + bytearray(original_tail)
+    for location in locations[1:]:
+        # BOX is an area average, which is what a mip level is; a sharper
+        # filter would ring on flat mask edges and quantize to stray nibbles.
+        level = base.resize((location.width, location.height), Image.BOX)
+        linear = encode_4444_linear(
+            metadata, level.tobytes(), location.width * location.height
+        )
+        mip4444.write_level(payload, location, linear)
+
+    rebuilt = bytes(payload[locations[0].allocation_length:])
+    if padding and rebuilt[len(rebuilt) - padding:] != original_tail[len(original_tail) - padding:]:
+        raise PatchError("mip regeneration wrote into the tail's unused slack")
+    return rebuilt
+
+
 def _strict_descriptor(metadata: dict[str, object]) -> None:
     disagreements = {
         key: (metadata.get(key), expected)
@@ -512,9 +667,11 @@ def _open_entry(
             for block in record.blocks
         ]
 
-    if sha256_bytes(original_entry) != EXPECTED_ENTRY_SHA256:
+    expected_entry = PINNED_ENTRIES.get(entry_index, {}).get("entry")
+    if expected_entry is not None and sha256_bytes(original_entry) != expected_entry:
         raise PatchError(
-            "source entry hash is not the pinned retail uniform_logo_01; refusing"
+            f"source entry {entry_index} does not match its pinned retail hash; "
+            "refusing"
         )
     if record.file_count != 2 or record.block_count != 2:
         raise PatchError("PORTME: uniform_logo IFF structure changed")
@@ -526,7 +683,7 @@ def _extract_layer(
     original_blocks: list[bytes],
     file_index: int,
     inner_name: str,
-    expected_base_sha: str,
+    expected_base_sha: str | None,
 ) -> _LayerTarget:
     """Validate one logo layer: DRAM/VRAM pairing, descriptor, base hash, transport."""
 
@@ -568,7 +725,7 @@ def _extract_layer(
     mip_tail = payload[BASE_LEN:]
     if len(mip_tail) != MIP_LEN:
         raise PatchError(f"{inner_name} packed mip tail is not the expected length")
-    if sha256_bytes(base) != expected_base_sha:
+    if expected_base_sha is not None and sha256_bytes(base) != expected_base_sha:
         raise PatchError(f"decoded {inner_name} base hash is not the pinned retail data")
 
     # Transport gate: the Xenos untile/endian/tile path must round-trip the exact
@@ -588,6 +745,58 @@ def _extract_layer(
         vram_offset=vram_part.offset,
         rgba=rgba,
     )
+
+
+def cleared_detail_rgba(rgba: bytes) -> bytes:
+    """One detail layer with every region mask cleared and its alpha kept.
+
+    A crest is a six-region mask split across two textures: ``logo_l0`` carries
+    regions 0-2 in its R/G/B and ``logo_l1`` carries regions 3-5, and the shader
+    fills each marked region from its own palette entry.  Writing the same art
+    into both therefore draws the mark twice, once in the wrong three colours.
+
+    "Cleared" is not invented here.  Thirty-nine of the game's own 118 crest
+    packages ship a ``logo_l1`` whose R/G/B is zero everywhere while its alpha
+    field is untouched -- that is retail's own shape for a crest that uses no
+    detail layer, and it is exactly what this reproduces.  Only the three
+    channels that select regions are changed; alpha is copied through, so the
+    edit cannot depend on a theory about what alpha means.
+    """
+
+    if len(rgba) != WIDTH * HEIGHT * 4:
+        raise PatchError("a crest layer must be exactly 512x512 RGBA")
+    cleared = bytearray(rgba)
+    cleared[0::4] = bytes(WIDTH * HEIGHT)
+    cleared[1::4] = bytes(WIDTH * HEIGHT)
+    cleared[2::4] = bytes(WIDTH * HEIGHT)
+    return bytes(cleared)
+
+
+def read_logo_layers(
+    index_path: Path,
+    entry_index: int,
+) -> tuple[bytes, bytes]:
+    """Decode both retail crest layers without writing or copying a volume."""
+
+    _archive, _entry, record, _raw, blocks, _stored = _open_entry(
+        Path(index_path), entry_index
+    )
+    l0_index, l1_index = resolve_layer_indices(record)
+    l0 = _extract_layer(
+        record,
+        blocks,
+        l0_index,
+        INNER_NAME,
+        pinned_base_sha(entry_index, INNER_NAME),
+    )
+    l1 = _extract_layer(
+        record,
+        blocks,
+        l1_index,
+        SIBLING_NAME,
+        pinned_base_sha(entry_index, SIBLING_NAME),
+    )
+    return l0.rgba, l1.rgba
 
 
 def _recompress_rebuild_reparse(
@@ -725,23 +934,67 @@ def build_patch(
     index_path: Path,
     png_path: Path,
     entry_index: int = ENTRY_INDEX,
-    file_index: int = FILE_INDEX,
+    file_index: int | None = None,
     png_path_l1: Path | None = None,
-    file_index_l1: int = SIBLING_FILE_INDEX,
+    file_index_l1: int | None = None,
+    regenerate_mips: bool = True,
+    clear_l1: bool = False,
 ) -> PatchResult:
     """Build a rebuilt uniform_logo entry with ``logo_l0`` (and optionally ``logo_l1``).
 
-    With ``png_path_l1`` omitted this writes only ``logo_l0`` (inner file 1) and
-    byte-preserves the sibling ``logo_l1`` layer, exactly as before.  With
-    ``png_path_l1`` supplied it co-writes both shared scorebug/crest sampler
-    layers: both base levels are re-encoded, both 0x2C000 packed mip tails are
-    byte-preserved, and the single shared VRAM block is recompressed once inside
-    the fixed outer allocation (or the writer fails closed).
+    Three detail-layer treatments, because a crest is six region masks split
+    across two textures and each treatment is right for a different job:
+
+    * ``png_path_l1`` supplied -- co-write both layers from the caller's own two
+      masks.  Both base levels are re-encoded, both 0x2C000 packed mip tails are
+      regenerated from their corresponding edited base, and the single shared
+      VRAM block is recompressed once inside the fixed outer allocation (or the
+      writer fails closed).
+    * ``clear_l1`` -- write ``logo_l0`` from the caller's art and clear the
+      detail layer's region masks, so the new mark renders exactly once.  This
+      is the correct treatment for one supplied image: mirroring that image into
+      both layers draws it twice, in two different palette colours.
+    * neither -- write only ``logo_l0`` and byte-preserve the sibling layer.
+      The game's own detail linework then stays on top of the new art, which is
+      only what you want when you are deliberately editing the fill alone.
     """
 
+    if png_path_l1 is not None and clear_l1:
+        raise PatchError(
+            "choose one detail-layer treatment: supply logo_l1 art, or clear it"
+        )
     archive, entry, record, original_entry, original_blocks, original_stored = (
         _open_entry(index_path, entry_index)
     )
+    # Positions differ between crest packages, so name lookup is the default and
+    # an explicit index is only an override.
+    found_l0, found_l1 = resolve_layer_indices(record)
+    if file_index is None:
+        file_index = found_l0
+    if file_index_l1 is None:
+        file_index_l1 = found_l1
+    if clear_l1:
+        retail_l1 = _extract_layer(
+            record,
+            original_blocks,
+            file_index_l1,
+            SIBLING_NAME,
+            pinned_base_sha(entry_index, SIBLING_NAME),
+        )
+        return _build_dual_layer_rgba_opened(
+            index_path,
+            _load_png(png_path, WIDTH, HEIGHT),
+            cleared_detail_rgba(retail_l1.rgba),
+            entry_index,
+            file_index,
+            file_index_l1,
+            entry,
+            record,
+            original_entry,
+            original_blocks,
+            original_stored,
+            regenerate_mips,
+        )
     if png_path_l1 is None:
         return _build_single_layer(
             index_path,
@@ -753,6 +1006,7 @@ def build_patch(
             original_entry,
             original_blocks,
             original_stored,
+            regenerate_mips,
         )
     return _build_dual_layer(
         index_path,
@@ -766,6 +1020,7 @@ def build_patch(
         original_entry,
         original_blocks,
         original_stored,
+        regenerate_mips,
     )
 
 
@@ -779,9 +1034,11 @@ def _build_single_layer(
     original_entry: bytes,
     original_blocks: list[bytes],
     original_stored: list[bytes],
+    regenerate_mips: bool = True,
 ) -> PatchResult:
     target = _extract_layer(
-        record, original_blocks, file_index, INNER_NAME, EXPECTED_BASE_SHA256
+        record, original_blocks, file_index, INNER_NAME,
+        pinned_base_sha(entry_index, INNER_NAME),
     )
     metadata = target.metadata
     base = target.base
@@ -793,7 +1050,7 @@ def _build_single_layer(
         "archive_index": str(index_path),
         "physical_volume": entry.segments[0].pack_name,
         "outer_entry_index": entry_index,
-        "outer_name": ENTRY_NAME,
+        "outer_name": resolve_outer_name(entry),
         "inner_file_index": file_index,
         "inner_name": INNER_NAME,
         "entry_sha256": sha256_bytes(original_entry),
@@ -829,8 +1086,17 @@ def _build_single_layer(
         return PatchResult(original_entry, manifest)
 
     new_base = encode_4444_base(metadata, wanted_rgba)
-    new_payload = new_base + mip_tail
-    if new_payload[BASE_LEN:] != mip_tail or len(new_payload) != PAYLOAD_LEN:
+    # Same contract as the dual-layer path: regenerate the packed levels from
+    # the new base, or a one-layer edit still serves the retail crest to every
+    # draw smaller than mip 0.
+    new_tail = (
+        rebuild_mip_tail(metadata, wanted_rgba, mip_tail)
+        if regenerate_mips else mip_tail
+    )
+    new_payload = new_base + new_tail
+    if len(new_payload) != PAYLOAD_LEN:
+        raise PatchError("payload length invariant failed")
+    if not regenerate_mips and new_payload[BASE_LEN:] != mip_tail:
         raise PatchError("mip-tail preservation invariant failed")
     if new_base == base:
         raise PatchError("no-op detection was inconsistent: encode reproduced retail base")
@@ -871,7 +1137,9 @@ def _build_single_layer(
         "mip_tail": {
             "length": MIP_LEN,
             "sha256": sha256_bytes(mip_tail),
-            "bit_exact": True,
+            "sha256_after": sha256_bytes(new_tail),
+            "bit_exact": new_tail == mip_tail,
+            "regenerated": regenerate_mips,
         },
         "iff": {
             "allocation_size": entry.size,
@@ -898,7 +1166,8 @@ def _build_single_layer(
             "h7a_decode_encode_decode_exact": True,
             "rebuilt_iff_reparsed": True,
             "footer_bit_exact": result.footer_after == result.footer_bytes,
-            "mip_tail_preserved": True,
+            "mip_tail_preserved": new_tail == mip_tail,
+            "mip_tail_regenerated": regenerate_mips,
             "other_level_l1_preserved": result.before_parts[(0, 1)]
             == result.after_parts[(0, 1)],
             "unrelated_inner_part_count": len(result.before_parts) - 1,
@@ -923,10 +1192,10 @@ def _build_single_layer(
     return PatchResult(result.rebuilt_entry, manifest)
 
 
-def _build_dual_layer(
+def _build_dual_layer_rgba_opened(
     index_path: Path,
-    png_path: Path,
-    png_path_l1: Path,
+    rgba_l0: bytes,
+    rgba_l1: bytes,
     entry_index: int,
     file_index: int,
     file_index_l1: int,
@@ -935,25 +1204,35 @@ def _build_dual_layer(
     original_entry: bytes,
     original_blocks: list[bytes],
     original_stored: list[bytes],
+    regenerate_mips: bool = True,
+    extracted_layers: tuple[_LayerTarget, _LayerTarget] | None = None,
 ) -> PatchResult:
     if file_index == file_index_l1:
         raise PatchError("logo_l0 and logo_l1 must be distinct inner files")
-    l0 = _extract_layer(
-        record, original_blocks, file_index, INNER_NAME, EXPECTED_BASE_SHA256
-    )
-    l1 = _extract_layer(
-        record, original_blocks, file_index_l1, SIBLING_NAME, EXPECTED_BASE_L1_SHA256
-    )
-    wanted = {
-        l0.name: _load_png(png_path, WIDTH, HEIGHT),
-        l1.name: _load_png(png_path_l1, WIDTH, HEIGHT),
-    }
+    if extracted_layers is None:
+        l0 = _extract_layer(
+            record, original_blocks, file_index, INNER_NAME,
+            pinned_base_sha(entry_index, INNER_NAME),
+        )
+        l1 = _extract_layer(
+            record, original_blocks, file_index_l1, SIBLING_NAME,
+            pinned_base_sha(entry_index, SIBLING_NAME),
+        )
+    else:
+        l0, l1 = extracted_layers
+        if (l0.file_index, l0.name, l1.file_index, l1.name) != (
+            file_index, INNER_NAME, file_index_l1, SIBLING_NAME
+        ):
+            raise PatchError("predecoded dual-layer ownership differs")
+    if len(rgba_l0) != WIDTH * HEIGHT * 4 or len(rgba_l1) != WIDTH * HEIGHT * 4:
+        raise PatchError("dual-layer RGBA inputs must both be exactly 512x512")
+    wanted = {l0.name: bytes(rgba_l0), l1.name: bytes(rgba_l1)}
 
     common_source = {
         "archive_index": str(index_path),
         "physical_volume": entry.segments[0].pack_name,
         "outer_entry_index": entry_index,
-        "outer_name": ENTRY_NAME,
+        "outer_name": resolve_outer_name(entry),
         "layers": [
             {"inner_file_index": layer.file_index, "inner_name": layer.name}
             for layer in (l0, l1)
@@ -966,9 +1245,10 @@ def _build_dual_layer(
         },
     }
 
-    # Apply each layer edit into the shared VRAM block, preserving its mip tail.
+    # Apply each layer edit into the shared VRAM block.
     new_block1 = bytearray(original_blocks[1])
     changed: list[tuple[_LayerTarget, bytes]] = []  # (layer, new_base)
+    new_tails: dict[str, bytes] = {}
     for layer in (l0, l1):
         if wanted[layer.name] == layer.rgba:
             continue
@@ -978,21 +1258,34 @@ def _build_dual_layer(
                 f"no-op detection was inconsistent for {layer.name}: "
                 "encode reproduced retail base"
             )
-        new_payload = new_base + layer.mip_tail
-        if new_payload[BASE_LEN:] != layer.mip_tail or len(new_payload) != PAYLOAD_LEN:
+        if regenerate_mips:
+            new_tail = rebuild_mip_tail(
+                layer.metadata, wanted[layer.name], layer.mip_tail
+            )
+        else:
+            new_tail = layer.mip_tail
+        new_payload = new_base + new_tail
+        if len(new_payload) != PAYLOAD_LEN:
+            raise PatchError(f"payload length invariant failed for {layer.name}")
+        if not regenerate_mips and new_payload[BASE_LEN:] != layer.mip_tail:
             raise PatchError(f"mip-tail preservation invariant failed for {layer.name}")
         new_block1[layer.vram_offset : layer.vram_offset + PAYLOAD_LEN] = new_payload
         changed.append((layer, new_base))
+        new_tails[layer.name] = new_tail
 
     layers_report: dict[str, object] = {}
     for layer in (l0, l1):
+        edited = any(layer is candidate for candidate, _ in changed)
+        after_tail = new_tails.get(layer.name, layer.mip_tail)
         entry_report: dict[str, object] = {
             "file_index": layer.file_index,
             "vram_offset_in_block1": layer.vram_offset,
             "base_sha256_before": sha256_bytes(layer.base),
             "mip_tail_sha256": sha256_bytes(layer.mip_tail),
-            "mip_tail_preserved": True,
-            "changed": any(layer is edited for edited, _ in changed),
+            "mip_tail_preserved": after_tail == layer.mip_tail,
+            "mip_tail_regenerated": edited and regenerate_mips,
+            "mip_tail_sha256_after": sha256_bytes(after_tail),
+            "changed": edited,
         }
         layers_report[layer.name] = entry_report
 
@@ -1002,7 +1295,7 @@ def _build_dual_layer(
             "mode": "no_op",
             "source": common_source,
             "target": {
-                "outer_name": ENTRY_NAME,
+                "outer_name": resolve_outer_name(entry),
                 "layers": [l0.name, l1.name],
                 "shared_vram_block": True,
                 "txtr": l0.metadata,
@@ -1055,7 +1348,7 @@ def _build_dual_layer(
         "mode": "patched",
         "source": common_source,
         "target": {
-            "outer_name": ENTRY_NAME,
+            "outer_name": resolve_outer_name(entry),
             "layers": [l0.name, l1.name],
             "shared_vram_block": True,
             "txtr": l0.metadata,
@@ -1086,7 +1379,12 @@ def _build_dual_layer(
             "h7a_decode_encode_decode_exact": True,
             "rebuilt_iff_reparsed": True,
             "footer_bit_exact": result.footer_after == result.footer_bytes,
-            "mip_tails_preserved": True,
+            "mip_tails_preserved": all(
+                bool(report["mip_tail_preserved"])
+                for report in layers_report.values()
+                if isinstance(report, dict) and report["changed"]
+            ),
+            "edited_mip_tails_regenerated": regenerate_mips,
             "dram_headers_preserved": (
                 result.before_parts[(l0.file_index, 0)]
                 == result.after_parts[(l0.file_index, 0)]
@@ -1119,6 +1417,224 @@ def _build_dual_layer(
     }
     return PatchResult(result.rebuilt_entry, manifest)
 
+
+def _build_dual_layer(
+    index_path: Path,
+    png_path: Path,
+    png_path_l1: Path,
+    entry_index: int,
+    file_index: int,
+    file_index_l1: int,
+    entry: apf_outer.Entry,
+    record: apf_inner.IFFRecord,
+    original_entry: bytes,
+    original_blocks: list[bytes],
+    original_stored: list[bytes],
+    regenerate_mips: bool = True,
+) -> PatchResult:
+    """PNG boundary for the in-memory dual-layer writer."""
+
+    return _build_dual_layer_rgba_opened(
+        index_path,
+        _load_png(png_path, WIDTH, HEIGHT),
+        _load_png(png_path_l1, WIDTH, HEIGHT),
+        entry_index,
+        file_index,
+        file_index_l1,
+        entry,
+        record,
+        original_entry,
+        original_blocks,
+        original_stored,
+        regenerate_mips,
+    )
+
+
+def build_patch_rgba(
+    index_path: Path,
+    rgba_l0: bytes,
+    rgba_l1: bytes,
+    *,
+    entry_index: int,
+    regenerate_mips: bool = True,
+) -> PatchResult:
+    """Rebuild both crest layers from RGBA without temporary PNG files."""
+
+    archive, entry, record, original_entry, original_blocks, original_stored = (
+        _open_entry(Path(index_path), entry_index)
+    )
+    del archive
+    file_index, file_index_l1 = resolve_layer_indices(record)
+    return _build_dual_layer_rgba_opened(
+        Path(index_path),
+        bytes(rgba_l0),
+        bytes(rgba_l1),
+        entry_index,
+        file_index,
+        file_index_l1,
+        entry,
+        record,
+        original_entry,
+        original_blocks,
+        original_stored,
+        regenerate_mips,
+    )
+
+
+@dataclass(frozen=True)
+class _PreparedBatchBuild:
+    """Pickle-safe, source-free input for one package rebuild worker."""
+
+    index_path: Path
+    rgba_l0: bytes
+    rgba_l1: bytes
+    entry_index: int
+    file_index: int
+    file_index_l1: int
+    entry: apf_outer.Entry
+    record: apf_inner.IFFRecord
+    original_entry: bytes
+    original_blocks: tuple[bytes, ...]
+    original_stored: tuple[bytes, ...]
+    regenerate_mips: bool
+    extracted_layers: tuple[_LayerTarget, _LayerTarget]
+
+
+def _build_prepared_batch_package(
+    prepared: _PreparedBatchBuild,
+) -> tuple[int, PatchResult]:
+    """Process-worker seam: rebuild/reparse one already decoded package in RAM."""
+
+    return prepared.entry_index, _build_dual_layer_rgba_opened(
+        prepared.index_path,
+        prepared.rgba_l0,
+        prepared.rgba_l1,
+        prepared.entry_index,
+        prepared.file_index,
+        prepared.file_index_l1,
+        prepared.entry,
+        prepared.record,
+        prepared.original_entry,
+        list(prepared.original_blocks),
+        list(prepared.original_stored),
+        prepared.regenerate_mips,
+        prepared.extracted_layers,
+    )
+
+
+def build_patch_rgba_batch(
+    index_path: Path,
+    entry_indices: Iterable[int],
+    transform: Callable[[int, bytes, bytes], tuple[bytes, bytes]],
+    *,
+    regenerate_mips: bool = True,
+    max_workers: int = 1,
+) -> dict[int, PatchResult]:
+    """Decode, transform, and rebuild many crest packages in one archive pass.
+
+    ``max_workers`` is deliberately bounded to four. The parent process remains
+    the sole read-only archive owner and performs every source pin and atlas
+    transform. Spawned workers receive only already-decoded bytes and rebuild
+    one fixed package in RAM; at most twice the worker count is in flight, and
+    results are returned in the caller's exact input order.
+    """
+
+    wanted_indices = tuple(entry_indices)
+    if not wanted_indices or len(set(wanted_indices)) != len(wanted_indices):
+        raise PatchError("batch crest entry indices must be nonempty and unique")
+    if type(max_workers) is not int or not 1 <= max_workers <= 4:
+        raise PatchError("batch crest max_workers must be an integer from 1 to 4")
+    archive = apf_outer.parse_archive(Path(index_path))
+    results: dict[int, PatchResult] = {}
+
+    def prepare(
+        reader: apf_inner.ArchiveReader, entry_index: int
+    ) -> _PreparedBatchBuild:
+        try:
+            entry = archive.entries[entry_index]
+        except IndexError as exc:
+            raise PatchError(f"outer archive has no entry {entry_index}") from exc
+        if len(entry.segments) != 1 or entry.segments[0].pack_name != "0A":
+            raise PatchError("PORTME: uniform_logo target is not in one 0A segment")
+        record = apf_inner.parse_iff(reader, entry)
+        original_entry = reader.read(entry, 0, entry.size)
+        original_blocks = [
+            apf_inner.decode_block(reader, record, index, 1 << 30)
+            for index in range(record.block_count)
+        ]
+        original_stored = [
+            reader.read(entry, block.start_offset, block.stored_length)
+            for block in record.blocks
+        ]
+        expected_entry = PINNED_ENTRIES.get(entry_index, {}).get("entry")
+        if expected_entry is not None and sha256_bytes(original_entry) != expected_entry:
+            raise PatchError(
+                f"source entry {entry_index} does not match its pinned retail hash; refusing"
+            )
+        if record.file_count != 2 or record.block_count != 2:
+            raise PatchError("PORTME: uniform_logo IFF structure changed")
+        file_index, file_index_l1 = resolve_layer_indices(record)
+        l0 = _extract_layer(
+            record, original_blocks, file_index, INNER_NAME,
+            pinned_base_sha(entry_index, INNER_NAME),
+        )
+        l1 = _extract_layer(
+            record, original_blocks, file_index_l1, SIBLING_NAME,
+            pinned_base_sha(entry_index, SIBLING_NAME),
+        )
+        rgba_l0, rgba_l1 = transform(entry_index, l0.rgba, l1.rgba)
+        return _PreparedBatchBuild(
+            Path(index_path), bytes(rgba_l0), bytes(rgba_l1), entry_index,
+            file_index, file_index_l1, entry, record, original_entry,
+            tuple(original_blocks), tuple(original_stored), regenerate_mips,
+            (l0, l1),
+        )
+
+    with apf_inner.ArchiveReader(archive) as reader:
+        if max_workers == 1:
+            for entry_index in wanted_indices:
+                rebuilt_index, result = _build_prepared_batch_package(
+                    prepare(reader, entry_index)
+                )
+                results[rebuilt_index] = result
+            return {entry_index: results[entry_index] for entry_index in wanted_indices}
+
+        context = multiprocessing.get_context("spawn")
+        pending: deque[tuple[int, Future[tuple[int, PatchResult]]]] = deque()
+
+        def collect_oldest() -> None:
+            expected_index, future = pending.popleft()
+            rebuilt_index, result = future.result()
+            if rebuilt_index != expected_index:
+                raise PatchError("parallel crest worker returned the wrong package")
+            results[rebuilt_index] = result
+
+        # Context manager + explicit cancel on error so worker processes never
+        # outlive the batch (monorepo suite hangs were contaminated by leftover
+        # ProcessPool workers after parallel crest builds).
+        with ProcessPoolExecutor(
+            max_workers=max_workers, mp_context=context
+        ) as executor:
+            try:
+                for entry_index in wanted_indices:
+                    pending.append(
+                        (
+                            entry_index,
+                            executor.submit(
+                                _build_prepared_batch_package,
+                                prepare(reader, entry_index),
+                            ),
+                        )
+                    )
+                    if len(pending) >= max_workers * 2:
+                        collect_oldest()
+                while pending:
+                    collect_oldest()
+            except BaseException:
+                for _entry_index, future in pending:
+                    future.cancel()
+                raise
+    return {entry_index: results[entry_index] for entry_index in wanted_indices}
 
 # ---------------------------------------------------------------------------
 # Output safety, copied verbatim from tools/apf_texture_patch.py:742-1031.
@@ -1291,10 +1807,22 @@ def _copy_fd_metadata(
     source_descriptor: int,
     output_descriptor: int,
     source_metadata: os.stat_result,
+    output_path: Path | None,
 ) -> None:
-    """Copy mode, available extended attributes, and timestamps by fd."""
+    """Copy mode, available extended attributes, and timestamps by fd.
+
+    ``output_path`` is the name ``output_descriptor`` was opened as.  POSIX never
+    consults it -- every step here addresses the descriptor, so the metadata
+    cannot be redirected to another file by a swap of that name.  It exists for
+    the platforms whose ``chmod``/``utime`` have no descriptor form at all
+    (Windows), where it is the difference between copying this metadata and
+    silently dropping it; the fallbacks it enables are metadata-only and each
+    caller re-checks that the output name still resolves to the descriptor's
+    inode before reporting success, so a redirected stamp fails the build rather
+    than passing for a clean one.  The bytes are never written through the name.
+    """
     platform_compat.fchmod(
-        output_descriptor, stat.S_IMODE(source_metadata.st_mode), path=None
+        output_descriptor, stat.S_IMODE(source_metadata.st_mode), path=output_path
     )
     if all(hasattr(os, name) for name in ("listxattr", "getxattr", "setxattr")):
         try:
@@ -1309,8 +1837,11 @@ def _copy_fd_metadata(
                 # Match shutil.copystat's best-effort behavior for attributes
                 # unavailable to the current user or destination filesystem.
                 continue
-    os.utime(
+    # Timestamps are cosmetic: utime_ns reports a skip rather than raising, and a
+    # skip must not fail a transaction whose bytes and mode are already correct.
+    platform_compat.utime_ns(
         output_descriptor,
+        output_path,
         ns=(source_metadata.st_atime_ns, source_metadata.st_mtime_ns),
     )
 
@@ -1391,9 +1922,14 @@ def _write_copied_volume(
         if source_sha_after != source_sha_before:
             raise PatchError("source APF volume changed during copied-volume patch")
         if not _path_is_owned_inode(source_volume, source_identity):
-            raise PatchError("source APF volume pathname changed during copy")
+            raise PatchError(
+            "source APF volume pathname changed during copy (a symlinked "
+            "source is the usual cause; stage a real copy instead)"
+        )
 
-        _copy_fd_metadata(source_descriptor, output_descriptor, source_metadata)
+        _copy_fd_metadata(
+            source_descriptor, output_descriptor, source_metadata, output_volume
+        )
         os.fsync(output_descriptor)
         if not _path_is_owned_inode(output_volume, output_identity):
             raise PatchError("output volume pathname changed during copied-volume patch")
@@ -1436,9 +1972,27 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         help="optional edited 512x512 RGBA PNG for logo_l1; co-writes both shared layers",
     )
+    parser.add_argument(
+        "--clear-l1",
+        action="store_true",
+        help="clear the detail layer's region masks (keeping its alpha) so one "
+             "supplied mark renders exactly once; use instead of --png-l1 when "
+             "you have a single image, because the two layers carry regions "
+             "0-2 and 3-5 of the same crest and are not interchangeable",
+    )
     parser.add_argument("--entry-index", type=int, default=ENTRY_INDEX)
-    parser.add_argument("--file-index", type=int, default=FILE_INDEX)
-    parser.add_argument("--file-index-l1", type=int, default=SIBLING_FILE_INDEX)
+    # Left unset the layers are found by name, which is what makes the writer
+    # work on every crest package rather than only the one whose inner-file
+    # order these constants happen to describe.
+    parser.add_argument(
+        "--preserve-mips",
+        action="store_true",
+        help="keep the retail packed mip tail byte-for-byte instead of "
+             "regenerating it from the new base; the crest will then still "
+             "show the retail logo at any draw smaller than full size",
+    )
+    parser.add_argument("--file-index", type=int, default=None)
+    parser.add_argument("--file-index-l1", type=int, default=None)
     parser.add_argument("--output-entry", type=Path, help="write rebuilt logical IFF entry")
     parser.add_argument(
         "--output-volume",
@@ -1479,6 +2033,8 @@ def main(argv: list[str] | None = None) -> int:
             args.file_index,
             png_path_l1=png_path_l1,
             file_index_l1=args.file_index_l1,
+            regenerate_mips=not args.preserve_mips,
+            clear_l1=args.clear_l1,
         )
         archive = apf_outer.parse_archive(index_path)
         entry = archive.entries[args.entry_index]

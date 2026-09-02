@@ -2,76 +2,83 @@
 
 The panel deliberately knows nothing about the main window, project session,
 or XISO builder.  :class:`CribPanelHost` is the complete integration boundary:
-the root facade supplies metadata and five callbacks, while this module owns
+the root facade supplies metadata and callbacks, while this module owns
 search, editable-first ordering, edit gating, PNG presentation, and progress/error
 UI.
 
-All 498 cataloged textures remain visible. The 128 Team Photos plus the proved
-``room:22`` ``bar_monitor`` surface expose Replace/Revert. Other object and room
-textures stay Preview/Export-only with bounded reskin and model-swap findings.
+All 498 cataloged textures expose Replace/Revert through exact fixed-allocation
+routes. Seven proved electronics scenes additionally expose bounded glTF model
+position editing for ten meshes.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import tempfile
 from typing import Callable, Iterable, Protocol, runtime_checkable
+from uuid import uuid4
 
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_crib import CribAsset, CribAssetStatus
 
 
 ProgressSink = Callable[[str, int, int], None]
-VALID_STATUS_FILTERS = (None, "editable", "modified", "export_only")
+VALID_STATUS_FILTERS = (None, "editable", "modified")
 
 
 CRIB_FINDINGS_PLAIN_TEXT = """\
-Team Photos and one Crib screen are editable now
-All 128 team-photo slots have a fixed 128x128 P8 layout. Mod Studio rebuilds
-their complete five-level mip chain and keeps every replacement in its original
-allocation. The room:22 bar_monitor screen is also editable as a complete
-128x128 PNG. Its scene is safely recompressed during Build; extremely flat or
-heavily noisy/dithered art may be refused with an actionable message.
+All 498 Crib textures are editable now
+The catalog contains 242 raw Team Item P8 textures (including all 128 Team
+Photos), 68 standalone VC-LZ P8 textures, and 188 material/submesh-owned P8
+surfaces across 36 SCNEs. Mod Studio regenerates every declared mip chain,
+preserves special layouts such as reflection's source gap and ticker_src's
+linear row order, and keeps each replacement inside its original allocation.
+Edits sharing one SCNE are composed before that scene is recompressed once.
 
-Other electronics reskins are mapped, but export-only
-The ownership spike mapped 25 electronics-like surfaces across seven Crib
-scenes. bar_monitor is the one reviewed writer; the other 24 rows, including
-screen_crib and screen_espn, remain Preview/Export-only. A PS5-themed texture
-illusion may be possible, but textures cannot change silhouette or add geometry.
+Safe compression boundary
+Every replacement stays inside the original fixed pixel/palette and compressed
+SCNE allocations. Extremely flat or heavily noisy/dithered art may be refused
+with an actionable message. Textures can reskin an object but cannot change its
+silhouette or add geometry.
 
-Model swapping is Coming Soon
-Crib SCNE resources couple nodes, shapes, submeshes, materials, pointers,
-bounds, markers, and draw commands inside compressed fixed allocations. No safe
-general model-import contract exists yet. Position/topology export worked for a
-20-vertex screen and a 224-vertex phone, but UV/normal register semantics,
-inverse command serialization, transforms, collision, and fixed-allocation
-relocation still block arbitrary import. Same-count cage deformation remains a
-plausible future spike.
+Position-only model editing is available for 10 electronics meshes
+Export any of the seven proved scenes to glTF, move existing vertices in
+Blender, and import the edited glTF. Mod Studio requires exactly the original
+vertex count and triangle topology, preserves UVs/materials/collision/indices
+and every other vertex register, then proves the rebuilt scene still fits its
+fixed allocation before staging it.
+
+Arbitrary model swapping is not supported
+Adding/removing faces, subdivision, welding, decimation, changing materials or
+UVs, and replacing helmet/object topology are intentionally refused. Those
+changes need a broader serializer and relocation contract than safe same-count
+deformation.
 """
 
 
 CRIB_FINDINGS_HTML = """
 <h2>What can I change?</h2>
-<h3 style="color:#62e6ad">Team Photos and one Crib screen are editable now</h3>
-<p>All <b>128 team-photo slots</b> have a fixed 128×128 P8 layout. Mod Studio
-rebuilds their complete five-level mip chain and keeps every replacement inside
-its original allocation. The proved <code>room:22 / bar_monitor</code> screen is
-also editable as a complete 128×128 PNG. Its compressed room scene is rebuilt
-during Build; art outside the safe compression envelope is refused clearly.</p>
-<h3 style="color:#7fc8ff">Other electronics reskins are mapped, but export-only</h3>
-<p>The ownership spike mapped <b>25 electronics-like surfaces across seven
-scenes</b>. <code>bar_monitor</code> is the one reviewed writer; the other 24,
-including <code>screen_crib</code> and <code>screen_espn</code>, remain
-Preview/Export-only. A PS5-themed texture illusion may be possible, but a
-texture cannot change an object's silhouette or add geometry.</p>
-<h3 style="color:#ffca80">Model swapping — Coming Soon</h3>
+<h3 style="color:#62e6ad">All 498 Crib textures are editable now</h3>
+<p>The catalog contains <b>242 raw Team Item P8 textures</b> (including all 128
+Team Photos), <b>68 standalone VC-LZ P8 textures</b>, and <b>188 exact
+material/submesh-owned P8 surfaces across 36 scenes</b>. Every declared mip is
+regenerated. Special source layouts such as the reflection gap and ticker_src's
+linear row order are preserved, and edits sharing a scene are composed before
+that SCNE is recompressed once. Art outside the safe compression envelope is
+refused clearly. A texture can reskin an object but cannot add geometry.</p>
+<h3 style="color:#62e6ad">Bounded model editing is available now</h3>
 <p>Crib SCNE resources couple nodes, shapes, submeshes, materials, pointers,
-bounds, markers, and draw commands inside compressed fixed allocations.
-Position/topology export worked for a 20-vertex screen and a 224-vertex phone,
-but UV/normal register semantics, inverse command serialization, transforms,
-collision, and fixed-allocation relocation still block arbitrary import.</p>
-<p><b>Best next experiment:</b> same-count cage deformation on an isolated
-source object, then traversal and rendering verification in xemu.</p>
+bounds, markers, and draw commands inside compressed fixed allocations. The
+seven proved electronics scenes now support glTF export and same-count,
+same-topology <b>position-only</b> import for ten exact meshes. Mod Studio keeps
+UVs, materials, collision, indices, normals and all other registers as original
+game bytes, and preflights the exact fixed compressed allocation before an edit
+can be staged.</p>
+<h3 style="color:#ffca80">Arbitrary model swapping — not supported</h3>
+<p>Adding/removing faces, subdivision, welding, decimation, material/UV edits,
+and general object replacement are refused until a broader serializer and
+relocation contract is proved.</p>
 """
 
 
@@ -153,7 +160,7 @@ def filter_crib_assets(
 
     if status not in VALID_STATUS_FILTERS:
         raise ValidationError(
-            "Crib status filter must be All, Editable, Modified, or Preview/Export-only"
+            "Crib status filter must be All, Editable, or Modified"
         )
     rows = tuple(assets)
     modified = set(modified_asset_ids)
@@ -167,8 +174,6 @@ def filter_crib_assets(
         if status == "editable" and not asset.editable:
             continue
         if status == "modified" and asset.asset_id not in modified:
-            continue
-        if status == "export_only" and asset.editable:
             continue
         haystack = crib_search_text(asset)
         if words and not all(word in haystack for word in words):
@@ -229,6 +234,23 @@ class CribPanelHost(Protocol):
 
     def revert_crib_photo(self, asset_id: str, progress: ProgressSink) -> object: ...
 
+    @property
+    def modified_crib_model_scene_ids(self) -> Iterable[str]: ...
+
+    def list_crib_model_scenes(self) -> Iterable[dict[str, object]]: ...
+
+    def export_crib_model(
+        self, scene_id: str, destination: Path, progress: ProgressSink
+    ) -> tuple[Path, Path]: ...
+
+    def import_crib_model(
+        self, scene_id: str, edited_gltf: Path, progress: ProgressSink
+    ) -> object: ...
+
+    def revert_crib_model(
+        self, scene_id: str, progress: ProgressSink
+    ) -> object: ...
+
 
 @dataclass(frozen=True, slots=True)
 class CribPanelCallbacks:
@@ -241,6 +263,17 @@ class CribPanelCallbacks:
     export: Callable[[str, Path, ProgressSink], Path]
     replace: Callable[[str, Path, ProgressSink], object]
     revert: Callable[[str, ProgressSink], object]
+    list_models: Callable[[], Iterable[dict[str, object]]] = lambda: ()
+    modified_model_ids: Callable[[], Iterable[str]] = lambda: ()
+    export_model: Callable[
+        [str, Path, ProgressSink], tuple[Path, Path]
+    ] = lambda _scene, _path, _progress: (_path, _path.with_suffix(".bin"))
+    import_model: Callable[
+        [str, Path, ProgressSink], object
+    ] = lambda _scene, _path, _progress: None
+    revert_model: Callable[
+        [str, ProgressSink], object
+    ] = lambda _scene, _progress: None
 
 
 class CallbackCribPanelHost:
@@ -281,6 +314,31 @@ class CallbackCribPanelHost:
     def revert_crib_photo(self, asset_id: str, progress: ProgressSink) -> object:
         return self.callbacks.revert(asset_id, progress)
 
+    @property
+    def modified_crib_model_scene_ids(self) -> tuple[str, ...]:
+        return tuple(str(item) for item in self.callbacks.modified_model_ids())
+
+    def list_crib_model_scenes(self) -> tuple[dict[str, object], ...]:
+        rows = tuple(dict(row) for row in self.callbacks.list_models())
+        if len({str(row.get("scene_id")) for row in rows}) != len(rows):
+            raise ValidationError("Crib panel host returned duplicate model scenes")
+        return rows
+
+    def export_crib_model(
+        self, scene_id: str, destination: Path, progress: ProgressSink
+    ) -> tuple[Path, Path]:
+        return self.callbacks.export_model(scene_id, destination, progress)
+
+    def import_crib_model(
+        self, scene_id: str, edited_gltf: Path, progress: ProgressSink
+    ) -> object:
+        return self.callbacks.import_model(scene_id, edited_gltf, progress)
+
+    def revert_crib_model(
+        self, scene_id: str, progress: ProgressSink
+    ) -> object:
+        return self.callbacks.revert_model(scene_id, progress)
+
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, pyqtSignal
 from PyQt5.QtGui import QImageReader, QPixmap
@@ -291,6 +349,7 @@ from PyQt5.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QHeaderView,
+    QInputDialog,
     QLabel,
     QLineEdit,
     QMessageBox,
@@ -307,6 +366,16 @@ from PyQt5.QtWidgets import (
 
 
 PYQT5_AVAILABLE = True
+
+# The Crib writer accepts any standard PNG at the slot's exact size, and the
+# panel fits any ordinary image to that size before staging -- so the chooser
+# and the drop target both advertise the full set instead of only PNG.
+CRIB_IMAGE_EXTENSIONS = {
+    ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp", ".tga",
+}
+CRIB_IMAGE_FILTER = (
+    "Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.tga);;All files (*)"
+)
 
 
 class _TaskSignals(QObject):
@@ -398,18 +467,49 @@ class _PngDropPreview(QFrame):
     def dragEnterEvent(self, event: object) -> None:  # type: ignore[override]
         mime = event.mimeData()  # type: ignore[attr-defined]
         urls = mime.urls() if mime.hasUrls() else []
-        if (
-            self._accepting
-            and len(urls) == 1
-            and urls[0].isLocalFile()
-            and urls[0].toLocalFile().lower().endswith(".png")
-        ):
+        if not self._accepting:
+            event.ignore()  # type: ignore[attr-defined]
+            return
+        if urls:
+            # Accept the drag so an unusable drop can explain itself with a
+            # plain message instead of silently bouncing off the preview.
             event.acceptProposedAction()  # type: ignore[attr-defined]
         else:
             event.ignore()  # type: ignore[attr-defined]
 
     def dropEvent(self, event: object) -> None:  # type: ignore[override]
-        supplied = Path(event.mimeData().urls()[0].toLocalFile())  # type: ignore[attr-defined]
+        urls = event.mimeData().urls()  # type: ignore[attr-defined]
+        if len(urls) != 1:
+            QMessageBox.information(
+                self,
+                "That drop can't be used yet",
+                "Drop one file at a time. Pick the single image you want to "
+                "use and drop it here again.",
+            )
+            event.ignore()  # type: ignore[attr-defined]
+            return
+        url = urls[0]
+        if not url.isLocalFile() or url.host():
+            QMessageBox.information(
+                self,
+                "That drop can't be used yet",
+                "That drop is a link or a web address, not a file on this "
+                "computer. Save or download the image first, then drop the "
+                "real file here.",
+            )
+            event.ignore()  # type: ignore[attr-defined]
+            return
+        supplied = Path(url.toLocalFile())
+        if supplied.suffix.casefold() not in CRIB_IMAGE_EXTENSIONS:
+            QMessageBox.information(
+                self,
+                "That drop can't be used yet",
+                "That file is not an image this panel can read. Drop a PNG, "
+                "JPEG, BMP, GIF, WebP or TGA image — any size is fine, the "
+                "editor resizes it for you.",
+            )
+            event.ignore()  # type: ignore[attr-defined]
+            return
         self.png_dropped.emit(supplied)
         event.acceptProposedAction()  # type: ignore[attr-defined]
 
@@ -437,11 +537,16 @@ class CribPanel(QWidget):
         self.browser = CribBrowserResult((), 0, 0, 0)
         self.selected_asset_id: str | None = None
         self._all_assets: tuple[CribAsset, ...] = ()
+        self._model_scenes: tuple[dict[str, object], ...] = ()
         self._busy = False
         self._refresh_after_task = False
         self._preview_generation = 0
         self._tasks: set[_Task] = set()
         self._pool = QThreadPool(self)
+        # Private exact-size copies prepared from ordinary images.  They serve
+        # one edit and are removed with the panel, never entered into projects.
+        self._fit_dir: Path | None = None
+        self.destroyed.connect(self._cleanup_fitted_images)
         self._search_timer = QTimer(self)
         self._search_timer.setSingleShot(True)
         self._search_timer.setInterval(220)
@@ -491,7 +596,6 @@ class CribPanel(QWidget):
         self.status_filter.addItem("All statuses", None)
         self.status_filter.addItem("Editable assets", "editable")
         self.status_filter.addItem("Modified", "modified")
-        self.status_filter.addItem("Preview / Export-only", "export_only")
         self.status_filter.setMinimumWidth(185)
         self.group_filter = QComboBox()
         self.group_filter.addItem("All collections", None)
@@ -560,6 +664,47 @@ class CribPanel(QWidget):
         actions.addWidget(self.revert_button)
         detail_layout.addLayout(actions)
         self.tabs.addTab(preview_tab, "Preview & Edit")
+
+        model_tab = QWidget()
+        model_layout = QVBoxLayout(model_tab)
+        model_layout.setContentsMargins(18, 16, 18, 16)
+        model_layout.setSpacing(12)
+        model_title = QLabel("Electronics model positions")
+        model_title.setObjectName("cribDetailTitle")
+        model_intro = QLabel(
+            "Export a proved scene to glTF, move its existing vertices, then "
+            "import it. Vertex count and faces must stay identical."
+        )
+        model_intro.setObjectName("cribMuted")
+        model_intro.setWordWrap(True)
+        self.model_scene = QComboBox()
+        self.model_scene.setMinimumWidth(260)
+        self.model_details = QLabel("Load your NFL 2K5 XISO to list model scenes.")
+        self.model_details.setObjectName("cribNote")
+        self.model_details.setWordWrap(True)
+        model_actions = QHBoxLayout()
+        self.model_export_button = QPushButton("Export glTF")
+        self.model_import_button = QPushButton("Import Edited glTF")
+        self.model_import_button.setObjectName("cribPrimaryButton")
+        self.model_revert_button = QPushButton("Revert Model")
+        model_actions.addWidget(self.model_export_button)
+        model_actions.addWidget(self.model_import_button, 1)
+        model_actions.addWidget(self.model_revert_button)
+        model_limit = QLabel(
+            "Preserved as original game bytes: UVs, materials, collision, "
+            "indices, normals and all non-position registers. Unsupported: "
+            "add/remove faces, subdivision, welding, decimation or object swaps."
+        )
+        model_limit.setObjectName("cribMuted")
+        model_limit.setWordWrap(True)
+        model_layout.addWidget(model_title)
+        model_layout.addWidget(model_intro)
+        model_layout.addWidget(self.model_scene)
+        model_layout.addWidget(self.model_details)
+        model_layout.addLayout(model_actions)
+        model_layout.addWidget(model_limit)
+        model_layout.addStretch(1)
+        self.tabs.addTab(model_tab, "Models")
 
         findings = QTextBrowser()
         findings.setObjectName("cribFindings")
@@ -660,6 +805,10 @@ class CribPanel(QWidget):
         self.replace_button.clicked.connect(self._choose_replacement)
         self.revert_button.clicked.connect(self._revert_selected)
         self.preview.png_dropped.connect(self._replace_with_path)
+        self.model_scene.currentIndexChanged.connect(self._model_scene_changed)
+        self.model_export_button.clicked.connect(self._export_model)
+        self.model_import_button.clicked.connect(self._import_model)
+        self.model_revert_button.clicked.connect(self._revert_model)
         self.error_raised.connect(
             lambda message: QMessageBox.warning(self, "The Crib", message)
         )
@@ -668,6 +817,8 @@ class CribPanel(QWidget):
         wanted = self.selected_asset_id if keep_selection else None
         try:
             self._all_assets = tuple(self.host.list_crib_assets())
+            self._model_scenes = tuple(self.host.list_crib_model_scenes())
+            self._refresh_model_choices()
             self._refresh_group_choices()
             modified = set(self.host.modified_crib_asset_ids)
             self.browser = filter_crib_assets(
@@ -692,7 +843,7 @@ class CribPanel(QWidget):
                 if is_modified
                 else "Editable"
                 if asset.editable
-                else "Preview / Export-only"
+                else "Unavailable · Catalog validation required"
             )
             values = (
                 ("●  " if is_modified else "") + asset.label,
@@ -720,13 +871,52 @@ class CribPanel(QWidget):
         self.table.blockSignals(False)
         self.count_label.setText(
             f"{self.browser.catalog_total:,} assets  ·  "
-            f"{self.browser.editable_total:,} editable  ·  "
-            f"{self.browser.export_only_total:,} export-only"
+            f"{self.browser.editable_total:,} editable"
         )
         self.match_label.setText(
             f"{self.browser.match_total:,} matching asset"
             f"{'s' if self.browser.match_total != 1 else ''} · Team Photos shown first"
         )
+        self._model_scene_changed()
+
+    def _refresh_model_choices(self) -> None:
+        current = self.model_scene.currentData()
+        self.model_scene.blockSignals(True)
+        self.model_scene.clear()
+        for row in self._model_scenes:
+            scene_id = str(row["scene_id"])
+            name = str(row.get("scene_name", scene_id)).replace("_", " ").title()
+            count = int(row.get("target_count", 0))
+            self.model_scene.addItem(
+                f"{name} · {count} mesh{'es' if count != 1 else ''}", scene_id
+            )
+        selected = self.model_scene.findData(current)
+        self.model_scene.setCurrentIndex(selected if selected >= 0 else 0)
+        self.model_scene.blockSignals(False)
+
+    def _selected_model_scene(self) -> dict[str, object] | None:
+        scene_id = self.model_scene.currentData()
+        return next(
+            (row for row in self._model_scenes if row.get("scene_id") == scene_id),
+            None,
+        )
+
+    def _model_scene_changed(self, *_args: object) -> None:
+        row = self._selected_model_scene()
+        if row is None:
+            self.model_details.setText(
+                "Load your NFL 2K5 XISO to list model scenes."
+            )
+        else:
+            scene_id = str(row["scene_id"])
+            names = ", ".join(str(value) for value in row.get("shape_names", ()))
+            modified = scene_id in set(self.host.modified_crib_model_scene_ids)
+            self.model_details.setText(
+                ("Modified · " if modified else "")
+                + f"{names}\n{int(row.get('target_count', 0))} fixed target(s) · "
+                "same-count position-only import"
+            )
+        self._refresh_controls()
 
     def _refresh_group_choices(self) -> None:
         current = self.group_filter.currentData()
@@ -787,7 +977,7 @@ class CribPanel(QWidget):
             if modified
             else "Editable Crib texture"
             if asset.editable
-            else "Preview / Export-only"
+            else "Unavailable · Catalog validation required"
         )
         location = (
             f"Scene {asset.scene_name} · texture {asset.texture_index}"
@@ -828,15 +1018,57 @@ class CribPanel(QWidget):
         self.preview.set_accepting(
             actions.can_drop_png,
             (
-                "Drop an exact 128×128 RGBA PNG here to replace this Crib texture"
+                f"Drop any image here to replace this Crib texture — it is "
+                f"resized to the exact {asset.width}×{asset.height} slot for you"
                 if asset is not None and asset.editable
-                else "This asset is Preview/Export-only for now"
+                else "This catalog row is unavailable because its writer contract failed validation"
             ),
         )
         self.table.setEnabled(not self._busy)
         self.search.setEnabled(not self._busy)
         self.status_filter.setEnabled(not self._busy)
         self.group_filter.setEnabled(not self._busy)
+        model = self._selected_model_scene()
+        scene_id = str(model["scene_id"]) if model is not None else ""
+        model_available = bool(model and self.host.source_ready and not self._busy)
+        self.model_scene.setEnabled(not self._busy and bool(self._model_scenes))
+        # Keep export/import clickable so gray never means silent no-op:
+        # click always works or explains the next step.
+        export_tip = (
+            "Export this Crib electronics scene as glTF (same-topology positions)."
+            if model_available
+            else (
+                "Load your NFL 2K5 XISO and select a proved electronics scene first. "
+                "Click still explains this — export needs a loaded source + scene."
+                if not self.host.source_ready
+                else "Select one of the proved electronics scenes in the Model list first."
+            )
+        )
+        import_tip = (
+            "Import a same-topology POSITION-only glTF for this scene "
+            "(vertex count and triangles must match the export)."
+            if model_available
+            else (
+                "Load your NFL 2K5 XISO and select a proved electronics scene first. "
+                "Click still explains this. Import never mutates your original XISO."
+                if not self.host.source_ready
+                else "Select a proved electronics scene first, then import a same-topology glTF."
+            )
+        )
+        self.model_export_button.setEnabled(not self._busy)
+        self.model_import_button.setEnabled(not self._busy)
+        self.model_export_button.setToolTip(export_tip)
+        self.model_import_button.setToolTip(import_tip)
+        self.model_export_button.setProperty(
+            "disableReason", "" if model_available else export_tip
+        )
+        self.model_import_button.setProperty(
+            "disableReason", "" if model_available else import_tip
+        )
+        self.model_revert_button.setEnabled(
+            model_available
+            and scene_id in set(self.host.modified_crib_model_scene_ids)
+        )
 
     def _load_preview(self, asset: CribAsset) -> None:
         generation = self._preview_generation
@@ -888,19 +1120,113 @@ class CribPanel(QWidget):
             return
         selected, _filter = QFileDialog.getOpenFileName(
             self,
-            "Choose Crib replacement PNG",
+            f"Choose an image for this Crib texture (any size or format — "
+            f"it is resized to {asset.width}×{asset.height} for you)",
             "",
-            "PNG image (*.png)",
+            CRIB_IMAGE_FILTER,
         )
         if selected:
             self._replace_with_path(Path(selected))
+
+    def _fit_crib_image(self, asset: CribAsset, supplied: Path) -> Path | None:
+        """Return an exact-size PNG for this slot with Contain/Cover/Stretch.
+
+        Dialog and drag/drop both call this path (same code as kit import).
+        Any ordinary image is accepted: the fit layer resizes it to the slot's
+        exact dimensions and writes an RGBA PNG. An already-exact image is
+        returned untouched. Returns ``None`` when the file cannot be read or
+        the user declines.
+        """
+
+        from mod_editor.core.errors import ValidationError as _ValidationError
+        from mod_editor.core.image_fit import (
+            fit_image,
+            fit_mode_from_label,
+            fit_mode_labels,
+            fit_to_png,
+        )
+
+        try:
+            probe = fit_image(supplied, asset.width, asset.height, mode="auto")
+        except _ValidationError as exc:
+            QMessageBox.information(
+                self,
+                "That file could not be read as an image",
+                f"{exc}\n\nFix: choose or drop a PNG, JPEG, BMP, GIF, WebP or "
+                "TGA image. Any size works -- the editor resizes it for you.",
+            )
+            return None
+
+        needs_png_conversion = (
+            probe.source_format != "PNG" or probe.source_mode != "RGBA"
+        )
+        if not probe.changed and not needs_png_conversion:
+            return supplied
+
+        if probe.changed:
+            labels = fit_mode_labels()
+            choice, accepted = QInputDialog.getItem(
+                self,
+                "How should this image fit the slot?",
+                f"This Crib texture must be exactly {asset.width}×{asset.height}, "
+                f"and that image is {probe.source_width}×{probe.source_height}.\n\n"
+                "Choose Contain, Cover, or Stretch. Dialog and drag/drop share "
+                "this path. Your original file is not modified.",
+                labels,
+                0,
+                False,
+            )
+            if not accepted:
+                return None
+            try:
+                chosen_mode = fit_mode_from_label(str(choice))
+            except _ValidationError as exc:
+                QMessageBox.information(
+                    self, "Invalid fit mode", f"{exc}\n\nNo edit was staged."
+                )
+                return None
+        else:
+            chosen_mode = "contain"  # exact size; PNG conversion only
+
+        if self._fit_dir is None:
+            self._fit_dir = Path(tempfile.mkdtemp(prefix="2k5-crib-fitted-"))
+        staged = self._fit_dir / f"crib-{uuid4().hex}.png"
+        try:
+            result = fit_to_png(
+                supplied, asset.width, asset.height, staged, mode=chosen_mode
+            )
+        except _ValidationError as exc:
+            QMessageBox.information(
+                self,
+                "Could not prepare that image",
+                f"{exc}\n\nFix: try a different image. No edit was staged.",
+            )
+            return None
+        self.progress_label.setText(
+            f"Prepared image for {asset.label} -- {result.describe()} "
+            f"({chosen_mode})."
+        )
+        return staged
+
+    def _cleanup_fitted_images(self, *_args: object) -> None:
+        import shutil
+
+        root = self._fit_dir
+        self._fit_dir = None
+        if root is not None and root.name.startswith("2k5-crib-fitted-"):
+            shutil.rmtree(root, ignore_errors=True)
 
     def _replace_with_path(self, supplied: Path) -> None:
         asset = self._selected_asset()
         if asset is None or not asset.editable:
             self.error_raised.emit(
-                "Select an Editable Crib asset before replacing a PNG."
+                "Select an Editable Crib asset before replacing a PNG. Fix: "
+                "choose one of the editable rows in the list, then drop or "
+                "choose your image again."
             )
+            return
+        fitted = self._fit_crib_image(asset, Path(supplied))
+        if fitted is None:
             return
 
         def complete(_value: object) -> None:
@@ -910,7 +1236,7 @@ class CribPanel(QWidget):
 
         self._run(
             lambda progress: self.host.replace_crib_photo(
-                asset.asset_id, supplied, progress
+                asset.asset_id, fitted, progress
             ),
             complete,
         )
@@ -927,6 +1253,103 @@ class CribPanel(QWidget):
 
         self._run(
             lambda progress: self.host.revert_crib_photo(asset.asset_id, progress),
+            complete,
+        )
+
+    def _export_model(self) -> None:
+        if not self.host.source_ready:
+            QMessageBox.information(
+                self,
+                "Load a game first",
+                "Crib model export needs your NFL 2K5 XISO loaded.\n\n"
+                "Fix: load the XISO, open The Crib, pick a proved electronics "
+                "scene, then export glTF.",
+            )
+            return
+        row = self._selected_model_scene()
+        if row is None:
+            QMessageBox.information(
+                self,
+                "Select a proved electronics scene",
+                "Choose one of the proved Crib electronics scenes in the Model "
+                "list first, then export glTF.",
+            )
+            return
+        scene_id = str(row["scene_id"])
+        scene_name = str(row.get("scene_name", "crib_scene"))
+        selected, _filter = QFileDialog.getSaveFileName(
+            self,
+            "Export Crib model",
+            f"{scene_name}.gltf",
+            "glTF model (*.gltf)",
+        )
+        if not selected:
+            return
+        destination = Path(selected)
+        self._run(
+            lambda progress: self.host.export_crib_model(
+                scene_id, destination, progress
+            ),
+            lambda value: self.progress_label.setText(
+                f"Exported {Path(value[0]).name} and {Path(value[1]).name}"  # type: ignore[index]
+            ),
+        )
+
+    def _import_model(self) -> None:
+        if not self.host.source_ready:
+            QMessageBox.information(
+                self,
+                "Load a game first",
+                "Crib model import needs your NFL 2K5 XISO loaded.\n\n"
+                "Fix: load the XISO, open The Crib, pick a proved electronics "
+                "scene, export glTF, edit POSITION only, then import again.\n\n"
+                "Import stages a copy — it never mutates your original disc/ISO.",
+            )
+            return
+        row = self._selected_model_scene()
+        if row is None:
+            QMessageBox.information(
+                self,
+                "Select a proved electronics scene",
+                "Choose one of the proved Crib electronics scenes in the Model "
+                "list first, then import a same-topology POSITION-only glTF.",
+            )
+            return
+        scene_id = str(row["scene_id"])
+        selected, _filter = QFileDialog.getOpenFileName(
+            self,
+            "Choose edited Crib glTF",
+            "",
+            "glTF model (*.gltf)",
+        )
+        if not selected:
+            return
+
+        def complete(_value: object) -> None:
+            self.crib_modified.emit(f"{scene_id}.geometry")
+            self.progress_label.setText("Edited Crib model staged")
+            self._refresh_after_task = True
+
+        self._run(
+            lambda progress: self.host.import_crib_model(
+                scene_id, Path(selected), progress
+            ),
+            complete,
+        )
+
+    def _revert_model(self) -> None:
+        row = self._selected_model_scene()
+        if row is None:
+            return
+        scene_id = str(row["scene_id"])
+
+        def complete(_value: object) -> None:
+            self.crib_reverted.emit(f"{scene_id}.geometry")
+            self.progress_label.setText("Original Crib model positions restored")
+            self._refresh_after_task = True
+
+        self._run(
+            lambda progress: self.host.revert_crib_model(scene_id, progress),
             complete,
         )
 

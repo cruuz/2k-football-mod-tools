@@ -25,7 +25,7 @@ import apf_xenos_dxn_mip_layout as dxn_mips
 SCHEMA = "apf_helmet_family_patch/v1"
 WORKSPACE = Path(__file__).resolve().parents[1]
 CATALOG = WORKSPACE / "reports/assets/apf_helmet_family_layout.json"
-EXPECTED_CATALOG_SHA256 = "72bf3efd4495e03fb856e0fb776313c842ebfafeb8d20d19f91318d7161aba03"
+EXPECTED_CATALOG_SHA256 = "29c3f097f63105f0ae2067d8f99f0ce8666e447d8bf13de4b1cb071e9638ed4c"
 EXPECTED_VOLUME_SHA256 = "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
 
 

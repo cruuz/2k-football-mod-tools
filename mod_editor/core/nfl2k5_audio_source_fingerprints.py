@@ -558,7 +558,7 @@ class Nfl2k5AudioSourceFingerprintStore:
         return self._load(
             root,
             path,
-            cache.source.sha256,
+            self.expected_source_sha256,
             expected_standalone,
             expected_streaming,
         )
@@ -590,7 +590,7 @@ class Nfl2k5AudioSourceFingerprintStore:
             result = self._load(
                 root,
                 path,
-                cache.source.sha256,
+                self.expected_source_sha256,
                 expected_standalone,
                 expected_streaming,
             )
@@ -640,7 +640,7 @@ class Nfl2k5AudioSourceFingerprintStore:
 
         self._check_cancelled(cancelled, completed)
         document = self._document(
-            cache.source.sha256, standalone_rows, streaming_rows
+            self.expected_source_sha256, standalone_rows, streaming_rows
         )
         payload = _canonical_json(document)
         _require(
@@ -651,7 +651,7 @@ class Nfl2k5AudioSourceFingerprintStore:
         self._parse_document(
             payload,
             path,
-            cache.source.sha256,
+            self.expected_source_sha256,
             expected_standalone,
             expected_streaming,
         )
@@ -668,7 +668,7 @@ class Nfl2k5AudioSourceFingerprintStore:
         result = self._load(
             root,
             path,
-            cache.source.sha256,
+            self.expected_source_sha256,
             expected_standalone,
             expected_streaming,
         )
@@ -677,11 +677,11 @@ class Nfl2k5AudioSourceFingerprintStore:
 
     def _validate_cache(self, cache: SourceCache) -> Path:
         _require(isinstance(cache, SourceCache), "Audio fingerprinting needs a source cache")
-        source_sha256 = _sha256_text(cache.source.sha256, "source XISO SHA-256")
-        _require(
-            source_sha256 == self.expected_source_sha256,
-            "Private source-audio fingerprints belong to a different XISO",
-        )
+        # Still required to be a well-formed digest, but no longer required to
+        # equal the project's own dump. A different container around the same
+        # game is the same game; the fingerprints are keyed to the cache handed
+        # to this call, and every artefact inside it is pinned individually.
+        _sha256_text(cache.source.sha256, "source XISO SHA-256")
         _require(
             cache.source.recognized and cache.source.kind == "xiso",
             "Audio fingerprinting needs a recognized NFL 2K5 XISO cache",
@@ -691,9 +691,14 @@ class Nfl2k5AudioSourceFingerprintStore:
             platform_compat.is_canonical_absolute_path(cache.root, root),
             "NFL 2K5 source-cache path must be absolute and canonical",
         )
+        # The cache directory is named for the canonical game identity, which is
+        # the key Nfl2k5SourceCache publishes under -- deliberately NOT the
+        # user's own container hash, since many legitimately different dumps of
+        # one disc share one cache. Comparing to cache.source.sha256 would fail
+        # for every dump packaged differently from the project's copy.
         _require(
-            root.name == source_sha256,
-            "NFL 2K5 source-cache directory is not bound to its XISO SHA-256",
+            root.name == self.expected_source_sha256,
+            "NFL 2K5 source-cache directory is not the canonical cache key",
         )
         return root
 

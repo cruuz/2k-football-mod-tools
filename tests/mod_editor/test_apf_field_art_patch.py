@@ -29,8 +29,10 @@ from __future__ import annotations
 
 from dataclasses import replace
 import hashlib
+import json
 import os
 from pathlib import Path
+import random
 import sys
 import tempfile
 import unittest
@@ -47,8 +49,22 @@ import apf_field_art_patch as fa  # noqa: E402
 import apf_field_art_verify as fav  # noqa: E402
 
 
-INDEX_PATH = WORKSPACE / "extracted/All-Pro Football 2K8 (USA)/0A"
-DISC_AVAILABLE = INDEX_PATH.exists()
+def _apf_index_0a() -> Path:
+    candidates = (
+        WORKSPACE / "extracted/All-Pro Football 2K8 (USA)/0A",
+        Path(
+            "/media/noah/Storage/for codex 1.0/extracted/"
+            "All-Pro Football 2K8 (USA)/0A"
+        ),
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return candidates[0]
+
+
+INDEX_PATH = _apf_index_0a()
+DISC_AVAILABLE = INDEX_PATH.is_file()
 SLOW = os.environ.get("APF_FIELD_ART_SLOW") == "1"
 _SIBLINGS = ("0B", "1A", "1B")
 
@@ -115,10 +131,13 @@ def _volume_dir(root: Path) -> Path:
 
 class FieldArtContractPinTests(unittest.TestCase):
     def test_contract_table_pins_every_shipped_slot(self) -> None:
-        self.assertEqual(
-            set(fa._CONTRACTS),
-            {(6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)},
-        )
+        core = {(6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)}
+        self.assertTrue(core.issubset(set(fa._CONTRACTS)))
+        self.assertGreaterEqual(len(fa._CONTRACTS), 6 + 21 + 194)
+        self.assertIn((659, 189), fa._CONTRACTS)  # weave_jersey0
+        self.assertEqual(fa._CONTRACTS[(659, 189)].codec, "rgba8888")
+        self.assertIn((659, 193), fa._CONTRACTS)  # dirtmap_helmet
+        self.assertEqual(fa._CONTRACTS[(659, 193)].codec, "bc3")
         endzone = fa._CONTRACTS[(6, 0)]
         self.assertEqual((endzone.codec, endzone.format), ("dxt1", 18))
         self.assertEqual((endzone.width, endzone.height), (2048, 512))
@@ -134,6 +153,29 @@ class FieldArtContractPinTests(unittest.TestCase):
         # These need a new DXT5A / 5_6_5 codec and a non-permutation swizzle path.
         for key in ((53, 3), (659, 11), (659, 168), (659, 173)):
             self.assertNotIn(key, fa._CONTRACTS)
+        # Format-59 DXT5A endzone layers stay out of the writer table.
+        self.assertNotIn((78, 1), fa._CONTRACTS)
+        extra = json.loads(
+            (WORKSPACE / "mod_editor/data/apf2k8_field_extra_targets.v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        refused = [
+            (int(row["entry_index"]), int(row["file_index"]))
+            for row in extra["endzones"]
+            if int(row["format"]) == 59
+        ]
+        self.assertEqual(len(refused), 39)
+        for key in refused:
+            self.assertNotIn(key, fa._CONTRACTS)
+        weights_head = fa._CONTRACTS[(659, 104)]
+        weights_arm = fa._CONTRACTS[(659, 227)]
+        self.assertEqual(weights_head.name, "weave_skin_weights_head")
+        self.assertEqual((weights_head.codec, weights_head.format), ("bc3", 20))
+        self.assertEqual((weights_head.width, weights_head.height), (256, 256))
+        self.assertEqual(weights_arm.name, "weave_skin_weights_arm")
+        self.assertEqual((weights_arm.codec, weights_arm.format), ("bc3", 20))
+        self.assertEqual((weights_arm.width, weights_arm.height), (256, 256))
 
 
 @unittest.skipUnless(DISC_AVAILABLE, "extracted APF 0A not present")
@@ -247,10 +289,98 @@ class FieldArtEditTests(unittest.TestCase):
         self.assertFalse(manifest["binary_patch_manifest"]["contains_replacement_bytes"])
 
     def test_endzone_l0_edit_changes_only_its_base(self) -> None:
-        # Flat magenta is RGB565-exact, so the DXT1 edit is bit-exact (maxerr 0).
+        """``endzone_l0`` accepts an edit now.  It did not, and why is worth keeping.
+
+        The encoder once emitted H7A matches that overlap their own output, which
+        compressed this block about 1,800 bytes under retail and left plenty of
+        room.  Those streams are not safe: the same encoding made a rebuilt team
+        crest render as coloured speckle in game, and removing it -- with nothing
+        else changed -- fixed the crest.  On this very block the old output held
+        10,016 overlapping matches out of 22,636.
+
+        Forbidding overlaps cost the headroom.  Outer entry 6 allocates 110,592
+        bytes and retail fills 110,320, leaving 272 bytes of slack, and a painted
+        rectangle scatters through the Xenos tiling rather than staying local, so
+        it costs a few hundred compressed bytes however small it is.  Greedy
+        overran by 21 bytes at 32x32 and still by 9 at 8x8, so the writer refused
+        -- correctly, since a refusal is recoverable and a console-invalid volume
+        is not.
+
+        The earlier version of this test named the fix it needed: "closing l0
+        properly needs a stronger parse, not a relaxed rule."
+        ``tools/apf_h7a_optimal.c`` is that parse.  It recovers about 585 bytes
+        over greedy here, more than the shortfall, so l0 now carries the same
+        2048x512 DXT1 edit coverage as its sibling.  The no-overlap rule did not
+        move.
+        """
         self._controlled_edit(6, 0, (255, 0, 255, 255), 32)
 
+    def test_an_endzone_edit_too_detailed_to_fit_is_still_refused(self) -> None:
+        """The allocation guard still has to fail closed.
+
+        Now that l0 absorbs an ordinary edit, the refusal path needs an edit that
+        genuinely cannot fit or it stops being covered.  Noise is the honest case:
+        incompressible pixels do not go into a fixed allocation at any parse
+        quality, so this pins the real ceiling rather than an encoder shortfall.
+        """
+        source = _extract(6, 0)
+        contract = source["contract"]
+        rng = random.Random(20260729)
+        rgba = bytearray(source["rgba"])
+        for y in range(160, 352):
+            row = y * contract.width
+            for x in range(640, 1408):
+                offset = (row + x) * 4
+                rgba[offset:offset + 3] = bytes(
+                    (rng.randrange(256), rng.randrange(256), rng.randrange(256))
+                )
+        with tempfile.TemporaryDirectory() as directory:
+            png = Path(directory) / "noise.png"
+            _save_png(png, contract.width, contract.height, bytes(rgba))
+            with self.assertRaisesRegex(
+                fa.PatchError, "exceeds its fixed outer allocation"
+            ):
+                fa.build_field_art_patch(INDEX_PATH, png, 6, 0)
+
+    def test_both_endzone_layers_land_in_one_pass(self) -> None:
+        """The retail entry pin no longer blocks the second layer.
+
+        Writing endzone_l0 then endzone_l1 as two passes could never work: the
+        first pass changes the entry, so the second pass's retail pin refuses.
+        One rebuild with both targets is the fix.
+        """
+        sources = {0: _extract(6, 0), 1: _extract(6, 1)}
+        with tempfile.TemporaryDirectory() as directory:
+            targets = []
+            for file_index, source in sources.items():
+                contract = source["contract"]
+                edited = _paint_rect(
+                    source["rgba"], contract.width, 24, (255, 0, 255, 255)
+                )
+                png = Path(directory) / f"layer{file_index}.png"
+                _save_png(png, contract.width, contract.height, edited)
+                targets.append((file_index, png))
+            result = fa.build_field_art_patch_many(INDEX_PATH, 6, tuple(targets))
+        manifest = result.manifest
+        self.assertEqual(manifest["mode"], "patched")
+        self.assertEqual(len(manifest["targets"]), 2)
+        self.assertEqual(
+            sorted(
+                (part["file_index"], part["part_index"])
+                for part in manifest["validation"]["changed_inner_parts"]
+            ),
+            sorted(
+                (file_index, source["contract"].pixel_part_index)
+                for file_index, source in sources.items()
+            ),
+        )
+        self.assertGreaterEqual(manifest["iff"]["allocation_slack_after"], 0)
+        self.assertTrue(manifest["iff"]["footer_bit_exact"])
+        self.assertFalse(manifest["binary_patch_manifest"]["contains_replacement_bytes"])
+
     def test_endzone_l1_edit_changes_only_its_base(self) -> None:
+        # l1 has room where l0 does not, so the endzone DXT1 edit path stays
+        # covered on a real 2048x512 endzone slot.
         self._controlled_edit(6, 1, (255, 0, 255, 255), 32)
 
     def test_divots_edit_changes_only_its_base(self) -> None:
@@ -314,12 +444,15 @@ class FieldArtFailClosedTests(unittest.TestCase):
 @unittest.skipUnless(DISC_AVAILABLE, "extracted APF 0A not present")
 class FieldArtCopiedVolumeTests(unittest.TestCase):
     def test_source_volume_is_never_modified_by_a_copy(self) -> None:
-        source = _extract(6, 0)
+        # Uses endzone l1: l0's allocation cannot absorb an edit now that the
+        # encoder emits only streams the console can decode (see
+        # _endzone_edit_refused), but l1 has room.
+        source = _extract(6, 1)
         with tempfile.TemporaryDirectory() as directory:
             png = Path(directory) / "magenta.png"
             edited = _paint_rect(source["rgba"], source["contract"].width, 32, (255, 0, 255, 255))
             _save_png(png, source["contract"].width, source["contract"].height, edited)
-            result = fa.build_field_art_patch(INDEX_PATH, png, 6, 0)
+            result = fa.build_field_art_patch(INDEX_PATH, png, 6, 1)
             out = Path(directory) / "copied" / "0A"
             summary = fa._write_copied_volume(INDEX_PATH, out, source["entry"], result.entry_bytes)
         self.assertEqual(
@@ -328,7 +461,8 @@ class FieldArtCopiedVolumeTests(unittest.TestCase):
         self.assertTrue(summary["outside_replacement"]["source_and_output_match"])
 
     def test_endzone_edit_is_verified_by_the_independent_verifier(self) -> None:
-        source = _extract(6, 0)
+        # Same reason as above: exercised on endzone l1, which has room.
+        source = _extract(6, 1)
         contract = source["contract"]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -340,12 +474,12 @@ class FieldArtCopiedVolumeTests(unittest.TestCase):
             self.assertEqual(
                 fa.main([
                     "--index", str(INDEX_PATH), "--png", str(png),
-                    "--entry-index", "6", "--file-index", "0",
+                    "--entry-index", "6", "--file-index", "1",
                     "--output-volume", str(out), "--manifest", str(manifest),
                 ]),
                 0,
             )
-            report = fav.verify(INDEX_PATH, out, png, 6, 0, manifest)
+            report = fav.verify(INDEX_PATH, out, png, 6, 1, manifest)
         self.assertEqual(report["mode"], "patched")
         diff = report["whole_volume_diff"]
         self.assertTrue(diff["all_other_bytes_identical"])

@@ -1,0 +1,280 @@
+{
+  "apf2k8": {
+    "archive_only_mod_note": "The gameplay camera has no asset-side representation in either game. Every camera node in both archives belongs to an intro, cutscene, menu or model-preview scene, and no stadium scene contains one, so editing archive files cannot change a camera setting or preset.",
+    "archive_only_mod_possible": false,
+    "float_settings_apply_only_in_custom": true,
+    "game": "All-Pro Football 2K8",
+    "menu_reachable_preset_count": 5,
+    "platform": "Xbox 360",
+    "preset_count": 6,
+    "presets": [
+      {
+        "eye": [
+          0.0,
+          500.0,
+          -1325.0
+        ],
+        "fully_authored": true,
+        "menu_reachable": true,
+        "name": "Standard"
+      },
+      {
+        "eye": [
+          0.0,
+          500.0,
+          -1325.0
+        ],
+        "fully_authored": true,
+        "menu_reachable": true,
+        "name": "Far"
+      },
+      {
+        "eye": [
+          1400.0,
+          900.0,
+          0.0
+        ],
+        "fully_authored": true,
+        "menu_reachable": true,
+        "name": "Side"
+      },
+      {
+        "eye": [
+          600.0,
+          350.0,
+          -950.0
+        ],
+        "fully_authored": true,
+        "menu_reachable": true,
+        "name": "Iso"
+      },
+      {
+        "eye": [
+          0.0,
+          500.0,
+          -1325.0
+        ],
+        "fully_authored": true,
+        "menu_reachable": true,
+        "name": "Custom"
+      },
+      {
+        "eye": [
+          0.0,
+          3750.0,
+          -20.0
+        ],
+        "fully_authored": true,
+        "menu_reachable": false,
+        "name": "Blimp"
+      }
+    ],
+    "presets_present_but_not_selectable": [
+      "Blimp"
+    ],
+    "read_only": true,
+    "runtime_behaviour_proved": false,
+    "runtime_note": "Every value here was read from the game's own executable. Nothing was observed running, and no claim is made about what any of it looks like on screen.",
+    "schema": "mod_editor_camera_options_inspection/v1",
+    "setting_count": 9,
+    "settings": [
+      {
+        "control": "choice",
+        "name": "Camera",
+        "stock_maximum": 4,
+        "stock_minimum": 0,
+        "stored_type": "int32"
+      },
+      {
+        "control": "toggle",
+        "name": "QB Pivot Mode (Home)",
+        "stock_maximum": 1,
+        "stock_minimum": 0,
+        "stored_type": "int32"
+      },
+      {
+        "control": "toggle",
+        "name": "Pass Play Zoom Out (Home)",
+        "stock_maximum": 1,
+        "stock_minimum": 0,
+        "stored_type": "int32"
+      },
+      {
+        "control": "toggle",
+        "name": "QB Pivot Mode (Away)",
+        "stock_maximum": 1,
+        "stock_minimum": 0,
+        "stored_type": "int32"
+      },
+      {
+        "control": "toggle",
+        "name": "Pass Play Zoom Out (Away)",
+        "stock_maximum": 1,
+        "stock_minimum": 0,
+        "stored_type": "int32"
+      },
+      {
+        "control": "slider",
+        "name": "Camera Distance",
+        "normalised_0_to_1": false,
+        "stock_maximum": 2500.0,
+        "stock_minimum": 500.0,
+        "stored_type": "float32"
+      },
+      {
+        "control": "slider",
+        "name": "Camera Pitch",
+        "normalised_0_to_1": true,
+        "stock_maximum": 1.0,
+        "stock_minimum": 0.0,
+        "stored_type": "float32"
+      },
+      {
+        "control": "slider",
+        "name": "Camera Angle",
+        "normalised_0_to_1": true,
+        "stock_maximum": 1.0,
+        "stock_minimum": 0.0,
+        "stored_type": "float32"
+      },
+      {
+        "control": "slider",
+        "name": "Camera Height",
+        "normalised_0_to_1": false,
+        "stock_maximum": 500.0,
+        "stock_minimum": 50.0,
+        "stored_type": "float32"
+      }
+    ],
+    "why_read_only": "no serializer for the camera block exists anywhere in the image; the 21-slider blob stops one dword short of the first camera global, so there is no camera file to edit and the only route is a XEX patch",
+    "writer_available": false
+  },
+  "nfl2k5": {
+    "archive_only_mod_note": "The gameplay camera has no asset-side representation in either game. Every camera node in both archives belongs to an intro, cutscene, menu or model-preview scene, and no stadium scene contains one, so editing archive files cannot change a camera setting or preset.",
+    "archive_only_mod_possible": false,
+    "float_settings_apply_only_in_custom": true,
+    "game": "ESPN NFL 2K5",
+    "menu_reachable_preset_count": 6,
+    "platform": "original Xbox",
+    "preset_count": 6,
+    "presets": [
+      {
+        "menu_reachable": true,
+        "name": "Standard",
+        "position": [
+          0.0,
+          100.0,
+          -150.0
+        ]
+      },
+      {
+        "menu_reachable": true,
+        "name": "Far",
+        "position": [
+          0.0,
+          100.0,
+          -150.0
+        ]
+      },
+      {
+        "menu_reachable": true,
+        "name": "Side",
+        "position": [
+          -350.0,
+          40.0,
+          250.0
+        ]
+      },
+      {
+        "menu_reachable": true,
+        "name": "Iso",
+        "position": [
+          100.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "menu_reachable": true,
+        "name": "Blimp",
+        "position": [
+          0.0,
+          0.0,
+          400.0
+        ]
+      },
+      {
+        "menu_reachable": true,
+        "name": "Custom",
+        "position": [
+          0.0,
+          100.0,
+          -150.0
+        ]
+      }
+    ],
+    "presets_present_but_not_selectable": [],
+    "read_only": true,
+    "runtime_behaviour_proved": false,
+    "runtime_note": "Every value here was read from the game's own executable. Nothing was observed running, and no claim is made about what any of it looks like on screen.",
+    "schema": "mod_editor_camera_options_inspection/v1",
+    "setting_count": 7,
+    "settings": [
+      {
+        "control": "choice",
+        "name": "Camera",
+        "stock_maximum": 5,
+        "stock_minimum": 0,
+        "stored_type": "int32"
+      },
+      {
+        "control": "toggle",
+        "name": "QB Pivot Mode",
+        "stock_maximum": 1,
+        "stock_minimum": 0,
+        "stored_type": "int32"
+      },
+      {
+        "control": "toggle",
+        "name": "Runner Pivot Mode",
+        "stock_maximum": 1,
+        "stock_minimum": 0,
+        "stored_type": "int32"
+      },
+      {
+        "control": "toggle",
+        "name": "Pass Play Zoom Out",
+        "stock_maximum": 1,
+        "stock_minimum": 0,
+        "stored_type": "int32"
+      },
+      {
+        "control": "slider",
+        "name": "Camera Distance",
+        "normalised_0_to_1": false,
+        "stock_maximum": 3.0,
+        "stock_minimum": 0.20000000298023224,
+        "stored_type": "float32"
+      },
+      {
+        "control": "slider",
+        "name": "Camera Angle",
+        "normalised_0_to_1": true,
+        "stock_maximum": 1.0,
+        "stock_minimum": 0.0,
+        "stored_type": "float32"
+      },
+      {
+        "control": "slider",
+        "name": "Camera Height",
+        "normalised_0_to_1": false,
+        "stock_maximum": 300.0,
+        "stock_minimum": 50.0,
+        "stored_type": "float32"
+      }
+    ],
+    "why_read_only": "camera values live in the save, not the executable; the save is covered by a 20-byte XCalculateSignature EXTRA that is compared exactly on load, and every menu constant is inside a digested XBE section",
+    "writer_available": false
+  },
+  "schema": "mod_editor_camera_options_snapshot/v1"
+}

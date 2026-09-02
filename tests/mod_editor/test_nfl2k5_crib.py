@@ -13,6 +13,7 @@ from mod_editor.core.errors import ValidationError
 from mod_editor.core.model import SourceRecord
 from mod_editor.core.nfl2k5_crib import (
     COMPACT_CATALOG_PATH,
+    ORIGINAL_SCHEMA,
     CribAssetStatus,
     CribCatalogError,
     CribCatalogExpectations,
@@ -22,7 +23,7 @@ from mod_editor.core.nfl2k5_crib import (
     Nfl2k5CribIO,
     load_nfl2k5_crib_catalog,
 )
-from mod_editor.core.nfl2k5_source_cache import SourceCache
+from mod_editor.core.nfl2k5_source_cache import SOURCE_SHA256, SourceCache
 
 from nfl_txtr import HEADER, encode_rgba_png, parse_chunks, decode_chunk
 
@@ -188,7 +189,7 @@ class Nfl2k5CribProductionCatalogTests(unittest.TestCase):
             36,
         )
 
-    def test_bar_monitor_is_editable_but_other_electronics_stay_export_only(self) -> None:
+    def test_all_498_crib_textures_are_editable(self) -> None:
         bar_monitor = self.catalog.by_selector("crib_scene_texture:room:22")
         self.assertIn("bar_monitor", bar_monitor.material_names)
         self.assertEqual(bar_monitor.status, CribAssetStatus.EDITABLE)
@@ -199,10 +200,12 @@ class Nfl2k5CribProductionCatalogTests(unittest.TestCase):
             "selector": "crib_scene_texture:room:22",
         })
         self.assertIn("recompresses", bar_monitor.authoring_note)
-        self.assertEqual(sum(asset.editable for asset in self.catalog.assets), 129)
+        self.assertEqual(sum(asset.editable for asset in self.catalog.assets), 498)
+        self.assertEqual(sum(not asset.editable for asset in self.catalog.assets), 0)
         trivia = self.catalog.search("trivia machine")
         self.assertTrue(trivia)
-        self.assertTrue(all(not asset.editable for asset in trivia))
+        self.assertTrue(all(asset.editable for asset in trivia[:3]))
+        self.assertTrue(all(asset.editable for asset in trivia))
         ownership = json.loads(Path(
             "reports/experiments/nfl2k5_crib_electronics_ownership.json"
         ).read_text(encoding="utf-8"))
@@ -211,11 +214,15 @@ class Nfl2k5CribProductionCatalogTests(unittest.TestCase):
             for row in ownership["textures"]
         ]
         self.assertEqual(len(electronics), 25)
-        self.assertEqual(
-            [asset.selector for asset in electronics if asset.editable],
-            ["crib_scene_texture:room:22"],
-        )
-        self.assertEqual(sum(not asset.editable for asset in electronics), 24)
+        self.assertTrue(all(asset.editable for asset in electronics))
+        self.assertEqual(sum(not asset.editable for asset in electronics), 0)
+
+        item = self.catalog.by_selector("crib_item_texture:00_helmet")
+        self.assertEqual(item.provider_edit("mine.png")["kind"],
+                         "crib_standalone_texture")
+        external = self.catalog.by_selector("crib_external_texture:7:logo")
+        self.assertEqual(external.provider_edit("mine.png")["kind"],
+                         "crib_standalone_texture")
 
     def test_compact_release_catalog_exactly_matches_audited_reports(self) -> None:
         compact = Nfl2k5CribCatalog.from_compact_catalog(COMPACT_CATALOG_PATH)
@@ -247,7 +254,12 @@ class Nfl2k5CribSyntheticTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temporary.cleanup()
 
-    def cache(self) -> SourceCache:
+    def cache(
+        self,
+        *,
+        source_sha256: str = "a" * 64,
+        source_size: int = 6_300_958_720,
+    ) -> SourceCache:
         originals = self.root / "originals"
         originals.mkdir(exist_ok=True)
         dummy = self.root / "dummy"
@@ -256,8 +268,8 @@ class Nfl2k5CribSyntheticTests(unittest.TestCase):
             selected_path=str(dummy),
             inspected_path=str(dummy),
             kind="xiso",
-            sha256="a" * 64,
-            size=6_300_499_968,
+            sha256=source_sha256,
+            size=source_size,
             recognized=True,
             fingerprint_id="synthetic",
             detected_game="nfl2k5",
@@ -286,8 +298,11 @@ class Nfl2k5CribSyntheticTests(unittest.TestCase):
         for forbidden in ("offset", "span", "sha256", "retail"):
             self.assertNotIn(forbidden, lowered)
         item = self.catalog.by_selector("crib_item_texture:00_helmet")
-        with self.assertRaisesRegex(CribCatalogError, "Coming Soon"):
-            item.provider_edit("replacement.png")
+        self.assertEqual(item.provider_edit("replacement.png"), {
+            "kind": "crib_standalone_texture",
+            "png": "replacement.png",
+            "selector": "crib_item_texture:00_helmet",
+        })
 
     def test_photo_export_and_five_mip_replacement_are_round_trip_safe(self) -> None:
         photo = self.catalog.by_selector("crib_team_photo:00_photo_00")
@@ -298,6 +313,21 @@ class Nfl2k5CribSyntheticTests(unittest.TestCase):
         original = io.ensure_original(photo)
         self.assertTrue(original.is_file())
         self.assertEqual(original, io.ensure_original(photo))
+        metadata = json.loads(original.with_suffix(".json").read_text())
+        self.assertEqual(metadata["schema"], ORIGINAL_SCHEMA)
+        self.assertEqual(metadata["source_sha256"], SOURCE_SHA256)
+
+        # A raw-disc layout has a different whole-container digest and size but
+        # resolves to the same pinned private source cache. Its valid original
+        # must be reused without decoding the retail span again.
+        raw_layout = Nfl2k5CribIO(
+            self.cache(source_sha256="b" * 64, source_size=7_825_162_240),
+            self.catalog,
+            span_reader=lambda _asset: (_ for _ in ()).throw(
+                AssertionError("canonical Crib original was re-decoded")
+            ),
+        )
+        self.assertEqual(raw_layout.ensure_original(photo), original)
 
         pixels = bytearray()
         colors = (
@@ -327,6 +357,70 @@ class Nfl2k5CribSyntheticTests(unittest.TestCase):
             patch.shareable_edit(replacement),
             photo.provider_edit(replacement),
         )
+
+    def test_crib_original_migrates_only_an_intact_legacy_source_binding(self) -> None:
+        photo = self.catalog.by_selector("crib_team_photo:00_photo_00")
+        io = Nfl2k5CribIO(
+            self.cache(), self.catalog, span_reader=lambda _asset: self.fixture.span
+        )
+        original = io.ensure_original(photo)
+        metadata = original.with_suffix(".json")
+        legacy = json.loads(metadata.read_text())
+        legacy["source_sha256"] = "c" * 64
+        metadata.write_text(json.dumps(legacy), encoding="utf-8")
+        calls = 0
+
+        def read_span(_asset):
+            nonlocal calls
+            calls += 1
+            return self.fixture.span
+
+        migrated = Nfl2k5CribIO(
+            self.cache(source_sha256="b" * 64, source_size=7_825_162_240),
+            self.catalog,
+            span_reader=read_span,
+        ).ensure_original(photo)
+
+        self.assertEqual(migrated, original)
+        self.assertEqual(calls, 1)
+        self.assertEqual(
+            json.loads(metadata.read_text())["source_sha256"], SOURCE_SHA256
+        )
+
+    def test_crib_original_still_refuses_tampered_incomplete_and_linked_pairs(self) -> None:
+        photo = self.catalog.by_selector("crib_team_photo:00_photo_00")
+
+        for defect in ("tampered", "incomplete", "linked"):
+            with self.subTest(defect=defect), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                cache = self.cache()
+                cache = SourceCache(
+                    source=cache.source,
+                    root=cache.root,
+                    pack0=cache.pack0,
+                    inventory=cache.inventory,
+                    originals=root,
+                    resource_count=cache.resource_count,
+                    outer_entry_count=cache.outer_entry_count,
+                    kind_counts=cache.kind_counts,
+                )
+                io = Nfl2k5CribIO(
+                    cache, self.catalog, span_reader=lambda _asset: self.fixture.span
+                )
+                original = io.ensure_original(photo)
+                metadata = original.with_suffix(".json")
+                if defect == "tampered":
+                    original.write_bytes(b"changed outside the app")
+                elif defect == "incomplete":
+                    metadata.unlink()
+                else:
+                    target = root / "outside.png"
+                    target.write_bytes(original.read_bytes())
+                    original.unlink()
+                    original.symlink_to(target)
+
+                with self.assertRaisesRegex(ValidationError, "changed outside Mod Studio"):
+                    io.ensure_original(photo)
 
     def test_wrong_dimensions_and_unknown_selectors_are_human_readable(self) -> None:
         photo = self.catalog.by_selector("crib_team_photo:00_photo_00")

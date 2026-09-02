@@ -500,7 +500,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.report is not None:
             report_path = args.report.expanduser()
             report_path.parent.mkdir(parents=True, exist_ok=True)
-            report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+            report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8", newline="\n")
         diff = report["whole_volume_diff"]
         print(
             "APF_FIELD_ART_VERIFY_PASS "

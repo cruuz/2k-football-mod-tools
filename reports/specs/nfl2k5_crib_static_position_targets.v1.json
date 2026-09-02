@@ -1,0 +1,420 @@
+{
+  "claims": {
+    "contains_retail_bytes": false,
+    "position_formats": [
+      "FLOAT3",
+      "NORMSHORT3"
+    ],
+    "source_topology_uv_material_collision_preserved": true
+  },
+  "schema": "nfl2k5_crib_static_position_targets/v1",
+  "targets": [
+    {
+      "decode": {
+        "format": "NORMSHORT3",
+        "offset": [
+          0.0,
+          78.99163055419922,
+          0.0
+        ],
+        "scale": 162.254150390625,
+        "shape_decode_fields_sha256": "0596d012a55af36ac57882ceb489a9ecafc36229e1b8901ccf1a8455a6067633"
+      },
+      "eligibility": {
+        "same_count_position_only": true,
+        "source_topology_required": true
+      },
+      "position": {
+        "byte_offset": 0,
+        "component_size": 6,
+        "source_gltf_float3_sha256": "63e5081210108444477b13f55b21b4273032a09cc02bf2b7666e7735c8a3fdb1",
+        "source_lane_sha256": "29d524006b7757072f4c15732d77f2877d32e3d2c752bb7777b0a8576953ed47",
+        "stream_offset": 11040,
+        "stride": 6
+      },
+      "scene_id": "nfl2k5.crib.o4248.c0086.scene4199",
+      "shape": {
+        "index": 0,
+        "name": "air_hockey_01",
+        "vertex_count": 2681
+      },
+      "source_identity": {
+        "chunk_index": 86,
+        "decoded_sha256": "f2906ece9b02ed0e76123076d371ccb14f6f08b377ab755cff919b6b93990a19",
+        "outer_index": 4248,
+        "scene_index": 4199,
+        "scene_name": "air_hockey"
+      },
+      "target_id": "nfl2k5.crib.o4248.c0086.scene4199.shape0000",
+      "texture_selectors": [
+        "crib_scene_texture:air_hockey:0",
+        "crib_scene_texture:air_hockey:1",
+        "crib_scene_texture:air_hockey:2",
+        "crib_scene_texture:air_hockey:3",
+        "crib_scene_texture:air_hockey:4",
+        "crib_scene_texture:air_hockey:5",
+        "crib_scene_texture:air_hockey:6"
+      ],
+      "topology_sha256": "36fca9626f4fa42905911f53d516ac8baabe28c53b19604f0e981bacb9f8c3e2"
+    },
+    {
+      "decode": {
+        "format": "NORMSHORT3",
+        "offset": [
+          0.0,
+          87.05399322509766,
+          0.6599998474121094
+        ],
+        "scale": 169.36404418945312,
+        "shape_decode_fields_sha256": "57510e6d989e8bd3e8d6c3749c38a0e19d9a62c412b39fac3de37ae34541dea2"
+      },
+      "eligibility": {
+        "same_count_position_only": true,
+        "source_topology_required": true
+      },
+      "position": {
+        "byte_offset": 0,
+        "component_size": 6,
+        "source_gltf_float3_sha256": "9413f700488fad8dbc0f3ff75f9bef1a27b610eb14e8c39fc934dc80522743de",
+        "source_lane_sha256": "33efcd2b51b705ed157e8145b13d9e4c872ff8b3ac428c916bda87983404e9b9",
+        "stream_offset": 7104,
+        "stride": 6
+      },
+      "scene_id": "nfl2k5.crib.o4248.c0090.scene4203",
+      "shape": {
+        "index": 0,
+        "name": "dart_machine",
+        "vertex_count": 2168
+      },
+      "source_identity": {
+        "chunk_index": 90,
+        "decoded_sha256": "9b685666a189c0a4cab97032c398b6028f9909038e9b452227fb5eaff80c11b3",
+        "outer_index": 4248,
+        "scene_index": 4203,
+        "scene_name": "dart_machine"
+      },
+      "target_id": "nfl2k5.crib.o4248.c0090.scene4203.shape0000",
+      "texture_selectors": [
+        "crib_scene_texture:dart_machine:0",
+        "crib_scene_texture:dart_machine:1"
+      ],
+      "topology_sha256": "0597e5fac3ce739a59f5ec27f9cd8d555e8391e6382248cd18dc9575706f7482"
+    },
+    {
+      "decode": {
+        "format": "NORMSHORT3",
+        "offset": [
+          -0.029331207275390625,
+          31.481395721435547,
+          1.0477705001831055
+        ],
+        "scale": 35.28683090209961,
+        "shape_decode_fields_sha256": "383f55353c01ab7660d0077ad6569774329021b99124b24f92a177343462ee30"
+      },
+      "eligibility": {
+        "same_count_position_only": true,
+        "source_topology_required": true
+      },
+      "position": {
+        "byte_offset": 0,
+        "component_size": 6,
+        "source_gltf_float3_sha256": "07734a1e24b62be9313dc234f2fc0cf2d2874583fb61d938e354c9e6cc3f16e9",
+        "source_lane_sha256": "c46e52ef594305932cf25dbe667888b72f89f3376698e0faa30c5670019a175c",
+        "stream_offset": 4576,
+        "stride": 6
+      },
+      "scene_id": "nfl2k5.crib.o4248.c0105.scene4218",
+      "shape": {
+        "index": 0,
+        "name": "phone",
+        "vertex_count": 208
+      },
+      "source_identity": {
+        "chunk_index": 105,
+        "decoded_sha256": "146a5685cd1b346500461d6d3e078982526fafbdc9e5e5ee92910eeef6ee3785",
+        "outer_index": 4248,
+        "scene_index": 4218,
+        "scene_name": "phone"
+      },
+      "target_id": "nfl2k5.crib.o4248.c0105.scene4218.shape0000",
+      "texture_selectors": [
+        "crib_scene_texture:phone:0",
+        "crib_scene_texture:phone:1",
+        "crib_scene_texture:phone:2",
+        "crib_scene_texture:phone:3",
+        "crib_scene_texture:phone:4"
+      ],
+      "topology_sha256": "065e9198af095ae9efa8fa215db0e41b60ab8228f9a56b4c4553b2dbed7dadcc"
+    },
+    {
+      "decode": {
+        "format": "FLOAT3"
+      },
+      "eligibility": {
+        "same_count_position_only": true,
+        "source_topology_required": true
+      },
+      "position": {
+        "byte_offset": 0,
+        "component_size": 12,
+        "source_gltf_float3_sha256": "aa8c448805f5487c54ebe2d1a1be30b6ce8c973c841ba06400bfec3d48fdac56",
+        "source_lane_sha256": "aa8c448805f5487c54ebe2d1a1be30b6ce8c973c841ba06400bfec3d48fdac56",
+        "stream_offset": 364000,
+        "stride": 12
+      },
+      "scene_id": "nfl2k5.crib.o4248.c0002.scene4186",
+      "shape": {
+        "index": 4,
+        "name": "r2_living_room",
+        "vertex_count": 2927
+      },
+      "source_identity": {
+        "chunk_index": 2,
+        "decoded_sha256": "e1627f1e0f3f64b9f3ddd61606bda56924ab1525f14efc573ee1ef17d77ba3f0",
+        "outer_index": 4248,
+        "scene_index": 4186,
+        "scene_name": "room"
+      },
+      "target_id": "nfl2k5.crib.o4248.c0002.scene4186.shape0004",
+      "texture_selectors": [
+        "crib_scene_texture:room:22"
+      ],
+      "topology_sha256": "63f956bba8a1fbd71ab3eeb585f388a7dfad5bbfd567f6d7042811170ff50d9c"
+    },
+    {
+      "decode": {
+        "format": "FLOAT3"
+      },
+      "eligibility": {
+        "same_count_position_only": true,
+        "source_topology_required": true
+      },
+      "position": {
+        "byte_offset": 0,
+        "component_size": 12,
+        "source_gltf_float3_sha256": "2e511be82cd66de1770ccb33b1e0e0309e9dc8b2a274f400941e4c6890dd3998",
+        "source_lane_sha256": "2e511be82cd66de1770ccb33b1e0e0309e9dc8b2a274f400941e4c6890dd3998",
+        "stream_offset": 428832,
+        "stride": 12
+      },
+      "scene_id": "nfl2k5.crib.o4248.c0002.scene4186",
+      "shape": {
+        "index": 5,
+        "name": "screen_espn_A",
+        "vertex_count": 20
+      },
+      "source_identity": {
+        "chunk_index": 2,
+        "decoded_sha256": "e1627f1e0f3f64b9f3ddd61606bda56924ab1525f14efc573ee1ef17d77ba3f0",
+        "outer_index": 4248,
+        "scene_index": 4186,
+        "scene_name": "room"
+      },
+      "target_id": "nfl2k5.crib.o4248.c0002.scene4186.shape0005",
+      "texture_selectors": [
+        "crib_scene_texture:room:31"
+      ],
+      "topology_sha256": "5296f0d4f38db2bfcbb60e1d59a8f1f0ef702e5b2186d5b2c166acfcbfa9db93"
+    },
+    {
+      "decode": {
+        "format": "FLOAT3"
+      },
+      "eligibility": {
+        "same_count_position_only": true,
+        "source_topology_required": true
+      },
+      "position": {
+        "byte_offset": 0,
+        "component_size": 12,
+        "source_gltf_float3_sha256": "a42df69754f592b96436b4670f1e0839590cc6825d293ac07750ad92952e5cbc",
+        "source_lane_sha256": "a42df69754f592b96436b4670f1e0839590cc6825d293ac07750ad92952e5cbc",
+        "stream_offset": 429600,
+        "stride": 12
+      },
+      "scene_id": "nfl2k5.crib.o4248.c0002.scene4186",
+      "shape": {
+        "index": 6,
+        "name": "screen_crib_A",
+        "vertex_count": 20
+      },
+      "source_identity": {
+        "chunk_index": 2,
+        "decoded_sha256": "e1627f1e0f3f64b9f3ddd61606bda56924ab1525f14efc573ee1ef17d77ba3f0",
+        "outer_index": 4248,
+        "scene_index": 4186,
+        "scene_name": "room"
+      },
+      "target_id": "nfl2k5.crib.o4248.c0002.scene4186.shape0006",
+      "texture_selectors": [
+        "crib_scene_texture:room:32"
+      ],
+      "topology_sha256": "5296f0d4f38db2bfcbb60e1d59a8f1f0ef702e5b2186d5b2c166acfcbfa9db93"
+    },
+    {
+      "decode": {
+        "format": "FLOAT3"
+      },
+      "eligibility": {
+        "same_count_position_only": true,
+        "source_topology_required": true
+      },
+      "position": {
+        "byte_offset": 0,
+        "component_size": 12,
+        "source_gltf_float3_sha256": "efb28c6d7db5d4818576a05f5b33f43e5c50bf013dec384cd4ea11b2efabb1b4",
+        "source_lane_sha256": "efb28c6d7db5d4818576a05f5b33f43e5c50bf013dec384cd4ea11b2efabb1b4",
+        "stream_offset": 526912,
+        "stride": 12
+      },
+      "scene_id": "nfl2k5.crib.o4248.c0002.scene4186",
+      "shape": {
+        "index": 38,
+        "name": "jukebox",
+        "vertex_count": 341
+      },
+      "source_identity": {
+        "chunk_index": 2,
+        "decoded_sha256": "e1627f1e0f3f64b9f3ddd61606bda56924ab1525f14efc573ee1ef17d77ba3f0",
+        "outer_index": 4248,
+        "scene_index": 4186,
+        "scene_name": "room"
+      },
+      "target_id": "nfl2k5.crib.o4248.c0002.scene4186.shape0038",
+      "texture_selectors": [
+        "crib_scene_texture:room:39",
+        "crib_scene_texture:room:40"
+      ],
+      "topology_sha256": "760cd2b7cd9660d489ae485f55abc5c38805b8b0e9c858e106fcda4076ef9bf9"
+    },
+    {
+      "decode": {
+        "format": "NORMSHORT3",
+        "offset": [
+          0.0,
+          131.93771362304688,
+          0.0
+        ],
+        "scale": 170.10472106933594,
+        "shape_decode_fields_sha256": "797e9417c3b0d46edaa1d4f48d1dbd6fbb732751d3385d3f1a494ef09a50f7e2"
+      },
+      "eligibility": {
+        "same_count_position_only": true,
+        "source_topology_required": true
+      },
+      "position": {
+        "byte_offset": 0,
+        "component_size": 6,
+        "source_gltf_float3_sha256": "9f1dfa9db93f902460f734f12e9c22dbe69c745e62acf6254af780f08ee47609",
+        "source_lane_sha256": "467e1f555a1f104e35b5c9186e5abc5c45c98e1e6667078ff0f13e48eca4c014",
+        "stream_offset": 2976,
+        "stride": 6
+      },
+      "scene_id": "nfl2k5.crib.o4248.c0108.scene4221",
+      "shape": {
+        "index": 0,
+        "name": "soda_machine_01",
+        "vertex_count": 212
+      },
+      "source_identity": {
+        "chunk_index": 108,
+        "decoded_sha256": "f1bde42234f59bc65ccfb9197c1b3ed92691406bc83fc286723ccebeae6c18a4",
+        "outer_index": 4248,
+        "scene_index": 4221,
+        "scene_name": "soda_machine"
+      },
+      "target_id": "nfl2k5.crib.o4248.c0108.scene4221.shape0000",
+      "texture_selectors": [
+        "crib_scene_texture:soda_machine:0",
+        "crib_scene_texture:soda_machine:1"
+      ],
+      "topology_sha256": "bcac3516f0d2a1e1cd977e2949ee3358aa78de9a3ef89d1a728458b833d0c08c"
+    },
+    {
+      "decode": {
+        "format": "NORMSHORT3",
+        "offset": [
+          0.0,
+          -34.0,
+          17.199005126953125
+        ],
+        "scale": 277.2657165527344,
+        "shape_decode_fields_sha256": "1549f0e04e2bc61dd9c086b38546662bda483bb4a260c65422aa391a179cc97d"
+      },
+      "eligibility": {
+        "same_count_position_only": true,
+        "source_topology_required": true
+      },
+      "position": {
+        "byte_offset": 0,
+        "component_size": 6,
+        "source_gltf_float3_sha256": "d095f75448702ed190336c04c25c6b0f03359c8afd89f546599956b6cd831fef",
+        "source_lane_sha256": "603f66def136d51ae5b3061a008bee5963e925cf62d7bc04bc714d21de95d943",
+        "stream_offset": 1920,
+        "stride": 6
+      },
+      "scene_id": "nfl2k5.crib.o4248.c0111.scene4224",
+      "shape": {
+        "index": 0,
+        "name": "ticker",
+        "vertex_count": 22
+      },
+      "source_identity": {
+        "chunk_index": 111,
+        "decoded_sha256": "72887be9a1eb20e3981c93bb3cbe0baaaa08a3d81730a9c661ccb39758c44078",
+        "outer_index": 4248,
+        "scene_index": 4224,
+        "scene_name": "ticker"
+      },
+      "target_id": "nfl2k5.crib.o4248.c0111.scene4224.shape0000",
+      "texture_selectors": [
+        "crib_scene_texture:ticker:0"
+      ],
+      "topology_sha256": "228eec57c1bd3519fdf42bb5076b452a9a2de1bf27cdce64078c1ce134d79562"
+    },
+    {
+      "decode": {
+        "format": "NORMSHORT3",
+        "offset": [
+          0.0,
+          31.936962127685547,
+          -1.52587890625e-05
+        ],
+        "scale": 42.30844497680664,
+        "shape_decode_fields_sha256": "1a3f6d0054704d7c20422a8c77c12c2bc3be1466cf08f92265b298db8cfbf156"
+      },
+      "eligibility": {
+        "same_count_position_only": true,
+        "source_topology_required": true
+      },
+      "position": {
+        "byte_offset": 0,
+        "component_size": 6,
+        "source_gltf_float3_sha256": "c4329ac74e25f9510c9e4803f974405415422a11d8d65e250ddf7ed18abe6c31",
+        "source_lane_sha256": "d149c4edac04415114dce47012a5016704e99e4ffdba54af9661b55d275888ad",
+        "stream_offset": 6176,
+        "stride": 6
+      },
+      "scene_id": "nfl2k5.crib.o4248.c0112.scene4225",
+      "shape": {
+        "index": 0,
+        "name": "bartop_trivia",
+        "vertex_count": 258
+      },
+      "source_identity": {
+        "chunk_index": 112,
+        "decoded_sha256": "493fc01e672fc5ff22779eebbe0c8a9c753c517c1f8c883970bedeb0d7cd0ade",
+        "outer_index": 4248,
+        "scene_index": 4225,
+        "scene_name": "trivia_machine"
+      },
+      "target_id": "nfl2k5.crib.o4248.c0112.scene4225.shape0000",
+      "texture_selectors": [
+        "crib_scene_texture:trivia_machine:0",
+        "crib_scene_texture:trivia_machine:1",
+        "crib_scene_texture:trivia_machine:2"
+      ],
+      "topology_sha256": "a44b98b4f02a0945e3556eac32e6d3beb09efc97ad425cc88e3e745044cca7bf"
+    }
+  ]
+}

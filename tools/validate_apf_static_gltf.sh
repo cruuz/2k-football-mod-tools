@@ -15,9 +15,12 @@ for required in \
   test -f "$required"
 done
 
-python3 -m py_compile tools/apf_scene.py
+python3 -m py_compile \
+  tools/apf_scene.py \
+  mod_editor/apf_studio/model_export.py \
+  mod_editor/apf_studio/model_import.py
 test "$(sha256sum "$manifest" | cut -d' ' -f1)" = \
-  e06c7719562a436538230480afcdb0061fe8b03864d31e792d6a9228401cb8aa
+  057a178e93b1dc37e1b6ce94ed8911f339fdf6ed845af58a0ed36dc5abb699f4
 
 python3 - "$inventory" "$manifest" "$models" <<'PY'
 from collections import Counter
@@ -108,20 +111,38 @@ for item in exports:
     ) == identity
     assert document["buffers"] == [{"byteLength": len(binary), "uri": bin_name}]
     assert document["scene"] == 0
+    unit_root_index = item["mesh_count"]
     assert document["scenes"] == [
-        {"name": identity[2], "nodes": list(range(item["mesh_count"]))}
+        {"name": identity[2], "nodes": [unit_root_index]}
     ]
-    assert len(document["nodes"]) == len(document["meshes"]) == item["mesh_count"]
+    assert len(document["nodes"]) == item["mesh_count"] + 1
+    assert len(document["meshes"]) == item["mesh_count"]
     assert len(document["accessors"]) == len(document["bufferViews"]) == 2 * item["mesh_count"]
     assert not document["extras"]["skipped"]
     assert all(value.startswith("PORTME:") for value in document["extras"]["portme"])
+    contract = document["asset"]["extras"]["coordinate_contract"]
+    assert contract["source_linear_unit"] == "centimeter"
+    assert contract["target_linear_unit"] == "meter"
+    assert contract["linear_scale"] == 0.01
+    assert contract["buffer_space"] == "serialized_scne_object_space"
+    unit_root = document["nodes"][unit_root_index]
+    assert unit_root == {
+        "children": list(range(item["mesh_count"])),
+        "extras": {
+            "linear_scale": 0.01,
+            "purpose": "unit conversion only; adds no transform of its own",
+        },
+        "name": f"{identity[2]}__centimeters_to_meters",
+        "scale": [0.01, 0.01, 0.01],
+    }
 
     cursor = 0
     vertices = 0
     triangles = 0
-    for mesh_index, (node, mesh) in enumerate(zip(document["nodes"], document["meshes"])):
+    for mesh_index, (node, mesh) in enumerate(zip(document["nodes"][:-1], document["meshes"])):
         assert node["mesh"] == mesh_index
         assert node["extras"]["raw_coordinates"] is True
+        assert node["extras"]["source_raw_coordinates"] is True
         assert mesh["name"] == node["name"]
         assert mesh["extras"]["source_primitive"] == "D3DPT_TRIANGLESTRIP"
         primitive = mesh["primitives"]
@@ -202,4 +223,8 @@ PY
   echo APF_STATIC_GLTF_REGEN_PASS
 fi
 
-echo 'APF_STATIC_GLTF_VALIDATION_PASS scenes=1208/1303 meshes=13006 vertices=16217141 triangles=11588322'
+QT_QPA_PLATFORM=offscreen python3 -m unittest -q \
+  tests.mod_editor.test_apf_model_export_gui \
+  tests.mod_editor.test_apf_model_import
+
+echo 'APF_STATIC_GLTF_VALIDATION_PASS scenes=1208/1303 meshes=13006 vertices=16217141 triangles=11588322 pinned_model_position_import=true'

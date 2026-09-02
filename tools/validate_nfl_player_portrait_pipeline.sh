@@ -12,6 +12,8 @@ importer=tools/nfl_player_portrait_png_import.py
 fixture_tool=tools/nfl_player_portrait_fixture.py
 workflow=tools/nfl_player_portrait_xiso_workflow.py
 verifier=tools/nfl_player_portrait_xiso_verify.py
+virtual_verifier=tools/nfl_player_portrait_xiso_virtual_verify.py
+virtual_test=tests/test_nfl_player_portrait_xiso_virtual_verify.py
 report=reports/assets/nfl2k5_player_portrait_compatibility.json
 table=reports/assets/nfl2k5_player_portrait_compatibility.tsv
 doc=docs/research/nfl_player_portrait_pipeline.md
@@ -24,14 +26,19 @@ proof_manifest=build/nfl2k5-player-portrait-workflow-20260712/workflow.json
 proof_previews=build/nfl2k5-player-portrait-workflow-20260712/previews
 
 for path in "$generator" "$targets" "$importer" "$fixture_tool" "$workflow" \
-  "$verifier" "$report" "$table" "$doc" "$trace" "$pseudo" "$fixture" \
-  "$plan" "$proof" "$proof_manifest"; do
+  "$verifier" "$virtual_verifier" "$virtual_test" "$report" "$table" "$doc" \
+  "$trace" "$pseudo" "$fixture" "$plan" "$proof_manifest"; do
   test -f "$path"
 done
 test -d "$proof_previews"
+test ! -e "$proof"
+test ! -L "$proof"
 
 PYTHONPYCACHEPREFIX="$tmp/pycache" python3 -m py_compile \
-  "$generator" "$targets" "$importer" "$fixture_tool" "$workflow" "$verifier"
+  "$generator" "$targets" "$importer" "$fixture_tool" "$workflow" "$verifier" \
+  "$virtual_verifier" "$virtual_test"
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools python3 -m unittest \
+  tests.test_nfl_player_portrait_xiso_virtual_verify >/dev/null
 
 PYTHONPATH=tools python3 "$generator" \
   --json "$tmp/compatibility.json" --tsv "$tmp/compatibility.tsv"
@@ -165,18 +172,26 @@ if PYTHONPATH=tools python3 "$importer" --compatibility "$tmp/forged.json" \
   exit 1
 fi
 
-PYTHONPATH=tools python3 "$verifier" \
+# The physical-output verifier remains strict and must reject the cleaned XISO.
+if PYTHONPATH=tools python3 "$verifier" \
   --source-xiso "ESPN NFL 2K5 (USA).xiso.iso" \
   --output-xiso "$proof" --manifest "$proof_manifest" \
-  --preview-dir "$proof_previews" --plan "$plan"
+  --preview-dir "$proof_previews" --plan "$plan" >/dev/null 2>&1; then
+  echo "physical portrait verifier accepted an absent output XISO" >&2
+  exit 1
+fi
+
+virtual_result=$(PYTHONPATH=tools python3 "$virtual_verifier" \
+  --source-xiso "ESPN NFL 2K5 (USA).xiso.iso" \
+  --absent-output-xiso "$proof" --manifest "$proof_manifest" \
+  --preview-dir "$proof_previews" --plan "$plan")
+test "$virtual_result" = \
+  '{"all_other_xiso_bytes_identical": true, "changed_byte_count": 17401, "default_xbe_unchanged": true, "edit_count": 1, "historical_compatibility_receipt_reconstructed": true, "output_xiso_absent": true, "output_xiso_written": false, "runtime_visibility_proved": false, "schema": "nfl2k5_player_portrait_xiso_virtual_verify/v1", "source_sha256": "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9", "virtual_output_sha256": "bb96a267077d670bb1fb206e3e523dec0934827739fa09e8cf36ec29ef0946a7", "xdvdfs_identical": true}'
 
 test "$(sha256sum 'ESPN NFL 2K5 (USA).xiso.iso' | cut -d' ' -f1)" = \
   7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc9
 test "$(sha256sum 'extracted/ESPN NFL 2K5 (USA)/default.xbe' | cut -d' ' -f1)" = \
   73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9
-test "$(sha256sum "$proof" | cut -d' ' -f1)" = \
-  bb96a267077d670bb1fb206e3e523dec0934827739fa09e8cf36ec29ef0946a7
-
 grep -Fq "Crib's \`team_photo\` object" "$doc"
 grep -Fq '`0x000E7181`' "$doc"
 grep -Fq '4,303 numeric P8' "$doc"
@@ -198,4 +213,4 @@ if [[ "${NFL_PLAYER_PORTRAIT_GHIDRA:-0}" == 1 ]]; then
   cmp "$tmp/ghidra/nfl_portrait_photo_audit_pseudo_c.c" "$pseudo"
 fi
 
-echo "NFL_PLAYER_PORTRAIT_PIPELINE_VALIDATION_PASS portraits=4303 current_hits=2248 current_fallback=299 crib_action_photos=128 cross_pack=4070 xiso_changed=17401 output_sha=bb96a267077d670bb1fb206e3e523dec0934827739fa09e8cf36ec29ef0946a7 forged_refused=true symlink_refused=true malformed_id_refused=true originals_unchanged=true runtime=false"
+echo "NFL_PLAYER_PORTRAIT_PIPELINE_VALIDATION_PASS portraits=4303 current_hits=2248 current_fallback=299 crib_action_photos=128 cross_pack=4070 xiso_changed=17401 output_sha=bb96a267077d670bb1fb206e3e523dec0934827739fa09e8cf36ec29ef0946a7 absent_output_virtualized=true physical_absent_output_refused=true historical_compatibility_receipt_reconstructed=true output_xiso_written=false forged_refused=true symlink_refused=true malformed_id_refused=true originals_unchanged=true runtime=false"

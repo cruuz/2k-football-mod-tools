@@ -19,6 +19,16 @@ import struct
 import sys
 import zlib
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import parse_archive, read_entry_bytes
 from nfl_txtr import HEADER, decode_chunk, parse_chunks, parse_texture
 from xbe_info import Xbe
@@ -30,6 +40,8 @@ DEFAULT_INDEX = ROOT / "extracted/ESPN NFL 2K5 (USA)/vc_53450030/0"
 DEFAULT_XBE = ROOT / "extracted/ESPN NFL 2K5 (USA)/default.xbe"
 DEFAULT_JSON = ROOT / "reports/assets/nfl2k5_create_team_field_art_inventory.json"
 DEFAULT_TSV = ROOT / "reports/assets/nfl2k5_create_team_field_art_inventory.tsv"
+INDEX_SOURCE_LABEL = "user-source/vc_53450030/0"
+XBE_SOURCE_LABEL = "user-source/default.xbe"
 INDEX_SIZE = 193_710_080
 INDEX_SHA256 = "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d"
 XBE_SIZE = 11_948_032
@@ -186,7 +198,7 @@ def xbe_evidence(path: Path) -> dict[str, object]:
                        "sha256": digest(body)})
 
     return {
-        "path": str(path.resolve()), "size": path.stat().st_size,
+        "path": XBE_SOURCE_LABEL, "size": path.stat().st_size,
         "sha256": XBE_SHA256, "anchors": anchor_rows,
         "function_ranges": ranges,
         "selector": {
@@ -379,7 +391,7 @@ def build(index_path: Path, xbe_path: Path) -> tuple[dict[str, object], list[dic
     }
     result = {
         "schema": SCHEMA,
-        "source": {"index_path": str(index_path.resolve()), "index_size": INDEX_SIZE,
+        "source": {"index_path": INDEX_SOURCE_LABEL, "index_size": INDEX_SIZE,
                    "index_sha256": INDEX_SHA256, "pack_path": "vc_53450030/0",
                    "pack_size": PACK0_SIZE, "pack_sha256": PACK0_SHA256},
         "name_id_algorithm": "CRC32(uppercase UTF-16LE filename)",
@@ -439,7 +451,7 @@ def main() -> int:
         report, rows = build(args.index, args.xbe)
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n",
-                             encoding="utf-8")
+                             encoding="utf-8", newline="\n")
         write_tsv(args.tsv, rows)
         print("NFL_CREATE_TEAM_FIELD_ART_INVENTORY_OK "
               f"packages={report['summary']['package_count']} "

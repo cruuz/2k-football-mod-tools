@@ -10,7 +10,7 @@ canonical="$root/reports/assets/nfl2k5_lions_home_49ers_pair_xiso_direct.json"
 vendor="$root/tools/vendor/extract-xiso"
 extract_xiso="$vendor/build/extract-xiso"
 expected_commit=b72e5b60d598ec6df80534cda19cdcd4361aa18c
-expected_extract_sha=96e6286d371e47e24474a3b7c89ef5c204ddca9c93c95d5ebcb7bcf1d6eb530f
+expected_extract_sha=222e7763df8f16d9b252c625fac5ef551cd25cdf031a785b3ec73c6e53c5d7f2
 
 [[ -f "$source_xiso" ]] || { echo "missing retail XISO" >&2; exit 1; }
 [[ -f "$output_xiso" ]] || { echo "missing donor-exact output XISO" >&2; exit 1; }

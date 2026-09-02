@@ -105,8 +105,8 @@
     "source_report": {
       "path": "reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json",
       "schema": "vc_gameplay_tuning_ai_draft_audit/v1",
-      "sha256": "c53522ee0f4151291f154720a1d457ff7368fb256fbf5845561f4ad68289524b",
-      "size": 53996
+      "sha256": "0c1c47c7f025f9fbb303b9a7d78e7aaf8e9d3c4d603a47bc7819d5ded43557ec",
+      "size": 54545
     },
     "warning": "These are live Xbox CPU fantasy-draft priorities, but changing them crosses signed-executable integrity and has no released writer or deterministic runtime trial."
   },
@@ -172,8 +172,8 @@
     "source_report": {
       "path": "reports/gameplay_tuning/nfl_franchise_limit_feasibility.json",
       "schema": "nfl2k5_franchise_limit_feasibility/v1",
-      "sha256": "cabb89966a93bf3e067638be744f807f2f1ad4f152a742a8648e2a2f52ceb9dc",
-      "size": 17707
+      "sha256": "a5d8e4ad78b0baf89063796df1250cbb774b4b058a9dba008fc3682a838b8af9",
+      "size": 19555
     },
     "target_count": 5,
     "targets": [
@@ -411,7 +411,7 @@
         "settings1": 0.5
       },
       {
-        "franchise1": 0.35,
+        "franchise1": 1.0,
         "name": "Human Catching",
         "settings1": 0.5
       },
@@ -426,17 +426,17 @@
         "settings1": 0.5
       },
       {
-        "franchise1": 0.5,
+        "franchise1": 0.35,
         "name": "Human Tackling",
         "settings1": 0.5
       },
       {
-        "franchise1": 0.525,
+        "franchise1": 0.5,
         "name": "Human Kicking",
         "settings1": 0.5
       },
       {
-        "franchise1": 1.0,
+        "franchise1": 0.525,
         "name": "Human Fatigue",
         "settings1": 0.5
       },
@@ -456,7 +456,7 @@
         "settings1": 0.5
       },
       {
-        "franchise1": 0.5,
+        "franchise1": 0.8,
         "name": "CPU Catching",
         "settings1": 0.5
       },
@@ -476,12 +476,12 @@
         "settings1": 0.5
       },
       {
-        "franchise1": 0.475,
+        "franchise1": 0.5,
         "name": "CPU Kicking",
         "settings1": 0.5
       },
       {
-        "franchise1": 0.8,
+        "franchise1": 0.475,
         "name": "CPU Fatigue",
         "settings1": 0.5
       },
@@ -506,7 +506,7 @@
     "source_report": {
       "path": "reports/gameplay_tuning/nfl2k5_xbox_save_inventory.json",
       "schema": "nfl2k5_xbox_save_inventory/v1",
-      "sha256": "52cd53b218b9608197c43721f2e874865ed9cf29ef6d75e03e2c3b996bbc344d",
+      "sha256": "e49d30bc9adb87faf1a592a9d3a529169659be8f926be9db9028c90009477e3c",
       "size": 31477
     },
     "title_id": "53450030",
@@ -524,7 +524,7 @@
     "observed_save_report": {
       "path": "reports/gameplay_tuning/nfl2k5_xbox_save_inventory.json",
       "schema": "nfl2k5_xbox_save_inventory/v1",
-      "sha256": "52cd53b218b9608197c43721f2e874865ed9cf29ef6d75e03e2c3b996bbc344d",
+      "sha256": "e49d30bc9adb87faf1a592a9d3a529169659be8f926be9db9028c90009477e3c",
       "size": 31477
     },
     "out_of_range_runtime_safety_proved": false,
@@ -567,7 +567,7 @@
         "index": 3,
         "name": "Human Catching",
         "named_menu_control_mapped": true,
-        "observed_franchise1_value": 0.35,
+        "observed_franchise1_value": 1.0,
         "observed_settings1_value": 0.5
       },
       {
@@ -591,7 +591,7 @@
         "index": 6,
         "name": "Human Tackling",
         "named_menu_control_mapped": true,
-        "observed_franchise1_value": 0.5,
+        "observed_franchise1_value": 0.35,
         "observed_settings1_value": 0.5
       },
       {
@@ -599,7 +599,7 @@
         "index": 7,
         "name": "Human Kicking",
         "named_menu_control_mapped": true,
-        "observed_franchise1_value": 0.525,
+        "observed_franchise1_value": 0.5,
         "observed_settings1_value": 0.5
       },
       {
@@ -607,7 +607,7 @@
         "index": 8,
         "name": "Human Fatigue",
         "named_menu_control_mapped": true,
-        "observed_franchise1_value": 1.0,
+        "observed_franchise1_value": 0.525,
         "observed_settings1_value": 0.5
       },
       {
@@ -639,7 +639,7 @@
         "index": 12,
         "name": "CPU Catching",
         "named_menu_control_mapped": true,
-        "observed_franchise1_value": 0.5,
+        "observed_franchise1_value": 0.8,
         "observed_settings1_value": 0.5
       },
       {
@@ -671,7 +671,7 @@
         "index": 16,
         "name": "CPU Kicking",
         "named_menu_control_mapped": true,
-        "observed_franchise1_value": 0.475,
+        "observed_franchise1_value": 0.5,
         "observed_settings1_value": 0.5
       },
       {
@@ -679,7 +679,7 @@
         "index": 17,
         "name": "CPU Fatigue",
         "named_menu_control_mapped": true,
-        "observed_franchise1_value": 0.8,
+        "observed_franchise1_value": 0.475,
         "observed_settings1_value": 0.5
       },
       {
@@ -710,8 +710,8 @@
     "source_report": {
       "path": "reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json",
       "schema": "vc_gameplay_tuning_ai_draft_audit/v1",
-      "sha256": "c53522ee0f4151291f154720a1d457ff7368fb256fbf5845561f4ad68289524b",
-      "size": 53996
+      "sha256": "0c1c47c7f025f9fbb303b9a7d78e7aaf8e9d3c4d603a47bc7819d5ded43557ec",
+      "size": 54545
     },
     "stock_ui_range": {
       "maximum": 1.0,

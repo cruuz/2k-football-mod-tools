@@ -105,6 +105,23 @@ class StreamingAudioFacadeTests(unittest.TestCase):
             audio_origin_preparation=preparation,  # type: ignore[arg-type]
         )
 
+    def test_streaming_replacement_uses_the_shared_audio_conformer(self) -> None:
+        """AUSB ranges advertise ordinary-audio import and own an exact shape."""
+
+        source = (
+            Path(__file__).resolve().parents[2]
+            / "mod_editor/gui/audio_panel_qt.py"
+        ).read_text(encoding="utf-8")
+        start = source.index("        def _replace_with_path(")
+        end = source.index("        def _revert_selected(", start)
+        block = source[start:end]
+        self.assertIn(
+            "asset.channels, asset.sample_rate, asset.frame_count", block
+        )
+        self.assertNotIn(
+            "if not isinstance(asset, Nfl2k5AudioAsset)", block
+        )
+
     def test_playable_scope_is_domain_prefixed_search_reusing_and_global(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             source_root = Path(temporary) / "source"

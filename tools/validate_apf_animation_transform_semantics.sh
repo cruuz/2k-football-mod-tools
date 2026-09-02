@@ -141,7 +141,7 @@ assert "0x84A11D00\t0x101F58C3\tlvx128\tv0,r31,r11" in vmx
 PY
 
 test "$(sha256sum "$report" | cut -d' ' -f1)" = \
-  55d84ba81e0db21b98da0b740de5d2c7f6c7cbc3e315d7ec84eeefce195a6e73
+  56be23ac9fef5fcc0c62848a896cd3e9becd8dbd46897e34e7fbeed621ebaa2a
 test "$(sha256sum "$root_tsv" | cut -d' ' -f1)" = \
   f47fe3225fcc0d0dff2e5cb17e75d84e76a1ff532d2ea9a3cfc946c5cf6e32c8
 test "$(sha256sum "$trace" | cut -d' ' -f1)" = \

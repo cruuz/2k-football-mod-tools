@@ -226,6 +226,18 @@ def parse_archive(index_path: Path) -> Archive:
             for i in range(entry_count)
         ]
 
+    declared_names = [name for name, _size in raw_packs]
+    if index_path.name not in declared_names:
+        # Pack data resolves by descriptor name from the index's directory, so
+        # a renamed index (0A.mybuild) silently reads the sibling 0A while its
+        # catalog says otherwise -- a wrong build that is slow to spot.
+        raise FormatError(
+            f"index file name {index_path.name!r} is not one of the archive's "
+            f"declared pack names {declared_names}; pack bytes resolve by name "
+            "from this directory, so a renamed index would silently read its "
+            f"neighbour. Name the index exactly {declared_names[0]!r}."
+        )
+
     packs: list[Pack] = []
     virtual_start = 0
     for ordinal, (name, size_blocks) in enumerate(raw_packs):
@@ -476,7 +488,7 @@ def main(argv: list[str] | None = None) -> int:
                 sys.stdout.write(document)
             else:
                 args.manifest.parent.mkdir(parents=True, exist_ok=True)
-                args.manifest.write_text(document, encoding="utf-8")
+                args.manifest.write_text(document, encoding="utf-8", newline="\n")
     except BrokenPipeError:
         return 0
     except (FormatError, OSError) as exc:

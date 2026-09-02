@@ -45,6 +45,7 @@ class ProductCategory(str, Enum):
     AUDIO = "audio"
     SLIDERS_GAMEPLAY = "sliders_gameplay"
     PLAYBOOKS_PLAYS = "playbooks_plays"
+    TEXTURES = "textures"
 
     @property
     def title(self) -> str:
@@ -56,6 +57,8 @@ class ProductStatus(str, Enum):
     PREVIEW = "Preview"
     EXPORT_ONLY = "Export-only"
     COMING_SOON = "Coming Soon"
+    EVIDENCE = "Proof boundary"
+    RESEARCH = "Research boundary"
 
 
 PRODUCT_CATEGORY_ORDER: tuple[ProductCategory, ...] = (
@@ -70,12 +73,15 @@ PRODUCT_CATEGORY_ORDER: tuple[ProductCategory, ...] = (
     ProductCategory.AUDIO,
     ProductCategory.SLIDERS_GAMEPLAY,
     ProductCategory.PLAYBOOKS_PLAYS,
+    ProductCategory.TEXTURES,
 )
 
 PRODUCT_STATUS_ORDER: tuple[ProductStatus, ...] = (
     ProductStatus.EDITABLE,
     ProductStatus.PREVIEW,
     ProductStatus.EXPORT_ONLY,
+    ProductStatus.EVIDENCE,
+    ProductStatus.RESEARCH,
     ProductStatus.COMING_SOON,
 )
 
@@ -91,6 +97,7 @@ _CATEGORY_TITLES: dict[ProductCategory, str] = {
     ProductCategory.AUDIO: "Audio",
     ProductCategory.SLIDERS_GAMEPLAY: "Sliders & Gameplay",
     ProductCategory.PLAYBOOKS_PLAYS: "Playbooks & Plays",
+    ProductCategory.TEXTURES: "All Textures",
 }
 
 # Exact-ID overrides resolve surfaces which intentionally span more than one
@@ -121,6 +128,7 @@ _SURFACE_CATEGORIES: dict[str, ProductCategory] = {
     "scorebug_presentation": ProductCategory.SCOREBUG_PRESENTATION,
     "scripts_config": ProductCategory.PLAYBOOKS_PLAYS,
     "stadiums_fields": ProductCategory.STADIUMS,
+    "textures": ProductCategory.TEXTURES,
     "uniforms": ProductCategory.UNIFORMS_EQUIPMENT,
 }
 
@@ -138,6 +146,17 @@ _CATEGORY_FINDINGS: dict[ProductCategory, tuple[str, ...]] = {
         "Team identity is currently owned by the team_identity kind inside "
         "nfl2k5.uniforms.all_visual; the v1 registry has no standalone Team "
         "Identity capability row.",
+    ),
+    ProductCategory.FIELD_ART_CREATE_TEAM: (
+        "Create-Team field art is the only proved field-art writer: 1,134 targets "
+        "(center_logo + six end-zone panels + pad_north/pad_south) inside the "
+        "create-team packages. Stock NFL midfield art is not a separate 'field art' "
+        "file — it is baked into each stadium's texture set. Browse that team's "
+        "midfield and end-zone in Stadium Studio (477 scenes, People & sideline "
+        "filter) or search 'field'/'midfield'/'endzone' in All Textures — those "
+        "1,134 create-team targets plus the 28,530 equipment palettes are the "
+        "11,395 All Textures targets, and NFL stadium field pieces are also there "
+        "under their stadium packages.",
     ),
     ProductCategory.CRIB: (
         "Crib photos and object textures are surfaced by a dedicated ownership "
@@ -167,6 +186,8 @@ class ProductCounts:
     preview: int
     export_only: int
     coming_soon: int
+    evidence: int
+    research: int
 
     @classmethod
     def from_statuses(cls, statuses: Iterable[ProductStatus]) -> "ProductCounts":
@@ -177,6 +198,8 @@ class ProductCounts:
             preview=values.count(ProductStatus.PREVIEW),
             export_only=values.count(ProductStatus.EXPORT_ONLY),
             coming_soon=values.count(ProductStatus.COMING_SOON),
+            evidence=values.count(ProductStatus.EVIDENCE),
+            research=values.count(ProductStatus.RESEARCH),
         )
 
     def for_status(self, status: ProductStatus) -> int:
@@ -185,6 +208,8 @@ class ProductCounts:
             ProductStatus.PREVIEW: self.preview,
             ProductStatus.EXPORT_ONLY: self.export_only,
             ProductStatus.COMING_SOON: self.coming_soon,
+            ProductStatus.EVIDENCE: self.evidence,
+            ProductStatus.RESEARCH: self.research,
         }[status]
 
 
@@ -305,7 +330,20 @@ def build_nfl2k5_product_catalog(
     bindings: list[ProductCapability] = []
     for capability in registry.for_game(GameId.NFL2K5):
         category = product_category(capability)
-        status = product_status(capability.classification)
+        gui = capability.raw.get("gui", {})
+        exposed = isinstance(gui, dict) and gui.get("expose") is True
+        if not exposed:
+            status = (
+                ProductStatus.EVIDENCE
+                if capability.classification
+                in {
+                    Classification.RUNTIME_PROVED,
+                    Classification.OFFLINE_WRITER_PROVED,
+                }
+                else ProductStatus.RESEARCH
+            )
+        else:
+            status = product_status(capability.classification)
         context = FindingsContext(capability, category, status)
         notes: list[str] = []
         for hook in findings_note_hooks:

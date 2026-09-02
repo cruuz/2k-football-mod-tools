@@ -54,7 +54,7 @@ test "$(wc -l < "$fingers")" -eq 16
 test "$(wc -l < "$scene_join")" -eq 145
 
 test "$(sha256sum "$report" | cut -d' ' -f1)" = \
-  0ccab8212bf99a1a1b0ba20fb146b2aa9575716be1ade3f493e6d7a5bda30b64
+  c53411ba4a46f3c0e721dff696b382e06c47d5f96d72165a56b12e1026d66a51
 test "$(sha256sum "$logical" | cut -d' ' -f1)" = \
   226a8d4247d5b437b0eef3aaa7a4ed2754e457f19892bef9a0b3f66b395b6fbe
 test "$(sha256sum "$matrix" | cut -d' ' -f1)" = \

@@ -29,32 +29,32 @@ class SpecError(ValueError):
 
 SOURCE_PINS = {
     "scne_inventory_parser": (
-        "tools/nfl_scne_inventory.py", 50116,
-        "1925041fb672fd9529d3cd7d01bdbbc2758e73eb1e14042c25c9ec454e6f5b5c",
+        "tools/nfl_scne_inventory.py", 50580,
+        "0f58222812df6b380588f8b0a2592101136a863cd0dd170b0f32df726de2fc6b",
     ),
     "bulk_static_exporter": (
-        "tools/nfl_static_gltf.py", 34715,
-        "860655825d81f1d55958213048ac1c2d71fe9db8f77792fed303d7f2af29bdbe",
+        "tools/nfl_static_gltf.py", 35165,
+        "5249732b635374eb33bcb39f162224bccd2163cf1cfd01b1dfc8db42ac40bea3",
     ),
     "topology_exporter": (
-        "tools/nfl_scne_gltf.py", 14579,
-        "ceb466f37bc41c1b9484bdac5500cac53161a44405f47c4d165bccee137f169f",
+        "tools/nfl_scne_gltf.py", 15043,
+        "69f560d9a665a40868f25334f6f90c5713135f9c4ee8321d0abd30bf3c847058",
     ),
     "normshort3_proof_tool": (
         "tools/nfl_normshort3_positions.py", 18060,
         "2423528567e0e9a24bd2e07767ad225ed737e86e87e4c5286eb1f4dbc0af5672",
     ),
     "outer_archive_parser": (
-        "tools/nfl_outer.py", 15881,
-        "fe6f2d422b71a55b873b41bda5996f4a0205d0bf8297b3476d61a419936aaabb",
+        "tools/nfl_outer.py", 17176,
+        "0f27ac4157f13704e4303dbf2e146427cc56d1d910a3e242fac4081a04d9ee6d",
     ),
     "resource_probe": (
-        "tools/nfl_scene_probe.py", 39862,
-        "0cab4e10367c950aada642853995b6a954e82b7e37c88c0539abd2a90a78dc2e",
+        "tools/nfl_scene_probe.py", 40326,
+        "31b17ded825d4379b517affece54fc5cd96abea49330017296a10a029216fc26",
     ),
     "resource_wrapper_vc_lz": (
-        "tools/nfl_txtr.py", 42563,
-        "15327068fcfa0de55022c4704212f5010e73ff4710d4c1f4ce3804c1b8e30139",
+        "tools/nfl_txtr.py", 43341,
+        "0896e3f409f38116602d37a8902f1403e8afe6ad9e17e9ee9d36244ae97a5107",
     ),
     "layout_evidence": (
         "docs/research/nfl_scne_layout.md", 11681,

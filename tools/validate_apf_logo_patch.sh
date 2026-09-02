@@ -4,8 +4,9 @@
 # and its proof test, regenerates the offline roundtrip + copied-volume proof to
 # a private temp report, and asserts the honest invariants: the Xenos 4_4_4_4
 # transport is bit-exact, decode->PNG->encode is a byte-identical no-op, a
-# controlled edit changes only the logo_l0 base (mip tail + sibling logo_l1 and
-# every other archive part byte-preserved), the whole-volume copy proves the
+# controlled edit changes only logo_l0's base plus its regenerated packed mips
+# (sibling logo_l1 and every other archive part byte-preserved), a dual-layer
+# edit changes only the two base-plus-mip payloads, the whole-volume copy proves the
 # retail source is untouched, and no runtime/scorebug effect is claimed.
 #
 # Regenerating to a temp path (rather than byte-diffing a committed report) keeps
@@ -48,7 +49,8 @@ assert report["no_op"]["entry_sha256_before"] == report["no_op"]["entry_sha256_a
 
 patched = report["patched"]
 assert patched["mode"] == "patched"
-assert patched["mip_tail"]["bit_exact"] is True
+assert patched["mip_tail"]["bit_exact"] is False
+assert patched["mip_tail"]["regenerated"] is True
 assert patched["iff"]["footer_bit_exact"] is True
 assert patched["iff"]["allocation_slack_after"] >= 0
 assert patched["validation"]["other_level_l1_preserved"] is True
@@ -64,8 +66,9 @@ assert safety["source_path_as_output_refused"] is True
 assert safety["existing_output_refused"] is True
 assert safety["wrong_dimensions_refused"] is True
 assert safety["fixed_outer_allocation"] is True
-assert safety["mip_tail_preserved"] is True
+assert safety["mip_tail_regenerated"] is True
 assert safety["sibling_logo_l1_preserved"] is True
+assert safety["dual_layer_changed_only_two_payload_spans"] is True
 assert safety["footer_preserved"] is True
 assert safety["replacement_bytes_embedded_in_report"] is False
 
@@ -84,7 +87,7 @@ assert conclusion["copied_volume_roundtrip_proved"] is True
 assert conclusion["xenia_runtime_validation"] is False
 assert conclusion["hardware_runtime_validation"] is False
 assert conclusion["scorebug_runtime_binding_proved"] is False
-assert conclusion["mip_regeneration_implemented"] is False
+assert conclusion["mip_regeneration_implemented"] is True
 PY
 
 echo "APF_LOGO_PATCH_VALIDATION_PASS mode=full-copy entry=36 file=1 base=512x512 format=4_4_4_4"

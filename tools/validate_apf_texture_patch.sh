@@ -61,7 +61,7 @@ assert live["controlled_base_decode_back_exact"] is True
 assert live["h7a_no_edit_roundtrip_exact"] is True
 assert live["h7a_edited_roundtrip_exact"] is True
 assert live["mip_sha256_before"] == live["mip_sha256_after_assessment"]
-assert live["fixed_allocation_slack_if_base_only"] == 3983
+assert live["fixed_allocation_slack_if_base_only"] == 408
 assert live["safe_writer_exposed"] is False
 assert live["primary_mip_reference"]["commit"] == "95a5c3ee250f80c3b9d139658649d9ffb6db3eec"
 copied = report["copied_volume"]

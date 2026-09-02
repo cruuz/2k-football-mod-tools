@@ -18,6 +18,16 @@ import struct
 
 from PIL import Image, UnidentifiedImageError, __version__ as PILLOW_VERSION
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 import apf_digital_font_layout as layout
 import apf_inner
 import apf_outer
@@ -95,31 +105,44 @@ def compress_h7a_bounded(data: bytes, shift: int) -> bytes:
                 if not bucket:
                     del positions[expired_key]
 
-    while cursor < len(data):
-        descriptor_offset = len(output)
-        output.append(0)
-        descriptor = 0
-        for bit in range(8):
-            if cursor >= len(data):
-                break
-            best_length = 0
-            best_distance = 0
-            if cursor + 3 <= len(data):
-                bucket = positions.get(data[cursor : cursor + 3])
-                if bucket:
-                    minimum = cursor - max_distance
+    def best_match(at: int) -> tuple[int, int]:
+        """The longest non-overlapping back-reference available at ``at``."""
+        best_length = 0
+        best_distance = 0
+        if at + 3 <= len(data):
+            bucket = positions.get(data[at : at + 3])
+            if bucket:
+                    minimum = at - max_distance
                     candidates = 0
                     for candidate in reversed(bucket):
                         if candidate < minimum:
                             break
-                        distance = cursor - candidate
+                        distance = at - candidate
                         if distance <= 0:
                             continue
                         length = _match_length(
-                            data, cursor, candidate, min(max_length, len(data) - cursor)
+                            data, at, candidate, min(max_length, len(data) - at)
                         )
+                        # Never emit a match that reads bytes it is still
+                        # writing.  Our decoder copies one byte at a time and so
+                        # reproduces an overlapping run correctly, which is why
+                        # this round-trips offline while the rebuilt asset comes
+                        # back as fine speckle in game.  Retail settles it: the
+                        # shipped 512x512 crest block holds 36,099 matches and
+                        # not one overlaps, where a plain greedy encoder emits
+                        # nearly eleven thousand, almost all at distance 2.
+                        if length > distance:
+                            length = distance
+                        if length < 3:
+                            continue
+                        # On a tie prefer the FARTHER match.  Both encode to
+                        # the same two bytes, but since a match may no longer
+                        # overlap, the reachable length at the next position is
+                        # bounded by the distance -- so taking the near copy
+                        # caps every following match at the same short length
+                        # and a run ramps up far more slowly.
                         if length > best_length or (
-                            length == best_length and distance < best_distance
+                            length == best_length and distance > best_distance
                         ):
                             best_length = length
                             best_distance = distance
@@ -128,6 +151,25 @@ def compress_h7a_bounded(data: bytes, shift: int) -> bytes:
                         candidates += 1
                         if candidates >= MAX_H7A_CANDIDATES:
                             break
+        return best_length, best_distance
+
+    while cursor < len(data):
+        descriptor_offset = len(output)
+        output.append(0)
+        descriptor = 0
+        for bit in range(8):
+            if cursor >= len(data):
+                break
+            best_length, best_distance = best_match(cursor)
+            if 3 <= best_length < max_length and cursor + 1 < len(data):
+                # Lazy matching.  Forbidding overlap costs ratio at the start of
+                # every repeated region, and this font block sits inside a fixed
+                # allocation with very little slack.  Taking a literal when the
+                # next position offers a longer match buys that back without
+                # relaxing the rule.
+                ahead_length, _ahead_distance = best_match(cursor + 1)
+                if ahead_length > best_length:
+                    best_length = 0
             if best_length >= 3:
                 descriptor |= 1 << bit
                 output.extend(

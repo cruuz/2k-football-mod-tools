@@ -16,6 +16,16 @@ import struct
 
 from PIL import Image, __version__ as PILLOW_VERSION
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 import apf_inner
 import apf_outer
 import apf_texture_patch as archive_patch
@@ -132,6 +142,48 @@ def _validate_structure(
     return target, metadata, blocks[1][:TEXTURE_LENGTH]
 
 
+def target_label(row: dict[str, object]) -> str:
+    """Name one shoulder target the way a user picked it, not by entry index."""
+
+    try:
+        slot = int(row["asset_index"])          # type: ignore[index]
+        outer = int(row["outer_table_index"])   # type: ignore[index]
+    except (KeyError, TypeError, ValueError):
+        return "Shoulder target"
+    name = str(row.get("outer_name") or "").strip()
+    return (
+        f"Shoulder slot {slot} (outer {outer}"
+        + (f", {name}" if name else "")
+        + ")"
+    )
+
+
+def slot_capacity(
+    entry: apf_outer.Entry,
+    record: apf_inner.IFFRecord,
+    original_stored: list[bytes],
+) -> dict[str, int]:
+    """How many compressed bytes this slot can ever hold, and how many retail uses.
+
+    Everything outside the VRAM block is fixed: the IFF header, the DRAM block,
+    and the validated footer.  What is left is the whole budget for the
+    rewritten ``shoulder_color`` payload -- and it is *not* the sector slack a
+    user can see, because retail's own payload is the dominant term.
+    """
+
+    footer_total = 8 + (record.footer.payload_size if record.footer else 0)
+    fixed = record.header_size + len(original_stored[0]) + footer_total
+    retail = len(original_stored[1])
+    budget = entry.size - fixed
+    return {
+        "allocation_size": entry.size,
+        "fixed_overhead_bytes": fixed,
+        "compressed_budget_bytes": budget,
+        "retail_compressed_bytes": retail,
+        "headroom_bytes": budget - retail,
+    }
+
+
 def _rebuild_entry(
     entry: apf_outer.Entry,
     record: apf_inner.IFFRecord,
@@ -139,6 +191,7 @@ def _rebuild_entry(
     original_blocks: list[bytes],
     original_stored: list[bytes],
     new_texture: bytes,
+    target: str = "Shoulder target",
 ) -> tuple[bytes, dict[str, object]]:
     if len(new_texture) != TEXTURE_LENGTH or len(original_blocks) != 2:
         raise ShoulderTransportError("shoulder block or color length changed")
@@ -152,9 +205,28 @@ def _rebuild_entry(
     shifts = [block.wrapper.shift for block in record.blocks if block.wrapper]
     if shifts != [9, 9]:
         raise ShoulderTransportError(f"PORTME: shoulder H7A shifts changed: {shifts}")
+    if record.footer is None:
+        raise ShoulderTransportError("PORTME: shoulder IFF has no validated footer")
+    footer_total = 8 + record.footer.payload_size
+    footer = original_entry[record.file_length : record.file_length + footer_total]
+    if len(footer) != footer_total:
+        raise ShoulderTransportError("PORTME: shoulder IFF footer is truncated")
+    if any(original_entry[record.file_length + footer_total :]):
+        raise ShoulderTransportError("PORTME: shoulder allocation tail is nonzero")
     descriptor = record.blocks[1]
     assert descriptor.wrapper is not None
     encoded = archive_patch.compress_h7a(new_blocks[1], descriptor.wrapper.shift)
+    greedy_active_length = (
+        record.header_size
+        + len(original_stored[0])
+        + apf_inner.H7A_HEADER_SIZE
+        + len(encoded)
+        + footer_total
+    )
+    if greedy_active_length > entry.size:
+        encoded = archive_patch.compress_h7a_best(
+            new_blocks[1], descriptor.wrapper.shift, greedy=encoded
+        )
     encoded_stored = struct.pack(
         ">5I",
         apf_inner.H7A_MAGIC,
@@ -207,17 +279,15 @@ def _rebuild_entry(
 
     new_file_length = record.header_size + len(body)
     struct.pack_into(">I", header, 0x08, new_file_length)
-    if record.footer is None:
-        raise ShoulderTransportError("PORTME: shoulder IFF has no validated footer")
-    footer_total = 8 + record.footer.payload_size
-    footer = original_entry[record.file_length : record.file_length + footer_total]
-    if any(original_entry[record.file_length + footer_total :]):
-        raise ShoulderTransportError("PORTME: shoulder allocation tail is nonzero")
     active = bytes(header) + bytes(body) + footer
+    capacity = slot_capacity(entry, record, original_stored)
     if len(active) > entry.size:
-        raise ShoulderTransportError(
-            "rebuilt shoulder IFF exceeds fixed allocation by "
-            f"{len(active) - entry.size} bytes"
+        raise archive_patch.allocation_overflow(
+            target=target,
+            overflow_bytes=len(active) - entry.size,
+            allocation_size=entry.size,
+            budget_bytes=capacity["compressed_budget_bytes"],
+            retail_bytes=capacity["retail_compressed_bytes"],
         )
     rebuilt = active + bytes(entry.size - len(active))
 
@@ -242,6 +312,7 @@ def _rebuild_entry(
         "file_length_before": record.file_length,
         "file_length_after": new_file_length,
         "allocation_slack_after": entry.size - len(active),
+        "capacity": dict(capacity),
         "h7a_shift": descriptor.wrapper.shift,
         "h7a_decode_encode_decode_exact": True,
         "footer_sha256_before": sha256(footer),
@@ -264,6 +335,39 @@ def _rebuild_entry(
         "changed_inner_parts": [
             {"file_index": INNER_INDEX, "part_index": 1, "block_index": 1}
         ],
+    }
+
+
+def inspect_capacity(index_path: Path, row: dict[str, object]) -> dict[str, object]:
+    """Answer "how much room does this slot have" without encoding anything.
+
+    Reads the IFF header and block table only, so it costs a seek rather than
+    the ~40 s a full BC3 + H7A build costs.  That is what makes it usable in a
+    target picker, which is where a user needs the answer.
+    """
+
+    archive = apf_outer.parse_archive(index_path)
+    entry_index = int(row["outer_table_index"])
+    try:
+        entry = archive.entries[entry_index]
+    except IndexError as exc:
+        raise ShoulderTransportError(
+            f"outer archive has no entry {entry_index}"
+        ) from exc
+    with apf_inner.ArchiveReader(archive) as reader:
+        record = apf_inner.parse_iff(reader, entry)
+        if record.block_count != 2:
+            raise ShoulderTransportError("shoulder record is not the proved two-block shape")
+        original_stored = [
+            reader.read(entry, block.start_offset, block.stored_length)
+            for block in record.blocks
+        ]
+    return {
+        "schema": SCHEMA,
+        "target": target_label(row),
+        "asset_index": int(row["asset_index"]),
+        "outer_table_index": entry_index,
+        **slot_capacity(entry, record, original_stored),
     }
 
 
@@ -370,6 +474,12 @@ def build_patch(
     for location, source_linear, source_rgba, wanted in zip(
         locations, original_linear, original_rgba, wanted_levels
     ):
+        # shoulder_color is a selector mask whose retail alpha is unused and
+        # uniformly zero. Preview/export display may force it opaque so RGB is
+        # visible, but the encoder must restore the original zero alpha.
+        wanted = apf_inner.restore_unused_mask_alpha_for_encode(
+            wanted, source_rgba
+        )
         linear, indices = bc3_backend._encode_changed_blocks(  # type: ignore[attr-defined]
             source_linear, source_rgba, wanted, location
         )
@@ -414,6 +524,7 @@ def build_patch(
         original_blocks,
         original_stored,
         new_texture,
+        target_label(row),
     )
     return archive_patch.PatchResult(
         rebuilt,

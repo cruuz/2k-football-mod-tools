@@ -428,9 +428,17 @@ class ActiveProjectWindowTests(unittest.TestCase):
         self.assertEqual(audio.range_label.text(), "0 results")
         self.assertEqual(audio.table.rowCount(), 0)
         self.assertIsNone(audio.selected_asset_id)
-        self.assertFalse(audio.previous_button.isEnabled())
-        self.assertFalse(audio.next_button.isEnabled())
-        self.assertFalse(audio.export_matching_button.isEnabled())
+        # Never silent-gray: pagination stays clickable and teaches Load wall.
+        self.assertTrue(audio.previous_button.isEnabled())
+        self.assertTrue(audio.next_button.isEnabled())
+        self.assertTrue(
+            str(audio.previous_button.property("disableReason") or "").strip()
+        )
+        self.assertTrue(
+            str(audio.next_button.property("disableReason") or "").strip()
+        )
+        # Export matching may still teach via disableReason (never silent-gray).
+        self.assertTrue(audio.export_matching_button.isEnabled())
 
     def test_unnamed_save_as_then_named_fast_save_uses_no_dialog(self) -> None:
         with tempfile.TemporaryDirectory(prefix="2k5-window-document-") as temporary:
@@ -514,6 +522,16 @@ class ActiveProjectWindowTests(unittest.TestCase):
             self.window._save_project_as_action.shortcut().toString(),
             "Ctrl+Shift+S",
         )
+
+    def test_accepted_close_removes_private_texture_master_workspace(self) -> None:
+        private_workspace = self.window._texture_master_root
+        self.assertTrue(private_workspace.is_dir())
+
+        self.assertTrue(self.window.close())
+        self.application.processEvents()
+
+        self.assertFalse(private_workspace.exists())
+        self.assertFalse(self.window._texture_master_finalizer.alive)
 
 
 if __name__ == "__main__":

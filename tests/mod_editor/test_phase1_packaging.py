@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import hashlib
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -17,6 +18,10 @@ release_gate = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(release_gate)
 
 
+@unittest.skipIf(
+    os.name == "nt",
+    "POSIX inode/link-count release audit runs in the dedicated Linux gate",
+)
 class ModStudioPackagingTests(unittest.TestCase):
     def test_source_version_and_visible_product_label_are_pinned(self) -> None:
         package_source = (ROOT / "mod_editor/__init__.py").read_text(
@@ -29,7 +34,7 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc30"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc77"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
@@ -49,17 +54,23 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC30 — Getting Started"
+            "# 2K5 Mod Studio v1.0 RC77 — Getting Started"
         ))
         self.assertIn(
-            "## v1.0 RC30 Off-Linux Direct Uniform-Colour Copy", changelog
+            "## v1.0 RC48 Audio Converter, Stadium Model Export, Update Check", changelog
         )
+        self.assertIn("## v1.0 RC50", changelog)
+        self.assertIn("## v1.0 RC69", changelog)
+        self.assertIn("## v1.0 RC67", changelog)
         self.assertIn(
             "fully_validated_read_only_preview_then_explicit_apply",
             packaging_readme,
         )
+        self.assertIn("registry has 70 cross-title rows", getting_started)
+        self.assertIn("complete 12-tab sidebar", getting_started)
+        self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio — v1.0 RC30 Release Status"
+            "# 2K5 Mod Studio — v1.0 RC77 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
@@ -235,11 +246,11 @@ class ModStudioPackagingTests(unittest.TestCase):
                 release_gate.audit_release(root, allowlist)
 
     def test_reviewed_metadata_files_match_exact_contract_and_have_no_payload(self) -> None:
-        self.assertEqual(len(release_gate.REVIEWED_METADATA), 14)
+        self.assertEqual(len(release_gate.REVIEWED_METADATA), 22)
         self.assertEqual(
             sum(path.startswith("reports/assets/")
                 for path in release_gate.REVIEWED_METADATA),
-            11,
+            16,
         )
         for relative, (size, expected_sha, schema) in release_gate.REVIEWED_METADATA.items():
             path = ROOT / relative
@@ -270,6 +281,11 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("mod_editor/core/apf_digital_font_provider.py", entries)
         self.assertIn("mod_editor/core/nfl2k5_stadium_cache.py", entries)
         self.assertIn("mod_editor/core/nfl2k5_stadium_texture_writer.py", entries)
+        self.assertIn("mod_editor/core/nfl2k5_crib_geometry_writer.py", entries)
+        self.assertIn(
+            "mod_editor/core/nfl2k5_crib_standalone_texture_writer.py", entries
+        )
+        self.assertIn("mod_editor/core/nfl2k5_playbook_route_writer.py", entries)
         self.assertIn("mod_editor/core/nfl2k5_safe_text_banks.py", entries)
         self.assertIn("mod_editor/core/nfl2k5_audo_fixed_slots.py", entries)
         self.assertIn(
@@ -435,11 +451,11 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn('"mod_editor.studio.uniform_bundle"', runtime_probe)
         self.assertIn("_exercise_team_kit", runtime_probe)
         self.assertIn("_exercise_workspace_recovery", runtime_probe)
-        self.assertIn("registry=65 sections=11 nfl2k5_capabilities=31", runtime_probe)
+        self.assertIn("registry=70 sections=12 nfl2k5_capabilities=32", runtime_probe)
         self.assertIn("stadium_textures_editable=23838", runtime_probe)
         self.assertIn("audio=850 audio_editable=850 audio_export_only=0", runtime_probe)
         self.assertIn("audio_streaming_ranges=53571", runtime_probe)
-        self.assertIn("crib=498 crib_editable=129", runtime_probe)
+        self.assertIn("crib=498 crib_editable=498", runtime_probe)
         self.assertIn("playbooks=37 formations=1533 plays=9251", runtime_probe)
         self.assertIn("_exercise_product_inspections", runtime_probe)
         self.assertIn("_exercise_default_provider_controller", runtime_probe)
@@ -447,7 +463,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn(
             '"apf2k8.scorebug_presentation.digital_font"', runtime_probe
         )
-        self.assertIn("reports=11 reviewed_metadata=14", runtime_probe)
+        self.assertIn("reports=16 reviewed_metadata=22", runtime_probe)
         self.assertIn("Nfl2k5StadiumCacheCoordinator", runtime_probe)
         self.assertIn("build_scorebug_texture_import", runtime_probe)
 

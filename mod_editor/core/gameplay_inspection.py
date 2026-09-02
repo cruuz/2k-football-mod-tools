@@ -22,18 +22,18 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_TUNING_REPORT = (
     ROOT / "reports/gameplay_tuning/gameplay_tuning_ai_draft_audit.json"
 )
-TUNING_REPORT_SIZE = 53_996
+TUNING_REPORT_SIZE = 54_545
 TUNING_REPORT_SHA256 = (
-    "c53522ee0f4151291f154720a1d457ff7368fb256fbf5845561f4ad68289524b"
+    "0c1c47c7f025f9fbb303b9a7d78e7aaf8e9d3c4d603a47bc7819d5ded43557ec"
 )
 TUNING_REPORT_SCHEMA = "vc_gameplay_tuning_ai_draft_audit/v1"
 
 DEFAULT_FRANCHISE_REPORT = (
     ROOT / "reports/gameplay_tuning/nfl_franchise_limit_feasibility.json"
 )
-FRANCHISE_REPORT_SIZE = 17_707
+FRANCHISE_REPORT_SIZE = 19_555
 FRANCHISE_REPORT_SHA256 = (
-    "cabb89966a93bf3e067638be744f807f2f1ad4f152a742a8648e2a2f52ceb9dc"
+    "a5d8e4ad78b0baf89063796df1250cbb774b4b058a9dba008fc3682a838b8af9"
 )
 FRANCHISE_REPORT_SCHEMA = "nfl2k5_franchise_limit_feasibility/v1"
 
@@ -42,7 +42,7 @@ DEFAULT_NFL_SAVE_REPORT = (
 )
 NFL_SAVE_REPORT_SIZE = 31_477
 NFL_SAVE_REPORT_SHA256 = (
-    "52cd53b218b9608197c43721f2e874865ed9cf29ef6d75e03e2c3b996bbc344d"
+    "e49d30bc9adb87faf1a592a9d3a529169659be8f926be9db9028c90009477e3c"
 )
 NFL_SAVE_REPORT_SCHEMA = "nfl2k5_xbox_save_inventory/v1"
 

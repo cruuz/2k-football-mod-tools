@@ -39,6 +39,16 @@ try:
 except ImportError as exc:  # pragma: no cover - exercised by the CLI error path.
     raise SystemExit("error: Pillow is required for PNG import") from exc
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 import apf_inner
 import apf_outer
 
@@ -52,6 +62,84 @@ MAX_H7A_CANDIDATES = 256
 
 class PatchError(ValueError):
     """Raised when a proposed patch cannot be proved safe."""
+
+
+class AllocationOverflowError(PatchError):
+    """One rebuilt entry does not fit the slot the game reserved for it.
+
+    This is the writer being right, not a defect: the game reads each of these
+    entries from a fixed span, so nothing may grow.  It carries the target's
+    identity and its real budget because the useful question is never "how many
+    bytes over" on its own -- it is *which* target, and how much room that
+    target ever had.  A slot's budget is set by how large retail's own
+    compressed payload there is, not by the sector slack around it, so the slot
+    with the most apparent free space can be the least able to accept detailed
+    art (measured across the 24 shoulder slots by davidhbui, Beta 38).
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        target: str,
+        overflow_bytes: int,
+        allocation_size: int,
+        budget_bytes: int | None = None,
+        retail_bytes: int | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.target = target
+        self.overflow_bytes = int(overflow_bytes)
+        self.allocation_size = int(allocation_size)
+        self.budget_bytes = None if budget_bytes is None else int(budget_bytes)
+        self.retail_bytes = None if retail_bytes is None else int(retail_bytes)
+
+
+def allocation_overflow(
+    *,
+    target: str,
+    overflow_bytes: int,
+    allocation_size: int,
+    budget_bytes: int | None = None,
+    retail_bytes: int | None = None,
+    advice: str | None = None,
+) -> AllocationOverflowError:
+    """Build the one overflow message every fixed-allocation writer should raise."""
+
+    detail = (
+        f"{target}: the rebuilt entry is {overflow_bytes:,} bytes over its "
+        f"{allocation_size:,}-byte fixed allocation."
+    )
+    if budget_bytes is not None and retail_bytes is not None:
+        detail += (
+            f" This slot's compressed budget is {budget_bytes:,} bytes and "
+            f"retail already uses {retail_bytes:,} of it, leaving "
+            f"{budget_bytes - retail_bytes:,} bytes free."
+        )
+        if advice is None:
+            detail += (
+                " The budget is set by how detailed retail's own artwork in "
+                "this slot is, so a slot holding a near-flat mask cannot take "
+                "a busy replacement no matter how much free space it appears "
+                "to have."
+            )
+    detail += " " + (
+        advice
+        or (
+            "Simplify the replacement — these are region masks, so flatten "
+            "colours to the retail palette and remove anti-aliasing, which emits "
+            "invalid region IDs rather than soft edges — or choose a slot whose "
+            "retail artwork is already detailed."
+        )
+    )
+    return AllocationOverflowError(
+        detail,
+        target=target,
+        overflow_bytes=overflow_bytes,
+        allocation_size=allocation_size,
+        budget_bytes=budget_bytes,
+        retail_bytes=retail_bytes,
+    )
 
 
 class BytesReader:
@@ -325,8 +413,26 @@ def compress_h7a(
                             candidate,
                             min(max_length, len(data) - cursor),
                         )
+                        # Never emit a match that reads bytes it is still
+                        # writing.  Our decoder copies one byte at a time and so
+                        # reproduces an overlapping run correctly, which is why
+                        # this round-trips offline while the rebuilt asset comes
+                        # back as fine speckle in game.  Retail settles it: the
+                        # shipped 512x512 crest block holds 36,099 matches and
+                        # not one overlaps, where a plain greedy encoder emits
+                        # nearly eleven thousand, almost all at distance 2.
+                        if length > distance:
+                            length = distance
+                        if length < 3:
+                            continue
+                        # On a tie prefer the FARTHER match.  Both encode to
+                        # the same two bytes, but since a match may no longer
+                        # overlap, the reachable length at the next position is
+                        # bounded by the distance -- so taking the near copy
+                        # caps every following match at the same short length
+                        # and a run ramps up far more slowly.
                         if length > best_length or (
-                            length == best_length and distance < best_distance
+                            length == best_length and distance > best_distance
                         ):
                             best_length = length
                             best_distance = distance
@@ -348,6 +454,83 @@ def compress_h7a(
             cursor += consumed
         output[descriptor_offset] = descriptor
     return bytes(output)
+
+
+# Greedy parsing is normally both fast and small enough for APF's fixed outer
+# allocations.  A handful of large textures sit within a few hundred bytes of
+# their bounds after a safe (non-overlapping) edit, however, and require a
+# minimum-cost parse.  Keep the slower encoder out of the common path: callers
+# first try ``compress_h7a`` and pass that result back here only when it does
+# not fit.
+_OPTIMAL_BINARY = Path(__file__).resolve().parent / "apf_h7a_optimal"
+_OPTIMAL_BINARY_SIZE = 14_472
+_OPTIMAL_BINARY_SHA256 = (
+    "9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab"
+)
+
+
+def _optimal_binary() -> Path | None:
+    """Return the exact reviewed Linux encoder bundled with the editor."""
+    import platform
+
+    if not sys.platform.startswith("linux") or platform.machine() not in {
+        "x86_64",
+        "amd64",
+    }:
+        return None
+    try:
+        info = _OPTIMAL_BINARY.lstat()
+    except OSError:
+        return None
+    if (
+        not stat.S_ISREG(info.st_mode)
+        or stat.S_ISLNK(info.st_mode)
+        or info.st_nlink != 1
+        or info.st_size != _OPTIMAL_BINARY_SIZE
+        or info.st_mode & 0o022
+        or not info.st_mode & stat.S_IXUSR
+    ):
+        return None
+    if sha256_file(_OPTIMAL_BINARY) != _OPTIMAL_BINARY_SHA256:
+        return None
+    return _OPTIMAL_BINARY
+
+
+def compress_h7a_best(
+    data: bytes,
+    shift: int,
+    *,
+    greedy: bytes | None = None,
+) -> bytes:
+    """Return the smaller verified safe parse, never worse than ``greedy``."""
+    import subprocess
+
+    baseline = compress_h7a(data, shift) if greedy is None else greedy
+    binary = _optimal_binary()
+    if binary is None:
+        return baseline
+    try:
+        finished = subprocess.run(
+            [str(binary), str(shift)],
+            input=data,
+            capture_output=True,
+            timeout=180,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return baseline
+    candidate = finished.stdout
+    if (
+        finished.returncode != 0
+        or not candidate
+        or len(candidate) >= len(baseline)
+    ):
+        return baseline
+    try:
+        if apf_inner.decompress_h7a(candidate, len(data), shift) != data:
+            return baseline
+    except Exception:  # noqa: BLE001 - any decode failure means fall back
+        return baseline
+    return candidate
 
 
 def _rgba_metrics(wanted: bytes, decoded: bytes) -> dict[str, object]:
@@ -907,10 +1090,22 @@ def _copy_fd_metadata(
     source_descriptor: int,
     output_descriptor: int,
     source_metadata: os.stat_result,
+    output_path: Path | None,
 ) -> None:
-    """Copy mode, available extended attributes, and timestamps by fd."""
+    """Copy mode, available extended attributes, and timestamps by fd.
+
+    ``output_path`` is the name ``output_descriptor`` was opened as.  POSIX never
+    consults it -- every step here addresses the descriptor, so the metadata
+    cannot be redirected to another file by a swap of that name.  It exists for
+    the platforms whose ``chmod``/``utime`` have no descriptor form at all
+    (Windows), where it is the difference between copying this metadata and
+    silently dropping it; the fallbacks it enables are metadata-only and each
+    caller re-checks that the output name still resolves to the descriptor's
+    inode before reporting success, so a redirected stamp fails the build rather
+    than passing for a clean one.  The bytes are never written through the name.
+    """
     platform_compat.fchmod(
-        output_descriptor, stat.S_IMODE(source_metadata.st_mode), path=None
+        output_descriptor, stat.S_IMODE(source_metadata.st_mode), path=output_path
     )
     if all(hasattr(os, name) for name in ("listxattr", "getxattr", "setxattr")):
         try:
@@ -925,8 +1120,11 @@ def _copy_fd_metadata(
                 # Match shutil.copystat's best-effort behavior for attributes
                 # unavailable to the current user or destination filesystem.
                 continue
-    os.utime(
+    # Timestamps are cosmetic: utime_ns reports a skip rather than raising, and a
+    # skip must not fail a transaction whose bytes and mode are already correct.
+    platform_compat.utime_ns(
         output_descriptor,
+        output_path,
         ns=(source_metadata.st_atime_ns, source_metadata.st_mtime_ns),
     )
 
@@ -1013,7 +1211,9 @@ def _write_copied_volume(
         if not _path_is_owned_inode(source_volume, source_identity):
             raise PatchError("source APF volume pathname changed during copy")
 
-        _copy_fd_metadata(source_descriptor, output_descriptor, source_metadata)
+        _copy_fd_metadata(
+            source_descriptor, output_descriptor, source_metadata, output_volume
+        )
         os.fsync(output_descriptor)
         if not _path_is_owned_inode(output_volume, output_identity):
             raise PatchError("output volume pathname changed during copied-volume patch")

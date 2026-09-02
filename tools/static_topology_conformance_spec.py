@@ -27,12 +27,12 @@ SOURCE_PINS = {
     "nfl_parent_spec": (
         "reports/specs/nfl2k5_xbox_static_scne.v1.json",
         47_126,
-        "d1e684a0b86c3a933355217174938cb95c5192eb2680c8b9698f7eb15ac39884",
+        "5947b18a7f9fe4b4f6895ca4ea37e5aadd55edb5d365128f46561011fdf8a01e",
     ),
     "apf_parent_spec": (
         "reports/specs/apf2k8_scne_static_serializer.v1.json",
-        75_274,
-        "e7eeaf35d897d188d6a0c2faa5e0300a741d751204bc4fae1222460bc980802b",
+        75_227,
+        "b7cd1928e71eaf1b64b182a3594f1151102161df49c7762d4a2a987f5df2da59",
     ),
     "nfl_roundtrip_report": (
         "reports/assets/nfl_stadium_group36_position_patch_roundtrip.json",
@@ -46,23 +46,23 @@ SOURCE_PINS = {
     ),
     "nfl_topology_parser": (
         "tools/nfl_scne_inventory.py",
-        50_116,
-        "1925041fb672fd9529d3cd7d01bdbbc2758e73eb1e14042c25c9ec454e6f5b5c",
+        50_580,
+        "0f58222812df6b380588f8b0a2592101136a863cd0dd170b0f32df726de2fc6b",
     ),
     "nfl_topology_exporter": (
         "tools/nfl_scne_gltf.py",
-        14_579,
-        "ceb466f37bc41c1b9484bdac5500cac53161a44405f47c4d165bccee137f169f",
+        15_043,
+        "69f560d9a665a40868f25334f6f90c5713135f9c4ee8321d0abd30bf3c847058",
     ),
     "nfl_bulk_exporter": (
         "tools/nfl_static_gltf.py",
-        34_715,
-        "860655825d81f1d55958213048ac1c2d71fe9db8f77792fed303d7f2af29bdbe",
+        35_165,
+        "5249732b635374eb33bcb39f162224bccd2163cf1cfd01b1dfc8db42ac40bea3",
     ),
     "apf_topology_parser_and_exporter": (
         "tools/apf_scene.py",
-        56_792,
-        "8b8c87249e33fb0606074b3f9047befad4eef94106ac5df3fa58f0b602730dcf",
+        61_388,
+        "0f416e57fe02b8ac7a3695820f23af6875d2413a50905a0292c88e231fd899c2",
     ),
     "nfl_same_count_writer": (
         "tools/nfl_stadium_group36_position_patch.py",
@@ -71,8 +71,8 @@ SOURCE_PINS = {
     ),
     "apf_same_count_writer": (
         "tools/apf_stadium_static_position_patch.py",
-        42_766,
-        "8f5e03ab306e2b985c4bf4058d855da6d9530daf304c1b6b164e589cbea61c5d",
+        43_189,
+        "37210991eb4c470facd778358c477931e6074e4e84915d330e6adbb44c2c2f4b",
     ),
     "nfl_group36_geometry_writer": (
         "tools/nfl_stadium_group36_geometry_patch.py",
@@ -102,17 +102,17 @@ SOURCE_PINS = {
     "nfl_upper_deck_changed_count_boundary": (
         "reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json",
         25_285,
-        "54e6d20dcf9c525a5248d94b4f45516425f0e69702df31dfd93fc351efd43eab",
+        "e583dde9bca86971eb7355fd07b6a6646a09af8356623b4114c3003998ea4bdb",
     ),
     "apf_draw_topology_spec": (
         "reports/specs/apf2k8_scne_draw_topology.v1.json",
         11_851,
-        "560865eb765d9af09d6246f594d213f965afcc89e77a8da854767775a2eee1da",
+        "ef29fc07d80582d938fbb0a00985c9bd0669ca88ba296d06cd39d9029233224b",
     ),
     "apf_draw_topology_corpus": (
         "reports/assets/apf_scne_draw_topology_corpus.v1.json",
         3_591,
-        "ca4465e7e7723c1363d42f2c7b9564e740bb1a6049279fb5055ee14309d3711b",
+        "8032c0eda8fefe75d61ae607feabad7bf477c845469374781856237bd13c16a2",
     ),
     "apf_topology_writer": (
         "tools/apf_stadium_node17_topology_patch.py",
@@ -511,7 +511,7 @@ def canonical_spec() -> dict[str, Any]:
                     "selected_probe_boundary": {
                         "spec_schema": "nfl2k5_upper_deck_changed_count_boundary/v1",
                         "spec_path": "reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json",
-                        "spec_sha256": "54e6d20dcf9c525a5248d94b4f45516425f0e69702df31dfd93fc351efd43eab",
+                        "spec_sha256": "e583dde9bca86971eb7355fd07b6a6646a09af8356623b4114c3003998ea4bdb",
                         "recipe_schema_path": "reports/specs/nfl2k5_upper_deck_source_subset_recipe.schema.json",
                         "recipe_schema_sha256": "4fac01c6cffe03481b456899ec2b2f3cd25f74954d5db94ccb3b8351f841ca4b",
                         "target_id": "nfl2k5/stadium/o3280/c5/s1",

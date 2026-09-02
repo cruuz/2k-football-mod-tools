@@ -73,9 +73,11 @@ def file_digest(path: Path) -> str:
     return value.hexdigest()
 
 
-def pin(path: Path) -> dict[str, Any]:
+def pin(path: Path, display_path: str) -> dict[str, Any]:
     resolved = path.resolve(strict=True)
-    return {"path": str(resolved), "size": resolved.stat().st_size,
+    require(bool(display_path) and not Path(display_path).is_absolute(),
+            "compatibility evidence label must be nonempty and relative")
+    return {"path": display_path, "size": resolved.stat().st_size,
             "sha256": file_digest(resolved)}
 
 
@@ -517,9 +519,16 @@ def run(root: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     report: dict[str, Any] = {
         "schema": SCHEMA,
         "inputs": {
-            "canonical_index": pin(index_path), "txtr_inventory": pin(txtr_path),
-            "roster_players": pin(roster_path), "default_xbe": pin(xbe_path),
-            "retail_xiso": {"path": str(source), "size": xiso.EXPECTED_XISO_SIZE,
+            "canonical_index": pin(index_path, "user-source/vc_53450030/0"),
+            "txtr_inventory": pin(
+                txtr_path, "generation-evidence/nfl2k5_all_txtr_inventory_v2.json"
+            ),
+            "roster_players": pin(
+                roster_path, "generation-evidence/nfl2k5_roster_players.tsv"
+            ),
+            "default_xbe": pin(xbe_path, "user-source/default.xbe"),
+            "retail_xiso": {"path": "user-source/ESPN NFL 2K5.xiso.iso",
+                            "size": xiso.EXPECTED_XISO_SIZE,
                             "sha256": xiso.EXPECTED_XISO_SHA256,
                             "opened_read_only": True},
             "packs": pack_records,

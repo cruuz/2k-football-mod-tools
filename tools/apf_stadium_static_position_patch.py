@@ -22,10 +22,14 @@ import struct
 import sys
 from typing import Any
 
+_TOOLS = str(Path(__file__).resolve().parent)
+if _TOOLS not in sys.path:
+    sys.path.insert(0, _TOOLS)
+
 import apf_inner
 import apf_outer
 import apf_scene
-from apf_texture_patch import compress_h7a
+from apf_texture_patch import compress_h7a, compress_h7a_best
 
 
 RECIPE_SCHEMA = "apf2k8_scne_same_count_position_recipe/v1"
@@ -65,7 +69,7 @@ POSITION_SIZE = 12
 POSITION_FORMAT = 0x002A23B9
 
 TARGET_SPANS = {
-    "matrix_table": (38_912, 5_696, "5fa0a6f9aa4444ad14676e989a521963d32e1693559f288202ac1bb3b81d8828"),
+    "matrix_table": (38_912, 12_816, "a5a4835dab61fdaf6e35474e178346254691b998fcf00f93cca1feb91c99ff20"),
     "node_record": (26_240, 176, "24f8b734350d0447879ae0fd2899794fbcd3cc455ddbe064ad1da9dbce4ef428"),
     "hierarchy": (375_664, 48, "21df6a8e4e475144de905a555bad3799c61f10ee3a233f8d05d51025f3c8067a"),
     "draw_record": (375_712, 48, "161a2e06c0b875b6679423f490c2c89691d1da9899003768a0f4eac01cfe873f"),
@@ -436,6 +440,15 @@ def _rebuild_entry(
     if not descriptor.is_compressed or descriptor.wrapper is None or descriptor.wrapper.shift != 12:
         raise PatchError("target DRAM H7A profile drift")
     compressed = compress_h7a(new_block0, 12)
+    greedy_active_length = (
+        record.header_size
+        + apf_inner.H7A_HEADER_SIZE
+        + len(compressed)
+        + len(original_stored[1])
+        + FOOTER_TOTAL
+    )
+    if greedy_active_length > OUTER_LENGTH:
+        compressed = compress_h7a_best(new_block0, 12, greedy=compressed)
     if apf_inner.decompress_h7a(compressed, len(new_block0), 12) != new_block0:
         raise PatchError("H7A encode/decode round-trip failed")
     new_stored = list(original_stored)
@@ -735,7 +748,10 @@ def _copy_new_at(
                 raise PatchError("source 1A descriptor changed during copy")
             final_source = os.lstat(source)
             if (final_source.st_dev, final_source.st_ino) != expected_source_identity:
-                raise PatchError("source 1A pathname changed during copy")
+                raise PatchError(
+                "source 1A pathname changed during copy (a symlinked "
+                "source is the usual cause; stage a real copy instead)"
+            )
         finally:
             os.close(source_descriptor)
         os.fsync(descriptor)

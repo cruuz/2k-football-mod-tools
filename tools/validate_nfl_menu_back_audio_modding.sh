@@ -98,17 +98,27 @@ for label, members, expected_names in (
 ):
     payloads = provider._load_closure(members)
     assert set(payloads) == expected_names
-    with provider._sealed_zipapp(members, label) as archive:
-        descriptor = os.open(archive, os.O_RDONLY)
+    with provider._sealed_zipapp(members, label) as module:
+        descriptor = os.open(module.path, os.O_RDONLY)
         try:
             assert fcntl.fcntl(descriptor, fcntl.F_GET_SEALS) & required_seals == required_seals
         finally:
             os.close(descriptor)
-        result = provider._run(
-            (sys.executable, "-I", "-B", "-S", os.fspath(archive), "--help"),
-            ProviderStage.VALIDATE,
-            lambda _event: None,
-        )
+        with module.pin_for_exec(
+            ProviderStage.VALIDATE, lambda _event: None
+        ) as pinned:
+            result = provider._run(
+                (
+                    sys.executable,
+                    "-I",
+                    "-B",
+                    "-S",
+                    os.fspath(pinned.path),
+                    "--help",
+                ),
+                ProviderStage.VALIDATE,
+                lambda _event: None,
+            )
         assert result.returncode == 0 and "usage:" in result.stdout
         assert result.argv[1:4] == ("-I", "-B", "-S")
         assert result.argv[4].startswith(f"/proc/{os.getpid()}/fd/")

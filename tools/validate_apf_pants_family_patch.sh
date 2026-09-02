@@ -151,8 +151,8 @@ assert typed["recipe"] == {
 }
 assert typed["contains_game_or_replacement_bytes"] is False
 
-assert hashlib.sha256(layout_path.read_bytes()).hexdigest() == "82241aefe6728a7426552663ee69ecffbdabca01f4359e8322edf75775adf293"
-assert hashlib.sha256(tsv_path.read_bytes()).hexdigest() == "91406d5f018576d86765f9fb1e0e8c223f599f138c0f870564a489f726046576"
+assert hashlib.sha256(layout_path.read_bytes()).hexdigest() == "707d916213f04499608b492ce2ea37a0e33b770af0f69c57248755d71ef5c32a"
+assert hashlib.sha256(tsv_path.read_bytes()).hexdigest() == "916c0d7fb8452f3f3b31eb23407eeba3e692dd7e9a14ff22d24eed1ab82977a7"
 assert layout["schema"] == "apf_pants_family_layout/v1"
 assert layout["source"]["sha256_before"] == layout["source"]["sha256_after"] == "dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e"
 assert layout["source"]["opened_for_write"] is False
@@ -170,7 +170,7 @@ for key in (
 ):
     assert eq[key] is True, key
 assert eq["h7a_shift_profile_counts"] == {"8,11": 19, "8,12": 5}
-assert eq["minimum_controlled_allocation_slack"] == 723
+assert eq["minimum_controlled_allocation_slack"] == 128
 descriptor = eq["canonical_txtr_descriptor"]
 assert (descriptor["width"], descriptor["height"], descriptor["format"]) == (512, 512, 18)
 assert descriptor["vc_base_data_length"] == 0x20000
@@ -218,7 +218,7 @@ assert roundtrip["schema"] == "apf_pants_family_patch_roundtrip/v1"
 assert roundtrip["target_selection"]["accepted"] == list(range(24))
 assert roundtrip["target_selection"]["rejected"] == [-1, 24]
 assert roundtrip["controlled_edit"]["representative_asset_indices"] == [6, 13, 23]
-assert [row["allocation_slack_after"] for row in roundtrip["controlled_edit"]["results"]] == [2986, 4773, 723]
+assert [row["allocation_slack_after"] for row in roundtrip["controlled_edit"]["results"]] == [2396, 4588, 128]
 assert roundtrip["copied_volume"]["outside_replacement"]["source_and_output_match"] is True
 assert roundtrip["conclusion"]["copy_only_all_24_target_cli_exposed"] is True
 assert roundtrip["conclusion"]["all_three_normal_maps_preserved"] is True
@@ -246,7 +246,7 @@ doc = doc_path.read_text(encoding="utf-8")
 for phrase in (
     "## Worked", "## Failed or unproved", "## Blocking",
     "All 24 retail", "Team selector sharing", "--asset-index",
-    "723 bytes", "all three normal maps", "not yet a production art pipeline",
+    "128 bytes", "all three normal maps", "not yet a production art pipeline",
     "runtime visibility is not proved", "APF_PANTS_FAMILY_PATCH_VALIDATION_PASS",
 ):
     assert phrase in doc, phrase
@@ -255,4 +255,4 @@ PY
 test "$(sha256sum "$source_volume" | cut -d' ' -f1)" = \
   dad8bb0d95778b52d8245078eb2d1dddb50166b3a52dcaac8cb0de3d38857b7e
 
-echo 'APF_PANTS_FAMILY_PATCH_VALIDATION_PASS targets=24 levels=8 h7a_profiles=2 controlled=24 representative=3 copied_volume=true independent_verify=true typed_recipe=true typed_artifacts=hashes-only team_bank_uses=80 used_assets=11 normals_preserved=3 min_slack=723 opaque_only=true production_dxt1=false runtime_visibility=false retail_unchanged=true'
+echo 'APF_PANTS_FAMILY_PATCH_VALIDATION_PASS targets=24 levels=8 h7a_profiles=2 controlled=24 representative=3 copied_volume=true independent_verify=true typed_recipe=true typed_artifacts=hashes-only team_bank_uses=80 used_assets=11 normals_preserved=3 min_slack=128 opaque_only=true production_dxt1=false runtime_visibility=false retail_unchanged=true'

@@ -24,8 +24,8 @@ control. It does not runtime-prove player names or any non-name roster field.
   `.codex-tmp/apf-four-family-runtime-sdl/runtime-roster-token-preserving-alpha15/{storage,content,cache}`
 - Initial Xenia log reported `ProfileManager: Found 0 Profiles`, proving the
   run entered the clean first-run path rather than reusing an old team profile.
-- All visual inspection and controller operation were delegated through
-  spark-hands; the operator's live desktop was not touched.
+- All visual inspection and controller operation ran in the isolated graphical
+  session; the operator's live desktop was not touched.
 
 ## Source and candidate receipt
 

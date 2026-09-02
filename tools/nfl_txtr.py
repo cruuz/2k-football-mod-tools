@@ -722,8 +722,21 @@ def parse_texture(output: bytes, chunk: Chunk) -> TextureInfo:
         # not the retail D3D PixelContainer Size bitfield.  Loader helpers at
         # 0x0034E60 read these halfwords directly when descriptor +0x14 marks
         # an explicit-size resource.
-        width = packed_size & 0xFFFF
-        height = (packed_size >> 16) & 0xFFFF
+        #
+        # The linear P8 format puts them the other way round, and reading them
+        # in the swizzled order transposed every one of those textures.  It is
+        # what made the Team Kit's Nameplate Atlas export as confetti: `names`
+        # carries 0x04000020 and is a 1024x32 character strip -- rendering it
+        # 32x1024 shreds the letterforms.  The only other texture in this
+        # format, `ticker_src`, carries the identical word and is a scrolling
+        # news ticker, which is wide and short for the same reason.  Decoded
+        # the right way round the first atlas reads "` - A B C D E F G H ...".
+        if format_code == 0x7F:
+            width = (packed_size >> 16) & 0xFFFF
+            height = packed_size & 0xFFFF
+        else:
+            width = packed_size & 0xFFFF
+            height = (packed_size >> 16) & 0xFFFF
     depth = 1 << ((packed_format >> 28) & 0xF)
     return TextureInfo(
         name=name,

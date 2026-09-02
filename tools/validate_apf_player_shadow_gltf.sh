@@ -115,15 +115,15 @@ for registered in \
 done
 
 test "$(sha256sum "$static_gltf" | cut -d' ' -f1)" = \
-  8e09a978bdbffbaccda237fcccd24a1cdc106a2d6ea240b7000c626bf810424c
+  cf93ad2660e13b7b8999350d85d4a7fdd67abaaab54da687b8b090af8644bc2d
 test "$(sha256sum "$static_bin" | cut -d' ' -f1)" = \
   574229cf5c8dfa0946ad81f47585f6b01442956b32afc5fe2cbc28910d4a4bd1
 test "$(sha256sum "$animated_gltf" | cut -d' ' -f1)" = \
-  8d521d09cd284c4a5974d928f69e87770f502c57c35dc7374917dfd90c6fbabf
+  b2a4029383cf75d73d8a7d6a640e7b5e12bdb1290e46e0c69404f4326422ad36
 test "$(sha256sum "$animated_bin" | cut -d' ' -f1)" = \
   7a21f34ebbb6bf647b837a7e57e6ed1675a3eadaeb29480a942772a3c46bd940
 test "$(sha256sum "$report" | cut -d' ' -f1)" = \
-  7a0929536651cf75b9aca7531b684e5e7168d1bd216bab064727efdde07cb555
+  d88679b5fda5d61bb802fab285a6a5b9b8b34dc8a591fd7fd89ce56dd3c597e3
 
 if [[ "${APF_PLAYER_SHADOW_GLTF_FULL:-0}" == 1 ]]; then
   APF_ANIMATION_BINDING_GHIDRA=1 \

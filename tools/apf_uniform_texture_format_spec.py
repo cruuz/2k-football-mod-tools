@@ -22,7 +22,7 @@ V1_SPEC = ROOT / "reports/specs/apf2k8_uniform_texture_formats.v1.json"
 V2_SPEC = ROOT / "reports/specs/apf2k8_uniform_texture_formats.v2.json"
 DEFAULT_SPEC = V2_SPEC
 V1_SPEC_SIZE = 53829
-V1_SPEC_SHA256 = "e46fd58ca3069e1d846c20cd3420a4bdf9fe2e144b02f7dc67608ba6fae0c388"
+V1_SPEC_SHA256 = "80acb6f48408b59d305b3cfac3cfe8b61104bcd189c1fda9ff28e17df7b1c218"
 
 
 class SpecError(ValueError):
@@ -32,44 +32,44 @@ class SpecError(ValueError):
 SOURCE_PINS_V1 = {
     "jersey_layout": (
         "reports/assets/apf_jersey_family_layout.json",
-        366329,
-        "f359a2ecd92e2305e29f2a34f1d0084ee8b2bb277a2f0bd43a1c76e12abb55dc",
+        366327,
+        "b60783b9c47b57e9b9f545e95f5c17d3c850e263e0d7d453aa6c3be4a0f809e4",
         "apf_jersey_family_layout/v1",
     ),
     "pants_layout": (
         "reports/assets/apf_pants_family_layout.json",
-        274896,
-        "82241aefe6728a7426552663ee69ecffbdabca01f4359e8322edf75775adf293",
+        274895,
+        "707d916213f04499608b492ce2ea37a0e33b770af0f69c57248755d71ef5c32a",
         "apf_pants_family_layout/v1",
     ),
     "helmet_layout": (
         "reports/assets/apf_helmet_family_layout.json",
-        280394,
-        "72bf3efd4495e03fb856e0fb776313c842ebfafeb8d20d19f91318d7161aba03",
+        280392,
+        "29c3f097f63105f0ae2067d8f99f0ce8666e447d8bf13de4b1cb071e9638ed4c",
         "apf_helmet_family_layout/v1",
     ),
     "jersey_roundtrip": (
         "reports/assets/apf_jersey_family_patch_roundtrip.json",
-        5199,
-        "e46ca976517b736ffb7b181f1ea812d9146cc1ff660bf789cdb3454d9e179e68",
+        5198,
+        "1273cb27f9869affa3fd4fb69b6ee2b3a3282dafc9e55e918159b6620ff4834a",
         "apf_jersey_family_patch_roundtrip/v1",
     ),
     "pants_roundtrip": (
         "reports/assets/apf_pants_family_patch_roundtrip.json",
         4568,
-        "28fa3fe162eea2eb11a152f96b045b324f816b5a512bedabdfc9735bba7c43ca",
+        "57faf1c600a306d50c298dc6810640fe886078c789ea0d174df740e9b7b29d08",
         "apf_pants_family_patch_roundtrip/v1",
     ),
     "helmet_roundtrip": (
         "reports/assets/apf_helmet_family_patch_roundtrip.json",
-        5225,
-        "ee9980d8d163e247f12a658d570d6a10575ec9000d9e4ab802a4f16800fb1df5",
+        5224,
+        "f85e37695b3b118f2a555e260dbfb6f207165677b68741a5b4c099fad811eb5c",
         "apf_helmet_family_patch_roundtrip/v1",
     ),
     "selector_sharing": (
         "reports/assets/uniform_texture_sharing.json",
         414887,
-        "eb37c92a2e2aeaf6d458028e5e5273110c80b3cdbaeb2b5925af99327f4cec6a",
+        "4c6557f8e9732267a078ecf42f2d8e8696d7207c9ed6aacd9a76a3e1c67c9910",
         "uniform_texture_sharing_audit/v1",
     ),
     "uniform_inventory": (
@@ -90,20 +90,20 @@ SOURCE_PINS_V2 = {
     **SOURCE_PINS_V1,
     "shoulder_layout": (
         "reports/assets/apf_shoulder_family_layout.json",
-        345097,
-        "a2ea45adb931677ef4d9d9a37530f2acc53013050793a47f41f69c65e8319875",
+        345091,
+        "6899b356c6364fb6f315dcb7ef599572ca1cb5771735a5540fcc70ef202456b8",
         "apf_shoulder_family_layout/v1",
     ),
     "shoulder_layout_tsv": (
         "reports/assets/apf_shoulder_family_layout.tsv",
-        7232,
-        "b18408c379ebde4006f7d7cf20688d931820c25062a5b1a1d4ed1d9010ddbc2b",
+        7226,
+        "b95a5342d4b7dd92ad3624aa62f811c743066c5b195d89db33387a7b2bc47dec",
         "apf_shoulder_family_layout_tsv/v1",
     ),
     "shoulder_roundtrip": (
         "reports/assets/apf_shoulder_family_patch_roundtrip.json",
-        5060,
-        "5a66993ffb350cb8ad79b677dd22e7b6298b1b83ff175778a0377713e13835f0",
+        5059,
+        "b471dc33cb9f30be45dfbf057219e6f3b8dff9b5be969ef3e66602c229cef2ef",
         "apf_shoulder_family_patch_roundtrip/v1",
     ),
 }
@@ -512,7 +512,7 @@ def _validate_family(key: str, family: dict[str, Any], reports: dict[str, dict[s
             "contains_retail_pixels": False,
             "all_24_fixed_allocations_fit_controlled_rebuild": True,
             "minimum_post_rebuild_slack_bytes": report["family_equivalence"]["minimum_controlled_allocation_slack"],
-            "minimum_slack_asset_index": 23,
+            "minimum_slack_asset_index": 20,
             "copied_volume_asset_index": 23,
             "arbitrary_png_fit_guaranteed": False,
         }, "shoulder controlled-fit proof")

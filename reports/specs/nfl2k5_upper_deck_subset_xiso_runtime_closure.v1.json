@@ -42,12 +42,12 @@
   "authority": {
     "changed_count_boundary": {
       "path": "reports/specs/nfl2k5_upper_deck_changed_count_boundary.v1.json",
-      "sha256": "54e6d20dcf9c525a5248d94b4f45516425f0e69702df31dfd93fc351efd43eab",
+      "sha256": "e583dde9bca86971eb7355fd07b6a6646a09af8356623b4114c3003998ea4bdb",
       "size": 25285
     },
     "native_writeback_closure": {
       "path": "reports/specs/nfl2k5_upper_deck_source_subset_writeback_closure.v1.json",
-      "sha256": "38a4b176fb39cab86b134d3b1c6d03043513771229cdf1e444ef6baa01912fba",
+      "sha256": "6f9b18450cef7b2fea6d64fd7972cb3381170f3b453885519c5407622e29f026",
       "size": 13933
     },
     "nonidentity4_recipe": {

@@ -210,10 +210,14 @@ def validate_dynamic_import(
     validate_sleeve_descriptors(source_decoded)
 
     manifest = parse_manifest(import_manifest_payload)
-    require(set(manifest) == {
+    required_manifest_fields = {
         "schema", "source_index", "canonical_inventory", "compatibility_report",
         "target", "input", "mips", "quantization", "layout", "compression",
         "rebuild", "previews", "claims", "outputs",
+    }
+    require(frozenset(manifest) in {
+        frozenset(required_manifest_fields),
+        frozenset(required_manifest_fields | {"bounded_palette_fit"}),
     } and manifest.get("schema") == SCHEMA,
             "import manifest schema/top-level fields mismatch")
     require(isinstance(manifest.get("source_index"), str) and
@@ -274,12 +278,6 @@ def validate_dynamic_import(
         clean_png_payload, (sleeve.BASE_WIDTH, sleeve.BASE_HEIGHT)
     )
     clean_mips = sleeve.generate_mips(clean_rgba, width, height)
-    clean_palette, index_levels, quantization = legacy.quantize_levels(clean_mips)
-    clean_expected = [
-        legacy.MipLevel(level.level, level.width, level.height,
-                        legacy.rgba_from_indices(indices, clean_palette))
-        for level, indices in zip(clean_mips, index_levels)
-    ]
 
     mud_record = input_record.get("mud")
     require(isinstance(mud_record, dict), "mud provenance is not an object")
@@ -292,12 +290,7 @@ def validate_dynamic_import(
         require(mode in {"identity", "darken_60"} and
                 mud_record == {"kind": "derived_palette", "mode": mode},
                 "derived mud record mismatch")
-        mud_palette = legacy.derive_mud_palette(clean_palette, str(mode))
-        mud_expected = [
-            legacy.MipLevel(level.level, level.width, level.height,
-                            legacy.rgba_from_indices(indices, mud_palette))
-            for level, indices in zip(clean_mips, index_levels)
-        ]
+        mud_mips = None
     elif mud_kind == "second_png_exact_shared_indices":
         require(mud_png_name is not None and mud_png_payload is not None,
                 "manifest requires a mud PNG")
@@ -310,12 +303,70 @@ def validate_dynamic_import(
         mud_width, mud_height, mud_rgba = legacy.decode_rgba_png(
             mud_png_payload, (sleeve.BASE_WIDTH, sleeve.BASE_HEIGHT)
         )
-        mud_expected = sleeve.generate_mips(mud_rgba, mud_width, mud_height)
-        full_palette = legacy.palette_for_shared_mud(index_levels, mud_expected)
-        highest_used = max(index for level in index_levels for index in level)
-        mud_palette = full_palette[:highest_used + 1]
+        mud_mips = sleeve.generate_mips(mud_rgba, mud_width, mud_height)
+        mode = None
     else:
         raise DynamicValidationError(f"unsupported mud source: {mud_kind!r}")
+
+    def mud_palette_for(
+        candidate_palette: list[tuple[int, int, int, int]],
+        candidate_levels: list[bytes],
+    ) -> list[tuple[int, int, int, int]]:
+        if mud_mips is None:
+            return legacy.derive_mud_palette(candidate_palette, str(mode))
+        full_palette = legacy.palette_for_shared_mud(
+            candidate_levels, mud_mips
+        )
+        highest_used = max(index for level in candidate_levels for index in level)
+        return full_palette[:highest_used + 1]
+
+    def candidate_decoded(
+        candidate_palette: list[tuple[int, int, int, int]],
+        candidate_levels: list[bytes],
+    ) -> bytes:
+        candidate_chain = b"".join(
+            legacy.swizzle_2d(indices, level.width, level.height, 1)
+            for level, indices in zip(clean_mips, candidate_levels)
+        )
+        candidate_mud_palette = mud_palette_for(
+            candidate_palette, candidate_levels
+        )
+        candidate = bytearray(source_decoded)
+        candidate[256:256 + sleeve.INDEX_CHAIN_BYTES] = candidate_chain
+        candidate[
+            256 + sleeve.CLEAN_PALETTE_OFFSET:
+            256 + sleeve.CLEAN_PALETTE_OFFSET + 1024
+        ] = legacy.palette_bytes(candidate_palette)
+        candidate[
+            256 + sleeve.MUD_PALETTE_OFFSET:
+            256 + sleeve.MUD_PALETTE_OFFSET + 1024
+        ] = legacy.palette_bytes(candidate_mud_palette)
+        return bytes(candidate)
+
+    bounded = legacy.quantize_levels_to_vc_lz_bound(
+        clean_mips,
+        candidate_decoded,
+        stream_tag=target.stream_tag,
+        offset_bits=target.offset_bits,
+        max_encoded_size=target.stored_size,
+    )
+    clean_palette = bounded.palette
+    index_levels = bounded.index_levels
+    quantization = bounded.quantization
+    mud_palette = mud_palette_for(clean_palette, index_levels)
+    clean_expected = [
+        legacy.MipLevel(level.level, level.width, level.height,
+                        legacy.rgba_from_indices(indices, clean_palette))
+        for level, indices in zip(clean_mips, index_levels)
+    ]
+    if mud_mips is None:
+        mud_expected = [
+            legacy.MipLevel(level.level, level.width, level.height,
+                            legacy.rgba_from_indices(indices, mud_palette))
+            for level, indices in zip(clean_mips, index_levels)
+        ]
+    else:
+        mud_expected = mud_mips
 
     quant_record = manifest.get("quantization")
     require(quant_record == {
@@ -326,6 +377,18 @@ def validate_dynamic_import(
         "mud_palette_entries": len(mud_palette),
         "shared_index_chain": True,
     }, "quantization metrics differ from raw PNG reconstruction")
+    expected_bounded_fit = {
+        "attempts": list(bounded.attempts),
+        "selected_palette_entries": len(clean_palette),
+        "selected_encoded_bytes": len(bounded.compressed),
+        "stored_size_bound": target.stored_size,
+    }
+    if len(bounded.attempts) > 1:
+        require(manifest.get("bounded_palette_fit") == expected_bounded_fit,
+                "bounded palette-fit evidence differs from raw PNG reconstruction")
+    else:
+        require("bounded_palette_fit" not in manifest,
+                "unchanged 256-color path gained fallback-only evidence")
     require(manifest.get("mips") == {
         "filter": "unpremultiplied_rgba_2x2_box_round_nearest",
         "level_count": 5,

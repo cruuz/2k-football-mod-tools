@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import json
 import os
 from pathlib import Path
 import tempfile
 import unittest
+
+from PIL import Image
 from unittest import mock
 
 
@@ -30,6 +33,21 @@ from mod_editor.apf_studio.models import (  # noqa: E402
     ApfCategory,
     ApfStatus,
 )
+
+
+_FIELD_EXTRA_TARGETS = (
+    Path(__file__).resolve().parents[2]
+    / "mod_editor"
+    / "data"
+    / "apf2k8_field_extra_targets.v1.json"
+)
+_WRITABLE_XENOS_FORMATS = frozenset({6, 18, 20})
+_CORE_FIELD_ART_KEYS = ((6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0))
+
+
+def _field_extra_rows() -> list[dict[str, object]]:
+    document = json.loads(_FIELD_EXTRA_TARGETS.read_text(encoding="utf-8"))
+    return list(document["package_659"]) + list(document["endzones"])
 
 
 def _write_png(path: Path, width: int, height: int) -> Path:
@@ -263,15 +281,60 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             page.deleteLater()
             self.application.processEvents()
 
+    def test_stock_nfl_endzones_button_filters_inventory(self) -> None:
+        page = self._page()
+        try:
+            self.assertTrue(page.stock_endzone_button.isEnabled())
+            self.assertFalse(
+                str(page.stock_endzone_button.property("disableReason") or "").strip()
+            )
+            page._show_stock_endzones()
+            self.application.processEvents()
+            self.assertEqual(
+                page.group_filter.currentData(), FieldArtKind.ENDZONE_TEXTURE.value
+            )
+            self.assertEqual(len(page.browser._matches), 235)
+            self.assertTrue(
+                all(
+                    asset.name.startswith("endzone_l")
+                    for asset in page.browser._matches
+                )
+            )
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_stock_nfl_endzones_button_teaches_when_unloaded(self) -> None:
+        page = self._page(ready=False)
+        try:
+            self.assertTrue(page.stock_endzone_button.isEnabled())
+            self.assertTrue(
+                str(page.stock_endzone_button.property("disableReason") or "").strip()
+            )
+            self.assertIn("Load", page.stock_endzone_button.toolTip())
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def _assert_replace_locked_explainable(self, page) -> None:
+        """Lock is honest: buttons stay clickable, but disableReason blocks write."""
+
+        self.assertFalse(page.browser.replace_button.isHidden())
+        self.assertFalse(page.browser.revert_button.isHidden())
+        # Never silent-gray: enabled + tooltip + disableReason teach the wall.
+        self.assertTrue(page.browser.replace_button.isEnabled())
+        self.assertTrue(page.browser.revert_button.isEnabled())
+        self.assertEqual(page.browser.replace_button.text(), "Replace locked")
+        self.assertEqual(page.browser.revert_button.text(), "Revert locked")
+        tip = page.browser.replace_button.toolTip()
+        reason = str(page.browser.replace_button.property("disableReason") or "")
+        self.assertTrue(tip.strip(), "locked replace must explain itself")
+        self.assertTrue(reason.strip(), "disableReason required for click-to-explain")
+
     def test_replace_and_revert_are_visible_but_explicitly_locked(self) -> None:
         page = self._page()
         try:
-            self.assertFalse(page.browser.replace_button.isHidden())
-            self.assertFalse(page.browser.revert_button.isHidden())
-            self.assertFalse(page.browser.replace_button.isEnabled())
-            self.assertFalse(page.browser.revert_button.isEnabled())
-            self.assertEqual(page.browser.replace_button.text(), "Replace locked")
-            self.assertEqual(page.browser.revert_button.text(), "Revert locked")
+            self._assert_replace_locked_explainable(page)
             self.assertIn("runtime field material", page.browser.detail_notes.text())
             self.assertIn(
                 "browse and export-only", page.browser.replace_button.toolTip()
@@ -294,9 +357,7 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 self.assertGreater(index, 0)
                 page.group_filter.setCurrentIndex(index)
                 self.application.processEvents()
-                self.assertFalse(page.browser.replace_button.isEnabled())
-                self.assertFalse(page.browser.revert_button.isEnabled())
-                self.assertEqual(page.browser.replace_button.text(), "Replace locked")
+                self._assert_replace_locked_explainable(page)
         finally:
             page.deleteLater()
             self.application.processEvents()
@@ -310,8 +371,7 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             self.assertEqual(page.group_table.rowCount(), 0)
             self.assertIn("Semantic map needs review", page.summary_label.text())
             self.assertEqual(len(page.browser._matches), 257)
-            self.assertFalse(page.browser.replace_button.isEnabled())
-            self.assertFalse(page.browser.revert_button.isEnabled())
+            self._assert_replace_locked_explainable(page)
         finally:
             page.deleteLater()
             self.application.processEvents()
@@ -319,10 +379,17 @@ class ApfFieldArtGuiTests(unittest.TestCase):
     def test_unloaded_state_preserves_the_action_lock(self) -> None:
         page = self._page(ready=False)
         try:
-            self.assertEqual(page.summary_label.text(), "Load a game to map Field Art")
+            summary = page.summary_label.text()
+            self.assertIn("Load", summary)
+            self.assertIn("Field Art", summary)
+            # Teachable empty state may include next-step stock-NFL inventory copy.
+            self.assertTrue(
+                summary.startswith("Load a game to map Field Art")
+                or summary.startswith("Load your APF game to map Field Art"),
+                msg=summary,
+            )
             self.assertEqual(page.browser.table.rowCount(), 0)
-            self.assertFalse(page.browser.replace_button.isEnabled())
-            self.assertFalse(page.browser.revert_button.isEnabled())
+            self._assert_replace_locked_explainable(page)
         finally:
             page.deleteLater()
             self.application.processEvents()
@@ -333,17 +400,31 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             offered = tuple(
                 target.name for target in FIELD_ART_COVERED_TARGETS
             )
-            self.assertEqual(
-                offered,
-                (
-                    "endzone_l0",
-                    "endzone_l1",
-                    "pc_field_goal",
-                    "Field_Pass_text",
-                    "Stride_number_field",
-                    "divots",
-                ),
+            core = (
+                "endzone_l0",
+                "endzone_l1",
+                "pc_field_goal",
+                "Field_Pass_text",
+                "Stride_number_field",
+                "divots",
             )
+            self.assertEqual(offered[:6], core)
+            extra_rows = _field_extra_rows()
+            writable_extras = [
+                row
+                for row in extra_rows
+                if int(row["format"]) in _WRITABLE_XENOS_FORMATS
+            ]
+            refused_fmt59 = [
+                row for row in extra_rows if int(row["format"]) == 59
+            ]
+            # 6 core + 21 weave/dirt + 194 format-18 endzones (196 including
+            # the two core endzone layers). Format 59 stays out.
+            self.assertEqual(len(writable_extras), 21 + 196)
+            self.assertEqual(len(refused_fmt59), 39)
+            self.assertGreaterEqual(len(offered), 6 + 21 + 194)
+            self.assertIn("weave_jersey0", offered)
+            self.assertIn("dirtmap_helmet", offered)
             self.assertEqual(page.editor.slot.count(), len(offered))
             # The deferred codecs and the non-texture rows are never offered.
             for deferred in (
@@ -356,11 +437,73 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 "penalty_onthe_field",
             ):
                 self.assertNotIn(deferred, offered)
-            # Each offered slot is pinned to one exact archive identity.
-            self.assertEqual(
-                tuple(target.key for target in FIELD_ART_COVERED_TARGETS),
-                ((6, 0), (6, 1), (659, 18), (659, 23), (659, 252), (53, 0)),
+            keys = tuple(target.key for target in FIELD_ART_COVERED_TARGETS)
+            key_set = set(keys)
+            self.assertEqual(keys[:6], _CORE_FIELD_ART_KEYS)
+            self.assertEqual(len(keys), len(key_set))
+            self.assertNotIn((53, 3), key_set)
+            for row in writable_extras:
+                self.assertIn(
+                    (int(row["entry_index"]), int(row["file_index"])),
+                    key_set,
+                )
+            labels = [
+                page.editor.slot.itemText(index)
+                for index in range(page.editor.slot.count())
+            ]
+            for row in refused_fmt59:
+                key = (int(row["entry_index"]), int(row["file_index"]))
+                self.assertNotIn(key, key_set)
+                needle = f"outer {row['entry_index']} / inner {row['file_index']}"
+                self.assertFalse(
+                    any(needle in label for label in labels),
+                    msg=f"format-59 slot {key} leaked into the picker",
+                )
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_editor_filter_keeps_the_221_slot_combo_usable(self) -> None:
+        page = self._page()
+        try:
+            self.assertGreaterEqual(page.editor.slot.count(), 6 + 21 + 194)
+            self.assertTrue(page.editor.slot.isEnabled())
+            self.assertTrue(page.editor.slot_filter.isEnabled())
+            page.editor.slot_filter.setText("weave_jersey0")
+            self.application.processEvents()
+            self.assertEqual(page.editor.slot.count(), 1)
+            self.assertEqual(page.editor.current_target().name, "weave_jersey0")
+            self.assertTrue(page.editor.replace_button.isEnabled())
+            self.assertTrue(page.editor.build_button.isEnabled())
+            page.editor.slot_filter.setText("not-a-real-field-art-slot-zzzz")
+            self.application.processEvents()
+            self.assertEqual(page.editor.slot.count(), 0)
+            self.assertTrue(page.editor.slot.isEnabled())
+            self.assertTrue(page.editor.replace_button.isEnabled())
+            self.assertTrue(
+                str(page.editor.build_button.property("disableReason") or "").strip()
             )
+            page.editor.slot_filter.clear()
+            self.application.processEvents()
+            self.assertEqual(page.editor.slot.count(), len(FIELD_ART_COVERED_TARGETS))
+        finally:
+            page.deleteLater()
+            self.application.processEvents()
+
+    def test_editor_stock_copy_does_not_claim_all_118_teams_writable(self) -> None:
+        page = self._page()
+        try:
+            lock_note = page.editor.lock_note.text()
+            folded = lock_note.casefold()
+            self.assertIn("format-18", folded)
+            self.assertIn("format-59", folded)
+            self.assertIn("export-only", folded)
+            self.assertIn("weave", folded)
+            self.assertIn("browse", folded)
+            # Inventory may name ~118 packages; the writer does not own the
+            # 39 format-59 endzone_l1 layers, so "all 118 teams" is a lie.
+            self.assertNotIn("all 118 teams", folded)
+            self.assertNotIn("every team", folded)
         finally:
             page.deleteLater()
             self.application.processEvents()
@@ -371,8 +514,15 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             self.assertTrue(page.editor.replace_button.isEnabled())
             self.assertTrue(page.editor.export_button.isEnabled())
             self.assertEqual(page.editor.replace_button.text(), "Replace PNG…")
-            self.assertFalse(page.editor.build_button.isEnabled())
-            self.assertFalse(page.editor.revert_button.isEnabled())
+            # Never silent-gray: Build/Revert stay clickable until staged.
+            self.assertTrue(page.editor.build_button.isEnabled())
+            self.assertTrue(page.editor.revert_button.isEnabled())
+            self.assertTrue(
+                str(page.editor.build_button.property("disableReason") or "").strip()
+            )
+            self.assertTrue(
+                str(page.editor.revert_button.property("disableReason") or "").strip()
+            )
             self.assertIn("not proved without a Xenia capture", page.editor.description.text())
         finally:
             page.deleteLater()
@@ -381,10 +531,18 @@ class ApfFieldArtGuiTests(unittest.TestCase):
     def test_editor_is_read_only_safe_until_a_game_is_loaded(self) -> None:
         page = self._page(ready=False)
         try:
-            self.assertFalse(page.editor.replace_button.isEnabled())
-            self.assertFalse(page.editor.export_button.isEnabled())
-            self.assertFalse(page.editor.build_button.isEnabled())
-            self.assertFalse(page.editor.revert_button.isEnabled())
+            # Never silent-gray when unloaded: enabled + disableReason teaches Load.
+            self.assertTrue(page.editor.replace_button.isEnabled())
+            self.assertTrue(page.editor.export_button.isEnabled())
+            self.assertTrue(page.editor.build_button.isEnabled())
+            self.assertTrue(page.editor.revert_button.isEnabled())
+            for button in (
+                page.editor.replace_button,
+                page.editor.export_button,
+                page.editor.build_button,
+            ):
+                reason = str(button.property("disableReason") or "")
+                self.assertIn("Load", reason)
             self.assertEqual(page.editor.status.text(), "○ Not loaded")
         finally:
             page.deleteLater()
@@ -417,8 +575,14 @@ class ApfFieldArtGuiTests(unittest.TestCase):
                 page.editor._revert()
                 self.application.processEvents()
                 self.assertIsNone(page.editor.staged_path(target))
-                self.assertFalse(page.editor.build_button.isEnabled())
-                self.assertFalse(page.editor.revert_button.isEnabled())
+                self.assertTrue(page.editor.build_button.isEnabled())
+                self.assertTrue(page.editor.revert_button.isEnabled())
+                self.assertTrue(
+                    str(page.editor.build_button.property("disableReason") or "").strip()
+                )
+                self.assertTrue(
+                    str(page.editor.revert_button.property("disableReason") or "").strip()
+                )
         finally:
             page.deleteLater()
             self.application.processEvents()
@@ -513,7 +677,14 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             page.deleteLater()
             self.application.processEvents()
 
-    def test_editor_refuses_a_png_that_is_not_the_exact_base_size(self) -> None:
+    def test_editor_offers_to_resize_a_png_that_is_not_the_base_size(self) -> None:
+        """A wrong size is an offer now, not a dead end.
+
+        The writer still demands the exact base size and always will. Refusing
+        the user's file instead of fitting it was the app's choice, and it
+        stopped people before they started -- so the prompt is the behaviour
+        under test, along with declining it leaving nothing staged.
+        """
         page = self._page()
         try:
             target_index = next(
@@ -528,16 +699,37 @@ class ApfFieldArtGuiTests(unittest.TestCase):
             with tempfile.TemporaryDirectory() as directory:
                 wrong = Path(directory) / "wrong.png"
                 _write_png(wrong, target.width // 2, target.height)
+
+                # Declining leaves the slot exactly as it was.
                 with mock.patch.object(
-                    gui.QMessageBox, "information", return_value=None
-                ) as reported:
+                    gui.QMessageBox, "question",
+                    return_value=gui.QMessageBox.Cancel,
+                ) as asked:
                     page.editor._stage_path(wrong)
                 self.application.processEvents()
-
-                reported.assert_called_once()
-                self.assertIn("Wrong PNG size", reported.call_args.args[1])
+                asked.assert_called_once()
+                self.assertIn("Resize this image?", asked.call_args.args[1])
                 self.assertIsNone(page.editor.staged_path(target))
-                self.assertFalse(page.editor.build_button.isEnabled())
+                self.assertTrue(page.editor.build_button.isEnabled())
+                self.assertTrue(
+                    str(page.editor.build_button.property("disableReason") or "").strip()
+                )
+
+                # Accepting stages a copy at exactly the base size.
+                with mock.patch.object(
+                    gui.QMessageBox, "question",
+                    return_value=gui.QMessageBox.Yes,
+                ), mock.patch.object(
+                    gui.QMessageBox, "information", return_value=None
+                ):
+                    page.editor._stage_path(wrong)
+                self.application.processEvents()
+                staged = page.editor.staged_path(target)
+                self.assertIsNotNone(staged)
+                with Image.open(staged) as fitted:
+                    self.assertEqual(
+                        fitted.size, (target.width, target.height)
+                    )
         finally:
             page.deleteLater()
             self.application.processEvents()

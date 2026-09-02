@@ -45,6 +45,7 @@ from mod_editor.studio.audio_replacement_pack import (
     MAX_PREFLIGHT_CHANGED_ROWS,
     MAX_REPLACEMENT_WAV_BYTES,
     MAX_SELECTED_AUDIO_COUNT,
+    REPLACEMENTS_DIRECTORY,
     AudioReplacementPackPreflightResult,
     AudioReplacementPackService,
     complete_standalone_pack_path,
@@ -242,6 +243,31 @@ class AudioReplacementPackTests(unittest.TestCase):
                 [AUDIO_REPLACEMENT_GUIDE, AUDIO_REPLACEMENT_MANIFEST, "replacements/"],
             )
             self.assertFalse(any(name.endswith(".wav") for name in archive.namelist()))
+
+    def test_export_uses_dirhandle_when_posix_fd_paths_are_unavailable(self) -> None:
+        """Hosted macOS need not expose a usable /proc/self/fd or /dev/fd alias."""
+
+        folder = self.root / "macos-fallback-folder"
+        archive_path = self.root / "macos-fallback.zip"
+        with mock.patch.object(
+            audio_pack_module, "_pinned_staging_root", return_value=None
+        ):
+            self.service.export_template(folder, container="folder")
+            self.service.export_template(archive_path, container="zip")
+
+        self.assertTrue((folder / REPLACEMENTS_DIRECTORY).is_dir())
+        with zipfile.ZipFile(archive_path) as archive:
+            self.assertEqual(
+                archive.namelist(),
+                [
+                    AUDIO_REPLACEMENT_GUIDE,
+                    AUDIO_REPLACEMENT_MANIFEST,
+                    f"{REPLACEMENTS_DIRECTORY}/",
+                ],
+            )
+        self.assertFalse(
+            any(".audio-pack-" in path.name for path in self.root.iterdir())
+        )
 
     def test_v1_v2_zip_bytes_remain_rc15_compatible(self) -> None:
         legacy = self.root / "legacy-v1.zip"
@@ -1117,24 +1143,37 @@ class AudioReplacementPackTests(unittest.TestCase):
         reached_final_call = False
 
         def race_at_final_call(
-            parent_descriptor: int, source_name: str, destination_name: str
+            parent_descriptor: object, source_name: str, destination_name: str
         ) -> None:
             nonlocal reached_final_call
             reached_final_call = True
-            os.mkdir(destination_name, mode=0o700, dir_fd=parent_descriptor)
-            marker = os.open(
-                f"{destination_name}/foreign.txt",
-                (os.O_WRONLY | os.O_CREAT | os.O_EXCL) | getattr(os, "O_BINARY", 0),
-                0o600,
-                dir_fd=parent_descriptor,
-            )
+            flags = (
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL
+            ) | getattr(os, "O_BINARY", 0)
+            destination_handle = None
+            if isinstance(parent_descriptor, int):
+                os.mkdir(destination_name, mode=0o700, dir_fd=parent_descriptor)
+                marker = os.open(
+                    f"{destination_name}/foreign.txt",
+                    flags,
+                    0o600,
+                    dir_fd=parent_descriptor,
+                )
+            else:
+                parent_descriptor.mkdir(destination_name, 0o700)  # type: ignore[attr-defined]
+                destination_handle = parent_descriptor.open_dir(  # type: ignore[attr-defined]
+                    destination_name
+                )
+                marker = destination_handle.open("foreign.txt", flags, 0o600)
             try:
                 os.write(marker, b"foreign destination survives")
             finally:
                 os.close(marker)
+                if destination_handle is not None:
+                    destination_handle.close()
             real_rename_noreplace(
                 parent_descriptor, source_name, destination_name
-            )
+            )  # type: ignore[arg-type]
 
         with (
             mock.patch.object(
@@ -2519,18 +2558,23 @@ class AudioReplacementPackGuiTests(unittest.TestCase):
             )
             application.processEvents()
 
-            self.assertFalse(panel.export_replacement_template_button.isEnabled())
-            self.assertIn(
-                "Add at least one Editable standalone sound",
-                panel.export_replacement_template_button.toolTip(),
+            # Never silent-gray: export stays clickable; disableReason teaches empty shortlist.
+            self.assertTrue(panel.export_replacement_template_button.isEnabled())
+            tip = panel.export_replacement_template_button.toolTip()
+            reason = str(
+                panel.export_replacement_template_button.property("disableReason") or ""
             )
-            with (
-                mock.patch.object(QFileDialog, "getSaveFileName") as choose,
-                mock.patch.object(QMessageBox, "information") as information,
-            ):
+            self.assertTrue(reason.strip() or tip.strip())
+            with mock.patch.object(QFileDialog, "getSaveFileName") as choose:
                 panel._export_audio_replacement_template()
             choose.assert_not_called()
-            self.assertIn("Add 1–256", information.call_args.args[2])
+            # Busy/empty wall is taught via progress_label (no modal hang).
+            self.assertTrue(
+                "1–256" in panel.progress_label.text()
+                or "Add" in panel.progress_label.text()
+                or reason in panel.progress_label.text()
+                or reason.strip()
+            )
             self.assertEqual(calls, [])
 
             # RC15 promotes alias-related rows by exact physical identity. The

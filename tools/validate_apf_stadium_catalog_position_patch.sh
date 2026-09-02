@@ -4,8 +4,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 GAME_DIR='extracted/All-Pro Football 2K8 (USA)'
-CATALOG='reports/assets/apf_stadium_static_position_target_catalog.json'
-SCHEMA='reports/specs/apf2k8_scne_catalog_position_recipe.schema.json'
+CATALOG='mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json'
+SCHEMA='mod_editor/data/apf2k8_stadium_position_recipe.v2.schema.json'
 SAMPLE='reports/asset_samples/apf_scene/stadium_node3_nonretail_zero_recipe.json'
 REPORT='reports/assets/apf_scne_catalog_position_roundtrip.json'
 
@@ -15,10 +15,10 @@ check_pin() {
   test "$(sha256sum "$path" | cut -d' ' -f1)" = "$digest"
 }
 
-check_pin "$CATALOG" 456821 e2b21ebf4d358358627d26b7d7ea3c6cf600ea3f9d1e139cb9caa8ff1748a424
-check_pin "$SCHEMA" 5585 41fcf955c65d81bb5da2d229d6a2ffee692a9c5ae80eda1c0849911c90950277
+check_pin "$CATALOG" 456898 c3122019b74645380052670f9fdce389277a454b440dd7b7f438276b05f57469
+check_pin "$SCHEMA" 5585 ff24b219f4d00a7342dcc41e37ef4d8afe487af8a23ce1c1fcf523fd498c28ac
 check_pin "$SAMPLE" 2971 329d3290201407f1acb905d432bf8b53547a654fd895cd37a347ae979c4b60a9
-check_pin "$REPORT" 5919 a701d74927e8a9ee36d24ffe33624016acc7058d6439ae7c60450489748f631b
+check_pin "$REPORT" 5932 eebd060dbcbeb07a01ccb2ac5a3491f0306ec43424080b33ad49258819333eea
 
 jq -e '
   .schema == "apf2k8_scne_catalog_position_roundtrip/v2" and
@@ -31,11 +31,11 @@ jq -e '
   .target.approved_position_lane_bytes == 288 and
   .no_op_witness.complete_1a_byte_identical == true and
   .no_op_witness.retail_coordinates_committed == false and
-  .changed_witness.output_outer14_sha256 == "ad58fc4b0adee1044c3c55df987d04d24875eb0f042e146ccd032f18a3664505" and
-  .changed_witness.output_1a_sha256 == "bae670cdc1f07a5201a21c6a7ecadb5499c7c2d46dff2a78f4342cf9ce8a7e33" and
+  .changed_witness.output_outer14_sha256 == "23e15b372b7e3be49a2b0a475232c4f44b9c4de9d4a7a572e5e98a8df9d7af9e" and
+  .changed_witness.output_1a_sha256 == "cf8cd039e6ef3f078f193c1563bce76d3983372cd67b30a0b051487699378022" and
   .changed_witness.changed_decoded_block0_bytes == 284 and
   .changed_witness.changed_decoded_bytes_subset_of_288_authorized_lane_bytes == true and
-  .changed_witness.allocation_slack_after_bytes == 1513 and
+  .changed_witness.allocation_slack_after_bytes == 21907 and
   .preservation_proof.all_scne_bytes_outside_selected_position_lanes_exact == true and
   .preservation_proof.all_twelve_non_target_parts_exact == true and
   .independent_verifier.imports_any_position_writer == false and
@@ -50,7 +50,7 @@ jq -e '
 python3 -m unittest tests.test_apf_stadium_catalog_position_patch >/dev/null
 
 if test "${APF_SCNE_CATALOG_POSITION_FAST:-0}" = 1; then
-  echo 'APF_SCNE_CATALOG_POSITION_VALIDATION_PASS mode=fast schema=v2 targets=77 target=outer14.inner8.node3 vertices=24 draws=3 witnesses=2 tests=14 full_copied_1a=skipped report_sha256=a701d74927e8a9ee36d24ffe33624016acc7058d6439ae7c60450489748f631b runtime=false hardware=false production=false'
+  echo 'APF_SCNE_CATALOG_POSITION_VALIDATION_PASS mode=fast schema=v2 targets=77 target=outer14.inner8.node3 vertices=24 draws=3 witnesses=2 tests=14 full_copied_1a=skipped report_sha256=eebd060dbcbeb07a01ccb2ac5a3491f0306ec43424080b33ad49258819333eea runtime=false hardware=false production=false'
   exit 0
 fi
 
@@ -76,13 +76,13 @@ check_pin "$tmp/noop/apf2k8_scne_catalog_position_manifest.json" 6147 ae6215ad2e
 check_pin "$tmp/noop_verify.json" 2889 f74be14d22bc83a00923ffc19e092f3e6a1a07b638fdfed9f238eaea343aad0f
 
 changed_patch="$(python3 tools/apf_stadium_catalog_position_patch.py --game-dir "$GAME_DIR" --recipe "$SAMPLE" --output-dir "$tmp/changed")"
-test "$changed_patch" = 'APF_SCNE_CATALOG_POSITION_PATCH_PASS mode=changed target=outer14.inner8.node3 vertices=24 copied_pack=1A outer_sha256=ad58fc4b0adee1044c3c55df987d04d24875eb0f042e146ccd032f18a3664505 output_pack_sha256=bae670cdc1f07a5201a21c6a7ecadb5499c7c2d46dff2a78f4342cf9ce8a7e33 runtime=false hardware=false production=false'
+test "$changed_patch" = 'APF_SCNE_CATALOG_POSITION_PATCH_PASS mode=changed target=outer14.inner8.node3 vertices=24 copied_pack=1A outer_sha256=23e15b372b7e3be49a2b0a475232c4f44b9c4de9d4a7a572e5e98a8df9d7af9e output_pack_sha256=cf8cd039e6ef3f078f193c1563bce76d3983372cd67b30a0b051487699378022 runtime=false hardware=false production=false'
 test "$(find "$tmp/changed" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort | tr '\n' ' ')" = '1A apf2k8_scne_catalog_position_manifest.json '
 changed_verify="$(python3 tools/apf_stadium_catalog_position_verify.py --game-dir "$GAME_DIR" --recipe "$SAMPLE" --output-dir "$tmp/changed" --artifact "$tmp/changed_verify.json")"
-test "$changed_verify" = 'APF_SCNE_CATALOG_POSITION_VERIFY_PASS mode=changed target=outer14.inner8.node3 vertices=24 output_pack_sha256=bae670cdc1f07a5201a21c6a7ecadb5499c7c2d46dff2a78f4342cf9ce8a7e33 siblings=11 non_target_parts=12 runtime=false hardware=false production=false'
-check_pin "$tmp/changed/apf2k8_scne_catalog_position_manifest.json" 6252 4b5fb3f37e0e9582644d7546afd70c56e484e0c8088fdf128a3b25b81405cfec
-check_pin "$tmp/changed_verify.json" 2891 dbd9657d7de21a002cdee9101ed24efd995ccfd6c127023685b0eeae5a0c449f
-test "$(sha256sum "$tmp/changed/1A" | cut -d' ' -f1)" = bae670cdc1f07a5201a21c6a7ecadb5499c7c2d46dff2a78f4342cf9ce8a7e33
+test "$changed_verify" = 'APF_SCNE_CATALOG_POSITION_VERIFY_PASS mode=changed target=outer14.inner8.node3 vertices=24 output_pack_sha256=cf8cd039e6ef3f078f193c1563bce76d3983372cd67b30a0b051487699378022 siblings=11 non_target_parts=12 runtime=false hardware=false production=false'
+check_pin "$tmp/changed/apf2k8_scne_catalog_position_manifest.json" 6253 b350705a1ddfea61c6d5bae065e88a702750296ec723342d38103e513ea3f851
+check_pin "$tmp/changed_verify.json" 2891 507c6adda8902b671bf1ade87bb52cd5655c305d7853a902683cf779eea0f00f
+test "$(sha256sum "$tmp/changed/1A" | cut -d' ' -f1)" = cf8cd039e6ef3f078f193c1563bce76d3983372cd67b30a0b051487699378022
 
 mkdir "$tmp/mutant"
 cp --reflink=auto "$tmp/changed/1A" "$tmp/mutant/1A"
@@ -97,4 +97,4 @@ test ! -e "$tmp/mutant_verify.json"
 source_after="$(sha256sum "$GAME_DIR/0A" "$GAME_DIR/0B" "$GAME_DIR/1A" "$GAME_DIR/1B")"
 test "$source_after" = "$source_before"
 
-echo 'APF_SCNE_CATALOG_POSITION_VALIDATION_PASS mode=full schema=v2 targets=77 target=outer14.inner8.node3 vertices=24 draws=3 witnesses=2 tests=14 full_copied_1a=true noop_exact=true changed_outer=ad58fc4b0adee1044c3c55df987d04d24875eb0f042e146ccd032f18a3664505 changed_1a=bae670cdc1f07a5201a21c6a7ecadb5499c7c2d46dff2a78f4342cf9ce8a7e33 changed_decoded=284 slack=1513 siblings=11 non_target_parts=12 mutation_refused=true overflow_refused=true symlink_refused=true hardlink_refused=true publication_races_refused=true source_unchanged=true independent_verify=true report_sha256=a701d74927e8a9ee36d24ffe33624016acc7058d6439ae7c60450489748f631b runtime=false hardware=false production=false'
+echo 'APF_SCNE_CATALOG_POSITION_VALIDATION_PASS mode=full schema=v2 targets=77 target=outer14.inner8.node3 vertices=24 draws=3 witnesses=2 tests=14 full_copied_1a=true noop_exact=true changed_outer=23e15b372b7e3be49a2b0a475232c4f44b9c4de9d4a7a572e5e98a8df9d7af9e changed_1a=cf8cd039e6ef3f078f193c1563bce76d3983372cd67b30a0b051487699378022 changed_decoded=284 slack=21907 siblings=11 non_target_parts=12 mutation_refused=true overflow_refused=true symlink_refused=true hardlink_refused=true publication_races_refused=true source_unchanged=true independent_verify=true report_sha256=eebd060dbcbeb07a01ccb2ac5a3491f0306ec43424080b33ad49258819333eea runtime=false hardware=false production=false'

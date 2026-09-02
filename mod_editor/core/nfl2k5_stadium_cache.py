@@ -20,6 +20,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import signal
 import stat
 import subprocess
@@ -76,6 +77,25 @@ class StadiumCacheError(ValidationError):
 
 class StadiumCacheFindingsError(StadiumCacheError):
     """The bounded worker reached an honest decoder or ownership boundary."""
+
+
+class StadiumCacheStaleError(StadiumCacheError):
+    """A previously derived private cache no longer matches this build.
+
+    Kept distinct from every other cache error because the correct response
+    differs.  A safety failure -- a symlink, a reparse point, a path outside
+    the private root -- must refuse and stay refused.  Staleness must not: this
+    cache is derived from the user's own game and is fully reproducible, so the
+    only right answer is to discard it and derive again.
+
+    This class exists because it did not.  Beta 30 rebound derived stadium
+    assets to the canonical game-content identity instead of a container hash,
+    which was the correct fix, and left every cache written before that change
+    failing its own marker check with no way back.  Anyone who had already
+    opened Stadium Studio then met "result marker is incompatible or
+    incomplete" on every launch, on a game that used to work, with the only
+    remedy being to delete a private directory nobody had told them about.
+    """
 
 
 @dataclass(frozen=True)
@@ -373,7 +393,17 @@ class Nfl2k5StadiumCacheCoordinator:
         final = root / PRIVATE_PARENT / FINAL_NAME
         if not final.exists():
             return None
-        return self._validate_result(final, cache.source.sha256)
+        # Every admitted container is reduced to the same independently pinned
+        # pack/inventory cache.  Bind derived assets to that canonical content,
+        # not to padding/layout bytes in whichever legal XISO was selected.
+        try:
+            return self._validate_result(final, SOURCE_SHA256)
+        except StadiumCacheStaleError:
+            # This accessor promises "already built", and a cache this build
+            # cannot read is not built. Reporting "nothing yet" sends the caller
+            # to ensure(), which rebuilds it; raising here would make every
+            # read-only probe fail on a game that only needs re-deriving.
+            return None
 
     def ensure(
         self,
@@ -430,8 +460,18 @@ class Nfl2k5StadiumCacheCoordinator:
                 ) from exc
             final = parent / FINAL_NAME
             if final.exists():
-                sink("Stadium Studio private assets ready", 1, 1)
-                return self._validate_result(final, cache.source.sha256)
+                try:
+                    result = self._validate_result(final, SOURCE_SHA256)
+                except StadiumCacheStaleError:
+                    # Derived from the user's own game and reproducible, so a
+                    # cache this build cannot read is a rebuild, not a wall.
+                    # Only staleness reaches here; a safety refusal from
+                    # _validate_result is a different class and still propagates.
+                    sink("Rebuilding out-of-date private Stadium Studio assets", 0, 1)
+                    self._discard_stale_final(final)
+                else:
+                    sink("Stadium Studio private assets ready", 1, 1)
+                    return result
             staging = parent / STAGING_NAME
             if staging.exists():
                 info = staging.lstat()
@@ -458,7 +498,7 @@ class Nfl2k5StadiumCacheCoordinator:
                 "--pack0", str(pack0),
                 "--inventory", str(inventory),
                 "--output", str(staging),
-                "--source-sha256", cache.source.sha256,
+                "--source-sha256", SOURCE_SHA256,
                 "--expected-scenes", str(EXPECTED_STADIUM_SCENES),
                 "--minimum-free-bytes", str(self.free_space_reserve),
             )
@@ -470,7 +510,7 @@ class Nfl2k5StadiumCacheCoordinator:
                     f"{detail} The source XISO and shareable projects were untouched; "
                     "completed scene checkpoints remain in the private cache for retry."
                 )
-            self._validate_result(staging, cache.source.sha256)
+            self._validate_result(staging, SOURCE_SHA256)
             if final.exists():
                 raise StadiumCacheError(
                     "Another process published Stadium Studio assets unexpectedly"
@@ -482,12 +522,46 @@ class Nfl2k5StadiumCacheCoordinator:
             fsync_directory(parent)
             sink("Stadium Studio private assets ready", 1, 1)
             # Re-resolve every path after the directory rename.
-            return self._validate_result(final, cache.source.sha256)
+            return self._validate_result(final, SOURCE_SHA256)
         finally:
             try:
                 release_lock(lock_fd)
             finally:
                 os.close(lock_fd)
+
+    def _discard_stale_final(self, final: Path) -> None:
+        """Remove a published cache this build cannot read, safely.
+
+        Deleting a directory tree is the one destructive act in this module, so
+        it is fenced twice: the target must be the exact published name under
+        the private parent, and it must be a real directory rather than a
+        symlink or reparse point -- the same conditions the publisher itself
+        required. Anything else is left untouched and reported, because a cache
+        that fails those checks is a safety question, not a stale one.
+        """
+
+        if final.name != FINAL_NAME or final.parent.name != PRIVATE_PARENT:
+            raise StadiumCacheError(
+                "Refusing to remove an unexpected Stadium Studio cache path"
+            )
+        info = final.lstat()
+        if (
+            not stat.S_ISDIR(info.st_mode)
+            or stat.S_ISLNK(info.st_mode)
+            or _is_reparse_point(info)
+        ):
+            raise StadiumCacheError(
+                "The published Stadium Studio cache is not a plain private "
+                "directory, so it will not be removed automatically"
+            )
+        # Renamed aside first: publication is a rename onto this exact name, so
+        # a crash mid-delete must not leave a half-erased tree wearing it.
+        discarded = final.with_name(f".{FINAL_NAME}.stale")
+        if discarded.exists():
+            shutil.rmtree(discarded, ignore_errors=True)
+        os.replace(final, discarded)
+        shutil.rmtree(discarded, ignore_errors=True)
+        fsync_directory(final.parent)
 
     @staticmethod
     def _require_private_directory(path: Path, label: str) -> None:
@@ -527,10 +601,14 @@ class Nfl2k5StadiumCacheCoordinator:
 
     @staticmethod
     def _validate_source_cache(cache: SourceCache) -> tuple[Path, Path, Path]:
+        # Identity, not container equality. The sha256 term used to require the
+        # user's whole image to equal the project's own dump, which refused
+        # every other legal rip of the same disc; the fingerprint already says
+        # this cache came from recognized USA retail NFL 2K5, and every artefact
+        # inside the cache is pinned individually.
         if (
             not cache.source.recognized
             or cache.source.fingerprint_id != "nfl2k5-usa-retail-xiso"
-            or cache.source.sha256 != SOURCE_SHA256
             or cache.source.kind != "xiso"
         ):
             raise StadiumCacheError(
@@ -547,6 +625,10 @@ class Nfl2k5StadiumCacheCoordinator:
         ):
             raise StadiumCacheError("The private NFL 2K5 source cache is not a safe directory")
         root = cache.root.resolve(strict=True)
+        if root.name != SOURCE_SHA256:
+            raise StadiumCacheError(
+                "The private NFL 2K5 source cache is not the canonical game cache"
+            )
         pack0 = _regular_file(cache.pack0, "private archive pack 0")
         inventory = _regular_file(cache.inventory, "private resource inventory")
         for path, label in ((pack0, "pack 0"), (inventory, "resource inventory")):
@@ -579,7 +661,7 @@ class Nfl2k5StadiumCacheCoordinator:
             or marker.get("private_user_cache") is not True
             or marker.get("shareable") is not False
         ):
-            raise StadiumCacheError(
+            raise StadiumCacheStaleError(
                 "Private Stadium Studio result marker is incompatible or incomplete"
             )
         paths = marker.get("paths")
@@ -587,7 +669,7 @@ class Nfl2k5StadiumCacheCoordinator:
         summary = marker.get("summary")
         if not isinstance(paths, dict) or not isinstance(hashes, dict) \
                 or not isinstance(summary, dict):
-            raise StadiumCacheError("Private Stadium Studio result marker is incomplete")
+            raise StadiumCacheStaleError("Private Stadium Studio result marker is incomplete")
         gltf_manifest = _confined_file(
             root, paths.get("gltf_manifest"), "stadium glTF manifest"
         )
@@ -598,21 +680,21 @@ class Nfl2k5StadiumCacheCoordinator:
             root, paths.get("texture_root"), "stadium texture root"
         )
         if _sha256(gltf_manifest) != hashes.get("gltf_manifest_sha256"):
-            raise StadiumCacheError("Private stadium glTF manifest hash changed")
+            raise StadiumCacheStaleError("Private stadium glTF manifest hash changed")
         if _sha256(texture_manifest) != hashes.get("texture_manifest_sha256"):
-            raise StadiumCacheError("Private stadium texture manifest hash changed")
+            raise StadiumCacheStaleError("Private stadium texture manifest hash changed")
         gltf = _read_json(gltf_manifest, "stadium glTF manifest")
         texture = _read_json(texture_manifest, "stadium texture manifest")
         if gltf.get("schema") != GLTF_MANIFEST_SCHEMA:
-            raise StadiumCacheError("Private stadium glTF manifest schema changed")
+            raise StadiumCacheStaleError("Private stadium glTF manifest schema changed")
         if texture.get("schema") != TEXTURE_MANIFEST_SCHEMA:
-            raise StadiumCacheError("Private stadium texture manifest schema changed")
+            raise StadiumCacheStaleError("Private stadium texture manifest schema changed")
         scene_count = _positive_int(summary.get("stadium_scene_count"), "scene count")
         exported = _positive_int(
             summary.get("exported_scene_count"), "exported scene count"
         )
         if scene_count != EXPECTED_STADIUM_SCENES or exported > scene_count:
-            raise StadiumCacheError("Private Stadium Studio scene coverage is incomplete")
+            raise StadiumCacheStaleError("Private Stadium Studio scene coverage is incomplete")
         return StadiumCacheResult(
             root=root,
             gltf_manifest=gltf_manifest,
@@ -646,6 +728,7 @@ __all__ = [
     "StadiumCacheError",
     "StadiumCacheFindingsError",
     "StadiumCacheResult",
+    "StadiumCacheStaleError",
     "StadiumCacheWorkerRunner",
     "SubprocessStadiumCacheWorkerRunner",
     "WorkerCommandResult",

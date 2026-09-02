@@ -9,6 +9,16 @@ import struct
 from collections import Counter
 from pathlib import Path
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 from nfl_outer import FormatError, parse_archive, read_entry_range
 
 
@@ -132,7 +142,10 @@ def main() -> int:
 
     result = {
         "schema": "nfl2k5_resource_chunk_inventory/v1",
-        "source_index": str(args.index),
+        # as_posix(), never str(): on Windows str(Path) yields backslashes, which
+        # JSON escapes, so the same scan of the same packs produced a
+        # different index and failed its own pinned hash.
+        "source_index": args.index.as_posix(),
         "summary": {
             "outer_entry_count": len(archive.entries),
             "structured_prefix_entry_count": structured_entries,
@@ -150,7 +163,7 @@ def main() -> int:
         "chunks": records,
     }
     args.json.parent.mkdir(parents=True, exist_ok=True)
-    args.json.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    args.json.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(result["summary"], indent=2))
     return 0
 

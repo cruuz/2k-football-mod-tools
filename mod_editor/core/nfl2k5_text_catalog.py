@@ -6,7 +6,8 @@ from the user's own XISO.  Only the two already-understood fixed-allocation
 ROST edit classes are writable:
 
 * team city/nickname/abbreviation strings; and
-* primary-player first/last names plus the masked jersey-number field.
+* primary-player first/last names, plus the masked jersey-number and
+  per-player face-shield fields for both player pools.
 
 Everything else remains searchable/exportable when it has a strict decoder,
 or appears as a read-only bank with a concise reason when it does not.
@@ -57,6 +58,13 @@ TEAM_STRIDE = 0x1F4
 JERSEY_FIELD = 0x20
 JERSEY_MASK = 0x3F8
 JERSEY_SHIFT = 3
+FACE_SHIELD_MASK = 0x18000
+FACE_SHIELD_SHIFT = 15
+FACE_SHIELD_CHOICES: tuple[tuple[int, str], ...] = (
+    (0, "None"),
+    (1, "Clear"),
+    (2, "Dark"),
+)
 TEXT_BANK_KINDS = frozenset({"CRED", "NAME", "ROST", "SITU", "STRG", "TRIV"})
 TEAM_TEXT_FIELDS: tuple[tuple[str, int], ...] = (
     ("nickname", 0x104),
@@ -129,10 +137,16 @@ class RosterNumberAsset:
     outer_index: int
     player_index: int
     provider_group_id: str
+    field: str = "jersey_number"
+    choices: tuple[tuple[int, str], ...] = ()
 
     @property
     def editable(self) -> bool:
         return self.access is TextAccess.EDITABLE
+
+    def display_value(self, value: int | None = None) -> str:
+        selected = self.value if value is None else value
+        return dict(self.choices).get(selected, str(selected))
 
 
 @dataclass(frozen=True)
@@ -171,6 +185,7 @@ class RosterPlayer:
     jersey_number_asset_id: str
     editable: bool
     reason: str
+    face_shield_asset_id: str = ""
 
 
 @dataclass(frozen=True)
@@ -589,7 +604,8 @@ class Nfl2k5TextCatalog:
                     bank_id, kind,
                     f"ROST {view.resource_label} · outer {outer}",
                     outer, chunk, True, "mixed", None,
-                    "Primary names/numbers and bounded team identity are editable; "
+                    "Primary names plus player numbers/face-shield types and bounded "
+                    "team identity are editable; "
                     "other decoded ROST text is export-only.",
                 ))
             elif kind == "STRG" and (outer, chunk) in strg_by_key:
@@ -795,7 +811,7 @@ class Nfl2k5TextEdits:
             record = grouped.setdefault(
                 asset.provider_group_id,
                 _provider_base(asset.provider_kind, asset.outer_index,
-                               asset.owner_index),
+                               asset.owner_index, asset.owner_kind),
             )
             record["changes"][asset.field] = value
         for asset_id, value in self._numbers.items():
@@ -807,9 +823,10 @@ class Nfl2k5TextEdits:
                     ROSTER_PLAYER_PROVIDER_KIND,
                     player.outer_index,
                     player.player_index,
+                    player.pool,
                 ),
             )
-            record["changes"]["jersey_number"] = value
+            record["changes"][asset.field] = value
         return (
             tuple(grouped[key] for key in sorted(grouped))
             + tuple(sorted(universal, key=lambda row: str(row["selector"])))
@@ -879,8 +896,9 @@ def _product_bank_from_safe(bank: SafeTextBank) -> TextBank:
     reason = bank.reason
     if bank.kind == "SITU":
         reason += (
-            " Coming Soon: team-selector reassignment, scenario-state values, "
-            "and unlock-condition logic need a separate causal decode."
+            " Research boundary: team-selector reassignment, scenario-state "
+            "values, and unlock-condition logic are inspect-only until a "
+            "separate causal decode proves safe editing."
         )
     return TextBank(
         bank_id=bank.bank_id,
@@ -1030,10 +1048,23 @@ def _unique_index(items: Sequence[Any], attribute: str) -> dict[str, Any]:
     return result
 
 
-def _provider_base(kind: str, outer_index: int, owner_index: int) -> dict[str, Any]:
+def _provider_base(
+    kind: str,
+    outer_index: int,
+    owner_index: int,
+    player_pool: str | None = None,
+) -> dict[str, Any]:
     if kind == ROSTER_TEAM_PROVIDER_KIND:
         key = "team_index"
     elif kind == ROSTER_PLAYER_PROVIDER_KIND:
+        if player_pool == "secondary_players":
+            return {
+                "kind": kind,
+                "resource_outer_index": outer_index,
+                "player_pool": player_pool,
+                "player_index": owner_index,
+                "changes": {},
+            }
         key = "primary_player_index"
     else:
         raise ValidationError(f"Unsupported text provider kind: {kind}")
@@ -1130,26 +1161,27 @@ def _append_roster_catalog(
             )
         word = struct.unpack_from("<I", raw, JERSEY_FIELD)[0]
         jersey = (word >> JERSEY_SHIFT) & 0x7F
+        face_shield = (word >> FACE_SHIELD_SHIFT) & 0x3
         face_id = struct.unpack_from("<H", raw, 0x06)[0]
         position_code = raw[0x35]
         name_assets: dict[str, str] = {}
-        name_editable = primary
+        name_target_editable = False
         reasons: list[str] = []
         for field in ("first_name", "last_name"):
             value = str(player[field])
             offset = int(player[f"{field}_offset"])
             unique = references[offset] == 1
             editable = primary and unique
+            name_target_editable = name_target_editable or editable
             if not primary:
                 reason = (
-                    "Secondary-player records are decoded but remain outside the "
-                    "proved primary-player writer."
+                    "Secondary-player name allocations are zero-capacity and stay "
+                    "read-only; this player's jersey number and face-shield type "
+                    "are enabled by their own proved contracts."
                 )
-                name_editable = False
                 reasons.append(reason)
             elif not unique:
                 reason = "This name allocation is shared by multiple decoded pointers."
-                name_editable = False
                 reasons.append(reason)
             else:
                 reason = "Fixed-allocation primary-player name string."
@@ -1164,11 +1196,15 @@ def _append_roster_catalog(
             )
             assets.append(asset)
             name_assets[field] = asset.asset_id
-        number_editable = primary and 0 <= jersey <= 99
+        # The generalized roster writer preserves the complete 32-bit word and
+        # patches only its seven jersey-number bits for both player pools.
+        # Secondary names remain unproved zero-capacity pointers, but their
+        # fixed-stride number word is no less bounded than a primary record.
+        number_editable = 0 <= jersey <= 99
         number_reason = (
-            "Masked primary-player jersey bits; every other word bit is preserved."
+            "Masked jersey-number bits; every other word bit is preserved."
             if number_editable else
-            "This player is outside the proved primary-player jersey writer."
+            "The source jersey value is outside the supported 0 through 99 range."
         )
         number_id = _asset_id(
             "nfl2k5", "roster", view.outer_index, pool, player_index,
@@ -1181,14 +1217,45 @@ def _append_roster_catalog(
             TextAccess.EDITABLE if number_editable else TextAccess.READ_ONLY,
             number_reason, view.outer_index, player_index, group,
         ))
-        editable = name_editable and number_editable
+        face_shield_editable = face_shield in dict(FACE_SHIELD_CHOICES)
+        face_shield_reason = (
+            "Per-player face-shield type from +0x20 bits 15..16. This disc seed "
+            "selects None, Clear, or Dark; it is not a HOME/AWAY visor tint, and "
+            "a loaded roster or franchise save may override it."
+            if face_shield_editable else
+            "The source face-shield value is reserved value 3. It is shown but "
+            "cannot be authored; only None, Clear, or Dark are supported."
+        )
+        face_shield_id = _asset_id(
+            "nfl2k5", "roster", view.outer_index, pool, player_index,
+            "face-shield",
+        )
+        numbers.append(RosterNumberAsset(
+            face_shield_id,
+            f"{player['first_name']} {player['last_name']} · Face Shield",
+            face_shield, 0, 2,
+            (TextAccess.EDITABLE if face_shield_editable
+             else TextAccess.READ_ONLY),
+            face_shield_reason, view.outer_index, player_index, group,
+            field="face_shield", choices=FACE_SHIELD_CHOICES,
+        ))
+        # RC50 enables each field from its own proved contract instead of
+        # locking the whole row, so a player row is writable when any bounded
+        # target is writable.  This keeps the published writable-player count
+        # truthful for the 68 secondary-pool players whose zero-capacity names
+        # stay read-only while their masked jersey-number bits are editable.
+        editable = (
+            name_target_editable or number_editable or face_shield_editable
+        )
         players.append(RosterPlayer(
             group, view.outer_index, view.resource_label, historical, pool,
             player_index, f"{player['first_name']} {player['last_name']}",
             position_code, face_id, name_assets["first_name"],
             name_assets["last_name"], number_id, editable,
             "; ".join(dict.fromkeys(reasons)) if reasons else
-            "Names and jersey number use bounded, pointer-preserving edits.",
+            "Names, jersey number, and face-shield type use bounded, "
+            "pointer-preserving edits.",
+            face_shield_id,
         ))
 
     read_only_groups: tuple[tuple[str, str, tuple[str, ...]], ...] = (

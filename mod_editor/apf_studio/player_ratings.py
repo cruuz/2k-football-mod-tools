@@ -28,14 +28,41 @@ class PlayerRatingsError(ValueError):
     """Raised when the packaged dictionary or a player record is invalid."""
 
 
+#: A name counts as real only when the executable pairs it with the byte.  The
+#: attribute descriptor table at 0x820E4D94 holds 27 records of stride 0x60; each
+#: carries the display name at +0x0C and a pointer at +0x18 to that attribute's
+#: own setter, whose ``stb`` displacement names the byte.  The four editable bytes
+#: that table does not mention keep a neutral label rather than a guess.
+NAMED_LABEL_STATUSES = frozenset({"xex_descriptor_proved"})
+
+
+#: Not every byte in the block is a magnitude.  Measured over the 1,437 stock
+#: records with a populated rating block: Kicking Style (0xD1) holds 49 at every
+#: field position with 99 for kickers and 1 for punters, 0xD2 holds only 0 or 1,
+#: Leadership (0xD3) is 50 in every single record, and 0xD4 uses just 1/25/50/99.
+#: Offering an index as a free 0-99 slider would invite writing a value the game
+#: never sees.
+ENUMERATED_DOMAIN = "enumerated"
+CONSTANT_DOMAIN = "constant"
+QUANTIZED_DOMAIN = "quantized_axis"
+RATING_DOMAIN = "rating_0_99"
+
+
 @dataclass(frozen=True)
 class PlayerRatingField:
     field_id: str
     label: str
     relative_offset: int
     display_order: int
-    formula_modifier_index: int
+    #: ``None`` for the three bytes the engine's attribute accessor family does
+    #: not expose (0xBD, 0xC5, 0xD2).  They are editable and their positions are
+    #: proved; they simply have no formula-table slot.
+    formula_modifier_index: int | None
     label_status: str
+    value_domain: str = RATING_DOMAIN
+    #: Every value seen in the stock roster, for the fields where that set is
+    #: small enough to be meaningful.  Empty when the field is an ordinary rating.
+    observed_stock_values: tuple[int, ...] = ()
 
     @property
     def relative_offset_hex(self) -> str:
@@ -43,7 +70,32 @@ class PlayerRatingField:
 
     @property
     def named(self) -> bool:
-        return self.label_status == "xex_ui_named"
+        return self.label_status in NAMED_LABEL_STATUSES
+
+    @property
+    def in_xex_attribute_interface(self) -> bool:
+        return self.formula_modifier_index is not None
+
+    @property
+    def free_0_99(self) -> bool:
+        """True when any exact 0..99 integer is a proved authorable value.
+
+        False for the two index bytes -- Kicking Style (0xD1) and the unnamed
+        0xD2 -- where an unobserved value is an unproved index rather than a
+        weaker rating.  Callers should offer a choice from
+        :attr:`observed_stock_values` instead of a slider.
+        """
+
+        return self.value_domain != ENUMERATED_DOMAIN
+
+    def authorable(self, value: int) -> bool:
+        """Whether ``value`` is proved authorable for this specific byte."""
+
+        if not 0 <= value <= 99:
+            return False
+        if self.value_domain == ENUMERATED_DOMAIN and self.observed_stock_values:
+            return value in self.observed_stock_values
+        return True
 
 
 @dataclass(frozen=True)
@@ -138,55 +190,39 @@ class PlayerRatingSchema:
 # fails closed if packaged metadata is reordered, relabeled, or widened.  These
 # are facts/coordinates only, never source bytes or player values.
 _EXPECTED_FIELDS = (
-    ("speed", "Speed", 0xBA, 0, 0, "xex_ui_named"),
-    ("agility", "Agility", 0xBB, 1, 1, "xex_ui_named"),
-    ("strength", "Strength", 0xC1, 2, 2, "xex_ui_named"),
-    ("jumping", "Jumping", 0xC2, 3, 3, "xex_ui_named"),
-    ("pass_arm_strength", "Pass Arm Strength", 0xBC, 4, 6, "xex_ui_named"),
-    ("stamina", "Stamina", 0xBE, 5, 9, "xex_ui_named"),
-    ("aggressiveness", "Aggressiveness", 0xD8, 6, 27, "xex_ui_named"),
-    ("consistency", "Consistency", 0xD7, 7, 22, "xex_ui_named"),
-    ("kick_power", "Kick Power", 0xBF, 8, 7, "xex_ui_named"),
-    ("kicking_style", "Kicking Style", 0xD1, 9, 26, "xex_ui_named"),
-    ("durability", "Durability", 0xC0, 10, 11, "xex_ui_named"),
-    ("coverage", "Coverage", 0xC3, 11, 20, "xex_ui_named"),
-    ("run_route", "Run Route", 0xC4, 12, 14, "xex_ui_named"),
-    ("tackle", "Tackle", 0xC6, 13, 17, "xex_ui_named"),
-    ("break_tackle", "Break Tackle", 0xC7, 14, 12, "xex_ui_named"),
-    ("pass_accuracy", "Pass Accuracy", 0xC8, 15, 5, "xex_ui_named"),
-    (
-        "pass_read_coverage",
-        "Pass Read Coverage",
-        0xC9,
-        16,
-        13,
-        "xex_ui_named",
-    ),
-    ("catch", "Catch", 0xCA, 17, 4, "xex_ui_named"),
-    ("run_blocking", "Run Blocking", 0xCB, 18, 15, "xex_ui_named"),
-    ("pass_blocking", "Pass Blocking", 0xCC, 19, 16, "xex_ui_named"),
-    ("secure_ball", "Secure Ball", 0xCD, 20, 10, "xex_ui_named"),
-    ("pass_rush", "Pass Rush", 0xCE, 21, 18, "xex_ui_named"),
-    ("run_coverage", "Run Coverage", 0xCF, 22, 19, "xex_ui_named"),
-    ("kick_accuracy", "Kick Accuracy", 0xD0, 23, 8, "xex_ui_named"),
-    ("leadership", "Leadership", 0xD3, 24, 23, "xex_ui_named"),
-    (
-        "unknown_rating_24",
-        "Unknown Rating 24",
-        0xD4,
-        25,
-        24,
-        "neutral_unresolved",
-    ),
-    ("composure", "Composure", 0xD5, 26, 21, "xex_ui_named"),
-    ("scramble", "Scramble", 0xD6, 27, 25, "xex_ui_named"),
+    ("speed", "Speed", 0xBA, 0, 0, "xex_descriptor_proved"),
+    ("agility", "Agility", 0xBB, 1, 1, "xex_descriptor_proved"),
+    ("strength", "Strength", 0xC1, 2, 2, "xex_descriptor_proved"),
+    ("jumping", "Jumping", 0xC2, 3, 3, "xex_descriptor_proved"),
+    ("pass_arm_strength", "Pass Arm Strength", 0xBC, 4, 6, "xex_descriptor_proved"),
+    ("stamina", "Stamina", 0xBE, 5, 9, "xex_descriptor_proved"),
+    ("aggressiveness", "Aggressiveness", 0xD8, 6, 27, "xex_descriptor_proved"),
+    ("consistency", "Consistency", 0xD7, 7, 22, "xex_descriptor_proved"),
+    ("kick_power", "Kick Power", 0xBF, 8, 7, "xex_descriptor_proved"),
+    ("kicking_style", "Kicking Style", 0xD1, 9, 26, "xex_descriptor_proved"),
+    ("durability", "Durability", 0xC0, 10, 11, "xex_descriptor_proved"),
+    ("coverage", "Coverage", 0xC3, 11, 20, "xex_descriptor_proved"),
+    ("run_route", "Run Route", 0xC4, 12, 14, "xex_descriptor_proved"),
+    ("tackle", "Tackle", 0xC6, 13, 17, "xex_descriptor_proved"),
+    ("break_tackle", "Break Tackle", 0xC7, 14, 12, "xex_descriptor_proved"),
+    ("pass_accuracy", "Pass Accuracy", 0xC8, 15, 5, "xex_descriptor_proved"),
+    ("pass_read_coverage", "Pass Read Coverage", 0xC9, 16, 13, "xex_descriptor_proved"),
+    ("catch", "Catch", 0xCA, 17, 4, "xex_descriptor_proved"),
+    ("run_blocking", "Run Blocking", 0xCB, 18, 15, "xex_descriptor_proved"),
+    ("pass_blocking", "Pass Blocking", 0xCC, 19, 16, "xex_descriptor_proved"),
+    ("secure_ball", "Secure Ball", 0xCD, 20, 10, "xex_descriptor_proved"),
+    ("pass_rush", "Pass Rush", 0xCE, 21, 18, "xex_descriptor_proved"),
+    ("run_coverage", "Run Coverage", 0xCF, 22, 19, "xex_descriptor_proved"),
+    ("kick_accuracy", "Kick Accuracy", 0xD0, 23, 8, "xex_descriptor_proved"),
+    ("leadership", "Leadership", 0xD3, 24, 23, "xex_descriptor_proved"),
+    ("unknown_rating_d4", "Unknown Rating (0xD4)", 0xD4, 25, 24, "neutral_unresolved"),
+    ("composure", "Composure", 0xD5, 26, 21, "xex_descriptor_proved"),
+    ("scramble", "Scramble", 0xD6, 27, 25, "xex_descriptor_proved"),
+    ("unknown_rating_bd", "Unknown Rating (0xBD)", 0xBD, 28, None, "neutral_unresolved"),
+    ("unknown_rating_c5", "Unknown Rating (0xC5)", 0xC5, 29, None, "neutral_unresolved"),
+    ("unknown_rating_d2", "Unknown Rating (0xD2)", 0xD2, 30, None, "neutral_unresolved"),
 )
-_EXPECTED_EXCLUDED = (
-    (0xBD, "unknown_unassigned"),
-    (0xC5, "unknown_unassigned"),
-    (0xD2, "unknown_unassigned"),
-    (0xD9, "height_in_inches_consumer_proved"),
-)
+_EXPECTED_EXCLUDED = ((0xD9, "height_in_inches_consumer_proved"),)
 
 
 def _object(value: object, label: str) -> dict[str, object]:
@@ -199,6 +235,29 @@ def _integer(value: object, label: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int):
         raise PlayerRatingsError(f"{label} must be an integer")
     return value
+
+
+def _optional_integer(value: object, label: str) -> int | None:
+    """An integer, or ``None`` for a field with no formula-table slot."""
+
+    if value is None:
+        return None
+    return _integer(value, label)
+
+
+def _observed_values(value: object, label: str) -> tuple[int, ...]:
+    """The stock value set for a field, ascending and unique.  May be absent."""
+
+    if value is None:
+        return ()
+    if not isinstance(value, list) or not value:
+        raise PlayerRatingsError(f"{label} must be a nonempty JSON array")
+    values = tuple(_integer(item, label) for item in value)
+    if sorted(set(values)) != list(values):
+        raise PlayerRatingsError(f"{label} must be ascending and unique")
+    if not all(0 <= item <= 100 for item in values):
+        raise PlayerRatingsError(f"{label} holds a value outside 0..100")
+    return values
 
 
 def _text(value: object, label: str) -> str:
@@ -284,11 +343,16 @@ def load_player_rating_schema(path: Path | None = None) -> PlayerRatingSchema:
                 _text(item.get("label"), f"fields[{index}].label"),
                 offset,
                 _integer(item.get("display_order"), f"fields[{index}].display_order"),
-                _integer(
+                _optional_integer(
                     item.get("formula_modifier_index"),
                     f"fields[{index}].formula_modifier_index",
                 ),
                 _text(item.get("label_status"), f"fields[{index}].label_status"),
+                _text(item.get("value_domain"), f"fields[{index}].value_domain"),
+                _observed_values(
+                    item.get("observed_stock_values"),
+                    f"fields[{index}].observed_stock_values",
+                ),
             )
         )
     observed_fields = tuple(
@@ -304,10 +368,22 @@ def load_player_rating_schema(path: Path | None = None) -> PlayerRatingSchema:
     )
     if observed_fields != _EXPECTED_FIELDS:
         raise PlayerRatingsError("APF player-rating field dictionary changed")
-    if root.get("field_count") != 28 or root.get("named_field_count") != 27:
+    if root.get("field_count") != 31 or root.get("named_field_count") != 27:
         raise PlayerRatingsError("APF player-rating field counts changed")
-    if {field.formula_modifier_index for field in parsed_fields} != set(range(28)):
+    interface_indices = {
+        field.formula_modifier_index
+        for field in parsed_fields
+        if field.formula_modifier_index is not None
+    }
+    if interface_indices != set(range(28)):
         raise PlayerRatingsError("APF formula modifier indices are not one exact 0..27 set")
+    # Each rating byte in 0xBA..0xD8 must appear exactly once.  Height (0xD9) is
+    # the one excluded neighbour.
+    offsets = [field.relative_offset for field in parsed_fields]
+    if sorted(offsets) != list(range(0xBA, 0xD9)):
+        raise PlayerRatingsError(
+            "APF base-rating fields do not cover 0xBA..0xD8 exactly once"
+        )
 
     raw_excluded = root.get("excluded_neighbor_bytes")
     if not isinstance(raw_excluded, list):

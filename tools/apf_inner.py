@@ -27,6 +27,16 @@ import sys
 from typing import BinaryIO, Iterable
 import zlib
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 import apf_outer
 
 
@@ -50,6 +60,7 @@ XENOS_FORMATS = {
     18: "DXT1",
     19: "DXT2_3",
     20: "DXT4_5",
+    32: "16_16_16_16",  # half-float RGBA; APF lightboxes use dimension=3 cubemap
     49: "DXN",
     58: "DXT3A",
     59: "DXT5A",
@@ -1105,6 +1116,76 @@ def _swizzle_pixel(
     return tuple(values[selector] for selector in selectors)  # type: ignore[return-value]
 
 
+def _half_float_to_u8(bits: int) -> int:
+    """IEEE-754 binary16 → 8-bit using 0..1 float range (clamped)."""
+
+    import struct
+
+    value = struct.unpack("<e", struct.pack("<H", bits & 0xFFFF))[0]
+    if value != value or value in (float("inf"), float("-inf")):  # NaN/Inf
+        return 0
+    if value <= 0.0:
+        return 0
+    if value >= 1.0:
+        return 255
+    return int(value * 255.0 + 0.5)
+
+
+def decode_txtr_cubemap_face0_rgba(
+    metadata: dict[str, object], base_data: bytes
+) -> tuple[int, int, bytes]:
+    """Preview face 0 of a format-32 (16_16_16_16) cubemap lightmap.
+
+    Real APF pins (SpecularLightBox class): dimension=3, format=32, tiled,
+    6 faces × width×height×8 bytes in the base allocation. Only face 0 is
+    decoded for PNG preview; other faces and mips stay raw-export only.
+    """
+
+    import struct
+
+    if int(metadata.get("dimension", -1)) != 3:
+        raise FormatError("PORTME: cubemap face0 decode requires dimension=3")
+    if metadata.get("stacked"):
+        raise FormatError("PORTME: stacked cubemap face0 is unsupported")
+    if not metadata.get("tiled"):
+        raise FormatError("PORTME: linear cubemap face0 routing is unverified")
+    format_value = int(metadata["format"])
+    if format_value != 32:
+        raise FormatError(
+            f"PORTME: cubemap face0 PNG only for format 32 (16_16_16_16); "
+            f"got {format_value} ({metadata.get('format_name', '')})"
+        )
+    width = int(metadata["width"])
+    height = int(metadata["height"])
+    pitch = int(metadata["pitch_pixels"])
+    endian = int(metadata["endianness"])
+    selectors = list(metadata["swizzle_components"])
+    if width <= 0 or height <= 0 or pitch < width:
+        raise FormatError("PORTME: cubemap face0 has invalid dimensions")
+    face_bytes = width * height * 8
+    if len(base_data) < face_bytes:
+        raise FormatError(
+            f"PORTME: cubemap base is {len(base_data)} bytes; "
+            f"face0 needs {face_bytes}"
+        )
+    # Face 0 is the first w×h×8 tiled region (proved on SpecularLightBox).
+    face0 = base_data[:face_bytes]
+    linear = _untile_2d(face0, width, height, pitch, 1, 1, 8)
+    linear = _endian_swap(linear, endian)
+    rgba = bytearray(width * height * 4)
+    for pixel_index in range(width * height):
+        r16, g16, b16, a16 = struct.unpack_from("<HHHH", linear, pixel_index * 8)
+        r8 = _half_float_to_u8(r16)
+        g8 = _half_float_to_u8(g16)
+        b8 = _half_float_to_u8(b16)
+        a8 = _half_float_to_u8(a16)
+        if a16 == 0:
+            a8 = 255  # APF lightboxes store A=0; force opaque preview
+        pixel = _swizzle_pixel((r8, g8, b8, a8), selectors)
+        rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+    return width, height, bytes(rgba)
+
+
 def decode_txtr_base_rgba(
     metadata: dict[str, object], base_data: bytes
 ) -> tuple[int, int, bytes]:
@@ -1115,12 +1196,28 @@ def decode_txtr_base_rgba(
     endian = int(metadata["endianness"])
     selectors = list(metadata["swizzle_components"])
     if metadata["dimension"] != 1 or metadata["stacked"]:
+        # Face-0 preview for APF format-32 cubemap lightmaps.
+        if (
+            int(metadata["dimension"]) == 3
+            and not metadata["stacked"]
+            and format_value == 32
+        ):
+            return decode_txtr_cubemap_face0_rgba(metadata, base_data)
+        dim = int(metadata["dimension"])
+        dim_hint = {
+            0: "1D",
+            1: "2D",
+            2: "3D",
+            3: "cubemap",
+        }.get(dim, f"dimension={dim}")
         raise FormatError(
-            "PORTME: PNG conversion currently supports only non-stacked 2D TXTR"
+            "PORTME: PNG conversion currently supports only non-stacked 2D TXTR "
+            f"(this asset is {dim_hint}"
+            f"{', stacked' if metadata['stacked'] else ''}; "
+            f"format {format_value} {metadata.get('format_name', '')}). "
+            "Cubemap face-0 preview ships for format 32 only; other cubemap/"
+            "3D formats remain raw-export."
         )
-    if not metadata["tiled"]:
-        raise FormatError("PORTME: linear TXTR base-level routing is unverified")
-
     if format_value == 18:
         block_width, block_height, block_size = 4, 4, 8
         decoder = _decode_bc1
@@ -1131,30 +1228,141 @@ def decode_txtr_base_rgba(
         block_width, block_height, block_size = 4, 4, 16
         decoder = _decode_bc3
     elif format_value == 6:
+        # 8_8_8_8 — 4 bytes/texel
         block_width, block_height, block_size = 1, 1, 4
+        decoder = None
+    elif format_value in (3, 4, 15):
+        # 1_5_5_5, 5_6_5, 4_4_4_4 — 2 bytes/texel
+        block_width, block_height, block_size = 1, 1, 2
+        decoder = None
+    elif format_value == 2:
+        # 8 — single 8-bit luminance/alpha channel
+        block_width, block_height, block_size = 1, 1, 1
+        decoder = None
+    elif format_value == 10:
+        # 8_8 — two 8-bit channels
+        block_width, block_height, block_size = 1, 1, 2
         decoder = None
     else:
         raise FormatError(
             f"PORTME: Xenos format {format_value} "
-            f"({metadata['format_name']}) is not implemented for PNG"
+            f"({metadata['format_name']}) is not implemented for PNG. "
+            f"This decoder covers: 8, 1_5_5_5, 5_6_5, 8_8_8_8, 8_8, "
+            f"4_4_4_4, DXT1, DXT2_3, DXT4_5, format-32 cubemap face0. "
+            f"DXN (49) and DXT5A (59) are decoded by the asset layer above "
+            f"this one, which routes them through their own layouts. "
+            f"Export raw TXTR parts instead."
         )
 
-    linear = _untile_2d(
-        base_data,
-        width,
-        height,
-        pitch,
-        block_width,
-        block_height,
-        block_size,
-    )
+    if metadata["tiled"]:
+        linear = _untile_2d(
+            base_data,
+            width,
+            height,
+            pitch,
+            block_width,
+            block_height,
+            block_size,
+        )
+    else:
+        # Linear (untiled) 2D base: row-major with pitch_pixels. Uncompressed
+        # uses 1×1 "blocks"; DXT/BC uses 4×4 blocks (same decoders as tiled).
+        width_blocks = (width + block_width - 1) // block_width
+        height_blocks = (height + block_height - 1) // block_height
+        pitch_blocks = (pitch + block_width - 1) // block_width
+        if pitch_blocks < width_blocks:
+            raise FormatError(
+                f"PORTME: linear TXTR pitch {pitch} is narrower than width {width}"
+            )
+        row_bytes = pitch_blocks * block_size
+        need = row_bytes * height_blocks
+        if len(base_data) < need:
+            raise FormatError(
+                f"PORTME: linear TXTR base is {len(base_data)} bytes; "
+                f"need {need} for {width}×{height} pitch {pitch} "
+                f"({width_blocks}×{height_blocks} blocks)"
+            )
+        # Pack tight rows of width_blocks from pitched source (matches untile out).
+        tight = bytearray(width_blocks * height_blocks * block_size)
+        dst_stride = width_blocks * block_size
+        for y in range(height_blocks):
+            src = y * row_bytes
+            dst = y * dst_stride
+            tight[dst : dst + dst_stride] = base_data[src : src + dst_stride]
+        linear = bytes(tight)
     linear = _endian_swap(linear, endian)
     rgba = bytearray(width * height * 4)
     if decoder is None:
-        for pixel_index in range(width * height):
-            raw = linear[pixel_index * 4 : pixel_index * 4 + 4]
-            pixel = _swizzle_pixel(tuple(raw), selectors)
-            rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        if format_value == 15:
+            for pixel_index in range(width * height):
+                raw = linear[pixel_index * 2 : pixel_index * 2 + 2]
+                if len(raw) != 2:
+                    raise FormatError("truncated 4_4_4_4 texel")
+                value = int.from_bytes(raw, "little")
+                r = value & 0xF
+                g = (value >> 4) & 0xF
+                b = (value >> 8) & 0xF
+                a = (value >> 12) & 0xF
+                a8 = (a << 4) | a
+                r8 = (r << 4) | r
+                g8 = (g << 4) | g
+                b8 = (b << 4) | b
+                pixel = _swizzle_pixel((r8, g8, b8, a8), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        elif format_value == 4:
+            # 5_6_5 RGB, opaque alpha
+            for pixel_index in range(width * height):
+                raw = linear[pixel_index * 2 : pixel_index * 2 + 2]
+                if len(raw) != 2:
+                    raise FormatError("truncated 5_6_5 texel")
+                value = int.from_bytes(raw, "little")
+                r5 = (value >> 11) & 0x1F
+                g6 = (value >> 5) & 0x3F
+                b5 = value & 0x1F
+                r8 = (r5 << 3) | (r5 >> 2)
+                g8 = (g6 << 2) | (g6 >> 4)
+                b8 = (b5 << 3) | (b5 >> 2)
+                pixel = _swizzle_pixel((r8, g8, b8, 255), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        elif format_value == 3:
+            # 1_5_5_5 ARGB
+            for pixel_index in range(width * height):
+                raw = linear[pixel_index * 2 : pixel_index * 2 + 2]
+                if len(raw) != 2:
+                    raise FormatError("truncated 1_5_5_5 texel")
+                value = int.from_bytes(raw, "little")
+                a1 = (value >> 15) & 0x1
+                r5 = (value >> 10) & 0x1F
+                g5 = (value >> 5) & 0x1F
+                b5 = value & 0x1F
+                a8 = 255 if a1 else 0
+                r8 = (r5 << 3) | (r5 >> 2)
+                g8 = (g5 << 3) | (g5 >> 2)
+                b8 = (b5 << 3) | (b5 >> 2)
+                pixel = _swizzle_pixel((r8, g8, b8, a8), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        elif format_value == 2:
+            for pixel_index in range(width * height):
+                if pixel_index >= len(linear):
+                    raise FormatError("truncated 8-bit texel")
+                v = linear[pixel_index]
+                pixel = _swizzle_pixel((v, v, v, 255), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        elif format_value == 10:
+            for pixel_index in range(width * height):
+                raw = linear[pixel_index * 2 : pixel_index * 2 + 2]
+                if len(raw) != 2:
+                    raise FormatError("truncated 8_8 texel")
+                # Common: R=first, G=second, B=0, A=255 (normal/gloss pairs vary)
+                r8, g8 = raw[0], raw[1]
+                pixel = _swizzle_pixel((r8, g8, 0, 255), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
+        else:
+            # format 6 8_8_8_8
+            for pixel_index in range(width * height):
+                raw = linear[pixel_index * 4 : pixel_index * 4 + 4]
+                pixel = _swizzle_pixel(tuple(raw), selectors)
+                rgba[pixel_index * 4 : pixel_index * 4 + 4] = bytes(pixel)
     else:
         width_blocks = (width + 3) // 4
         height_blocks = (height + 3) // 4
@@ -1174,6 +1382,57 @@ def decode_txtr_base_rgba(
                         destination = (y * width + x) * 4
                         rgba[destination : destination + 4] = bytes(pixel)
     return width, height, bytes(rgba)
+
+
+def force_opaque_alpha_for_display(rgba: bytes) -> tuple[bytes, bool]:
+    """Substitute 255 for an alpha channel that is uniformly zero, display only.
+
+    Some APF mask textures (``jersey_color``, ``shoulder_color``) store real
+    mask data in RGB while retail left alpha at zero everywhere: the shader
+    consumes RGB as mask selectors and never samples alpha, so the channel is
+    unused storage rather than an opacity instruction.  A preview that honours
+    that alpha composites zero over the checkerboard and shows a blank panel
+    for a texture that is anything but blank.
+
+    The gate is deliberately narrow: exactly one distinct alpha value and that
+    value is 0.  Genuinely transparent art (varying alpha, or a uniform 255)
+    is returned untouched.
+
+    DISPLAY PATH ONLY.  The substituted alpha must never reach an encoder --
+    the zero alpha is written back verbatim on the encode side, and
+    :func:`restore_unused_mask_alpha_for_encode` is the matching half of the
+    split.
+    """
+
+    if len(rgba) % 4:
+        raise FormatError("RGBA buffer length is not a multiple of four")
+    if not rgba or any(rgba[3::4]):
+        return rgba, False
+    forced = bytearray(rgba)
+    forced[3::4] = b"\xff" * (len(rgba) // 4)
+    return bytes(forced), True
+
+
+def restore_unused_mask_alpha_for_encode(wanted: bytes, original: bytes) -> bytes:
+    """Force *wanted*'s alpha to zero when *original*'s alpha is uniformly zero.
+
+    The encode half of the display/encode split for all-zero-alpha mask
+    textures.  A preview or export shows such a mask force-opaqued (see
+    :func:`force_opaque_alpha_for_display`) so the user can see and edit the
+    RGB mask; when that image comes back in, its display alpha must not be
+    encoded -- the slot's alpha is unused storage that retail holds at zero,
+    and it is written back verbatim.  Gating on the *original* decoded base
+    (not the incoming image) keeps the rule family-agnostic and leaves slots
+    with real, varying alpha completely alone.
+    """
+
+    if len(wanted) != len(original) or len(wanted) % 4:
+        raise FormatError("wanted and original RGBA lengths differ")
+    if not original or any(original[3::4]):
+        return wanted
+    restored = bytearray(wanted)
+    restored[3::4] = b"\0" * (len(wanted) // 4)
+    return bytes(restored)
 
 
 def _png_chunk(kind: bytes, payload: bytes) -> bytes:
@@ -1585,7 +1844,7 @@ def dump_file_parts(
         }
 
     metadata_path = output_dir / f"{base}.json"
-    metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    metadata_path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8", newline="\n")
     written.append(metadata_path)
     if png_error is not None:
         raise FormatError(f"{png_error}; metadata written to {metadata_path}")
@@ -1802,7 +2061,8 @@ def main(argv: list[str] | None = None) -> int:
             args.manifest.write_text(
                 json.dumps(document, indent=2, sort_keys=False) + "\n",
                 encoding="utf-8",
-            )
+    newline="\n",
+)
 
         if args.inventory_tsv is not None:
             args.inventory_tsv.parent.mkdir(parents=True, exist_ok=True)

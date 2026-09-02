@@ -28,6 +28,16 @@ try:
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("error: Pillow is required for PNG import and mip generation") from exc
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 import apf_inner
 import apf_outer
 import apf_texture_patch as archive_patch
@@ -114,6 +124,14 @@ def _encode_changed_blocks(
         raise UniformPatchError(f"mip {location.level} original RGBA length is invalid")
     if len(wanted_rgba) != len(original_rgba):
         raise UniformPatchError(f"mip {location.level} wanted RGBA length is invalid")
+    # ``jersey_color`` is a mask texture. Retail stores its alpha channel as
+    # zero for every texel because the shader consumes RGB selectors and never
+    # samples alpha. The preview deliberately force-opaques that unused
+    # channel so the modder can see the mask; restore the retail zero before
+    # encoding so a display-only convenience can never corrupt the payload.
+    wanted_rgba = apf_inner.restore_unused_mask_alpha_for_encode(
+        wanted_rgba, original_rgba
+    )
     result = bytearray(original_linear)
     changed: list[int] = []
     for block_y in range(location.height_blocks):

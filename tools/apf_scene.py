@@ -24,15 +24,47 @@ import sys
 from typing import Iterable
 import zlib
 
+# The shipped Windows runtime is an embeddable CPython whose ._pth file
+# defines sys.path outright and, unlike a normal interpreter, does NOT add
+# this script's own directory -- so the sibling imports below fail there
+# with ModuleNotFoundError unless the directory is put back explicitly.
+import sys as _sys
+from pathlib import Path as _Path
+_here = str(_Path(__file__).resolve().parent)
+if _here not in _sys.path:
+    _sys.path.insert(0, _here)
+
 import apf_inner
 import apf_outer
 
 
 SCENE_HEADER_MIN = 0x64
 SCENE_NODE_SIZE = 0xB0
-MATRIX_SIZE = 0x40
-JOINT_TABLE_HEADER_SIZE = 0x20
+#: One per-node transform record. 0x90 (144), not 0x40.
+#:
+#: The 0x40 reading was wrong for every SCNE in this title, and it is checkable
+#: two independent ways. Structurally, for all seven scorebug components and for
+#: the stadium, ``node_start + SCENE_NODE_SIZE*node_count == matrix_start`` and
+#: ``next_table_start - matrix_start == 144*matrix_count`` hold exactly. From
+#: code, two unrelated functions walk this array with ``addi r10,r10,144``
+#: (0x84ABE524 and 0x8472A358) and then reach the transform through a pointer at
+#: record +0x74.
+#:
+#: Reading it at 0x40 silently overlapped the records and produced values like
+#: 9.386e14 and -6.527e26 -- which is what the old non-finite PORTME was really
+#: reporting. Bytes +0x44/+0x64 of a record hold a node-name CRC-32, and a CRC
+#: that happens to begin 0x7F8 is a signalling NaN when misread as a float. At
+#: the correct stride every record in the eight files checked has m[15] == 1.0
+#: and zero non-finite components.
+MATRIX_SIZE = 0x90
+#: The 4x4 float32 matrix at the head of each record. The remaining 0x50 bytes
+#: are a name pointer, that name's CRC-32, and two constants.
+MATRIX_FLOAT_BYTES = 0x40
+# Deliberately no hierarchy-table header constant: the 0x20 once modelled as a
+# header is record 0's absolute and parent-relative vectors.
 JOINT_RECORD_SIZE = 0x30
+#: APF geometry is authored in centimetres; glTF's unit is the metre.
+UNIT_SCALE = 0.01
 DRAW_RECORD_SIZE = 0x30
 DECLARATION_RECORD_SIZE = 0x40
 STREAM_RECORD_SIZE = 0x18
@@ -122,6 +154,37 @@ for _semantic_base in (
 
 class SceneError(ValueError):
     """A bounded SCNE relationship failed validation."""
+
+
+def _unit_contract() -> dict[str, object]:
+    """The centimetre-to-metre declaration shared by both export paths."""
+
+    return {
+        "source_linear_unit": "centimeter",
+        "target_linear_unit": "meter",
+        "linear_scale": UNIT_SCALE,
+        "applied_as": "root node scale; buffer bytes are unmodified",
+        "buffer_space": "serialized_scne_object_space",
+        "recipe_note": (
+            "A position recipe must be in serialized_scne_object_space. "
+            "Coordinates read out of a viewer are metres, so multiply them by "
+            "1 / linear_scale before writing a recipe."
+        ),
+    }
+
+
+def _unit_root(name: str, children: list[int]) -> dict[str, object]:
+    """A root node whose only job is the centimetre-to-metre conversion."""
+
+    return {
+        "name": f"{name}__centimeters_to_meters",
+        "scale": [UNIT_SCALE, UNIT_SCALE, UNIT_SCALE],
+        "children": children,
+        "extras": {
+            "purpose": "unit conversion only; adds no transform of its own",
+            "linear_scale": UNIT_SCALE,
+        },
+    }
 
 
 def _u16be(data: bytes, offset: int, what: str) -> int:
@@ -251,24 +314,38 @@ def _parse_hierarchy_table(data: bytes, count: int, pointer_field: int, what: st
     if count == 0:
         return None
     table = _relative_target(data, pointer_field, f"{what} hierarchy")
-    records = table + JOINT_TABLE_HEADER_SIZE
-    # The serializer omits the two float4 payloads from the terminal record.
-    # This is exact in the one-record glowball table and in the 5/61-record
-    # popup/face tables: 0x20 + (count - 1) * 0x30 + 0x10 bytes.
-    table_length = JOINT_TABLE_HEADER_SIZE + (count - 1) * JOINT_RECORD_SIZE + 0x10
+    # There is no table header.  Each 0x30 record is
+    #   [+0x00 absolute vector][+0x10 parent-relative vector][+0x20 name/indices]
+    # so the first 0x20 bytes are record 0's two vectors, not eight header words.
+    #
+    # The previous model skipped 0x20 as a header and read the vectors at +0x10
+    # and +0x20 *after* the name block, which resolves to record i+1's vectors --
+    # every joint carried its successor's geometry.  Two things that looked like
+    # findings were artifacts of it: "the serializer omits the two float4
+    # payloads from the terminal record" (there is no record count+1 to borrow
+    # from, so the last one read empty) and a reported eight-word table header.
+    # The total length is identical either way, 0x20 + (count-1)*0x30 + 0x10 ==
+    # count*0x30, which is why the bounds check never caught it.
+    #
+    # Settled by the relation a parent-relative vector must satisfy,
+    # relative(i) == absolute(i) - absolute(parent(i)): this layout scores 100%
+    # on every scene carrying a hierarchy, where the previous one scored 0-50%.
+    records = table
+    table_length = count * JOINT_RECORD_SIZE
     if table + table_length > len(data):
         raise SceneError(f"{what}: hierarchy table exceeds SCNE system part")
 
     hierarchy_records: list[dict[str, object]] = []
     for index in range(count):
         offset = records + index * JOINT_RECORD_SIZE
+        meta = offset + 0x20
         name, name_offset = _named_pointer(
-            data, offset, offset + 4, f"{what} hierarchy record {index}"
+            data, meta, meta + 4, f"{what} hierarchy record {index}"
         )
-        parent = _i16be(data, offset + 8, "hierarchy parent")
-        first_child = _i16be(data, offset + 10, "hierarchy first child")
-        next_sibling = _i16be(data, offset + 12, "hierarchy next sibling")
-        reserved = _u16be(data, offset + 14, "hierarchy reserved")
+        parent = _i16be(data, meta + 8, "hierarchy parent")
+        first_child = _i16be(data, meta + 10, "hierarchy first child")
+        next_sibling = _i16be(data, meta + 12, "hierarchy next sibling")
+        reserved = _u16be(data, meta + 14, "hierarchy reserved")
         for label, value in (
             ("parent", parent),
             ("first_child", first_child),
@@ -278,18 +355,24 @@ def _parse_hierarchy_table(data: bytes, count: int, pointer_field: int, what: st
                 raise SceneError(
                     f"{what} hierarchy record {index}: {label} index {value} outside {count} records"
                 )
-        vector_a = None
-        vector_b = None
-        if index + 1 < count:
-            vector_a = tuple(_f32be(data, offset + 0x10 + i * 4, "hierarchy vector A") for i in range(4))
-            vector_b = tuple(_f32be(data, offset + 0x20 + i * 4, "hierarchy vector B") for i in range(4))
+        # Every record carries both vectors.  The absolute one is the node's own
+        # position; the second is that position minus its parent's, which is what
+        # the invariant above checks.
+        vector_a = tuple(
+            _f32be(data, offset + i * 4, "hierarchy absolute vector")
+            for i in range(4)
+        )
+        vector_b = tuple(
+            _f32be(data, offset + 0x10 + i * 4, "hierarchy parent-relative vector")
+            for i in range(4)
+        )
         hierarchy_records.append(
             {
                 "index": index,
                 "offset": offset,
                 "name": name,
                 "name_offset": name_offset,
-                "name_crc32": _hex(_u32be(data, offset + 4, "hierarchy name hash")),
+                "name_crc32": _hex(_u32be(data, meta + 4, "hierarchy name hash")),
                 "parent": parent,
                 "first_child": first_child,
                 "next_sibling": next_sibling,
@@ -331,10 +414,8 @@ def _parse_hierarchy_table(data: bytes, count: int, pointer_field: int, what: st
         "byte_length": table_length,
         "record_offset": records,
         "count": count,
-        "header_words": [
-            _hex(_u32be(data, table + i * 4, "hierarchy header"))
-            for i in range(JOINT_TABLE_HEADER_SIZE // 4)
-        ],
+        # No "header_words": what was reported under that name is record 0's
+        # absolute and parent-relative vectors, which now appear on record 0.
         "topology_status": "validated" if not topology_warnings else "variant",
         "topology_warnings": topology_warnings,
         "records": hierarchy_records,
@@ -525,13 +606,17 @@ def parse_scene_system_part(
     matrix_nonfinite_offsets: list[int] = []
     if matrix_start is not None:
         matrix_payload = data[matrix_start : matrix_start + matrix_count * MATRIX_SIZE]
-        # Most records are finite 4x4 float matrices.  A bounded set of stadium,
-        # sideline and UI variants contains NaN/Inf bit patterns; retain those
-        # offsets as PORTME evidence instead of rejecting the entire SCNE.
-        for i in range(matrix_count * 16):
-            value = struct.unpack_from(">f", matrix_payload, i * 4)[0]
-            if not math.isfinite(value):
-                matrix_nonfinite_offsets.append(matrix_start + i * 4)
+        # Only the first MATRIX_FLOAT_BYTES of each record are floats. Scanning
+        # the whole 0x90 record would report the name pointer and the name's
+        # CRC-32 as non-finite components, which is exactly the false PORTME the
+        # old 0x40 stride produced.
+        for record_index in range(matrix_count):
+            base = record_index * MATRIX_SIZE
+            for component in range(MATRIX_FLOAT_BYTES // 4):
+                offset = base + component * 4
+                value = struct.unpack_from(">f", matrix_payload, offset)[0]
+                if not math.isfinite(value):
+                    matrix_nonfinite_offsets.append(matrix_start + offset)
         matrix_sha256 = hashlib.sha256(matrix_payload).hexdigest()
 
     node_count = _u32be(data, 0x44, "scene-node count")
@@ -545,7 +630,8 @@ def parse_scene_system_part(
     if matrix_nonfinite_offsets:
         portme.append(
             f"PORTME: {len(matrix_nonfinite_offsets)} non-finite component(s) in the "
-            "0x40-byte matrix-like table; determine sentinel/variant semantics"
+            "4x4 float head of the 0x90-byte transform records; determine "
+            "sentinel/variant semantics"
         )
     if node_start is not None:
         for node_index in range(node_count):
@@ -739,11 +825,19 @@ def write_gltf(path: Path, scene: dict[str, object], outer_index: int, inner_ind
                 "inner_file_index": inner_index,
                 "scne_root_name": scene["root_name"],
                 "system_sha256": scene["system_sha256"],
+                "coordinate_contract": _unit_contract(),
             },
         },
         "scene": 0,
-        "scenes": [{"nodes": [0]}],
-        "nodes": [{"name": node["name"], "mesh": 0}],
+        "scenes": [{"nodes": [1]}],
+        "nodes": [
+            {
+                "name": node["name"],
+                "mesh": 0,
+                "extras": {"raw_coordinates": True, "source_raw_coordinates": True},
+            },
+            _unit_root(node["name"], [0]),
+        ],
         "meshes": [
             {
                 "name": node["name"],
@@ -784,7 +878,7 @@ def write_gltf(path: Path, scene: dict[str, object], outer_index: int, inner_ind
         ],
     }
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8", newline="\n")
 
 
 def _little_endian_array(typecode: str, values: Iterable[float | int]) -> bytes:
@@ -957,7 +1051,10 @@ def write_gltf_collection(
                     "mesh": output_mesh,
                     "extras": {
                         "apf_scene_node_index": node["index"],
+                        # The buffer is untouched game data.  The unit conversion
+                        # lives on the root wrapper node below, not here.
                         "raw_coordinates": True,
+                        "source_raw_coordinates": True,
                     },
                 }
             )
@@ -984,11 +1081,32 @@ def write_gltf_collection(
                 "inner_file_index": inner_index,
                 "scne_root_name": scene["root_name"],
                 "system_sha256": scene["system_sha256"],
+                "coordinate_contract": _unit_contract(),
             },
         },
         "scene": 0,
-        "scenes": [{"name": scene["root_name"], "nodes": list(range(len(nodes)))}],
-        "nodes": nodes,
+        # One root wrapper carries the unit conversion so the buffer stays raw.
+        #
+        # APF geometry is in centimetres; glTF's unit is the metre. Exported
+        # without a scale, a stadium arrives in Blender a hundred times too
+        # large -- past the default 1000 m clip distance -- which is what a
+        # modder reported as "not sure if the gltf is loading correctly".
+        #
+        # Scaling the buffer instead would have been the other option, and is
+        # wrong here: ``scene.bin`` is byte-identical game data, the static
+        # topology conformance spec depends on it staying that way, and the
+        # position-writer recipe declares ``coordinate_space`` as a const,
+        # ``serialized_scne_object_space``. A wrapper leaves both contracts
+        # untouched.
+        #
+        # The trade-off, stated because it can silently ruin an edit: anything
+        # read back out of Blender is now in metres, while a recipe must be in
+        # raw SCNE object space. Multiply by ``1 / linear_scale`` (100) on the
+        # way back. ``asset.extras.coordinate_contract`` below records the exact
+        # factor so a recipe builder can undo it programmatically rather than by
+        # eye.
+        "scenes": [{"name": scene["root_name"], "nodes": [len(nodes)]}],
+        "nodes": nodes + [_unit_root(scene["root_name"], list(range(len(nodes))))],
         "meshes": meshes,
         "buffers": [{"byteLength": len(binary), "uri": bin_path.name}],
         "bufferViews": buffer_views,
@@ -1007,8 +1125,9 @@ def write_gltf_collection(
     bin_path.parent.mkdir(parents=True, exist_ok=True)
     bin_path.write_bytes(binary)
     path.write_text(
-        json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+        json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8",
+    newline="\n",
+)
     return {
         "status": "exported",
         "gltf": path.name,
@@ -1244,8 +1363,9 @@ def main(argv: list[str] | None = None) -> int:
                 ],
             }
             (args.gltf_dir / "manifest.json").write_text(
-                json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-            )
+                json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8",
+    newline="\n",
+)
         for scene in scenes:
             _strip_private_geometry(scene)
 
@@ -1258,7 +1378,7 @@ def main(argv: list[str] | None = None) -> int:
                 "self_relative_pointer": "target = pointer_field_offset + stored_u32 - 1",
                 "scene_node_size": SCENE_NODE_SIZE,
                 "matrix_size": MATRIX_SIZE,
-                "hierarchy_table_header_size": JOINT_TABLE_HEADER_SIZE,
+                "hierarchy_table_header": "none; the table is count * 0x30 records",
                 "hierarchy_record_size": JOINT_RECORD_SIZE,
                 "draw_record_size": DRAW_RECORD_SIZE,
                 "vertex_declaration_record_size": DECLARATION_RECORD_SIZE,
@@ -1299,7 +1419,7 @@ def main(argv: list[str] | None = None) -> int:
             ],
         }
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+        args.output.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8", newline="\n")
 
         if args.tsv is not None:
             args.tsv.parent.mkdir(parents=True, exist_ok=True)

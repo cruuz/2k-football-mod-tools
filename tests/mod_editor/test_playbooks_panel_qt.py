@@ -17,7 +17,11 @@ from mod_editor.core.nfl2k5_playbook_inspector import (
 )
 from mod_editor.gui.playbooks_panel_qt import (
     PLAY_EDITOR_FINDINGS_PLAIN_TEXT,
+    book_has_community_flags,
+    broken_play_annotations,
     filter_playbooks,
+    format_formation_package_map_line,
+    format_play_name_with_warnings,
     formation_play_rows,
     playbook_action_state,
     playbook_search_text,
@@ -129,13 +133,82 @@ class PlaybooksPanelModelTests(unittest.TestCase):
 
     def test_findings_state_exact_authoring_and_retail_boundaries(self) -> None:
         note = PLAY_EDITOR_FINDINGS_PLAIN_TEXT
-        self.assertIn("Route drawing and editing — Coming Soon", note)
+        self.assertIn("Freehand route drawing is not supported", note)
         self.assertIn("37 PLAY books", note)
         self.assertIn("32,502 complete chains", note)
         self.assertIn("all 91,833 eight-byte nodes", note)
         self.assertIn("shareable Mod Studio projects never contain PLAY data", note)
         self.assertIn("only along X", note)
         self.assertIn("only along Y", note)
+
+    def test_community_flagged_filter_keeps_dime_ace_books(self) -> None:
+        dime = _book(
+            asset_id="private.play.dime",
+            name="Defense Book",
+            formation_name="Dime",
+            play_name="Cover 2",
+            family_id=1,
+            outer_index=12,
+        )
+        quiet = self.offense
+        result = filter_playbooks(
+            (quiet, dime), community_flagged_only=True
+        )
+        self.assertEqual(result.books, (dime,))
+        self.assertTrue(book_has_community_flags(dime))
+        self.assertFalse(book_has_community_flags(quiet))
+
+    def test_package_map_line_formats_dime_g1_honesty(self) -> None:
+        dime_map = (5, 0, 2, 3, 1, 7, 8, 9, 4, 6, 10)
+        line = format_formation_package_map_line("Dime", dime_map)
+        self.assertIn("+0x0D", line)
+        self.assertIn("5, 0, 2, 3, 1, 7, 8, 9, 4, 6, 10", line)
+        self.assertIn("G1", line)
+        self.assertIn("unproved", line.casefold())
+        empty = format_formation_package_map_line("Dime", ())
+        self.assertIn("not present", empty.casefold())
+        ace = format_formation_package_map_line(
+            "Ace", (0, 8, 6, 9, 7, 10, 1, 4, 3, 5, 2)
+        )
+        self.assertIn("G2", ace)
+        self.assertIn("not this map", ace.casefold())
+
+
+@unittest.skipUnless(
+    __import__("pathlib").Path(
+        "extracted/ESPN NFL 2K5 (USA)/vc_53450030/0"
+    ).is_file(),
+    "2K5 pack0 fixture not present",
+)
+class RealO0308PackageMapInInspectorTests(unittest.TestCase):
+    """Shipped parser populates package_map on real o0308."""
+
+    def test_dime_nickel_maps_match_census(self) -> None:
+        from pathlib import Path
+
+        from mod_editor.core.nfl2k5_playbook_inspector import (
+            BODY_SIZE,
+            RESOURCE_HEADER_SIZE,
+            parse_playbook_resource,
+        )
+
+        pack = Path("extracted/ESPN NFL 2K5 (USA)/vc_53450030/0")
+        raw = pack.read_bytes()[
+            106_803_200 : 106_803_200 + RESOURCE_HEADER_SIZE + BODY_SIZE
+        ]
+        book = parse_playbook_resource(raw)
+        nickel = book.formations[23]
+        dime = book.formations[24]
+        self.assertEqual(nickel.name, "Nickel")
+        self.assertEqual(dime.name, "Dime")
+        self.assertEqual(
+            list(nickel.package_map), [4, 5, 0, 2, 3, 1, 7, 8, 9, 6, 10]
+        )
+        self.assertEqual(
+            list(dime.package_map), [5, 0, 2, 3, 1, 7, 8, 9, 4, 6, 10]
+        )
+        ui = format_formation_package_map_line(dime.name, dime.package_map)
+        self.assertIn("5, 0, 2, 3, 1, 7, 8, 9, 4, 6, 10", ui)
 
 
 if __name__ == "__main__":

@@ -183,6 +183,16 @@ class FakeFontRunner:
 
 class ApfDigitalFontTests(unittest.TestCase):
     def test_shared_texture_compressor_default_contract_remains_byte_exact(self) -> None:
+        # Two of these three vectors changed when the shared encoder stopped
+        # emitting matches that overlap their own output.  That was not a
+        # regression: an overlapping run round-trips perfectly through our own
+        # byte-at-a-time decoder but the console's does not, and a rebuilt
+        # texture came back as fine speckle in game because of it.  Retail's own
+        # crest block contains 36,099 matches and not one overlaps.  The two
+        # vectors that moved are the ones with long runs -- a 4,097-byte fill and
+        # a 3-byte cycle -- which is exactly where the old encoder overlapped;
+        # the short literal vector is unchanged.  See
+        # tests/apf_h7a_no_overlap_test.py for the rule itself.
         historical_vectors = (
             (
                 b"APF2K8",
@@ -192,12 +202,12 @@ class ApfDigitalFontTests(unittest.TestCase):
             (
                 b"A" * 4097,
                 10,
-                "cc0ac53772e3fdf01bea95801a74dc1efc3f493ccc878002aa32500d53dc04ba",
+                "092008e332caaaaf108d43ba048c7f3c33c819ef254f197a64eb73b29f038cd0",
             ),
             (
                 b"ABC" * 3000,
                 11,
-                "d0e3dc17ce4b19dc186f39849b40161f26eeaae691ec0e3fe183bab4045dba39",
+                "92996f0b496e4ebeccba236014f0a086804c7c6d10035c620475e7721b9c5131",
             ),
         )
         for decoded, shift, expected_sha256 in historical_vectors:

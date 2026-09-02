@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import configparser
 import hashlib
 import importlib
@@ -24,7 +25,7 @@ sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.35"
+EXPECTED_PRODUCT_VERSION = "0.1.0-alpha.84"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(TOOLS) not in sys.path:
@@ -32,8 +33,8 @@ if str(TOOLS) not in sys.path:
 
 EXTRACTOR = ROOT / "tools/vendor/extract-xiso/build/extract-xiso"
 EXTRACTOR_LICENSE = ROOT / "tools/vendor/extract-xiso/LICENSE.TXT"
-EXTRACTOR_SIZE = 56_584
-EXTRACTOR_SHA256 = "96e6286d371e47e24474a3b7c89ef5c204ddca9c93c95d5ebcb7bcf1d6eb530f"
+EXTRACTOR_SIZE = 51_336
+EXTRACTOR_SHA256 = "222e7763df8f16d9b252c625fac5ef551cd25cdf031a785b3ec73c6e53c5d7f2"
 # The Windows extractor, built from the same vendored extract-xiso 2.7.1 source
 # so a Windows user can hand the app a .iso directly.  Pinned exactly like the
 # ELF above: a bundled binary nobody can rebuild from this tree at review time
@@ -45,10 +46,15 @@ EXTRACTOR_WINDOWS_SHA256 = (
 )
 EXTRACTOR_LICENSE_SIZE = 3_115
 EXTRACTOR_LICENSE_SHA256 = "719d9e9a12c470a20d9f1988a03108fd99bb0b07a5340c6bbf3caf524b7adf01"
+H7A_ENCODER = ROOT / "tools/apf_h7a_optimal"
+H7A_ENCODER_SIZE = 14_472
+H7A_ENCODER_SHA256 = (
+    "9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab"
+)
 INSTALLER = ROOT / "packaging/apf2k8_mod_studio_installer.py"
-STADIUM_MATERIAL_FINDINGS_SIZE = 2_584
+STADIUM_MATERIAL_FINDINGS_SIZE = 2_341
 STADIUM_MATERIAL_FINDINGS_SHA256 = (
-    "703b92417deb8db346ce1d27aef69e939e543c970c5970c390050b6f1f9f8635"
+    "cefcf72b94df7e5af69fb67f2f306168f4bdd9716464b15767038f598fa4a99d"
 )
 
 EXPECTED_RETAIL_HASHES = frozenset(
@@ -74,11 +80,20 @@ PRODUCT_MODULES = (
     "mod_editor.apf_studio.backend",
     "mod_editor.apf_studio.build",
     "mod_editor.apf_studio.catalog",
+    "mod_editor.apf_studio.custom_team_appearance_qt",
     "mod_editor.apf_studio.facade",
     "mod_editor.apf_studio.field_art",
     "mod_editor.apf_studio.gui",
+    "mod_editor.apf_studio.helmet_crest_design",
+    "mod_editor.apf_studio.helmet_logo_placement",
+    "mod_editor.apf_studio.helmet_logo_placement_qt",
+    "mod_editor.apf_studio.helmet_logo_regions",
+    "mod_editor.apf_studio.helmet_logo_regions_qt",
     "mod_editor.apf_studio.inspectors",
     "mod_editor.apf_studio.launcher",
+    "mod_editor.apf_studio.model_export",
+    "mod_editor.apf_studio.model_export_qt",
+    "mod_editor.apf_studio.model_import",
     "mod_editor.apf_studio.models",
     "mod_editor.apf_studio.player_ratings",
     "mod_editor.apf_studio.player_positions",
@@ -87,15 +102,25 @@ PRODUCT_MODULES = (
     "mod_editor.apf_studio.project",
     "mod_editor.apf_studio.roster_workspace",
     "mod_editor.apf_studio.roster_workspace_qt",
+    "mod_editor.apf_studio.save_appearance",
+    "mod_editor.apf_studio.save_playbooks",
+    "mod_editor.apf_studio.save_playbooks_qt",
     "mod_editor.apf_studio.session",
     "mod_editor.apf_studio.source",
     "mod_editor.apf_studio.stadium",
+    "mod_editor.apf_studio.stadium_model_import",
     "mod_editor.apf_studio.stadium_material_findings",
     "mod_editor.apf_studio.text_sheet",
+    "mod_editor.apf_studio.textlogo_authoring",
     "mod_editor.apf_studio.uniform_targets",
+    "mod_editor.apf_studio.uniform_equipment_colors_qt",
+    "mod_editor.apf_studio.uniform_independence",
+    "mod_editor.apf_studio.uniform_independence_panel",
     "mod_editor.core.capabilities",
     "mod_editor.core.errors",
+    "mod_editor.core.json_stream",
     "mod_editor.core.model",
+    "mod_editor.core.texture_master",
     "mod_editor.gui.apf_audio_waveform_qt",
     "mod_editor.gui.stadium_viewer",
 )
@@ -108,10 +133,15 @@ TOOL_MODULES = (
     "apf_audo_exact_slot",
     "apf_ausb_audio",
     "apf_ausb_exact_slot",
+    "apf_custom_team_appearance_patch",
     "apf_digital_font_layout",
     "apf_digital_font_transport",
     "apf_helmet_color_transport",
+    "apf_helmet_crest_mask_fit",
+    "apf_helmet_crest_wrap_patch",
+    "apf_helmet_crest_wrap_verify",
     "apf_inner",
+    "apf_jersey_selector_patch",
     "apf_outer",
     "apf_pants_color_transport",
     "apf_player_rating_patch",
@@ -119,12 +149,22 @@ TOOL_MODULES = (
     "apf_roster",
     "apf_roster_composite_patch",
     "apf_roster_identity_patch",
+    "apf_save_custom_team_appearance",
+    "apf_stfs_roster_extract",
     "apf_scene",
+    "apf_stadium_catalog_position_patch",
+    "apf_stadium_catalog_position_verify",
+    "apf_stadium_static_position_patch",
+    "apf_stadium_static_position_verify",
     "apf_shoulder_color_transport",
+    "apf_textlogo_patch",
+    "apf_textlogo_verify",
     "apf_texture_patch",
+    "apf_uniform_equipment_color_patch",
     "apf_txt_loc",
     "apf_txt_loc_patch",
     "apf_uniform_inventory",
+    "apf_uniform_selector_patch",
     "apf_uniform_mip_patch",
     "apf_xenos_bc1_mip_layout",
     "apf_xenos_dxn_mip_layout",
@@ -137,6 +177,7 @@ TOOL_MODULES = (
     "nfl_txtr",
     "playbook_inventory",
     "string_table_inventory",
+    "validate_apf_custom_team_appearance",
 )
 
 
@@ -205,6 +246,19 @@ def _check_extractor() -> None:
         license_info.st_size == EXTRACTOR_LICENSE_SIZE
         and _sha256(EXTRACTOR_LICENSE) == EXTRACTOR_LICENSE_SHA256,
         "reviewed extract-xiso license size/hash changed",
+    )
+
+
+def _check_h7a_encoder() -> None:
+    binary = _require_regular(H7A_ENCODER, "reviewed H7A encoder")
+    require(
+        binary.st_size == H7A_ENCODER_SIZE
+        and _sha256(H7A_ENCODER) == H7A_ENCODER_SHA256,
+        "reviewed H7A encoder size/hash changed",
+    )
+    require(
+        binary.st_mode & stat.S_IXUSR and not binary.st_mode & 0o022,
+        "reviewed H7A encoder mode changed",
     )
 
 
@@ -307,6 +361,11 @@ def _check_install_contract() -> None:
             all(token not in text for token in ("rm -rf", "rm -fr", "DISPLAY=:0", "xdotool")),
             f"install/launch script acquired a destructive or active-desktop token: {script.name}",
         )
+        if script.name in {"install.sh", "uninstall.sh"}:
+            require(
+                "PYTHONDONTWRITEBYTECODE=1" in text,
+                f"installer bootstrap can contaminate its audited source: {script.name}",
+            )
         syntax = subprocess.run(
             ["bash", "-n", str(script)],
             stdin=subprocess.DEVNULL,
@@ -333,10 +392,11 @@ def _check_install_contract() -> None:
 
         first = installer.install(ROOT, environment=environment)
         paths = first.paths
+        resolved_home = home.resolve(strict=True)
         require(first.action == "installed", "first per-user install was not classified as installed")
-        require(paths.app_dir == home / "xdg-data/apf2k8-mod-studio/app",
+        require(paths.app_dir == resolved_home / "xdg-data/apf2k8-mod-studio/app",
                 "per-user application path changed")
-        require(paths.wrapper == home / ".local/bin/apf2k8-mod-studio",
+        require(paths.wrapper == resolved_home / ".local/bin/apf2k8-mod-studio",
                 "per-user command path changed")
         for path in (paths.app_dir, paths.wrapper, paths.desktop, paths.icon, paths.record):
             require(os.path.lexists(path), f"per-user install omitted {path}")
@@ -381,7 +441,7 @@ def _check_install_contract() -> None:
         )
         for sentinel in preserved:
             sentinel.parent.mkdir(parents=True, exist_ok=True)
-            sentinel.write_text("user data, not installer-owned\n", encoding="utf-8")
+            sentinel.write_text("user data, not installer-owned\n", encoding="utf-8", newline="\n")
         removed = installer.uninstall(environment=environment)
         require(removed.action == "uninstalled", "per-user uninstall result changed")
         require(all(path.exists() for path in preserved),
@@ -407,6 +467,55 @@ def _check_namespace_isolation() -> None:
             "mod_editor is not the tested APF namespace package")
     require(core is not None and getattr(core, "__file__", None) is None,
             "mod_editor.core is not the tested APF namespace package")
+
+
+def _check_literal_product_import_closure() -> None:
+    """Reject a staged APF tree whose code names an unshipped local module.
+
+    Importing each public module is not enough: a button callback can hide an
+    import until a user clicks it. Beta 45 did exactly that in two Playbooks
+    actions. Parse every staged Python file and require every literal
+    ``mod_editor.*`` import to resolve inside this clean product tree. Namespace
+    package directories are valid even though their mixed-product
+    ``__init__.py`` files are deliberately absent.
+    """
+
+    missing: list[str] = []
+    for path in sorted(ROOT.rglob("*.py")):
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        except (OSError, SyntaxError, UnicodeError) as exc:
+            raise RuntimeError(f"could not inspect staged import closure: {path}") from exc
+        relative = path.relative_to(ROOT)
+        package = list(relative.with_suffix("").parts[:-1])
+        if relative.name == "__init__.py":
+            package = list(relative.parts[:-1])
+        candidates: list[tuple[int, str]] = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                candidates.extend((node.lineno, alias.name) for alias in node.names)
+            elif isinstance(node, ast.ImportFrom):
+                if node.level:
+                    keep = len(package) - node.level + 1
+                    parts = package[: max(0, keep)]
+                    if node.module:
+                        parts.extend(node.module.split("."))
+                    name = ".".join(parts)
+                else:
+                    name = node.module or ""
+                if name:
+                    candidates.append((node.lineno, name))
+        for line, name in candidates:
+            if name != "mod_editor" and not name.startswith("mod_editor."):
+                continue
+            target = ROOT.joinpath(*name.split("."))
+            if target.is_dir() or target.with_suffix(".py").is_file():
+                continue
+            missing.append(f"{relative}:{line} imports missing local module {name}")
+    require(
+        not missing,
+        "staged APF local-import closure is incomplete: " + "; ".join(missing),
+    )
 
 
 def _check_audo_authoring_doc() -> None:
@@ -467,7 +576,7 @@ def _check_external_xma1_bridge_doc() -> None:
         "one argument per line",
         "`{encoded_size}`",
         "final XMA1 output",
-        "fake encoders only",
+        "do not claim that fake output",
         "cannot determine the copyright or license",
     ):
         require(marker in text,
@@ -596,6 +705,43 @@ def _exercise_retail_free_project(modules: dict[str, object]) -> None:
         )
         require(len(replacements) == 1 and replacements[0].replacement_sha256 == digest,
                 "project replacement did not round-trip")
+
+
+def _exercise_texture_master(modules: dict[str, object]) -> None:
+    """Round-trip a user-authored APF master plus one native mask edit."""
+
+    from PIL import Image
+
+    texture_master = modules["mod_editor.core.texture_master"]
+    with tempfile.TemporaryDirectory(prefix="apf-runtime-master-") as name:
+        root = Path(name)
+        source = root / "user-logo.png"
+        Image.new("RGBA", (32, 12), (240, 240, 240, 255)).save(source)
+        baseline = root / "semantic-before-edit.png"
+        Image.new("RGBA", (8, 8), (255, 0, 0, 136)).save(baseline)
+        final = root / "semantic-final.png"
+        edited = Image.open(baseline).copy()
+        edited.putpixel((5, 3), (0, 255, 0, 136))
+        edited.save(final)
+        archive = texture_master.save_texture_master_bundle(
+            source_image=source,
+            destination=root / "fixture.2ktexmaster",
+            asset_id="apf.runtime.user.crest",
+            editor_target="apf2k8_xbox360-helmet-crest",
+            native_width=8,
+            native_height=8,
+            compiled_native_png=final,
+            compiled_native_baseline_png=baseline,
+            high_resolution_scale=2,
+            editor_transform={"operation": "runtime-semantic-mask-edit"},
+        )
+        loaded = texture_master.load_texture_master_bundle(archive)
+        require(
+            loaded.manifest["native_raster_edit"]["changed_pixel_count"] == 1
+            and loaded.native_png == final.read_bytes()
+            and loaded.native_baseline_png == baseline.read_bytes(),
+            "APF high-resolution texture-master runtime contract changed",
+        )
 
 
 def _exercise_retail_free_audio_project(modules: dict[str, object]) -> None:
@@ -988,6 +1134,11 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
     player_rating_sheet = modules["mod_editor.apf_studio.player_rating_sheet"]
     roster_workspace = modules["mod_editor.apf_studio.roster_workspace"]
     roster_workspace_qt = modules["mod_editor.apf_studio.roster_workspace_qt"]
+    save_appearance = modules["mod_editor.apf_studio.save_appearance"]
+    model_export = modules["mod_editor.apf_studio.model_export"]
+    model_export_qt = modules["mod_editor.apf_studio.model_export_qt"]
+    model_import = modules["mod_editor.apf_studio.model_import"]
+    stadium_model_import = modules["mod_editor.apf_studio.stadium_model_import"]
     audio_batch_export = modules["mod_editor.apf_studio.audio_batch_export"]
     audio_replacement_pack = modules[
         "mod_editor.apf_studio.audio_replacement_pack"
@@ -996,6 +1147,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
     stadium_material_findings = modules[
         "mod_editor.apf_studio.stadium_material_findings"
     ]
+    textlogo_authoring = modules["mod_editor.apf_studio.textlogo_authoring"]
     stadium_viewer = modules["mod_editor.gui.stadium_viewer"]
     capability_core = modules["mod_editor.core.capabilities"]
     core_model = modules["mod_editor.core.model"]
@@ -1030,26 +1182,32 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 66
-        and len(registry.for_game(core_model.GameId.APF2K8)) == 34,
+        len(registry.capabilities) == 70
+        and len(registry.for_game(core_model.GameId.APF2K8)) == 37,
         "shared/APF capability registry counts changed",
     )
     cards = catalog.build_capability_cards()
-    require(len(cards) == 34 and len({item.capability_id for item in cards}) == 34,
-            "APF capability surface is not exactly 34 unique rows")
+    require(len(cards) == 37 and len({item.capability_id for item in cards}) == 37,
+            "APF capability surface is not exactly 37 unique rows")
     require(len(models.APF_CATEGORY_ORDER) == 14,
             "APF complete sidebar category count changed")
     editable = {item.capability_id for item in cards if item.status is models.ApfStatus.EDITABLE}
     expected_editable = {
         "apf2k8.audio.ausb_xma_export",
         "apf2k8.audio.xma_export",
+        "apf2k8.colors.uniform_selector_appearance_custom_team",
         "apf2k8.field_art.base_texture",
         "apf2k8.logos_cards.draft_logo",
         "apf2k8.logos_cards.team_logo",
         "apf2k8.logos_cards.team_logo_cache",
+        "apf2k8.logos_cards.textlogo_wordmarks",
         "apf2k8.menus.layouts",
+        "apf2k8.models.scne_gltf",
+        "apf2k8.models.scne_same_count_position",
         "apf2k8.players.roster",
         "apf2k8.scorebug_presentation.digital_font",
+        "apf2k8.scripts.director_playbook",
+        "apf2k8.stadiums.textures",
         "apf2k8.uniforms.helmet_color_00_23",
         "apf2k8.uniforms.jersey_00_23",
         "apf2k8.uniforms.pants_color_00_23",
@@ -1059,9 +1217,79 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         editable == expected_editable
         and all(
             models.CAPABILITY_ACTION_BINDINGS[capability_id].has_complete_editor
+            or models.CAPABILITY_ACTION_BINDINGS[
+                capability_id
+            ].has_verified_one_shot_writer
             for capability_id in editable
         ),
         "public editable capability/action boundary changed",
+    )
+    textlogo_patch = importlib.import_module("apf_textlogo_patch")
+    textlogo_verify = importlib.import_module("apf_textlogo_verify")
+    textlogo_targets = textlogo_patch.load_targets()
+    require(
+        textlogo_authoring.WORDMARK_WIDTH == 512
+        and textlogo_authoring.WORDMARK_HEIGHT == 128
+        and textlogo_authoring.WORDMARK_FIT_MODES == ("contain", "cover", "stretch")
+        and len(textlogo_targets) == 206
+        and textlogo_targets[0]["asset_index"] == 0
+        and textlogo_targets[-1]["asset_index"] == 205
+        and textlogo_patch.SELECTOR_SLOT == 6
+        and textlogo_patch.INNER_NAME == "textlogo_color"
+        and textlogo_patch.CATALOG_SHA256
+        == "39a1e0c944a846e24d7a11c52d6a0fbba4091959f01856d3a087efde01ba490c"
+        and callable(textlogo_patch.build_patch)
+        and callable(textlogo_verify.verify_copied_volume)
+        and models.CAPABILITY_ACTION_BINDINGS[
+            "apf2k8.logos_cards.textlogo_wordmarks"
+        ].has_complete_editor
+        and hasattr(gui, "ApfTextLogoPanel"),
+        "complete 206-slot APF wordmark editor contract changed",
+    )
+    model_binding = models.CAPABILITY_ACTION_BINDINGS[
+        "apf2k8.models.scne_gltf"
+    ]
+    model_panel_source = inspect.getsource(
+        model_export_qt.PlayerEquipmentModelExportPanel
+    )
+    require(
+        [(item.key, item.outer_index, item.inner_index, item.expected_mesh_count)
+         for item in model_export.TARGETS]
+        == [("helmet", 1310, 128, 33), ("player", 1310, 273, 1)]
+        and model_import.EXPORT_SCHEMA
+        == "apf2k8_private_static_model_export/v2"
+        and model_import.IMPORT_SCHEMA
+        == "apf2k8_same_topology_model_import/v1"
+        and "POSITION-only" in model_import.MODEL_IMPORT_BOUNDARY
+        and model_binding.handler_id == "uniforms.model_position_roundtrip"
+        and model_binding.actions
+        == frozenset(
+            {
+                models.ApfProductAction.PREVIEW,
+                models.ApfProductAction.EXPORT,
+                models.ApfProductAction.BUILD_COPY,
+            }
+        )
+        and model_binding.one_shot_target
+        == "mod_editor.apf_studio.model_import:import_model"
+        and model_binding.output_kind == "verified copied 0A"
+        and model_binding.has_verified_one_shot_writer
+        and "Import edited glTF" in model_panel_source
+        and "import_model(" in model_panel_source,
+        "APF helmet/player model POSITION round-trip closure changed",
+    )
+    stadium_model_binding = models.CAPABILITY_ACTION_BINDINGS[
+        "apf2k8.models.scne_same_count_position"
+    ]
+    require(
+        stadium_model_binding.handler_id
+        == "stadium.selected_mesh_position_roundtrip"
+        and stadium_model_binding.one_shot_target
+        == "mod_editor.apf_studio.stadium_model_import:import_edited_mesh"
+        and stadium_model_binding.output_kind == "verified copied 1A"
+        and stadium_model_binding.has_verified_one_shot_writer
+        and callable(stadium_model_import.import_edited_mesh),
+        "APF stadium selected-mesh POSITION round-trip closure changed",
     )
     audio_card = next(
         item for item in cards if item.capability_id == "apf2k8.audio.xma_export"
@@ -1357,11 +1585,11 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
             marker in lock_message
             for marker in (
                 "player first/last names",
-                "editable",
-                "team abbreviations",
-                "jersey numbers",
+                "separate save players",
+                "raw-save jersey",
+                "depth",
                 "membership",
-                "depth charts",
+                "team abbreviations",
                 "runtime-locked",
             )
         )
@@ -1405,18 +1633,25 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
     position_schema = player_positions.load_player_position_schema()
     rating_patch = importlib.import_module("apf_player_rating_patch")
     position_patch = importlib.import_module("apf_player_position_patch")
+    appearance_patch = importlib.import_module(
+        "apf_custom_team_appearance_patch"
+    )
+    save_appearance_patch = importlib.import_module(
+        "apf_save_custom_team_appearance"
+    )
+    stfs_roster_extract = importlib.import_module("apf_stfs_roster_extract")
     roster_composite = importlib.import_module("apf_roster_composite_patch")
     unknown_rating = next(
         field
         for field in rating_schema.fields
-        if field.field_id == "unknown_rating_24"
+        if field.field_id == "unknown_rating_d4"
     )
     synthetic_record = bytearray(rating_schema.record_stride)
     synthetic_record[rating_schema.fields[0].relative_offset] = 99
     synthetic_record[unknown_rating.relative_offset] = 100
     synthetic_values = rating_schema.decode_record(synthetic_record)
     require(
-        len(rating_schema.fields) == 28
+        len(rating_schema.fields) == 31
         and sum(field.named for field in rating_schema.fields) == 27
         and (rating_schema.native_minimum, rating_schema.native_maximum) == (0, 100)
         and (
@@ -1425,15 +1660,19 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         )
         == (0, 99)
         and unknown_rating.relative_offset == 0xD4
-        and unknown_rating.label == "Unknown Rating 24"
+        and unknown_rating.label == "Unknown Rating (0xD4)"
+        # 0xBD, 0xC5 and 0xD2 became named editable fields; height is the one
+        # remaining excluded neighbour.
         and [
             item.relative_offset
             for item in rating_schema.excluded_neighbor_bytes
         ]
-        == [0xBD, 0xC5, 0xD2, 0xD9]
+        == [0xD9]
+        and sorted(field.relative_offset for field in rating_schema.fields)
+        == list(range(0xBA, 0xD9))
         and rating_schema.runtime_status == "token_preserving_runtime_loaded"
         and synthetic_values["speed"] == 99
-        and synthetic_values["unknown_rating_24"] == 100,
+        and synthetic_values["unknown_rating_d4"] == 100,
         "retail-free APF native base-rating dictionary changed",
     )
     rating_targets = tuple(
@@ -1443,7 +1682,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
     require(
         rating_patch.EXPECTED_PLAYER_COUNT == 2_254
         and (rating_patch.PUBLIC_MINIMUM, rating_patch.PUBLIC_MAXIMUM) == (0, 99)
-        and len(rating_targets) == 28
+        and len(rating_targets) == 31
         and tuple(target.field_id for target in rating_targets)
         == tuple(field.field_id for field in rating_schema.fields)
         and tuple(target.record_relative_offset for target in rating_targets)
@@ -1463,7 +1702,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         and callable(
             getattr(build.ApfBuildService, "_compile_roster_composite_groups", None)
         ),
-        "strict 28-field APF player-rating writer contract changed",
+        "strict 31-field APF player-rating writer contract changed",
     )
     synthetic_position_record = bytearray(position_schema.record_stride)
     synthetic_position_record[0x34] = synthetic_position_record[0x35] = 16
@@ -1500,6 +1739,95 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
             "APF player-position writer accepted a non-0..16 code: "
             f"{refused_value!r}"
         )
+    synthetic_bank = appearance_patch.AppearanceBank(
+        tuple(0xFF000000 + index for index in range(10)),
+        bytes.fromhex("0703020009000000"),
+        bytes.fromhex("5000000302010000"),
+    )
+    synthetic_appearance = appearance_patch.CustomTeamAppearance(
+        32, synthetic_bank, synthetic_bank
+    )
+    eagles_appearance = appearance_patch.eagles_2017_preset(
+        synthetic_appearance
+    )
+    require(
+        appearance_patch.SCHEMA
+        == "apf2k8_custom_team_appearance_patch/v1"
+        and appearance_patch.USER_SLOTS == tuple(range(32, 40))
+        and len(eagles_appearance.home.palette) == 10
+        and eagles_appearance.home.palette[8] == 0xFF004C54
+        and eagles_appearance.home.helmet_selector
+        == bytes.fromhex("0708020009000000")
+        and eagles_appearance.home.logo_selector
+        == bytes.fromhex("1E00010009000000")
+        and appearance_patch.decode_replacement_payload(
+            appearance_patch.encode_replacement_payload(eagles_appearance),
+            "synthetic-appearance",
+        )
+        == eagles_appearance
+        and callable(getattr(appearance_patch, "build_patch", None))
+        and callable(
+            getattr(appearance_patch, "patch_private_staged_volume", None)
+        )
+        and callable(
+            getattr(appearance_patch, "verify_output_appearances", None)
+        )
+        and callable(
+            getattr(build.ApfBuildService, "_compile_custom_team_appearance_group", None)
+        )
+        and callable(
+            getattr(facade.ApfStudioFacade, "replace_custom_team_appearance", None)
+        ),
+        "bounded APF custom-team appearance writer/editor contract changed",
+    )
+    require(
+        save_appearance_patch.SCHEMA
+        == "apf2k8_save_custom_team_appearance/v1"
+        and save_appearance_patch.MANIFEST_SCHEMA
+        == "apf2k8_save_custom_team_appearance_patch/v1"
+        and save_appearance_patch.STFS_EXTRACT_SCHEMA
+        == "apf2k8_stfs_roster_extract/v1"
+        and save_appearance_patch.STFS_HANDOFF_SCHEMA
+        == "apf2k8_stfs_roster_appearance_handoff/v1"
+        and save_appearance_patch.STFS_MAGICS
+        == (b"CON ", b"LIVE", b"PIRS")
+        and stfs_roster_extract.STFS_MAGICS == (b"CON ", b"LIVE", b"PIRS")
+        and save_appearance_patch.ROOT_OFFSET == 4
+        and save_appearance_patch.USER_CATEGORY == 2
+        and callable(getattr(save_appearance_patch, "parse_save", None))
+        and callable(getattr(save_appearance_patch, "make_patch", None))
+        and callable(getattr(save_appearance_patch, "verify_patch", None))
+        and callable(getattr(save_appearance_patch, "make_stfs_extract", None))
+        and callable(getattr(save_appearance_patch, "verify_stfs_extract", None))
+        and callable(getattr(save_appearance_patch, "make_stfs_handoff", None))
+        and callable(getattr(save_appearance_patch, "verify_stfs_handoff", None))
+        and callable(getattr(save_appearance_patch, "write_stfs_extract", None))
+        and callable(getattr(save_appearance_patch, "write_patch", None))
+        and callable(getattr(stfs_roster_extract, "extract_roster_payload", None))
+        and "24–31" in save_appearance.RAW_SAVE_BOUNDARY
+        and "32–39" in save_appearance.RAW_SAVE_BOUNDARY
+        and "STFS" in save_appearance.SIGNED_SAVE_BOUNDARY
+        and "does not write the signed container"
+        in save_appearance.SIGNED_SAVE_BOUNDARY
+        and "unavailable private keys" in save_appearance.SIGNED_SAVE_BOUNDARY
+        and callable(getattr(save_appearance, "inspect_save", None))
+        and callable(getattr(save_appearance, "extract_raw_save", None))
+        and callable(getattr(save_appearance, "write_new_save", None))
+        and save_appearance.SaveAppearanceWriteReceipt.__dataclass_fields__[
+            "runtime_in_game_proved"
+        ].default
+        is False,
+        "raw/STFS custom-team appearance safety/runtime boundary changed",
+    )
+    for refused_slot in (31, 40, True):
+        try:
+            appearance_patch.asset_id(refused_slot)
+        except appearance_patch.CustomTeamAppearanceError:
+            continue
+        raise RuntimeError(
+            "APF custom-team appearance writer accepted unsafe slot "
+            f"{refused_slot!r}"
+        )
     for refused_value in (-1, 100, True, 99.0, "99"):
         try:
             rating_patch.validate_value(refused_value)
@@ -1521,10 +1849,12 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         )
         and player_rating_sheet.PLAYER_RATING_SHEET_SCHEMA
         == "apf2k8_private_player_rating_sheet/v2"
-        and len(player_rating_sheet.RATING_COLUMNS) == 28
+        and len(player_rating_sheet.RATING_COLUMNS) == 31
         and callable(getattr(player_rating_sheet, "preview_player_rating_sheet", None))
         and callable(getattr(player_rating_sheet, "apply_player_rating_sheet", None))
-        and "private ratings CSV"
+        and "save players"
+        in gui.CATEGORY_BLURBS[models.ApfCategory.ROSTERS].casefold()
+        and "149 exact packed fields"
         in gui.CATEGORY_BLURBS[models.ApfCategory.ROSTERS],
         "complete private APF player-rating sheet import/export route is missing",
     )
@@ -1743,7 +2073,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         and gui.AUDIO_REPLACEMENT_IMPORT_CONFIRMATION_CONTRACT
         == "fully_validated_read_only_preview_then_explicit_apply"
         and gui.AUDIO_DIRECT_DROP_CONTRACT
-        == "selected_exact_slot_xma1_or_pcm16_wav"
+        == "selected_exact_slot_xma1_or_conformed_audio"
         and all(
             marker in pack_session_source
             for marker in (
@@ -1781,7 +2111,13 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
                 "len(urls) != 1",
                 "bool(urls[0].host())",
                 "path.is_file() and not path.is_symlink()",
-                '{".xma", ".wav"}',
+                # The admission list widened from {".xma", ".wav"} to ".xma"
+                # plus everything the converter can read. Both halves are
+                # pinned, so the lossless passthrough route and the conform
+                # route each stay gated on suffix rather than the drop target
+                # quietly admitting any file at all.
+                'path.suffix.casefold() == ".xma"',
+                "audio_conform.is_supported_suffix(path)",
             )
         )
         and all(
@@ -1848,23 +2184,22 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
     )
     material_findings = stadium_material_findings.load_stadium_material_findings()
     require(
-        material_findings.outcome == "texture_owner_unresolved"
-        and material_findings.experiment["scene_mesh_nodes"] == 116
-        and material_findings.experiment["draw_records"] == 328
-        and material_findings.experiment["serialized_material_records"] == 113
-        and material_findings.experiment["shader_family_records"] == 13
-        and material_findings.experiment[
-            "known_named_texture_identities_checked"
-        ] == 737
-        and material_findings.proof["mesh_to_named_texture_identity"] is False
-        and material_findings.proof["texture_writer_safe_to_expose"] is False
-        and material_findings.runtime_capture["outcome"]
-        == "host_breakpoint_intercepted"
-        and material_findings.runtime_capture["game_frame_rendered"] is False
-        and material_findings.runtime_capture["guest_registers_captured"] is False
-        and material_findings.runtime_capture["configuration_restored"] is True
-        and "Replace/Revert stays disabled" in material_findings.author_summary
-        and "material-array base" in material_findings.best_next_experiment,
+        material_findings.outcome == "embedded_texture_ownership_proved"
+        and material_findings.experiment["scene_surface_nodes"] == 89
+        and material_findings.experiment["serialized_material_records"] == 84
+        and material_findings.experiment["shader_family_records"] == 20
+        and material_findings.experiment["embedded_texture_descriptors"] == 78
+        and material_findings.experiment["editable_texture_descriptors"] == 78
+        and material_findings.experiment["orphaned_embedded_textures"] == 0
+        and material_findings.proof["material_slot_to_embedded_texture"] is True
+        and material_findings.proof["texture_writer_safe_to_expose"] is True
+        and material_findings.proof["runtime_visibility_proved"] is False
+        and material_findings.runtime_capture["outcome"] == "offline_writer_proved"
+        and material_findings.runtime_capture["emulator_used"] is False
+        and material_findings.runtime_capture["source_opened_read_only"] is True
+        and material_findings.runtime_capture["copied_output_reopened"] is True
+        and "Replace, Revert" in material_findings.author_summary
+        and "Xbox 360 hardware" in material_findings.best_next_experiment,
         "APF stadium material findings runtime boundary changed",
     )
     scene_tool = importlib.import_module("apf_scene")
@@ -1906,6 +2241,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
     else:
         raise RuntimeError("AUSB export accepted an unsupported extension")
     _exercise_retail_free_project(modules)
+    _exercise_texture_master(modules)
     _exercise_retail_free_audio_project(modules)
     _exercise_external_xma1_bridge(modules)
     return len(cards)
@@ -1944,12 +2280,12 @@ def _check_private_source(
         )
         require(universal_count == 10_464,
                 f"expected 10,464 universal assets, found {universal_count}")
-        require(uniform_count == 96,
-                f"expected 96 editable uniform assets, found {uniform_count}")
+        require(uniform_count == 302,
+                f"expected 302 editable uniform/wordmark assets, found {uniform_count}")
         require(uniform_inventory_count == 408,
                 f"expected 408 uniform inventory records, found {uniform_inventory_count}")
-        require(capability_count == 34,
-                f"expected 34 capabilities, found {capability_count}")
+        require(capability_count == 37,
+                f"expected 37 capabilities, found {capability_count}")
         require(
             len({item.asset_id for item in product_catalog.assets}) == universal_count
             and len({item.asset_id for item in product_catalog.uniform_assets}) == uniform_count,
@@ -1958,7 +2294,15 @@ def _check_private_source(
         by_family: dict[str, int] = {}
         for item in product_catalog.uniform_assets:
             by_family[item.family] = by_family.get(item.family, 0) + 1
-        require(by_family == {"helmet": 24, "jersey": 24, "pants": 24, "shoulder": 24},
+        require(
+            by_family
+            == {
+                "helmet": 24,
+                "jersey": 24,
+                "pants": 24,
+                "shoulder": 24,
+                "textlogo": 206,
+            },
                 f"uniform family coverage changed: {by_family}")
         inventory_by_type: dict[str, int] = {}
         inventory_by_coordinate: dict[tuple[int, int], object] = {}
@@ -1979,7 +2323,7 @@ def _check_private_source(
             (item.outer_index, item.inner_index): item
             for item in product_catalog.uniform_assets
         }
-        require(len(editable_coordinates) == 96,
+        require(len(editable_coordinates) == 302,
                 "editable uniform targets repeat an archive coordinate")
         require(set(editable_coordinates).issubset(inventory_by_coordinate),
                 "editable uniform targets are missing from the 408-record inventory")
@@ -1988,6 +2332,7 @@ def _check_private_source(
             "pants": "pants_color",
             "helmet": "helmet_color",
             "shoulder": "shoulder_color",
+            "textlogo": "textlogo_color",
         }
         require(
             all(
@@ -2007,9 +2352,9 @@ def _check_private_source(
         for item in additional_inventory:
             additional_by_type[item.type_name] = additional_by_type.get(item.type_name, 0) + 1
         require(
-            len(additional_inventory) == 312
+            len(additional_inventory) == 106
             and additional_by_type
-            == {"NameFont": 11, "NumberFont": 24, "SCNE": 2, "TXTR": 275},
+            == {"NameFont": 11, "NumberFont": 24, "SCNE": 2, "TXTR": 69},
             f"additional uniform inventory coverage changed: count={len(additional_inventory)} types={additional_by_type}",
         )
         external_audio_banks = tuple(
@@ -2119,8 +2464,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         _check_clean_stage()
         _check_extractor()
+        _check_h7a_encoder()
         _check_desktop_contract()
         _check_install_contract()
+        _check_literal_product_import_closure()
         modules = {name: importlib.import_module(name) for name in PRODUCT_MODULES}
         for name in TOOL_MODULES:
             importlib.import_module(name)
@@ -2147,7 +2494,7 @@ def main(argv: list[str] | None = None) -> int:
                 "audio_replacement_token=exact_member_result_source_session_project_revision "
                 "audio_replacement_noop=cancel_unchanged "
                 "audio_replacement_lifecycle=worker_drained_before_confirmation "
-                "audio_direct_drop=selected_exact_slot_xma1_or_pcm16_wav "
+                "audio_direct_drop=selected_exact_slot_xma1_or_conformed_audio "
                 "audio_mutation_lifecycle=submission_to_worker_idle "
                 "retail_source_required=false"
             )
@@ -2171,7 +2518,7 @@ def main(argv: list[str] | None = None) -> int:
                 "audio_replacement_token=exact_member_result_source_session_project_revision "
                 "audio_replacement_noop=cancel_unchanged "
                 "audio_replacement_lifecycle=worker_drained_before_confirmation "
-                "audio_direct_drop=selected_exact_slot_xma1_or_pcm16_wav "
+                "audio_direct_drop=selected_exact_slot_xma1_or_conformed_audio "
                 "audio_mutation_lifecycle=submission_to_worker_idle "
                 "private_source_verified=true"
             )

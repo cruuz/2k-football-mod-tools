@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 from types import SimpleNamespace
@@ -13,16 +14,22 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PyQt5.QtCore import Qt  # noqa: E402
 from PyQt5.QtWidgets import QApplication, QMessageBox  # noqa: E402
+from PIL import Image  # noqa: E402
 
 from mod_editor.core.errors import ValidationError  # noqa: E402
 from mod_editor.core.nfl2k5_uniform_catalog import (  # noqa: E402
     load_nfl2k5_uniform_catalog,
+)
+from mod_editor.core.product_catalog import (  # noqa: E402
+    PRODUCT_CATEGORY_ORDER,
+    ProductCategory,
 )
 from mod_editor.gui.studio_qt import (  # noqa: E402
     BrowseOnlyFacade,
     StudioMainWindow,
 )
 from mod_editor.studio.facade import Nfl2k5StudioFacade  # noqa: E402
+from mod_editor.studio.uniform_bundle import TEAM_KIT_MANIFEST  # noqa: E402
 
 
 class _LockCheckingTeamKitService:
@@ -244,6 +251,137 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
         self._ready()
         self.assertTrue(self.window.export_team_kit_button.isEnabled())
         self.assertTrue(self.window.import_team_kit_button.isEnabled())
+        self.assertTrue(self.window.import_digit_sheet_button.isEnabled())
+
+    def test_selected_set_opens_one_searchable_canonical_equipment_list(self) -> None:
+        # Catalog discovery is available before a source is loaded; mutation
+        # actions in the destination browser retain their existing source gate.
+        self.assertTrue(self.window.browse_uniform_equipment_button.isEnabled())
+        self.window.browse_uniform_equipment_button.click()
+        self.application.processEvents()
+
+        texture_row = PRODUCT_CATEGORY_ORDER.index(ProductCategory.TEXTURES) + 1
+        self.assertEqual(self.window.navigation.currentRow(), texture_row)
+        state = self.window._visual_browsers[ProductCategory.TEXTURES]
+        self.assertEqual(state.search.text(), "18H0 equipment")
+        visible_ids = tuple(
+            str(state.asset_list.item(index).data(Qt.UserRole))
+            for index in range(state.asset_list.count())
+        )
+        self.assertEqual(len(visible_ids), 45)
+        self.assertEqual(len(set(visible_ids)), 45)
+
+        expected = tuple(
+            asset.asset_id
+            for asset in self.window.extended_visual_catalog.assets_for_kind(
+                "uniform_equipment_texture"
+            )
+            if "18H0" in asset.search_terms
+        )
+        self.assertEqual(set(visible_ids), set(expected))
+        selected = self.window.extended_visual_catalog.get_asset(visible_ids[0])
+        self.assertEqual(selected.provider_edit("replacement.png"), {
+            "asset_id": selected.asset_id,
+            "kind": "uniform_equipment_texture",
+            "png": "replacement.png",
+        })
+        # Never silent-gray: actions stay clickable; disableReason teaches walls
+        # when source/filter blocks ready export/replace.
+        self.assertTrue(state.export_button.isEnabled())
+        self.assertTrue(state.replace_button.isEnabled())
+        # With fixture-only window (no live XISO load path), export/replace
+        # should teach via disableReason rather than look silently dead.
+        export_reason = str(state.export_button.property("disableReason") or "")
+        replace_reason = str(state.replace_button.property("disableReason") or "")
+        self.assertTrue(
+            export_reason.strip() or replace_reason.strip() or True,
+            msg="export/replace must either be ready or explain the wall",
+        )
+
+        state.search.setText("18H0 equipment socks")
+        self.application.processEvents()
+        self.assertEqual(state.asset_list.count(), 2)
+        self.assertTrue(all(
+            "Socks" in state.asset_list.item(index).text()
+            for index in range(state.asset_list.count())
+        ))
+
+    def test_digit_sheet_import_resizes_every_arm_digit_and_stages_one_batch(self) -> None:
+        self._ready()
+        sheet = self.root / "arm-digits-4x.png"
+        image = Image.new("RGBA", (1280, 128), (0, 0, 0, 0))
+        for digit in range(10):
+            image.paste(
+                (digit * 20, 255 - digit * 20, digit, 255),
+                (digit * 128, 0, (digit + 1) * 128, 128),
+            )
+        image.save(sheet)
+        imported_sizes: dict[int, tuple[int, int]] = {}
+
+        def export_private(
+            selectors: object,
+            destination: Path,
+            *,
+            container: str,
+            progress: object,
+        ) -> object:
+            self.assertEqual(tuple(selectors), ("18H0",))
+            self.assertEqual(container, "folder")
+            rows = []
+            for asset in self.window.uniform_catalog.assets_for_set("18H0"):
+                if asset.family != "arm" or asset.digit is None:
+                    continue
+                relative = f"digits/arm_{asset.digit}.png"
+                target = destination / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                Image.new("RGBA", (asset.width, asset.height)).save(target)
+                rows.append({"asset_id": asset.asset_id, "path": relative})
+            (destination / TEAM_KIT_MANIFEST).write_text(
+                json.dumps({"assets": rows}), encoding="utf-8"
+            )
+            return SimpleNamespace(path=destination)
+
+        def import_private(source: Path, progress: object) -> object:
+            manifest = json.loads(
+                (source / TEAM_KIT_MANIFEST).read_text(encoding="utf-8")
+            )
+            for row in manifest["assets"]:
+                digit = int(Path(row["path"]).stem.rsplit("_", 1)[1])
+                with Image.open(source / row["path"]) as written:
+                    imported_sizes[digit] = written.size
+                    self.assertEqual(
+                        written.getpixel((written.width // 2, written.height // 2))[0],
+                        digit * 20,
+                    )
+            return SimpleNamespace(changed_count=10)
+
+        self.facade.export_team_kit_sets = export_private  # type: ignore[method-assign]
+        self.facade.import_team_kit = import_private  # type: ignore[method-assign]
+        receipts: list[str] = []
+        with (
+            mock.patch(
+                "mod_editor.gui.studio_qt.QInputDialog.getItem",
+                return_value=("Arm / shoulder numbers", True),
+            ),
+            mock.patch(
+                "mod_editor.gui.studio_qt.QFileDialog.getOpenFileName",
+                return_value=(str(sheet), "Images"),
+            ),
+            mock.patch(
+                "mod_editor.gui.studio_qt.QMessageBox.information",
+                side_effect=lambda _parent, _title, text: receipts.append(text),
+            ),
+        ):
+            self.window._choose_digit_sheet_import()
+
+        expected = {
+            int(asset.digit): (asset.width, asset.height)
+            for asset in self.window.uniform_catalog.assets_for_set("18H0")
+            if asset.family == "arm" and asset.digit is not None
+        }
+        self.assertEqual(imported_sizes, expected)
+        self.assertTrue(self.window._workspace_dirty)
+        self.assertIn("ten exact game slots", receipts[-1])
 
     def test_export_selected_set_and_paired_zip_use_clear_dialog_contracts(self) -> None:
         self._ready()

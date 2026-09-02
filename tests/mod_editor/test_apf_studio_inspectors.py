@@ -84,7 +84,7 @@ def _roster_report() -> dict[str, object]:
             "base_ratings": {
                 field.field_id: (
                     100
-                    if index == 0 and field.field_id == "unknown_rating_24"
+                    if index == 0 and field.field_id == "unknown_rating_d4"
                     else (index + field.display_order) % 100
                 )
                 for field in PLAYER_RATING_SCHEMA.fields
@@ -556,11 +556,15 @@ class ApfStudioInspectorTests(unittest.TestCase):
         self.assertGreater(snapshot.model.page(search="Needle", limit=20).total, 0)
         player = snapshot.model.page(kinds="player", limit=1).items[0]
         ratings = player.fields["base_ratings"]
-        self.assertEqual(len(ratings), 28)
+        self.assertEqual(len(ratings), len(PLAYER_RATING_SCHEMA.fields))
         self.assertEqual(ratings[0]["label"], "Speed")
         self.assertEqual(ratings[0]["value"], 0)
-        self.assertEqual(ratings[25]["label"], "Unknown Rating 24")
-        self.assertEqual(ratings[25]["value"], 100)
+        self.assertEqual(ratings[25]["label"], "Unknown Rating (0xD4)")
+        native_100 = next(
+            row for row in ratings if row["id"] == "unknown_rating_d4"
+        )
+        self.assertEqual(native_100["value"], 100)
+        self.assertEqual(native_100["relative_offset_hex"], "0xD4")
         self.assertEqual(player.fields["base_rating_scale"]["native_maximum"], 100)
         first_name_editor = player.fields["identity_editor"]["first_name"]
         self.assertTrue(first_name_editor["runtime_editable"])

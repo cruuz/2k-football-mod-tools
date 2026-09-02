@@ -39,17 +39,12 @@ if python3 tools/nfl2k5_scorebug_mod_project.py build \
   exit 1
 fi
 
-# Real-disc verifier gate without retaining another 6.3 GB image. This older
-# single-target proof uses the same strict importer, retail pins, XDVDFS parser,
-# and full-image outside-union comparison as the typed composer.
-python3 tools/nfl_scorebug_xiso_verify.py \
-  --source-xiso "$source" \
-  --output-xiso \
-    build/nfl2k5-scorebug-workflow-20260712/ESPN-NFL-2K5-scorebug-magenta.xiso.iso \
-  --manifest build/nfl2k5-scorebug-workflow-20260712/workflow.json \
-  --preview build/nfl2k5-scorebug-workflow-20260712/preview.png \
-  --target score_buga \
-  --png reports/assets/nfl2k5_scorebug_fixtures/score_buga_diagnostic.png
+# The shared presentation validator builds the retail score_buga proof into a
+# bounded mktemp directory, independently verifies all 6.3 GB, and removes the
+# copy.  Calling it here keeps this legacy standalone entry point complete;
+# both registered scorebug capabilities use the combined product wrapper, so
+# the aggregate executes this expensive gate only once.
+bash tools/validate_scorebug_presentation_pipeline.sh
 
 PYTHONPATH=tools python3 - "$temporary/validate.json" <<'PY'
 import hashlib
@@ -99,4 +94,4 @@ test "$before_index" = "$after_index"
 test "$before_xbe" = "$after_xbe"
 test "$before_audit" = "$after_audit"
 
-echo "NFL2K5_SCOREBUG_MOD_PROJECT_VALIDATION_PASS targets=3 schema=canonical pins=strict union=synthetic real_xiso_gate=2169 runtime=false originals_unchanged=yes"
+echo "NFL2K5_SCOREBUG_MOD_PROJECT_VALIDATION_PASS targets=3 schema=canonical pins=strict union=synthetic real_xiso_gate=fresh-2169 runtime=false originals_unchanged=yes"

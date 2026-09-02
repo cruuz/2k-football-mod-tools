@@ -20,9 +20,11 @@ builds use the dynamic resolver below; no retail catalog or payload ships.
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import asdict, dataclass, field, replace
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -171,6 +173,19 @@ from nfl_scne_inventory import ScneError, parse_scene  # noqa: E402
 BUILD_SCHEMA = "2k5_mod_studio_stadium_texture_xiso/v1"
 GENERAL_BUILD_SCHEMA = "2k5_mod_studio_stadium_p8_texture_xiso/v2"
 UNIFIED_IMPORT_SCHEMA = "nfl2k5_stadium_texture_unified_import/v2"
+GEOMETRY_RECIPE_SCHEMA = "2k5_mod_studio_stadium_geometry_recipe/v1"
+GEOMETRY_IMPORT_SCHEMA = "nfl2k5_stadium_geometry_unified_import/v1"
+GEOMETRY_CATALOG_SCHEMA = "nfl2k5_stadium_static_target_catalog/v1"
+GEOMETRY_CATALOG_SIZE = 858_600
+GEOMETRY_CATALOG_SHA256 = (
+    "f44472856044a5d8a50d18476a4c7af18ef98bcc3f7cf1d567db2b33d5336bfa"
+)
+GEOMETRY_CATALOG_PATH = (
+    ROOT / "reports/specs/nfl2k5_stadium_static_target_catalog.v1.json"
+)
+MAX_GLTF_JSON_BYTES = 64 * 1024 * 1024
+MAX_GLTF_BUFFER_BYTES = 512 * 1024 * 1024
+MAX_GEOMETRY_RECIPE_BYTES = 64 * 1024 * 1024
 SELECTOR_RE = re.compile(
     r"nfl2k5\.stadium\.o(?P<outer>\d{4})\.c(?P<chunk>\d{4})\."
     r"scene(?P<scene>\d{4})\.texture(?P<texture>\d{4})\Z"
@@ -273,6 +288,16 @@ SHARED_OWNERSHIP_NOTE = (
 
 class StadiumTextureWriterError(ValidationError):
     """The bounded target or output violated its fixed contract."""
+
+
+@dataclass(frozen=True)
+class CompiledStadiumGeometryRecipe:
+    scene_id: str
+    recipe: bytes = field(repr=False)
+    recipe_sha256: str
+    changed_target_count: int
+    changed_vertex_count: int
+    preserved_triangle_count: int
 
 
 @dataclass(frozen=True)
@@ -469,6 +494,20 @@ class _FixedSpanBuild:
     scratch_after: int
 
 
+
+def _decoded_rgba(path: Path) -> bytes:
+    """The PNG's pixels, which are identical everywhere its bytes may not be.
+
+    Two zlib implementations can compress the same image to different valid
+    files, so the compressed bytes cannot be pinned across machines. What can be
+    pinned is what those bytes decode to.
+    """
+    from PIL import Image
+
+    with Image.open(path) as image:
+        return image.convert("RGBA").tobytes()
+
+
 def _sha256_bytes(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
@@ -519,6 +558,7 @@ def _rebuild_vc_lz_fixed_span(
     *,
     consumed_cap: int,
     scratch_cap: int,
+    template_stream_prefix: bytes | None = None,
 ) -> _FixedSpanBuild:
     """Rebuild one compressed resource while preserving its fixed final tail.
 
@@ -536,24 +576,58 @@ def _rebuild_vc_lz_fixed_span(
              "Decoded SCNE size differs from wrapper allocation")
     _require(stored_size == consumed_cap + len(opaque_tail),
              "SCNE consumed cap and opaque tail do not fill stored allocation")
-    try:
-        encoded, _compression = compress_vc_lz(
-            decoded,
-            stream_tag=1,
-            offset_bits=12,
-            max_encoded_size=consumed_cap,
-            verify_roundtrip=True,
+    stream_tag = 1
+    source_offset_bits = 12
+    if template_stream_prefix is not None:
+        _require(
+            len(template_stream_prefix) >= 9,
+            "SCNE compressed template stream prefix is truncated",
         )
-        decoded_back, decode_info = decompress_vc_lz(encoded, len(decoded))
-        alias = minimum_vc_lz_overlap_scratch(encoded, stored_size, len(decoded))
-    except TxtrError as exc:
-        raise StadiumTextureWriterError(FIXED_ALLOCATION_ERROR) from exc
-    _require(decoded_back == decoded and decode_info.consumed_bytes == len(encoded),
-             "Rebuilt SCNE stream failed its lossless decode check")
+        declared_size, stream_tag = struct.unpack_from("<II", template_stream_prefix)
+        source_offset_bits = template_stream_prefix[8]
+        _require(
+            declared_size == len(decoded)
+            and 1 <= source_offset_bits <= 15,
+            "SCNE compressed template stream prefix changed",
+        )
+    # Replay the source encoder geometry first.  Only if it cannot fit do we
+    # try the two other bounded tiers observed across these fixed SCNEs.  This
+    # is deterministic, preserves the retail style whenever possible, and
+    # avoids rejecting ordinary edits merely because one caller hardcoded a
+    # different distance/length split.
+    candidates = [source_offset_bits]
+    candidates.extend(
+        bits for bits in (10, 11, 12) if bits not in candidates
+    )
+    selected: tuple[bytes, bytes, Any, int, int] | None = None
+    last_error: TxtrError | None = None
+    for offset_bits in candidates:
+        try:
+            encoded, _compression = compress_vc_lz(
+                decoded,
+                stream_tag=stream_tag,
+                offset_bits=offset_bits,
+                max_encoded_size=consumed_cap,
+                verify_roundtrip=True,
+            )
+            decoded_back, decode_info = decompress_vc_lz(encoded, len(decoded))
+            alias = minimum_vc_lz_overlap_scratch(encoded, stored_size, len(decoded))
+        except TxtrError as exc:
+            last_error = exc
+            continue
+        _require(
+            decoded_back == decoded and decode_info.consumed_bytes == len(encoded),
+            "Rebuilt SCNE stream failed its lossless decode check",
+        )
+        zero_gap = consumed_cap - len(encoded)
+        scratch = _aligned16(max(stored_size - len(encoded), alias))
+        if scratch <= scratch_cap:
+            selected = (encoded, decoded_back, decode_info, alias, scratch)
+            break
+    if selected is None:
+        raise StadiumTextureWriterError(FIXED_ALLOCATION_ERROR) from last_error
+    encoded, decoded_back, decode_info, alias, scratch = selected
     zero_gap = consumed_cap - len(encoded)
-    scratch = _aligned16(max(stored_size - len(encoded), alias))
-    if scratch > scratch_cap:
-        raise StadiumTextureWriterError(FIXED_ALLOCATION_ERROR)
     header = bytearray(template_header)
     struct.pack_into("<I", header, 0x14, scratch)
     span = bytes(header) + encoded + bytes(zero_gap) + opaque_tail
@@ -1106,6 +1180,9 @@ def _read_dynamic_png(
 def _compile_resolved_scene(
     resolved: Sequence[_ResolvedStadiumScene],
     replacement_pngs: Sequence[Path],
+    *,
+    base_decoded: bytes | None = None,
+    base_allowed_ranges: Sequence[range] = (),
 ) -> _CompiledStadiumScene:
     _require(
         len(resolved) == len(replacement_pngs) and bool(resolved),
@@ -1123,9 +1200,15 @@ def _compile_resolved_scene(
     )
     selectors = [row.contract.texture_id for row in resolved]
     _require(len(selectors) == len(set(selectors)), "Stadium texture target repeats")
-    edited = bytearray(source.decoded)
+    if base_decoded is None:
+        base_decoded = source.decoded
+    _require(
+        len(base_decoded) == len(source.decoded),
+        "Composed Stadium decoded allocation changed size",
+    )
+    edited = bytearray(base_decoded)
     payloads: list[_CompiledP8Payload] = []
-    allowed_ranges: list[range] = []
+    allowed_ranges: list[range] = list(base_allowed_ranges)
     for row, replacement_png in zip(resolved, replacement_pngs):
         contract = row.contract
         payload, rgba = _read_dynamic_png(replacement_png, contract)
@@ -1200,6 +1283,7 @@ def _compile_resolved_scene(
         source.opaque_tail,
         consumed_cap=contract.retail_consumed,
         scratch_cap=SCNE_OBSERVED_SCRATCH_MAX,
+        template_stream_prefix=source.span[HEADER.size:HEADER.size + 9],
     )
     return _CompiledStadiumScene(
         source=source,
@@ -1559,17 +1643,17 @@ class Nfl2k5StadiumTextureWriter:
         success = False
         try:
             source_info = os.fstat(source_fd)
-            _require(
-                stat.S_ISREG(source_info.st_mode)
-                and source_info.st_size == xiso.EXPECTED_XISO_SIZE,
-                "Retail source XISO descriptor is incompatible",
-            )
+            # The container is not pinned: how the disc was read changes the
+            # file's size and hash without changing the game. Identity comes
+            # from the located game partition, its file count, its two volume
+            # extents and default.xbe -- all checked immediately below, and all
+            # stronger than a hash of the wrapper.
+            _require(stat.S_ISREG(source_info.st_mode),
+                     "Retail source XISO descriptor is incompatible")
             source_identity = xiso.fd_identity(source_fd)
             _require(xiso.path_identity(source) == source_identity,
                      "Retail source XISO pathname changed after open")
             source_sha = _sha256_fd(source_fd)
-            _require(source_sha == xiso.EXPECTED_XISO_SHA256,
-                     "Retail source XISO hash does not match NFL 2K5 USA")
             entries, directory = xiso.parse_xdvdfs(source_fd, source_info.st_size)
             files = [row for row in entries.values() if not (row.attributes & 0x10)]
             pack = entries.get(PACK_PATH.casefold())
@@ -1582,7 +1666,12 @@ class Nfl2k5StadiumTextureWriter:
                      "XDVDFS volume 0 extent changed")
             _require(xbe is not None and xbe.size == xiso.EXPECTED_XBE_SIZE,
                      "default.xbe extent changed")
-            _require(pack.byte_offset + CHUNK_PACK_OFFSET == ABSOLUTE_XISO_SPAN,
+            # ABSOLUTE_XISO_SPAN was measured on an image whose game partition
+            # begins at byte 0. The same sector in a raw disc read sits
+            # base_offset further in, so the invariant is the offset WITHIN the
+            # partition, not the absolute byte.
+            _require(pack.byte_offset - pack.base_offset + CHUNK_PACK_OFFSET
+                     == ABSOLUTE_XISO_SPAN,
                      "Authorized stadium XISO span arithmetic changed")
             retail_span = xiso.read_exact(source_fd, ABSOLUTE_XISO_SPAN, CHUNK_SPAN_SIZE)
             _require(_sha256_bytes(retail_span) == CHUNK_SPAN_SHA256,
@@ -1728,7 +1817,6 @@ class Nfl2k5StadiumTextureWriter:
         if (
             not source.recognized
             or source.fingerprint_id != "nfl2k5-usa-retail-xiso"
-            or source.sha256 != SOURCE_SHA256
             or source.kind != "xiso"
         ):
             raise StadiumTextureWriterError(
@@ -1783,7 +1871,13 @@ class Nfl2k5StadiumTextureWriter:
             "depth": 1,
             "dimensions": 2,
             "rgba_sha256": STOCK_RGBA_SHA256,
-            "png_sha256": STOCK_PNG_SHA256,
+            # png_sha256 is deliberately NOT required here: it is the hash of
+            # zlib-compressed bytes, and zlib-ng (Fedora 40+, openSUSE, newer
+            # python.org Windows builds) emits different but perfectly valid
+            # deflate output than the zlib this value was measured with. Pinning
+            # it made Stadium Studio refuse to open on those machines even with
+            # a byte-perfect game. The decoded pixels below are the real
+            # contract and they are implementation-independent.
             "mapped_material_names": TARGET_MATERIAL_NAME,
             "mapped_material_count": 1,
         }
@@ -1820,8 +1914,8 @@ class Nfl2k5StadiumTextureWriter:
             stock_png.relative_to(texture_root)
         except ValueError as exc:
             raise StadiumTextureWriterError("Private cement01 PNG escapes texture cache") from exc
-        _require(_sha256_file(stock_png) == STOCK_PNG_SHA256,
-                 "Private cement01 PNG no longer matches its manifest")
+        _require(_sha256_bytes(_decoded_rgba(stock_png)) == STOCK_RGBA_SHA256,
+                 "Private cement01 PNG no longer decodes to its manifest pixels")
         pack9 = _regular(self.cache.pack0.parent / PACK_NAME, "private archive volume 9")
         _require(pack9.stat().st_size == PACK_SIZE, "Private archive volume 9 size changed")
         source_xiso = _regular(Path(source.selected_path), "retail source XISO")
@@ -2058,15 +2152,656 @@ def build_unified_stadium_texture_import(
     return results[0]
 
 
+def _load_geometry_catalog(
+    path: Path = GEOMETRY_CATALOG_PATH, *, enforce_pin: bool = True
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+    catalog_path = _regular(path, "bounded Stadium geometry catalog")
+    payload = catalog_path.read_bytes()
+    if enforce_pin:
+        _require(
+            len(payload) == GEOMETRY_CATALOG_SIZE
+            and _sha256_bytes(payload) == GEOMETRY_CATALOG_SHA256,
+            "Bounded Stadium geometry catalog identity changed",
+        )
+    try:
+        document = json.loads(payload.decode("utf-8"))
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise StadiumTextureWriterError(
+            f"Could not read the bounded Stadium geometry catalog ({exc})."
+        ) from exc
+    rows = document.get("targets") if isinstance(document, dict) else None
+    _require(
+        isinstance(document, dict)
+        and document.get("schema") == GEOMETRY_CATALOG_SCHEMA
+        and isinstance(rows, list)
+        and bool(rows),
+        "Bounded Stadium geometry catalog schema changed",
+    )
+    result: dict[str, dict[str, Any]] = {}
+    for raw in rows:
+        _require(
+            isinstance(raw, dict) and isinstance(raw.get("target_id"), str),
+            "Bounded Stadium geometry catalog contains an invalid target",
+        )
+        target_id = str(raw["target_id"])
+        _require(target_id not in result, "Bounded Stadium geometry target repeats")
+        result[target_id] = raw
+    return document, result
+
+
+def _read_gltf_bundle(path: Path) -> tuple[dict[str, Any], tuple[bytes, ...]]:
+    gltf = _regular(path.expanduser(), "edited Stadium glTF")
+    _require(
+        0 < gltf.stat().st_size <= MAX_GLTF_JSON_BYTES,
+        "Edited Stadium glTF is empty or too large",
+    )
+    try:
+        document = json.loads(gltf.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise StadiumTextureWriterError(f"Could not read that Stadium glTF ({exc}).") from exc
+    _require(isinstance(document, dict), "Edited Stadium glTF root must be an object")
+    declared = document.get("buffers")
+    _require(isinstance(declared, list) and bool(declared), "Stadium glTF has no buffers")
+    buffers: list[bytes] = []
+    for number, row in enumerate(declared):
+        _require(isinstance(row, dict), "Stadium glTF buffer row is invalid")
+        uri = row.get("uri")
+        _require(
+            isinstance(uri, str)
+            and bool(uri)
+            and not uri.startswith("data:")
+            and not Path(uri).is_absolute()
+            and ".." not in Path(uri).parts,
+            "Use a .gltf with ordinary sidecar .bin files; embedded or unsafe buffers are refused",
+        )
+        buffer_path = _regular(gltf.parent / uri, f"Stadium glTF buffer {number}")
+        _require(
+            0 < buffer_path.stat().st_size <= MAX_GLTF_BUFFER_BYTES,
+            "Stadium glTF buffer is empty or too large",
+        )
+        payload = buffer_path.read_bytes()
+        length = row.get("byteLength")
+        _require(
+            type(length) is int and 0 < length <= len(payload),
+            "Stadium glTF buffer length is invalid",
+        )
+        buffers.append(payload)
+    return document, tuple(buffers)
+
+
+_GLTF_COMPONENTS: Mapping[int, tuple[str, int]] = {
+    5120: ("b", 1),
+    5121: ("B", 1),
+    5122: ("h", 2),
+    5123: ("H", 2),
+    5125: ("I", 4),
+    5126: ("f", 4),
+}
+_GLTF_COUNTS = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4}
+
+
+def _gltf_accessor(
+    document: Mapping[str, Any], buffers: Sequence[bytes], accessor_index: object
+) -> tuple[tuple[float | int, ...], ...]:
+    accessors = document.get("accessors")
+    views = document.get("bufferViews")
+    _require(
+        type(accessor_index) is int
+        and isinstance(accessors, list)
+        and 0 <= accessor_index < len(accessors)
+        and isinstance(views, list),
+        "Stadium glTF accessor is missing",
+    )
+    accessor = accessors[accessor_index]
+    _require(isinstance(accessor, dict), "Stadium glTF accessor is invalid")
+    view_index = accessor.get("bufferView")
+    component = accessor.get("componentType")
+    kind = accessor.get("type")
+    count = accessor.get("count")
+    _require(
+        type(view_index) is int
+        and 0 <= view_index < len(views)
+        and component in _GLTF_COMPONENTS
+        and kind in _GLTF_COUNTS
+        and type(count) is int
+        and count > 0
+        and "sparse" not in accessor,
+        "Stadium glTF accessor shape is unsupported",
+    )
+    view = views[view_index]
+    _require(isinstance(view, dict), "Stadium glTF buffer view is invalid")
+    buffer_index = view.get("buffer", 0)
+    _require(
+        type(buffer_index) is int and 0 <= buffer_index < len(buffers),
+        "Stadium glTF buffer view names a missing buffer",
+    )
+    code, scalar_size = _GLTF_COMPONENTS[int(component)]
+    components = _GLTF_COUNTS[str(kind)]
+    packed_size = scalar_size * components
+    stride = view.get("byteStride", packed_size)
+    start = int(view.get("byteOffset", 0)) + int(accessor.get("byteOffset", 0))
+    _require(
+        type(stride) is int
+        and stride >= packed_size
+        and start >= 0
+        and start + stride * (count - 1) + packed_size <= len(buffers[buffer_index]),
+        "Stadium glTF accessor falls outside its buffer",
+    )
+    fmt = "<" + code * components
+    return tuple(
+        tuple(struct.unpack_from(fmt, buffers[buffer_index], start + vertex * stride))
+        for vertex in range(count)
+    )
+
+
+def _mesh_by_shape(
+    document: Mapping[str, Any], shape_index: int, shape_name: str
+) -> Mapping[str, Any]:
+    meshes = document.get("meshes")
+    _require(isinstance(meshes, list), "Stadium glTF has no meshes")
+    candidates = [
+        row for row in meshes
+        if isinstance(row, dict)
+        and isinstance(row.get("extras"), dict)
+        and row["extras"].get("source_shape_index") == shape_index
+    ]
+    if not candidates:
+        candidates = [
+            row for row in meshes
+            if isinstance(row, dict) and row.get("name") == shape_name
+        ]
+    _require(
+        len(candidates) == 1,
+        f"Edited Stadium glTF must contain exactly one {shape_name!r} mesh",
+    )
+    return candidates[0]
+
+
+def _mesh_positions(
+    document: Mapping[str, Any], buffers: Sequence[bytes], mesh: Mapping[str, Any]
+) -> tuple[tuple[float, float, float], ...]:
+    primitives = mesh.get("primitives")
+    _require(isinstance(primitives, list) and bool(primitives), "Stadium mesh has no primitives")
+    accessors = {
+        primitive.get("attributes", {}).get("POSITION")
+        for primitive in primitives if isinstance(primitive, dict)
+        and isinstance(primitive.get("attributes"), dict)
+    }
+    _require(len(accessors) == 1, "Every Stadium submesh must share one position lane")
+    values = _gltf_accessor(document, buffers, next(iter(accessors)))
+    _require(
+        all(
+            len(row) == 3
+            and all(isinstance(value, float) and math.isfinite(value) for value in row)
+            for row in values
+        ),
+        "Stadium positions must be finite FLOAT3 values",
+    )
+    return tuple((float(row[0]), float(row[1]), float(row[2])) for row in values)
+
+
+def _mesh_triangles(
+    document: Mapping[str, Any], buffers: Sequence[bytes], mesh: Mapping[str, Any]
+) -> Counter[tuple[int, int, int]]:
+    primitives = mesh.get("primitives")
+    _require(isinstance(primitives, list) and bool(primitives), "Stadium mesh has no primitives")
+    result: Counter[tuple[int, int, int]] = Counter()
+    for primitive in primitives:
+        _require(isinstance(primitive, dict), "Stadium primitive is invalid")
+        positions = _mesh_positions(document, buffers, mesh)
+        if "indices" in primitive:
+            rows = _gltf_accessor(document, buffers, primitive.get("indices"))
+            _require(all(len(row) == 1 for row in rows), "Stadium indices must be scalar")
+            indices = [int(row[0]) for row in rows]
+        else:
+            indices = list(range(len(positions)))
+        _require(
+            all(0 <= value < len(positions) for value in indices),
+            "Stadium primitive references a vertex outside its fixed lane",
+        )
+        mode = primitive.get("mode", 4)
+        triangles: list[tuple[int, int, int]] = []
+        if mode == 4:
+            _require(len(indices) % 3 == 0, "Stadium triangle list is incomplete")
+            triangles = [tuple(indices[i:i + 3]) for i in range(0, len(indices), 3)]
+        elif mode == 5:
+            triangles = [
+                (indices[i], indices[i + 1], indices[i + 2])
+                if i % 2 == 0 else
+                (indices[i + 1], indices[i], indices[i + 2])
+                for i in range(len(indices) - 2)
+            ]
+        else:
+            raise StadiumTextureWriterError(
+                "Only triangle-list or triangle-strip Stadium topology is supported"
+            )
+        for triangle in triangles:
+            if len(set(triangle)) == 3:
+                result[tuple(sorted(triangle))] += 1
+    return result
+
+
+def compile_stadium_geometry_recipe(
+    scene: Any,
+    imported_gltf: Path,
+    *,
+    catalog_path: Path = GEOMETRY_CATALOG_PATH,
+    enforce_catalog_pin: bool = True,
+) -> CompiledStadiumGeometryRecipe:
+    """Validate one complete glTF and retain only changed fixed position lanes."""
+
+    _document, catalog = _load_geometry_catalog(
+        catalog_path, enforce_pin=enforce_catalog_pin
+    )
+    scene_id = getattr(scene, "scene_id", None)
+    _require(scene_id == TARGET_SCENE_ID, "Only the proved full Stadium scene is importable")
+    source_document, source_buffers = _read_gltf_bundle(Path(scene.gltf_path))
+    edited_document, edited_buffers = _read_gltf_bundle(imported_gltf)
+    targets = tuple(getattr(scene, "geometry_targets", ()))
+    catalog_targets = [
+        row for row in targets
+        if getattr(row, "target_id", None) in catalog
+        and getattr(row, "writer_route", None) == "catalog-same-count-position-v2"
+    ]
+    _require(
+        len(catalog_targets) == len(catalog),
+        "The selected Stadium scene is missing one or more bounded geometry targets",
+    )
+    edits: list[dict[str, Any]] = []
+    changed_vertices = 0
+    triangle_count = 0
+    for target in sorted(catalog_targets, key=lambda row: int(row.shape_index)):
+        row = catalog[target.target_id]
+        source_mesh = _mesh_by_shape(source_document, target.shape_index, target.shape_name)
+        edited_mesh = _mesh_by_shape(edited_document, target.shape_index, target.shape_name)
+        before = _mesh_positions(source_document, source_buffers, source_mesh)
+        after = _mesh_positions(edited_document, edited_buffers, edited_mesh)
+        expected = int(row["shape"]["vertex_count"])
+        _require(
+            len(before) == len(after) == expected,
+            f"{target.shape_name} must keep exactly {expected} vertices; add/remove, "
+            "subdivide, decimate, weld, and applied topology modifiers are not supported",
+        )
+        before_topology = _mesh_triangles(source_document, source_buffers, source_mesh)
+        after_topology = _mesh_triangles(edited_document, edited_buffers, edited_mesh)
+        _require(
+            after_topology == before_topology,
+            f"{target.shape_name} topology changed. Move vertices only; faces and "
+            "indices must remain the same.",
+        )
+        triangle_count += sum(before_topology.values())
+        before_bytes = b"".join(struct.pack("<3f", *xyz) for xyz in before)
+        after_bytes = b"".join(struct.pack("<3f", *xyz) for xyz in after)
+        if after_bytes == before_bytes:
+            continue
+        changed_vertices += sum(
+            left != right for left, right in zip(before, after, strict=True)
+        )
+        edits.append({
+            "positions": [list(xyz) for xyz in after],
+            "source_position_sha256": _sha256_bytes(before_bytes),
+            "target_id": target.target_id,
+            "topology_sha256": _sha256_bytes(
+                _canonical_json(sorted((list(key), count) for key, count in before_topology.items()))
+            ),
+        })
+    _require(
+        bool(edits),
+        "That model has the original Stadium positions; no geometry edit was staged",
+    )
+    recipe = {
+        "catalog": {
+            "schema": GEOMETRY_CATALOG_SCHEMA,
+            "sha256": GEOMETRY_CATALOG_SHA256,
+        },
+        "edits": edits,
+        "preservation": {
+            "collision": "unchanged game bytes",
+            "materials": "unchanged game bytes",
+            "topology": "validated equivalent before import",
+            "uvs": "unchanged game bytes",
+        },
+        "scene_id": scene_id,
+        "schema": GEOMETRY_RECIPE_SCHEMA,
+    }
+    payload = _canonical_json(recipe)
+    _require(
+        len(payload) <= MAX_GEOMETRY_RECIPE_BYTES,
+        "Edited Stadium position recipe is too large",
+    )
+    return CompiledStadiumGeometryRecipe(
+        scene_id,
+        payload,
+        _sha256_bytes(payload),
+        len(edits),
+        changed_vertices,
+        triangle_count,
+    )
+
+
+def _validate_geometry_catalog_row(decoded: bytes, row: Mapping[str, Any]) -> tuple[int, int]:
+    source = row.get("source_identity")
+    shape = row.get("shape")
+    position = row.get("position")
+    eligibility = row.get("eligibility")
+    _require(
+        isinstance(source, dict)
+        and source.get("outer_index") == 3280
+        and source.get("chunk_index") == 5
+        and source.get("scene_index") == 2648
+        and isinstance(shape, dict)
+        and isinstance(position, dict)
+        and isinstance(eligibility, dict)
+        and eligibility.get("mechanically_rigid_same_count_float3") is True,
+        "Stadium geometry target is outside the proved scene contract",
+    )
+    span = position.get("contiguous_decoded_span")
+    count = shape.get("vertex_count")
+    _require(isinstance(span, dict) and type(count) is int and count > 0,
+             "Stadium geometry position contract is incomplete")
+    start, size, end = span.get("offset"), span.get("size"), span.get("end_offset")
+    _require(
+        type(start) is int and type(size) is int and type(end) is int
+        and size == count * 12 and end == start + size
+        and 0 <= start < end <= len(decoded)
+        and _sha256_bytes(decoded[start:end]) == span.get("sha256"),
+        "Stadium source position lane changed from its bounded catalog",
+    )
+    return start, end
+
+
+def _load_and_apply_geometry_recipe(
+    resolved: _ResolvedStadiumScene,
+    recipe_path: Path,
+) -> tuple[Path, bytes, bytes, list[range], set[str], int, list[int]]:
+    """Validate a private recipe and apply only its catalogued FLOAT3 lanes."""
+
+    _catalog_document, catalog = _load_geometry_catalog()
+    recipe_file = _regular(recipe_path, "private Stadium geometry recipe")
+    _require(
+        0 < recipe_file.stat().st_size <= MAX_GEOMETRY_RECIPE_BYTES,
+        "Private Stadium geometry recipe is empty or too large",
+    )
+    payload = recipe_file.read_bytes()
+    try:
+        recipe = json.loads(payload.decode("utf-8"))
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise StadiumTextureWriterError(
+            f"Could not read Stadium geometry recipe ({exc})."
+        ) from exc
+    _require(payload == _canonical_json(recipe), "Stadium geometry recipe is not canonical")
+    _require(
+        isinstance(recipe, dict)
+        and set(recipe) == {"catalog", "edits", "preservation", "scene_id", "schema"}
+        and recipe.get("schema") == GEOMETRY_RECIPE_SCHEMA
+        and recipe.get("scene_id") == TARGET_SCENE_ID
+        and recipe.get("catalog") == {
+            "schema": GEOMETRY_CATALOG_SCHEMA,
+            "sha256": GEOMETRY_CATALOG_SHA256,
+        }
+        and recipe.get("preservation") == {
+            "collision": "unchanged game bytes",
+            "materials": "unchanged game bytes",
+            "topology": "validated equivalent before import",
+            "uvs": "unchanged game bytes",
+        }
+        and isinstance(recipe.get("edits"), list)
+        and bool(recipe["edits"]),
+        "Stadium geometry recipe contract changed",
+    )
+    edited = bytearray(resolved.decoded)
+    allowed: list[range] = []
+    target_ids: set[str] = set()
+    changed_vertices = 0
+    for edit in recipe["edits"]:
+        _require(
+            isinstance(edit, dict)
+            and set(edit) == {
+                "positions", "source_position_sha256", "target_id", "topology_sha256"
+            }
+            and isinstance(edit.get("target_id"), str)
+            and edit["target_id"] in catalog
+            and edit["target_id"] not in target_ids,
+            "Stadium geometry recipe has an invalid or repeated target",
+        )
+        target_ids.add(edit["target_id"])
+        row = catalog[edit["target_id"]]
+        start, end = _validate_geometry_catalog_row(resolved.decoded, row)
+        _require(
+            edit.get("source_position_sha256")
+            == _sha256_bytes(resolved.decoded[start:end]),
+            "Stadium geometry recipe belongs to a different source position lane",
+        )
+        positions = edit.get("positions")
+        expected = int(row["shape"]["vertex_count"])
+        _require(
+            isinstance(positions, list) and len(positions) == expected,
+            "Stadium geometry recipe vertex count changed",
+        )
+        packed_rows: list[bytes] = []
+        for xyz in positions:
+            _require(
+                isinstance(xyz, list)
+                and len(xyz) == 3
+                and all(
+                    type(value) in (int, float) and math.isfinite(float(value))
+                    for value in xyz
+                ),
+                "Stadium geometry recipe contains an invalid position",
+            )
+            try:
+                packed_rows.append(
+                    struct.pack("<3f", *(float(value) for value in xyz))
+                )
+            except (OverflowError, struct.error) as exc:
+                raise StadiumTextureWriterError(
+                    "Stadium geometry position is outside binary32"
+                ) from exc
+        packed = b"".join(packed_rows)
+        _require(len(packed) == end - start, "Stadium geometry lane allocation changed")
+        changed_vertices += sum(
+            resolved.decoded[offset:offset + 12]
+            != packed[vertex * 12:(vertex + 1) * 12]
+            for vertex, offset in enumerate(range(start, end, 12))
+        )
+        edited[start:end] = packed
+        allowed.append(range(start, end))
+    changed_offsets = [
+        index
+        for index, (before, after) in enumerate(
+            zip(resolved.decoded, edited, strict=True)
+        )
+        if before != after
+    ]
+    _require(bool(changed_offsets), "Stadium geometry recipe is a no-op")
+    _require(
+        all(any(index in span for span in allowed) for index in changed_offsets),
+        "Stadium geometry edit escaped its fixed position lanes",
+    )
+    return (
+        recipe_file,
+        payload,
+        bytes(edited),
+        allowed,
+        target_ids,
+        changed_vertices,
+        changed_offsets,
+    )
+
+
+def build_unified_stadium_geometry_import(
+    index_path: Path,
+    inventory_path: Path,
+    recipe_path: Path,
+) -> tuple[bytes, list[tuple[str, bytes]], dict[str, Any], str, dict[str, Any]]:
+    """Compile all changed fixed FLOAT3 lanes into one preserved SCNE span."""
+
+    resolved = _DynamicStadiumResolver(index_path, inventory_path).resolve(TARGET_TEXTURE_ID)
+    (
+        recipe_file,
+        payload,
+        edited,
+        _allowed,
+        target_ids,
+        changed_vertices,
+        changed_offsets,
+    ) = _load_and_apply_geometry_recipe(resolved, recipe_path)
+    fixed = _rebuild_vc_lz_fixed_span(
+        edited,
+        resolved.span[:HEADER.size],
+        resolved.opaque_tail,
+        consumed_cap=resolved.contract.retail_consumed,
+        scratch_cap=SCNE_OBSERVED_SCRATCH_MAX,
+        template_stream_prefix=resolved.span[HEADER.size:HEADER.size + 9],
+    )
+    selector = f"{TARGET_SCENE_ID}.geometry"
+    target = resolved.contract.target_metadata()
+    target.update({
+        "selector": selector,
+        "target_ids": sorted(target_ids),
+        "target_count": len(target_ids),
+    })
+    report = {
+        "schema": GEOMETRY_IMPORT_SCHEMA,
+        "input_recipe": {
+            "path": str(recipe_file),
+            "sha256": _sha256_bytes(payload),
+        },
+        "target": target,
+        "replacement": {
+            "span_size": len(fixed.span),
+            "span_sha256": _sha256_bytes(fixed.span),
+            "encoded_sha256": fixed.encoded_sha256,
+            "encoded_bytes": fixed.encoded_bytes,
+            "decoded_after_sha256": fixed.decoded_sha256,
+            "decoded_changed_byte_count": len(changed_offsets),
+            "changed_vertex_count": changed_vertices,
+        },
+        "claims": {
+            "same_count_position_lanes_only": True,
+            "topology_validated_equivalent_before_import": True,
+            "source_uv_material_collision_and_other_stream_bytes_preserved": True,
+            "fixed_scne_allocation_preserved": True,
+            "opaque_tail_preserved": True,
+            "runtime_visibility_proved": False,
+            "contains_retail_bytes": False,
+        },
+    }
+    return fixed.span, [], report, selector, target
+
+
+def build_unified_stadium_geometry_and_texture_import(
+    index_path: Path,
+    inventory_path: Path,
+    recipe_path: Path,
+    texture_edits: Sequence[tuple[str, Path]],
+) -> tuple[bytes, list[tuple[str, bytes]], dict[str, Any], str, dict[str, Any]]:
+    """Compose fixed position lanes and P8 allocations before one compression."""
+
+    _require(bool(texture_edits), "Choose at least one Stadium texture to compose")
+    selectors = [selector for selector, _png in texture_edits]
+    _require(len(selectors) == len(set(selectors)), "Stadium texture target repeats")
+    resolved = _DynamicStadiumResolver(index_path, inventory_path).resolve_many(selectors)
+    _require(
+        all(row.contract.scene_id == TARGET_SCENE_ID for row in resolved),
+        "Stadium geometry can compose only with textures from its own scene",
+    )
+    (
+        recipe_file,
+        recipe_payload,
+        geometry_decoded,
+        geometry_ranges,
+        geometry_target_ids,
+        changed_vertices,
+        geometry_changed_offsets,
+    ) = _load_and_apply_geometry_recipe(resolved[0], recipe_path)
+    compiled = _compile_resolved_scene(
+        resolved,
+        [png for _selector, png in texture_edits],
+        base_decoded=geometry_decoded,
+        base_allowed_ranges=geometry_ranges,
+    )
+    selector = f"{TARGET_SCENE_ID}.geometry-texture-bundle"
+    target = compiled.source.contract.target_metadata()
+    target.update({
+        "selector": selector,
+        "geometry_target_ids": sorted(geometry_target_ids),
+        "geometry_target_count": len(geometry_target_ids),
+        "texture_ids": selectors,
+        "texture_count": len(selectors),
+    })
+    previews = [
+        (
+            f"stadium-{payload.contract.scene_index:04d}-"
+            f"texture{payload.contract.texture_index:04d}-preview.png",
+            payload.quantized_preview_png,
+        )
+        for payload in compiled.textures
+    ]
+    report = {
+        "schema": GEOMETRY_IMPORT_SCHEMA,
+        "input_recipe": {
+            "path": str(recipe_file),
+            "sha256": _sha256_bytes(recipe_payload),
+        },
+        "input_pngs": [
+            {
+                "target": payload.contract.texture_id,
+                "path": str(path),
+                "sha256": payload.replacement_png_sha256,
+                "rgba_sha256": payload.replacement_rgba_sha256,
+                "width": payload.contract.width,
+                "height": payload.contract.height,
+            }
+            for payload, (_selector, path) in zip(
+                compiled.textures, texture_edits, strict=True
+            )
+        ],
+        "target": target,
+        "replacement": {
+            "span_size": len(compiled.fixed.span),
+            "span_sha256": _sha256_bytes(compiled.fixed.span),
+            "encoded_sha256": compiled.fixed.encoded_sha256,
+            "encoded_bytes": compiled.fixed.encoded_bytes,
+            "decoded_after_sha256": compiled.fixed.decoded_sha256,
+            "decoded_changed_byte_count": compiled.decoded_changed_byte_count,
+            "geometry_changed_byte_count": len(geometry_changed_offsets),
+            "changed_vertex_count": changed_vertices,
+        },
+        "compiled_textures": [
+            _compiled_payload_metadata(payload) for payload in compiled.textures
+        ],
+        "claims": {
+            "same_count_position_lanes_only": True,
+            "topology_validated_equivalent_before_import": True,
+            "source_uv_material_collision_and_other_stream_bytes_preserved": True,
+            "bounded_p8_textures_only": True,
+            "complete_mip_chains_regenerated": True,
+            "geometry_and_same_scene_textures_composed_before_compression": True,
+            "fixed_scne_allocation_preserved": True,
+            "opaque_tail_preserved": True,
+            "runtime_visibility_proved": False,
+            "contains_retail_bytes": False,
+        },
+    }
+    return compiled.fixed.span, previews, report, selector, target
+
+
 __all__ = [
     "BUILD_SCHEMA",
     "CompiledStadiumTextureEdit",
+    "CompiledStadiumGeometryRecipe",
     "DynamicStadiumP8Contract",
     "FIXED_ALLOCATION_ERROR",
     "GENERAL_BUILD_SCHEMA",
     "Nfl2k5StadiumTextureWriter",
     "build_unified_stadium_texture_import",
     "build_unified_stadium_texture_imports",
+    "build_unified_stadium_geometry_import",
+    "build_unified_stadium_geometry_and_texture_import",
+    "compile_stadium_geometry_recipe",
+    "GEOMETRY_CATALOG_PATH",
+    "GEOMETRY_RECIPE_SCHEMA",
     "SELECTOR_RE",
     "SHARED_OWNERSHIP_NOTE",
     "StadiumP8TargetContract",

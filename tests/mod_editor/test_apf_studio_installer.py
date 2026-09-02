@@ -43,7 +43,71 @@ def _stage_release(destination: Path) -> None:
         target.chmod(0o755 if source_mode & stat.S_IXUSR else 0o644)
 
 
+def _launcher_python() -> str:
+    """Return the interpreter the shipped Linux launcher actually uses.
+
+    Pytest is often installed in an isolated virtual environment that does not
+    inherit distro packages such as PyQt5.  The product launcher deliberately
+    executes the system ``python3`` after checking those distro dependencies,
+    so using ``sys.executable`` here would test the runner rather than the
+    installed application.  Windows has a separate bundled-runtime installer.
+    """
+
+    if os.name != "nt":
+        executable = shutil.which("python3")
+        if executable is not None:
+            return executable
+    return sys.executable
+
+
+@unittest.skipIf(
+    os.name == "nt",
+    "the per-user XDG installer is POSIX-only; Windows ships the NSIS installer",
+)
 class ReleaseClosureTests(unittest.TestCase):
+    def test_literal_local_import_gate_catches_a_lazy_missing_module(self) -> None:
+        gate_path = ROOT / "packaging/check_apf2k8_mod_studio_runtime.py"
+        spec = importlib.util.spec_from_file_location(
+            "_apf_runtime_import_closure_test", gate_path
+        )
+        assert spec is not None and spec.loader is not None
+        gate = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(gate)
+        with tempfile.TemporaryDirectory(prefix="apf-lazy-import-closure-") as temporary:
+            stage = Path(temporary)
+            feature = stage / "mod_editor/apf_studio/feature.py"
+            feature.parent.mkdir(parents=True)
+            feature.write_text(
+                "def on_click():\n"
+                "    from mod_editor.core.shipped_only_in_source import value\n"
+                "    return value\n",
+                encoding="utf-8",
+            )
+            original_root = gate.ROOT
+            gate.ROOT = stage
+            try:
+                with self.assertRaisesRegex(
+                    RuntimeError,
+                    "feature.py:2 imports missing local module "
+                    "mod_editor.core.shipped_only_in_source",
+                ):
+                    gate._check_literal_product_import_closure()
+            finally:
+                gate.ROOT = original_root
+
+    def test_apf_stage_has_no_dependency_on_the_mixed_2k5_research_module(self) -> None:
+        entries = set(_release_entries())
+        self.assertNotIn(
+            "mod_editor/core/playbook_package_rule_spike.py",
+            entries,
+        )
+        for relative in (
+            "mod_editor/apf_studio/facade.py",
+            "mod_editor/apf_studio/playbook_membership_qt.py",
+        ):
+            text = (ROOT / relative).read_text(encoding="utf-8")
+            self.assertNotIn("playbook_package_rule_spike", text)
+
     def test_external_xma1_bridge_is_in_the_retail_free_runtime_closure(self) -> None:
         entries = set(_release_entries())
         self.assertTrue(
@@ -160,7 +224,7 @@ class ReleaseClosureTests(unittest.TestCase):
         self.assertIn('"mod_editor.apf_studio.player_positions"', runtime)
         self.assertIn('"apf_player_rating_patch"', runtime)
         self.assertIn('"apf_player_position_patch"', runtime)
-        self.assertIn("len(rating_schema.fields) == 28", runtime)
+        self.assertIn("len(rating_schema.fields) == 31", runtime)
         self.assertIn(
             'rating_schema.runtime_status == "token_preserving_runtime_loaded"',
             runtime,
@@ -170,7 +234,7 @@ class ReleaseClosureTests(unittest.TestCase):
         self.assertIn('"replace_player_position"', runtime)
         self.assertIn('"player first/last names"', runtime)
         self.assertIn('"team abbreviations"', runtime)
-        self.assertIn('"jersey numbers"', runtime)
+        self.assertIn('"raw-save jersey"', runtime)
         self.assertIn('"membership"', runtime)
         self.assertIn("project.MAX_PROJECT_FILES == 131_072", runtime)
         self.assertIn(
@@ -242,7 +306,7 @@ class ReleaseClosureTests(unittest.TestCase):
             )
             result = subprocess.run(
                 [
-                    sys.executable,
+                    _launcher_python(),
                     str(stage / "packaging/check_apf2k8_mod_studio_runtime.py"),
                 ],
                 cwd=stage,
@@ -285,17 +349,21 @@ class ReleaseClosureTests(unittest.TestCase):
         )
         self.assertIn("load_stadium_material_findings()", runtime)
         self.assertIn(
-            'material_findings.outcome == "texture_owner_unresolved"',
+            'material_findings.outcome == "embedded_texture_ownership_proved"',
             runtime,
         )
         self.assertIn(
-            'material_findings.proof["texture_writer_safe_to_expose"] is False',
+            'material_findings.proof["texture_writer_safe_to_expose"] is True',
             runtime,
         )
         self.assertIn("STADIUM_MATERIAL_FINDINGS_SHA256", runtime)
-        self.assertIn("len(registry.capabilities) == 66", runtime)
+        self.assertIn("len(registry.capabilities) == 70", runtime)
 
 
+@unittest.skipIf(
+    os.name == "nt",
+    "the per-user XDG installer is POSIX-only; Windows ships the NSIS installer",
+)
 class PerUserPathTests(unittest.TestCase):
     def test_launcher_hands_its_exact_private_state_root_to_the_app(self) -> None:
         launcher = (
@@ -343,6 +411,10 @@ class PerUserPathTests(unittest.TestCase):
         self.assertIn("X-APF2K8-Mod-Studio-Managed=true", rendered)
 
 
+@unittest.skipIf(
+    os.name == "nt",
+    "the per-user XDG installer is POSIX-only; Windows ships the NSIS installer",
+)
 class PerUserLifecycleTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="apf-installer-lifecycle-")
@@ -407,7 +479,7 @@ class PerUserLifecycleTests(unittest.TestCase):
             "print('APF_AUDIO_PACKET_GATE_PASS')"
         )
         runtime_result = subprocess.run(
-            [sys.executable, "-c", installed_probe],
+            [_launcher_python(), "-c", installed_probe],
             cwd=paths.app_dir,
             env=runtime_environment,
             stdin=subprocess.DEVNULL,
