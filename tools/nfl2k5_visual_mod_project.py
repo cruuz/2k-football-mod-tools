@@ -298,7 +298,10 @@ FORMATION_CREATE_FIELDS = {"kind", "asset_id", "donor_formation_index"}
 PLAY_CREATE_FIELDS = {"kind", "asset_id", "donor_play_index"}
 FORMATION_LINK_KIND = formation_play_adapter.PROVIDER_KIND_LINK
 FORMATION_LINK_FIELDS = {"kind", "asset_id", "formation_index", "play_index"}
-CREATE_OPTIONAL_FIELDS = {"custom_name"}
+CREATE_OPTIONAL_FIELDS = {
+    "custom_name", "slot_positions", "category_index", "assignments", "replace_index",
+    "category_positions", "play_flags",
+}
 LINK_OPTIONAL_FIELDS = {"group"}
 SCOREBUG_TEXTURE_FIELDS = {"kind", "target", "png"}
 STADIUM_TEXTURE_FIELDS = {"kind", "target", "png"}
@@ -925,7 +928,20 @@ def validate_edit_shape(record: object, order: int) -> dict[str, Any]:
                 re.ASCII,
             ) is not None
             and type(record.get("donor_formation_index")) is int
-            and record["donor_formation_index"] >= 0,
+            and record["donor_formation_index"] >= 0
+            and (
+                record.get("replace_index") is None
+                or (type(record.get("replace_index")) is int and record["replace_index"] >= 0)
+            )
+            and (
+                record.get("category_positions") is None
+                or (
+                    type(record.get("category_positions")) is list
+                    and len(record["category_positions"]) == 11
+                    and all(type(c) is int and 0 <= c <= 255 for c in record["category_positions"])
+                    and type(record.get("category_index")) is int
+                )
+            ),
             f"edit {order} has invalid play_formation_create fields/types",
         )
     elif kind == PLAY_CREATE_KIND:
@@ -940,7 +956,15 @@ def validate_edit_shape(record: object, order: int) -> dict[str, Any]:
                 re.ASCII,
             ) is not None
             and type(record.get("donor_play_index")) is int
-            and record["donor_play_index"] >= 0,
+            and record["donor_play_index"] >= 0
+            and (
+                record.get("replace_index") is None
+                or (type(record.get("replace_index")) is int and record["replace_index"] >= 0)
+            )
+            and (
+                record.get("play_flags") is None
+                or (type(record.get("play_flags")) is int and 0 <= record["play_flags"] <= 0xFFFFFFFF)
+            ),
             f"edit {order} has invalid play_create fields/types",
         )
     elif kind == FORMATION_LINK_KIND:
@@ -1237,6 +1261,11 @@ def project_asset_paths(project: ProjectFile) -> list[Path]:
             UNIVERSAL_FIXED_TEXT_KIND,
             # A colour edit carries colours, not a file to pin.
             UNIF_COLOR_KIND,
+            # Playbook edits carry logical selectors and authored numbers only.
+            PLAY_ROUTE_KIND,
+            FORMATION_CREATE_KIND,
+            PLAY_CREATE_KIND,
+            FORMATION_LINK_KIND,
         }:
             names = []
         elif edit["kind"] in AUDIO_KINDS:
@@ -3392,7 +3421,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     ],
                 }
                 effective_input_hashes = {}
-            elif kind in (FORMATION_CREATE_KIND, PLAY_CREATE_KIND):
+            elif kind in (FORMATION_CREATE_KIND, PLAY_CREATE_KIND, FORMATION_LINK_KIND):
                 asset_id = str(edit["asset_id"])
                 if asset_id in handled_formation_play_books:
                     continue
@@ -3413,7 +3442,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     "formation_donors": [int(r["donor_formation_index"]) for r in f_rows],
                     "play_donors": [int(r["donor_play_index"]) for r in p_rows],
                     "links": [
-                        (int(r["formation_index"]), int(r["play_index"]))
+                        [int(r["formation_index"]), int(r["play_index"])]
                         for r in l_rows
                     ],
                 }
