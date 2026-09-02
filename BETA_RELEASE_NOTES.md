@@ -1,3 +1,49 @@
+# beta-53 — RC77 / alpha.84
+
+**Date:** 2026-09-02
+
+**2K5 Mod Studio:** `v1.0-RC77`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (identity ride-along; no APF surface change)
+
+## New: ★ Create a Play
+
+The last navigation entry opens a five-step wizard: pick a team's playbook, lay
+out a formation (modern templates, drag to move, click to swap or change a
+position), choose run or pass, draw routes by dragging from a player or pick a
+job from his menu, then replace outdated stock plays and build the disc. The
+Play Designer and Design Formation panels sit underneath for fine control. The
+PLAY format is decoded end to end and the game's own validator is ported, so
+nothing the game would reject is ever staged.
+
+Authored passes now play as passes: the header class bits are written from a
+stock play of the same QB-chain shape (the earlier build cloned a run header,
+which the game played as a QB draw).
+
+## New: Throw Distance & Arc
+
+Sliders & Gameplay → **Throw Distance && Arc**. Two sliders over the game's own
+arm-strength curve tables in `default.xbe`:
+
+- **Deep-ball ceiling** (55 = retail … 100 yards at 99 arm). The curve is
+  re-spaced as a scale: at 80, a 70 arm throws 41, an 85 arm 52, a 95 arm 66
+  and a 99 arm 80 (retail 40 / 45 / 50 / 55).
+- **Pass arc** (0 = retail … 100 %). Slows the last 25 yards of the ceiling so
+  long balls hang longer and climb higher; 40 % at an 80-yard ceiling is a
+  5.0 s, 33-yard-high bomb.
+
+Read a `default.xbe` or a disc image, watch the per-arm preview (ceiling, hang
+time, apex), write a patched **copy** (never the source) with the section
+digest recomputed and every byte verified. xemu-only, like Bump strength.
+Witnessed in xemu with gdb: retail Vick pinned at 55.0 yd; the tuned copy
+launched 80.0-yard, 5.00-second balls. CLI: `tools/nfl2k5_throw_distance.py`.
+
+## Housekeeping
+
+- Pre-source browse-only facade implements the extended Playbooks contract.
+- The formation/play writer tests now run under CI's per-file runner.
+- Versions: 2K5 `1.0.0rc77`, APF `0.1.0-alpha.84`, updater tag `beta-53`.
+
 # beta-51 — RC75 / alpha.82
 
 **Date:** 2026-08-23

@@ -50,6 +50,15 @@ class _Host:
     def revert_play_create(self, *args, **kwargs):
         raise RuntimeError("not used")
 
+    def playbook_raw_body(self, *args, **kwargs):
+        raise RuntimeError("not used")
+
+    def stage_formation_selector(self, *args, **kwargs):
+        raise RuntimeError("not used")
+
+    def create_authored_play(self, *args, **kwargs):
+        raise RuntimeError("not used")
+
 
 class LinkTableExportUiTests(unittest.TestCase):
     @classmethod

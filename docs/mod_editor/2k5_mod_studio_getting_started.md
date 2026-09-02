@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC76 — Getting Started
+# 2K5 Mod Studio v1.0 RC77 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -841,3 +841,23 @@ independent Verify. The source XISO remained unchanged, and the temporary
 6.30 GB output was removed after the result was recorded. This proves the
 offline authoring/build path; it does not prove that the selected range was
 heard in-game or establish its semantic cue name.
+
+## ★ Create a Play (RC77)
+
+The last entry in the left navigation. Load your NFL 2K5 disc first (File →
+Open), then walk the five steps: pick a team's playbook, lay out a formation
+(modern templates; drag a player to move him, click him to swap or change his
+position), choose run or pass, draw routes by dragging from a player or pick a
+job from his menu, replace outdated stock plays, build. Every authored play is
+checked against the game's own validator before it is staged; the build refuses
+anything the game would reject.
+
+## Throw Distance & Arc (RC77)
+
+Sliders & Gameplay → **Throw Distance && Arc**. Choose a `default.xbe` or a
+disc image, move the two sliders (deep-ball ceiling in yards at 99 arm, pass
+arc), watch the per-arm preview (ceiling, hang time, apex), choose where to
+save the patched **copy**, and write. The source is never touched. The copy is
+xemu-only: its RSA signature cannot be regenerated, so real hardware rejects it
+(the same rule as Bump strength). `tools/nfl2k5_throw_distance.py` does the
+same from a terminal (`read`, `sliders`, `curves`, `preview`).

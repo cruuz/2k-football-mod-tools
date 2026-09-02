@@ -111,6 +111,7 @@ from mod_editor.gui.bump_panel_qt import BumpPanel
 from mod_editor.gui.save_panel_qt import SavePanel
 from mod_editor.gui.crib_panel_qt import CribPanel
 from mod_editor.gui.gameplay_panel_qt import GameplayPanel
+from mod_editor.gui.throw_tuning_panel_qt import ThrowTuningPanel
 from mod_editor.gui.menus_panel_qt import MenusPanel
 from mod_editor.gui.playbooks_panel_qt import PlaybooksPanel
 from mod_editor.gui.text_rosters_panel import TextRosterPanel
@@ -876,6 +877,9 @@ class BrowseOnlyFacade:
     revert_play_create = _unavailable
     create_formation_link = _unavailable
     revert_formation_link = _unavailable
+    playbook_raw_body = _unavailable
+    stage_formation_selector = _unavailable
+    create_authored_play = _unavailable
     stadium_scenes = _unavailable
     stadium_details = _unavailable
     preview_stadium_texture = _unavailable
@@ -1467,6 +1471,7 @@ class StudioMainWindow(QMainWindow):
         self._crib_panel: CribPanel | None = None
         self._playbooks_panel: PlaybooksPanel | None = None
         self._gameplay_panel: GameplayPanel | None = None
+        self._throw_tuning_panel: ThrowTuningPanel | None = None
         self._menus_panel: MenusPanel | None = None
         self.workspace_store = workspace_store
         self._workspace_dirty = False
@@ -2275,9 +2280,15 @@ class StudioMainWindow(QMainWindow):
                 self._playbooks_panel = PlaybooksPanel(self.facade)
                 page = self._playbooks_panel
             elif category == ProductCategory.SLIDERS_GAMEPLAY:
+                # Throw Distance & Arc is the one writable workspace on this
+                # page: two sliders over the game's own arm-strength curve
+                # tables, written to a COPY of default.xbe (xemu-only), the
+                # same contract Bump strength ships under.
+                self._throw_tuning_panel = ThrowTuningPanel(self.facade)
                 self._gameplay_panel = GameplayPanel(
                     self.facade,
                     capability_page=self._build_capability_page(section),
+                    extra_tabs=((self._throw_tuning_panel, "Throw Distance && Arc"),),
                 )
                 page = self._gameplay_panel
             else:

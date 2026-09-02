@@ -99,17 +99,17 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "b25f669bdbdf8e893db792f1af42c3bf9787a708b7b9d62f1124ef6e4a47b290",
     "mod_editor/gui/studio_qt.py":
-        "3771251b6a750f9d88f7b62a86bb83e1a36cf2789d92281dd78860d1a7b0b129",
+        "7ae0be69c43119f0f34b8d421c867dcb1483f167d45f3b5a7a12c89a7c8e61d7",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "7fa09cb1cdd356cf0528bea52b13aad80eee325168b894e126ad117fd71dd104",
+        "e9c98051c0211789f358209ab65bb8e97d44bb0bb6acb1175961e64fab44fc3f",
     "mod_editor/studio/project_archive.py":
-        "b15ea74bb39337194b8842e7a9ac8fd04bc16ff2977ab54d801f9f9452c3051f",
+        "613e98767acae90e949ca5d4a7dc28611cc8fee12e7c036b9d2c2583154077ee",
     "mod_editor/studio/session.py":
-        "350fae4c4f2e0185b5fdd7bab6e3ebf0ff0db0cb61216b01c2a0a7218ae69153",
+        "34a73dcc42524eef110b2b17c5d1158c4ed5ac45db0f7a3bf0ae50b5e08a27a0",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
