@@ -52,10 +52,11 @@ for entry in (ROOT, ROOT / "tools"):
 
 import nfl_txtr as t  # noqa: E402
 import nfl_tset_png_import as palette_tools  # noqa: E402
+import nfl_uniform_color_xiso_direct_patch as xc  # noqa: E402
 from nfl_outer import parse_archive, read_entry_range  # noqa: E402
 
 INDEX = Path(os.environ.get("NFL2K5_RETAIL_INDEX", "retail-packs/0"))   # extracted pack index, developer machines only
-XISO_PACK_BYTE_OFFSET = 1_631_188_992
+PACK_SIZE = 193_710_080          # retail vc_53450030/0; WHERE it sits is resolved from the image's directory
 OUTER_346_PACK_OFFSET = 109_895_680
 
 
@@ -134,10 +135,13 @@ def main() -> int:
     fd = os.open(args.xiso, os.O_RDWR | getattr(os, "O_BINARY", 0))
     receipts = []
     try:
+        pack_offset, pack_size = xc.pack_extent(fd, os.fstat(fd).st_size, "0")
+        if pack_size != PACK_SIZE:
+            raise SystemExit(f"vc_53450030/0 in {args.xiso} is {pack_size} bytes, not the retail {PACK_SIZE}")
         for index, png in zip(args.chunk, args.png):
             c, cc, span, dec, info, tex = by_index[index]
             new_span, rec = build_replacement(span, cc, dec, info, tex, Path(png))
-            absolute = XISO_PACK_BYTE_OFFSET + OUTER_346_PACK_OFFSET + c.offset
+            absolute = pack_offset + OUTER_346_PACK_OFFSET + c.offset
             current = _pread(fd, len(span), absolute)
             if current == span:
                 state = "retail"
@@ -149,7 +153,8 @@ def main() -> int:
                 _pwrite(fd, new_span, absolute)
                 if _pread(fd, len(span), absolute) != new_span:
                     raise SystemExit("readback failed")
-            receipts.append({"chunk": index, "name": tex.name, "png": str(png), "absolute": absolute, "state_before": state,
+            receipts.append({"chunk": index, "name": tex.name, "png": str(png), "absolute": absolute,
+                             "pack0_byte_offset": pack_offset, "state_before": state,
                              "span_sha256_after": sha(new_span), **{k: v for k, v in rec.items() if k != "quantization"},
                              "palette_reduced": bool(getattr(rec["quantization"], "palette_was_reduced", False))
                              if not isinstance(rec["quantization"], dict) else rec["quantization"].get("palette_was_reduced")})

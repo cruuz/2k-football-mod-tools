@@ -266,6 +266,9 @@ STOCK_MIP_RGBA_SHA256 = (
     "b5dea06667a5bd0fd2d88b0cc2546d149fa32ca127d0ce49761d1f180b5c6166",
 )
 
+# Where the span sat in the retail rip this was developed on (pack 9 at sector 35,531 of an
+# extracted .xiso).  Provenance only: the build resolves pack 9 through the XDVDFS directory of the
+# image it is copying, because a raw dump or a rebuilt image puts the same pack elsewhere.
 ABSOLUTE_XISO_SPAN = PACK_SECTOR * xiso.SECTOR_SIZE + CHUNK_PACK_OFFSET
 COPY_BLOCK = 16 * 1024 * 1024
 MAX_MANIFEST_BYTES = 128 * 1024
@@ -1660,20 +1663,22 @@ class Nfl2k5StadiumTextureWriter:
             index = entries.get(INDEX_PATH.casefold())
             xbe = entries.get("default.xbe")
             _require(len(files) == XDVDFS_FILE_COUNT, "XDVDFS file count changed")
-            _require(pack is not None and (pack.sector, pack.size) == (PACK_SECTOR, PACK_SIZE),
+            # Sectors are NOT compared: they are where one particular build of
+            # the image placed the file. Size here and the pack's content hash
+            # below are what identify the pack, and both are layout-independent.
+            _require(pack is not None and pack.size == PACK_SIZE,
                      "XDVDFS volume 9 extent changed")
-            _require(index is not None and (index.sector, index.size) == (INDEX_SECTOR, INDEX_SIZE),
+            _require(index is not None and index.size == INDEX_SIZE,
                      "XDVDFS volume 0 extent changed")
             _require(xbe is not None and xbe.size == xiso.EXPECTED_XBE_SIZE,
                      "default.xbe extent changed")
-            # ABSOLUTE_XISO_SPAN was measured on an image whose game partition
-            # begins at byte 0. The same sector in a raw disc read sits
-            # base_offset further in, so the invariant is the offset WITHIN the
-            # partition, not the absolute byte.
-            _require(pack.byte_offset - pack.base_offset + CHUNK_PACK_OFFSET
-                     == ABSOLUTE_XISO_SPAN,
+            # The span's absolute byte is DERIVED from where this image keeps
+            # pack 9, not remembered from the retail rip: the invariant is the
+            # offset WITHIN the pack.
+            span_absolute = pack.byte_offset + CHUNK_PACK_OFFSET
+            _require(CHUNK_PACK_OFFSET + CHUNK_SPAN_SIZE <= pack.size,
                      "Authorized stadium XISO span arithmetic changed")
-            retail_span = xiso.read_exact(source_fd, ABSOLUTE_XISO_SPAN, CHUNK_SPAN_SIZE)
+            retail_span = xiso.read_exact(source_fd, span_absolute, CHUNK_SPAN_SIZE)
             _require(_sha256_bytes(retail_span) == CHUNK_SPAN_SHA256,
                      "Retail XISO stadium SCNE span changed")
             _require(retail_span != compiled.rebuilt_span,
@@ -1686,11 +1691,11 @@ class Nfl2k5StadiumTextureWriter:
             _require(xiso.owned_path_matches(output_owned),
                      "Output XISO pathname changed during copy")
             written = platform_compat.pwrite(
-                output_owned.descriptor, compiled.rebuilt_span, ABSOLUTE_XISO_SPAN
+                output_owned.descriptor, compiled.rebuilt_span, span_absolute
             )
             _require(written == CHUNK_SPAN_SIZE, "Short stadium SCNE XISO write")
             _require(
-                xiso.read_exact(output_owned.descriptor, ABSOLUTE_XISO_SPAN, CHUNK_SPAN_SIZE)
+                xiso.read_exact(output_owned.descriptor, span_absolute, CHUNK_SPAN_SIZE)
                 == compiled.rebuilt_span,
                 "Stadium SCNE XISO readback differs",
             )
@@ -1736,9 +1741,10 @@ class Nfl2k5StadiumTextureWriter:
                 "resource": {
                     "pack_path": PACK_PATH,
                     "pack_sector": pack.sector,
+                    "pack_byte_offset": pack.byte_offset,
                     "pack_size": pack.size,
                     "pack_span_offset": CHUNK_PACK_OFFSET,
-                    "absolute_xiso_span": ABSOLUTE_XISO_SPAN,
+                    "absolute_xiso_span": span_absolute,
                     "span_size": CHUNK_SPAN_SIZE,
                     "source_span_sha256": CHUNK_SPAN_SHA256,
                     "replacement_span_sha256": compiled.rebuilt_span_sha256,

@@ -31,6 +31,8 @@ INDEX_SECTOR = 796_479
 FILE_COUNT = 19
 SPAN_OFFSET = subset_verify.CHUNK_START
 SPAN_SIZE = subset_verify.CHUNK_SPAN
+# Retail-rip provenance only (pack 9 at sector 35,531 of an extracted .xiso); the span is
+# addressed through the source image's own XDVDFS directory below.
 EXPECTED_ABSOLUTE_SPAN = PACK_SECTOR * xiso.SECTOR_SIZE + SPAN_OFFSET
 LEDGER_CHUNK = 16 * 1024 * 1024
 
@@ -214,10 +216,10 @@ def run(
         pack = entries.get(PACK_PATH.casefold())
         index = entries.get(INDEX_PATH.casefold())
         xbe = entries.get("default.xbe")
-        require(pack is not None and (pack.sector, pack.size) ==
-                (PACK_SECTOR, subset_verify.PACK_SIZE), "volume 9 XDVDFS extent mismatch")
-        require(index is not None and (index.sector, index.size) ==
-                (INDEX_SECTOR, subset_verify.INDEX_SIZE), "volume 0 XDVDFS extent mismatch")
+        require(pack is not None and pack.size == subset_verify.PACK_SIZE,
+                "volume 9 XDVDFS extent mismatch")
+        require(index is not None and index.size == subset_verify.INDEX_SIZE,
+                "volume 0 XDVDFS extent mismatch")
         require(xbe is not None and xbe.size == xiso.EXPECTED_XBE_SIZE,
                 "default.xbe extent mismatch")
         require(digest_fd(source_fd, pack.byte_offset, pack.size) == subset_verify.PACK_SHA256,
@@ -228,7 +230,7 @@ def run(
                 "retail default.xbe hash mismatch")
 
         absolute = pack.byte_offset + SPAN_OFFSET
-        require(absolute == EXPECTED_ABSOLUTE_SPAN and SPAN_OFFSET + SPAN_SIZE <= pack.size,
+        require(SPAN_OFFSET + SPAN_SIZE <= pack.size,
                 "authorized XISO span arithmetic changed")
         retail_span = xiso.read_exact(source_fd, absolute, SPAN_SIZE)
         replacement_span = xiso.read_exact(changed_fd, SPAN_OFFSET, SPAN_SIZE)

@@ -618,16 +618,20 @@ def _open_binary(path: Path, flags: int) -> int:
 
 
 def image_xbe_extent(descriptor: int, size: int) -> tuple[int, int]:
-    """(byte offset, size) of default.xbe inside an XDVDFS image."""
+    """(byte offset, size) of default.xbe inside an XDVDFS image.
+
+    Resolved through the image's directory (whatever the game partition's base
+    and wherever the file was placed), never assumed from the retail rip."""
 
     xc = _xdvdfs_module()
-    entries, _directory = xc.parse_xdvdfs(descriptor, size)
-    xbe = entries.get("default.xbe")
-    _require(xbe is not None, "disc image has no default.xbe")
-    _require(xbe.size == EXPECTED_XBE_SIZE,
-             f"default.xbe inside the image is {xbe.size} bytes, not the retail "
+    try:
+        offset, length = xc.xbe_extent(descriptor, size)
+    except xc.PatchError as exc:
+        raise ThrowTuningError(f"disc image has no default.xbe: {exc}") from exc
+    _require(length == EXPECTED_XBE_SIZE,
+             f"default.xbe inside the image is {length} bytes, not the retail "
              f"{EXPECTED_XBE_SIZE}")
-    return int(xbe.byte_offset), int(xbe.size)
+    return int(offset), int(length)
 
 
 def _edge_disc_status(descriptor: int, size: int) -> dict[str, object]:
@@ -680,18 +684,32 @@ def read_image(image_path: Path | str) -> dict[str, object]:
 
 
 def is_disc_image(path: Path | str) -> bool:
-    """True when the file looks like an XDVDFS image rather than an XBE."""
+    """True when the file looks like an XDVDFS image rather than an XBE.
+
+    The filesystem header is at 0x10000 of the GAME PARTITION, which is byte 0
+    of an extracted .xiso but sits 0x18300000 / 0x0FD90000 / 0x02080000 further
+    in on a raw disc read.  Checking file offset 0x10000 alone called every raw
+    dump "not a disc", so the partition is located the same way every reader
+    of the image locates it."""
 
     path = Path(path)
     try:
-        with path.open("rb") as stream:
-            head = stream.read(4)
-            if head == b"XBEH":
-                return False
-            stream.seek(0x10000)
-            return stream.read(20) == b"MICROSOFT*XBOX*MEDIA"
+        descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
     except OSError:
         return False
+    try:
+        if platform_compat.pread(descriptor, 4, 0) == b"XBEH":
+            return False
+        xc = _xdvdfs_module()
+        try:
+            xc.locate_xdvdfs_base(descriptor, os.fstat(descriptor).st_size, require_entry=None)
+        except xc.PatchError:
+            return False
+        return True
+    except OSError:
+        return False
+    finally:
+        os.close(descriptor)
 
 
 def read_any(path: Path | str) -> dict[str, object]:

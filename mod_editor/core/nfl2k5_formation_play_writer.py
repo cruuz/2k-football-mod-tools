@@ -63,7 +63,7 @@ from .nfl2k5_playbook_inspector import (
     STRING_BASE,
     parse_playbook_resource,
 )
-from .nfl2k5_source_cache import PACK0_SHA256, PACK0_SIZE
+from .nfl2k5_source_cache import PACK0_RETAIL_BYTE_OFFSET, PACK0_RETAIL_SECTOR, PACK0_SHA256, PACK0_SIZE
 from .nfl2k5_universal_asset_index import Nfl2k5UniversalAssetIndex
 
 try:
@@ -1017,11 +1017,12 @@ def build_unified_formation_play_import(
         "chunk_index": record.chunk_index,
         "resource_size": record.raw_size,
         "xiso_pack_path": "vc_53450030/0",
-        "xiso_pack_sector": 796_479,
+        # retail-rip provenance; the build re-derives the absolute from the target image's directory
+        "xiso_pack_sector": PACK0_RETAIL_SECTOR,
         "xiso_pack_size": PACK0_SIZE,
         "xiso_pack_sha256": PACK0_SHA256,
         "pack_offset": pack_offset,
-        "xiso_absolute_span_offset": 1_631_188_992 + pack_offset,
+        "xiso_absolute_span_offset": PACK0_RETAIL_BYTE_OFFSET + pack_offset,
         "span_sha256": compiled.source_sha256,
     }
     report = dict(compiled.report)

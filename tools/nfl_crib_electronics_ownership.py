@@ -100,8 +100,7 @@ def inventory(source_xiso: Path, catalog_path: Path,
                 "source must be the pinned untouched NFL 2K5 XISO")
         entries, directory = common.parse_xdvdfs(source_fd, common.EXPECTED_XISO_SIZE)
         pack = entries.get(PACK_PATH.casefold())
-        require(pack is not None and (pack.sector, pack.size) == (PACK_SECTOR, PACK_SIZE),
-                "pack C extent changed")
+        require(pack is not None and pack.size == PACK_SIZE, "pack C extent changed")
         assert pack is not None
         require(common.sha256_fd(source_fd, pack.byte_offset, pack.size) == PACK_SHA256,
                 "pack C hash changed")
@@ -260,7 +259,8 @@ def inventory(source_xiso: Path, catalog_path: Path,
                 "xiso_size": common.EXPECTED_XISO_SIZE,
                 "xiso_sha256": common.EXPECTED_XISO_SHA256,
                 "pack_path": PACK_PATH,
-                "pack_sector": PACK_SECTOR,
+                "pack_sector": pack.sector,
+                "pack_byte_offset": pack.byte_offset,
                 "pack_size": PACK_SIZE,
                 "pack_sha256": PACK_SHA256,
                 "opened_read_only": True,

@@ -31,7 +31,7 @@ XDVDFS_HEADER_OFFSET = 0x10000
 XDVDFS_BASE_OFFSETS: tuple[int, ...] = (
     0x00000000,   # extracted .xiso -- the game partition is the whole file
     0x18300000,   # XGD1 raw dump (405,798,912)
-    0x0FD90000,   # XGD2 raw dump (265,289,728)
+    0x0FD90000,   # XGD2 raw dump (265,879,552)
     0x02080000,   # XGD3 raw dump (34,078,720)
 )
 EXPECTED_XISO_SIZE = 6_300_499_968
@@ -590,6 +590,107 @@ def parse_xdvdfs(
         "directory_extents": len(visited_directories),
         "directory_nodes": total_nodes,
     }
+
+
+# ---------------------------------------------------------------------------
+# Where a game file is in THIS image.
+#
+# Every archive pack of NFL 2K5 lives under one folder on the disc. The retail
+# rip these editors were developed against places pack 0 at sector 796,479,
+# which is byte 1,631,188,992 of an extracted .xiso -- and for a long time
+# that number was simply typed into writers as "where pack 0 is". It is not.
+# A raw dump keeps the video partition in front (the whole game partition
+# moves), and an extract-xiso rebuild or a different ripper lays the same 19
+# files out at completely different sectors while every file stays
+# byte-identical. The first public report of this was a legal USA retail .iso
+# on which the executable-only patches worked (default.xbe is located through
+# the directory) and the pack-0 schedule patch reported the pack as "foreign"
+# because it had read 193 MB from the wrong place.
+#
+# So the pack's location is RESOLVED through the XDVDFS directory of the image
+# actually being read or written, exactly as default.xbe already was. The
+# retail sectors survive only as provenance for build receipts (see
+# RETAIL_PACK_SECTORS) and are never used to address an image.
+PACK_FOLDER = "vc_53450030"
+PACK_NAMES = "0123456789ABCDEF"
+
+#: Sector of each archive pack in the pinned retail rip, recorded in receipts
+#: so a build can be traced back to the rebuild its audits came from. NEVER
+#: use these to address an image: resolve through pack_extent() instead.
+RETAIL_PACK_SECTORS: dict[str, int] = {
+    "0": 796_479, "1": 649_995, "2": 891_064, "3": 495_938,
+    "4": 1_042_066, "5": 345_561, "6": 1_350_843, "7": 1_194_985,
+    "8": 1_574_589, "9": 35_531, "A": 2_403_082, "B": 2_179_328,
+    "C": 2_554_593, "D": 2_028_383, "E": 2_708_466, "F": 2_855_836,
+}
+
+
+def pack_path(pack: "int | str") -> str:
+    """Directory path of an archive pack: ``vc_53450030/<hex digit>``.
+
+    Accepts the pack's index (``0``..``15``), its hex name in either case
+    (``"c"``/``"C"``), or an already-qualified ``vc_53450030/C``.
+    """
+    if isinstance(pack, bool) or not isinstance(pack, (int, str)):
+        raise PatchError(f"archive pack must be an index or a name, not {pack!r}")
+    if isinstance(pack, int):
+        require(0 <= pack < len(PACK_NAMES), f"archive pack index {pack} is out of range")
+        return f"{PACK_FOLDER}/{PACK_NAMES[pack]}"
+    text = pack.strip().replace("\\", "/")
+    if "/" in text:
+        folder, _, name = text.rpartition("/")
+        require(folder.casefold() == PACK_FOLDER.casefold(),
+                f"{pack!r} is not a path under {PACK_FOLDER}/")
+        text = name
+    require(len(text) == 1 and text.upper() in PACK_NAMES,
+            f"{pack!r} is not an archive pack name (expected one hex digit)")
+    return f"{PACK_FOLDER}/{text.upper()}"
+
+
+def file_extent(
+    descriptor: int, image_size: int, path: str,
+    *, entries: "dict[str, XdvdfsEntry] | None" = None,
+) -> XdvdfsEntry:
+    """The directory entry of one file in this image, or a clear failure.
+
+    ``path`` is looked up case-insensitively (XDVDFS names are). The image's
+    game partition is located and its directory parsed unless the caller
+    already holds ``entries`` from :func:`parse_xdvdfs`. A missing file or a
+    directory where a file was expected raises :class:`PatchError` naming the
+    path -- there is deliberately no fallback to a remembered offset.
+    """
+    if entries is None:
+        entries, _directory = parse_xdvdfs(descriptor, image_size)
+    entry = entries.get(path.casefold())
+    require(entry is not None,
+            f"this disc image has no {path} in its XDVDFS directory")
+    assert entry is not None
+    require(not (entry.attributes & 0x10), f"{path} is a directory, not a file")
+    require(entry.byte_offset + entry.size <= image_size,
+            f"{path} extends past the end of the image")
+    return entry
+
+
+def pack_extent(
+    descriptor: int, image_size: int, pack: "int | str",
+    *, entries: "dict[str, XdvdfsEntry] | None" = None,
+) -> tuple[int, int]:
+    """``(absolute byte offset, size)`` of archive pack ``pack`` in THIS image.
+
+    The offset already includes the game partition's base, so it can be
+    handed straight to a positional read or write on ``descriptor``.
+    """
+    entry = file_extent(descriptor, image_size, pack_path(pack), entries=entries)
+    return int(entry.byte_offset), int(entry.size)
+
+
+def xbe_extent(
+    descriptor: int, image_size: int,
+    *, entries: "dict[str, XdvdfsEntry] | None" = None,
+) -> tuple[int, int]:
+    """``(absolute byte offset, size)`` of ``default.xbe`` in THIS image."""
+    entry = file_extent(descriptor, image_size, "default.xbe", entries=entries)
+    return int(entry.byte_offset), int(entry.size)
 
 
 def copy_fd_exact(source: int, output: int, size: int) -> str:
