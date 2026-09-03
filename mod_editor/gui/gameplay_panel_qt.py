@@ -262,7 +262,7 @@ class GameplayPanel(QWidget):
 
         header = QHBoxLayout()
         titles = QVBoxLayout()
-        title = QLabel("Sliders & Gameplay")
+        title = QLabel("Gameplay")
         title.setObjectName("inspectionTitle")
         subtitle = QLabel(
             "Browse the 21 named controls, 17 Fantasy Draft weights, observed "

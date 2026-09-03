@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC77 — Getting Started
+# 2K5 Mod Studio v1.0 RC78 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -861,3 +861,18 @@ save the patched **copy**, and write. The source is never touched. The copy is
 xemu-only: its RSA signature cannot be regenerated, so real hardware rejects it
 (the same rule as Bump strength). `tools/nfl2k5_throw_distance.py` does the
 same from a terminal (`read`, `sliders`, `curves`, `preview`).
+
+## ★ Build & Share — the SOFTDRINK patch (RC78)
+
+Open your disc image (File → Open), go to **★ Build & Share → Build**, and press
+one of the three preset buttons: **Basic** keeps the game in 2004 and ticks only
+the 2K5 fixes (throw ceiling 80 with realistic flight, real Catching and
+Interception sliders, draft and free-agency AI, real returners, kicking power);
+**Advanced** adds everything that modernises the game (EDGE, modern kicking and
+overtime, acceleration, progression, arc by distance, the ESPN scorebug, scheme
+labels, one-pool positions, the Far-look camera, the 2026 franchise);
+**Experimental** adds widescreen hor+ (set xemu's Display aspect to 16x9) and the
+dynamic-kickoff line-up. Untick anything you do not want, choose where the
+patched **copy** goes, and Build. The original is never touched; a receipt is
+written beside the copy. The **Share** tab turns that copy into a `.2k5patch`
+file anyone can check and apply to their own image.

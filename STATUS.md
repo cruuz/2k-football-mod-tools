@@ -1,4 +1,34 @@
-# 2K5 Mod Studio — v1.0 RC77 Release Status
+# 2K5 Mod Studio — v1.0 RC78 Release Status
+
+## Beta 54 — Build & Share with the SOFTDRINK patch presets (2026-09-03)
+
+Source/UI versions are **2K5 RC78** and **APF alpha.84**; both use updater tag
+`beta-54`.
+
+- **★ Build & Share → Build.** One checklist builds a patched COPY of a disc
+  image or default.xbe with every executable / text / presentation patch, and
+  three buttons tick a preset first: **Basic** (the 2004 game + the 2K5 fixes:
+  throw 80 realistic, catch/INT sliders, draft + FA AI with the Rookie Report
+  rule, returners, kicking power), **Advanced** (+ EDGE, modern kicking and
+  overtime, acceleration, progression, arc by distance, ESPN scorebug, scheme
+  labels, one-pool positions with the team-rating fix, Far-look camera, 2026
+  franchise with a three-game preseason and rookie birth years) and
+  **Experimental** (+ widescreen hor+ and the dynamic-kickoff line-up). A
+  preset ticks only what the source can still take and says what it skipped.
+- **Share tab.** `.2k5patch` export / inspect / check / apply (byte runs +
+  assets + recipe, every run SHA-verified against the bytes it replaces).
+- **Audio → Sounds, Commentary.** Sound-bank and AUDO writers across sub-banks
+  with export, fit line, verify; commentary line swap.
+- Every patch is pattern-checked against retail, written to a copy, read back
+  and receipted. Proven statically (unit tests + unicorn emulation of the
+  patched routines); in-game witnessing per preset is Noah's release gate.
+- Getting Started → "Start with the SOFTDRINK patch" opens Build & Share; the
+  Share tab exports the copy you just built in one click; the Build checklist
+  is drawn large and high-contrast; disc patching runs on Windows/macOS too
+  (seek-based positional IO, binary handles).
+- Installed-studio limit: the ESPN scorebug toggle is "Not available in this
+  build" (its art and retail mesh are not shipped); the published Advanced
+  `.2k5patch` carries it.
 
 ## Beta 53 — Create a Formation / Create a Play, Play Designer, Throw Distance & Arc (2026-09-02)
 

@@ -17,6 +17,7 @@ from typing import Any
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtWidgets import (
     QAbstractItemView,
+    QCheckBox,
     QFileDialog,
     QGroupBox,
     QHBoxLayout,
@@ -223,7 +224,104 @@ class ThrowTuningPanel(QWidget):
         arc_note.setObjectName("throwMuted")
         arc_note.setWordWrap(True)
         layout.addWidget(arc_note)
+
+        self.realistic_check = QCheckBox("Realistic deep-ball flight (recommended)")
+        self.realistic_check.setToolTip(
+            "Replaces the arc slider with the speed table elite NFL arms actually produce: "
+            "~60 mph release, 3.2-3.9 s hang for 60-80 air yards, apex 13-20 yd. Short game stays retail."
+        )
+        layout.addWidget(self.realistic_check)
+        self.arc_by_distance_check = QCheckBox("Arc by distance: 45-60 yd lobs hang high, 63+ yd keep the flat bomb")
+        self.arc_by_distance_check.setToolTip(
+            "Relocates the lob-speed table to an eight-point copy in the XBE header: every throw up to 40 "
+            "yards keeps the retail speeds (short accuracy and power unchanged), 45 to 60 air yards get the "
+            "high hanging arc (12 yd/s ground speed), 63 yards and beyond keep the realistic flat flight. "
+            "The in-place table then only matters for read-back; the ceiling still applies."
+        )
+        layout.addWidget(self.arc_by_distance_check)
+        realistic_note = QLabel(
+            "Real deep balls are not moon balls: the longest tracked NFL completions (62-68 air yards) "
+            "hang about 3.5 s with an apex near 15 yd. This table gives 55 yd → 2.8 s, 65 → 3.2 s, "
+            "80 → 3.8 s (apex 19 yd)."
+        )
+        realistic_note.setObjectName("throwMuted")
+        realistic_note.setWordWrap(True)
+        layout.addWidget(realistic_note)
+
+        self.catch_check = QCheckBox("Make the Catching slider decide drops (goes to 200) and the Interception slider decide picks")
+        self.catch_check.setToolTip(
+            "Retail: the Catching slider barely reaches play. This 60-byte executable patch divides the "
+            "catch roll by twice the receiver's side's slider: 50 = retail, 100 = double the catch odds, "
+            "200 = quadruple. Raises both Catching menu ceilings to 200. xemu-only."
+        )
+        layout.addWidget(self.catch_check)
+
+        self.scorebug_check = QCheckBox("Modern ESPN scorebug: one horizontal bar, bottom centre, never swaps sides, stays up during plays (disc images only)")
+        self.scorebug_check.setToolTip(
+            "Re-lays the field scorebug mesh into one bar (ESPN mark, away/home abbreviations and scores, "
+            "down & distance, quarter, clock, play clock), pins all three placement modes to the bottom centre "
+            "above the ticker band, freezes the drop-box animations, and repaints the frame atlas and ESPN strip. "
+            "Needs a disc image because the mesh lives in the field resource pack. xemu-only."
+        )
+        layout.addWidget(self.scorebug_check)
+
+        self.accel_check = QCheckBox("Acceleration ramp: players wind up to top speed (agility decides how fast)")
+        self.accel_check.setToolTip(
+            "Retail has no acceleration: everyone is at top speed on the first step, so linemen keep pace with "
+            "receivers at high Pursuit and slow quarterbacks burst out of the pocket. This executable patch ramps the "
+            "per-frame speed cache from 60 % to 100 % of the rating: ~1 s at 99 agility, ~1.75 s at 50, ~2 s at 30; "
+            "standing still resets it. xemu-only."
+        )
+        layout.addWidget(self.accel_check)
+
+        self.draft_check = QCheckBox("Realistic, unpredictable CPU drafts and free agency in franchise (positional value + need + noise)")
+        self.draft_check.setToolTip(
+            "Retail CPU teams draft the best raw overall at their neediest positions (so the positions whose rookies "
+            "roll the highest overalls flood round 1) and chase free agents in position-enum order. This executable "
+            "patch picks by each prospect's edge over his own position's class, real positional value, the team's "
+            "need order and a little noise, and scores free-agent targets the same way. Fantasy draft untouched. xemu-only."
+        )
+        layout.addWidget(self.draft_check)
+
+        self.returner_check = QCheckBox("Real kick and punt returners on CPU depth charts (no quarterbacks fielding punts)")
+        self.returner_check.setToolTip(
+            "The franchise auto depth chart never records which player had the best punt-return score: it stores the "
+            "score itself as the roster slot, so the punt returner is whoever sits in slot 0 (often a QB), and the second "
+            "kick returner is picked with a stale score. This executable patch tracks the players, scans the whole "
+            "roster, keeps starters out unless nobody else is eligible, and limits returners to WR/CB/S/RB/FB. xemu-only."
+        )
+        layout.addWidget(self.returner_check)
+
+        self.progression_check = QCheckBox("NFL-shaped player development (growth to the prime, age decline by position, more stars and busts)")
+        self.progression_check.setToolTip(
+            "Retail development is a hidden archetype per player driving flat curves (+2 or +3 from rookie year to the "
+            "prime). This data patch reshapes the ten aging-curve tables (growth over years 1-5 by rating family, "
+            "steeper decline after year 9-12, speed first) and widens the archetype mix per position so more prospects "
+            "become stars or busts. Draft-day ratings are unchanged. xemu-only."
+        )
+        layout.addWidget(self.progression_check)
+
+        self.edge_check = QCheckBox("Rename Defensive End to EDGE everywhere (rosters, depth charts, player cards, draft, HUD, historic teams, trivia)")
+        self.edge_check.setToolTip(
+            "Repoints the five position-abbreviation tables and the play-call Package legend to a new EDGE string "
+            "hosted in the XBE header, shrinks the 18 'Defensive End(s)' long names to 'Edge Rusher(s)' in place, "
+            "relabels the LDE/RDE formation slots EDGE (LEFT/RIGHT EDGE RUSHER), and on a disc image renames the 247 "
+            "historic-team 'Def End' players to 'Edge' and two trivia questions. Pattern-checked, digests recomputed. xemu-only."
+        )
+        layout.addWidget(self.edge_check)
         return box
+
+    @staticmethod
+    def _scorebug_module():
+        """The layout tool lives in tools/ (it shares the disc-resource codecs there)."""
+
+        import importlib
+        import sys
+
+        tools = Path(__file__).resolve().parents[2] / "tools"
+        if str(tools) not in sys.path:
+            sys.path.insert(0, str(tools))
+        return importlib.import_module("nfl2k5_scorebug_layout")
 
     def _build_preview(self) -> QGroupBox:
         box = QGroupBox("What each arm rating gets (deep ball, forced lob)")
@@ -257,10 +355,31 @@ class ThrowTuningPanel(QWidget):
         self.ceiling_spin.valueChanged.connect(self._ceiling_from_spin)
         self.arc_slider.valueChanged.connect(self._arc_from_slider)
         self.arc_spin.valueChanged.connect(self._arc_from_spin)
+        self.realistic_check.toggled.connect(self._option_toggled)
+        self.arc_by_distance_check.toggled.connect(self._option_toggled)
+        self.catch_check.toggled.connect(self._option_toggled)
+        self.scorebug_check.toggled.connect(self._option_toggled)
+        self.accel_check.toggled.connect(self._option_toggled)
+        self.draft_check.toggled.connect(self._option_toggled)
+        self.returner_check.toggled.connect(self._option_toggled)
+        self.progression_check.toggled.connect(self._option_toggled)
+        self.edge_check.toggled.connect(self._option_toggled)
 
     # ------------------------------------------------------------ settings
     def settings(self) -> tt.TuningSettings:
-        return tt.TuningSettings(float(self.ceiling_spin.value()), self.arc_spin.value() / 100.0)
+        return tt.TuningSettings(float(self.ceiling_spin.value()), self.arc_spin.value() / 100.0,
+                                 self.realistic_check.isChecked(), self.arc_by_distance_check.isChecked())
+
+    def catch_slider_requested(self) -> bool:
+        return self.catch_check.isChecked()
+
+    def _option_toggled(self, _checked: bool) -> None:
+        if self._syncing:
+            return
+        self.arc_slider.setEnabled(not self.realistic_check.isChecked())
+        self.arc_spin.setEnabled(not self.realistic_check.isChecked())
+        self._refresh_preview()
+        self._refresh_controls()
 
     def set_settings(self, settings: tt.TuningSettings) -> None:
         self._syncing = True
@@ -269,12 +388,27 @@ class ThrowTuningPanel(QWidget):
             self.ceiling_spin.setValue(int(round(settings.max_deep_yards)))
             self.arc_slider.setValue(int(round(settings.arc * 100)))
             self.arc_spin.setValue(int(round(settings.arc * 100)))
+            self.realistic_check.setChecked(bool(settings.realistic_flight))
+            self.arc_by_distance_check.setChecked(bool(getattr(settings, "arc_by_distance", False)))
+            self.arc_slider.setEnabled(not settings.realistic_flight)
+            self.arc_spin.setEnabled(not settings.realistic_flight)
         finally:
             self._syncing = False
         self._refresh_preview()
         self._refresh_controls()
 
     def reset_to_retail(self) -> None:
+        self._syncing = True
+        try:
+            self.catch_check.setChecked(False)
+            self.scorebug_check.setChecked(False)
+            self.accel_check.setChecked(False)
+            self.draft_check.setChecked(False)
+            self.returner_check.setChecked(False)
+            self.progression_check.setChecked(False)
+            self.edge_check.setChecked(False)
+        finally:
+            self._syncing = False
         self.set_settings(tt.TuningSettings())
 
     def _ceiling_from_slider(self, value: int) -> None:
@@ -323,7 +457,10 @@ class ThrowTuningPanel(QWidget):
 
     # ------------------------------------------------------------- preview
     def preview_rows(self) -> tuple[tt.PreviewRow, ...]:
-        return tt.preview(tt.curves_for(self.settings()))
+        settings = self.settings()
+        curves = dict(tt.curves_for(settings))
+        curves["lobspeed"] = tt.effective_lobspeed(settings, curves)
+        return tt.preview(curves)
 
     def _refresh_preview(self) -> None:
         retail = tt.preview({name: tt.CURVES[name].retail for name in tt.EDITABLE_CURVES})
@@ -382,13 +519,99 @@ class ThrowTuningPanel(QWidget):
         curves = report["curves"]
         assert isinstance(curves, dict)
         edited = [name for name in tt.EDITABLE_CURVES if not curves[name]["retail"]]
+        catch_state = str(report.get("catch_slider", "foreign"))
+        self._syncing = True
+        try:
+            self.catch_check.setChecked(catch_state == "applied")
+            self.catch_check.setEnabled(catch_state != "foreign")
+        finally:
+            self._syncing = False
+        if catch_state == "applied":
+            self.catch_check.setToolTip("Already applied in this source; it cannot be removed here (start from retail).")
+        scorebug_state = "n/a"
+        if report.get("container") == "xiso":
+            try:
+                scorebug_state = self._scorebug_module().status(Path(str(report["path"])))
+            except Exception:  # noqa: BLE001 - the layout tool refuses anything it cannot prove
+                scorebug_state = "foreign"
+        self._scorebug_state = scorebug_state
+        self._syncing = True
+        try:
+            self.scorebug_check.setChecked(scorebug_state == "applied")
+            self.scorebug_check.setEnabled(scorebug_state == "retail")
+        finally:
+            self._syncing = False
+        if scorebug_state == "applied":
+            self.scorebug_check.setToolTip("Already applied in this source; it cannot be removed here (start from retail).")
+        elif scorebug_state == "n/a":
+            self.scorebug_check.setToolTip("Open a disc image (.iso) to use this; a bare default.xbe has no scorebug mesh.")
+        accel_state = str(report.get("accel_ramp", "foreign"))
+        self._syncing = True
+        try:
+            self.accel_check.setChecked(accel_state == "applied")
+            self.accel_check.setEnabled(accel_state != "foreign")
+        finally:
+            self._syncing = False
+        if accel_state == "applied":
+            self.accel_check.setToolTip("Already applied in this source; it cannot be removed here (start from retail).")
+        draft_state = str(report.get("draft_ai", "foreign"))
+        self._syncing = True
+        try:
+            self.draft_check.setChecked(draft_state == "applied")
+            self.draft_check.setEnabled(draft_state != "foreign")
+        finally:
+            self._syncing = False
+        if draft_state == "applied":
+            self.draft_check.setToolTip("Already applied in this source; it cannot be removed here (start from retail).")
+        for box, key in ((self.returner_check, "returner_fix"), (self.progression_check, "progression")):
+            box_state = str(report.get(key, "foreign"))
+            self._syncing = True
+            try:
+                box.setChecked(box_state == "applied")
+                box.setEnabled(box_state != "foreign")
+            finally:
+                self._syncing = False
+            if box_state == "applied":
+                box.setToolTip("Already applied in this source; it cannot be removed here (start from retail).")
+        edge_state = str(report.get("edge_rename", "foreign"))
+        edge_disc = report.get("edge_rename_disc")
+        edge_disc_state = str(edge_disc.get("status")) if isinstance(edge_disc, dict) else "n/a"
+        # a disc whose XBE is already renamed but whose text is still retail can still take the text pass
+        edge_writable = edge_state == "retail" or (edge_state == "applied" and edge_disc_state == "retail")
+        self._edge_writable = edge_writable
+        self._syncing = True
+        try:
+            self.edge_check.setChecked(edge_state == "applied" and not edge_writable)
+            self.edge_check.setEnabled(edge_writable)
+        finally:
+            self._syncing = False
+        if edge_state == "applied" and not edge_writable:
+            self.edge_check.setToolTip("Already applied in this source; it cannot be removed here (start from retail).")
         container = "disc image" if report.get("container") == "xiso" else "default.xbe"
         retail = " (retail default.xbe by SHA-256)" if report.get("matches_retail_sha256") else ""
         state = ("retail throw tables" if not edited
                  else "already tuned: " + ", ".join(edited) + " edited")
+        flight = ("arc by distance (45-60 high, 63+ flat)" if getattr(settings, "arc_by_distance", False)
+                  else "realistic flight" if settings.realistic_flight else f"arc {int(round(settings.arc * 100))} %")
+        catch_text = {"retail": "catch patch not applied", "applied": "catch patch applied",
+                      "foreign": "catch-patch sites unrecognised (patch disabled)"}[catch_state]
+        extras = []
+        if scorebug_state in ("applied", "retail"):
+            extras.append("ESPN scorebug " + ("applied" if scorebug_state == "applied" else "not applied"))
+        if accel_state in ("applied", "retail"):
+            extras.append("acceleration ramp " + ("applied" if accel_state == "applied" else "not applied"))
+        if draft_state in ("applied", "retail"):
+            extras.append("draft AI " + ("applied" if draft_state == "applied" else "not applied"))
+        for key, label in (("returner_fix", "returner fix"), ("progression", "progression")):
+            if str(report.get(key)) in ("applied", "retail"):
+                extras.append(label + " " + ("applied" if report.get(key) == "applied" else "not applied"))
+        if edge_state in ("applied", "retail"):
+            extras.append("EDGE rename " + ("applied" if edge_state == "applied" else "not applied")
+                          + (f" (disc text {edge_disc_state})" if edge_disc_state != "n/a" else ""))
         self.source_status.setText(
             f"Read the {container}{retail}: {state}. Current ceiling "
-            f"{settings.max_deep_yards:g} yd, arc {int(round(settings.arc * 100))} %."
+            f"{settings.max_deep_yards:g} yd, {flight}; {catch_text}"
+            + ("; " + "; ".join(extras) if extras else "") + "."
         )
         self._refresh_controls()
 
@@ -420,10 +643,19 @@ class ThrowTuningPanel(QWidget):
         except tt.ThrowTuningError:
             return False
         curves = self._report["curves"] if self._report else {}
-        return any(
+        curve_change = any(
             tuple(wanted[name]) != tuple(curves[name]["points"])  # type: ignore[index]
             for name in tt.EDITABLE_CURVES
         )
+        catch_change = self.catch_check.isChecked() and str(self._report.get("catch_slider")) == "retail"
+        scorebug_change = self.scorebug_check.isChecked() and getattr(self, "_scorebug_state", "n/a") == "retail"
+        accel_change = self.accel_check.isChecked() and str(self._report.get("accel_ramp")) == "retail"
+        draft_change = self.draft_check.isChecked() and str(self._report.get("draft_ai")) == "retail"
+        returner_change = self.returner_check.isChecked() and str(self._report.get("returner_fix")) == "retail"
+        progression_change = self.progression_check.isChecked() and str(self._report.get("progression")) == "retail"
+        edge_change = self.edge_check.isChecked() and getattr(self, "_edge_writable", False)
+        return (curve_change or catch_change or scorebug_change or accel_change or draft_change or edge_change
+                or returner_change or progression_change)
 
     def _write(self) -> None:
         source_text = self.source_field.text()
@@ -433,15 +665,34 @@ class ThrowTuningPanel(QWidget):
         source = Path(source_text)
         target = Path(target_text)
         settings = self.settings()
+        want_catch = self.catch_check.isChecked() and str(self._report.get("catch_slider") if self._report else "") == "retail"
+        want_scorebug = self.scorebug_check.isChecked() and getattr(self, "_scorebug_state", "n/a") == "retail"
+        want_accel = self.accel_check.isChecked() and str(self._report.get("accel_ramp") if self._report else "") == "retail"
+        want_draft = self.draft_check.isChecked() and str(self._report.get("draft_ai") if self._report else "") == "retail"
+        want_edge = self.edge_check.isChecked() and getattr(self, "_edge_writable", False)
+        want_returner = self.returner_check.isChecked() and str(self._report.get("returner_fix") if self._report else "") == "retail"
+        want_progression = self.progression_check.isChecked() and str(self._report.get("progression") if self._report else "") == "retail"
         overwrite = target.exists()
         is_image = tt.is_disc_image(source)
+        if want_scorebug and not (is_image and tt.is_disc_image(target)):
+            QMessageBox.warning(self, "Disc image needed",
+                                "The ESPN scorebug edits the field resource pack, so both the source and the "
+                                "copy must be disc images (.iso).")
+            return
         top = self.preview_rows()[-1]
         confirmation = QMessageBox.question(
             self,
             "Write a patched copy?",
             f"Ceiling {settings.max_deep_yards:g} yd at 99 arm, arc {int(round(settings.arc * 100))} % "
-            f"({top.hang_seconds:.1f} s hang, {top.apex_yards:.0f} yd apex on the longest ball)\n\n"
-            f"Source (untouched): {source}\n"
+            f"({top.hang_seconds:.1f} s hang, {top.apex_yards:.0f} yd apex on the longest ball)"
+            + ("\nCatching/Interception-slider patch: ON (executable patch, Catching menu max 200)" if want_catch else "")
+            + ("\nModern ESPN scorebug: ON (mesh re-layout, bottom centre, atlas + ESPN strip repainted)" if want_scorebug else "")
+            + ("\nAcceleration ramp: ON (executable patch, players wind up to top speed)" if want_accel else "")
+            + ("\nRealistic CPU drafts and free agency: ON (executable patch, draft pick + free-agent wishes)" if want_draft else "")
+            + ("\nReturner fix: ON (executable patch, franchise auto depth chart)" if want_returner else "")
+            + ("\nNFL-shaped development: ON (aging curves + archetype weights)" if want_progression else "")
+            + ("\nEDGE rename: ON (position tables, long names, formation slots" + (", historic-roster names, trivia" if is_image else "") + ")" if want_edge else "")
+            + f"\n\nSource (untouched): {source}\n"
             + (f"REPLACING existing copy: {target}" if overwrite else f"New copy: {target}")
             + ("\n\nThis copies the whole disc image, then patches default.xbe inside the copy."
                if is_image else "")
@@ -452,14 +703,38 @@ class ThrowTuningPanel(QWidget):
         if confirmation != QMessageBox.Ok:
             return
 
+        scorebug_module = self._scorebug_module() if want_scorebug else None
+
         def write(progress: ProgressSink) -> dict[str, object]:
             progress("Patching throw tables", 0, 0)
-            return tt.write_copy(source, target, settings=settings, overwrite=overwrite, progress=progress)
+            result = tt.write_copy(source, target, settings=settings, overwrite=overwrite, progress=progress,
+                                   catch_slider=want_catch, accel_ramp=want_accel, draft_ai=want_draft,
+                                   edge_rename=want_edge, returner_fix=want_returner, progression=want_progression)
+            if scorebug_module is not None:
+                progress("Re-laying the scorebug (mesh, placement, textures)", 0, 0)
+                receipt = scorebug_module.apply_in_place(target)
+                result = dict(result)
+                result["scorebug_layout"] = receipt
+            return result
 
         def done(result: object) -> None:
             assert isinstance(result, dict)
             changes = result.get("changes") or []
             summary = ", ".join(str(change["curve"]) for change in changes)
+            if result.get("catch_slider") == "applied" and want_catch:
+                summary = (summary + ", " if summary else "") + "catch-slider patch"
+            if result.get("scorebug_layout"):
+                summary = (summary + ", " if summary else "") + "ESPN scorebug"
+            if result.get("accel_ramp") == "applied" and want_accel:
+                summary = (summary + ", " if summary else "") + "acceleration ramp"
+            if result.get("draft_ai") == "applied" and want_draft:
+                summary = (summary + ", " if summary else "") + "realistic CPU drafts"
+            if result.get("edge_rename") == "applied" and want_edge:
+                summary = (summary + ", " if summary else "") + "EDGE rename"
+            if result.get("returner_fix") == "applied" and want_returner:
+                summary = (summary + ", " if summary else "") + "returner fix"
+            if result.get("progression") == "applied" and want_progression:
+                summary = (summary + ", " if summary else "") + "NFL-shaped development"
             self.status_label.setText(
                 f"Patched copy written to {target.name}: {summary} "
                 f"({result.get('changed_byte_count')} bytes changed, digest recomputed, "

@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import QApplication  # noqa: E402
 from mod_editor.core import nfl2k5_throw_tuning as tt  # noqa: E402
 from mod_editor.gui.throw_tuning_panel_qt import ThrowTuningPanel  # noqa: E402
 from nfl2k5_throw_tuning_test import _build_synthetic_xbe  # noqa: E402
+from nfl2k5_edge_rename_test import build_edge_synthetic_xbe  # noqa: E402
 
 
 class ThrowTuningPanelTests(unittest.TestCase):
@@ -77,6 +78,35 @@ class ThrowTuningPanelTests(unittest.TestCase):
         self.assertFalse(self.panel.has_changes())
         self.assertFalse(self.panel.write_button.isEnabled())
 
+    def test_realistic_flight_and_catch_controls(self) -> None:
+        self.panel.apply_report(tt.read_xbe(self.source))
+        self.panel.target_field.setText(str(self.work / "out.xbe"))
+        self.assertFalse(self.panel.has_changes())
+        self.panel.realistic_check.setChecked(True)
+        self.assertFalse(self.panel.arc_slider.isEnabled())
+        self.assertTrue(self.panel.settings().realistic_flight)
+        self.assertTrue(self.panel.has_changes())
+        self.assertEqual(self.panel.preview_rows()[-1].hang_seconds, 2.81)  # 55 yd at 19.6 yd/s
+        self.panel.realistic_check.setChecked(False)
+        self.assertTrue(self.panel.arc_slider.isEnabled())
+        self.assertFalse(self.panel.has_changes())
+        self.assertTrue(self.panel.catch_check.isEnabled())
+        self.panel.catch_check.setChecked(True)
+        self.assertTrue(self.panel.catch_slider_requested())
+        self.assertTrue(self.panel.has_changes())
+        self.assertTrue(self.panel.write_button.isEnabled())
+        self.panel.reset_to_retail()
+        self.assertFalse(self.panel.catch_check.isChecked())
+        self.assertFalse(self.panel.has_changes())
+
+    def test_applied_catch_patch_is_shown_and_not_re_requested(self) -> None:
+        patched = self.work / "patched.xbe"
+        tt.write_xbe_copy(self.source, patched, catch_slider=True)
+        self.panel.apply_report(tt.read_xbe(patched))
+        self.assertTrue(self.panel.catch_check.isChecked())
+        self.assertIn("catch patch applied", self.panel.source_status.text())
+        self.assertFalse(self.panel.has_changes())
+
     def test_tuned_source_reports_its_sliders(self) -> None:
         tuned = self.work / "tuned.xbe"
         tt.write_xbe_copy(self.source, tuned, settings=tt.TuningSettings(72.0, 0.25))
@@ -87,6 +117,70 @@ class ThrowTuningPanelTests(unittest.TestCase):
         self.panel.arc_spin.setValue(0)
         self.assertTrue(self.panel.has_changes())
 
+    def test_scorebug_checkbox_needs_a_retail_disc_image(self) -> None:
+        # A bare default.xbe has no scorebug mesh: the control is off and disabled.
+        self.panel.apply_report(tt.read_xbe(self.source))
+        self.assertFalse(self.panel.scorebug_check.isEnabled())
+        self.assertFalse(self.panel.scorebug_check.isChecked())
+        self.assertIn("disc image", self.panel.scorebug_check.toolTip())
+        # A disc image the layout tool cannot prove retail is refused (foreign), never guessed.
+        report = dict(tt.read_xbe(self.source))
+        report["container"] = "xiso"
+        report["path"] = str(self.work / "missing.xiso.iso")
+        self.panel.apply_report(report)
+        self.assertEqual(self.panel._scorebug_state, "foreign")
+        self.assertFalse(self.panel.scorebug_check.isEnabled())
+        self.assertFalse(self.panel.has_changes())
+
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class EdgeRenameCheckboxTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.app = QApplication.instance() or QApplication([])
+
+    def setUp(self) -> None:
+        self._temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self._temporary.cleanup)
+        self.work = Path(self._temporary.name)
+        self.panel = ThrowTuningPanel(None)
+        self.addCleanup(self.panel.deleteLater)
+
+    def test_checkbox_is_disabled_when_the_sites_are_unrecognised(self) -> None:
+        source = self.work / "default.xbe"
+        source.write_bytes(_build_synthetic_xbe())   # no EDGE windows: foreign
+        self.panel.apply_report(tt.read_xbe(source))
+        self.assertFalse(self.panel.edge_check.isEnabled())
+        self.assertFalse(self.panel.edge_check.isChecked())
+        self.assertNotIn("EDGE rename", self.panel.source_status.text())
+
+    def test_retail_sites_enable_the_checkbox_and_gate_the_write(self) -> None:
+        source = self.work / "default.xbe"
+        source.write_bytes(build_edge_synthetic_xbe())
+        self.panel.apply_report(tt.read_xbe(source))
+        self.assertTrue(self.panel.edge_check.isEnabled())
+        self.assertIn("EDGE rename not applied", self.panel.source_status.text())
+        self.panel.target_field.setText(str(self.work / "out.xbe"))
+        self.panel._refresh_controls()
+        self.assertFalse(self.panel.has_changes())
+        self.panel.edge_check.setChecked(True)
+        self.assertTrue(self.panel.has_changes())
+        self.assertTrue(self.panel.write_button.isEnabled())
+        self.panel.reset_to_retail()
+        self.assertFalse(self.panel.edge_check.isChecked())
+        self.assertFalse(self.panel.has_changes())
+
+    def test_applied_source_shows_the_rename_and_locks_the_box(self) -> None:
+        source = self.work / "default.xbe"
+        target = self.work / "edge.xbe"
+        source.write_bytes(build_edge_synthetic_xbe())
+        tt.write_xbe_copy(source, target, edge_rename=True)
+        self.panel.apply_report(tt.read_xbe(target))
+        self.assertTrue(self.panel.edge_check.isChecked())
+        self.assertFalse(self.panel.edge_check.isEnabled())
+        self.assertIn("EDGE rename applied", self.panel.source_status.text())
+        self.assertFalse(self.panel.has_changes())
+
