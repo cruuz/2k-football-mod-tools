@@ -24,7 +24,8 @@ The patch adds value 4, "7-On-7":
 * the two wrap constants become 3 / 4 and the register call pushes 4;
 * the text and register callbacks read a five-entry string table in the cave (the four retail
   pointers plus a new UTF-16 ``7-On-7``);
-* the switch jumps through a five-entry table in the cave: entries 0-3 clear the 7-on-7 flag and
+* the switch jumps through a five-entry table in the cave: entries 0-3 clear the 7-on-7 flag (a byte
+  in writable memory between .rdata and .data; .text is read-only, see FLAG_VA) and
   jump to the retail stubs (so Special Move / Full Scrimmage / Offense Only / Kickoff are exactly
   retail, kick word included); entry 4 sets the flag and writes mode 1 (Full Scrimmage);
 * the loader compare becomes ``jmp cave``: mode 3, or mode 1 with the flag set, takes the retail
@@ -65,7 +66,7 @@ LOADER_TEAMS_VA = 0x00062D39      # `push 1; call FUN_000628d0; push 0; call FUN
 
 CAVE_VA = 0x001AC170              # FUN_001ac170: dead (no call, jump or pointer to it), 525 bytes
 CAVE_SIZE = 0x100
-FLAG_OFFSET = 0x00                # one byte: 1 while the 7-on-7 practice type is selected
+FLAG_OFFSET = 0x00                # reserved zero byte (the flag itself lives at FLAG_VA in writable memory)
 STRING_TABLE_OFFSET = 0x04        # five u32 string pointers
 JUMP_TABLE_OFFSET = 0x18          # five u32 stub addresses
 NAME_OFFSET = 0x2C                # UTF-16LE "7-On-7\0" (14 bytes)
@@ -115,7 +116,15 @@ def _imm(va: int) -> str:
     return struct.pack("<I", va).hex()
 
 
-FLAG_VA = CAVE_VA + FLAG_OFFSET
+# The flag is the one thing the cave WRITES, and .text (0x11000..0x420114, section flags 0x16) is mapped
+# read-only by the kernel: a `mov byte [.text],0` in the switch stub faulted the moment the Scrimmage
+# screen initialised (witnessed 2026-09-03: the game froze on "Scrimmage"). The flag therefore lives in
+# writable memory: the 23-byte alignment gap between the end of .rdata (0xA69969, flags 0x7 writable)
+# and the start of .data (0xA69980, flags 0x7 writable). Both sections share that page, so it is
+# writable, and no section's data or code touches those bytes. Every switch stub writes the flag before
+# anything reads it (the Practice Type setter runs when the Scrimmage screen opens), so its power-on
+# value never matters. The cave's byte 0 stays reserved (zero) so the layout is unchanged.
+FLAG_VA = 0x00A69970
 STRING_TABLE_VA = CAVE_VA + STRING_TABLE_OFFSET
 JUMP_TABLE_VA = CAVE_VA + JUMP_TABLE_OFFSET
 NAME_VA = CAVE_VA + NAME_OFFSET

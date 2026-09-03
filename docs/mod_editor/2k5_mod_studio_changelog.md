@@ -52,7 +52,11 @@
   coverage. Executable: nine spans plus a 256-byte cave in the dead routine at 0x1AC170; data:
   PRACTICE-pb.iff in place, wrapper untouched; the writer builds on the retail book or on the
   one-pool recode of it (which the Build tab runs first), and the two orders give the same bytes.
-  Needs a disc image. Unwitnessed in game.
+  Needs a disc image. First in-game test (2026-09-03) froze on "Scrimmage": the mode flag lived in
+  `.text`, which the kernel maps read-only, and the Practice Type switch writes it when the screen
+  opens; the flag now lives in writable memory between `.rdata` and `.data`, and a new test
+  (`test_xbe_patch_memory_writes.py`) disassembles every XBE patch and refuses any write into a
+  read-only section. Still unwitnessed past that screen.
 
 ## v1.0 RC80 — ★ Models: export any model to Blender and back (2026-09-03)
 
