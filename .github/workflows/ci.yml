@@ -46,6 +46,14 @@ jobs:
       # Qt needs a display. The offscreen platform plugin gives it one with no
       # X server / no window, on every OS.
       QT_QPA_PLATFORM: offscreen
+      # Every main window schedules the automatic GitHub update check 1.2 s
+      # after construction. Tests build and delete dozens of windows; the
+      # check must stay offline here (no network task racing a deleted
+      # window, no first-run explanation dialog blocking a headless run).
+      MOD_STUDIO_NO_UPDATE_CHECK: "1"
+      # A segfault in a Qt test then prints the Python stack that was live,
+      # instead of a bare rc=139.
+      PYTHONFAULTHANDLER: "1"
     steps:
       - uses: actions/checkout@v4
 
