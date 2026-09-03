@@ -90,6 +90,7 @@ if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
 import nfl_txtr  # noqa: E402
+import nfl_uniform_color_xiso_direct_patch as xc  # noqa: E402
 from mod_editor.core import nfl2k5_bump_strength as bs  # noqa: E402
 from mod_editor.core import nfl2k5_throw_tuning as tt  # noqa: E402
 import nfl2k5_scorebug_position_patch as sbpos  # noqa: E402
@@ -116,7 +117,10 @@ T = {"root": 0, "away_city": 1, "away_city_l": 2, "home_city": 3, "home_city_l":
 
 # ---- disc / XBE facts --------------------------------------------------------------------
 PACK_PATH = "vc_53450030/0"
-XISO_PACK_BYTE_OFFSET = 1_631_188_992     # audit: xiso_pack_byte_offset of vc_53450030/0
+PACK_SIZE = 193_710_080                   # retail vc_53450030/0
+# Where pack 0 sits is NOT a constant of the game: the retail rip this was developed on has it at
+# byte 1,631,188,992, a raw dump or a rebuilt image puts it elsewhere.  chunk78_absolute() resolves
+# it through the XDVDFS directory of the image being read or written.
 CHUNK78_PACK_OFFSET = 110_486_272         # outer 346 (pack offset 109,895,680) + chunk 590,592
 SPAN_SIZE = 0x20 + 4800
 SPAN_SHA = "3b1d7c8f0d5f3d6c1c6f0f0b8a8f8e5a3f4e9b2c7d6a5b4c3d2e1f0a9b8c7d6e"  # replaced at first read
@@ -487,15 +491,28 @@ def refit(template_span: bytes, decoded: bytes) -> tuple[bytes, object]:
     return span, info
 
 
+def chunk78_absolute(fd: int, size: int) -> int:
+    """Absolute byte of the score_bug chunk (78) in the open image: pack 0 resolved through the
+    image's XDVDFS directory plus the chunk's offset inside the pack.  Raises xc.PatchError when the
+    image has no retail-sized pack 0."""
+
+    pack_offset, pack_size = xc.pack_extent(fd, size, "0")
+    xc.require(pack_size == PACK_SIZE, f"{PACK_PATH} is {pack_size} bytes, not the retail {PACK_SIZE}")
+    return pack_offset + CHUNK78_PACK_OFFSET
+
+
 def read_retail_span(xiso: Path) -> tuple[int, bytes]:
-    absolute = XISO_PACK_BYTE_OFFSET + CHUNK78_PACK_OFFSET
-    with xiso.open("rb") as f:
-        f.seek(absolute)
-        span = f.read(SPAN_SIZE)
+    fd = os.open(xiso, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+    try:
+        absolute = chunk78_absolute(fd, os.fstat(fd).st_size)
+        span = _pread(fd, SPAN_SIZE, absolute)
+    finally:
+        os.close(fd)
     chunks = nfl_txtr.parse_chunks(span, allow_trailing=True)
     decoded, _ = nfl_txtr.decode_chunk(span, chunks[0])
     if sha(decoded) != SCNE_SHA:
         raise SystemExit(f"disc chunk 78 at {absolute:#x} is not the retail score_bug (decoded {sha(decoded)[:12]})")
+    _remember_retail_scne(decoded)
     return absolute, span
 
 
@@ -600,7 +617,10 @@ def status(xiso: Path) -> str:
         return "foreign"
     try:
         size = os.fstat(fd).st_size
-        absolute = XISO_PACK_BYTE_OFFSET + CHUNK78_PACK_OFFSET
+        try:
+            absolute = chunk78_absolute(fd, size)
+        except xc.PatchError:
+            return "foreign"
         if absolute + SPAN_SIZE > size:
             return "foreign"
         span = _pread(fd, SPAN_SIZE, absolute)
@@ -613,22 +633,42 @@ def status(xiso: Path) -> str:
         xbe = _pread(fd, xlen, xoff)
     finally:
         os.close(fd)
-    edited = Mesh(retail_scne_bytes()) if sha(decoded) == SCNE_SHA else None
-    if edited is not None:
-        # chunk is retail; the placement must be retail too
+    if sha(decoded) == SCNE_SHA:
+        # chunk is retail (and IS the retail SCNE: keep it for later steps); the placement must be
+        # retail too
+        _remember_retail_scne(decoded)
         try:
             sbpos.apply(xbe, ROOT_X, ROOT_Y)
         except SystemExit:
             return "foreign"
         return "retail"
-    m = Mesh(retail_scne_bytes())
+    try:
+        m = Mesh(retail_scne_bytes())
+    except SystemExit:
+        # without the retail mesh the ESPN layout cannot be reproduced to compare against; this is a
+        # status probe, so answer rather than abort the caller (inspect() only catches Exception)
+        return "foreign"
     espn_layout(m)
     if decoded == m.serialize():
         return "applied"
     return "foreign"
 
 
+_RETAIL_SCNE_FROM_DISC: bytes | None = None
+
+
+def _remember_retail_scne(decoded: bytes) -> None:
+    """Chunk 78 decoded from a retail disc IS the retail score_bug SCNE; keep it so no loose copy of
+    the asset is needed once any retail image has been read."""
+
+    global _RETAIL_SCNE_FROM_DISC
+    if _RETAIL_SCNE_FROM_DISC is None and sha(decoded) == SCNE_SHA:
+        _RETAIL_SCNE_FROM_DISC = bytes(decoded)
+
+
 def retail_scne_bytes() -> bytes:
+    if _RETAIL_SCNE_FROM_DISC is not None:
+        return _RETAIL_SCNE_FROM_DISC
     for candidate in (ESPN_TEXTURES / "score_bug_retail.scne", Path("/tmp/opencode/scorebug/score_bug.scne")):
         if candidate.exists():
             data = candidate.read_bytes()
@@ -648,6 +688,8 @@ def apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements: bool =
     fd = os.open(xiso, os.O_RDWR | getattr(os, "O_BINARY", 0))
     try:
         size = os.fstat(fd).st_size
+        if chunk78_absolute(fd, size) != absolute:
+            raise SystemExit("the image's pack 0 moved between reading and writing the scorebug span")
         xoff, xlen = tt.image_xbe_extent(fd, size)
         xbe = _pread(fd, xlen, xoff)
         new_xbe, receipt = patch_xbe(xbe, freeze_elements=freeze_elements)
@@ -731,6 +773,7 @@ def main() -> int:
     shutil.copyfile(src, dst)
     fd = os.open(dst, os.O_RDWR | getattr(os, "O_BINARY", 0))
     try:
+        absolute = chunk78_absolute(fd, os.fstat(fd).st_size)
         if _pread(fd, SPAN_SIZE, absolute) != span:
             raise SystemExit("copy does not hold the retail span")
         _pwrite(fd, new_span, absolute)

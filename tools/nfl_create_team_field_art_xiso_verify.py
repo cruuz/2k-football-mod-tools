@@ -191,7 +191,7 @@ def run(
                 "XDVDFS tree/extents differ")
         pack = source_entries.get("vc_53450030/0")
         xbe = source_entries.get("default.xbe")
-        require(pack is not None and pack.byte_offset == 1_631_188_992 and
+        require(pack is not None and
                 pack.size == 193_710_080 and xbe is not None and
                 (output_fd is None or common.sha256_fd(
                     output_fd, xbe.byte_offset, xbe.size

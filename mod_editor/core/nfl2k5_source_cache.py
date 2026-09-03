@@ -38,6 +38,12 @@ SOURCE_SHA256 = "7b4b493b9492ecfb353ae97c7243210c8dd4fe1601eb34549eea67ad6ee68bc
 PACK_FOLDER = Path("extracted/ESPN NFL 2K5 (USA)/vc_53450030")
 PACK0_SIZE = 193_710_080
 PACK0_SHA256 = "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d"
+# Where pack 0 sat in the pinned retail rip (sector 796,479 of an extracted .xiso).  Recorded in
+# prepared-edit targets as provenance ONLY: the build (nfl2k5_visual_mod_project.bind_prepared_to_source)
+# derives every absolute offset from the pack's position in the image actually being written,
+# because a raw dump or a rebuilt image puts the same pack elsewhere.
+PACK0_RETAIL_SECTOR = 796_479
+PACK0_RETAIL_BYTE_OFFSET = PACK0_RETAIL_SECTOR * 2048
 INVENTORY_SIZE = 55_746_414
 INVENTORY_SHA256 = "af881421c10fa01288556fec12a24ad0d8e36d6f58db8134fd956db686b0bcac"
 INVENTORY_RELATIVE = Path("indexes/nfl2k5_resource_chunks_v2.json")

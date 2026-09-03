@@ -248,6 +248,19 @@ def _xbe_bytes(source: Path) -> bytes:
     return source.read_bytes()
 
 
+def _pack0_extent(descriptor: int) -> tuple[int, int]:
+    """(absolute byte offset, size) of vc_53450030/0 in the open image, from its XDVDFS directory."""
+
+    xc = tt._xdvdfs_module()
+    try:
+        offset, size = xc.pack_extent(descriptor, os.fstat(descriptor).st_size, "0")
+    except xc.PatchError as exc:
+        raise ValueError(f"cannot locate the schedule template pack: {exc}") from exc
+    if size != PACK0_SIZE:
+        raise ValueError(f"vc_53450030/0 in this image is {size} bytes, not the retail {PACK0_SIZE}")
+    return offset, size
+
+
 def _write_xbe_bytes(target: Path, payload: bytes) -> None:
     if tt.is_disc_image(target):
         fd = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
@@ -367,11 +380,15 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         # the 3-game preseason block goes right after the regular-season records (read by the
         # rewritten generator of the season patch's ``preseason`` group)
         preseason_block, preseason_info = fs.encode_preseason(doc) if hasattr(fs, "encode_preseason") else (b"", {"games": 0})
-        sbl = _tools_module("nfl2k5_scorebug_layout")
-        pack_offset = int(sbl.XISO_PACK_BYTE_OFFSET) if sbl is not None else 1_631_188_992
         fd = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
         try:
-            pack = platform_compat.pread(fd, PACK0_SIZE, pack_offset)
+            # Pack 0 is found through the image's own XDVDFS directory, never at a remembered byte.
+            # The first public report of the Advanced preset failing was a legal USA retail .iso whose
+            # packs sit at other sectors than the rip this was developed on: the executable patches
+            # worked (default.xbe was resolved) while this step read 193 MB from the wrong place and
+            # reported the schedule template as "foreign".
+            pack_offset, pack_size = _pack0_extent(fd)
+            pack = platform_compat.pread(fd, pack_size, pack_offset)
             pstate = fs.pack_status(pack)
             if pstate["state"] == "retail":
                 patched, pack_receipt = fs.apply_pack(pack, template, preseason=preseason_block)
@@ -389,7 +406,8 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
                     platform_compat.pwrite(fd, patched[start:], pack_offset + start)
                     written += len(pack) - start
                 os.fsync(fd)
-                pack_receipt = {**{k: v for k, v in pack_receipt.items() if k != "records"}, "written_bytes": written}
+                pack_receipt = {**{k: v for k, v in pack_receipt.items() if k != "records"}, "written_bytes": written,
+                                "pack0_byte_offset": pack_offset}
             elif pstate.get("state") == "applied":
                 pack_receipt = {"already_applied": True}
             else:

@@ -16,6 +16,7 @@ import stat
 import struct
 import sys
 
+from . import platform_compat
 from .errors import ValidationError
 from .json_stream import require_regular_file
 
@@ -42,6 +43,7 @@ TARGET_SCENE_ID = "nfl2k5.stadium.o3280.c0005.scene2648"
 PACK_PATH = "vc_53450030/9"
 PACK_SECTOR = 35_531
 PACK_SIZE = 634_941_440
+PACK_SHA256 = "779b37455fc44cd7eb60674b926d7ccaf9cd6bd9d894157a1d68119281790c7a"   # retail vc_53450030/9
 INDEX_PATH = "vc_53450030/0"
 INDEX_SECTOR = 796_479
 INDEX_SIZE = 193_710_080
@@ -49,6 +51,8 @@ FILE_COUNT = 19
 CHUNK_PACK_OFFSET = 0x07EA5A40
 CHUNK_STORED_SIZE = 908_880
 CHUNK_SPAN_SIZE = HEADER.size + CHUNK_STORED_SIZE
+# Provenance of the retail rip only (pack 9 at sector 35,531 of an extracted .xiso); the verifier
+# derives the span's absolute byte from where the images being verified keep pack 9.
 ABSOLUTE_SPAN = PACK_SECTOR * xiso.SECTOR_SIZE + CHUNK_PACK_OFFSET
 SOURCE_SPAN_SHA256 = "0cd1977a6097851f9366d935098bdd9e97144f3ffce0f8690593c2623fbbd73a"
 SOURCE_DECODED_SHA256 = "229db9f309bf69eaa28901ae6e2e15b26a279b3f1f37abed01e36041c5e5ead8"
@@ -96,7 +100,7 @@ def _digest_fd(fd: int, offset: int = 0, length: int | None = None) -> str:
     remaining = length
     while remaining is None or remaining:
         request = BLOCK if remaining is None else min(BLOCK, remaining)
-        payload = os.pread(fd, request, position)
+        payload = platform_compat.pread(fd, request, position)
         if not payload:
             break
         digest.update(payload)
@@ -108,16 +112,18 @@ def _digest_fd(fd: int, offset: int = 0, length: int | None = None) -> str:
     return digest.hexdigest()
 
 
-def _compare_discs(source_fd: int, output_fd: int, size: int) -> tuple[str, str, int]:
+def _compare_discs(
+    source_fd: int, output_fd: int, size: int, span_absolute: int
+) -> tuple[str, str, int]:
     source_hash = hashlib.sha256()
     output_hash = hashlib.sha256()
     changed = 0
     position = 0
-    end = ABSOLUTE_SPAN + CHUNK_SPAN_SIZE
+    end = span_absolute + CHUNK_SPAN_SIZE
     while position < size:
         request = min(BLOCK, size - position)
-        left = os.pread(source_fd, request, position)
-        right = os.pread(output_fd, request, position)
+        left = platform_compat.pread(source_fd, request, position)
+        right = platform_compat.pread(output_fd, request, position)
         _require(len(left) == len(right) == request, "Short full-disc comparison read")
         source_hash.update(left)
         output_hash.update(right)
@@ -126,7 +132,7 @@ def _compare_discs(source_fd: int, output_fd: int, size: int) -> tuple[str, str,
                 if values[0] != values[1]:
                     absolute = position + index
                     _require(
-                        ABSOLUTE_SPAN <= absolute < end,
+                        span_absolute <= absolute < end,
                         f"Unauthorized XISO difference at 0x{absolute:x}",
                     )
                     changed += 1
@@ -255,22 +261,30 @@ def verify_stadium_texture_xiso(
         index = source_entries.get(INDEX_PATH.casefold())
         xbe = source_entries.get("default.xbe")
         _require(len(files) == FILE_COUNT, "XDVDFS file count changed")
-        _require(pack is not None and (pack.sector, pack.size) == (PACK_SECTOR, PACK_SIZE),
+        # Sizes, not sectors: the sector is where one build of the image put
+        # the file, and the same pack sits elsewhere in a raw dump or a rebuild.
+        _require(pack is not None and pack.size == PACK_SIZE,
                  "XDVDFS volume 9 extent changed")
-        _require(index is not None and (index.sector, index.size) == (INDEX_SECTOR, INDEX_SIZE),
+        _require(index is not None and index.size == INDEX_SIZE,
                  "XDVDFS volume 0 extent changed")
         _require(xbe is not None and xbe.size == xiso.EXPECTED_XBE_SIZE,
                  "default.xbe extent changed")
-        _require(pack.byte_offset + CHUNK_PACK_OFFSET == ABSOLUTE_SPAN,
+        span_absolute = pack.byte_offset + CHUNK_PACK_OFFSET
+        _require(CHUNK_PACK_OFFSET + CHUNK_SPAN_SIZE <= pack.size,
                  "Authorized SCNE absolute offset changed")
 
         source_sha, output_sha, complete_changed = _compare_discs(
-            source_fd, output_fd, source_info.st_size
+            source_fd, output_fd, source_info.st_size, span_absolute
         )
-        _require(source_sha == xiso.EXPECTED_XISO_SHA256,
-                 "Retail source XISO hash mismatch")
-        retail_span = xiso.read_exact(source_fd, ABSOLUTE_SPAN, CHUNK_SPAN_SIZE)
-        output_span = xiso.read_exact(output_fd, ABSOLUTE_SPAN, CHUNK_SPAN_SIZE)
+        # The container is not pinned (a raw dump and an extracted .xiso are
+        # the same game with different wrappers); the game bytes are: pack 9
+        # and default.xbe are hashed against retail right here.
+        _require(_digest_fd(source_fd, pack.byte_offset, pack.size) == PACK_SHA256,
+                 "Retail source XISO volume 9 hash mismatch")
+        _require(_digest_fd(source_fd, xbe.byte_offset, xbe.size) == xiso.EXPECTED_XBE_SHA256,
+                 "Retail source default.xbe hash mismatch")
+        retail_span = xiso.read_exact(source_fd, span_absolute, CHUNK_SPAN_SIZE)
+        output_span = xiso.read_exact(output_fd, span_absolute, CHUNK_SPAN_SIZE)
         _require(_sha256(retail_span) == SOURCE_SPAN_SHA256,
                  "Retail source SCNE span hash mismatch")
         _require(output_span != retail_span, "Output stadium texture span is a no-op")
@@ -375,10 +389,11 @@ def verify_stadium_texture_xiso(
         _require(isinstance(resource, dict), "Manifest resource record is invalid")
         expected_resource_fixed = {
             "pack_path": PACK_PATH,
-            "pack_sector": PACK_SECTOR,
+            "pack_sector": pack.sector,
+            "pack_byte_offset": pack.byte_offset,
             "pack_size": PACK_SIZE,
             "pack_span_offset": CHUNK_PACK_OFFSET,
-            "absolute_xiso_span": ABSOLUTE_SPAN,
+            "absolute_xiso_span": span_absolute,
             "span_size": CHUNK_SPAN_SIZE,
             "source_span_sha256": SOURCE_SPAN_SHA256,
             "replacement_span_sha256": _sha256(output_span),
@@ -478,7 +493,7 @@ def verify_stadium_texture_xiso(
         "mip_rgba_sha256": mip_hashes,
         "encoded_bytes": encoded_bytes,
         "scratch_after": scratch_after,
-        "absolute_span_offset": ABSOLUTE_SPAN,
+        "absolute_span_offset": span_absolute,
         "span_size": CHUNK_SPAN_SIZE,
         "xdvdfs_tree_exact": True,
         "outside_authorized_span_exact": True,

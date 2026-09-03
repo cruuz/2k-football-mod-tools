@@ -30,6 +30,8 @@ INDEX_SECTOR = 796_479
 FILE_COUNT = 19
 SPAN_OFFSET = subset_verify.CHUNK_START
 SPAN_SIZE = subset_verify.CHUNK_SPAN
+# Retail-rip provenance only (pack 9 at sector 35,531 of an extracted .xiso); the verifier
+# addresses the span through the images' own XDVDFS directory.
 ABSOLUTE_SPAN = PACK_SECTOR * xiso_format.SECTOR_SIZE + SPAN_OFFSET
 MAX_MANIFEST = 64 * 1024
 BLOCK = 16 * 1024 * 1024
@@ -104,10 +106,10 @@ def ledger(before: bytes, after: bytes) -> dict[str, object]:
     }
 
 
-def compare_full(source_fd: int, output_fd: int, size: int) -> int:
+def compare_full(source_fd: int, output_fd: int, size: int, absolute: int) -> int:
     position = 0
     changed = 0
-    end = ABSOLUTE_SPAN + SPAN_SIZE
+    end = absolute + SPAN_SIZE
     while position < size:
         request = min(BLOCK, size - position)
         left = os.pread(source_fd, request, position)
@@ -116,9 +118,8 @@ def compare_full(source_fd: int, output_fd: int, size: int) -> int:
         if left != right:
             for index, values in enumerate(zip(left, right)):
                 if values[0] != values[1]:
-                    absolute = position + index
-                    require(ABSOLUTE_SPAN <= absolute < end,
-                            f"unauthorized XISO difference at 0x{absolute:x}")
+                    require(absolute <= position + index < end,
+                            f"unauthorized XISO difference at 0x{position + index:x}")
                     changed += 1
         position += request
     return changed
@@ -200,13 +201,14 @@ def verify(
         pack = source_entries.get(PACK_PATH.casefold())
         index = source_entries.get(INDEX_PATH.casefold())
         xbe = source_entries.get("default.xbe")
-        require(pack is not None and (pack.sector, pack.size) ==
-                (PACK_SECTOR, subset_verify.PACK_SIZE), "volume 9 extent mismatch")
-        require(index is not None and (index.sector, index.size) ==
-                (INDEX_SECTOR, subset_verify.INDEX_SIZE), "volume 0 extent mismatch")
+        require(pack is not None and pack.size == subset_verify.PACK_SIZE,
+                "volume 9 extent mismatch")
+        require(index is not None and index.size == subset_verify.INDEX_SIZE,
+                "volume 0 extent mismatch")
         require(xbe is not None and xbe.size == xiso_format.EXPECTED_XBE_SIZE,
                 "default.xbe extent mismatch")
-        require(pack.byte_offset + SPAN_OFFSET == ABSOLUTE_SPAN,
+        span_absolute = pack.byte_offset + SPAN_OFFSET
+        require(SPAN_OFFSET + SPAN_SIZE <= pack.size,
                 "authorized absolute span arithmetic mismatch")
         require(digest_fd(source_fd, pack.byte_offset, pack.size) == subset_verify.PACK_SHA256,
                 "retail XISO volume 9 hash mismatch")
@@ -216,8 +218,8 @@ def verify(
                 digest_fd(output_fd, xbe.byte_offset, xbe.size) ==
                 xiso_format.EXPECTED_XBE_SHA256, "default.xbe differs")
 
-        retail_span = xiso_format.read_exact(source_fd, ABSOLUTE_SPAN, SPAN_SIZE)
-        output_span = xiso_format.read_exact(output_fd, ABSOLUTE_SPAN, SPAN_SIZE)
+        retail_span = xiso_format.read_exact(source_fd, span_absolute, SPAN_SIZE)
+        output_span = xiso_format.read_exact(output_fd, span_absolute, SPAN_SIZE)
         changed_span = xiso_format.read_exact(changed_fd, SPAN_OFFSET, SPAN_SIZE)
         require(hashlib.sha256(retail_span).hexdigest() == subset_verify.SOURCE_SPAN_SHA256,
                 "retail SCNE span hash mismatch")
@@ -225,7 +227,7 @@ def verify(
                 "output XISO does not contain the verified changed SCNE span")
         derived_ledger = ledger(retail_span, output_span)
         require(derived_ledger["changed_byte_count"] > 0, "XISO subset span is a no-op")
-        require(compare_full(source_fd, output_fd, source_info.st_size) ==
+        require(compare_full(source_fd, output_fd, source_info.st_size, span_absolute) ==
                 derived_ledger["changed_byte_count"], "full-disc difference count mismatch")
         output_pack_sha = digest_fd(output_fd, pack.byte_offset, pack.size)
         require(output_pack_sha == changed_sha,
@@ -252,7 +254,7 @@ def verify(
             "path": PACK_PATH, "pack_sector": pack.sector,
             "pack_byte_offset": pack.byte_offset, "pack_size": pack.size,
             "pack_span_offset": SPAN_OFFSET, "span_size": SPAN_SIZE,
-            "absolute_span_offset": ABSOLUTE_SPAN,
+            "absolute_span_offset": span_absolute,
             "source_span_sha256": hashlib.sha256(retail_span).hexdigest(),
             "replacement_span_sha256": hashlib.sha256(output_span).hexdigest(),
             "source_pack_sha256": subset_verify.PACK_SHA256,
@@ -299,7 +301,7 @@ def verify(
         "changed_volume_sha256": changed_sha,
         "changed_byte_count": derived_ledger["changed_byte_count"],
         "changed_run_count": derived_ledger["changed_run_count"],
-        "absolute_span_offset": ABSOLUTE_SPAN,
+        "absolute_span_offset": span_absolute,
         "span_size": SPAN_SIZE,
         "xdvdfs_tree_exact": True,
         "outside_authorized_span_exact": True,

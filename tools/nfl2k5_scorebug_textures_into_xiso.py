@@ -48,6 +48,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
+import nfl_uniform_color_xiso_direct_patch as xc  # noqa: E402
 from nfl_scorebug_png_import import DEFAULT_AUDIT, build_import  # noqa: E402
 
 DEFAULT_INDEX = Path(os.environ.get("NFL2K5_RETAIL_INDEX", "retail-packs/0"))   # extracted pack index, developer machines only
@@ -73,10 +74,23 @@ def main() -> int:
     receipts = []
     fd = os.open(args.xiso, os.O_RDWR | getattr(os, "O_BINARY", 0))
     try:
+        image_size = os.fstat(fd).st_size
+        pack_extents: dict[str, tuple[int, int]] = {}
         for name, png in jobs:
             replacement, _preview, value = build_import(Path(args.index), Path(args.audit), name, Path(png))
             target = value["target"]
-            absolute = int(target["xiso_absolute_span_offset"])
+            # The audit's xiso_absolute_span_offset is where the span sat in the rip the audit was
+            # taken on.  This image may lay its packs out differently, so the pack is resolved
+            # through ITS directory and only the pack-relative offset is trusted.
+            pack_path = str(target.get("xiso_pack_path") or target.get("pack_path") or "vc_53450030/0")
+            if pack_path not in pack_extents:
+                pack_extents[pack_path] = xc.pack_extent(fd, image_size, pack_path)
+            pack_offset, pack_size = pack_extents[pack_path]
+            audited_size = int(target.get("xiso_pack_size") or target.get("pack_size") or 0)
+            if audited_size and audited_size != pack_size:
+                raise SystemExit(f"{name}: {pack_path} in {args.xiso} is {pack_size} bytes, "
+                                 f"not the audited {audited_size}")
+            absolute = pack_offset + int(target["pack_offset"])
             current = _pread(fd, len(replacement), absolute)
             # Keep the wrapper retail: refill the stream to the stored body instead of raising the
             # in-place scratch word (the loader hangs on large raised values; see nfl_vc_lz_fill).
@@ -101,7 +115,8 @@ def main() -> int:
                 _pwrite(fd, replacement, absolute)
                 if _pread(fd, len(replacement), absolute) != replacement:
                     raise SystemExit(f"{name}: readback failed")
-            receipts.append({"target": name, "png": str(png), "absolute": absolute, "span_size": len(replacement),
+            receipts.append({"target": name, "png": str(png), "absolute": absolute, "pack_byte_offset": pack_offset,
+                             "span_size": len(replacement),
                              "state_before": state, "span_sha256_after": sha(replacement),
                              "quantization": value.get("quantization") or value.get("import", {}).get("quantization")})
         os.fsync(fd)

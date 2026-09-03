@@ -121,13 +121,12 @@ class UpperDeckSubsetXisoTests(unittest.TestCase):
                     with self.assertRaisesRegex(writer.UpperDeckSubsetXisoError, "outside"):
                         writer._compare_complete_xisos(left, right, 64, 16, expected)
                 with (
-                    mock.patch.object(verifier, "ABSOLUTE_SPAN", 16),
                     mock.patch.object(verifier, "SPAN_SIZE", 8),
                     mock.patch.object(verifier, "BLOCK", 7),
                 ):
                     with self.assertRaisesRegex(verifier.UpperDeckSubsetXisoVerifyError,
                                                 "unauthorized"):
-                        verifier.compare_full(left, right, 64)
+                        verifier.compare_full(left, right, 64, 16)
             finally:
                 os.close(left)
                 os.close(right)

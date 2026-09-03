@@ -222,6 +222,12 @@ DEFAULT_INDEX = ownership.DEFAULT_INDEX
 DEFAULT_INVENTORY = ownership.DEFAULT_INVENTORY
 INDEX_SIZE = ownership.INDEX_SIZE
 INDEX_SHA256 = ownership.INDEX_SHA256
+# Where pack 0 sat in the pinned retail rip the audits were taken on (sector 796,479 of an
+# extracted .xiso).  Provenance for target records ONLY: bind_prepared_to_source() derives every
+# absolute offset from the pack's position in the image actually being built, because a raw dump
+# or a rebuilt image puts the same pack somewhere else entirely.
+RETAIL_PACK0_SECTOR = common.RETAIL_PACK_SECTORS["0"]
+RETAIL_PACK0_BYTE_OFFSET = RETAIL_PACK0_SECTOR * common.SECTOR_SIZE
 INVENTORY_SIZE = ownership.INVENTORY_SIZE
 INVENTORY_SHA256 = ownership.INVENTORY_SHA256
 MAX_PROJECT_BYTES = 64 * 1024 * 1024
@@ -1735,7 +1741,7 @@ def build_team_identity_imports(edit: dict[str, Any], audit_path: Path) \
                 f"team_identity {field} retail UTF-16 allocation changed")
         body_offset = int(record["body_string_offset"])
         pack_offset = ROST_OUTER_PACK_OFFSET + ROST_WRAPPER_SIZE + body_offset
-        absolute = 1_631_188_992 + pack_offset
+        absolute = RETAIL_PACK0_BYTE_OFFSET + pack_offset
         selector = f"team:{team_index}:{field}"
         target = {
             "selector": selector,
@@ -1751,8 +1757,8 @@ def build_team_identity_imports(edit: dict[str, Any], audit_path: Path) \
             "roster_size": int(team["roster_size"]),
             "stadium_index": int(team["stadium_index"]),
             "xiso_pack_path": "vc_53450030/0",
-            "xiso_pack_sector": 796_479,
-            "xiso_pack_byte_offset": 1_631_188_992,
+            "xiso_pack_sector": RETAIL_PACK0_SECTOR,
+            "xiso_pack_byte_offset": RETAIL_PACK0_BYTE_OFFSET,
             "xiso_pack_size": INDEX_SIZE,
             "xiso_pack_sha256": INDEX_SHA256,
             "pack_offset": pack_offset,
@@ -1883,8 +1889,8 @@ def build_player_roster_imports(edit: dict[str, Any], audit_path: Path) \
         "replacement_jersey_number": new_number,
         "replacement_jersey_word": f"0x{after_word:08x}",
         "xiso_pack_path": "vc_53450030/0",
-        "xiso_pack_sector": 796_479,
-        "xiso_pack_byte_offset": 1_631_188_992,
+        "xiso_pack_sector": RETAIL_PACK0_SECTOR,
+        "xiso_pack_byte_offset": RETAIL_PACK0_BYTE_OFFSET,
         "xiso_pack_size": INDEX_SIZE,
         "xiso_pack_sha256": INDEX_SHA256,
     }
@@ -1909,7 +1915,7 @@ def build_player_roster_imports(edit: dict[str, Any], audit_path: Path) \
             "body_string_offset": body_offset,
             "allocation_bytes": len(before), "before": before_text,
             "after": after_text, "pack_offset": pack_offset,
-            "xiso_absolute_span_offset": 1_631_188_992 + pack_offset,
+            "xiso_absolute_span_offset": RETAIL_PACK0_BYTE_OFFSET + pack_offset,
             "span_sha256": digest(before),
         }
         report = {
@@ -1948,7 +1954,7 @@ def build_player_roster_imports(edit: dict[str, Any], audit_path: Path) \
         "record_field_offset": PLAYER_JERSEY_FIELD,
         "body_field_offset": body_offset, "allocation_bytes": 4,
         "pack_offset": pack_offset,
-        "xiso_absolute_span_offset": 1_631_188_992 + pack_offset,
+        "xiso_absolute_span_offset": RETAIL_PACK0_BYTE_OFFSET + pack_offset,
         "span_sha256": digest(before),
     }
     report = {
@@ -2002,12 +2008,12 @@ def _roster_span_target(
         "body_offset": body_offset,
         "allocation_bytes": len(before),
         "xiso_pack_path": "vc_53450030/0",
-        "xiso_pack_sector": 796_479,
-        "xiso_pack_byte_offset": 1_631_188_992,
+        "xiso_pack_sector": RETAIL_PACK0_SECTOR,
+        "xiso_pack_byte_offset": RETAIL_PACK0_BYTE_OFFSET,
         "xiso_pack_size": INDEX_SIZE,
         "xiso_pack_sha256": INDEX_SHA256,
         "pack_offset": pack_offset,
-        "xiso_absolute_span_offset": 1_631_188_992 + pack_offset,
+        "xiso_absolute_span_offset": RETAIL_PACK0_BYTE_OFFSET + pack_offset,
         "span_sha256": digest(before),
     }
 
@@ -2602,14 +2608,14 @@ def build_one_import(order: int, edit: dict[str, Any], project: ProjectFile,
         proof_target = dict(raw_target)
         proof_target.update({
             "xiso_pack_path": "vc_53450030/0",
-            "xiso_pack_sector": 796_479,
-            "xiso_pack_byte_offset": 1_631_188_992,
+            "xiso_pack_sector": RETAIL_PACK0_SECTOR,
+            "xiso_pack_byte_offset": RETAIL_PACK0_BYTE_OFFSET,
             "xiso_pack_size": INDEX_SIZE,
             "xiso_pack_sha256": INDEX_SHA256,
             "pack_offset": (int(raw_target["pack_offset"]) +
                             int(raw_target["chunk_offset"])),
             "xiso_absolute_span_offset": (
-                1_631_188_992 + int(raw_target["pack_offset"]) +
+                RETAIL_PACK0_BYTE_OFFSET + int(raw_target["pack_offset"]) +
                 int(raw_target["chunk_offset"])),
         })
         return (replacement, previews, report,
@@ -4203,7 +4209,10 @@ def validate_ausb_audio_source(
             f"p{target['payload_offset']:010x}"
         )
         and target.get("xiso_pack_path") == edit.pack_path
-        and target.get("xiso_pack_sector") == pack.sector
+        # the recorded sector is where the PREPARING image kept the pack; the
+        # image being built may lay it out differently, so only its type is
+        # checked here and the pack is bound by path, size and content hash
+        and type(target.get("xiso_pack_sector")) is int
         and target.get("xiso_pack_size") == pack.size
         and target.get("pack_offset") == edit.pack_offset
         and target.get("span_sha256") == edit.retail_span_sha256,

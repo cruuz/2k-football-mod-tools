@@ -152,7 +152,6 @@ def run(source_path: Path, output_path: Path, manifest_path: Path,
                 xbe.size == common.EXPECTED_XBE_SIZE and
                 common.sha256_fd(source_fd, xbe.byte_offset, xbe.size) ==
                 common.EXPECTED_XBE_SHA256 and
-                pack.sector == 796479 and pack.byte_offset == 1_631_188_992 and
                 pack.size == 193_710_080 and
                 common.sha256_fd(source_fd, pack.byte_offset, pack.size) ==
                 "34e5665bc53c393ef978b505e0f1d28d457915ba193f96c3a6113ff4b08b8b3d",

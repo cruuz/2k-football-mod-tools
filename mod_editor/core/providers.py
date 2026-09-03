@@ -511,7 +511,7 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "e2cc7bcbc91902e9f2d2dbb1a81dc25b2256c490fb790b258dda13b305e6aadd"
+    backend_module_sha256 = "3e60888ae7e26d87cc9ce80744969cebcf71788838986c957a0c94f1bb02745f"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/errors.py": "4624e80f063f1e7db69ec6c20d2703f01eec49728b02c88792ccb309bd742de0",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
@@ -528,7 +528,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "49c4391884b2e3ed5a3928ab7b85316c2194213cae2892cae769ea807a2e1259",
         "mod_editor/core/nfl2k5_safe_text_banks.py": "c7ea4288611615204f53c40f5da06728bd9e5511eec5ae06711145e509461d48",
         "mod_editor/core/nfl2k5_scorebug_unified_adapter.py": "3307d3b1777fcb51f112dea2c6c5290dd969c3037d5bc21112f9740b7cef9bfd",
-        "mod_editor/core/nfl2k5_source_cache.py": "662f1a9c0be6c73b647ba3850396f1016e10ef1c5227e01a4474d6d679c36731",
+        "mod_editor/core/nfl2k5_source_cache.py": "8c8dff555d422e53cdebfccc7aeec4e10a045bf76fe4a4a9f07a38a30def81c6",
         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
         "mod_editor/core/nfl2k5_p8_texture_writer.py": "3b0d59ff7b81ffc71c22f4ba049b6662cc35c623918a01a163c9a614652fdd9f",
         "mod_editor/core/nfl2k5_crib.py": "b0d93f0035df7fbdcf23cf83c50bad8ffdc4cfbf3ea1041fb589f6117f4bc6fb",
@@ -536,13 +536,13 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_crib_geometry_writer.py": "d1cb53a2e801cfd14c469dc58cf8e433a8045e93e724ed502073a1cb2b8d0d78",
         "mod_editor/core/nfl2k5_crib_scene_texture_writer.py": "4f72f59fab6f116c164a2acafb110829a46eb18dc5abcc5cd2c05978a0f0cdbd",
         "mod_editor/core/nfl2k5_crib_standalone_texture_writer.py": "95cab3bb2d666fa4f4dfddfb25816c443b17a51bb97abbe90d9532a5f117bae6",
-        "mod_editor/core/nfl2k5_playbook_route_writer.py": "9607daa8b63b0afac400c34e82ad98a0253c2dd95b88aa3468aa86e82bd50698",
-        "mod_editor/core/nfl2k5_formation_play_writer.py": "dd808fa33257c4cdc30e3ab5cc74f3fd7834e6ccad77b3c862d67e3f3ec314a7",
+        "mod_editor/core/nfl2k5_playbook_route_writer.py": "87ac9ab729e15c665774223c406a248931b77a05ca2fa258b04e1f0cd06674c5",
+        "mod_editor/core/nfl2k5_formation_play_writer.py": "0405c622e0e8c41cd3f2d0da1945e1c0c5567255ae276894bdef9c400c247472",
         "mod_editor/core/nfl2k5_play_codec.py": "6102d406bb8738ff78f65ce19fa455f0af2284ad27687b3c9b7de5ce9cebf2d2",
         "mod_editor/core/nfl2k5_playbook_inspector.py": "f77f94c4d926d9fb5de55626bec8106e9c7a9b124e0553b724913922d8d3099f",
         "mod_editor/core/nfl2k5_universal_asset_index.py": "3bf99afe588f381d4604a883ad92a5bfbb1bb39391bce4acb5b97eda54bc27d7",
         "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "aea43c39b8101e9507930f6a9014cfebd966189bef1f96c297702bfb62acb7b9",
-        "mod_editor/core/nfl2k5_stadium_texture_writer.py": "4d292f46a4c7e8b590c636b0996ec6db1f7e1aa844d1a461faa372c95d4edc7b",
+        "mod_editor/core/nfl2k5_stadium_texture_writer.py": "94c8a6171b7500fc2685205a184a6fa5443b767ac240bf6c89eedf62a3273506",
         "mod_editor/core/nfl2k5_build_service.py": "49b01dac2da660b2c582bee57765fc4abbfdb68a2cd0efe287dbb9097c344cee",
         "mod_editor/core/nfl2k5_stadium_cache.py": "24bc748223ba18aaad0f1c8347fddd9967a2c5a01dd5caaa2e843985ca00349e",
         "mod_editor/core/nfl2k5_stadium_studio.py": "abd1e509605686f9f1e53b5b1fbcd29bf28f8b1ddd20828081c089169f8d0e32",
@@ -591,7 +591,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl_tset_png_import_xiso_generic_patch.py": "a84699a55b7e34ff49a28913a7b892ce673fac4b78d427929683c2afc0c68cc2",
         "tools/nfl_txtr.py": "0896e3f409f38116602d37a8902f1403e8afe6ad9e17e9ee9d36244ae97a5107",
         "tools/xbox_ima_encoder.py": "995e5c217c0a78bb3713f1d91db3dfde53da101e23519e2b3b47751c394b1e7c",
-        "tools/nfl_uniform_color_xiso_direct_patch.py": "8615a75b2943a119c8cc9244f4934a7eb9c95610dd0d8431ff7cf3dfb5977d06",
+        "tools/nfl_uniform_color_xiso_direct_patch.py": "bbd4f5147d19afe3ad3ff0079c5bc0693108b58956bed74444c659718aef4ceb",
         "tools/nfl_uniform_inventory.py": "d991b5a509d3fc44f61546eef418fa37b121eb1b669fac488db083024a2ec037",
         "tools/string_table_inventory.py": "88877c5c83d75382a7b349390b2babbe724da88927f53c916056eb88622d1ea4",
         "tools/xbe_info.py": "c7843c317a7ec022bc22ee6266b96d856b57233af2d6baa71ec071a94212e0ef",
@@ -1118,7 +1118,7 @@ class Nfl2k5ScorebugProvider:
         "tools/nfl_scorebug_png_import.py": "c1162c7167433776790b0db5a0518f14bd0d648efc86e3008732ab770327dd37",
         "tools/nfl_tset_png_import.py": "1b77ac19044424c73ed4402b9c2a6d0761c462b9ecd8000de3894c8640d88a4c",
         "tools/nfl_txtr.py": "0896e3f409f38116602d37a8902f1403e8afe6ad9e17e9ee9d36244ae97a5107",
-        "tools/nfl_uniform_color_xiso_direct_patch.py": "8615a75b2943a119c8cc9244f4934a7eb9c95610dd0d8431ff7cf3dfb5977d06",
+        "tools/nfl_uniform_color_xiso_direct_patch.py": "bbd4f5147d19afe3ad3ff0079c5bc0693108b58956bed74444c659718aef4ceb",
         "tools/nfl_uniform_inventory.py": "d991b5a509d3fc44f61546eef418fa37b121eb1b669fac488db083024a2ec037",
         "tools/xbe_info.py": "c7843c317a7ec022bc22ee6266b96d856b57233af2d6baa71ec071a94212e0ef",
     }
