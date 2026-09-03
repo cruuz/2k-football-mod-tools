@@ -1,4 +1,10 @@
-# next — stacked, unreleased
+# beta-56 — RC80 / alpha.84
+
+**Date:** 2026-09-03
+
+**2K5 Mod Studio:** `v1.0-RC80`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
 
 ## New: ★ Models — every model out to Blender and back
 

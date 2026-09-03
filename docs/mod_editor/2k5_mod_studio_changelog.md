@@ -1,6 +1,6 @@
 # 2K5 Mod Studio — Product Changelog
 
-## Unreleased (stacked for the next beta) — ★ Models: export any model to Blender and back
+## v1.0 RC80 — ★ Models: export any model to Blender and back (2026-09-03)
 
 - **New: ★ Models.** Every 3D model on the loaded disc (players, helmets and face
   masks, balls, referees, coaches, cheerleaders, crowds, props, the Crib, menus,
