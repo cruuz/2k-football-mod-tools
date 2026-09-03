@@ -91,6 +91,10 @@ class BuildPlan:
     # aspect_ratio = '16x9'. Opt-in only (not in a preset) until witnessed in game.
     widescreen: bool = False
     overtime: bool = False        # 2025+ NFL overtime: both teams possess, 10-min regular season w/ ties, playoffs to a winner
+    # 7-on-7 practice: a fifth Practice Type (Practice -> Scrimmage -> Practice Type -> 7-On-7) that plays as
+    # Full Scrimmage with the practice book loaded for both teams, plus the 7-on-7 sets/plays written into
+    # PRACTICE-pb.iff (linemen parked at the sideline, a 4-second timer rusher); needs a disc image; unwitnessed
+    seven_on_seven: bool = False
     # text
     edge_rename: bool = False
     # presentation
@@ -104,7 +108,7 @@ class BuildPlan:
     def wants_xbe_patch(self) -> bool:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
                 or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools
-                or self.season_2026 or self.widescreen or self.overtime)
+                or self.season_2026 or self.widescreen or self.overtime or self.seven_on_seven)
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -125,7 +129,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
         "edge_rename": False, "scorebug": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False,
-        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False,
+        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "seven_on_seven": False,
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
@@ -133,7 +137,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False,
-        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True,
+        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "seven_on_seven": False,
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
@@ -141,7 +145,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True,
-        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True,
+        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "seven_on_seven": True,
     },
 }
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
@@ -175,6 +179,8 @@ def availability() -> dict[str, bool]:
         "kickoff_alignment": _tools_module("nfl2k5_kickoff_alignment") is not None,
         "widescreen": _core_module("nfl2k5_widescreen") is not None,
         "overtime": _core_module("nfl2k5_overtime") is not None,
+        "seven_on_seven": (_core_module("nfl2k5_seven_on_seven") is not None
+                           and _core_module("nfl2k5_seven_on_seven_book") is not None),
         "season_2026": (_core_module("nfl2k5_season_length") is not None
                         and _tools_module("nfl2k5_franchise_schedule") is not None
                         and (ROOT / "data" / "nfl_2026_schedule.json").exists()),
@@ -202,6 +208,7 @@ def inspect(source: Path | str) -> dict[str, Any]:
         "scheme_labels": report.get("scheme_labels", "unknown"), "camera": report.get("camera", "unknown"),
         "kick_rules": report.get("kick_rules", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
         "overtime": report.get("overtime", "unknown"),
+        "seven_on_seven": report.get("seven_on_seven", "unknown"), "seven_on_seven_book": "n/a",
         "position_pools": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
         "scorebug": "n/a", "edge_rename": "unknown", "commentary": "unknown",
     }
@@ -230,6 +237,12 @@ def inspect(source: Path | str) -> dict[str, Any]:
                 out["scorebug"] = sbl.status(source)
             except Exception:  # noqa: BLE001
                 out["scorebug"] = "foreign"
+        book = _core_module("nfl2k5_seven_on_seven_book")
+        if book is not None:
+            try:
+                out["seven_on_seven_book"] = book.status(source)
+            except Exception:  # noqa: BLE001
+                out["seven_on_seven_book"] = "foreign"
     if "edge_rename" in report:
         out["edge_rename"] = report.get("edge_rename")
         out["edge_rename_disc"] = report.get("edge_rename_disc")
@@ -296,6 +309,8 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         raise ValueError("the 2026 season needs a disc image (the schedule template lives in pack 0)")
     if plan.kickoff_alignment and not is_image:
         raise ValueError("the dynamic-kickoff alignment needs a disc image (the formations live in the playbooks)")
+    if plan.seven_on_seven and not is_image:
+        raise ValueError("7-on-7 practice needs a disc image (the 7-on-7 sets live in the practice playbook)")
 
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
     #    including its disc text spans when the source is an image)
@@ -308,11 +323,11 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
                                   "returner_fix": plan.returner_fix, "progression": plan.progression,
                                   "scheme_labels": plan.scheme_labels or plan.position_pools,
                                   "camera": plan.camera, "kick_rules": plan.kick_rules, "kick_power": plan.kick_power, "widescreen": plan.widescreen,
-                                  "overtime": plan.overtime}
+                                  "overtime": plan.overtime, "seven_on_seven": plan.seven_on_seven}
         if settings is not None:
             kwargs["settings"] = settings
         step = tt.write_copy(source, target, **kwargs)
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "widescreen", "overtime", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "widescreen", "overtime", "seven_on_seven", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
@@ -359,6 +374,13 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         align_receipt = align.apply(target, progress=lambda msg: progress(msg, 0, 0))
         receipt["steps"].append({"step": "kickoff_alignment",
                                  **{k: align_receipt[k] for k in ("status", "kicker_depth_yd", "changed_bytes", "books")}})
+    if plan.seven_on_seven:
+        book = _core_module("nfl2k5_seven_on_seven_book")
+        if book is None:
+            raise RuntimeError("the 7-on-7 practice book module is not available in this build")
+        progress("Writing the 7-on-7 sets into the practice playbook", 0, 0)
+        book_receipt = book.apply(target, progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "seven_on_seven_book", **{k: v for k, v in book_receipt.items() if k != "formations"}})
     if plan.season_2026:
         season = _core_module("nfl2k5_season_length")
         fs = _tools_module("nfl2k5_franchise_schedule")

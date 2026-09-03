@@ -78,6 +78,13 @@ PATCHES = (
      "the Standard preset take Far's look-at, lens and offset words, so a profile left on Standard gets the "
      "Far view. Far itself, the kick, replay and other presets are untouched; the fresh-profile default stays "
      "Standard."),
+    ("seven_on_seven", "7-on-7 practice mode",
+     "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
+     "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "
+     "the pass rush off; the practice book gains three 7-on-7 passing sets (Trips, Spread, Ace: QB, a centre to snap, "
+     "five skill players) with nine pass concepts and two coverage sets (4-3 and Nickel looks) with six coverages. The "
+     "engine always fields eleven, so the four linemen of each side stand idle at the sideline by design, and one "
+     "parked defender rushes after a 4-second count as the throw timer. Needs a disc image; unwitnessed in game."),
 )
 
 

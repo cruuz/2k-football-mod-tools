@@ -25,6 +25,7 @@ from mod_editor.core import nfl2k5_accel_ramp as accel  # noqa: E402
 from mod_editor.core import nfl2k5_draft_ai as draft  # noqa: E402
 from mod_editor.core import nfl2k5_progression as progression  # noqa: E402
 from mod_editor.core import nfl2k5_returner_fix as returner  # noqa: E402
+from mod_editor.core import nfl2k5_seven_on_seven as seven  # noqa: E402
 from mod_editor.core import nfl2k5_throw_tuning as tt  # noqa: E402
 
 IMAGE_BASE = strength.IMAGE_BASE
@@ -87,6 +88,9 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
     buf[TEXT_RAW + (returner.SITE_VA - TEXT_VA): TEXT_RAW + (returner.SITE_VA - TEXT_VA) + returner.SITE_SIZE] = returner.RETAIL_SITE
     buf[TEXT_RAW + (accel.HOOK_VA - TEXT_VA): TEXT_RAW + (accel.HOOK_VA - TEXT_VA) + len(accel.RETAIL_HOOK)] = accel.RETAIL_HOOK
     for va, retail in ((catch.HOOK_VA, catch.RETAIL_HOOK), (catch.CEIL_SITES[0], catch.RETAIL_CEIL), (catch.CEIL_SITES[1], catch.RETAIL_CEIL)):
+        off = TEXT_RAW + (va - TEXT_VA)
+        buf[off: off + len(retail)] = retail
+    for _label, va, retail, _patched in seven.sites():      # the 7-on-7 practice sites (all in .text)
         off = TEXT_RAW + (va - TEXT_VA)
         buf[off: off + len(retail)] = retail
     for name, curve in tt.CURVES.items():

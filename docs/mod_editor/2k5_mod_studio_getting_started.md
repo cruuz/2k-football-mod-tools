@@ -921,3 +921,17 @@ dynamic-kickoff line-up. Untick anything you do not want, choose where the
 patched **copy** goes, and Build. The original is never touched; a receipt is
 written beside the copy. The **Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
+
+## 7-on-7 practice mode (RC81, Experimental)
+
+Tick **7-on-7 practice mode** on Gameplay Patches or Build (the Experimental preset
+ticks it; it needs a disc image), build the copy, then in game go **Practice → Scrimmage →
+Practice Type → 7-On-7** (press right past Kickoff) and Start. The mode plays as Full
+Scrimmage with the practice playbook loaded for both teams, the way Basic Training loads
+it, so the play-call screens list the three 7-on-7 passing sets (Trips, Spread, Ace) and
+the two coverage sets (Cover 43, Nickel) beside the retail practice plays. ESPN NFL 2K5
+always fields eleven a side, so the eight linemen (four per side) stand idle at the
+sideline by design; the offence keeps a real centre to snap. One parked defender rushes
+after a 4-second count: throw before he arrives. Power Pocket behaviour is on while the
+mode is selected. Unwitnessed in game: the parked linemen staying still, the sideline
+spots, the 4-second delay, and whether the Practice Type row shows the new name.
