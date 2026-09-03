@@ -486,7 +486,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     receipt = apply(args.path, three_four=split(args.three_four), four_three=split(args.four_three),
                     historic=not args.no_historic, progress=print)
     if args.receipt:
-        Path(args.receipt).write_text(json.dumps(receipt, indent=1), encoding="utf-8")
+        Path(args.receipt).write_text(json.dumps(receipt, indent=1), encoding="utf-8", newline="\n")
     print(json.dumps({k: receipt[k] for k in ("status", "totals", "changed_bytes")}, indent=1))
     return 0
 

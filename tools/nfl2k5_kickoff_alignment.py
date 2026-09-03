@@ -302,7 +302,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     receipt = apply(args.path, kicker_depth_yd=args.kicker_depth_yd, progress=print)
     if args.receipt:
-        Path(args.receipt).write_text(json.dumps(receipt, indent=1), encoding="utf-8")
+        Path(args.receipt).write_text(json.dumps(receipt, indent=1), encoding="utf-8", newline="\n")
     print(json.dumps({k: receipt[k] for k in ("status", "kicker_depth_yd", "changed_bytes", "books")}, indent=1))
     return 0
 

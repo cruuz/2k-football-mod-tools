@@ -421,11 +421,20 @@ class _Task(QRunnable):
 class SoundsPanel(QWidget):
     """One WAV into a rotating bank slot (every sub-bank by default) or a standalone cue, in a copy."""
 
+    def wait_idle(self, timeout_ms: int = 30_000) -> bool:
+        """Block until the background task (source load / export / write) has finished; True when idle."""
+        return bool(self._pool.waitForDone(timeout_ms))
+
+    def closeEvent(self, event) -> None:  # noqa: N802 - Qt naming
+        self.wait_idle()
+        super().closeEvent(event)
+
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._facade = facade
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
+        self._pool.setMaxThreadCount(1)
         self._busy = False
         self._catalog: SoundCatalog | None = None
         self._catalog_cache: dict[Path, SoundCatalog] = {}

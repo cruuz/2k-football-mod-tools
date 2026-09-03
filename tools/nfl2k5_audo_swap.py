@@ -536,7 +536,7 @@ def export_records(disc: AudoDisc, records, out_dir: Path) -> list[dict[str, obj
         write_wav(out_dir / name, pcm, record.channels, record.sample_rate)
         rows.append({"file": name, "payload_sha256": sha256_bytes(raw),
                      "retail_payload": sha256_bytes(raw) == record.payload_sha256, **resolved.describe()})
-    (out_dir / "manifest.json").write_text(json.dumps(rows, indent=2))
+    (out_dir / "manifest.json").write_text(json.dumps(rows, indent=2), newline="\n")
     return rows
 
 
@@ -596,7 +596,7 @@ def _cmd_replace(args: argparse.Namespace) -> int:
                               fade_ms=args.fade_ms, strict=args.strict, catalog=records)
     text = json.dumps(receipt, indent=2)
     if args.receipt:
-        Path(args.receipt).write_text(text)
+        Path(args.receipt).write_text(text, newline="\n")
     if args.quiet:
         print(f"wrote {receipt['record_count']} record(s): {', '.join(receipt['records'])}")
     else:

@@ -55,7 +55,12 @@ class ModBuildTests(unittest.TestCase):
 
     def test_availability_reports_optional_modules(self) -> None:
         avail = mod_build.availability()
-        self.assertTrue(avail["throw"] and avail["catch_slider"] and avail["scorebug"])
+        self.assertTrue(avail["throw"] and avail["catch_slider"])
+        # the ESPN scorebug needs its repainted art and the retail mesh, which developer trees have and
+        # release trees / CI checkouts deliberately do not: availability must say so, never fail later
+        scorebug_inputs = ((mod_build.ROOT / "mod_editor" / "assets" / "nfl2k5_scorebug_espn" / "shield_espn_modern.png").exists()
+                           and (mod_build.ROOT / "assets" / "intermediate" / "nfl2k5" / "models" / "0346_0078_score_bug.gltf").exists())
+        self.assertEqual(avail["scorebug"], scorebug_inputs)
         self.assertIn("edge_rename", avail)
         self.assertIn("commentary", avail)
 

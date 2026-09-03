@@ -1028,7 +1028,7 @@ def export_samples(disc: SoundBanks, payloads, out_dir: Path) -> list[dict[str, 
         name = f"{payload.bank}_{payload.name}_sb{payload.subbank:02d}.wav"
         write_wav(out_dir / name, pcm, payload.channels, payload.sample_rate)
         rows.append({"file": name, "payload_sha256": sha256_bytes(raw), **payload.describe()})
-    (out_dir / "manifest.json").write_text(json.dumps(rows, indent=2))
+    (out_dir / "manifest.json").write_text(json.dumps(rows, indent=2), newline="\n")
     return rows
 
 
@@ -1179,7 +1179,7 @@ def _cmd_replace(args: argparse.Namespace) -> int:
                               fade_ms=args.fade_ms, strict=args.strict, banks=_banks(args))
     text = json.dumps(receipt, indent=2)
     if args.receipt:
-        Path(args.receipt).write_text(text)
+        Path(args.receipt).write_text(text, newline="\n")
     if args.quiet:
         print(f"wrote {receipt['payload_count']} payload(s): {', '.join(receipt['samples'])} "
               f"in {receipt['bank']['bank']} sub-banks {receipt['subbanks']}")

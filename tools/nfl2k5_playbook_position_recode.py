@@ -674,7 +674,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "apply":
         receipt = apply(args.path, prevent_two_edges=args.prevent_two_edges, progress=print)
         if args.receipt:
-            Path(args.receipt).write_text(json.dumps(receipt, indent=1), encoding="utf-8")
+            Path(args.receipt).write_text(json.dumps(receipt, indent=1), encoding="utf-8", newline="\n")
         print(json.dumps({k: receipt[k] for k in ("status", "changed_bytes", "prevent_two_edges")}, indent=1))
         return 0
     if args.command == "digests":

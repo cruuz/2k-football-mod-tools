@@ -573,7 +573,7 @@ def cmd_inspect(args: argparse.Namespace) -> int:
         report["games"] = f"{len(report['games'])} records (use --games to list)"
     text = json.dumps(report, indent=1)
     if args.out:
-        Path(args.out).write_text(text + "\n", encoding="utf-8")
+        Path(args.out).write_text(text + "\n", encoding="utf-8", newline="\n")
         print(f"wrote {args.out}")
     else:
         print(text)
@@ -629,7 +629,7 @@ def cmd_apply(args: argparse.Namespace) -> int:
                           "sha256_after": sha256(patched_xbe), "status_after": season.status(patched_xbe), **xbe_receipt}
     text = json.dumps(receipt, indent=1)
     if args.receipt:
-        Path(args.receipt).write_text(text + "\n", encoding="utf-8")
+        Path(args.receipt).write_text(text + "\n", encoding="utf-8", newline="\n")
     print(text if not args.receipt else f"wrote {args.receipt}")
     return 0
 

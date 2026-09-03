@@ -689,7 +689,7 @@ def export_streams(disc: DiscBanks, streams, out_dir: Path) -> list[dict[str, ob
         name = f"{stream.bank.name}_{stream.index:05d}.wav"
         write_wav(out_dir / name, pcm, stream.channels, stream.sample_rate)
         rows.append({"file": name, "payload_sha256": sha256_bytes(payload), **stream.describe()})
-    (out_dir / "manifest.json").write_text(json.dumps(rows, indent=2))
+    (out_dir / "manifest.json").write_text(json.dumps(rows, indent=2), newline="\n")
     return rows
 
 
@@ -804,7 +804,7 @@ def transcribe_directory(wav_dir: Path, model_dir: Path, out_path: Path | None =
         rows.append({"file": wav.name, "seconds": round(len(pcm) / 2 / rate, 3),
                      "text": result.get("text", ""), "words": result.get("result", [])})
     if out_path is not None:
-        Path(out_path).write_text(json.dumps(rows, indent=2))
+        Path(out_path).write_text(json.dumps(rows, indent=2), newline="\n")
     return rows
 
 
@@ -875,7 +875,7 @@ def _cmd_replace(args: argparse.Namespace) -> int:
                              expect_sha256=args.expect_sha256, force=args.force, guards=guards)
     text = json.dumps(receipt, indent=2)
     if args.receipt:
-        Path(args.receipt).write_text(text)
+        Path(args.receipt).write_text(text, newline="\n")
     print(text)
     return 0
 

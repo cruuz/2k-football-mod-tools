@@ -124,6 +124,9 @@ class SoundsPanelTests(unittest.TestCase):
         self.panel.audo_records = self.fx.records
 
     def tearDown(self) -> None:
+        # drain the worker before the widget goes: a runnable signalling into a deleted panel crashes Qt on Windows
+        self.panel.wait_idle(20_000)
+        self.app.processEvents()
         self.panel.deleteLater()
         self.app.processEvents()
         self.tmp.cleanup()
@@ -383,6 +386,9 @@ class SoundsPanelTests(unittest.TestCase):
             self.assertEqual(len(panels), 1)
             self.assertIs(panels[0], window._sounds_panel)
         finally:
+            for panel in window.findChildren(SoundsPanel):
+                panel.wait_idle(20_000)
+            self.app.processEvents()
             window.deleteLater()
             self.app.processEvents()
 

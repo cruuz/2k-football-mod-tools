@@ -161,16 +161,18 @@ class QuickShareTests(unittest.TestCase):
     def test_build_receipt_prefills_the_export_and_arms_the_one_click_button(self) -> None:
         panel = SharePanel()
         self.assertFalse(panel.quick_export_button.isEnabled())
-        panel.prefill_from_build({"source": "/tmp/base.xiso.iso", "target": "/tmp/copy (advanced).xiso.iso",
+        base = Path(tempfile.gettempdir()) / "base.xiso.iso"
+        target = Path(tempfile.gettempdir()) / "copy (advanced).xiso.iso"
+        panel.prefill_from_build({"source": str(base), "target": str(target),
                                   "plan": {"name": "SOFTDRINK patch: advanced (everything modern)"}})
-        self.assertEqual(panel.base_field.text(), "/tmp/base.xiso.iso")
-        self.assertEqual(panel.patched_field.text(), "/tmp/copy (advanced).xiso.iso")
-        self.assertTrue(panel.out_field.text().endswith("copy (advanced).2k5patch"))
+        self.assertEqual(Path(panel.base_field.text()), base)
+        self.assertEqual(Path(panel.patched_field.text()), target)
+        self.assertEqual(Path(panel.out_field.text()), target.with_name("copy (advanced).2k5patch"))
         self.assertEqual(panel.name_field.text(), "SOFTDRINK patch: advanced (everything modern)")
         self.assertEqual(panel.version_field.text(), "1")
         self.assertTrue(panel.quick_export_button.isEnabled())
         panel.prefill_from_build({"source": "", "target": ""})   # an empty receipt changes nothing
-        self.assertEqual(panel.base_field.text(), "/tmp/base.xiso.iso")
+        self.assertEqual(Path(panel.base_field.text()), base)
         panel.deleteLater()
         self.app.processEvents()
 
