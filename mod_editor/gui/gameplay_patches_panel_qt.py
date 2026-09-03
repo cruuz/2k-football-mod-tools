@@ -57,6 +57,13 @@ PATCHES = (
      "grow over years 1-5 by rating family and decline harder after year 9-12 (speed first), and each "
      "position's archetype mix is widened so more prospects become stars or busts. Draft-day ratings are "
      "unchanged."),
+    ("team_column", "TEAM column on the franchise Player Card",
+     "Retail: the Player Card lists a player's stats season by season (Yr, Games, ...) but never which team a "
+     "season was played for; only the card's colours show the current team, so a traded veteran's history reads "
+     "as one club. Patch: a TEAM column sits next to Yr (frozen, the stats still scroll). The current season shows "
+     "the live team; every season rollover records the team the player finished it with, so from then on past "
+     "seasons show that club (a mid-season trade shows the season-end team). Seasons that ended before this patch "
+     "was in the save, the folded \"pre\" row and the Total row read \"--\". Franchise saves stay loadable either way."),
     ("kick_rules", "Modern kicking: kickoff from the 35, touchbacks to the 35, PAT from the 15, ~70-yard legs",
      "Retail kicks off from the 30 with touchbacks at the 20, snaps the extra point from the 2, and its "
      "field-goal tables top out near 60 yards for a 99 kicker on a perfect meter. Patch: kickoff spot 35, "

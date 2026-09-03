@@ -1,8 +1,8 @@
-# 2K5 Mod Studio — v1.0 RC80 Release Status
+# 2K5 Mod Studio — v1.0 RC81 Release Status
 
 ## Beta 56 — ★ Models: export any model to Blender and back (2026-09-03)
 
-Source/UI versions are **2K5 RC80** and **APF alpha.84**; both use updater tag
+Source/UI versions are **2K5 RC81** and **APF alpha.84**; both use updater tag
 `beta-56`.
 
 - **★ Models page.** Export any of the 4,616 SCNE models on the loaded disc as

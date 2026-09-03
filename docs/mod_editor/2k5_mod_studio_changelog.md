@@ -31,6 +31,15 @@
   `tests/mod_editor/test_self_update.py` (install-kind detection, asset choice per
   product and layout, sidecar verification, tarball swap + fallback, hostile
   archive refusal, the banner flow off the GUI thread).
+- **TEAM column on the franchise Player Card.** A new executable patch (Build tab, Gameplay
+  Patches page, both SOFTDRINK presets; `.2k5patch` carries it) adds a frozen TEAM column next to
+  Yr on the Player Card's season-by-season stats. The current season shows the live team; every
+  season rollover records the team the player finished the season with (field 87 of the game's own
+  per-player history stream, written through its own writer), so past seasons show that club from
+  then on. Seasons that ended before the patch was in the save, the folded "pre" row and the Total
+  row read "--"; a mid-season trade shows the season-end team. Six column lists get the new
+  pointer in place; the caves live in the unused tail of the dead `FUN_00046ee0` (0x47220..0x47420).
+  Unwitnessed in game; the caves run under unicorn in `tests/mod_editor/test_nfl2k5_team_column.py`.
 
 ## v1.0 RC80 — ★ Models: export any model to Blender and back (2026-09-03)
 

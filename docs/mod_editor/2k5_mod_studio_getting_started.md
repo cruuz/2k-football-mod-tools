@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC80 — Getting Started
+# 2K5 Mod Studio v1.0 RC81 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -921,3 +921,14 @@ dynamic-kickoff line-up. Untick anything you do not want, choose where the
 patched **copy** goes, and Build. The original is never touched; a receipt is
 written beside the copy. The **Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
+
+**TEAM column on the Player Card** (Gameplay group, in both Basic and Advanced): the
+franchise Player Card's season-by-season stats gain a TEAM column next to Yr, showing
+which team each season was played for. The current season shows the player's live
+team; from the first season rollover after the patch is in the save, every completed
+season shows the team the player finished it with. Past seasons of an OLD franchise
+save show "--" until their next rollover (the game never stored a team per season;
+the patch records one from then on), the folded "pre" row and the Total row also
+read "--", and a player traded mid-season shows the season-end team. Saves stay
+loadable with or without the patch. Unwitnessed in game so far: it is executed under
+an emulator in the test suite, so please report what you see.

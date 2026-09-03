@@ -120,7 +120,7 @@ class BuildPanel(QWidget):
         self.preset_basic_button = QPushButton("Basic: the 2004 game, just the 2K5 fixes")
         self.preset_basic_button.setToolTip("Keeps the game in 2004 and ticks only the fixes: throw ceiling 80 with realistic flight, "
                                             "Catching/Interception sliders, franchise draft and free agency AI (Rookie Report never ranks "
-                                            "FB/K/P in the top 25), real returners, kicking power to ~70 yards for elite legs. "
+                                            "FB/K/P in the top 25), real returners, kicking power to ~70 yards for elite legs, the TEAM column on the Player Card. "
                                             "Retail kick spots, names, rules and presentation.")
         self.preset_basic_button.setObjectName("presetButton")
         self.preset_basic_button.clicked.connect(lambda: self.apply_preset("softdrink_basic"))
@@ -170,12 +170,13 @@ class BuildPanel(QWidget):
         self.draft_check = QCheckBox("Realistic, unpredictable CPU drafts and free agency in franchise")
         self.returner_check = QCheckBox("Real kick and punt returners on CPU depth charts (no QB fielding punts)")
         self.progression_check = QCheckBox("NFL-shaped player development (growth, age decline, more stars and busts)")
+        self.team_column_check = QCheckBox("TEAM column on the franchise Player Card's season-by-season stats (which team each season was played for)")
         self.kick_rules_check = QCheckBox("Modern kicking: kickoff 35, touchback 35, PAT from the 15, ~70-yard legs")
         self.kick_power_check = QCheckBox("Kicking power only: ~70-yard legs for elite kickers, retail kick spots (the 2004 game)")
         self.season_check = QCheckBox("2026 franchise: real 2026 schedule + 3-game preseason, 17 games over 18 weeks, 14-team playoffs, 2026 dates and rookie birth years (disc images only)")
         self.overtime_check = QCheckBox("Modern overtime: both teams get a possession, 10 minutes with ties, playoffs play on")
         self.kickoff_alignment_check = QCheckBox("Dynamic kickoff line-up: coverage on the receiving 40, return setup zone 35-30, two returners deep, 5-yd run-up (disc images only; unwitnessed)")
-        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check):
+        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check):
             g.addWidget(box)
         root.addWidget(gameplay)
 
@@ -250,7 +251,7 @@ class BuildPanel(QWidget):
         if isinstance(settings, tt.TuningSettings):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
-                           ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"),
+                           ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"),
                            ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("overtime", "overtime"), ("season_2026", "2026 season"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -278,6 +279,7 @@ class BuildPanel(QWidget):
         gate(self.draft_check, "draft_ai")
         gate(self.returner_check, "returner_fix")
         gate(self.progression_check, "progression")
+        gate(self.team_column_check, "team_column")
         gate(self.kick_rules_check, "kick_rules")
         gate(self.kick_power_check, "kick_power", module="kick_rules")
         self.kick_rules_check.toggled.connect(lambda on: on and self.kick_power_check.setChecked(False))
@@ -306,6 +308,7 @@ class BuildPanel(QWidget):
             "position_pools": self.position_pools_check,
             "kickoff_alignment": self.kickoff_alignment_check,
             "season_2026": self.season_check, "widescreen": self.widescreen_check, "overtime": self.overtime_check,
+            "team_column": self.team_column_check,
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
         applied, skipped = [], []
@@ -345,7 +348,7 @@ class BuildPanel(QWidget):
             position_pools=self.position_pools_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),
             season_2026=self.season_check.isChecked(), widescreen=self.widescreen_check.isChecked(),
-            overtime=self.overtime_check.isChecked(),
+            overtime=self.overtime_check.isChecked(), team_column=self.team_column_check.isChecked(),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
         )
 
@@ -353,7 +356,7 @@ class BuildPanel(QWidget):
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools
-                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.commentary)
+                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.commentary)
 
     def _refresh(self) -> None:
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())
