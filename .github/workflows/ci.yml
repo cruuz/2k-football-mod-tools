@@ -186,7 +186,7 @@ jobs:
           # Per-file wall clock so a single hung test cannot consume the whole
           # 30-minute job and leave us with no summary at all (which is exactly
           # how the first Windows runs died). `timeout` ships with coreutils on
-          # Linux/macOS and with Git-for-Windows bash on windows-latest; if it is
+          # Linux (gtimeout on macOS) and with Git-for-Windows bash on windows-latest; if it is
           # somehow absent we fall back to running without it. Exit 124 = timed
           # out; we record it as a failure with a clear marker.
           # timeout -k 30 also SIGKILLs 30s after SIGTERM. Crucially we write
@@ -196,7 +196,14 @@ jobs:
           # exactly how the Windows/ubuntu jobs stalled to the 30-min limit with
           # no summary). Reading a file with `cat` never blocks on a live writer.
           TMO=""
-          command -v timeout >/dev/null 2>&1 && TMO="timeout -k 30 420"
+          if command -v timeout >/dev/null 2>&1; then
+            TMO="timeout -k 30 420"
+          elif command -v gtimeout >/dev/null 2>&1; then
+            # macOS has no timeout(1); Homebrew coreutils on the hosted image
+            # installs it as gtimeout. Without this a hung Qt test ran the
+            # macOS job into the 30-minute limit with no summary.
+            TMO="gtimeout -k 30 420"
+          fi
           OUTF="$(mktemp)"
 
           for f in tests/mod_editor/test_*.py; do

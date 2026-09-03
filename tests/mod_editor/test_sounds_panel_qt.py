@@ -370,10 +370,18 @@ class SoundsPanelTests(unittest.TestCase):
         with self.assertRaises(SoundsError):
             module.perform_write(source, alias, BANK, "tip_01", clip, self.fx.disc.retail_packs,
                                  banks=self.fx.banks, audo_records=self.fx.records)
-        relative = Path(os.path.relpath(source, Path.cwd()))
-        with self.assertRaises(SoundsError):
-            module.perform_write(source, relative, BANK, "tip_01", clip, self.fx.disc.retail_packs,
-                                 banks=self.fx.banks, audo_records=self.fx.records)
+        # The same file spelled relative to the cwd. Resolve from the temp dir, not the checkout: Windows
+        # CI keeps the two on different drives (C: vs D:), where relpath() has no answer and raises.
+        previous_cwd = Path.cwd()
+        os.chdir(self.dir)
+        try:
+            relative = Path(os.path.relpath(source, self.dir))
+            self.assertFalse(relative.is_absolute())
+            with self.assertRaises(SoundsError):
+                module.perform_write(source, relative, BANK, "tip_01", clip, self.fx.disc.retail_packs,
+                                     banks=self.fx.banks, audo_records=self.fx.records)
+        finally:
+            os.chdir(previous_cwd)
         self.assertEqual(source.read_bytes(), self.fx.before)
         self.assertFalse((self.dir / "fixture.sounds-receipt.json").exists())
 
