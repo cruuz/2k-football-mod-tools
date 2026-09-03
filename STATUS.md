@@ -10,8 +10,10 @@
   retail span, pack located through the disc directory). Verified: seven models
   round-trip through headless Blender 4.0 (joint counts, UV layers, index lane
   survive; the referee's striped shirt fixes the UV convention); a Blender edit of
-  the referee imports, fits, and decodes back exactly. In-game witnessing of an
-  imported model is Noah's release gate.
+  the referee imports, fits, and decodes back exactly; a whole-torso scale of the
+  player body (6,309 of 7,396 vertices moved) and a whole-head scale (all 11,727
+  vertices) both fit their retail spans. In-game witnessing of an imported model
+  is Noah's release gate.
 
 ## Beta 55 — every archive pack found through the disc directory (2026-09-03)
 
