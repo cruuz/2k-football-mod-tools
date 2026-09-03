@@ -24,6 +24,40 @@ from typing import Any
 import zlib
 
 
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read; Windows has no os.pread, so seek/read/restore there."""
+    preader = getattr(os, "pread", None)
+    if preader is not None:
+        return preader(fd, count, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        chunks: list[bytes] = []
+        remaining = count
+        while remaining > 0:
+            chunk = os.read(fd, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
+def _pwrite(fd: int, data: bytes, offset: int) -> int:
+    """Positional write; Windows has no os.pwrite, so seek/write/restore there."""
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        return os.write(fd, data)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
 RECIPE_SCHEMA = "apf2k8_scne_same_count_position_recipe/v1"
 MANIFEST_SCHEMA = "apf2k8_scne_same_count_position_patch/v1"
 VERIFY_SCHEMA = "apf2k8_scne_same_count_position_verification/v1"
@@ -145,7 +179,7 @@ def sha256_fd(descriptor: int) -> str:
     size = os.fstat(descriptor).st_size
     cursor = 0
     while cursor < size:
-        chunk = os.pread(descriptor, min(8 * 1024 * 1024, size - cursor), cursor)
+        chunk = _pread(descriptor, min(8 * 1024 * 1024, size - cursor), cursor)
         if not chunk:
             raise VerifyError("short descriptor read")
         digest.update(chunk)
@@ -160,7 +194,7 @@ def sha256_fd_range(descriptor: int, offset: int, size: int) -> str:
     cursor = offset
     remaining = size
     while remaining:
-        chunk = os.pread(descriptor, min(8 * 1024 * 1024, remaining), cursor)
+        chunk = _pread(descriptor, min(8 * 1024 * 1024, remaining), cursor)
         if not chunk:
             raise VerifyError("short descriptor range read")
         digest.update(chunk)
@@ -327,7 +361,7 @@ def _parse_outer(index_path: Path) -> dict[str, Any]:
             or sha256_fd(descriptor) != SOURCE_PACKS["0A"][1]
         ):
             raise VerifyError("outer index descriptor identity differs")
-        fixed = os.pread(descriptor, 24, 0)
+        fixed = _pread(descriptor, 24, 0)
         if len(fixed) != 24:
             raise VerifyError("outer index header is truncated")
         magic, alignment, pack_count, reserved_0c, entry_count, reserved_14 = struct.unpack(">6I", fixed)
@@ -336,7 +370,7 @@ def _parse_outer(index_path: Path) -> dict[str, Any]:
         packs: list[dict[str, Any]] = []
         virtual_start = 0
         for ordinal in range(pack_count):
-            raw = os.pread(descriptor, 16, 24 + ordinal * 16)
+            raw = _pread(descriptor, 16, 24 + ordinal * 16)
             if len(raw) != 16:
                 raise VerifyError("outer pack descriptor is truncated")
             size_blocks, reserved, raw_name = struct.unpack(">II8s", raw)
@@ -348,7 +382,7 @@ def _parse_outer(index_path: Path) -> dict[str, Any]:
                 raise VerifyError("outer pack declared size differs")
             packs.append({"ordinal": ordinal, "name": name, "virtual_start": virtual_start, "size": size})
             virtual_start += size
-        raw_entry = os.pread(descriptor, 12, 24 + 4 * 16 + OUTER_INDEX * 12)
+        raw_entry = _pread(descriptor, 12, 24 + 4 * 16 + OUTER_INDEX * 12)
         if len(raw_entry) != 12:
             raise VerifyError("outer target record is truncated")
         name_id, offset_blocks, size_blocks = struct.unpack(">3I", raw_entry)
@@ -686,7 +720,7 @@ def verify(game_dir: Path, recipe_path: Path, output_dir: Path) -> tuple[dict[st
                 raise VerifyError("output 1A hardlink-aliases source 1A")
             if output_pack_stat.st_size != SOURCE_PACKS["1A"][0]:
                 raise VerifyError("output 1A size differs")
-            manifest_raw = os.pread(manifest_fd, manifest_stat.st_size, 0)
+            manifest_raw = _pread(manifest_fd, manifest_stat.st_size, 0)
             manifest_temp = json.loads(manifest_raw, object_pairs_hook=lambda pairs: _unique_pairs(pairs, "manifest"), parse_constant=lambda value: _reject_constant(value, "manifest"))
             if not isinstance(manifest_temp, dict) or manifest_raw != canonical_json_bytes(manifest_temp):
                 raise VerifyError("manifest is not canonical sorted object JSON")
@@ -695,7 +729,7 @@ def verify(game_dir: Path, recipe_path: Path, output_dir: Path) -> tuple[dict[st
             prefix_sha = sha256_fd_range(output_pack_fd, 0, OUTER_PACK_OFFSET)
             suffix_offset = OUTER_PACK_OFFSET + OUTER_LENGTH
             suffix_sha = sha256_fd_range(output_pack_fd, suffix_offset, output_pack_stat.st_size - suffix_offset)
-            output_entry = os.pread(output_pack_fd, OUTER_LENGTH, OUTER_PACK_OFFSET)
+            output_entry = _pread(output_pack_fd, OUTER_LENGTH, OUTER_PACK_OFFSET)
             final_pack = os.stat("1A", dir_fd=directory_fd, follow_symlinks=False)
             final_manifest = os.stat(MANIFEST_NAME, dir_fd=directory_fd, follow_symlinks=False)
             if (
@@ -740,7 +774,7 @@ def verify(game_dir: Path, recipe_path: Path, output_dir: Path) -> tuple[dict[st
             or sha256_fd(source_1a_fd) != SOURCE_PACKS["1A"][1]
         ):
             raise VerifyError("source 1A descriptor identity differs")
-        source_entry = os.pread(source_1a_fd, OUTER_LENGTH, OUTER_PACK_OFFSET)
+        source_entry = _pread(source_1a_fd, OUTER_LENGTH, OUTER_PACK_OFFSET)
         source_prefix_sha = sha256_fd_range(source_1a_fd, 0, OUTER_PACK_OFFSET)
         source_suffix_sha = sha256_fd_range(source_1a_fd, suffix_offset, SOURCE_PACKS["1A"][0] - suffix_offset)
         final_source_1a = os.lstat(source_1a_path)

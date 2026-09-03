@@ -35,6 +35,40 @@ import apf_scene
 import apf_stadium_static_position_patch as container
 
 
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read; Windows has no os.pread, so seek/read/restore there."""
+    preader = getattr(os, "pread", None)
+    if preader is not None:
+        return preader(fd, count, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        chunks: list[bytes] = []
+        remaining = count
+        while remaining > 0:
+            chunk = os.read(fd, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
+def _pwrite(fd: int, data: bytes, offset: int) -> int:
+    """Positional write; Windows has no os.pwrite, so seek/write/restore there."""
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        return os.write(fd, data)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG_PATH = ROOT / "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json"
 CATALOG_SCHEMA = "apf2k8_stadium_static_position_target_catalog/v1"
@@ -614,7 +648,7 @@ def write_output(game_dir: Path, recipe_path: Path, output_dir: Path) -> dict[st
         try:
             written = 0
             while written < len(rebuilt_entry):
-                count = os.pwrite(output_fd, rebuilt_entry[written:], OUTER_PACK_OFFSET + written)
+                count = _pwrite(output_fd, rebuilt_entry[written:], OUTER_PACK_OFFSET + written)
                 if count <= 0:
                     raise PatchError("short outer-entry write")
                 written += count

@@ -28,6 +28,40 @@ if _TOOLS not in sys.path:
 import apf_stadium_static_position_verify as archive
 
 
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read; Windows has no os.pread, so seek/read/restore there."""
+    preader = getattr(os, "pread", None)
+    if preader is not None:
+        return preader(fd, count, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        chunks: list[bytes] = []
+        remaining = count
+        while remaining > 0:
+            chunk = os.read(fd, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
+def _pwrite(fd: int, data: bytes, offset: int) -> int:
+    """Positional write; Windows has no os.pwrite, so seek/write/restore there."""
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        return os.write(fd, data)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG_PATH = ROOT / "mod_editor/data/apf2k8_stadium_static_position_target_catalog.v1.json"
 CATALOG_SCHEMA = "apf2k8_stadium_static_position_target_catalog/v1"
@@ -495,7 +529,7 @@ def verify(game_dir: Path, recipe_path: Path, output_dir: Path) -> tuple[dict[st
                 raise VerifyError("output 1A hardlink-aliases source 1A")
             if pack_stat.st_size != SOURCE_PACKS["1A"][0]:
                 raise VerifyError("output 1A size differs")
-            manifest_raw = os.pread(manifest_fd, manifest_stat.st_size, 0)
+            manifest_raw = _pread(manifest_fd, manifest_stat.st_size, 0)
             manifest = json.loads(
                 manifest_raw,
                 object_pairs_hook=lambda pairs: archive._unique_pairs(pairs, "manifest"),
@@ -507,7 +541,7 @@ def verify(game_dir: Path, recipe_path: Path, output_dir: Path) -> tuple[dict[st
             prefix_sha = archive.sha256_fd_range(pack_fd, 0, OUTER_PACK_OFFSET)
             suffix_offset = OUTER_PACK_OFFSET + OUTER_LENGTH
             suffix_sha = archive.sha256_fd_range(pack_fd, suffix_offset, pack_stat.st_size - suffix_offset)
-            output_entry = os.pread(pack_fd, OUTER_LENGTH, OUTER_PACK_OFFSET)
+            output_entry = _pread(pack_fd, OUTER_LENGTH, OUTER_PACK_OFFSET)
             pack_identity = (pack_stat.st_dev, pack_stat.st_ino)
             manifest_identity = (manifest_stat.st_dev, manifest_stat.st_ino)
             final_pack = os.stat("1A", dir_fd=directory_fd, follow_symlinks=False)
@@ -536,7 +570,7 @@ def verify(game_dir: Path, recipe_path: Path, output_dir: Path) -> tuple[dict[st
         source_identity = (source_fd_stat.st_dev, source_fd_stat.st_ino)
         if source_identity != (source_lstat.st_dev, source_lstat.st_ino) or archive.sha256_fd(source_fd) != SOURCE_PACKS["1A"][1]:
             raise VerifyError("source 1A descriptor identity differs")
-        source_entry = os.pread(source_fd, OUTER_LENGTH, OUTER_PACK_OFFSET)
+        source_entry = _pread(source_fd, OUTER_LENGTH, OUTER_PACK_OFFSET)
         source_prefix = archive.sha256_fd_range(source_fd, 0, OUTER_PACK_OFFSET)
         source_suffix = archive.sha256_fd_range(source_fd, suffix_offset, SOURCE_PACKS["1A"][0] - suffix_offset)
         final_source = os.lstat(source_path)

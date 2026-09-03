@@ -32,6 +32,40 @@ if str(ROOT) not in sys.path:
 from mod_editor.core import nfl2k5_bump_strength as bs  # noqa: E402
 from mod_editor.core import nfl2k5_throw_tuning as tt  # noqa: E402
 
+
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read; Windows has no os.pread, so seek/read/restore there."""
+    preader = getattr(os, "pread", None)
+    if preader is not None:
+        return preader(fd, count, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        chunks: list[bytes] = []
+        remaining = count
+        while remaining > 0:
+            chunk = os.read(fd, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
+def _pwrite(fd: int, data: bytes, offset: int) -> int:
+    """Positional write; Windows has no os.pwrite, so seek/write/restore there."""
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        return os.write(fd, data)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
 X_SLOT = 0x00010A40   # boot-logo bitmap region (see nfl2k5_catch_slider)
 Y_SLOT = 0x00010A44
 # x sites: mode 0 (in-game, +120), mode 1 (drive toward the bug's side, +564 = the game's own
@@ -91,19 +125,19 @@ def main() -> int:
     if dst.exists() and not a.overwrite:
         raise SystemExit(f"target exists: {dst}")
     if tt.is_disc_image(src):
-        fd = os.open(src, os.O_RDONLY)
+        fd = os.open(src, os.O_RDONLY | getattr(os, "O_BINARY", 0))
         try:
-            size = os.fstat(fd).st_size; off, length = tt.image_xbe_extent(fd, size); payload = os.pread(fd, length, off)
+            size = os.fstat(fd).st_size; off, length = tt.image_xbe_extent(fd, size); payload = _pread(fd, length, off)
         finally:
             os.close(fd)
         patched, receipt = apply(payload, a.x, a.y)
         shutil.copyfile(src, dst)
-        fd = os.open(dst, os.O_RDWR)
+        fd = os.open(dst, os.O_RDWR | getattr(os, "O_BINARY", 0))
         try:
             for i in range(0, len(patched), 1 << 20):
                 if payload[i:i + (1 << 20)] != patched[i:i + (1 << 20)]:
-                    os.pwrite(fd, patched[i:i + (1 << 20)], off + i)
-            os.fsync(fd); check = os.pread(fd, length, off)
+                    _pwrite(fd, patched[i:i + (1 << 20)], off + i)
+            os.fsync(fd); check = _pread(fd, length, off)
         finally:
             os.close(fd)
         assert check == patched

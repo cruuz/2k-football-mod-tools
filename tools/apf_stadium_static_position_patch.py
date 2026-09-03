@@ -32,6 +32,40 @@ import apf_scene
 from apf_texture_patch import compress_h7a, compress_h7a_best
 
 
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read; Windows has no os.pread, so seek/read/restore there."""
+    preader = getattr(os, "pread", None)
+    if preader is not None:
+        return preader(fd, count, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        chunks: list[bytes] = []
+        remaining = count
+        while remaining > 0:
+            chunk = os.read(fd, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
+def _pwrite(fd: int, data: bytes, offset: int) -> int:
+    """Positional write; Windows has no os.pwrite, so seek/write/restore there."""
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        return os.write(fd, data)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
 RECIPE_SCHEMA = "apf2k8_scne_same_count_position_recipe/v1"
 MANIFEST_SCHEMA = "apf2k8_scne_same_count_position_patch/v1"
 RECIPE_SCHEMA_PATH = Path(__file__).resolve().parents[1] / "reports/specs/apf2k8_scne_same_count_position_recipe.schema.json"
@@ -179,7 +213,7 @@ def sha256_fd(descriptor: int) -> str:
     offset = 0
     size = os.fstat(descriptor).st_size
     while offset < size:
-        chunk = os.pread(descriptor, min(8 * 1024 * 1024, size - offset), offset)
+        chunk = _pread(descriptor, min(8 * 1024 * 1024, size - offset), offset)
         if not chunk:
             raise PatchError("short descriptor read while hashing")
         digest.update(chunk)
@@ -194,7 +228,7 @@ def sha256_fd_range(descriptor: int, offset: int, size: int) -> str:
     cursor = offset
     remaining = size
     while remaining:
-        chunk = os.pread(descriptor, min(8 * 1024 * 1024, remaining), cursor)
+        chunk = _pread(descriptor, min(8 * 1024 * 1024, remaining), cursor)
         if not chunk:
             raise PatchError("short descriptor range read")
         digest.update(chunk)
@@ -898,7 +932,7 @@ def write_output(game_dir: Path, recipe_path: Path, output_dir: Path) -> dict[st
         try:
             written = 0
             while written < len(rebuilt_entry):
-                count = os.pwrite(output_descriptor, rebuilt_entry[written:], OUTER_PACK_OFFSET + written)
+                count = _pwrite(output_descriptor, rebuilt_entry[written:], OUTER_PACK_OFFSET + written)
                 if count <= 0:
                     raise PatchError("short outer-entry write")
                 written += count

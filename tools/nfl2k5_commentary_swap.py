@@ -70,6 +70,40 @@ from nfl_outer import (  # noqa: E402
 )
 import xbox_ima_encoder as ima  # noqa: E402
 
+
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read; Windows has no os.pread, so seek/read/restore there."""
+    preader = getattr(os, "pread", None)
+    if preader is not None:
+        return preader(fd, count, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        chunks: list[bytes] = []
+        remaining = count
+        while remaining > 0:
+            chunk = os.read(fd, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
+def _pwrite(fd: int, data: bytes, offset: int) -> int:
+    """Positional write; Windows has no os.pwrite, so seek/write/restore there."""
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        return os.write(fd, data)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
 PACK_FOLDER = "vc_53450030"
 SAMPLE_RATE = 22_050
 UNIT_WORD = 0x12000
@@ -241,7 +275,7 @@ def _pread_exact(descriptor: int, offset: int, length: int) -> bytes:
     parts: list[bytes] = []
     done = 0
     while done < length:
-        chunk = os.pread(descriptor, length - done, offset + done)
+        chunk = _pread(descriptor, length - done, offset + done)
         _require(bool(chunk), f"short read at 0x{offset + done:x}")
         parts.append(chunk)
         done += len(chunk)
@@ -252,7 +286,7 @@ def _pwrite_exact(descriptor: int, data: bytes, offset: int) -> None:
     view = memoryview(data)
     done = 0
     while done < len(view):
-        count = os.pwrite(descriptor, view[done:], offset + done)
+        count = _pwrite(descriptor, view[done:], offset + done)
         _require(count > 0, f"short write at 0x{offset + done:x}")
         done += count
 

@@ -102,7 +102,8 @@ def open_regular(path: Path, label: str, maximum: int | None = None) -> OpenIden
     )
     if maximum is not None:
         require(0 < supplied.st_size <= maximum, f"{label} size is outside its allowed range")
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
+    flags = (os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
+             | getattr(os, "O_BINARY", 0))
     try:
         descriptor = os.open(requested, flags)
     except OSError as exc:
@@ -682,7 +683,8 @@ def write_artifact_dir(path: Path, report: dict[str, Any]) -> Path:
     try:
         descriptor = os.open(
             report_path,
-            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0),
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_BINARY", 0),
             0o644,
         )
         payload = (json.dumps(report, indent=2, sort_keys=True) + "\n").encode("utf-8")

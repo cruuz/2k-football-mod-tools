@@ -646,7 +646,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
     try:
         size = os.fstat(descriptor).st_size
         offset, length = image_xbe_extent(descriptor, size)
-        payload = platform_compat.pread(descriptor, length, offset) if hasattr(platform_compat, "pread") else os.pread(descriptor, length, offset)
+        payload = platform_compat.pread(descriptor, length, offset)
         disc_status = _edge_disc_status(descriptor, size)
     finally:
         os.close(descriptor)
@@ -1083,7 +1083,7 @@ def write_image_copy(
     check = _open_binary(target, os.O_RDONLY)
     try:
         _require(os.fstat(check).st_size == size, "copied image has the wrong size")
-        after = os.pread(check, length, offset)
+        after = platform_compat.pread(check, length, offset)
     finally:
         os.close(check)
     _require(after == patched, "patched default.xbe read-back differs inside the copy")
