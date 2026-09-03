@@ -1508,6 +1508,7 @@ class StudioMainWindow(QMainWindow):
         self._open_project_action: QAction | None = None
         self._save_project_action: QAction | None = None
         self._save_project_as_action: QAction | None = None
+        self._ps2_save_action: QAction | None = None
 
         self.setWindowTitle("2K5 Mod Studio")
         icon = _window_icon()
@@ -1565,6 +1566,13 @@ class StudioMainWindow(QMainWindow):
         )
         self._recover_action = file_menu.addAction("Recover Unsaved Edits…")
         self._recover_action.triggered.connect(self._recover_from_menu)
+        file_menu.addSeparator()
+        self._ps2_save_action = file_menu.addAction("PS2 Save Editor…")
+        self._ps2_save_action.setToolTip(
+            "Edit an ESPN NFL 2K5 PlayStation 2 memory-card save. This is "
+            "separate from the Xbox game image you have open."
+        )
+        self._ps2_save_action.triggered.connect(self._open_ps2_save_editor)
         file_menu.addSeparator()
         quit_action = file_menu.addAction("Quit")
         quit_action.setShortcut("Ctrl+Q")
@@ -2004,6 +2012,35 @@ class StudioMainWindow(QMainWindow):
             )
             return
         self._recover_candidate(candidate)
+
+    def _open_ps2_save_editor(self, _checked: bool = False) -> None:
+        """Open the PS2 memory-card save editor.
+
+        PS2 saves are the user's own files and have nothing to do with the
+        Xbox image this window may have loaded, so the editor is a
+        self-contained dialog rather than a page in the project workspace.
+        The import stays local because the PS2 modules put ``tools/`` on
+        ``sys.path`` when they load.
+        """
+
+        if self._refuse_while_audio_busy("open the PS2 Save Editor"):
+            return
+        try:
+            from .ps2_save_dialog_qt import Ps2SaveEditorDialog
+        except Exception as exc:  # pragma: no cover - defensive import guard
+            QMessageBox.warning(
+                self,
+                "PS2 Save Editor is unavailable",
+                f"The PS2 save editor could not be loaded: {str(exc).strip()}\n\n"
+                "Nothing was changed.",
+            )
+            return
+        dialog = Ps2SaveEditorDialog(parent=self)
+        dialog.exec_()
+        dialog.deleteLater()
+        self._set_status(
+            "PS2 Save Editor closed • your Xbox project was not changed."
+        )
 
     def _recover_candidate(self, candidate: RecoveryCandidate) -> None:
         if self._refuse_while_audio_busy("recover unsaved edits"):
@@ -7504,6 +7541,10 @@ class StudioMainWindow(QMainWindow):
             self._open_source_action.setEnabled(not global_busy)
         if self._open_project_action is not None:
             self._open_project_action.setEnabled(ready and not global_busy)
+        if self._ps2_save_action is not None:
+            # PS2 saves are independent of the Xbox source, so this needs no
+            # loaded image -- only the guard against a running operation.
+            self._ps2_save_action.setEnabled(not global_busy)
         if self._recent_source_menu is not None:
             self._recent_source_menu.setEnabled(not global_busy)
         if self._recent_project_menu is not None:

@@ -48,6 +48,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="open the 2K5 Mod Studio desktop application",
     )
     action.add_argument(
+        "--ps2-save",
+        action="store_true",
+        help=(
+            "open only the PlayStation 2 memory-card save editor, without the "
+            "rest of the studio"
+        ),
+    )
+    action.add_argument(
         "--check-registry",
         action="store_true",
         help="validate the capability registry without opening a display",
@@ -478,6 +486,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
+    if args.ps2_save:
+        # The PS2 save editor needs no Xbox source, no uniform catalog and no
+        # generated inventory reports -- it works purely on the user's own
+        # memory-card save.  Opening it directly means someone who only owns
+        # the PlayStation 2 release can use it without the studio's
+        # Xbox-derived startup requirements.
+        from PyQt5.QtWidgets import QApplication
+
+        from .gui.ps2_save_dialog_qt import Ps2SaveEditorDialog
+
+        application = QApplication.instance() or QApplication(sys.argv[:1])
+        dialog = Ps2SaveEditorDialog()
+        dialog.show()
+        return application.exec_()
+
     # Product mode is the default GUI.  The explicit --studio form is retained
     # for desktop launchers and remains mutually exclusive with headless tools.
     from .core.nfl2k5_uniform_catalog import load_nfl2k5_uniform_catalog

@@ -75,6 +75,7 @@ mod_editor/core/nfl2k5_playbook_inspector.py
 mod_editor/core/nfl2k5_playbook_route_writer.py
 mod_editor/core/nfl2k5_player_assets.py
 mod_editor/core/playbook_package_rule_spike.py
+mod_editor/core/ps2_save_service.py
 mod_editor/core/nfl2k5_safe_text_banks.py
 mod_editor/core/nfl2k5_save_writer.py
 mod_editor/core/nfl2k5_scorebug_unified_adapter.py
@@ -116,6 +117,7 @@ mod_editor/gui/crib_panel_qt.py
 mod_editor/gui/gameplay_panel_qt.py
 mod_editor/gui/menus_panel_qt.py
 mod_editor/gui/play_designer_qt.py
+mod_editor/gui/ps2_save_dialog_qt.py
 mod_editor/gui/playbooks_panel_qt.py
 mod_editor/gui/save_panel_qt.py
 mod_editor/gui/stadium_viewer.py
