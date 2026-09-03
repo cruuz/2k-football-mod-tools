@@ -1,5 +1,37 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC81 — Update now: the studio updates itself on every platform (2026-09-03)
+
+- **Update now.** When a newer release exists the banner and the Help menu's
+  Check for Updates dialog offer **Update now** next to the old **Get the update**
+  link. The studio downloads the release file that matches this copy, checks it
+  against the SHA-256 the release published (a mismatch is discarded, never
+  installed), and then:
+  - **Windows installer** (the Setup.exe layout): starts the new installer
+    silently with `/S /WAITPID=<pid> /RELAUNCH /D=<install folder>` and closes.
+    The installer waits for the studio to exit before it touches a file,
+    installs over the same folder, and reopens the studio.
+  - **Unpacked release folder** (the tarball on Linux, macOS, or Windows): unpacks
+    the new version beside the folder, swaps the two so shortcuts keep working,
+    keeps the old one as `<folder>.previous`, starts the new version and closes.
+    If the folder is held open (Windows, started from the .bat) the new version is
+    placed beside it under the release's own name and the banner says where.
+  - **A git checkout** is never updated in place; it only gets the link.
+- The update runs off the GUI thread with progress in the banner; a failure is
+  one sentence in the banner and the old copy is untouched.
+- The first-run disclosure now says what the check does and that nothing is
+  downloaded on its own. Nothing starts without the user pressing the button
+  and confirming.
+- Installer template: `.onInit` implements `/WAITPID=` (SYNCHRONIZE wait, ten
+  minute cap) and `.onInstSuccess` implements `/RELAUNCH`; both are inert when a
+  person runs the installer by hand. Proven under Wine 9: the install held until
+  the waited process exited, then `runtime\pythonw.exe` started; the control run
+  without `/RELAUNCH` started nothing; a dead pid does not hang.
+- New module `mod_editor/core/self_update.py`, shipped in both studios; tests in
+  `tests/mod_editor/test_self_update.py` (install-kind detection, asset choice per
+  product and layout, sidecar verification, tarball swap + fallback, hostile
+  archive refusal, the banner flow off the GUI thread).
+
 ## v1.0 RC80 — ★ Models: export any model to Blender and back (2026-09-03)
 
 - **New: ★ Models.** Every 3D model on the loaded disc (players, helmets and face

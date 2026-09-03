@@ -862,6 +862,27 @@ xemu-only: its RSA signature cannot be regenerated, so real hardware rejects it
 (the same rule as Bump strength). `tools/nfl2k5_throw_distance.py` does the
 same from a terminal (`read`, `sliders`, `curves`, `preview`).
 
+## Updating the studio
+
+The studio checks GitHub for a newer release when it starts (Help menu: **Check
+for updates automatically** turns that off; **Check for Updates…** asks now).
+When there is one, a banner appears with three choices:
+
+- **Update now** downloads the release, verifies it against its published
+  SHA-256, installs it over this copy and reopens the studio. Save your work
+  first: the studio closes to finish. On Windows the installer runs on its own
+  after the studio closes and reopens it when it is done. From an unpacked
+  release folder the new version is placed beside the old one, the folders are
+  swapped so your shortcut keeps working, and the previous version stays next
+  to it as `<folder>.previous` until you delete it.
+- **Get the update** opens the downloads page instead, for a manual install.
+- **Later** hides the notice until the next release.
+
+**Update now** is only offered when this copy knows how to replace itself: the
+Windows installer layout, or an unpacked release folder you can write to. A
+folder you cannot write to, or a git checkout, gets the link only. Nothing is
+downloaded until you press the button and confirm.
+
 ## ★ Models — every model out to Blender and back
 
 1. Load your XISO, open **★ Models** (below the categories) and press **List the models**.

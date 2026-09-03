@@ -122,6 +122,7 @@ mod_editor/gui/crash_report.py
 mod_editor/gui/stadium_viewer.py
 mod_editor/gui/texture_editor.py
 mod_editor/gui/update_ui.py
+mod_editor/core/self_update.py
 packaging/apf2k8-mod-studio.desktop
 packaging/apf2k8-mod-studio.svg
 packaging/apf2k8-release-allowlist.txt

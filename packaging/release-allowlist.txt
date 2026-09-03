@@ -127,6 +127,7 @@ mod_editor/gui/text_rosters_panel.py
 mod_editor/gui/texture_editor.py
 mod_editor/gui/throw_tuning_panel_qt.py
 mod_editor/gui/update_ui.py
+mod_editor/core/self_update.py
 mod_editor/studio/__init__.py
 mod_editor/studio/audio_annotations.py
 mod_editor/studio/audio_bundle.py
