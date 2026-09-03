@@ -117,6 +117,7 @@ from mod_editor.gui.share_panel_qt import SharePanel
 from mod_editor.gui.commentary_panel_qt import CommentaryPanel
 from mod_editor.gui.sounds_panel_qt import SoundsPanel
 from mod_editor.gui.build_panel_qt import BuildPanel
+from mod_editor.gui.models_panel_qt import ModelsPanel
 from mod_editor.gui.gameplay_patches_panel_qt import TEXT_PATCHES, GameplayPatchesPanel
 from mod_editor.gui.menus_panel_qt import MenusPanel
 from mod_editor.gui.playbooks_panel_qt import PlaybooksPanel
@@ -2150,6 +2151,12 @@ class StudioMainWindow(QMainWindow):
                 item.setToolTip("The field art of the game's own Create-a-Team teams (fictional logos by design). "
                                 "Real NFL end zones and midfield art live under All Textures / Stadiums.")
             self.navigation.addItem(item)
+        models_item = QListWidgetItem("  ★ Models")
+        models_item.setData(Qt.UserRole, "models")
+        models_item.setSizeHint(QSize(210, 44))
+        models_item.setToolTip("Export any 3D model on the disc (players, helmets, balls, referees, crowds, props, the Crib) "
+                               "as glTF for Blender, and import an edited one back into a copy of your disc.")
+        self.navigation.addItem(models_item)
         create_item = QListWidgetItem("  ★ Create a Play")
         create_item.setData(Qt.UserRole, "create_play")
         create_item.setSizeHint(QSize(210, 44))
@@ -2402,6 +2409,8 @@ class StudioMainWindow(QMainWindow):
                 page = self._build_capability_page(section)
             self._category_pages[category] = page
             self.pages.addWidget(self._page_scroll_host(page))
+        self._models_panel = ModelsPanel(self.facade)
+        self.pages.addWidget(self._page_scroll_host(self._models_panel))
         self._create_play_page = self._build_create_play_page()
         self.pages.addWidget(self._page_scroll_host(self._create_play_page))
         self._build_share_page = self._build_build_share_page()
@@ -7747,7 +7756,8 @@ class StudioMainWindow(QMainWindow):
             return
         if row - 1 >= len(PRODUCT_CATEGORY_ORDER):
             special = row - 1 - len(PRODUCT_CATEGORY_ORDER)
-            self.page_title.setText(("Create a Play", "Build & Share")[special] if special < 2 else "")
+            titles = ("Models", "Create a Play", "Build & Share")
+            self.page_title.setText(titles[special] if special < len(titles) else "")
             return
         category = PRODUCT_CATEGORY_ORDER[row - 1]
         self.page_title.setText(

@@ -99,13 +99,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "b25f669bdbdf8e893db792f1af42c3bf9787a708b7b9d62f1124ef6e4a47b290",
     "mod_editor/gui/studio_qt.py":
-        "ae78fdfe3ee41a45278bcda9bc6da87f1448ab26512b7e0cd5b66f579383e474",
+        "ad0968458d99fe6ef9fd199506cb1885a4d08b99b82a7da7575fa0fc4281583e",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "e9c98051c0211789f358209ab65bb8e97d44bb0bb6acb1175961e64fab44fc3f",
+        "9b4dac1ce24824cb2501c9cb62cea51566c37fd2f3f9f1f8053cb08ad2b0aa45",
     "mod_editor/studio/project_archive.py":
         "613e98767acae90e949ca5d4a7dc28611cc8fee12e7c036b9d2c2583154077ee",
     "mod_editor/studio/session.py":
@@ -1723,6 +1723,8 @@ def main() -> int:
         "mod_editor.gui.menus_panel_qt",
         "mod_editor.gui.playbooks_panel_qt",
         "mod_editor.gui.stadium_viewer",
+        "mod_editor.core.nfl2k5_models",
+        "mod_editor.gui.models_panel_qt",
         "mod_editor.gui.text_rosters_panel",
         "mod_editor.gui.studio_qt",
     )
