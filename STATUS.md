@@ -1,4 +1,16 @@
-# 2K5 Mod Studio — v1.0 RC78 Release Status
+# 2K5 Mod Studio — v1.0 RC79 Release Status
+
+## Beta 55 — every archive pack found through the disc directory (2026-09-03)
+
+Source/UI versions are **2K5 RC79** and **APF alpha.84**; both use updater tag
+`beta-55`.
+
+- **Fix:** Build → Advanced failed on a legal USA retail `.iso` whose packs sit at other
+  sectors than the development rip (`pack-0 schedule template is foreign`). Every pack
+  writer now resolves `vc_53450030/<pack>` through the image's XDVDFS directory; disc
+  detection locates the game partition; the scorebug status cannot abort the Build panel.
+  Identical Advanced builds proven on the retail rip, a redump-style image and an
+  extract-xiso reordered image, also under the simulated-Windows check.
 
 ## Beta 54 — Build & Share with the SOFTDRINK patch presets (2026-09-03)
 

@@ -1,3 +1,22 @@
+# beta-55 — RC79 / alpha.84
+
+**Date:** 2026-09-03
+
+**2K5 Mod Studio:** `v1.0-RC79`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
+
+## Fix: Build & Share → Advanced on any dump of the disc
+
+The second public beta-54 report: a legal USA retail `.iso` laid out differently from the rip
+this studio was developed on failed the 2026 season step with `pack-0 schedule template is
+foreign: ROST stored size is not retail`, while Basic (executable-only) built. The schedule
+step and a dozen other pack writers read packs at a byte offset measured on one image; they
+now resolve every `vc_53450030/<pack>` through the image's own file table, disc detection
+locates the game partition, and the scorebug status can no longer abort the Build panel on a
+user machine. Verified with identical Advanced builds from the retail rip, a redump-style
+image and an extract-xiso reordered image, with and without the POSIX-only `os` members.
+
 # beta-54 — RC78 / alpha.84
 
 **Date:** 2026-09-03

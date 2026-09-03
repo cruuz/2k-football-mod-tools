@@ -1,5 +1,22 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC79 — every archive pack found through the disc directory (2026-09-03)
+
+- **Fix: Build → Advanced on any dump of the disc.** A legal USA retail `.iso`
+  laid out differently from the rip this studio was developed on (a raw dump
+  with the video partition in front, or an image rebuilt by another ripper)
+  failed the 2026 season step with `pack-0 schedule template is foreign: ROST
+  stored size is not retail` while Basic built fine. The schedule step and
+  every other pack writer read `vc_53450030/<pack>` at a byte offset measured
+  on one image; they now resolve the pack through the image's own file table,
+  exactly as `default.xbe` always was. Disc detection locates the game
+  partition instead of assuming it starts at byte 0.
+- The ESPN scorebug status no longer aborts the Build panel on machines
+  without the developer-only retail scene file; it reports "not available".
+- Verified with identical Advanced builds from the retail rip, a redump-style
+  image and an extract-xiso reordered image, also with the POSIX-only `os`
+  members removed (the simulated-Windows check).
+
 ## v1.0 RC78 — Build & Share with the SOFTDRINK patch presets (2026-09-03)
 
 - **New: ★ Build & Share → Build.** One checklist builds a patched COPY of a
