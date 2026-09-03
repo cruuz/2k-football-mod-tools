@@ -1563,7 +1563,7 @@ class Apf2k8JerseyColorProvider:
     backend_module = "tools/apf_jersey_family_patch.py"
     backend_module_sha256 = "a07d2d28f287185b231e93405e3c2a0354567d28ba70f38b0d3e9f4e9b621821"
     verifier_module = "tools/apf_jersey_family_verify.py"
-    verifier_module_sha256 = "559c3b8d5125ad7e31a4a3212249d35846b8c143f693503accbae7d32868e09f"
+    verifier_module_sha256 = "96b5b6602cbe9c60f51c02029a6e173ddaedde4fee0a6ff0ec1c278b172cb7af"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/platform_compat.py": "08b6adec767b63c9fda1c56dd5a1b4caa67384e8dde27c523b049dc57de45211",
         "tools/apf_inner.py": "4175688c9df2cb8d8253f5b4d08570a3a3486cb9856d000a4146e5a952982847",
