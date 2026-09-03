@@ -131,8 +131,109 @@ def fill_stream(stream: bytes, decoded: bytes, stored_size: int, *, slack: int) 
     return current, expanded
 
 
-def rebuild_fixed_span_filled(template_span: bytes, decoded: bytes, *, max_candidate_comparisons: int = 50_000_000) -> tuple[bytes, FillInfo]:
-    """Like nfl_txtr.rebuild_compressed_chunk_fixed_span, but the wrapper (incl. +0x14) stays retail."""
+def compress_optimal(decoded: bytes, *, stream_tag: int, offset_bits: int, chain_limit: int = 256) -> bytes:
+    """Optimal-parse VC-LZ encoder: the same token format as the retail packer, fewer bytes.
+
+    The game's packer (and ``nfl_txtr.compress_vc_lz``, which reproduces it to the byte) is
+    greedy: at every position it takes the longest match it can see.  That is not the cheapest
+    parse.  A flag bit costs 1/8 byte, a literal one byte, a match two bytes, so a short match
+    followed by a long one often beats a long match followed by literals.  This encoder scores
+    every parse with exact token costs and keeps the cheapest, which on the shipped scenes saves
+    roughly one to three percent -- the headroom an edited model needs to fit back into its
+    retail span, since the retail streams were packed to within a few bytes of it.
+
+    Match candidates come from a hash chain over three-byte keys, most recent first, capped at
+    ``chain_limit`` per position; a longer chain finds slightly better matches more slowly.
+    Matches never overlap their source (the title's decoder copies backwards), exactly like the
+    greedy encoder, and the result is verified by the ported retail decoder before use.
+    """
+
+    n = len(decoded)
+    if n == 0:
+        raise t.TxtrError("VC-LZ cannot encode an empty output buffer")
+    length_bits = 16 - offset_bits
+    max_distance = (1 << offset_bits) - 1
+    max_length = ((1 << length_bits) - 1) + 3
+    MIN = 3
+    src = decoded
+    # longest usable match at every position (length, distance)
+    best_len = [0] * n
+    best_dist = [0] * n
+    chains: dict[int, list[int]] = {}
+    for i in range(n - MIN + 1):
+        key = src[i] | (src[i + 1] << 8) | (src[i + 2] << 16)
+        chain = chains.get(key)
+        if chain:
+            cutoff = i - max_distance
+            blen = 0
+            bdist = 0
+            seen = 0
+            for c in reversed(chain):
+                if c < cutoff:
+                    break
+                seen += 1
+                if seen > chain_limit:
+                    break
+                d = i - c
+                if d < MIN:
+                    continue
+                limit = min(max_length, n - i, d)
+                if limit <= blen:
+                    continue
+                L = MIN
+                while L < limit and src[c + L] == src[i + L]:
+                    L += 1
+                if L > blen:
+                    blen, bdist = L, d
+                    if blen == max_length:
+                        break
+            if blen >= MIN:
+                best_len[i] = blen
+                best_dist[i] = bdist
+            # prune the chain to the window every so often
+            if len(chain) > 4096 and chain[-1] - chain[0] > 2 * max_distance:
+                del chain[: len(chain) // 2]
+            chain.append(i)
+        else:
+            chains[key] = [i]
+    # backward dynamic programme in eighth-bytes: literal 9, match 17
+    INF = 1 << 60
+    cost = [0] * (n + 1)
+    choice = [1] * (n + 1)          # length consumed at i (1 = literal)
+    for i in range(n - 1, -1, -1):
+        c = cost[i + 1] + 9
+        ch = 1
+        m = best_len[i]
+        if m >= MIN:
+            for L in range(MIN, m + 1):
+                v = cost[i + L] + 17
+                if v < c:
+                    c, ch = v, L
+        cost[i], choice[i] = c, ch
+    tokens: list = []
+    i = 0
+    while i < n:
+        L = choice[i]
+        if L == 1:
+            tokens.append(("L", src[i]))
+        else:
+            tokens.append(("M", best_dist[i], L))
+        i += L
+    stream = serialize(n, stream_tag, offset_bits, tokens)
+    back, info = t.decompress_vc_lz(stream, n)
+    if back != decoded or info.consumed_bytes != len(stream):
+        raise t.TxtrError("optimal VC-LZ encoder failed its round-trip check")
+    return stream
+
+
+def rebuild_fixed_span_filled(template_span: bytes, decoded: bytes, *, max_candidate_comparisons: int = 50_000_000,
+                              encoder: str = "greedy") -> tuple[bytes, FillInfo]:
+    """Like nfl_txtr.rebuild_compressed_chunk_fixed_span, but the wrapper (incl. +0x14) stays retail.
+
+    ``encoder="greedy"`` reproduces the retail packer; ``"optimal"`` uses :func:`compress_optimal`,
+    which packs tighter and is what lets an edited resource fit its retail span; ``"auto"`` tries
+    greedy first and falls back to optimal only when greedy does not fit.
+    """
 
     fields = t.HEADER.unpack_from(template_span)
     raw_kind, stored_size, system_bytes, video_bytes, magic, scratch, r0, r1 = fields
@@ -145,8 +246,21 @@ def rebuild_fixed_span_filled(template_span: bytes, decoded: bytes, *, max_candi
     tstream = template_span[t.HEADER.size: t.HEADER.size + tinfo.consumed_bytes]
     _osz, tag = struct.unpack_from("<II", tstream, 0)
     offset_bits = tstream[8]
-    compressed, _ = t.compress_vc_lz(decoded, stream_tag=tag, offset_bits=offset_bits, max_encoded_size=stored_size,
-                                     max_candidate_comparisons=max_candidate_comparisons, verify_roundtrip=True)
+    if encoder not in ("greedy", "optimal", "auto"):
+        raise t.TxtrError(f"unknown VC-LZ encoder {encoder!r}")
+    compressed = None
+    if encoder in ("greedy", "auto"):
+        try:
+            compressed, _ = t.compress_vc_lz(decoded, stream_tag=tag, offset_bits=offset_bits, max_encoded_size=stored_size,
+                                             max_candidate_comparisons=max_candidate_comparisons, verify_roundtrip=True)
+        except t.TxtrError:
+            if encoder == "greedy":
+                raise
+    if compressed is None:
+        compressed = compress_optimal(decoded, stream_tag=tag, offset_bits=offset_bits)
+        if len(compressed) > stored_size:
+            raise t.TxtrError(f"VC-LZ stream needs {len(compressed)} bytes, more than the {stored_size}-byte stored body "
+                              "even with optimal parsing")
     filled, expanded = fill_stream(compressed, decoded, stored_size, slack=min(scratch, 16))
     padding = stored_size - len(filled)
     exact_min = t.minimum_vc_lz_overlap_scratch(filled, stored_size, len(decoded))

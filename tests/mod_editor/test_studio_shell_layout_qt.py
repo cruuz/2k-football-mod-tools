@@ -42,8 +42,9 @@ class StudioShellLayoutTests(unittest.TestCase):
 
     def test_navigation_rows_and_pages_line_up(self) -> None:
         rows = self._row_texts()
-        self.assertEqual(len(rows), 1 + len(PRODUCT_CATEGORY_ORDER) + 2)
+        self.assertEqual(len(rows), 1 + len(PRODUCT_CATEGORY_ORDER) + 3)
         self.assertEqual(rows[0], "Getting Started")
+        self.assertEqual(rows[-3], "★ Models")
         self.assertEqual(rows[-2], "★ Create a Play")
         self.assertEqual(rows[-1], "★ Build & Share")
         self.assertIn("Gameplay", rows)

@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC79 — Getting Started
+# 2K5 Mod Studio v1.0 RC80 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -861,6 +861,30 @@ save the patched **copy**, and write. The source is never touched. The copy is
 xemu-only: its RSA signature cannot be regenerated, so real hardware rejects it
 (the same rule as Bump strength). `tools/nfl2k5_throw_distance.py` does the
 same from a terminal (`read`, `sliders`, `curves`, `preview`).
+
+## ★ Models — every model out to Blender and back
+
+1. Load your XISO, open **★ Models** (below the categories) and press **List the models**.
+   Every 3D model on the disc appears; filter by group (Players, Helmets & face masks,
+   Balls & field props, Officials, Cheerleaders & crowd, Sideline props, Stadiums, Trophy
+   room, Cutscenes, The Crib, Menus) or search by name.
+2. Pick a model and press **Export selected**. You get `<model>.gltf`, `<model>.bin` and a
+   README in the export folder. Open the `.gltf` in Blender (File → Import → glTF 2.0).
+   Units are metres; keep the scaled root node.
+3. Edit: move vertices, sculpt, proportional-edit. Keep the vertex count and the triangles;
+   do not decimate, merge or add geometry (the game's allocation is fixed).
+4. Export from Blender (File → Export → glTF 2.0) and tick **Include → Data → Mesh →
+   Attributes** so the `_NFL_VERTEX_INDEX` lane comes along; `.glb` or `.gltf` both work.
+5. Back in ★ Models, select the same model, choose the edited file and press **Check the
+   edited file**. The report says how the file was matched, how many vertices moved, whether
+   the encodable range was widened, and whether the model still fits its space on the disc.
+6. Choose the source image and where to write the copy, then **Write the copy**. The source
+   is never touched; a receipt is written beside the copy. Share → Apply can turn that copy
+   into a `.2k5patch`.
+
+What you cannot change (yet): the number of vertices or triangles, bones, weights, animations,
+and the body-type / face morph deltas (their channels are listed in the export). The player
+body and head are shared base meshes; editing them changes every player.
 
 ## ★ Build & Share — the SOFTDRINK patch (RC78)
 

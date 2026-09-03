@@ -62,6 +62,7 @@ mod_editor/core/nfl2k5_throw_tuning.py
 mod_editor/core/nfl2k5_crib.py
 mod_editor/core/nfl2k5_crib_electronics_targets.py
 mod_editor/core/nfl2k5_crib_geometry_writer.py
+mod_editor/core/nfl2k5_models.py
 mod_editor/core/nfl2k5_crib_scene_texture_writer.py
 mod_editor/core/nfl2k5_crib_standalone_texture_writer.py
 mod_editor/core/nfl2k5_digit_sheet.py
@@ -262,6 +263,7 @@ mod_editor/gui/gameplay_patches_panel_qt.py
 mod_editor/gui/presentation_panel_qt.py
 mod_editor/gui/share_panel_qt.py
 mod_editor/gui/sounds_panel_qt.py
+mod_editor/gui/models_panel_qt.py
 tools/nfl2k5_audo_swap.py
 tools/nfl2k5_commentary_swap.py
 tools/nfl2k5_fieldpack_texture_into_xiso.py

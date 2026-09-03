@@ -1,4 +1,22 @@
-# 2K5 Mod Studio — v1.0 RC79 Release Status
+# 2K5 Mod Studio — v1.0 RC80 Release Status
+
+## Beta 56 — ★ Models: export any model to Blender and back (2026-09-03)
+
+Source/UI versions are **2K5 RC80** and **APF alpha.84**; both use updater tag
+`beta-56`.
+
+- **★ Models page.** Export any of the 4,616 SCNE models on the loaded disc as
+  Blender-ready glTF (positions, normals, UVs, vertex colours, embedded textures,
+  skins, morph channel names, vertex-index lane) and import a same-topology edit
+  back into a copy of the disc (range widening, exact-match normals/UVs,
+  index-lane / order / nearest-vertex fitting, optimal-parse VC-LZ repack into the
+  retail span, pack located through the disc directory). Verified: seven models
+  round-trip through headless Blender 4.0 (joint counts, UV layers, index lane
+  survive; the referee's striped shirt fixes the UV convention); a Blender edit of
+  the referee imports, fits, and decodes back exactly; a whole-torso scale of the
+  player body (6,309 of 7,396 vertices moved) and a whole-head scale (all 11,727
+  vertices) both fit their retail spans. In-game witnessing of an imported model
+  is Noah's release gate.
 
 ## Beta 55 — every archive pack found through the disc directory (2026-09-03)
 

@@ -1,3 +1,23 @@
+# beta-56 — RC80 / alpha.84
+
+**Date:** 2026-09-03
+
+**2K5 Mod Studio:** `v1.0-RC80`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
+
+## New: ★ Models — every model out to Blender and back
+
+The ★ Models page lists every 3D model on your disc (players, helmets, face masks, balls,
+referees, coaches, cheerleaders, crowds, props, the Crib, menus, trophies, stadiums) and
+exports any of them as glTF 2.0 for Blender: triangles, normals, UVs, vertex colours, the
+textures the game draws it with, a skin with the game's joints on every animated model, and a
+vertex-index lane so an edited file finds its way back. Import fits your edited glTF/GLB onto the
+game's own vertices, re-encodes positions (widening the range when your edit needs it), keeps
+everything else exactly as shipped, rebuilds the resource into its retail span, and writes a copy
+of your disc. The report tells you what changed before anything is written; the README beside each
+export tells you what can change. Not yet: new vertices or triangles, bones, animations, morphs.
+
 # beta-55 — RC79 / alpha.84
 
 **Date:** 2026-09-03

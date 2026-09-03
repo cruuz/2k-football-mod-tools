@@ -819,6 +819,20 @@ class Nfl2k5StudioFacade:
             )
 
     @property
+    def models_source_paths(self) -> tuple[Path, Path] | None:
+        """(pack-0 archive index, resource inventory) of the private source cache, for the Models page.
+
+        Both files are derived from the user's own disc by the source cache, so a model exported
+        here is the user's own game data regardless of how their disc image is laid out.
+        """
+
+        with self._lock:
+            cache = self._cache
+            if cache is None:
+                return None
+            return (Path(cache.pack0), Path(cache.inventory))
+
+    @property
     def source_sha256(self) -> str | None:
         """Return the active source identity without exposing any game bytes."""
 

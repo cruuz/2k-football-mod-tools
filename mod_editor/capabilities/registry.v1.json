@@ -3736,7 +3736,10 @@
         "reports/specs/nfl2k5_crib_static_position_targets.v1.json",
         "mod_editor/core/nfl2k5_crib_geometry_writer.py",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py",
+        "mod_editor/core/nfl2k5_models.py",
+        "mod_editor/gui/models_panel_qt.py",
         "tests/mod_editor/test_nfl2k5_crib_geometry_writer.py",
+        "tests/mod_editor/test_nfl2k5_models.py",
         "reports/specs/nfl2k5_xbox_static_scne.v1.json"
       ],
       "game": "nfl2k5_xbox",
@@ -3744,11 +3747,11 @@
         "default_enabled": true,
         "expose": true,
         "mode": "edit",
-        "reason": "All eligible static SCNE meshes remain exportable. Mod Studio additionally imports edited glTF positions for the pinned full Stadium scene and ten exact Crib electronics meshes across seven scenes, enforcing identical vertex counts and triangle topology before fixed-span XISO staging."
+        "reason": "The Models page lists every scene on the loaded disc, exports any of them as Blender-ready glTF, and imports an edited glTF/GLB by fitting it onto the game's own vertices (vertex-index lane, order, or nearest vertex), re-encoding positions (range widened when needed), normals and UVs for exact matches, and rebuilding the resource into its retail span before writing a copy of the disc. Vertex count, topology, bones, weights and every other byte stay as shipped. The pinned Stadium/Crib position staging remains."
       },
       "id": "nfl2k5.models.scne_gltf",
       "input_constraints": [
-        "General SCNE export remains available; edited-glTF import is bounded to the pinned full Stadium scene and ten exact Crib electronics meshes across seven scenes.",
+        "Every SCNE exports; an edited glTF/GLB imports onto the same vertices only: the vertex count and triangle topology of the game's shape are kept, and a file with a different count is fitted by nearest vertex with a warning.",
         "Imports may move existing positions only. Vertex count and triangle topology must remain identical; UVs, materials, collision, indices, normals, all other vertex registers, commands, transforms, and opaque tails remain source bytes.",
         "Every recipe is checked against the user's exact source and must recompress into the original fixed SCNE allocation before it can be staged. Arbitrary topology replacement remains unsupported."
       ],
@@ -3767,18 +3770,18 @@
           "docs/research/nfl_group36_xemu_runtime_result_v2.md",
           "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json"
         ],
-        "scope": "Exported models open in standard tools. The product now compiles and stages bounded edited-glTF position recipes for one full Stadium scene and ten Crib meshes while preserving topology and non-position bytes. The older group36 diagnostic is visibly proved; runtime visibility of these broader product import targets and original-hardware acceptance remain untested.",
+        "scope": "Exported models open in Blender 4 (verified headless: meshes, UV layers, armatures with the game's joint counts, textures; the referee's shirt, shoes and cap only line up under the u=(n+1)/2, v=(1-n)/2 texture-coordinate mapping). Same-topology imports rebuild into the retail span with the wrapper byte-identical and decode back exactly; in-game witnessing of an imported model and original-hardware acceptance remain untested.",
         "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "4,616 canonical SCNE records / 4,007 nonempty exports; edited import for one pinned Stadium scene and seven pinned Crib scenes",
+            "allowed": "4,616 canonical SCNE records; every scene with decodable geometry exports and accepts a same-topology import",
             "name": "scene",
             "required": true
           }
         ],
-        "notes": "Every other scene remains export-only; arbitrary model replacement is not implied."
+        "notes": "Every scene is exportable and importable for same-topology vertex edits; adding or removing vertices/triangles, bones, animations and morph deltas are not implied (morph channels are exported as names only)."
       },
       "source_container": {
         "format": "NFL SCNE resources in VC archive",
@@ -3788,7 +3791,7 @@
         "resource": "4,616 SCNE resources",
         "retail_file": "ESPN NFL 2K5 (USA).xiso.iso"
       },
-      "summary": "Export NFL 2K5 static scene geometry and import bounded same-count, same-topology position edits for one full Stadium scene plus ten Crib electronics meshes across seven scenes.",
+      "summary": "Export every NFL 2K5 SCNE model (4,616 scenes) as glTF with positions, normals, UVs, vertex colours, embedded textures and skins, and import same-topology vertex edits for any of them into a copy of the disc, plus the earlier bounded Stadium/Crib position staging.",
       "surface": "models_shap_scne",
       "title": "NFL 2K5 bounded SCNE glTF editing",
       "validation_command": "bash tools/validate_nfl_static_gltf.sh"
