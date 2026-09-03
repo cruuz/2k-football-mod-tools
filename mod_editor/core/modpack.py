@@ -790,7 +790,7 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
         from mod_editor.core import (nfl2k5_accel_ramp, nfl2k5_camera, nfl2k5_catch_slider, nfl2k5_draft_ai,
                                      nfl2k5_edge_rename, nfl2k5_kick_rules, nfl2k5_modern_positions,
                                      nfl2k5_position_pools, nfl2k5_progression, nfl2k5_returner_fix,
-                                     nfl2k5_season_length, nfl2k5_widescreen, nfl2k5_overtime)
+                                     nfl2k5_season_length, nfl2k5_widescreen, nfl2k5_overtime, nfl2k5_seven_on_seven)
         for label, module in (("catch_slider", nfl2k5_catch_slider),
                               ("accel_ramp", nfl2k5_accel_ramp),
                               ("draft_ai", nfl2k5_draft_ai),
@@ -803,7 +803,8 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
                               ("position_pools", nfl2k5_position_pools),
                               ("season_2026", _SeasonStatus),
                               ("widescreen", nfl2k5_widescreen),
-                              ("overtime", nfl2k5_overtime)):
+                              ("overtime", nfl2k5_overtime),
+                              ("seven_on_seven", nfl2k5_seven_on_seven)):
             try:
                 before, after = module.status(base_xbe), module.status(patched_xbe)
             except Exception:  # noqa: BLE001
@@ -860,7 +861,7 @@ def describe_operation(operation: Mapping[str, Any]) -> str:
         return (f"Throw Distance & Arc: max deep {operation.get('max_deep_yards')} yd, arc {operation.get('arc')}"
                 + (", realistic flight" if operation.get("realistic_flight") else "")
                 + (", arc by distance (retail to 40 yd, 45-60 high, 63+ flat)" if operation.get("arc_by_distance") else ""))
-    if op in ("catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "edge_rename", "scheme_labels", "camera", "kick_rules", "kick_power", "position_pools", "season_2026", "widescreen", "overtime"):
+    if op in ("catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "edge_rename", "scheme_labels", "camera", "kick_rules", "kick_power", "position_pools", "season_2026", "widescreen", "overtime", "seven_on_seven"):
         label = {"catch_slider": "Catch slider cave", "accel_ramp": "Acceleration ramp cave", "draft_ai": "Franchise draft AI",
                  "returner_fix": "KR/PR returner fix", "progression": "NFL-shaped progression", "edge_rename": "DE -> EDGE rename",
                  "scheme_labels": "Scheme depth-chart labels (SAM/MIKE/WILL, EDGE, NT)", "camera": "Standard camera = the Far look",
@@ -869,7 +870,8 @@ def describe_operation(operation: Mapping[str, Any]) -> str:
                  "position_pools": "One EDGE / LB / interior pool across 4-3 and 3-4 (XBE + playbooks + rosters)",
                  "season_2026": "2026 franchise (real schedule, 17 games / 18 weeks, 3-game preseason, 14-team playoffs, 2026 dates, rookie birth years)",
                  "widescreen": "Widescreen hor+ 16:9 (needs xemu aspect 16x9)",
-                 "overtime": "Modern overtime (both possess, 10-min regular season, playoffs to a winner)"}[op]
+                 "overtime": "Modern overtime (both possess, 10-min regular season, playoffs to a winner)",
+                 "seven_on_seven": "7-on-7 practice mode (Practice Type 7-On-7 + the 7-on-7 sets in the practice playbook)"}[op]
         return f"{label}: {'on' if operation.get('enabled') else operation.get('status', 'off')}"
     if op == "scorebug_layout":
         textures = operation.get("textures_asset") or {}

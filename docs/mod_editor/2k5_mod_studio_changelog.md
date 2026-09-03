@@ -40,6 +40,17 @@
   row read "--"; a mid-season trade shows the season-end team. Six column lists get the new
   pointer in place; the caves live in the unused tail of the dead `FUN_00046ee0` (0x47220..0x47420).
   Unwitnessed in game; the caves run under unicorn in `tests/mod_editor/test_nfl2k5_team_column.py`.
+- **7-on-7 practice mode (Experimental preset, or its own checkbox on Gameplay Patches and Build).**
+  Practice -> Scrimmage -> Practice Type gains a fifth value, **7-On-7**: it plays as Full
+  Scrimmage with the practice playbook loaded for both teams (Basic Training's own path) and
+  the pass rush off, and the practice book gains three 7-on-7 passing sets (Trips, Spread,
+  Ace) with nine pass concepts, two coverage sets (4-3 and Nickel looks) with six coverages,
+  and five clearly named personnel groups. The engine always fields eleven, so the four
+  linemen of each side stand idle at the sideline by design (the retail Basic Training idle
+  chain), and one parked defender rushes after a 4-second count as the throw timer. The 27
+  retail practice plays carry the AI-excluded flag so a CPU-called defence is always a 7-on-7
+  coverage. Executable: nine spans plus a 256-byte cave in the dead routine at 0x1AC170; data:
+  PRACTICE-pb.iff in place, wrapper untouched. Needs a disc image. Unwitnessed in game.
 
 ## v1.0 RC80 — ★ Models: export any model to Blender and back (2026-09-03)
 

@@ -79,7 +79,7 @@ class PresetTests(unittest.TestCase):
         # nothing that changes the 2004 rules, names or presentation
         self.assertFalse(plan.edge_rename or plan.kick_rules or plan.overtime or plan.accel_ramp or plan.progression
                          or plan.scorebug or plan.arc_by_distance or plan.scheme_labels or plan.camera
-                         or plan.position_pools or plan.season_2026 or plan.widescreen or plan.kickoff_alignment)
+                         or plan.position_pools or plan.season_2026 or plan.widescreen or plan.kickoff_alignment or plan.seven_on_seven)
         self.assertEqual(plan.max_deep_yards, 80.0)
         self.assertEqual((plan.source, plan.target), ("s", "t"))
         self.assertIn("basic", plan.name)
@@ -95,7 +95,7 @@ class PresetTests(unittest.TestCase):
         plan = mod_build.apply_preset(mod_build.BuildPlan(source="s", target="t"), "softdrink_advanced")
         self.assertTrue(plan.accel_ramp and plan.progression and plan.scorebug and plan.arc_by_distance and plan.position_pools
                         and plan.season_2026 and plan.edge_rename and plan.overtime and plan.camera and plan.scheme_labels)
-        self.assertFalse(plan.widescreen or plan.kickoff_alignment)
+        self.assertFalse(plan.widescreen or plan.kickoff_alignment or plan.seven_on_seven)
 
     def test_experimental_is_advanced_plus_widescreen_and_kickoff_lineup(self) -> None:
         advanced = mod_build.PRESETS["softdrink_advanced"]
@@ -104,7 +104,7 @@ class PresetTests(unittest.TestCase):
             if value is True:
                 self.assertTrue(experimental.get(key), key)
         plan = mod_build.apply_preset(mod_build.BuildPlan(source="s", target="t"), "softdrink_experimental")
-        self.assertTrue(plan.widescreen and plan.kickoff_alignment)
+        self.assertTrue(plan.widescreen and plan.kickoff_alignment and plan.seven_on_seven)
         self.assertIn("experimental", plan.name)
 
     def test_every_preset_names_every_toggle(self) -> None:

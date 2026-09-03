@@ -68,6 +68,7 @@ def _kick_power_status(payload: bytes) -> str:
 from . import nfl2k5_widescreen as widescreen_patch
 from . import nfl2k5_overtime as overtime_patch
 from . import nfl2k5_team_column as team_column_patch
+from . import nfl2k5_seven_on_seven as seven_on_seven_patch
 from .nfl2k5_bump_strength import (
     RETAIL_XBE_SHA256,
     _Section,
@@ -585,6 +586,7 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "widescreen": widescreen_patch.status(payload),
         "overtime": overtime_patch.status(payload),
         "team_column": team_column_patch.status(payload),
+        "seven_on_seven": seven_on_seven_patch.status(payload),
         "path": str(path),
         "xbe_sha256": _digest(payload),
         "matches_retail_sha256": _digest(payload) == RETAIL_XBE_SHA256,
@@ -677,6 +679,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "widescreen": widescreen_patch.status(payload),
         "overtime": overtime_patch.status(payload),
         "team_column": team_column_patch.status(payload),
+        "seven_on_seven": seven_on_seven_patch.status(payload),
         "path": str(path),
         "xbe_byte_offset": offset,
         "xbe_sha256": _digest(payload),
@@ -840,7 +843,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                camera: bool = False, kick_rules: bool = False,
                widescreen: bool = False, overtime: bool = False,
                arc_table: bool = False, kick_power: bool = False,
-               team_column: bool = False) -> tuple[bytes, dict[str, object]]:
+               team_column: bool = False,
+               seven_on_seven: bool = False) -> tuple[bytes, dict[str, object]]:
     """Curves (if any), the relocated arc-by-distance table (if asked), then the catch-slider,
     acceleration-ramp, draft-AI, EDGE-rename, returner and progression patches (if asked)."""
 
@@ -918,7 +922,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                                      (camera, camera_patch, "camera_patch", "camera"),
                                      (widescreen, widescreen_patch, "widescreen_patch", "widescreen"),
                                      (overtime, overtime_patch, "overtime_patch", "overtime"),
-                                     (team_column, team_column_patch, "team_column_patch", "TEAM-column")):
+                                     (team_column, team_column_patch, "team_column_patch", "TEAM-column"),
+                                     (seven_on_seven, seven_on_seven_patch, "seven_on_seven_patch", "7-on-7 practice")):
         if not flag:
             continue
         state = module.status(patched)
@@ -952,18 +957,19 @@ def write_xbe_copy(
     overtime: bool = False,
     kick_power: bool = False,
     team_column: bool = False,
+    seven_on_seven: bool = False,
 ) -> dict[str, object]:
     """Write a patched COPY of ``source_xbe`` to ``target_xbe``."""
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven,
              "nothing requested")
     source = _resolve_source(source_xbe)
     target = Path(target_xbe).expanduser()
     _prepare_target(source, target, overwrite)
     original = source.read_bytes()
     arc_table = settings is not None and settings.arc_by_distance
-    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column)
+    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven)
     _require(patched != original, "nothing to write: the requested curves and patches already match the file")
     descriptor = _open_binary(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
     try:
@@ -1000,6 +1006,7 @@ def write_xbe_copy(
         "widescreen": widescreen_patch.status(result),
         "overtime": overtime_patch.status(result),
         "team_column": team_column_patch.status(result),
+        "seven_on_seven": seven_on_seven_patch.status(result),
         "source": {"path": str(source), "sha256": _digest(original),
                    "matches_retail_sha256": _digest(original) == RETAIL_XBE_SHA256},
         "target": {"path": str(target), "sha256": _digest(result)},
@@ -1039,6 +1046,7 @@ def write_image_copy(
     overtime: bool = False,
     kick_power: bool = False,
     team_column: bool = False,
+    seven_on_seven: bool = False,
 ) -> dict[str, object]:
     """Copy a disc image and patch ``default.xbe`` inside the COPY.
 
@@ -1048,7 +1056,7 @@ def write_image_copy(
     """
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven,
              "nothing requested")
     source = _resolve_source(source_image)
     target = Path(target_image).expanduser()
@@ -1062,7 +1070,7 @@ def write_image_copy(
         original = platform_compat.pread(src, length, offset)
         _require(len(original) == length, "short read of default.xbe from the source image")
         arc_table = settings is not None and settings.arc_by_distance
-        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column)
+        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven)
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
         if edge_rename:
@@ -1147,6 +1155,7 @@ def write_image_copy(
         "widescreen": widescreen_patch.status(after),
         "overtime": overtime_patch.status(after),
         "team_column": team_column_patch.status(after),
+        "seven_on_seven": seven_on_seven_patch.status(after),
         "source": {"path": str(source), "size": size, "xbe_sha256": _digest(original),
                    "xbe_matches_retail_sha256": _digest(original) == RETAIL_XBE_SHA256},
         "target": {"path": str(target), "size": size, "xbe_sha256": _digest(after)},
