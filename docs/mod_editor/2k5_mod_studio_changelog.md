@@ -1,5 +1,30 @@
 # 2K5 Mod Studio — Product Changelog
 
+## Unreleased (stacked for the next beta) — ★ Models: export any model to Blender and back
+
+- **New: ★ Models.** Every 3D model on the loaded disc (players, helmets and face
+  masks, balls, referees, coaches, cheerleaders, crowds, props, the Crib, menus,
+  trophies, stadiums; 4,616 scenes, listed by name in about a second) exports as a
+  glTF 2.0 file that opens in Blender: triangles, normals, UVs, vertex colours,
+  the embedded textures the game draws it with, a skin with the game's joints for
+  every animated model, morph channel names, and a vertex-index lane. A README
+  beside each export says what can change.
+- **Import an edited glTF/GLB.** Move vertices freely and bring the file back:
+  the game's vertex count, triangles, bones, weights and every other byte are
+  kept; positions (and normals / UVs for exactly matched vertices) are re-encoded
+  into the game's fixed-point lanes, the encodable range is widened when an edit
+  needs it, Blender's re-ordered or split vertices are mapped back through the
+  index lane (or by order / nearest vertex with a warning), the resource is
+  rebuilt into its retail span with the wrapper untouched, and a COPY of the disc
+  is written with the pack located through the disc's own directory. The report
+  says exactly what changed before anything is written.
+- The disc reserves a fixed compressed size per model; the importer packs with an
+  optimal-parse VC-LZ encoder that beats the game's own packer by 0.4 to 1.3
+  percent, which is the headroom an edit needs. Very heavy edits can still exceed
+  it and are refused with the arithmetic.
+- Not yet: adding or removing vertices or triangles, new bones or animations, and
+  body-type / face morph deltas (channels are listed, not editable).
+
 ## v1.0 RC79 — every archive pack found through the disc directory (2026-09-03)
 
 - **Fix: Build → Advanced on any dump of the disc.** A legal USA retail `.iso`
