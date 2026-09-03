@@ -1,3 +1,86 @@
+# beta-54 — RC78 / alpha.84
+
+**Date:** 2026-09-03
+
+**2K5 Mod Studio:** `v1.0-RC78`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (identity ride-along; no APF surface change)
+
+## New: ★ Build & Share — "Start with the SOFTDRINK patch"
+
+One page builds a patched copy of your disc image (or default.xbe) from a
+checklist, and three buttons tick a known-good set before you build:
+
+- **Basic: the 2004 game, just the 2K5 fixes.** Throw ceiling 80 with realistic
+  flight, Catching / Interception sliders that actually decide drops and picks
+  (Catching to 200), franchise draft and free-agency AI that drafts by value and
+  need (the Rookie Report never ranks a FB, K or P in the top 25), real kick and
+  punt returners on CPU depth charts, and kicking power re-spaced so elite legs
+  reach ~70 yards. Retail kick spots, names, rules and presentation.
+- **Advanced: everything modern.** Basic plus Defensive End → EDGE game-wide,
+  modern kicking (kickoff 35, touchback 35, PAT from the 15), modern overtime
+  (both teams possess, 10-minute regular season with ties, playoffs play on),
+  acceleration ramp, NFL-shaped progression, arc by distance (short game retail,
+  45–60 yd lobs hang, 63+ flat), the ESPN scorebug bar (bottom centre, stays up
+  during plays, repainted textures, kick meter lifted, lineup strip off),
+  depth-chart positions by scheme (SAM / MIKE / WILL, 3-4 NT / EDGE), one EDGE /
+  LB / interior pool across schemes (rosters, playbooks, free agency, draft, team
+  ratings), the Far-look default camera, and the 2026 franchise: real 2026
+  schedule, three-game preseason, 17 games over 18 weeks, 14-team playoffs, 2026
+  dates and rookie birth years.
+- **Experimental: advanced + widescreen + rough edges.** Widescreen hor+ 16:9
+  (wider 3D view; HUD, menus and play art keep their 4:3 sizing; set xemu's
+  Display aspect to 16x9) and the dynamic-kickoff line-up (alignment only).
+
+Every toggle is pattern-checked against retail bytes, refuses a source whose
+sites are neither retail nor this patch, writes a COPY, reads it back and
+leaves a receipt beside it. xemu-only, like every executable edit here.
+
+## New: Share tab (`.2k5patch`)
+
+Export the difference between your patched copy and the base it came from as a
+small patch file (byte runs, your source PNGs / WAVs, a recipe), inspect or
+dry-run it against any disc, and apply it to a copy of your own image; every run
+is verified against the SHA-256 of the bytes it replaces before anything is
+written. The two SOFTDRINK presets ship as `.2k5patch` files with this release.
+
+## New: Sounds and Commentary
+
+Audio → Sounds replaces any game sound (crowd, QB cadence, chants, PA, SFX) across
+every sub-bank from a WAV, with export, fit line and verify. Commentary swaps a
+stored line for your own recording. Both verified statically; witness in game.
+
+## Also
+
+- Throw Distance & Arc gained the arc-by-distance, catch, acceleration, draft,
+  returner, progression and EDGE toggles; the lob-speed table now keeps the retail
+  short-game points exactly.
+- Gameplay Patches and Presentation pages expose the same toggles individually.
+
+## Also in this beta
+
+- **Getting Started** has a "Start with the SOFTDRINK patch" button that opens Build & Share.
+- **Share, the easy way:** after a Build, the Share tab's top button exports a `.2k5patch`
+  next to your copy in one click (base, copy, name and file pre-filled).
+- The Build tab's checklist is drawn large and high-contrast so every ticked patch reads at a glance.
+- Disc-image patching no longer depends on POSIX-only positional reads: the same code path runs on
+  Windows and macOS (seek-based fallback), and every image handle opens in binary mode.
+- "Field Art & Create-Team Art" now explains itself: it is the game's own Create-a-Team teams
+  (fictional by design); real NFL end zones and midfield art live under All Textures / Stadiums.
+
+## Known limits (beta)
+
+- **The ESPN scorebug toggle reads "Not available in this build" in the installed studio.** Its
+  repainted art and the retail scorebug mesh are not shipped (retail-free release rule); the
+  Advanced preset skips it and says so. The full Advanced experience, scorebug included, is the
+  `SOFTDRINK patch advanced` `.2k5patch` published with this release: Share → Apply it to your own copy.
+
+- Dynamic kickoff phase 2 (players hold until the ball lands, CPU kicker range)
+  is not built; the alignment toggle may draw a kickoff flag — report it.
+- Team names, cities and "Super Bowl 2005" text are still 2004; no Pro Bowl in
+  the 18-week season; the 2027 preseason reuses the 2026 opponents.
+- Widescreen: the injury banner and a few full-screen fades are unproven.
+
 # beta-53 — RC77 / alpha.84
 
 **Date:** 2026-09-02

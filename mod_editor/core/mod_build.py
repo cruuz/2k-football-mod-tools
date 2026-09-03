@@ -1,0 +1,418 @@
+"""One build plan → one patched copy → one receipt.
+
+Every patch the studio can make today is a byte-level edit of a COPY of the user's disc image:
+the throw curve tables, the executable caves (Catching/Interception sliders, acceleration ramp,
+franchise draft AI), the DE→EDGE strings, the ESPN scorebug bar with its textures, commentary
+line swaps.  Until now each lived behind its own panel and its own copy step.  ``build`` applies a
+whole :class:`BuildPlan` to one copy in a fixed order, streams progress, and returns a receipt
+that the mod-pack exporter can store as the pack's recipe.
+
+The modules that are still being written by other work streams (EDGE rename, commentary swap)
+are imported lazily and reported as "unavailable" when absent, so this file never breaks the
+studio while they land.
+"""
+
+from __future__ import annotations
+
+import importlib
+import json
+import os
+
+from mod_editor.core import platform_compat
+import shutil
+import sys
+from collections.abc import Callable
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+from typing import Any
+
+from . import nfl2k5_throw_tuning as tt
+
+ProgressSink = Callable[[str, int, int], None]
+ROOT = Path(__file__).resolve().parents[2]
+PACK0_SIZE = 193_710_080   # vc_53450030/0 (retail); the schedule template lives in its ROST resource
+
+
+def _tools_module(name: str):
+    tools = ROOT / "tools"
+    if str(tools) not in sys.path:
+        sys.path.insert(0, str(tools))
+    try:
+        return importlib.import_module(name)
+    except Exception:  # noqa: BLE001 - optional module not present yet
+        return None
+
+
+def _core_module(name: str):
+    try:
+        return importlib.import_module(f"mod_editor.core.{name}")
+    except Exception:  # noqa: BLE001
+        return None
+
+
+@dataclass
+class CommentarySwap:
+    stream: str            # bank/stream id as the commentary tool names it
+    wav: str               # path to the replacement WAV
+
+
+@dataclass
+class BuildPlan:
+    source: str
+    target: str
+    overwrite: bool = False
+    # gameplay
+    throw: bool = False
+    max_deep_yards: float = 55.0
+    arc: float = 0.0
+    realistic_flight: bool = False
+    arc_by_distance: bool = False   # 45-60 yd lobs hang high, 61+ stay flat
+    catch_slider: bool = False
+    accel_ramp: bool = False
+    draft_ai: bool = False
+    returner_fix: bool = False
+    progression: bool = False
+    scheme_labels: bool = False   # depth-chart slot labels by scheme: 4-3 SAM/MIKE/WILL, 3-4 EDGE/MIKE/WILL/NT
+    camera: bool = False          # Standard camera preset -> the Far look (retail Far geometry + lens 28/24); Far untouched
+    kick_rules: bool = False      # kickoff 35 / touchback 35 (2026) / PAT 15, FG ceiling ~70 yd for elite legs
+    kick_power: bool = False      # FG ceiling ~70 yd for elite legs ONLY (retail kick spots) - the BASIC preset's kicking fix
+    # dynamic-kickoff alignment (2024+ rule, PHASE 1 = data only): coverage on the receiving 40, return
+    # setup zone 35-30 with two returners deep, 5-yd kicker run-up; rewrites the Kickoff / Kick Return
+    # formations of the 36 kicking playbooks; needs a disc image; opt-in until witnessed
+    kickoff_alignment: bool = False
+    # one EDGE / one LB / one interior pool across 4-3 and 3-4 (XBE pools + playbook recode + ROST
+    # reclassification; needs a disc image; implies scheme_labels)
+    position_pools: bool = False
+    # 2026 season: real 2026 schedule template in pack 0 (17 games, 18 weeks, one bye; the real 3-game
+    # preseason after it) + year/calendar/season-length/14-team-playoffs/preseason executable patches
+    # (rookie birth years and the DOB line follow the year); needs a disc image
+    season_2026: bool = False
+    # hor+ 16:9: the 3D view widens, HUD/menus/scorebug stay 4:3-proportioned; needs xemu [display.ui]
+    # aspect_ratio = '16x9'. Opt-in only (not in a preset) until witnessed in game.
+    widescreen: bool = False
+    overtime: bool = False        # 2025+ NFL overtime: both teams possess, 10-min regular season w/ ties, playoffs to a winner
+    # text
+    edge_rename: bool = False
+    # presentation
+    scorebug: bool = False
+    commentary: list[CommentarySwap] = field(default_factory=list)
+    # free-form description carried into receipts / packs
+    name: str = ""
+    author: str = ""
+    notes: str = ""
+
+    def wants_xbe_patch(self) -> bool:
+        return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
+                or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools
+                or self.season_2026 or self.widescreen or self.overtime)
+
+    def to_recipe(self) -> dict[str, Any]:
+        d = asdict(self)
+        d.pop("source"); d.pop("target"); d.pop("overwrite")
+        return d
+
+
+# ---------------------------------------------------------------------------------------------
+# SOFTDRINK patch presets (Noah, 9/3): one click to start from a known-good set, then customise.
+#   basic    = gameplay/logic fixes only, stock feel — what an official update would have shipped
+#   advanced = basic + every modern tweak (presentation, feel, era)
+# Each maps BuildPlan field -> value; fields not listed keep the plan's defaults.  Patches that do
+# not exist yet in this build are simply absent (availability() says which are missing).
+PRESETS: dict[str, dict[str, Any]] = {
+    # BASIC keeps the game in 2004: only the fixes a 2K5 update would have shipped.
+    "softdrink_basic": {
+        "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": False,
+        "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
+        "edge_rename": False, "scorebug": False, "scheme_labels": False, "camera": False,
+        "kick_rules": False, "kick_power": True, "kickoff_alignment": False,
+        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False,
+    },
+    # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
+    "softdrink_advanced": {
+        "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
+        "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
+        "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
+        "kick_rules": True, "kick_power": False, "kickoff_alignment": False,
+        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True,
+    },
+    # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
+    "softdrink_experimental": {
+        "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
+        "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
+        "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
+        "kick_rules": True, "kick_power": False, "kickoff_alignment": True,
+        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True,
+    },
+}
+PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
+                 "softdrink_advanced": "SOFTDRINK patch: advanced (everything modern)",
+                 "softdrink_experimental": "SOFTDRINK patch: experimental (advanced + widescreen + rough edges)"}
+
+
+def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
+    """Return a copy of ``plan`` with the named preset's toggles set (source/target/name kept)."""
+
+    if name not in PRESETS:
+        raise KeyError(f"unknown preset {name!r}; choose from {sorted(PRESETS)}")
+    values = dict(asdict(plan))
+    values["commentary"] = list(plan.commentary)
+    values.update(PRESETS[name])
+    if not values.get("name"):
+        values["name"] = PRESET_TITLES[name]
+    return BuildPlan(**values)
+
+
+def availability() -> dict[str, bool]:
+    """Which optional patch modules are present in this build."""
+
+    return {
+        "throw": True, "catch_slider": True, "accel_ramp": True, "draft_ai": True,
+        "returner_fix": _core_module("nfl2k5_returner_fix") is not None,
+        "progression": _core_module("nfl2k5_progression") is not None,
+        "scheme_labels": _core_module("nfl2k5_modern_positions") is not None,
+        "camera": _core_module("nfl2k5_camera") is not None,
+        "kick_rules": _core_module("nfl2k5_kick_rules") is not None,
+        "kickoff_alignment": _tools_module("nfl2k5_kickoff_alignment") is not None,
+        "widescreen": _core_module("nfl2k5_widescreen") is not None,
+        "overtime": _core_module("nfl2k5_overtime") is not None,
+        "season_2026": (_core_module("nfl2k5_season_length") is not None
+                        and _tools_module("nfl2k5_franchise_schedule") is not None
+                        and (ROOT / "data" / "nfl_2026_schedule.json").exists()),
+        "position_pools": (_core_module("nfl2k5_position_pools") is not None
+                           and _tools_module("nfl2k5_playbook_position_recode") is not None
+                           and _tools_module("nfl2k5_roster_reclassify") is not None),
+        "scorebug": (_tools_module("nfl2k5_scorebug_layout") is not None
+                     and (ROOT / "mod_editor" / "assets" / "nfl2k5_scorebug_espn" / "shield_espn_modern.png").exists()
+                     and (ROOT / "assets" / "intermediate" / "nfl2k5" / "models" / "0346_0078_score_bug.gltf").exists()),
+        "edge_rename": _core_module("nfl2k5_edge_rename") is not None,
+        "commentary": _tools_module("nfl2k5_commentary_swap") is not None,
+    }
+
+
+def inspect(source: Path | str) -> dict[str, Any]:
+    """Current state of every patch in ``source`` (a default.xbe or a disc image)."""
+
+    source = Path(source)
+    report = tt.read_any(source)
+    out: dict[str, Any] = {
+        "path": str(source), "container": report.get("container"),
+        "throw": report["settings"], "catch_slider": report.get("catch_slider"),
+        "accel_ramp": report.get("accel_ramp"), "draft_ai": report.get("draft_ai"),
+        "returner_fix": report.get("returner_fix", "unknown"), "progression": report.get("progression", "unknown"),
+        "scheme_labels": report.get("scheme_labels", "unknown"), "camera": report.get("camera", "unknown"),
+        "kick_rules": report.get("kick_rules", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
+        "overtime": report.get("overtime", "unknown"),
+        "position_pools": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
+        "scorebug": "n/a", "edge_rename": "unknown", "commentary": "unknown",
+    }
+    if report.get("container") == "xiso":
+        align = _tools_module("nfl2k5_kickoff_alignment")
+        if align is not None:
+            try:
+                out["kickoff_alignment"] = align.status(source)["status"]
+            except Exception:  # noqa: BLE001
+                out["kickoff_alignment"] = "foreign"
+        pools = _core_module("nfl2k5_position_pools")
+        if pools is not None:
+            try:
+                out["position_pools"] = pools.status(_xbe_bytes(source))
+            except Exception:  # noqa: BLE001
+                out["position_pools"] = "foreign"
+        season = _core_module("nfl2k5_season_length")
+        if season is not None:
+            try:
+                out["season_2026"] = season.simple_status(_xbe_bytes(source))
+            except Exception:  # noqa: BLE001
+                out["season_2026"] = "foreign"
+        sbl = _tools_module("nfl2k5_scorebug_layout")
+        if sbl is not None:
+            try:
+                out["scorebug"] = sbl.status(source)
+            except Exception:  # noqa: BLE001
+                out["scorebug"] = "foreign"
+    if "edge_rename" in report:
+        out["edge_rename"] = report.get("edge_rename")
+        out["edge_rename_disc"] = report.get("edge_rename_disc")
+    return out
+
+
+def _xbe_bytes(source: Path) -> bytes:
+    if tt.is_disc_image(source):
+        fd = os.open(source, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+        try:
+            size = os.fstat(fd).st_size
+            off, length = tt.image_xbe_extent(fd, size)
+            return platform_compat.pread(fd, length, off)
+        finally:
+            os.close(fd)
+    return source.read_bytes()
+
+
+def _write_xbe_bytes(target: Path, payload: bytes) -> None:
+    if tt.is_disc_image(target):
+        fd = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
+        try:
+            size = os.fstat(fd).st_size
+            off, length = tt.image_xbe_extent(fd, size)
+            if length != len(payload):
+                raise ValueError("default.xbe size changed")
+            platform_compat.pwrite(fd, payload, off)
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    else:
+        target.write_bytes(payload)
+
+
+def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
+    """Apply the whole plan to a copy of ``plan.source`` at ``plan.target``; return the receipt."""
+
+    progress = progress or (lambda *_a: None)
+    source, target = Path(plan.source), Path(plan.target)
+    if target.exists() and target.resolve() == source.resolve():
+        raise ValueError("target must not be the source")
+    if target.exists() and not plan.overwrite:
+        raise FileExistsError(f"{target} exists")
+    receipt: dict[str, Any] = {"plan": plan.to_recipe(), "steps": [], "source": str(source), "target": str(target)}
+    is_image = tt.is_disc_image(source)
+    if plan.scorebug and not is_image:
+        raise ValueError("the ESPN scorebug needs a disc image (the mesh lives in the field pack)")
+    if plan.position_pools and not is_image:
+        raise ValueError("one-pool positions need a disc image (playbooks and rosters live on the disc)")
+    if plan.season_2026 and not is_image:
+        raise ValueError("the 2026 season needs a disc image (the schedule template lives in pack 0)")
+    if plan.kickoff_alignment and not is_image:
+        raise ValueError("the dynamic-kickoff alignment needs a disc image (the formations live in the playbooks)")
+
+    # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
+    #    including its disc text spans when the source is an image)
+    if plan.wants_xbe_patch() or plan.edge_rename:
+        progress("Copying and patching default.xbe", 0, 0)
+        settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
+        kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
+                                  "catch_slider": plan.catch_slider, "accel_ramp": plan.accel_ramp,
+                                  "draft_ai": plan.draft_ai, "edge_rename": plan.edge_rename,
+                                  "returner_fix": plan.returner_fix, "progression": plan.progression,
+                                  "scheme_labels": plan.scheme_labels or plan.position_pools,
+                                  "camera": plan.camera, "kick_rules": plan.kick_rules, "kick_power": plan.kick_power, "widescreen": plan.widescreen,
+                                  "overtime": plan.overtime}
+        if settings is not None:
+            kwargs["settings"] = settings
+        step = tt.write_copy(source, target, **kwargs)
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "widescreen", "overtime", "changed_byte_count")}})
+    else:
+        progress("Copying the image", 0, 0)
+        if target.exists():
+            target.unlink()
+        shutil.copyfile(source, target)
+        receipt["steps"].append({"step": "copy"})
+
+    # 3. presentation on the copy
+    if plan.scorebug:
+        sbl = _tools_module("nfl2k5_scorebug_layout")
+        if sbl is None:
+            raise RuntimeError("scorebug layout tool is not available in this build")
+        progress("Re-laying the scorebug (mesh, placement, textures)", 0, 0)
+        rec = sbl.apply_in_place(target)
+        receipt["steps"].append({"step": "scorebug", **{k: rec.get(k) for k in ("filled_bytes", "padding_bytes", "wrapper_identical", "root", "textures", "text_colours", "persistent", "hud_layout", "layout")}})
+    if plan.position_pools:
+        pools = _core_module("nfl2k5_position_pools")
+        recode = _tools_module("nfl2k5_playbook_position_recode")
+        roster = _tools_module("nfl2k5_roster_reclassify")
+        if pools is None or recode is None or roster is None:
+            raise RuntimeError("one-pool position modules are not available in this build")
+        progress("Merging the EDGE / LB / interior pools in the executable", 0, 0)
+        xbe = _xbe_bytes(target)
+        state = pools.status(xbe)
+        if state == "retail":
+            xbe, pools_receipt = pools.apply(xbe)
+            _write_xbe_bytes(target, xbe)
+        elif state == "applied":
+            pools_receipt = {"already_applied": True}
+        else:
+            raise ValueError(f"position-pool sites are {state}; refusing")
+        progress("Recoding the 37 playbooks' defensive categories", 0, 0)
+        book_receipt = recode.apply(target, progress=lambda msg: progress(msg, 0, 0))
+        progress("Reclassifying rosters into the merged pools", 0, 0)
+        roster_receipt = roster.apply(target, progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "position_pools", "xbe": pools_receipt,
+                                 "playbooks": {k: v for k, v in book_receipt.items() if k not in ("books", "rows")},
+                                 "rosters": {k: v for k, v in roster_receipt.items() if k not in ("moves", "teams")}})
+    if plan.kickoff_alignment:
+        align = _tools_module("nfl2k5_kickoff_alignment")
+        if align is None:
+            raise RuntimeError("the kickoff alignment tool is not available in this build")
+        progress("Lining up the dynamic kickoff (coverage on the 40, setup zone 35-30)", 0, 0)
+        align_receipt = align.apply(target, progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "kickoff_alignment",
+                                 **{k: align_receipt[k] for k in ("status", "kicker_depth_yd", "changed_bytes", "books")}})
+    if plan.season_2026:
+        season = _core_module("nfl2k5_season_length")
+        fs = _tools_module("nfl2k5_franchise_schedule")
+        if season is None or fs is None:
+            raise RuntimeError("2026 season modules are not available in this build")
+        progress("Setting the franchise to 2026 (year, calendar, 18-week season)", 0, 0)
+        xbe = _xbe_bytes(target)
+        state = season.simple_status(xbe)
+        if state == "retail":
+            xbe, season_receipt = season.apply(xbe)
+            _write_xbe_bytes(target, xbe)
+        elif state == "applied":
+            season_receipt = {"already_applied": True}
+        else:
+            raise ValueError(f"season-length sites are {state}; refusing")
+        progress("Writing the real 2026 schedule into the franchise template", 0, 0)
+        doc = json.loads((ROOT / "data" / "nfl_2026_schedule.json").read_text(encoding="utf-8"))
+        template, info = fs.encode_schedule(doc)
+        # the 3-game preseason block goes right after the regular-season records (read by the
+        # rewritten generator of the season patch's ``preseason`` group)
+        preseason_block, preseason_info = fs.encode_preseason(doc) if hasattr(fs, "encode_preseason") else (b"", {"games": 0})
+        sbl = _tools_module("nfl2k5_scorebug_layout")
+        pack_offset = int(sbl.XISO_PACK_BYTE_OFFSET) if sbl is not None else 1_631_188_992
+        fd = os.open(target, os.O_RDWR | getattr(os, "O_BINARY", 0))
+        try:
+            pack = platform_compat.pread(fd, PACK0_SIZE, pack_offset)
+            pstate = fs.pack_status(pack)
+            if pstate["state"] == "retail":
+                patched, pack_receipt = fs.apply_pack(pack, template, preseason=preseason_block)
+                written = 0
+                start = None
+                for i in range(len(pack)):
+                    if pack[i] != patched[i]:
+                        if start is None:
+                            start = i
+                    elif start is not None:
+                        platform_compat.pwrite(fd, patched[start:i], pack_offset + start)
+                        written += i - start
+                        start = None
+                if start is not None:
+                    platform_compat.pwrite(fd, patched[start:], pack_offset + start)
+                    written += len(pack) - start
+                os.fsync(fd)
+                pack_receipt = {**{k: v for k, v in pack_receipt.items() if k != "records"}, "written_bytes": written}
+            elif pstate.get("state") == "applied":
+                pack_receipt = {"already_applied": True}
+            else:
+                raise ValueError(f"pack-0 schedule template is {pstate.get('state')}: {pstate.get('reason', '')}")
+        finally:
+            os.close(fd)
+        receipt["steps"].append({"step": "season_2026", "xbe": {k: v for k, v in season_receipt.items() if k != "edits"},
+                                 "schedule": {"weeks": info["validation"]["weeks"], "games": len(template) // 8,
+                                              "preseason_games": preseason_info.get("games", 0), **pack_receipt}})
+    for swap in plan.commentary:
+        cs = _tools_module("nfl2k5_commentary_swap")
+        if cs is None:
+            raise RuntimeError("commentary swap tool is not available in this build")
+        progress(f"Replacing commentary stream {swap.stream}", 0, 0)
+        rec = cs.replace_in_place(target, swap.stream, Path(swap.wav)) if hasattr(cs, "replace_in_place") else {"unsupported": True}
+        receipt["steps"].append({"step": "commentary", "stream": swap.stream, "wav": swap.wav, **rec})
+
+    receipt["result"] = inspect(target)
+    return receipt
+
+
+def save_receipt(receipt: dict[str, Any], path: Path | str) -> None:
+    Path(path).write_text(json.dumps(receipt, indent=1, default=str), encoding="utf-8", newline="\n")
+
+
+__all__ = ["BuildPlan", "CommentarySwap", "PRESETS", "PRESET_TITLES", "apply_preset", "availability", "build", "inspect", "save_receipt"]

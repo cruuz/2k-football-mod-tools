@@ -1,5 +1,29 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC78 — Build & Share with the SOFTDRINK patch presets (2026-09-03)
+
+- **New: ★ Build & Share → Build.** One checklist builds a patched COPY of a
+  disc image (or `default.xbe`) with every executable, text and presentation
+  patch, and three buttons tick a preset first: **Basic** (the 2004 game plus
+  the 2K5 fixes: throw ceiling 80 with realistic flight, real Catching and
+  Interception sliders, draft and free-agency AI with the Rookie Report rule,
+  real returners, kicking power to ~70 yards), **Advanced** (everything modern:
+  EDGE, modern kicking 35 / 35 / PAT 15, modern overtime, acceleration ramp,
+  progression, arc by distance, the ESPN scorebug, scheme labels, one-pool
+  positions with corrected team ratings, the Far-look camera, the 2026 franchise
+  with a three-game preseason and rookie birth years) and **Experimental**
+  (widescreen hor+ and the dynamic-kickoff line-up). A preset ticks only what
+  the source can still take and reports what it skipped.
+- **New: Share tab.** `.2k5patch` export, inspect, check and apply: byte runs
+  plus your source assets and a recipe, every run SHA-verified against the
+  bytes it replaces before anything is written.
+- **New: Audio → Sounds and Commentary.** Replace any game sound across every
+  sub-bank from a WAV (export, fit line, verify); swap a commentary line.
+- Throw Distance & Arc: the arc-by-distance lob-speed table now keeps the
+  retail short-game points exactly (relocated 8-point table).
+- Every patch is pattern-checked against retail, written to a copy, read back
+  and receipted; xemu-only, like every executable edit.
+
 ## v1.0 RC77 — Create a Formation / Create a Play, Play Designer, Throw Distance & Arc (2026-09-02)
 
 - **New: ★ Create a Play (last navigation entry).** A five-step wizard: pick

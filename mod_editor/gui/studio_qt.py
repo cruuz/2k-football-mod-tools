@@ -112,6 +112,12 @@ from mod_editor.gui.save_panel_qt import SavePanel
 from mod_editor.gui.crib_panel_qt import CribPanel
 from mod_editor.gui.gameplay_panel_qt import GameplayPanel
 from mod_editor.gui.throw_tuning_panel_qt import ThrowTuningPanel
+from mod_editor.gui.presentation_panel_qt import PresentationPanel
+from mod_editor.gui.share_panel_qt import SharePanel
+from mod_editor.gui.commentary_panel_qt import CommentaryPanel
+from mod_editor.gui.sounds_panel_qt import SoundsPanel
+from mod_editor.gui.build_panel_qt import BuildPanel
+from mod_editor.gui.gameplay_patches_panel_qt import TEXT_PATCHES, GameplayPatchesPanel
 from mod_editor.gui.menus_panel_qt import MenusPanel
 from mod_editor.gui.playbooks_panel_qt import PlaybooksPanel
 from mod_editor.gui.text_rosters_panel import TextRosterPanel
@@ -1106,7 +1112,7 @@ _WORKSPACE_CAPABILITIES = {
     "nfl2k5.portraits_faces.roster_portraits": "Portraits & Faces",
     "nfl2k5.portraits_faces.live_textures": "Portraits & Faces",
     "nfl2k5.stadiums.create_team_field_art": "Field Art & Create-Team Art",
-    "nfl2k5.scorebug_presentation.inventory": "Scorebug & Presentation",
+    "nfl2k5.scorebug_presentation.inventory": "Presentation",
     "nfl2k5.crib.assets": "The Crib",
     "nfl2k5.audio.audo_wav": "Audio",
     # The Stadiums page exports the pinned scene to glTF, imports same-topology
@@ -1472,6 +1478,13 @@ class StudioMainWindow(QMainWindow):
         self._playbooks_panel: PlaybooksPanel | None = None
         self._gameplay_panel: GameplayPanel | None = None
         self._throw_tuning_panel: ThrowTuningPanel | None = None
+        self._gameplay_patches_panel: GameplayPatchesPanel | None = None
+        self._edge_panel: GameplayPatchesPanel | None = None
+        self._presentation_panel: PresentationPanel | None = None
+        self._commentary_panel: CommentaryPanel | None = None
+        self._build_panel: BuildPanel | None = None
+        self._share_panel: SharePanel | None = None
+        self._sounds_panel: SoundsPanel | None = None
         self._menus_panel: MenusPanel | None = None
         self.workspace_store = workspace_store
         self._workspace_dirty = False
@@ -2133,12 +2146,22 @@ class StudioMainWindow(QMainWindow):
             item.setData(Qt.UserRole, category.value)
             item.setSizeHint(QSize(210, 40))
             item.setToolTip(display_title)
+            if category is ProductCategory.FIELD_ART_CREATE_TEAM:
+                item.setToolTip("The field art of the game's own Create-a-Team teams (fictional logos by design). "
+                                "Real NFL end zones and midfield art live under All Textures / Stadiums.")
             self.navigation.addItem(item)
         create_item = QListWidgetItem("  ★ Create a Play")
         create_item.setData(Qt.UserRole, "create_play")
         create_item.setSizeHint(QSize(210, 44))
         create_item.setToolTip("Step-by-step: pick a playbook, lay out a formation, choose run or pass, hand out jobs, replace outdated plays, build, launch.")
         self.navigation.addItem(create_item)
+        build_item = QListWidgetItem("  ★ Build & Share")
+        build_item.setData(Qt.UserRole, "build_share")
+        build_item.setSizeHint(QSize(210, 44))
+        build_item.setToolTip("Build: one patched copy of your disc with every ticked patch and one receipt. "
+                              "Share: export that copy as a .2k5patch (byte runs + your images/audio + recipe) "
+                              "others apply to their own disc, or apply a pack someone shared.")
+        self.navigation.addItem(build_item)
         side_layout.addWidget(self.navigation, 1)
 
         safety = QLabel(
@@ -2256,7 +2279,20 @@ class StudioMainWindow(QMainWindow):
                     on_status=self._specialized_panel_status,
                     on_refresh=self._specialized_panel_refresh,
                 )
-                page = self._text_roster_panel
+                # The DE -> EDGE rename is a text patch (executable position
+                # tables + the disc's text spans), so it lives with the other
+                # text tools rather than under Gameplay.
+                identity_tabs = QTabWidget()
+                identity_tabs.setObjectName("teamIdentityTabs")
+                identity_tabs.setAccessibleName("Text and team identity workspaces")
+                identity_tabs.addTab(self._text_roster_panel, "Text && Team Identity")
+                self._edge_panel = GameplayPatchesPanel(
+                    self.facade, patches=TEXT_PATCHES, title="Text Patches",
+                    intro="Text patches that change what the game calls things.",
+                )
+                identity_tabs.addTab(self._edge_panel, "EDGE Rename")
+                identity_tabs.setCurrentIndex(0)
+                page = identity_tabs
             elif category == ProductCategory.CRIB:
                 self._crib_panel = CribPanel(
                     crib_specialist_host,
@@ -2276,6 +2312,23 @@ class StudioMainWindow(QMainWindow):
                     lambda _asset_id: self._specialized_panel_refresh()
                 )
                 page = self._crib_panel
+            elif category == ProductCategory.SCOREBUG_PRESENTATION:
+                # Presentation = the scorebug texture inventory plus the two
+                # writable presentation workspaces: the ESPN horizontal
+                # scorebug/ticker re-layout and commentary line swaps.  Both
+                # write a copy of the disc, never the source.
+                if visual_kinds is None:
+                    raise RuntimeError("Presentation visual kinds are unavailable")
+                presentation_tabs = QTabWidget()
+                presentation_tabs.setObjectName("presentationTabs")
+                presentation_tabs.setAccessibleName("Presentation workspaces")
+                presentation_tabs.addTab(self._build_visual_page(section, visual_kinds), "Inventory")
+                self._presentation_panel = PresentationPanel(self.facade)
+                presentation_tabs.addTab(self._presentation_panel, "ESPN Scorebug && Ticker")
+                self._commentary_panel = CommentaryPanel(self.facade)
+                presentation_tabs.addTab(self._commentary_panel, "Commentary")
+                presentation_tabs.setCurrentIndex(0)
+                page = presentation_tabs
             elif visual_kinds is not None:
                 page = self._build_visual_page(section, visual_kinds)
             elif category == ProductCategory.MENUS_UI:
@@ -2312,7 +2365,19 @@ class StudioMainWindow(QMainWindow):
                 )
                 self._audio_panel.setToolTip("Browse, preview, export and replace supported audio — drop any common file (MP3, WAV, FLAC, OGG, M4A); it is converted to the slot's exact shape when FFmpeg is available.")
                 self._audio_panel.setAccessibleDescription("Audio workspace: searchable playable cues and ranges with replace support for exact-slot standalone and streaming-range sounds.")
-                page = self._audio_panel
+                # Sounds: the rotating SFX banks (hits, whistles, crowd
+                # reactions, QB cadence) and the standalone AUDO cues,
+                # replaced through the soundbank/audo swap tools into a COPY
+                # of the disc -- the same shape Presentation uses for its
+                # copy-writing workspaces.
+                audio_tabs = QTabWidget()
+                audio_tabs.setObjectName("audioTabs")
+                audio_tabs.setAccessibleName("Audio workspaces")
+                audio_tabs.addTab(self._audio_panel, "Audio Cues")
+                self._sounds_panel = SoundsPanel(self.facade)
+                audio_tabs.addTab(self._sounds_panel, "Sounds")
+                audio_tabs.setCurrentIndex(0)
+                page = audio_tabs
             elif category == ProductCategory.PLAYBOOKS_PLAYS:
                 self._playbooks_panel = PlaybooksPanel(self.facade)
                 page = self._playbooks_panel
@@ -2322,10 +2387,15 @@ class StudioMainWindow(QMainWindow):
                 # tables, written to a COPY of default.xbe (xemu-only), the
                 # same contract Bump strength ships under.
                 self._throw_tuning_panel = ThrowTuningPanel(self.facade)
+                # Gameplay Patches: the executable caves (Catching/Interception
+                # sliders, acceleration ramp, franchise draft AI) with their
+                # explanations, written through mod_build.
+                self._gameplay_patches_panel = GameplayPatchesPanel(self.facade)
                 self._gameplay_panel = GameplayPanel(
                     self.facade,
                     capability_page=self._build_capability_page(section),
-                    extra_tabs=((self._throw_tuning_panel, "Throw Distance && Arc"),),
+                    extra_tabs=((self._throw_tuning_panel, "Throw Distance && Arc"),
+                                (self._gameplay_patches_panel, "Gameplay Patches")),
                 )
                 page = self._gameplay_panel
             else:
@@ -2334,6 +2404,8 @@ class StudioMainWindow(QMainWindow):
             self.pages.addWidget(self._page_scroll_host(page))
         self._create_play_page = self._build_create_play_page()
         self.pages.addWidget(self._page_scroll_host(self._create_play_page))
+        self._build_share_page = self._build_build_share_page()
+        self.pages.addWidget(self._page_scroll_host(self._build_share_page))
         workspace_layout.addWidget(self.pages, 1)
         workspace_layout.addWidget(footer)
         root_layout.addWidget(workspace, 1)
@@ -2469,11 +2541,25 @@ class StudioMainWindow(QMainWindow):
         browse_button = QPushButton("Browse Uniforms")
         browse_button.setObjectName("secondaryButton")
         browse_button.clicked.connect(lambda: self.navigation.setCurrentRow(1))
+        softdrink_button = QPushButton("Start with the SOFTDRINK patch  \u2192")
+        softdrink_button.setObjectName("primaryButton")
+        softdrink_button.setToolTip("Build & Share: one click ticks the SOFTDRINK patch (Basic = the 2004 game with the 2K5 fixes, "
+                                    "Advanced = everything modern, Experimental = widescreen and the rough edges), then Build writes a "
+                                    "patched COPY of your disc.")
+        softdrink_button.clicked.connect(self._go_to_build_share)
         start_layout.addWidget(browse_button)
+        start_layout.addWidget(softdrink_button)
         start_layout.addWidget(open_button)
         outer.addWidget(start)
         outer.addStretch(1)
         return page
+
+    def _go_to_build_share(self) -> None:
+        """Select the ★ Build & Share navigation entry (Getting Started's SOFTDRINK button)."""
+        for row in range(self.navigation.count()):
+            if self.navigation.item(row).data(Qt.UserRole) == "build_share":
+                self.navigation.setCurrentRow(row)
+                return
 
     def _build_uniform_page(self, section: ProductCategorySection) -> QWidget:
         page = QWidget()
@@ -7530,8 +7616,14 @@ class StudioMainWindow(QMainWindow):
         audio_busy = self._embedded_audio_busy
         crib_busy = self._embedded_crib_busy
         for page in self._category_pages.values():
-            owns_audio = page is self._audio_panel
-            owns_crib = page is self._crib_panel
+            owns_audio = page is self._audio_panel or (
+                self._audio_panel is not None
+                and page.isAncestorOf(self._audio_panel)
+            )
+            owns_crib = page is self._crib_panel or (
+                self._crib_panel is not None
+                and page.isAncestorOf(self._crib_panel)
+            )
             page.setEnabled(
                 not self._blocking
                 and (
@@ -7587,6 +7679,22 @@ class StudioMainWindow(QMainWindow):
         layout.addStretch(1)
         return page
 
+    def _build_build_share_page(self) -> QWidget:
+        """★ Build & Share: one copy with every patch (Build) and the .2k5patch exchange (Share)."""
+
+        tabs = QTabWidget()
+        tabs.setObjectName("buildShareTabs")
+        tabs.setAccessibleName("Build and share workspaces")
+        self._build_panel = BuildPanel(self.facade)
+        tabs.addTab(self._build_panel, "Build")
+        # Share: a .2k5patch (byte runs + the modder's own images/audio + recipe)
+        # made from a patched copy, applied to somebody else's own disc copy.
+        self._share_panel = SharePanel(self.facade)
+        tabs.addTab(self._share_panel, "Share")
+        self._build_panel.built.connect(self._share_panel.prefill_from_build)
+        tabs.setCurrentIndex(0)
+        return tabs
+
     def _open_create_play_wizard(self) -> None:
         if not bool(getattr(self.facade, "source_ready", False)):
             QMessageBox.information(self, "Create a Play", "Load your NFL 2K5 XISO first (File → Open XISO).")
@@ -7638,7 +7746,8 @@ class StudioMainWindow(QMainWindow):
             self.page_title.setText("Getting Started")
             return
         if row - 1 >= len(PRODUCT_CATEGORY_ORDER):
-            self.page_title.setText("Create a Play")
+            special = row - 1 - len(PRODUCT_CATEGORY_ORDER)
+            self.page_title.setText(("Create a Play", "Build & Share")[special] if special < 2 else "")
             return
         category = PRODUCT_CATEGORY_ORDER[row - 1]
         self.page_title.setText(

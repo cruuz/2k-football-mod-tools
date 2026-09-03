@@ -207,6 +207,13 @@ python3 -m mod_editor --studio          # 2K5 Mod Studio
 
 ## Usage (the short version)
 
+**2K5, quickest path:** open the studio, choose your disc image, go to
+★ Build & Share → Build, press **Basic** (the 2004 game with the 2K5 fixes),
+**Advanced** (everything modern) or **Experimental** (widescreen and the rough
+edges), then Build. You get a patched COPY with a receipt; the original is never
+touched. The Share tab turns that copy into a `.2k5patch` anyone can apply to
+their own image.
+
 1. **Load Game** → select your clean ISO (or its extracted folder). The editor
    hashes and recognizes a supported source revision; it never modifies your
    original.

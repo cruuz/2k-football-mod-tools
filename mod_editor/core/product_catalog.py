@@ -91,11 +91,11 @@ _CATEGORY_TITLES: dict[ProductCategory, str] = {
     ProductCategory.TEAM_IDENTITY: "Team Identity",
     ProductCategory.FIELD_ART_CREATE_TEAM: "Field Art & Create-Team Art",
     ProductCategory.STADIUMS: "Stadiums",
-    ProductCategory.SCOREBUG_PRESENTATION: "Scorebug & Presentation",
+    ProductCategory.SCOREBUG_PRESENTATION: "Presentation",
     ProductCategory.MENUS_UI: "Menus & UI",
     ProductCategory.CRIB: "The Crib",
     ProductCategory.AUDIO: "Audio",
-    ProductCategory.SLIDERS_GAMEPLAY: "Sliders & Gameplay",
+    ProductCategory.SLIDERS_GAMEPLAY: "Gameplay",
     ProductCategory.PLAYBOOKS_PLAYS: "Playbooks & Plays",
     ProductCategory.TEXTURES: "All Textures",
 }

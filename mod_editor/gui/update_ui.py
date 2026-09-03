@@ -14,6 +14,8 @@ Design rules, because this is the one piece of UI that talks to the internet:
 
 from __future__ import annotations
 
+import os
+
 from PyQt5.QtCore import QObject, QRunnable, QSettings, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtCore import QUrl
@@ -33,6 +35,9 @@ SETTINGS_APPLICATION = "updates"
 KEY_ENABLED = "check_automatically"
 KEY_DISMISSED = "dismissed_tag"
 KEY_PROMPTED = "explained_once"
+# Set to 1 / true / yes to keep a run entirely offline (CI, scripted use, a
+# locked-down machine). It wins over the saved preference and never writes it.
+ENV_DISABLE = "MOD_STUDIO_NO_UPDATE_CHECK"
 
 
 def _settings() -> QSettings:
@@ -43,6 +48,8 @@ def _settings() -> QSettings:
 
 
 def automatic_checks_enabled() -> bool:
+    if os.environ.get(ENV_DISABLE, "").strip().lower() in {"1", "true", "yes"}:
+        return False
     value = _settings().value(KEY_ENABLED, True)
     if isinstance(value, str):
         return value.strip().lower() not in {"false", "0", "no"}
@@ -75,6 +82,11 @@ class _CheckTask(QRunnable):
 
     def __init__(self, current_tag: str) -> None:
         super().__init__()
+        # Owned from the GUI thread until the result has been delivered (see
+        # start_check). With the pool's default autoDelete the runnable, and
+        # with it the GUI-thread `signals` object, was destroyed from the worker
+        # thread while the queued `done` emission was still in flight.
+        self.setAutoDelete(False)
         self.signals = _Signals()
         self._current_tag = current_tag
 
@@ -96,11 +108,18 @@ class _CheckTask(QRunnable):
             return
 
 
+# Checks in flight, held so that each task and its signal object outlive the
+# worker thread and die on the GUI thread, after `done` has been delivered.
+_LIVE_CHECKS: set[_CheckTask] = set()
+
+
 def start_check(current_tag: str, on_result) -> None:
     """Run a check on a pool thread and hand the result back on the GUI thread."""
 
     task = _CheckTask(current_tag)
     task.signals.done.connect(on_result)
+    task.signals.done.connect(lambda _status, task=task: _LIVE_CHECKS.discard(task))
+    _LIVE_CHECKS.add(task)
     QThreadPool.globalInstance().start(task)
 
 
