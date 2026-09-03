@@ -67,6 +67,12 @@ ASSET_ID = "PRACTICE"
 PRACTICE_OUTER_INDEX = 334
 RESOURCE_SIZE = RESOURCE_HEADER_SIZE + BODY_SIZE
 RETAIL_RESOURCE_SHA256 = "56de927e6969f010dccf0e1a3d7f216bcb8010393e543769de12a794e9ccdfb9"
+#: The same book after the one-pool position recode (``nfl2k5_playbook_position_recode.apply`` with its
+#: defaults), which the Build tab runs BEFORE this writer whenever the EDGE/LB/interior pools are on.
+#: Only the category table's defensive slot codes differ, so the 7-on-7 sets are written on top of it with
+#: their own personnel groups recoded by the same rule; the result is byte-identical to recoding a 7-on-7 book.
+RECODED_RESOURCE_SHA256 = "83ac912b3b44505ced3598b76cecc5ea71789e2273cb2bbd331b91d5b8d97cfb"
+KNOWN_SOURCE_STATES = {RETAIL_RESOURCE_SHA256: "retail", RECODED_RESOURCE_SHA256: "recoded"}
 RETAIL_FORMATIONS = 23
 RETAIL_PLAYS = 27
 RETAIL_CATEGORIES = 11
@@ -264,6 +270,18 @@ def _wrap(body: bytes) -> bytes:
     return b"PLAY" + struct.pack("<7I", BODY_SIZE, BODY_SIZE, 0, 0, 0, 0, 0) + body
 
 
+def _recode_row(formation_type: int, row: bytes) -> bytes:
+    """One personnel group's eleven slot codes after the one-pool position recode (its own rule)."""
+
+    tools = ROOT / "tools"
+    if str(tools) not in sys.path:
+        sys.path.insert(0, str(tools))
+    recode = importlib.import_module("nfl2k5_playbook_position_recode")
+    new, _rule = recode.recode_codes(list(row), formation_type)
+    _require(len(new) == len(row), "the position recode changed the slot count")
+    return bytes(new)
+
+
 def _add_categories(raw: bytes) -> tuple[bytes, list[int]]:
     """Append the five 7-on-7 personnel groups (name in the pool tail, id byte, eleven codes)."""
 
@@ -322,7 +340,8 @@ def build_replacement(raw: bytes) -> tuple[bytes, dict[str, Any]]:
     """The 7-on-7 practice book built from the retail resource; returns (resource, report)."""
 
     _require(len(raw) == RESOURCE_SIZE and raw[:4] == b"PLAY", "not a fixed NFL 2K5 PLAY resource")
-    _require(_sha256(raw) == RETAIL_RESOURCE_SHA256, "this practice book is not the retail PRACTICE-pb.iff")
+    source_state = KNOWN_SOURCE_STATES.get(_sha256(raw))
+    _require(source_state is not None, "this practice book is neither the retail PRACTICE-pb.iff nor its one-pool recode")
     with_categories, category_indices = _add_categories(raw)
     source = parse_playbook_resource(with_categories, asset_id=ASSET_ID)
     donor_flags = {p.index: p.flags_or_id for p in source.plays}
@@ -340,9 +359,15 @@ def build_replacement(raw: bytes) -> tuple[bytes, dict[str, Any]]:
     for play_index in range(RETAIL_PLAYS):
         field = PLAY_BASE + play_index * PLAY_SIZE + 4
         struct.pack_into("<I", body, field, struct.unpack_from("<I", body, field)[0] | AI_EXCLUDED)
+    if source_state == "recoded":
+        for k, (_name, id_byte, row) in enumerate(CATEGORIES):
+            record = CATEGORY_BASE + category_indices[k] * CATEGORY_SIZE
+            _require(body[record + 4] == id_byte and bytes(body[record + 5: record + 16]) == row,
+                     "the personnel group rows moved during compilation")
+            body[record + 5: record + 16] = _recode_row(id_byte, row)
     result = raw[:RESOURCE_HEADER_SIZE] + bytes(body)
     report = verify(result)
-    report.update({"source_sha256": _sha256(raw), "replacement_sha256": _sha256(result),
+    report.update({"source_state": source_state, "source_sha256": _sha256(raw), "replacement_sha256": _sha256(result),
                    "new_formation_indices": new_formations, "new_play_indices": new_plays,
                    "category_indices": list(category_indices), "new_node_count": compiled.report["new_node_count"],
                    "changed_byte_count": sum(1 for a, b in zip(raw, result) if a != b)})
@@ -405,12 +430,14 @@ def verify(resource: bytes) -> dict[str, Any]:
 
 
 def resource_status(resource: bytes) -> str:
-    """retail | applied | foreign for one PRACTICE-pb.iff resource."""
+    """retail | recoded | applied | foreign for one PRACTICE-pb.iff resource (``recoded`` = the retail
+    book after the one-pool position recode, a source this writer builds on just like retail)."""
 
     if len(resource) != RESOURCE_SIZE or resource[:4] != b"PLAY":
         return "foreign"
-    if _sha256(resource) == RETAIL_RESOURCE_SHA256:
-        return "retail"
+    known = KNOWN_SOURCE_STATES.get(_sha256(resource))
+    if known is not None:
+        return known
     try:
         verify(resource)
     except Exception:  # noqa: BLE001
@@ -452,7 +479,7 @@ def apply(path: Path | str, progress: Callable[[str], None] | None = None) -> di
         state = resource_status(before)
         if state == "applied":
             return {"status": "applied", "already_applied": True, "outer_index": PRACTICE_OUTER_INDEX}
-        _require(state == "retail", f"the practice book is {state}, not retail; refusing")
+        _require(state in ("retail", "recoded"), f"the practice book is {state}, not retail; refusing")
         say("Building the 7-on-7 practice book")
         replacement, report = build_replacement(before)
         _require(replacement[:RESOURCE_HEADER_SIZE] == before[:RESOURCE_HEADER_SIZE], "the resource wrapper changed")
@@ -465,6 +492,6 @@ def apply(path: Path | str, progress: Callable[[str], None] | None = None) -> di
             **{k: v for k, v in report.items() if k != "wrapper"}}
 
 
-__all__ = ["ASSET_ID", "CATEGORIES", "FORMATIONS", "PRACTICE_OUTER_INDEX", "RETAIL_RESOURCE_SHA256", "RESOURCE_SIZE",
+__all__ = ["ASSET_ID", "CATEGORIES", "FORMATIONS", "PRACTICE_OUTER_INDEX", "RECODED_RESOURCE_SHA256", "RETAIL_RESOURCE_SHA256", "RESOURCE_SIZE",
            "RUSH_DELAY_SECONDS", "SevenOnSevenBookError", "apply", "build_replacement", "plays", "resource_status",
            "status", "verify"]

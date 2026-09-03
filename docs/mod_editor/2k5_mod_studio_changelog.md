@@ -50,7 +50,9 @@
   chain), and one parked defender rushes after a 4-second count as the throw timer. The 27
   retail practice plays carry the AI-excluded flag so a CPU-called defence is always a 7-on-7
   coverage. Executable: nine spans plus a 256-byte cave in the dead routine at 0x1AC170; data:
-  PRACTICE-pb.iff in place, wrapper untouched. Needs a disc image. Unwitnessed in game.
+  PRACTICE-pb.iff in place, wrapper untouched; the writer builds on the retail book or on the
+  one-pool recode of it (which the Build tab runs first), and the two orders give the same bytes.
+  Needs a disc image. Unwitnessed in game.
 
 ## v1.0 RC80 — ★ Models: export any model to Blender and back (2026-09-03)
 
