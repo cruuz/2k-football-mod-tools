@@ -5,6 +5,12 @@
 Source/UI versions are **2K5 RC78** and **APF alpha.84**; both use updater tag
 `beta-54`.
 
+- **Hotfix 2026-09-03 (evening), same release and file names:** Windows Build failed
+  with `module 'os' has no attribute 'pread'` in the post-write verify. All shipped
+  positional IO now falls back to seek/read/write where `os.pread`/`os.pwrite` are
+  absent, `copy_file_range` is optional, raw descriptors open binary; CI rejects bare
+  POSIX-only `os` functions in shipped Python.
+
 - **★ Build & Share → Build.** One checklist builds a patched COPY of a disc
   image or default.xbe with every executable / text / presentation patch, and
   three buttons tick a preset first: **Basic** (the 2004 game + the 2K5 fixes:

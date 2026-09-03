@@ -32,6 +32,40 @@ import apf_jersey_family_verify as verifier  # noqa: E402
 import apf_xenos_mip_layout as xenos_mips  # noqa: E402
 
 
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read; Windows has no os.pread, so seek/read/restore there."""
+    preader = getattr(os, "pread", None)
+    if preader is not None:
+        return preader(fd, count, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        chunks: list[bytes] = []
+        remaining = count
+        while remaining > 0:
+            chunk = os.read(fd, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
+def _pwrite(fd: int, data: bytes, offset: int) -> int:
+    """Positional write; Windows has no os.pwrite, so seek/write/restore there."""
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        return os.write(fd, data)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
 SCHEMA = "apf2k8_jersey_family_export/v1"
 PROVENANCE_NAME = "provenance.json"
 TEAM_TABLE = WORKSPACE / "reports/assets/apf_uniform_team_assets.tsv"
@@ -267,7 +301,7 @@ def _read_selected_source(
         size = int(row["outer_allocation"]["size"])
         require(0 <= offset <= source.size and size <= source.size - offset,
                 "selected jersey allocation is outside source APF 0A")
-        entry_bytes = os.pread(source.descriptor, size, offset)
+        entry_bytes = _pread(source.descriptor, size, offset)
         require(len(entry_bytes) == size and
                 sha256(entry_bytes) == row["outer_allocation"]["sha256"],
                 "selected jersey allocation differs from the pinned catalog")
@@ -412,7 +446,7 @@ def _create_file(dir_fd: int, name: str, payload: bytes) -> tuple[int, int]:
         identity = (opened.st_dev, opened.st_ino)
         _write_payload(descriptor, payload)
         os.fsync(descriptor)
-        require(os.pread(descriptor, len(payload) + 1, 0) == payload,
+        require(_pread(descriptor, len(payload) + 1, 0) == payload,
                 f"export output read-back differs: {name}")
         current = os.stat(name, dir_fd=dir_fd, follow_symlinks=False)
         require(stat.S_ISREG(current.st_mode) and

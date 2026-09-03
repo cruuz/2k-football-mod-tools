@@ -6,6 +6,17 @@
 
 **APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (identity ride-along; no APF surface change)
 
+**Hotfix (same release, same file names, 2026-09-03 evening):** the Build tab died on
+Windows with `module 'os' has no attribute 'pread'` after writing the copy, in the
+read-back that verifies it. Every shipped module now resolves positional IO through
+a seek-based fallback where `os.pread` / `os.pwrite` do not exist (the throw-tuning
+verify, the playbook position recode, the commentary swap, the team-identity and
+scorebug tools, five APF tools), `copy_file_range` is optional, and every raw
+descriptor opens in binary mode. Proven by building the Basic and Advanced presets
+and applying the Advanced `.2k5patch` to a retail copy with those `os` members
+deleted; the outputs are byte-identical to a Linux build. CI now fails on any bare
+POSIX-only `os` function in shipped Python. Re-download the same beta-54 assets.
+
 ## New: ★ Build & Share — "Start with the SOFTDRINK patch"
 
 One page builds a patched copy of your disc image (or default.xbe) from a

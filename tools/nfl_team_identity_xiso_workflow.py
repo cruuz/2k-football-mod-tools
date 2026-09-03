@@ -20,6 +20,40 @@ import struct
 import sys
 
 
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read; Windows has no os.pread, so seek/read/restore there."""
+    preader = getattr(os, "pread", None)
+    if preader is not None:
+        return preader(fd, count, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        chunks: list[bytes] = []
+        remaining = count
+        while remaining > 0:
+            chunk = os.read(fd, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
+def _pwrite(fd: int, data: bytes, offset: int) -> int:
+    """Positional write; Windows has no os.pwrite, so seek/write/restore there."""
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        return os.write(fd, data)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
 SCHEMA = "nfl2k5_team_identity_xiso_workflow/v1"
 AUDIT_SCHEMA = "nfl2k5_team_identity_audit/v1"
 SECTOR = 2048
@@ -87,7 +121,7 @@ EDITS = (
 def pread_exact(fd: int, offset: int, size: int) -> bytes:
     result = bytearray()
     while len(result) < size:
-        chunk = os.pread(fd, size - len(result), offset + len(result))
+        chunk = _pread(fd, size - len(result), offset + len(result))
         require(bool(chunk), f"short read at 0x{offset + len(result):x}")
         result.extend(chunk)
     return bytes(result)
@@ -96,7 +130,7 @@ def pread_exact(fd: int, offset: int, size: int) -> bytes:
 def pwrite_exact(fd: int, offset: int, data: bytes) -> None:
     written = 0
     while written < len(data):
-        amount = os.pwrite(fd, data[written:], offset + written)
+        amount = _pwrite(fd, data[written:], offset + written)
         require(amount > 0, f"short write at 0x{offset + written:x}")
         written += amount
 
@@ -105,7 +139,7 @@ def hash_extent(fd: int, offset: int, size: int) -> str:
     digest = hashlib.sha256()
     position = 0
     while position < size:
-        chunk = os.pread(fd, min(HASH_CHUNK, size - position), offset + position)
+        chunk = _pread(fd, min(HASH_CHUNK, size - position), offset + position)
         require(bool(chunk), f"short hash read at 0x{offset + position:x}")
         digest.update(chunk)
         position += len(chunk)
@@ -184,11 +218,13 @@ def parse_xdvdfs(fd: int, image_size: int) -> tuple[dict[str, Entry], dict[str, 
 
 def copy_image(source_fd: int, output_fd: int, size: int) -> str:
     position = 0
-    method = "copy_file_range"
-    while position < size:
+    # Linux-only accelerated copy; Windows and macOS have no such member at all.
+    copier = getattr(os, "copy_file_range", None)
+    method = "copy_file_range" if copier is not None else "pread_pwrite"
+    while position < size and copier is not None:
         request = min(COPY_CHUNK, size - position)
         try:
-            amount = os.copy_file_range(source_fd, output_fd, request, position, position)
+            amount = copier(source_fd, output_fd, request, position, position)
         except OSError as exc:
             if exc.errno not in {
                 errno.EXDEV, errno.EINVAL, errno.ENOSYS, errno.EOPNOTSUPP,
@@ -199,7 +235,7 @@ def copy_image(source_fd: int, output_fd: int, size: int) -> str:
         require(amount > 0, "short copy_file_range result")
         position += amount
     while position < size:
-        chunk = os.pread(source_fd, min(COPY_CHUNK, size - position), position)
+        chunk = _pread(source_fd, min(COPY_CHUNK, size - position), position)
         require(bool(chunk), "short source read during XISO copy")
         pwrite_exact(output_fd, position, chunk)
         position += len(chunk)
@@ -237,7 +273,7 @@ def safe_source(path: Path) -> tuple[Path, int, tuple[int, int]]:
     info = path.lstat()
     require(not stat.S_ISLNK(info.st_mode), "source must not be a symlink")
     resolved = path.resolve(strict=True)
-    fd = os.open(resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    fd = os.open(resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0))
     descriptor_info = os.fstat(fd)
     require(stat.S_ISREG(descriptor_info.st_mode), "source is not a regular file")
     require(descriptor_info.st_size == IMAGE_SIZE, "retail XISO size changed")
@@ -253,7 +289,7 @@ def reserve(path: Path) -> tuple[Path, int, tuple[int, int]]:
     fd = os.open(
         resolved,
         os.O_CREAT | os.O_EXCL | os.O_RDWR |
-        getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+        getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0),
         0o644,
     )
     info = os.fstat(fd)
@@ -272,7 +308,7 @@ def validate_audit(path: Path) -> str:
     info = path.lstat()
     require(not stat.S_ISLNK(info.st_mode), "audit report must not be a symlink")
     resolved = path.resolve(strict=True)
-    fd = os.open(resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    fd = os.open(resolved, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0))
     try:
         opened = os.fstat(fd)
         require(stat.S_ISREG(opened.st_mode), "audit report is not a regular file")

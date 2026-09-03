@@ -88,11 +88,40 @@ POSIX_ONLY_OPEN_FLAGS = frozenset(
     }
 )
 
+# ``os`` functions that CPython does not define on Windows. A bare call is an
+# unconditional AttributeError there; the beta-54 Build died on ``os.pread`` in
+# the read-back that verifies a written copy, after the 6 GB copy had been made.
+POSIX_ONLY_OS_FUNCTIONS = frozenset(
+    {
+        "pread",
+        "pwrite",
+        "copy_file_range",
+        "sendfile",
+        "fchmod",
+        "fchown",
+        "posix_fadvise",
+        "posix_fallocate",
+        "fdatasync",
+        "sync",
+        "getuid",
+        "geteuid",
+        "getgid",
+        "lockf",
+        "mkfifo",
+        "mknod",
+        "statvfs",
+    }
+)
+# Process control (``fork``/``setsid``/``killpg``) is deliberately not listed:
+# the shipped job runners keep those in explicit POSIX branches beside Win32
+# job-object counterparts, which a bare-attribute scan cannot see.
+
 # Removed from ``os`` for the simulation. The three flags are what the writers
 # OR into their ``os.open`` calls; ``copy_file_range`` is the Linux-only
 # accelerated copy whose absence raises AttributeError rather than the OSError
-# its fallback used to catch.
-SIMULATED_ABSENT = ("O_CLOEXEC", "O_NOFOLLOW", "O_DIRECTORY", "copy_file_range")
+# its fallback used to catch; ``pread``/``pwrite`` are the positional IO pair
+# every disc writer resolves at call time.
+SIMULATED_ABSENT = ("O_CLOEXEC", "O_NOFOLLOW", "O_DIRECTORY", "copy_file_range", "pread", "pwrite")
 
 
 def _shipped_python_tools() -> list[Path]:
@@ -115,8 +144,40 @@ def _shipped_python_tools() -> list[Path]:
     return sorted(shipped)
 
 
+def _shipped_python_files() -> list[Path]:
+    """Every ``.py`` named by a release allowlist: the tools AND the product package."""
+    shipped: dict[Path, None] = {}
+    for allowlist in _ALLOWLISTS:
+        if not allowlist.exists():
+            continue
+        for raw in allowlist.read_text(encoding="utf-8").splitlines():
+            entry = raw.strip()
+            if not entry or entry.startswith("#") or not entry.endswith(".py"):
+                continue
+            if entry.startswith("tools/vendor/"):
+                continue
+            # The tarball installers are per-platform by design (the Windows
+            # build is NSIS); only the runtime the product ships everywhere is
+            # held to the Windows rule.
+            if entry.startswith("packaging/"):
+                continue
+            path = _REPO_ROOT / entry
+            if path.exists():
+                shipped[path] = None
+    return sorted(shipped)
+
+
+def _bare_posix_functions(source: str) -> list[tuple[int, str]]:
+    """Bare ``os.<POSIX-only function>`` reads, ignoring the ``getattr`` form."""
+    return _bare_posix_attributes(source, POSIX_ONLY_OS_FUNCTIONS)
+
+
 def _bare_posix_open_flags(source: str) -> list[tuple[int, str]]:
     """Bare ``os.<POSIX-only flag>`` reads, ignoring the ``getattr`` form."""
+    return _bare_posix_attributes(source, POSIX_ONLY_OPEN_FLAGS)
+
+
+def _bare_posix_attributes(source: str, names: frozenset[str]) -> list[tuple[int, str]]:
     tree = ast.parse(source)
     guarded: set[tuple[int, int]] = set()
     for node in ast.walk(tree):
@@ -136,7 +197,7 @@ def _bare_posix_open_flags(source: str) -> list[tuple[int, str]]:
             continue
         if not isinstance(node.value, ast.Name) or node.value.id != "os":
             continue
-        if node.attr not in POSIX_ONLY_OPEN_FLAGS:
+        if node.attr not in names:
             continue
         if (node.value.lineno, node.value.col_offset) in guarded:
             continue
@@ -235,6 +296,49 @@ class OpenFlagLiteralTests(unittest.TestCase):
             ' | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_BINARY", 0), 0o644)\n'
         )
         self.assertEqual(_bare_posix_open_flags(repaired), [])
+
+
+class PosixFunctionLiteralTests(unittest.TestCase):
+    """No shipped Python file may call a POSIX-only ``os`` function bare.
+
+    Wider than the flag rule on purpose: it covers ``mod_editor/`` too, because
+    the beta-54 Build crash was in ``mod_editor/core/nfl2k5_throw_tuning.py``,
+    not in a tool.
+    """
+
+    def test_no_bare_posix_only_os_functions_in_shipped_python(self) -> None:
+        shipped = _shipped_python_files()
+        self.assertGreaterEqual(len(shipped), 60, "release allowlists resolved almost no .py")
+        offences: list[str] = []
+        for path in shipped:
+            try:
+                source = path.read_text(encoding="utf-8")
+            except UnicodeDecodeError:  # pragma: no cover - defensive
+                continue
+            for lineno, name in _bare_posix_functions(source):
+                offences.append(f"{path.relative_to(_REPO_ROOT)}:{lineno}: {name}")
+        self.assertEqual(
+            offences,
+            [],
+            "Shipped Python calls POSIX-only os functions as bare attributes, which "
+            "is an AttributeError on Windows. Resolve them with getattr(os, name, None) "
+            "and fall back (platform_compat.pread/pwrite, or a local seek-based helper):\n  "
+            + "\n  ".join(offences),
+        )
+
+    def test_the_check_would_have_caught_the_beta_54_build_crash(self) -> None:
+        """A negative control: the exact pre-hotfix line must be rejected."""
+        regressed = "import os\nafter = os.pread(check, length, offset)\n"
+        self.assertEqual(_bare_posix_functions(regressed), [(2, "os.pread")])
+
+    def test_the_check_accepts_the_resolved_form(self) -> None:
+        repaired = (
+            "import os\n"
+            'preader = getattr(os, "pread", None)\n'
+            "if preader is not None:\n"
+            "    return preader(fd, count, offset)\n"
+        )
+        self.assertEqual(_bare_posix_functions(repaired), [])
 
 
 class SimulatedWindowsWriterTests(unittest.TestCase):

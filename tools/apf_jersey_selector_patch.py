@@ -38,6 +38,40 @@ import apf_roster
 import apf_texture_patch as transport
 
 
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read; Windows has no os.pread, so seek/read/restore there."""
+    preader = getattr(os, "pread", None)
+    if preader is not None:
+        return preader(fd, count, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        chunks: list[bytes] = []
+        remaining = count
+        while remaining > 0:
+            chunk = os.read(fd, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
+def _pwrite(fd: int, data: bytes, offset: int) -> int:
+    """Positional write; Windows has no os.pwrite, so seek/write/restore there."""
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        return os.write(fd, data)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
 ROOT = Path(__file__).resolve().parents[1]
 FORMAT_SPEC = ROOT / "reports/specs/apf2k8_roster_jersey_selector_writeback.v1.json"
 FORMAT_SPEC_SIZE = 33_352
@@ -196,7 +230,7 @@ def _sha256_fd(descriptor: int) -> str:
     size = os.fstat(descriptor).st_size
     cursor = 0
     while cursor < size:
-        chunk = os.pread(descriptor, min(8 * 1024 * 1024, size - cursor), cursor)
+        chunk = _pread(descriptor, min(8 * 1024 * 1024, size - cursor), cursor)
         if not chunk:
             raise PatchError("short descriptor read while hashing")
         digest.update(chunk)
@@ -211,7 +245,7 @@ def _pread_exact(descriptor: int, size: int, offset: int) -> bytes:
     cursor = offset
     remaining = size
     while remaining:
-        chunk = os.pread(descriptor, remaining, cursor)
+        chunk = _pread(descriptor, remaining, cursor)
         if not chunk:
             raise PatchError("short descriptor read")
         chunks.append(chunk)
@@ -226,7 +260,7 @@ def _pwrite_all(descriptor: int, data: bytes, offset: int) -> None:
     view = memoryview(data)
     written = 0
     while written < len(view):
-        count = os.pwrite(descriptor, view[written:], offset + written)
+        count = _pwrite(descriptor, view[written:], offset + written)
         if count <= 0:
             raise PatchError("short descriptor write")
         written += count
@@ -240,7 +274,7 @@ def _sha256_fd_range(descriptor: int, offset: int, size: int) -> str:
     cursor = offset
     remaining = size
     while remaining:
-        chunk = os.pread(descriptor, min(8 * 1024 * 1024, remaining), cursor)
+        chunk = _pread(descriptor, min(8 * 1024 * 1024, remaining), cursor)
         if not chunk:
             raise PatchError("short descriptor read while hashing a range")
         digest.update(chunk)
@@ -493,7 +527,7 @@ def _write_bound_copied_volume(
     copied_source = hashlib.sha256()
     cursor = 0
     while cursor < source.size:
-        chunk = os.pread(
+        chunk = _pread(
             source.descriptor,
             min(8 * 1024 * 1024, source.size - cursor),
             cursor,

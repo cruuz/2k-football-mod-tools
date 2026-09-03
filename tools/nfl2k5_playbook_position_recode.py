@@ -61,6 +61,40 @@ if str(_HERE) not in sys.path:
 
 from nfl_outer import ALIGNMENT, HEADER_SIZE, PACK_NAMES, PACK_SLOT_COUNT, align_up  # noqa: E402
 
+
+def _pread(fd: int, count: int, offset: int) -> bytes:
+    """Positional read; Windows has no os.pread, so seek/read/restore there."""
+    preader = getattr(os, "pread", None)
+    if preader is not None:
+        return preader(fd, count, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        chunks: list[bytes] = []
+        remaining = count
+        while remaining > 0:
+            chunk = os.read(fd, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        return b"".join(chunks)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
+
+def _pwrite(fd: int, data: bytes, offset: int) -> int:
+    """Positional write; Windows has no os.pwrite, so seek/write/restore there."""
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
+    here = os.lseek(fd, 0, os.SEEK_CUR)
+    try:
+        os.lseek(fd, offset, os.SEEK_SET)
+        return os.write(fd, data)
+    finally:
+        os.lseek(fd, here, os.SEEK_SET)
+
 PACK_FOLDER = "vc_53450030"
 RESOURCE_HEADER_SIZE = 0x20
 BODY_SIZE = 0x13390
@@ -249,7 +283,7 @@ class OuterImage:
         entries, _directory = xc.parse_xdvdfs(self._fd, size)
         first = entries.get(f"{PACK_FOLDER}/0")
         _require(first is not None, f"disc image has no {PACK_FOLDER}/0")
-        header = os.pread(self._fd, HEADER_SIZE, int(first.byte_offset))
+        header = _pread(self._fd, HEADER_SIZE, int(first.byte_offset))
         _, _, populated = struct.unpack_from("<III", header, 0)
         blocks = struct.unpack_from(f"<{PACK_SLOT_COUNT}I", header, 12)
         virtual = 0
@@ -292,7 +326,7 @@ class OuterImage:
         chunks: list[bytes] = []
         for pack, pack_offset, length in self._segments(virtual_offset, size):
             if self._fd is not None:
-                data = os.pread(self._fd, length, pack.image_offset + pack_offset)
+                data = _pread(self._fd, length, pack.image_offset + pack_offset)
             else:
                 with open(pack.path, "rb") as handle:  # type: ignore[arg-type]
                     handle.seek(pack_offset)
@@ -306,7 +340,7 @@ class OuterImage:
         written = 0
         for pack, pack_offset, length in self._segments(virtual_offset, len(data)):
             part = data[written: written + length]
-            count = os.pwrite(self._fd, part, pack.image_offset + pack_offset)
+            count = _pwrite(self._fd, part, pack.image_offset + pack_offset)
             _require(count == length, "short write inside the outer archive")
             written += count
         return written

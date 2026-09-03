@@ -20,8 +20,9 @@ import os
 
 def _pread(fd: int, count: int, offset: int) -> bytes:
     """Positional read; Windows has no os.pread, so seek/read/restore there."""
-    if hasattr(os, "pread"):
-        return os.pread(fd, count, offset)
+    preader = getattr(os, "pread", None)
+    if preader is not None:
+        return preader(fd, count, offset)
     here = os.lseek(fd, 0, os.SEEK_CUR)
     try:
         os.lseek(fd, offset, os.SEEK_SET)
@@ -32,8 +33,9 @@ def _pread(fd: int, count: int, offset: int) -> bytes:
 
 def _pwrite(fd: int, data: bytes, offset: int) -> int:
     """Positional write; Windows has no os.pwrite, so seek/write/restore there."""
-    if hasattr(os, "pwrite"):
-        return os.pwrite(fd, data, offset)
+    pwriter = getattr(os, "pwrite", None)
+    if pwriter is not None:
+        return pwriter(fd, data, offset)
     here = os.lseek(fd, 0, os.SEEK_CUR)
     try:
         os.lseek(fd, offset, os.SEEK_SET)
