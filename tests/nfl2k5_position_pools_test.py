@@ -99,7 +99,13 @@ def build_synthetic_xbe() -> bytes:
             struct.pack_into("<I", buf, off(record), string_va)
             struct.pack_into("<I", buf, off(record) + pools.FILTER_ENUM_OFFSET, enum)
         for string_va in strings:
-            buf[off(string_va): off(string_va) + pools.FILTER_STRING_SLOT] = _u16(text, pools.FILTER_STRING_SLOT)
+            # 0xEAE8CC is the retail typo copy ("outside Linebackers"); everything else is title case
+            body = "outside Linebackers" if string_va == 0xEAE8CC else text
+            buf[off(string_va): off(string_va) + pools.FILTER_STRING_SLOT] = _u16(body, pools.FILTER_STRING_SLOT)
+    # the enum-10 identity strings the patch must leave alone
+    for _label, va, slot, expected in pools.RETAINED_OLB_IDENTITY:
+        if isinstance(expected, str):
+            buf[off(va): off(va) + slot] = _u16(expected, slot)
     _repin(buf)
     return bytes(buf)
 
@@ -223,14 +229,25 @@ class RatingAndRowCountLayoutTests(unittest.TestCase):
 
     def test_filter_sites_are_distinct_and_match_the_string_copies(self) -> None:
         self.assertEqual(len(pools.FILTER_ILB_RECORDS), 15)
-        self.assertEqual(len(pools.FILTER_OLB_RECORDS), 14)
-        self.assertEqual(len(set(pools.FILTER_ILB_RECORDS + pools.FILTER_OLB_RECORDS)), 29)
-        self.assertEqual(len(set(pools.FILTER_ILB_STRINGS + pools.FILTER_OLB_STRINGS)), 25)
+        self.assertEqual(len(pools.FILTER_OLB_RECORDS), 15)          # one per screen, the 0x55EFB0 typo record included
+        self.assertEqual(len(set(pools.FILTER_ILB_RECORDS + pools.FILTER_OLB_RECORDS)), 30)
+        self.assertEqual(len(set(pools.FILTER_ILB_STRINGS + pools.FILTER_OLB_STRINGS)), 26)
         self.assertLessEqual(len("Linebackers".encode("utf-16le")) + 2, pools.FILTER_STRING_SLOT)
         labels = [site.label for site in pools._sites(True, True)]
         self.assertEqual(len(labels), len(set(labels)))
         self.assertIn("tab_init_rows", labels)
         self.assertNotIn("tab_init_rows", [site.label for site in pools._sites(True, False)])
+
+    def test_no_site_writes_the_retired_olb_name(self) -> None:
+        # the whole point of the one-LB-row fix: enum 10's name is never a patch site
+        written = {site.va for site in pools._sites(True, True)}
+        for label, va, _size, _expected in pools.RETAINED_OLB_IDENTITY:
+            self.assertNotIn(va, written, label)
+        for va in pools.FILTER_OLB_RECORDS:
+            self.assertNotIn(va + pools.FILTER_ENUM_OFFSET, written, hex(va))
+        for va in pools.FILTER_OLB_STRINGS:
+            self.assertNotIn(va, written, hex(va))
+        self.assertNotIn("olb", " ".join(site.label for site in pools._sites(True, True) if site.group == "filters"))
 
 
 def _prepared_with_ratings() -> bytes:
@@ -264,7 +281,7 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(tables["roster_targets"]["OLB"], 0)
         self.assertEqual(tables["roster_targets"]["ILB"], 5)
         self.assertEqual(tables["roster_maxima"]["DE"], 6)
-        self.assertEqual(tables["abbreviations"][pools.ENUM_OLB], "LB")
+        self.assertEqual(tables["abbreviations"][pools.ENUM_OLB], "OLB")     # the retired code keeps its own name
         self.assertEqual(tables["abbreviations"][pools.ENUM_ILB], "LB")
         self.assertEqual(tables["abbreviations"][pools.ENUM_DE], "EDGE")
         self.assertEqual(tables["package_swap_olb"], {"code": 0x2E, "alt": 0x4E})
@@ -304,7 +321,8 @@ class SyntheticXbeTests(unittest.TestCase):
             off = pools._offset(patched, va)
             self.assertEqual(patched[off: off + slot], _u16(new, slot), label)
         self.assertNotIn("Inside Linebacker".encode("utf-16le"), patched)
-        self.assertNotIn("Outside Linebacker".encode("utf-16le"), patched)
+        # "Outside Linebacker(s)" stays: it is the retired enum 10's own name
+        self.assertIn("Outside Linebacker".encode("utf-16le"), patched)
 
     def test_code_sites(self) -> None:
         patched, _ = pools.apply(self.prepared)
@@ -328,15 +346,33 @@ class SyntheticXbeTests(unittest.TestCase):
             self.assertFalse(any(r["position"] == "OLB" for r in receipt["rating_tables"][name]), name)
         off = pools._offset(patched, pools.CONSISTENCY_DEF_VA)
         self.assertEqual(patched[off: off + 88], pools.NEW_CONSISTENCY_DEF)
-        for record in pools.FILTER_OLB_RECORDS:
-            self.assertEqual(struct.unpack_from("<I", patched, pools._offset(patched, record) + 0x18)[0], pools.ENUM_ILB)
+        for record in pools.FILTER_OLB_RECORDS:      # untouched: still the retired enum, still its own name
+            self.assertEqual(struct.unpack_from("<I", patched, pools._offset(patched, record) + 0x18)[0], pools.ENUM_OLB)
         for record in pools.FILTER_ILB_RECORDS:
             self.assertEqual(struct.unpack_from("<I", patched, pools._offset(patched, record) + 0x18)[0], pools.ENUM_ILB)
-        for va in pools.FILTER_ILB_STRINGS + pools.FILTER_OLB_STRINGS:
+        for va in pools.FILTER_ILB_STRINGS:
             off = pools._offset(patched, va)
             self.assertEqual(patched[off: off + 40], _u16("Linebackers", 40))
+        for va in pools.FILTER_OLB_STRINGS:
+            off = pools._offset(patched, va)
+            self.assertIn(patched[off: off + 40], (_u16("Outside Linebackers", 40), _u16("outside Linebackers", 40)))
         self.assertNotIn("Inside Linebackers".encode("utf-16le"), patched)
-        self.assertNotIn("Outside Linebackers".encode("utf-16le"), patched)
+        self.assertTrue(pools.retail_olb_identity(patched))
+
+    def test_every_screen_shows_exactly_one_linebackers_row(self) -> None:
+        patched, receipt = pools.apply(self.prepared)
+        rows = pools.filter_rows(patched)
+        self.assertEqual(len(rows), 15)
+        for row in rows:
+            self.assertEqual(row["ilb_name"], "Linebackers")
+            self.assertEqual(row["ilb_enum"], pools.ENUM_ILB)
+            self.assertIn(row["olb_name"], pools.FILTER_OLB_RETAIL_TEXTS)
+            self.assertEqual(row["olb_enum"], pools.ENUM_OLB)
+            self.assertFalse(row["duplicate"], row)
+        self.assertEqual(receipt["filter_rows"], rows)
+        self.assertTrue(receipt["retail_olb_identity"])
+        # and the retail image itself has no duplicate either
+        self.assertFalse(any(r["duplicate"] for r in pools.filter_rows(self.prepared)))
 
     def test_optional_code_sites_can_be_left_out(self) -> None:
         patched, receipt = pools.apply(self.prepared, linebacker_penalty_fix=False, depth_chart_third_starter=False)
@@ -406,7 +442,14 @@ class RetailXbeSmokeTests(unittest.TestCase):
         for section in strength._sections(patched):
             self.assertEqual(section.stored_digest, strength.section_digest(patched, section), section.index)
         self.assertEqual(receipt["tables"]["abbreviations"], ["QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE",
-                                                              "LB", "LB", "C", "G", "T", "DT", "EDGE"])
+                                                              "OLB", "LB", "C", "G", "T", "DT", "EDGE"])
+        # the real fifteen roster/draft/free-agency screens: one "Linebackers" row each
+        rows = receipt["filter_rows"]
+        self.assertEqual(len(rows), 15)
+        self.assertEqual({r["ilb_name"] for r in rows}, {"Linebackers"})
+        self.assertEqual({r["olb_name"] for r in rows}, {"Outside Linebackers", "outside Linebackers"})
+        self.assertFalse(any(r["duplicate"] for r in rows))
+        self.assertTrue(receipt["retail_olb_identity"])
 
 
 @unittest.skipUnless(RETAIL_XBE.is_file() and HAVE_UNICORN, "retail default.xbe and unicorn needed")

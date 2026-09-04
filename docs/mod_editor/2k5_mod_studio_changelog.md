@@ -40,6 +40,61 @@
   fall back to the extracted archive only to tell "already imported" from "foreign bytes".
 - The scorebug mockup's triangle strips are decoded from the retail scene's own command blocks
   instead of an intermediate glTF research export; the export is no longer needed anywhere.
+- **★ Models: a whole player body in one operation.** A player is three scenes -- `hi_body`
+  (drawn close up), `lo_body` (swapped in at distance) and `hi_head` -- so a body edit made on one
+  of them alone changes shape when the camera pulls back; a modder who exported all three had no
+  way to apply more than one of them. Selecting any of the three now arms a **Player body set**
+  box: **Export the body set** writes all three (plus a set README) into the export folder, and
+  **Check the folder** fits every edited file in one go and writes them into **ONE** copy of the
+  disc. It is all-or-nothing twice over: a member that no longer fits its space on the disc
+  refuses the whole set *before* the disc is copied, and every member's place on the disc is
+  located and checked before the first byte moves. A set is "the three SCNE of one pack entry
+  named hi_body / lo_body / hi_head" -- on the retail disc, outer 3 chunks 114 / 113 / 115, and
+  no other pack entry carries any of those names. A file you did not touch is skipped and named in
+  the report (exporting the set writes all three, so editing only the head is normal); a folder
+  where nothing changed is refused. Measured on the real cache: a 120-vertex nudge on both bodies
+  repacks to 202,224 of `hi_body`'s 202,240 stored bytes and 135,792 of `lo_body`'s 135,808 with
+  the wrapper byte-identical, while a scattered edit (every tenth vertex) needs 623 bytes more than
+  `hi_body` has and refuses the whole set - so body edits want to be smooth and local. Single-model
+  export and import are unchanged. (`nfl2k5_models.body_sets` / `export_body_set` /
+  `compile_body_set_import` / `write_import_set_copy`, new `UnchangedModelError`, `models_panel_qt`.)
+- **Fixed: the roster screens listed "Linebackers" twice in a row** with the one-pool positions
+  patch on (a user, 2026-09-04). The home screen's Team Rosters, the draft, free agency, the trade
+  block and scouting each own a fixed position-filter list with one row per roster code -- fifteen
+  arrays of 17-19 records (`0xB0`/`0xC8`/`0x110`/`0x118`/`0x120`/`0x128` bytes, name pointer at
+  `+0x00`, roster enum at `+0x18`; the count handler is `FUN_0031AB20` -> `FUN_000C3CB0(team,
+  position)`), and the `Outside Linebackers` record is always the one immediately before
+  `Inside Linebackers` (0x539520/0x5395E8, 0x53A1F8/0x53A2A8, 0x53AF90/0x53B058, 0x53DEF0/0x53E008,
+  0x53FBF0/0x53FD18, 0x5498E8/0x549998, 0x550F68/0x551078, 0x552798/0x5528B0, 0x5545E8/0x554700,
+  0x559450/0x559578, 0x55EFB0/0x55F078, 0x570D30/0x570E50, 0x57FD70/0x57FE90, 0x582658/0x582778,
+  0x588060/0x588178). Beta 58 renamed **both** rows and pointed the OLB row's enum at 11. The
+  retired enum 10 now keeps its retail name everywhere the game prints a roster position -- the
+  abbreviation table entry `0x4F26F8` stays `OLB` (0xE69C54), `0xE69D40`/`0xE69EE8` stay
+  `Outside Linebacker(s)`, and all fifteen filter records keep enum 10 and their own strings -- so
+  every screen shows exactly one `Linebackers` row. The behaviour half of the merge is untouched:
+  enum 10 still maps to the ILB kind, reads the LB lists, has a roster target of 0 and is emptied
+  by the roster pass, so the `Outside Linebackers` row simply lists nobody, the way `Fullbacks`
+  does for a team without one. Removing the row instead would mean restructuring fifteen abutting
+  record arrays that have no count word, which cannot be proved without running the game. The
+  patch is 46 sites / 655 bytes (was 75 / 935). Also found: the fifteenth OLB record (0x55EFB0,
+  the draft board) carries the retail typo `outside Linebackers` at 0xEAE8CC, which is why beta
+  58's exact-text sweep renamed only fourteen and left one screen mismatched.
+  (`nfl2k5_position_pools.py`, new `filter_rows` / `retail_olb_identity` readbacks.)
+- **The Player Card's TEAM column is consistent now.** The shipped nflverse history covers 5,042
+  of the 5,838 rows the card can show, and the rest read `--`, about one row in seven, scattered
+  down a career (Noah: "make it more consistent"). Every season the data does not cover is now
+  filled with that player's **own 2004 club**, read from the roster's 32 team records (each starts
+  with a NULL-terminated array of player pointers before its abbreviation at `+0x108`), and
+  counted separately in the receipt and the shipped match log as `seasons_inferred` so the data's
+  own coverage stays honest. Result on the retail roster: **5,746 of 5,838 rows name a team**
+  (was 5,042), 704 seasons over 185 players inferred, pool 36,866 -> 42,612 of 50,000. Only three
+  things still read `--`: the folded "pre" row and Total, a season the roster carries no stats for,
+  and the 2004 free agents (41 players, 92 rows) who are on no club at all. A CSV row always wins
+  over the fill, so one line corrects any inferred season; `infer_current_team=False` restores the
+  data-only behaviour. The current-season row keeps reading the player's live team in every mode
+  (the getter tests `ecx == 11` before it ever looks at field 87 -- now asserted under unicorn even
+  with a field-87 entry present for that slot). (`nfl2k5_team_history.py`, repinned
+  `SHIPPED_POOL_SHA256`.)
 
 ## v1.0 RC82 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star; overtime and Models UV fixes (2026-09-04)
 

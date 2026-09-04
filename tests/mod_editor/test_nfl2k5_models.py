@@ -9,6 +9,7 @@ from pathlib import Path
 import struct
 import sys
 import tempfile
+from typing import Sequence
 import unittest
 
 REPO = Path(__file__).resolve().parents[2]
@@ -289,8 +290,9 @@ class RealSceneTests(unittest.TestCase):
     def test_an_unchanged_export_is_refused_rather_than_written(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             result = M.export_model(self.source, "o4248c94", Path(tmp) / "case.gltf")
-            with self.assertRaisesRegex(M.ModelsError, "does not change"):
+            with self.assertRaisesRegex(M.UnchangedModelError, "does not change"):
                 M.compile_import(self.source, "o4248c94", result.gltf_path)
+            self.assertIsInstance(M.UnchangedModelError("x"), M.ModelsError)
 
     # -- the per-shape UV rule and the Stadium Studio contract ---------------------------------
     STADIUM = "o3611c4"            # the smallest stadium scene: 67 shapes, 16,104 vertices, 44 textures
@@ -484,6 +486,334 @@ class RealSceneTests(unittest.TestCase):
         self.assertIn("1 vertex colours", compiled.summary())
         rebuilt = self.source.decode_span(compiled.rebuilt_span, resource)
         self.assertEqual(M.read_lane_u32(rebuilt, shape, lanes.colour, 1)[0], 0xFFFF0000)
+
+
+# ---------------------------------------------------------------- the player body set
+
+def _entry(name: str, outer: int, chunk: int) -> M.ModelEntry:
+    return M.ModelEntry(M.model_key(outer, chunk), outer, chunk, name, M.group_for_name(name), 100, 200)
+
+
+class BodySetTests(unittest.TestCase):
+    def test_a_set_is_the_three_roles_of_one_pack_entry(self) -> None:
+        catalog = [_entry("lo_body", 3, 113), _entry("hi_body", 3, 114), _entry("hi_head", 3, 115),
+                   _entry("ball", 3, 88), _entry("hands", 4250, 1),
+                   _entry("hi_body", 9, 1), _entry("hi_head", 9, 2)]           # incomplete: no lo_body
+        sets = M.body_sets(catalog)
+        self.assertEqual(len(sets), 1)
+        self.assertEqual(sets[0].outer_index, 3)
+        self.assertEqual([e.name for e in sets[0].entries], list(M.BODY_SET_ROLES))
+        self.assertEqual(sets[0].keys, ("o3c114", "o3c113", "o3c115"))          # hi_body, lo_body, hi_head
+        self.assertEqual(sets[0].entry_for("hi_head").chunk_index, 115)
+        for key in sets[0].keys:
+            self.assertEqual(M.body_set_for_key(catalog, key), sets[0])
+        self.assertIsNone(M.body_set_for_key(catalog, "o3c88"))
+        self.assertIsNone(M.body_set_for_key(catalog, "o9c1"))                  # incomplete entry is not a set
+        with self.assertRaises(M.ModelsError):
+            sets[0].entry_for("facemask")
+
+    def test_two_complete_entries_are_two_sets(self) -> None:
+        catalog = [_entry(role, outer, i) for outer in (3, 9) for i, role in enumerate(M.BODY_SET_ROLES)]
+        self.assertEqual([s.outer_index for s in M.body_sets(catalog)], [3, 9])
+
+    def test_edited_files_are_matched_by_key_then_by_name(self) -> None:
+        catalog = [_entry("lo_body", 3, 113), _entry("hi_body", 3, 114), _entry("hi_head", 3, 115)]
+        body_set = M.body_sets(catalog)[0]
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / "hi_body_o3c114.gltf").write_text("{}")                   # exported name
+            (folder / "lo_body.glb").write_bytes(b"glTF")                       # renamed, still recognisable
+            (folder / "notes.txt").write_text("ignored")
+            found = M.find_body_set_files(body_set, folder)
+            self.assertEqual(found["o3c114"].name, "hi_body_o3c114.gltf")
+            self.assertEqual(found["o3c113"].name, "lo_body.glb")
+            self.assertNotIn("o3c115", found)                                    # the head was not edited
+            with self.assertRaisesRegex(M.ModelsError, "missing hi_head"):
+                M.compile_body_set_import(object(), body_set, folder)
+            (folder / "hi_body copy.gltf").write_text("{}")               # two candidates, no key to tell them apart
+            (folder / "lo_body_old.glb").write_bytes(b"glTF")
+            with self.assertRaisesRegex(M.ModelsError, "could be it"):
+                M.find_body_set_files(body_set, folder)
+
+    def test_file_names_round_trip(self) -> None:
+        entry = _entry("hi_body", 3, 114)
+        self.assertEqual(M.body_set_file_name(entry), "hi_body_o3c114.gltf")
+        self.assertEqual(M.body_set_file_name(entry, ".bin"), "hi_body_o3c114.bin")
+
+
+class _StubSource:
+    """Just enough ModelSource for the set writer: a template span per model key."""
+
+    def __init__(self, templates: dict[str, bytes]) -> None:
+        self.templates = templates
+
+    def resource(self, key: str) -> str:
+        return key
+
+    def span(self, resource: str) -> bytes:
+        return self.templates[resource]
+
+
+def _stub_compiled(key: str, name: str, template: bytes, rebuilt: bytes) -> M.CompiledModelImport:
+    return M.CompiledModelImport(key, name, 3, 0, M._sha256(template), M._sha256(template), M._sha256(rebuilt),
+                                 rebuilt, sum(1 for a, b in zip(template, rebuilt) if a != b),
+                                 [M.ImportShapeReport(0, name, "vertex index lane", 4, 4, 4, 2)], [])
+
+
+class BodySetWriteTests(unittest.TestCase):
+    """The set writer copies the disc once, checks every member first, and writes them all or none."""
+
+    KEYS = ("o3c114", "o3c113", "o3c115")
+    NAMES = ("hi_body", "lo_body", "hi_head")
+    OFFSETS = (0x400, 0x800, 0xC00)
+
+    def setUp(self) -> None:
+        self.templates = {key: bytes([i + 1]) * 0x100 for i, key in enumerate(self.KEYS)}
+        self.rebuilt = {key: bytes([0xF0 + i]) * 0x100 for i, key in enumerate(self.KEYS)}
+        self.source = _StubSource(self.templates)
+        self.offsets = dict(zip(self.KEYS, self.OFFSETS))
+        self._real_spans = M.image_spans
+
+        def fake_spans(source, compiled, descriptor, size):
+            return [(self.offsets[compiled.key], 0, len(compiled.rebuilt_span))]
+
+        M.image_spans = fake_spans
+
+    def tearDown(self) -> None:
+        M.image_spans = self._real_spans
+
+    def _disc(self, directory: Path) -> Path:
+        image = bytearray(0x2000)
+        for key, offset in self.offsets.items():
+            image[offset: offset + 0x100] = self.templates[key]
+        path = directory / "source.xiso.iso"
+        path.write_bytes(bytes(image))
+        return path
+
+    def _set(self, members: Sequence[str] | None = None) -> M.CompiledModelSet:
+        compiled_set = M.CompiledModelSet(3)
+        for key, name in zip(self.KEYS, self.NAMES):
+            if members is not None and key not in members:
+                continue
+            compiled_set.members.append(_stub_compiled(key, name, self.templates[key], self.rebuilt[key]))
+            compiled_set.files[key] = f"/edited/{name}.gltf"
+        return compiled_set
+
+    def test_all_three_land_in_one_copy_with_one_receipt(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source_image = self._disc(Path(tmp))
+            target = Path(tmp) / "copy.xiso.iso"
+            compiled_set = self._set()
+            receipt = M.write_import_set_copy(self.source, compiled_set, source_image, target)
+            written = target.read_bytes()
+            for key, offset in self.offsets.items():
+                self.assertEqual(written[offset: offset + 0x100], self.rebuilt[key], key)
+            self.assertEqual(source_image.read_bytes()[0x400:0x500], self.templates["o3c114"])   # source untouched
+            self.assertEqual(len(written), 0x2000)
+            self.assertEqual(receipt["schema"], M.SCHEMA_SET_IMPORT + "-receipt")
+            self.assertEqual(len(receipt["models"]), 3)
+            self.assertEqual([s["model"] for s in receipt["spans"]], list(self.NAMES))
+            self.assertEqual({s["was"] for s in receipt["spans"]}, {"retail"})
+            self.assertEqual(receipt["changed_bytes"], compiled_set.changed_bytes)
+            self.assertEqual(receipt["outer_index"], 3)
+            self.assertTrue(Path(receipt["receipt_path"]).is_file())
+            self.assertIn("player-body-set", Path(receipt["receipt_path"]).name)
+            self.assertIn("hi_body, lo_body, hi_head", compiled_set.summary())
+
+    def test_writing_the_same_set_twice_is_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source_image = self._disc(Path(tmp))
+            target = Path(tmp) / "copy.xiso.iso"
+            M.write_import_set_copy(self.source, self._set(), source_image, target)
+            again = M.write_import_set_copy(self.source, self._set(), source_image, target, overwrite=True)
+            self.assertEqual({s["was"] for s in again["spans"]}, {"retail"})     # the copy is remade from the source
+
+    def test_a_foreign_member_refuses_the_whole_set_before_any_byte_is_written(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source_image = self._disc(Path(tmp))
+            blob = bytearray(source_image.read_bytes())
+            blob[0xC00: 0xD00] = b"\x99" * 0x100                                 # someone else's edit on the head
+            source_image.write_bytes(bytes(blob))
+            target = Path(tmp) / "copy.xiso.iso"
+            with self.assertRaisesRegex(M.ModelsError, "hi_head"):
+                M.write_import_set_copy(self.source, self._set(), source_image, target)
+            # the copy exists but carries none of the three edits
+            written = target.read_bytes()
+            self.assertEqual(written, source_image.read_bytes())
+
+    def test_overlapping_members_are_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source_image = self._disc(Path(tmp))
+            self.offsets["o3c113"] = self.offsets["o3c114"] + 0x80               # two models over the same bytes
+            with self.assertRaisesRegex(M.ModelsError, "same bytes"):
+                M.write_import_set_copy(self.source, self._set(), source_image, Path(tmp) / "copy.xiso.iso")
+
+    def test_an_empty_set_is_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(M.ModelsError, "Nothing to write"):
+                M.write_import_set_copy(self.source, M.CompiledModelSet(3), self._disc(Path(tmp)),
+                                        Path(tmp) / "copy.xiso.iso")
+
+
+class BodySetCompileRefusalTests(unittest.TestCase):
+    """A member that does not fit refuses the set at compile time, so no disc is ever copied."""
+
+    def setUp(self) -> None:
+        self.catalog = [_entry("lo_body", 3, 113), _entry("hi_body", 3, 114), _entry("hi_head", 3, 115)]
+        self.body_set = M.body_sets(self.catalog)[0]
+        self._real_compile = M.compile_import
+
+    def tearDown(self) -> None:
+        M.compile_import = self._real_compile
+
+    def _folder(self, directory: Path) -> Path:
+        for entry in self.body_set.entries:
+            (directory / M.body_set_file_name(entry)).write_text("{}")
+        return directory
+
+    def test_one_member_that_does_not_fit_refuses_the_set(self) -> None:
+        calls: list[str] = []
+
+        def fake_compile(source, key, path, **kwargs):
+            calls.append(key)
+            if key == "o3c115":
+                raise M.ModelsError("hi_head: the edited model no longer fits the space the disc reserves for it")
+            return _stub_compiled(key, key, b"a" * 16, b"b" * 16)
+
+        M.compile_import = fake_compile
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = self._folder(Path(tmp))
+            with self.assertRaisesRegex(M.ModelsError, "no longer fits"):
+                M.compile_body_set_import(object(), self.body_set, folder)
+        self.assertEqual(calls, ["o3c114", "o3c113", "o3c115"])
+
+    def test_an_unedited_member_is_skipped_and_an_unedited_set_is_refused(self) -> None:
+        def one_edited(source, key, path, **kwargs):
+            if key == "o3c114":
+                return _stub_compiled(key, "hi_body", b"a" * 16, b"b" * 16)
+            raise M.UnchangedModelError(f"{key}: the edited file does not change any vertex of this model")
+
+        M.compile_import = one_edited
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = self._folder(Path(tmp))
+            compiled_set = M.compile_body_set_import(object(), self.body_set, folder)
+            self.assertEqual([m.key for m in compiled_set.members], ["o3c114"])
+            self.assertEqual(len(compiled_set.notes), 2)
+            self.assertTrue(all("unedited" in note for note in compiled_set.notes))
+
+            def none_edited(source, key, path, **kwargs):
+                raise M.UnchangedModelError(f"{key}: the edited file does not change any vertex of this model")
+
+            M.compile_import = none_edited
+            with self.assertRaisesRegex(M.ModelsError, "None of the files"):
+                M.compile_body_set_import(object(), self.body_set, folder)
+
+    def test_a_partial_folder_is_allowed_only_when_asked(self) -> None:
+        M.compile_import = lambda source, key, path, **kwargs: _stub_compiled(key, key, b"a" * 16, b"b" * 16)
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / M.body_set_file_name(self.body_set.entry_for("hi_body"))).write_text("{}")
+            with self.assertRaisesRegex(M.ModelsError, "lo_body"):
+                M.compile_body_set_import(object(), self.body_set, folder)
+            compiled_set = M.compile_body_set_import(object(), self.body_set, folder, require_all=False)
+            self.assertEqual([m.key for m in compiled_set.members], ["o3c114"])
+            self.assertEqual(len(compiled_set.notes), 2)
+            self.assertIn("no edited file", compiled_set.notes[0])
+
+
+@unittest.skipUnless(HAVE_DISC, "private retail extraction is absent")
+class RealBodySetTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.source = M.ModelSource(PACK0, INVENTORY)
+        cls.catalog = cls.source.catalog()
+
+    def test_the_disc_holds_exactly_one_player_body_set(self) -> None:
+        sets = M.body_sets(self.catalog)
+        self.assertEqual(len(sets), 1)
+        body_set = sets[0]
+        self.assertEqual(body_set.outer_index, 3)
+        self.assertEqual(body_set.keys, ("o3c114", "o3c113", "o3c115"))
+        self.assertEqual([e.name for e in body_set.entries], ["hi_body", "lo_body", "hi_head"])
+        self.assertEqual([e.chunk_index for e in body_set.entries], [114, 113, 115])
+        # no other pack entry carries any of the three names, which is what makes the grouping safe
+        for role in M.BODY_SET_ROLES:
+            self.assertEqual([e.outer_index for e in self.catalog if e.name == role], [3], role)
+        self.assertEqual(M.body_set_for_key(self.catalog, "o3c114"), body_set)
+        self.assertIsNone(M.body_set_for_key(self.catalog, "o4250c1"))          # hands are not part of a set
+
+    def test_export_writes_all_three_plus_a_set_readme(self) -> None:
+        body_set = M.body_sets(self.catalog)[0]
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            results = M.export_body_set(self.source, body_set, folder)
+            self.assertEqual([r.name for r in results], ["hi_body", "lo_body", "hi_head"])
+            for entry in body_set.entries:
+                self.assertTrue((folder / M.body_set_file_name(entry)).is_file(), entry.name)
+                self.assertTrue((folder / M.body_set_file_name(entry, ".bin")).is_file(), entry.name)
+            readme = (folder / "player-body-set-README.txt").read_text(encoding="utf-8")
+            for phrase in ("hi_body", "lo_body", "hi_head", "ONE copy of your disc", "nothing is written"):
+                self.assertIn(phrase, readme)
+            found = M.find_body_set_files(body_set, folder)
+            self.assertEqual(sorted(found), sorted(body_set.keys))
+            # nothing was edited, so there is nothing to write and the set says so
+            with self.assertRaisesRegex(M.ModelsError, "None of the files"):
+                M.compile_body_set_import(self.source, body_set, folder)
+
+    def _move(self, result: M.ExportResult, count: int, delta: float) -> int:
+        document = json.loads(result.gltf_path.read_text(encoding="utf-8"))
+        blob = bytearray(result.bin_path.read_bytes())
+        accessor = document["accessors"][document["meshes"][0]["primitives"][0]["attributes"]["POSITION"]]
+        view = document["bufferViews"][accessor["bufferView"]]
+        moved = 0
+        for i in range(min(count, accessor["count"])):
+            at = view["byteOffset"] + i * 12
+            x, y, z = struct.unpack_from("<3f", blob, at)
+            struct.pack_into("<3f", blob, at, x, y + delta, z)
+            moved += 1
+        result.bin_path.write_bytes(bytes(blob))
+        return moved
+
+    def test_two_edited_members_compile_together_and_the_untouched_one_is_skipped(self) -> None:
+        body_set = M.body_sets(self.catalog)[0]
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            results = M.export_body_set(self.source, body_set, folder)
+            moved = sum(self._move(result, 120, 0.2) for result in results[:2])     # hi_body + lo_body, head untouched
+            self.assertEqual(moved, 240)
+            compiled = M.compile_body_set_import(self.source, body_set, folder)
+        self.assertEqual([m.name for m in compiled.members], ["hi_body", "lo_body"])
+        self.assertEqual(sorted(compiled.files), ["o3c113", "o3c114"])
+        self.assertEqual(len(compiled.notes), 1)
+        self.assertIn("hi_head", compiled.notes[0])
+        self.assertIn("unedited", compiled.notes[0])
+        self.assertEqual(sum(s.positions_changed for m in compiled.members for s in m.shapes), 240)
+        self.assertIn("hi_body, lo_body", compiled.summary())
+        for member in compiled.members:
+            template = self.source.span(self.source.resource(member.key))
+            self.assertEqual(len(member.rebuilt_span), len(template))              # the retail span, to the byte
+            self.assertEqual(member.rebuilt_span[:0x20], template[:0x20])          # wrapper identical
+        self.assertGreater(compiled.changed_bytes, 0)
+
+    def test_a_scattered_body_edit_is_refused_for_the_whole_set(self) -> None:
+        """The player body has ~16 bytes of compressed headroom: a scattered edit does not fit."""
+
+        body_set = M.body_sets(self.catalog)[0]
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            results = M.export_body_set(self.source, body_set, folder)
+            document = json.loads(results[0].gltf_path.read_text(encoding="utf-8"))
+            blob = bytearray(results[0].bin_path.read_bytes())
+            accessor = document["accessors"][document["meshes"][0]["primitives"][0]["attributes"]["POSITION"]]
+            view = document["bufferViews"][accessor["bufferView"]]
+            for i in range(0, accessor["count"], 10):                              # every tenth vertex: incompressible
+                at = view["byteOffset"] + i * 12
+                x, y, z = struct.unpack_from("<3f", blob, at)
+                struct.pack_into("<3f", blob, at, x, y + 0.3, z)
+            results[0].bin_path.write_bytes(bytes(blob))
+            self._move(results[1], 120, 0.2)                                       # lo_body would have fitted
+            with self.assertRaisesRegex(M.ModelsError, "no longer fits the space"):
+                M.compile_body_set_import(self.source, body_set, folder)
 
 
 if __name__ == "__main__":

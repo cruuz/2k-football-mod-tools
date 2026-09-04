@@ -172,10 +172,12 @@ class BuildPanel(QWidget):
         self.returner_check = QCheckBox("Real kick and punt returners on CPU depth charts (no QB fielding punts)")
         self.progression_check = QCheckBox("NFL-shaped player development (growth, age decline, more stars and busts)")
         self.team_column_check = QCheckBox("TEAM column on the franchise Player Card's season-by-season stats (which team each season was played for)")
-        self.team_history_check = QCheckBox("Real team history for the roster's past seasons on the Player Card (built-in nflverse data, 86 % of the retail rows; new franchises; disc images only)")
+        self.team_history_check = QCheckBox("Real team history for the roster's past seasons on the Player Card (built-in nflverse data; every other season falls back to that player's 2004 club, so 98 % of the rows name a team; new franchises; disc images only)")
         self.team_history_check.setToolTip("Writes the real club of every past season the roster carries stats for into the roster template (one pool "
-                                           "dword per season row, so the game folds the oldest seasons a little earlier). Only franchises created from the "
-                                           "copy see it. Give a CSV below to replace the built-in data (columns last_name, first_name, birth_date, season, team).")
+                                           "dword per season row, so the game folds the oldest seasons a little earlier). Seasons the built-in data does not "
+                                           "cover are filled with the player's own 2004 club rather than left as '--'; only the retail free agents (on no 2004 "
+                                           "club) still read '--'. Only franchises created from the copy see it. Give a CSV below to replace the built-in data "
+                                           "(columns last_name, first_name, birth_date, season, team); a CSV row always wins over the fallback.")
         history_row = QHBoxLayout()
         history_row.addWidget(QLabel("Team history CSV (optional, replaces the built-in data)"))
         self.team_history_field = QLineEdit()

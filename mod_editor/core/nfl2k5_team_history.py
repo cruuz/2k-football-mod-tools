@@ -30,9 +30,23 @@ Identity for matching a CSV row to a record: first/last name (+0x10/+0x14), birt
 
 Only seasons whose slot already has a games entry (field 0, regular class) get a team entry: that
 is exactly when the card shows a row.  Cost: 1 dword per player-season out of the pool's free
-13,134, so the game's automatic folding of the oldest seasons starts earlier (roughly three
-quarters of a season for the retail CSV).  This never reaches a franchise created before the
-patched disc was in use (the save carries its own roster copy).  Unwitnessed in game.
+13,134, so the game's automatic folding of the oldest seasons starts earlier.  This never reaches a
+franchise created before the patched disc was in use (the save carries its own roster copy).
+Unwitnessed in game.
+
+Consistency (2026-09-04, Noah: "make it more consistent"): the shipped CSV covers 5,042 of the
+5,838 rows the card can show, and beta 58 left the rest reading ``--`` -- about one row in seven,
+scattered.  A season with no CSV row is now filled with the player's **own 2004 club**, read from
+the roster's team records (each of the 32 club records begins with a NULL-terminated array of
+player pointers before its abbreviation at +0x108), and counted as ``seasons_inferred`` in the
+receipt and the match log so the CSV's own coverage stays visible and honest.  A CSV row always
+wins over the inference, so a single line in a user CSV corrects any inferred season.  That leaves
+exactly three ways a row can still read ``--``: the folded "pre" row (the getter checks bit 30), a
+season with no games entry (the card draws no row at all), and a player who is on no 2004 club --
+the 170 retail free agents, 92 of whose displayable seasons the CSV does not cover either.  On the
+retail roster: 5,746 of 5,838 shown seasons carry a team (was 5,042), the pool goes 36,866 ->
+42,612 of 50,000, and the 29 seasons older than the card's 15-row window are still skipped because
+no row exists for them.  ``infer_current_team=False`` restores the CSV-only behaviour.
 """
 
 from __future__ import annotations
@@ -61,6 +75,7 @@ RESOURCE_SIZE = RESOURCE_HEADER_SIZE + BODY_SIZE
 OBJ_OFF = 0x40                  # the roster object inside the body
 PLAYER_SIZE = 0x54
 TEAM_SIZE = 0x1F4
+TEAM_ROSTER_BYTES = 0x108       # a team record starts with its player pointers and ends them before +0x108 (the abbreviation)
 POOL_CAPACITY = 50_000          # FUN_0014e7e0 for a roster with >= 35 team records
 RETAIL_POOL_USED = 36_866
 BASE_YEAR = 2004                # the retail roster's current season
@@ -71,7 +86,7 @@ NFL_TEAM_COUNT = 32
 RETAIL_POOL_SHA256 = "e181a8f7a3d0cc590d60cdae6ce1d45d4255c5503c4d18ba216bf648fe708f18"
 SHIPPED_CSV = ROOT / "data" / "nfl2k5_retail_team_history.csv"
 SHIPPED_CSV_SHA256 = "5e8ae2e8f09ac2dd6a397e9735e60641edcf8c2707c40bf42551b66d45577374"   # tools/nfl2k5_team_history_from_nflverse.py, 2026-09-03
-SHIPPED_POOL_SHA256 = "aa50c5dd05c3aa45c6a5777038b9e85fa7f0f4a084efd042f29e21a667fb9218"   # the pool digest after the shipped CSV is applied to the retail roster
+SHIPPED_POOL_SHA256 = "f6bb10ada2a46f143c2f766dd029289690a25aa53af4423fa2790e846c8008f9"   # the pool digest after the shipped CSV + the 2004-club fill is applied to the retail roster
 ATTRIBUTION = "nflverse-data (https://github.com/nflverse/nflverse-data), CC-BY-4.0"
 
 CSV_COLUMNS = ("last_name", "first_name", "birth_date", "season", "team")
@@ -182,6 +197,7 @@ class Roster:
     used: int                   # dwords in use
     players_off: int
     player_count: int
+    current_team: dict[int, int] = field(default_factory=dict)   # player index -> 2004 club (0..31)
 
     def team_index(self, abbreviation: str) -> int:
         try:
@@ -257,6 +273,15 @@ def parse_body(body: bytes) -> Roster:
                               last=_utf16(body, _rel(body, off + 0x14)), birth=decode_birth(_u32(body, off + 0x18)),
                               position=body[off + 0x35], count=(_u32(body, off + 0x24) >> 8) & 0x1F,
                               stream=stream, entries=tuple(entries)))
+    current_team: dict[int, int] = {}
+    for k in range(min(team_count, NFL_TEAM_COUNT)):        # 0..31 are the 2004 clubs; 32/33 are USER, 34+ all-star
+        base = teams_off + k * TEAM_SIZE
+        for slot in range(0, TEAM_ROSTER_BYTES, 4):          # a NULL-terminated array of player pointers at +0x00
+            target = _rel(body, base + slot)
+            if target is None or not (players_off <= target < players_off + player_count * PLAYER_SIZE) \
+                    or (target - players_off) % PLAYER_SIZE:
+                break
+            current_team.setdefault((target - players_off) // PLAYER_SIZE, k)
     streams = sorted((p.stream, len(p.entries)) for p in players if p.stream is not None)
     covered = 0
     at = pool
@@ -265,7 +290,8 @@ def parse_body(body: bytes) -> Roster:
         at += length * 4
         covered += length
     _require(covered == used, f"streams cover {covered} dwords but the pool says {used}")
-    return Roster(body=body, players=players, teams=teams, pool=pool, used=used, players_off=players_off, player_count=player_count)
+    return Roster(body=body, players=players, teams=teams, pool=pool, used=used, players_off=players_off,
+                  player_count=player_count, current_team=current_team)
 
 
 def pool_digest(roster: Roster) -> str:
@@ -361,6 +387,9 @@ def _position_matches(code: str | None, player: Player) -> bool:
     return POSITION_CODES[player.position] in group if player.position < len(POSITION_CODES) else want == player.position
 
 
+INFERRED_LOG_SAMPLE = 40        # how many per-player "inferred" lines the log keeps before summarising
+
+
 @dataclass
 class MatchLog:
     exact: int = 0
@@ -374,15 +403,29 @@ class MatchLog:
     already_present: int = 0
     outside_career: int = 0
     duplicate_rows: int = 0
+    seasons_inferred: int = 0          # filled with the player's 2004 club because no CSV row covered them
+    players_inferred: int = 0
+    seasons_no_team: int = 0           # still "--": the player is a 2004 free agent, he has no club to infer
+    players_no_team: int = 0
+    displayable_seasons: int = 0       # every retail player-season the card can show a row for
     lines: list[str] = field(default_factory=list)
 
     def as_dict(self) -> dict[str, Any]:
         return {k: v for k, v in self.__dict__.items() if k != "lines"}
 
 
-def match_rows(roster: Roster, rows: Sequence[Row], *, base_year: int = BASE_YEAR) -> tuple[dict[int, dict[int, int]], MatchLog]:
+def match_rows(roster: Roster, rows: Sequence[Row], *, base_year: int = BASE_YEAR,
+               infer_current_team: bool = True) -> tuple[dict[int, dict[int, int]], MatchLog]:
     """CSV rows -> {player index: {slot: team index}} plus a log.  Match order per (name, DOB):
-    normalised last+first+DOB, then last+DOB (unique), then last+first+position (unique, warned)."""
+    normalised last+first+DOB, then last+DOB (unique), then last+first+position (unique, warned).
+
+    With ``infer_current_team`` on (the default), every remaining player-season the card can show a
+    row for is filled with the player's **2004 club** taken from the roster's own team membership,
+    and counted separately as "inferred" so the CSV's own coverage stays visible.  That is what
+    makes the TEAM column consistent: a row either names a team or is one of the two cases that
+    genuinely have none - a folded "pre" row, or a player with no 2004 club (the retail free
+    agents, who appear in no team record at all).  A CSV row always wins over the inference.
+    """
 
     by_exact: dict[tuple[str, str, dt.date | None], list[Player]] = {}
     by_last_dob: dict[tuple[str, dt.date | None], list[Player]] = {}
@@ -462,6 +505,35 @@ def match_rows(roster: Roster, rows: Sequence[Row], *, base_year: int = BASE_YEA
             continue
         additions.setdefault(player.index, {})[slot] = roster.team_index(row.team)
         log.seasons_written += 1
+    for player in roster.players:
+        shown = sorted(slot for slot in player.games_slots()
+                       if 1 <= slot < player.count and player.count - slot <= MAX_DISPLAY_AGE)
+        log.displayable_seasons += len(shown)
+        if not infer_current_team:
+            continue
+        have = set(additions.get(player.index, {})) | player.team_slots()
+        wanted = [slot for slot in shown if slot not in have]
+        if not wanted:
+            continue
+        team = roster.current_team.get(player.index)
+        if team is None:
+            log.seasons_no_team += len(wanted)
+            log.players_no_team += 1
+            continue
+        for slot in wanted:
+            additions.setdefault(player.index, {})[slot] = team
+        log.seasons_inferred += len(wanted)
+        log.players_inferred += 1
+        if log.players_inferred <= INFERRED_LOG_SAMPLE:
+            years = ", ".join(str(base_year - (player.count - slot)) for slot in wanted)
+            log.lines.append(f"record {player.index}: {player.first} {player.last}: inferred "
+                             f"{roster.teams[team]} (his 2004 club) for {years}")
+    if log.players_inferred > INFERRED_LOG_SAMPLE:
+        log.lines.append(f"... and {log.players_inferred - INFERRED_LOG_SAMPLE} more players whose uncovered "
+                         "seasons were inferred from their 2004 club")
+    if log.players_no_team:
+        log.lines.append(f"{log.seasons_no_team} season(s) over {log.players_no_team} player(s) keep \"--\": "
+                         "they are on no 2004 club (the retail free agents), so there is nothing to infer")
     return additions, log
 
 
@@ -506,12 +578,18 @@ def rebuild(roster: Roster, additions: Mapping[int, Mapping[int, int]]) -> bytes
     return out
 
 
-def apply_body(body: bytes, rows: Sequence[Row], *, base_year: int = BASE_YEAR) -> tuple[bytes, dict[str, Any]]:
+def apply_body(body: bytes, rows: Sequence[Row], *, base_year: int = BASE_YEAR,
+               infer_current_team: bool = True) -> tuple[bytes, dict[str, Any]]:
     roster = parse_body(body)
-    additions, log = match_rows(roster, rows, base_year=base_year)
+    additions, log = match_rows(roster, rows, base_year=base_year, infer_current_team=infer_current_team)
     out = rebuild(roster, additions)
+    written = sum(len(slots) for slots in additions.values())
     return out, {"pool_used_before": roster.used, "pool_used_after": parse_body(out).used,
-                 "players_matched": len(additions), "matches": log.as_dict(), "log": log.lines}
+                 "players_matched": len(additions), "matches": log.as_dict(), "log": log.lines,
+                 "infer_current_team": infer_current_team,
+                 "seasons_with_a_team": written,
+                 "seasons_displayable": log.displayable_seasons,
+                 "seasons_without_a_team": log.displayable_seasons - written}
 
 
 # --------------------------------------------------------------------------------------------- image
@@ -560,6 +638,7 @@ def load_rows(source: Path | str | None = "retail") -> tuple[list[Row], dict[str
 
 
 def apply(path: Path | str, source: Path | str | None = "retail", *, base_year: int = BASE_YEAR,
+          infer_current_team: bool = True,
           progress: Callable[[str], None] | None = None) -> dict[str, Any]:
     """Write the team history into the main roster of the disc image at ``path`` (a COPY)."""
 
@@ -573,7 +652,8 @@ def apply(path: Path | str, source: Path | str | None = "retail", *, base_year: 
             return {"status": state, "already_applied": True, "outer_index": ROST_OUTER_INDEX, **provenance}
         _require(state == "retail", f"the roster's history pool is {state}, not retail; refusing")
         say("Matching the team history to the roster")
-        body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], rows, base_year=base_year)
+        body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], rows, base_year=base_year,
+                                   infer_current_team=infer_current_team)
         replacement = before[:RESOURCE_HEADER_SIZE] + body
         say("Writing the roster's history pool")
         count = archive.write(entry.virtual_offset, replacement)
@@ -586,7 +666,7 @@ def apply(path: Path | str, source: Path | str | None = "retail", *, base_year: 
 
 __all__ = ["ATTRIBUTION", "BASE_YEAR", "BODY_SIZE", "CSV_COLUMNS", "ERA_CODES", "MAX_DISPLAY_AGE", "MatchLog", "POOL_CAPACITY",
            "RESOURCE_HEADER_SIZE", "RESOURCE_SIZE", "RETAIL_POOL_SHA256", "RETAIL_POOL_USED", "RETAIL_TEAM_INDEX",
-           "ROST_OUTER_INDEX", "Roster", "Row", "SHIPPED_CSV", "SHIPPED_CSV_SHA256", "SHIPPED_POOL_SHA256", "TEAM_ALIASES",
+           "ROST_OUTER_INDEX", "Roster", "Row", "TEAM_ROSTER_BYTES", "INFERRED_LOG_SAMPLE", "SHIPPED_CSV", "SHIPPED_CSV_SHA256", "SHIPPED_POOL_SHA256", "TEAM_ALIASES",
            "TeamHistoryError", "apply", "apply_body", "body_status", "load_rows", "match_rows", "normalise_name",
            "parse_birth_date", "parse_body", "pool_digest", "read_csv", "rebuild", "resolve_team", "resource_status",
            "status", "summary"]

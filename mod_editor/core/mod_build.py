@@ -126,7 +126,9 @@ class BuildPlan:
     seven_on_seven: bool = False
     # real team history for the roster's past seasons on the Player Card: "retail" = the shipped nflverse CSV
     # (data/nfl2k5_retail_team_history.csv), a path = a user CSV, "" = off; disc images only; shows in franchises
-    # CREATED from the copy; costs one pool dword per season row (the game folds the oldest seasons a bit earlier)
+    # CREATED from the copy; costs one pool dword per season row (the game folds the oldest seasons a bit earlier).
+    # Seasons the CSV does not cover are filled with the player's own 2004 club (receipt: "seasons_inferred"), so
+    # 5,746 of the 5,838 rows the card can show name a team; only the 2004 free agents still read "--".
     team_history: str = ""
     # Position row on the first page of Edit Player (roster mode and Franchise); the descriptor exists for
     # Create Player, the Edit Player lists just never listed it. Depth Chart -> Auto after a change.

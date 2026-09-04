@@ -1014,6 +1014,37 @@ Blender. **Write UVs from the file** on import inverts through the same per-mesh
 a UV moved outside a mesh's range widens that mesh's constant for you (one axis at a time)
 when **Widen the range** is ticked. UVs stay off by default on import.
 
+**A whole player body at once (RC83).** A player is not one model: the game draws `hi_body` up
+close, swaps in `lo_body` at distance and draws `hi_head` as its own scene, so a body edit made
+on only one of them changes shape when the camera pulls back. Select any of the three (they are
+in the Players group, or search `body`) and the **Player body set** box lights up:
+
+1. **Export the body set** writes all three into the export folder as `hi_body_o3c114.gltf`,
+   `lo_body_o3c113.gltf` and `hi_head_o3c115.gltf` (each with its `.bin` and README) plus a
+   `player-body-set-README.txt` for the set.
+2. Edit them in Blender the usual way, and make the same change to both bodies - they are
+   different meshes with different vertex counts, so a lattice or shrinkwrap over both at once
+   is the usual way to keep them in step. Keep the file names (the `_o<pack>c<chunk>` tail is
+   how each file is matched back to its scene).
+3. Point **Edited folder** at that folder and press **Check the folder**. All three are fitted
+   and reported together, and **if any one of them no longer fits its space on the disc,
+   nothing is written at all** - the whole set is refused before the disc is copied. A file you
+   did not touch is simply skipped and said so in the report, so editing only the head (or only
+   the two bodies) works; a folder where nothing changed is refused.
+4. **Write the copy** puts all three into ONE copy of the disc in a single pass, with one
+   receipt beside it. Every model's place on the disc is located and checked before the first
+   byte moves, so a set never lands half-applied.
+
+Single-model export and import are unchanged; the set is a convenience, not a different writer.
+A folder that is missing one of the three is refused rather than half-applied.
+
+**How much room a body edit has.** The two bodies are packed to within 16 bytes of their space on
+the disc (`hi_body` 202,224 of 202,240 compressed bytes, `lo_body` 135,792 of 135,808 after a
+120-vertex nudge), so keep edits smooth and local: moving a contiguous run of vertices repacks
+inside the budget, while a scattered edit (every tenth vertex, say) does not - one measured attempt
+needed 623 bytes more than `hi_body` has and the whole set was refused. If that happens, undo the
+noisiest part of the sculpt and check the folder again; nothing was written.
+
 **Vertex colours.** The game's per-vertex colour is baked lighting that multiplies the texture
 in game. The export carries it as the `_NFL_COLOR` attribute (r g b a, 0..1; see it in the
 Spreadsheet or paint it with an Attribute node), so textures show at full brightness in
@@ -1052,14 +1083,32 @@ possession ends in a safety, a first-possession field goal or touchdown is answe
 kickoff to the other team, and after both have possessed the next score wins; regular
 season games can still end tied after one period, playoff games play on.
 
+**Modern defensive positions** (Advanced and Experimental): the depth chart's slots become
+4-3 EDGE / DT / SAM / MIKE / WILL and 3-4 EDGE / NT / DE / MIKE / WILL, and the four retail
+front-seven roster positions become three pools - EDGE (4-3 ends and 3-4 outside backers),
+DT (every interior lineman) and LB (every off-ball backer). The old OLB code is retired: it
+still behaves exactly like an LB, but the build's roster pass moves every stock player out of
+it, so after a Build no team has one. **It keeps its own name (RC83).** The roster, draft,
+free-agency, trade and scouting screens each own a fixed position-filter list with one row per
+roster code, and beta 58 renamed both linebacker rows "Linebackers", which is why those screens
+listed "Linebackers" twice in a row. Only the real LB code is renamed now, so each screen shows
+one "Linebackers" row; the retired "Outside Linebackers" row is still there and lists nobody,
+the same way "Fullbacks" lists nobody on a team without one. (A row cannot be removed: the lists
+have no count word and abut each other in the executable, so dropping one would mean moving
+every following record and could only be proved by playing the game.) If you import a roster
+that still carries OLB players, they show up under "Outside Linebackers" with the OLB badge
+instead of hiding inside a second "Linebackers".
+
 **TEAM column on the Player Card** (Gameplay group, in both Basic and Advanced): the
 franchise Player Card's season-by-season stats gain a TEAM column next to Yr, showing
 which team each season was played for. The current season shows the player's live
 team; from the first season rollover after the patch is in the save, every completed
-season shows the team the player finished it with. Past seasons of an OLD franchise
-save show "--" until their next rollover (the game never stored a team per season;
-the patch records one from then on), the folded "pre" row and the Total row also
-read "--", and a player traded mid-season shows the season-end team. Saves stay
+season shows the team the player finished it with. The current-season row always
+reads the player's live team, whatever the history says, so a trade shows up there
+at once. Past seasons of an OLD franchise save show "--" until their next rollover
+(the game never stored a team per season; the patch records one from then on), the
+folded "pre" row and the Total row also read "--", and a player traded mid-season
+shows the season-end team. Saves stay
 loadable with or without the patch. Unwitnessed in game so far: it is executed under
 an emulator in the test suite, so please report what you see.
 
@@ -1083,18 +1132,28 @@ published `SOFTDRINK patch advanced` `.2k5patch` from **Share** instead, which c
 roster already carries season-by-season stats for 1,325 players back to 1982, and the TEAM
 column above can only learn teams from the seasons a patched disc plays. This toggle writes
 the real club of those past seasons into the roster template from nflverse-data (CC-BY-4.0):
-1,148 of the 1,325 players match by name and birth date and 5,068 of their 5,867 season rows
-get a team (86 %; 1999-2003 about 85 %, the 1990s 80-90 %, sparse before 1990). Only a
-franchise CREATED from the copy shows it - an existing save keeps its own roster - and each
-row costs one dword of the game's 50,000-dword history pool (36,866 -> 41,908), so the game's
-automatic folding of the oldest seasons into the "pre" row starts a little earlier. To use
-your own data, point the "Team history CSV" field at a UTF-8 CSV with the columns
+1,148 of the 1,325 players match by name and birth date and the data places 5,042 season rows.
+**Every remaining row is filled with that player's own 2004 club (RC83)** rather than left
+blank, so 5,746 of the 5,838 rows the card can show name a team instead of 5,042 - the column
+reads the same all the way down a career instead of dropping to "--" every few seasons. An
+inferred row is a good guess, not a record: a player who changed teams in 2001 shows his 2004
+club for 2001 unless the data (or your own CSV) covers that season. The build receipt counts
+the two separately (`seasons_written` from the data, `seasons_inferred` from the 2004 club) and
+`data/nfl2k5_retail_team_history.match.log` says which seasons the shipped data actually covers.
+Only three things still read "--": the folded "pre" row and the Total row, a season the roster
+carries no stats for (the card draws no row at all), and the 2004 free agents - 41 players, 92
+rows - who are on no club, so there is nothing to infer. Only a franchise CREATED from the copy
+shows any of it - an existing save keeps its own roster - and each row costs one dword of the
+game's 50,000-dword history pool (36,866 -> 42,612), so the game's automatic folding of the
+oldest seasons into the "pre" row starts a little earlier. To use your own data, or to correct
+an inferred season, point the "Team history CSV" field at a UTF-8 CSV with the columns
 `last_name,first_name,birth_date,season,team` (birth date `YYYY-MM-DD`; `position` and
 `roster_index` optional; team = a 2004 abbreviation such as `ARZ`, `STL`, `TEN` or an nflverse
-code such as `RAI`, `RAM`, `PHX`, `HOU` for the Oilers up to 1996). Players are matched by
-name and birth date, then last name and birth date, then name and position; a season is only
-written when the roster has stats for it (the receipt lists every row that could not be used).
-In this cut relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN).
+code such as `RAI`, `RAM`, `PHX`, `HOU` for the Oilers up to 1996). One line per season is
+enough and a CSV row always wins over the 2004-club fill. Players are matched by name and birth
+date, then last name and birth date, then name and position; a season is only written when the
+roster has stats for it (the receipt lists every row that could not be used). In this cut
+relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN).
 
 **Modern draft-prospect names** (Build tab and Gameplay Patches, ADVANCED and EXPERIMENTAL; disc
 images only): retail names every generated rookie and free agent from the 1990 US Census lists,
