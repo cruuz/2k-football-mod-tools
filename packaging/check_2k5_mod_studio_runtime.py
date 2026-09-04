@@ -1726,6 +1726,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_models",
         "mod_editor.core.self_update",
         "mod_editor.core.nfl2k5_team_column",
+        "mod_editor.core.nfl2k5_team_history",
         "mod_editor.core.nfl2k5_seven_on_seven",
         "mod_editor.core.nfl2k5_seven_on_seven_book",
         "mod_editor.gui.models_panel_qt",

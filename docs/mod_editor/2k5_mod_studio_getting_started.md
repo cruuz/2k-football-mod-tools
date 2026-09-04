@@ -933,6 +933,23 @@ read "--", and a player traded mid-season shows the season-end team. Saves stay
 loadable with or without the patch. Unwitnessed in game so far: it is executed under
 an emulator in the test suite, so please report what you see.
 
+**Real team history** (Build tab, ADVANCED and EXPERIMENTAL; disc images only): the retail
+roster already carries season-by-season stats for 1,325 players back to 1982, and the TEAM
+column above can only learn teams from the seasons a patched disc plays. This toggle writes
+the real club of those past seasons into the roster template from nflverse-data (CC-BY-4.0):
+1,148 of the 1,325 players match by name and birth date and 5,068 of their 5,867 season rows
+get a team (86 %; 1999-2003 about 85 %, the 1990s 80-90 %, sparse before 1990). Only a
+franchise CREATED from the copy shows it - an existing save keeps its own roster - and each
+row costs one dword of the game's 50,000-dword history pool (36,866 -> 41,908), so the game's
+automatic folding of the oldest seasons into the "pre" row starts a little earlier. To use
+your own data, point the "Team history CSV" field at a UTF-8 CSV with the columns
+`last_name,first_name,birth_date,season,team` (birth date `YYYY-MM-DD`; `position` and
+`roster_index` optional; team = a 2004 abbreviation such as `ARZ`, `STL`, `TEN` or an nflverse
+code such as `RAI`, `RAM`, `PHX`, `HOU` for the Oilers up to 1996). Players are matched by
+name and birth date, then last name and birth date, then name and position; a season is only
+written when the roster has stats for it (the receipt lists every row that could not be used).
+In this cut relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN).
+
 ## 7-on-7 practice mode (RC81, Experimental)
 
 Tick **7-on-7 practice mode** on Gameplay Patches or Build (the Experimental preset
