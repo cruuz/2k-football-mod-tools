@@ -68,6 +68,28 @@
   fake field goal carries the rolled ball for that play only. Unicorn-proven on the real bytes
   (rolled on live FG, untouched on other formations / dead ball / the -4 sentinel, registers, flags
   and stack transparent); unwitnessed in game.
+- **Modern draft-prospect names** (`nfl2k5_prospect_names.py`, advanced and experimental presets;
+  `BuildPlan.prospect_names = "modern"` or a CSV path; disc images only). Retail names every
+  generated rookie and free agent from the 1990 US Census lists (James, Harold, Walter... Smith,
+  Garcia, Martinez): two independent uniform draws over a 485 + 485 pool in the roster template
+  (ROST body: entry array 0x72FB4, UTF-16 strings 0x8B7D0..0x8EB86), so a fifth of every class
+  carries a Hispanic-origin name and none reads like a 2020s roster. The pool is rewritten inside
+  its own 13,238 bytes from `data/nfl2k5_modern_names.csv` (nflverse-data 2015-2025 rosters,
+  CC-BY-4.0; `tools/nfl2k5_modern_names_generate.py` reproduces it): the 433 surnames the announcer
+  has recorded stay at their index (the audio id is 9300 + index) and keep their call-out, the 52
+  Hispanic-origin and developer slots take modern surnames (Diggs, Chubb, Kamara...) and every
+  first name goes modern. A 27-byte cave on the generator's audio-id store (hook 0x2BE7B8; host =
+  the tail of the dead `FUN_000b4a60` at 0xB4A70, beside the penalties stub) keeps 9300 + index for
+  surname pointers below the layout's boundary and writes 9100 (no recorded cue: the announcer
+  falls back to the jersey number) for replacements. The boundary is baked from the CSV, so
+  `inspect` reports `applied` only with both halves present and agreeing (`partial` otherwise) and
+  the build refuses a mismatch. Correction to the study: the 272 zero bytes before the pool are the
+  empty names of the 68 spare player records (136 relative pointers land there), not free space, so
+  the budget is the retail span. Custom lists: `first,last`, 485 rows, `index` optional, ASCII up to
+  12 characters, within the byte budget; the receipt logs every slot as kept or replaced. New
+  franchises only (a save carries its own roster copy). Unicorn-proven hook (retained pointer ->
+  9300 + index, replacement -> 9100), both cave gates pass, order-independent with the other
+  executable patches; unwitnessed in game.
 
 - **★ Models: texture coordinates now follow the game's own per-mesh rule.** Beta 56
   decoded every model's UVs with one fixed formula (`u = (n + 1) / 2`, `v = (1 - n) / 2`,

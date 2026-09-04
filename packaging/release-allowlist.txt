@@ -240,6 +240,7 @@ tools/xbox_ima_encoder.py
 # Beta 54: Build & Share (SOFTDRINK patch presets), Share (.2k5patch), Sounds, Commentary and the
 # executable / text / presentation patch modules they drive.
 data/nfl2k5_retail_team_history.csv
+data/nfl2k5_modern_names.csv
 data/nfl_2026_schedule.json
 mod_editor/core/mod_build.py
 mod_editor/core/modpack.py
@@ -266,6 +267,7 @@ mod_editor/core/nfl2k5_penalties.py
 mod_editor/core/nfl2k5_uniform_choice.py
 mod_editor/core/nfl2k5_kick_laces.py
 mod_editor/core/nfl2k5_team_history.py
+mod_editor/core/nfl2k5_prospect_names.py
 mod_editor/core/nfl2k5_seven_on_seven.py
 mod_editor/core/nfl2k5_boot_logo.py
 mod_editor/core/nfl2k5_seven_on_seven_book.py

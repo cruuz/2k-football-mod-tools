@@ -867,6 +867,21 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
                 operations.append(op)
     except Exception:  # noqa: BLE001
         pass
+    try:
+        from mod_editor.core import nfl2k5_prospect_names as _prospect_names
+        before, after = _prospect_names.image_status(Path(base_path)), _prospect_names.image_status(Path(patched_path))
+        if before != after:
+            detected["prospect_names"] = {"base": before, "patched": after}
+            if after in ("applied", "applied-custom"):
+                op = {"op": "prospect_names", "enabled": True, "status": after,
+                      "source": "modern" if after == "applied" else "custom"}
+                if after == "applied" and _prospect_names.SHIPPED_CSV.is_file():
+                    member = f"{ASSET_ROOT}/text/{_prospect_names.SHIPPED_CSV.name}"
+                    auto_assets.append({"path": _prospect_names.SHIPPED_CSV, "member": member, "role": "prospect_names.csv"})
+                    op["csv_asset"] = member
+                operations.append(op)
+    except Exception:  # noqa: BLE001
+        pass
     return {"detected": detected, "operations": operations, "auto_assets": auto_assets}
 
 
@@ -879,6 +894,9 @@ def describe_operation(operation: Mapping[str, Any]) -> str:
     if op == "team_history":
         source = "built-in nflverse data" if operation.get("source") == "retail" else "a custom CSV"
         return f"Real team history on the Player Card for the roster's past seasons ({source}; franchises created from the copy)"
+    if op == "prospect_names":
+        source = "built-in nflverse 2015-2025 list" if operation.get("source") == "modern" else "a custom CSV"
+        return f"Modern draft-prospect names in the generated-player pool ({source}; recorded surnames keep their call-outs, new ones are announced by number; franchises created from the copy)"
     if op in ("catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "edge_rename", "scheme_labels", "camera", "kick_rules", "kick_power", "position_pools", "season_2026", "widescreen", "overtime", "seven_on_seven"):
         label = {"catch_slider": "Catch slider cave", "accel_ramp": "Acceleration ramp cave", "draft_ai": "Franchise draft AI",
                  "returner_fix": "KR/PR returner fix", "progression": "NFL-shaped progression", "edge_rename": "DE -> EDGE rename",

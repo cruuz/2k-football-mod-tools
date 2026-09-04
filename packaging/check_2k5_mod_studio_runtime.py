@@ -1733,6 +1733,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_uniform_choice",
         "mod_editor.core.nfl2k5_kick_laces",
         "mod_editor.core.nfl2k5_team_history",
+        "mod_editor.core.nfl2k5_prospect_names",
         "mod_editor.core.nfl2k5_seven_on_seven",
         "mod_editor.core.nfl2k5_boot_logo",
         "mod_editor.core.nfl2k5_seven_on_seven_book",

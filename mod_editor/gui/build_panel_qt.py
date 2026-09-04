@@ -183,6 +183,20 @@ class BuildPanel(QWidget):
         self.team_history_button = QPushButton("Choose…")
         self.team_history_button.clicked.connect(self._choose_team_history)
         history_row.addWidget(self.team_history_button)
+        self.prospect_names_check = QCheckBox("Modern draft-prospect names: 485 first names and 52 surnames from 2015-2025 NFL rosters in the generated-player pool (recorded surnames keep their call-outs, new ones are announced by number; new franchises; disc images only)")
+        self.prospect_names_check.setToolTip("Rewrites the 485 first names and 485 surnames the game draws for rookies and free agents (the 1990 Census lists in retail) "
+                                             "inside the roster template's own 13,238 bytes and hooks the generator's audio id: the 433 surnames the announcer has "
+                                             "recorded stay at their index and are still called by name, the 52 replacements and every generated player with one are "
+                                             "announced by number. Only franchises created from the copy see it. Give a CSV below to replace the built-in list "
+                                             "(columns first,last; 485 rows; index optional; ASCII, up to 12 characters, total under 13,238 UTF-16 bytes).")
+        names_row = QHBoxLayout()
+        names_row.addWidget(QLabel("Prospect names CSV (optional, replaces the built-in list)"))
+        self.prospect_names_field = QLineEdit()
+        self.prospect_names_field.setPlaceholderText("first,last (485 rows; index optional)")
+        names_row.addWidget(self.prospect_names_field, 1)
+        self.prospect_names_button = QPushButton("Choose…")
+        self.prospect_names_button.clicked.connect(self._choose_prospect_names)
+        names_row.addWidget(self.prospect_names_button)
         self.kick_rules_check = QCheckBox("Modern kicking: kickoff 35, touchback 35, PAT from the 15, ~70-yard legs")
         self.kick_power_check = QCheckBox("Kicking power only: ~70-yard legs for elite kickers, retail kick spots (the 2004 game)")
         self.season_check = QCheckBox("2026 franchise: real 2026 schedule + 3-game preseason, 17 games over 18 weeks, 14-team playoffs, 2026 dates and rookie birth years (disc images only)")
@@ -194,11 +208,12 @@ class BuildPanel(QWidget):
         self.uniform_choice_check = QCheckBox("Home/away jerseys at any stadium: up/down past the last era on Controller Assign or Team Select flips that side's colour (retail default kept; unwitnessed)")
         self.kick_laces_check = QCheckBox("Laces to the posts on field goals and PATs: the held ball rolls 180 degrees about its long axis on Field Goal formation plays (kickoff tee, punts and carries unchanged; unwitnessed)")
         self.seven_on_seven_check = QCheckBox("7-on-7 practice mode: Practice Type 7-On-7 + 7-on-7 sets in the practice playbook (linemen idle at the sideline, 4-second timer rusher; disc images only; unwitnessed)")
-        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.seven_on_seven_check):
+        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.prospect_names_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.seven_on_seven_check):
             g.addWidget(box)
         if not mod_build.SEVEN_ON_SEVEN_RELEASED:
             self.seven_on_seven_check.hide()
         g.addLayout(history_row)
+        g.addLayout(names_row)
         root.addWidget(gameplay)
 
         text = QGroupBox("Text")
@@ -272,7 +287,7 @@ class BuildPanel(QWidget):
         if isinstance(settings, tt.TuningSettings):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
-                           ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"),
+                           ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("prospect_names", "prospect names"),
                            ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("seven_on_seven", "7-on-7 practice"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -302,6 +317,7 @@ class BuildPanel(QWidget):
         gate(self.progression_check, "progression")
         gate(self.team_column_check, "team_column")
         gate(self.team_history_check, "team_history", needs_image=True)
+        gate(self.prospect_names_check, "prospect_names", needs_image=True)
         gate(self.kick_rules_check, "kick_rules")
         gate(self.kick_power_check, "kick_power", module="kick_rules")
         self.kick_rules_check.toggled.connect(lambda on: on and self.kick_power_check.setChecked(False))
@@ -337,6 +353,7 @@ class BuildPanel(QWidget):
             "kickoff_alignment": self.kickoff_alignment_check,
             "season_2026": self.season_check, "widescreen": self.widescreen_check, "overtime": self.overtime_check,
             "team_column": self.team_column_check, "team_history": self.team_history_check,
+            "prospect_names": self.prospect_names_check,
             "seven_on_seven": self.seven_on_seven_check, "position_row": self.position_row_check, "probowl_order": self.probowl_order_check,
             "penalties": self.penalties_check,
             "uniform_choice": self.uniform_choice_check,
@@ -386,6 +403,7 @@ class BuildPanel(QWidget):
             uniform_choice=("choice" if self.uniform_choice_check.isChecked() else ""),
             kick_laces=self.kick_laces_check.isChecked(),
             team_history=((self.team_history_field.text().strip() or "retail") if self.team_history_check.isChecked() else ""),
+            prospect_names=((self.prospect_names_field.text().strip() or "modern") if self.prospect_names_check.isChecked() else ""),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
         )
 
@@ -393,7 +411,7 @@ class BuildPanel(QWidget):
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools
-                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.commentary)
+                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.prospect_names or p.commentary)
 
     def _refresh(self) -> None:
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())
@@ -417,6 +435,13 @@ class BuildPanel(QWidget):
         if chosen:
             self.team_history_field.setText(chosen)
             self.team_history_check.setChecked(True)
+            self._refresh()
+
+    def _choose_prospect_names(self) -> None:
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose a prospect names CSV", str(Path.home()), "CSV (*.csv);;All files (*)")
+        if chosen:
+            self.prospect_names_field.setText(chosen)
+            self.prospect_names_check.setChecked(True)
             self._refresh()
 
     def _choose_target(self) -> None:

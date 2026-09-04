@@ -27,7 +27,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def test_three_patches_with_explanations_and_gating(self) -> None:
-        self.assertEqual([k for k, _l, _e in PATCHES], ["catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces"])
+        self.assertEqual([k for k, _l, _e in PATCHES], ["catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names"])
         for _k, _l, explanation in PATCHES:
             self.assertIn("Retail", explanation)
             self.assertIn("Patch", explanation)
@@ -41,7 +41,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
                 # table, the Edit Player row lists, the Pro Bowl tab list, the penalty curves or the held-ball hook, so those toggles must gate
                 # themselves off as "foreign" there
                 for key, check in panel.checks.items():
-                    if key in ("camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces"):
+                    if key in ("camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names"):
                         self.assertFalse(check.isEnabled(), key)
                         self.assertIn("neither retail nor this patch", check.toolTip())
                     else:
