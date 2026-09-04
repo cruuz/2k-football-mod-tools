@@ -126,6 +126,8 @@ class ShapeTests(unittest.TestCase):
         from mod_editor.core import mod_build
         import tempfile
 
+        if str(REPO / "tests") not in sys.path:      # CI runs each file standalone: tests/ is not on sys.path there
+            sys.path.insert(0, str(REPO / "tests"))
         from nfl2k5_throw_tuning_test import _build_progression_xbe  # noqa: PLC0415
 
         with tempfile.TemporaryDirectory() as tmp:
