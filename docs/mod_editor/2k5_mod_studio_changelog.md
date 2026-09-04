@@ -1,6 +1,6 @@
 # 2K5 Mod Studio — Product Changelog
 
-## v1.0 RC82 — (unreleased)
+## v1.0 RC82 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star; overtime and Models UV fixes (2026-09-04)
 
 - **Fixed: modern overtime ended after a first-possession field goal** because the kickoff after
   a score is built (and its receiving team marked as "has possessed") in the same dead-ball pass
