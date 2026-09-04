@@ -116,6 +116,10 @@ class BuildPlan:
     # one EDGE / one LB / one interior pool across 4-3 and 3-4 (XBE pools + playbook recode + ROST
     # reclassification; needs a disc image; implies scheme_labels)
     position_pools: bool = False
+    # SLOT / NICKEL CORNER / DIME CORNER rows and X / Z labels on the depth-chart screen (executable, stride 13;
+    # EXPERIMENTAL, unwitnessed): needs the one-pool positions (their third-starter cave) and the X / Z / SLOT playbook
+    # roles; the rows edit the existing receiver / corner lists, they are not independent assignments
+    depth_chart_rows: bool = False
     # 2026 season: real 2026 schedule template in pack 0 (17 games, 18 weeks, one bye; the real 3-game
     # preseason after it) + year/calendar/season-length/14-team-playoffs/preseason executable patches
     # (rookie birth years and the DOB line follow the year); needs a disc image
@@ -206,7 +210,7 @@ class BuildPlan:
 
     def wants_xbe_patch(self) -> bool:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
-                or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.dynamic_kickoff
+                or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.dynamic_kickoff or self.depth_chart_rows
                 or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
                 or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.uniform_choice)
                 or self.kick_laces or self.franchise_practice or bool(self.prospect_names) or self.player_star)
@@ -230,7 +234,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
         "edge_rename": False, "scorebug": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False, "dynamic_kickoff": False,
-        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "depth_roles": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "prospect_names": "", "player_star": False,
+        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "prospect_names": "", "player_star": False,
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
@@ -238,7 +242,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False,
-        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "depth_roles": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
@@ -246,7 +250,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True, "dynamic_kickoff": True,
-        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "depth_roles": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
     },
 }
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
@@ -322,6 +326,9 @@ def availability() -> dict[str, bool]:
                            and _tools_module("nfl2k5_playbook_position_recode") is not None),
         "depth_roles": (_core_module("nfl2k5_depth_roles") is not None
                         and _tools_module("nfl2k5_playbook_position_recode") is not None),
+        "depth_chart_rows": (_core_module("nfl2k5_depth_chart_rows") is not None and _core_module("nfl2k5_position_pools") is not None
+                             and _core_module("nfl2k5_modern_positions") is not None and _core_module("nfl2k5_depth_roles") is not None
+                             and _tools_module("nfl2k5_playbook_position_recode") is not None and _tools_module("nfl2k5_roster_reclassify") is not None),
     }
 
 
@@ -336,7 +343,7 @@ def inspect(source: Path | str) -> dict[str, Any]:
         "accel_ramp": report.get("accel_ramp"), "draft_ai": report.get("draft_ai"),
         "returner_fix": report.get("returner_fix", "unknown"), "progression": report.get("progression", "unknown"),
         "scheme_labels": report.get("scheme_labels", "unknown"), "camera": report.get("camera", "unknown"),
-        "kick_rules": report.get("kick_rules", "unknown"), "dynamic_kickoff": report.get("dynamic_kickoff", "unknown"), "dynamic_kickoff_settings": report.get("dynamic_kickoff_settings"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
+        "kick_rules": report.get("kick_rules", "unknown"), "dynamic_kickoff": report.get("dynamic_kickoff", "unknown"), "dynamic_kickoff_settings": report.get("dynamic_kickoff_settings"), "depth_chart_rows": report.get("depth_chart_rows", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
         "overtime": report.get("overtime", "unknown"), "team_column": report.get("team_column", "unknown"),
         "position_row": report.get("position_row", "unknown"), "probowl_order": report.get("probowl_order", "unknown"),
         "penalties": report.get("penalties", "unknown"),
@@ -580,6 +587,24 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         raise ValueError("roster edits need a disc image (the roster records live in pack 0)")
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
+    if plan.depth_chart_rows:
+        if not is_image:
+            raise ValueError("depth-chart rows need a disc image (they build on the one-pool positions and the playbook roles)")
+        rows = _core_module("nfl2k5_depth_chart_rows")
+        pools = _core_module("nfl2k5_position_pools")
+        roles = _core_module("nfl2k5_depth_roles")
+        if rows is None or pools is None or roles is None:
+            raise RuntimeError("the depth-chart row dependencies are not available in this build")
+        source_xbe = _xbe_bytes(source)
+        if rows.status(source_xbe) == "foreign":
+            raise ValueError("the depth-chart row sites are neither retail nor this patch; refusing")
+        pool_state = pools.status(source_xbe)
+        if pool_state not in ("retail", "applied"):
+            raise ValueError("the position-pool sites are neither retail nor this patch; refusing")
+        if pool_state != "applied" and not plan.position_pools:
+            raise ValueError("depth-chart rows need the one-pool positions (tick them, or build on a disc that has them)")
+        if not plan.depth_roles and roles.status(source)["status"] != "applied":
+            raise ValueError("depth-chart rows need the X / Z / SLOT playbook roles (tick them, or build on a disc that has them)")
     if plan.depth_roles and not is_image:
         raise ValueError("depth roles need a disc image (the personnel groups live in the PLAY books)")
     if plan.depth_roles:
@@ -592,7 +617,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
 
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
     #    including its disc text spans when the source is an image)
-    if plan.wants_xbe_patch() or plan.edge_rename:
+    # the rows run after the pools step below (their cave and stride depend on it), so they never ride the first pass
+    if replace(plan, depth_chart_rows=False).wants_xbe_patch() or plan.edge_rename:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -611,7 +637,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         if settings is not None:
             kwargs["settings"] = settings
         step = tt.write_copy(source, target, **kwargs)
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
@@ -656,6 +682,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         receipt["steps"].append({"step": "position_pools", "xbe": pools_receipt,
                                  "playbooks": {k: v for k, v in book_receipt.items() if k not in ("books", "rows")},
                                  "rosters": {k: v for k, v in roster_receipt.items() if k not in ("moves", "teams")}})
+    if plan.depth_chart_rows:
+        # after the pools (the rows reuse their third-starter cave and their stride-aware table) and before the book
+        # writers; the executable rows never touch a book
+        progress("Adding the SLOT, nickel and dime depth-chart rows", 0, 0)
+        xbe, row_step = tt._apply_all(_xbe_bytes(target), None, catch_slider=False, arc_table=False, depth_chart_rows=True)
+        _write_xbe_bytes(target, xbe)
+        rows = _core_module("nfl2k5_depth_chart_rows")
+        if rows is None or rows.status(_xbe_bytes(target)) != "applied":
+            raise ValueError("the depth-chart rows failed their read-back")
+        receipt["steps"].append({"step": "depth_chart_rows", "status": "applied", "xbe": row_step.get("depth_chart_rows_patch"),
+                                 "changed_byte_count": row_step.get("changed_byte_count")})
     if plan.kickoff_alignment:
         align = _tools_module("nfl2k5_kickoff_alignment")
         if align is None:

@@ -273,6 +273,11 @@ class BuildPanel(QWidget):
                                           "Changes who lines up, not how they play. Unwitnessed in game.")
         tl.addWidget(self.depth_roles_check)
         self.depth_roles_check.toggled.connect(lambda _checked: self._refresh())
+        self.depth_chart_rows_check = QCheckBox("SLOT, NICKEL and DIME rows on the depth chart, X / Z labels (switches on the one-pool positions and the playbook roles when the disc lacks them; disc images only; experimental)")
+        self.depth_chart_rows_check.setToolTip("Thirteen depth-chart rows per unit instead of eleven: a SLOT row on offence, NICKEL CORNER and DIME CORNER rows on both defences, "
+                                               "LWR / RWR shown as X / Z. The new rows are views onto your receiver and corner lists. Unwitnessed in game.")
+        tl.addWidget(self.depth_chart_rows_check)
+        self.depth_chart_rows_check.toggled.connect(lambda _checked: self._refresh())
         root.addWidget(text)
 
         pres = QGroupBox("Presentation (disc images only)")
@@ -340,7 +345,7 @@ class BuildPanel(QWidget):
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
                            ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"),
-                           ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"),
+                           ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
                            ("scorebug", "ESPN scorebug")):
             bits.append(f"{label}: {state.get(key)}")
@@ -401,6 +406,10 @@ class BuildPanel(QWidget):
         gate(self.scheme_labels_check, "scheme_labels")
         gate(self.position_pools_check, "position_pools", needs_image=True)
         gate(self.depth_roles_check, "depth_roles", needs_image=True)
+        gate(self.depth_chart_rows_check, "depth_chart_rows", needs_image=True)
+        if any(state.get(k) == "foreign" for k in ("position_pools", "scheme_labels", "depth_roles")):
+            self.depth_chart_rows_check.setEnabled(False)
+            self.depth_chart_rows_check.setToolTip("A dependency of the rows (pools, scheme labels or playbook roles) is neither retail nor this patch.")
         gate(self.scorebug_check, "scorebug", needs_image=True)
         gate(self.camera_check, "camera")
         gate(self.widescreen_check, "widescreen")
@@ -418,6 +427,7 @@ class BuildPanel(QWidget):
             "camera": self.camera_check, "kick_rules": self.kick_rules_check, "kick_power": self.kick_power_check,
             "position_pools": self.position_pools_check,
             "depth_roles": self.depth_roles_check,
+            "depth_chart_rows": self.depth_chart_rows_check,
             "kickoff_alignment": self.kickoff_alignment_check,
             "dynamic_kickoff": self.dynamic_kickoff_check,
             "season_2026": self.season_check, "widescreen": self.widescreen_check, "overtime": self.overtime_check,
@@ -470,7 +480,7 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def plan(self) -> mod_build.BuildPlan:
-        return mod_build.BuildPlan(
+        plan = mod_build.BuildPlan(
             source=self.source_field.text(), target=self.target_field.text(),
             overwrite=Path(self.target_field.text()).exists() if self.target_field.text() else False,
             throw=self.throw_check.isChecked(), max_deep_yards=float(self.ceiling_spin.value()), arc=0.0,
@@ -483,6 +493,7 @@ class BuildPanel(QWidget):
             kick_rules=self.kick_rules_check.isChecked(), kick_power=self.kick_power_check.isChecked(),
             position_pools=self.position_pools_check.isChecked(),
             depth_roles=self.depth_roles_check.isChecked(),
+            depth_chart_rows=self.depth_chart_rows_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),
             dynamic_kickoff=self.dynamic_kickoff_check.isChecked(),
             season_2026=self.season_check.isChecked(), widescreen=self.widescreen_check.isChecked(),
@@ -499,11 +510,17 @@ class BuildPanel(QWidget):
             roster_edits=(self.roster_edits_field.text().strip() if self.roster_edits_check.isChecked() else ""),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
         )
+        if plan.depth_chart_rows:
+            state = self._state or {}
+            plan.position_pools = plan.position_pools or state.get("position_pools") != "applied"
+            plan.scheme_labels = plan.scheme_labels or state.get("scheme_labels") != "applied"
+            plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
+        return plan
 
     def has_work(self) -> bool:
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
-                    or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles
+                    or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.commentary)
 
     def _refresh(self) -> None:

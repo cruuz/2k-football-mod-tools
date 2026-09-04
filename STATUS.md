@@ -4,6 +4,8 @@
 
 Source/UI versions are **2K5 RC84** and **APF alpha.84**.
 
+- **SLOT / NICKEL / DIME depth-chart rows, X / Z labels (Experimental).** Thirteen-row depth chart on top of
+  the one-pool positions and the playbook roles. Astra Tier 2, gate-proved, unwitnessed.
 - **Franchise saves decoded** (season block + front office: cap, IR, schedule grid, coaches, seeds, user control);
   read-only franchise card in ★ Rosters; xemu HDD save extractor. Finn's IR move reproduced byte for byte.
 - **Dynamic kickoff behaviour (Experimental).** Hold until first contact, landing zone, CPU aim and CPU touchbacks

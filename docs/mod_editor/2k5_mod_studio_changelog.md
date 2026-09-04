@@ -2,6 +2,16 @@
 
 ## v1.0 RC84 — (unreleased)
 
+- **SLOT, NICKEL CORNER and DIME CORNER rows on the depth chart, X / Z labels (Experimental).** The executable
+  follow-up to the playbook roles, built by GPT-6 Astra: the depth-chart table is re-laid at thirteen rows per unit
+  instead of eleven (the nine surviving stride multiplies and the row-count callback rewritten in place, the table
+  at .rdata 0x5140D8 re-laid with the specials untouched), the offence gains a SLOT row and both defences gain
+  NICKEL CORNER and DIME CORNER rows that are views onto your receiver and corner lists through the one-pool
+  third-starter cave, LWR / RWR read X / Z, and the duplicate-starter warning keeps to the original eleven rows.
+  Needs the one-pool positions and the playbook roles and switches them on when the disc lacks them; the position
+  modules now read the table stride off the executable so both layouts parse. 840 bytes on a one-pool source, both
+  executable gates, eight composition orders identical. Unwitnessed in game: thirteen rows fitting the screen,
+  moves through the new rows and the franchise auto-depth are the checklist items.
 - **Franchise saves, decoded.** The two signed saves on hand turned out to be franchise saves, and so is the one
   pulled out of the emulator's disk image, so the Rosters tab has been opening franchise saves all along; now the
   studio also reads the rest of the file. Beyond the roster arena a franchise save carries a season block (mode,

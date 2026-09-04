@@ -172,6 +172,12 @@ PATCHES = (
      "corners inside (retail already did for 66 of 71 and 36 of 38 sets). Twelve shared groups whose formations "
      "disagree by more than two yards, bunch sets and special teams keep their retail assignments and are listed in "
      "the build report. Changes who lines up, not how they play: Advanced. No new depth-chart rows yet. Unwitnessed in game."),
+    ("depth_chart_rows", "SLOT, NICKEL and DIME rows on the depth chart, X / Z labels (disc images only, experimental)",
+     "Retail: the depth chart lists two receivers (LWR / RWR) and two corners; who plays the slot or the nickel is whoever "
+     "the formation happens to pick. Patch: the offence gets a SLOT row and both defences get NICKEL CORNER and DIME CORNER "
+     "rows (thirteen rows per unit instead of eleven; LWR / RWR become X / Z). The new rows are views onto your receiver "
+     "and corner lists, so moving a player there moves him in that list. Needs the one-pool positions and the X / Z / SLOT "
+     "playbook roles and switches them on when the disc lacks them. Special teams keep KR, PR, K and P. Unwitnessed in game."),
 )
 
 
@@ -203,7 +209,7 @@ if not mod_build.SEVEN_ON_SEVEN_RELEASED:
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"prospect_names", "depth_roles", "dynamic_kickoff"}
+NEEDS_IMAGE = {"prospect_names", "depth_roles", "dynamic_kickoff", "depth_chart_rows"}
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
@@ -318,6 +324,10 @@ class GameplayPatchesPanel(QWidget):
             # a known non-retail state is the more useful message; an unreadable one (a bare XBE cannot
             # carry a playbook patch, so inspect says n/a) should say what the user needs instead
             check.setToolTip("Needs a disc image." if needs_image and value not in ("applied", "foreign", "partial") else tip)
+        row_check = self.checks.get("depth_chart_rows")
+        if row_check is not None and any(state.get(k) == "foreign" for k in ("position_pools", "scheme_labels", "depth_roles")):
+            row_check.setEnabled(False)
+            row_check.setToolTip("A dependency of the rows (pools, scheme labels or playbook roles) is neither retail nor this patch.")
         self.source_status.setText("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches) + ".")
         self._refresh()
 
@@ -329,6 +339,12 @@ class GameplayPatchesPanel(QWidget):
         for key, check in self.checks.items():
             on = check.isChecked()
             setattr(plan, key, (STRING_TOGGLES[key] if on else "") if key in STRING_TOGGLES else on)
+        if plan.depth_chart_rows:
+            # the rows build on the pools, the scheme labels and the playbook roles: switch on whatever the source lacks
+            state = self._state or {}
+            plan.position_pools = plan.position_pools or state.get("position_pools") != "applied"
+            plan.scheme_labels = plan.scheme_labels or state.get("scheme_labels") != "applied"
+            plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
         return plan
 
     def _refresh(self) -> None:

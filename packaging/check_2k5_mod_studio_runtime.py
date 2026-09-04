@@ -1736,6 +1736,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_franchise_practice",
         "mod_editor.core.nfl2k5_kick_laces",
         "mod_editor.core.nfl2k5_dynamic_kickoff",
+        "mod_editor.core.nfl2k5_depth_chart_rows",
         "mod_editor.core.nfl2k5_team_history",
         "mod_editor.core.nfl2k5_career_stats",
         "mod_editor.core.nfl2k5_save_rost",
