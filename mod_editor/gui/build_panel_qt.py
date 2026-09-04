@@ -318,7 +318,14 @@ class BuildPanel(QWidget):
                            ("camera", "camera"), ("widescreen", "widescreen"),
                            ("scorebug", "ESPN scorebug")):
             bits.append(f"{label}: {state.get(key)}")
-        self.source_status.setText(("Disc image" if is_image else "default.xbe") + " read. " + "; ".join(bits) + ".")
+        # The disc's identity comes first: a repacked or pre-modded image decides whether Build
+        # can work at all, and the user should read that before pressing the button, not after a
+        # step refuses 40 minutes in.
+        head = ("Disc image" if is_image else "default.xbe") + " read."
+        identity = str(state.get("disc_identity_line") or "")
+        if identity:
+            head += " " + identity
+        self.source_status.setText(head + " " + "; ".join(bits) + ".")
         # a patch already applied cannot be re-applied; a foreign site disables the toggle
         def gate(box: QCheckBox, key: str, needs_image: bool = False, module: str | None = None) -> None:
             value = str(state.get(key))

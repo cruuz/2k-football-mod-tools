@@ -31,6 +31,34 @@ is published; the gate reports the package's final file and byte counts and
 refuses retail game bytes. The app creates private indexes, previews, and
 originals from your XISO on your computer; do not share that private cache.
 
+### Which disc image works
+
+The studio takes a dump of the **retail USA disc**, in either shape it normally
+comes in: an extracted `.xiso`, where the game partition is the whole file, or a
+raw/redump dump that still has the video partition in front (the game then starts
+at 0x18300000 or 0x0FD90000, and the studio finds it). A raw dump being a
+different size from somebody else's is expected and fine.
+
+Two other things arrive under the same `ESPN NFL 2K5 (USA).iso` name and are not
+the same:
+
+- a **repack**, where somebody unpacked the disc and rebuilt the image. The file
+  bytes are still retail but they sit at other sectors. Build & Share works on
+  one, because every writer finds its file through the disc directory, but a
+  `.2k5patch` cannot: a patch addresses bytes by their position in the game
+  partition, and a repack moved them. Build the mod yourself instead of applying
+  a patch file, or rebuild the image from the original dump.
+- a **pre-modded image**, where somebody's roster or gameplay mod is already in
+  `default.xbe` or `vc_53450030/0`. The studio's writers start from retail bytes,
+  so a build refuses. Start again from a clean dump of your own disc.
+
+You do not have to work this out yourself. The Build tab's source line and the
+Apply panel both name your image as soon as you choose it: *retail dump (xiso)*,
+*retail dump (raw/redump with video partition)*, *repacked disc*, *modified disc*,
+or *unknown image*, with a sentence saying what to do. Every refusal quotes the
+same line, so a failure says which disc you handed it and not just how many bytes
+disagreed.
+
 ## Make your first edit
 
 1. Open **2K5 Mod Studio** from the desktop application menu.

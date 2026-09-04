@@ -66,7 +66,10 @@ def _print_inspect(info: dict) -> None:
         print(f"  {info['description']}")
     print(f"  created {info['created'] or '?'}  tool {info['tool'].get('name')} {info['tool'].get('version')}")
     print(f"  base: {base['label']}  size {base['size']}  sha256 {base['sha256'] or 'unknown'}"
-          + ("  [retail]" if base["is_retail"] else "  [NOT the retail image: the author built on a modified copy]"))
+          + ("  [retail]" if base["is_retail"]
+             else "  [retail-equivalent: every changed byte was proved against the retail image]"
+             if base.get("is_retail_equivalent")
+             else "  [NOT the retail image: the author built on a modified copy]"))
     print(f"  runs: {info['runs']}  changed bytes: {_human(info['bytes'])}  pack file: {_human(info['pack_bytes'])}")
     for region in info["regions"]:
         print(f"    {region['name']}: {region['runs']} run(s), {_human(region['bytes'])}")
@@ -91,7 +94,8 @@ def cmd_export(args: argparse.Namespace) -> int:
         {"name": args.name, "author": args.author or "", "version": args.version or "",
          "description": args.description or "", "base_label": args.base_label or "",
          "assets": [Path(item) for item in args.asset], "operations": operations, "project": args.project},
-        overwrite=args.overwrite, recipe=not args.no_recipe, progress=_progress(not args.json),
+        overwrite=args.overwrite, recipe=not args.no_recipe, retail_image=args.retail_image,
+        progress=_progress(not args.json),
     )
     if args.json:
         print(json.dumps(receipt, indent=1))
@@ -99,7 +103,13 @@ def cmd_export(args: argparse.Namespace) -> int:
         print(f"Wrote {receipt['pack']} ({_human(receipt['pack_bytes'])}): {receipt['runs']} run(s), "
               f"{_human(receipt['bytes'])} changed, {len(receipt['assets'])} asset(s), in {receipt['elapsed_seconds']} s")
         base = receipt["base"]
-        print("  base: " + ("retail disc image" if base["is_retail"] else f"custom base ({base['label']})"))
+        print("  base: " + ("retail disc image" if base["is_retail"]
+                            else f"retail-equivalent ({base['label']})" if base.get("is_retail_equivalent")
+                            else f"custom base ({base['label']})"))
+        proof = receipt.get("retail_equivalence")
+        if proof is not None:
+            print(f"  proved against {proof['image']}: {proof['matching']}/{proof['runs']} run(s) match retail"
+                  + (f" ({proof['reason']})" if proof["reason"] else ""))
         for line in receipt["recipe_lines"]:
             print(f"  - {line}")
     return 0
@@ -126,6 +136,9 @@ def cmd_check(args: argparse.Namespace) -> int:
             print(f"  image sha256 {report['image_sha256']}"
                   + ("  [retail]" if report["image_is_retail"] else "")
                   + ("  [same base as the author]" if report["image_matches_base_sha256"] else ""))
+        if report.get("identity"):
+            print(f"  this image is: {report['identity']['headline']}")
+            print(f"    {report['identity']['detail']}")
         for run in report["runs"]:
             if run["state"] != "match":
                 print(f"    run {run['index']} @0x{run['file_offset']:x} ({run['length']} B, {run['region'] or 'no file'}): {run['state']}")
@@ -182,6 +195,9 @@ def main(argv: list[str] | None = None) -> int:
     export.add_argument("--version")
     export.add_argument("--description")
     export.add_argument("--base-label", help="how to describe the base when it is not the retail image")
+    export.add_argument("--retail-image", metavar="IMAGE",
+                        help="a retail disc image every run is proved against; when all of them hold the "
+                             "retail bytes the pack records a retail-equivalent base instead of a custom one")
     export.add_argument("--asset", action="append", default=[], metavar="FILE",
                         help="bundle a source file (PNG, WAV, JSON...) under assets/; repeatable")
     export.add_argument("--recipe", metavar="JSON", help="a JSON list of recipe operations ({'op': ..., parameters}) to record")

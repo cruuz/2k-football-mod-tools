@@ -379,6 +379,17 @@ def inspect(source: Path | str) -> dict[str, Any]:
     if "edge_rename" in report:
         out["edge_rename"] = report.get("edge_rename")
         out["edge_rename_disc"] = report.get("edge_rename_disc")
+    # Which disc this is decides whether Build will work at all, so the panel can say it
+    # before anyone presses the button rather than after a step has refused.
+    if report.get("container") == "xiso":
+        identity = disc_identity(source)
+        out["disc_identity"] = identity.as_json() if identity is not None else None
+        out["disc_identity_line"] = identity.line() if identity is not None else ""
+        out["disc_identity_headline"] = identity.headline if identity is not None else ""
+    else:
+        out["disc_identity"] = None
+        out["disc_identity_line"] = ""
+        out["disc_identity_headline"] = ""
     return out
 
 
@@ -447,9 +458,54 @@ def image_target_path(chosen: str) -> str:
     return text + ".xiso.iso"
 
 
+def disc_identity(source: Path | str, *, pack0: bytes | None = None):
+    """What kind of disc image ``source`` is, or None when it cannot be told."""
+
+    module = _core_module("nfl2k5_disc_identity")
+    if module is None:
+        return None
+    try:
+        return module.identify(source, pack0=pack0)
+    except Exception:  # noqa: BLE001 -- an identity is a courtesy, never a gate
+        return None
+
+
+def _identity_note(source: Path | str, *, pack0: bytes | None = None) -> str:
+    identity = disc_identity(source, pack0=pack0)
+    return f"This image is: {identity.line()}" if identity is not None else ""
+
+
+def _with_identity(exc: ValueError, source: Path, is_image: bool) -> ValueError:
+    """Name the disc in a refusal.
+
+    "pack-0 schedule template is foreign: ROST stored size is not retail" is
+    true and useless: it is the same sentence for a repacked image, a disc that
+    already carries somebody's roster mod, and a dump of another game.  Which
+    one it is decides whether the user re-dumps, rebuilds, or starts over, so
+    every refusal on a disc image says which.
+    """
+
+    text = str(exc)
+    if not is_image or "This image is:" in text:
+        return exc
+    note = _identity_note(source)
+    if not note:
+        return exc
+    joiner = " " if text.rstrip().endswith((".", "!", "?", ":")) else ". "
+    return ValueError(f"{text.rstrip()}{joiner}{note}")
+
+
 def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
     """Apply the whole plan to a copy of ``plan.source`` at ``plan.target``; return the receipt."""
 
+    try:
+        return _build(plan, progress)
+    except ValueError as exc:
+        source = Path(plan.source)
+        raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+
+
+def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
     source, target = Path(plan.source), Path(plan.target)
     if target.exists() and target.resolve() == source.resolve():
@@ -609,7 +665,9 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
             elif pstate.get("state") == "applied":
                 pack_receipt = {"already_applied": True}
             else:
-                raise ValueError(f"pack-0 schedule template is {pstate.get('state')}: {pstate.get('reason', '')}")
+                note = _identity_note(target, pack0=pack)
+                raise ValueError(f"pack-0 schedule template is {pstate.get('state')}: "
+                                 f"{pstate.get('reason', '')}. {note}".rstrip())
         finally:
             os.close(fd)
         receipt["steps"].append({"step": "season_2026", "xbe": {k: v for k, v in season_receipt.items() if k != "edits"},
