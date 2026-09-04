@@ -172,6 +172,11 @@ class BuildPlan:
     # and leaves +0x2C, the season-stat pool, the generated-name pool and the +0x53 star bit alone,
     # so all four of their digest gates stay intact.  Disc images only.
     roster_edits: str = ""
+    # community playbook packs (.2k5book recipes) installed into the copy's team books.
+    # A recipe, not retail bytes: the same formation/play/link rows the designers stage, so
+    # Build compiles them against the user's own disc.  Never in a preset -- a community book
+    # is a user choice like commentary, and a curated official one belongs in EXPERIMENTAL first.
+    playbook_packs: tuple[str, ...] = ()
     # text
     edge_rename: bool = False
     # presentation
@@ -293,6 +298,8 @@ def availability() -> dict[str, bool]:
                      and _scorebug_art_available()),
         "edge_rename": _core_module("nfl2k5_edge_rename") is not None,
         "commentary": _tools_module("nfl2k5_commentary_swap") is not None,
+        "playbook_packs": (_core_module("nfl2k5_playbook_pack") is not None
+                           and _tools_module("nfl2k5_playbook_position_recode") is not None),
     }
 
 
@@ -320,6 +327,9 @@ def inspect(source: Path | str) -> dict[str, Any]:
         "seven_on_seven": report.get("seven_on_seven", "unknown"), "seven_on_seven_book": "n/a", "team_history": "n/a",
         "position_pools": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
         "scorebug": "n/a", "edge_rename": "unknown", "commentary": "unknown",
+        # a pack is a recipe compiled into the books; there is no single site to read back,
+        # so the receipt (not inspect) is the record of which packs went in
+        "playbook_packs": "n/a",
     }
     if report.get("container") == "xiso":
         align = _tools_module("nfl2k5_kickoff_alignment")
@@ -476,6 +486,8 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         raise ValueError("star tags need a disc image (the roster records live in pack 0)")
     if plan.roster_edits and not is_image:
         raise ValueError("roster edits need a disc image (the roster records live in pack 0)")
+    if plan.playbook_packs and not is_image:
+        raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
 
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
     #    including its disc text spans when the source is an image)
@@ -557,6 +569,19 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         progress("Writing the 7-on-7 sets into the practice playbook", 0, 0)
         book_receipt = book.apply(target, progress=lambda msg: progress(msg, 0, 0))
         receipt["steps"].append({"step": "seven_on_seven_book", **{k: v for k, v in book_receipt.items() if k != "formations"}})
+    if plan.playbook_packs:
+        # after every other playbook writer (the position recode rewrites defensive category
+        # codes and the 7-on-7 writer owns the practice book; a pack only ever replaces
+        # offensive formations/plays inside a team book, so the three do not overlap).
+        packs = _core_module("nfl2k5_playbook_pack")
+        if packs is None:
+            raise RuntimeError("the playbook pack module is not available in this build")
+        progress("Installing the community playbook packs", 0, 0)
+        pack_receipt = packs.apply_packs_to_image(
+            target, [Path(p) for p in plan.playbook_packs],
+            progress=lambda msg: progress(msg, 0, 0),
+        )
+        receipt["steps"].append({"step": "playbook_packs", **pack_receipt})
     if plan.season_2026:
         season = _core_module("nfl2k5_season_length")
         fs = _tools_module("nfl2k5_franchise_schedule")

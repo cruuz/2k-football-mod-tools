@@ -59,6 +59,21 @@ class _Host:
     def create_authored_play(self, *args, **kwargs):
         raise RuntimeError("not used")
 
+    def playbook_teams(self, *args, **kwargs):
+        return ()
+
+    def load_playbook_pack(self, *args, **kwargs):
+        raise RuntimeError("not used")
+
+    def preview_playbook_pack(self, *args, **kwargs):
+        raise RuntimeError("not used")
+
+    def install_playbook_pack(self, *args, **kwargs):
+        raise RuntimeError("not used")
+
+    def export_playbook_pack(self, *args, **kwargs):
+        raise RuntimeError("not used")
+
 
 class LinkTableExportUiTests(unittest.TestCase):
     @classmethod

@@ -111,6 +111,21 @@ class KeyboardSearchPolishTests(unittest.TestCase):
             def create_authored_play(self, *a, **k):
                 raise RuntimeError
 
+            def playbook_teams(self, *a, **k):
+                return ()
+
+            def load_playbook_pack(self, *a, **k):
+                raise RuntimeError
+
+            def preview_playbook_pack(self, *a, **k):
+                raise RuntimeError
+
+            def install_playbook_pack(self, *a, **k):
+                raise RuntimeError
+
+            def export_playbook_pack(self, *a, **k):
+                raise RuntimeError
+
         panel = PlaybooksPanel(_Host())
         try:
             self.assertTrue(bool(panel.search.property("studioSearch")))

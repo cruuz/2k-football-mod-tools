@@ -227,6 +227,7 @@ FORBIDDEN_SUFFIXES = frozenset(
 )
 ALLOWED_SUFFIXES = frozenset(
     {
+        ".2k5book",   # data/playbooks/*.2k5book: a community playbook recipe -- UTF-8 JSON, zero retail bytes
         ".bat",
         ".cfg",
         ".command",

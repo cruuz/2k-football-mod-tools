@@ -144,6 +144,71 @@
   position-pool gates all stay intact (asserted by a test on the retail roster). Share detects the
   edit between two discs, rebuilds the document from the rosters themselves and packs it as an asset.
 - Unwitnessed in game.
+- **Community playbook packs (`.2k5book`): the stock books stop being the ceiling.** Measured over
+  all 32 team books, shotgun is 18 % of offensive formations and only **14.5 % of the plays you can
+  call**; six books (ATL, DEN, NYJ, PHI, SF, TB) have exactly one gun formation and in all six it is
+  "Hail Mary"; there are zero pistol sets and 38.7 % of every route stem is exactly ten yards. A pack
+  is a small JSON **recipe** — literally the `formation_creates` / `play_creates` / `formation_links`
+  rows a `.2k5mod` already stores and the writer already compiles — so it carries **zero retail
+  bytes**, reviews as a diff, merges, and compiles against the installer's own disc.
+  **Playbooks & Plays → Install Playbook Pack…** (and a card on Create a Play step 1) shows a plan
+  table before anything happens: per entry what it replaces and whether it is OK, a conflict with an
+  edit you already staged, or over budget, under a live budget bar (`plays n/270, formations n/50,
+  nodes n/3,500`). The team combo offers the pack's own team, a retarget to any other book, or all 32
+  at once; a retarget re-resolves every `replace_index` **by name** through
+  `suggest_plays_to_replace` / `suggest_formations_to_replace` and only falls back to the stored
+  index when the name still matches there. Installed entries are ordinary project edits: they show in
+  the edit list, revert one at a time, and serialise into `.2k5mod` with **no schema change**.
+  **Export Playbook Pack…** is the mirror, so a contributor with no dev environment can author in the
+  studio and attach the JSON to a thread. `BuildPlan.playbook_packs` (empty in every preset — a
+  community book is a user choice like commentary) applies them through the existing compile path and
+  the receipt lists every pack, its author, its licence and every book it touched.
+  **Capacity is the binding constraint:** eight books are already at the 270-play cap and there are
+  only 180 spare play slots across all 32, so packs **replace, never append**, and the check reports
+  net growth on every run. `tools/nfl2k5_playbook_pack.py check` runs the first six rules with **no
+  game data at all** (schema → budget → the ported retail validator on every play via
+  `build_descriptor` → class-flag sanity → formation legality → the donor-header rule), then a real
+  dry compile when a book is supplied; it exits 0 when green, so it drops into a GitHub Action over a
+  `books/` directory. Rule 4 exists because of a real bug: a pass cloned from the book's first
+  offensive play (a run in every retail book) is *played* as a run — the receiver icons vanish at the
+  snap and the QB cannot throw. New: `mod_editor/core/nfl2k5_playbook_pack.py`,
+  `mod_editor/gui/playbook_pack_dialog_qt.py`, `tools/nfl2k5_playbook_pack.py`,
+  `docs/mod_editor/playbook_packs.md`.
+- **A project may now hold designs for more than one book.** The session validated a new
+  formation/play/link against *every* staged create, and the compiler edits one book per call, so
+  staging a design for a second team failed with "One PLAY compiler call may edit only one
+  playbook". The candidate set is now filtered to the book the request touches (Build already
+  grouped by book), which is what "apply this pack to all 32" needs. `.2k5book` also joins the
+  release gate's allowed text suffixes -- it is UTF-8 JSON with zero retail bytes, the same class
+  as the shipped `.csv` data.
+- **A retarget re-slots the chains, not just the coordinates.** 29 of the 32 books order their skill
+  players differently from ATL, so pointing a pack at another team permutes the eleven formation
+  slots. The chains now follow their players and every operand that names a slot (Snap To, Handoff
+  To, Fake Handoff, a Move's follow slot in mode 2, a conditional's read slot for kinds 2/3/5/6) is
+  renumbered with them — otherwise the tight end runs the split end's route and a handoff points at
+  nobody. Proved per book: after a retarget, every position kind still runs the route its author drew.
+- **Seed pack `data/playbooks/modern_gun_core.2k5book`** (Modern Gun Core, CC0-1.0), authored on ATL
+  with the library's own concepts: **Gun Trips Rt / Gun Doubles / Gun Bunch Rt / Gun Empty** replacing
+  Split Jokers / I Jokers / Strong I Pro / Weak I Jokers, and eleven concepts — Mesh, Levels, Stick,
+  Dagger, 4 Verts, Curl-Flat, Snag, Smash, Y-Cross, Slant-Flat, Flood — each replacing a play already
+  listed in the formation it takes over, so it lands in the new menu with no new link. Net growth
+  **zero** formations and **zero** plays (+308 nodes, 2,438 → 2,746 of 3,500): it passes all seven
+  checks on ATL and, retargeted by name, on all 32 team books including the eight at the play cap.
+  Not in any preset. Never launched in game.
+- **Two cheap wins in Create a Play step 5.** The **QB read order** — the four ordered 1-5 values every
+  Dropback (`0x06`) node carries, 171 distinct tuples over the 3,225 retail dropbacks, editable since
+  the codec shipped and never exposed, so an authored pass inherited whatever the generator hard-coded
+  — is now four spin boxes per pass play. The **audible slot** — `FormationLinkRequest.group`, which
+  the writer has always taken; every populated retail formation carries exactly one link in each of
+  groups 0, 1 and 2, the same structure proved in APF's SPLB — is now a combo on both the wizard's link
+  step and the panel's "List Selected Play in Selected Formation". What the four read values select,
+  and what an audible slot does at the line, are readings of the corpus, not witnessed runtime claims.
+- `nfl2k5_play_library.PASS_CONCEPTS` gains **Y-Cross** and **Snag** (14 concepts), so the wizard and
+  any pack can build them from the library rather than by hand.
+- **Honest limits, stated on every install:** the engine has no pre-snap motion (no opcode has a
+  pre-snap phase and all 88,254 retail Start nodes sit at x=0, y=0), no give-or-throw RPO (the ball
+  simulation walks each chain once, so a QB who hands off cannot throw later) and no tempo. Option
+  routes and keep-or-throw RPOs are accepted by the ported validator but **unwitnessed in game**.
 
 ## v1.0 RC82 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star; overtime and Models UV fixes (2026-09-04)
 

@@ -888,6 +888,11 @@ class BrowseOnlyFacade:
     playbook_raw_body = _unavailable
     stage_formation_selector = _unavailable
     create_authored_play = _unavailable
+    playbook_teams = _unavailable
+    load_playbook_pack = _unavailable
+    preview_playbook_pack = _unavailable
+    install_playbook_pack = _unavailable
+    export_playbook_pack = _unavailable
     stadium_scenes = _unavailable
     stadium_details = _unavailable
     preview_stadium_texture = _unavailable

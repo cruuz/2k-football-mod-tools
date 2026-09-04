@@ -22,7 +22,8 @@ from PyQt5.QtGui import QBrush, QColor, QCursor, QFont, QPainterPath, QPen
 from PyQt5.QtWidgets import (
     QAbstractItemView, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout, QFrame,
     QGroupBox, QHBoxLayout, QInputDialog, QLabel, QLineEdit, QListWidget, QListWidgetItem, QMenu,
-    QMessageBox, QPushButton, QRadioButton, QScrollArea, QSizePolicy, QStackedWidget, QTableWidget,
+    QMessageBox, QPushButton, QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QStackedWidget,
+    QTableWidget,
     QTableWidgetItem, QVBoxLayout, QWidget, QWizard, QWizardPage,
 )
 
@@ -38,6 +39,62 @@ HUGE = "font-size: 20px; font-weight: 600;"
 
 def _quiet(*_args: object) -> None:
     pass
+
+
+# ---------------------------------------------------------------------------
+# QB read progression: the four ordered 1-5 values every Dropback node carries
+# ---------------------------------------------------------------------------
+# Opcode 0x06 ("Dropback / Pass") stores five small fields; operands 1-4 are four
+# ordered values in 1..5 (171 distinct tuples over the 3,225 retail Dropback
+# nodes) and are the quarterback's read order.  They are editable today and no
+# retail play ever set them from this studio: a wizard play inherited whatever
+# the generator hard-coded.  What the four numbers select *is* a reading of the
+# corpus, not a witnessed runtime behaviour, so the wizard labels them "read
+# order" and never claims more.
+
+DROPBACK_OPCODE = 0x06
+READ_ORDER_SLICE = slice(1, 5)
+READ_ORDER_MIN, READ_ORDER_MAX = 1, 5
+
+
+def read_order_of(chain: list) -> tuple[int, int, int, int] | None:
+    """The four ordered values of a chain's Dropback node, or ``None`` when the
+    chain has no Dropback node (a run, a sneak, a blocker)."""
+
+    for op, vals in chain:
+        if op == DROPBACK_OPCODE and len(vals) >= 5:
+            return tuple(int(v) for v in vals[READ_ORDER_SLICE])  # type: ignore[return-value]
+    return None
+
+
+def with_read_order(chain: list, order: "tuple[int, ...] | list[int]") -> list:
+    """A copy of ``chain`` whose Dropback node carries ``order`` (four 1-5 values)."""
+
+    values = [max(READ_ORDER_MIN, min(READ_ORDER_MAX, int(v))) for v in order]
+    if len(values) != 4:
+        raise ValueError("a read order is four values")
+    out = []
+    for op, vals in chain:
+        if op == DROPBACK_OPCODE and len(vals) >= 5:
+            fresh = list(vals)
+            fresh[READ_ORDER_SLICE] = values
+            out.append((op, fresh))
+        else:
+            out.append((op, list(vals)))
+    return out
+
+
+#: Menu selection groups.  Every populated retail formation carries exactly one
+#: link in each of groups 0, 1 and 2 (938 formations, no exceptions) -- the three
+#: audible slots, the same structure proved in APF's SPLB.  Group 3 exists in the
+#: format and is what the tutorial book uses.
+AUDIBLE_GROUPS: tuple[tuple[str, object], ...] = (
+    ("Inherit from the formation", None),
+    ("Audible 1 (group 0)", 0),
+    ("Audible 2 (group 1)", 1),
+    ("Audible 3 (group 2)", 2),
+    ("Group 3 (tutorial books)", 3),
+)
 
 
 @dataclass
@@ -132,9 +189,48 @@ class TeamPage(QWizardPage):
         self.status = QLabel("Load your NFL 2K5 disc first (File → Open), then the 37 playbooks appear here.")
         self.status.setWordWrap(True)
         layout.addWidget(self.status)
+
+        # Somebody else already did the work: a community pack is the same recipe
+        # this wizard produces, so it installs into the same edit list.
+        self.pack_card = QGroupBox("Already have a playbook pack?")
+        card = QVBoxLayout(self.pack_card)
+        card_text = QLabel(
+            "A .2k5book is a recipe somebody made in this studio — formations, plays and the "
+            "stock entries they replace. It carries no game data and is compiled against your "
+            "own disc. You will see exactly what it replaces before anything is staged."
+        )
+        card_text.setWordWrap(True)
+        card_text.setStyleSheet(BIG)
+        card.addWidget(card_text)
+        self.install_pack_button = QPushButton("Install a playbook pack…")
+        self.install_pack_button.setStyleSheet(HUGE)
+        self.install_pack_button.clicked.connect(self._install_pack)
+        card.addWidget(self.install_pack_button)
+        self.pack_status = QLabel("")
+        self.pack_status.setWordWrap(True)
+        card.addWidget(self.pack_status)
+        layout.addWidget(self.pack_card)
+
         self.list.itemSelectionChanged.connect(self.completeChanged)
         self.list.itemDoubleClicked.connect(lambda _i: self.wiz.next())
         self._books: list[Nfl2k5Playbook] = []
+
+    def _install_pack(self) -> None:
+        from mod_editor.gui.playbook_pack_dialog_qt import (
+            PlaybookPackInstallDialog, choose_pack_to_open,
+        )
+
+        path = choose_pack_to_open(self)
+        if path is None:
+            return
+        try:
+            dialog = PlaybookPackInstallDialog(self.wiz.host, path, self)
+        except Exception as exc:  # noqa: BLE001
+            QMessageBox.warning(self, "Install a playbook pack", str(exc))
+            return
+        if dialog.exec_() != dialog.Accepted:
+            return
+        self.pack_status.setText(getattr(dialog, "result_message", "Playbook pack staged."))
 
     def initializePage(self) -> None:
         self.list.clear()
@@ -923,8 +1019,10 @@ class FinalizePage(QWizardPage):
         self.setSubTitle("Each design either replaces an outdated stock entry (suggested for you) or is added as new. "
                          "Then Build makes a fresh disc and Launch starts xemu with it.")
         layout = QVBoxLayout(self)
-        self.table = QTableWidget(0, 4)
-        self.table.setHorizontalHeaderLabels(["What", "Name", "Put it where?", "Why that suggestion"])
+        self.table = QTableWidget(0, 6)
+        self.table.setHorizontalHeaderLabels(
+            ["What", "Name", "Put it where?", "Why that suggestion", "QB read order", "Audible slot"]
+        )
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setStyleSheet(BIG)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -943,16 +1041,28 @@ class FinalizePage(QWizardPage):
         self.launch.clicked.connect(self._launch)
         row.addWidget(self.apply); row.addWidget(self.build); row.addWidget(self.launch)
         layout.addLayout(row)
+        self.hint = QLabel(
+            "QB read order: the four ordered 1-5 values every Dropback node carries (retail sets "
+            "them on all 3,225 of them; nothing in this studio ever did until now). Audible slot: "
+            "which of the formation's three audible groups this play is listed in — leave it on "
+            "Inherit to copy the formation's existing slots."
+        )
+        self.hint.setWordWrap(True)
+        layout.addWidget(self.hint)
         self.status = QLabel("")
         self.status.setWordWrap(True)
         self.status.setStyleSheet(BIG)
         layout.addWidget(self.status)
         self._choices: list[tuple[object, QComboBox]] = []
+        self._read_orders: dict[int, tuple[object, list[QSpinBox], int]] = {}
+        self._groups: dict[int, tuple[object, QComboBox]] = {}
 
     def initializePage(self) -> None:
         book, body = self.wiz.book, self.wiz.body
         self.table.setRowCount(0)
         self._choices = []
+        self._read_orders = {}
+        self._groups = {}
         used_f: set[int] = set()
         used_p: set[int] = set()
         try:
@@ -994,14 +1104,60 @@ class FinalizePage(QWizardPage):
                 if psugg:
                     used_p.add(psugg[0][0])
                 self._choices.append((p, pc))
+                self._add_read_order(r, p, f)
+                self._add_audible_group(r, p)
         self.table.resizeColumnsToContents()
         self.status.setText(f"{len(self.wiz.designed)} formation(s), {sum(len(f.plays) for f in self.wiz.designed)} play(s) designed. "
                             "Replacing keeps the playbook the same size; adding grows it (50 formations / 270 plays max).")
+
+    def _add_read_order(self, row: int, play: "DesignedPlay", formation: "DesignedFormation") -> None:
+        """Four 1-5 spin boxes over the QB's Dropback node (pass plays only)."""
+
+        qb_slot = next((s for s in range(11) if formation.kinds[s] == lib.QB), 0)
+        order = read_order_of(play.chains[qb_slot]) if qb_slot < len(play.chains) else None
+        if order is None:
+            item = QTableWidgetItem("— (no dropback)")
+            item.setFlags(Qt.ItemIsEnabled)
+            self.table.setItem(row, 4, item)
+            return
+        holder = QWidget()
+        box = QHBoxLayout(holder)
+        box.setContentsMargins(0, 0, 0, 0)
+        spins: list[QSpinBox] = []
+        for value in order:
+            spin = QSpinBox()
+            spin.setRange(READ_ORDER_MIN, READ_ORDER_MAX)
+            spin.setValue(int(value))
+            spin.setToolTip(
+                "One of the Dropback node's four ordered 1-5 values — the quarterback's read "
+                "order. Retail sets them on every dropback; what each number selects is read "
+                "from the corpus, not witnessed in game."
+            )
+            box.addWidget(spin)
+            spins.append(spin)
+        self.table.setCellWidget(row, 4, holder)
+        self._read_orders[row] = (play, spins, qb_slot)
+
+    def _add_audible_group(self, row: int, play: "DesignedPlay") -> None:
+        combo = QComboBox()
+        for label, value in AUDIBLE_GROUPS:
+            combo.addItem(label, value)
+        combo.setToolTip(
+            "Which of the formation's three audible slots lists this play. Every populated "
+            "retail formation carries exactly one link in each of groups 0, 1 and 2."
+        )
+        self.table.setCellWidget(row, 5, combo)
+        self._groups[row] = (play, combo)
 
     def _apply(self) -> None:
         book = self.wiz.book
         host = self.wiz.host
         staged = 0
+        for play, spins, qb_slot in self._read_orders.values():
+            play.chains[qb_slot] = with_read_order(
+                play.chains[qb_slot], [spin.value() for spin in spins]
+            )
+        groups = {id(play): combo.currentData() for play, combo in self._groups.values()}
         try:
             current_formation: DesignedFormation | None = None
             for obj, combo in self._choices:
@@ -1029,7 +1185,8 @@ class FinalizePage(QWizardPage):
                             link_selector = current_formation.selector
                     host.create_authored_play(book.asset_id, obj.donor_play_index, obj.name, assignments,
                                               link_index, link_selector, _quiet, replace_index=target,
-                                              play_flags=obj.play_flags)
+                                              play_flags=obj.play_flags,
+                                              link_group=groups.get(id(obj)))
                     staged += 1
         except Exception as exc:  # noqa: BLE001
             QMessageBox.warning(self, "Create a Play", f"Could not stage everything:\n\n{exc}")
