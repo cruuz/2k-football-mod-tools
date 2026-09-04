@@ -102,6 +102,8 @@ class PatchWriteTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
         cls.patched, _ = pools.apply(cls.patched)
         cls.patched, _ = rows.apply(cls.patched)
+        from mod_editor.core import nfl2k5_practice_squad as ps
+        cls.patched, _ps_receipt = ps.apply(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
 

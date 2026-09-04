@@ -55,6 +55,8 @@ class CaveReferenceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
         cls.patched, _ = pools.apply(cls.patched)
         cls.patched, _ = rows.apply(cls.patched)
+        from mod_editor.core import nfl2k5_practice_squad as ps
+        cls.patched, _ps_receipt = ps.apply(cls.patched)
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
