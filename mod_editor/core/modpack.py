@@ -788,6 +788,32 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
     operations: list[dict[str, Any]] = []
     auto_assets: list[dict[str, Any]] = []
     try:
+        import json as _json
+
+        from mod_editor.core import nfl2k5_roster_records as _records
+        before, after = _records.status(Path(base_path)), _records.status(Path(patched_path))
+        if before != after or after == "edited":
+            with _records._outer_image()(Path(base_path)) as _base_archive:
+                _entry = _records._entry(_base_archive)
+                base_body = _base_archive.read(_entry.virtual_offset, _entry.size)[_records.RESOURCE_HEADER_SIZE:]
+            with _records._outer_image()(Path(patched_path)) as _patched_archive:
+                _entry = _records._entry(_patched_archive)
+                patched_body = _patched_archive.read(_entry.virtual_offset, _entry.size)[_records.RESOURCE_HEADER_SIZE:]
+            if base_body != patched_body:
+                document = _records.edits_between(base_body, patched_body, name="roster_edits")
+                if document["edits"]:
+                    detected["roster_edits"] = {"base": before, "patched": after,
+                                                "players_edited": len(document["edits"])}
+                    member = f"{ASSET_ROOT}/text/roster_edits.json"
+                    auto_assets.append({"data": _json.dumps(document, indent=1).encode("utf-8"),
+                                        "member": member, "role": "roster_edits.json",
+                                        "source_name": "roster_edits.json"})
+                    operations.append({"op": "roster_edits", "enabled": True,
+                                       "players_edited": len(document["edits"]),
+                                       "edits_asset": member})
+    except Exception:  # noqa: BLE001 - a roster we cannot read is simply not described
+        pass
+    try:
         tt = _throw_module()
         offset, length = tt.image_xbe_extent(base_fd, size)
     except Exception:  # noqa: BLE001 -- no recognisable default.xbe: nothing to label
@@ -913,6 +939,10 @@ def describe_operation(operation: Mapping[str, Any]) -> str:
     if op == "team_history":
         source = "built-in nflverse data" if operation.get("source") == "retail" else "a custom CSV"
         return f"Real team history on the Player Card for the roster's past seasons ({source}; franchises created from the copy)"
+    if op == "roster_edits":
+        count = int(operation.get("players_edited", 0) or 0)
+        return (f"Roster edits from ★ Rosters: {count} player{'' if count == 1 else 's'} "
+                "(ratings, appearance, equipment, contracts, names, depth)")
     if op == "prospect_names":
         source = "built-in nflverse 2015-2025 list" if operation.get("source") == "modern" else "a custom CSV"
         return f"Modern draft-prospect names in the generated-player pool ({source}; recorded surnames keep their call-outs, new ones are announced by number; franchises created from the copy)"
@@ -1009,10 +1039,17 @@ def _stage_assets(specs: Iterable[Any], auto: Iterable[Mapping[str, Any]]) -> li
         return candidate
 
     for spec in auto:
-        path = Path(spec["path"])
-        data = _read_small_file(path, f"asset {path.name}", MAX_ASSET_BYTES)
+        # an auto asset is either a file the studio ships or bytes a detector rebuilt in memory
+        if spec.get("data") is not None:
+            data = bytes(spec["data"])
+            source_name = str(spec.get("source_name") or PurePosixPath(str(spec["member"])).name)
+        else:
+            path = Path(spec["path"])
+            data = _read_small_file(path, f"asset {path.name}", MAX_ASSET_BYTES)
+            source_name = path.name
+        _require(len(data) <= MAX_ASSET_BYTES, f"asset {source_name} is larger than {MAX_ASSET_BYTES} bytes")
         member = unique(str(spec["member"]))
-        staged.append(_Staged(member, data, member.split("/")[1], spec.get("role"), path.name))
+        staged.append(_Staged(member, data, member.split("/")[1], spec.get("role"), source_name))
     for spec in specs:
         if isinstance(spec, (str, Path)):
             spec = {"path": spec}

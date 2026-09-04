@@ -95,6 +95,55 @@
   (the getter tests `ecx == 11` before it ever looks at field 87 -- now asserted under unicorn even
   with a field-87 entry present for that slot). (`nfl2k5_team_history.py`, repinned
   `SHIPPED_POOL_SHA256`.)
+## v1.0 RC83 — ★ Rosters: the whole roster editable, on the disc and in a save (unreleased)
+
+- **★ Rosters, a new top-level page — the studio's replacement for Flying Finn's NFL 2K5 GameSave
+  Editor.** Team list → player grid → attribute cards, the layout everybody already knows, over the
+  **disc** as well as over an Xbox save, with the things his 2008 Delphi build could not do: undo and
+  redo, dirty markers per player and per field, a diff of the whole edit before anything is written,
+  a validation pass, and a source file that is never touched. Every field of the 0x54 record is
+  editable: names and college through the shared string pool, position, jersey, years pro, hand,
+  height, weight, date of birth, play-by-play and portrait ids, every appearance and equipment slot,
+  all 28 rating bytes, the depth rank and side, and the **contract block** (value, type, signing-bonus
+  tier, length, remaining, with the derived penalty shown) — which no open tool has ever edited.
+  Format credit: **Flying Finn (Glen Leskinen)** and **Bad_AL** (NFL2K5Tool); the map was re-verified
+  byte for byte against the retail disc before a line of it was written.
+- `mod_editor/core/nfl2k5_roster_records.py`: a typed codec whose field table claims **all 84 bytes
+  with no gaps** — every named field plus one explicitly named `unknown_*` field for every bit nobody
+  has named yet, which is why decode → encode is **byte-identical on all 2,547 retail records** and
+  on the whole 0x90F60 body. Also the team record (65 pointers = the depth order, count byte, coach
+  pointer, abbreviation), the 266-entry college table, the free-agent list, and both string pools.
+- **The three style channels get first-class controls** (2026-09-04 executable study). **Power Run
+  Style** (`+0x4D`) as a Finesse / Balanced / Power segmented control writing the game's own 1 / 50 /
+  99 over its 33 / 66 thresholds; **Throw style**, the low bit of **Scramble** (`+0x4F`) — the only
+  bit test on any rating byte anywhere in `.text` (`and ecx,ebx` at 0x002D92B1), which picks the
+  animation-set family and is believed, not proved, to be the throw motion — as a toggle that moves
+  only that bit, beside a Scramble slider that preserves it; and **Kicking Style** (`+0x4B`),
+  EXPERIMENTAL, with the three values retail uses. **Best Hand** (`+0x18` bit 1) is a checkbox on the
+  Appearance tab. There is no other parity scheme hidden in the ratings: the scan is exhaustive.
+- **The name pool is modelled honestly.** 65,120 bytes hold 5,094 strings with **zero** free bytes, so
+  it cannot grow: the editor reuses an existing string (Finn's shared-name trick, and how you beat the
+  rename limit), rewrites in place when the current string has no other user, reclaims what shortening
+  a name frees, and otherwise **refuses** with the number of bytes it needed. Nothing is ever written
+  outside the span the pool was discovered from.
+- **Xbox saves, read and re-signed.** `EXTRA` = HMAC-SHA1(SigKey16, the whole `SAVEGAME.DAT`); the key
+  is the literal Finn carries, and it is byte-identical to what the studio's own
+  `nfl2k5_save_writer.derive_sig_key` computes from the retail XBE certificate (asserted by the
+  tests). A save whose stored `EXTRA` does not verify is refused rather than quietly re-signed; a
+  written copy rebuilds only `SAVEGAME.DAT` and `EXTRA` and copies `SaveMeta.xbx`, `TYPE` and the
+  images byte for byte. Franchise arenas are found at their own `+0x2E0` offset.
+- **Finn's tools, ported and improved.** Global Attribute Editor with his "show affected players"
+  preview plus a condition he never had ("every QB with Speed ≥ 80 → throw style B"); Copy /
+  Paste / Paste-attributes-only / Paste-photo under his rules; Advance Years Pro; Restore
+  Height/Weight/DOB; a CSV twin that reads his semicolon export as well as ours; position chips;
+  search by name, years pro or college; ↑ ↓ depth reorder on the team's own pointer list.
+- **Build & Share**: `BuildPlan.roster_edits` applies a roster-edits document
+  (`2k5_mod_studio_roster_edits/v1`) to the ROST resource of the copy, **last** of the roster passes —
+  it writes named record fields and shared name strings and leaves `+0x2C`, the season-stat pool, the
+  generated-name pool and the `+0x53` star bit alone, so the star-tag, team-history, prospect-name and
+  position-pool gates all stay intact (asserted by a test on the retail roster). Share detects the
+  edit between two discs, rebuilds the document from the rosters themselves and packs it as an asset.
+- Unwitnessed in game.
 
 ## v1.0 RC82 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star; overtime and Models UV fixes (2026-09-04)
 

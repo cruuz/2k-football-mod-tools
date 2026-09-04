@@ -200,6 +200,19 @@ class BuildPanel(QWidget):
         self.prospect_names_button = QPushButton("Choose…")
         self.prospect_names_button.clicked.connect(self._choose_prospect_names)
         names_row.addWidget(self.prospect_names_button)
+        self.roster_edits_check = QCheckBox("Roster edits from the ★ Rosters page (ratings, appearance, equipment, contracts, names, depth; disc images only)")
+        self.roster_edits_check.setToolTip("Applies a roster-edits document (2k5_mod_studio_roster_edits/v1) written by ★ Rosters. "
+                                           "It runs last of the roster passes and writes only named record fields and shared name strings, "
+                                           "so the star tags, the team history, the prospect names and the position pools all survive. "
+                                           "Give the JSON file below.")
+        edits_row = QHBoxLayout()
+        edits_row.addWidget(QLabel("Roster edits document (from ★ Rosters -> Save roster edits…)"))
+        self.roster_edits_field = QLineEdit()
+        self.roster_edits_field.setPlaceholderText("roster_edits.json")
+        edits_row.addWidget(self.roster_edits_field, 1)
+        self.roster_edits_button = QPushButton("Choose…")
+        self.roster_edits_button.clicked.connect(self._choose_roster_edits)
+        edits_row.addWidget(self.roster_edits_button)
         self.kick_rules_check = QCheckBox("Modern kicking: kickoff 35, touchback 35, PAT from the 15, ~70-yard legs")
         self.kick_power_check = QCheckBox("Kicking power only: ~70-yard legs for elite kickers, retail kick spots (the 2004 game)")
         self.season_check = QCheckBox("2026 franchise: real 2026 schedule + 3-game preseason, 17 games over 18 weeks, 14-team playoffs, 2026 dates and rookie birth years (disc images only)")
@@ -213,7 +226,7 @@ class BuildPanel(QWidget):
         self.franchise_practice_check = QCheckBox("Free Practice inside Franchise: a Practice row on the Coach's Desk runs a full scrimmage with your franchise roster, your away kit vs your home kit, and returns to the desk (no stats or injuries; unwitnessed)")
         self.seven_on_seven_check = QCheckBox("7-on-7 practice mode: Practice Type 7-On-7 + 7-on-7 sets in the practice playbook (linemen idle at the sideline, 4-second timer rusher; disc images only; unwitnessed)")
         self.player_star_check = QCheckBox("Star decal under the players you tag: the retail controller star follows every player ticked ★ Star in Text & Rosters, up to 9 at once (nothing changes with no tags; unwitnessed)")
-        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.prospect_names_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.franchise_practice_check, self.player_star_check, self.seven_on_seven_check):
+        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.prospect_names_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.franchise_practice_check, self.player_star_check, self.seven_on_seven_check, self.roster_edits_check):
             g.addWidget(box)
         if not mod_build.SEVEN_ON_SEVEN_RELEASED:
             self.seven_on_seven_check.hide()
@@ -223,6 +236,7 @@ class BuildPanel(QWidget):
         g.addWidget(self.star_players_label)
         g.addLayout(history_row)
         g.addLayout(names_row)
+        g.addLayout(edits_row)
         root.addWidget(gameplay)
 
         text = QGroupBox("Text")
@@ -299,7 +313,7 @@ class BuildPanel(QWidget):
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("prospect_names", "prospect names"),
                            ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("seven_on_seven", "7-on-7 practice"),
-                           ("player_star", "star decal"), ("player_tags", "star tags"),
+                           ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
                            ("scorebug", "ESPN scorebug")):
@@ -329,6 +343,10 @@ class BuildPanel(QWidget):
         gate(self.team_column_check, "team_column")
         gate(self.team_history_check, "team_history", needs_image=True)
         gate(self.prospect_names_check, "prospect_names", needs_image=True)
+        # an already-edited roster can take more edits: gate on availability and the container only
+        self.roster_edits_check.setEnabled(self._available.get("roster_edits", True) and is_image)
+        self.roster_edits_check.setChecked(False)
+        self.roster_edits_check.setToolTip("" if is_image else "Needs a disc image.")
         gate(self.kick_rules_check, "kick_rules")
         gate(self.kick_power_check, "kick_power", module="kick_rules")
         self.kick_rules_check.toggled.connect(lambda on: on and self.kick_power_check.setChecked(False))
@@ -437,6 +455,7 @@ class BuildPanel(QWidget):
             player_star=self.player_star_check.isChecked(), player_tags=list(self.star_players),
             team_history=((self.team_history_field.text().strip() or "retail") if self.team_history_check.isChecked() else ""),
             prospect_names=((self.prospect_names_field.text().strip() or "modern") if self.prospect_names_check.isChecked() else ""),
+            roster_edits=(self.roster_edits_field.text().strip() if self.roster_edits_check.isChecked() else ""),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
         )
 
@@ -444,7 +463,7 @@ class BuildPanel(QWidget):
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools
-                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.commentary)
+                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.commentary)
 
     def _refresh(self) -> None:
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())
@@ -462,6 +481,19 @@ class BuildPanel(QWidget):
             self.apply_state(mod_build.inspect(Path(chosen)))
         except Exception as exc:  # noqa: BLE001
             QMessageBox.critical(self, "Could not read the source", str(exc))
+
+    def _choose_roster_edits(self) -> None:
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose a roster-edits document", str(Path.home()),
+                                                 "Roster edits (*.json);;All files (*)")
+        if chosen:
+            self.set_roster_edits(chosen)
+
+    def set_roster_edits(self, path: str) -> None:
+        """★ Rosters calls this when it writes a roster-edits document."""
+
+        self.roster_edits_field.setText(path)
+        self.roster_edits_check.setChecked(bool(path) and self.roster_edits_check.isEnabled())
+        self._refresh()
 
     def _choose_team_history(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose a team history CSV", str(Path.home()), "CSV (*.csv);;All files (*)")
