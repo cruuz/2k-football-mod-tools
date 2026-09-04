@@ -79,6 +79,8 @@ RETAIL_CATEGORIES = 11
 POOL_COUNT_WORD = 0x1083C
 EMPTY_LINK = 0x1FF
 LINK_GROUP = 3                     # the selection group every tutorial link in this book uses
+LINK_PRESENT = 0x8000              # set on every real link word in every retail book
+EMPTY_LINK = 0x7FF                 # the retail fill for an unused menu slot
 AI_EXCLUDED = 0x400000             # play header bit 22: retail Take Knee / Spike Ball; FUN_00204930 skips it
 YD = codec.YD_CM
 
@@ -332,7 +334,11 @@ def _requests(category_indices: Sequence[int], donor_flags: Mapping[int, int]) -
 def _write_links(body: bytearray, formation_index: int, play_indices: Sequence[int]) -> None:
     aux = FORMATION_AUX_BASE + formation_index * FORMATION_AUX_SIZE
     _require(len(play_indices) <= FORMATION_PLAY_LINKS, "too many plays for one formation menu")
-    words = [(LINK_GROUP << 9) | p for p in play_indices] + [0x7FF] * (FORMATION_PLAY_LINKS - len(play_indices))
+    # Retail encoding, checked across all 16,065 links of the 37 shipped books: bit 15 set on every real
+    # link, the selection group in bits 9-10, the play index in bits 0-8, 0x7FF for an empty slot. A word
+    # without bit 15 is not a play link to the game: the defensive play-call then walked a personnel-group
+    # record as if it were a play and faulted (witnessed 2026-09-03, EIP 0x1A8E3A, address 0x12321110).
+    words = [LINK_PRESENT | (LINK_GROUP << 9) | p for p in play_indices] + [EMPTY_LINK] * (FORMATION_PLAY_LINKS - len(play_indices))
     struct.pack_into(f"<{FORMATION_PLAY_LINKS}H", body, aux, *words)
 
 
@@ -410,6 +416,10 @@ def verify(resource: bytes) -> dict[str, Any]:
         _require(lib.formation_category(body, index) == book.categories[RETAIL_CATEGORIES + cat].index, f"{name}: personnel group differs")
         links = [link.play_index for link in book.formations[index].play_links]
         _require(links, f"{name}: no plays listed")
+        aux = FORMATION_AUX_BASE + index * FORMATION_AUX_SIZE
+        for word in struct.unpack_from(f"<{FORMATION_PLAY_LINKS}H", body, aux):
+            _require(word == EMPTY_LINK or (word & LINK_PRESENT and (word & 0x1FF) < len(book.plays)),
+                     f"{name}: menu link {word:#06x} is not a retail-shaped play link")
         for play_index in links:
             _flags, chains = lib.play_chains(body, play_index)
             for slot in expected:

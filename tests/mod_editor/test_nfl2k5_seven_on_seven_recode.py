@@ -69,3 +69,40 @@ class RecodeCompositionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@unittest.skipUnless((LOOSE / "0").is_file(), "retail extraction not present")
+class MenuLinkShapeTests(unittest.TestCase):
+    """Formation menu links must look exactly like retail's: bit 15 set, group in bits 9-10, index in 0-8."""
+
+    def test_every_new_link_word_has_the_retail_shape(self) -> None:
+        import struct
+        import nfl2k5_playbook_position_recode as recode
+        with recode.OuterImage(LOOSE) as archive:
+            entry = archive.entries[book.PRACTICE_OUTER_INDEX]
+            retail = archive.read(entry.virtual_offset, entry.size)
+        built, _report = book.build_replacement(retail)
+        body = built[book.RESOURCE_HEADER_SIZE:]
+        seen = 0
+        for index in range(23, 28):
+            aux = book.FORMATION_AUX_BASE + index * book.FORMATION_AUX_SIZE
+            for word in struct.unpack_from(f"<{book.FORMATION_PLAY_LINKS}H", body, aux):
+                if word == book.EMPTY_LINK:
+                    continue
+                seen += 1
+                self.assertTrue(word & book.LINK_PRESENT, hex(word))
+                self.assertEqual((word >> 9) & 0x3F, book.LINK_GROUP, hex(word))
+                self.assertGreaterEqual(word & 0x1FF, 27, hex(word))
+                self.assertLess(word & 0x1FF, 42, hex(word))
+        self.assertEqual(seen, 3 * 3 + 2 * 6)
+
+    def test_retail_links_all_carry_bit_15(self) -> None:
+        import struct
+        import nfl2k5_playbook_position_recode as recode
+        with recode.OuterImage(LOOSE) as archive:
+            entry = archive.entries[book.PRACTICE_OUTER_INDEX]
+            body = archive.read(entry.virtual_offset, entry.size)[book.RESOURCE_HEADER_SIZE:]
+        words = [w for f in range(23) for w in struct.unpack_from(f"<{book.FORMATION_PLAY_LINKS}H", body, book.FORMATION_AUX_BASE + f * book.FORMATION_AUX_SIZE)]
+        real = [w for w in words if w not in (0, book.EMPTY_LINK)]
+        self.assertTrue(real)
+        self.assertTrue(all(w & book.LINK_PRESENT for w in real))

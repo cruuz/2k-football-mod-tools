@@ -56,7 +56,11 @@
   `.text`, which the kernel maps read-only, and the Practice Type switch writes it when the screen
   opens; the flag now lives in writable memory between `.rdata` and `.data`, and a new test
   (`test_xbe_patch_memory_writes.py`) disassembles every XBE patch and refuses any write into a
-  read-only section. Still unwitnessed past that screen.
+  read-only section. Second test: 7-On-7 opened and an offensive play was chosen, then the
+  defensive play-call faulted (kernel bugcheck, EIP 0x1A8E3A) because the writer's formation menu
+  links lacked bit 15, which every real link in all 37 retail books carries; the writer now emits
+  retail-shaped links and the verifier refuses any other shape. Still unwitnessed past the
+  defensive play-call.
 
 ## v1.0 RC80 — ★ Models: export any model to Blender and back (2026-09-03)
 
