@@ -5143,6 +5143,92 @@
       "surface": "saves",
       "title": "NFL 2K5 (PS2) memory-card save writer",
       "validation_command": "bash tools/validate_nfl2k5_ps2_save.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 tools/nfl2k5_ps2_disc_inventory.py --iso <SLUS-20919.iso> --json <report.json> --csv <inventory.csv> [--xbox-inventory <xbox_inventory.csv> --join-csv <name_join.csv>] [--hash-image] [--require-retail]",
+        "module": "tools/nfl2k5_ps2_disc_inventory.py",
+        "operation": "inspect"
+      },
+      "classification": "read-only-mapped",
+      "evidence": [
+        "docs/product/PS2_PORT_HANDOFF.md",
+        "reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json",
+        "reports/gameplay_tuning/nfl2k5_ps2_xbox_name_join.v1.csv"
+      ],
+      "game": "nfl2k5_ps2",
+      "gui": {
+        "default_enabled": true,
+        "expose": true,
+        "mode": "view",
+        "reason": "Every field shown is read straight off the user's disc by a walk that decodes only the metadata half of each resource chunk and is proved on a synthetic disc plus the retail image (550,746 rows, 0 errors). There is no PS2 disc writer and no GS texture codec, so the viewer browses names, formats, dimensions and Xbox counterparts and exports them; it never offers an edit. The workspace is the PS2 Disc window (separate from the Xbox sidebar, like the PS2 save editor); the command line ships today."
+      },
+      "id": "nfl2k5ps2.textures.disc_inventory",
+      "input_constraints": [
+        "Read-only: the ISO is opened for reading, never modified, and its size and mtime are re-checked after the walk; every output is created exclusively and may not be the image itself.",
+        "Metadata only: at most system_bytes of each chunk is read or decoded; video_bytes (pixels, audio samples) is never read off the disc, so no output can carry retail payload.",
+        "Identity is checked, not assumed: the boot ELF digest is compared with the pinned SLUS_209.19 and reported (refused with --require-retail); --hash-image additionally compares the whole image with the pinned retail digest. A mod disc still inventories and says so.",
+        "The Xbox counterpart is a name join (name.strip().upper()), not a pixel match: 24,187 of the Xbox disc's 24,285 names occur on the PS2 disc; 1,659 PS2 names have no Xbox counterpart and 98 Xbox names have no PS2 one."
+      ],
+      "portme": [
+        "Emit each texture's PCSX2 replacement-pack file name (GS TEX0 and CLUT hashes computed from the disc bytes) so pack authors can name their dumps; offline-writer-proved only once a texture is witnessed rendering in PenguinScreen2 (milestone M1).",
+        "Ship the PS2 <-> Xbox texture manifest: the 4,297 names that resolve to exactly one Xbox asset first, then the 7,739 fan-out names via the shared (id, chunk) key, which resolves 77% of TSETs.",
+        "Give the browser a virtualized model; 550,746 rows do not fit a plain item model."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "metadata-only",
+        "rule": "Ship the inventory tool, the ISO9660 reader it imports, their self-tests and the names-only PS2 <-> Xbox join; the user's ISO, the per-disc inventory and every payload byte stay with the user.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Inspection only: nothing is written to the disc, a save or the emulator, so there is no runtime behaviour to witness. The Xbox counterpart column is a disc-level name correspondence, not a claim that the two textures render alike.",
+        "status": "not-applicable"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "0..4 (/VC_20919/0. .. 4.)",
+            "name": "pack",
+            "required": false
+          },
+          {
+            "allowed": "0..4321 outer entry index",
+            "name": "entry_index",
+            "required": false
+          },
+          {
+            "allowed": "chunk FourCC (TXTR, HITX, TSET, SCNE, AUDO, ...) or sub-object role",
+            "name": "fourcc",
+            "required": false
+          },
+          {
+            "allowed": "resource name, matched case-insensitively",
+            "name": "name",
+            "required": false
+          },
+          {
+            "allowed": "both | ps2_only | xbox_only",
+            "name": "xbox_presence",
+            "required": false
+          }
+        ],
+        "notes": "Filters over a read-only table; the GUI must not offer byte editing, texture export or pack writing from this row. Sub-object rows (TSET textures, SCNE materials/nodes/shapes/markers) have no on-disc size of their own and show it blank."
+      },
+      "source_container": {
+        "format": "ISO9660 DVD image; VC outer pack archive /VC_20919/0. .. 4. (4,635,080,704 bytes as one virtual range, 0x800-aligned entries) holding 0x20-byte resource chunks, optionally VC-LZ compressed",
+        "hash_pins": [
+          "e8c3ba9a3224d567e3abb50c91e9d6fdd9820138226c05e525f9dbf34a47d8aa",
+          "f1300699ab445ad04b1e27f6e2df87f7a4d1d080d06c7d73499e1be9618a4ebe"
+        ],
+        "resource": "4,322 outer entries; 550,746 resource rows (63,866 chunks, 120,779 TXTR objects: 118,531 PSMT8 + 2,248 PSMT4; 12,814 TSETs; 402,834 SCNE table rows); 25,846 distinct names, 24,187 shared with the Xbox disc",
+        "retail_file": "User-owned ESPN NFL 2K5 (USA) PlayStation 2 ISO, SLUS-20919 NTSC-U v1.01"
+      },
+      "summary": "Open a user's SLUS-20919 ISO read-only, verify it against the registry's pinned digests, and inventory the ~550K named resources in /VC_20919 -- 120,779 textures with GS pixel format and dimensions -- together with each name's Xbox counterpart (24,187 shared names, 99.6% of the Xbox disc's). This is the first time the studio admits a PS2 disc; it hands PCSX2 replacement-pack authors the names their GS-hash dumps lack and never reads a pixel or a sample.",
+      "surface": "textures",
+      "title": "NFL 2K5 (PS2) disc resource inventory",
+      "validation_command": "bash tools/validate_nfl2k5_ps2_disc_inventory.sh"
     }
   ],
   "classification_definitions": {

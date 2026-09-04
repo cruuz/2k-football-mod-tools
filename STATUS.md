@@ -1,8 +1,22 @@
-# 2K5 Mod Studio — v1.0 RC83 Release Status
+# 2K5 Mod Studio — v1.0 RC84 Release Status
 
-## Beta 59 (unreleased) — ★ Rosters: the whole roster editable, on the disc and in a save
+## Beta 60 (unreleased) — NFL 2K5 (PS2): the disc, read by name
 
-Source/UI versions are **2K5 RC83** and **APF alpha.84**.
+Source/UI versions are **2K5 RC84** and **APF alpha.84**.
+
+- **First PS2 disc capability.** `nfl2k5ps2.textures.disc_inventory` (read-only-mapped, view):
+  open a `SLUS-20919` ISO read-only, identity-check it against the pinned digests, inventory
+  550,746 named resources (120,779 textures with GS format and dimensions) and see each name's
+  Xbox counterpart -- 24,187 shared names, 99.6% of the Xbox disc's. Command line today
+  (`tools/nfl2k5_ps2_disc_inventory.py`); the PS2 Disc window follows. Never reads a pixel or a
+  sample: only the metadata half of each chunk is decoded, and the self-test proves it.
+- ISO9660 reader serial fix (`SLUS-209.19` -> `SLUS-20919`); its 54-test suite now runs in CI.
+- The PCSX2 replacement-pack audit accepts all six PCSX2 name shapes (it rejected 27% of a real
+  pack).
+
+## Beta 59 — ★ Rosters: the whole roster editable, on the disc and in a save
+
+Source/UI versions were **2K5 RC83** and **APF alpha.84**.
 
 - **★ Rosters**, a new top-level page: the studio's replacement for Flying Finn's NFL 2K5 GameSave
   Editor. Team list → player grid → attribute cards, over the **disc** as well as over an Xbox save,
@@ -2752,7 +2766,7 @@ Export-only boundary instead of pretending that registry status is an action.
 
 | Product surface | Exact release-candidate coverage |
 | --- | ---: |
-| Capability registry | 70 rows total; 32 Xbox NFL 2K5 rows; 1 NFL 2K5 PS2 save-import row |
+| Capability registry | 71 rows total; 32 Xbox NFL 2K5 rows; 2 NFL 2K5 PS2 rows (save-import writer, read-only disc inventory) |
 | Sidebar tabs | 11 |
 | Specialized visual assets | 63,592 total; all 63,592 Editable, including 28,530 package-local equipment P8 palettes |
 | Text banks | 716 |

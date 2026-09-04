@@ -46,9 +46,10 @@ SURFACES = (
 )
 SURFACE_GAMES = {surface: _LEGACY_GAMES for surface in SURFACES}
 SURFACE_GAMES["crib_assets"] = ("nfl2k5_xbox",)
-# The general P8 texture lane is NFL 2K5 only: APF 2K8 keeps its own
-# field-art and uniform writers and has no equivalent corpus mapped.
-SURFACE_GAMES["textures"] = ("nfl2k5_xbox",)
+# The texture lane is NFL 2K5 only: APF 2K8 keeps its own field-art and
+# uniform writers and has no equivalent corpus mapped. The PS2 release joins
+# it with the read-only disc inventory (nfl2k5ps2.textures.disc_inventory).
+SURFACE_GAMES["textures"] = ("nfl2k5_ps2", "nfl2k5_xbox")
 # PS2 staged surfaces (each must carry at least one nfl2k5_ps2 row):
 SURFACE_GAMES["saves"] = GAMES
 CLASSIFICATIONS = (

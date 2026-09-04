@@ -115,9 +115,9 @@ to their branches first — **nothing is currently committed.**
 |---|---|---|
 | 1 | `docs/product/PS2_PORT_HANDOFF.md` (this file) | no — unshipped |
 | 2 | Audit-tool fixes + 23 tests (`nfl2k5_ps2_replacement_pack_audit.py`) | no — unallowlisted |
-| 3 | `tools/ps2_iso9660.py` reader + 27 synthetic tests. **Fix `SLUS-209.19` → `SLUS-20919`** in `boot_identity()` (confirmed at `:914`) or it will not join against `SERIAL`. **Move the test file to `tests/mod_editor/`** or CI never runs it. Swap the Madden disc tests for a skip-guarded SLUS-20919 identity test | no — unshipped until #5 |
-| 4 | `tools/nfl2k5_ps2_disc_inventory.py` (productized `ps2_vc_inventory.py`) + synthetic selftest + evidence JSON at `reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json` + a **~1 MB name-join as `.csv`** (not `.tsv` — see landing mechanics), not the 70 MB dumps | no |
-| 5a | Registry row (complete per the field list above) + `validate_nfl2k5_ps2_disc_inventory.sh` + `SURFACE_GAMES["textures"] = ("nfl2k5_ps2", "nfl2k5_xbox")` + the **13 count pins** 70→71 + allowlist entries + closure list at `check_2k5…:1698` + changelog **RC84** (RC83 is taken — Beta 59 shipped 2026-09-04) + the **4-edit** schema fix | **2K5 re-seal**; APF literal only |
+| 3 | `tools/ps2_iso9660.py` reader + the synthetic suite. **Fix `SLUS-209.19` → `SLUS-20919`** in `boot_identity()` or it will not join against `SERIAL`. **Move the test file to `tests/mod_editor/`** or CI never runs it. Swap the Madden disc tests for a skip-guarded SLUS-20919 identity test. ✅ **Landed** (`a1ab225` on `ps2-lane`): `_serial_of` normalises the 8.3 name; the suite is 54 tests (50 synthetic + 4 gated on `NFL2K5_PS2_ISO`), verified against the retail image | no — unshipped until #5 |
+| 4 | `tools/nfl2k5_ps2_disc_inventory.py` (productized `ps2_vc_inventory.py`) + synthetic selftest + evidence JSON at `reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json` + a **~1.5 MB name-join as `.csv`** (not `.tsv` — see landing mechanics), not the 70 MB dumps. ✅ **Landed** (`38f0376`): reproduces the research run row for row (550,746 rows); `ps2_iso9660.build_synthetic_iso` made public for the selftest; the validator `.sh`/`.bat` pair landed here rather than in 5a | no |
+| 5a | Registry row (complete per the field list above) + `SURFACE_GAMES["textures"] = ("nfl2k5_ps2", "nfl2k5_xbox")` + the **13 count pins** 70→71 + allowlist entries + closure list (the `product_modules` tuple in `check_2k5_mod_studio_runtime.py`, next to the two PS2 save tools — locate by content) + changelog **RC84** (RC83 is taken — Beta 59 shipped 2026-09-04) + the **6-edit** schema fix. ⚠ **"Changelog RC84" is a version-truth bump, not one heading:** `test_no_capability_is_invisible.py` requires `__version__` == the newest changelog heading == the `STATUS.md` and getting-started headers, and `test_beta45_honesty_freeze.py` / `test_phase1_packaging.py` pin the literal, so it is 6 more edits (`mod_editor/__init__.py` → `1.0.0rc84`, `STATUS.md` ×2, getting-started ×1, three test literals) | **2K5 re-seal**; APF literal only |
 | 5b | `ps2_disc_service.py` (Qt-free) + `ps2_disc_dialog_qt.py` + `studio_qt.py` menu entry + `--ps2-disc`, `repin.py --apply` | same release |
 
 **The 13 count-pin sites (9 files).** ⚠ **Do not trust any line number in
@@ -159,10 +159,11 @@ the first PS2 commit.
 are all in `packaging/apf2k8-release-allowlist.txt`. Any edit to them changes
 the APF archive bytes. Plan for **both** products to re-seal on 5a.
 
-**The schema fix is 5 edits, not one.** `registry.schema.json`: `games.minItems`
-**and** `maxItems` 2→3; `surfaces.minItems`/`maxItems` 20→21; and `textures`
-added to **both** surface enums — the row's own `surface: "textures"` is
-**illegal under the published schema today**. (Currently inert: no JSON Schema
+**The schema fix is 6 edits, not one** (an earlier count said 5 — it is two
+per pair). `registry.schema.json`: `games.minItems` **and** `maxItems` 2→3;
+`surfaces.minItems` **and** `maxItems` 20→21; and `textures` added to **both**
+surface enums — the row's own `surface: "textures"` is **illegal under the
+published schema today**. (Currently inert: no JSON Schema
 is ever applied, only the `$id` is checked at `validate_registry.py:326`. Fix
 it anyway; a stock validator would reject the file.)
 
@@ -184,10 +185,20 @@ it anyway; a stock validator would reject the file.)
 - **Every new `tools/*.py` must pass `test_shipped_tools_are_self_sufficient.py`**
   — importable with only its own directory on `sys.path`.
 - **Allowlist entries needed** (`packaging/release-allowlist.txt` only — none
-  for APF): `tools/nfl2k5_ps2_disc_inventory.py`, `tools/ps2_iso9660.py` (when
-  5b imports it), `tools/validate_nfl2k5_ps2_disc_inventory.sh` **and `.bat`**,
+  for APF): `tools/nfl2k5_ps2_disc_inventory.py`, `tools/ps2_iso9660.py` (in
+  **5a**, not 5b — the inventory tool imports it, so it ships with it),
+  `tools/validate_nfl2k5_ps2_disc_inventory.sh` **and `.bat`**,
   `mod_editor/core/ps2_disc_service.py`, `mod_editor/gui/ps2_disc_dialog_qt.py`.
-  The evidence JSON needs none.
+  The evidence JSON and the name-join `.csv` need none: they are committed
+  evidence the registry row cites, not shipped files. (`.csv` was still chosen
+  over `.tsv` so the join can ship later without a suffix fight.)
+- **The Python 3.9 baseline on the dev box is 21 passing files / 264 failing
+  files, but the cause is `PyQt5` missing, not `datetime.UTC`** — the same 264
+  fail under a bare 3.11. With PyQt5 + Pillow installed (3.11 venv,
+  `QT_QPA_PLATFORM=offscreen`) 3,233 tests run and 44 files still fail, all on
+  the gitignored release inputs (`reports/assets/`, retail catalogs). Compare
+  per-file against that venv baseline; it is the only one that exercises the
+  count-pin tests.
 - `630c4cc` (upstream PR #5) is **byte-identical** to the base tree —
   `git diff cc7bb92 630c4cc` is empty — so the fork's PS2 history is fully
   upstream already.

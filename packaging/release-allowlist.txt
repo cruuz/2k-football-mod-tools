@@ -173,6 +173,7 @@ tools/launch_2k5_mod_studio.sh
 tools/make_app_icons.py
 tools/nfl2k5_franchise_schedule_probe.py
 tools/nfl2k5_jersey_png_workflow.py
+tools/nfl2k5_ps2_disc_inventory.py
 tools/nfl2k5_ps2_save.py
 tools/nfl2k5_ps2_save_verify.py
 tools/nfl2k5_save_roster_import.py
@@ -229,7 +230,10 @@ tools/nfl_uniform_color_records.py
 tools/nfl_uniform_color_records_patch.py
 tools/nfl_uniform_color_xiso_direct_patch.py
 tools/nfl_uniform_inventory.py
+tools/ps2_iso9660.py
 tools/string_table_inventory.py
+tools/validate_nfl2k5_ps2_disc_inventory.bat
+tools/validate_nfl2k5_ps2_disc_inventory.sh
 tools/validate_nfl2k5_ps2_save.bat
 tools/validate_nfl2k5_ps2_save.sh
 tools/validate_nfl_coach_roster_name.sh

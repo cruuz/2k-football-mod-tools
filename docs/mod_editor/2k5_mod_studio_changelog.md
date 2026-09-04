@@ -1,5 +1,34 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC84 — NFL 2K5 (PS2): the disc, read by name (unreleased)
+
+- **The studio admits a PlayStation 2 disc for the first time.** A new capability row,
+  `nfl2k5ps2.textures.disc_inventory` (`read-only-mapped`, view), opens your own `SLUS-20919` ISO
+  read-only, checks the boot ELF -- and on request the whole image -- against the digests the
+  registry pins, and inventories the ~550,000 named resources inside `/VC_20919`: 120,779 textures
+  with their GS pixel format and dimensions, every TSET member, every scene's materials, nodes,
+  shapes and markers. With an Xbox resource-name inventory alongside it also names each resource's
+  **Xbox counterpart**. Both discs carry the same Visual Concepts container, so the correspondence
+  is a name join, not a pixel match: 24,187 of the Xbox disc's 24,285 names (99.6%) occur on the
+  PS2 disc. That list is what a PCSX2 texture-replacement pack author has never had, because a
+  GS-hash dump carries no names. `tools/nfl2k5_ps2_disc_inventory.py` ships on the command line
+  now; the PS2 Disc window (a separate window, like the PS2 save editor) follows.
+- **Retail-free by construction, and proved.** Only the metadata half of each resource chunk is
+  ever read or decoded; pixels and audio are never touched. The self-test builds a synthetic
+  two-pack disc, plants a payload sentinel and proves no output contains it. The committed
+  evidence -- `reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json` and the names-only
+  `nfl2k5_ps2_xbox_name_join.v1.csv` -- carries names, sizes, offsets, dimensions and digests only.
+- **Fixed: the PS2 serial.** The ISO9660 reader reported `SLUS-209.19`, the disc's 8.3 file name
+  with a hyphen, which matched nothing: PCSX2, redump and the registry all write `SLUS-20919`. It
+  does now, and its 54-test conformance suite runs in CI (it lived outside the directory CI globs,
+  so it had never run there).
+- **The PCSX2 replacement-pack audit completes against a real pack.** PCSX2 prints its hash fields
+  with `%llx`, unpadded, in six name shapes; the audit accepted one fixed-width shape and rejected
+  27% of a real 23,010-file pack. It now accepts all six, tolerates the pack manager's zero-byte
+  provenance markers and BOM-first JSON, and follows a symlinked pack root.
+- Registry 70 -> 71 rows; the `textures` surface now covers the PS2 target; the published schema
+  admits the third game and the twenty-first surface the registry already carried.
+
 ## v1.0 RC83 — ★ Rosters (the Flying Finn-parity roster editor), playbook packs, scorebug on every machine, disc identity, body sets, one LB group, TEAM column filled (2026-09-04)
 
 - **Fixed: a refusal now says which disc image you handed it.** One report carried two failures
