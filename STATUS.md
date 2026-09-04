@@ -4,6 +4,8 @@
 
 Source/UI versions are **2K5 RC84** and **APF alpha.84**.
 
+- **X / Z / SLOT and nickel / dime roles in every playbook (Advanced).** The third receiver and the third /
+  fourth corners on the depth chart now line up inside; refused groups are reported. Astra Tier 1; rows are Tier 2.
 - **Career stats CSV import (opt-in).** Build tab pass after the team history: real per-season counters for
   ≤2003 seasons from a user CSV, 31 verified fields, export-then-import with identity pins, pool-bounded.
   Built by GPT-6 Astra; release staging now normalises file modes and the H7A encoder explains refusals.

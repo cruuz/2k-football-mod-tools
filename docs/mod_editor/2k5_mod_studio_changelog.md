@@ -2,6 +2,16 @@
 
 ## v1.0 RC84 — (unreleased)
 
+- **X / Z / SLOT receivers and nickel / dime corners (Build tab, Advanced).** Retail 2K5 has no slot receiver:
+  the inside man of a three-wide set is whichever ordinal the formation happens to name (the #1 receiver in 196 of
+  the 466 three-wide formations, the #2 in 115, the #3 in 100), so the third receiver on your depth chart is inside
+  only a fifth of the time. The new pass, built by GPT-6 Astra from the depth-chart research, rewrites the
+  personnel groups of every playbook so the innermost receiver is the third receiver (SLOT) with X and Z outside,
+  and nickel / dime sets use your third and fourth corners inside in all 71 and 38 of them. Twelve shared groups
+  whose formations disagree about the inside spot by more than two yards, bunch sets and special teams keep their
+  retail assignments and are listed in the build report; 456 bytes change on the disc and every play still passes
+  the validator. Depth-chart rows named SLOT / NICKEL / DIME are the executable follow-up. Unwitnessed in game.
+  The same delivery fixed the Create-a-Play writer's authored menu links, which were missing the populated-link bit.
 - **Career stats from your own CSV (Build tab, opt-in).** A new pass, built by GPT-6 Astra and wired here,
   imports real per-season counters for the roster's past seasons — passing, rushing, receiving, defence and
   kicking, 31 fields whose IDs were read off the game's own display-selector table (`0xA8A51C + 28·selector`);

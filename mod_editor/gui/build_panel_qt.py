@@ -262,6 +262,13 @@ class BuildPanel(QWidget):
         tl.addWidget(self.scheme_labels_check)
         self.position_pools_check = QCheckBox("One EDGE / one LB / one interior pool across 4-3 and 3-4 (rosters, playbooks, free agency, draft; disc images only)")
         tl.addWidget(self.position_pools_check)
+        self.depth_roles_check = QCheckBox("X / Z / SLOT receivers and nickel / dime corners in every playbook (the third receiver and the third / fourth corners on your depth chart line up inside; disc images only)")
+        self.depth_roles_check.setToolTip("Rewrites the personnel groups of all 37 playbooks so the innermost receiver of a three-wide set is your third receiver "
+                                          "(SLOT, with X and Z outside) and nickel / dime sets use your third and fourth corners inside. Groups whose formations "
+                                          "disagree about the inside spot, bunch sets and special teams keep their retail assignments; the build report lists them. "
+                                          "Changes who lines up, not how they play. Unwitnessed in game.")
+        tl.addWidget(self.depth_roles_check)
+        self.depth_roles_check.toggled.connect(lambda _checked: self._refresh())
         root.addWidget(text)
 
         pres = QGroupBox("Presentation (disc images only)")
@@ -329,7 +336,7 @@ class BuildPanel(QWidget):
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
                            ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"),
-                           ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"),
+                           ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
                            ("scorebug", "ESPN scorebug")):
             bits.append(f"{label}: {state.get(key)}")
@@ -388,6 +395,7 @@ class BuildPanel(QWidget):
         gate(self.edge_check, "edge_rename")
         gate(self.scheme_labels_check, "scheme_labels")
         gate(self.position_pools_check, "position_pools", needs_image=True)
+        gate(self.depth_roles_check, "depth_roles", needs_image=True)
         gate(self.scorebug_check, "scorebug", needs_image=True)
         gate(self.camera_check, "camera")
         gate(self.widescreen_check, "widescreen")
@@ -404,6 +412,7 @@ class BuildPanel(QWidget):
             "edge_rename": self.edge_check, "scorebug": self.scorebug_check, "scheme_labels": self.scheme_labels_check,
             "camera": self.camera_check, "kick_rules": self.kick_rules_check, "kick_power": self.kick_power_check,
             "position_pools": self.position_pools_check,
+            "depth_roles": self.depth_roles_check,
             "kickoff_alignment": self.kickoff_alignment_check,
             "season_2026": self.season_check, "widescreen": self.widescreen_check, "overtime": self.overtime_check,
             "team_column": self.team_column_check, "team_history": self.team_history_check, "career_stats": self.career_stats_check,
@@ -467,6 +476,7 @@ class BuildPanel(QWidget):
             scheme_labels=self.scheme_labels_check.isChecked(), camera=self.camera_check.isChecked(),
             kick_rules=self.kick_rules_check.isChecked(), kick_power=self.kick_power_check.isChecked(),
             position_pools=self.position_pools_check.isChecked(),
+            depth_roles=self.depth_roles_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),
             season_2026=self.season_check.isChecked(), widescreen=self.widescreen_check.isChecked(),
             overtime=self.overtime_check.isChecked(), team_column=self.team_column_check.isChecked(), seven_on_seven=self.seven_on_seven_check.isChecked(),
@@ -486,7 +496,7 @@ class BuildPanel(QWidget):
     def has_work(self) -> bool:
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
-                    or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools
+                    or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles
                     or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.commentary)
 
     def _refresh(self) -> None:

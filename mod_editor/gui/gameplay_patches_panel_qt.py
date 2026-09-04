@@ -157,6 +157,13 @@ PATCHES = (
      "player ticked nothing changes on screen. The same routine gates the on-field name/number indicator, so a "
      "tagged player gets that too when Player Indicator Text is on. The tags need a disc image and reach "
      "franchises created from the copy. Unwitnessed in game."),
+    ("depth_roles", "X / Z / SLOT receivers and nickel / dime corners (disc images only)",
+     "Retail playbooks have no slot receiver: the inside man of a three-wide set is the #1 receiver in 196 formations, "
+     "the #2 in 115, the #3 in 100. Patch: every personnel group is rewritten so the innermost receiver is the third "
+     "receiver on your depth chart (SLOT) with X and Z outside, and nickel / dime sets use your third and fourth "
+     "corners inside (retail already did for 66 of 71 and 36 of 38 sets). Twelve shared groups whose formations "
+     "disagree by more than two yards, bunch sets and special teams keep their retail assignments and are listed in "
+     "the build report. Changes who lines up, not how they play: Advanced. No new depth-chart rows yet. Unwitnessed in game."),
 )
 
 
@@ -188,7 +195,7 @@ if not mod_build.SEVEN_ON_SEVEN_RELEASED:
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"prospect_names"}
+NEEDS_IMAGE = {"prospect_names", "depth_roles"}
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
@@ -300,7 +307,9 @@ class GameplayPatchesPanel(QWidget):
                    "foreign": "Bytes at the patch sites are neither retail nor this patch; refusing.",
                    "partial": "Only one half of this patch is in the source (executable or name pool); refusing.",
                    "retail": ""}.get(value, "Unknown state.")
-            check.setToolTip("Needs a disc image." if value == "retail" and needs_image else tip)
+            # a known non-retail state is the more useful message; an unreadable one (a bare XBE cannot
+            # carry a playbook patch, so inspect says n/a) should say what the user needs instead
+            check.setToolTip("Needs a disc image." if needs_image and value not in ("applied", "foreign", "partial") else tip)
         self.source_status.setText("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches) + ".")
         self._refresh()
 

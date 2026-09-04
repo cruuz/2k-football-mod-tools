@@ -182,6 +182,11 @@ class BuildPlan:
     # Build compiles them against the user's own disc.  Never in a preset -- a community book
     # is a user choice like commentary, and a curated official one belongs in EXPERIMENTAL first.
     playbook_packs: tuple[str, ...] = ()
+    # X / Z / SLOT receivers and nickel / dime corners: the personnel-group ordinals of every PLAY book normalised so
+    # the innermost receiver is WR ordinal 2 (the 3rd receiver on the depth chart) and the inside corners are CB
+    # ordinals 2 / 3; twelve shared groups that disagree by > 2 yd are refused and reported; disc images only;
+    # ADVANCED (it changes who lines up, not physics); no depth-chart rows (those are the Tier 2 executable patch)
+    depth_roles: bool = False
     # text
     edge_rename: bool = False
     # presentation
@@ -218,7 +223,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
         "edge_rename": False, "scorebug": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False,
-        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "prospect_names": "", "player_star": False,
+        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "depth_roles": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "prospect_names": "", "player_star": False,
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
@@ -226,7 +231,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False,
-        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "depth_roles": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
@@ -234,7 +239,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True,
-        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "depth_roles": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
     },
 }
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
@@ -306,6 +311,8 @@ def availability() -> dict[str, bool]:
         "commentary": _tools_module("nfl2k5_commentary_swap") is not None,
         "playbook_packs": (_core_module("nfl2k5_playbook_pack") is not None
                            and _tools_module("nfl2k5_playbook_position_recode") is not None),
+        "depth_roles": (_core_module("nfl2k5_depth_roles") is not None
+                        and _tools_module("nfl2k5_playbook_position_recode") is not None),
     }
 
 
@@ -336,8 +343,17 @@ def inspect(source: Path | str) -> dict[str, Any]:
         # a pack is a recipe compiled into the books; there is no single site to read back,
         # so the receipt (not inspect) is the record of which packs went in
         "playbook_packs": "n/a",
+        "depth_roles": "n/a",
     }
     if report.get("container") == "xiso":
+        roles = _core_module("nfl2k5_depth_roles")
+        if roles is not None:
+            try:
+                role_state = roles.status(source)
+                out["depth_roles"] = role_state["status"]
+                out["depth_roles_books"] = role_state["books"]
+            except Exception:  # noqa: BLE001
+                out["depth_roles"] = "foreign"
         align = _tools_module("nfl2k5_kickoff_alignment")
         if align is not None:
             try:
@@ -552,6 +568,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         raise ValueError("roster edits need a disc image (the roster records live in pack 0)")
     if plan.playbook_packs and not is_image:
         raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
+    if plan.depth_roles and not is_image:
+        raise ValueError("depth roles need a disc image (the personnel groups live in the PLAY books)")
+    if plan.depth_roles:
+        roles = _core_module("nfl2k5_depth_roles")
+        if roles is None:
+            raise RuntimeError("the depth-role module is not available in this build")
+        role_states = roles.status(source)["books"]
+        if not role_states or any(state == "foreign" for state in role_states.values()):
+            raise ValueError("the source disc's playbooks carry foreign personnel data; depth roles refuse to guess")
 
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
     #    including its disc text spans when the source is an image)
@@ -646,6 +671,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
             progress=lambda msg: progress(msg, 0, 0),
         )
         receipt["steps"].append({"step": "playbook_packs", **pack_receipt})
+    if plan.depth_roles:
+        # last of the playbook writers: a pack or the 7-on-7 / kickoff writers change formations and shared-group
+        # usage, and the role pass must see the final books (it validates every play before and after)
+        roles = _core_module("nfl2k5_depth_roles")
+        if roles is None:
+            raise RuntimeError("the depth-role module is not available in this build")
+        progress("Assigning X / Z / SLOT receivers and nickel / dime corners in the playbooks", 0, 0)
+        role_receipt = roles.apply(target, allow_custom=bool(plan.playbook_packs or plan.seven_on_seven or plan.kickoff_alignment),
+                                   progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "depth_roles", **role_receipt})
     if plan.season_2026:
         season = _core_module("nfl2k5_season_length")
         fs = _tools_module("nfl2k5_franchise_schedule")

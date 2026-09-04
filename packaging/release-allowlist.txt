@@ -16,6 +16,7 @@ NOTICE.md
 docs/mod_editor/2k5_mod_studio_changelog.md
 docs/mod_editor/2k5_mod_studio_getting_started.md
 docs/mod_editor/career_stats.md
+docs/mod_editor/depth_roles.md
 docs/mod_editor/high_resolution_texture_authoring.md
 docs/mod_editor/nfl2k3_nfl2k4_source_compatibility_boundary.md
 docs/product/ADDITIONAL_AUDIO_FINDINGS.md
@@ -42,6 +43,7 @@ mod_editor/core/gameplay_inspection.py
 mod_editor/core/image_fit.py
 mod_editor/core/json_stream.py
 mod_editor/core/nfl2k5_career_stats.py
+mod_editor/core/nfl2k5_depth_roles.py
 mod_editor/core/nfl2k5_save_rost.py
 mod_editor/core/texture_master.py
 mod_editor/core/menu_modes.py
@@ -175,6 +177,7 @@ tools/game_audio_convert.py
 tools/launch_2k5_mod_studio.sh
 tools/make_app_icons.py
 tools/nfl2k5_career_stats.py
+tools/nfl2k5_depth_roles.py
 tools/nfl2k5_franchise_schedule_probe.py
 tools/nfl2k5_jersey_png_workflow.py
 tools/nfl2k5_ps2_save.py
