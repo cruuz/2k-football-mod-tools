@@ -4,6 +4,8 @@
 
 Source/UI versions are **2K5 RC84** and **APF alpha.84**.
 
+- **Dynamic kickoff behaviour (Experimental).** Hold until first contact, landing zone, CPU aim and CPU touchbacks
+  as an executable patch on top of the beta-58 spots and line-up. Astra-built, gate-proved, unwitnessed.
 - **X / Z / SLOT and nickel / dime roles in every playbook (Advanced).** The third receiver and the third /
   fourth corners on the depth chart now line up inside; refused groups are reported. Astra Tier 1; rows are Tier 2.
 - **Career stats CSV import (opt-in).** Build tab pass after the team history: real per-season counters for

@@ -44,6 +44,7 @@ mod_editor/core/image_fit.py
 mod_editor/core/json_stream.py
 mod_editor/core/nfl2k5_career_stats.py
 mod_editor/core/nfl2k5_depth_roles.py
+mod_editor/core/nfl2k5_dynamic_kickoff.py
 mod_editor/core/nfl2k5_save_rost.py
 mod_editor/core/texture_master.py
 mod_editor/core/menu_modes.py

@@ -2,6 +2,17 @@
 
 ## v1.0 RC84 — (unreleased)
 
+- **Dynamic kickoff, the whole 2024/2025 rule (Build tab and Gameplay Patches, Experimental).** Beta 58 moved the
+  kick spots and the line-up; this executable patch, built by GPT-6 Astra, adds the behaviour: the ten coverage men
+  and nine setup blockers do not move until the ball touches the ground or a player (the kicker and the two returners
+  are free), the first contact is remembered, a ball that lands in the landing zone and is then downed in the end zone
+  comes out to the 20, a kick straight into the end zone is a touchback to the 35 (30 for the 2024 spot), a kick short
+  of the landing zone or out of bounds goes to the 40, the CPU kicker aims for the landing zone 90 % of the time and the
+  CPU returner takes the touchback 90 % of the time. Your own kicks and returns are untouched; onside and safety kicks
+  and every scrimmage play bypass it. Ten hooks into a 1,939-byte hash-pinned cave at 0x2890F0 with ten runtime bytes in
+  the unowned section gap; both executable gates, bounded execution of every hook in both field directions, idempotent.
+  Ticking it switches on the modern kick spots and the line-up with it. Unwitnessed in game: the in-game checklist is
+  in the build report.
 - **X / Z / SLOT receivers and nickel / dime corners (Build tab, Advanced).** Retail 2K5 has no slot receiver:
   the inside man of a three-wide set is whichever ordinal the formation happens to name (the #1 receiver in 196 of
   the 466 three-wide formations, the #2 in 115, the #3 in 100), so the third receiver on your depth chart is inside

@@ -71,6 +71,14 @@ PATCHES = (
      "curves re-spaced as a scale so a 99 leg reaches 65-69 yards while mid-power kickers gain 2-3. "
      "Kickoff and return formations follow the ball; onside and safety kicks are untouched; the CPU keeps "
      "its retail field-goal range for fourth-down decisions."),
+    ("dynamic_kickoff", "Dynamic kickoff: nobody moves until the ball comes down, landing zone, CPU kicks and touchbacks (disc images only, experimental)",
+     "Retail: on a kickoff everyone sprints at the kick, the ball is kicked wherever the CPU meter lands and a returner brings "
+     "most kicks out. Patch: the 2024/2025 rule. The ten coverage men and nine setup blockers hold still until the ball touches the "
+     "ground or a player (the kicker and the two returners are free); first contact in the landing zone (goal line to the 20) then "
+     "downed in the end zone puts the ball on the 20, a kick straight into the end zone is a touchback to the 35 (30 for the 2024 "
+     "spot), short of the landing zone or out of bounds is the 40; the CPU kicker aims for the landing zone 90 % of the time and the "
+     "CPU returner takes the touchback 90 % of the time. Your own kicks and returns stay in your hands; onside and safety kicks are "
+     "untouched. Switches on the modern kick spots and the dynamic line-up with it. Unwitnessed in game."),
     ("overtime", "Modern overtime: both teams get a possession, 10 minutes with ties, playoffs to a winner",
      "Retail overtime is sudden death for the quarter length: any score ends it, even a first-possession "
      "touchdown, and the regular season ties after one period. Patch (the 2025 NFL rule): each team is "
@@ -195,7 +203,7 @@ if not mod_build.SEVEN_ON_SEVEN_RELEASED:
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
 STRING_TOGGLES = {"penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
 # toggles whose other half lives in pack 0: a bare default.xbe cannot take them
-NEEDS_IMAGE = {"prospect_names", "depth_roles"}
+NEEDS_IMAGE = {"prospect_names", "depth_roles", "dynamic_kickoff"}
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",

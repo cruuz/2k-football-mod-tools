@@ -59,6 +59,7 @@ from . import nfl2k5_progression as progression_patch
 from . import nfl2k5_modern_positions as scheme_labels_patch
 from . import nfl2k5_camera as camera_patch
 from . import nfl2k5_kick_rules as kick_rules_patch
+from . import nfl2k5_dynamic_kickoff as dynamic_kickoff_patch
 
 
 def _kick_power_status(payload: bytes) -> str:
@@ -591,6 +592,8 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "scheme_labels": scheme_labels_patch.status(payload),
         "camera": camera_patch.status(payload),
         "kick_rules": kick_rules_patch.status(payload),
+        "dynamic_kickoff": dynamic_kickoff_patch.status(payload),
+        "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(payload),
         "kick_power": _kick_power_status(payload),
         "widescreen": widescreen_patch.status(payload),
         "overtime": overtime_patch.status(payload),
@@ -693,6 +696,8 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "scheme_labels": scheme_labels_patch.status(payload),
         "camera": camera_patch.status(payload),
         "kick_rules": kick_rules_patch.status(payload),
+        "dynamic_kickoff": dynamic_kickoff_patch.status(payload),
+        "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(payload),
         "kick_power": _kick_power_status(payload),
         "widescreen": widescreen_patch.status(payload),
         "overtime": overtime_patch.status(payload),
@@ -902,6 +907,25 @@ class _prospect_names_adapter:
         return prospect_names_patch.xbe_apply(payload, self.boundary())
 
 
+class _dynamic_kickoff_adapter:
+    """The dynamic-kickoff module takes four settings; the loop below only knows flag/module pairs.
+
+    Re-applying an already-applied payload validates the requested settings (a mismatch raises rather
+    than silently keeping the old ones)."""
+
+    def __init__(self, settings: Mapping[str, object] | None) -> None:
+        self.settings = dict(settings or {})
+
+    def status(self, payload: bytes) -> str:
+        state = dynamic_kickoff_patch.status(payload)
+        if state == "applied":
+            dynamic_kickoff_patch.apply(payload, **self.settings)
+        return state
+
+    def apply(self, payload: bytes):
+        return dynamic_kickoff_patch.apply(payload, **self.settings)
+
+
 def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]]] | None,
                catch_slider: bool, accel_ramp: bool = False, draft_ai: bool = False,
                edge_rename: bool = False, returner_fix: bool = False,
@@ -913,10 +937,15 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                seven_on_seven: bool = False, position_row: bool = False,
                probowl_order: bool = False, penalties: str = "", uniform_choice: str = "",
                kick_laces: bool = False, franchise_practice: bool = False,
-               prospect_names: str = "", player_star: bool = False) -> tuple[bytes, dict[str, object]]:
+               prospect_names: str = "", player_star: bool = False,
+               dynamic_kickoff: bool = False,
+               dynamic_kickoff_settings: Mapping[str, object] | None = None) -> tuple[bytes, dict[str, object]]:
     """Curves (if any), the relocated arc-by-distance table (if asked), then the catch-slider,
     acceleration-ramp, draft-AI, EDGE-rename, returner and progression patches (if asked)."""
 
+    if dynamic_kickoff:
+        # the hold / landing-zone patch sits on the modern kick spots and never on the power-only variant
+        kick_rules, kick_power = True, False
     receipt: dict[str, object] = {"changes": [], "section_digests": [], "changed_byte_count": 0}
     patched = payload
     if wanted and (_curves_differ(payload, wanted) or not arc_table):
@@ -999,7 +1028,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                                      (kick_laces, kick_laces_patch, "kick_laces_patch", "kick-laces"),
                                      (franchise_practice, franchise_practice_patch, "franchise_practice_patch", "Franchise-practice"),
                                      (bool(prospect_names), _prospect_names_adapter(prospect_names), "prospect_names_patch", "prospect-names"),
-                                     (player_star, player_star_patch, "player_star_patch", "player-star")):
+                                     (player_star, player_star_patch, "player_star_patch", "player-star"),
+                                     (dynamic_kickoff, _dynamic_kickoff_adapter(dynamic_kickoff_settings), "dynamic_kickoff_patch", "dynamic-kickoff")):
         if not flag:
             continue
         state = module.status(patched)
@@ -1060,18 +1090,20 @@ def write_xbe_copy(
     franchise_practice: bool = False,
     prospect_names: str = "",
     player_star: bool = False,
+    dynamic_kickoff: bool = False,
+    dynamic_kickoff_settings: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     """Write a patched COPY of ``source_xbe`` to ``target_xbe``."""
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff,
              "nothing requested")
     source = _resolve_source(source_xbe)
     target = Path(target_xbe).expanduser()
     _prepare_target(source, target, overwrite)
     original = source.read_bytes()
     arc_table = settings is not None and settings.arc_by_distance
-    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star)
+    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings)
     _require(patched != original, "nothing to write: the requested curves and patches already match the file")
     descriptor = _open_binary(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
     try:
@@ -1104,6 +1136,8 @@ def write_xbe_copy(
         "scheme_labels": scheme_labels_patch.status(result),
         "camera": camera_patch.status(result),
         "kick_rules": kick_rules_patch.status(result),
+        "dynamic_kickoff": dynamic_kickoff_patch.status(result),
+        "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(result),
         "kick_power": _kick_power_status(result),
         "widescreen": widescreen_patch.status(result),
         "overtime": overtime_patch.status(result),
@@ -1166,6 +1200,8 @@ def write_image_copy(
     franchise_practice: bool = False,
     prospect_names: str = "",
     player_star: bool = False,
+    dynamic_kickoff: bool = False,
+    dynamic_kickoff_settings: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     """Copy a disc image and patch ``default.xbe`` inside the COPY.
 
@@ -1175,7 +1211,7 @@ def write_image_copy(
     """
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or uniform_choice or kick_laces or franchise_practice or bool(prospect_names) or player_star or dynamic_kickoff,
              "nothing requested")
     source = _resolve_source(source_image)
     target = Path(target_image).expanduser()
@@ -1189,7 +1225,7 @@ def write_image_copy(
         original = platform_compat.pread(src, length, offset)
         _require(len(original) == length, "short read of default.xbe from the source image")
         arc_table = settings is not None and settings.arc_by_distance
-        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star)
+        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, uniform_choice=uniform_choice, kick_laces=kick_laces, franchise_practice=franchise_practice, prospect_names=prospect_names, player_star=player_star, dynamic_kickoff=dynamic_kickoff, dynamic_kickoff_settings=dynamic_kickoff_settings)
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
         if edge_rename:
@@ -1270,6 +1306,8 @@ def write_image_copy(
         "scheme_labels": scheme_labels_patch.status(after),
         "camera": camera_patch.status(after),
         "kick_rules": kick_rules_patch.status(after),
+        "dynamic_kickoff": dynamic_kickoff_patch.status(after),
+        "dynamic_kickoff_settings": dynamic_kickoff_patch.read_settings(after),
         "kick_power": _kick_power_status(after),
         "widescreen": widescreen_patch.status(after),
         "overtime": overtime_patch.status(after),

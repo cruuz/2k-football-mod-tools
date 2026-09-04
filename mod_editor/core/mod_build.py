@@ -22,7 +22,7 @@ from mod_editor.core import platform_compat
 import shutil
 import sys
 from collections.abc import Callable
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -106,6 +106,13 @@ class BuildPlan:
     # setup zone 35-30 with two returners deep, 5-yd kicker run-up; rewrites the Kickoff / Kick Return
     # formations of the 36 kicking playbooks; needs a disc image; opt-in until witnessed
     kickoff_alignment: bool = False
+    # the full 2024/2025 dynamic kickoff (executable, EXPERIMENTAL, unwitnessed): coverage and setup blockers hold until the
+    # ball touches the ground or a player, first contact is latched, landing zone then end zone = the 20, direct touchback =
+    # touchback_yard (35, or 30 for 2024), short / out = the 40, the CPU kicker aims for the landing zone and the CPU returner
+    # takes the touchback with the given probabilities; implies kick_rules + kickoff_alignment (and never kick_power)
+    dynamic_kickoff: bool = False
+    dynamic_kickoff_settings: dict[str, object] = field(default_factory=lambda: {
+        "touchback_yard": 35, "cpu_landing_probability": 90, "cpu_target_yards": (5, 15), "cpu_touchback_probability": 90})
     # one EDGE / one LB / one interior pool across 4-3 and 3-4 (XBE pools + playbook recode + ROST
     # reclassification; needs a disc image; implies scheme_labels)
     position_pools: bool = False
@@ -199,7 +206,7 @@ class BuildPlan:
 
     def wants_xbe_patch(self) -> bool:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
-                or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools
+                or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.dynamic_kickoff
                 or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
                 or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.uniform_choice)
                 or self.kick_laces or self.franchise_practice or bool(self.prospect_names) or self.player_star)
@@ -222,7 +229,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": False,
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
         "edge_rename": False, "scorebug": False, "scheme_labels": False, "camera": False,
-        "kick_rules": False, "kick_power": True, "kickoff_alignment": False,
+        "kick_rules": False, "kick_power": True, "kickoff_alignment": False, "dynamic_kickoff": False,
         "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "depth_roles": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "prospect_names": "", "player_star": False,
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
@@ -230,7 +237,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
-        "kick_rules": True, "kick_power": False, "kickoff_alignment": False,
+        "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False,
         "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "depth_roles": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
@@ -238,7 +245,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "throw": True, "max_deep_yards": 80.0, "arc": 0.0, "realistic_flight": True, "arc_by_distance": True,
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
-        "kick_rules": True, "kick_power": False, "kickoff_alignment": True,
+        "kick_rules": True, "kick_power": False, "kickoff_alignment": True, "dynamic_kickoff": True,
         "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "depth_roles": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
     },
 }
@@ -271,6 +278,8 @@ def availability() -> dict[str, bool]:
         "camera": _core_module("nfl2k5_camera") is not None,
         "kick_rules": _core_module("nfl2k5_kick_rules") is not None,
         "kickoff_alignment": _tools_module("nfl2k5_kickoff_alignment") is not None,
+        "dynamic_kickoff": (_core_module("nfl2k5_dynamic_kickoff") is not None and _core_module("nfl2k5_kick_rules") is not None
+                            and _tools_module("nfl2k5_kickoff_alignment") is not None),
         "widescreen": _core_module("nfl2k5_widescreen") is not None,
         "overtime": _core_module("nfl2k5_overtime") is not None,
         "team_history": (_core_module("nfl2k5_team_history") is not None
@@ -327,7 +336,7 @@ def inspect(source: Path | str) -> dict[str, Any]:
         "accel_ramp": report.get("accel_ramp"), "draft_ai": report.get("draft_ai"),
         "returner_fix": report.get("returner_fix", "unknown"), "progression": report.get("progression", "unknown"),
         "scheme_labels": report.get("scheme_labels", "unknown"), "camera": report.get("camera", "unknown"),
-        "kick_rules": report.get("kick_rules", "unknown"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
+        "kick_rules": report.get("kick_rules", "unknown"), "dynamic_kickoff": report.get("dynamic_kickoff", "unknown"), "dynamic_kickoff_settings": report.get("dynamic_kickoff_settings"), "kick_power": report.get("kick_power", "unknown"), "widescreen": report.get("widescreen", "unknown"),
         "overtime": report.get("overtime", "unknown"), "team_column": report.get("team_column", "unknown"),
         "position_row": report.get("position_row", "unknown"), "probowl_order": report.get("probowl_order", "unknown"),
         "penalties": report.get("penalties", "unknown"),
@@ -539,6 +548,9 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
 
 def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
+    if plan.dynamic_kickoff:
+        # record the effective dependencies in the recipe: the modern spots, never the power-only variant, the line-up
+        plan = replace(plan, kick_rules=True, kick_power=False, kickoff_alignment=True)
     source, target = Path(plan.source), Path(plan.target)
     if target.exists() and target.resolve() == source.resolve():
         raise ValueError("target must not be the source")
@@ -594,11 +606,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
                                   "penalties": plan.penalties, "uniform_choice": uniform_choice_mode(plan.uniform_choice),
                                   "kick_laces": plan.kick_laces, "franchise_practice": plan.franchise_practice,
                                   "prospect_names": plan.prospect_names,
-                                  "player_star": plan.player_star}
+                                  "player_star": plan.player_star,
+                                  "dynamic_kickoff": plan.dynamic_kickoff, "dynamic_kickoff_settings": plan.dynamic_kickoff_settings}
         if settings is not None:
             kwargs["settings"] = settings
         step = tt.write_copy(source, target, **kwargs)
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "franchise_practice", "prospect_names", "player_star", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():

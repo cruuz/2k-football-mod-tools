@@ -232,6 +232,10 @@ class BuildPanel(QWidget):
         self.season_check = QCheckBox("2026 franchise: real 2026 schedule + 3-game preseason, 17 games over 18 weeks, 14-team playoffs, 2026 dates and rookie birth years (disc images only)")
         self.overtime_check = QCheckBox("Modern overtime: both teams get a possession, 10 minutes with ties, playoffs play on")
         self.kickoff_alignment_check = QCheckBox("Dynamic kickoff line-up: coverage on the receiving 40, return setup zone 35-30, two returners deep, 5-yd run-up (disc images only; unwitnessed)")
+        self.dynamic_kickoff_check = QCheckBox("Dynamic kickoff (2024/2025 rule): nobody moves until the ball comes down, landing zone, CPU kicks to it and takes touchbacks (switches on the kick spots and line-up; disc images only; experimental)")
+        self.dynamic_kickoff_check.setToolTip("Coverage and setup blockers hold until the ball touches the ground or a player; landing zone then end zone = the 20, "
+                                              "straight into the end zone = touchback to the 35 (30 for 2024), short or out = the 40; the CPU kicker aims for the landing zone "
+                                              "90 % of the time and the CPU returner takes the touchback 90 % of the time. Your kicks and returns stay yours. Unwitnessed in game.")
         self.position_row_check = QCheckBox("Position on the first page of Edit Player, in roster mode and Franchise (Depth Chart -> Auto afterwards)")
         self.probowl_order_check = QCheckBox("Pro Bowl Votes tabs in football order: offence, defence, then K and P")
         self.penalties_check = QCheckBox("Penalties at NFL rates (estimated first cut: holding, DPI, roughing, face mask, clipping re-tuned; 15-yd face mask) + a working Chop Block toggle")
@@ -240,7 +244,7 @@ class BuildPanel(QWidget):
         self.franchise_practice_check = QCheckBox("Free Practice inside Franchise: a Practice row on the Coach's Desk runs a full scrimmage with your franchise roster, your away kit vs your home kit, and returns to the desk (no stats or injuries; unwitnessed)")
         self.seven_on_seven_check = QCheckBox("7-on-7 practice mode: Practice Type 7-On-7 + 7-on-7 sets in the practice playbook (linemen idle at the sideline, 4-second timer rusher; disc images only; unwitnessed)")
         self.player_star_check = QCheckBox("Star decal under the players you tag: the retail controller star follows every player ticked ★ Star in Text & Rosters, up to 9 at once (nothing changes with no tags; unwitnessed)")
-        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.career_stats_check, self.prospect_names_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.franchise_practice_check, self.player_star_check, self.seven_on_seven_check, self.roster_edits_check):
+        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.career_stats_check, self.prospect_names_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.dynamic_kickoff_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.franchise_practice_check, self.player_star_check, self.seven_on_seven_check, self.roster_edits_check):
             g.addWidget(box)
         if not mod_build.SEVEN_ON_SEVEN_RELEASED:
             self.seven_on_seven_check.hide()
@@ -334,7 +338,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -382,6 +386,7 @@ class BuildPanel(QWidget):
         self.kick_rules_check.toggled.connect(lambda on: on and self.kick_power_check.setChecked(False))
         self.kick_power_check.toggled.connect(lambda on: on and self.kick_rules_check.setChecked(False))
         gate(self.kickoff_alignment_check, "kickoff_alignment", needs_image=True)
+        gate(self.dynamic_kickoff_check, "dynamic_kickoff", needs_image=True)
         gate(self.season_check, "season_2026", needs_image=True)
         gate(self.overtime_check, "overtime")
         gate(self.position_row_check, "position_row")
@@ -414,6 +419,7 @@ class BuildPanel(QWidget):
             "position_pools": self.position_pools_check,
             "depth_roles": self.depth_roles_check,
             "kickoff_alignment": self.kickoff_alignment_check,
+            "dynamic_kickoff": self.dynamic_kickoff_check,
             "season_2026": self.season_check, "widescreen": self.widescreen_check, "overtime": self.overtime_check,
             "team_column": self.team_column_check, "team_history": self.team_history_check, "career_stats": self.career_stats_check,
             "prospect_names": self.prospect_names_check,
@@ -478,6 +484,7 @@ class BuildPanel(QWidget):
             position_pools=self.position_pools_check.isChecked(),
             depth_roles=self.depth_roles_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),
+            dynamic_kickoff=self.dynamic_kickoff_check.isChecked(),
             season_2026=self.season_check.isChecked(), widescreen=self.widescreen_check.isChecked(),
             overtime=self.overtime_check.isChecked(), team_column=self.team_column_check.isChecked(), seven_on_seven=self.seven_on_seven_check.isChecked(),
             position_row=self.position_row_check.isChecked(), probowl_order=self.probowl_order_check.isChecked(),
@@ -497,7 +504,7 @@ class BuildPanel(QWidget):
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles
-                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.commentary)
+                    or p.kickoff_alignment or p.dynamic_kickoff or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.commentary)
 
     def _refresh(self) -> None:
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())
