@@ -1,5 +1,39 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC84 — (unreleased)
+
+- **★ Rosters now reads a patched disc's own position scheme instead of the retail 17.** Two of
+  the Build tab's patches change what a position *means*: the **EDGE rename** prints EDGE / Edge
+  Rusher wherever the game said Defensive End, and the **one-pool** pass (`position_pools` plus the
+  ROST reclassify) makes 16 = EDGE, 15 = the interior, 11 = LB and **retires 10** — no player on a
+  reclassified roster carries OLB, and writing one back parks him in a filter row no team fills.
+  The editor was showing `QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE` on all of them. It now
+  detects the scheme — from the disc's own `edge_rename` / `scheme_labels` / `position_pools`
+  states for an image, and from the records themselves for a save or a loose ROST body (an empty
+  OLB code in the primary pool is the reclassify signature; retail ships 191 of them, and the 68
+  class-generator templates are excluded because the pass deliberately leaves them keyed per enum)
+  — and a **Position scheme** selector on the source row says what was found, why, and lets you
+  override it. A save cannot show the EDGE rename at all, because that patch only rewrites text;
+  the page says so rather than guessing.
+- Everything that names a position follows the scheme: the grid, the header card, the position
+  chips (one pool gains its own **EDGE** chip and "DL" becomes the interior), the Position picker,
+  the Global Attribute Editor's position boxes, the validation checks and the CSV. Everything that
+  *means* a position stays keyed by the **code**, the way the game keys its own per-position rating
+  labels and getters: a one-pool LB is read on the linebacker card set and an EDGE on the
+  defensive-end one, the jersey ranges follow the pool, and the depth chart is grouped per code so
+  the edge rushers and the interior are separate chains. The header card names the card set a
+  player is rated on.
+- **A retired code is never written.** Under one pool the Position picker shows OLB greyed out and
+  disabled, so the row cannot be picked and the picker cycles the live codes, and the card refuses
+  the write anyway with a message naming the code that replaces it; a global edit aimed at a retired
+  position is refused; a CSV that brings **OLB** rows onto a one-pool roster maps them to **LB (11)**
+  and logs one line per row it moved; and a saved roster-edits document authored on a retail disc
+  does the same when Build applies it to a disc built with the pools, so the edit lands on a
+  position the game actually fills. CSV import accepts every scheme's names whichever roster it is
+  reading into, so a sheet exported from a retail disc loads onto a one-pool disc and back. A player
+  already parked on the retired code is still shown, and the Checks tab now says he is on a position
+  no screen fills.
+
 ## v1.0 RC83 — ★ Rosters (the Flying Finn-parity roster editor), playbook packs, scorebug on every machine, disc identity, body sets, one LB group, TEAM column filled (2026-09-04)
 
 - **Fixed: a refusal now says which disc image you handed it.** One report carried two failures

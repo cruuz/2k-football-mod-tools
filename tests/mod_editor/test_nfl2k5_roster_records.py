@@ -56,6 +56,54 @@ SAMPLE = [
 ]
 TEAM_ABBRS = ("IND", "ATL", "SF")
 
+# Front-seven fixtures for the position-scheme tests.  A retail roster carries OLB (10); a roster
+# put through tools/nfl2k5_roster_reclassify carries none at all -- its 3-4 outside backers have
+# become EDGE (16) and its off-ball backers LB (11).  Both sit on team 2, which the default sample
+# leaves empty, so the existing fixtures are untouched.
+FRONT_RETAIL = [
+    ("Ray", "Lewis", 11, 52, 8, 250, 73, D(1975, 5, 15), 1, 80, 2),
+    ("Peter", "Boulware", 10, 58, 7, 255, 76, D(1974, 12, 18), 1, 78, 2),
+    ("Adalius", "Thomas", 10, 96, 4, 270, 74, D(1977, 7, 25), 2, 76, 2),
+    ("Kelly", "Gregg", 15, 97, 5, 310, 71, D(1976, 11, 3), 3, 60, 2),
+    ("Terrell", "Suggs", 16, 55, 0, 260, 75, D(1982, 10, 11), 2, 82, 2),
+]
+FRONT_ONE_POOL = [
+    ("Ray", "Lewis", 11, 52, 8, 250, 73, D(1975, 5, 15), 1, 80, 2),
+    ("Peter", "Boulware", 16, 58, 7, 255, 76, D(1974, 12, 18), 1, 78, 2),
+    ("Adalius", "Thomas", 16, 96, 4, 270, 74, D(1977, 7, 25), 2, 76, 2),
+    ("Kelly", "Gregg", 15, 97, 5, 310, 71, D(1976, 11, 3), 3, 60, 2),
+    ("Terrell", "Suggs", 16, 55, 0, 260, 75, D(1982, 10, 11), 2, 82, 2),
+]
+RETAIL_FRONT_SAMPLE = SAMPLE + FRONT_RETAIL
+ONE_POOL_SAMPLE = SAMPLE + FRONT_ONE_POOL
+
+
+def retail_front_body() -> bytes:
+    return synthetic_body(RETAIL_FRONT_SAMPLE)
+
+
+def one_pool_body() -> bytes:
+    return synthetic_body(ONE_POOL_SAMPLE)
+
+
+def reclassified_retail_body() -> bytes:
+    """The retail ROST body put through the shipped reclassify pass, in memory.
+
+    Nothing is written: the pass is planned against the retail pack and applied to a copy of the
+    body, which is exactly what ``tools/nfl2k5_roster_reclassify.py apply`` does inside a disc copy.
+    ``schemes={}`` leaves the playbooks unread; every retail team carries a scheme word (0/1/2), so
+    the book fallback is never reached.
+    """
+
+    import nfl2k5_roster_reclassify as reclassify
+
+    with reclassify.OuterImage(RETAIL_EXTRACTION) as archive:
+        resource = reclassify.load_resources(archive, historic=False)[0]
+    body = bytearray(resource.body)
+    moves, _schemes = reclassify.plan_resource(resource, {})
+    reclassify.apply_moves(body, moves)
+    return bytes(body)
+
 
 def synthetic_body(players=SAMPLE, *, size: int = rr.BODY_SIZE) -> bytes:
     """A ROST body in the retail shape, with the name pool packed solid (no free bytes)."""
@@ -862,6 +910,362 @@ class RetailTests(unittest.TestCase):
                  ("position_pools", "season_2026", "team_history", "prospect_names", "player_tags",
                   "roster_edits")]
         self.assertEqual(order, sorted(order), "roster_edits is the last ROST pass in build()")
+
+
+# --------------------------------------------------------------------------------------- schemes
+class PositionSchemeTests(unittest.TestCase):
+    """What a position code MEANS follows the disc's patches, not the retail table."""
+
+    def test_a_scheme_only_renames_and_never_moves_a_code(self) -> None:
+        for scheme in rr.POSITION_SCHEMES:
+            names = rr.position_names(scheme)
+            self.assertEqual(len(names), len(rr.POSITIONS))
+            for code in range(len(rr.POSITIONS)):
+                # the code a name resolves to is the code it was read from, in every scheme
+                self.assertEqual(rr.position_code(names[code], scheme), code)
+        self.assertEqual(rr.position_names("retail"), rr.POSITIONS)
+        self.assertEqual(rr.position_name(16, "edge"), "EDGE")
+        self.assertEqual(rr.position_name(11, "edge"), "ILB", "the EDGE rename moves no linebacker")
+        self.assertEqual(rr.position_name(16, "one_pool"), "EDGE")
+        self.assertEqual(rr.position_name(11, "one_pool"), "LB")
+        self.assertEqual(rr.position_name(15, "one_pool"), "DT")
+        self.assertIn("interior", rr.position_long_name(15, "one_pool"))
+        self.assertEqual(rr.position_name(10, "one_pool"), "OLB",
+                         "the retired code keeps its retail name, the way the game still prints it")
+
+    def test_names_resolve_both_ways_whatever_the_loaded_scheme(self) -> None:
+        for scheme in rr.POSITION_SCHEMES:
+            self.assertEqual(rr.position_code("EDGE", scheme), 16)
+            self.assertEqual(rr.position_code("DE", scheme), 16)
+            self.assertEqual(rr.position_code("LB", scheme), 11)
+            self.assertEqual(rr.position_code("ILB", scheme), 11)
+            self.assertEqual(rr.position_code("OLB", scheme), 10)
+            self.assertEqual(rr.position_code("RB", scheme), 7)
+            self.assertEqual(rr.position_code("hb", scheme), 7)
+            self.assertEqual(rr.position_code(" 15 ", scheme), 15)
+        with self.assertRaises(rr.RosterRecordError):
+            rr.position_code("NOSE TACKLE")
+        with self.assertRaises(rr.RosterRecordError):
+            rr.normalise_scheme("three-four")
+
+    def test_the_retired_code_is_named_refused_and_has_a_replacement(self) -> None:
+        self.assertEqual(rr.retired_position_codes("retail"), ())
+        self.assertEqual(rr.retired_position_codes("edge"), ())
+        self.assertEqual(rr.retired_position_codes("one_pool"), (10,))
+        self.assertNotIn(10, rr.live_position_codes("one_pool"))
+        self.assertIn(10, rr.live_position_codes("retail"))
+        self.assertEqual(rr.replacement_position_code(10, "one_pool"), 11)
+        self.assertEqual(rr.replacement_position_code(10, "retail"), 10)
+        rr.check_position_code(10, "retail")
+        rr.check_position_code(11, "one_pool")
+        with self.assertRaises(rr.RosterRecordError) as raised:
+            rr.check_position_code(10, "one_pool")
+        self.assertIn("retired", str(raised.exception))
+        self.assertIn("LB", str(raised.exception))
+
+    def test_the_chips_group_by_code_and_one_pool_gains_an_edge_chip(self) -> None:
+        self.assertNotIn("EDGE", rr.chip_order("retail"))
+        self.assertIn("EDGE", rr.chip_order("one_pool"))
+        self.assertEqual(rr.position_groups("retail")["DL"], (15, 16))
+        self.assertEqual(rr.position_groups("one_pool")["DL"], (15,))
+        self.assertEqual(rr.position_groups("one_pool")["EDGE"], (16,))
+        # a stray retired OLB still has a chip that finds him: the game treats enum 10 as an LB
+        self.assertEqual(rr.position_groups("one_pool")["LB"], (10, 11))
+
+    def test_detection_reads_one_pool_from_an_empty_olb_code(self) -> None:
+        document = rr.load_body(one_pool_body())
+        found = rr.detect_scheme_from_data(document)
+        self.assertEqual(found["scheme"], "one_pool")
+        self.assertEqual(found["confidence"], "high")
+        self.assertEqual(found["census"][10], 0)
+        self.assertGreater(found["census"][11], 0)
+        self.assertGreater(found["census"][16], 0)
+        self.assertIn("OLB", found["why"])
+
+    def test_detection_says_retail_while_olb_is_populated_and_admits_the_blind_spot(self) -> None:
+        document = rr.load_body(retail_front_body())
+        found = rr.detect_scheme_from_data(document)
+        self.assertEqual(found["scheme"], "retail")
+        self.assertEqual(found["confidence"], "low")
+        self.assertEqual(found["census"][10], 2)
+        # the EDGE rename is text in the executable and in the historic ROST names, so a roster
+        # body cannot show it and the heuristic has to say so rather than guess
+        self.assertIn("EDGE rename", found["why"])
+
+    def test_the_secondary_templates_do_not_hide_the_signal(self) -> None:
+        document = rr.load_body(one_pool_body())
+        # the reclassify pass deliberately leaves the class-generator templates keyed per enum,
+        # so counting every pool would find an OLB on a reclassified roster
+        self.assertEqual(document.position_census("primary")[10], 0)
+        self.assertEqual(document.position_census(None)[10], 0)      # synthetic body has no templates
+        self.assertEqual(sum(document.position_census("primary").values()), len(ONE_POOL_SAMPLE))
+
+    def test_detection_reads_a_discs_own_patch_states(self) -> None:
+        pools = rr.detect_scheme_from_states({"position_pools": "applied", "edge_rename": "applied",
+                                              "scheme_labels": "applied"})
+        self.assertEqual(pools["scheme"], "one_pool")
+        edge = rr.detect_scheme_from_states({"position_pools": "retail", "edge_rename": "applied",
+                                             "scheme_labels": "applied"})
+        self.assertEqual(edge["scheme"], "edge")
+        disc_only = rr.detect_scheme_from_states({"position_pools": "retail", "edge_rename": "retail",
+                                                  "edge_rename_disc": {"status": "applied"}})
+        self.assertEqual(disc_only["scheme"], "edge")
+        retail = rr.detect_scheme_from_states({"position_pools": "retail", "edge_rename": "retail",
+                                               "scheme_labels": "retail"})
+        self.assertEqual(retail["scheme"], "retail")
+        self.assertEqual(retail["confidence"], "high")
+        unknown = rr.detect_scheme_from_states({})
+        self.assertEqual(unknown["scheme"], "retail")
+        self.assertEqual(unknown["confidence"], "low")
+
+    def test_detection_reports_a_disagreement_instead_of_hiding_it(self) -> None:
+        # an executable carrying the pools over a roster nobody reclassified is a real broken state
+        half = rr.detect_scheme(rr.load_body(retail_front_body()),
+                                states={"position_pools": "applied", "edge_rename": "applied"})
+        self.assertEqual(half["scheme"], "one_pool")
+        self.assertIn("retired OLB code", half["note"])
+        # and the other way round: the roster is reclassified, the executable is not
+        other = rr.detect_scheme(rr.load_body(one_pool_body()),
+                                 states={"position_pools": "retail", "edge_rename": "retail"})
+        self.assertEqual(other["scheme"], "one_pool")
+        self.assertIn("follow the roster", other["note"])
+        agreed = rr.detect_scheme(rr.load_body(one_pool_body()),
+                                  states={"position_pools": "applied", "edge_rename": "applied"})
+        self.assertEqual(agreed["scheme"], "one_pool")
+        self.assertEqual(agreed["note"], "")
+
+    def test_a_document_reads_its_codes_through_the_scheme_it_is_given(self) -> None:
+        document = rr.load_body(one_pool_body(), scheme="one_pool")
+        self.assertEqual(document.scheme, "one_pool")
+        names = {p.display: p.record.position_name for p in document.players}
+        self.assertEqual(names["Ray Lewis"], "LB")
+        self.assertEqual(names["Terrell Suggs"], "EDGE")
+        self.assertEqual(names["Kelly Gregg"], "DT")
+        document.set_scheme("retail")
+        self.assertEqual(document.players[0].record.scheme, "retail")
+        names = {p.display: p.record.position_name for p in document.players}
+        self.assertEqual(names["Ray Lewis"], "ILB")
+        self.assertEqual(names["Terrell Suggs"], "DE")
+        self.assertEqual(document.summary()["scheme"], "retail")
+
+    def test_ratings_stay_keyed_by_the_code(self) -> None:
+        # the game's per-position rating labels come from the enum, so renaming must not move a
+        # player onto another position's weighting
+        self.assertEqual(rr.rating_profile(11), "ILB")
+        self.assertEqual(rr.rating_profile(16), "DE")
+        self.assertEqual(rr.OVERALL_WEIGHTS_BY_CODE[11], rr.OVERALL_WEIGHTS["ILB"])
+        self.assertEqual(rr.OVERALL_WEIGHTS_BY_CODE[16], rr.OVERALL_WEIGHTS["DE"])
+        self.assertEqual(rr.OVERALL_WEIGHTS_BY_CODE[10], rr.OVERALL_WEIGHTS["OLB"])
+        self.assertIn("pass_rush", rr.key_ratings(16))
+        self.assertIn("tackle", rr.key_ratings(11))
+        retail = rr.load_body(one_pool_body())
+        one_pool = rr.load_body(one_pool_body(), scheme="one_pool")
+        for a, b in zip(retail.players, one_pool.players):
+            self.assertEqual(a.record.overall(), b.record.overall(),
+                             "the OVR estimate is the same number under either label")
+
+    def test_jersey_ranges_and_validation_follow_the_code(self) -> None:
+        self.assertEqual(rr.jersey_range(16), (50, 99))
+        self.assertEqual(rr.jersey_range(11), (40, 59))
+        self.assertEqual(rr.JERSEY_RANGES["DE"], rr.JERSEY_RANGES_BY_CODE[16])
+        document = rr.load_body(one_pool_body(), scheme="one_pool")
+        suggs = next(p for p in document.players if p.last == "Suggs")
+        findings = rr.validate(document, [suggs])
+        self.assertFalse([f for f in findings if f["check"] == "jersey"],
+                         "#55 is legal for an EDGE because the range is keyed by code 16")
+        suggs.record.set("jersey", 12)
+        detail = [f for f in rr.validate(document, [suggs]) if f["check"] == "jersey"]
+        self.assertEqual(len(detail), 1)
+        self.assertIn("EDGE", detail[0]["detail"])
+
+    def test_validation_flags_a_player_parked_on_the_retired_code(self) -> None:
+        document = rr.load_body(retail_front_body(), scheme="one_pool")
+        stray = next(p for p in document.players if p.last == "Boulware")
+        findings = [f for f in rr.validate(document, [stray]) if f["check"] == "position"]
+        self.assertEqual(len(findings), 1)
+        self.assertIn("retired", findings[0]["detail"])
+        clean = rr.load_body(retail_front_body(), scheme="retail")
+        self.assertFalse([f for f in rr.validate(clean) if f["check"] == "position"])
+
+    def test_the_document_refuses_to_write_a_retired_code(self) -> None:
+        document = rr.load_body(one_pool_body(), scheme="one_pool")
+        player = next(p for p in document.players if p.last == "Lewis")
+        with self.assertRaises(rr.RosterRecordError):
+            document.set_position(player, "OLB")
+        self.assertEqual(player.record.values["position"], 11)
+        self.assertEqual(document.set_position(player, "EDGE"), 16)
+        self.assertEqual(player.record.values["position"], 16)
+        retail = rr.load_body(retail_front_body(), scheme="retail")
+        self.assertEqual(retail.set_position(retail.players[0], "OLB"), 10)
+
+    def test_the_depth_chart_is_per_code(self) -> None:
+        document = rr.load_body(one_pool_body(), scheme="one_pool")
+        chart = document.depth_chart(2)
+        self.assertEqual(sorted(chart), [11, 15, 16])
+        self.assertEqual([p.last for p in chart[16]],
+                         [p.last for p in sorted(chart[16], key=lambda q: q.record.values["depth_rank"])])
+        suggs = next(p for p in document.players if p.last == "Suggs")
+        nth, of = document.depth_slot(2, suggs)
+        self.assertEqual(of, 3)
+        self.assertTrue(1 <= nth <= 3)
+
+    def test_a_global_edit_selects_positions_by_code(self) -> None:
+        document = rr.load_body(one_pool_body(), scheme="one_pool")
+        by_new_name = rr.global_edit_preview(document, attribute="speed", mode="equal", value=70,
+                                             positions=["EDGE"])
+        by_old_name = rr.global_edit_preview(document, attribute="speed", mode="equal", value=70,
+                                             positions=["DE"])
+        self.assertTrue(by_new_name)
+        self.assertEqual([row["name"] for row in by_new_name], [row["name"] for row in by_old_name])
+        self.assertTrue(all(row["position"] == "EDGE" for row in by_new_name))
+        with self.assertRaises(rr.RosterRecordError):
+            rr.global_edit_preview(document, attribute="position", mode="equal", value=10)
+
+    def test_a_roster_edit_never_writes_the_retired_code_into_a_reclassified_roster(self) -> None:
+        source = rr.load_body(retail_front_body(), scheme="retail")
+        lewis = next(p for p in source.players if p.last == "Lewis")
+        lewis.record.set("position", 10)                       # authored against a retail roster
+        document = rr.edits_document(source, name="retail edit")
+        self.assertEqual(document["edits"][0]["fields"]["position"], 10)
+
+        body, receipt = rr.apply_body(one_pool_body(), document)
+        landed = rr.load_body(body)
+        moved = next(p for p in landed.players if p.last == "Lewis")
+        self.assertEqual(moved.record.values["position"], 11,
+                         "the target roster is reclassified, so the OLB code is mapped to LB")
+        self.assertEqual(len([line for line in receipt["log"] if "retired" in line]), 1)
+
+        # and onto a roster that still uses the retail codes it writes exactly what was authored
+        body, receipt = rr.apply_body(retail_front_body(), document)
+        kept = next(p for p in rr.load_body(body).players if p.last == "Lewis")
+        self.assertEqual(kept.record.values["position"], 10)
+        self.assertEqual(receipt["log"], [])
+        # an explicit scheme wins over the detection
+        body, receipt = rr.apply_body(one_pool_body(), document, scheme="retail")
+        forced = next(p for p in rr.load_body(body).players if p.last == "Lewis")
+        self.assertEqual(forced.record.values["position"], 10)
+
+    def test_a_csv_round_trips_under_each_scheme(self) -> None:
+        for scheme, expected in (("retail", "ILB"), ("edge", "ILB"), ("one_pool", "LB")):
+            document = rr.load_body(one_pool_body(), scheme=scheme)
+            text = rr.export_csv(document)
+            positions = [line.split(",")[5] for line in text.splitlines()[1:]]
+            self.assertIn(expected, positions, f"{scheme} names its own codes in the CSV")
+            reloaded = rr.load_body(one_pool_body(), scheme=scheme)
+            receipt = rr.import_csv(reloaded, text)
+            self.assertEqual(receipt["fields"], 0, "an unedited export changes nothing on import")
+            self.assertEqual(receipt["log"], [])
+            self.assertEqual(reloaded.to_body(), document.to_body())
+
+    def test_a_csv_written_on_a_retail_disc_loads_onto_a_one_pool_roster(self) -> None:
+        source = rr.load_body(retail_front_body(), scheme="retail")
+        text = rr.export_csv(source)
+        self.assertIn("OLB", text)
+        target = rr.load_body(one_pool_body(), scheme="one_pool")
+        receipt = rr.import_csv(target, text)
+        moved = {p.last: p.record.values["position"] for p in target.players}
+        self.assertEqual(moved["Boulware"], 11, "an OLB row lands on LB, not on the retired code")
+        self.assertEqual(moved["Thomas"], 11)
+        notes = [line for line in receipt["log"] if "retired" in line]
+        self.assertEqual(len(notes), 2, "and the receipt says so for every row it moved")
+        self.assertIn("LB (code 11)", notes[0])
+        # the EDGE / LB names of a one-pool export read straight back onto a retail roster
+        back = rr.load_body(retail_front_body(), scheme="retail")
+        receipt = rr.import_csv(back, rr.export_csv(rr.load_body(one_pool_body(), scheme="one_pool")))
+        self.assertEqual(receipt["log"], [])
+        self.assertEqual(back.players[len(SAMPLE) + 1].record.values["position"], 16)
+
+
+@unittest.skipUnless(HAVE_RETAIL, "the retail extraction is not mounted")
+class RetailPositionSchemeTests(unittest.TestCase):
+    """The detection heuristic against the real roster, before and after the shipped pass."""
+
+    def test_the_retail_roster_detects_as_retail_with_the_measured_census(self) -> None:
+        document = rr.load_body(retail_body())
+        found = rr.detect_scheme_from_data(document)
+        self.assertEqual(found["scheme"], "retail")
+        self.assertEqual(found["census"], rr.RETAIL_PRIMARY_POSITION_CENSUS)
+        self.assertEqual(found["census"][10], 191)
+
+    def test_the_reclassified_roster_detects_as_one_pool(self) -> None:
+        body = reclassified_retail_body()
+        self.assertNotEqual(body, retail_body())
+        document = rr.load_body(body)
+        found = rr.detect_scheme_from_data(document)
+        self.assertEqual(found["scheme"], "one_pool")
+        self.assertEqual(found["confidence"], "high")
+        census = found["census"]
+        self.assertEqual(census[10], 0, "the pass empties the OLB code")
+        self.assertEqual(census[11], 305)
+        self.assertEqual(census[15], 208)
+        self.assertEqual(census[16], 196)
+        self.assertEqual(sum(census.values()), rr.RETAIL_PRIMARY_COUNT)
+        # the templates the pass leaves alone still carry an OLB, which is why the census is
+        # primary-pool only
+        self.assertEqual(document.position_census("secondary")[10], 4)
+
+    def test_the_detector_reads_the_real_executables_own_patch_states(self) -> None:
+        from mod_editor.core import nfl2k5_edge_rename as edge_rename
+        from mod_editor.core import nfl2k5_modern_positions as modern_positions
+        from mod_editor.core import nfl2k5_position_pools as position_pools
+
+        xbe = RETAIL_XBE.read_bytes()
+
+        def states(payload: bytes) -> dict[str, str]:
+            return {"edge_rename": edge_rename.status(payload),
+                    "scheme_labels": modern_positions.status(payload),
+                    "position_pools": position_pools.status(payload)}
+
+        self.assertEqual(rr.detect_scheme_from_states(states(xbe))["scheme"], "retail")
+        edged, _receipt = edge_rename.apply(xbe)
+        self.assertEqual(rr.detect_scheme_from_states(states(edged))["scheme"], "edge")
+        labelled, _receipt = modern_positions.apply(edged, three_four_line=True)
+        self.assertEqual(rr.detect_scheme_from_states(states(labelled))["scheme"], "edge",
+                         "the depth-chart slot labels never move a roster code")
+        pooled, _receipt = position_pools.apply(labelled)
+        self.assertEqual(rr.detect_scheme_from_states(states(pooled))["scheme"], "one_pool")
+        # and the two halves of a real one-pool disc agree, so nothing is flagged
+        whole = rr.detect_scheme(rr.load_body(reclassified_retail_body()), states=states(pooled))
+        self.assertEqual(whole["scheme"], "one_pool")
+        self.assertEqual(whole["note"], "")
+        # while the executable alone, over an un-reclassified roster, is called out
+        half = rr.detect_scheme(rr.load_body(retail_body()), states=states(pooled))
+        self.assertEqual(half["scheme"], "one_pool")
+        self.assertIn("191", half["note"])
+
+    def test_inspect_states_reads_a_real_executable_through_mod_build(self) -> None:
+        found = rr.inspect_states(RETAIL_XBE)
+        self.assertIsNotNone(found)
+        assert found is not None
+        self.assertEqual(sorted(found), ["edge_rename", "edge_rename_disc", "position_pools",
+                                         "scheme_labels"])
+        self.assertEqual(found["edge_rename"], "retail")
+        self.assertEqual(found["scheme_labels"], "retail")
+        self.assertEqual(rr.detect_scheme_from_states(found)["scheme"], "retail")
+        # a pack folder has no executable to read, and detection must fall back rather than raise
+        self.assertIsNone(rr.inspect_states(RETAIL_EXTRACTION))
+        fallback = rr.detect_scheme(rr.load_body(reclassified_retail_body()),
+                                    source=RETAIL_EXTRACTION)
+        self.assertEqual(fallback["scheme"], "one_pool")
+        self.assertEqual(fallback["source"], "roster data")
+
+    def test_the_reclassified_roster_reads_and_writes_under_the_one_pool_names(self) -> None:
+        document = rr.load_body(reclassified_retail_body(), scheme="one_pool")
+        names = {p.record.position_name for p in document.by_pool("primary")}
+        self.assertIn("EDGE", names)
+        self.assertIn("LB", names)
+        self.assertNotIn("ILB", names)
+        self.assertNotIn("DE", names)
+        edge = next(p for p in document.by_pool("primary") if p.record.position_name == "EDGE")
+        self.assertEqual(edge.record.rating_profile, "DE", "an EDGE keeps the defensive-end card set")
+        with self.assertRaises(rr.RosterRecordError):
+            document.set_position(edge, "OLB")
+        text = rr.export_csv(document, document.by_pool("primary")[:50])
+        self.assertNotIn(";OLB;", text)
+        reloaded = rr.load_body(reclassified_retail_body(), scheme="one_pool")
+        receipt = rr.import_csv(reloaded, text)
+        self.assertEqual(receipt["log"], [])
+        self.assertEqual(receipt["fields"], 0)
 
 
 if __name__ == "__main__":

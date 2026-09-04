@@ -1,4 +1,18 @@
-# 2K5 Mod Studio — v1.0 RC83 Release Status
+# 2K5 Mod Studio — v1.0 RC84 Release Status
+
+## Beta 60 (unreleased) — ★ Rosters reads the disc's own position scheme
+
+Source/UI versions are **2K5 RC84** and **APF alpha.84**.
+
+- **★ Rosters is scheme-aware.** The page no longer shows the retail 17 positions on every roster.
+  It detects whether the loaded source is on the retail table, the **EDGE rename** or the
+  **one-pool** model (EDGE / LB / interior, OLB retired) — from the disc's own patch states for an
+  image, from the records for a save or a loose body — and every label, chip, picker, CSV column,
+  jersey check and depth note follows it. Ratings stay keyed by the position **code**, the way the
+  game keys them, so a one-pool LB is still read on the linebacker card set and an EDGE on the
+  defensive-end one. Codes are never written outside the scheme: the picker greys the retired OLB
+  out, and a CSV that brings OLB rows onto a reclassified roster maps them to LB and says so.
+  A selector overrides the detection. Unwitnessed in game.
 
 ## Beta 59 (unreleased) — ★ Rosters: the whole roster editable, on the disc and in a save
 

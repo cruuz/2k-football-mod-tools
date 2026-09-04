@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC83 — Getting Started
+# 2K5 Mod Studio v1.0 RC84 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -1050,6 +1050,27 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
    Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
    ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
    out of Finn's binary, so no value order is guessed.
+
+**Position scheme.** A patched disc does not necessarily have the retail seventeen positions, so the
+page asks the source which table it is on before it labels anything. Two Build patches change what a
+position *means*: the **EDGE rename** prints EDGE / Edge Rusher everywhere the game said Defensive
+End (the codes do not move), and the **one-pool** pass — `position_pools` in Advanced, plus the ROST
+reclassify — makes 16 EDGE, 15 the interior (the 3-4 nose is simply DT #1), 11 LB and **retires 10**:
+no player on a reclassified roster carries OLB any more. For a disc image the page reads the disc's
+own `edge_rename` / `scheme_labels` / `position_pools` states; for an Xbox save or a loose roster body
+it infers the scheme from the records, where an **empty OLB code in the main player pool** is the
+reclassify signature (retail ships 191 OLBs; the 68 class-generator templates are not counted,
+because the pass leaves those keyed one per position on purpose). A save carries no executable, so it
+**cannot** show the EDGE rename — that patch only rewrites text — and the page says so instead of
+guessing. The **Position scheme** selector next to the source row tells you what was detected and
+why, and lets you set it yourself. Everything that names a position follows it: the grid, the header,
+the chips (one pool gains its own **EDGE** chip, and DL becomes the interior), the Position picker,
+the Global Attribute Editor and the CSV. Everything that *means* a position stays keyed by the
+position code the way the game keys its own rating labels, so a one-pool LB is still rated on the
+linebacker card set and an EDGE on the defensive-end one, jersey ranges follow the pool, and the
+depth chart is grouped per code. The picker greys out a code the scheme retired and refuses to write
+it, and a CSV that brings OLB rows onto a one-pool roster maps them to LB and lists every row it
+moved. Nothing in your roster is renamed by any of this — only what the editor shows you.
 
 **What you can edit.** First and last name, college, position, jersey number, years pro, hand,
 height, weight, date of birth, the play-by-play name id and the portrait id; skin, face, face mask,

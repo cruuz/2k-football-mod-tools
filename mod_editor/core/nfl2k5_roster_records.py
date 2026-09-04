@@ -55,6 +55,18 @@ implements the only three honest moves, the same three ``nfl2k5_prospect_names``
 3. **refuse** -- ``RosterPoolFull`` when neither works.  Nothing is ever written outside the span the
    pool was discovered from.
 
+Position schemes
+----------------
+A position **code** is stable; what it MEANS is decided by the patches the disc carries, so this
+module carries three views of the same 17 codes and every reader takes one (``POSITION_SCHEMES``):
+``retail``, ``edge`` (``nfl2k5_edge_rename``: 16 prints EDGE, no code moves) and ``one_pool``
+(``nfl2k5_position_pools`` + ``tools/nfl2k5_roster_reclassify``: 16 = EDGE, 15 = the interior,
+11 = LB, and **10 is retired** -- it keeps its retail name on screen but no player carries it).
+``detect_scheme`` reads a disc's own patch states through ``mod_build.inspect`` and falls back to
+the records themselves (an empty OLB code in the primary pool is the reclassify signature); the
+ratings, the jersey ranges and the depth chains stay keyed by the CODE, because that is what the
+game indexes.
+
 Save containers
 ---------------
 ``EXTRA`` = HMAC-SHA1(SigKey16, entire ``SAVEGAME.DAT``), 20 bytes.  ``SIG_KEY`` is the literal Finn
@@ -157,6 +169,172 @@ POSITION_GROUPS = {
     "QB": ("QB",), "RB": ("HB", "FB"), "WR": ("WR",), "TE": ("TE",), "OL": ("C", "G", "T"),
     "DL": ("DT", "DE"), "LB": ("OLB", "ILB"), "DB": ("CB", "FS", "SS"), "K/P": ("K", "P"),
 }
+ENUM_OLB, ENUM_ILB, ENUM_DT, ENUM_DE = 10, 11, 15, 16
+# The four codes the one-pool pass rearranges; every other code means the same thing in all schemes.
+FRONT_CODES = (ENUM_OLB, ENUM_ILB, ENUM_DT, ENUM_DE)
+POSITION_LONG_NAMES = ("Quarterback", "Kicker", "Punter", "Wide Receiver", "Cornerback",
+                       "Free Safety", "Strong Safety", "Halfback", "Fullback", "Tight End",
+                       "Outside Linebacker", "Inside Linebacker", "Center", "Guard", "Tackle",
+                       "Defensive Tackle", "Defensive End")
+
+# --------------------------------------------------------------------------------- position schemes
+# What a position CODE means depends on which patches the disc carries, so the editor cannot show
+# the retail 17 names on every roster:
+#
+# * ``retail``   -- the shipped table above.
+# * ``edge``     -- ``nfl2k5_edge_rename``: every place the game prints "Def End" / "Defensive End"
+#                   reads EDGE / Edge Rusher.  **The codes do not move**: 16 is still the same pool.
+# * ``one_pool`` -- ``nfl2k5_position_pools`` + ``tools/nfl2k5_roster_reclassify``: 16 = EDGE (4-3
+#                   ends and 3-4 outside backers), 15 = the interior (4-3 tackles, the 3-4 nose and
+#                   the 3-4 ends), 11 = LB (every off-ball backer) and **10 is retired** -- it keeps
+#                   its retail name everywhere the game prints a roster position (see the "One LB
+#                   row" note in ``nfl2k5_position_pools``) but no player on a reclassified roster
+#                   carries it, and the editor must never write it back.
+#
+# The 3-4 nose is not a roster position: it is DT #1 on the 3-4 depth-chart tab ("NT", a slot label
+# from ``nfl2k5_modern_positions``), so code 15 stays "DT" here and says so in its long name.
+POSITION_SCHEMES = ("retail", "edge", "one_pool")
+SCHEME_TITLES = {
+    "retail": "Retail (17 positions)",
+    "edge": "EDGE names (DE renamed, same 17 codes)",
+    "one_pool": "One pool (EDGE / LB / interior, OLB retired)",
+}
+# The Build patch that puts a disc on each scheme -- the state ``detect_scheme_from_states`` reads.
+SCHEME_PATCH_NAMES = {"retail": "", "edge": "edge_rename", "one_pool": "position_pools"}
+
+
+def _relabel(table: Sequence[str], changes: Mapping[int, str]) -> tuple[str, ...]:
+    out = list(table)
+    for index, text in changes.items():
+        out[index] = text
+    return tuple(out)
+
+
+SCHEME_POSITION_NAMES: dict[str, tuple[str, ...]] = {
+    "retail": POSITIONS,
+    "edge": _relabel(POSITIONS, {ENUM_DE: "EDGE"}),
+    "one_pool": _relabel(POSITIONS, {ENUM_DE: "EDGE", ENUM_ILB: "LB"}),
+}
+SCHEME_POSITION_LONG_NAMES: dict[str, tuple[str, ...]] = {
+    "retail": POSITION_LONG_NAMES,
+    "edge": _relabel(POSITION_LONG_NAMES, {ENUM_DE: "Edge Rusher"}),
+    "one_pool": _relabel(POSITION_LONG_NAMES, {
+        ENUM_DE: "Edge Rusher",
+        ENUM_ILB: "Linebacker",
+        ENUM_DT: "Defensive Tackle (interior; the 3-4 nose is DT #1)",
+        ENUM_OLB: "Outside Linebacker (retired -- no player carries it)"}),
+}
+# Codes the scheme keeps in the data but no longer fills, and where a stray one has to go.
+SCHEME_RETIRED_CODES: dict[str, tuple[int, ...]] = {"retail": (), "edge": (), "one_pool": (ENUM_OLB,)}
+SCHEME_RETIRED_REPLACEMENT: dict[str, dict[int, int]] = {
+    "retail": {}, "edge": {}, "one_pool": {ENUM_OLB: ENUM_ILB},
+}
+
+_RETAIL_GROUP_CODES: dict[str, tuple[int, ...]] = {
+    "QB": (0,), "RB": (7, 8), "WR": (3,), "TE": (9,), "OL": (12, 13, 14),
+    "DL": (ENUM_DT, ENUM_DE), "LB": (ENUM_OLB, ENUM_ILB), "DB": (4, 5, 6), "K/P": (1, 2),
+}
+SCHEME_GROUP_CODES: dict[str, dict[str, tuple[int, ...]]] = {
+    "retail": _RETAIL_GROUP_CODES,
+    "edge": _RETAIL_GROUP_CODES,
+    # under one pool the edge rushers are their own roster position, so they get their own chip and
+    # "DL" means the interior; a stray retired OLB still shows under LB, because that is what the
+    # game does with it (enum 10 behaves exactly like an LB, it is only unnamed on the roster).
+    "one_pool": {"QB": (0,), "RB": (7, 8), "WR": (3,), "TE": (9,), "OL": (12, 13, 14),
+                 "DL": (ENUM_DT,), "EDGE": (ENUM_DE,), "LB": (ENUM_OLB, ENUM_ILB),
+                 "DB": (4, 5, 6), "K/P": (1, 2)},
+}
+SCHEME_CHIP_ORDER: dict[str, tuple[str, ...]] = {
+    "retail": ("All", "QB", "RB", "WR", "TE", "OL", "DL", "LB", "DB", "K/P"),
+    "edge": ("All", "QB", "RB", "WR", "TE", "OL", "DL", "LB", "DB", "K/P"),
+    "one_pool": ("All", "QB", "RB", "WR", "TE", "OL", "DL", "EDGE", "LB", "DB", "K/P"),
+}
+
+# Every name any scheme uses, plus Finn's RB, resolved to the code it stores.  Import accepts all of
+# them whatever the loaded scheme is, so a spreadsheet written against a retail disc still reads on
+# a one-pool disc (and the other way round).
+POSITION_CODE_BY_TEXT: dict[str, int] = {
+    text.upper(): code
+    for names in reversed(list(SCHEME_POSITION_NAMES.values()))
+    for code, text in enumerate(names)
+}
+POSITION_CODE_BY_TEXT.update(POSITION_ALIASES)
+
+
+def normalise_scheme(scheme: str | None) -> str:
+    """The scheme name, defaulting to retail; an unknown name is a programming error."""
+
+    name = str(scheme or "retail")
+    _require(name in POSITION_SCHEMES, f"unknown position scheme {scheme!r}; use one of {POSITION_SCHEMES}")
+    return name
+
+
+def position_names(scheme: str = "retail") -> tuple[str, ...]:
+    return SCHEME_POSITION_NAMES[normalise_scheme(scheme)]
+
+
+def position_name(code: int, scheme: str = "retail") -> str:
+    names = position_names(scheme)
+    return names[code] if 0 <= code < len(names) else f"?{code}"
+
+
+def position_long_name(code: int, scheme: str = "retail") -> str:
+    names = SCHEME_POSITION_LONG_NAMES[normalise_scheme(scheme)]
+    return names[code] if 0 <= code < len(names) else f"position {code}"
+
+
+def position_code(text: str | int, scheme: str = "retail") -> int:
+    """A position code from a name in any scheme, Finn's ``RB``, or a plain number."""
+
+    normalise_scheme(scheme)
+    if isinstance(text, int):
+        return int(text)
+    value = str(text).strip()
+    code = POSITION_CODE_BY_TEXT.get(value.upper())
+    if code is not None:
+        return code
+    _require(value.lstrip("-").isdigit(), f"{value!r} is not a position name or number")
+    return int(value)
+
+
+def retired_position_codes(scheme: str = "retail") -> tuple[int, ...]:
+    return SCHEME_RETIRED_CODES[normalise_scheme(scheme)]
+
+
+def is_retired_position(code: int, scheme: str = "retail") -> bool:
+    return int(code) in retired_position_codes(scheme)
+
+
+def live_position_codes(scheme: str = "retail") -> tuple[int, ...]:
+    """The codes a roster on this scheme is allowed to store, in table order."""
+
+    retired = retired_position_codes(scheme)
+    return tuple(code for code in range(len(POSITIONS)) if code not in retired)
+
+
+def replacement_position_code(code: int, scheme: str = "retail") -> int:
+    """Where a retired code has to go on this scheme (10 -> 11 under one pool)."""
+
+    return SCHEME_RETIRED_REPLACEMENT[normalise_scheme(scheme)].get(int(code), int(code))
+
+
+def check_position_code(code: int, scheme: str = "retail") -> None:
+    """Refuse a code the scheme retired, naming the code that replaces it."""
+
+    if is_retired_position(code, scheme):
+        instead = replacement_position_code(code, scheme)
+        raise RosterRecordError(
+            f"{position_name(code, 'retail')} (code {code}) is retired on a "
+            f"{SCHEME_TITLES[normalise_scheme(scheme)]} roster; use "
+            f"{position_name(instead, scheme)} (code {instead}) instead")
+
+
+def position_groups(scheme: str = "retail") -> dict[str, tuple[int, ...]]:
+    return SCHEME_GROUP_CODES[normalise_scheme(scheme)]
+
+
+def chip_order(scheme: str = "retail") -> tuple[str, ...]:
+    return SCHEME_CHIP_ORDER[normalise_scheme(scheme)]
 
 HANDS = ("Left", "Right")
 BODIES = ("Skinny", "Normal", "Large", "Extra Large")
@@ -298,6 +476,33 @@ OVERALL_WEIGHTS: dict[str, dict[str, int]] = {
     **_SKILL,
     "G": _SKILL["C"], "T": _SKILL["C"], "OLB": _SKILL["ILB"], "FS": _SKILL["CB"], "P": _SKILL["K"],
 }
+# The rating semantics belong to the CODE, not to the label the disc prints: the game's own
+# per-position rating labels and getters are indexed by the position enum (.rdata 0x004F5258 /
+# 0x004F55B8), so a one-pool LB (code 11) reads the ILB card set and a one-pool EDGE (code 16) reads
+# the DE card set -- only the wording on screen changes.  Renaming a position must never move a
+# player onto another position's weights, which is exactly what happened while ``OVERALL_WEIGHTS``
+# was keyed by the displayed name: "LB" and "EDGE" are not retail names, so they fell through to the
+# flat average.
+RATING_PROFILE_BY_CODE: dict[int, str] = {code: name for code, name in enumerate(POSITIONS)}
+OVERALL_WEIGHTS_BY_CODE: dict[int, dict[str, int]] = {
+    code: OVERALL_WEIGHTS[name] for code, name in RATING_PROFILE_BY_CODE.items() if name in OVERALL_WEIGHTS
+}
+
+
+def rating_profile(code: int) -> str:
+    """Which retail position's rating card set the game uses for this code."""
+
+    return RATING_PROFILE_BY_CODE.get(int(code), f"?{code}")
+
+
+def key_ratings(code: int, limit: int = 4) -> tuple[str, ...]:
+    """The ratings that carry this code's profile, heaviest first (the studio's own weighting)."""
+
+    weights = OVERALL_WEIGHTS_BY_CODE.get(int(code))
+    if not weights:
+        return ()
+    ordered = sorted(weights.items(), key=lambda item: (-item[1], item[0]))
+    return tuple(name for name, _weight in ordered[:limit])
 
 # The attribute cards, grouped the way the ★ Rosters right-hand panel shows them.
 ATTRIBUTE_CARDS: dict[str, tuple[str, ...]] = {
@@ -473,20 +678,23 @@ def _signed(value: int) -> int:
 class PlayerRecord:
     """A decoded 0x54 record with typed access to every field and to the composites."""
 
-    __slots__ = ("values",)
+    __slots__ = ("values", "scheme")
 
-    def __init__(self, values: Mapping[str, int]) -> None:
+    def __init__(self, values: Mapping[str, int], scheme: str = "retail") -> None:
         self.values: dict[str, int] = dict(values)
+        # which position table this record's code should be READ through; the stored bytes never
+        # change with it (see POSITION_SCHEMES)
+        self.scheme: str = normalise_scheme(scheme)
 
     @classmethod
-    def decode(cls, raw: bytes) -> "PlayerRecord":
-        return cls(decode_record(raw))
+    def decode(cls, raw: bytes, scheme: str = "retail") -> "PlayerRecord":
+        return cls(decode_record(raw), scheme)
 
     def encode(self) -> bytes:
         return encode_record(self.values)
 
     def copy(self) -> "PlayerRecord":
-        return PlayerRecord(self.values)
+        return PlayerRecord(self.values, self.scheme)
 
     # ------------------------------------------------------------------ raw field access
     def get(self, name: str) -> int:
@@ -625,9 +833,24 @@ class PlayerRecord:
 
     # ------------------------------------------------------------------ conveniences
     @property
+    def position_code(self) -> int:
+        return self.values["position"]
+
+    @property
     def position_name(self) -> str:
-        code = self.values["position"]
-        return POSITIONS[code] if code < len(POSITIONS) else f"?{code}"
+        """The abbreviation this record's scheme prints for its code (retail unless told otherwise)."""
+
+        return position_name(self.values["position"], self.scheme)
+
+    @property
+    def position_long_name(self) -> str:
+        return position_long_name(self.values["position"], self.scheme)
+
+    @property
+    def rating_profile(self) -> str:
+        """The retail position whose rating card set the game uses for this record's code."""
+
+        return rating_profile(self.values["position"])
 
     @property
     def pbp_last_name_only(self) -> bool:
@@ -662,7 +885,7 @@ class PlayerRecord:
         extracted yet; this is a documented, stable estimate (``OVERALL_WEIGHTS``) that sorts a
         depth chart sensibly and moves when you edit the ratings that matter for the position."""
 
-        weights = OVERALL_WEIGHTS.get(self.position_name)
+        weights = OVERALL_WEIGHTS_BY_CODE.get(self.values["position"])
         if not weights:
             named = [self.values[name] for name in RATING_BYTE_ORDER if name not in STYLE_RATINGS]
             return round(sum(named) / len(named))
@@ -883,14 +1106,49 @@ class RosterDocument:
     """
 
     def __init__(self, body: bytes | bytearray, *, base: int = 0, source: str = "body",
-                 container: "SaveContainer | None" = None, resource_header: bytes = b"") -> None:
+                 container: "SaveContainer | None" = None, resource_header: bytes = b"",
+                 scheme: str = "retail") -> None:
         self.body = bytearray(body)
         self.base = base
         self.source = source
         self.container = container
         self.resource_header = bytes(resource_header)
         self.original = bytes(body)
+        self.scheme = normalise_scheme(scheme)
+        # what the data alone says; the panel overwrites it with the disc's patch states or the
+        # user's choice (see detect_scheme)
+        self.scheme_detection: dict[str, Any] = {}
         self._parse()
+        self.set_scheme(self.scheme)
+
+    # ------------------------------------------------------------------ position scheme
+    def set_scheme(self, scheme: str) -> str:
+        """Read every position code through ``scheme`` (retail | edge | one_pool).
+
+        Nothing in the body changes: this decides which names the editor prints, which chips it
+        offers, which codes the Position picker will write and which code a CSV's ``OLB`` maps to.
+        """
+
+        self.scheme = normalise_scheme(scheme)
+        for player in self.players:
+            player.record.scheme = self.scheme
+        return self.scheme
+
+    def position_census(self, pool: str | None = "primary") -> dict[int, int]:
+        """How many players carry each position code, by default in the primary pool only.
+
+        The 68 secondary records are the class generator's templates: they are keyed one per enum
+        and ``tools/nfl2k5_roster_reclassify`` deliberately leaves them alone, so a reclassified
+        roster still holds an OLB template.  Counting them would hide the one signal there is.
+        """
+
+        counts = {code: 0 for code in range(len(POSITIONS))}
+        for player in self.players:
+            if pool is not None and player.pool != pool:
+                continue
+            code = player.record.values["position"]
+            counts[code] = counts.get(code, 0) + 1
+        return counts
 
     # ------------------------------------------------------------------ pointers
     def rel(self, field_offset: int) -> int | None:
@@ -924,7 +1182,8 @@ class RosterDocument:
             for index in range(count):
                 offset = table + index * PLAYER_SIZE
                 player = Player(pool=pool, index=index, offset=offset,
-                                record=PlayerRecord.decode(bytes(b[offset: offset + PLAYER_SIZE])))
+                                record=PlayerRecord.decode(bytes(b[offset: offset + PLAYER_SIZE]),
+                                                           self.scheme))
                 self.players.append(player)
                 self.by_offset[offset] = player
         self.primary_table = self.rel(base + POOL_FIELDS["primary"][1])
@@ -1042,7 +1301,40 @@ class RosterDocument:
                 "colleges": len(self.colleges), "free_agents": len(self.free_agents),
                 "draft_class": len(self.group_players("draft_class")),
                 "names": self.names.summary(), "source": self.source,
-                "base": f"0x{self.base:x}"}
+                "scheme": self.scheme, "base": f"0x{self.base:x}"}
+
+    def depth_chart(self, team_index: int) -> dict[int, list[Player]]:
+        """The team's players grouped by position CODE, in the game's own rank order.
+
+        The depth chart is per code, not per label: under one pool the edge rushers (16) and the
+        interior (15) are separate chains even though retail called both "DL", and the retired
+        OLB code shares the LB chain because the game's kind mapping already sends it there.
+        """
+
+        chart: dict[int, list[Player]] = {}
+        for player in self.team_players(team_index):
+            chart.setdefault(player.record.values["position"], []).append(player)
+        for group in chart.values():
+            group.sort(key=lambda p: (p.record.values["depth_rank"], p.record.values["depth_side"],
+                                      p.index))
+        return chart
+
+    def depth_slot(self, team_index: int, player: Player) -> tuple[int, int]:
+        """``(nth, of)`` for this player inside his own position code on this team, 1-based."""
+
+        group = self.depth_chart(team_index).get(player.record.values["position"], [])
+        for index, candidate in enumerate(group):
+            if candidate is player:
+                return index + 1, len(group)
+        return 0, len(group)
+
+    def set_position(self, player: Player, code: int | str) -> int:
+        """Set a position through the loaded scheme, refusing a code the scheme retired."""
+
+        value = position_code(code, self.scheme)
+        check_position_code(value, self.scheme)
+        player.record.set("position", value)
+        return value
 
     # ------------------------------------------------------------------ edits
     def set_name(self, player: Player, which: str, text: str) -> dict[str, Any]:
@@ -1200,21 +1492,29 @@ def find_block_base(payload: bytes) -> int:
     raise RosterRecordError("no ROST block found in this save")
 
 
-def load_body(body: bytes) -> RosterDocument:
+def load_body(body: bytes, *, scheme: str = "retail") -> RosterDocument:
     """A bare ROST body (0x90F60 bytes on the retail disc)."""
 
-    return RosterDocument(body, base=0, source="body")
+    return RosterDocument(body, base=0, source="body", scheme=scheme)
 
 
-def load_image(path: Path | str) -> RosterDocument:
-    """The main roster resource of a disc image or a loose pack folder (read-only)."""
+def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False) -> RosterDocument:
+    """The main roster resource of a disc image or a loose pack folder (read-only).
+
+    With ``detect=True`` the disc's own patch states decide the position scheme (see
+    ``detect_scheme``); otherwise the caller says, and ``retail`` is the default.
+    """
 
     with _outer_image()(path) as archive:
         entry = _entry(archive)
         resource = archive.read(entry.virtual_offset, entry.size)
     _require(resource[:4] == b"ROST" and len(resource) == RESOURCE_SIZE, "the roster resource is foreign")
-    return RosterDocument(resource[RESOURCE_HEADER_SIZE:], base=0, source=str(path),
-                          resource_header=resource[:RESOURCE_HEADER_SIZE])
+    document = RosterDocument(resource[RESOURCE_HEADER_SIZE:], base=0, source=str(path),
+                              resource_header=resource[:RESOURCE_HEADER_SIZE], scheme=scheme)
+    if detect:
+        document.scheme_detection = detect_scheme(document, source=path)
+        document.set_scheme(str(document.scheme_detection["scheme"]))
+    return document
 
 
 def resource_status(resource: bytes) -> str:
@@ -1236,6 +1536,129 @@ def status(path: Path | str) -> str:
     with _outer_image()(path) as archive:
         entry = _entry(archive)
         return resource_status(archive.read(entry.virtual_offset, entry.size))
+
+
+# ------------------------------------------------------------------------------------ scheme detection
+# Retail primary-pool census, measured on the disc: OLB 191, ILB 131, DT 183, DE 204 (2,479 records).
+# After ``tools/nfl2k5_roster_reclassify`` the same pool reads OLB 0, LB 305, DT 208, EDGE 196: every
+# OLB has become an LB (4-3 teams) or an EDGE (3-4 teams), so **an empty OLB code is the signal**.
+# The 68 secondary templates keep one record per enum -- OLB included -- which is why the census
+# counts the primary pool only.
+RETAIL_PRIMARY_POSITION_CENSUS = {
+    0: 147, 1: 70, 2: 69, 3: 242, 4: 248, 5: 86, 6: 108, 7: 138, 8: 101, 9: 141,
+    10: 191, 11: 131, 12: 107, 13: 158, 14: 155, 15: 183, 16: 204,
+}
+
+
+def detect_scheme_from_data(document: RosterDocument) -> dict[str, Any]:
+    """Infer the position scheme from the roster records alone (a save or a bare ROST body).
+
+    The heuristic, and its limits, stated plainly:
+
+    * **one_pool** when the primary pool has **no** player at code 10 while codes 11 and 16 both
+      have players.  Retail ships 191 OLBs, and the reclassify pass is the only thing that empties
+      the code, so an empty OLB pool on a roster that still has linebackers and ends is decisive.
+    * anything else reads as **retail**, because the EDGE rename is text: it rewrites the
+      executable's strings and 247 "Def End" last names in the *historic* ROST resources, and
+      touches nothing in the main roster body.  A save or a loose body therefore **cannot** show
+      it, and the editor says so rather than guessing.
+
+    Either way the user can override with the panel's "Position scheme" selector.
+    """
+
+    census = document.position_census("primary")
+    olb, lb, interior, edge = (census.get(code, 0) for code in FRONT_CODES)
+    if olb == 0 and lb > 0 and edge > 0:
+        return {
+            "scheme": "one_pool", "confidence": "high", "census": census, "source": "roster data",
+            "why": (f"no primary-pool player carries the retired OLB code (retail has "
+                    f"{RETAIL_PRIMARY_POSITION_CENSUS[10]}), and the roster still holds {lb} at LB "
+                    f"(11), {edge} at EDGE (16) and {interior} interior (15)"),
+        }
+    return {
+        "scheme": "retail", "confidence": "low", "census": census, "source": "roster data",
+        "why": (f"{olb} primary-pool players still carry OLB (10), so this roster has not been "
+                "reclassified. Roster data cannot show the EDGE rename -- that patch only rewrites "
+                "text in the executable and in the historic ROST name strings -- so pick "
+                "\"EDGE names\" yourself if this came from an EDGE disc"),
+    }
+
+
+def detect_scheme_from_states(states: Mapping[str, Any]) -> dict[str, Any]:
+    """Read the scheme off a disc's own patch statuses (``mod_build.inspect``).
+
+    ``position_pools`` is the one-pool patch (OLB retired, 11 = LB, 16 = EDGE), ``edge_rename`` is
+    the DE -> EDGE text pass (executable) with ``edge_rename_disc`` its pack-side half, and
+    ``scheme_labels`` is only the depth-chart slot names, which never move a roster code.
+    """
+
+    def text(value: Any) -> str:
+        if isinstance(value, Mapping):
+            return str(value.get("status", "unknown"))
+        return str(value if value is not None else "unknown")
+
+    pools, labels = text(states.get("position_pools")), text(states.get("scheme_labels"))
+    xbe, disc = text(states.get("edge_rename")), text(states.get("edge_rename_disc"))
+    common = {"confidence": "high", "source": "disc patch states",
+              "states": {"position_pools": pools, "edge_rename": xbe, "edge_rename_disc": disc,
+                         "scheme_labels": labels}}
+    if pools == "applied":
+        return {**common, "scheme": "one_pool",
+                "why": f"the disc's {SCHEME_PATCH_NAMES['one_pool']} patch reads applied "
+                       f"(scheme_labels {labels})"}
+    if "applied" in (xbe, disc):
+        return {**common, "scheme": "edge",
+                "why": (f"the EDGE rename reads applied (executable {xbe}, disc text {disc}) and "
+                        f"position_pools reads {pools}")}
+    if pools in ("unknown", "n/a", "foreign") and xbe in ("unknown", "n/a", "foreign"):
+        return {**common, "scheme": "retail", "confidence": "low",
+                "why": f"the disc's patch states are {pools} / {xbe}; falling back to the retail table"}
+    return {**common, "scheme": "retail",
+            "why": f"position_pools reads {pools} and the EDGE rename reads {xbe}"}
+
+
+def inspect_states(source: Path | str) -> dict[str, Any] | None:
+    """The four patch states ``detect_scheme_from_states`` needs, or ``None`` if we cannot read them."""
+
+    try:
+        from . import mod_build                            # local: mod_build imports this module back
+        report = mod_build.inspect(Path(source))
+    except Exception:                                       # noqa: BLE001 - detection is never fatal
+        return None
+    return {key: report.get(key) for key in
+            ("position_pools", "edge_rename", "edge_rename_disc", "scheme_labels")}
+
+
+def detect_scheme(document: RosterDocument, *, source: Path | str | None = None,
+                  states: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Decide the position scheme for a loaded roster.
+
+    A disc can say for itself (its patch states); a save or a bare body can only be inferred from
+    the records.  When both are available they are combined, and a disagreement is reported rather
+    than silently resolved -- a disc whose executable carries the pools but whose ROST was never
+    reclassified is a real, broken state somebody could hand us.
+    """
+
+    data = detect_scheme_from_data(document)
+    if states is None and source is not None:
+        states = inspect_states(source)
+    if not states:
+        return {**data, "data": data, "disc": None, "note": ""}
+    disc = detect_scheme_from_states(states)
+    note = ""
+    scheme = disc["scheme"]
+    if disc["scheme"] == "one_pool" and data["scheme"] != "one_pool":
+        note = ("the executable carries the one-pool patch but the roster still has "
+                f"{data['census'].get(10, 0)} players at the retired OLB code: run the reclassify "
+                "pass (Build & Share -> Advanced) or the depth chart will not fill")
+    elif data["scheme"] == "one_pool" and disc["scheme"] != "one_pool":
+        scheme = "one_pool"
+        note = ("the roster is reclassified (no OLB) but the executable's position_pools patch "
+                f"reads {disc.get('states', {}).get('position_pools', 'unknown')}: the names below "
+                "follow the roster")
+    why = disc["why"] + ("; " + data["why"] if data["scheme"] == "one_pool" else "")
+    return {"scheme": scheme, "confidence": disc["confidence"], "source": "disc patch states",
+            "why": why, "census": data["census"], "note": note, "data": data, "disc": disc}
 
 
 # --------------------------------------------------------------------------------------------- saves
@@ -1302,10 +1725,10 @@ class SaveContainer:
     def savegame(self) -> bytes:
         return self.members[self.savegame_name]
 
-    def document(self) -> RosterDocument:
+    def document(self, *, scheme: str = "retail") -> RosterDocument:
         payload = self.savegame
         base = find_block_base(payload)
-        return RosterDocument(payload, base=base, source=str(self.path), container=self)
+        return RosterDocument(payload, base=base, source=str(self.path), container=self, scheme=scheme)
 
     def with_savegame(self, payload: bytes) -> dict[str, bytes]:
         members = dict(self.members)
@@ -1362,8 +1785,13 @@ def verify_extra(savegame: bytes, extra: bytes) -> bool:
     return len(extra) == EXTRA_SIZE and hmac.compare_digest(sign_save(savegame), bytes(extra))
 
 
-def load_save(path: Path | str, *, require_signature: bool = True) -> RosterDocument:
-    return SaveContainer.load(path, require_signature=require_signature).document()
+def load_save(path: Path | str, *, require_signature: bool = True, scheme: str = "retail",
+              detect: bool = False) -> RosterDocument:
+    document = SaveContainer.load(path, require_signature=require_signature).document(scheme=scheme)
+    if detect:
+        document.scheme_detection = detect_scheme(document)
+        document.set_scheme(str(document.scheme_detection["scheme"]))
+    return document
 
 
 def save_document(document: RosterDocument, target: Path | str, *, overwrite: bool = False) -> dict[str, Any]:
@@ -1418,11 +1846,20 @@ def read_edits(source: Path | str | Mapping[str, Any]) -> dict[str, Any]:
     return dict(document)
 
 
-def apply_body(body: bytes, source: Path | str | Mapping[str, Any]) -> tuple[bytes, dict[str, Any]]:
-    """Apply a roster-edits document to a ROST body; returns the new body and a receipt."""
+def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
+               scheme: str | None = None) -> tuple[bytes, dict[str, Any]]:
+    """Apply a roster-edits document to a ROST body; returns the new body and a receipt.
+
+    ``scheme`` is the TARGET roster's position scheme.  It defaults to what the target's own
+    records say (``detect_scheme_from_data``), and it is what stops an edit authored on a retail
+    disc from writing the retired OLB code into a reclassified one: the code is mapped to the pool
+    that absorbed it and the receipt's log says so, for every record it moved.
+    """
 
     doc = read_edits(source)
     roster = RosterDocument(body)
+    target_scheme = normalise_scheme(scheme) if scheme else str(detect_scheme_from_data(roster)["scheme"])
+    roster.set_scheme(target_scheme)
     index: dict[tuple[str, int], Player] = {(p.pool, p.index): p for p in roster.players}
     log: list[str] = []
     applied = 0
@@ -1445,6 +1882,13 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any]) -> tuple[byt
             if name in POINTER_FIELDS:
                 log.append(f"{key}: {name} is a pointer and cannot travel between roster copies")
                 continue
+            if name == "position" and is_retired_position(int(value), target_scheme):
+                instead = replacement_position_code(int(value), target_scheme)
+                log.append(f"{key}: the edit sets "
+                           f"{position_name(int(value), 'retail')} (code {value}), retired on this "
+                           f"{SCHEME_TITLES[target_scheme]} roster; wrote "
+                           f"{position_name(instead, target_scheme)} (code {instead}) instead")
+                value = instead
             try:
                 player.record.set(name, int(value))
             except RosterRecordError as exc:
@@ -1471,8 +1915,12 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any]) -> tuple[byt
 
 
 def apply(path: Path | str, source: Path | str | Mapping[str, Any], *,
-          progress: Callable[[str], None] | None = None) -> dict[str, Any]:
-    """Write a roster-edits document into the main roster of the disc image at ``path`` (a COPY)."""
+          progress: Callable[[str], None] | None = None,
+          scheme: str | None = None) -> dict[str, Any]:
+    """Write a roster-edits document into the main roster of the disc image at ``path`` (a COPY).
+
+    ``scheme`` is the target disc's position scheme; ``None`` reads it off the target's records.
+    """
 
     say = progress or (lambda _m: None)
     with _outer_image()(path, writable=True) as archive:
@@ -1481,7 +1929,7 @@ def apply(path: Path | str, source: Path | str | Mapping[str, Any], *,
         state = resource_status(before)
         _require(state in ("retail", "edited"), f"the roster resource is {state}; refusing")
         say("Applying the roster edits")
-        body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], source)
+        body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], source, scheme=scheme)
         replacement = before[:RESOURCE_HEADER_SIZE] + body
         if replacement == before:
             return {"status": state, "already_applied": True, "outer_index": ROST_OUTER_INDEX, **receipt}
@@ -1544,7 +1992,12 @@ def _csv_row(document: RosterDocument, player: Player) -> dict[str, Any]:
 
 def export_csv(document: RosterDocument, players: Sequence[Player] | None = None, *,
                delimiter: str = ",") -> str:
-    """Finn's "Export as Text", as a spreadsheet-friendly CSV (his own separator was ';')."""
+    """Finn's "Export as Text", as a spreadsheet-friendly CSV (his own separator was ';').
+
+    The ``position`` column is written in the document's own scheme (``EDGE`` and ``LB`` on a
+    one-pool roster), and ``import_csv`` accepts **every** scheme's names whichever roster it is
+    reading into, so a sheet exported from a retail disc still loads onto a one-pool disc.
+    """
 
     stream = io.StringIO()
     writer = csv.DictWriter(stream, fieldnames=list(CSV_COLUMNS), delimiter=delimiter,
@@ -1563,8 +2016,9 @@ def _enum_value(name: str, text: str) -> int:
         for index, label in enumerate(table):
             if label.casefold() == folded:
                 return index
-        if name == "position" and value.upper() in POSITION_ALIASES:
-            return POSITION_ALIASES[value.upper()]
+        if name == "position" and value.upper() in POSITION_CODE_BY_TEXT:
+            # every scheme's names resolve, so "OLB", "ILB", "LB", "DE", "EDGE" and "RB" all read
+            return POSITION_CODE_BY_TEXT[value.upper()]
     _require(value.lstrip("-").isdigit(), f"{name}: {text!r} is not one of {table or 'the accepted values'}")
     return int(value)
 
@@ -1609,7 +2063,10 @@ def import_csv(document: RosterDocument, text: str, *, delimiter: str | None = N
             if column in CSV_READ_ONLY or column not in CSV_COLUMNS or value == "":
                 continue
             try:
-                touched += _apply_csv_cell(document, player, column, value)
+                changed_here, note = _apply_csv_cell(document, player, column, value)
+                touched += changed_here
+                if note:
+                    log.append(f"row {number} {column}: {note}")
             except (RosterRecordError, ValueError) as exc:
                 log.append(f"row {number} {column}: {exc}")
         changed_fields += touched
@@ -1617,48 +2074,64 @@ def import_csv(document: RosterDocument, text: str, *, delimiter: str | None = N
     return {"rows": matched, "changed": changed_players, "fields": changed_fields, "log": log}
 
 
-def _apply_csv_cell(document: RosterDocument, player: Player, column: str, value: str) -> int:
+def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
+                    value: str) -> tuple[int, str]:
+    """Apply one cell.  Returns ``(fields written, note)``; the note goes in the receipt's log."""
+
     record = player.record
     if column in ("first", "last"):
         if value == getattr(player, column):
-            return 0
+            return 0, ""
         document.set_name(player, column, value)
-        return 1
+        return 1, ""
     if column == "college":
         if value == player.college:
-            return 0
+            return 0, ""
         _require(value in document.colleges, f"{value!r} is not one of the roster's {len(document.colleges)} colleges")
         document.set_college(player, document.colleges.index(value))
-        return 1
+        return 1, ""
     if column == "birth_date":
         date = dt.date.fromisoformat(value.strip())
         if record.birth_date == date:
-            return 0
+            return 0, ""
         record.birth_date = date
-        return 1
+        return 1, ""
     if column == "weight":
         new = int(value)
         if record.weight == new:
-            return 0
+            return 0, ""
         record.weight = new
-        return 1
+        return 1, ""
     if column == "skin":
         new = int(value)
         if record.skin == new:
-            return 0
+            return 0, ""
         record.skin = new
-        return 1
+        return 1, ""
     if column in ("left_glove", "left_wrist", "left_elbow"):
         new = int(value)
         if getattr(record, column) == new:
-            return 0
+            return 0, ""
         setattr(record, column, new)
-        return 1
-    new = _enum_value(column, value) if column in ENUMS else int(value)
+        return 1, ""
+    note = ""
+    if column == "position":
+        # a sheet written against a retail roster carries OLB rows; on a one-pool roster that code
+        # is retired, so map it to the pool that absorbed it and SAY SO rather than writing a code
+        # no screen in the game fills
+        new = position_code(value, document.scheme)
+        if is_retired_position(new, document.scheme):
+            instead = replacement_position_code(new, document.scheme)
+            note = (f"{value!r} is {position_name(new, 'retail')} (code {new}), retired on this "
+                    f"{SCHEME_TITLES[document.scheme]} roster; wrote "
+                    f"{position_name(instead, document.scheme)} (code {instead}) instead")
+            new = instead
+    else:
+        new = _enum_value(column, value) if column in ENUMS else int(value)
     if record.values.get(column) == new:
-        return 0
+        return 0, note
     record.set(column, new)
-    return 1
+    return 1, note
 
 
 # --------------------------------------------------------------------------------------------- global
@@ -1677,11 +2150,19 @@ def global_edit_preview(document: RosterDocument, *, attribute: str, mode: str, 
 
     ``mode`` is ``equal`` (set to value), ``add`` (+/- value) or ``percent`` (scale by value %).
     ``where`` is an optional ``(attribute, operator, value)`` condition, which is what turns this into
-    "every QB with Speed >= 80 -> throw style B" or "every HB with Break Tackle >= 75 -> Power"."""
+    "every QB with Speed >= 80 -> throw style B" or "every HB with Break Tackle >= 75 -> Power".
+
+    ``positions`` are matched by the **code** they resolve to, in any scheme's names, so ``["DE"]``
+    and ``["EDGE"]`` select the same players and a condition written on a retail disc still runs on
+    a one-pool one."""
 
     _require(attribute in FIELD_BY_NAME or attribute in COMPOSITE_FIELDS or attribute in VIRTUAL_FIELDS,
              f"no roster field named {attribute!r}")
     _require(mode in ("equal", "add", "percent"), "mode must be equal, add or percent")
+    if attribute == "position":
+        # a sweep that moves people between positions has to land on a code the scheme still fills
+        _require(mode == "equal", "a global position change must be 'set equal to' a position code")
+        check_position_code(int(round(value)), document.scheme)
     condition = None
     if where is not None:
         key, operator, threshold = where
@@ -1690,11 +2171,11 @@ def global_edit_preview(document: RosterDocument, *, attribute: str, mode: str, 
         _require(operator in WHERE_OPERATORS,
                  f"unknown comparison {operator!r}; use one of {sorted(WHERE_OPERATORS)}")
         condition = (key, WHERE_OPERATORS[operator], int(threshold))
-    wanted_positions = {p.upper() for p in positions}
+    wanted_positions = {position_code(p, document.scheme) for p in positions}
     wanted_teams = set(teams)
     out: list[dict[str, Any]] = []
     for player in (players if players is not None else document.players):
-        if wanted_positions and player.record.position_name.upper() not in wanted_positions:
+        if wanted_positions and player.record.values["position"] not in wanted_positions:
             continue
         if wanted_teams and not wanted_teams.intersection(player.teams):
             continue
@@ -1787,12 +2268,23 @@ def copy_player(source: PlayerRecord, target: PlayerRecord, *, mode: str = "all"
 
 
 # --------------------------------------------------------------------------------------------- checks
-JERSEY_RANGES: dict[str, tuple[int, int]] = {
-    "QB": (1, 19), "K": (1, 19), "P": (1, 19), "WR": (10, 89), "TE": (40, 89),
-    "HB": (20, 49), "FB": (20, 49), "CB": (20, 49), "FS": (20, 49), "SS": (20, 49),
-    "C": (50, 79), "G": (50, 79), "T": (50, 79), "DT": (50, 99), "DE": (50, 99),
-    "OLB": (40, 59), "ILB": (40, 59),
+# Keyed by the CODE, not the label: the number a position is allowed to wear follows the pool the
+# record is in, so a one-pool EDGE (16) keeps the defensive-end range and a one-pool LB (11) keeps
+# the linebacker range whatever the disc prints.  The name-keyed table is the retail view of the
+# same numbers and stays for callers that already import it.
+JERSEY_RANGES_BY_CODE: dict[int, tuple[int, int]] = {
+    0: (1, 19), 1: (1, 19), 2: (1, 19), 3: (10, 89), 9: (40, 89),
+    7: (20, 49), 8: (20, 49), 4: (20, 49), 5: (20, 49), 6: (20, 49),
+    12: (50, 79), 13: (50, 79), 14: (50, 79), 15: (50, 99), 16: (50, 99),
+    10: (40, 59), 11: (40, 59),
 }
+JERSEY_RANGES: dict[str, tuple[int, int]] = {
+    POSITIONS[code]: span for code, span in sorted(JERSEY_RANGES_BY_CODE.items())
+}
+
+
+def jersey_range(code: int) -> tuple[int, int]:
+    return JERSEY_RANGES_BY_CODE.get(int(code), (0, 99))
 
 
 def validate(document: RosterDocument, players: Sequence[Player] | None = None) -> list[dict[str, Any]]:
@@ -1802,11 +2294,19 @@ def validate(document: RosterDocument, players: Sequence[Player] | None = None) 
     for player in (players if players is not None else document.players):
         record = player.record
         position = record.position_name
-        low, high = JERSEY_RANGES.get(position, (0, 99))
+        low, high = jersey_range(record.values["position"])
         number = record.values["jersey"]
         if not low <= number <= high:
             findings.append({"level": "warning", "player": player.display, "check": "jersey",
                              "detail": f"#{number} is outside the NFL range {low}-{high} for a {position}"})
+        if is_retired_position(record.values["position"], document.scheme):
+            instead = replacement_position_code(record.values["position"], document.scheme)
+            findings.append({"level": "warning", "player": player.display, "check": "position",
+                             "detail": f"carries {position_name(record.values['position'], 'retail')} "
+                                       f"(code {record.values['position']}), which this roster's "
+                                       f"{SCHEME_TITLES[document.scheme]} scheme retired; the game "
+                                       f"lists him under a filter row no team fills. Move him to "
+                                       f"{position_name(instead, document.scheme)}"})
         for name in RATING_BYTE_ORDER:
             if record.values[name] > RATING_MAX:
                 findings.append({"level": "warning", "player": player.display, "check": "rating",
@@ -1832,7 +2332,18 @@ def validate(document: RosterDocument, players: Sequence[Player] | None = None) 
 __all__ = [
     "ATTRIBUTE_CARDS", "BODIES", "CONTRACT_BONUSES", "CONTRACT_TYPES", "CSV_COLUMNS", "EDITS_SCHEMA",
     "ELBOWS", "ENUMS", "FACE_SHIELDS", "FIELDS", "FIELD_BY_NAME", "GLOVES", "HANDS", "HELMETS",
-    "JERSEY_RANGES", "KICKING_STYLE_PRESETS", "NECK_ROLLS", "POSITIONS", "POSITION_GROUPS",
+    "JERSEY_RANGES", "JERSEY_RANGES_BY_CODE", "KICKING_STYLE_PRESETS", "NECK_ROLLS", "POSITIONS",
+    "POSITION_ALIASES", "POSITION_CODE_BY_TEXT", "POSITION_GROUPS", "POSITION_LONG_NAMES",
+    "POSITION_SCHEMES", "OVERALL_WEIGHTS", "OVERALL_WEIGHTS_BY_CODE", "RATING_PROFILE_BY_CODE",
+    "FRONT_CODES", "RETAIL_PRIMARY_POSITION_CENSUS", "SCHEME_CHIP_ORDER", "SCHEME_GROUP_CODES",
+    "SCHEME_PATCH_NAMES",
+    "SCHEME_POSITION_LONG_NAMES", "SCHEME_POSITION_NAMES", "SCHEME_RETIRED_CODES",
+    "SCHEME_RETIRED_REPLACEMENT", "SCHEME_TITLES", "ENUM_OLB", "ENUM_ILB", "ENUM_DT", "ENUM_DE",
+    "check_position_code", "chip_order", "detect_scheme", "detect_scheme_from_data",
+    "detect_scheme_from_states", "inspect_states", "is_retired_position", "jersey_range",
+    "key_ratings", "live_position_codes", "normalise_scheme", "position_code", "position_groups",
+    "position_long_name", "position_name", "position_names", "rating_profile",
+    "replacement_position_code", "retired_position_codes",
     "POWER_RUN_STYLES", "POWER_RUN_STYLE_THRESHOLDS", "POWER_RUN_STYLE_VALUES",
     "RATING_BYTE_ORDER", "RATING_LABELS", "RATING_MAX", "RATING_MAX_LARGE", "RATING_UI_ORDER",
     "RETAIL_BODY_SHA256", "SCRAMBLE_AGILITY_THRESHOLD", "SCRAMBLE_PRESETS", "STYLE_RATINGS",

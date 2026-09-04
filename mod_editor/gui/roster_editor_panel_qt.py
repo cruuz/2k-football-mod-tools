@@ -35,6 +35,14 @@ asset); "Write a disc copy…" copies the loaded image first and edits the copy;
 an Xbox save writes a **re-signed** copy of the container beside the original, with every other
 member byte for byte.
 
+**Position scheme.**  A patched disc does not mean the retail 17 positions.  The page detects which
+scheme the loaded source is on -- ``retail``, ``edge`` (the DE -> EDGE rename) or ``one_pool``
+(EDGE / LB / interior, with OLB retired) -- from the disc's own patch states, falling back to the
+roster records, and every label, chip, picker, CSV column and check follows it.  The selector on the
+source row says what was detected and why, and lets you override it.  The **ratings never move**:
+they are keyed by the position code the way the game keys them, so a one-pool LB is scored on the
+linebacker card set and a one-pool EDGE on the defensive-end one.
+
 Field credit: Flying Finn (Glen Leskinen) and Bad_AL, re-verified against the retail disc.  See
 ``mod_editor/core/nfl2k5_roster_records.py``.
 """
@@ -45,7 +53,7 @@ import json
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QFont, QPainter, QPen
@@ -86,8 +94,6 @@ DISC_FILTER = "Disc images (*.iso *.xiso *.xiso.iso);;All files (*)"
 SAVE_FILTER = "Xbox saves (*.zip SAVEGAME.DAT);;All files (*)"
 EDITS_FILTER = "Roster edits (*.json);;All files (*)"
 CSV_FILTER = "Spreadsheets (*.csv *.txt);;All files (*)"
-
-CHIP_ORDER = ("All", "QB", "RB", "WR", "TE", "OL", "DL", "LB", "DB", "K/P")
 
 # The studio's own sheet has no rule for a checked QToolButton, so a selected chip or segment would
 # look identical to an unselected one.  Scope the rule to the buttons themselves.
@@ -254,6 +260,9 @@ class AttributeCard(QWidget):
         self.combo: QComboBox | None = None
         self.spin: QSpinBox | None = None
         self.bar: ValueBar | None = None
+        # a dropdown whose row order is NOT the stored value (the Position picker under a scheme
+        # that retired a code) carries its own value list; None means index == value
+        self._values: list[int] | None = None
         if choices and segmented:
             # a three-state style control reads better as buttons than as a dropdown, and it is
             # how the game's own editor presents Finesse / Balanced / Power
@@ -307,6 +316,34 @@ class AttributeCard(QWidget):
         self.setMinimumWidth(max(148, wanted))
 
     # ------------------------------------------------------------------ value
+    def set_choices(self, labels: Sequence[str], values: Sequence[int] | None = None,
+                    *, disabled: Sequence[int] = (), tooltips: Mapping[int, str] | None = None) -> None:
+        """Rebuild a dropdown card.  ``values`` are the stored codes, ``disabled`` the ones the
+        loaded scheme retired: a disabled row cannot be chosen from the list and the arrow keys step
+        over it (asserted in the page's tests), so the picker cycles only live codes, while a record
+        that already carries a retired one is still shown on it.  The panel refuses the write as
+        well, so nothing depends on Qt's key handling alone."""
+
+        if self.combo is None:
+            return
+        current = self.value()
+        self._quiet = True
+        try:
+            self.combo.clear()
+            self.combo.addItems(list(labels))
+            self._values = list(values) if values is not None else None
+            model = self.combo.model()
+            for row in range(self.combo.count()):
+                code = self._values[row] if self._values is not None else row
+                item = model.item(row)
+                if item is not None:
+                    item.setEnabled(code not in set(disabled))
+                    if tooltips and code in tooltips:
+                        self.combo.setItemData(row, tooltips[code], Qt.ToolTipRole)
+        finally:
+            self._quiet = False
+        self.set_value(current)
+
     def value(self) -> int:
         if self.segments:
             for index, button in enumerate(self.segments):
@@ -314,7 +351,10 @@ class AttributeCard(QWidget):
                     return index
             return 0
         if self.combo is not None:
-            return self.combo.currentIndex()
+            index = self.combo.currentIndex()
+            if self._values is not None:
+                return self._values[index] if 0 <= index < len(self._values) else 0
+            return index
         assert self.spin is not None
         return self.spin.value()
 
@@ -325,7 +365,11 @@ class AttributeCard(QWidget):
                 for index, button in enumerate(self.segments):
                     button.setChecked(index == int(value))
             elif self.combo is not None:
-                self.combo.setCurrentIndex(max(0, min(self.combo.count() - 1, int(value))))
+                if self._values is not None:
+                    row = self._values.index(int(value)) if int(value) in self._values else -1
+                    self.combo.setCurrentIndex(row)
+                else:
+                    self.combo.setCurrentIndex(max(0, min(self.combo.count() - 1, int(value))))
             else:
                 assert self.spin is not None and self.bar is not None
                 number = int(value)
@@ -361,8 +405,9 @@ class AttributeCard(QWidget):
         self.changed.emit(self.name, int(value))
 
     def _combo_changed(self, index: int) -> None:
-        if not self._quiet:
-            self.changed.emit(self.name, int(index))
+        if self._quiet or index < 0:
+            return
+        self.changed.emit(self.name, int(self.value()))
 
     def _spin_changed(self, value: int) -> None:
         if self.bar is not None:
@@ -443,13 +488,22 @@ class GlobalEditDialog(QDialog):
         limits.addStretch(1)
         layout.addLayout(limits)
 
-        scope = QGroupBox("Positions (none ticked = every position)")
+        scheme = panel.scheme
+        scope = QGroupBox(f"Positions (none ticked = every position) — {rr.SCHEME_TITLES[scheme]}")
         scope_layout = QGridLayout(scope)
+        # named in the loaded scheme, and a code the scheme retired is offered greyed out so a
+        # sweep cannot be aimed at a pool no player is in
         self.positions: dict[str, QCheckBox] = {}
-        for index, code in enumerate(rr.POSITIONS):
-            box = QCheckBox(code)
-            self.positions[code] = box
-            scope_layout.addWidget(box, index // 6, index % 6)
+        for code in range(len(rr.POSITIONS)):
+            label = rr.position_name(code, scheme)
+            box = QCheckBox(label)
+            box.setToolTip(f"{rr.position_long_name(code, scheme)} (code {code})")
+            if rr.is_retired_position(code, scheme):
+                box.setEnabled(False)
+                box.setToolTip(f"{rr.position_long_name(code, scheme)} (code {code}) — retired on "
+                               f"this roster; nobody carries it")
+            self.positions[label] = box
+            scope_layout.addWidget(box, code // 6, code % 6)
         layout.addWidget(scope)
         self.current_team_only = QCheckBox("This team only")
         layout.addWidget(self.current_team_only)
@@ -470,6 +524,11 @@ class GlobalEditDialog(QDialog):
         self.where_value = QSpinBox()
         self.where_value.setRange(0, 255)
         self.where_value.setValue(80)
+        # "Position" compares the stored code, so name the codes of the loaded scheme rather than
+        # leaving a bare number nobody can map
+        self.where_value.setToolTip(
+            "For Position the value is the roster code: "
+            + ", ".join(f"{code} {name}" for code, name in enumerate(rr.position_names(scheme))))
         where_row.addWidget(self.where_value)
         layout.addLayout(where_row)
 
@@ -488,7 +547,7 @@ class GlobalEditDialog(QDialog):
 
     # ------------------------------------------------------------------ behaviour
     def settings(self) -> dict[str, Any]:
-        chosen = [code for code, box in self.positions.items() if box.isChecked()]
+        chosen = [name for name, box in self.positions.items() if box.isChecked()]
         where = None
         if self.where_enabled.isChecked():
             where = (str(self.where_attribute.currentData()), str(self.where_operator.currentData()),
@@ -534,6 +593,9 @@ class RosterEditorPanel(QWidget):
         self._rows: list[rr.Player] = []
         self._group: tuple[str, int] = ("team", 0)
         self._chip = "All"
+        self._scheme = "retail"                 # what the labels follow right now
+        self._scheme_choice = "auto"            # what the selector says: auto or a fixed scheme
+        self._scheme_detection: dict[str, Any] = {}
         self._edits_path: Path | None = None
         self.undo_stack = UndoStack(on_change=self._refresh_actions)
         self.cards: dict[str, AttributeCard] = {}
@@ -541,6 +603,12 @@ class RosterEditorPanel(QWidget):
         self._page_cards: dict[int, list[str]] = {}
         self._build()
         self._refresh_actions()
+
+    @property
+    def scheme(self) -> str:
+        """Which position table the page is reading codes through (see rr.POSITION_SCHEMES)."""
+
+        return self.document.scheme if self.document is not None else self._scheme
 
     # ------------------------------------------------------------------ construction
     def _build(self) -> None:
@@ -566,6 +634,25 @@ class RosterEditorPanel(QWidget):
             source_row.addWidget(widget)
         source_row.addWidget(self.source_label, 1)
         layout.addLayout(source_row)
+
+        scheme_row = QHBoxLayout()
+        scheme_row.addWidget(QLabel("Position scheme"))
+        self.scheme_combo = QComboBox()
+        self.scheme_combo.setAccessibleName("Position scheme")
+        self.scheme_combo.addItem("Auto (detect)", "auto")
+        for name in rr.POSITION_SCHEMES:
+            self.scheme_combo.addItem(rr.SCHEME_TITLES[name], name)
+        self.scheme_combo.setToolTip(
+            "What a position CODE means on the loaded source. A disc says for itself (the EDGE "
+            "rename and the one-pool position_pools patch report their own state); a save or a bare "
+            "roster body can only be inferred from the records, and the EDGE rename is invisible "
+            "there, so override it here if you know better.")
+        self.scheme_combo.activated.connect(self._scheme_chosen)
+        scheme_row.addWidget(self.scheme_combo)
+        self.scheme_label = QLabel("Retail table until a roster is loaded.")
+        self.scheme_label.setWordWrap(True)
+        scheme_row.addWidget(self.scheme_label, 1)
+        layout.addLayout(scheme_row)
 
         tools = QHBoxLayout()
         self.undo_button = QPushButton("Undo")
@@ -655,21 +742,11 @@ class RosterEditorPanel(QWidget):
         self.search.textChanged.connect(lambda _t: self.refresh_grid())
         box.addWidget(self.search)
 
-        chips = QHBoxLayout()
-        chips.setSpacing(2)
+        self.chip_row = QHBoxLayout()
+        self.chip_row.setSpacing(2)
         self.chips: dict[str, QToolButton] = {}
-        for label in CHIP_ORDER:
-            button = QToolButton()
-            button.setText(label)
-            button.setCheckable(True)
-            button.setStyleSheet(TOGGLE_STYLE)
-            button.setToolTip(f"Show {label} only" if label != "All" else "Show every position")
-            button.setChecked(label == "All")
-            button.clicked.connect(lambda _c=False, name=label: self._chip_clicked(name))
-            self.chips[label] = button
-            chips.addWidget(button)
-        chips.addStretch(1)
-        box.addLayout(chips)
+        self._rebuild_chips()
+        box.addLayout(self.chip_row)
 
         self.player_table = QTableWidget(0, 6)
         self.player_table.setHorizontalHeaderLabels(["POS", "#", "Player", "Yrs", "OVR", "Depth"])
@@ -714,9 +791,17 @@ class RosterEditorPanel(QWidget):
         self.header_stats = QLabel("")
         self.header_stats.setWordWrap(True)
         self.header_contract = QLabel("")
+        self.header_profile = QLabel("")
+        self.header_profile.setWordWrap(True)
+        self.header_profile.setToolTip(
+            "The game keys its per-position rating labels and getters off the position CODE, not "
+            "off the name a patched disc prints, so renaming a position never changes which ratings "
+            "matter: a one-pool LB is still read on the linebacker card set and a one-pool EDGE on "
+            "the defensive-end one.")
         header_box.addWidget(self.header_name)
         header_box.addWidget(self.header_stats)
         header_box.addWidget(self.header_contract)
+        header_box.addWidget(self.header_profile)
         box.addWidget(header)
 
         names = QHBoxLayout()
@@ -813,6 +898,8 @@ class RosterEditorPanel(QWidget):
         caption = self.STYLE_CAPTIONS.get(name) or rr.RATING_LABELS.get(name) or (
             rr.FIELD_BY_NAME[name].label if name in rr.FIELD_BY_NAME else name.replace("_", " ").title())
         choices = rr.ENUMS.get(name)
+        if name == "position":
+            choices = rr.position_names(self._scheme)
         presets: tuple[tuple[str, int], ...] = ()
         if name == "scramble":
             presets = tuple(rr.SCRAMBLE_PRESETS)
@@ -851,9 +938,110 @@ class RosterEditorPanel(QWidget):
         box.addWidget(self.report, 1)
         return page
 
+    # ------------------------------------------------------------------ position scheme
+    def _rebuild_chips(self) -> None:
+        """The position chips of the loaded scheme (one pool adds an EDGE chip of its own)."""
+
+        order = rr.chip_order(self._scheme)
+        while self.chip_row.count():
+            item = self.chip_row.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.setParent(None)
+                widget.deleteLater()
+        self.chips = {}
+        if self._chip not in order:
+            self._chip = "All"
+        groups = rr.position_groups(self._scheme)
+        for label in order:
+            button = QToolButton()
+            button.setText(label)
+            button.setCheckable(True)
+            button.setStyleSheet(TOGGLE_STYLE)
+            if label == "All":
+                button.setToolTip("Show every position")
+            else:
+                members = ", ".join(rr.position_name(code, self._scheme) for code in groups.get(label, ()))
+                button.setToolTip(f"Show {label} only ({members})")
+            button.setChecked(label == self._chip)
+            button.clicked.connect(lambda _c=False, name=label: self._chip_clicked(name))
+            self.chips[label] = button
+            self.chip_row.addWidget(button)
+        self.chip_row.addStretch(1)
+
+    def _refresh_position_card(self) -> None:
+        """Name the Position picker in the loaded scheme and grey out any code it retired."""
+
+        card = self.cards.get("position")
+        if card is None:
+            return
+        codes = list(range(len(rr.POSITIONS)))
+        labels: list[str] = []
+        tooltips: dict[int, str] = {}
+        for code in codes:
+            name = rr.position_name(code, self._scheme)
+            retired = rr.is_retired_position(code, self._scheme)
+            labels.append(f"{name} (retired)" if retired else name)
+            tooltips[code] = (f"{rr.position_long_name(code, self._scheme)} — code {code}"
+                              + (" — this roster's scheme retired it; the picker will not write it"
+                                 if retired else ""))
+        card.set_choices(labels, codes, disabled=rr.retired_position_codes(self._scheme),
+                         tooltips=tooltips)
+
+    def _scheme_chosen(self, _index: int) -> None:
+        choice = str(self.scheme_combo.currentData())
+        self._scheme_choice = choice
+        detected = str(self._scheme_detection.get("scheme", "retail"))
+        self.apply_scheme(detected if choice == "auto" else choice)
+
+    def apply_scheme(self, scheme: str, *, refresh: bool = True) -> str:
+        """Read every position code through ``scheme`` and relabel the whole page.
+
+        ``refresh=False`` is for the load path, where the team list has not been rebuilt yet and
+        the caller redraws the grid itself.
+        """
+
+        self._scheme = rr.normalise_scheme(scheme)
+        if self.document is not None:
+            self.document.set_scheme(self._scheme)
+        self._rebuild_chips()
+        self._refresh_position_card()
+        self._refresh_scheme_label()
+        if refresh and self.document is not None:
+            self.refresh_grid()
+            self._show_player(self.selected_player())
+        return self._scheme
+
+    def _refresh_scheme_label(self) -> None:
+        detection = self._scheme_detection
+        title = rr.SCHEME_TITLES[self._scheme]
+        if not detection:
+            self.scheme_label.setText(f"{title} — nothing loaded yet.")
+            return
+        detected = str(detection.get("scheme", "retail"))
+        lead = (f"{title} — detected from the {detection.get('source', 'roster data')}"
+                if self._scheme_choice == "auto"
+                else f"{title} — chosen by you (detection said {rr.SCHEME_TITLES[detected]})")
+        parts = [f"{lead}: {detection.get('why', '')}."]
+        if detection.get("note"):
+            parts.append(f"⚠ {detection['note']}.")
+        if detection.get("confidence") == "low" and self._scheme_choice == "auto":
+            parts.append("Low confidence — set it yourself if you know the disc.")
+        self.scheme_label.setText(" ".join(parts))
+
+    def detect_scheme(self, document: rr.RosterDocument, source: Path | None = None) -> dict[str, Any]:
+        """What scheme this source is on: the disc's own patch states first, its records second."""
+
+        try:
+            return rr.detect_scheme(document, source=source)
+        except Exception as exc:                                   # noqa: BLE001 - never fatal
+            return {"scheme": "retail", "confidence": "low", "source": "fallback", "census": {},
+                    "note": "", "why": f"detection failed ({type(exc).__name__}: {exc})"}
+
     # ------------------------------------------------------------------ loading
     def load_document(self, document: rr.RosterDocument, *, label: str = "",
-                      source: Path | None = None, kind: str = "") -> None:
+                      source: Path | None = None, kind: str = "",
+                      detection: dict[str, Any] | None = None) -> None:
         """Adopt a parsed roster (the tests and the studio both use this)."""
 
         self.document = document
@@ -863,6 +1051,9 @@ class RosterEditorPanel(QWidget):
         self._dirty.clear()
         self.undo_stack.clear()
         self._clipboard = None
+        self._scheme_detection = detection if detection is not None else self.detect_scheme(document)
+        self.apply_scheme(str(self._scheme_detection["scheme"]) if self._scheme_choice == "auto"
+                          else self._scheme_choice, refresh=False)
         summary = document.summary()
         self.source_label.setText(label or f"{summary['players']} players, {summary['teams']} teams")
         self.college_combo.blockSignals(True)
@@ -875,7 +1066,8 @@ class RosterEditorPanel(QWidget):
         self._set_status(
             f"{summary['players']} players · {summary['teams']} teams · {summary['free_agents']} free "
             f"agents · {summary['draft_class']} in the draft class · "
-            f"{summary['names']['unique']} distinct names in a {summary['names']['capacity_bytes']}-byte pool")
+            f"{summary['names']['unique']} distinct names in a {summary['names']['capacity_bytes']}-byte pool"
+            f" · {rr.SCHEME_TITLES[self._scheme]}")
 
     def load_from_facade(self) -> bool:
         """Load the roster out of whatever XISO the studio already has open."""
@@ -894,7 +1086,10 @@ class RosterEditorPanel(QWidget):
             return False
         state = "retail" if rr.resource_status(
             document.resource_header + bytes(document.body)) == "retail" else "already edited"
-        self.load_document(document, label=f"{Path(path).name} ({state})", source=Path(path), kind="disc")
+        # a disc can say which position scheme it is on: mod_build.inspect reads the EDGE rename and
+        # the one-pool position_pools patch straight off its executable
+        self.load_document(document, label=f"{Path(path).name} ({state})", source=Path(path),
+                           kind="disc", detection=self.detect_scheme(document, Path(path)))
         return True
 
     def load_save(self, path: Path | str) -> bool:
@@ -904,8 +1099,9 @@ class RosterEditorPanel(QWidget):
         except Exception as exc:  # noqa: BLE001
             self._set_status(f"Could not read the save: {type(exc).__name__}: {exc}")
             return False
+        # a save carries no executable, so the scheme can only come from the records
         self.load_document(document, label=f"{Path(path).name} (signature verified)",
-                           source=Path(path), kind="save")
+                           source=Path(path), kind="save", detection=self.detect_scheme(document))
         return True
 
     def _choose_disc(self) -> None:
@@ -959,10 +1155,13 @@ class RosterEditorPanel(QWidget):
         if self.document is None:
             return []
         kind, index = self._group
+        if kind == "team" and not 0 <= index < len(self.document.teams):
+            return []
         players = self.document.team_players(index) if kind == "team" else self.document.group_players(kind)
         if self._chip != "All":
-            wanted = set(rr.POSITION_GROUPS.get(self._chip, ()))
-            players = [p for p in players if p.record.position_name in wanted]
+            # by CODE: a chip must not miss a player because the scheme renamed his position
+            wanted = set(rr.position_groups(self._scheme).get(self._chip, ()))
+            players = [p for p in players if p.record.values["position"] in wanted]
         needle = self.search.text().strip().casefold()
         if needle:
             players = [p for p in players
@@ -971,9 +1170,28 @@ class RosterEditorPanel(QWidget):
                        or needle == str(p.record.values["years_pro"])]
         return players
 
+    def _depth_chart(self) -> dict[int, list[rr.Player]]:
+        """This team's players grouped by position CODE in rank order -- the game's own chains."""
+
+        kind, index = self._group
+        if self.document is None or kind != "team" or not 0 <= index < len(self.document.teams):
+            return {}
+        return self.document.depth_chart(index)
+
+    def _depth_note(self, chart: dict[int, list[rr.Player]], player: rr.Player) -> str:
+        code = player.record.values["position"]
+        group = chart.get(code, [])
+        for position, candidate in enumerate(group):
+            if candidate is player:
+                return (f"{rr.position_long_name(code, self._scheme)} #{position + 1} of "
+                        f"{len(group)} on this team (rank {player.record.values['depth_rank']}, "
+                        f"side {player.record.values['depth_side']})")
+        return ""
+
     def refresh_grid(self) -> None:
         players = self.visible_players()
         self._rows = players
+        chart = self._depth_chart()
         self.player_table.blockSignals(True)
         self.player_table.setRowCount(len(players))
         for row, player in enumerate(players):
@@ -983,10 +1201,15 @@ class RosterEditorPanel(QWidget):
                      str(record.values["years_pro"]), str(record.overall()),
                      f"{record.values['depth_rank']}/{record.values['depth_side']}"
                      + (" IR" if record.on_injured_reserve else ""))
+            note = self._depth_note(chart, player) if chart else ""
             for column, text in enumerate(cells):
                 item = QTableWidgetItem(text)
                 if column in (1, 3, 4):
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                if column == 0:
+                    item.setToolTip(f"{record.position_long_name} (code {record.values['position']})")
+                elif column == 5 and note:
+                    item.setToolTip(note)
                 self.player_table.setItem(row, column, item)
         self.player_table.resizeColumnsToContents()
         self.player_table.blockSignals(False)
@@ -1019,6 +1242,7 @@ class RosterEditorPanel(QWidget):
             self.header_name.setText("—")
             self.header_stats.setText("")
             self.header_contract.setText("")
+            self.header_profile.setText("")
             self.first_field.setText("")
             self.last_field.setText("")
             for card in self.cards.values():
@@ -1041,6 +1265,14 @@ class RosterEditorPanel(QWidget):
             f"{record.weight} lb{age} · {record.values['years_pro']} yrs pro · {player.college or '—'} · "
             f"{rr.HANDS[record.values['hand']]} hand · "
             f"{rr.POWER_RUN_STYLES[record.power_run_style_bucket]} · {family}")
+        code = record.values["position"]
+        key = " · ".join(rr.RATING_LABELS.get(name, name) for name in rr.key_ratings(code))
+        profile = rr.rating_profile(code)
+        self.header_profile.setText(
+            f"{record.position_long_name} (code {code})"
+            + (f" · rated on the {profile} card set: {key}" if key else "")
+            + (" · RETIRED on this roster's scheme"
+               if rr.is_retired_position(code, self._scheme) else ""))
         self.header_contract.setText(
             f"Contract: {record.values['contract_length']} yrs ${record.contract_millions:.2f}m, "
             f"{record.values['contract_remaining']} remaining, "
@@ -1079,7 +1311,7 @@ class RosterEditorPanel(QWidget):
         if self.document is None:
             return None
         raw = self.document.original[player.offset: player.offset + rr.PLAYER_SIZE]
-        return rr.PlayerRecord.decode(raw)
+        return rr.PlayerRecord.decode(raw, self.document.scheme)
 
     # ------------------------------------------------------------------ edits
     def _card_changed(self, name: str, value: int) -> None:
@@ -1089,6 +1321,17 @@ class RosterEditorPanel(QWidget):
         if name == "scramble":
             # magnitude and parity are independent in the engine; the slider must not disturb the bit
             value = (int(value) & ~1) | (player.record.values["scramble"] & 1)
+        if name == "position":
+            # never write a code the loaded scheme retired: on a reclassified roster enum 10 is a
+            # filter row no team fills, so a player parked there disappears from every position list
+            try:
+                rr.check_position_code(int(value), self._scheme)
+            except rr.RosterRecordError as exc:
+                self._set_status(str(exc))
+                card = self.cards.get("position")
+                if card is not None:
+                    card.set_value(player.record.values["position"])
+                return
         before = player.record.get(name)
         if before == value:
             return
@@ -1149,10 +1392,12 @@ class RosterEditorPanel(QWidget):
         return False
 
     def _refresh_grid_row(self, player: rr.Player) -> None:
+        chart = self._depth_chart()
         for row, candidate in enumerate(self._rows):
             if candidate is player:
                 record = player.record
                 marker = "● " if (player.pool, player.index) in self._dirty else ""
+                note = self._depth_note(chart, player) if chart else ""
                 for column, text in enumerate((record.position_name, str(record.values["jersey"]),
                                                f"{marker}{player.display}",
                                                str(record.values["years_pro"]), str(record.overall()),
@@ -1160,6 +1405,11 @@ class RosterEditorPanel(QWidget):
                     item = self.player_table.item(row, column)
                     if item is not None:
                         item.setText(text)
+                        if column == 0:
+                            item.setToolTip(f"{record.position_long_name} "
+                                            f"(code {record.values['position']})")
+                        elif column == 5:
+                            item.setToolTip(note)
                 break
         self.count_label.setText(f"{len(self._rows)} shown · {len(self._dirty)} edited")
 
@@ -1436,7 +1686,12 @@ class RosterEditorPanel(QWidget):
                 lines.append(f"    {key}: {was!r} -> {now!r}")
             for key, (was, now) in sorted(entry["changes"].items()):
                 caption = rr.RATING_LABELS.get(key) or rr.FIELD_BY_NAME[key].label
-                lines.append(f"    {caption}: {was} -> {now}")
+                if key == "position":
+                    # a bare "10 -> 11" says nothing; name both ends in the loaded scheme
+                    lines.append(f"    {caption}: {rr.position_name(was, self._scheme)} -> "
+                                 f"{rr.position_name(now, self._scheme)}")
+                else:
+                    lines.append(f"    {caption}: {was} -> {now}")
         self.report.setPlainText("\n".join(lines))
         self.tabs.setCurrentIndex(self.tabs.count() - 1)
         return entries

@@ -744,8 +744,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         if records is None:
             raise RuntimeError("the roster records module is not available in this build")
         progress("Applying the roster edits", 0, 0)
-        edits_receipt = records.apply(target, Path(plan.roster_edits), progress=lambda msg: progress(msg, 0, 0))
+        # the reclassify pass above retires the OLB code, so an edit authored on a retail roster
+        # must not write it back: tell the writer which scheme the disc it is landing on is on
+        edits_receipt = records.apply(target, Path(plan.roster_edits),
+                                      progress=lambda msg: progress(msg, 0, 0),
+                                      scheme="one_pool" if plan.position_pools else None)
         receipt["steps"].append({"step": "roster_edits", "source": plan.roster_edits,
+                                 "scheme": "one_pool" if plan.position_pools else "auto",
                                  **{k: v for k, v in edits_receipt.items() if k != "log"},
                                  "log_lines": len(edits_receipt.get("log", []))})
     for swap in plan.commentary:

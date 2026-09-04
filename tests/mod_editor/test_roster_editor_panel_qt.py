@@ -34,7 +34,13 @@ from mod_editor.gui.roster_editor_panel_qt import (  # noqa: E402
     UndoStack,
     ValueBar,
 )
-from test_nfl2k5_roster_records import COLLEGES, SAMPLE, synthetic_body  # noqa: E402
+from test_nfl2k5_roster_records import (  # noqa: E402
+    COLLEGES,
+    SAMPLE,
+    one_pool_body,
+    retail_front_body,
+    synthetic_body,
+)
 
 
 class RosterEditorPanelTests(unittest.TestCase):
@@ -460,6 +466,253 @@ class ShellPlacementTests(unittest.TestCase):
         finally:
             panel.deleteLater()
             self.application.processEvents()
+
+
+class PositionSchemePanelTests(unittest.TestCase):
+    """The page relabels itself for the scheme the loaded source is on."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.application = QApplication.instance() or QApplication([])
+
+    def setUp(self) -> None:
+        self.panel = RosterEditorPanel()
+
+    def tearDown(self) -> None:
+        self.panel.deleteLater()
+        self.application.processEvents()
+
+    def _load(self, body: bytes) -> None:
+        self.panel.load_document(rr.load_body(body), label="synthetic")
+        self.application.processEvents()
+
+    def _grid(self) -> dict[str, str]:
+        out = {}
+        for row in range(self.panel.player_table.rowCount()):
+            out[self.panel.player_table.item(row, 2).text().lstrip("● ")] = \
+                self.panel.player_table.item(row, 0).text()
+        return out
+
+    # ------------------------------------------------------------------ detection
+    def test_a_reclassified_roster_is_detected_and_relabels_the_page(self) -> None:
+        self._load(one_pool_body())
+        self.assertEqual(self.panel.scheme, "one_pool")
+        self.assertIn("EDGE", self.panel.chips, "one pool gets its own EDGE chip")
+        self.assertNotIn("EDGE", RosterEditorPanel().chips, "a fresh page starts on the retail set")
+        self.assertIn("no primary-pool player carries the retired OLB code",
+                      self.panel.scheme_label.text())
+        self.panel.team_list.setCurrentRow(2)
+        self.application.processEvents()
+        grid = self._grid()
+        self.assertEqual(grid["Ray Lewis"], "LB")
+        self.assertEqual(grid["Terrell Suggs"], "EDGE")
+        self.assertEqual(grid["Kelly Gregg"], "DT")
+
+    def test_a_retail_roster_keeps_the_retail_table(self) -> None:
+        self._load(retail_front_body())
+        self.assertEqual(self.panel.scheme, "retail")
+        self.assertNotIn("EDGE", self.panel.chips)
+        self.panel.team_list.setCurrentRow(2)
+        self.application.processEvents()
+        grid = self._grid()
+        self.assertEqual(grid["Peter Boulware"], "OLB")
+        self.assertEqual(grid["Terrell Suggs"], "DE")
+        self.assertIn("EDGE rename", self.panel.scheme_label.text(),
+                      "the page admits it cannot see the rename in roster data")
+
+    def test_the_selector_overrides_the_detection_both_ways(self) -> None:
+        self._load(one_pool_body())
+        index = self.panel.scheme_combo.findData("retail")
+        self.panel.scheme_combo.setCurrentIndex(index)
+        self.panel._scheme_chosen(index)
+        self.application.processEvents()
+        self.assertEqual(self.panel.scheme, "retail")
+        self.panel.team_list.setCurrentRow(2)
+        self.application.processEvents()
+        self.assertEqual(self._grid()["Ray Lewis"], "ILB")
+        self.assertIn("chosen by you", self.panel.scheme_label.text())
+        back = self.panel.scheme_combo.findData("auto")
+        self.panel.scheme_combo.setCurrentIndex(back)
+        self.panel._scheme_chosen(back)
+        self.application.processEvents()
+        self.assertEqual(self.panel.scheme, "one_pool")
+        self.assertEqual(self._grid()["Ray Lewis"], "LB")
+
+    def test_the_chips_filter_by_code_under_one_pool(self) -> None:
+        self._load(one_pool_body())
+        self.panel.team_list.setCurrentRow(2)
+        self.panel._chip_clicked("EDGE")
+        self.application.processEvents()
+        self.assertEqual(sorted(p.last for p in self.panel.visible_players()),
+                         ["Boulware", "Suggs", "Thomas"])
+        self.panel._chip_clicked("DL")
+        self.assertEqual([p.last for p in self.panel.visible_players()], ["Gregg"])
+        self.panel._chip_clicked("LB")
+        self.assertEqual([p.last for p in self.panel.visible_players()], ["Lewis"])
+
+    # ------------------------------------------------------------------ the picker
+    def test_the_position_picker_hides_the_retired_code_and_refuses_to_write_it(self) -> None:
+        self._load(one_pool_body())
+        card = self.panel.cards["position"]
+        self.assertEqual(card.combo.itemText(11), "LB")
+        self.assertEqual(card.combo.itemText(16), "EDGE")
+        self.assertEqual(card.combo.itemText(10), "OLB (retired)")
+        model = card.combo.model()
+        self.assertFalse(model.item(10).isEnabled(), "the retired row cannot be picked or cycled")
+        self.assertTrue(model.item(11).isEnabled())
+        self.panel.team_list.setCurrentRow(2)
+        self.application.processEvents()
+        self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Lewis"))
+        player = self.panel.selected_player()
+        self.assertEqual(player.last, "Lewis")
+        self.panel._card_changed("position", 10)
+        self.assertEqual(player.record.values["position"], 11, "the write is refused")
+        self.assertIn("retired", self.panel.status_label.text())
+        self.panel._card_changed("position", 16)
+        self.assertEqual(player.record.values["position"], 16, "a live code still writes")
+        self.assertEqual(self.panel.undo(), f"{player.display}: position")
+        self.assertEqual(player.record.values["position"], 11)
+
+    def test_the_picker_cycles_only_live_codes(self) -> None:
+        try:
+            from PyQt5.QtTest import QTest
+        except ImportError:                                     # pragma: no cover - Qt build choice
+            self.skipTest("PyQt5.QtTest is not available")
+        self._load(one_pool_body())
+        self.panel.team_list.setCurrentRow(2)
+        self.application.processEvents()
+        self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Lewis"))
+        combo = self.panel.cards["position"].combo
+        combo.setCurrentIndex(9)                                # TE, the row above the retired OLB
+        QTest.keyClick(combo, Qt.Key_Down)
+        self.assertEqual(combo.currentText(), "LB", "the arrow keys step over the retired row")
+        self.assertEqual(self.panel.selected_player().record.values["position"], 11)
+
+    def test_the_picker_stays_whole_on_a_retail_roster(self) -> None:
+        self._load(retail_front_body())
+        card = self.panel.cards["position"]
+        self.assertEqual(card.combo.itemText(10), "OLB")
+        self.assertTrue(card.combo.model().item(10).isEnabled())
+        self.panel.team_list.setCurrentRow(2)
+        self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Lewis"))
+        self.panel._card_changed("position", 10)
+        self.assertEqual(self.panel.selected_player().record.values["position"], 10)
+
+    # ------------------------------------------------------------------ cards and header
+    def test_the_header_names_the_position_and_the_card_set_it_is_rated_on(self) -> None:
+        self._load(one_pool_body())
+        self.panel.team_list.setCurrentRow(2)
+        self.application.processEvents()
+        self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Suggs"))
+        text = self.panel.header_profile.text()
+        self.assertIn("Edge Rusher", text)
+        self.assertIn("DE card set", text)
+        self.assertIn("Pass Rush", text)
+        self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Lewis"))
+        text = self.panel.header_profile.text()
+        self.assertIn("Linebacker", text)
+        self.assertIn("ILB card set", text)
+
+    def test_the_depth_cell_says_where_the_player_sits_in_his_own_pool(self) -> None:
+        self._load(one_pool_body())
+        self.panel.team_list.setCurrentRow(2)
+        self.application.processEvents()
+        rows = [self.panel.player_table.item(r, 2).text() for r in range(self.panel.player_table.rowCount())]
+        row = rows.index("Terrell Suggs")
+        self.assertIn("Edge Rusher #", self.panel.player_table.item(row, 5).toolTip())
+        self.assertIn(" of 3 ", self.panel.player_table.item(row, 5).toolTip())
+
+    # ------------------------------------------------------------------ global edit and CSV
+    def test_the_global_editor_offers_the_schemes_own_names(self) -> None:
+        self._load(one_pool_body())
+        dialog = GlobalEditDialog(self.panel)
+        try:
+            self.assertIn("EDGE", dialog.positions)
+            self.assertIn("LB", dialog.positions)
+            self.assertNotIn("ILB", dialog.positions)
+            self.assertFalse(dialog.positions["OLB"].isEnabled(), "the retired pool cannot be aimed at")
+            dialog.positions["EDGE"].setChecked(True)
+            dialog.attribute.setCurrentIndex(0)          # Speed
+            dialog.mode.setCurrentIndex(0)
+            dialog.value.setValue(70)
+            rows = dialog.refresh_preview()
+            self.assertTrue(rows)
+            self.assertTrue(all(row["position"] == "EDGE" for row in rows))
+        finally:
+            dialog.deleteLater()
+
+    def test_loading_a_second_roster_reswitches_the_scheme(self) -> None:
+        self._load(one_pool_body())
+        self.panel.team_list.setCurrentRow(2)
+        self.application.processEvents()
+        self.assertEqual(self.panel.scheme, "one_pool")
+        self._load(retail_front_body())
+        self.assertEqual(self.panel.scheme, "retail")
+        self.assertNotIn("EDGE", self.panel.chips)
+        self.panel.team_list.setCurrentRow(2)
+        self.application.processEvents()
+        self.assertEqual(self._grid()["Peter Boulware"], "OLB")
+
+    def test_the_checks_tab_reports_a_player_parked_on_the_retired_code(self) -> None:
+        self._load(retail_front_body())
+        index = self.panel.scheme_combo.findData("one_pool")
+        self.panel.scheme_combo.setCurrentIndex(index)
+        self.panel._scheme_chosen(index)
+        self.panel.team_list.setCurrentRow(2)
+        self.application.processEvents()
+        findings = self.panel.run_validation()
+        parked = [f for f in findings if f["check"] == "position"]
+        self.assertEqual(len(parked), 2)
+        self.assertIn("retired", self.panel.report.toPlainText())
+
+    def test_the_diff_names_a_position_change_in_the_loaded_scheme(self) -> None:
+        self._load(one_pool_body())
+        self.panel.team_list.setCurrentRow(2)
+        self.application.processEvents()
+        self.panel.select_player(next(p for p in self.panel.visible_players() if p.last == "Lewis"))
+        self.panel._card_changed("position", 16)
+        self.panel.refresh_diff()
+        self.assertIn("Position: LB -> EDGE", self.panel.report.toPlainText())
+
+    def test_a_retail_csv_lands_on_a_one_pool_roster_with_a_warning(self) -> None:
+        source = RosterEditorPanel()
+        source.load_document(rr.load_body(retail_front_body()), label="retail")
+        text = source.export_csv_text(everything=True)
+        source.deleteLater()
+        self.assertIn("OLB", text)
+
+        self._load(one_pool_body())
+        receipt = self.panel.import_csv_text(text)
+        notes = [line for line in receipt["log"] if "retired" in line]
+        self.assertEqual(len(notes), 2)
+        moved = {p.last: p.record.values["position"] for p in self.panel.document.players}
+        self.assertEqual(moved["Boulware"], 11)
+        self.assertEqual(moved["Thomas"], 11)
+        self.assertIn("notes", self.panel.status_label.text())
+
+    def test_a_save_is_detected_from_its_records_alone(self) -> None:
+        savegame = one_pool_body() + bytes(224)
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "one-pool.zip"
+            with zipfile.ZipFile(source, "w") as archive:
+                archive.writestr("53450030/0001/SAVEGAME.DAT", savegame)
+                archive.writestr("53450030/0001/EXTRA", rr.sign_save(savegame))
+            self.assertTrue(self.panel.load_save(source))
+        self.assertEqual(self.panel.scheme, "one_pool")
+        self.assertEqual(self.panel._scheme_detection["source"], "roster data",
+                         "a save carries no executable to read a patch state off")
+        self.assertIn("EDGE", self.panel.chips)
+
+    def test_a_one_pool_csv_round_trips_through_the_page(self) -> None:
+        self._load(one_pool_body())
+        text = self.panel.export_csv_text(everything=True)
+        self.assertIn("EDGE", text)
+        self.assertIn("LB", text)
+        before = self.panel.document.to_body()
+        receipt = self.panel.import_csv_text(text)
+        self.assertEqual(receipt["log"], [])
+        self.assertEqual(receipt["fields"], 0)
+        self.assertEqual(self.panel.document.to_body(), before)
 
 
 if __name__ == "__main__":
