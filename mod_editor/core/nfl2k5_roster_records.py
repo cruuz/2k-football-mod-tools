@@ -464,15 +464,75 @@ SCRAMBLE_AGILITY_THRESHOLD = 1.5               # 0.01*Scramble + 0.01*Agility, [
 # Kicking Style: retail's three values.  EXPERIMENTAL -- no consumer proved.
 KICKING_STYLE_PRESETS = (("Punter", 1), ("Default", 49), ("Kicker", 99))
 
-# Not read yet, kept here so it is not lost: the game's own create-a-player templates ("Pocket QB",
-# "Scrambling QB", "Speed WR", "Power HB", ...) live at .rdata 0x005561B8 as 36 records of 0x74 =
-# a label pointer plus 28 int32 slots, where -1 means "leave this rating alone".  Slot 7 is Power Run
-# Style and slot 21 is Scramble (both proved); the display order of the other 26 slots is unmapped.
-# An "apply template" action wants that map finished, or it should write only those two slots.
+# The game's own create-a-player templates ("Pocket QB", "Scrambling QB", "Speed WR", "Power HB",
+# ...): .rdata 0x005561B8, 36 records of 0x74 = a label pointer plus 28 int32 slots.  The record for
+# a player is ``3 * position + variant`` (0x343466..0x34347B: ``movzx eax,[edx+0x35]`` then
+# ``lea ecx,[ecx+eax*2] ; add eax,ecx ; imul eax,eax,0x74``), so the table covers the twelve
+# positions QB..ILB and stops there -- C, G, T, DT and DE have no template.  **All 28 slots are
+# proved** by the apply routine at 0x343460 (FUN_00343460, the only reader of the table besides the
+# label getter at 0x343FA0): it is unrolled, one ``mov ecx,[eax+4+4*slot]`` per slot followed by a
+# ``mov byte ptr [record+OFF],cl``, and CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS is that sequence read
+# off the disassembly.  A slot of -1 does NOT mean "leave alone": the routine loads ``bl = 0x4B``
+# once (0x34349F) and writes **75** for every -1; every other value is clamped to 0..100
+# (``cmp cl,0x64`` at 0x3434AE and siblings).  The values below are the retail table, pinned by
+# CREATE_PLAYER_TEMPLATES_SHA256; ``read_templates`` reads the same table out of any default.xbe.
 CREATE_PLAYER_TEMPLATES_RDATA = 0x005561B8
 CREATE_PLAYER_TEMPLATE_COUNT = 36
 CREATE_PLAYER_TEMPLATE_STRIDE = 0x74
-CREATE_PLAYER_TEMPLATE_SLOTS = {7: "power_run_style", 21: "scramble"}
+CREATE_PLAYER_TEMPLATE_APPLY_VA = 0x343460
+CREATE_PLAYER_TEMPLATE_APPLY_END_VA = 0x343BFA
+CREATE_PLAYER_TEMPLATE_APPLY_SHA256 = "484d5eed9b63b4e6a74e9d002ec53c078af2294d902331c30e1322badf2ebad9"
+CREATE_PLAYER_TEMPLATES_SHA256 = "df39b34c497215f7749a16b2f10974c99d95c027ef5f929538bf9340b0face61"
+CREATE_PLAYER_TEMPLATE_DEFAULT = 75            # mov bl,0x4B at 0x34349F: what a -1 slot writes
+CREATE_PLAYER_TEMPLATE_MAX = 100               # cmp cl,0x64: values above are clamped, below 0 -> 0
+CREATE_PLAYER_TEMPLATE_VARIANTS = 3
+CREATE_PLAYER_TEMPLATE_POSITIONS = 12          # QB K P WR CB FS SS HB FB TE OLB ILB
+CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS = (
+    0x36, 0x37, 0x42, 0x38, 0x43, 0x41, 0x47, 0x4D, 0x44, 0x45, 0x46, 0x3F, 0x49, 0x48,
+    0x40, 0x3E, 0x3A, 0x4A, 0x39, 0x3B, 0x4C, 0x4F, 0x4E, 0x3C, 0x3D, 0x4B, 0x50, 0x51,
+)
+CREATE_PLAYER_TEMPLATE_SLOTS = {
+    slot: RATING_BYTE_ORDER[offset - 0x36] for slot, offset in enumerate(CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS)
+}
+# (label, 28 slot values) in table order: record i is position i // 3, variant i % 3
+RETAIL_CREATE_PLAYER_TEMPLATES: tuple[tuple[str, tuple[int, ...]], ...] = (
+    ('Pocket QB', (45, 35, 85, 88, 82, 35, 50, 50, 10, 20, 20, 10, 15, 15, 20, 20, 10, 10, 80, 75, 70, 10, 65, 50, 50, 70, 50, 60)),
+    ('Scrambling QB', (70, 65, 75, 85, 78, 55, 50, 1, 10, 20, 20, 10, 15, 15, 20, 20, 10, 10, 80, 75, 70, 90, 65, 50, 50, 70, 50, 75)),
+    ('Balanced QB', (55, 50, 82, 82, 80, 45, 50, 50, 10, 20, 20, 10, 15, 15, 20, 20, 10, 10, 80, 75, 70, 50, 65, 50, 50, 70, 50, 60)),
+    ('Kicker', (40, 30, 35, 35, 10, 35, 50, 1, 10, 20, 20, 10, 15, 15, 20, 20, 85, 85, 80, 75, 55, 10, 65, 30, 50, 50, 50, 60)),
+    ('Kicker', (40, 30, 35, 35, 10, 35, 50, 1, 10, 20, 20, 10, 15, 15, 20, 20, 85, 85, 80, 75, 55, 10, 65, 30, 50, 50, 50, 60)),
+    ('Kicker', (40, 30, 35, 35, 10, 35, 50, 1, 10, 20, 20, 10, 15, 15, 20, 20, 85, 85, 80, 75, 55, 10, 65, 30, 50, 50, 50, 60)),
+    ('Punter', (40, 30, 35, 35, 10, 35, 50, 1, 10, 20, 20, 10, 15, 15, 20, 20, 88, 78, 80, 75, 55, 10, 65, 30, 50, 50, 50, 60)),
+    ('Punter', (40, 30, 35, 35, 10, 35, 50, 1, 10, 20, 20, 10, 15, 15, 20, 20, 88, 78, 80, 75, 55, 10, 65, 30, 50, 50, 50, 60)),
+    ('Punter', (40, 30, 35, 35, 10, 35, 50, 1, 10, 20, 20, 10, 15, 15, 20, 20, 88, 78, 80, 75, 55, 10, 65, 30, 50, 50, 50, 60)),
+    ('Speed WR', (90, 85, 35, 35, 10, 45, 60, 1, 70, 20, 20, 75, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 50, 75, -1, 50, 60)),
+    ('Hands WR', (75, 80, 35, 35, 10, 55, 75, 50, 85, 20, 20, 80, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 50, 85, -1, 50, 60)),
+    ('Balanced WR', (80, 83, 35, 35, 10, 50, 65, 50, 78, 20, 20, 78, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 50, 80, -1, 50, 60)),
+    ('Cover CB', (90, 85, 35, 35, 10, 35, 50, 1, 35, 20, 20, 10, 35, 15, 35, 85, 10, 10, 80, 75, 55, 10, 65, 50, 85, 60, 50, 60)),
+    ('Physical CB', (80, 80, 35, 35, 10, 35, 50, 50, 25, 20, 20, 10, 55, 15, 55, 70, 10, 10, 80, 75, 55, 10, 65, 50, 75, 74, 50, 75)),
+    ('Balanced CB', (85, 83, 35, 35, 10, 35, 50, 50, 30, 20, 20, 10, 50, 15, 50, 78, 10, 10, 80, 75, 55, 10, 65, 50, 80, 70, 50, 60)),
+    ('Cover FS', (85, 75, 35, 35, 10, 35, 50, 50, 25, 20, 20, 10, 35, 15, 45, 80, 10, 10, 80, 75, 55, 10, 65, 50, 60, 60, 50, 60)),
+    ('Physical FS', (60, 70, 35, 35, 10, 35, 50, 50, 10, 20, 20, 10, 65, 15, 75, 68, 10, 10, 80, 75, 55, 10, 65, 65, 60, 74, 50, 75)),
+    ('Balanced FS', (78, 72, 35, 35, 10, 35, 50, 50, 15, 20, 20, 10, 55, 15, 70, 73, 10, 10, 80, 75, 55, 10, 65, 50, 60, 70, 50, 60)),
+    ('Cover SS', (82, 70, 35, 35, 10, 35, 50, 50, 25, 20, 20, 10, 40, 15, 50, 79, 10, 10, 80, 75, 55, 10, 65, 50, 60, 58, 50, 60)),
+    ('Physical SS', (70, 60, 35, 35, 10, 35, 50, 50, 10, 20, 20, 10, 70, 15, 80, 67, 10, 10, 80, 75, 55, 10, 65, 65, 60, 70, 50, 75)),
+    ('Balanced SS', (75, 65, 35, 35, 10, 35, 50, 50, 15, 20, 20, 10, 60, 15, 75, 72, 10, 10, 80, 75, 55, 10, 65, 60, 60, 65, 50, 60)),
+    ('Finesse HB', (86, 85, 35, 35, 10, 75, 86, 1, 65, 40, 50, 60, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 50, 60, -1, 50, 60)),
+    ('Power HB', (75, 70, 35, 35, 10, 85, 82, 99, 55, 50, 50, 50, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 65, 60, -1, 50, 75)),
+    ('Balanced HB', (80, 78, 35, 35, 10, 80, 84, 50, 60, 45, 50, 55, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 60, 60, -1, 50, 60)),
+    ('Blocking FB', (70, 50, 35, 35, 10, 75, 78, 99, 35, 80, 75, 30, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 65, 50, -1, 50, 75)),
+    ('Catching FB', (77, 65, 35, 35, 10, 75, 82, 99, 70, 70, 65, 68, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 50, 50, -1, 50, 60)),
+    ('Balanced FB', (73, 55, 35, 35, 10, 75, 80, 99, 60, 75, 75, 55, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 55, 50, -1, 50, 60)),
+    ('Catching TE', (81, 70, 35, 35, 10, 65, 65, 99, 85, 65, 65, 80, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 50, 60, -1, 50, 60)),
+    ('Blocking TE', (72, 50, 35, 35, 10, 60, 60, 99, 60, 83, 80, 60, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 70, 60, -1, 50, 75)),
+    ('Balanced TE', (75, 60, 35, 35, 10, 65, 63, 99, 78, 78, 78, 78, 15, 15, 20, 20, 10, 10, 80, 75, 55, 10, 65, 60, 60, -1, 50, 60)),
+    ('Run Stop OLB', (70, 65, 35, 35, 10, 35, 50, 50, 10, 20, 20, 10, 90, 55, 85, 55, 10, 10, 80, 75, 55, 10, 65, 75, 50, 55, 50, 75)),
+    ('Coverage OLB', (82, 75, 35, 35, 10, 35, 50, 50, 25, 20, 20, 10, 65, 70, 75, 75, 10, 10, 80, 75, 55, 10, 65, 65, 50, 85, 50, 60)),
+    ('Balanced OLB', (75, 70, 35, 35, 10, 35, 50, 50, 10, 20, 20, 10, 75, 65, 80, 60, 10, 10, 80, 75, 55, 10, 65, 70, 50, 65, 50, 60)),
+    ('Run Stop ILB', (68, 65, 35, 35, 10, 35, 50, 50, 10, 20, 20, 10, 92, 55, 90, 50, 10, 10, 80, 75, 55, 10, 65, 75, 50, 55, 50, 75)),
+    ('Coverage ILB', (80, 75, 35, 35, 10, 35, 50, 50, 25, 20, 20, 10, 70, 75, 80, 70, 10, 10, 80, 75, 55, 10, 65, 65, 50, 85, 50, 60)),
+    ('Balanced ILB', (75, 70, 35, 35, 10, 35, 50, 50, 10, 20, 20, 10, 83, 68, 85, 60, 10, 10, 80, 75, 55, 10, 65, 70, 50, 65, 50, 60)),
+)
 
 ENUMS["power_run_style_bucket"] = POWER_RUN_STYLES
 ENUMS["throw_style"] = THROW_STYLES
@@ -2763,6 +2823,88 @@ def _apply_csv_team(document: RosterDocument, player: Player, value: str) -> tup
     return 1, f"moved {current_text} -> {document.teams[target].abbreviation}"
 
 
+# ------------------------------------------------------------------------------------------ templates
+@dataclass(frozen=True)
+class CreatePlayerTemplate:
+    """One of the game's create-a-player templates: a label and 28 slot values in table order."""
+
+    index: int
+    label: str
+    slots: tuple[int, ...]
+
+    @property
+    def position_code(self) -> int:
+        return self.index // CREATE_PLAYER_TEMPLATE_VARIANTS
+
+    @property
+    def variant(self) -> int:
+        return self.index % CREATE_PLAYER_TEMPLATE_VARIANTS
+
+    @property
+    def position_name(self) -> str:
+        return position_name(self.position_code)
+
+    def ratings(self) -> dict[str, int]:
+        """What the game writes for each rating: -1 becomes 75, everything else is clamped 0..100."""
+
+        out: dict[str, int] = {}
+        for slot, value in enumerate(self.slots):
+            name = CREATE_PLAYER_TEMPLATE_SLOTS[slot]
+            if value == -1:
+                out[name] = CREATE_PLAYER_TEMPLATE_DEFAULT
+            else:
+                out[name] = max(0, min(CREATE_PLAYER_TEMPLATE_MAX, int(value)))
+        return out
+
+
+def create_player_templates() -> tuple[CreatePlayerTemplate, ...]:
+    """The retail table, as the game applies it."""
+
+    return tuple(CreatePlayerTemplate(index, label, tuple(slots))
+                 for index, (label, slots) in enumerate(RETAIL_CREATE_PLAYER_TEMPLATES))
+
+
+def read_templates(payload: bytes) -> tuple[CreatePlayerTemplate, ...]:
+    """The same table read out of a ``default.xbe`` (a modded executable may carry other values)."""
+
+    from .nfl2k5_rdata_sites import offset_of
+
+    out = []
+    for index in range(CREATE_PLAYER_TEMPLATE_COUNT):
+        offset = offset_of(payload, CREATE_PLAYER_TEMPLATES_RDATA + index * CREATE_PLAYER_TEMPLATE_STRIDE)
+        _require(offset + CREATE_PLAYER_TEMPLATE_STRIDE <= len(payload), "the template table runs past the file")
+        label_va = struct.unpack_from("<I", payload, offset)[0]
+        slots = struct.unpack_from("<28i", payload, offset + 4)
+        label_off = offset_of(payload, label_va)
+        end = label_off
+        while end + 1 < len(payload) and payload[end: end + 2] != b"\0\0":
+            end += 2
+        label = payload[label_off:end].decode("utf-16-le", "replace")
+        out.append(CreatePlayerTemplate(index, label, tuple(slots)))
+    return tuple(out)
+
+
+def templates_for_position(code: int, templates: Sequence[CreatePlayerTemplate] | None = None) -> tuple[CreatePlayerTemplate, ...]:
+    """The three templates the game offers for a position code, or none (C, G, T, DT, DE have none)."""
+
+    table = templates if templates is not None else create_player_templates()
+    if not 0 <= int(code) < CREATE_PLAYER_TEMPLATE_POSITIONS:
+        return ()
+    return tuple(t for t in table if t.position_code == int(code))
+
+
+def apply_template(record: PlayerRecord, template: CreatePlayerTemplate) -> dict[str, tuple[int, int]]:
+    """Write a template onto a record exactly as FUN_00343460 does.  Returns the fields that changed."""
+
+    changes: dict[str, tuple[int, int]] = {}
+    for name, value in template.ratings().items():
+        before = record.values[name]
+        if before != value:
+            record.values[name] = value
+            changes[name] = (before, value)
+    return changes
+
+
 # ---------------------------------------------------------------------------------------- .PlayerData
 # Finn's Backup / Restore container (§15.1 of the RE report): a flat array of 150-byte entries, one
 # per primary record -- the raw 0x54 record verbatim (its pointers are stale on restore, so the
@@ -3271,6 +3413,9 @@ __all__ = [
     "MSG_SIGN_MAX_PLAYERS", "DRAFT_CLASS_WHY", "FREE_AGENT_LIST_CAP", "replay_moves", "validate_membership",
     "REPAIR_KINDS", "plan_repairs", "apply_repairs", "PLAYER_DATA_ENTRY_SIZE", "PLAYER_DATA_TRAILER",
     "PlayerDataEntry", "export_player_data", "import_player_data", "read_player_data",
+    "CreatePlayerTemplate", "CREATE_PLAYER_TEMPLATE_SLOTS", "CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS",
+    "CREATE_PLAYER_TEMPLATE_DEFAULT", "CREATE_PLAYER_TEMPLATE_MAX", "RETAIL_CREATE_PLAYER_TEMPLATES",
+    "apply_template", "create_player_templates", "read_templates", "templates_for_position",
     "advance_years_pro", "apply", "apply_body",
     "copy_player", "decode_record", "edits_document", "encode_record", "encoded_size",
     "export_csv", "field_coverage", "find_block_base", "global_edit_apply", "global_edit_preview",

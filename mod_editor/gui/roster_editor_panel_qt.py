@@ -661,6 +661,8 @@ class RosterEditorPanel(QWidget):
         self._scheme_detection: dict[str, Any] = {}
         self._edits_path: Path | None = None
         self._repair_plans: list[dict[str, Any]] = []
+        self._templates: tuple[rr.CreatePlayerTemplate, ...] = rr.create_player_templates()
+        self._templates_source = "retail table"
         self.undo_stack = UndoStack(on_change=self._refresh_actions)
         self.cards: dict[str, AttributeCard] = {}
         self._card_order: list[str] = []
@@ -735,6 +737,17 @@ class RosterEditorPanel(QWidget):
         paste_menu.addAction("Paste attributes only", lambda: self.paste_player("attributes"))
         paste_menu.addAction("Paste photo only", lambda: self.paste_player("photo"))
         self.paste_button.setMenu(paste_menu)
+        self.template_button = QToolButton()
+        self.template_button.setText("Template ▾")
+        self.template_button.setPopupMode(QToolButton.InstantPopup)
+        self.template_button.setToolTip(
+            "The game's own create-a-player templates (Pocket QB, Speed WR, Power HB, ...), applied the "
+            "way the game applies them: all 28 rating bytes, -1 slots become 75, values clamp to 0..100. "
+            "The three for this player's position come first; C, G, T, DT and DE have none in the game's "
+            "table. Read from the loaded disc's executable when there is one, else the retail table.")
+        self.template_menu = QMenu(self.template_button)
+        self.template_menu.aboutToShow.connect(self._fill_template_menu)
+        self.template_button.setMenu(self.template_menu)
         self.passes_button = QToolButton()
         self.passes_button.setText("One-shot passes ▾")
         self.passes_button.setPopupMode(QToolButton.InstantPopup)
@@ -757,7 +770,7 @@ class RosterEditorPanel(QWidget):
                            lambda: self._import_player_data("attributes"))
         self.csv_button.setMenu(csv_menu)
         for widget in (self.undo_button, self.redo_button, self.global_button, self.copy_button,
-                       self.paste_button, self.passes_button, self.csv_button):
+                       self.paste_button, self.template_button, self.passes_button, self.csv_button):
             tools.addWidget(widget)
         tools.addStretch(1)
         self.save_edits_button = QPushButton("Save roster edits…")
@@ -1164,6 +1177,7 @@ class RosterEditorPanel(QWidget):
         self.refresh_grid()
         self._refresh_pool_label()
         self._replan_repairs()
+        self._load_templates(source if kind == "disc" else None)
         repairs = (f" · {len(self._repair_plans)} repair{'s' if len(self._repair_plans) != 1 else ''} "
                    f"available on the Checks tab" if self._repair_plans else "")
         self._set_status(
@@ -1907,6 +1921,72 @@ class RosterEditorPanel(QWidget):
             self._after_edit(player)
         return len(scope)
 
+    # ------------------------------------------------------------------ templates
+    def _load_templates(self, disc: Path | None) -> None:
+        """The loaded disc's own template table when there is one, else the retail table."""
+
+        self._templates, self._templates_source = rr.create_player_templates(), "retail table"
+        if disc is None:
+            return
+        try:
+            from mod_editor.core import mod_build
+            payload = mod_build._xbe_bytes(Path(disc))
+            self._templates = rr.read_templates(payload)
+            self._templates_source = f"{Path(disc).name} executable"
+        except Exception as exc:                                    # noqa: BLE001 - the retail table stands in
+            self._templates_source = f"retail table ({type(exc).__name__} reading the disc's executable)"
+
+    def templates(self) -> tuple[rr.CreatePlayerTemplate, ...]:
+        return self._templates
+
+    def _fill_template_menu(self) -> None:
+        self.template_menu.clear()
+        player = self.selected_player()
+        if self.document is None or player is None:
+            return
+        code = player.record.values["position"]
+        own = rr.templates_for_position(code, self._templates)
+        if own:
+            for template in own:
+                action = self.template_menu.addAction(template.label)
+                action.triggered.connect(lambda _c=False, t=template: self.apply_template(t))
+        else:
+            action = self.template_menu.addAction(
+                f"No template for {rr.position_name(code, self._scheme)} in the game's table")
+            action.setEnabled(False)
+        self.template_menu.addSeparator()
+        everything = QMenu("All templates", self.template_menu)
+        for template in self._templates:
+            action = everything.addAction(f"{template.label} ({template.position_name})")
+            action.triggered.connect(lambda _c=False, t=template: self.apply_template(t))
+        self.template_menu.addMenu(everything)
+        note = self.template_menu.addAction(f"Source: {self._templates_source}")
+        note.setEnabled(False)
+
+    def apply_template(self, template: rr.CreatePlayerTemplate) -> dict[str, tuple[int, int]]:
+        """Write one template onto the selected player with undo."""
+
+        player = self.selected_player()
+        if player is None or self.document is None:
+            return {}
+        before = dict(player.record.values)
+        changes = rr.apply_template(player.record, template)
+        if not changes:
+            self._set_status(f"{player.display} already matches {template.label}.")
+            return {}
+        after = dict(player.record.values)
+
+        def restore(values: dict[str, int]) -> None:
+            player.record.values.update(values)
+            self._after_edit(player)
+
+        self.undo_stack.push(UndoEntry(f"{player.display}: template {template.label}",
+                                       lambda: restore(before), lambda: restore(after)))
+        self._after_edit(player)
+        self._set_status(f"Applied {template.label} to {player.display}: {len(changes)} ratings changed "
+                         f"({self._templates_source}).")
+        return changes
+
     # ------------------------------------------------------------------ repairs
     def _replan_repairs(self) -> list[dict[str, Any]]:
         self._repair_plans = rr.plan_repairs(self.document) if self.document is not None else []
@@ -2194,6 +2274,7 @@ class RosterEditorPanel(QWidget):
         self.repair_button.setEnabled(loaded and bool(self._repair_plans))
         self.copy_button.setEnabled(selected)
         self.paste_button.setEnabled(selected and self._clipboard is not None)
+        self.template_button.setEnabled(selected)
         self.up_button.setEnabled(selected and self._group[0] == "team")
         self.down_button.setEnabled(selected and self._group[0] == "team")
         player = self.selected_player()

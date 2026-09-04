@@ -333,6 +333,30 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.panel.undo()
         self.assertEqual(self.panel.document.players[0].record.values["jersey"], 18)
 
+    def test_templates_offer_the_positions_three_first_and_apply_with_undo(self) -> None:
+        player = self.panel.selected_player()
+        assert player is not None
+        self.assertTrue(self.panel.template_button.isEnabled())
+        self.panel._fill_template_menu()
+        labels = [a.text() for a in self.panel.template_menu.actions() if a.text() and not a.menu()]
+        self.assertEqual(labels[:3], ["Pocket QB", "Scrambling QB", "Balanced QB"])
+        self.assertTrue(labels[-1].startswith("Source: retail table"))
+        before = dict(player.record.values)
+        changes = self.panel.apply_template(rr.create_player_templates()[1])
+        self.assertGreater(len(changes), 20)
+        self.assertEqual(player.record.values["scramble"], 90)
+        self.assertEqual(self.panel.cards["scramble"].value(), 90)
+        self.assertIn((player.pool, player.index), self.panel._dirty)
+        self.assertIn("Applied Scrambling QB", self.panel.status_label.text())
+        self.assertEqual(self.panel.undo(), "Peyton Manning: template Scrambling QB")
+        self.assertEqual(player.record.values, before)
+        self.panel.team_list.setCurrentRow(self.panel.team_list.count() - 2)      # the DT prospect
+        self.application.processEvents()
+        self.panel._fill_template_menu()
+        first = self.panel.template_menu.actions()[0]
+        self.assertFalse(first.isEnabled())
+        self.assertIn("No template for DT", first.text())
+
     def test_a_player_data_backup_round_trips_with_undo(self) -> None:
         backup = self.panel.export_player_data_bytes()
         self.assertEqual(len(backup), rr.PLAYER_DATA_ENTRY_SIZE * len(SAMPLE))

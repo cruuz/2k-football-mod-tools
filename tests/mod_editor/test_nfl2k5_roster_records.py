@@ -809,6 +809,61 @@ class MembershipTests(unittest.TestCase):
         self.assertEqual(reloaded.by_offset[reloaded.free_agents[-1]].display, player.display)
 
 
+# ----------------------------------------------------------------------------------------- templates
+class TemplateTests(unittest.TestCase):
+    """The game's create-a-player templates, applied the way FUN_00343460 applies them."""
+
+    def test_the_slot_map_covers_every_rating_byte_once(self) -> None:
+        self.assertEqual(len(rr.CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS), 28)
+        self.assertEqual(sorted(rr.CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS), list(range(0x36, 0x52)))
+        self.assertEqual(rr.CREATE_PLAYER_TEMPLATE_SLOTS[7], "power_run_style")
+        self.assertEqual(rr.CREATE_PLAYER_TEMPLATE_SLOTS[21], "scramble")
+        self.assertEqual(rr.CREATE_PLAYER_TEMPLATE_SLOTS[0], "speed")
+        self.assertEqual(rr.CREATE_PLAYER_TEMPLATE_SLOTS[25], "kicking_style")
+        self.assertEqual(rr.CREATE_PLAYER_TEMPLATE_SLOTS[27], "aggressiveness")
+
+    def test_the_retail_table_reads_as_the_game_lays_it_out(self) -> None:
+        templates = rr.create_player_templates()
+        self.assertEqual(len(templates), 36)
+        self.assertEqual([t.label for t in templates[:3]], ["Pocket QB", "Scrambling QB", "Balanced QB"])
+        self.assertEqual([t.position_name for t in templates[::3]],
+                         ["QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB"])
+        pocket, scrambling, balanced = templates[:3]
+        self.assertEqual((pocket.ratings()["scramble"], scrambling.ratings()["scramble"], balanced.ratings()["scramble"]),
+                         (10, 90, 50))
+        finesse, power, balanced_hb = rr.templates_for_position(rr.POSITIONS.index("HB"))
+        self.assertEqual((finesse.label, power.label, balanced_hb.label), ("Finesse HB", "Power HB", "Balanced HB"))
+        self.assertEqual((finesse.ratings()["power_run_style"], power.ratings()["power_run_style"],
+                          balanced_hb.ratings()["power_run_style"]), (1, 99, 50))
+        self.assertEqual(rr.templates_for_position(rr.POSITIONS.index("DE")), ())
+        self.assertEqual(rr.templates_for_position(rr.POSITIONS.index("C")), ())
+        speed_wr = rr.templates_for_position(rr.POSITIONS.index("WR"))[0]
+        self.assertEqual(speed_wr.slots[25], -1, "the WR/HB/FB/TE templates leave slot 25 at -1")
+        self.assertEqual(speed_wr.ratings()["kicking_style"], rr.CREATE_PLAYER_TEMPLATE_DEFAULT,
+                         "which the routine writes as 75 (mov bl,0x4B), not 'leave alone'")
+        self.assertEqual(speed_wr.ratings()["speed"], 90)
+        self.assertEqual(speed_wr.ratings()["catch"], 70)
+        self.assertEqual(speed_wr.ratings()["run_route"], 75)
+        self.assertEqual(rr.templates_for_position(0)[0].ratings()["pass_accuracy"], 85)
+        self.assertEqual(rr.templates_for_position(0)[1].ratings()["pass_arm_strength"], 85)
+
+    def test_apply_writes_the_28_bytes_with_the_games_own_clamps(self) -> None:
+        document = rr.load_body(synthetic_body())
+        manning = document.players[0]
+        odd = rr.CreatePlayerTemplate(99, "Clamp", tuple([-1, 150, -7] + [50] * 25))
+        changes = rr.apply_template(manning.record, odd)
+        self.assertEqual(manning.record.values["speed"], 75)
+        self.assertEqual(manning.record.values["agility"], 100)
+        self.assertEqual(manning.record.values["pass_accuracy"], 0)
+        self.assertEqual(manning.record.values["aggressiveness"], 50)
+        self.assertEqual(changes["speed"], (66, 75))
+        self.assertEqual(rr.apply_template(manning.record, odd), {}, "a second application changes nothing")
+        pocket = rr.create_player_templates()[0]
+        rr.apply_template(manning.record, pocket)
+        self.assertEqual(manning.record.ratings(), pocket.ratings())
+        self.assertEqual(manning.record.throw_style, 0, "Pocket QB writes Scramble 10: an even value")
+
+
 # --------------------------------------------------------------------------------------- .PlayerData
 class PlayerDataTests(unittest.TestCase):
     """Finn's backup container: 150-byte entries, matched back by name + play-by-play index."""
@@ -1301,6 +1356,28 @@ class RetailMembershipTests(unittest.TestCase):
         self.assertEqual(rr.FREE_AGENT_LIST_CAP, 2500, "the game's own append cap (0x242560)")
         self.assertTrue(all(t.clean_parse for t in self.document.teams))
         self.assertEqual(sum(1 for p in self.document.players if len([t for t in p.teams if t < rr.CLUB_TEAM_COUNT]) > 1), 0)
+
+    def test_the_template_table_and_its_apply_routine_are_the_pinned_retail_bytes(self) -> None:
+        payload = RETAIL_XBE.read_bytes()
+        from mod_editor.core.nfl2k5_rdata_sites import offset_of
+        table = offset_of(payload, rr.CREATE_PLAYER_TEMPLATES_RDATA)
+        self.assertEqual(hashlib.sha256(payload[table: table + 36 * 0x74]).hexdigest(), rr.CREATE_PLAYER_TEMPLATES_SHA256)
+        routine = offset_of(payload, rr.CREATE_PLAYER_TEMPLATE_APPLY_VA)
+        span = rr.CREATE_PLAYER_TEMPLATE_APPLY_END_VA - rr.CREATE_PLAYER_TEMPLATE_APPLY_VA
+        self.assertEqual(hashlib.sha256(payload[routine: routine + span]).hexdigest(), rr.CREATE_PLAYER_TEMPLATE_APPLY_SHA256)
+        self.assertEqual(payload[offset_of(payload, 0x34349F): offset_of(payload, 0x34349F) + 2], b"\xb3\x4b",
+                         "mov bl,0x4B: the value a -1 slot writes")
+        self.assertEqual(payload[offset_of(payload, 0x3434AE): offset_of(payload, 0x3434AE) + 3], b"\x80\xf9\x64",
+                         "cmp cl,0x64: the clamp")
+        # the unrolled routine: slot k is read at [eax+4+4k] and written at record+OFFSETS[k]
+        code = payload[routine: routine + span]
+        for slot, offset in enumerate(rr.CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS):
+            read = b"\x8b\x48" + bytes([4 + 4 * slot]) if 4 + 4 * slot < 0x80 else None
+            if read is not None:
+                self.assertIn(read, code, f"slot {slot}: mov ecx,[eax+0x{4 + 4 * slot:x}]")
+            written = (b"\x88\x4a" + bytes([offset]), b"\x88\x42" + bytes([offset]))     # ...,cl  or  ...,al (slot 27)
+            self.assertTrue(any(pattern in code for pattern in written), f"slot {slot}: mov [edx+0x{offset:x}],cl/al")
+        self.assertEqual(rr.read_templates(payload), rr.create_player_templates())
 
     def test_the_retail_disc_itself_has_exactly_one_headless_player(self) -> None:
         plans = rr.plan_repairs(self.document)
