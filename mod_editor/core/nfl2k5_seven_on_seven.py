@@ -64,8 +64,13 @@ RETAIL_STUBS = (0x000E3406, 0x000E3426, 0x000E3411, 0x000E341C)   # mode 0 / mod
 LOADER_PRACTICE_VA = 0x00062D15   # `push 0; mov edx,"PRACTICE-pb.iff"; ...` (the Basic Training path)
 LOADER_TEAMS_VA = 0x00062D39      # `push 1; call FUN_000628d0; push 0; call FUN_000628d0`
 
-CAVE_VA = 0x001AC170              # FUN_001ac170: dead (no call, jump or pointer to it), 525 bytes
-CAVE_SIZE = 0x100
+# FUN_001ac170 is dead: no call, jump or pointer reaches 0x1AC170..0x1AC25F (scanned every relative call/jump in
+# .text and every absolute dword in .text/.rdata/.data). It is 240 bytes long and ends with `ret` at 0x1AC25F;
+# the disassembler had merged the NEXT routine into it. 0x1AC260 (`sub esp,8; push ebx; ...`) is a live function
+# reached through a pointer at 0x1B877D, and a cave that spilled over it crashed the game with an int3 the moment
+# a play started (witnessed 2026-09-03: KeBugCheck 0x1E, STATUS_BREAKPOINT at EIP 0x1AC260, also the demo freeze).
+CAVE_VA = 0x001AC170
+CAVE_SIZE = 0xF0
 FLAG_OFFSET = 0x00                # reserved zero byte (the flag itself lives at FLAG_VA in writable memory)
 STRING_TABLE_OFFSET = 0x04        # five u32 string pointers
 JUMP_TABLE_OFFSET = 0x18          # five u32 stub addresses
@@ -79,8 +84,7 @@ RETAIL_CAVE = bytes.fromhex(
     "208b88100300000f2841200f294424108b5424188b44241052508bcee82d0312008b4e208b91100300008b52308bcee80ac8"
     "ffff8bcee8733903008b460c8978108b4e0c89791c8bcee8408a06008b76303bf77410397e4874078b76303bf775f43bf775"
     "998b357402e6003bf774498b56208b82100300000f2840200f294424108b4c24188b54241051528bcee8bc0212008b46208b"
-    "88100300008b51308bcee899c7ffff8b560c897a108b460c89781c8b76303bf775b75f5e8be55dc383ec085355568bf18b6e"
-    "208b9d1c0400"
+    "88100300008b51308bcee899c7ffff8b560c897a108b460c89781c8b76303bf775b75f5e8be55dc3"
 )
 assert len(RETAIL_CAVE) == CAVE_SIZE
 

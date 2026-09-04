@@ -59,8 +59,12 @@
   read-only section. Second test: 7-On-7 opened and an offensive play was chosen, then the
   defensive play-call faulted (kernel bugcheck, EIP 0x1A8E3A) because the writer's formation menu
   links lacked bit 15, which every real link in all 37 retail books carries; the writer now emits
-  retail-shaped links and the verifier refuses any other shape. Still unwitnessed past the
-  defensive play-call.
+  retail-shaped links and the verifier refuses any other shape. Third test: the play started and the game halted on an
+  `int3`: the cave had been placed in a "525-byte dead routine" that really ends after 240 bytes;
+  0x1AC260 is a live function reached through a pointer (this was also the demo-mode freeze). The
+  cave now stops at 0x1AC25F and a new test (`test_xbe_patch_cave_references.py`) scans every
+  relative call/jump and every absolute pointer in the retail image and refuses a cave that any
+  outside reference lands in. Still unwitnessed past the snap.
 
 ## v1.0 RC80 — ★ Models: export any model to Blender and back (2026-09-03)
 
