@@ -95,6 +95,13 @@ PATCHES = (
      "Retail: the Pro Bowl Votes tabs run QB, HB, FB, WR, TE, C, G, T, then K and P before the defence. Patch: "
      "the tab list runs offence, defence, then K and P (one pointer list; the vote scanner reads each tab's "
      "own position, and no other screen uses the list). Unwitnessed in game."),
+    ("uniform_choice", "Home/away jerseys at any stadium",
+     "Retail: the jersey colour is decided once per game load by one rule (home dark, visitor white, except the "
+     "Cowboys wear white at home and navy in Washington and Tennessee); the player only picks the era. Patch: "
+     "the same up/down that picks the era on Controller Assign or Team Select keeps going past the last era to "
+     "flip that side's colour and restart at the first era (15 eras x 2 colours per side; the retail default "
+     "stays the default; both teams may choose white). Practice and Xbox Live keep the retail rule; the Team "
+     "Select preview shows the era art only. Unwitnessed in game."),
     ("seven_on_seven", "7-on-7 practice mode",
      "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
      "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "
@@ -141,6 +148,10 @@ TEXT_PATCHES = (
      "chart reads SAM, MIKE, WILL; the 3-4 chart reads EDGE for the outside backers, MIKE and WILL inside, NT in "
      "the middle. Labels only (each scheme has its own slot records); who fills a slot is unchanged."),
 )
+
+
+# BuildPlan fields that are strings: the value a ticked box writes
+STRING_TOGGLES = {"uniform_choice": "choice"}
 
 
 class GameplayPatchesPanel(QWidget):
@@ -243,7 +254,8 @@ class GameplayPatchesPanel(QWidget):
             overwrite=Path(self.target_field.text()).exists() if self.target_field.text() else False,
         )
         for key, check in self.checks.items():
-            setattr(plan, key, check.isChecked())
+            on = check.isChecked()
+            setattr(plan, key, (STRING_TOGGLES[key] if on else "") if key in STRING_TOGGLES else on)
         return plan
 
     def _refresh(self) -> None:

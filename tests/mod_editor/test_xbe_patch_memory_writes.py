@@ -60,6 +60,14 @@ class SectionTableTests(unittest.TestCase):
         self.assertTrue(names[".rdata"])
         self.assertTrue(names[".data"])
 
+    def test_the_uniform_flip_words_live_in_writable_memory(self) -> None:
+        from mod_editor.core import nfl2k5_uniform_choice as uniform
+        table = sections(XBE.read_bytes())
+        for va in (uniform.HOME_FLIP_VA, uniform.AWAY_FLIP_VA, uniform.AWAY_VALUE_VA):
+            self.assertTrue(writable(table, va), hex(va))
+        for va in (uniform.RULE_BLOCK_VA, uniform.HOME_PREV_VA, uniform.RESET_TAIL_VA):
+            self.assertFalse(writable(table, va), hex(va))
+
     def test_the_seven_on_seven_flag_lives_in_writable_memory(self) -> None:
         from mod_editor.core import nfl2k5_seven_on_seven as seven
         table = sections(XBE.read_bytes())
@@ -79,7 +87,7 @@ class PatchWriteTests(unittest.TestCase):
         cls.table = sections(cls.retail)
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
                                           "scheme_labels", "camera", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
-        cls.patched, cls.receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False)
+        cls.patched, cls.receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, uniform_choice="choice")
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
 
