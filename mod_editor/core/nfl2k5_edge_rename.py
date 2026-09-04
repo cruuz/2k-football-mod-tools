@@ -28,12 +28,15 @@ the game; the catch/accel/draft caves already live there): ``|CIRCLE|SWAP EDGE``
 The long names are shrunk in place: four ``Defensive End`` slots (28 bytes) become
 ``Edge Rusher`` and fourteen ``Defensive Ends`` slots (32 bytes) become ``Edge Rushers``.
 
-The formation-slot label records in ``.rdata`` (``0x5140D8 + 0x48 * (11 * unit + slot)``:
+The formation-slot label records in ``.rdata`` (``0x5140D8 + 0x48 * (stride * unit + slot)``:
 5-wchar abbreviation at +0, 27-wchar long name at +0x0A, two dwords at +0x40) hold ``LDE`` /
 ``RDE`` with ``LEFT DEF END`` / ``RIGHT DEF END`` (one retail record says ``RIGHT DEF TACKLE``
 for the right end).  The abbreviation field cannot hold ``LEDGE`` (five characters plus NUL is
 one wchar too many, and the long name starts right behind it), so both sides become ``EDGE``
 and the side moves into the long name: ``LEFT EDGE RUSHER`` / ``RIGHT EDGE RUSHER``.
+The stride is read through ``nfl2k5_modern_positions.layout_stride`` (11 retail,
+13 with Tier 2). Scheme/pool-owned 3-4 DE text is preserved, so EDGE can be
+applied before or after those modules on either layout.
 
 On the disc, 247 historic-team players are literally named "<Team> Def End" (ROST resources in
 pack ``0``, 16-byte last-name allocations, uniquely referenced) and two trivia questions say
@@ -55,6 +58,7 @@ import struct
 from typing import Mapping, Sequence
 
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
+from . import nfl2k5_modern_positions as modern
 
 IMAGE_BASE = 0x10000
 LOGO_END_VA = 0x00010CC2
@@ -171,7 +175,10 @@ def _sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
     for index, va in enumerate(PLURAL_SITES):
         sites.append((f"long_plural_{index}", _offset(payload, va),
                       _utf16("Defensive Ends", PLURAL_SLOT), _utf16(LONG_PLURAL, PLURAL_SLOT)))
-    for label, va, abbrev, old_long, new_long in SLOT_RECORDS:
+    stride = modern.layout_stride(payload)
+    for label, retail_va, abbrev, old_long, new_long in SLOT_RECORDS:
+        unit, slot = divmod((retail_va - modern.SLOT_TABLE_VA) // SLOT_RECORD_STRIDE, modern.SLOTS_PER_UNIT)
+        va = modern.record_va(unit, slot, stride)
         sites.append((label, _offset(payload, va), _slot_record(abbrev, old_long),
                       _slot_record(ABBREVIATION, new_long)))
     return sites
@@ -188,7 +195,11 @@ def status(payload: bytes) -> str:
     for label, off, before, after in sites:
         got = payload[off: off + len(before)]
         also = tuple(_slot_record(a, l) for a, l in SLOT_RECORD_ALTERNATIVES.get(label, ()))
-        states.add("retail" if got == before else "applied" if got == after or got in also else "foreign")
+        # Scheme/pool-owned 3-4 DE text is compatible with either EDGE state.  It must
+        # not make an otherwise retail EDGE patch look partially applied.
+        if got in also:
+            continue
+        states.add("retail" if got == before else "applied" if got == after else "foreign")
     if states == {"retail"}:
         return "retail"
     if states == {"applied"}:
@@ -207,6 +218,9 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     touched: set[int] = set()
     edits = []
     for label, off, before, after in _sites(payload):
+        also = tuple(_slot_record(a, l) for a, l in SLOT_RECORD_ALTERNATIVES.get(label, ()))
+        if payload[off:off + len(before)] in also:
+            continue
         _require(len(before) == len(after), f"{label}: replacement length differs")
         buf[off: off + len(after)] = after
         if off >= header:

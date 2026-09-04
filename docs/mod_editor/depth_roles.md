@@ -1,9 +1,10 @@
-# Depth roles (Tier 1)
+# Depth roles (playbooks and depth-chart rows)
 
 This optional ADVANCED playbook pass assigns X/Z/SLOT receiver ordinals and
 nickel/dime corner ordinals. It edits existing personnel groups in every PLAY
-book, including utility books. It has no executable patch or depth-chart UI
-rows. In-game player selection remains unwitnessed.
+book, including utility books. The Tier 1 pass has no executable patch;
+the separate experimental Tier 2 patch below adds depth-chart rows.
+In-game player selection remains unwitnessed.
 
 ## Rule and exceptions
 
@@ -138,3 +139,81 @@ Trips/Doubles/Spread/Trey plus Nickel/Dime, check a refused group and a
 Quads/Bunch set, check substitutions and flipped formations, and simulate a
 franchise week to inspect auto-depth reordering. Ensure all huddles break.
 No xemu, GUI or audio is invoked by this module or its tests.
+
+## Tier 2: depth-chart rows (EXPERIMENTAL)
+
+`mod_editor/core/nfl2k5_depth_chart_rows.py` adds these views of the existing
+position lists. It changes no roster position codes and allocates no lists.
+
+| Unit | Visible rows | Added labels | Position / encoded chain |
+|---|---:|---|---|
+| Offense | 12 | X and Z replace LWR/RWR; SLOT appended | SLOT: `(3, 2)` |
+| 4-3 defense | 13 | NCB / NICKEL CORNER; DCB / DIME CORNER | `(4, 2)`; `(4, 3)` |
+| 3-4 defense | 13 | NCB / NICKEL CORNER; DCB / DIME CORNER | `(4, 2)`; `(4, 3)` |
+| Special teams | 4 | KR, PR, K, P retained | Original fields |
+
+The 44 × 0x48 table at `0x5140D8` uses storage stride 13. Existing slots keep
+their indices within each unit; specials move to absolute records 39–42.
+Offense record 12 and final record 43 are all-zero padding. The row-count
+callback at `0x243AA0` returns **12/13/13/4**, so offense padding cannot become
+a selectable row. This does not depend on the blank guard at `0x242C10`;
+that guard also returns zero when directly tested. The six **dwords** of the
+KR/PR position list at `0x514D38` are pinned and untouched.
+
+```python
+from mod_editor.core import nfl2k5_depth_chart_rows as rows
+
+rows.status(xbe_bytes)                 # retail | applied | foreign
+patched_xbe, receipt = rows.apply(xbe_bytes)
+assert rows.apply(patched_xbe)[0] == patched_xbe
+```
+
+`apply` requires `nfl2k5_position_pools.status(xbe_bytes) == "applied"`, with
+the normal third-starter and penalty options enabled. Pools itself requires
+modern scheme labels first. EDGE may run before or after these patches; its
+writer preserves the scheme-owned 3-4 DE names. Both label writers and the
+pool module detect stride 11 or 13. Their existing direct repeated-apply
+refusal behavior remains; the orchestrator skips their applied states.
+Rows itself returns unchanged bytes and `already_applied: true` on repeat.
+
+SLOT/NCB read **rank row 1**; DCB reads **side row 1**, using the existing
+`0x242B07` hook and `0x2BA840` pools cave. These are starting rows for the
+on-field resolver, not a guarantee of the third/fourth roster identity:
+the builder's deduplication and fallback behavior remain unwitnessed.
+The detail lists have `max(0, position_count - 1)` entries after the retail
+screen-entry compactor (`0x243790`) makes the rank/side indices dense.
+Changing either list changes a shared rank/side field, so another row may
+also change. These are role views, not independent saved depth charts.
+
+Two additional correctness fixes accompany expansion. `0x242CA3` now tests
+chain bit 0 for swaps: treating chain 2 as merely nonzero would incorrectly
+swap the side list. The existing bench block `0x244405..0x244477` computes
+the actual row before the `>7` promotion decision and uses the same chain
+bit after confirmation. It preserves the displayed row for ordinary
+selection, the dialog's stack argument, and the retail list compactor.
+There is no additional cave or writable global. The eleven original stride
+sites are covered by nine three-byte instruction pins and two whole-block
+pins: pools' tab initializer and this bench block own the other two.
+
+The duplicate-starter check (`0x243B50`) deliberately still examines the
+original eleven slots. Its four count calls become `mov eax,11`; otherwise
+an added role view that aliases a base-row starter could open a warning
+every time the chart renders. An actual duplicate among the original
+starters still takes the retail warning path.
+
+The full table is checked against a retail SHA-256 after reversing only
+recognised pool and label edits. Unknown padding, fields, instruction bytes,
+missing dependencies, and partial expansion are refused. Touched `.text`
+and `.rdata` digests are updated. This pure module performs no file writes;
+the existing build writer owns output copies and Windows binary I/O.
+
+Integration is specified in `WIRING_TIER2.md`; protected build/GUI files are
+not changed by this delivery. Select EXPERIMENTAL only until Noah witnesses
+the screen. Pair the rows with the Tier 1 playbook pass and the complete
+pools build (XBE, books, rosters). The tests execute retail getters, counts,
+swaps, duplicate checks, and the bench arm with read-only code pages and
+instruction limits. Dialog and bench-compaction call boundaries are stubbed
+in the isolated bench test; real screen-entry compaction runs separately.
+They do not launch a game or demonstrate clipping, controller interaction,
+franchise-week behavior, or on-field player identity. The in-game checklist
+is included in `WIRING_TIER2.md` and the delivery report.

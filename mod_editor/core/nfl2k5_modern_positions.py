@@ -11,7 +11,10 @@ separate, larger pass; see ``MODERN_POSITIONS_2026-09-03.md``.
 
 Where the labels live
 ---------------------
-``.rdata 0x5140D8`` holds 44 slot records of ``0x48`` bytes, indexed ``unit * 11 + slot``:
+``.rdata 0x5140D8`` holds 44 slot records of ``0x48`` bytes, indexed ``unit * stride + slot``.
+Retail stride is 11; Tier 2 (``nfl2k5_depth_chart_rows``) uses 13. Readers and
+writers detect the stride from the complete instruction at ``0x243AE5``;
+``record_va`` retains its retail default and accepts an explicit stride.
 
 * ``+0x00`` 5-wchar abbreviation (4 characters plus NUL);
 * ``+0x0A`` 27-wchar long name (26 characters plus NUL);
@@ -51,7 +54,7 @@ Optional (``three_four_line=True``): the two 3-4 end records (unit 2 slots 0 and
 ``0x514708`` / ``0x514798``) become ``DE`` / LEFT|RIGHT DEFENSIVE END.  Those two records are
 also rewritten by the EDGE rename (``nfl2k5_edge_rename``), so this patch accepts either the
 retail bytes (``LDE`` / ``RDE``) or the EDGE-applied bytes there; ``nfl2k5_edge_rename`` accepts
-the ``DE`` text on those two records as an applied state, so apply the EDGE rename first.  It is off
+the ``DE`` text on those two records as compatible with either EDGE state. It is off
 by default because under the retail pools those slots still draw from the DE (EDGE) roster
 position, so the label is only truthful once the 3-4 line is rewired to the interior (DT) pool,
 which is what ``nfl2k5_position_pools`` (Phase 2) does: it rewrites the pool fields of six records
@@ -76,6 +79,9 @@ IMAGE_BASE = 0x10000
 SLOT_TABLE_VA = 0x005140D8
 SLOT_RECORD_STRIDE = 0x48
 SLOTS_PER_UNIT = 11
+EXPANDED_SLOTS_PER_UNIT = 13
+SLOT_TABLE_RECORDS = 44
+STRIDE_INSTRUCTION_VA = 0x00243AE5  # cb_00243ae0: imul eax,eax,unit stride
 UNIT_COUNT = 4                        # offense, 4-3 defense, 3-4 defense, special teams
 SLOT_ABBREV_WCHARS = 5
 SLOT_LONG_WCHARS = 27
@@ -94,9 +100,25 @@ def _require(condition: bool, message: str) -> None:
         raise ModernPositionsError(message)
 
 
-def record_va(unit: int, slot: int) -> int:
-    _require(0 <= unit < UNIT_COUNT and 0 <= slot < SLOTS_PER_UNIT, "slot record out of range")
-    return SLOT_TABLE_VA + SLOT_RECORD_STRIDE * (unit * SLOTS_PER_UNIT + slot)
+def record_va(unit: int, slot: int, slots_per_unit: int = SLOTS_PER_UNIT) -> int:
+    """Address in either layout; the default remains retail for existing callers."""
+
+    _require(slots_per_unit in (SLOTS_PER_UNIT, EXPANDED_SLOTS_PER_UNIT), "unknown slot stride")
+    index = unit * slots_per_unit + slot
+    _require(0 <= unit < UNIT_COUNT and 0 <= slot < slots_per_unit
+             and index < SLOT_TABLE_RECORDS, "slot record out of range")
+    return SLOT_TABLE_VA + SLOT_RECORD_STRIDE * index
+
+
+def layout_stride(payload: bytes) -> int:
+    """Read the whole record-getter instruction, never infer layout from a label."""
+
+    off = _offset(payload, STRIDE_INSTRUCTION_VA)
+    instruction = payload[off:off + 3]
+    for stride in (SLOTS_PER_UNIT, EXPANDED_SLOTS_PER_UNIT):
+        if instruction == bytes((0x6B, 0xC0, stride)):
+            return stride
+    raise ModernPositionsError("unrecognised depth-chart record-getter stride")
 
 
 @dataclass(frozen=True)
@@ -111,6 +133,9 @@ class LabelSite:
     @property
     def va(self) -> int:
         return record_va(self.unit, self.slot)
+
+    def va_for(self, slots_per_unit: int) -> int:
+        return record_va(self.unit, self.slot, slots_per_unit)
 
 
 # The EDGE rename's bytes for the two 3-4 end records (accepted as "before" for the optional part).
@@ -182,25 +207,26 @@ def selected_sites(three_four_line: bool = False) -> tuple[LabelSite, ...]:
 def read_record(payload: bytes, unit: int, slot: int) -> dict[str, object]:
     """Decode one slot record: abbreviation, long name, position enum, chain."""
 
-    off = _offset(payload, record_va(unit, slot))
+    va = record_va(unit, slot, layout_stride(payload))
+    off = _offset(payload, va)
     raw = payload[off: off + SLOT_RECORD_STRIDE]
     _require(len(raw) == SLOT_RECORD_STRIDE, "slot record is truncated")
     abbrev = raw[:2 * SLOT_ABBREV_WCHARS].decode("utf-16le", "replace").split("\0")[0]
     long_name = raw[2 * SLOT_ABBREV_WCHARS: SLOT_TEXT_BYTES].decode("utf-16le", "replace").split("\0")[0]
     position, chain = struct.unpack_from("<II", raw, SLOT_TEXT_BYTES)
-    return {"unit": unit, "slot": slot, "va": record_va(unit, slot), "abbreviation": abbrev,
+    return {"unit": unit, "slot": slot, "va": va, "abbreviation": abbrev,
             "long_name": long_name, "position": position, "chain": chain}
 
 
 def read_units(payload: bytes) -> dict[str, list[dict[str, object]]]:
     """Every defensive slot record of both defensive units, as the screens would show them."""
 
-    return {UNIT_NAMES[unit]: [read_record(payload, unit, slot) for slot in range(SLOTS_PER_UNIT)]
+    return {UNIT_NAMES[unit]: [read_record(payload, unit, slot) for slot in range(layout_stride(payload))]
             for unit in (UNIT_43, UNIT_34)}
 
 
 def _site_state(payload: bytes, site: LabelSite) -> str:
-    off = _offset(payload, site.va)
+    off = _offset(payload, site.va_for(layout_stride(payload)))
     got = payload[off: off + SLOT_TEXT_BYTES]
     if got == slot_text(*site.after):
         return "applied"
@@ -213,8 +239,9 @@ def pool_profile(payload: bytes, sites: Sequence[LabelSite] | None = None) -> st
     """Name of the pool profile every record's (position, chain) matches, or None when mixed."""
 
     sites = SITES if sites is None else sites
+    stride = layout_stride(payload)
     for name, profile in POOL_PROFILES.items():
-        if all(struct.unpack_from("<II", payload, _offset(payload, site.va) + SLOT_TEXT_BYTES) == profile[site.label]
+        if all(struct.unpack_from("<II", payload, _offset(payload, site.va_for(stride)) + SLOT_TEXT_BYTES) == profile[site.label]
                for site in sites):
             return name
     return None
@@ -255,15 +282,17 @@ def apply(payload: bytes, three_four_line: bool = False) -> tuple[bytes, Mapping
     sections = _sections(payload)
     touched: set[int] = set()
     edits = []
+    stride = layout_stride(payload)
     for site in selected_sites(three_four_line):
-        off = _offset(payload, site.va)
+        va = site.va_for(stride)
+        off = _offset(payload, va)
         before = bytes(buf[off: off + SLOT_TEXT_BYTES])
         after = slot_text(*site.after)
         _require(len(before) == len(after) == SLOT_TEXT_BYTES, f"{site.label}: record length")
         buf[off: off + SLOT_TEXT_BYTES] = after
         touched.add(_section_for_offset(sections, off).index)
         edits.append({"label": site.label, "unit": UNIT_NAMES[site.unit], "slot": site.slot,
-                      "va": f"0x{site.va:x}", "file_offset": f"0x{off:x}",
+                      "va": f"0x{va:x}", "file_offset": f"0x{off:x}",
                       "before": before.decode("utf-16le", "replace").replace("\0", "|").rstrip("|"),
                       "after": f"{site.after[0]} / {site.after[1]}"})
     for section in sections:
@@ -282,5 +311,6 @@ __all__ = [
     "EXPECTED_POOLS", "LabelSite", "ModernPositionsError", "ONE_POOL_POOLS", "POOL_PROFILES", "SITES", "SLOT_ABBREV_WCHARS",
     "SLOT_LONG_WCHARS", "SLOT_RECORD_STRIDE", "SLOT_TABLE_VA", "SLOT_TEXT_BYTES", "UNIT_34",
     "UNIT_43", "UNIT_NAMES", "apply", "pool_profile", "read_record", "read_units", "record_va", "selected_sites",
-    "site_states", "slot_text", "status",
+    "site_states", "slot_text", "status", "layout_stride", "SLOTS_PER_UNIT", "EXPANDED_SLOTS_PER_UNIT",
+    "SLOT_TABLE_RECORDS", "STRIDE_INSTRUCTION_VA",
 ]

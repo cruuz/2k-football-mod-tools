@@ -51,6 +51,10 @@ class CaveReferenceTests(unittest.TestCase):
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
                                           "scheme_labels", "camera", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
         cls.patched, _receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True, dynamic_kickoff=True)
+        from mod_editor.core import nfl2k5_position_pools as pools
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        cls.patched, _ = pools.apply(cls.patched)
+        cls.patched, _ = rows.apply(cls.patched)
         text_lo, text_hi, _raw, _rawsize = cls.sec[".text"]
         # relative call/jump targets from a linear sweep of .text (byte-granular so no instruction is missed)
         targets: dict[int, list[int]] = {}
@@ -144,6 +148,15 @@ class CaveReferenceTests(unittest.TestCase):
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail), source_root=REPO)
         for start in (0x1AFDF0, 0x28B410, 0x1D82D0, 0x325E70, 0x2979F0, 0xB4A60, 0x2BA840):
             self.assertTrue(manifest.overlaps(start, start + 1), hex(start))
+    def test_depth_rows_share_the_unreferenced_pools_cave_including_its_entry(self) -> None:
+        from mod_editor.core import nfl2k5_position_pools as pools
+        from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        self.assertEqual(rows.status(self.patched), "applied")
+        self.assertEqual(self.patched[pools.CAVE_VA - BASE:pools.CAVE_VA - BASE + pools.CAVE_SIZE], pools.cave_bytes())
+        # Unlike an in-place routine rewrite, this is a cave: even the entry
+        # must have no retail callers or pointers.
+        self.assertEqual({va: refs for va, refs in self.targets.items()
+                          if pools.CAVE_VA <= va < pools.CAVE_VA + pools.CAVE_SIZE}, {})
 
 
 if __name__ == "__main__":
