@@ -2,6 +2,60 @@
 
 ## v1.0 RC84 — (unreleased)
 
+- **★ Rosters: team membership — release, sign, move, swap.** Finn's core operations, as
+  pointer-list edits plus the team's `+0x11C` count byte and the free-agent list's count, under the
+  grid: **Release to free agency**, **Sign to ▾** a team (a free agent) or **Move to ▾** (a rostered
+  player), and **Swap with…** another rostered player. Finn's own limits apply and refuse with his
+  own words — a club must keep **42** players, may hold **54**, and the free-agent list is full at
+  the game's own ceiling: its append helper at `0x242560` refuses at `cmp eax,0x9C4` (**2,500**) and
+  never reallocates, so the list is a fixed 2,500-slot buffer whose tail past the count is junk
+  (real saves carry stale absolute pointers there, which is why "the zero run after the list" is
+  not the capacity). The **draft class cannot be moved** ("Invalid operation on a draft class"): two
+  real saves show the game regenerates 380 prospects into a fixed record window (1937..2316 in
+  retail, celebrity records included) at load and marks them itself with `+0x08` bit 4
+  (`FUN_002BE6F0`), so a team pointer at a prospect would not take him out of the class. A player
+  who joins a team is ranked at the bottom of his position's chain (the auto depth chart's own
+  rank / side rule); a released player's record is not touched (retail free agents keep their old
+  bits). Depth order is preserved, every operation undoes, the team list counts follow, **Show my
+  changes** names moves as text (`IND (12 of 53) -> Free Agents`), the roster-edits document
+  carries them with the destination slot and the depth bits pinned, Build's roster-edits step
+  replays them as one checked transaction (a document that would break the rules on the target
+  roster is skipped with the reason, the fields still land), and the CSV's `team` column now signs,
+  moves and releases. Verified on the retail body (2,500-slot list, 53-man clubs, the AFC squad
+  at 43, BRP at 54, alumni sides that share records with the clubs) and on the real franchise
+  saves. Unwitnessed in game.
+- **★ Rosters: Check & repair on load.** Finn's editor silently cleared the "headless" bit on load
+  and told you afterwards. The page now plans every mechanical repair it can prove when a roster
+  loads — the headless bit (`+0x0C` bit 7; the retail disc itself ships one, Carlos Joseph), a
+  player on a position code the loaded scheme retired, a team count byte that overstates its
+  pointer list, a duplicate entry in a team or free-agent list — lists them on the Checks tab,
+  touches nothing until **Repair (N)** is pressed, then applies them with an itemised receipt and
+  an undo.
+- **★ Rosters: `.PlayerData` export and restore.** Finn's backup container (150-byte entries: the
+  raw record, 16-byte first and last name, 32-byte college, `u16 7`) is read and written from the
+  CSV menu, so community backups load. Restore matches by **name + play-by-play index** (a unique
+  name still matches when the index differs, and says so; an ambiguous name is skipped, not
+  guessed), never overwrites a name, brings the college back by name from the roster's own table,
+  never moves a pointer and leaves the studio's star tag alone; whole record or attributes only.
+- **★ Rosters: the game's own create-a-player templates, all 28 slots proved.** The 36-record
+  table at `.rdata 0x5561B8` (three per position, QB..ILB; C, G, T, DT and DE have none) is read
+  through its only apply routine, `FUN_00343460`, which fixes every slot to a rating byte. A `-1`
+  slot is **not** "leave alone": the routine writes 75 (`mov bl,0x4B`) and clamps everything to
+  0..100. **Template ▾** on the toolbar offers the player's three first — read from the loaded
+  disc's executable when there is one, else the pinned retail table — and applies with undo.
+- **★ Rosters: play-by-play and portrait pickers.** The two ids get a searchable list beside the
+  spin box. Play-by-play: the ids the loaded roster itself uses (`Last, First`), the jersey-number
+  call-outs 9000–9099, the 9100 "announce the number" fallback and the 485-name recorded surname
+  bank at 9300+ — all proved in the executable; any other id can still be typed, and the wider
+  audio-bank index Finn shipped from his install is not decoded. Portraits: the **4,303** portraits
+  the disc carries, by id, with the roster records that select them, from the shipped portrait
+  catalogue; when the catalogue is absent the spin box stays and the picker says why.
+- **`docs/nfl2k5_ratings_and_styles.md`.** The ratings → animation study as a shareable document:
+  the 28 rating bytes with their getters and retail distributions, the three style channels (Power
+  Run Style's 33 / 66 thresholds, the Scramble parity bit at `0x002D92B1` and the mobile-QB test,
+  Kicking Style as an unproved channel), Best Hand, the template slot map, and what the studio
+  exposes — with every hypothesis labelled as one.
+
 - **Career stats from your own CSV (Build tab, opt-in).** A new pass, built by GPT-6 Astra and wired here,
   imports real per-season counters for the roster's past seasons — passing, rushing, receiving, defence and
   kicking, 31 fields whose IDs were read off the game's own display-selector table (`0xA8A51C + 28·selector`);

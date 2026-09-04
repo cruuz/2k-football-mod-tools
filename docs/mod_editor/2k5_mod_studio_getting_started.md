@@ -1116,9 +1116,30 @@ league or the list, and restore height, weight and date of birth to what the ros
 **CSV ▾** exports the list or the whole league and reads it back — it also reads Finn's
 semicolon-delimited export, and a spreadsheet with three columns is a legal edit.
 
-**Check & diff.** **Check this roster** flags jerseys outside the NFL range for a position, ratings
-above 99, impossible heights and dates, and the "headless" bit Finn's editor silently clears on load.
-**Show my changes** lists every field you changed against the roster you loaded.
+**Teams (RC84).** Under the grid: **Release to free agency**, **Sign to ▾** / **Move to ▾** a team,
+**Swap with…** another rostered player. These are Finn's operations done his way — the team's pointer
+list and its count byte, the free-agent list and its count — with his limits: a club must keep 42,
+may hold 54, and the free-agent list is full at 2,500 (the game's own ceiling). The draft class is
+off limits, because the game regenerates it into a fixed window of records every time it loads a
+roster; edit prospects in place. A player who joins a team lands at the bottom of his position's
+depth chain. Every move undoes, shows up in **Show my changes** as text, travels in the roster-edits
+document (Build replays it) and can be done from a spreadsheet through the CSV's `team` column.
+
+**Check & repair (RC84).** When a roster loads, the Checks tab lists every mechanical repair the page
+can prove — the "headless" bit (Finn cleared it silently; the retail disc itself has one), a player
+on a position the loaded scheme retired, a team count byte that overstates its list, a duplicate
+list entry — and changes nothing until you press **Repair (N)**. You get an itemised receipt and an
+undo. **Check this roster** flags jerseys outside the NFL range for a position, ratings above 99,
+impossible heights and dates, clubs under 42 or over 54, and the headless bit. **Show my changes**
+lists every field you changed against the roster you loaded.
+
+**Templates, pickers, backups (RC84).** **Template ▾** applies one of the game's own 36
+create-a-player templates (Pocket QB, Speed WR, Power HB, …; the player's three first; C, G, T, DT
+and DE have none in the game's table) exactly as the game does. The play-by-play and portrait cards
+have a **…** button that opens a searchable list: the play-by-play ids this roster uses, the
+jersey-number call-outs and the recorded surname bank; the 4,303 portraits on the disc with the
+players that wear them. **CSV ▾** also exports and restores Finn's **`.PlayerData`** backups, matched
+back by name and play-by-play index, so a community backup restores here.
 
 **Writing.** Your source is never touched.
 

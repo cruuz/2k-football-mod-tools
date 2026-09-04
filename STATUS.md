@@ -19,6 +19,14 @@ Source/UI versions are **2K5 RC84** and **APF alpha.84**.
   defensive-end one. Codes are never written outside the scheme: the picker greys the retired OLB
   out, and a CSV that brings OLB rows onto a reclassified roster maps them to LB and says so.
   A selector overrides the detection. Unwitnessed in game.
+- **★ Rosters, phase 2 (Finn parity):** team membership — release / sign / move / swap as pointer-list
+  edits with Finn's 42 / 54 limits and the game's own 2,500-slot free-agent ceiling (append helper
+  `0x242560`), the draft class refused because the game regenerates it into a fixed record window at
+  load; **Check & repair** offered on load with a receipt (never silent); **`.PlayerData`** export and
+  restore under the studio's identity rules; the 36 **create-a-player templates** with all 28 slots
+  proved from `FUN_00343460` (`-1` writes 75); searchable **play-by-play and portrait pickers** built
+  from the disc's own data (4,303 portraits); and `docs/nfl2k5_ratings_and_styles.md`. Moves travel
+  in the roster-edits document and the CSV; Build replays them. Unwitnessed in game.
 
 ## Beta 59 (unreleased) — ★ Rosters: the whole roster editable, on the disc and in a save
 
