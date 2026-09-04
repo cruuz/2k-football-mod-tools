@@ -113,6 +113,11 @@ class SharePanel(QWidget):
         create_layout = QVBoxLayout(create)
         self.base_field, self.base_button = self._path_row(create_layout, "Base image (what you started from)", self._choose_base)
         self.patched_field, self.patched_button = self._path_row(create_layout, "Patched copy", self._choose_patched)
+        # A patch built on a working copy still applies to retail when every run's expected bytes
+        # are the retail bytes. Point this at a retail dump and the pack says so, instead of
+        # warning everyone who opens it about a "custom base" that never affected them.
+        self.retail_field, self.retail_button = self._path_row(
+            create_layout, "Retail disc image (optional, proves the patch applies to retail)", self._choose_retail)
         form = QFormLayout()
         self.name_field = QLineEdit()
         self.name_field.setPlaceholderText("What this patch does, e.g. ESPN scorebug + 80-yard bombs")
@@ -171,6 +176,12 @@ class SharePanel(QWidget):
         self.pack_summary.setTextInteractionFlags(Qt.TextSelectableByMouse)
         apply_layout.addWidget(self.pack_summary)
         self.source_field, self.source_button = self._path_row(apply_layout, "Your disc image (never modified)", self._choose_source)
+        # Which disc this is decides whether a byte-run patch can ever apply, so say it as soon
+        # as the path is known rather than after a check has counted 2,802 mismatching runs.
+        self.source_identity = QLabel("")
+        self.source_identity.setWordWrap(True)
+        self.source_identity.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        apply_layout.addWidget(self.source_identity)
         self.check_status = QLabel("")
         self.check_status.setWordWrap(True)
         apply_layout.addWidget(self.check_status)
@@ -280,8 +291,13 @@ class SharePanel(QWidget):
             lines.append(info["description"])
         lines.append(f"{info['runs']} run(s), {_human(info['bytes'])} changed; patch file {_human(info['pack_bytes'])}; "
                      f"created {info['created'] or '?'} with {info['tool'].get('name') or '?'} {info['tool'].get('version') or ''}")
-        lines.append("Base: " + ("the retail disc image." if base["is_retail"]
-                                 else f"NOT the retail disc image ({base['label'] or 'custom'}); your copy must match that base."))
+        if base["is_retail"]:
+            lines.append("Base: the retail disc image.")
+        elif base.get("is_retail_equivalent"):
+            lines.append("Base: retail-equivalent. The author built on a working copy, but every byte this "
+                         "patch changes was proved against the retail disc image, so a retail dump takes it.")
+        else:
+            lines.append(f"Base: NOT the retail disc image ({base['label'] or 'custom'}); your copy must match that base.")
         if info["regions"]:
             lines.append("Touches: " + ", ".join(f"{region['name']} ({region['runs']} run(s), {_human(region['bytes'])})"
                                                  for region in info["regions"]))
@@ -316,6 +332,9 @@ class SharePanel(QWidget):
     def _choose_patched(self) -> None:
         self._choose_file(self.patched_field, "Choose the patched copy", IMAGE_FILTER)
 
+    def _choose_retail(self) -> None:
+        self._choose_file(self.retail_field, "Choose a retail disc image to prove the patch against", IMAGE_FILTER)
+
     def _choose_project(self) -> None:
         self._choose_file(self.project_field, "Choose a studio project to embed", PROJECT_FILTER)
 
@@ -347,9 +366,28 @@ class SharePanel(QWidget):
         if self._choose_file(self.source_field, "Choose your own disc image", IMAGE_FILTER) is not None:
             self._check_state = None
             self.check_status.setText("")
+            self.describe_source()
             self._refresh()
             if self._pack is not None:
                 self.start_check()
+
+    def describe_source(self) -> str:
+        """Name the disc image in the source field (also used by tests)."""
+
+        path = self.source_field.text().strip()
+        text = ""
+        if path:
+            try:
+                from mod_editor.core import nfl2k5_disc_identity as identity
+                found = identity.identify(path)
+            except Exception:  # noqa: BLE001 -- naming the disc must never break the panel
+                found = None
+            if found is not None:
+                text = ("Your image: " + found.line()
+                        + ("" if found.can_take_a_byte_run_patch
+                           else " Use the Build tab to make this mod yourself instead."))
+        self.source_identity.setText(text)
+        return text
 
     def _choose_target(self) -> None:
         chosen, _f = QFileDialog.getSaveFileName(self, "Choose where to save the patched copy",
@@ -405,6 +443,7 @@ class SharePanel(QWidget):
             "description": self.description_field.toPlainText(),
             "assets": list(self._asset_paths),
             "project": self.project_field.text().strip() or None,
+            "retail_image": self.retail_field.text().strip() or None,
         }
         overwrite = False
         if out.exists():
@@ -425,6 +464,8 @@ class SharePanel(QWidget):
         text = (f"Wrote {Path(receipt['pack']).name} ({_human(receipt['pack_bytes'])}): {receipt['runs']} run(s), "
                 f"{_human(receipt['bytes'])} changed, {len(receipt['assets'])} asset(s), in {receipt['elapsed_seconds']} s. "
                 + ("Base is the retail disc image." if base["is_retail"]
+                   else "Base is retail-equivalent: every changed byte was proved against the retail disc image."
+                   if base.get("is_retail_equivalent")
                    else "Base is NOT the retail disc image: only people with the same base can apply this."))
         if receipt["recipe_lines"]:
             text += " Recipe: " + "; ".join(receipt["recipe_lines"]) + "."

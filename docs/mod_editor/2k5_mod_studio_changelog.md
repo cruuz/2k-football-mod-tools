@@ -2,6 +2,31 @@
 
 ## v1.0 RC83 — (unreleased)
 
+- **Fixed: a refusal now says which disc image you handed it.** One report carried two failures
+  on one file: Build & Share -> Advanced died with `pack-0 schedule template is foreign: ROST
+  stored size is not retail`, and Apply refused with `2802 run(s) hold bytes that are neither
+  the expected base nor the patched bytes`. Both sentences were true and neither was actionable,
+  because both are the same sentence for four different images. A new identifier
+  (`mod_editor/core/nfl2k5_disc_identity.py`) finds `default.xbe` and `vc_53450030/0` through the
+  disc directory, hashes them, compares their positions with the retail layout, and names the
+  image: **retail dump (xiso)**, **retail dump (raw/redump with video partition)**, **repacked
+  disc**, **modified disc**, or **unknown image**, each with a sentence saying what to do. The
+  Build tab's source line and the Apply panel show it the moment you choose a file, and every
+  Build refusal, the schedule step's refusal and the Apply MISMATCH text quote it.
+- **A repacked disc builds.** Retail file bytes rebuilt at other sectors are a legal image for
+  Build & Share, which resolves every file through the disc directory, and the schedule step now
+  finds the ROST roster resource by **searching the pack for it** rather than trusting pack
+  offset 0x392800, so a rearranged pack is read where the resource really is instead of being
+  called foreign because one u32 was somewhere else. What a repack cannot do is take a
+  `.2k5patch`, since a patch addresses bytes by their position in the game partition; Apply now
+  says exactly that and points at the Build tab.
+- **Published patches stop calling themselves a "custom base".** A patch exported from a working
+  copy still applies to a retail dump when every run's expected bytes are the retail bytes.
+  `modpack.export` takes a retail image (`--retail-image`, or the new optional field on the
+  Share page), proves every run against it, and records `is_retail_equivalent` in the manifest;
+  Apply then reads "Base: retail-equivalent" instead of warning about a base that never affected
+  the person reading it. Without that proof nothing is claimed.
+
 - **Fixed: "made the patch and didn't get the new scorebug at the bottom."** The ESPN scorebug
   was the one Build step that could only run on the machine it was written on. Its inputs are
   the retail score_bug scene and three retail P8 atlases, plus our repaints of those atlases —

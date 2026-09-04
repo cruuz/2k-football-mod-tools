@@ -248,6 +248,7 @@ mod_editor/core/modpack.py
 mod_editor/core/nfl2k5_accel_ramp.py
 mod_editor/core/nfl2k5_camera.py
 mod_editor/core/nfl2k5_catch_slider.py
+mod_editor/core/nfl2k5_disc_identity.py
 mod_editor/core/nfl2k5_draft_ai.py
 mod_editor/core/nfl2k5_edge_rename.py
 mod_editor/core/nfl2k5_hud_layout.py
