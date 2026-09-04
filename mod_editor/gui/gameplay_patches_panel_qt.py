@@ -95,6 +95,16 @@ PATCHES = (
      "Retail: the Pro Bowl Votes tabs run QB, HB, FB, WR, TE, C, G, T, then K and P before the defence. Patch: "
      "the tab list runs offence, defence, then K and P (one pointer list; the vote scanner reads each tab's "
      "own position, and no other screen uses the list). Unwitnessed in game."),
+    ("penalties", "Penalties at NFL rates + a working Chop Block toggle",
+     "Retail: every penalty slider drives a hidden curve table (a probability per block, a hazard while the ball "
+     "is in flight, a grace window after the release), tuned so the default 50 flags far more holding, face masks "
+     "and clipping than an NFL Sunday, the incidental face mask is still the 2004 five-yard call, and the Chop "
+     "Block On/Off toggle does nothing (chop blocks follow the Clipping slider). Patch: seven curve tables are "
+     "re-knotted in place so the default 50 lands near NFL 2024 per-game rates (0 still means none, 100 keeps the "
+     "retail extreme), the incidental face mask becomes 15 yards, and the Chop Block toggle is wired through a "
+     "10-byte stub so it really silences chop blocks (retail profiles have it Off: switch it On in Penalty "
+     "Settings). The rates are ESTIMATED pending a calibration playtest; illegal formation, illegal contact and "
+     "12 men do not exist in the engine. Unwitnessed in game."),
     ("seven_on_seven", "7-on-7 practice mode",
      "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
      "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "
@@ -129,6 +139,9 @@ class _Task(QRunnable):
 
 if not mod_build.SEVEN_ON_SEVEN_RELEASED:
     PATCHES = tuple(entry for entry in PATCHES if entry[0] != "seven_on_seven")
+
+# BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
+STRING_TOGGLES = {"penalties": "nfl"}
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
@@ -243,7 +256,8 @@ class GameplayPatchesPanel(QWidget):
             overwrite=Path(self.target_field.text()).exists() if self.target_field.text() else False,
         )
         for key, check in self.checks.items():
-            setattr(plan, key, check.isChecked())
+            on = check.isChecked()
+            setattr(plan, key, (STRING_TOGGLES[key] if on else "") if key in STRING_TOGGLES else on)
         return plan
 
     def _refresh(self) -> None:

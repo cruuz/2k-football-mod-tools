@@ -870,6 +870,27 @@ page gains the game's own Position picker after Last Name, in roster mode and in
 (the ratings stay, the overall follows the new position; run Depth Chart -> Auto afterwards), and
 the Pro Bowl Votes tabs run offence, defence, then kicker and punter. Both are unwitnessed in game.
 
+**Penalties at NFL rates, Chop Block toggle** (Gameplay group, advanced and experimental presets):
+retail's default 50 on every slider flags far more holding, face masks and clipping than an NFL
+Sunday, the incidental face mask is still the 2004 five-yard call, and the Chop Block On/Off toggle
+does nothing (chop blocks ride the Clipping slider). The patch re-knots seven of the hidden
+slider-to-rate curve tables in place so 50 lands near the NFL 2024 per-team-game rates (0 still
+means none, 100 keeps the retail extreme; every Penalty Settings slider still moves in 40 steps and
+"All Penalties Off" still kills every flag), makes the incidental face mask 15 yards, and wires the
+Chop Block toggle for real. Retail profiles carry Chop Block **Off**: switch it On in Penalty
+Settings if you want chop blocks called. Illegal formation, illegal contact and 12 men do not exist
+in the engine. **The rates are an estimate** (the engine has no calls-per-game number; each slider
+drives a probability per event, a hazard per second or a grace window, and how often those events
+happen is unmeasured). Calibration recipe: on a **retail** copy at default sliders, play or watch
+six CPU-vs-CPU games (coach or demo mode; Practice -> Scrimmage does not count, penalties are off in
+practice) and tally the flags by type from the play log and the referee announcements (holding,
+false start, DPI, roughing, face mask, defensive holding, clipping, late hit, offside/NZI, delay).
+Divide the NFL rate (per team-game: offensive holding 1.30, false start 1.30, DPI 0.58, defensive
+holding 0.34, unnecessary roughness 0.34, delay 0.32, roughing the passer 0.18, face mask 0.17,
+NZI 0.17, ineligible downfield 0.14) by what you counted, scale each table's 50 knot by that
+factor (never above its 100 knot), and send the numbers in: they become the shipped profile.
+Unwitnessed in game.
+
 ## If xemu says "insert a disc" or stops at the Xbox logo
 
 Every disc the studio writes is a plain XISO; the changed bytes are inside `default.xbe` and the

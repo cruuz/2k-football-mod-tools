@@ -12,6 +12,21 @@
   scanner reads each tab's own position and no other screen shares the list. In every preset.
 - `nfl2k5_rdata_sites.py`: the shared retail-pin / status / apply / digest-repin helper those two
   and future fixed-span `.rdata` patches use.
+- **Penalties at NFL rates + a working Chop Block toggle** (`nfl2k5_penalties.py`, advanced and
+  experimental presets; `BuildPlan.penalties = "nfl"`). Every penalty slider drives a hidden
+  `.rdata` curve table read through the game's interpolator (`FUN_001b0ae0`); seven of the nine are
+  re-knotted in place (offensive/defensive holding, clipping, roughing window, late-hit window, face
+  mask, ineligible downfield; DPI hazard/radius and the NZI zone kept) so the default 50 lands near
+  NFL 2024 per-team-game rates while 0 still means none and 100 keeps the retail extreme. The
+  incidental face mask (idx 25) becomes 15 yards. The Chop Block On/Off toggle, dead in retail
+  because idx 9 and 10 share the Clipping-slider case of the enable pass (`FUN_000b1440`), is wired
+  through a 10-byte stub (`mov eax,[0xE60064]; jmp 0xB1558`) hosted in the dead `FUN_000b4a60`
+  (zero references in the retail image; both cave gates pass) -- note retail profiles carry Chop
+  Block **Off**, so switch it On in Penalty Settings. **The rates are ESTIMATED** pending a
+  calibration playtest (the engine has no calls-per-game number; see the getting-started recipe).
+  Illegal formation, illegal contact and 12 men on the field do not exist in the engine, so no
+  patch can add them. 141 bytes over `.text`/`.rdata`/`.data`; unicorn-proven interpolator and
+  enable-pass runs; unwitnessed in game.
 
 - **★ Models: texture coordinates now follow the game's own per-mesh rule.** Beta 56
   decoded every model's UVs with one fixed formula (`u = (n + 1) / 2`, `v = (1 - n) / 2`,

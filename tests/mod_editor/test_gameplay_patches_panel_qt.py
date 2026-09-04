@@ -27,7 +27,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def test_three_patches_with_explanations_and_gating(self) -> None:
-        self.assertEqual([k for k, _l, _e in PATCHES], ["catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order"])
+        self.assertEqual([k for k, _l, _e in PATCHES], ["catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties"])
         for _k, _l, explanation in PATCHES:
             self.assertIn("Retail", explanation)
             self.assertIn("Patch", explanation)
@@ -38,10 +38,10 @@ class GameplayPatchesPanelTests(unittest.TestCase):
             try:
                 panel.apply_state(mod_build.inspect(source))
                 # the throw-tuning synthetic XBE models every cave site but not the camera preset
-                # table, the Edit Player row lists or the Pro Bowl tab list, so those toggles must gate
+                # table, the Edit Player row lists, the Pro Bowl tab list or the penalty curves, so those toggles must gate
                 # themselves off as "foreign" there
                 for key, check in panel.checks.items():
-                    if key in ("camera", "kick_rules", "overtime", "position_row", "probowl_order"):
+                    if key in ("camera", "kick_rules", "overtime", "position_row", "probowl_order", "penalties"):
                         self.assertFalse(check.isEnabled(), key)
                         self.assertIn("neither retail nor this patch", check.toolTip())
                     else:
