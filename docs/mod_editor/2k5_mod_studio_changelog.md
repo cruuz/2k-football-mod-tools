@@ -40,6 +40,14 @@
   row read "--"; a mid-season trade shows the season-end team. Six column lists get the new
   pointer in place; the caves live in the unused tail of the dead `FUN_00046ee0` (0x47220..0x47420).
   Unwitnessed in game; the caves run under unicorn in `tests/mod_editor/test_nfl2k5_team_column.py`.
+- **Real team history for the roster's past seasons.** The Build tab's "Real team history" toggle (ADVANCED and
+  EXPERIMENTAL presets; disc images only) writes the real club of every past season the retail roster carries stats
+  for into the roster template's own history pool (field 87, `data/nfl2k5_retail_team_history.csv`, generated from
+  nflverse-data, CC-BY-4.0: 1,148 of the 1,325 retail players with history matched, 5,068 of 5,867 season rows, 86 %;
+  5,042 rows land in the pool, 36,866 -> 41,908 of 50,000 dwords). Only franchises created from the copy show it; a
+  user CSV (last_name, first_name, birth_date, season, team) replaces the built-in data and rides in the `.2k5patch`
+  as `assets/text/`. Relocated franchises show the 2004 abbreviation (Oilers -> TEN, LA Raiders -> OAK). The pool
+  writer runs after the position-pool and 2026-schedule passes. Unwitnessed in game.
 - **7-on-7 practice mode (Experimental preset, or its own checkbox on Gameplay Patches and Build).**
   Practice -> Scrimmage -> Practice Type gains a fifth value, **7-On-7**: it plays as Full
   Scrimmage with the practice playbook loaded for both teams (Basic Training's own path) and
