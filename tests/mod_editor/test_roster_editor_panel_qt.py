@@ -31,12 +31,15 @@ from mod_editor.gui.roster_editor_panel_qt import (  # noqa: E402
     UndoEntry,
     GlobalEditDialog,
     RosterEditorPanel,
+    SwapPlayerDialog,
     UndoStack,
     ValueBar,
 )
 from test_nfl2k5_roster_records import (  # noqa: E402
     COLLEGES,
+    LEAGUE_CLUB_SIZE,
     SAMPLE,
+    league_body,
     one_pool_body,
     retail_front_body,
     synthetic_body,
@@ -407,6 +410,141 @@ class RosterEditorPanelTests(unittest.TestCase):
         finally:
             panel.deleteLater()
             self.application.processEvents()
+
+
+class MembershipPanelTests(unittest.TestCase):
+    """Release / Sign / Move / Swap under the grid, on a league big enough for Finn's rules."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.application = QApplication.instance() or QApplication([])
+
+    def setUp(self) -> None:
+        self.body = league_body()
+        self.panel = RosterEditorPanel()
+        self.panel.load_document(rr.load_body(self.body), label="league")
+        self.application.processEvents()
+
+    def tearDown(self) -> None:
+        self.panel.deleteLater()
+        self.application.processEvents()
+
+    def rows(self) -> list[str]:
+        return [self.panel.team_list.item(i).text() for i in range(self.panel.team_list.count())]
+
+    def goto(self, row: int, cell: int = 0) -> rr.Player:
+        self.panel.team_list.setCurrentRow(row)
+        self.application.processEvents()
+        self.panel.player_table.setCurrentCell(cell, 0)
+        self.application.processEvents()
+        player = self.panel.selected_player()
+        assert player is not None
+        return player
+
+    def test_the_buttons_follow_the_selection(self) -> None:
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        self.assertTrue(self.panel.release_button.isEnabled())
+        self.assertTrue(self.panel.swap_button.isEnabled())
+        self.assertEqual(self.panel.team_menu_button.text(), "Move to ▾")
+        self.goto(self.panel.team_list.count() - 3)                  # Free Agents
+        self.assertFalse(self.panel.release_button.isEnabled())
+        self.assertFalse(self.panel.swap_button.isEnabled())
+        self.assertTrue(self.panel.team_menu_button.isEnabled())
+        self.assertEqual(self.panel.team_menu_button.text(), "Sign to ▾")
+        self.goto(self.panel.team_list.count() - 2)                  # Draft Class
+        self.assertFalse(self.panel.release_button.isEnabled())
+        self.assertFalse(self.panel.team_menu_button.isEnabled())
+        self.assertFalse(self.panel.swap_button.isEnabled())
+        self.panel._fill_team_menu()
+        self.assertEqual(len(self.panel.team_menu.actions()), 0, "nothing is offered for a prospect")
+
+    def test_release_updates_the_lists_and_undo_puts_him_back(self) -> None:
+        player = self.goto(0, 5)
+        receipt = self.panel.release_selected()
+        assert receipt is not None
+        self.assertEqual(receipt["from"]["slot"], 5)
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1}")
+        self.assertEqual(self.rows()[-3], "Free Agents · 4")
+        self.assertIn((player.pool, player.index), self.panel._dirty)
+        self.assertNotIn(player, self.panel.visible_players())
+        self.assertIn("Released", self.panel.status_label.text())
+        self.assertEqual(self.panel.undo(), f"{player.display}: release")
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE}")
+        self.assertIs(self.panel.visible_players()[5], player)
+        self.assertNotIn((player.pool, player.index), self.panel._dirty)
+        self.assertEqual(self.panel.document.to_body(), self.body)
+        self.panel.redo()
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1}")
+
+    def test_a_refusal_is_reported_on_the_status_line_and_changes_nothing(self) -> None:
+        self.panel.load_document(rr.load_body(league_body(rr.TEAM_MIN_PLAYERS)), label="tight")
+        self.application.processEvents()
+        self.goto(0, 0)
+        self.assertIsNone(self.panel.release_selected())
+        self.assertIn("must maintain at least 42", self.panel.status_label.text())
+        self.assertEqual(self.panel.undo_stack.depth, (0, 0))
+        self.assertEqual(self.panel.document.diff(), [])
+
+    def test_sign_and_move_through_the_team_menu(self) -> None:
+        free_agent = self.goto(self.panel.team_list.count() - 3)
+        self.panel._fill_team_menu()
+        labels = [a.text() for a in self.panel.team_menu.actions() if a.text()]
+        self.assertTrue(labels[0].startswith("IND ·"))
+        receipt = self.panel.send_selected_to(1)
+        assert receipt is not None
+        self.assertEqual((receipt["operation"], receipt["to"]["team"]), ("sign", "ATL"))
+        self.assertEqual(self.rows()[1], f"ATL · {LEAGUE_CLUB_SIZE + 1}")
+        self.assertIn("Sign:", self.panel.status_label.text())
+        self.goto(1, LEAGUE_CLUB_SIZE)                    # he sits at the bottom of ATL
+        self.assertIs(self.panel.selected_player(), free_agent)
+        self.assertIn(f"ATL ({LEAGUE_CLUB_SIZE + 1} of {LEAGUE_CLUB_SIZE + 1})", self.panel.header_contract.text())
+        self.assertEqual(self.panel.team_menu_button.text(), "Move to ▾")
+        moved = self.panel.send_selected_to(0)
+        assert moved is not None
+        self.assertEqual((moved["operation"], moved["from"]["team"], moved["to"]["team"]), ("transfer", "ATL", "IND"))
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        self.panel.undo()
+        self.panel.undo()
+        self.assertEqual(self.panel.document.to_body(), self.body)
+
+    def test_swap_through_the_dialog_and_the_diff_names_the_teams(self) -> None:
+        player = self.goto(0, 2)
+        dialog = SwapPlayerDialog(self.panel, player)
+        self.assertEqual(dialog.team_combo.currentData(), 1, "defaults to the other club")
+        other = self.panel.document.team_players(1)[4]
+        self.assertTrue(dialog.select_player(other))
+        self.assertIs(dialog.chosen(), other)
+        receipt = self.panel.swap_selected_with(dialog.chosen())
+        assert receipt is not None
+        self.assertEqual(receipt["operation"], "swap")
+        self.assertIs(self.panel.visible_players()[2], other)
+        self.assertIs(self.panel.document.team_players(1)[4], player)
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        entries = self.panel.refresh_diff()
+        self.assertEqual({e["name"] for e in entries}, {player.display, other.display})
+        report = self.panel.report.toPlainText()
+        self.assertIn(f"team: IND (3 of {LEAGUE_CLUB_SIZE}) -> ATL (5 of {LEAGUE_CLUB_SIZE})", report)
+        self.panel.undo()
+        self.assertEqual(self.panel.document.to_body(), self.body)
+
+    def test_the_csv_team_column_and_the_edits_document_carry_moves(self) -> None:
+        text = self.panel.export_csv_text(everything=True)
+        mover = self.panel.document.team_players(1)[3]
+        edited = text.replace(f"primary,{mover.index},ATL,", f"primary,{mover.index},IND,")
+        receipt = self.panel.import_csv_text(edited)
+        self.assertEqual(receipt["changed"], 1)
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1}", f"ATL · {LEAGUE_CLUB_SIZE - 1}"])
+        self.assertIn((mover.pool, mover.index), self.panel._dirty)
+        document = self.panel.edits_document()
+        self.assertEqual(len(document["moves"]), 1)
+        self.assertEqual(document["moves"][0]["to_teams"][0]["team"], "IND")
+        replayed, replay = rr.apply_body(self.body, document)
+        self.assertEqual(replay["players_moved"], 1)
+        self.assertEqual(replayed, self.panel.document.to_body())
+        self.panel.undo()
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        self.assertEqual(self.panel.document.to_body(), self.body)
+        self.assertNotIn((mover.pool, mover.index), self.panel._dirty)
 
 
 class UndoStackTests(unittest.TestCase):
