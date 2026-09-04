@@ -70,7 +70,7 @@ class StudioShellLayoutTests(unittest.TestCase):
             self.assertNotIn(moved, titles)
         patches = self.window._gameplay_patches_panel
         assert patches is not None
-        self.assertEqual(set(patches.checks), {"catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice"})
+        self.assertEqual(set(patches.checks), {"catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces"})
 
     def test_presentation_page_has_inventory_scorebug_and_commentary(self) -> None:
         page = self.window._category_pages[ProductCategory.SCOREBUG_PRESENTATION]
