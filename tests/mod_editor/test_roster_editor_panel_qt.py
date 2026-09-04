@@ -30,13 +30,18 @@ from mod_editor.gui.roster_editor_panel_qt import (  # noqa: E402
     AttributeCard,
     UndoEntry,
     GlobalEditDialog,
+    IdPickerDialog,
     RosterEditorPanel,
+    SwapPlayerDialog,
     UndoStack,
     ValueBar,
 )
 from test_nfl2k5_roster_records import (  # noqa: E402
     COLLEGES,
+    LEAGUE_CLUB_SIZE,
     SAMPLE,
+    damaged_body,
+    league_body,
     one_pool_body,
     retail_front_body,
     synthetic_body,
@@ -329,6 +334,82 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.panel.undo()
         self.assertEqual(self.panel.document.players[0].record.values["jersey"], 18)
 
+    def test_the_play_by_play_and_portrait_cards_carry_a_searchable_picker(self) -> None:
+        player = self.panel.selected_player()
+        assert player is not None
+        for name in ("pbp_id", "photo_id"):
+            self.assertIsNotNone(self.panel.cards[name].pick_button, name)
+        self.assertIsNone(self.panel.cards["jersey"].pick_button)
+        entries, note = self.panel.picker_entries("pbp_id")
+        self.assertEqual(entries[1000], "Manning, Peyton")
+        self.assertIn("recorded surname bank", note)
+        dialog = IdPickerDialog("Play-by-play name", entries, player.record.values["pbp_id"], self.panel, note=note)
+        self.assertEqual(dialog.chosen(), 1000)
+        self.assertEqual(dialog.list.currentRow(), 0)
+        dialog.search.setText("vick")
+        self.assertEqual(dialog.list.count(), 1)
+        self.assertEqual(dialog.count_label.text().split(" of ")[0], "1")
+        dialog.list.setCurrentRow(0)
+        self.assertEqual(dialog.chosen(), 1003)
+        dialog.search.setText("9300")
+        self.assertEqual(dialog.list.item(0).text().strip(), "9300 · Smith (recorded surname bank)")
+        dialog.spin.setValue(4242)                                      # any id can still be typed
+        self.assertEqual(dialog.chosen(), 4242)
+        self.panel.set_field(player, "pbp_id", dialog.chosen())
+        self.assertEqual(player.record.values["pbp_id"], 4242)
+        self.assertEqual(self.panel.cards["pbp_id"].value(), 4242)
+        self.panel.undo()
+        self.assertEqual(player.record.values["pbp_id"], 1000)
+        entries, note = self.panel.picker_entries("photo_id")
+        if rr.PORTRAIT_REPORT.is_file():
+            self.assertEqual(len(entries), 4303)
+            self.assertIn("4303 portraits", note)
+        else:
+            self.assertEqual(entries, {})
+            self.assertIn("not listed", note)
+
+    def test_templates_offer_the_positions_three_first_and_apply_with_undo(self) -> None:
+        player = self.panel.selected_player()
+        assert player is not None
+        self.assertTrue(self.panel.template_button.isEnabled())
+        self.panel._fill_template_menu()
+        labels = [a.text() for a in self.panel.template_menu.actions() if a.text() and not a.menu()]
+        self.assertEqual(labels[:3], ["Pocket QB", "Scrambling QB", "Balanced QB"])
+        self.assertTrue(labels[-1].startswith("Source: retail table"))
+        before = dict(player.record.values)
+        changes = self.panel.apply_template(rr.create_player_templates()[1])
+        self.assertGreater(len(changes), 20)
+        self.assertEqual(player.record.values["scramble"], 90)
+        self.assertEqual(self.panel.cards["scramble"].value(), 90)
+        self.assertIn((player.pool, player.index), self.panel._dirty)
+        self.assertIn("Applied Scrambling QB", self.panel.status_label.text())
+        self.assertEqual(self.panel.undo(), "Peyton Manning: template Scrambling QB")
+        self.assertEqual(player.record.values, before)
+        self.panel.team_list.setCurrentRow(self.panel.team_list.count() - 2)      # the DT prospect
+        self.application.processEvents()
+        self.panel._fill_template_menu()
+        first = self.panel.template_menu.actions()[0]
+        self.assertFalse(first.isEnabled())
+        self.assertIn("No template for DT", first.text())
+
+    def test_a_player_data_backup_round_trips_with_undo(self) -> None:
+        backup = self.panel.export_player_data_bytes()
+        self.assertEqual(len(backup), rr.PLAYER_DATA_ENTRY_SIZE * len(SAMPLE))
+        player = self.panel.selected_player()
+        assert player is not None
+        self.panel.set_field(player, "speed", 3)
+        receipt = self.panel.import_player_data_bytes(backup)
+        self.assertEqual((receipt["matched"], receipt["changed"], receipt["fields"]), (len(SAMPLE), 1, 1))
+        self.assertEqual(player.record.values["speed"], 66)
+        self.assertNotIn((player.pool, player.index), self.panel._dirty)
+        self.assertIn(".PlayerData: 8 entries", self.panel.status_label.text())
+        self.assertEqual(self.panel.undo(), ".PlayerData restore (1 players)")
+        self.assertEqual(player.record.values["speed"], 3)
+        self.panel.redo()
+        self.assertEqual(player.record.values["speed"], 66)
+        with self.assertRaises(rr.RosterRecordError):
+            self.panel.import_player_data_bytes(b"not a backup")
+
     def test_saving_the_edits_document_announces_it_for_the_build_tab(self) -> None:
         seen: list[str] = []
         self.panel.roster_edits_changed.connect(seen.append)
@@ -407,6 +488,195 @@ class RosterEditorPanelTests(unittest.TestCase):
         finally:
             panel.deleteLater()
             self.application.processEvents()
+
+
+class MembershipPanelTests(unittest.TestCase):
+    """Release / Sign / Move / Swap under the grid, on a league big enough for Finn's rules."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.application = QApplication.instance() or QApplication([])
+
+    def setUp(self) -> None:
+        self.body = league_body()
+        self.panel = RosterEditorPanel()
+        self.panel.load_document(rr.load_body(self.body), label="league")
+        self.application.processEvents()
+
+    def tearDown(self) -> None:
+        self.panel.deleteLater()
+        self.application.processEvents()
+
+    def rows(self) -> list[str]:
+        return [self.panel.team_list.item(i).text() for i in range(self.panel.team_list.count())]
+
+    def goto(self, row: int, cell: int = 0) -> rr.Player:
+        self.panel.team_list.setCurrentRow(row)
+        self.application.processEvents()
+        self.panel.player_table.setCurrentCell(cell, 0)
+        self.application.processEvents()
+        player = self.panel.selected_player()
+        assert player is not None
+        return player
+
+    def test_the_buttons_follow_the_selection(self) -> None:
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        self.assertTrue(self.panel.release_button.isEnabled())
+        self.assertTrue(self.panel.swap_button.isEnabled())
+        self.assertEqual(self.panel.team_menu_button.text(), "Move to ▾")
+        self.goto(self.panel.team_list.count() - 3)                  # Free Agents
+        self.assertFalse(self.panel.release_button.isEnabled())
+        self.assertFalse(self.panel.swap_button.isEnabled())
+        self.assertTrue(self.panel.team_menu_button.isEnabled())
+        self.assertEqual(self.panel.team_menu_button.text(), "Sign to ▾")
+        self.goto(self.panel.team_list.count() - 2)                  # Draft Class
+        self.assertFalse(self.panel.release_button.isEnabled())
+        self.assertFalse(self.panel.team_menu_button.isEnabled())
+        self.assertFalse(self.panel.swap_button.isEnabled())
+        self.panel._fill_team_menu()
+        self.assertEqual(len(self.panel.team_menu.actions()), 0, "nothing is offered for a prospect")
+
+    def test_release_updates_the_lists_and_undo_puts_him_back(self) -> None:
+        player = self.goto(0, 5)
+        receipt = self.panel.release_selected()
+        assert receipt is not None
+        self.assertEqual(receipt["from"]["slot"], 5)
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1}")
+        self.assertEqual(self.rows()[-3], "Free Agents · 4")
+        self.assertIn((player.pool, player.index), self.panel._dirty)
+        self.assertNotIn(player, self.panel.visible_players())
+        self.assertIn("Released", self.panel.status_label.text())
+        self.assertEqual(self.panel.undo(), f"{player.display}: release")
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE}")
+        self.assertIs(self.panel.visible_players()[5], player)
+        self.assertNotIn((player.pool, player.index), self.panel._dirty)
+        self.assertEqual(self.panel.document.to_body(), self.body)
+        self.panel.redo()
+        self.assertEqual(self.rows()[0], f"IND · {LEAGUE_CLUB_SIZE - 1}")
+
+    def test_a_refusal_is_reported_on_the_status_line_and_changes_nothing(self) -> None:
+        self.panel.load_document(rr.load_body(league_body(rr.TEAM_MIN_PLAYERS)), label="tight")
+        self.application.processEvents()
+        self.goto(0, 0)
+        self.assertIsNone(self.panel.release_selected())
+        self.assertIn("must maintain at least 42", self.panel.status_label.text())
+        self.assertEqual(self.panel.undo_stack.depth, (0, 0))
+        self.assertEqual(self.panel.document.diff(), [])
+
+    def test_sign_and_move_through_the_team_menu(self) -> None:
+        free_agent = self.goto(self.panel.team_list.count() - 3)
+        self.panel._fill_team_menu()
+        labels = [a.text() for a in self.panel.team_menu.actions() if a.text()]
+        self.assertTrue(labels[0].startswith("IND ·"))
+        receipt = self.panel.send_selected_to(1)
+        assert receipt is not None
+        self.assertEqual((receipt["operation"], receipt["to"]["team"]), ("sign", "ATL"))
+        self.assertEqual(self.rows()[1], f"ATL · {LEAGUE_CLUB_SIZE + 1}")
+        self.assertIn("Sign:", self.panel.status_label.text())
+        self.goto(1, LEAGUE_CLUB_SIZE)                    # he sits at the bottom of ATL
+        self.assertIs(self.panel.selected_player(), free_agent)
+        self.assertIn(f"ATL ({LEAGUE_CLUB_SIZE + 1} of {LEAGUE_CLUB_SIZE + 1})", self.panel.header_contract.text())
+        self.assertEqual(self.panel.team_menu_button.text(), "Move to ▾")
+        moved = self.panel.send_selected_to(0)
+        assert moved is not None
+        self.assertEqual((moved["operation"], moved["from"]["team"], moved["to"]["team"]), ("transfer", "ATL", "IND"))
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        self.panel.undo()
+        self.panel.undo()
+        self.assertEqual(self.panel.document.to_body(), self.body)
+
+    def test_swap_through_the_dialog_and_the_diff_names_the_teams(self) -> None:
+        player = self.goto(0, 2)
+        dialog = SwapPlayerDialog(self.panel, player)
+        self.assertEqual(dialog.team_combo.currentData(), 1, "defaults to the other club")
+        other = self.panel.document.team_players(1)[4]
+        self.assertTrue(dialog.select_player(other))
+        self.assertIs(dialog.chosen(), other)
+        receipt = self.panel.swap_selected_with(dialog.chosen())
+        assert receipt is not None
+        self.assertEqual(receipt["operation"], "swap")
+        self.assertIs(self.panel.visible_players()[2], other)
+        self.assertIs(self.panel.document.team_players(1)[4], player)
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        entries = self.panel.refresh_diff()
+        self.assertEqual({e["name"] for e in entries}, {player.display, other.display})
+        report = self.panel.report.toPlainText()
+        self.assertIn(f"team: IND (3 of {LEAGUE_CLUB_SIZE}) -> ATL (5 of {LEAGUE_CLUB_SIZE})", report)
+        self.panel.undo()
+        self.assertEqual(self.panel.document.to_body(), self.body)
+
+    def test_the_csv_team_column_and_the_edits_document_carry_moves(self) -> None:
+        text = self.panel.export_csv_text(everything=True)
+        mover = self.panel.document.team_players(1)[3]
+        edited = text.replace(f"primary,{mover.index},ATL,", f"primary,{mover.index},IND,")
+        receipt = self.panel.import_csv_text(edited)
+        self.assertEqual(receipt["changed"], 1)
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE + 1}", f"ATL · {LEAGUE_CLUB_SIZE - 1}"])
+        self.assertIn((mover.pool, mover.index), self.panel._dirty)
+        document = self.panel.edits_document()
+        self.assertEqual(len(document["moves"]), 1)
+        self.assertEqual(document["moves"][0]["to_teams"][0]["team"], "IND")
+        replayed, replay = rr.apply_body(self.body, document)
+        self.assertEqual(replay["players_moved"], 1)
+        self.assertEqual(replayed, self.panel.document.to_body())
+        self.panel.undo()
+        self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE}", f"ATL · {LEAGUE_CLUB_SIZE}"])
+        self.assertEqual(self.panel.document.to_body(), self.body)
+        self.assertNotIn((mover.pool, mover.index), self.panel._dirty)
+
+
+class RepairPanelTests(unittest.TestCase):
+    """Check & repair on load: offered, never silent; applied with a receipt and an undo."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.application = QApplication.instance() or QApplication([])
+
+    def setUp(self) -> None:
+        self.body = damaged_body()
+        self.panel = RosterEditorPanel()
+        self.panel.load_document(rr.load_body(self.body), label="damaged")
+        self.application.processEvents()
+
+    def tearDown(self) -> None:
+        self.panel.deleteLater()
+        self.application.processEvents()
+
+    def test_repairs_are_offered_on_load_and_nothing_is_touched(self) -> None:
+        self.assertEqual(self.panel.repair_button.text(), "Repair (3)")
+        self.assertTrue(self.panel.repair_button.isEnabled())
+        self.assertIn("3 repairs available", self.panel.status_label.text())
+        self.assertIn("Nothing has been changed", self.panel.report.toPlainText())
+        self.assertIn("Peyton Manning", self.panel.report.toPlainText())
+        self.assertEqual(self.panel.document.to_body(), self.body)
+        self.assertEqual(self.panel.undo_stack.depth, (0, 0))
+        clean = RosterEditorPanel()
+        clean.load_document(rr.load_body(synthetic_body()), label="clean")
+        self.assertEqual(clean.repair_button.text(), "Repair")
+        self.assertFalse(clean.repair_button.isEnabled())
+        self.assertNotIn("repair", clean.status_label.text())
+        clean.deleteLater()
+
+    def test_repair_applies_with_a_receipt_and_undoes(self) -> None:
+        receipt = self.panel.run_repairs()
+        assert receipt is not None
+        self.assertEqual(receipt["applied"], 3)
+        report = self.panel.report.toPlainText()
+        self.assertTrue(report.startswith("Repaired 1 headless player;"), report)
+        self.assertIn("City1 Team1: the count byte says 4", report)
+        self.assertEqual(self.panel.tabs.currentIndex(), self.panel.tabs.count() - 1)
+        self.assertFalse(self.panel.repair_button.isEnabled())
+        self.assertEqual(self.panel.document.players[0].record.values["headless"], 0)
+        self.assertIn(("primary", 0), self.panel._dirty)
+        self.assertEqual([self.panel.team_list.item(i).text() for i in range(2)], ["IND · 3", "ATL · 3"])
+        self.assertEqual(self.panel.undo(), "repair (3)")
+        self.assertEqual(self.panel.document.to_body(), self.body)
+        self.assertEqual(self.panel.repair_button.text(), "Repair (3)")
+        self.assertNotIn(("primary", 0), self.panel._dirty)
+        self.panel.redo()
+        self.assertEqual(rr.plan_repairs(self.panel.document), [])
+        diff = self.panel.refresh_diff()
+        self.assertEqual(diff[0]["changes"], {"headless": (1, 0)})
 
 
 class UndoStackTests(unittest.TestCase):

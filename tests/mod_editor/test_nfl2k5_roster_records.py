@@ -86,6 +86,31 @@ def one_pool_body() -> bytes:
     return synthetic_body(ONE_POOL_SAMPLE)
 
 
+LEAGUE_CLUB_SIZE = 44
+
+
+def league_sample(club_size: int = LEAGUE_CLUB_SIZE) -> list:
+    """Two clubs big enough for Finn's 42-man rule plus three free agents and one prospect."""
+
+    rows = []
+    for team in (0, 1):
+        for n in range(club_size):
+            code = (n * 7) % len(rr.POSITIONS)
+            if code == 15:                              # 15 with no team is the fixture's draft-class marker
+                code = 16
+            rows.append((f"F{team}{n}", f"Last{team}{n}", code, 1 + n, n % 12, 200 + n, 70 + n % 8,
+                         D(1975 + n % 10, 1 + n % 12, 1 + n % 28), n % len(COLLEGES), 50 + n % 40, team))
+    rows.append(("Free", "AgentOne", 4, 24, 3, 190, 71, D(1979, 5, 9), 4, 80, None))
+    rows.append(("Free", "AgentTwo", 0, 9, 3, 210, 74, D(1978, 5, 9), 4, 70, None))
+    rows.append(("Free", "AgentThree", 3, 81, 1, 185, 72, D(1981, 2, 2), 4, 88, None))
+    rows.append(("Draft", "Prospect", 15, 99, 0, 300, 75, D(1983, 4, 2), 4, 60, None))
+    return rows
+
+
+def league_body(club_size: int = LEAGUE_CLUB_SIZE) -> bytes:
+    return synthetic_body(league_sample(club_size))
+
+
 def reclassified_retail_body() -> bytes:
     """The retail ROST body put through the shipped reclassify pass, in memory.
 
@@ -504,7 +529,7 @@ class PassTests(unittest.TestCase):
         player.record.set("speed", 120)
         player.record.set("headless", 1)
         checks = {item["check"] for item in rr.validate(self.document, [player])}
-        self.assertEqual(checks, {"jersey", "rating", "headless", "name pool"})
+        self.assertEqual(checks, {"jersey", "rating", "headless", "name pool", "roster size", "free agents"})
 
 
 # --------------------------------------------------------------------------------------------- csv
@@ -601,6 +626,469 @@ class EditsDocumentTests(unittest.TestCase):
         document = rr.edits_between(self.body, self.document.to_body())
         self.assertEqual(document["edits"], [{"pool": "primary", "index": 0, "last": "Manning",
                                               "first": "Peyton", "fields": {"speed": 12}}])
+
+
+def synthetic_save_v0(body: bytes | None = None, *, suffix: bytes = bytes(0x1000)) -> bytes:
+    """The runtime-arena layout every real SAVEGAME.DAT carries (found by GPT-6 Astra, 2026-09-04).
+
+    File-relative: a 0x20-byte wrapper at 0x2E0 (``ROST`` + declared length 0x91020), the ROST preamble at
+    0x300 with version 0 and a relative pointer to the object at 0x320, then the 0x91000-byte arena.  The
+    object is the disc object moved 0x20 bytes closer to the preamble; every pointer inside it is field-
+    relative, so the bytes after the object are the disc body's bytes after ITS object.
+    """
+
+    body = synthetic_body() if body is None else body
+    arena = bytearray(body[rr.OBJ_OFF:]) + bytes(0x91000 - (len(body) - rr.OBJ_OFF))
+    preamble = bytes(12) + b"ROST" + struct.pack("<Ii", 0, 0x20 - 0x14 + 1) + bytes(8)      # 0x20 bytes
+    wrapper = b"ROST" + struct.pack("<I", 0x20 + 0x91000) + bytes(0x18)
+    return bytes(0x2E0) + wrapper + preamble + bytes(arena) + suffix
+
+
+# ---------------------------------------------------------------------------------------- membership
+class MembershipTests(unittest.TestCase):
+    """Finn's release / sign / swap as pointer-list edits, with his thresholds and refusals."""
+
+    def setUp(self) -> None:
+        self.body = league_body()
+        self.document = rr.load_body(self.body)
+        self.ind, self.atl = self.document.teams[0], self.document.teams[1]
+        self.free_agents = self.document.group_players("free_agent")
+        self.prospect = self.document.group_players("draft_class")[0]
+
+    def names(self, team_index: int) -> list[str]:
+        return [p.display for p in self.document.team_players(team_index)]
+
+    def test_release_and_sign_are_the_pointer_lists_and_the_counts(self) -> None:
+        player = self.document.team_players(0)[5]
+        receipt = self.document.release(player)
+        self.assertEqual((receipt["from"]["team"], receipt["from"]["slot"], receipt["to"]["kind"]), ("IND", 5, "free_agent"))
+        self.assertEqual((len(self.ind.slots), len(self.document.free_agents)), (LEAGUE_CLUB_SIZE - 1, 4))
+        self.assertEqual(player.group, "free_agent")
+        self.assertNotIn(player.display, self.names(0))
+        self.assertEqual(self.document.membership_text(player), "Free Agents")
+        reloaded = rr.load_body(self.document.to_body())
+        self.assertEqual(reloaded.teams[0].player_count, LEAGUE_CLUB_SIZE - 1, "the +0x11C count byte moved")
+        self.assertEqual(len(reloaded.teams[0].slots), LEAGUE_CLUB_SIZE - 1)
+        self.assertEqual(reloaded.by_offset[reloaded.free_agents[-1]].display, player.display)
+        self.assertEqual(reloaded.u32(reloaded.obj_base + rr.FREE_AGENT_COUNT_FIELD), 4)
+        # the tail slot the list gave up is zero, exactly as Finn's IR diff showed the game keeps it
+        tail = self.ind.offset + (LEAGUE_CLUB_SIZE - 1) * 4
+        self.assertEqual(reloaded.body[tail: tail + 4], b"\0\0\0\0")
+        # signing him back at his old slot puts every byte back
+        back = self.document.sign(player, 0, slot=5)
+        self.assertEqual((back["to"]["team"], back["to"]["slot"]), ("IND", 5))
+        self.assertEqual(self.document.membership_text(player), f"IND (6 of {LEAGUE_CLUB_SIZE})")
+        self.assertEqual(self.document.diff(), [] if not back["depth"]["depth_rank"][0] != back["depth"]["depth_rank"][1] else self.document.diff())
+        player.record.values["depth_rank"], player.record.values["depth_side"] = back["depth"]["depth_rank"][0], back["depth"]["depth_side"][0]
+        self.assertEqual(self.document.to_body(), self.body)
+        self.assertEqual(self.document.diff(), [])
+
+    def test_a_signed_player_lands_at_the_bottom_of_his_positions_chain(self) -> None:
+        free_agent = self.free_agents[0]                    # a CB
+        same = [p for p in self.document.team_players(0) if p.record.values["position"] == 4]
+        receipt = self.document.sign(free_agent, 0)
+        self.assertEqual(receipt["to"]["slot"], LEAGUE_CLUB_SIZE, "appended to the list")
+        self.assertEqual(free_agent.record.values["depth_rank"], min(len(same), rr.DEPTH_ROW_CAP))
+        self.assertEqual(free_agent.record.values["depth_side"],
+                         rr.DEPTH_SIDE_FOR_RANK.get(min(len(same), 7), min(len(same), 7)))
+        self.assertNotIn(free_agent.offset, self.document.free_agents)
+        self.assertEqual(self.document.depth_slot(0, free_agent), (len(same) + 1, len(same) + 1))
+
+    def test_finns_thresholds_and_refusals(self) -> None:
+        small = rr.load_body(league_body(rr.TEAM_MIN_PLAYERS))
+        with self.assertRaisesRegex(rr.MembershipRefused, "must maintain at least 42"):
+            small.release(small.team_players(0)[0])
+        with self.assertRaisesRegex(rr.MembershipRefused, "Max players reached"):
+            self.document.sign(self.free_agents[0], 0, maximum=LEAGUE_CLUB_SIZE)
+        self.document.free_agent_capacity = len(self.document.free_agents)
+        with self.assertRaisesRegex(rr.MembershipRefused, "Max free agents reached"):
+            self.document.release(self.document.team_players(0)[0])
+        for operation in (lambda: self.document.release(self.prospect),
+                          lambda: self.document.sign(self.prospect, 0),
+                          lambda: self.document.swap(self.prospect, self.document.team_players(0)[0]),
+                          lambda: self.document.transfer(self.prospect, 1)):
+            with self.assertRaisesRegex(rr.MembershipRefused, "Invalid operation on a draft class"):
+                operation()
+        with self.assertRaisesRegex(rr.MembershipRefused, "move him"):
+            self.document.sign(self.document.team_players(0)[0], 1)
+        with self.assertRaisesRegex(rr.MembershipRefused, "cannot be placed on Injured Reserve"):
+            self.document.check_operation(self.free_agents[0], "injured_reserve")
+        self.assertEqual(self.document.to_body(), self.body, "a refusal touches nothing")
+
+    def test_transfer_and_swap_keep_the_counts(self) -> None:
+        mover = self.document.team_players(0)[3]
+        receipt = self.document.transfer(mover, 1)
+        self.assertEqual((receipt["from"]["team"], receipt["to"]["team"], receipt["to"]["slot"]),
+                         ("IND", "ATL", LEAGUE_CLUB_SIZE))
+        self.assertEqual((len(self.ind.slots), len(self.atl.slots)), (LEAGUE_CLUB_SIZE - 1, LEAGUE_CLUB_SIZE + 1))
+        self.assertEqual(mover.teams, [1])
+        a, b = self.document.team_players(0)[2], self.document.team_players(1)[7]
+        swap = self.document.swap(a, b)
+        self.assertEqual((swap["first"]["to"], swap["second"]["to"]), ("ATL", "IND"))
+        self.assertIs(self.document.team_players(0)[2], b)
+        self.assertIs(self.document.team_players(1)[7], a)
+        self.assertEqual((len(self.ind.slots), len(self.atl.slots)), (LEAGUE_CLUB_SIZE - 1, LEAGUE_CLUB_SIZE + 1))
+        reloaded = rr.load_body(self.document.to_body())
+        self.assertEqual([p.display for p in reloaded.team_players(1)][7], a.display)
+        self.assertEqual(reloaded.teams[1].player_count, LEAGUE_CLUB_SIZE + 1)
+
+    def test_the_diff_and_the_edits_document_carry_moves_that_replay_byte_for_byte(self) -> None:
+        released = self.document.team_players(0)[1]
+        self.document.release(released)
+        self.document.sign(self.free_agents[1], 1, slot=2)
+        self.document.swap(self.document.team_players(0)[4], self.document.team_players(1)[9])
+        self.document.transfer(self.document.team_players(1)[0], 0)
+        entries = {e["name"]: e for e in self.document.diff()}
+        self.assertEqual(entries[released.display]["membership"], (f"IND (2 of {LEAGUE_CLUB_SIZE})", "Free Agents"))
+        self.assertEqual(entries[self.free_agents[1].display]["membership"][0], "Free Agents")
+        self.assertTrue(entries[self.free_agents[1].display]["membership"][1].startswith("ATL (2 of"), "the transfer out of ATL slot 0 moved him up one")
+        document = rr.edits_document(self.document, name="moves")
+        self.assertEqual(len(document["moves"]), 5)
+        by_name = {f"{m['first']} {m['last']}": m for m in document["moves"]}
+        self.assertEqual(by_name[released.display]["to_teams"], [])
+        self.assertTrue(by_name[released.display]["free_agent"])
+        self.assertEqual(by_name[self.free_agents[1].display]["to_teams"][0]["team"], "ATL")
+        replayed, receipt = rr.apply_body(self.body, json.loads(json.dumps(document)))
+        self.assertEqual(receipt["log"], [])
+        self.assertEqual(receipt["players_moved"], 5)
+        self.assertEqual(replayed, self.document.to_body())
+        recovered = rr.edits_between(self.body, replayed)
+        self.assertEqual(len(recovered["moves"]), 5)
+
+    def test_a_replay_that_would_break_the_rules_leaves_the_lists_alone_and_says_so(self) -> None:
+        for player in list(self.document.team_players(0))[:3]:
+            self.document.release(player, minimum=0)          # 44 -> 41, only possible by force here
+        self.document.team_players(1)[0].record.set("speed", 11)
+        document = rr.edits_document(self.document)
+        replayed, receipt = rr.apply_body(self.body, document)
+        self.assertEqual(receipt["players_moved"], 0)
+        self.assertTrue(any("moves skipped" in line and "minimum 42" in line for line in receipt["log"]), receipt["log"])
+        target = rr.load_body(replayed)
+        self.assertEqual(len(target.teams[0].slots), LEAGUE_CLUB_SIZE, "the target's lists are untouched")
+        self.assertEqual(target.team_players(1)[0].record.values["speed"], 11, "the fields still landed")
+        with_missing = rr.edits_document(self.document)
+        with_missing["moves"] = [{"pool": "primary", "index": 0, "to_teams": [{"team": "XXX"}], "free_agent": False}]
+        _out, receipt = rr.apply_body(self.body, with_missing)
+        self.assertTrue(any("no team 'XXX'" in line for line in receipt["log"]), receipt["log"])
+
+    def test_the_csv_team_column_moves_players(self) -> None:
+        text = rr.export_csv(self.document)
+        mover, cut = self.document.team_players(1)[2], self.document.team_players(0)[6]
+        edited = (text.replace(f"primary,{mover.index},ATL,", f"primary,{mover.index},IND,")
+                      .replace(f"primary,{cut.index},IND,", f"primary,{cut.index},free_agent,")
+                      .replace(f"primary,{self.prospect.index},draft_class,", f"primary,{self.prospect.index},IND,")
+                      .replace(f"primary,{self.free_agents[2].index},free_agent,", f"primary,{self.free_agents[2].index},atl,"))
+        receipt = rr.import_csv(self.document, edited)
+        self.assertEqual(receipt["changed"], 3)
+        self.assertEqual(mover.teams, [0])
+        self.assertEqual(cut.group, "free_agent")
+        self.assertEqual(self.free_agents[2].teams, [1])
+        self.assertTrue(any("Invalid operation on a draft class" in line for line in receipt["log"]), receipt["log"])
+        self.assertEqual(self.prospect.group, "draft_class")
+        again = rr.import_csv(rr.load_body(self.body), rr.export_csv(self.document))
+        self.assertEqual(again["changed"], 3)
+
+    def test_snapshot_and_restore_put_every_list_and_depth_bit_back(self) -> None:
+        before = self.document.membership_snapshot()
+        self.document.release(self.document.team_players(0)[0])
+        self.document.sign(self.free_agents[0], 1)
+        self.document.swap(self.document.team_players(0)[1], self.document.team_players(1)[1])
+        self.assertNotEqual(self.document.to_body(), self.body)
+        self.document.restore_membership(before)
+        self.assertEqual(self.document.to_body(), self.body)
+        self.assertEqual(self.document.membership_changes(), [])
+        self.assertEqual([p.group for p in self.free_agents], ["free_agent"] * 3)
+
+    def test_validation_reports_roster_sizes_and_the_free_agent_list(self) -> None:
+        small = rr.load_body(league_body(rr.TEAM_MIN_PLAYERS - 1))
+        checks = [f for f in rr.validate_membership(small) if f["check"] == "roster size"]
+        self.assertEqual(len(checks), 2)
+        self.assertIn("41 players", checks[0]["detail"])
+        free = [f for f in rr.validate(self.document) if f["check"] == "free agents"][0]
+        self.assertTrue(free["detail"].startswith("3 of "))
+        big = self.document
+        for player in list(self.free_agents):
+            big.sign(player, 0, maximum=99)
+        self.assertEqual(len(big.teams[0].slots), LEAGUE_CLUB_SIZE + 3)
+        big.free_agent_capacity = 0
+        with self.assertRaisesRegex(rr.RosterRecordError, "pointer"):
+            big.release(big.team_players(0)[0])
+
+    def test_a_save_arena_moves_players_through_the_same_lists(self) -> None:
+        savegame = synthetic_save_v0(self.body)
+        document = rr.RosterDocument(savegame, base=0x300, source="save")
+        self.assertEqual(document.free_agent_capacity, rr.load_body(self.body).free_agent_capacity)
+        player = document.team_players(0)[0]
+        document.release(player)
+        reloaded = rr.RosterDocument(document.to_body(), base=0x300)
+        self.assertEqual(len(reloaded.teams[0].slots), LEAGUE_CLUB_SIZE - 1)
+        self.assertEqual(reloaded.by_offset[reloaded.free_agents[-1]].display, player.display)
+
+
+# ------------------------------------------------------------------------------------------- pickers
+class PickerIndexTests(unittest.TestCase):
+    def test_the_play_by_play_index_comes_from_the_roster_and_the_two_proved_ranges(self) -> None:
+        document = rr.load_body(synthetic_body())
+        index = rr.pbp_name_index(document)
+        self.assertEqual(index[1000], "Manning, Peyton")
+        self.assertEqual(index[1003], "Vick, Michael")
+        self.assertEqual(index[9000], "#00 (jersey-number call-out)")
+        self.assertEqual(index[9099], "#99 (jersey-number call-out)")
+        self.assertEqual(index[9100], "(announce the jersey number)")
+        self.assertEqual(index[9300], "Smith (recorded surname bank)")
+        self.assertEqual(index[9300 + 484], index[9784])
+        self.assertNotIn(9785, index)
+        self.assertEqual(list(index), sorted(index))
+        document.players[1].record.set("pbp_id", 1000)
+        self.assertEqual(rr.pbp_name_index(document)[1000], "Manning, Peyton / Harrison, Marvin")
+        self.assertIn(9300, rr.pbp_name_index(None))
+
+    def test_the_portrait_index_reads_the_shipped_catalogue_or_says_why_not(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            missing = Path(td) / "nope.json"
+            entries, meta = rr.portrait_index(None, missing)
+            self.assertEqual(entries, {})
+            self.assertIn("not present", meta["reason"])
+            report = Path(td) / "portraits.json"
+            report.write_text(json.dumps({
+                "targets": [{"name": "0124"}, {"name": "5015"}, {"name": "0007"}, {"name": "junk"}],
+                "roster_selector_mapping": [
+                    {"portrait_present": True, "portrait_resource_name": "0124", "first_name": "Duane", "last_name": "Starks"},
+                    {"portrait_present": True, "portrait_resource_name": "5015", "first_name": "Anthony", "last_name": "Adams"},
+                    {"portrait_present": False, "portrait_resource_name": "0007", "first_name": "No", "last_name": "Body"},
+                ]}), encoding="utf-8")
+            document = rr.load_body(synthetic_body())
+            document.players[0].record.set("photo_id", 124)
+            entries, meta = rr.portrait_index(document, report)
+            self.assertEqual(meta["count"], 3)
+            self.assertEqual(entries[124], "Duane Starks · Peyton Manning")
+            self.assertEqual(entries[5015], "Anthony Adams")
+            self.assertEqual(entries[7], "(no roster record selects it)")
+            self.assertNotIn("junk", entries)
+            report.write_text("{not json", encoding="utf-8")
+            entries, meta = rr.portrait_index(None, report)
+            self.assertEqual(entries, {})
+            self.assertIn("could not be read", meta["reason"])
+
+    @unittest.skipUnless(rr.PORTRAIT_REPORT.is_file(), "shipped portrait catalogue not present in this checkout")
+    def test_the_shipped_catalogue_lists_the_discs_4303_portraits(self) -> None:
+        entries, meta = rr.portrait_index(None)
+        self.assertEqual(meta["count"], 4303)
+        self.assertEqual(entries[5015], "Anthony Adams")
+
+
+# ----------------------------------------------------------------------------------------- templates
+class TemplateTests(unittest.TestCase):
+    """The game's create-a-player templates, applied the way FUN_00343460 applies them."""
+
+    def test_the_slot_map_covers_every_rating_byte_once(self) -> None:
+        self.assertEqual(len(rr.CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS), 28)
+        self.assertEqual(sorted(rr.CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS), list(range(0x36, 0x52)))
+        self.assertEqual(rr.CREATE_PLAYER_TEMPLATE_SLOTS[7], "power_run_style")
+        self.assertEqual(rr.CREATE_PLAYER_TEMPLATE_SLOTS[21], "scramble")
+        self.assertEqual(rr.CREATE_PLAYER_TEMPLATE_SLOTS[0], "speed")
+        self.assertEqual(rr.CREATE_PLAYER_TEMPLATE_SLOTS[25], "kicking_style")
+        self.assertEqual(rr.CREATE_PLAYER_TEMPLATE_SLOTS[27], "aggressiveness")
+
+    def test_the_retail_table_reads_as_the_game_lays_it_out(self) -> None:
+        templates = rr.create_player_templates()
+        self.assertEqual(len(templates), 36)
+        self.assertEqual([t.label for t in templates[:3]], ["Pocket QB", "Scrambling QB", "Balanced QB"])
+        self.assertEqual([t.position_name for t in templates[::3]],
+                         ["QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB"])
+        pocket, scrambling, balanced = templates[:3]
+        self.assertEqual((pocket.ratings()["scramble"], scrambling.ratings()["scramble"], balanced.ratings()["scramble"]),
+                         (10, 90, 50))
+        finesse, power, balanced_hb = rr.templates_for_position(rr.POSITIONS.index("HB"))
+        self.assertEqual((finesse.label, power.label, balanced_hb.label), ("Finesse HB", "Power HB", "Balanced HB"))
+        self.assertEqual((finesse.ratings()["power_run_style"], power.ratings()["power_run_style"],
+                          balanced_hb.ratings()["power_run_style"]), (1, 99, 50))
+        self.assertEqual(rr.templates_for_position(rr.POSITIONS.index("DE")), ())
+        self.assertEqual(rr.templates_for_position(rr.POSITIONS.index("C")), ())
+        speed_wr = rr.templates_for_position(rr.POSITIONS.index("WR"))[0]
+        self.assertEqual(speed_wr.slots[25], -1, "the WR/HB/FB/TE templates leave slot 25 at -1")
+        self.assertEqual(speed_wr.ratings()["kicking_style"], rr.CREATE_PLAYER_TEMPLATE_DEFAULT,
+                         "which the routine writes as 75 (mov bl,0x4B), not 'leave alone'")
+        self.assertEqual(speed_wr.ratings()["speed"], 90)
+        self.assertEqual(speed_wr.ratings()["catch"], 70)
+        self.assertEqual(speed_wr.ratings()["run_route"], 75)
+        self.assertEqual(rr.templates_for_position(0)[0].ratings()["pass_accuracy"], 85)
+        self.assertEqual(rr.templates_for_position(0)[1].ratings()["pass_arm_strength"], 85)
+
+    def test_apply_writes_the_28_bytes_with_the_games_own_clamps(self) -> None:
+        document = rr.load_body(synthetic_body())
+        manning = document.players[0]
+        odd = rr.CreatePlayerTemplate(99, "Clamp", tuple([-1, 150, -7] + [50] * 25))
+        changes = rr.apply_template(manning.record, odd)
+        self.assertEqual(manning.record.values["speed"], 75)
+        self.assertEqual(manning.record.values["agility"], 100)
+        self.assertEqual(manning.record.values["pass_accuracy"], 0)
+        self.assertEqual(manning.record.values["aggressiveness"], 50)
+        self.assertEqual(changes["speed"], (66, 75))
+        self.assertEqual(rr.apply_template(manning.record, odd), {}, "a second application changes nothing")
+        pocket = rr.create_player_templates()[0]
+        rr.apply_template(manning.record, pocket)
+        self.assertEqual(manning.record.ratings(), pocket.ratings())
+        self.assertEqual(manning.record.throw_style, 0, "Pocket QB writes Scramble 10: an even value")
+
+
+# --------------------------------------------------------------------------------------- .PlayerData
+class PlayerDataTests(unittest.TestCase):
+    """Finn's backup container: 150-byte entries, matched back by name + play-by-play index."""
+
+    def setUp(self) -> None:
+        self.body = synthetic_body()
+        self.document = rr.load_body(self.body)
+
+    def test_export_is_finns_shape(self) -> None:
+        data = rr.export_player_data(self.document)
+        primary = self.document.by_pool("primary")
+        self.assertEqual(len(data), rr.PLAYER_DATA_ENTRY_SIZE * len(primary))
+        first = data[:rr.PLAYER_DATA_ENTRY_SIZE]
+        player = primary[0]
+        self.assertEqual(first[:rr.PLAYER_SIZE], self.body[player.offset: player.offset + rr.PLAYER_SIZE],
+                         "the raw record, pointers included")
+        self.assertEqual(first[0x54:0x64], b"Peyton" + bytes(10))
+        self.assertEqual(first[0x64:0x74], b"Manning" + bytes(9))
+        self.assertEqual(first[0x74:0x94], b"Tennessee" + bytes(23))
+        self.assertEqual(struct.unpack_from("<H", first, 0x94)[0], 7)
+        entries = rr.read_player_data(data)
+        self.assertEqual([(e.first, e.last, e.college, e.pbp_id) for e in entries[:2]],
+                         [("Peyton", "Manning", "Tennessee", 1000), ("Marvin", "Harrison", "Tennessee", 1001)])
+
+    def test_restoring_an_untouched_export_changes_nothing(self) -> None:
+        data = rr.export_player_data(self.document)
+        receipt = rr.import_player_data(self.document, data)
+        self.assertEqual((receipt["entries"], receipt["matched"], receipt["changed"], receipt["fields"], receipt["log"]),
+                         (len(SAMPLE), len(SAMPLE), 0, 0, []))
+        self.assertEqual(self.document.to_body(), self.body)
+
+    def test_a_backup_puts_edited_values_back_and_respects_the_identity_rules(self) -> None:
+        backup = rr.export_player_data(self.document)
+        manning = self.document.players[0]
+        manning.record.set("speed", 12)
+        manning.record.set("contract_value", 1)
+        manning.record.set("star_tag", 1)
+        manning.record.set("pbp_id", 4242)                               # the index differs: name alone
+        self.document.set_college(manning, COLLEGES.index("Michigan"))
+        receipt = rr.import_player_data(self.document, backup)
+        self.assertEqual(receipt["changed"], 1)
+        self.assertEqual((manning.record.values["speed"], manning.record.values["contract_value"]), (66, 200))
+        self.assertEqual(manning.record.values["pbp_id"], 1000, "the play-by-play index is data and comes back")
+        self.assertEqual(manning.record.values["star_tag"], 1, "the studio's own bit is never overwritten")
+        self.assertEqual(manning.college, "Tennessee", "the college comes back by name")
+        self.assertTrue(any("matched by name alone" in line for line in receipt["log"]), receipt["log"])
+        self.assertEqual(manning.record.values["first_name_pointer"],
+                         rr.PlayerRecord.decode(self.body[manning.offset: manning.offset + 0x54]).values["first_name_pointer"])
+
+    def test_attributes_only_and_unmatched_entries(self) -> None:
+        backup = bytearray(rr.export_player_data(self.document))
+        backup[0x36] = 99                                                  # Manning's speed in the file
+        backup[0x0A] = 0xFF                                                # and his contract value
+        stranger = bytes(rr.PLAYER_SIZE) + b"Nobody".ljust(16, b"\0") + b"Here".ljust(16, b"\0") + bytes(32) + struct.pack("<H", 7)
+        receipt = rr.import_player_data(self.document, bytes(backup) + stranger, mode="attributes")
+        self.assertEqual((receipt["entries"], receipt["matched"], receipt["changed"], receipt["fields"]),
+                         (len(SAMPLE) + 1, len(SAMPLE), 1, 1))
+        self.assertEqual(self.document.players[0].record.values["speed"], 99)
+        self.assertEqual(self.document.players[0].record.values["contract_value"], 200, "attributes only")
+        self.assertTrue(any("Nobody Here" in line and "no roster record" in line for line in receipt["log"]))
+        with self.assertRaisesRegex(rr.RosterRecordError, "whole 150-byte entries"):
+            rr.read_player_data(bytes(backup)[:-1])
+        bad = bytearray(backup)
+        struct.pack_into("<H", bad, 0x94, 9)
+        with self.assertRaisesRegex(rr.RosterRecordError, "trailer word is 9"):
+            rr.read_player_data(bytes(bad))
+        college_missing = bytearray(rr.export_player_data(self.document))
+        college_missing[0x74:0x94] = b"Nowhere State".ljust(32, b"\0")
+        receipt = rr.import_player_data(self.document, bytes(college_missing))
+        self.assertTrue(any("Nowhere State" in line and "not in this roster's table" in line for line in receipt["log"]))
+
+    def test_a_duplicate_name_without_its_index_is_skipped_not_guessed(self) -> None:
+        twin = self.document.players[1]
+        self.document.set_name(twin, "first", "Peyton")
+        self.document.set_name(twin, "last", "Manning")
+        backup = bytearray(rr.export_player_data(self.document))
+        struct.pack_into("<H", backup, 4, 5555)                            # entry 0's index matches nobody now
+        backup[0x36] = 1
+        receipt = rr.import_player_data(self.document, bytes(backup))
+        self.assertTrue(any("2 records carry this name" in line for line in receipt["log"]), receipt["log"])
+        self.assertEqual(self.document.players[0].record.values["speed"], 66)
+        self.assertEqual(receipt["matched"], len(SAMPLE) - 1)
+
+
+# ------------------------------------------------------------------------------------------ repairs
+def damaged_body() -> bytes:
+    """The synthetic roster with the faults Check & repair knows: a headless bit, a team whose count
+    byte overstates its list, and a team that lists one player twice."""
+
+    body = bytearray(synthetic_body())
+    body[PLAYERS_OFF + 0x0C] |= 0x80                                          # Manning: headless
+    team1 = TEAMS_OFF + 1 * rr.TEAM_SIZE
+    body[team1 + rr.TEAM_PLAYER_COUNT] = 4                                     # says 4, slot 3 is null
+    team0 = TEAMS_OFF
+    first = struct.unpack_from("<i", body, team0)[0]
+    struct.pack_into("<i", body, team0 + 12, first - 12)                       # slot 3 = slot 0 again
+    body[team0 + rr.TEAM_PLAYER_COUNT] = 4
+    return bytes(body)
+
+
+class RepairTests(unittest.TestCase):
+    def test_a_clean_roster_has_nothing_to_repair(self) -> None:
+        document = rr.load_body(synthetic_body())
+        self.assertEqual(rr.plan_repairs(document), [])
+        self.assertEqual(rr.apply_repairs(document)["summary"], "Nothing to repair.")
+        self.assertEqual(document.to_body(), synthetic_body())
+
+    def test_the_faults_are_planned_not_applied_then_applied_with_a_receipt(self) -> None:
+        body = damaged_body()
+        document = rr.load_body(body)
+        self.assertFalse(document.teams[1].clean_parse)
+        self.assertEqual(len(document.teams[0].slots), 4)
+        plans = rr.plan_repairs(document)
+        self.assertEqual([p["kind"] for p in plans], ["headless", "duplicate_slot", "team_count"])
+        self.assertIn("Peyton Manning", plans[0]["detail"])
+        self.assertIn("0x80", plans[0]["detail"])
+        self.assertEqual(document.to_body(), body, "planning changes nothing")
+        with self.assertRaisesRegex(rr.MembershipRefused, "count byte"):
+            document.release(document.team_players(1)[0], 1, minimum=0)
+        receipt = rr.apply_repairs(document, plans)
+        self.assertEqual(receipt["applied"], 3)
+        self.assertTrue(receipt["summary"].startswith("Repaired 1 headless player;"))
+        self.assertEqual(len(receipt["lines"]), 3)
+        self.assertEqual(document.players[0].record.values["headless"], 0)
+        self.assertEqual(len(document.teams[0].slots), 3)
+        self.assertEqual((document.teams[1].player_count, document.teams[1].clean_parse), (3, True))
+        repaired = rr.load_body(document.to_body())
+        self.assertEqual([t.player_count for t in repaired.teams], [3, 3, 0])
+        self.assertTrue(all(t.clean_parse for t in repaired.teams))
+        self.assertEqual(repaired.body[PLAYERS_OFF + 0x0C], synthetic_body()[PLAYERS_OFF + 0x0C])
+        team0 = TEAMS_OFF
+        self.assertEqual(repaired.body[team0 + 12: team0 + 16], b"\0\0\0\0", "the duplicate slot is zeroed")
+        self.assertEqual(rr.plan_repairs(repaired), [])
+        self.assertEqual(repaired.to_body(), document.to_body())
+
+    def test_a_retired_position_code_is_a_planned_repair_under_one_pool(self) -> None:
+        document = rr.load_body(retail_front_body(), scheme="one_pool")
+        plans = [p for p in rr.plan_repairs(document) if p["kind"] == "retired_position"]
+        self.assertEqual({p["player"] for p in plans}, {"Peter Boulware", "Adalius Thomas"})
+        self.assertEqual({(p["from"], p["to"]) for p in plans}, {(rr.ENUM_OLB, rr.ENUM_ILB)})
+        rr.apply_repairs(document, plans)
+        self.assertEqual(document.position_census("primary")[rr.ENUM_OLB], 0)
+        self.assertEqual(rr.plan_repairs(document), [])
+
+    def test_a_duplicate_free_agent_entry_is_dropped(self) -> None:
+        body = bytearray(synthetic_body())
+        first = struct.unpack_from("<i", body, FREE_AGENTS_OFF)[0]
+        struct.pack_into("<i", body, FREE_AGENTS_OFF + 4, first - 4)
+        struct.pack_into("<I", body, rr.OBJ_OFF + 0x38, 2)
+        document = rr.load_body(bytes(body))
+        self.assertEqual(len(document.free_agents), 2)
+        plans = rr.plan_repairs(document)
+        self.assertEqual([p["kind"] for p in plans], ["duplicate_free_agent"])
+        rr.apply_repairs(document, plans)
+        reloaded = rr.load_body(document.to_body())
+        self.assertEqual(len(reloaded.free_agents), 1)
+        self.assertEqual(reloaded.u32(rr.OBJ_OFF + 0x38), 1)
 
 
 # --------------------------------------------------------------------------------------------- saves
@@ -913,6 +1401,98 @@ class RetailTests(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------------------- schemes
+@unittest.skipUnless(HAVE_RETAIL, "retail extraction not present")
+class RetailMembershipTests(unittest.TestCase):
+    """The membership rules against the real 52-team roster (private extraction)."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.body = retail_body()
+
+    def setUp(self) -> None:
+        self.document = rr.load_body(self.body)
+
+    def team(self, abbreviation: str) -> rr.TeamRecord:
+        return next(t for t in self.document.teams if t.abbreviation == abbreviation)
+
+    def test_the_free_agent_list_capacity_is_measured_at_2500(self) -> None:
+        self.assertEqual(self.document.free_agent_list, 0x3F364)
+        self.assertEqual(len(self.document.free_agents), rr.RETAIL_FREE_AGENT_COUNT)
+        self.assertEqual(self.document.free_agent_capacity, 2500)
+        self.assertEqual(self.document.free_agent_list + 2500 * 4, self.document.rel(self.document.obj_base + rr.OBJ_OFF + 0x44),
+                         "the list runs exactly up to the season-stat pool")
+        self.assertEqual(rr.FREE_AGENT_LIST_CAP, 2500, "the game's own append cap (0x242560)")
+        self.assertTrue(all(t.clean_parse for t in self.document.teams))
+        self.assertEqual(sum(1 for p in self.document.players if len([t for t in p.teams if t < rr.CLUB_TEAM_COUNT]) > 1), 0)
+
+    def test_the_template_table_and_its_apply_routine_are_the_pinned_retail_bytes(self) -> None:
+        payload = RETAIL_XBE.read_bytes()
+        from mod_editor.core.nfl2k5_rdata_sites import offset_of
+        table = offset_of(payload, rr.CREATE_PLAYER_TEMPLATES_RDATA)
+        self.assertEqual(hashlib.sha256(payload[table: table + 36 * 0x74]).hexdigest(), rr.CREATE_PLAYER_TEMPLATES_SHA256)
+        routine = offset_of(payload, rr.CREATE_PLAYER_TEMPLATE_APPLY_VA)
+        span = rr.CREATE_PLAYER_TEMPLATE_APPLY_END_VA - rr.CREATE_PLAYER_TEMPLATE_APPLY_VA
+        self.assertEqual(hashlib.sha256(payload[routine: routine + span]).hexdigest(), rr.CREATE_PLAYER_TEMPLATE_APPLY_SHA256)
+        self.assertEqual(payload[offset_of(payload, 0x34349F): offset_of(payload, 0x34349F) + 2], b"\xb3\x4b",
+                         "mov bl,0x4B: the value a -1 slot writes")
+        self.assertEqual(payload[offset_of(payload, 0x3434AE): offset_of(payload, 0x3434AE) + 3], b"\x80\xf9\x64",
+                         "cmp cl,0x64: the clamp")
+        # the unrolled routine: slot k is read at [eax+4+4k] and written at record+OFFSETS[k]
+        code = payload[routine: routine + span]
+        for slot, offset in enumerate(rr.CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS):
+            read = b"\x8b\x48" + bytes([4 + 4 * slot]) if 4 + 4 * slot < 0x80 else None
+            if read is not None:
+                self.assertIn(read, code, f"slot {slot}: mov ecx,[eax+0x{4 + 4 * slot:x}]")
+            written = (b"\x88\x4a" + bytes([offset]), b"\x88\x42" + bytes([offset]))     # ...,cl  or  ...,al (slot 27)
+            self.assertTrue(any(pattern in code for pattern in written), f"slot {slot}: mov [edx+0x{offset:x}],cl/al")
+        self.assertEqual(rr.read_templates(payload), rr.create_player_templates())
+
+    def test_the_retail_disc_itself_has_exactly_one_headless_player(self) -> None:
+        plans = rr.plan_repairs(self.document)
+        self.assertEqual([(p["kind"], p["player"]) for p in plans], [("headless", "Carlos Joseph")])
+        self.assertEqual(self.document.body[self.document.players[1718].offset + 0x0C], 0xB6)
+        receipt = rr.apply_repairs(self.document)
+        self.assertTrue(receipt["summary"].startswith("Repaired 1 headless player"), receipt["summary"])
+        self.assertEqual(self.document.to_body()[self.document.players[1718].offset + 0x0C], 0x36,
+                         "the byte Finn's own diff showed: 0xB6 -> 0x36")
+        self.assertEqual(rr.plan_repairs(self.document), [])
+
+    def test_release_sign_swap_and_finns_limits_on_the_real_clubs(self) -> None:
+        sf, afc, brp = self.team("SF"), self.team("AFC"), self.team("BRP")
+        self.assertEqual((len(sf.slots), len(afc.slots), len(brp.slots)), (53, 43, 54))
+        player = self.document.team_players(sf.index)[10]
+        alumni = [t for t in player.teams if t != sf.index]
+        receipt = self.document.release(player, sf.index)
+        self.assertEqual((receipt["team_players"], receipt["free_agents"]), (52, 242))
+        self.assertEqual(sorted(player.teams), sorted(alumni), "an all-star side keeps him")
+        self.document.release(self.document.team_players(afc.index)[0], afc.index)
+        with self.assertRaisesRegex(rr.MembershipRefused, "AFC AFC must maintain at least 42"):
+            self.document.release(self.document.team_players(afc.index)[0], afc.index)
+        with self.assertRaisesRegex(rr.MembershipRefused, "Max players reached"):
+            self.document.sign(player, brp.index)
+        chi = self.team("CHI")
+        a, b = self.document.team_players(sf.index)[0], self.document.team_players(chi.index)[0]
+        self.document.swap(a, b)
+        self.assertIn(chi.index, a.teams)
+        self.assertIn(sf.index, b.teams)
+        centers = next(p for p in self.document.players if p.display == "Larry Centers")
+        self.assertTrue(self.document.is_free_agent(centers) and centers.teams, "retail lists him on ASW and as a free agent")
+        self.document.release(centers, centers.teams[0])
+        self.assertEqual(len(self.document.free_agents), 243, "already a free agent: the list does not grow")
+        reloaded = rr.load_body(self.document.to_body())
+        self.assertEqual(len(reloaded.teams[sf.index].slots), 52)
+        self.assertEqual(reloaded.teams[sf.index].player_count, 52)
+        self.assertEqual(len(reloaded.free_agents), 243)
+        self.assertEqual([p.display for p in reloaded.team_players(chi.index)][0], a.display)
+        document = rr.edits_document(self.document)
+        replayed, receipt = rr.apply_body(self.body, document)
+        self.assertEqual(receipt["log"], [])
+        self.assertEqual(replayed, self.document.to_body())
+        for prospect in self.document.group_players("draft_class")[:1]:
+            with self.assertRaisesRegex(rr.MembershipRefused, "regenerates the draft class"):
+                self.document.sign(prospect, sf.index)
+
+
 class PositionSchemeTests(unittest.TestCase):
     """What a position code MEANS follows the disc's patches, not the retail table."""
 
@@ -1268,27 +1848,7 @@ class RetailPositionSchemeTests(unittest.TestCase):
         self.assertEqual(receipt["fields"], 0)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 # --------------------------------------------------------------------------------------------- version-0 saves
-def synthetic_save_v0(body: bytes | None = None, *, suffix: bytes = bytes(0x1000)) -> bytes:
-    """The runtime-arena layout every real SAVEGAME.DAT carries (found by GPT-6 Astra, 2026-09-04).
-
-    File-relative: a 0x20-byte wrapper at 0x2E0 (``ROST`` + declared length 0x91020), the ROST preamble at
-    0x300 with version 0 and a relative pointer to the object at 0x320, then the 0x91000-byte arena.  The
-    object is the disc object moved 0x20 bytes closer to the preamble; every pointer inside it is field-
-    relative, so the bytes after the object are the disc body's bytes after ITS object.
-    """
-
-    body = synthetic_body() if body is None else body
-    arena = bytearray(body[rr.OBJ_OFF:]) + bytes(0x91000 - (len(body) - rr.OBJ_OFF))
-    preamble = bytes(12) + b"ROST" + struct.pack("<Ii", 0, 0x20 - 0x14 + 1) + bytes(8)      # 0x20 bytes
-    wrapper = b"ROST" + struct.pack("<I", 0x20 + 0x91000) + bytes(0x18)
-    return bytes(0x2E0) + wrapper + preamble + bytes(arena) + suffix
-
-
 class VersionZeroSaveTests(unittest.TestCase):
     def setUp(self) -> None:
         self.body = synthetic_body()
@@ -1341,7 +1901,21 @@ class VersionZeroSaveTests(unittest.TestCase):
 
 
 REAL_SAVES = Path(os.environ.get("NFL2K5_SAVE_FIXTURES", str(Path.home() / "Desktop" / "2K5-8 Editors" / "save_fixtures")))
-REAL_SAVE_FILES = sorted(REAL_SAVES.glob("*/UDATA/53450030/*/SAVEGAME.DAT")) if REAL_SAVES.is_dir() else []
+
+
+def _carries_roster_arena(path: Path) -> bool:
+    """Only franchise / roster saves hold the ROST arena; the team, profile and settings saves in the
+    same fixture folder are other formats and are not this module's business."""
+
+    try:
+        rr.find_block_base(path.read_bytes())
+    except (rr.RosterRecordError, OSError):
+        return False
+    return True
+
+
+REAL_SAVE_FILES = ([path for path in sorted(REAL_SAVES.glob("*/UDATA/53450030/*/SAVEGAME.DAT"))
+                    if _carries_roster_arena(path)] if REAL_SAVES.is_dir() else [])
 
 
 @unittest.skipUnless(REAL_SAVE_FILES, "no real signed saves (set NFL2K5_SAVE_FIXTURES to a folder of <name>/UDATA/...)")
@@ -1376,3 +1950,33 @@ class RealSaveTests(unittest.TestCase):
                     self.assertTrue(back.container.verified)
                     self.assertEqual(back.players[0].record.values["speed"], 88)
         self.assertGreaterEqual(seen, 1, "no roster-bearing save among the private fixtures")
+
+    def test_membership_moves_survive_a_real_save_round_trip(self) -> None:
+        for path in REAL_SAVE_FILES:
+            with self.subTest(save=path.parts[-5]):
+                document = rr.load_save(path)
+                self.assertEqual(document.free_agent_capacity, 2500, "the runtime arena keeps the same 2,500-slot list")
+                prospects = document.group_players("draft_class")
+                self.assertGreater(len(prospects), 0, "the runtime's prospect flag (+0x08 bit 4) reads as the draft class")
+                self.assertTrue(all(p.record.values["player_type"] & rr.FLAG_PROSPECT or p.record.values["player_type"] == 0
+                                    for p in prospects))
+                # a franchise off-season can carry a club above the 54 cap, so pick the smallest club
+                club = min(document.teams[:32], key=lambda t: len(t.slots))
+                before = len(club.slots)
+                player = document.team_players(club.index)[-1]
+                document.release(player, club.index)
+                signed = document.by_offset[document.original_free_agents[0]]
+                document.sign(signed, club.index)
+                with tempfile.TemporaryDirectory() as td:
+                    rr.save_document(document, Path(td) / "copy")
+                    back = rr.load_save(Path(td) / "copy")
+                    self.assertTrue(back.container.verified)
+                    self.assertEqual(len(back.teams[club.index].slots), before)
+                    self.assertEqual(back.teams[club.index].player_count, before)
+                    self.assertEqual(back.team_players(club.index)[-1].display, signed.display)
+                    self.assertEqual(back.by_offset[back.free_agents[-1]].display, player.display)
+                    self.assertEqual(len(back.free_agents), len(document.original_free_agents))
+
+
+if __name__ == "__main__":
+    unittest.main()
