@@ -27,6 +27,17 @@
   Illegal formation, illegal contact and 12 men on the field do not exist in the engine, so no
   patch can add them. 141 bytes over `.text`/`.rdata`/`.data`; unicorn-proven interpolator and
   enable-pass runs; unwitnessed in game.
+- **Home/away jerseys at any stadium** (`nfl2k5_uniform_choice.py`, `BuildPlan.uniform_choice`).
+  Retail decides the colour once per game load with one rule (home dark, visitor white; the
+  Cowboys white at home and navy in Washington/Tennessee) and only lets you pick the era. The
+  `choice` form (ADVANCED and EXPERIMENTAL; off in BASIC) rewrites the 97-byte rule block, the four
+  era handlers and the slot reset in place: up/down past the last available era on Controller
+  Assign or Team Select flips that side's colour and restarts at the first era, so each side
+  cycles 15 eras x 2 colours with no new button; the retail default stays the default and both
+  teams may choose white. Two flip words live in the writable `.rdata`/`.data` gap beside the
+  7-on-7 flag and clear with the era slots; no cave. The `rule` form (opt-in) is the same block as
+  `mov esi,0` + NOPs: home always dark everywhere, Cowboys included. Practice, Xbox Live and the
+  Team Select preview art are not covered. Unicorn-proven on the real routines; unwitnessed in game.
 
 - **★ Models: texture coordinates now follow the game's own per-mesh rule.** Beta 56
   decoded every model's UVs with one fixed formula (`u = (n + 1) / 2`, `v = (1 - n) / 2`,

@@ -891,6 +891,15 @@ NZI 0.17, ineligible downfield 0.14) by what you counted, scale each table's 50 
 factor (never above its 100 knot), and send the numbers in: they become the shipped profile.
 Unwitnessed in game.
 
+**Home/away jerseys at any stadium** (Gameplay group, ADVANCED and EXPERIMENTAL): the retail game
+decides the jersey colour once per game load (home dark, visitor white, except the Cowboys wear
+white at home and navy in Washington and Tennessee) and only lets you choose the era. With the
+patch, on Controller Assign or the exhibition Team Select screen, keep pressing up (or down) on a
+side's uniform past its last era: that side's colour flips and the era restarts at the first (or
+last) one, so each side cycles 15 eras x 2 colours on the same input. The retail default is still
+the default, and both teams may choose white. Practice and Xbox Live are not covered, and the
+Team Select preview shows the era art only, not the colour. Unwitnessed in game.
+
 ## If xemu says "insert a disc" or stops at the Xbox logo
 
 Every disc the studio writes is a plain XISO; the changed bytes are inside `default.xbe` and the

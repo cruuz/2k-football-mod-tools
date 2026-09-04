@@ -105,6 +105,13 @@ PATCHES = (
      "10-byte stub so it really silences chop blocks (retail profiles have it Off: switch it On in Penalty "
      "Settings). The rates are ESTIMATED pending a calibration playtest; illegal formation, illegal contact and "
      "12 men do not exist in the engine. Unwitnessed in game."),
+    ("uniform_choice", "Home/away jerseys at any stadium",
+     "Retail: the jersey colour is decided once per game load by one rule (home dark, visitor white, except the "
+     "Cowboys wear white at home and navy in Washington and Tennessee); the player only picks the era. Patch: "
+     "the same up/down that picks the era on Controller Assign or Team Select keeps going past the last era to "
+     "flip that side's colour and restart at the first era (15 eras x 2 colours per side; the retail default "
+     "stays the default; both teams may choose white). Practice and Xbox Live keep the retail rule; the Team "
+     "Select preview shows the era art only. Unwitnessed in game."),
     ("seven_on_seven", "7-on-7 practice mode",
      "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
      "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "
@@ -154,6 +161,10 @@ TEXT_PATCHES = (
      "chart reads SAM, MIKE, WILL; the 3-4 chart reads EDGE for the outside backers, MIKE and WILL inside, NT in "
      "the middle. Labels only (each scheme has its own slot records); who fills a slot is unchanged."),
 )
+
+
+# BuildPlan fields that are strings: the value a ticked box writes
+STRING_TOGGLES = {"uniform_choice": "choice"}
 
 
 class GameplayPatchesPanel(QWidget):

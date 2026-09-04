@@ -50,6 +50,22 @@ def _core_module(name: str):
         return None
 
 
+UNIFORM_CHOICE_MODES = ("", "rule", "choice")
+
+
+def uniform_choice_mode(value: object) -> str:
+    """``BuildPlan.uniform_choice`` normalised: a bare checkbox True means the in-game choice form."""
+
+    if value is True:
+        return "choice"
+    if not value:
+        return ""
+    mode = str(value)
+    if mode not in UNIFORM_CHOICE_MODES:
+        raise ValueError(f"uniform_choice must be one of {UNIFORM_CHOICE_MODES}, not {value!r}")
+    return mode
+
+
 @dataclass
 class CommentarySwap:
     stream: str            # bank/stream id as the commentary tool names it
@@ -111,6 +127,10 @@ class BuildPlan:
     # (seven .rdata slider->factor curve tables re-knotted in place, incidental face mask 5 -> 15 yd, the dead
     # Chop Block toggle wired through a 10-byte stub); room for a user .json profile path later; unwitnessed
     penalties: str = ""
+    # home/away jerseys at any stadium: "rule" = home always dark, visitor always white (no Cowboys exception);
+    # "choice" = the retail default plus a per-side colour flip on the same up/down that picks the era on
+    # Controller Assign / Team Select (past the last era: flip and restart); "" = retail. Unwitnessed.
+    uniform_choice: str = ""
     # text
     edge_rename: bool = False
     # presentation
@@ -125,7 +145,7 @@ class BuildPlan:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
                 or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools
                 or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
-                or self.position_row or self.probowl_order or bool(self.penalties))
+                or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.uniform_choice))
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -146,7 +166,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
         "edge_rename": False, "scorebug": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False,
-        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "position_row": True, "probowl_order": True, "penalties": "",
+        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "",
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
@@ -154,7 +174,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False,
-        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl",
+        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice",
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
@@ -162,7 +182,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True,
-        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl",
+        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice",
     },
 }
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
@@ -202,6 +222,7 @@ def availability() -> dict[str, bool]:
         "position_row": _core_module("nfl2k5_position_row") is not None,
         "probowl_order": _core_module("nfl2k5_probowl_order") is not None,
         "penalties": _core_module("nfl2k5_penalties") is not None,
+        "uniform_choice": _core_module("nfl2k5_uniform_choice") is not None,
         "seven_on_seven": (SEVEN_ON_SEVEN_RELEASED
                            and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
@@ -234,6 +255,7 @@ def inspect(source: Path | str) -> dict[str, Any]:
         "overtime": report.get("overtime", "unknown"), "team_column": report.get("team_column", "unknown"),
         "position_row": report.get("position_row", "unknown"), "probowl_order": report.get("probowl_order", "unknown"),
         "penalties": report.get("penalties", "unknown"),
+        "uniform_choice": report.get("uniform_choice", "unknown"),
         "seven_on_seven": report.get("seven_on_seven", "unknown"), "seven_on_seven_book": "n/a", "team_history": "n/a",
         "position_pools": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
         "scorebug": "n/a", "edge_rename": "unknown", "commentary": "unknown",
@@ -383,11 +405,11 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
                                   "camera": plan.camera, "kick_rules": plan.kick_rules, "kick_power": plan.kick_power, "widescreen": plan.widescreen,
                                   "overtime": plan.overtime, "team_column": plan.team_column, "seven_on_seven": plan.seven_on_seven,
                                   "position_row": plan.position_row, "probowl_order": plan.probowl_order,
-                                  "penalties": plan.penalties}
+                                  "penalties": plan.penalties, "uniform_choice": uniform_choice_mode(plan.uniform_choice)}
         if settings is not None:
             kwargs["settings"] = settings
         step = tt.write_copy(source, target, **kwargs)
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "uniform_choice", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
