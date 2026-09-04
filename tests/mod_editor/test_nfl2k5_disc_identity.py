@@ -193,7 +193,7 @@ class DiscIdentityTests(unittest.TestCase):
         """"Build works on a repack" is a claim about the resolver, so check the resolver."""
 
         import os as _os
-        fd = _os.open(self.repack, _os.O_RDONLY)
+        fd = _os.open(self.repack, _os.O_RDONLY | getattr(_os, "O_BINARY", 0))   # Windows opens text-mode by default
         try:
             size = _os.fstat(fd).st_size
             self.assertEqual(xiso.xbe_extent(fd, size), ((XBE_SECTOR + 0x100) * SECTOR, XBE_SIZE))
