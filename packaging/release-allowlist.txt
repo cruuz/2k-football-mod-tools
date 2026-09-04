@@ -17,6 +17,7 @@ docs/mod_editor/2k5_mod_studio_changelog.md
 docs/mod_editor/2k5_mod_studio_getting_started.md
 docs/mod_editor/career_stats.md
 docs/mod_editor/depth_roles.md
+docs/mod_editor/franchise_save.md
 docs/mod_editor/high_resolution_texture_authoring.md
 docs/mod_editor/nfl2k3_nfl2k4_source_compatibility_boundary.md
 docs/product/ADDITIONAL_AUDIO_FINDINGS.md
@@ -45,6 +46,7 @@ mod_editor/core/json_stream.py
 mod_editor/core/nfl2k5_career_stats.py
 mod_editor/core/nfl2k5_depth_roles.py
 mod_editor/core/nfl2k5_dynamic_kickoff.py
+mod_editor/core/nfl2k5_franchise_save.py
 mod_editor/core/nfl2k5_save_rost.py
 mod_editor/core/texture_master.py
 mod_editor/core/menu_modes.py
@@ -186,6 +188,7 @@ tools/nfl2k5_ps2_save_verify.py
 tools/nfl2k5_save_roster_import.py
 tools/nfl2k5_visual_mod_project.py
 tools/nfl2k5_throw_distance.py
+tools/nfl2k5_xemu_saves.py
 tools/nfl_all_texture_xiso_workflow.py
 tools/nfl_audo_wav_xiso_workflow.py
 tools/nfl_audo_wav_xiso_verify.py

@@ -4,6 +4,8 @@
 
 Source/UI versions are **2K5 RC84** and **APF alpha.84**.
 
+- **Franchise saves decoded** (season block + front office: cap, IR, schedule grid, coaches, seeds, user control);
+  read-only franchise card in ★ Rosters; xemu HDD save extractor. Finn's IR move reproduced byte for byte.
 - **Dynamic kickoff behaviour (Experimental).** Hold until first contact, landing zone, CPU aim and CPU touchbacks
   as an executable patch on top of the beta-58 spots and line-up. Astra-built, gate-proved, unwitnessed.
 - **X / Z / SLOT and nickel / dime roles in every playbook (Advanced).** The third receiver and the third /

@@ -1739,6 +1739,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_team_history",
         "mod_editor.core.nfl2k5_career_stats",
         "mod_editor.core.nfl2k5_save_rost",
+        "mod_editor.core.nfl2k5_franchise_save",
         "mod_editor.core.nfl2k5_prospect_names",
         "mod_editor.core.nfl2k5_seven_on_seven",
         "mod_editor.core.nfl2k5_boot_logo",

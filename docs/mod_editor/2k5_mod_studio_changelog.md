@@ -2,6 +2,19 @@
 
 ## v1.0 RC84 — (unreleased)
 
+- **Franchise saves, decoded.** The two signed saves on hand turned out to be franchise saves, and so is the one
+  pulled out of the emulator's disk image, so the Rosters tab has been opening franchise saves all along; now the
+  studio also reads the rest of the file. Beyond the roster arena a franchise save carries a season block (mode,
+  stage, week, year, the 12 + 12 playoff seeds, divisions, which teams are user-controlled, the 22 × 17 schedule
+  grid with quarter scores) and a front-office block (salary cap, the injured-reserve table, trades, free-agent
+  bids, the transaction log and ledger), tiled with no gap and proved off the game's own save and restore
+  routines. A read-only card under the Rosters source row now says what a franchise save is ("2011 season ·
+  offseason stage 1, week 0/1 · user team(s) DET · coach Steve Mariucci (153-85-0) · salary cap $88.1M · 268/268
+  grid games played · injured reserve: none"), and Flying Finn's injured-reserve move is reproduced byte for byte.
+  The writers (year, cap, user control, schedule cell, coach fields, IR place / activate, re-signed write) live in
+  the new core module for a Franchise tab. `tools/nfl2k5_xemu_saves.py` lists and extracts saves from a copy of
+  xemu's `xbox_hdd.qcow2` (pure-Python qcow2 + FATX, read-only) and writes a catalogue. Unwitnessed edits: the
+  in-game checklist is in the report.
 - **Dynamic kickoff, the whole 2024/2025 rule (Build tab and Gameplay Patches, Experimental).** Beta 58 moved the
   kick spots and the line-up; this executable patch, built by GPT-6 Astra, adds the behaviour: the ten coverage men
   and nine setup blockers do not move until the ball touches the ground or a player (the kicker and the two returners
