@@ -191,6 +191,8 @@ class BuildPanel(QWidget):
         self.seven_on_seven_check = QCheckBox("7-on-7 practice mode: Practice Type 7-On-7 + 7-on-7 sets in the practice playbook (linemen idle at the sideline, 4-second timer rusher; disc images only; unwitnessed)")
         for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.seven_on_seven_check):
             g.addWidget(box)
+        if not mod_build.SEVEN_ON_SEVEN_RELEASED:
+            self.seven_on_seven_check.hide()
         g.addLayout(history_row)
         root.addWidget(gameplay)
 

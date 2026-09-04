@@ -104,7 +104,8 @@ class PresetTests(unittest.TestCase):
             if value is True:
                 self.assertTrue(experimental.get(key), key)
         plan = mod_build.apply_preset(mod_build.BuildPlan(source="s", target="t"), "softdrink_experimental")
-        self.assertTrue(plan.widescreen and plan.kickoff_alignment and plan.seven_on_seven)
+        self.assertTrue(plan.widescreen and plan.kickoff_alignment)
+        self.assertEqual(plan.seven_on_seven, mod_build.SEVEN_ON_SEVEN_RELEASED)
         self.assertIn("experimental", plan.name)
 
     def test_every_preset_names_every_toggle(self) -> None:

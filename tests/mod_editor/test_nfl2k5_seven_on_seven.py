@@ -145,7 +145,7 @@ class SyntheticTests(unittest.TestCase):
 
     def test_build_plan_and_presets_know_the_toggle(self) -> None:
         self.assertFalse(mod_build.BuildPlan(source="s", target="t").seven_on_seven)
-        self.assertTrue(mod_build.PRESETS["softdrink_experimental"]["seven_on_seven"])
+        self.assertEqual(mod_build.PRESETS["softdrink_experimental"]["seven_on_seven"], mod_build.SEVEN_ON_SEVEN_RELEASED)
         self.assertFalse(mod_build.PRESETS["softdrink_basic"]["seven_on_seven"])
         self.assertFalse(mod_build.PRESETS["softdrink_advanced"]["seven_on_seven"])
         self.assertTrue(mod_build.BuildPlan(source="s", target="t", seven_on_seven=True).wants_xbe_patch())

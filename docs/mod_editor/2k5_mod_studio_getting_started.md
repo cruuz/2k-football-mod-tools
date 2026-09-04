@@ -862,6 +862,16 @@ xemu-only: its RSA signature cannot be regenerated, so real hardware rejects it
 (the same rule as Bump strength). `tools/nfl2k5_throw_distance.py` does the
 same from a terminal (`read`, `sliders`, `curves`, `preview`).
 
+## If xemu says "insert a disc" or stops at the Xbox logo
+
+Every disc the studio writes is a plain XISO; the changed bytes are inside `default.xbe` and the
+packs. If xemu will not boot it: quit xemu completely and load the image fresh (the "insert a
+disc" message means no disc was mounted at boot); keep the images outside `C:\Program Files`;
+make sure the save name ends in `.iso` (the studio adds `.xiso.iso` to a bare name); check that
+your retail image boots with the same settings; and if you run a ReShade or other graphics
+wrapper, try once without it. The boot logo the kernel draws is kept decodable by the builder
+from RC81 on.
+
 ## Updating the studio
 
 The studio checks GitHub for a newer release when it starts (Help menu: **Check
@@ -949,17 +959,3 @@ code such as `RAI`, `RAM`, `PHX`, `HOU` for the Oilers up to 1996). Players are 
 name and birth date, then last name and birth date, then name and position; a season is only
 written when the roster has stats for it (the receipt lists every row that could not be used).
 In this cut relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN).
-
-## 7-on-7 practice mode (RC81, Experimental)
-
-Tick **7-on-7 practice mode** on Gameplay Patches or Build (the Experimental preset
-ticks it; it needs a disc image), build the copy, then in game go **Practice → Scrimmage →
-Practice Type → 7-On-7** (press right past Kickoff) and Start. The mode plays as Full
-Scrimmage with the practice playbook loaded for both teams, the way Basic Training loads
-it, so the play-call screens list the three 7-on-7 passing sets (Trips, Spread, Ace) and
-the two coverage sets (Cover 43, Nickel) beside the retail practice plays. ESPN NFL 2K5
-always fields eleven a side, so the eight linemen (four per side) stand idle at the
-sideline by design; the offence keeps a real centre to snap. One parked defender rushes
-after a 4-second count: throw before he arrives. Power Pocket behaviour is on while the
-mode is selected. Unwitnessed in game: the parked linemen staying still, the sideline
-spots, the 4-second delay, and whether the Practice Type row shows the new name.

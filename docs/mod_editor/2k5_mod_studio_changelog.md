@@ -57,32 +57,11 @@
   `mod_editor/core/nfl2k5_boot_logo.py`, reported as `boot_logo` in every XBE status.
 - **Disc names always end in .iso.** A save name typed without a suffix in Build or Apply produced a
   file xemu's picker could not see; a bare name now gets `.xiso.iso`.
-- **7-on-7 practice mode (Experimental preset, or its own checkbox on Gameplay Patches and Build).**
-  Practice -> Scrimmage -> Practice Type gains a fifth value, **7-On-7**: it plays as Full
-  Scrimmage with the practice playbook loaded for both teams (Basic Training's own path) and
-  the pass rush off, and the practice book gains three 7-on-7 passing sets (Trips, Spread,
-  Ace) with nine pass concepts, two coverage sets (4-3 and Nickel looks) with six coverages,
-  and five clearly named personnel groups. The engine always fields eleven, so the four
-  linemen of each side stand idle at the sideline by design (the retail Basic Training idle
-  chain), and one parked defender rushes after a 4-second count as the throw timer. The 27
-  retail practice plays carry the AI-excluded flag so a CPU-called defence is always a 7-on-7
-  coverage. Executable: nine spans plus a 256-byte cave in the dead routine at 0x1AC170; data:
-  PRACTICE-pb.iff in place, wrapper untouched; the writer builds on the retail book or on the
-  one-pool recode of it (which the Build tab runs first), and the two orders give the same bytes.
-  Needs a disc image. First in-game test (2026-09-03) froze on "Scrimmage": the mode flag lived in
-  `.text`, which the kernel maps read-only, and the Practice Type switch writes it when the screen
-  opens; the flag now lives in writable memory between `.rdata` and `.data`, and a new test
-  (`test_xbe_patch_memory_writes.py`) disassembles every XBE patch and refuses any write into a
-  read-only section. Second test: 7-On-7 opened and an offensive play was chosen, then the
-  defensive play-call faulted (kernel bugcheck, EIP 0x1A8E3A) because the writer's formation menu
-  links lacked bit 15, which every real link in all 37 retail books carries; the writer now emits
-  retail-shaped links and the verifier refuses any other shape. Third test: the play started and the game halted on an
-  `int3`: the cave had been placed in a "525-byte dead routine" that really ends after 240 bytes;
-  0x1AC260 is a live function reached through a pointer (this was also the demo-mode freeze). The
-  cave now stops at 0x1AC25F and a new test (`test_xbe_patch_cave_references.py`) scans every
-  relative call/jump and every absolute pointer in the retail image and refuses a cave that any
-  outside reference lands in. Still unwitnessed past the snap.
-
+- **In development, not in this release: 7-on-7 practice.** A fifth Practice Type that plays 7-on-7
+  sets from the practice playbook is built and tested (executable patch, book writer, three runtime
+  bugs found and fixed through xemu's debugger: a flag in read-only `.text`, menu links without
+  bit 15, a cave over a live function). It reaches the play-call but has not been witnessed through
+  a snap, so it is hidden in this build (`mod_build.SEVEN_ON_SEVEN_RELEASED`).
 ## v1.0 RC80 — ★ Models: export any model to Blender and back (2026-09-03)
 
 - **New: ★ Models.** Every 3D model on the loaded disc (players, helmets and face

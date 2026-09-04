@@ -117,6 +117,9 @@ class _Task(QRunnable):
             self.signals.finished.emit(result)
 
 
+if not mod_build.SEVEN_ON_SEVEN_RELEASED:
+    PATCHES = tuple(entry for entry in PATCHES if entry[0] != "seven_on_seven")
+
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
      "Retail calls the position DE / Defensive End in rosters, depth charts, the draft, the formation "

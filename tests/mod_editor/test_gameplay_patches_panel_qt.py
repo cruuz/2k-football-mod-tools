@@ -27,7 +27,7 @@ class GameplayPatchesPanelTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def test_three_patches_with_explanations_and_gating(self) -> None:
-        self.assertEqual([k for k, _l, _e in PATCHES], ["catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "seven_on_seven"])
+        self.assertEqual([k for k, _l, _e in PATCHES], ["catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera"])
         for _k, _l, explanation in PATCHES:
             self.assertIn("Retail", explanation)
             self.assertIn("Patch", explanation)

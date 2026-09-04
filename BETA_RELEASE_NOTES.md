@@ -1,3 +1,48 @@
+# beta-57 — RC81 / alpha.84
+
+**Date:** 2026-09-03
+
+**2K5 Mod Studio:** `v1.0-RC81`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
+
+## New: Update now
+
+When a newer release exists, the banner (and Help > Check for Updates) offers **Update now**. The
+studio downloads the right file for your install, checks it against the SHA-256 the release
+publishes, and installs it: on the Windows installer layout it starts the new installer silently
+after the studio closes and reopens the studio; from an unpacked release folder it swaps the
+folder in place and keeps the old one beside it as `.previous`. Nothing downloads until you
+press the button and confirm. This is the first build with the button, so this one update is by
+hand; from here on it is one click.
+
+## New: TEAM on the franchise Player Card, with real history
+
+The season-by-season stats on a player's franchise card now show which team each season was
+played for. From the first season rollover after the patch is in your save, every completed
+season records the club the player finished it with. For 2004 and earlier the roster template
+carries the real clubs from nflverse data (CC-BY-4.0): 1,148 of the 1,325 retail players with
+past-season stats, 5,068 of their 5,867 season rows. Rows the data does not cover show "--", and
+you can supply your own CSV (`last_name, first_name, birth_date, season, team`) on the Build tab
+for an updated roster. Relocated franchises show the 2004 abbreviation in this cut. A new
+franchise is required; existing saves keep "--". Both are in the BASIC (column only), ADVANCED
+and EXPERIMENTAL presets. Unwitnessed in game so far; please report what you see.
+
+## Fixed
+
+- Several executable patches store code in the XBE boot-logo bitmap. The game never reads it, but
+  the kernel draws it during the boot animation, and a user's investigation of a hang at the Xbox
+  logo flagged it. The builder now keeps a decodable logo in the header and points the kernel at
+  it. On xemu with the Complex BIOS the old discs boot regardless; this closes the risk elsewhere.
+- A disc save name typed without an extension produced a file xemu's picker could not see. A bare
+  name now gets `.xiso.iso`.
+
+## Not in this release
+
+The 7-on-7 practice mode is built and tested but stays hidden until it is witnessed through a
+snap. The SOFTDRINK patch files are rebuilt for the new presets: basic v0.6, advanced v0.9,
+experimental v0.2. APF 2K8 Mod Studio assets are the beta-53 alpha.84 files, re-attached.
+
 # beta-56 — RC80 / alpha.84
 
 **Date:** 2026-09-03

@@ -1,5 +1,26 @@
 # 2K5 Mod Studio — v1.0 RC81 Release Status
 
+## Beta 57 — Update now, the franchise TEAM column with real history, and two report fixes (2026-09-03)
+
+Source/UI versions are **2K5 RC81** and **APF alpha.84**; both use updater tag
+`beta-57`.
+
+- **Update now.** The update banner and Help > Check for Updates install a newer
+  release from inside the studio: download, SHA-256 check against the published
+  sidecar, then a silent reinstall (Windows installer layout, which waits for the
+  studio to close and reopens it) or a folder swap (unpacked release). Proven
+  under Wine and end to end on Linux with the real beta-56 archive.
+- **TEAM column on the franchise Player Card**, recorded at every season
+  rollover through the game's own stat writer, plus **real team history for 2004
+  and earlier** written into the roster template from nflverse data (1,148 of
+  1,325 retail players, 5,068 of 5,867 season rows) and a CSV import for updated
+  rosters. New franchise required; unwitnessed in game.
+- **Fixes from user reports:** the boot-logo bitmap that several caves use is
+  relocated so the kernel always decodes a valid logo; a disc save name without
+  a suffix now gets `.xiso.iso`.
+- **Not in this release:** the 7-on-7 practice mode (built, three runtime bugs
+  fixed through xemu's debugger, not yet witnessed through a snap).
+
 ## Beta 56 — ★ Models: export any model to Blender and back (2026-09-03)
 
 Source/UI versions are **2K5 RC81** and **APF alpha.84**; both use updater tag

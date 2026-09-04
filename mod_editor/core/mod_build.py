@@ -152,7 +152,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True,
-        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": True, "team_history": "retail",
+        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail",
     },
 }
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
@@ -189,7 +189,8 @@ def availability() -> dict[str, bool]:
         "team_history": (_core_module("nfl2k5_team_history") is not None
                          and (ROOT / "data" / "nfl2k5_retail_team_history.csv").exists()),
         "team_column": _core_module("nfl2k5_team_column") is not None,
-        "seven_on_seven": (_core_module("nfl2k5_seven_on_seven") is not None
+        "seven_on_seven": (SEVEN_ON_SEVEN_RELEASED
+                           and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
         "season_2026": (_core_module("nfl2k5_season_length") is not None
                         and _tools_module("nfl2k5_franchise_schedule") is not None
@@ -305,6 +306,12 @@ def _write_xbe_bytes(target: Path, payload: bytes) -> None:
     else:
         target.write_bytes(payload)
 
+
+#: The 7-on-7 practice mode is built and tested but not released yet (Noah's call, 2026-09-03: it is
+#: witnessed through the Practice Type screen and the play-call, not yet through a snap). While False the
+#: checkboxes are hidden, every preset leaves it off and Build reports it unavailable; the modules and their
+#: tests stay so the branch that finishes it merges cleanly.
+SEVEN_ON_SEVEN_RELEASED = False
 
 IMAGE_SUFFIXES = (".iso", ".xiso", ".img")
 
