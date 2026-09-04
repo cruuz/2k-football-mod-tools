@@ -20,6 +20,7 @@ docs/mod_editor/depth_roles.md
 docs/mod_editor/franchise_save.md
 docs/mod_editor/high_resolution_texture_authoring.md
 docs/mod_editor/nfl2k3_nfl2k4_source_compatibility_boundary.md
+docs/nfl2k5_ratings_and_styles.md
 docs/product/ADDITIONAL_AUDIO_FINDINGS.md
 docs/product/CATCH_STRENGTH_FINDINGS.md
 docs/product/FANTASY_DRAFT_FINDINGS.md
