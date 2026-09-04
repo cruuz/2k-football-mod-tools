@@ -274,6 +274,7 @@ mod_editor/core/nfl2k5_boot_logo.py
 mod_editor/core/nfl2k5_seven_on_seven_book.py
 mod_editor/core/nfl2k5_player_star.py
 mod_editor/core/nfl2k5_player_tags.py
+mod_editor/core/nfl2k5_roster_records.py
 mod_editor/core/nfl2k5_widescreen.py
 mod_editor/gui/build_panel_qt.py
 mod_editor/gui/commentary_panel_qt.py
@@ -282,6 +283,7 @@ mod_editor/gui/presentation_panel_qt.py
 mod_editor/gui/share_panel_qt.py
 mod_editor/gui/sounds_panel_qt.py
 mod_editor/gui/models_panel_qt.py
+mod_editor/gui/roster_editor_panel_qt.py
 tools/nfl2k5_audo_swap.py
 tools/nfl2k5_commentary_swap.py
 tools/nfl2k5_fieldpack_texture_into_xiso.py

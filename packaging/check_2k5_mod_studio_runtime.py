@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "b25f669bdbdf8e893db792f1af42c3bf9787a708b7b9d62f1124ef6e4a47b290",
     "mod_editor/gui/studio_qt.py":
-        "a086b240194f3959326597ebe2266e6adfff3cd24483b28f4193056128638791",
+        "32f08b8ed6b1570476234f0e72a989dbd0151862c3df80465ae905593cb0ff2f",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -1740,7 +1740,9 @@ def main() -> int:
         "mod_editor.core.nfl2k5_seven_on_seven_book",
         "mod_editor.core.nfl2k5_player_star",
         "mod_editor.core.nfl2k5_player_tags",
+        "mod_editor.core.nfl2k5_roster_records",
         "mod_editor.gui.models_panel_qt",
+        "mod_editor.gui.roster_editor_panel_qt",
         "mod_editor.gui.text_rosters_panel",
         "mod_editor.gui.studio_qt",
     )

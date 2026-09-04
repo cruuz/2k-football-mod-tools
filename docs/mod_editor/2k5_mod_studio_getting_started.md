@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC82 — Getting Started
+# 2K5 Mod Studio v1.0 RC83 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -980,6 +980,88 @@ When there is one, a banner appears with three choices:
 Windows installer layout, or an unpacked release folder you can write to. A
 folder you cannot write to, or a git checkout, gets the link only. Nothing is
 downloaded until you press the button and confirm.
+
+## ★ Rosters — every player, on the disc or in a save (RC83)
+
+**★ Rosters** is the studio's replacement for Flying Finn's *NFL 2K5 GameSave Editor*: the same
+three-pane shape people know, over the disc as well as over a save, with undo, dirty markers, a diff
+and a validation pass on top. The format knowledge behind it comes from **Flying Finn (Glen
+Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the retail disc.
+
+1. Open the page and press **Use the loaded XISO** (or **Open a disc…**). An Xbox save works too:
+   **Open an Xbox save…** takes an Action Replay `.zip`, an extracted save folder or a loose
+   `SAVEGAME.DAT` with its `EXTRA` beside it. The stored signature is checked on load, and a save
+   whose `EXTRA` does not verify is refused rather than quietly re-signed.
+2. **Left** — the 32 clubs, the game's extra squads (Pro Bowl, all-time, the two user teams), then
+   Free Agents, the Draft Class and the leftover pools.
+3. **Middle** — search by name, years pro or college; the position chips (QB RB WR TE OL DL LB DB
+   K/P) narrow the list; the grid shows position, number, name, years pro, an OVR estimate and the
+   depth slot. **↑ Move up / ↓ Move down** reorder the team's own pointer list, which *is* the depth
+   chart.
+4. **Right** — the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
+   Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
+   ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
+   out of Finn's binary, so no value order is guessed.
+
+**What you can edit.** First and last name, college, position, jersey number, years pro, hand,
+height, weight, date of birth, the play-by-play name id and the portrait id; skin, face, face mask,
+face shield, body type, dreads, eye black, mouthpiece, turtleneck, sleeves, neck roll, both gloves,
+wrists, elbows and shoes, and the helmet; all 28 rating bytes; the depth rank and side; and the
+**contract** — value, type, signing-bonus tier, length and years remaining, with the penalty shown
+derived the way Finn showed it. The contract block is the one thing no open tool has ever edited.
+
+**The Style tab.** Three of the 28 rating bytes are style channels, not scalars, and they get
+first-class controls:
+
+* **Power Run Style** (`+0x4D`) — a **Finesse / Balanced / Power** segmented control writing the
+  game's own 1 / 50 / 99, with the raw byte on a card beneath. The game decodes it below 33, below
+  66, else, and reads it in play as a blend weight.
+* **Throw style** (the low bit of **Scramble**, `+0x4F`) — the only bit test on any rating byte
+  anywhere in the executable. It picks which family of directional animation sets a player uses;
+  believed, not proved, to be the throw and release motion. The toggle moves **only** that bit, and
+  the Scramble slider (presets Pocket 10 / Balanced 50 / Scrambling 90) moves the magnitude while
+  preserving it. Scramble is a real rating the Player Card never prints but the game's own roster
+  editor does; with Agility it also picks the mobile-quarterback family.
+* **Kicking Style** (`+0x4B`) — **EXPERIMENTAL**. The game names it and holds it at 99 for every
+  kicker, 1 for every punter and 49 for everyone else, but no consumer is proved. Presets are those
+  three values.
+
+**Best Hand** is on the Appearance tab: `+0x18` bit 1, the row the game's own editor toggles. It is
+not related to the Scramble parity bit.
+
+**Names share strings.** The player-name pool is packed solid: 65,120 bytes holding 5,094 strings
+with **no free space**, so it cannot grow. Typing a name that already exists anywhere in the roster
+points this player at that string — Finn's own trick for beating the rename limit, and it always
+works. A brand-new longer name needs a free block, which appears when some other name is shortened;
+when there is none the edit is refused with the number of bytes it needed. The status line under the
+name fields always says how much room is left.
+
+**Tools.** **Global Attribute Editor** takes an attribute (including the style channels), a rule
+(set / add / percent), a scope (positions, this team, rookies only) and an optional condition —
+"every QB with Speed ≥ 80 → throw style B", "all HBs with Break Tackle ≥ 75 → Power" — and shows
+**every affected player before it changes anything**. **Copy player** and **Paste ▾**
+(player / attributes only / photo only) follow Finn's rules: a paste never carries names, college,
+play-by-play or photo unless you ask for the photo. **One-shot passes ▾** advance years pro for the
+league or the list, and restore height, weight and date of birth to what the roster shipped with.
+**CSV ▾** exports the list or the whole league and reads it back — it also reads Finn's
+semicolon-delimited export, and a spreadsheet with three columns is a legal edit.
+
+**Check & diff.** **Check this roster** flags jerseys outside the NFL range for a position, ratings
+above 99, impossible heights and dates, and the "headless" bit Finn's editor silently clears on load.
+**Show my changes** lists every field you changed against the roster you loaded.
+
+**Writing.** Your source is never touched.
+
+* **Save roster edits…** writes a small JSON document. The Build tab picks it up as the
+  **roster edits** step, and Share packs it into a `.2k5patch` as an asset, so an edit travels
+  without the disc.
+* **Write a copy…** copies the disc image and edits the copy, or — for a save — writes a
+  **re-signed** container beside the original with every other member (`SaveMeta.xbx`, `TYPE`, the
+  images) copied byte for byte. Renaming or dropping those is what makes the game call a save
+  corrupt, so they are never rebuilt.
+
+In a build, the roster-edits step runs **last** of the roster passes, so the star tags, the real team
+history, the modern prospect names and the one-pool positions all survive it. Unwitnessed in game.
 
 ## ★ Models — every model out to Blender and back
 

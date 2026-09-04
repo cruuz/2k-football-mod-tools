@@ -2,8 +2,8 @@
 
 Gameplay = sliders inspector + Throw Distance & Arc + Gameplay Patches; Presentation = the
 scorebug inventory + ESPN Scorebug & Ticker + Commentary; Audio = Audio Cues + Sounds; Text & Team
-Identity carries the EDGE rename; ★ Build & Share is the second special row with the Build and
-Share tabs.
+Identity carries the EDGE rename; ★ Rosters is the first of four special rows and ★ Build & Share the last, with the Build
+and Share tabs.
 """
 
 from __future__ import annotations
@@ -42,8 +42,9 @@ class StudioShellLayoutTests(unittest.TestCase):
 
     def test_navigation_rows_and_pages_line_up(self) -> None:
         rows = self._row_texts()
-        self.assertEqual(len(rows), 1 + len(PRODUCT_CATEGORY_ORDER) + 3)
+        self.assertEqual(len(rows), 1 + len(PRODUCT_CATEGORY_ORDER) + 4)
         self.assertEqual(rows[0], "Getting Started")
+        self.assertEqual(rows[-4], "★ Rosters")
         self.assertEqual(rows[-3], "★ Models")
         self.assertEqual(rows[-2], "★ Create a Play")
         self.assertEqual(rows[-1], "★ Build & Share")

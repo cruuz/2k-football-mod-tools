@@ -153,6 +153,13 @@ class BuildPlan:
     # who gets one: primary-roster indices (17) or "last,first,birth_date" keys ("Vick,Michael,1980-06-28"),
     # written into the ROST resource; disc images only, and the tag reaches franchises CREATED from the copy
     player_tags: list[str] = field(default_factory=list)
+    # ★ Rosters edits: "" = off, otherwise the path of a roster-edits JSON document
+    # (``2k5_mod_studio_roster_edits/v1``, written by the ★ Rosters page).  Applied to the ROST
+    # resource of the copy LAST, after every other roster pass: it writes named record fields
+    # (ratings, appearance, equipment, contract, position, depth, names through the shared pool)
+    # and leaves +0x2C, the season-stat pool, the generated-name pool and the +0x53 star bit alone,
+    # so all four of their digest gates stay intact.  Disc images only.
+    roster_edits: str = ""
     # text
     edge_rename: bool = False
     # presentation
@@ -252,6 +259,7 @@ def availability() -> dict[str, bool]:
                            and (ROOT / "data" / "nfl2k5_modern_names.csv").exists()),
         "player_star": _core_module("nfl2k5_player_star") is not None,
         "player_tags": _core_module("nfl2k5_player_tags") is not None,
+        "roster_edits": _core_module("nfl2k5_roster_records") is not None,
         "seven_on_seven": (SEVEN_ON_SEVEN_RELEASED
                            and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
@@ -289,7 +297,7 @@ def inspect(source: Path | str) -> dict[str, Any]:
         "franchise_practice": report.get("franchise_practice", "unknown"),
         # the executable half alone is never "applied": the name pool lives in pack 0 (both halves below for images)
         "prospect_names": ("partial" if report.get("prospect_names") == "applied" else report.get("prospect_names", "unknown")),
-        "player_star": report.get("player_star", "unknown"), "player_tags": "n/a",
+        "player_star": report.get("player_star", "unknown"), "player_tags": "n/a", "roster_edits": "n/a",
         "seven_on_seven": report.get("seven_on_seven", "unknown"), "seven_on_seven_book": "n/a", "team_history": "n/a",
         "position_pools": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
         "scorebug": "n/a", "edge_rename": "unknown", "commentary": "unknown",
@@ -343,6 +351,12 @@ def inspect(source: Path | str) -> dict[str, Any]:
                 out["player_tags"] = tags.status(source)
             except Exception:  # noqa: BLE001
                 out["player_tags"] = "foreign"
+        records = _core_module("nfl2k5_roster_records")
+        if records is not None:
+            try:
+                out["roster_edits"] = records.status(source)
+            except Exception:  # noqa: BLE001
+                out["roster_edits"] = "foreign"
     if "edge_rename" in report:
         out["edge_rename"] = report.get("edge_rename")
         out["edge_rename_disc"] = report.get("edge_rename_disc")
@@ -441,6 +455,8 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         raise ValueError("modern prospect names need a disc image (the name pool lives in the roster template in pack 0)")
     if plan.player_tags and not is_image:
         raise ValueError("star tags need a disc image (the roster records live in pack 0)")
+    if plan.roster_edits and not is_image:
+        raise ValueError("roster edits need a disc image (the roster records live in pack 0)")
 
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
     #    including its disc text spans when the source is an image)
@@ -611,6 +627,19 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
             tags_receipt = {**tags_receipt, "note": "player_star is off: the tags are written but nothing draws them"}
         receipt["steps"].append({"step": "player_tags", **{k: v for k, v in tags_receipt.items() if k != "log"},
                                  "log_lines": len(tags_receipt.get("log", []))})
+    if plan.roster_edits:
+        # after every other roster pass. The star tag is +0x53, the team history rebuilds the stat
+        # pool and the +0x2C pointers, the prospect names own the generated-name pool and the
+        # reclassify hashes position/order: this pass writes named record fields and shared name
+        # strings, and preserves all four, so running it last leaves every earlier gate intact.
+        records = _core_module("nfl2k5_roster_records")
+        if records is None:
+            raise RuntimeError("the roster records module is not available in this build")
+        progress("Applying the roster edits", 0, 0)
+        edits_receipt = records.apply(target, Path(plan.roster_edits), progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "roster_edits", "source": plan.roster_edits,
+                                 **{k: v for k, v in edits_receipt.items() if k != "log"},
+                                 "log_lines": len(edits_receipt.get("log", []))})
     for swap in plan.commentary:
         cs = _tools_module("nfl2k5_commentary_swap")
         if cs is None:
