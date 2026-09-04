@@ -216,6 +216,8 @@ def main(argv: list[str] | None = None) -> int:
         handle.write(f"# players with game seasons: {counts['players']}; exact: {counts['exact']}; last name + DOB: {counts['fallback_dob']}; "
                      f"ambiguous: {counts['ambiguous']}; none: {counts['none']}\n")
         handle.write(f"# season rows: {counts['covered']} of {total_seasons} have a team; per year: {per_year}\n")
+        handle.write("# the studio fills every season this CSV does not cover with the player's own 2004 club\n"
+                     "#   (counted as \"inferred\" in the build receipt); a row here always wins over that fill.\n")
         handle.write("\n".join(log_lines) + "\n")
     digest = hashlib.sha256(args.out.read_bytes()).hexdigest()
     print(f"players {counts['players']}: exact {counts['exact']}, last-name+DOB {counts['fallback_dob']}, ambiguous {counts['ambiguous']}, none {counts['none']}")

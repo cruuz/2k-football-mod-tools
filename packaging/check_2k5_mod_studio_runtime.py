@@ -99,17 +99,17 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "b25f669bdbdf8e893db792f1af42c3bf9787a708b7b9d62f1124ef6e4a47b290",
     "mod_editor/gui/studio_qt.py":
-        "a086b240194f3959326597ebe2266e6adfff3cd24483b28f4193056128638791",
+        "86bba04358cd3c6602b6461e6e71286e72619afc485d7b107ac7b0822aaf7f61",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "8e110e27a57ba22074af408241e07bf980f9cdbb1a0eda4c07d141566ad6fe18",
+        "9e53ff74c87926bdb54f5329abefb5090e0915a4bdf194db0d570dd4e638aa93",
     "mod_editor/studio/project_archive.py":
         "613e98767acae90e949ca5d4a7dc28611cc8fee12e7c036b9d2c2583154077ee",
     "mod_editor/studio/session.py":
-        "34a73dcc42524eef110b2b17c5d1158c4ed5ac45db0f7a3bf0ae50b5e08a27a0",
+        "bc0afff3d6e1f2d53de00dfba8d6015ff530fcf093a1ce00b09df0828d2d583e",
 }
 
 REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
@@ -1700,6 +1700,7 @@ def main() -> int:
         "mod_editor.core.ps2_save_service",
         "mod_editor.gui.ps2_save_dialog_qt",
         "mod_editor.core.nfl2k5_playbook_inspector",
+        "mod_editor.core.nfl2k5_playbook_pack",
         "mod_editor.core.playbook_package_rule_spike",
         "mod_editor.core.nfl2k5_universal_asset_index",
         "mod_editor.core.nfl2k5_scorebug_unified_adapter",
@@ -1722,6 +1723,7 @@ def main() -> int:
         "mod_editor.gui.gameplay_panel_qt",
         "mod_editor.gui.menus_panel_qt",
         "mod_editor.gui.playbooks_panel_qt",
+        "mod_editor.gui.playbook_pack_dialog_qt",
         "mod_editor.gui.stadium_viewer",
         "mod_editor.core.nfl2k5_models",
         "mod_editor.core.self_update",
@@ -1740,7 +1742,9 @@ def main() -> int:
         "mod_editor.core.nfl2k5_seven_on_seven_book",
         "mod_editor.core.nfl2k5_player_star",
         "mod_editor.core.nfl2k5_player_tags",
+        "mod_editor.core.nfl2k5_roster_records",
         "mod_editor.gui.models_panel_qt",
+        "mod_editor.gui.roster_editor_panel_qt",
         "mod_editor.gui.text_rosters_panel",
         "mod_editor.gui.studio_qt",
     )
@@ -1779,6 +1783,7 @@ def main() -> int:
         "nfl_scne_inventory",
         "nfl_stadium_studio_cache",
         "nfl_static_gltf",
+        "nfl2k5_playbook_pack",
         "string_table_inventory",
     )
     loaded = {name: importlib.import_module(name) for name in tool_modules}

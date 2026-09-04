@@ -1,9 +1,27 @@
-# 2K5 Mod Studio — v1.0 RC82 Release Status
+# 2K5 Mod Studio — v1.0 RC83 Release Status
+
+## Beta 59 (unreleased) — ★ Rosters: the whole roster editable, on the disc and in a save
+
+Source/UI versions are **2K5 RC83** and **APF alpha.84**.
+
+- **★ Rosters**, a new top-level page: the studio's replacement for Flying Finn's NFL 2K5 GameSave
+  Editor. Team list → player grid → attribute cards, over the **disc** as well as over an Xbox save,
+  with undo/redo, dirty markers, a diff, a validation pass and a source file that is never written.
+  Every field of the 0x54 record, including the **contract block** no open tool has ever edited, and
+  first-class controls for the three rating bytes that are style channels (Power Run Style, the
+  Scramble throw-style parity bit, and the experimental Kicking Style).
+- Names go through the real string pool: reuse an existing string (how you beat the rename limit),
+  rewrite in place, reclaim what shortening frees, and refuse when there is nowhere to put a longer
+  one. The pool has zero free bytes in retail.
+- Xbox saves are verified on load and re-signed on write, with every other container member copied
+  byte for byte.
+- Build & Share carries the edit as the `roster_edits` step and packs it into a `.2k5patch`.
+- Format credit: Flying Finn (Glen Leskinen) and Bad_AL. Unwitnessed in game.
 
 ## Beta 58 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star (2026-09-04)
 
 Source/UI versions are **2K5 RC82** and **APF alpha.84**; both use updater tag
-`beta-58`.
+`beta-59`.
 
 - **Free Practice inside Franchise:** a Practice row on the Coach's Desk starts a
   Scrimmage of your team against itself with the live franchise roster and

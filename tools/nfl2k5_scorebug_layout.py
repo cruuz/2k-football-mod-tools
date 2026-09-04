@@ -367,7 +367,35 @@ COLOURS = {"yscore_buga": (38, 38, 46), "yscore_buga1": (38, 38, 46), "zz_ESPN_b
 TEAM_AWAY, TEAM_HOME = (167, 25, 48), (0, 34, 68)
 
 
-def strips() -> list[tuple[int, list[int]]]:
+# The eleven submeshes' NV2A command blocks inside the decoded score_bug scene: (offset, word
+# count), in submesh order, exactly what the scene's own submesh table declares.  Pinned here so
+# the mockup is drawn from the retail scene itself -- the intermediate glTF this used to read is
+# a developer research export that is not in a release, and gating the whole scorebug on it was
+# half of why the step reported "Not available in this build" on every install.
+SUBMESH_COMMANDS = ((8752, 17), (8820, 17), (8888, 17), (8956, 20), (9036, 17), (9104, 17),
+                    (9172, 53), (9384, 50), (9584, 28), (9696, 16), (9760, 16))
+
+
+def strips(scne: bytes | None = None) -> list[tuple[int, list[int]]]:
+    """Triangle-strip indices per submesh, decoded from the retail scene's command blocks.
+
+    Falls back to the intermediate glTF export when the push-buffer decoder is not importable;
+    both produce the same index lists (proved in tests/nfl2k5_scorebug_layout_test.py).
+    """
+
+    try:
+        import nfl_static_gltf
+    except Exception:  # noqa: BLE001 - research export fallback
+        nfl_static_gltf = None
+    if nfl_static_gltf is not None:
+        decoded = scne if scne is not None else retail_scne_bytes()
+        out = []
+        for k, (offset, words) in enumerate(SUBMESH_COMMANDS):
+            idx: list[int] = []
+            for _mode, raw in nfl_static_gltf.decode_batches(decoded, offset, words):
+                idx.extend(raw)
+            out.append((k, idx))
+        return out
     g = json.loads((ROOT / "assets/intermediate/nfl2k5/models/0346_0078_score_bug.gltf").read_text())
     b = (ROOT / "assets/intermediate/nfl2k5/models/0346_0078_score_bug.bin").read_bytes()
     out = []
@@ -411,8 +439,14 @@ def _textured_triangle(im, tex, pts, uvs) -> None:
     im.alpha_composite(layer)
 
 
-def preview(m: Mesh, path: Path, *, scale: int = 2, widest: bool = False) -> None:
-    """Mockup of the bar; ``widest`` substitutes the longest strings the game emits per field."""
+def preview(m: Mesh, path: Path, *, scale: int = 2, widest: bool = False,
+            mark_png: Path | None = None) -> None:
+    """Mockup of the bar; ``widest`` substitutes the longest strings the game emits per field.
+
+    ``mark_png`` is the repainted ESPN mark to wrap onto the mark quads.  It defaults to the
+    developer asset folder, which a release does not have -- callers that derived the art from
+    the user's disc pass the derived file instead.
+    """
 
     from PIL import Image, ImageDraw, ImageFont
 
@@ -429,15 +463,18 @@ def preview(m: Mesh, path: Path, *, scale: int = 2, widest: bool = False) -> Non
     order = {"zscore_buga": 0, "yscore_buga": 1, "yscore_buga1": 1, "zz_ESPN_bug": 2, "zz_ESPN_bug1": 2,
              "dscore_buga": 3, "bscore_buga2": 3, "cscore_buga": 4}
     tris = []
-    for k, idx in strips():
+    # espn_layout never touches the command blocks, so the edited scene decodes to the
+    # retail strips; the mockup therefore needs no separate copy of the retail scene.
+    for k, idx in strips(bytes(m.buf)):
         mat = SUBMESHES[k][2]
         for i in range(len(idx) - 2):
             a, b, c = idx[i], idx[i + 1], idx[i + 2]
             if a == b or b == c or a == c:
                 continue
             tris.append((order.get(mat, 5), mat, (a, b, c)))
-    mark_png = ESPN_TEXTURES / "shield_espn_modern.png"
-    mark_tex = Image.open(mark_png).convert("RGBA") if mark_png.exists() else None
+    if mark_png is None:
+        mark_png = ESPN_TEXTURES / "shield_espn_modern.png"
+    mark_tex = Image.open(mark_png).convert("RGBA") if Path(mark_png).exists() else None
     for _, mat, (a, b, c) in sorted(tris, key=lambda t: t[0]):
         col = COLOURS.get(mat)
         if col is None:
@@ -643,7 +680,7 @@ def status(xiso: Path) -> str:
             return "foreign"
         return "retail"
     try:
-        m = Mesh(retail_scne_bytes())
+        m = Mesh(retail_scne_bytes(xiso))
     except SystemExit:
         # without the retail mesh the ESPN layout cannot be reproduced to compare against; this is a
         # status probe, so answer rather than abort the caller (inspect() only catches Exception)
@@ -657,16 +694,42 @@ def status(xiso: Path) -> str:
 _RETAIL_SCNE_FROM_DISC: bytes | None = None
 
 
+def _source_art():
+    """The disc-sourced art resolver, or ``None`` in a bare tools-only checkout."""
+
+    try:
+        from mod_editor.core import nfl2k5_scorebug_source_art as sa
+    except Exception:  # noqa: BLE001 - the tool still works from local assets alone
+        return None
+    return sa
+
+
 def _remember_retail_scne(decoded: bytes) -> None:
-    """Chunk 78 decoded from a retail disc IS the retail score_bug SCNE; keep it so no loose copy of
-    the asset is needed once any retail image has been read."""
+    """Chunk 78 decoded from a retail disc IS the retail score_bug SCNE; keep it -- in this
+    process and in the studio's private cache -- so no loose copy of the asset is needed once
+    any retail image has been read."""
 
     global _RETAIL_SCNE_FROM_DISC
-    if _RETAIL_SCNE_FROM_DISC is None and sha(decoded) == SCNE_SHA:
+    if sha(decoded) != SCNE_SHA:
+        return
+    if _RETAIL_SCNE_FROM_DISC is None:
         _RETAIL_SCNE_FROM_DISC = bytes(decoded)
+    sa = _source_art()
+    if sa is not None:
+        try:
+            sa.remember_retail_scne(bytes(decoded))
+        except Exception:  # noqa: BLE001 - a cache that cannot be written never fails a build
+            pass
 
 
-def retail_scne_bytes() -> bytes:
+def retail_scne_bytes(source: Path | None = None) -> bytes:
+    """The decoded retail score_bug scene.
+
+    Order: this process (any retail image read so far), the developer asset folder, the
+    studio's private cache, then ``source`` itself -- the user's disc, which is where the
+    resource actually lives.  It is never shipped.
+    """
+
     if _RETAIL_SCNE_FROM_DISC is not None:
         return _RETAIL_SCNE_FROM_DISC
     for candidate in (ESPN_TEXTURES / "score_bug_retail.scne", Path("/tmp/opencode/scorebug/score_bug.scne")):
@@ -674,17 +737,57 @@ def retail_scne_bytes() -> bytes:
             data = candidate.read_bytes()
             if sha(data) == SCNE_SHA:
                 return data
+    sa = _source_art()
+    if sa is not None:
+        try:
+            return sa.retail_scne(Path(source) if source is not None else None)
+        except Exception as exc:  # noqa: BLE001 - answered as a SystemExit below, like the old path
+            raise SystemExit(f"retail decoded score_bug SCNE not found: {exc}") from exc
     raise SystemExit("retail decoded score_bug SCNE not found")
+
+
+def resolve_textures(xiso: Path) -> dict:
+    """Where each replacement PNG comes from for this build.
+
+    The developer asset folder wins when it is present, so this workstation's builds are
+    unchanged.  Otherwise the two atlases the bar needs -- and the shared digit sheet where a
+    DejaVu Sans Bold is installed to draw it -- are GENERATED from the retail textures in
+    ``xiso`` itself and cached privately.  The generator is shipped code and the retail
+    inputs are the user's own disc, so nothing retail-derived has to travel in the release.
+    """
+
+    sa = _source_art()
+    if sa is None:
+        art: dict[str, Path] = {}
+        for role, name in (("score_buga", "score_buga_modern.png"),
+                           ("shield_espn", "shield_espn_modern.png"),
+                           ("digital_font", "digital_font_modern.png"),
+                           ("NAVTEXTURE", "NAVTEXTURE_modern.png")):
+            candidate = ESPN_TEXTURES / name
+            if candidate.exists():
+                art[role] = candidate
+        for role in ("score_buga", "shield_espn"):
+            if role not in art:
+                raise SystemExit(f"{role} replacement art is not available in this build")
+        return {"art": art, "origin": {r: "developer" for r in art}, "reference_match": {}, "skipped": {}}
+    try:
+        return sa.resolve_art(Path(xiso))
+    except sa.ScorebugArtError as exc:
+        raise SystemExit(str(exc)) from exc
 
 
 def apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements: bool = True) -> dict:
     """Re-lay the scorebug inside an existing (already copied) image: chunk 78, XBE, textures."""
 
     absolute, span = read_retail_span(xiso)
-    m = Mesh(retail_scne_bytes())
+    m = Mesh(retail_scne_bytes(xiso))
     espn_layout(m)
     decoded = m.serialize()
     new_span, info = refit(span, decoded)
+    # Resolve (and, on an install, derive) the replacement art BEFORE the first write: the
+    # retail textures it is generated from are read out of this very image, and a failure here
+    # must not leave a copy with a re-laid mesh and retail atlases.
+    art = resolve_textures(xiso) if textures else None
     fd = os.open(xiso, os.O_RDWR | getattr(os, "O_BINARY", 0))
     try:
         size = os.fstat(fd).st_size
@@ -700,20 +803,25 @@ def apply_in_place(xiso: Path, *, textures: bool = True, freeze_elements: bool =
         os.close(fd)
     receipt.update({"chunk78_absolute": absolute, "filled_bytes": info.filled_bytes, "padding_bytes": info.padding_bytes, "wrapper_identical": info.wrapper_identical,
                     "root": [ROOT_X, ROOT_Y], "layout": f"espn-horizontal-v{LAYOUT_VERSION}", "textures": []})
-    if textures:
+    if textures and art is not None:
         import subprocess
+        paths = art["art"]
+        receipt["art_origin"] = art["origin"]
+        receipt["art_reference_match"] = art["reference_match"]
+        if art["skipped"]:
+            receipt["art_skipped"] = art["skipped"]
         argv = [sys.executable, str(ROOT / "tools" / "nfl2k5_scorebug_textures_into_xiso.py"), str(xiso),
-                "--score-buga", str(ESPN_TEXTURES / "score_buga_modern.png"),
-                "--shield-espn", str(ESPN_TEXTURES / "shield_espn_modern.png")]
-        font_png = ESPN_TEXTURES / "digital_font_modern.png"
-        if font_png.exists():
+                "--score-buga", str(paths["score_buga"]),
+                "--shield-espn", str(paths["shield_espn"])]
+        font_png = paths.get("digital_font")
+        if font_png is not None:
             argv += ["--digital-font", str(font_png)]
         done = subprocess.run(argv, capture_output=True, text=True, check=False)
         if done.returncode != 0:
             raise SystemExit(f"texture import failed: {done.stderr[-400:]}")
-        receipt["textures"] = ["score_buga", "shield_espn"] + (["digital_font"] if font_png.exists() else [])
-        ticker_png = ESPN_TEXTURES / "NAVTEXTURE_modern.png"
-        if ticker_png.exists():
+        receipt["textures"] = ["score_buga", "shield_espn"] + (["digital_font"] if font_png is not None else [])
+        ticker_png = paths.get("NAVTEXTURE")
+        if ticker_png is not None:
             argv = [sys.executable, str(ROOT / "tools" / "nfl2k5_fieldpack_texture_into_xiso.py"), str(xiso),
                     "--chunk", "34", "--png", str(ticker_png)]
             done = subprocess.run(argv, capture_output=True, text=True, check=False)
@@ -755,7 +863,7 @@ def main() -> int:
     if dst.exists() and not args.overwrite:
         raise SystemExit(f"{dst} exists (use --overwrite)")
     absolute, span = read_retail_span(src)
-    m = Mesh(retail_scne_bytes())
+    m = Mesh(retail_scne_bytes(src))
     espn_layout(m)
     decoded = m.serialize()
     new_span, info = refit(span, decoded)

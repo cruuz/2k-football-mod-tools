@@ -139,6 +139,27 @@ class ScorebugLayoutTests(unittest.TestCase):
         self.assertAlmostEqual(max(p[0] for p in pill), b, delta=0.05)
         self.assertAlmostEqual(m.world[L.T["drop_down"]][0], (a + b) / 2, places=3)
 
+    def test_strips_come_from_the_scene_not_the_research_export(self) -> None:
+        """The mockup used to read an intermediate glTF that is not in a release (and gated the
+        whole step).  The same index lists decode straight out of the retail scene."""
+
+        from_scene = L.strips(self.retail)
+        self.assertEqual(len(from_scene), len(L.SUBMESHES))
+        self.assertTrue(all(idx for _k, idx in from_scene))
+        self.assertTrue(all(0 <= v < L.VCOUNT for _k, idx in from_scene for v in idx))
+        export = ROOT / "assets/intermediate/nfl2k5/models/0346_0078_score_bug.gltf"
+        if not export.is_file():
+            self.skipTest("the intermediate glTF research export is not in this tree")
+        import json
+        document = json.loads(export.read_text())
+        buffer = export.with_suffix(".bin").read_bytes()
+        for k, primitive in enumerate(document["meshes"][0]["primitives"]):
+            accessor = document["accessors"][primitive["indices"]]
+            view = document["bufferViews"][accessor["bufferView"]]
+            offset = view.get("byteOffset", 0) + accessor.get("byteOffset", 0)
+            expected = list(struct.unpack_from("<%dH" % accessor["count"], buffer, offset))
+            self.assertEqual(from_scene[k][1], expected, k)
+
     def test_v6_preview_renders_normal_and_widest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             m = L.Mesh(self.retail)

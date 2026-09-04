@@ -33,13 +33,47 @@ ESPN_RED_DARK = (150, 0, 18, 255)
 WHITE = (255, 255, 255, 255)
 CELL_SLATE = (52, 54, 66, 255)
 CLEAR = (0, 0, 0, 0)
-FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-FONT_BOLD_OBLIQUE = "/usr/share/fonts/truetype/dejavu/DejaVuSans-BoldOblique.ttf"
+FONT_BOLD = "DejaVuSans-Bold.ttf"
+FONT_BOLD_OBLIQUE = "DejaVuSans-BoldOblique.ttf"
+# Where DejaVu lives on the platforms the studio runs on.  The digit sheet is drawn with real
+# glyphs, so the art is only reproducible where the same face is installed; ``have_text_font``
+# lets a caller skip that one atlas instead of silently shipping PIL's bitmap fallback, which
+# would look nothing like the published patch.
+FONT_DIRECTORIES = (
+    "/usr/share/fonts/truetype/dejavu",
+    "/usr/share/fonts/dejavu",
+    "/usr/share/fonts/TTF",
+    "/usr/local/share/fonts",
+    "/opt/homebrew/share/fonts",
+    str(Path.home() / ".fonts"),
+    str(Path.home() / "Library" / "Fonts"),
+    "C:/Windows/Fonts",
+)
+
+
+def font_file(name: str) -> Path | None:
+    """The installed DejaVu face ``name``, or ``None``.  Absolute names are honoured as given."""
+
+    candidate = Path(name)
+    if candidate.is_absolute():
+        return candidate if candidate.is_file() else None
+    for directory in FONT_DIRECTORIES:
+        found = Path(directory) / name
+        if found.is_file():
+            return found
+    return None
+
+
+def have_text_font() -> bool:
+    """Whether the faces the digit sheet is drawn with are installed on this machine."""
+
+    return font_file(FONT_BOLD) is not None
 
 
 def font(path: str, size: int) -> ImageFont.FreeTypeFont:
+    found = font_file(path)
     try:
-        return ImageFont.truetype(path, size)
+        return ImageFont.truetype(str(found), size) if found is not None else ImageFont.load_default()
     except OSError:
         return ImageFont.load_default()
 

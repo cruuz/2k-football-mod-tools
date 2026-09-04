@@ -469,11 +469,17 @@ def parse_manifest(document: Mapping[str, Any]) -> Manifest:
     base_size = _int(base.get("size"), "base.size", minimum=1)
     base_sha = _hex64(base.get("sha256"), "base.sha256", optional=True)
     base_partition = _int(base.get("partition_base", 0), "base.partition_base")
+    base_is_retail = bool(base.get("is_retail")) and base_size == RETAIL_XISO_SIZE and base_sha == RETAIL_XISO_SHA256
     base_doc = {
         "size": base_size,
         "sha256": base_sha,
         "partition_base": base_partition,
-        "is_retail": bool(base.get("is_retail")) and base_size == RETAIL_XISO_SIZE and base_sha == RETAIL_XISO_SHA256,
+        "is_retail": base_is_retail,
+        # A pack built on a working copy still applies to a retail dump when every run's
+        # expected bytes are the retail bytes.  Saying "custom base" there frightens people
+        # away from a patch that is provably fine for them, so the exporter proves it against
+        # a retail image and records the answer here.
+        "is_retail_equivalent": base_is_retail or bool(base.get("is_retail_equivalent")),
         "label": _text(base.get("label"), "base_label"),
     }
 
@@ -740,6 +746,24 @@ def _scorebug_assets_dir() -> Path:
     return Path(__file__).resolve().parents[1] / "assets" / "nfl2k5_scorebug_espn"
 
 
+def _scorebug_asset_dirs() -> tuple[Path, ...]:
+    """Where the scorebug's replacement PNGs may live, best first.
+
+    The developer asset folder is not in a release; on an install the art is generated from
+    the user's own disc into the private cache, and a pack exported there must bundle the
+    files the build actually used, not silently drop them.
+    """
+
+    folders = [_scorebug_assets_dir()]
+    try:
+        from mod_editor.core import nfl2k5_scorebug_source_art as _art
+
+        folders.append(_art.cache_dir())
+    except Exception:  # noqa: BLE001 - no cache in this build
+        pass
+    return tuple(folders)
+
+
 SCOREBUG_TEXTURE_ROLES = (
     ("score_buga", "score_buga_modern.png"),
     ("shield_espn", "shield_espn_modern.png"),
@@ -769,6 +793,32 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
     detected: dict[str, Any] = {}
     operations: list[dict[str, Any]] = []
     auto_assets: list[dict[str, Any]] = []
+    try:
+        import json as _json
+
+        from mod_editor.core import nfl2k5_roster_records as _records
+        before, after = _records.status(Path(base_path)), _records.status(Path(patched_path))
+        if before != after or after == "edited":
+            with _records._outer_image()(Path(base_path)) as _base_archive:
+                _entry = _records._entry(_base_archive)
+                base_body = _base_archive.read(_entry.virtual_offset, _entry.size)[_records.RESOURCE_HEADER_SIZE:]
+            with _records._outer_image()(Path(patched_path)) as _patched_archive:
+                _entry = _records._entry(_patched_archive)
+                patched_body = _patched_archive.read(_entry.virtual_offset, _entry.size)[_records.RESOURCE_HEADER_SIZE:]
+            if base_body != patched_body:
+                document = _records.edits_between(base_body, patched_body, name="roster_edits")
+                if document["edits"]:
+                    detected["roster_edits"] = {"base": before, "patched": after,
+                                                "players_edited": len(document["edits"])}
+                    member = f"{ASSET_ROOT}/text/roster_edits.json"
+                    auto_assets.append({"data": _json.dumps(document, indent=1).encode("utf-8"),
+                                        "member": member, "role": "roster_edits.json",
+                                        "source_name": "roster_edits.json"})
+                    operations.append({"op": "roster_edits", "enabled": True,
+                                       "players_edited": len(document["edits"]),
+                                       "edits_asset": member})
+    except Exception:  # noqa: BLE001 - a roster we cannot read is simply not described
+        pass
     try:
         tt = _throw_module()
         offset, length = tt.image_xbe_extent(base_fd, size)
@@ -841,9 +891,10 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
             detected["scorebug_layout"] = {"base": before, "patched": after, "layout_version": version}
             if after == "applied":
                 textures: dict[str, str | None] = {}
-                folder = _scorebug_assets_dir()
+                folders = _scorebug_asset_dirs()
                 for role, file_name in SCOREBUG_TEXTURE_ROLES:
-                    candidate = folder / file_name
+                    candidate = next((f / file_name for f in folders if (f / file_name).is_file()),
+                                     folders[0] / file_name)
                     if candidate.is_file():
                         member = f"{ASSET_ROOT}/texture/{file_name}"
                         textures[role] = member
@@ -894,6 +945,10 @@ def describe_operation(operation: Mapping[str, Any]) -> str:
     if op == "team_history":
         source = "built-in nflverse data" if operation.get("source") == "retail" else "a custom CSV"
         return f"Real team history on the Player Card for the roster's past seasons ({source}; franchises created from the copy)"
+    if op == "roster_edits":
+        count = int(operation.get("players_edited", 0) or 0)
+        return (f"Roster edits from ★ Rosters: {count} player{'' if count == 1 else 's'} "
+                "(ratings, appearance, equipment, contracts, names, depth)")
     if op == "prospect_names":
         source = "built-in nflverse 2015-2025 list" if operation.get("source") == "modern" else "a custom CSV"
         return f"Modern draft-prospect names in the generated-player pool ({source}; recorded surnames keep their call-outs, new ones are announced by number; franchises created from the copy)"
@@ -990,10 +1045,17 @@ def _stage_assets(specs: Iterable[Any], auto: Iterable[Mapping[str, Any]]) -> li
         return candidate
 
     for spec in auto:
-        path = Path(spec["path"])
-        data = _read_small_file(path, f"asset {path.name}", MAX_ASSET_BYTES)
+        # an auto asset is either a file the studio ships or bytes a detector rebuilt in memory
+        if spec.get("data") is not None:
+            data = bytes(spec["data"])
+            source_name = str(spec.get("source_name") or PurePosixPath(str(spec["member"])).name)
+        else:
+            path = Path(spec["path"])
+            data = _read_small_file(path, f"asset {path.name}", MAX_ASSET_BYTES)
+            source_name = path.name
+        _require(len(data) <= MAX_ASSET_BYTES, f"asset {source_name} is larger than {MAX_ASSET_BYTES} bytes")
         member = unique(str(spec["member"]))
-        staged.append(_Staged(member, data, member.split("/")[1], spec.get("role"), path.name))
+        staged.append(_Staged(member, data, member.split("/")[1], spec.get("role"), source_name))
     for spec in specs:
         if isinstance(spec, (str, Path)):
             spec = {"path": spec}
@@ -1054,12 +1116,58 @@ def _stage_project(project_path: Path | str | None) -> tuple[list[_Staged], dict
 # Export
 
 
+def _base_label(is_retail: bool, is_equivalent: bool) -> str:
+    if is_retail:
+        return "ESPN NFL 2K5 (USA) retail disc image"
+    if is_equivalent:
+        return "retail-equivalent base (every changed byte matches the retail disc image)"
+    return "custom base (not the retail disc image)"
+
+
 def _tool_version() -> str:
     try:
         import mod_editor
         return str(getattr(mod_editor, "__version__", "unknown"))
     except Exception:  # noqa: BLE001
         return "unknown"
+
+
+def retail_equivalence(runs: Sequence[Run], retail_image: Path | str) -> dict[str, Any]:
+    """Would every run of this pack find its expected bytes on the retail disc image?
+
+    A pack exported from a working copy is not a pack that needs the working copy.
+    Runs are addressed from the game partition, so if the base and retail hold the
+    same bytes everywhere a run reaches, a retail dump takes the patch unchanged --
+    and the Apply panel has no business calling that a "custom base".
+    """
+
+    path = _regular_path(retail_image, "retail disc image")
+    fd = _open(path, os.O_RDONLY)
+    try:
+        size = os.fstat(fd).st_size
+        identity = disc_identity(fd, size)
+        pbase = partition_base(fd, size) or 0
+        matching = 0
+        differing = 0
+        for run in runs:
+            start = pbase + run.offset
+            if start + run.length > size or _sha256(_pread_exact(fd, run.length, start, "retail run")) != run.expected_sha256:
+                differing += 1
+            else:
+                matching += 1
+    finally:
+        os.close(fd)
+    usable = identity is not None and identity.can_take_a_byte_run_patch
+    return {
+        "image": str(path),
+        "identity": identity.as_json() if identity is not None else None,
+        "runs": len(runs),
+        "matching": matching,
+        "differing": differing,
+        "equivalent": bool(usable and differing == 0),
+        "reason": ("" if usable else "the image given as retail is not a retail dump")
+                  or ("" if differing == 0 else f"{differing} run(s) differ from the retail disc"),
+    }
 
 
 def export(
@@ -1070,6 +1178,7 @@ def export(
     *,
     overwrite: bool = False,
     recipe: bool = True,
+    retail_image: Path | str | None = None,
     progress: ProgressSink | None = None,
     block: int = BLOCK,
     gap: int = COALESCE_GAP,
@@ -1077,7 +1186,9 @@ def export(
     """Diff ``patched_iso`` against ``base_iso`` and write a ``.2k5patch``.
 
     ``meta`` carries ``name`` (required), ``author``, ``version``,
-    ``description``, ``base_label``; optionally ``assets`` (paths or
+    ``description``, ``base_label``, ``retail_image`` (a retail dump every run is
+    proved against, so a pack built on a working copy can honestly say it applies
+    to retail); optionally ``assets`` (paths or
     ``{"path", "kind", "role", "name"}`` specs bundled under ``assets/``),
     ``operations`` (recipe operation objects, each with an ``op`` name and its
     parameters) and ``project`` (a studio ``.2k5mod`` whose members are
@@ -1173,6 +1284,12 @@ def export(
         recipe_doc["project"] = project_document
 
     is_retail = size == RETAIL_XISO_SIZE and base_sha == RETAIL_XISO_SHA256
+    retail_source = retail_image if retail_image is not None else meta.get("retail_image")
+    equivalence: dict[str, Any] | None = None
+    if not is_retail and retail_source:
+        report("Proving the patch against the retail disc image", 0, 0)
+        equivalence = retail_equivalence(runs, retail_source)
+    is_equivalent = is_retail or bool(equivalence and equivalence["equivalent"])
     manifest: dict[str, Any] = {
         "format": FORMAT,
         "kind": KIND,
@@ -1188,7 +1305,8 @@ def export(
             "sha256": base_sha,
             "partition_base": partition,
             "is_retail": is_retail,
-            "label": base_label or ("ESPN NFL 2K5 (USA) retail disc image" if is_retail else "custom base (not the retail disc image)"),
+            "is_retail_equivalent": is_equivalent,
+            "label": base_label or _base_label(is_retail, is_equivalent),
         },
         "result": {"size": size, "sha256": patched_sha},
         "payload": {"member": PAYLOAD_MEMBER, "length": len(payload_bytes), "sha256": _sha256(payload_bytes)},
@@ -1234,6 +1352,7 @@ def export(
         "result": dict(manifest["result"]),
         "runs": len(runs),
         "bytes": len(payload_bytes),
+        "retail_equivalence": equivalence,
         "regions": loaded.manifest.region_summary(),
         "ops": [run.as_json() for run in runs],
         "assets": [asset.as_json() for asset in assets],
@@ -1256,6 +1375,24 @@ def _classify(actual: bytes, run: Run) -> str:
     if digest == run.new_sha256:
         return "applied"
     return "mismatch"
+
+
+def disc_identity(descriptor: int, size: int) -> Any | None:
+    """What kind of disc image this is, or None when the identifier is unavailable.
+
+    A run count is not an answer.  "2802 of 2811 runs mismatch" is the same
+    sentence for a repacked image, a pre-modded one and a dump of another game,
+    and only one of those is worth re-dumping a disc over.
+    """
+
+    try:
+        from . import nfl2k5_disc_identity as identity
+    except ImportError:   # pragma: no cover - the identifier is always shipped
+        return None
+    try:
+        return identity.identify_descriptor(descriptor, size)
+    except Exception:  # noqa: BLE001 -- an identity is a courtesy, never a gate
+        return None
 
 
 def _check_descriptor(pack: Pack, descriptor: int, size: int, *, hash_image: bool, progress: ProgressSink) -> dict[str, Any]:
@@ -1291,6 +1428,7 @@ def _check_descriptor(pack: Pack, descriptor: int, size: int, *, hash_image: boo
             position += len(chunk)
             progress("Hashing the image", position, size)
         image_sha = digest.hexdigest()
+    identity = disc_identity(descriptor, size) if overall in ("mismatch", "partial") else None
     return {
         "schema": CHECK_SCHEMA,
         "pack": str(pack.path),
@@ -1303,11 +1441,12 @@ def _check_descriptor(pack: Pack, descriptor: int, size: int, *, hash_image: boo
         "image_sha256": image_sha,
         "image_matches_base_sha256": None if image_sha is None or manifest.base["sha256"] is None else image_sha == manifest.base["sha256"],
         "image_is_retail": None if image_sha is None else (size == RETAIL_XISO_SIZE and image_sha == RETAIL_XISO_SHA256),
-        "explanation": explain_state(overall, counts, size == manifest.base["size"]),
+        "identity": identity.as_json() if identity is not None else None,
+        "explanation": explain_state(overall, counts, size == manifest.base["size"], identity=identity),
     }
 
 
-def explain_state(state: str, counts: Mapping[str, int], size_matches: bool) -> str:
+def explain_state(state: str, counts: Mapping[str, int], size_matches: bool, *, identity: Any | None = None) -> str:
     if state == "ready":
         text = "Every run's expected bytes are present: the patch can be applied to this image."
     elif state == "applied":
@@ -1318,9 +1457,14 @@ def explain_state(state: str, counts: Mapping[str, int], size_matches: bool) -> 
     else:
         text = (f"{counts['mismatch'] + counts['out_of_range']} run(s) hold bytes that are neither the expected base "
                 "nor the patched bytes: this image is not the base the patch was made from. Nothing will be written.")
-    if not size_matches:
+    # The size note reassures a raw-dump holder, and misleads anyone whose image is a repack or
+    # already modded: for them the size is not why the runs disagree. Only say it when the image
+    # really is (or might be) a dump.
+    if not size_matches and (identity is None or identity.can_take_a_byte_run_patch):
         text += (" (The file size differs from the author's base; runs are located through the game partition, "
                  "so a raw dump with the video partition still attached is fine when every run matches.)")
+    if identity is not None and state in ("mismatch", "partial"):
+        text += f" This image is: {identity.line()}"
     return text
 
 
@@ -1576,6 +1720,7 @@ __all__ = [
     "describe_recipe",
     "diff_descriptors",
     "differences",
+    "disc_identity",
     "explain_state",
     "export",
     "extract_assets",
@@ -1586,4 +1731,5 @@ __all__ = [
     "parse_manifest",
     "partition_base",
     "recognise_recipe",
+    "retail_equivalence",
 ]

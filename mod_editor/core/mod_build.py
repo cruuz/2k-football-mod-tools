@@ -50,6 +50,16 @@ def _core_module(name: str):
         return None
 
 
+def _scorebug_art_available() -> bool:
+    module = _core_module("nfl2k5_scorebug_source_art")
+    if module is None:
+        return False
+    try:
+        return bool(module.available())
+    except Exception:  # noqa: BLE001
+        return False
+
+
 UNIFORM_CHOICE_MODES = ("", "rule", "choice")
 
 
@@ -116,7 +126,9 @@ class BuildPlan:
     seven_on_seven: bool = False
     # real team history for the roster's past seasons on the Player Card: "retail" = the shipped nflverse CSV
     # (data/nfl2k5_retail_team_history.csv), a path = a user CSV, "" = off; disc images only; shows in franchises
-    # CREATED from the copy; costs one pool dword per season row (the game folds the oldest seasons a bit earlier)
+    # CREATED from the copy; costs one pool dword per season row (the game folds the oldest seasons a bit earlier).
+    # Seasons the CSV does not cover are filled with the player's own 2004 club (receipt: "seasons_inferred"), so
+    # 5,746 of the 5,838 rows the card can show name a team; only the 2004 free agents still read "--".
     team_history: str = ""
     # Position row on the first page of Edit Player (roster mode and Franchise); the descriptor exists for
     # Create Player, the Edit Player lists just never listed it. Depth Chart -> Auto after a change.
@@ -153,6 +165,18 @@ class BuildPlan:
     # who gets one: primary-roster indices (17) or "last,first,birth_date" keys ("Vick,Michael,1980-06-28"),
     # written into the ROST resource; disc images only, and the tag reaches franchises CREATED from the copy
     player_tags: list[str] = field(default_factory=list)
+    # ★ Rosters edits: "" = off, otherwise the path of a roster-edits JSON document
+    # (``2k5_mod_studio_roster_edits/v1``, written by the ★ Rosters page).  Applied to the ROST
+    # resource of the copy LAST, after every other roster pass: it writes named record fields
+    # (ratings, appearance, equipment, contract, position, depth, names through the shared pool)
+    # and leaves +0x2C, the season-stat pool, the generated-name pool and the +0x53 star bit alone,
+    # so all four of their digest gates stay intact.  Disc images only.
+    roster_edits: str = ""
+    # community playbook packs (.2k5book recipes) installed into the copy's team books.
+    # A recipe, not retail bytes: the same formation/play/link rows the designers stage, so
+    # Build compiles them against the user's own disc.  Never in a preset -- a community book
+    # is a user choice like commentary, and a curated official one belongs in EXPERIMENTAL first.
+    playbook_packs: tuple[str, ...] = ()
     # text
     edge_rename: bool = False
     # presentation
@@ -252,6 +276,7 @@ def availability() -> dict[str, bool]:
                            and (ROOT / "data" / "nfl2k5_modern_names.csv").exists()),
         "player_star": _core_module("nfl2k5_player_star") is not None,
         "player_tags": _core_module("nfl2k5_player_tags") is not None,
+        "roster_edits": _core_module("nfl2k5_roster_records") is not None,
         "seven_on_seven": (SEVEN_ON_SEVEN_RELEASED
                            and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
@@ -261,11 +286,20 @@ def availability() -> dict[str, bool]:
         "position_pools": (_core_module("nfl2k5_position_pools") is not None
                            and _tools_module("nfl2k5_playbook_position_recode") is not None
                            and _tools_module("nfl2k5_roster_reclassify") is not None),
+        # The scorebug used to be gated on two developer-only files (our repaint of the ESPN
+        # mark, and an intermediate glTF that only the CLI mockup ever reads), so every install
+        # but this workstation reported "Not available in this build" and the ADVANCED preset
+        # skipped it silently.  Both retail-derived inputs and the derived art now come from
+        # the user's own disc image at build time (nfl2k5_scorebug_source_art), so the step is
+        # available whenever the writer and the generator are: the source is checked when the
+        # build runs, where a non-image source is already refused with its own message.
         "scorebug": (_tools_module("nfl2k5_scorebug_layout") is not None
-                     and (ROOT / "mod_editor" / "assets" / "nfl2k5_scorebug_espn" / "shield_espn_modern.png").exists()
-                     and (ROOT / "assets" / "intermediate" / "nfl2k5" / "models" / "0346_0078_score_bug.gltf").exists()),
+                     and _core_module("nfl2k5_scorebug_source_art") is not None
+                     and _scorebug_art_available()),
         "edge_rename": _core_module("nfl2k5_edge_rename") is not None,
         "commentary": _tools_module("nfl2k5_commentary_swap") is not None,
+        "playbook_packs": (_core_module("nfl2k5_playbook_pack") is not None
+                           and _tools_module("nfl2k5_playbook_position_recode") is not None),
     }
 
 
@@ -289,10 +323,13 @@ def inspect(source: Path | str) -> dict[str, Any]:
         "franchise_practice": report.get("franchise_practice", "unknown"),
         # the executable half alone is never "applied": the name pool lives in pack 0 (both halves below for images)
         "prospect_names": ("partial" if report.get("prospect_names") == "applied" else report.get("prospect_names", "unknown")),
-        "player_star": report.get("player_star", "unknown"), "player_tags": "n/a",
+        "player_star": report.get("player_star", "unknown"), "player_tags": "n/a", "roster_edits": "n/a",
         "seven_on_seven": report.get("seven_on_seven", "unknown"), "seven_on_seven_book": "n/a", "team_history": "n/a",
         "position_pools": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
         "scorebug": "n/a", "edge_rename": "unknown", "commentary": "unknown",
+        # a pack is a recipe compiled into the books; there is no single site to read back,
+        # so the receipt (not inspect) is the record of which packs went in
+        "playbook_packs": "n/a",
     }
     if report.get("container") == "xiso":
         align = _tools_module("nfl2k5_kickoff_alignment")
@@ -343,9 +380,26 @@ def inspect(source: Path | str) -> dict[str, Any]:
                 out["player_tags"] = tags.status(source)
             except Exception:  # noqa: BLE001
                 out["player_tags"] = "foreign"
+        records = _core_module("nfl2k5_roster_records")
+        if records is not None:
+            try:
+                out["roster_edits"] = records.status(source)
+            except Exception:  # noqa: BLE001
+                out["roster_edits"] = "foreign"
     if "edge_rename" in report:
         out["edge_rename"] = report.get("edge_rename")
         out["edge_rename_disc"] = report.get("edge_rename_disc")
+    # Which disc this is decides whether Build will work at all, so the panel can say it
+    # before anyone presses the button rather than after a step has refused.
+    if report.get("container") == "xiso":
+        identity = disc_identity(source)
+        out["disc_identity"] = identity.as_json() if identity is not None else None
+        out["disc_identity_line"] = identity.line() if identity is not None else ""
+        out["disc_identity_headline"] = identity.headline if identity is not None else ""
+    else:
+        out["disc_identity"] = None
+        out["disc_identity_line"] = ""
+        out["disc_identity_headline"] = ""
     return out
 
 
@@ -414,9 +468,54 @@ def image_target_path(chosen: str) -> str:
     return text + ".xiso.iso"
 
 
+def disc_identity(source: Path | str, *, pack0: bytes | None = None):
+    """What kind of disc image ``source`` is, or None when it cannot be told."""
+
+    module = _core_module("nfl2k5_disc_identity")
+    if module is None:
+        return None
+    try:
+        return module.identify(source, pack0=pack0)
+    except Exception:  # noqa: BLE001 -- an identity is a courtesy, never a gate
+        return None
+
+
+def _identity_note(source: Path | str, *, pack0: bytes | None = None) -> str:
+    identity = disc_identity(source, pack0=pack0)
+    return f"This image is: {identity.line()}" if identity is not None else ""
+
+
+def _with_identity(exc: ValueError, source: Path, is_image: bool) -> ValueError:
+    """Name the disc in a refusal.
+
+    "pack-0 schedule template is foreign: ROST stored size is not retail" is
+    true and useless: it is the same sentence for a repacked image, a disc that
+    already carries somebody's roster mod, and a dump of another game.  Which
+    one it is decides whether the user re-dumps, rebuilds, or starts over, so
+    every refusal on a disc image says which.
+    """
+
+    text = str(exc)
+    if not is_image or "This image is:" in text:
+        return exc
+    note = _identity_note(source)
+    if not note:
+        return exc
+    joiner = " " if text.rstrip().endswith((".", "!", "?", ":")) else ". "
+    return ValueError(f"{text.rstrip()}{joiner}{note}")
+
+
 def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
     """Apply the whole plan to a copy of ``plan.source`` at ``plan.target``; return the receipt."""
 
+    try:
+        return _build(plan, progress)
+    except ValueError as exc:
+        source = Path(plan.source)
+        raise _with_identity(exc, source, tt.is_disc_image(source)) from exc
+
+
+def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
     progress = progress or (lambda *_a: None)
     source, target = Path(plan.source), Path(plan.target)
     if target.exists() and target.resolve() == source.resolve():
@@ -441,6 +540,10 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         raise ValueError("modern prospect names need a disc image (the name pool lives in the roster template in pack 0)")
     if plan.player_tags and not is_image:
         raise ValueError("star tags need a disc image (the roster records live in pack 0)")
+    if plan.roster_edits and not is_image:
+        raise ValueError("roster edits need a disc image (the roster records live in pack 0)")
+    if plan.playbook_packs and not is_image:
+        raise ValueError("playbook packs need a disc image (the books live in the archive packs)")
 
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
     #    including its disc text spans when the source is an image)
@@ -476,8 +579,14 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         if sbl is None:
             raise RuntimeError("scorebug layout tool is not available in this build")
         progress("Re-laying the scorebug (mesh, placement, textures)", 0, 0)
-        rec = sbl.apply_in_place(target)
-        receipt["steps"].append({"step": "scorebug", **{k: rec.get(k) for k in ("filled_bytes", "padding_bytes", "wrapper_identical", "root", "textures", "text_colours", "persistent", "hud_layout", "layout")}})
+        try:
+            rec = sbl.apply_in_place(target)
+        except SystemExit as exc:
+            # the layout writer reports refusals as SystemExit (it is also a CLI). A build runs on
+            # a Qt worker thread whose runner catches Exception, so a SystemExit there would kill
+            # the thread silently and leave the panel waiting for a result that never comes.
+            raise RuntimeError(f"the ESPN scorebug could not be written: {exc}") from exc
+        receipt["steps"].append({"step": "scorebug", **{k: rec.get(k) for k in ("filled_bytes", "padding_bytes", "wrapper_identical", "root", "textures", "text_colours", "persistent", "hud_layout", "layout", "art_origin", "art_reference_match", "art_skipped")}})
     if plan.position_pools:
         pools = _core_module("nfl2k5_position_pools")
         recode = _tools_module("nfl2k5_playbook_position_recode")
@@ -516,6 +625,19 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         progress("Writing the 7-on-7 sets into the practice playbook", 0, 0)
         book_receipt = book.apply(target, progress=lambda msg: progress(msg, 0, 0))
         receipt["steps"].append({"step": "seven_on_seven_book", **{k: v for k, v in book_receipt.items() if k != "formations"}})
+    if plan.playbook_packs:
+        # after every other playbook writer (the position recode rewrites defensive category
+        # codes and the 7-on-7 writer owns the practice book; a pack only ever replaces
+        # offensive formations/plays inside a team book, so the three do not overlap).
+        packs = _core_module("nfl2k5_playbook_pack")
+        if packs is None:
+            raise RuntimeError("the playbook pack module is not available in this build")
+        progress("Installing the community playbook packs", 0, 0)
+        pack_receipt = packs.apply_packs_to_image(
+            target, [Path(p) for p in plan.playbook_packs],
+            progress=lambda msg: progress(msg, 0, 0),
+        )
+        receipt["steps"].append({"step": "playbook_packs", **pack_receipt})
     if plan.season_2026:
         season = _core_module("nfl2k5_season_length")
         fs = _tools_module("nfl2k5_franchise_schedule")
@@ -568,7 +690,9 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
             elif pstate.get("state") == "applied":
                 pack_receipt = {"already_applied": True}
             else:
-                raise ValueError(f"pack-0 schedule template is {pstate.get('state')}: {pstate.get('reason', '')}")
+                note = _identity_note(target, pack0=pack)
+                raise ValueError(f"pack-0 schedule template is {pstate.get('state')}: "
+                                 f"{pstate.get('reason', '')}. {note}".rstrip())
         finally:
             os.close(fd)
         receipt["steps"].append({"step": "season_2026", "xbe": {k: v for k, v in season_receipt.items() if k != "edits"},
@@ -611,6 +735,19 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
             tags_receipt = {**tags_receipt, "note": "player_star is off: the tags are written but nothing draws them"}
         receipt["steps"].append({"step": "player_tags", **{k: v for k, v in tags_receipt.items() if k != "log"},
                                  "log_lines": len(tags_receipt.get("log", []))})
+    if plan.roster_edits:
+        # after every other roster pass. The star tag is +0x53, the team history rebuilds the stat
+        # pool and the +0x2C pointers, the prospect names own the generated-name pool and the
+        # reclassify hashes position/order: this pass writes named record fields and shared name
+        # strings, and preserves all four, so running it last leaves every earlier gate intact.
+        records = _core_module("nfl2k5_roster_records")
+        if records is None:
+            raise RuntimeError("the roster records module is not available in this build")
+        progress("Applying the roster edits", 0, 0)
+        edits_receipt = records.apply(target, Path(plan.roster_edits), progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "roster_edits", "source": plan.roster_edits,
+                                 **{k: v for k, v in edits_receipt.items() if k != "log"},
+                                 "log_lines": len(edits_receipt.get("log", []))})
     for swap in plan.commentary:
         cs = _tools_module("nfl2k5_commentary_swap")
         if cs is None:

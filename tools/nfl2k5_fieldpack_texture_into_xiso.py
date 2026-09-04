@@ -58,10 +58,39 @@ from nfl_outer import parse_archive, read_entry_range  # noqa: E402
 INDEX = Path(os.environ.get("NFL2K5_RETAIL_INDEX", "retail-packs/0"))   # extracted pack index, developer machines only
 PACK_SIZE = 193_710_080          # retail vc_53450030/0; WHERE it sits is resolved from the image's directory
 OUTER_346_PACK_OFFSET = 109_895_680
+OUTER_346_SIZE = 2_977_184       # the field resource package, one contiguous run inside pack 0
+
+# Reading the retail template out of the image being written is only safe for a chunk whose
+# retail span digest is pinned: without that, an image that already holds a replacement would
+# hand back its own modified bytes as the "retail" template and every guard below would pass.
+# Metadata only -- a digest, never payload.
+IMAGE_TEMPLATE_PINS = {
+    34: "82fe5d54d718f9312355ca73bd0ee513bbd4581226dd607994ecd39b6d9e7502",   # NAVTEXTURE 128x128
+}
 
 
 def sha(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest()
+
+
+def field_pack_from_image(fd: int, image_size: int):
+    """Outer 346 read straight out of an open disc image.
+
+    The package is one contiguous run in ``vc_53450030/0``, so the whole thing is exactly the
+    bytes ``read_entry_range`` would return from an extracted archive -- which is why a user
+    who only has their own disc gets the same chunk table (and the same replacement spans)
+    as a developer machine with the packs extracted.  The pack is resolved through THIS
+    image's directory; only the pack-relative offset is a constant.
+    """
+
+    pack_offset, pack_size = xc.pack_extent(fd, image_size, "0")
+    if pack_size != PACK_SIZE:
+        raise SystemExit(f"vc_53450030/0 in this image is {pack_size} bytes, not the retail {PACK_SIZE}")
+    absolute = pack_offset + OUTER_346_PACK_OFFSET
+    if absolute + OUTER_346_SIZE > image_size:
+        raise SystemExit("the field resource package lies past the end of this image")
+    data = _pread(fd, OUTER_346_SIZE, absolute)
+    return data, t.parse_chunks(data, allow_trailing=True)
 
 
 def field_pack():
@@ -123,23 +152,47 @@ def main() -> int:
     ap.add_argument("--png", action="append", default=[])
     ap.add_argument("--list", action="store_true")
     args = ap.parse_args()
-    data, chunks = field_pack()
-    texes = texture_chunks(data, chunks)
     if args.list:
-        for c, cc, span, dec, info, tex in texes:
+        data, chunks = field_pack()
+        for c, cc, span, dec, info, tex in texture_chunks(data, chunks):
             print(f"chunk {c.index:3d} {tex.name!r:20s} {tex.width}x{tex.height} {getattr(tex, 'format_name', getattr(tex, 'format', '?'))} span {len(span)} decoded {len(dec)}")
         return 0
     if not args.xiso or len(args.chunk) != len(args.png) or not args.chunk:
         raise SystemExit("need XISO and matching --chunk/--png pairs")
-    by_index = {c.index: (c, cc, span, dec, info, tex) for c, cc, span, dec, info, tex in texes}
     fd = os.open(args.xiso, os.O_RDWR | getattr(os, "O_BINARY", 0))
     receipts = []
     try:
-        pack_offset, pack_size = xc.pack_extent(fd, os.fstat(fd).st_size, "0")
+        image_size = os.fstat(fd).st_size
+        # The retail template comes from the image being written; the extracted pack archive
+        # (developer machines only) is a fallback for an image whose field pack already moved.
+        try:
+            data, chunks = field_pack_from_image(fd, image_size)
+            texes = texture_chunks(data, chunks)
+            template_source = "image"
+        except SystemExit:
+            raise
+        except Exception:  # noqa: BLE001 - unreadable package: try the archive
+            data, chunks = field_pack()
+            texes = texture_chunks(data, chunks)
+            template_source = "index"
+        by_index = {c.index: (c, cc, span, dec, info, tex) for c, cc, span, dec, info, tex in texes}
+        pack_offset, pack_size = xc.pack_extent(fd, image_size, "0")
         if pack_size != PACK_SIZE:
             raise SystemExit(f"vc_53450030/0 in {args.xiso} is {pack_size} bytes, not the retail {PACK_SIZE}")
         for index, png in zip(args.chunk, args.png):
+            if index not in by_index:
+                raise SystemExit(f"chunk {index} is not a single-mip P8 texture of the field pack")
             c, cc, span, dec, info, tex = by_index[index]
+            if template_source == "image":
+                pinned = IMAGE_TEMPLATE_PINS.get(index)
+                if pinned is None:
+                    raise SystemExit(
+                        f"chunk {index} ({tex.name}) has no pinned retail digest, so it cannot be "
+                        "imported from an image-sourced template; extract the pack archive first")
+                if sha(span) != pinned:
+                    raise SystemExit(
+                        f"chunk {index} ({tex.name}) in this image is not the retail texture "
+                        "(already changed?)")
             new_span, rec = build_replacement(span, cc, dec, info, tex, Path(png))
             absolute = pack_offset + OUTER_346_PACK_OFFSET + c.offset
             current = _pread(fd, len(span), absolute)
@@ -155,6 +208,7 @@ def main() -> int:
                     raise SystemExit("readback failed")
             receipts.append({"chunk": index, "name": tex.name, "png": str(png), "absolute": absolute,
                              "pack0_byte_offset": pack_offset, "state_before": state,
+                             "template": template_source,
                              "span_sha256_after": sha(new_span), **{k: v for k, v in rec.items() if k != "quantization"},
                              "palette_reduced": bool(getattr(rec["quantization"], "palette_was_reduced", False))
                              if not isinstance(rec["quantization"], dict) else rec["quantization"].get("palette_was_reduced")})

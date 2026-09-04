@@ -118,6 +118,7 @@ from mod_editor.gui.commentary_panel_qt import CommentaryPanel
 from mod_editor.gui.sounds_panel_qt import SoundsPanel
 from mod_editor.gui.build_panel_qt import BuildPanel
 from mod_editor.gui.models_panel_qt import ModelsPanel
+from mod_editor.gui.roster_editor_panel_qt import RosterEditorPanel
 from mod_editor.gui.gameplay_patches_panel_qt import TEXT_PATCHES, GameplayPatchesPanel
 from mod_editor.gui.menus_panel_qt import MenusPanel
 from mod_editor.gui.playbooks_panel_qt import PlaybooksPanel
@@ -887,6 +888,11 @@ class BrowseOnlyFacade:
     playbook_raw_body = _unavailable
     stage_formation_selector = _unavailable
     create_authored_play = _unavailable
+    playbook_teams = _unavailable
+    load_playbook_pack = _unavailable
+    preview_playbook_pack = _unavailable
+    install_playbook_pack = _unavailable
+    export_playbook_pack = _unavailable
     stadium_scenes = _unavailable
     stadium_details = _unavailable
     preview_stadium_texture = _unavailable
@@ -2157,6 +2163,13 @@ class StudioMainWindow(QMainWindow):
                 item.setToolTip("The field art of the game's own Create-a-Team teams (fictional logos by design). "
                                 "Real NFL end zones and midfield art live under All Textures / Stadiums.")
             self.navigation.addItem(item)
+        roster_item = QListWidgetItem("  ★ Rosters")
+        roster_item.setData(Qt.UserRole, "rosters")
+        roster_item.setSizeHint(QSize(210, 44))
+        roster_item.setToolTip("Every player on the disc or in an Xbox save: names, position, number, the 27 ratings, "
+                               "appearance and equipment, height/weight/date of birth, college, depth order and the "
+                               "contract. Undo, a diff and a validation pass; your source file is never written.")
+        self.navigation.addItem(roster_item)
         models_item = QListWidgetItem("  ★ Models")
         models_item.setData(Qt.UserRole, "models")
         models_item.setSizeHint(QSize(210, 44))
@@ -2416,6 +2429,8 @@ class StudioMainWindow(QMainWindow):
                 page = self._build_capability_page(section)
             self._category_pages[category] = page
             self.pages.addWidget(self._page_scroll_host(page))
+        self._roster_editor_panel = RosterEditorPanel(self.facade)
+        self.pages.addWidget(self._page_scroll_host(self._roster_editor_panel))
         self._models_panel = ModelsPanel(self.facade)
         self.pages.addWidget(self._page_scroll_host(self._models_panel))
         self._create_play_page = self._build_create_play_page()
@@ -7704,6 +7719,10 @@ class StudioMainWindow(QMainWindow):
         tabs.setAccessibleName("Build and share workspaces")
         self._build_panel = BuildPanel(self.facade)
         self._connect_star_players()
+        # ★ Rosters writes a roster-edits document; the Build tab carries it as the roster_edits step
+        roster_editor = getattr(self, "_roster_editor_panel", None)
+        if roster_editor is not None:
+            roster_editor.roster_edits_changed.connect(self._build_panel.set_roster_edits)
         tabs.addTab(self._build_panel, "Build")
         # Share: a .2k5patch (byte runs + the modder's own images/audio + recipe)
         # made from a patched copy, applied to somebody else's own disc copy.
@@ -7797,8 +7816,8 @@ class StudioMainWindow(QMainWindow):
         "Build Modded XISO" / "Check My Images" (both about staged texture edits)
         thinking the build had failed. On that page only xemu controls stay."""
 
-        special = row - 1 - len(PRODUCT_CATEGORY_ORDER)
-        on_build_share = special == 2
+        item = self.navigation.item(row)
+        on_build_share = item is not None and item.data(Qt.UserRole) == "build_share"
         for widget in (self.edit_count, self.undo_button, self.revert_all_button,
                        self.check_images_button, self.build_button):
             widget.setVisible(not on_build_share)
@@ -7809,7 +7828,7 @@ class StudioMainWindow(QMainWindow):
             return
         if row - 1 >= len(PRODUCT_CATEGORY_ORDER):
             special = row - 1 - len(PRODUCT_CATEGORY_ORDER)
-            titles = ("Models", "Create a Play", "Build & Share")
+            titles = ("Rosters", "Models", "Create a Play", "Build & Share")
             self.page_title.setText(titles[special] if special < len(titles) else "")
             return
         category = PRODUCT_CATEGORY_ORDER[row - 1]

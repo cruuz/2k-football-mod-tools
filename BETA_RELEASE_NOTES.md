@@ -1,3 +1,47 @@
+# beta-59 — RC83 / alpha.84
+
+**Date:** 2026-09-04
+
+**2K5 Mod Studio:** `v1.0-RC83`
+
+**APF 2K8 Mod Studio:** `v0.1.0-alpha.84` (unchanged)
+
+## New: ★ Rosters — the roster editor
+
+A full roster editor in the studio, laid out the way Flying Finn's GameSave Editor was (team list,
+player grid with depth reorder, attribute cards, global attribute editor, search, copy and paste,
+CSV) and then some: undo and redo, a diff view against what you loaded, validation cards. It edits
+the roster template on a copy of your disc, and it opens, edits and re-signs Xbox save containers
+including franchise saves, so the game accepts them. Every field of the player record is there,
+including the style channels the research turned up: Power Run Style, a Scramble slider with a
+separate Throw Style toggle (the one bit that picks the throw animation family), Kicking Style
+(experimental) and Best Hand. Credit to Flying Finn (Glen Leskinen) and Bad_AL for the format
+knowledge. Franchise-only screens (schedule, coaches, cap, injured reserve) come in the next beta.
+
+## New: playbook packs
+
+A shareable `.2k5book` format for community playbooks (plays authored in the studio, no game data
+inside), an offline checker, Install and Export Playbook Pack on the Playbooks & Plays tab, a seed
+"modern gun core" pack, and a contributor guide. The wizard now exposes the QB read progression
+and the three audible slots.
+
+## Fixed
+
+- The ESPN scorebug now builds on every machine: the retail inputs are read from your own disc at
+  build time. Before, only the published SOFTDRINK patch files carried it. The ticker band stays
+  retail on user builds for now.
+- Models: a whole player body set (hi-res body, lo-res body, head) exports and imports as one
+  operation, all or nothing.
+- Roster screens listed Linebackers twice with the one-pool positions; the retired slot keeps its
+  retail name so one group shows.
+- TEAM column: rows the history data did not cover now show the player's 2004 club (logged as
+  inferred); only folded rows and 2004 free agents show "--".
+
+## Not in this release
+
+7-on-7 practice (still hidden), a practice squad (feasible for about 11 players; plan written),
+roster-editor phase 2. Everything new is unwitnessed in game unless a tester says otherwise.
+
 # beta-58 — RC82 / alpha.84
 
 **Date:** 2026-09-04
@@ -216,6 +260,8 @@ stored line for your own recording. Both verified statically; witness in game.
   repainted art and the retail scorebug mesh are not shipped (retail-free release rule); the
   Advanced preset skips it and says so. The full Advanced experience, scorebug included, is the
   `SOFTDRINK patch advanced` `.2k5patch` published with this release: Share → Apply it to your own copy.
+  *(Fixed after beta-58: the scorebug now builds on any install, from your own disc image. Only
+  the ticker-band atlas still needs the published patch.)*
 
 - Dynamic kickoff phase 2 (players hold until the ball lands, CPU kicker range)
   is not built; the alignment toggle may draw a kickoff flag — report it.

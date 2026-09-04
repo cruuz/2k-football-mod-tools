@@ -15,7 +15,9 @@ sys.path.insert(0, str(REPO))
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
 from mod_editor.core import nfl2k5_models as M  # noqa: E402
-from mod_editor.gui.models_panel_qt import FEASIBILITY, ModelsPanel, import_report_text  # noqa: E402
+from mod_editor.gui.models_panel_qt import (  # noqa: E402
+    FEASIBILITY, ModelsPanel, import_report_text, set_report_text,
+)
 
 EXTRACTION = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted"))
 PACK0 = EXTRACTION / "ESPN NFL 2K5 (USA)" / "vc_53450030" / "0"
@@ -47,8 +49,54 @@ class ModelsPanelTests(unittest.TestCase):
         self.assertIn("Load your NFL 2K5 XISO", panel.status_label.text())
 
     def test_feasibility_text_names_the_boundaries(self) -> None:
-        for phrase in ("EXPORT", "IMPORT", "NOT YET", "vertex count", "Attributes", "hi_body"):
+        for phrase in ("EXPORT", "IMPORT", "NOT YET", "vertex count", "Attributes", "hi_body",
+                       "PLAYER BODY SET", "lo_body", "ONE copy"):
             self.assertIn(phrase, FEASIBILITY)
+
+    def test_the_body_set_box_is_off_until_a_member_is_selected(self) -> None:
+        panel = self.panel
+        self.assertFalse(panel.export_set_button.isEnabled())
+        self.assertFalse(panel.check_set_button.isEnabled())
+        self.assertIsNone(panel.current_body_set())
+        self.assertIn("three models", panel.set_label.text())
+
+    def test_selecting_a_member_arms_the_body_set_box(self) -> None:
+        panel = self.panel
+        entries = [M.ModelEntry(M.model_key(3, c), 3, c, name, "players", 10, 20)
+                   for c, name in ((113, "lo_body"), (114, "hi_body"), (115, "hi_head"), (88, "ball"))]
+        panel.apply_catalog(object(), entries)                 # no ModelSource needed for the gating
+        panel._source = object()
+        self.assertTrue(panel.select_key("o3c114"))
+        self.assertTrue(panel.wait_idle(20_000))               # the stub source fails the details read; that is fine
+        self.app.processEvents()
+        body_set = panel.current_body_set()
+        self.assertIsNotNone(body_set)
+        assert body_set is not None
+        self.assertEqual(body_set.keys, ("o3c114", "o3c113", "o3c115"))
+        self.assertTrue(panel.export_set_button.isEnabled())
+        self.assertFalse(panel.check_set_button.isEnabled())   # no folder yet
+        panel.set_folder_field.setText("/tmp/body-set")
+        self.assertTrue(panel.check_set_button.isEnabled())
+        self.assertIn("High-detail body", panel.set_label.text())
+        self.assertTrue(panel.select_key("o3c88"))
+        self.assertTrue(panel.wait_idle(20_000))
+        self.app.processEvents()
+        self.assertIsNone(panel.current_body_set())
+        self.assertFalse(panel.export_set_button.isEnabled())
+        panel._source = None
+
+    def test_set_report_text_lists_every_member_and_says_nothing_is_written(self) -> None:
+        compiled_set = M.CompiledModelSet(3)
+        for key, name in (("o3c114", "hi_body"), ("o3c113", "lo_body")):
+            compiled_set.members.append(M.CompiledModelImport(
+                key, name, 3, 0, "a" * 64, "b" * 64, "c" * 64, b"\0" * 8, 6,
+                [M.ImportShapeReport(0, name + "_mesh", "vertex index lane", 8, 8, 8, 3, 0, 0, 0.75)], ["fits"]))
+            compiled_set.files[key] = f"/edited/{name}.gltf"
+        compiled_set.notes.append("hi_head: no edited file in the folder, left as the game shipped it")
+        text = set_report_text(compiled_set)
+        for phrase in ("hi_body", "lo_body", "hi_body_mesh", "3 moved", "no edited file",
+                       "ONE copy of the disc", "Nothing has been written yet"):
+            self.assertIn(phrase, text)
 
     def test_import_report_text_lists_each_mesh(self) -> None:
         compiled = M.CompiledModelImport("o1c2", "thing", 1, 2, "a" * 64, "b" * 64, "c" * 64, b"\0" * 32, 12,
@@ -94,6 +142,17 @@ class ModelsPanelTests(unittest.TestCase):
             self.assertTrue(panel.wait_idle(120_000))
             self.app.processEvents()
         self.assertFalse(panel.write_button.isEnabled())
+        self.assertFalse(panel.export_set_button.isEnabled())    # the referee is not part of a body set
+        panel.search.setText("hi_body")
+        self.app.processEvents()
+        self.assertTrue(panel.select_key("o3c114"))
+        self.assertTrue(panel.wait_idle(120_000))
+        self.app.processEvents()
+        body_set = panel.current_body_set()
+        self.assertIsNotNone(body_set)
+        assert body_set is not None
+        self.assertEqual(body_set.keys, ("o3c114", "o3c113", "o3c115"))
+        self.assertTrue(panel.export_set_button.isEnabled())
         panel.group_combo.setCurrentIndex(1)                     # Players
         panel.search.setText("")
         self.app.processEvents()

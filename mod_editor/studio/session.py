@@ -889,11 +889,15 @@ class StudioSession:
         )
         from mod_editor.core.nfl2k5_formation_play_writer import compile_formation_play_creations
 
+        # The compiler edits one book per call, and a project may now hold designs for
+        # several books at once (a community pack applied to more than one team), so the
+        # candidate set is filtered to the book this request touches.
+        book_id = request.asset_id
         compile_formation_play_creations(
             raw,
-            formation_requests=list(candidate.values()),
-            play_requests=list(self._play_creates.values()),
-            link_requests=list(self._formation_links.values()),
+            formation_requests=[r for r in candidate.values() if r.asset_id == book_id],
+            play_requests=[r for r in self._play_creates.values() if r.asset_id == book_id],
+            link_requests=[r for r in self._formation_links.values() if r.asset_id == book_id],
         )
         self._formation_creates = candidate
         self._undo_order.append(_SessionUndo("formation_create", f"Create formation from {request.donor_formation_index}", (key, previous)))
@@ -928,11 +932,12 @@ class StudioSession:
         )
         from mod_editor.core.nfl2k5_formation_play_writer import compile_formation_play_creations
 
+        book_id = request.asset_id
         compile_formation_play_creations(
             raw,
-            formation_requests=list(self._formation_creates.values()),
-            play_requests=list(candidate.values()),
-            link_requests=list(self._formation_links.values()),
+            formation_requests=[r for r in self._formation_creates.values() if r.asset_id == book_id],
+            play_requests=[r for r in candidate.values() if r.asset_id == book_id],
+            link_requests=[r for r in self._formation_links.values() if r.asset_id == book_id],
         )
         self._play_creates = candidate
         self._undo_order.append(_SessionUndo("play_create", f"Create play from {request.donor_play_index}", (key, previous)))
@@ -995,11 +1000,12 @@ class StudioSession:
         )
         from mod_editor.core.nfl2k5_formation_play_writer import compile_formation_play_creations
 
+        book_id = request.asset_id
         compile_formation_play_creations(
             raw,
-            formation_requests=list(self._formation_creates.values()),
-            play_requests=list(self._play_creates.values()),
-            link_requests=list(candidate.values()),
+            formation_requests=[r for r in self._formation_creates.values() if r.asset_id == book_id],
+            play_requests=[r for r in self._play_creates.values() if r.asset_id == book_id],
+            link_requests=[r for r in candidate.values() if r.asset_id == book_id],
         )
         self._formation_links = candidate
         self._undo_order.append(_SessionUndo("formation_link", f"List play {request.play_index} in formation {request.formation_index}", (key, previous)))

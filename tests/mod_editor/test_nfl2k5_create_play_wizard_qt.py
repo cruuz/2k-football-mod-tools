@@ -54,9 +54,24 @@ class CreatePlayWizardTests(unittest.TestCase):
         w.next()
         fz = w.page_finalize
         self.assertEqual(fz.table.rowCount(), 2)
+        # the two cheap wins: the QB read order and the audible slot live on the play row
+        from mod_editor.gui.create_play_wizard_qt import AUDIBLE_GROUPS, read_order_of
+        self.assertEqual(fz.table.horizontalHeaderItem(4).text(), "QB read order")
+        self.assertEqual(fz.table.horizontalHeaderItem(5).text(), "Audible slot")
+        self.assertIsNone(fz.table.cellWidget(0, 4), "a formation row has no read order")
+        spins = fz._read_orders[1][1]
+        self.assertEqual([s.value() for s in spins], [1, 4, 2, 3])
+        for spin, value in zip(spins, (2, 1, 3, 4)):
+            spin.setValue(value)
+        group_combo = fz._groups[1][1]
+        self.assertEqual(group_combo.count(), len(AUDIBLE_GROUPS))
+        group_combo.setCurrentIndex(2)          # "Audible 2 (group 1)"
+        self.assertEqual(group_combo.currentData(), 1)
         fz._apply()
         self.assertIn("Staged 2", fz.status.text())
         session = self.facade._session
+        designed_play = w.designed[0].plays[0]
+        self.assertEqual(read_order_of(designed_play.chains[0]), (2, 1, 3, 4))
         self.assertEqual([r.custom_name for r in session.formation_creates], ["Pistol Ace"])
         self.assertIsNotNone(session.formation_creates[0].replace_index)
         self.assertEqual([r.custom_name for r in session.play_creates], ["Pistol Smash"])
@@ -65,6 +80,11 @@ class CreatePlayWizardTests(unittest.TestCase):
                          "a wizard pass must be staged under a pass-class header, not the first offensive play's run header")
         self.assertEqual(lib.qb_signature(lib.play_chains(w.body, staged_play.donor_play_index)[1][0][1]), "pass")
         self.assertTrue(session.formation_links)
+        self.assertEqual([l.group for l in session.formation_links], [1],
+                         "the audible slot chosen on the link step reaches the link request")
+        staged_qb = staged_play.assignments[0]
+        self.assertEqual([int(v) for v in next(n for n in staged_qb if n[0] == 0x06)[1][1:5]],
+                         [2, 1, 3, 4], "the read order reaches the staged chain")
 
     def test_position_swap_and_drawn_routes(self):
         from PyQt5.QtCore import Qt

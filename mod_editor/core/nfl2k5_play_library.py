@@ -473,6 +473,8 @@ PASS_CONCEPTS: dict[str, dict] = {
     "Drive": {"blurb": "drag and dig from the same side", "outside": "Drag", "inside": "In / Dig", "te": "Curl", "back": "Block (stay in)"},
     "Dagger": {"blurb": "go clears, dig comes in behind", "outside": "In / Dig", "inside": "Go", "te": "Curl", "back": "Block (stay in)"},
     "Curl-Flat": {"blurb": "curls outside, backs to the flat", "outside": "Curl", "inside": "Curl", "te": "Out", "back": "Flat"},
+    "Y-Cross": {"blurb": "the tight end crosses on a dig under a post, comeback outside", "outside": "Comeback", "inside": "Post", "te": "In / Dig", "back": "Flat"},
+    "Snag": {"blurb": "slant inside, corner over the top of it, back to the flat", "outside": "Slant", "inside": "Corner", "te": "Stick", "back": "Flat"},
     "HB Screen": {"blurb": "back slips out behind the line", "outside": "Go", "inside": "Go", "te": "Block (stay in)", "back": "Screen"},
     "Wheel": {"blurb": "back wheels up the sideline", "outside": "Post", "inside": "Drag", "te": "Out", "back": "Wheel"},
 }

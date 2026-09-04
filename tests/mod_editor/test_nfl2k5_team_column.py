@@ -395,6 +395,16 @@ class UnicornTests(unittest.TestCase):
             if (word >> 16) & 0x7F == tc.TEAM_FIELD:
                 uc.mem_write(head + i * 4, struct.pack("<I", word | 0x40000000))
         self.assertEqual(self._getter(uc, 12), tc.STR_DASH_VA)
+        # the current-season row NEVER reads the history: bank 11 is the live team in every mode, even
+        # when a field-87 entry exists for that slot (the roster's team-history pass writes past
+        # seasons only, but a save rolled over under an older build can carry one)
+        uc.mem_write(PLAYERS + 0x30, struct.pack("<I", TEAMS + 2 * tc.TEAM_STRIDE))
+        count = (self._u(uc, PLAYERS + 0x24) >> 8) & 0x1F
+        head = self._u(uc, PLAYERS + 0x2C)
+        word = self._u(uc, head)
+        uc.mem_write(head, struct.pack("<I", (count << 23) | (tc.TEAM_FIELD << 16) | 1))   # "team AAA this season"
+        self.assertEqual(self._text(uc, self._getter(uc, 11)), "CCC", "bank 11 follows player+0x30")
+        uc.mem_write(head, struct.pack("<I", word))
         # a free agent's card: no live team
         uc.mem_write(PLAYERS + 0x30, struct.pack("<I", 0))
         self.assertEqual(self._getter(uc, 11), tc.STR_DASH_VA)

@@ -1,5 +1,240 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC83 — ★ Rosters (the Flying Finn-parity roster editor), playbook packs, scorebug on every machine, disc identity, body sets, one LB group, TEAM column filled (2026-09-04)
+
+- **Fixed: a refusal now says which disc image you handed it.** One report carried two failures
+  on one file: Build & Share -> Advanced died with `pack-0 schedule template is foreign: ROST
+  stored size is not retail`, and Apply refused with `2802 run(s) hold bytes that are neither
+  the expected base nor the patched bytes`. Both sentences were true and neither was actionable,
+  because both are the same sentence for four different images. A new identifier
+  (`mod_editor/core/nfl2k5_disc_identity.py`) finds `default.xbe` and `vc_53450030/0` through the
+  disc directory, hashes them, compares their positions with the retail layout, and names the
+  image: **retail dump (xiso)**, **retail dump (raw/redump with video partition)**, **repacked
+  disc**, **modified disc**, or **unknown image**, each with a sentence saying what to do. The
+  Build tab's source line and the Apply panel show it the moment you choose a file, and every
+  Build refusal, the schedule step's refusal and the Apply MISMATCH text quote it.
+- **A repacked disc builds.** Retail file bytes rebuilt at other sectors are a legal image for
+  Build & Share, which resolves every file through the disc directory, and the schedule step now
+  finds the ROST roster resource by **searching the pack for it** rather than trusting pack
+  offset 0x392800, so a rearranged pack is read where the resource really is instead of being
+  called foreign because one u32 was somewhere else. What a repack cannot do is take a
+  `.2k5patch`, since a patch addresses bytes by their position in the game partition; Apply now
+  says exactly that and points at the Build tab.
+- **Published patches stop calling themselves a "custom base".** A patch exported from a working
+  copy still applies to a retail dump when every run's expected bytes are the retail bytes.
+  `modpack.export` takes a retail image (`--retail-image`, or the new optional field on the
+  Share page), proves every run against it, and records `is_retail_equivalent` in the manifest;
+  Apply then reads "Base: retail-equivalent" instead of warning about a base that never affected
+  the person reading it. Without that proof nothing is claimed.
+
+- **Fixed: "made the patch and didn't get the new scorebug at the bottom."** The ESPN scorebug
+  was the one Build step that could only run on the machine it was written on. Its inputs are
+  the retail score_bug scene and three retail P8 atlases, plus our repaints of those atlases —
+  and a repaint that keeps the retail alpha silhouette, the retail letter mask and one retail
+  glyph cell is retail-derived, so none of it could ship under the retail-free release rule.
+  The Build tab therefore showed "Not available in this build" and **Advanced silently skipped
+  the scorebug**; only the published `.2k5patch` files carried those bytes. Nothing has to ship:
+  every input is now read out of **your own disc image** at build time. The scene span and the
+  three atlas spans are read at pinned pack-relative offsets — the pack resolved through your
+  image's own file table — and checked against the audited retail SHA-256 first; the
+  retail atlases are decoded to PNGs and the modern art is regenerated from them by the
+  generator that has always shipped (`tools/nfl2k5_scorebug_espn_art.py`), then cached beside
+  the model index in the private, disc-derived cache so a second build does no work. The result
+  is byte-for-byte what this workstation builds: on the retail image, the re-laid mesh span, the
+  `score_buga`, `shield_espn` and `digital_font` spans and the whole patched `default.xbe` are
+  identical to a build made with the developer files present
+  (`tests/mod_editor/test_nfl2k5_scorebug_source_art.py`, including a full write over a real
+  disc copy).
+  `availability()["scorebug"]` is now about what this build can DO, not about files on one
+  person's disk, and the Presentation tab draws its planned-look mockup from your disc instead
+  of saying "mockup not shipped in this build".
+  - The shared **digit sheet** (`digital_font`) is drawn with DejaVu Sans Bold. Where that face
+    is not installed the sheet is skipped and named in the receipt rather than silently redrawn
+    in a fallback font; the bar itself never depends on it.
+  - The **ticker-band atlas** (`NAVTEXTURE`, the Bottom Line strip under the bar) was hand
+    painted and has no generator, so it stays out of a release build and your ticker keeps its
+    retail art. The receipt says so. The published `SOFTDRINK patch advanced` `.2k5patch` still
+    carries it — Share → Apply.
+  - Every receipt now records where each PNG came from (`art_origin`), whether it matched the
+    reference art the published patches were built with (`art_reference_match`), and anything
+    that was skipped and why (`art_skipped`).
+- The scorebug's texture writer and the field-pack texture writer no longer need an extracted
+  copy of `vc_53450030/0` (a developer artefact that was never in a release, and whose absence
+  made the step fail even here unless `NFL2K5_RETAIL_INDEX` happened to be set). Both read the
+  retail template out of the image they are writing, at a pinned offset with a pinned digest, and
+  fall back to the extracted archive only to tell "already imported" from "foreign bytes".
+- The scorebug mockup's triangle strips are decoded from the retail scene's own command blocks
+  instead of an intermediate glTF research export; the export is no longer needed anywhere.
+- **★ Models: a whole player body in one operation.** A player is three scenes -- `hi_body`
+  (drawn close up), `lo_body` (swapped in at distance) and `hi_head` -- so a body edit made on one
+  of them alone changes shape when the camera pulls back; a modder who exported all three had no
+  way to apply more than one of them. Selecting any of the three now arms a **Player body set**
+  box: **Export the body set** writes all three (plus a set README) into the export folder, and
+  **Check the folder** fits every edited file in one go and writes them into **ONE** copy of the
+  disc. It is all-or-nothing twice over: a member that no longer fits its space on the disc
+  refuses the whole set *before* the disc is copied, and every member's place on the disc is
+  located and checked before the first byte moves. A set is "the three SCNE of one pack entry
+  named hi_body / lo_body / hi_head" -- on the retail disc, outer 3 chunks 114 / 113 / 115, and
+  no other pack entry carries any of those names. A file you did not touch is skipped and named in
+  the report (exporting the set writes all three, so editing only the head is normal); a folder
+  where nothing changed is refused. Measured on the real cache: a 120-vertex nudge on both bodies
+  repacks to 202,224 of `hi_body`'s 202,240 stored bytes and 135,792 of `lo_body`'s 135,808 with
+  the wrapper byte-identical, while a scattered edit (every tenth vertex) needs 623 bytes more than
+  `hi_body` has and refuses the whole set - so body edits want to be smooth and local. Single-model
+  export and import are unchanged. (`nfl2k5_models.body_sets` / `export_body_set` /
+  `compile_body_set_import` / `write_import_set_copy`, new `UnchangedModelError`, `models_panel_qt`.)
+- **Fixed: the roster screens listed "Linebackers" twice in a row** with the one-pool positions
+  patch on (a user, 2026-09-04). The home screen's Team Rosters, the draft, free agency, the trade
+  block and scouting each own a fixed position-filter list with one row per roster code -- fifteen
+  arrays of 17-19 records (`0xB0`/`0xC8`/`0x110`/`0x118`/`0x120`/`0x128` bytes, name pointer at
+  `+0x00`, roster enum at `+0x18`; the count handler is `FUN_0031AB20` -> `FUN_000C3CB0(team,
+  position)`), and the `Outside Linebackers` record is always the one immediately before
+  `Inside Linebackers` (0x539520/0x5395E8, 0x53A1F8/0x53A2A8, 0x53AF90/0x53B058, 0x53DEF0/0x53E008,
+  0x53FBF0/0x53FD18, 0x5498E8/0x549998, 0x550F68/0x551078, 0x552798/0x5528B0, 0x5545E8/0x554700,
+  0x559450/0x559578, 0x55EFB0/0x55F078, 0x570D30/0x570E50, 0x57FD70/0x57FE90, 0x582658/0x582778,
+  0x588060/0x588178). Beta 58 renamed **both** rows and pointed the OLB row's enum at 11. The
+  retired enum 10 now keeps its retail name everywhere the game prints a roster position -- the
+  abbreviation table entry `0x4F26F8` stays `OLB` (0xE69C54), `0xE69D40`/`0xE69EE8` stay
+  `Outside Linebacker(s)`, and all fifteen filter records keep enum 10 and their own strings -- so
+  every screen shows exactly one `Linebackers` row. The behaviour half of the merge is untouched:
+  enum 10 still maps to the ILB kind, reads the LB lists, has a roster target of 0 and is emptied
+  by the roster pass, so the `Outside Linebackers` row simply lists nobody, the way `Fullbacks`
+  does for a team without one. Removing the row instead would mean restructuring fifteen abutting
+  record arrays that have no count word, which cannot be proved without running the game. The
+  patch is 46 sites / 655 bytes (was 75 / 935). Also found: the fifteenth OLB record (0x55EFB0,
+  the draft board) carries the retail typo `outside Linebackers` at 0xEAE8CC, which is why beta
+  58's exact-text sweep renamed only fourteen and left one screen mismatched.
+  (`nfl2k5_position_pools.py`, new `filter_rows` / `retail_olb_identity` readbacks.)
+- **The Player Card's TEAM column is consistent now.** The shipped nflverse history covers 5,042
+  of the 5,838 rows the card can show, and the rest read `--`, about one row in seven, scattered
+  down a career (Noah: "make it more consistent"). Every season the data does not cover is now
+  filled with that player's **own 2004 club**, read from the roster's 32 team records (each starts
+  with a NULL-terminated array of player pointers before its abbreviation at `+0x108`), and
+  counted separately in the receipt and the shipped match log as `seasons_inferred` so the data's
+  own coverage stays honest. Result on the retail roster: **5,746 of 5,838 rows name a team**
+  (was 5,042), 704 seasons over 185 players inferred, pool 36,866 -> 42,612 of 50,000. Only three
+  things still read `--`: the folded "pre" row and Total, a season the roster carries no stats for,
+  and the 2004 free agents (41 players, 92 rows) who are on no club at all. A CSV row always wins
+  over the fill, so one line corrects any inferred season; `infer_current_team=False` restores the
+  data-only behaviour. The current-season row keeps reading the player's live team in every mode
+  (the getter tests `ecx == 11` before it ever looks at field 87 -- now asserted under unicorn even
+  with a field-87 entry present for that slot). (`nfl2k5_team_history.py`, repinned
+  `SHIPPED_POOL_SHA256`.)
+## v1.0 RC83 — ★ Rosters: the whole roster editable, on the disc and in a save (unreleased)
+
+- **★ Rosters, a new top-level page — the studio's replacement for Flying Finn's NFL 2K5 GameSave
+  Editor.** Team list → player grid → attribute cards, the layout everybody already knows, over the
+  **disc** as well as over an Xbox save, with the things his 2008 Delphi build could not do: undo and
+  redo, dirty markers per player and per field, a diff of the whole edit before anything is written,
+  a validation pass, and a source file that is never touched. Every field of the 0x54 record is
+  editable: names and college through the shared string pool, position, jersey, years pro, hand,
+  height, weight, date of birth, play-by-play and portrait ids, every appearance and equipment slot,
+  all 28 rating bytes, the depth rank and side, and the **contract block** (value, type, signing-bonus
+  tier, length, remaining, with the derived penalty shown) — which no open tool has ever edited.
+  Format credit: **Flying Finn (Glen Leskinen)** and **Bad_AL** (NFL2K5Tool); the map was re-verified
+  byte for byte against the retail disc before a line of it was written.
+- `mod_editor/core/nfl2k5_roster_records.py`: a typed codec whose field table claims **all 84 bytes
+  with no gaps** — every named field plus one explicitly named `unknown_*` field for every bit nobody
+  has named yet, which is why decode → encode is **byte-identical on all 2,547 retail records** and
+  on the whole 0x90F60 body. Also the team record (65 pointers = the depth order, count byte, coach
+  pointer, abbreviation), the 266-entry college table, the free-agent list, and both string pools.
+- **The three style channels get first-class controls** (2026-09-04 executable study). **Power Run
+  Style** (`+0x4D`) as a Finesse / Balanced / Power segmented control writing the game's own 1 / 50 /
+  99 over its 33 / 66 thresholds; **Throw style**, the low bit of **Scramble** (`+0x4F`) — the only
+  bit test on any rating byte anywhere in `.text` (`and ecx,ebx` at 0x002D92B1), which picks the
+  animation-set family and is believed, not proved, to be the throw motion — as a toggle that moves
+  only that bit, beside a Scramble slider that preserves it; and **Kicking Style** (`+0x4B`),
+  EXPERIMENTAL, with the three values retail uses. **Best Hand** (`+0x18` bit 1) is a checkbox on the
+  Appearance tab. There is no other parity scheme hidden in the ratings: the scan is exhaustive.
+- **The name pool is modelled honestly.** 65,120 bytes hold 5,094 strings with **zero** free bytes, so
+  it cannot grow: the editor reuses an existing string (Finn's shared-name trick, and how you beat the
+  rename limit), rewrites in place when the current string has no other user, reclaims what shortening
+  a name frees, and otherwise **refuses** with the number of bytes it needed. Nothing is ever written
+  outside the span the pool was discovered from.
+- **Xbox saves, read and re-signed.** `EXTRA` = HMAC-SHA1(SigKey16, the whole `SAVEGAME.DAT`); the key
+  is the literal Finn carries, and it is byte-identical to what the studio's own
+  `nfl2k5_save_writer.derive_sig_key` computes from the retail XBE certificate (asserted by the
+  tests). A save whose stored `EXTRA` does not verify is refused rather than quietly re-signed; a
+  written copy rebuilds only `SAVEGAME.DAT` and `EXTRA` and copies `SaveMeta.xbx`, `TYPE` and the
+  images byte for byte. Franchise arenas are found at their own `+0x2E0` offset.
+- **Finn's tools, ported and improved.** Global Attribute Editor with his "show affected players"
+  preview plus a condition he never had ("every QB with Speed ≥ 80 → throw style B"); Copy /
+  Paste / Paste-attributes-only / Paste-photo under his rules; Advance Years Pro; Restore
+  Height/Weight/DOB; a CSV twin that reads his semicolon export as well as ours; position chips;
+  search by name, years pro or college; ↑ ↓ depth reorder on the team's own pointer list.
+- **Build & Share**: `BuildPlan.roster_edits` applies a roster-edits document
+  (`2k5_mod_studio_roster_edits/v1`) to the ROST resource of the copy, **last** of the roster passes —
+  it writes named record fields and shared name strings and leaves `+0x2C`, the season-stat pool, the
+  generated-name pool and the `+0x53` star bit alone, so the star-tag, team-history, prospect-name and
+  position-pool gates all stay intact (asserted by a test on the retail roster). Share detects the
+  edit between two discs, rebuilds the document from the rosters themselves and packs it as an asset.
+- Unwitnessed in game.
+- **Community playbook packs (`.2k5book`): the stock books stop being the ceiling.** Measured over
+  all 32 team books, shotgun is 18 % of offensive formations and only **14.5 % of the plays you can
+  call**; six books (ATL, DEN, NYJ, PHI, SF, TB) have exactly one gun formation and in all six it is
+  "Hail Mary"; there are zero pistol sets and 38.7 % of every route stem is exactly ten yards. A pack
+  is a small JSON **recipe** — literally the `formation_creates` / `play_creates` / `formation_links`
+  rows a `.2k5mod` already stores and the writer already compiles — so it carries **zero retail
+  bytes**, reviews as a diff, merges, and compiles against the installer's own disc.
+  **Playbooks & Plays → Install Playbook Pack…** (and a card on Create a Play step 1) shows a plan
+  table before anything happens: per entry what it replaces and whether it is OK, a conflict with an
+  edit you already staged, or over budget, under a live budget bar (`plays n/270, formations n/50,
+  nodes n/3,500`). The team combo offers the pack's own team, a retarget to any other book, or all 32
+  at once; a retarget re-resolves every `replace_index` **by name** through
+  `suggest_plays_to_replace` / `suggest_formations_to_replace` and only falls back to the stored
+  index when the name still matches there. Installed entries are ordinary project edits: they show in
+  the edit list, revert one at a time, and serialise into `.2k5mod` with **no schema change**.
+  **Export Playbook Pack…** is the mirror, so a contributor with no dev environment can author in the
+  studio and attach the JSON to a thread. `BuildPlan.playbook_packs` (empty in every preset — a
+  community book is a user choice like commentary) applies them through the existing compile path and
+  the receipt lists every pack, its author, its licence and every book it touched.
+  **Capacity is the binding constraint:** eight books are already at the 270-play cap and there are
+  only 180 spare play slots across all 32, so packs **replace, never append**, and the check reports
+  net growth on every run. `tools/nfl2k5_playbook_pack.py check` runs the first six rules with **no
+  game data at all** (schema → budget → the ported retail validator on every play via
+  `build_descriptor` → class-flag sanity → formation legality → the donor-header rule), then a real
+  dry compile when a book is supplied; it exits 0 when green, so it drops into a GitHub Action over a
+  `books/` directory. Rule 4 exists because of a real bug: a pass cloned from the book's first
+  offensive play (a run in every retail book) is *played* as a run — the receiver icons vanish at the
+  snap and the QB cannot throw. New: `mod_editor/core/nfl2k5_playbook_pack.py`,
+  `mod_editor/gui/playbook_pack_dialog_qt.py`, `tools/nfl2k5_playbook_pack.py`,
+  `docs/mod_editor/playbook_packs.md`.
+- **A project may now hold designs for more than one book.** The session validated a new
+  formation/play/link against *every* staged create, and the compiler edits one book per call, so
+  staging a design for a second team failed with "One PLAY compiler call may edit only one
+  playbook". The candidate set is now filtered to the book the request touches (Build already
+  grouped by book), which is what "apply this pack to all 32" needs. `.2k5book` also joins the
+  release gate's allowed text suffixes -- it is UTF-8 JSON with zero retail bytes, the same class
+  as the shipped `.csv` data.
+- **A retarget re-slots the chains, not just the coordinates.** 29 of the 32 books order their skill
+  players differently from ATL, so pointing a pack at another team permutes the eleven formation
+  slots. The chains now follow their players and every operand that names a slot (Snap To, Handoff
+  To, Fake Handoff, a Move's follow slot in mode 2, a conditional's read slot for kinds 2/3/5/6) is
+  renumbered with them — otherwise the tight end runs the split end's route and a handoff points at
+  nobody. Proved per book: after a retarget, every position kind still runs the route its author drew.
+- **Seed pack `data/playbooks/modern_gun_core.2k5book`** (Modern Gun Core, CC0-1.0), authored on ATL
+  with the library's own concepts: **Gun Trips Rt / Gun Doubles / Gun Bunch Rt / Gun Empty** replacing
+  Split Jokers / I Jokers / Strong I Pro / Weak I Jokers, and eleven concepts — Mesh, Levels, Stick,
+  Dagger, 4 Verts, Curl-Flat, Snag, Smash, Y-Cross, Slant-Flat, Flood — each replacing a play already
+  listed in the formation it takes over, so it lands in the new menu with no new link. Net growth
+  **zero** formations and **zero** plays (+308 nodes, 2,438 → 2,746 of 3,500): it passes all seven
+  checks on ATL and, retargeted by name, on all 32 team books including the eight at the play cap.
+  Not in any preset. Never launched in game.
+- **Two cheap wins in Create a Play step 5.** The **QB read order** — the four ordered 1-5 values every
+  Dropback (`0x06`) node carries, 171 distinct tuples over the 3,225 retail dropbacks, editable since
+  the codec shipped and never exposed, so an authored pass inherited whatever the generator hard-coded
+  — is now four spin boxes per pass play. The **audible slot** — `FormationLinkRequest.group`, which
+  the writer has always taken; every populated retail formation carries exactly one link in each of
+  groups 0, 1 and 2, the same structure proved in APF's SPLB — is now a combo on both the wizard's link
+  step and the panel's "List Selected Play in Selected Formation". What the four read values select,
+  and what an audible slot does at the line, are readings of the corpus, not witnessed runtime claims.
+- `nfl2k5_play_library.PASS_CONCEPTS` gains **Y-Cross** and **Snag** (14 concepts), so the wizard and
+  any pack can build them from the library rather than by hand.
+- **Honest limits, stated on every install:** the engine has no pre-snap motion (no opcode has a
+  pre-snap phase and all 88,254 retail Start nodes sit at x=0, y=0), no give-or-throw RPO (the ball
+  simulation walks each chain once, so a QB who hands off cannot throw later) and no tempo. Option
+  routes and keep-or-throw RPOs are accepted by the ported validator but **unwitnessed in game**.
+
 ## v1.0 RC82 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star; overtime and Models UV fixes (2026-09-04)
 
 - **Fixed: modern overtime ended after a first-possession field goal** because the kickoff after

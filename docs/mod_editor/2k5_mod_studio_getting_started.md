@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC82 — Getting Started
+# 2K5 Mod Studio v1.0 RC83 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -30,6 +30,34 @@ from an exact file-by-file allowlist and must pass the retail-free gate before i
 is published; the gate reports the package's final file and byte counts and
 refuses retail game bytes. The app creates private indexes, previews, and
 originals from your XISO on your computer; do not share that private cache.
+
+### Which disc image works
+
+The studio takes a dump of the **retail USA disc**, in either shape it normally
+comes in: an extracted `.xiso`, where the game partition is the whole file, or a
+raw/redump dump that still has the video partition in front (the game then starts
+at 0x18300000 or 0x0FD90000, and the studio finds it). A raw dump being a
+different size from somebody else's is expected and fine.
+
+Two other things arrive under the same `ESPN NFL 2K5 (USA).iso` name and are not
+the same:
+
+- a **repack**, where somebody unpacked the disc and rebuilt the image. The file
+  bytes are still retail but they sit at other sectors. Build & Share works on
+  one, because every writer finds its file through the disc directory, but a
+  `.2k5patch` cannot: a patch addresses bytes by their position in the game
+  partition, and a repack moved them. Build the mod yourself instead of applying
+  a patch file, or rebuild the image from the original dump.
+- a **pre-modded image**, where somebody's roster or gameplay mod is already in
+  `default.xbe` or `vc_53450030/0`. The studio's writers start from retail bytes,
+  so a build refuses. Start again from a clean dump of your own disc.
+
+You do not have to work this out yourself. The Build tab's source line and the
+Apply panel both name your image as soon as you choose it: *retail dump (xiso)*,
+*retail dump (raw/redump with video partition)*, *repacked disc*, *modified disc*,
+or *unknown image*, with a sentence saying what to do. Every refusal quotes the
+same line, so a failure says which disc you handed it and not just how many bytes
+disagreed.
 
 ## Make your first edit
 
@@ -855,6 +883,26 @@ job from his menu, replace outdated stock plays, build. Every authored play is
 checked against the game's own validator before it is staged; the build refuses
 anything the game would reject.
 
+## Playbook packs — share a playbook, not a disc (RC83)
+
+**Playbooks & Plays → Install Playbook Pack…**, and the same card on Create a Play step 1. A
+`.2k5book` is a small JSON recipe somebody made in this studio: formations, plays, and the stock
+entries each one replaces. It carries no game data at all — it is compiled against *your* disc when
+you Build — so it is safe to post in a thread or attach to a pull request. Before anything is staged
+you see a plan table (per entry: what it replaces, and OK / conflict / over budget) under a live
+budget bar reading `plays 254/270, formations 39/50, nodes 2,746/3,500`, and you choose where it
+goes: the pack's own team, a retarget to any other book (every target is re-resolved **by name** in
+that team's book), or all 32 at once. What installs are ordinary project edits — they show in the
+edit list, revert one at a time, and save into your `.2k5mod`. **Export Playbook Pack…** is the
+mirror: design what you want in Create a Play, press it, and you have a file to share, with no
+Python and no git. `data/playbooks/modern_gun_core.2k5book` ships as a worked example — four gun
+sets and eleven pass concepts that replace ranked dated entries so the book does not grow, which is
+what lets it install into the eight team books already at the 270-play cap. Contributors can gate
+their own work with `tools/nfl2k5_playbook_pack.py check FILE.2k5book`, whose first six rules need
+no game data. Read `docs/mod_editor/playbook_packs.md` before authoring one: the engine has no
+pre-snap motion, no give-or-throw RPO and no tempo, and option routes and keep-or-throw RPOs pass
+the validator but have never been witnessed in game.
+
 ## Throw Distance & Arc (RC77)
 
 Sliders & Gameplay → **Throw Distance && Arc**. Choose a `default.xbe` or a
@@ -981,6 +1029,88 @@ Windows installer layout, or an unpacked release folder you can write to. A
 folder you cannot write to, or a git checkout, gets the link only. Nothing is
 downloaded until you press the button and confirm.
 
+## ★ Rosters — every player, on the disc or in a save (RC83)
+
+**★ Rosters** is the studio's replacement for Flying Finn's *NFL 2K5 GameSave Editor*: the same
+three-pane shape people know, over the disc as well as over a save, with undo, dirty markers, a diff
+and a validation pass on top. The format knowledge behind it comes from **Flying Finn (Glen
+Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the retail disc.
+
+1. Open the page and press **Use the loaded XISO** (or **Open a disc…**). An Xbox save works too:
+   **Open an Xbox save…** takes an Action Replay `.zip`, an extracted save folder or a loose
+   `SAVEGAME.DAT` with its `EXTRA` beside it. The stored signature is checked on load, and a save
+   whose `EXTRA` does not verify is refused rather than quietly re-signed.
+2. **Left** — the 32 clubs, the game's extra squads (Pro Bowl, all-time, the two user teams), then
+   Free Agents, the Draft Class and the leftover pools.
+3. **Middle** — search by name, years pro or college; the position chips (QB RB WR TE OL DL LB DB
+   K/P) narrow the list; the grid shows position, number, name, years pro, an OVR estimate and the
+   depth slot. **↑ Move up / ↓ Move down** reorder the team's own pointer list, which *is* the depth
+   chart.
+4. **Right** — the header card, then the cards: **Athletic / Skills / Mental / Style / Appearance /
+   Identity / Contract**. A numeric card is a value, a spin box and a bar: click or drag the bar,
+   ← → nudge by one, ↑ ↓ jump to the next card. Enum cards are dropdowns built from the tables lifted
+   out of Finn's binary, so no value order is guessed.
+
+**What you can edit.** First and last name, college, position, jersey number, years pro, hand,
+height, weight, date of birth, the play-by-play name id and the portrait id; skin, face, face mask,
+face shield, body type, dreads, eye black, mouthpiece, turtleneck, sleeves, neck roll, both gloves,
+wrists, elbows and shoes, and the helmet; all 28 rating bytes; the depth rank and side; and the
+**contract** — value, type, signing-bonus tier, length and years remaining, with the penalty shown
+derived the way Finn showed it. The contract block is the one thing no open tool has ever edited.
+
+**The Style tab.** Three of the 28 rating bytes are style channels, not scalars, and they get
+first-class controls:
+
+* **Power Run Style** (`+0x4D`) — a **Finesse / Balanced / Power** segmented control writing the
+  game's own 1 / 50 / 99, with the raw byte on a card beneath. The game decodes it below 33, below
+  66, else, and reads it in play as a blend weight.
+* **Signature release** (the low bit of **Scramble**, `+0x4F`; in retail only Vick, Gannon and Rivers carry it) — the only bit test on any rating byte
+  anywhere in the executable. It picks which family of directional animation sets a player uses;
+  believed, not proved, to be the throw and release motion. The toggle moves **only** that bit, and
+  the Scramble slider (presets Pocket 10 / Balanced 50 / Scrambling 90) moves the magnitude while
+  preserving it. Scramble is a real rating the Player Card never prints but the game's own roster
+  editor does; with Agility it also picks the mobile-quarterback family.
+* **Kicking Style** (`+0x4B`) — **EXPERIMENTAL**. The game names it and holds it at 99 for every
+  kicker, 1 for every punter and 49 for everyone else, but no consumer is proved. Presets are those
+  three values.
+
+**Best Hand** is on the Appearance tab: `+0x18` bit 1, the row the game's own editor toggles. It is
+not related to the Scramble parity bit.
+
+**Names share strings.** The player-name pool is packed solid: 65,120 bytes holding 5,094 strings
+with **no free space**, so it cannot grow. Typing a name that already exists anywhere in the roster
+points this player at that string — Finn's own trick for beating the rename limit, and it always
+works. A brand-new longer name needs a free block, which appears when some other name is shortened;
+when there is none the edit is refused with the number of bytes it needed. The status line under the
+name fields always says how much room is left.
+
+**Tools.** **Global Attribute Editor** takes an attribute (including the style channels), a rule
+(set / add / percent), a scope (positions, this team, rookies only) and an optional condition —
+"every QB with Speed ≥ 80 → signature release", "all HBs with Break Tackle ≥ 75 → Power" — and shows
+**every affected player before it changes anything**. **Copy player** and **Paste ▾**
+(player / attributes only / photo only) follow Finn's rules: a paste never carries names, college,
+play-by-play or photo unless you ask for the photo. **One-shot passes ▾** advance years pro for the
+league or the list, and restore height, weight and date of birth to what the roster shipped with.
+**CSV ▾** exports the list or the whole league and reads it back — it also reads Finn's
+semicolon-delimited export, and a spreadsheet with three columns is a legal edit.
+
+**Check & diff.** **Check this roster** flags jerseys outside the NFL range for a position, ratings
+above 99, impossible heights and dates, and the "headless" bit Finn's editor silently clears on load.
+**Show my changes** lists every field you changed against the roster you loaded.
+
+**Writing.** Your source is never touched.
+
+* **Save roster edits…** writes a small JSON document. The Build tab picks it up as the
+  **roster edits** step, and Share packs it into a `.2k5patch` as an asset, so an edit travels
+  without the disc.
+* **Write a copy…** copies the disc image and edits the copy, or — for a save — writes a
+  **re-signed** container beside the original with every other member (`SaveMeta.xbx`, `TYPE`, the
+  images) copied byte for byte. Renaming or dropping those is what makes the game call a save
+  corrupt, so they are never rebuilt.
+
+In a build, the roster-edits step runs **last** of the roster passes, so the star tags, the real team
+history, the modern prospect names and the one-pool positions all survive it. Unwitnessed in game.
+
 ## ★ Models — every model out to Blender and back
 
 1. Load your XISO, open **★ Models** (below the categories) and press **List the models**.
@@ -1013,6 +1143,37 @@ surfaces onto one repeat and mirrored V — the "scrambled stadium textures" peo
 Blender. **Write UVs from the file** on import inverts through the same per-mesh constant;
 a UV moved outside a mesh's range widens that mesh's constant for you (one axis at a time)
 when **Widen the range** is ticked. UVs stay off by default on import.
+
+**A whole player body at once (RC83).** A player is not one model: the game draws `hi_body` up
+close, swaps in `lo_body` at distance and draws `hi_head` as its own scene, so a body edit made
+on only one of them changes shape when the camera pulls back. Select any of the three (they are
+in the Players group, or search `body`) and the **Player body set** box lights up:
+
+1. **Export the body set** writes all three into the export folder as `hi_body_o3c114.gltf`,
+   `lo_body_o3c113.gltf` and `hi_head_o3c115.gltf` (each with its `.bin` and README) plus a
+   `player-body-set-README.txt` for the set.
+2. Edit them in Blender the usual way, and make the same change to both bodies - they are
+   different meshes with different vertex counts, so a lattice or shrinkwrap over both at once
+   is the usual way to keep them in step. Keep the file names (the `_o<pack>c<chunk>` tail is
+   how each file is matched back to its scene).
+3. Point **Edited folder** at that folder and press **Check the folder**. All three are fitted
+   and reported together, and **if any one of them no longer fits its space on the disc,
+   nothing is written at all** - the whole set is refused before the disc is copied. A file you
+   did not touch is simply skipped and said so in the report, so editing only the head (or only
+   the two bodies) works; a folder where nothing changed is refused.
+4. **Write the copy** puts all three into ONE copy of the disc in a single pass, with one
+   receipt beside it. Every model's place on the disc is located and checked before the first
+   byte moves, so a set never lands half-applied.
+
+Single-model export and import are unchanged; the set is a convenience, not a different writer.
+A folder that is missing one of the three is refused rather than half-applied.
+
+**How much room a body edit has.** The two bodies are packed to within 16 bytes of their space on
+the disc (`hi_body` 202,224 of 202,240 compressed bytes, `lo_body` 135,792 of 135,808 after a
+120-vertex nudge), so keep edits smooth and local: moving a contiguous run of vertices repacks
+inside the budget, while a scattered edit (every tenth vertex, say) does not - one measured attempt
+needed 623 bytes more than `hi_body` has and the whole set was refused. If that happens, undo the
+noisiest part of the sculpt and check the folder again; nothing was written.
 
 **Vertex colours.** The game's per-vertex colour is baked lighting that multiplies the texture
 in game. The export carries it as the `_NFL_COLOR` attribute (r g b a, 0..1; see it in the
@@ -1052,33 +1213,77 @@ possession ends in a safety, a first-possession field goal or touchdown is answe
 kickoff to the other team, and after both have possessed the next score wins; regular
 season games can still end tied after one period, playoff games play on.
 
+**Modern defensive positions** (Advanced and Experimental): the depth chart's slots become
+4-3 EDGE / DT / SAM / MIKE / WILL and 3-4 EDGE / NT / DE / MIKE / WILL, and the four retail
+front-seven roster positions become three pools - EDGE (4-3 ends and 3-4 outside backers),
+DT (every interior lineman) and LB (every off-ball backer). The old OLB code is retired: it
+still behaves exactly like an LB, but the build's roster pass moves every stock player out of
+it, so after a Build no team has one. **It keeps its own name (RC83).** The roster, draft,
+free-agency, trade and scouting screens each own a fixed position-filter list with one row per
+roster code, and beta 58 renamed both linebacker rows "Linebackers", which is why those screens
+listed "Linebackers" twice in a row. Only the real LB code is renamed now, so each screen shows
+one "Linebackers" row; the retired "Outside Linebackers" row is still there and lists nobody,
+the same way "Fullbacks" lists nobody on a team without one. (A row cannot be removed: the lists
+have no count word and abut each other in the executable, so dropping one would mean moving
+every following record and could only be proved by playing the game.) If you import a roster
+that still carries OLB players, they show up under "Outside Linebackers" with the OLB badge
+instead of hiding inside a second "Linebackers".
+
 **TEAM column on the Player Card** (Gameplay group, in both Basic and Advanced): the
 franchise Player Card's season-by-season stats gain a TEAM column next to Yr, showing
 which team each season was played for. The current season shows the player's live
 team; from the first season rollover after the patch is in the save, every completed
-season shows the team the player finished it with. Past seasons of an OLD franchise
-save show "--" until their next rollover (the game never stored a team per season;
-the patch records one from then on), the folded "pre" row and the Total row also
-read "--", and a player traded mid-season shows the season-end team. Saves stay
+season shows the team the player finished it with. The current-season row always
+reads the player's live team, whatever the history says, so a trade shows up there
+at once. Past seasons of an OLD franchise save show "--" until their next rollover
+(the game never stored a team per season; the patch records one from then on), the
+folded "pre" row and the Total row also read "--", and a player traded mid-season
+shows the season-end team. Saves stay
 loadable with or without the patch. Unwitnessed in game so far: it is executed under
 an emulator in the test suite, so please report what you see.
+
+**The ESPN scorebug** (Build tab and Presentation, ADVANCED and EXPERIMENTAL; disc images
+only): one horizontal ESPN-style bar at the bottom centre that never swaps sides — ESPN mark,
+both abbreviations and scores, down & distance, quarter, clock, play clock — replacing the
+retail two-row bug, its drive-direction side swap and the drop-box animations. It is built
+entirely from your own disc: the retail scorebug scene and the frame, mark and digit atlases
+are read out of your image (each checked against its known retail SHA-256 first), the modern
+art is generated from them, and both are kept in the studio's private cache so later builds
+are instant. Nothing retail travels in the download, which is why the studio needs your image
+here and cannot do this step from a loose `default.xbe`.
+
+Two things to expect. The shared digit sheet is drawn with the DejaVu Sans Bold font; if your
+system does not have it the digits are left retail and the receipt says so. And the ticker
+band under the bar (the "Bottom Line" strip) keeps its retail art in a build — that one atlas
+was hand painted and there is no way to regenerate it from your disc. If you want it, apply the
+published `SOFTDRINK patch advanced` `.2k5patch` from **Share** instead, which carries it.
 
 **Real team history** (Build tab, ADVANCED and EXPERIMENTAL; disc images only): the retail
 roster already carries season-by-season stats for 1,325 players back to 1982, and the TEAM
 column above can only learn teams from the seasons a patched disc plays. This toggle writes
 the real club of those past seasons into the roster template from nflverse-data (CC-BY-4.0):
-1,148 of the 1,325 players match by name and birth date and 5,068 of their 5,867 season rows
-get a team (86 %; 1999-2003 about 85 %, the 1990s 80-90 %, sparse before 1990). Only a
-franchise CREATED from the copy shows it - an existing save keeps its own roster - and each
-row costs one dword of the game's 50,000-dword history pool (36,866 -> 41,908), so the game's
-automatic folding of the oldest seasons into the "pre" row starts a little earlier. To use
-your own data, point the "Team history CSV" field at a UTF-8 CSV with the columns
+1,148 of the 1,325 players match by name and birth date and the data places 5,042 season rows.
+**Every remaining row is filled with that player's own 2004 club (RC83)** rather than left
+blank, so 5,746 of the 5,838 rows the card can show name a team instead of 5,042 - the column
+reads the same all the way down a career instead of dropping to "--" every few seasons. An
+inferred row is a good guess, not a record: a player who changed teams in 2001 shows his 2004
+club for 2001 unless the data (or your own CSV) covers that season. The build receipt counts
+the two separately (`seasons_written` from the data, `seasons_inferred` from the 2004 club) and
+`data/nfl2k5_retail_team_history.match.log` says which seasons the shipped data actually covers.
+Only three things still read "--": the folded "pre" row and the Total row, a season the roster
+carries no stats for (the card draws no row at all), and the 2004 free agents - 41 players, 92
+rows - who are on no club, so there is nothing to infer. Only a franchise CREATED from the copy
+shows any of it - an existing save keeps its own roster - and each row costs one dword of the
+game's 50,000-dword history pool (36,866 -> 42,612), so the game's automatic folding of the
+oldest seasons into the "pre" row starts a little earlier. To use your own data, or to correct
+an inferred season, point the "Team history CSV" field at a UTF-8 CSV with the columns
 `last_name,first_name,birth_date,season,team` (birth date `YYYY-MM-DD`; `position` and
 `roster_index` optional; team = a 2004 abbreviation such as `ARZ`, `STL`, `TEN` or an nflverse
-code such as `RAI`, `RAM`, `PHX`, `HOU` for the Oilers up to 1996). Players are matched by
-name and birth date, then last name and birth date, then name and position; a season is only
-written when the roster has stats for it (the receipt lists every row that could not be used).
-In this cut relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN).
+code such as `RAI`, `RAM`, `PHX`, `HOU` for the Oilers up to 1996). One line per season is
+enough and a CSV row always wins over the 2004-club fill. Players are matched by name and birth
+date, then last name and birth date, then name and position; a season is only written when the
+roster has stats for it (the receipt lists every row that could not be used). In this cut
+relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN).
 
 **Modern draft-prospect names** (Build tab and Gameplay Patches, ADVANCED and EXPERIMENTAL; disc
 images only): retail names every generated rookie and free agent from the 1990 US Census lists,

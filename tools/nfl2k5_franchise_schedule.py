@@ -352,7 +352,47 @@ def decode_preseason_block(payload: bytes, offset: int) -> dict[str, Any] | None
 
 # -- pack status / apply --------------------------------------------------------------------------
 
+def looks_like_pack_rost(payload: bytes, offset: int) -> bool:
+    """Is a retail-shaped ROST outer entry at ``offset``? (tag, stored size, pool link)"""
+    if offset < 0 or offset + ROST_OUTER_SIZE > len(payload):
+        return False
+    try:
+        return (payload[offset: offset + 4] == ROST_TAG
+                and u32(payload, offset + 4) == ROST_BODY_SIZE
+                and payload[offset + 0x2C: offset + 0x30] == ROST_TAG
+                and pool_header(payload, offset) == offset + 0x60)
+    except (ScheduleError, struct.error):
+        return False
+
+
+def locate_pack_rost(payload: bytes, *, expected: int = PACK_ROST_OFFSET) -> int | None:
+    """Where the roster resource really is in this pack, or None when it is not there.
+
+    The schedule template is a *resource*, not a byte address. Retail keeps it at outer
+    entry 5 (pack offset 0x392800), and reading it there is right for every retail dump
+    however the disc image around the pack is laid out. A pack somebody rebuilt can hold
+    the same resource somewhere else, though, and answering "ROST stored size is not
+    retail" because byte 0x392804 happens to be something else is a claim about an
+    offset, not about the pack. So the retail offset is a fast path and the resource is
+    searched for when it does not hold.
+    """
+    if looks_like_pack_rost(payload, expected):
+        return expected
+    position = 0
+    while True:
+        hit = payload.find(ROST_TAG, position)
+        if hit < 0:
+            return None
+        if looks_like_pack_rost(payload, hit):
+            return hit
+        position = hit + 1
+
+
 def pack_status(payload: bytes, rost: int = PACK_ROST_OFFSET) -> dict[str, Any]:
+    located = locate_pack_rost(payload, expected=rost)
+    relocated = located is not None and located != rost
+    if located is not None:
+        rost = located
     try:
         require(len(payload) >= rost + ROST_OUTER_SIZE, "pack is too short for the ROST outer entry")
         require(u32(payload, rost + 4) == ROST_BODY_SIZE, "ROST stored size is not retail")
@@ -366,7 +406,7 @@ def pack_status(payload: bytes, rost: int = PACK_ROST_OFFSET) -> dict[str, Any]:
     tail = payload[rost + TAIL_FREE_REL: rost + ROST_OUTER_SIZE]
     info: dict[str, Any] = {"rost_offset": f"0x{rost:x}", "pool_header": f"0x{hdr:x}", "schedule_count": count,
                             "schedule_offset": f"0x{ptr:x}", "retail_template_intact": retail_ok,
-                            "tail_zero": not any(tail)}
+                            "rost_relocated": relocated, "tail_zero": not any(tail)}
     if count == RETAIL_TEMPLATE_COUNT and ptr == retail_ptr and retail_ok and not any(tail):
         info["state"] = "retail"
         info["preseason_games"] = 0
@@ -393,6 +433,7 @@ def apply_pack(payload: bytes, template: bytes, rost: int = PACK_ROST_OFFSET,
     """Write the regular-season ``template`` (and, right after it, the optional ``preseason`` block
     from ``encode_preseason``) into the ROST tail of a retail pack copy; the pool pair counts only
     the regular records."""
+    rost = locate_pack_rost(payload, expected=rost) or rost
     state = pack_status(payload, rost)
     require(state["state"] == "retail", f"pack ROST is {state['state']}, not retail: {state.get('reason', '')}")
     require(len(template) % RECORD_SIZE == 0 and template, "template must be whole 8-byte records")

@@ -79,6 +79,7 @@ mod_editor/core/playbook_package_rule_spike.py
 mod_editor/core/ps2_save_service.py
 mod_editor/core/nfl2k5_safe_text_banks.py
 mod_editor/core/nfl2k5_save_writer.py
+mod_editor/core/nfl2k5_scorebug_source_art.py
 mod_editor/core/nfl2k5_scorebug_unified_adapter.py
 mod_editor/core/nfl2k5_source_cache.py
 mod_editor/core/nfl2k5_stadium_cache.py
@@ -247,6 +248,7 @@ mod_editor/core/modpack.py
 mod_editor/core/nfl2k5_accel_ramp.py
 mod_editor/core/nfl2k5_camera.py
 mod_editor/core/nfl2k5_catch_slider.py
+mod_editor/core/nfl2k5_disc_identity.py
 mod_editor/core/nfl2k5_draft_ai.py
 mod_editor/core/nfl2k5_edge_rename.py
 mod_editor/core/nfl2k5_hud_layout.py
@@ -274,6 +276,7 @@ mod_editor/core/nfl2k5_boot_logo.py
 mod_editor/core/nfl2k5_seven_on_seven_book.py
 mod_editor/core/nfl2k5_player_star.py
 mod_editor/core/nfl2k5_player_tags.py
+mod_editor/core/nfl2k5_roster_records.py
 mod_editor/core/nfl2k5_widescreen.py
 mod_editor/gui/build_panel_qt.py
 mod_editor/gui/commentary_panel_qt.py
@@ -282,6 +285,7 @@ mod_editor/gui/presentation_panel_qt.py
 mod_editor/gui/share_panel_qt.py
 mod_editor/gui/sounds_panel_qt.py
 mod_editor/gui/models_panel_qt.py
+mod_editor/gui/roster_editor_panel_qt.py
 tools/nfl2k5_audo_swap.py
 tools/nfl2k5_commentary_swap.py
 tools/nfl2k5_fieldpack_texture_into_xiso.py
@@ -297,3 +301,11 @@ tools/nfl2k5_scorebug_textures_into_xiso.py
 tools/nfl2k5_soundbank_swap.py
 tools/nfl_vc_lz_fill.py
 tools/fatx_dirent_rename.py
+
+# Beta 59: community playbook packs (.2k5book) — the format, the offline check CLI,
+# the install / export dialogs and the seed pack.
+data/playbooks/modern_gun_core.2k5book
+docs/mod_editor/playbook_packs.md
+mod_editor/core/nfl2k5_playbook_pack.py
+mod_editor/gui/playbook_pack_dialog_qt.py
+tools/nfl2k5_playbook_pack.py
