@@ -356,9 +356,15 @@ def apply_tarball(plan: UpdatePlan, tarball: Path, *, progress: ProgressSink | N
     staging = unpack_tarball(tarball, parent, progress=progress)
     progress("Switching to the new version", 0, 1)
     try:
-        os.chdir(parent)   # a process whose working directory is the folder would block the rename
+        cwd = Path.cwd().resolve()
     except OSError:
-        pass
+        cwd = None
+    if cwd is not None and (cwd == root or root in cwd.parents):
+        # a process whose working directory is inside the folder would block the rename (Windows refuses it)
+        try:
+            os.chdir(parent)
+        except OSError:
+            pass
     new_root = root
     try:
         swap_install(root, staging)

@@ -101,7 +101,7 @@ def _tarball_install(parent: Path, name: str = "2K5-Mod-Studio-v1.0-RC80-2026-09
 class InstallKindTests(unittest.TestCase):
     def test_a_git_checkout_is_never_self_updated(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / "repo"
+            root = Path(tmp).resolve() / "repo"
             (root / ".git").mkdir(parents=True)
             (root / "tools").mkdir()
             (root / "tools" / "launch_2k5_mod_studio.sh").write_text("")
@@ -115,7 +115,7 @@ class InstallKindTests(unittest.TestCase):
 
     def test_the_windows_installer_layout(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            base = Path(tmp) / "2K5-Mod-Studio"
+            base = Path(tmp).resolve() / "2K5-Mod-Studio"
             (base / "runtime").mkdir(parents=True)
             (base / "runtime" / "pythonw.exe").write_bytes(b"MZ")
             (base / "app" / "mod_editor").mkdir(parents=True)
@@ -129,7 +129,7 @@ class InstallKindTests(unittest.TestCase):
 
     def test_an_unpacked_release_folder_on_every_platform(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            root = _tarball_install(Path(tmp))
+            root = _tarball_install(Path(tmp).resolve())
             for platform in ("linux", "darwin", "win32"):
                 kind = U.detect_install(root, platform=platform, executable="/usr/bin/python3")
                 self.assertEqual(kind.kind, "tarball", platform)
@@ -137,7 +137,7 @@ class InstallKindTests(unittest.TestCase):
 
     def test_the_apf_studio_uses_its_own_launcher_and_module(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / "apf"
+            root = Path(tmp).resolve() / "apf"
             (root / "tools").mkdir(parents=True)
             (root / "tools" / "launch_apf2k8_mod_studio.sh").write_text("")
             kind = U.detect_install(root, "apf", platform="linux", executable="py")
@@ -148,9 +148,9 @@ class InstallKindTests(unittest.TestCase):
 class PlanTests(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory()
-        self.root = _tarball_install(Path(self.tmp.name))
+        self.root = _tarball_install(Path(self.tmp.name).resolve())
         self.tarball = U.detect_install(self.root, platform="linux")
-        base = Path(self.tmp.name) / "win" / "2K5-Mod-Studio"
+        base = Path(self.tmp.name).resolve() / "win" / "2K5-Mod-Studio"
         (base / "runtime").mkdir(parents=True)
         (base / "runtime" / "pythonw.exe").write_bytes(b"MZ")
         (base / "app").mkdir()
@@ -182,7 +182,7 @@ class PlanTests(unittest.TestCase):
 
     def test_the_apf_product_never_takes_a_2k5_file(self) -> None:
         document = _document(self._assets())
-        apf_root = Path(self.tmp.name) / "apf"
+        apf_root = Path(self.tmp.name).resolve() / "apf"
         (apf_root / "tools").mkdir(parents=True)
         (apf_root / "tools" / "launch_apf2k8_mod_studio.sh").write_text("")
         plan = U.plan_update(document, U.detect_install(apf_root, "apf", platform="linux"), "apf")
@@ -221,8 +221,8 @@ class DownloadTests(unittest.TestCase):
         assets = U.release_assets(document)
         seen = []
         with tempfile.TemporaryDirectory() as tmp:
-            plan = U.UpdatePlan("2k5", "beta-99", U.InstallKind("tarball", Path(tmp), ("x",)), assets[0], assets[1])
-            path = U.fetch_update(plan, Path(tmp) / "work", progress=lambda *a: seen.append(a), opener=_opener(files))
+            plan = U.UpdatePlan("2k5", "beta-99", U.InstallKind("tarball", Path(tmp).resolve(), ("x",)), assets[0], assets[1])
+            path = U.fetch_update(plan, Path(tmp).resolve() / "work", progress=lambda *a: seen.append(a), opener=_opener(files))
             self.assertEqual(path.read_bytes(), payload)
             self.assertFalse(path.with_name(path.name + ".part").exists())
         self.assertEqual(seen[-1][0], "Verified")
@@ -233,10 +233,10 @@ class DownloadTests(unittest.TestCase):
         files = {"a.tar.gz": b"evil" * 1000, "a.tar.gz.sha256": _sidecar("a.tar.gz", payload)}
         assets = U.release_assets(_document(files))
         with tempfile.TemporaryDirectory() as tmp:
-            plan = U.UpdatePlan("2k5", "beta-99", U.InstallKind("tarball", Path(tmp), ("x",)), assets[0], assets[1])
+            plan = U.UpdatePlan("2k5", "beta-99", U.InstallKind("tarball", Path(tmp).resolve(), ("x",)), assets[0], assets[1])
             with self.assertRaises(U.SelfUpdateError) as caught:
-                U.fetch_update(plan, Path(tmp) / "work", opener=_opener(files))
-            self.assertFalse((Path(tmp) / "work" / "a.tar.gz").exists())
+                U.fetch_update(plan, Path(tmp).resolve() / "work", opener=_opener(files))
+            self.assertFalse((Path(tmp).resolve() / "work" / "a.tar.gz").exists())
         self.assertIn("SHA-256", str(caught.exception))
 
     def test_a_short_download_is_refused(self) -> None:
@@ -245,18 +245,18 @@ class DownloadTests(unittest.TestCase):
         document = _document({"a.tar.gz": payload, "a.tar.gz.sha256": files["a.tar.gz.sha256"]})
         assets = U.release_assets(document)
         with tempfile.TemporaryDirectory() as tmp:
-            plan = U.UpdatePlan("2k5", "beta-99", U.InstallKind("tarball", Path(tmp), ("x",)), assets[0], assets[1])
+            plan = U.UpdatePlan("2k5", "beta-99", U.InstallKind("tarball", Path(tmp).resolve(), ("x",)), assets[0], assets[1])
             with self.assertRaises(U.SelfUpdateError) as caught:
-                U.fetch_update(plan, Path(tmp) / "work", opener=_opener(files))
+                U.fetch_update(plan, Path(tmp).resolve() / "work", opener=_opener(files))
         self.assertIn("100", str(caught.exception))
 
     def test_no_sidecar_means_no_install(self) -> None:
         files = {"a.tar.gz": b"x"}
         assets = U.release_assets(_document(files))
         with tempfile.TemporaryDirectory() as tmp:
-            plan = U.UpdatePlan("2k5", "beta-99", U.InstallKind("tarball", Path(tmp), ("x",)), assets[0], None)
+            plan = U.UpdatePlan("2k5", "beta-99", U.InstallKind("tarball", Path(tmp).resolve(), ("x",)), assets[0], None)
             with self.assertRaises(U.SelfUpdateError):
-                U.fetch_update(plan, Path(tmp) / "work", opener=_opener(files))
+                U.fetch_update(plan, Path(tmp).resolve() / "work", opener=_opener(files))
 
     def test_the_sidecar_must_name_the_file(self) -> None:
         digest = hashlib.sha256(b"x").hexdigest()
@@ -273,27 +273,27 @@ class TarballApplyTests(unittest.TestCase):
         files = {name: payload, name + ".sha256": _sidecar(name, payload)}
         started = []
         with tempfile.TemporaryDirectory() as tmp:
-            root = _tarball_install(Path(tmp))
+            root = _tarball_install(Path(tmp).resolve())
             install = U.detect_install(root, platform="linux", executable="python3")
-            plan = U.run_update(_document(files), install=install, work=Path(tmp) / "dl",
+            plan = U.run_update(_document(files), install=install, work=Path(tmp).resolve() / "dl",
                                 opener=_opener(files), spawn_tarball=lambda cmd, cwd: started.append((cmd, cwd)))
             self.assertEqual((root / "mod_editor" / "__main__.py").read_text(), "print('new')\n")
             previous = root.with_name(root.name + ".previous")
             self.assertEqual((previous / "mod_editor" / "__main__.py").read_text(), "print('old')\n")
             self.assertTrue(os.access(root / "tools" / "launch_2k5_mod_studio.sh", os.X_OK))
-            self.assertFalse((Path(tmp) / (root.name + ".new")).exists())
+            self.assertFalse((Path(tmp).resolve() / (root.name + ".new")).exists())
         self.assertEqual(started, [(["python3", "-m", "mod_editor", "--studio"], root)])
         self.assertTrue(any("previous" in note for note in plan.notes))
 
     def test_a_second_update_replaces_the_previous_copy(self) -> None:
         payload = _make_tarball("top", RELEASE_FILES)
         with tempfile.TemporaryDirectory() as tmp:
-            root = _tarball_install(Path(tmp))
+            root = _tarball_install(Path(tmp).resolve())
             previous = root.with_name(root.name + ".previous")
             previous.mkdir()
             (previous / "stale").write_text("")
             plan = U.UpdatePlan("2k5", "beta-99", U.detect_install(root, platform="linux"), U.ReleaseAsset("t", HOST + "t", 1), None)
-            tarball = Path(tmp) / "t.tar.gz"
+            tarball = Path(tmp).resolve() / "t.tar.gz"
             tarball.write_bytes(payload)
             U.apply_tarball(plan, tarball, spawn=lambda *_a: None)
             self.assertFalse((previous / "stale").exists())
@@ -303,9 +303,9 @@ class TarballApplyTests(unittest.TestCase):
         payload = _make_tarball("2K5-Mod-Studio-v1.0-RC99-2026-09-09", RELEASE_FILES)
         started = []
         with tempfile.TemporaryDirectory() as tmp:
-            root = _tarball_install(Path(tmp))
+            root = _tarball_install(Path(tmp).resolve())
             plan = U.UpdatePlan("2k5", "beta-99", U.detect_install(root, platform="linux"), U.ReleaseAsset("t", HOST + "t", 1), None)
-            tarball = Path(tmp) / "t.tar.gz"
+            tarball = Path(tmp).resolve() / "t.tar.gz"
             tarball.write_bytes(payload)
             real_rename = os.rename
 
@@ -316,7 +316,7 @@ class TarballApplyTests(unittest.TestCase):
 
             with unittest.mock.patch.object(U.os, "rename", refuse):
                 new_root, _cmd = U.apply_tarball(plan, tarball, spawn=lambda cmd, cwd: started.append(cwd))
-            self.assertEqual(new_root, Path(tmp) / "2K5-Mod-Studio-v1.0-RC99-2026-09-09")
+            self.assertEqual(new_root, Path(tmp).resolve() / "2K5-Mod-Studio-v1.0-RC99-2026-09-09")
             self.assertEqual((new_root / "mod_editor" / "__main__.py").read_text(), "print('new')\n")
             self.assertEqual((root / "mod_editor" / "__main__.py").read_text(), "print('old')\n")
             self.assertEqual(started, [new_root])
@@ -340,10 +340,10 @@ class TarballApplyTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp:
             for bad, link in (("top/../escape", False), ("/abs", False), ("other/x", False), ("top/link", True)):
-                tarball = Path(tmp) / "t.tar.gz"
+                tarball = Path(tmp).resolve() / "t.tar.gz"
                 tarball.write_bytes(archive_with(bad, link))
                 with self.assertRaises(U.SelfUpdateError, msg=bad):
-                    U.unpack_tarball(tarball, Path(tmp) / "out")
+                    U.unpack_tarball(tarball, Path(tmp).resolve() / "out")
 
     def test_an_unwritable_parent_is_explained(self) -> None:
         if sys.platform.startswith("win"):
@@ -351,13 +351,13 @@ class TarballApplyTests(unittest.TestCase):
         if getattr(os, "geteuid", lambda: -1)() == 0:
             self.skipTest("root can write anywhere")
         with tempfile.TemporaryDirectory() as tmp:
-            parent = Path(tmp) / "locked"
+            parent = Path(tmp).resolve() / "locked"
             root = _tarball_install(parent)
             parent.chmod(0o555)
             try:
                 plan = U.UpdatePlan("2k5", "beta-99", U.detect_install(root, platform="linux"), U.ReleaseAsset("t", HOST + "t", 1), None)
                 with self.assertRaises(U.SelfUpdateError) as caught:
-                    U.apply_tarball(plan, Path(tmp) / "missing.tar.gz", spawn=lambda *_a: None)
+                    U.apply_tarball(plan, Path(tmp).resolve() / "missing.tar.gz", spawn=lambda *_a: None)
             finally:
                 parent.chmod(0o755)
         self.assertIn("not writable", str(caught.exception))
@@ -366,12 +366,12 @@ class TarballApplyTests(unittest.TestCase):
 class WindowsApplyTests(unittest.TestCase):
     def test_the_installer_is_started_silently_with_wait_and_relaunch(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            base = Path(tmp) / "Programs" / "2K5 Mod Studio"
+            base = Path(tmp).resolve() / "Programs" / "2K5 Mod Studio"
             (base / "runtime").mkdir(parents=True)
             (base / "runtime" / "pythonw.exe").write_bytes(b"MZ")
             (base / "app").mkdir()
             install = U.detect_install(base / "app", platform="win32")
-            installer = Path(tmp) / "dl" / "2K5-Mod-Studio-1.0.0rc99-Setup.exe"
+            installer = Path(tmp).resolve() / "dl" / "2K5-Mod-Studio-1.0.0rc99-Setup.exe"
             installer.parent.mkdir()
             installer.write_bytes(b"MZ")
             plan = U.UpdatePlan("2k5", "beta-99", install, U.ReleaseAsset(installer.name, HOST + installer.name, 2), None)
@@ -388,7 +388,7 @@ class WindowsApplyTests(unittest.TestCase):
         import build_windows_installer as B  # noqa: E402
 
         with tempfile.TemporaryDirectory() as tmp:
-            script = B.render_nsis(B.PRODUCTS["2k5"], "1.0.0rc99", Path(tmp), None, Path(tmp))
+            script = B.render_nsis(B.PRODUCTS["2k5"], "1.0.0rc99", Path(tmp).resolve(), None, Path(tmp).resolve())
         self.assertIn('!include "FileFunc.nsh"', script)
         self.assertIn('${GetOptions} $R0 "/WAITPID=" $R1', script)
         self.assertIn("kernel32::WaitForSingleObject", script)
@@ -409,7 +409,7 @@ class BannerTests(unittest.TestCase):
         from mod_editor.gui import update_ui
         self.update_ui = update_ui
         self.tmp = tempfile.TemporaryDirectory()
-        self.root = _tarball_install(Path(self.tmp.name))
+        self.root = _tarball_install(Path(self.tmp.name).resolve())
         self.install = U.detect_install(self.root, platform="linux", executable="python3")
 
     def tearDown(self) -> None:
@@ -455,7 +455,7 @@ class BannerTests(unittest.TestCase):
         def run_update(document, product="2k5", **kw):
             kw["opener"] = _opener(files)
             kw["spawn_tarball"] = lambda cmd, cwd: started.append((cmd, cwd))
-            kw["work"] = Path(self.tmp.name) / "dl"
+            kw["work"] = Path(self.tmp.name).resolve() / "dl"
             return real_run(document, product, **kw)
 
         with unittest.mock.patch.object(self.update_ui.self_update, "run_update", run_update):
@@ -486,7 +486,7 @@ class BannerTests(unittest.TestCase):
 
         def run_update(document, product="2k5", **kw):
             kw["opener"] = _opener(files)
-            kw["work"] = Path(self.tmp.name) / "dl"
+            kw["work"] = Path(self.tmp.name).resolve() / "dl"
             return real_run(document, product, **kw)
 
         with unittest.mock.patch.object(self.update_ui.self_update, "run_update", run_update):
