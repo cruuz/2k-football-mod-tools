@@ -90,6 +90,37 @@
   franchises only (a save carries its own roster copy). Unicorn-proven hook (retained pointer ->
   9300 + index, replacement -> 9100), both cave gates pass, order-independent with the other
   executable patches; unwitnessed in game.
+- **Free Practice inside Franchise** (`nfl2k5_franchise_practice.py`, `BuildPlan.franchise_practice`;
+  ADVANCED and EXPERIMENTAL presets, opt-in in BASIC until witnessed). Retail Practice exists only
+  under Game Modes on the main menu, picks two random teams and has no way in from a franchise, and
+  the Coach's Desk (descriptor `.rdata` 0x522190) has no spare row: its eleven rows run Schedule ..
+  Quit and the type-3 terminator at 0x52215C ends exactly where the descriptor begins. The patch
+  relocates the desk's 52-byte event-hook list into a cave (the same six `(event, record)` pairs
+  with event 5 last, since the dispatcher `FUN_0006E4E0` scans for the first matching event), which
+  frees precisely one 0x34 row slot at 0x521EEC, writes a **Practice** row there (type 9, label =
+  the retail UTF-16 `L"Practice"` at 0xE9C3BC, always visible) and moves the descriptor's row
+  pointer back one row, so Practice is the first row and the eleven retail rows follow unchanged.
+  The row's activate stub is the tail of the retail Front Office callback `FUN_00142910` (start the
+  fade, set the deferred next screen `[0xAA2408]`) pointed at a **clone of the Scrimmage Settings
+  descriptor** in the cave -- byte-identical to 0x501834 except its own hook list (Team Select still
+  on event 0xB) and its own START handler. The clone's event-1 stub runs retail `cb_00148AD0`
+  (Practice Type 0, the `s32` practice field) and then `FUN_000C4D70`, the game's own "the team the
+  user coaches" (`[0xE5775C]` -> `FUN_000C4C50`), and puts that team on **both** sides through
+  `FUN_00077AE0` / `FUN_00077B20` at Practice Type = Full Scrimmage via `FUN_000E33F0`, so mode 1
+  fields your first-team offence against your first-team defence in your away kit against your home
+  kit, with the live franchise roster (there is one roster object, `[0xB72918]`, and the franchise
+  load already overwrote it). The START stub is `FUN_00148B50` with **one** pop instead of two,
+  because the franchise entry is one push deep, so a rep ends back on the Coach's Desk. 352-byte
+  cave at 0x1D82D0 (eleven dead type-tag predicates; no branch target and no aligned pointer in any
+  of the 23 sections lands inside), 100 bytes of code, four tables, **no mutable state and not one
+  retail instruction byte changed**; no resource or pack change. Practice is mode 1 and the stat,
+  clock and injury paths are gated on mode >= 4, so a session writes no season stats and no
+  injuries, and the season state is only touched by franchise setters this path never calls.
+  Unicorn-proven on the real bytes (both team globals and both playbook names = the coached team,
+  Practice Type and the mode word set, retail practice untouched with no coached team; the START
+  stub pops once where retail's pops twice); both cave gates pass, order-independent with the other
+  executable patches. **Unwitnessed in game** -- the Coach's Desk has never been seen drawing a
+  twelfth row, and a mode-1 game ending inside a franchise context has never been witnessed.
 
 - **★ Models: texture coordinates now follow the game's own per-mesh rule.** Beta 56
   decoded every model's UVs with one fixed formula (`u = (n + 1) / 2`, `v = (1 - n) / 2`,

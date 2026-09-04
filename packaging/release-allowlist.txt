@@ -265,6 +265,7 @@ mod_editor/core/nfl2k5_position_row.py
 mod_editor/core/nfl2k5_probowl_order.py
 mod_editor/core/nfl2k5_penalties.py
 mod_editor/core/nfl2k5_uniform_choice.py
+mod_editor/core/nfl2k5_franchise_practice.py
 mod_editor/core/nfl2k5_kick_laces.py
 mod_editor/core/nfl2k5_team_history.py
 mod_editor/core/nfl2k5_prospect_names.py

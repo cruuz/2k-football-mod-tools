@@ -129,6 +129,18 @@ PATCHES = (
      "the 52 replacements (Diggs, Chubb, Kamara...) and every first name are new, and a 27-byte cave on the "
      "generator announces players with a replacement surname by jersey number instead of a wrong name. Only "
      "franchises created from the copy see it. Unwitnessed in game."),
+    ("franchise_practice", "Free Practice inside Franchise",
+     "Retail: Practice lives only under Game Modes on the main menu, it picks two random teams, and there is no "
+     "way into it from a franchise; the Coach's Desk lists Schedule through Quit and its eleven rows end right "
+     "where the descriptor begins, so there is no spare slot. Patch: the desk's 52-byte event-hook list is copied "
+     "into a cave, which frees exactly one 0x34 row slot, and a Practice row is written there (first, above "
+     "Schedule) opening a clone of the Scrimmage Settings screen. The clone's enter hook runs the retail practice "
+     "defaults, then puts the team you coach on BOTH sides at Practice Type = Full Scrimmage, so you get your "
+     "first-team offence against your first-team defence in your away kit against your home kit on the practice "
+     "field, with the live franchise roster (there is only one roster in memory and the franchise load already "
+     "overwrote it). Its START handler pops once instead of twice, so a rep ends back on the Coach's Desk. "
+     "Practice is game mode 1 and the stat, clock and injury paths are gated on mode 4 and up, so a session "
+     "writes no season stats and no injuries; no retail instruction byte is changed. Unwitnessed in game."),
     ("seven_on_seven", "7-on-7 practice mode",
      "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
      "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "

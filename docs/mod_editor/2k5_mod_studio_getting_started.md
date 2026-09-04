@@ -881,6 +881,27 @@ punts and ball carries unchanged; a fake field goal run carries the rolled ball 
 If the laces end up sideways instead of backwards, the 90-degree variant is a 16-byte data edit in
 the cave (`nfl2k5_kick_laces.apply(..., roll=ROLL_90)`). Unwitnessed in game.
 
+**Free Practice inside Franchise** (Gameplay group, ADVANCED and EXPERIMENTAL presets; opt-in in
+BASIC until it is witnessed): retail Practice lives only under Game Modes on the main menu and picks
+two random teams, so there is no way to run a rep from inside a franchise. The patch adds a
+**Practice** row to the Coach's Desk, above Schedule. Choosing it opens the Scrimmage Settings
+screen already set to **Full Scrimmage**, with your franchise team on both sides -- your first-team
+offence against your first-team defence, on the practice field, in your away kit against your home
+kit (the away side takes the `a` uniform and the home side the `h`, so the two sides are told
+apart). The players are your live franchise roster: the game keeps one roster in memory and loading
+the franchise already replaced it, so trades, draft picks, depth-chart order and edited ratings are
+all there. Press START and the rep plays; when it ends you are back on the **Coach's Desk**, not the
+main menu. Nothing accrues: a practice session runs in game mode 1, and the stat, clock and injury
+paths are gated on mode 4 and up, so no season stats and no injuries are written, the week and the
+schedule do not move, and the franchise save is still only written when you ask for it. The B button
+backs out of the settings screen to the Coach's Desk, and the Team Select button still works if you
+would rather scrimmage against another team. What to check in game: the desk draws and scrolls with
+the twelfth row and every retail row still works; Practice Type reads Full Scrimmage and both
+uniforms are yours; a traded or drafted player is on the field; START plays a rep and backing out
+lands on the desk; after advancing a week the schedule, the Player Card stats and the injury list
+are unchanged; and main-menu Practice with no franchise loaded is still two random teams on Special
+Move. Unwitnessed in game.
+
 **Penalties at NFL rates, Chop Block toggle** (Gameplay group, advanced and experimental presets):
 retail's default 50 on every slider flags far more holding, face masks and clipping than an NFL
 Sunday, the incidental face mask is still the 2004 five-yard call, and the Chop Block On/Off toggle

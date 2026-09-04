@@ -1731,6 +1731,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_probowl_order",
         "mod_editor.core.nfl2k5_penalties",
         "mod_editor.core.nfl2k5_uniform_choice",
+        "mod_editor.core.nfl2k5_franchise_practice",
         "mod_editor.core.nfl2k5_kick_laces",
         "mod_editor.core.nfl2k5_team_history",
         "mod_editor.core.nfl2k5_prospect_names",
