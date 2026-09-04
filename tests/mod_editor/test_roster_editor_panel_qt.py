@@ -39,6 +39,7 @@ from test_nfl2k5_roster_records import (  # noqa: E402
     COLLEGES,
     LEAGUE_CLUB_SIZE,
     SAMPLE,
+    damaged_body,
     league_body,
     one_pool_body,
     retail_front_body,
@@ -545,6 +546,60 @@ class MembershipPanelTests(unittest.TestCase):
         self.assertEqual(self.rows()[:2], [f"IND · {LEAGUE_CLUB_SIZE}", f"ATL · {LEAGUE_CLUB_SIZE}"])
         self.assertEqual(self.panel.document.to_body(), self.body)
         self.assertNotIn((mover.pool, mover.index), self.panel._dirty)
+
+
+class RepairPanelTests(unittest.TestCase):
+    """Check & repair on load: offered, never silent; applied with a receipt and an undo."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.application = QApplication.instance() or QApplication([])
+
+    def setUp(self) -> None:
+        self.body = damaged_body()
+        self.panel = RosterEditorPanel()
+        self.panel.load_document(rr.load_body(self.body), label="damaged")
+        self.application.processEvents()
+
+    def tearDown(self) -> None:
+        self.panel.deleteLater()
+        self.application.processEvents()
+
+    def test_repairs_are_offered_on_load_and_nothing_is_touched(self) -> None:
+        self.assertEqual(self.panel.repair_button.text(), "Repair (3)")
+        self.assertTrue(self.panel.repair_button.isEnabled())
+        self.assertIn("3 repairs available", self.panel.status_label.text())
+        self.assertIn("Nothing has been changed", self.panel.report.toPlainText())
+        self.assertIn("Peyton Manning", self.panel.report.toPlainText())
+        self.assertEqual(self.panel.document.to_body(), self.body)
+        self.assertEqual(self.panel.undo_stack.depth, (0, 0))
+        clean = RosterEditorPanel()
+        clean.load_document(rr.load_body(synthetic_body()), label="clean")
+        self.assertEqual(clean.repair_button.text(), "Repair")
+        self.assertFalse(clean.repair_button.isEnabled())
+        self.assertNotIn("repair", clean.status_label.text())
+        clean.deleteLater()
+
+    def test_repair_applies_with_a_receipt_and_undoes(self) -> None:
+        receipt = self.panel.run_repairs()
+        assert receipt is not None
+        self.assertEqual(receipt["applied"], 3)
+        report = self.panel.report.toPlainText()
+        self.assertTrue(report.startswith("Repaired 1 headless player;"), report)
+        self.assertIn("City1 Team1: the count byte says 4", report)
+        self.assertEqual(self.panel.tabs.currentIndex(), self.panel.tabs.count() - 1)
+        self.assertFalse(self.panel.repair_button.isEnabled())
+        self.assertEqual(self.panel.document.players[0].record.values["headless"], 0)
+        self.assertIn(("primary", 0), self.panel._dirty)
+        self.assertEqual([self.panel.team_list.item(i).text() for i in range(2)], ["IND · 3", "ATL · 3"])
+        self.assertEqual(self.panel.undo(), "repair (3)")
+        self.assertEqual(self.panel.document.to_body(), self.body)
+        self.assertEqual(self.panel.repair_button.text(), "Repair (3)")
+        self.assertNotIn(("primary", 0), self.panel._dirty)
+        self.panel.redo()
+        self.assertEqual(rr.plan_repairs(self.panel.document), [])
+        diff = self.panel.refresh_diff()
+        self.assertEqual(diff[0]["changes"], {"headless": (1, 0)})
 
 
 class UndoStackTests(unittest.TestCase):

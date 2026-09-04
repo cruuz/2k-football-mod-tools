@@ -1115,6 +1115,7 @@ class TeamRecord:
     coach_offset: int | None = None
     scheme: int = 0
     clean_parse: bool = True                               # count byte == pointers we could resolve
+    repaired: bool = False                                 # a repair rewrote the count / the whole list
 
     @property
     def reordered(self) -> bool:
@@ -1820,9 +1821,9 @@ class RosterDocument:
             # slots only, so a pointer we could not resolve stays exactly as the roster shipped it;
             # a membership change (only allowed on a cleanly parsed team) rewrites all 65 slots and
             # the count byte, the way Finn's IR diff showed the game keeps them (compacted, zero tail)
-            if not team.changed:
+            if not team.changed and not team.repaired:
                 continue
-            if len(team.slots) == len(team.original_slots):
+            if len(team.slots) == len(team.original_slots) and not team.repaired:
                 for slot, target in enumerate(team.slots):
                     field_offset = team.offset + slot * 4
                     struct.pack_into("<i", out, field_offset, target - field_offset + 1)
@@ -2895,6 +2896,126 @@ def copy_player(source: PlayerRecord, target: PlayerRecord, *, mode: str = "all"
     return count
 
 
+# -------------------------------------------------------------------------------------------- repairs
+# Finn's editor repairs one thing silently on load and reports it afterwards ("Repaired N headless
+# players. Be sure to save file if everything looks OK."): a set +0x0C bit 7, which renders the model
+# without a head (§14.3 of the RE report; the retail disc itself ships one, Carlos Joseph, T, a free
+# agent, +0x0C = 0xB6).  The studio plans every mechanical repair it can prove, shows the list, and
+# applies it only when asked -- never silently -- with a receipt and an undo.
+REPAIR_KINDS = ("headless", "retired_position", "team_count", "duplicate_slot", "duplicate_free_agent")
+
+
+def plan_repairs(document: RosterDocument) -> list[dict[str, Any]]:
+    """What Check & repair would change, as data.  Nothing is touched."""
+
+    plans: list[dict[str, Any]] = []
+    for player in document.players:
+        record = player.record
+        if record.values["headless"]:
+            byte = document.body[player.offset + 0x0C]
+            plans.append({"kind": "headless", "pool": player.pool, "index": player.index,
+                          "player": player.display,
+                          "detail": f"{player.display}: +0x0C bit 7 is set (0x{byte:02X}); clear it so the "
+                                    f"model renders with a head (0x{byte & 0x7F:02X})"})
+        code = record.values["position"]
+        if player.pool == "primary" and is_retired_position(code, document.scheme):
+            instead = replacement_position_code(code, document.scheme)
+            plans.append({"kind": "retired_position", "pool": player.pool, "index": player.index,
+                          "player": player.display, "from": code, "to": instead,
+                          "detail": f"{player.display}: carries {position_name(code, 'retail')} (code {code}), "
+                                    f"retired on this {SCHEME_TITLES[document.scheme]} roster; move him to "
+                                    f"{position_name(instead, document.scheme)} (code {instead})"})
+    for team in document.teams:
+        if not team.clean_parse:
+            plans.append({"kind": "team_count", "team_index": team.index, "team": team.display,
+                          "count": team.player_count, "resolved": len(team.slots),
+                          "detail": f"{team.display}: the count byte says {team.player_count} but only "
+                                    f"{len(team.slots)} pointers resolve; set the count to {len(team.slots)} and "
+                                    f"zero the rest of the list"})
+        seen: set[int] = set()
+        duplicates = []
+        for offset in team.slots:
+            if offset in seen:
+                duplicates.append(document.by_offset[offset].display)
+            seen.add(offset)
+        if duplicates:
+            plans.append({"kind": "duplicate_slot", "team_index": team.index, "team": team.display,
+                          "players": duplicates,
+                          "detail": f"{team.display}: listed twice: {', '.join(duplicates)}; keep the first "
+                                    f"entry and compact the list"})
+    seen = set()
+    duplicates = []
+    for offset in document.free_agents:
+        if offset in seen:
+            duplicates.append(document.by_offset[offset].display)
+        seen.add(offset)
+    if duplicates:
+        plans.append({"kind": "duplicate_free_agent", "players": duplicates,
+                      "detail": f"free-agent list: listed twice: {', '.join(duplicates)}; keep the first entry"})
+    return plans
+
+
+def apply_repairs(document: RosterDocument, plans: Sequence[Mapping[str, Any]] | None = None) -> dict[str, Any]:
+    """Apply the planned repairs and say exactly what was done (Finn's notice, itemised)."""
+
+    chosen = list(plans) if plans is not None else plan_repairs(document)
+    by_key = {(p.pool, p.index): p for p in document.players}
+    counts: dict[str, int] = {kind: 0 for kind in REPAIR_KINDS}
+    lines: list[str] = []
+    lists_touched = False
+    for plan in chosen:
+        kind = str(plan.get("kind"))
+        _require(kind in REPAIR_KINDS, f"unknown repair {kind!r}")
+        if kind in ("headless", "retired_position"):
+            player = by_key.get((str(plan.get("pool")), int(plan.get("index", -1))))
+            if player is None:
+                lines.append(f"skipped: no record {plan.get('pool')} #{plan.get('index')}")
+                continue
+            if kind == "headless":
+                if not player.record.values["headless"]:
+                    continue
+                player.record.values["headless"] = 0
+            else:
+                player.record.values["position"] = int(plan["to"])
+        elif kind == "team_count":
+            team = document.teams[int(plan["team_index"])]
+            team.player_count = len(team.slots)
+            team.clean_parse = True
+            team.repaired = True
+            lists_touched = True
+        elif kind == "duplicate_slot":
+            team = document.teams[int(plan["team_index"])]
+            kept: list[int] = []
+            for offset in team.slots:
+                if offset not in kept:
+                    kept.append(offset)
+            team.slots = kept
+            lists_touched = True
+        elif kind == "duplicate_free_agent":
+            kept = []
+            for offset in document.free_agents:
+                if offset not in kept:
+                    kept.append(offset)
+            document.free_agents = kept
+            lists_touched = True
+        counts[kind] += 1
+        lines.append(str(plan.get("detail", kind)))
+    if lists_touched:
+        document._reindex_membership()
+    summary = []
+    if counts["headless"]:
+        summary.append(f"Repaired {counts['headless']} headless player{'s' if counts['headless'] != 1 else ''}")
+    if counts["retired_position"]:
+        summary.append(f"moved {counts['retired_position']} player(s) off a retired position code")
+    if counts["team_count"]:
+        summary.append(f"fixed {counts['team_count']} team count byte(s)")
+    if counts["duplicate_slot"] or counts["duplicate_free_agent"]:
+        summary.append(f"removed {counts['duplicate_slot'] + counts['duplicate_free_agent']} duplicate list entr"
+                       f"{'y' if counts['duplicate_slot'] + counts['duplicate_free_agent'] == 1 else 'ies'}")
+    return {"applied": sum(counts.values()), "counts": counts, "lines": lines,
+            "summary": ("; ".join(summary) + ". Check the roster before you write it.") if summary else "Nothing to repair."}
+
+
 # --------------------------------------------------------------------------------------------- checks
 # Keyed by the CODE, not the label: the number a position is allowed to wear follows the pool the
 # record is in, so a one-pool EDGE (16) keeps the defensive-end range and a one-pool LB (11) keeps
@@ -3015,6 +3136,7 @@ __all__ = [
     "TEAM_MAX_PLAYERS", "TEAM_SLOTS", "CLUB_TEAM_COUNT", "FLAG_PROSPECT", "FLAG_NFL_PLAYER",
     "MSG_DRAFT_CLASS", "MSG_FREE_AGENT_IR", "MSG_RELEASE_MAX_FREE_AGENTS", "MSG_RELEASE_MINIMUM",
     "MSG_SIGN_MAX_PLAYERS", "DRAFT_CLASS_WHY", "FREE_AGENT_LIST_CAP", "replay_moves", "validate_membership",
+    "REPAIR_KINDS", "plan_repairs", "apply_repairs",
     "advance_years_pro", "apply", "apply_body",
     "copy_player", "decode_record", "edits_document", "encode_record", "encoded_size",
     "export_csv", "field_coverage", "find_block_base", "global_edit_apply", "global_edit_preview",

@@ -809,6 +809,81 @@ class MembershipTests(unittest.TestCase):
         self.assertEqual(reloaded.by_offset[reloaded.free_agents[-1]].display, player.display)
 
 
+# ------------------------------------------------------------------------------------------ repairs
+def damaged_body() -> bytes:
+    """The synthetic roster with the faults Check & repair knows: a headless bit, a team whose count
+    byte overstates its list, and a team that lists one player twice."""
+
+    body = bytearray(synthetic_body())
+    body[PLAYERS_OFF + 0x0C] |= 0x80                                          # Manning: headless
+    team1 = TEAMS_OFF + 1 * rr.TEAM_SIZE
+    body[team1 + rr.TEAM_PLAYER_COUNT] = 4                                     # says 4, slot 3 is null
+    team0 = TEAMS_OFF
+    first = struct.unpack_from("<i", body, team0)[0]
+    struct.pack_into("<i", body, team0 + 12, first - 12)                       # slot 3 = slot 0 again
+    body[team0 + rr.TEAM_PLAYER_COUNT] = 4
+    return bytes(body)
+
+
+class RepairTests(unittest.TestCase):
+    def test_a_clean_roster_has_nothing_to_repair(self) -> None:
+        document = rr.load_body(synthetic_body())
+        self.assertEqual(rr.plan_repairs(document), [])
+        self.assertEqual(rr.apply_repairs(document)["summary"], "Nothing to repair.")
+        self.assertEqual(document.to_body(), synthetic_body())
+
+    def test_the_faults_are_planned_not_applied_then_applied_with_a_receipt(self) -> None:
+        body = damaged_body()
+        document = rr.load_body(body)
+        self.assertFalse(document.teams[1].clean_parse)
+        self.assertEqual(len(document.teams[0].slots), 4)
+        plans = rr.plan_repairs(document)
+        self.assertEqual([p["kind"] for p in plans], ["headless", "duplicate_slot", "team_count"])
+        self.assertIn("Peyton Manning", plans[0]["detail"])
+        self.assertIn("0x80", plans[0]["detail"])
+        self.assertEqual(document.to_body(), body, "planning changes nothing")
+        with self.assertRaisesRegex(rr.MembershipRefused, "count byte"):
+            document.release(document.team_players(1)[0], 1, minimum=0)
+        receipt = rr.apply_repairs(document, plans)
+        self.assertEqual(receipt["applied"], 3)
+        self.assertTrue(receipt["summary"].startswith("Repaired 1 headless player;"))
+        self.assertEqual(len(receipt["lines"]), 3)
+        self.assertEqual(document.players[0].record.values["headless"], 0)
+        self.assertEqual(len(document.teams[0].slots), 3)
+        self.assertEqual((document.teams[1].player_count, document.teams[1].clean_parse), (3, True))
+        repaired = rr.load_body(document.to_body())
+        self.assertEqual([t.player_count for t in repaired.teams], [3, 3, 0])
+        self.assertTrue(all(t.clean_parse for t in repaired.teams))
+        self.assertEqual(repaired.body[PLAYERS_OFF + 0x0C], synthetic_body()[PLAYERS_OFF + 0x0C])
+        team0 = TEAMS_OFF
+        self.assertEqual(repaired.body[team0 + 12: team0 + 16], b"\0\0\0\0", "the duplicate slot is zeroed")
+        self.assertEqual(rr.plan_repairs(repaired), [])
+        self.assertEqual(repaired.to_body(), document.to_body())
+
+    def test_a_retired_position_code_is_a_planned_repair_under_one_pool(self) -> None:
+        document = rr.load_body(retail_front_body(), scheme="one_pool")
+        plans = [p for p in rr.plan_repairs(document) if p["kind"] == "retired_position"]
+        self.assertEqual({p["player"] for p in plans}, {"Peter Boulware", "Adalius Thomas"})
+        self.assertEqual({(p["from"], p["to"]) for p in plans}, {(rr.ENUM_OLB, rr.ENUM_ILB)})
+        rr.apply_repairs(document, plans)
+        self.assertEqual(document.position_census("primary")[rr.ENUM_OLB], 0)
+        self.assertEqual(rr.plan_repairs(document), [])
+
+    def test_a_duplicate_free_agent_entry_is_dropped(self) -> None:
+        body = bytearray(synthetic_body())
+        first = struct.unpack_from("<i", body, FREE_AGENTS_OFF)[0]
+        struct.pack_into("<i", body, FREE_AGENTS_OFF + 4, first - 4)
+        struct.pack_into("<I", body, rr.OBJ_OFF + 0x38, 2)
+        document = rr.load_body(bytes(body))
+        self.assertEqual(len(document.free_agents), 2)
+        plans = rr.plan_repairs(document)
+        self.assertEqual([p["kind"] for p in plans], ["duplicate_free_agent"])
+        rr.apply_repairs(document, plans)
+        reloaded = rr.load_body(document.to_body())
+        self.assertEqual(len(reloaded.free_agents), 1)
+        self.assertEqual(reloaded.u32(rr.OBJ_OFF + 0x38), 1)
+
+
 # --------------------------------------------------------------------------------------------- saves
 class SaveContainerTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -1142,6 +1217,16 @@ class RetailMembershipTests(unittest.TestCase):
         self.assertEqual(rr.FREE_AGENT_LIST_CAP, 2500, "the game's own append cap (0x242560)")
         self.assertTrue(all(t.clean_parse for t in self.document.teams))
         self.assertEqual(sum(1 for p in self.document.players if len([t for t in p.teams if t < rr.CLUB_TEAM_COUNT]) > 1), 0)
+
+    def test_the_retail_disc_itself_has_exactly_one_headless_player(self) -> None:
+        plans = rr.plan_repairs(self.document)
+        self.assertEqual([(p["kind"], p["player"]) for p in plans], [("headless", "Carlos Joseph")])
+        self.assertEqual(self.document.body[self.document.players[1718].offset + 0x0C], 0xB6)
+        receipt = rr.apply_repairs(self.document)
+        self.assertTrue(receipt["summary"].startswith("Repaired 1 headless player"), receipt["summary"])
+        self.assertEqual(self.document.to_body()[self.document.players[1718].offset + 0x0C], 0x36,
+                         "the byte Finn's own diff showed: 0xB6 -> 0x36")
+        self.assertEqual(rr.plan_repairs(self.document), [])
 
     def test_release_sign_swap_and_finns_limits_on_the_real_clubs(self) -> None:
         sf, afc, brp = self.team("SF"), self.team("AFC"), self.team("BRP")

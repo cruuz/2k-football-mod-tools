@@ -659,6 +659,7 @@ class RosterEditorPanel(QWidget):
         self._scheme_choice = "auto"            # what the selector says: auto or a fixed scheme
         self._scheme_detection: dict[str, Any] = {}
         self._edits_path: Path | None = None
+        self._repair_plans: list[dict[str, Any]] = []
         self.undo_stack = UndoStack(on_change=self._refresh_actions)
         self.cards: dict[str, AttributeCard] = {}
         self._card_order: list[str] = []
@@ -1013,8 +1014,16 @@ class RosterEditorPanel(QWidget):
         self.validate_button.clicked.connect(self.run_validation)
         self.diff_button = QPushButton("Show my changes")
         self.diff_button.clicked.connect(self.refresh_diff)
+        self.repair_button = QPushButton("Repair")
+        self.repair_button.setToolTip(
+            "Finn's editor silently repaired \"headless\" players on load. The studio plans every "
+            "mechanical repair it can prove (the headless bit, a retired position code, a wrong team "
+            "count byte, a duplicate list entry), lists them here, and applies them only when you press "
+            "this -- with a receipt and an undo.")
+        self.repair_button.clicked.connect(self.run_repairs)
         row.addWidget(self.validate_button)
         row.addWidget(self.diff_button)
+        row.addWidget(self.repair_button)
         row.addStretch(1)
         box.addLayout(row)
         self.report = QPlainTextEdit()
@@ -1148,11 +1157,18 @@ class RosterEditorPanel(QWidget):
         self._populate_teams()
         self.refresh_grid()
         self._refresh_pool_label()
+        self._replan_repairs()
+        repairs = (f" · {len(self._repair_plans)} repair{'s' if len(self._repair_plans) != 1 else ''} "
+                   f"available on the Checks tab" if self._repair_plans else "")
         self._set_status(
             f"{summary['players']} players · {summary['teams']} teams · {summary['free_agents']} free "
             f"agents · {summary['draft_class']} in the draft class · "
             f"{summary['names']['unique']} distinct names in a {summary['names']['capacity_bytes']}-byte pool"
-            f" · {rr.SCHEME_TITLES[self._scheme]}")
+            f" · {rr.SCHEME_TITLES[self._scheme]}{repairs}")
+        if self._repair_plans:
+            self.report.setPlainText("Check & repair found:\n" + "\n".join(
+                f"  - {plan['detail']}" for plan in self._repair_plans)
+                + "\n\nNothing has been changed. Press Repair to apply these, or leave them.")
 
     def load_from_facade(self) -> bool:
         """Load the roster out of whatever XISO the studio already has open."""
@@ -1885,6 +1901,57 @@ class RosterEditorPanel(QWidget):
             self._after_edit(player)
         return len(scope)
 
+    # ------------------------------------------------------------------ repairs
+    def _replan_repairs(self) -> list[dict[str, Any]]:
+        self._repair_plans = rr.plan_repairs(self.document) if self.document is not None else []
+        count = len(self._repair_plans)
+        self.repair_button.setText(f"Repair ({count})" if count else "Repair")
+        self.repair_button.setEnabled(bool(count))
+        return self._repair_plans
+
+    def run_repairs(self) -> dict[str, Any] | None:
+        """Apply the planned repairs with an undo and print the receipt on the Checks tab."""
+
+        if self.document is None or not self._repair_plans:
+            return None
+        document = self.document
+        plans = list(self._repair_plans)
+        involved = [p for p in document.players
+                    if any(plan.get("pool") == p.pool and plan.get("index") == p.index for plan in plans)]
+        records_before = {(p.pool, p.index): dict(p.record.values) for p in involved}
+        lists_before = document.membership_snapshot()
+        teams_before = {t.index: (t.player_count, t.clean_parse, t.repaired) for t in document.teams}
+        receipt = rr.apply_repairs(document, plans)
+        records_after = {(p.pool, p.index): dict(p.record.values) for p in involved}
+        lists_after = document.membership_snapshot()
+        teams_after = {t.index: (t.player_count, t.clean_parse, t.repaired) for t in document.teams}
+
+        def settle() -> None:
+            for player in involved:
+                self._after_edit(player)
+            self._replan_repairs()
+            self._refresh_team_labels()
+            self.refresh_grid()
+            self._show_player(self.selected_player())
+
+        def restore(records: dict, lists: dict, teams: dict) -> None:
+            for player in involved:
+                player.record.values.update(records[(player.pool, player.index)])
+            document.restore_membership(lists)
+            for team in document.teams:
+                team.player_count, team.clean_parse, team.repaired = teams[team.index]
+            settle()
+
+        self.undo_stack.push(UndoEntry(
+            f"repair ({receipt['applied']})",
+            lambda: restore(records_before, lists_before, teams_before),
+            lambda: restore(records_after, lists_after, teams_after)))
+        settle()
+        self.report.setPlainText(receipt["summary"] + "\n\n" + "\n".join(f"  - {line}" for line in receipt["lines"]))
+        self.tabs.setCurrentIndex(self.tabs.count() - 1)
+        self._set_status(receipt["summary"])
+        return receipt
+
     # ------------------------------------------------------------------ reports
     def run_validation(self) -> list[dict[str, Any]]:
         if self.document is None:
@@ -2066,6 +2133,7 @@ class RosterEditorPanel(QWidget):
                        self.save_edits_button, self.write_button, self.validate_button,
                        self.diff_button):
             widget.setEnabled(loaded)
+        self.repair_button.setEnabled(loaded and bool(self._repair_plans))
         self.copy_button.setEnabled(selected)
         self.paste_button.setEnabled(selected and self._clipboard is not None)
         self.up_button.setEnabled(selected and self._group[0] == "team")
