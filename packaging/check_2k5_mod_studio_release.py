@@ -231,7 +231,7 @@ ALLOWED_SUFFIXES = frozenset(
         ".cfg",
         ".command",
         ".css",
-        ".csv",        # data/nfl2k5_retail_team_history.csv (nflverse, CC-BY-4.0; text, reviewed)
+        ".csv",        # data/nfl2k5_retail_team_history.csv, data/nfl2k5_modern_names.csv (nflverse, CC-BY-4.0; text, reviewed)
         ".desktop",
         ".html",
         ".ini",

@@ -105,6 +105,15 @@ PATCHES = (
      "10-byte stub so it really silences chop blocks (retail profiles have it Off: switch it On in Penalty "
      "Settings). The rates are ESTIMATED pending a calibration playtest; illegal formation, illegal contact and "
      "12 men do not exist in the engine. Unwitnessed in game."),
+    ("prospect_names", "Modern draft-prospect names (disc images only)",
+     "Retail: rookies and free agents are named from the 1990 US Census lists (James, Harold, Walter... Smith, "
+     "Garcia, Martinez), drawn independently, so a fifth of every draft class carries a Hispanic-origin name and no "
+     "class ever reads like a 2020s roster. Patch: the 485 first names and 485 surnames in the roster template's "
+     "name pool become the most common names of 2015-2025 NFL players (nflverse-data, CC-BY-4.0), rewritten inside "
+     "the pool's own 13,238 bytes; the 433 surnames the announcer has recorded keep their slot and their call-out, "
+     "the 52 replacements (Diggs, Chubb, Kamara...) and every first name are new, and a 27-byte cave on the "
+     "generator announces players with a replacement surname by jersey number instead of a wrong name. Only "
+     "franchises created from the copy see it. Unwitnessed in game."),
     ("seven_on_seven", "7-on-7 practice mode",
      "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
      "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "
@@ -141,7 +150,9 @@ if not mod_build.SEVEN_ON_SEVEN_RELEASED:
     PATCHES = tuple(entry for entry in PATCHES if entry[0] != "seven_on_seven")
 
 # BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
-STRING_TOGGLES = {"penalties": "nfl"}
+STRING_TOGGLES = {"penalties": "nfl", "prospect_names": "modern"}
+# toggles whose other half lives in pack 0: a bare default.xbe cannot take them
+NEEDS_IMAGE = {"prospect_names"}
 
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
@@ -239,14 +250,18 @@ class GameplayPatchesPanel(QWidget):
     def apply_state(self, state: dict[str, object]) -> None:
         self._state = state
         self.source_field.setText(str(state.get("path", "")))
+        is_image = state.get("container") == "xiso"
         for key, _label, _e in self._patches:
             value = str(state.get(key))
             check = self.checks[key]
-            check.setEnabled(value == "retail")
+            needs_image = key in NEEDS_IMAGE and not is_image
+            check.setEnabled(value == "retail" and not needs_image)
             check.setChecked(False)
-            check.setToolTip({"applied": "Already applied in this source.",
-                              "foreign": "Bytes at the patch sites are neither retail nor this patch; refusing.",
-                              "retail": ""}.get(value, "Unknown state."))
+            tip = {"applied": "Already applied in this source.",
+                   "foreign": "Bytes at the patch sites are neither retail nor this patch; refusing.",
+                   "partial": "Only one half of this patch is in the source (executable or name pool); refusing.",
+                   "retail": ""}.get(value, "Unknown state.")
+            check.setToolTip("Needs a disc image." if value == "retail" and needs_image else tip)
         self.source_status.setText("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches) + ".")
         self._refresh()
 

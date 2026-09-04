@@ -71,6 +71,7 @@ from . import nfl2k5_team_column as team_column_patch
 from . import nfl2k5_position_row as position_row_patch
 from . import nfl2k5_probowl_order as probowl_order_patch
 from . import nfl2k5_penalties as penalties_patch
+from . import nfl2k5_prospect_names as prospect_names_patch
 from . import nfl2k5_seven_on_seven as seven_on_seven_patch
 from . import nfl2k5_boot_logo as boot_logo
 from .nfl2k5_bump_strength import (
@@ -594,6 +595,7 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "position_row": position_row_patch.status(payload),
         "probowl_order": probowl_order_patch.status(payload),
         "penalties": penalties_patch.status(payload),
+        "prospect_names": prospect_names_patch.xbe_status(payload),
         "boot_logo": boot_logo.status(payload),
         "path": str(path),
         "xbe_sha256": _digest(payload),
@@ -691,6 +693,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "position_row": position_row_patch.status(payload),
         "probowl_order": probowl_order_patch.status(payload),
         "penalties": penalties_patch.status(payload),
+        "prospect_names": prospect_names_patch.xbe_status(payload),
         "boot_logo": boot_logo.status(payload),
         "path": str(path),
         "xbe_byte_offset": offset,
@@ -862,6 +865,31 @@ class _penalties_adapter:
         return penalties_patch.apply(payload, self.profile)
 
 
+class _prospect_names_adapter:
+    """``status``/``apply`` of the prospect-names cave bound to a name source (``""`` = off, ``"modern"`` =
+    the shipped CSV, or a user CSV path).  The cave bakes in the boundary of that CSV's pool layout, so an
+    executable already carrying the cave with another boundary reads ``foreign`` here (the pool pass
+    would refuse it anyway); the boundary is resolved lazily so an idle adapter loads nothing."""
+
+    def __init__(self, source: str) -> None:
+        self.source = source
+        self._boundary: int | None = None
+
+    def boundary(self) -> int:
+        if self._boundary is None:
+            self._boundary = prospect_names_patch.layout_for(self.source or "modern").boundary
+        return self._boundary
+
+    def status(self, payload: bytes) -> str:
+        state = prospect_names_patch.xbe_status(payload)
+        if state == "applied" and prospect_names_patch.xbe_boundary(payload) != self.boundary():
+            return "foreign"
+        return state
+
+    def apply(self, payload: bytes):
+        return prospect_names_patch.xbe_apply(payload, self.boundary())
+
+
 def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]]] | None,
                catch_slider: bool, accel_ramp: bool = False, draft_ai: bool = False,
                edge_rename: bool = False, returner_fix: bool = False,
@@ -871,7 +899,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                arc_table: bool = False, kick_power: bool = False,
                team_column: bool = False,
                seven_on_seven: bool = False, position_row: bool = False,
-               probowl_order: bool = False, penalties: str = "") -> tuple[bytes, dict[str, object]]:
+               probowl_order: bool = False, penalties: str = "",
+               prospect_names: str = "") -> tuple[bytes, dict[str, object]]:
     """Curves (if any), the relocated arc-by-distance table (if asked), then the catch-slider,
     acceleration-ramp, draft-AI, EDGE-rename, returner and progression patches (if asked)."""
 
@@ -953,7 +982,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
                                      (seven_on_seven, seven_on_seven_patch, "seven_on_seven_patch", "7-on-7 practice"),
                                      (position_row, position_row_patch, "position_row_patch", "Position row"),
                                      (probowl_order, probowl_order_patch, "probowl_order_patch", "Pro Bowl order"),
-                                     (bool(penalties), _penalties_adapter(penalties), "penalties_patch", "penalties")):
+                                     (bool(penalties), _penalties_adapter(penalties), "penalties_patch", "penalties"),
+                                     (bool(prospect_names), _prospect_names_adapter(prospect_names), "prospect_names_patch", "prospect-names")):
         if not flag:
             continue
         state = module.status(patched)
@@ -997,18 +1027,19 @@ def write_xbe_copy(
     position_row: bool = False,
     probowl_order: bool = False,
     penalties: str = "",
+    prospect_names: str = "",
 ) -> dict[str, object]:
     """Write a patched COPY of ``source_xbe`` to ``target_xbe``."""
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or prospect_names,
              "nothing requested")
     source = _resolve_source(source_xbe)
     target = Path(target_xbe).expanduser()
     _prepare_target(source, target, overwrite)
     original = source.read_bytes()
     arc_table = settings is not None and settings.arc_by_distance
-    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties)
+    patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, prospect_names=prospect_names)
     _require(patched != original, "nothing to write: the requested curves and patches already match the file")
     descriptor = _open_binary(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
     try:
@@ -1049,6 +1080,7 @@ def write_xbe_copy(
         "position_row": position_row_patch.status(result),
         "probowl_order": probowl_order_patch.status(result),
         "penalties": penalties_patch.status(result),
+        "prospect_names": prospect_names_patch.xbe_status(result),
         "boot_logo": boot_logo.status(result),
         "source": {"path": str(source), "sha256": _digest(original),
                    "matches_retail_sha256": _digest(original) == RETAIL_XBE_SHA256},
@@ -1093,6 +1125,7 @@ def write_image_copy(
     position_row: bool = False,
     probowl_order: bool = False,
     penalties: str = "",
+    prospect_names: str = "",
 ) -> dict[str, object]:
     """Copy a disc image and patch ``default.xbe`` inside the COPY.
 
@@ -1102,7 +1135,7 @@ def write_image_copy(
     """
 
     wanted = _resolve_wanted(settings, curves) if (settings is not None or curves is not None) else None
-    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties,
+    _require(wanted is not None or catch_slider or accel_ramp or draft_ai or edge_rename or returner_fix or progression or scheme_labels or camera or kick_rules or kick_power or widescreen or overtime or team_column or seven_on_seven or position_row or probowl_order or penalties or prospect_names,
              "nothing requested")
     source = _resolve_source(source_image)
     target = Path(target_image).expanduser()
@@ -1116,7 +1149,7 @@ def write_image_copy(
         original = platform_compat.pread(src, length, offset)
         _require(len(original) == length, "short read of default.xbe from the source image")
         arc_table = settings is not None and settings.arc_by_distance
-        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties)
+        patched, receipt = _apply_all(original, wanted, catch_slider, accel_ramp, draft_ai, edge_rename, returner_fix, progression, scheme_labels, camera, kick_rules, widescreen, overtime, arc_table=arc_table, kick_power=kick_power, team_column=team_column, seven_on_seven=seven_on_seven, position_row=position_row, probowl_order=probowl_order, penalties=penalties, prospect_names=prospect_names)
         entries: dict[str, object] = {}
         disc_before: dict[str, object] = {}
         if edge_rename:
@@ -1205,6 +1238,7 @@ def write_image_copy(
         "position_row": position_row_patch.status(after),
         "probowl_order": probowl_order_patch.status(after),
         "penalties": penalties_patch.status(after),
+        "prospect_names": prospect_names_patch.xbe_status(after),
         "boot_logo": boot_logo.status(after),
         "source": {"path": str(source), "size": size, "xbe_sha256": _digest(original),
                    "xbe_matches_retail_sha256": _digest(original) == RETAIL_XBE_SHA256},

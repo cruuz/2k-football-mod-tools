@@ -1014,3 +1014,23 @@ code such as `RAI`, `RAM`, `PHX`, `HOU` for the Oilers up to 1996). Players are 
 name and birth date, then last name and birth date, then name and position; a season is only
 written when the roster has stats for it (the receipt lists every row that could not be used).
 In this cut relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN).
+
+**Modern draft-prospect names** (Build tab and Gameplay Patches, ADVANCED and EXPERIMENTAL; disc
+images only): retail names every generated rookie and free agent from the 1990 US Census lists,
+so draft classes are full of Harolds and Walters, a fifth of them with a Hispanic-origin name, and
+no Jalen, Jordan or Isaiah ever turns up. The toggle rewrites the 485 first names and 485 surnames
+of the roster template's name pool with the most common names of 2015-2025 NFL players
+(nflverse-data, CC-BY-4.0; `data/nfl2k5_modern_names.csv`). The announcer rule: the game calls a
+generated player by a recorded surname bank indexed by pool position, so the 433 surnames the bank
+knows (Smith, Johnson, Jackson...) keep their slot and are still called by name, while the 52 slots
+that held Hispanic-origin or developer names take modern surnames (Diggs, Chubb, Kamara...) and a
+rookie with one of those is announced by jersey number instead of a wrong name (a small executable
+cave decides per surname, so the executable and the disc's roster template must come from the
+same build). Only a franchise CREATED from the copy sees the new names: an existing save carries
+its own roster copy. To use your own list, point the "Prospect names CSV" field at a UTF-8 CSV with
+the columns `first,last` (485 rows in pool order; an `index` column is optional; `#` comment lines
+allowed): ASCII letters plus `' - .`, 1-12 characters each, no empty names, and the whole list must
+fit the pool's 13,238 UTF-16 bytes (the built-in list uses all of them; shorter names buy room). A
+surname equal to the retail one at its index keeps its call-out, any other surname is announced by
+number; the build receipt lists every slot as kept or replaced. Unwitnessed in game: please report
+whether a drafted Smith is called by name and a drafted Diggs by number.

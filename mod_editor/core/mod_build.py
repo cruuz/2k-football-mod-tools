@@ -111,6 +111,11 @@ class BuildPlan:
     # (seven .rdata slider->factor curve tables re-knotted in place, incidental face mask 5 -> 15 yd, the dead
     # Chop Block toggle wired through a 10-byte stub); room for a user .json profile path later; unwitnessed
     penalties: str = ""
+    # modern draft-prospect names: "" = off, "modern" = the shipped nflverse list (data/nfl2k5_modern_names.csv),
+    # a path = a user CSV (first,last; 485 rows). Rewrites the generated-player name pool in pack 0's roster
+    # template (433 recorded surnames keep their index and call-out, 52 + every first name go modern) and
+    # hooks the generator so replacement surnames are announced by number; disc images only; new franchises
+    prospect_names: str = ""
     # text
     edge_rename: bool = False
     # presentation
@@ -125,7 +130,7 @@ class BuildPlan:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
                 or self.progression or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools
                 or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
-                or self.position_row or self.probowl_order or bool(self.penalties))
+                or self.position_row or self.probowl_order or bool(self.penalties) or bool(self.prospect_names))
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -146,7 +151,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
         "edge_rename": False, "scorebug": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False,
-        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "position_row": True, "probowl_order": True, "penalties": "",
+        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "position_row": True, "probowl_order": True, "penalties": "", "prospect_names": "",
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
@@ -154,7 +159,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False,
-        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl",
+        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl", "prospect_names": "modern",
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
@@ -162,7 +167,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True,
-        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl",
+        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl", "prospect_names": "modern",
     },
 }
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
@@ -202,6 +207,8 @@ def availability() -> dict[str, bool]:
         "position_row": _core_module("nfl2k5_position_row") is not None,
         "probowl_order": _core_module("nfl2k5_probowl_order") is not None,
         "penalties": _core_module("nfl2k5_penalties") is not None,
+        "prospect_names": (_core_module("nfl2k5_prospect_names") is not None
+                           and (ROOT / "data" / "nfl2k5_modern_names.csv").exists()),
         "seven_on_seven": (SEVEN_ON_SEVEN_RELEASED
                            and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
@@ -234,6 +241,8 @@ def inspect(source: Path | str) -> dict[str, Any]:
         "overtime": report.get("overtime", "unknown"), "team_column": report.get("team_column", "unknown"),
         "position_row": report.get("position_row", "unknown"), "probowl_order": report.get("probowl_order", "unknown"),
         "penalties": report.get("penalties", "unknown"),
+        # the executable half alone is never "applied": the name pool lives in pack 0 (both halves below for images)
+        "prospect_names": ("partial" if report.get("prospect_names") == "applied" else report.get("prospect_names", "unknown")),
         "seven_on_seven": report.get("seven_on_seven", "unknown"), "seven_on_seven_book": "n/a", "team_history": "n/a",
         "position_pools": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
         "scorebug": "n/a", "edge_rename": "unknown", "commentary": "unknown",
@@ -275,6 +284,12 @@ def inspect(source: Path | str) -> dict[str, Any]:
                 out["team_history"] = history.status(source)
             except Exception:  # noqa: BLE001
                 out["team_history"] = "foreign"
+        names = _core_module("nfl2k5_prospect_names")
+        if names is not None:
+            try:
+                out["prospect_names"] = names.image_status(source)
+            except Exception:  # noqa: BLE001
+                out["prospect_names"] = "foreign"
     if "edge_rename" in report:
         out["edge_rename"] = report.get("edge_rename")
         out["edge_rename_disc"] = report.get("edge_rename_disc")
@@ -369,6 +384,8 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         raise ValueError("7-on-7 practice needs a disc image (the 7-on-7 sets live in the practice playbook)")
     if plan.team_history and not is_image:
         raise ValueError("the team history needs a disc image (the roster template lives in pack 0)")
+    if plan.prospect_names and not is_image:
+        raise ValueError("modern prospect names need a disc image (the name pool lives in the roster template in pack 0)")
 
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
     #    including its disc text spans when the source is an image)
@@ -383,11 +400,11 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
                                   "camera": plan.camera, "kick_rules": plan.kick_rules, "kick_power": plan.kick_power, "widescreen": plan.widescreen,
                                   "overtime": plan.overtime, "team_column": plan.team_column, "seven_on_seven": plan.seven_on_seven,
                                   "position_row": plan.position_row, "probowl_order": plan.probowl_order,
-                                  "penalties": plan.penalties}
+                                  "penalties": plan.penalties, "prospect_names": plan.prospect_names}
         if settings is not None:
             kwargs["settings"] = settings
         step = tt.write_copy(source, target, **kwargs)
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "scheme_labels", "camera", "kick_rules", "kick_power", "widescreen", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "penalties", "prospect_names", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
@@ -509,6 +526,20 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         history_receipt = history.apply(target, plan.team_history, progress=lambda msg: progress(msg, 0, 0))
         receipt["steps"].append({"step": "team_history", **{k: v for k, v in history_receipt.items() if k != "log"},
                                  "log_lines": len(history_receipt.get("log", []))})
+    if plan.prospect_names:
+        # after every other roster pass: the name pool (entry array + string span) is outside what the
+        # reclassify, schedule and team-history gates hash, and none of them writes it. The executable half
+        # (the cave with the layout's boundary) went in with the XBE step above; both must agree.
+        names = _core_module("nfl2k5_prospect_names")
+        if names is None:
+            raise RuntimeError("the prospect names module is not available in this build")
+        progress("Writing the modern prospect names into the roster's name pool", 0, 0)
+        names_receipt = names.apply(target, plan.prospect_names, progress=lambda msg: progress(msg, 0, 0))
+        baked = names.xbe_boundary(_xbe_bytes(target))
+        if baked != names_receipt["boundary"]:
+            raise ValueError(f"the executable's prospect-names cave carries boundary {baked}, the name pool needs {names_receipt['boundary']}")
+        receipt["steps"].append({"step": "prospect_names", **{k: v for k, v in names_receipt.items() if k != "log"},
+                                 "log_lines": len(names_receipt.get("log", []))})
     for swap in plan.commentary:
         cs = _tools_module("nfl2k5_commentary_swap")
         if cs is None:
