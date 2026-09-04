@@ -628,6 +628,22 @@ class EditsDocumentTests(unittest.TestCase):
                                               "first": "Peyton", "fields": {"speed": 12}}])
 
 
+def synthetic_save_v0(body: bytes | None = None, *, suffix: bytes = bytes(0x1000)) -> bytes:
+    """The runtime-arena layout every real SAVEGAME.DAT carries (found by GPT-6 Astra, 2026-09-04).
+
+    File-relative: a 0x20-byte wrapper at 0x2E0 (``ROST`` + declared length 0x91020), the ROST preamble at
+    0x300 with version 0 and a relative pointer to the object at 0x320, then the 0x91000-byte arena.  The
+    object is the disc object moved 0x20 bytes closer to the preamble; every pointer inside it is field-
+    relative, so the bytes after the object are the disc body's bytes after ITS object.
+    """
+
+    body = synthetic_body() if body is None else body
+    arena = bytearray(body[rr.OBJ_OFF:]) + bytes(0x91000 - (len(body) - rr.OBJ_OFF))
+    preamble = bytes(12) + b"ROST" + struct.pack("<Ii", 0, 0x20 - 0x14 + 1) + bytes(8)      # 0x20 bytes
+    wrapper = b"ROST" + struct.pack("<I", 0x20 + 0x91000) + bytes(0x18)
+    return bytes(0x2E0) + wrapper + preamble + bytes(arena) + suffix
+
+
 # ---------------------------------------------------------------------------------------- membership
 class MembershipTests(unittest.TestCase):
     """Finn's release / sign / swap as pointer-list edits, with his thresholds and refusals."""
@@ -1832,27 +1848,7 @@ class RetailPositionSchemeTests(unittest.TestCase):
         self.assertEqual(receipt["fields"], 0)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 # --------------------------------------------------------------------------------------------- version-0 saves
-def synthetic_save_v0(body: bytes | None = None, *, suffix: bytes = bytes(0x1000)) -> bytes:
-    """The runtime-arena layout every real SAVEGAME.DAT carries (found by GPT-6 Astra, 2026-09-04).
-
-    File-relative: a 0x20-byte wrapper at 0x2E0 (``ROST`` + declared length 0x91020), the ROST preamble at
-    0x300 with version 0 and a relative pointer to the object at 0x320, then the 0x91000-byte arena.  The
-    object is the disc object moved 0x20 bytes closer to the preamble; every pointer inside it is field-
-    relative, so the bytes after the object are the disc body's bytes after ITS object.
-    """
-
-    body = synthetic_body() if body is None else body
-    arena = bytearray(body[rr.OBJ_OFF:]) + bytes(0x91000 - (len(body) - rr.OBJ_OFF))
-    preamble = bytes(12) + b"ROST" + struct.pack("<Ii", 0, 0x20 - 0x14 + 1) + bytes(8)      # 0x20 bytes
-    wrapper = b"ROST" + struct.pack("<I", 0x20 + 0x91000) + bytes(0x18)
-    return bytes(0x2E0) + wrapper + preamble + bytes(arena) + suffix
-
-
 class VersionZeroSaveTests(unittest.TestCase):
     def setUp(self) -> None:
         self.body = synthetic_body()
@@ -1969,3 +1965,7 @@ class RealSaveTests(unittest.TestCase):
                     self.assertEqual(back.team_players(club.index)[-1].display, signed.display)
                     self.assertEqual(back.by_offset[back.free_agents[-1]].display, player.display)
                     self.assertEqual(len(back.free_agents), len(document.original_free_agents))
+
+
+if __name__ == "__main__":
+    unittest.main()
