@@ -306,6 +306,24 @@ def _write_xbe_bytes(target: Path, payload: bytes) -> None:
         target.write_bytes(payload)
 
 
+IMAGE_SUFFIXES = (".iso", ".xiso", ".img")
+
+
+def image_target_path(chosen: str) -> str:
+    """A user-typed save name for a patched disc image, given the suffix xemu's file picker looks for.
+
+    A Discord user built a disc, got "a file that wasn't a .iso", and could not load it: the save
+    dialog accepted a bare name. Anything without a disc-image suffix gets ``.xiso.iso``."""
+
+    text = chosen.strip()
+    if not text:
+        return text
+    lowered = text.casefold()
+    if any(lowered.endswith(suffix) for suffix in IMAGE_SUFFIXES):
+        return text
+    return text + ".xiso.iso"
+
+
 def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, Any]:
     """Apply the whole plan to a copy of ``plan.source`` at ``plan.target``; return the receipt."""
 

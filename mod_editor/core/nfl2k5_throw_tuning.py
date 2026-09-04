@@ -69,6 +69,7 @@ from . import nfl2k5_widescreen as widescreen_patch
 from . import nfl2k5_overtime as overtime_patch
 from . import nfl2k5_team_column as team_column_patch
 from . import nfl2k5_seven_on_seven as seven_on_seven_patch
+from . import nfl2k5_boot_logo as boot_logo
 from .nfl2k5_bump_strength import (
     RETAIL_XBE_SHA256,
     _Section,
@@ -587,6 +588,7 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "overtime": overtime_patch.status(payload),
         "team_column": team_column_patch.status(payload),
         "seven_on_seven": seven_on_seven_patch.status(payload),
+        "boot_logo": boot_logo.status(payload),
         "path": str(path),
         "xbe_sha256": _digest(payload),
         "matches_retail_sha256": _digest(payload) == RETAIL_XBE_SHA256,
@@ -680,6 +682,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "overtime": overtime_patch.status(payload),
         "team_column": team_column_patch.status(payload),
         "seven_on_seven": seven_on_seven_patch.status(payload),
+        "boot_logo": boot_logo.status(payload),
         "path": str(path),
         "xbe_byte_offset": offset,
         "xbe_sha256": _digest(payload),
@@ -934,6 +937,12 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         else:
             _require(state == "applied", f"{label} sites are {state}; refusing to patch")
             receipt = {**receipt, key: {"already_applied": True}}
+    # Caves in the boot-logo bitmap: keep the kernel's logo decodable by pointing the header at a pristine copy
+    if boot_logo.needed(patched):
+        patched, logo_receipt = boot_logo.apply(patched)
+        receipt["boot_logo"] = logo_receipt
+    else:
+        receipt["boot_logo"] = {"status": boot_logo.status(patched)}
     return patched, receipt
 
 
@@ -1007,6 +1016,7 @@ def write_xbe_copy(
         "overtime": overtime_patch.status(result),
         "team_column": team_column_patch.status(result),
         "seven_on_seven": seven_on_seven_patch.status(result),
+        "boot_logo": boot_logo.status(result),
         "source": {"path": str(source), "sha256": _digest(original),
                    "matches_retail_sha256": _digest(original) == RETAIL_XBE_SHA256},
         "target": {"path": str(target), "sha256": _digest(result)},
@@ -1156,6 +1166,7 @@ def write_image_copy(
         "overtime": overtime_patch.status(after),
         "team_column": team_column_patch.status(after),
         "seven_on_seven": seven_on_seven_patch.status(after),
+        "boot_logo": boot_logo.status(after),
         "source": {"path": str(source), "size": size, "xbe_sha256": _digest(original),
                    "xbe_matches_retail_sha256": _digest(original) == RETAIL_XBE_SHA256},
         "target": {"path": str(target), "size": size, "xbe_sha256": _digest(after)},

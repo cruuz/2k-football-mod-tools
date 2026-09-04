@@ -406,7 +406,7 @@ class BuildPanel(QWidget):
                                                  "ESPN NFL 2K5 (modded).xiso.iso" if is_image else "default_modded.xbe",
                                                  IMAGE_FILTER if is_image else XBE_FILTER)
         if chosen:
-            self.target_field.setText(chosen)
+            self.target_field.setText(mod_build.image_target_path(chosen) if is_image else chosen)
             self._refresh()
 
     def _build(self) -> None:

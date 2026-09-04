@@ -48,6 +48,15 @@
   user CSV (last_name, first_name, birth_date, season, team) replaces the built-in data and rides in the `.2k5patch`
   as `assets/text/`. Relocated franchises show the 2004 abbreviation (Oilers -> TEN, LA Raiders -> OAK). The pool
   writer runs after the position-pool and 2026-schedule passes. Unwitnessed in game.
+- **Boot logo kept decodable.** Several executable patches keep code and constants in the XBE
+  header's boot-logo bitmap (0x10A10..0x10CC2). The game never reads it, but the kernel draws it during
+  the boot animation, and a bitmap full of code decodes to nonsense (a user's investigation of a
+  freeze at the Xbox logo flagged exactly this). Whenever a cave has taken the bitmap the builder now
+  copies the retail logo into the header's zero padding (0x10CD0) and points LogoBitmapAddr at the
+  copy, so the kernel decodes the genuine 100 x 17 logo; the caves are untouched.
+  `mod_editor/core/nfl2k5_boot_logo.py`, reported as `boot_logo` in every XBE status.
+- **Disc names always end in .iso.** A save name typed without a suffix in Build or Apply produced a
+  file xemu's picker could not see; a bare name now gets `.xiso.iso`.
 - **7-on-7 practice mode (Experimental preset, or its own checkbox on Gameplay Patches and Build).**
   Practice -> Scrimmage -> Practice Type gains a fifth value, **7-On-7**: it plays as Full
   Scrimmage with the practice playbook loaded for both teams (Basic Training's own path) and
