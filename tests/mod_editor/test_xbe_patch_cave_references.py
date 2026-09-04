@@ -132,6 +132,19 @@ class CaveReferenceTests(unittest.TestCase):
         self.assertIn(0x1AC260, self.targets)
         self.assertEqual(self.patched[0x1AC260 - BASE: 0x1AC270 - BASE], self.retail[0x1AC260 - BASE: 0x1AC270 - BASE])
 
+    def test_oracle_projection_preserves_the_existing_gate(self) -> None:
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage, legacy_external_references, legacy_references
+        targets = legacy_references(XbeImage(self.retail))
+        self.assertEqual(set(targets), set(self.targets))
+        for start, end in self._caves():
+            self.assertEqual(legacy_external_references(targets, start, end), [], hex(start))
+
+    def test_current_owners_are_reserved_for_new_allocations(self) -> None:
+        from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, ReservationManifest, XbeImage
+        manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail), source_root=REPO)
+        for start in (0x1AFDF0, 0x28B410, 0x1D82D0, 0x325E70, 0x2979F0, 0xB4A60, 0x2BA840):
+            self.assertTrue(manifest.overlaps(start, start + 1), hex(start))
+
 
 if __name__ == "__main__":
     unittest.main()

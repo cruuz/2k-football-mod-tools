@@ -75,6 +75,15 @@ class SectionTableTests(unittest.TestCase):
         # the cave itself is code and constants in .text: nothing may write there
         self.assertFalse(writable(table, seven.CAVE_VA))
 
+    def test_oracle_agrees_on_writable_flags_and_rejects_text_data(self) -> None:
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(XBE.read_bytes())
+        for section in image.sections:
+            self.assertEqual(image.runtime_writable(section.start), writable(sections(image.data), section.start))
+        for address, size in ((0xA69970, 1), (0xA69974, 4), (0xA69978, 4), (0xA6997C, 4)):
+            self.assertTrue(image.runtime_writable(address, size), hex(address))
+        self.assertFalse(image.section(0x1AC260).writable)
+
 
 @unittest.skipUnless(XBE.is_file() and Cs is not None, "retail extraction or capstone not present")
 class PatchWriteTests(unittest.TestCase):
@@ -131,6 +140,24 @@ class PatchWriteTests(unittest.TestCase):
                     offenders.append(f"{insn.address:#x}: {insn.mnemonic} {insn.op_str}")
         self.assertGreater(checked, 0, "no absolute writes found; the scan is broken")
         self.assertEqual(offenders, [], "writes into read-only sections:\n" + "\n".join(offenders))
+
+    def test_oracle_checks_full_width_of_existing_absolute_writes(self) -> None:
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.patched)
+        checked = 0
+        for start, end in self._changed_ranges():
+            for insn in self.md.disasm(self.patched[start:end], start + BASE):
+                if insn.mnemonic not in WRITING or not insn.operands:
+                    continue
+                dest = insn.operands[0]
+                if dest.type != X86_OP_MEM or dest.mem.base or dest.mem.index:
+                    continue
+                target = dest.mem.disp & 0xFFFFFFFF
+                if BASE <= target < 0x1000000:
+                    checked += 1
+                    self.assertTrue(image.runtime_writable(target, max(dest.size, 1)),
+                                    f"{insn.address:#x}: {insn.mnemonic} {insn.op_str}")
+        self.assertGreater(checked, 0)
 
 
 if __name__ == "__main__":
