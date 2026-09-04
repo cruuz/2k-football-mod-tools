@@ -70,7 +70,7 @@ class StudioShellLayoutTests(unittest.TestCase):
             self.assertNotIn(moved, titles)
         patches = self.window._gameplay_patches_panel
         assert patches is not None
-        self.assertEqual(set(patches.checks), {"catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera"})
+        self.assertEqual(set(patches.checks), {"catch_slider", "accel_ramp", "draft_ai", "returner_fix", "progression", "team_column", "kick_rules", "overtime", "camera", "position_row", "probowl_order", "penalties", "uniform_choice", "kick_laces", "prospect_names", "franchise_practice", "player_star"})
 
     def test_presentation_page_has_inventory_scorebug_and_commentary(self) -> None:
         page = self.window._category_pages[ProductCategory.SCOREBUG_PRESENTATION]
@@ -117,3 +117,33 @@ class StudioShellLayoutTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BuildShareActionBarTests(StudioShellLayoutTests):
+    """Build & Share hides the texture-project controls and feeds Launch Latest Build."""
+
+    def test_build_share_page_hides_the_texture_project_controls(self) -> None:
+        nav = self.window.navigation
+        project_widgets = (self.window.edit_count, self.window.undo_button, self.window.revert_all_button,
+                           self.window.check_images_button, self.window.build_button)
+        nav.setCurrentRow(1)
+        self.assertTrue(all(not w.isHidden() for w in project_widgets))
+        nav.setCurrentRow(nav.count() - 1)          # ★ Build & Share
+        self.assertTrue(all(w.isHidden() for w in project_widgets))
+        self.assertFalse(self.window.launch_button.isHidden())
+        self.assertFalse(self.window.configure_xemu_button.isHidden())
+        nav.setCurrentRow(nav.count() - 2)          # ★ Create a Play: controls return
+        self.assertTrue(all(not w.isHidden() for w in project_widgets))
+
+    def test_a_finished_build_tab_copy_is_offered_to_launch(self) -> None:
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            image = Path(tmp) / "ESPN NFL 2K5 (modded).xiso.iso"
+            image.write_bytes(b"\0" * 64)
+            self.window._on_build_tab_built({"target": str(image), "steps": [{"step": "xbe"}]})
+            facade = self.window.facade
+            if hasattr(facade, "register_external_build") and hasattr(facade, "_last_build"):
+                self.assertEqual(getattr(facade._last_build, "output_xiso", None), image)
+            # a missing file must not crash the window
+            self.window._on_build_tab_built({"target": str(Path(tmp) / "gone.iso")})

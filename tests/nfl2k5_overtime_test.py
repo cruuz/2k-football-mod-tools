@@ -9,6 +9,7 @@ the private copy exists.
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 from pathlib import Path
 import struct
 import sys
@@ -28,6 +29,8 @@ TEXT_VA = 0x11000
 TEXT_RAW = 0x2000
 TEXT_SIZE = 0x320000
 RETAIL_XBE = Path("/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe")
+HAVE_UNICORN = importlib.util.find_spec("unicorn") is not None
+HAVE_CAPSTONE = importlib.util.find_spec("capstone") is not None
 
 
 def _section_digest(payload: bytes, raw: int, raw_size: int) -> bytes:
@@ -43,7 +46,8 @@ def _text_off(va: int) -> int:
 def _retail_sites() -> list[tuple[int, bytes]]:
     return [(ot.MAIN_CAVE_VA, ot.RETAIL_MAIN_CAVE), (ot.AUX_CAVE_VA, ot.RETAIL_AUX_CAVE),
             (ot.INIT_SITE_VA, ot.RETAIL_INIT), (ot.OT_KICKOFF_SITE_VA, ot.RETAIL_OT_KICKOFF),
-            (ot.KICKOFF_SITE_VA, ot.RETAIL_KICKOFF), (ot.PRED_SITE_VA, ot.RETAIL_PRED),
+            (ot.KICKOFF_SITE_VA, ot.RETAIL_KICKOFF), (ot.SITUATION_SITE_VA, ot.RETAIL_SITUATION),
+            (ot.PRED_SITE_VA, ot.RETAIL_PRED),
             (ot.EXPIRY_SITE_VA, ot.RETAIL_EXPIRY), (ot.EXPIRY2_SITE_VA, ot.RETAIL_EXPIRY2),
             (ot.SIM_RESET_SITE_VA, ot.RETAIL_SIM_RESET), (ot.SIM_ROLL_SITE_VA, ot.RETAIL_SIM_ROLL),
             (ot.SIM_TIE_SITE_VA, ot.RETAIL_SIM_TIE), (ot.SIM_PERIOD_SITE_VA, ot.RETAIL_SIM_PERIOD)]
@@ -115,22 +119,34 @@ class CaveShapeTests(unittest.TestCase):
         labels = ot.cave_labels()
         for name in ("init", "flag_team", "ot_check", "not_over", "over", "ot_expiry", "exp_tied", "exp_differ"):
             self.assertTrue(ot.MAIN_CODE_VA <= labels[name] < ot.MAIN_CAVE_VA + ot.MAIN_CAVE_SIZE, name)
-        for name in ("ot_kickoff", "kickoff_flag", "sim_reset", "sim_roll", "sim_tie", "sim_period"):
+        for name in ("ot_kickoff", "kickoff_flag", "situation", "sim_reset", "sim_roll", "sim_tie", "sim_period"):
             self.assertTrue(ot.AUX_CAVE_VA <= labels[name] < ot.AUX_CAVE_VA + ot.AUX_CAVE_SIZE, name)
         aux = ot.aux_cave_bytes()
-        # every call in the aux cave targets flag_team in the main cave or a kick-setup tail jump
+        # every call in the aux cave targets flag_team in the main cave; the tail jumps land on the
+        # displaced kick-setup / possession routines
         calls = []
         i = 0
         while i < len(aux) - 5:
             if aux[i] in (0xE8, 0xE9):
                 rel = struct.unpack_from("<i", aux, i + 1)[0]
                 target = ot.AUX_CAVE_VA + i + 5 + rel
-                if target in (labels["flag_team"], ot.FN_KICK_SETUP):
+                if target in (labels["flag_team"], ot.FN_KICK_SETUP, ot.FN_SET_POSSESSION):
                     calls.append((aux[i], target))
             i += 1
         self.assertIn((0xE8, labels["flag_team"]), calls)
         self.assertIn((0xE9, ot.FN_KICK_SETUP), calls)
+        self.assertIn((0xE9, ot.FN_SET_POSSESSION), calls)
         self.assertGreaterEqual(sum(1 for op, t in calls if op == 0xE9 and t == ot.FN_KICK_SETUP), 2)
+        # the two kickoff stubs mark the receiver PENDING (dl = 4), never possessed (dl = 1)
+        for name in ("ot_kickoff", "kickoff_flag"):
+            off = labels[name] - ot.AUX_CAVE_VA
+            body = aux[off: off + 0x60]
+            self.assertIn(bytes([0xB2, ot.FLAG_PENDING]) + b"\xe8", body, f"{name} passes the pending mask")
+            self.assertNotIn(bytes([0xB2, ot.FLAG_POSSESSED]) + b"\xe8", body, name)
+        situation = labels["situation"] - ot.AUX_CAVE_VA
+        self.assertEqual(aux[situation: situation + 7], bytes.fromhex("c605") + struct.pack("<I", ot.STATE_GLOBAL) + b"\x00",
+                         "the situation seed clears the possession flags")
+        self.assertEqual(aux[situation + 7], 0xE9)
 
     def test_main_cave_entry_points_have_the_expected_shape(self) -> None:
         labels = ot.cave_labels()
@@ -141,6 +157,18 @@ class CaveShapeTests(unittest.TestCase):
         self.assertEqual(main[init + 16], 0xC3)
         check = labels["ot_check"] - ot.MAIN_CAVE_VA
         self.assertEqual(main[check: check + 8], b"\xa1" + struct.pack("<I", ot.PERIOD_GLOBAL) + bytes.fromhex("83f805"))
+        # bookkeeping is skipped while a kickoff is pending (phase 2): the receiver's opportunity is still ahead
+        self.assertEqual(main[check + 10: check + 17], bytes.fromhex("833d") + struct.pack("<I", ot.PHASE_GLOBAL) + b"\x02")
+        self.assertEqual(main[check + 17], 0x74)
+        self.assertEqual(labels["ot_check"] + 19 + main[check + 18], labels["scores"])
+        # then the pending bits (2/3) are promoted into the possession bits (0/1) before the possessor is flagged
+        promote = main[check + 19: check + 38]
+        self.assertEqual(promote, b"\xa0" + struct.pack("<I", ot.STATE_FLAGS) + bytes.fromhex("8ac8c0e9020ac12403")
+                         + b"\xa2" + struct.pack("<I", ot.STATE_FLAGS))
+        self.assertEqual(main[check + 48: check + 50], bytes([0xB2, ot.FLAG_POSSESSED]), "the possessor gets the possessed mask")
+        flag = labels["flag_team"] - ot.MAIN_CAVE_VA
+        self.assertEqual(main[flag + 12: flag + 18], bytes.fromhex("0815") + struct.pack("<I", ot.STATE_FLAGS), "or [flags], dl")
+        self.assertEqual(main[flag + 19: flag + 27], bytes.fromhex("00d20815") + struct.pack("<I", ot.STATE_FLAGS), "away: dl doubled")
         not_over = labels["not_over"] - ot.MAIN_CAVE_VA
         self.assertEqual(main[not_over: not_over + 9], b"\xa1" + struct.pack("<I", ot.PERIOD_GLOBAL) + bytes.fromhex("83fc00c3"))
         over = labels["over"] - ot.MAIN_CAVE_VA
@@ -184,6 +212,7 @@ class SyntheticXbeTests(unittest.TestCase):
             _text_off(ot.INIT_SITE_VA): ot._rel32_call(ot.INIT_SITE_VA, labels["init"]) + b"\x90",
             _text_off(ot.OT_KICKOFF_SITE_VA): ot._rel32_call(ot.OT_KICKOFF_SITE_VA, labels["ot_kickoff"]),
             _text_off(ot.KICKOFF_SITE_VA): ot._rel32_call(ot.KICKOFF_SITE_VA, labels["kickoff_flag"]),
+            _text_off(ot.SITUATION_SITE_VA): ot._rel32_call(ot.SITUATION_SITE_VA, labels["situation"]),
             _text_off(ot.SIM_RESET_SITE_VA): ot._rel32_call(ot.SIM_RESET_SITE_VA, labels["sim_reset"]) + b"\x90",
             _text_off(ot.SIM_ROLL_SITE_VA): ot._rel32_call(ot.SIM_ROLL_SITE_VA, labels["sim_roll"]) + b"\x90\x90",
             _text_off(ot.SIM_PERIOD_SITE_VA): ot._rel32_call(ot.SIM_PERIOD_SITE_VA, labels["sim_period"]) + b"\x90" * 5,
@@ -239,7 +268,7 @@ class SyntheticXbeTests(unittest.TestCase):
                            (ot.SIM_TIE_SITE_VA, ot.RETAIL_SIM_TIE), (ot.SIM_PERIOD_SITE_VA, ot.RETAIL_SIM_PERIOD)):
             self.assertEqual(patched[_text_off(va): _text_off(va) + len(retail)], retail, hex(va))
         labels = {e["label"] for e in receipt["edits"]}
-        self.assertEqual(labels, {"main_cave", "aux_cave", "init_hook", "ot_kickoff_hook"})
+        self.assertEqual(labels, {"main_cave", "aux_cave", "init_hook", "ot_kickoff_hook", "situation_hook"})
 
     def test_other_minutes_change_only_the_scale_float(self) -> None:
         default, _ = ot.apply(self.payload, 10)
@@ -290,6 +319,334 @@ class RetailXbeSmokeTests(unittest.TestCase):
         data, vsize = next((s, v) for s, v in sizes.values() if s.virtual_address <= ot.STATE_GLOBAL < s.virtual_address + v)
         self.assertGreaterEqual(ot.STATE_GLOBAL - data.virtual_address, data.raw_size)
         self.assertLess(ot.STATE_GLOBAL + 4, data.virtual_address + vsize)
+
+
+# --- unicorn: the real score / kickoff-build / post-play evaluator code of the patched image -------------------
+SCRATCH = 0x00F00000
+DESC, DRIVE, CTX, CLOCK, TSTATE, DIR, PARAMS = (SCRATCH, SCRATCH + 0x1000, SCRATCH + 0x2000, SCRATCH + 0x3000,
+                                                SCRATCH + 0x3100, SCRATCH + 0x3200, SCRATCH + 0x5000)
+STACK_TOP, SENTINEL = SCRATCH + 0x1F000, 0x00DEAD00
+HOME, AWAY = 0xE5FC20, 0xE5FC60                      # the two team objects (BSS)
+HOME_SCORE, AWAY_SCORE = 0xB25E30, 0xB25E48          # the two score objects
+FN_APPLY_DESCRIPTOR = 0x0022E4D0                     # FUN_0022e4d0: score dispatch + next-play build (kickoff hook inside)
+FN_SCORE_DISPATCH, FN_TD, FN_SAFETY, FN_FG, FN_PAT = 0x0022E2D0, 0x000B8400, 0x000B84F0, 0x000B85C0, 0x000B8420
+FN_TO_INT, FN_SITUATION, FN_SITUATION_TAIL = 0x000B4950, 0x0010BD80, 0x000E7C50
+GAME_STATE, KICKOFF_TEAM = 0x00E602B8, 0x00E60288
+KIND_TD, KIND_SAFETY, KIND_FG, KIND_PAT = 1, 2, 3, 4  # descriptor +0x74 as FUN_0022e2d0 switches on it
+
+
+class _Game:
+    """A patched retail image in unicorn with a mocked game state; every call outside the allow-list is
+    skipped (eax := 0, stack arguments popped), the routines the caves tail-jump into return at once."""
+
+    def __init__(self, patched: bytes) -> None:
+        from capstone import CS_ARCH_X86, CS_MODE_32, Cs
+        from unicorn import UC_ARCH_X86, UC_HOOK_CODE, UC_MODE_32, Uc
+
+        self.md = Cs(CS_ARCH_X86, CS_MODE_32)
+        self.uc = uc = Uc(UC_ARCH_X86, UC_MODE_32)
+        uc.mem_map(0x00010000, 0x00E61000 - 0x00010000)
+        for section in strength._sections(patched):
+            if section.virtual_address in (0x11000, 0x4E3AE0, 0xA69980):
+                uc.mem_write(section.virtual_address, patched[section.raw_offset: section.raw_offset + section.raw_size])
+        uc.mem_map(SCRATCH, 0x20000)
+        self.allow = {FN_SCORE_DISPATCH, ot.FN_SET_POSSESSION, FN_TO_INT, FN_TD, FN_SAFETY, FN_FG, FN_PAT}
+        self.caves = (range(ot.MAIN_CAVE_VA, ot.MAIN_CAVE_VA + ot.MAIN_CAVE_SIZE),
+                      range(ot.AUX_CAVE_VA, ot.AUX_CAVE_VA + ot.AUX_CAVE_SIZE))
+        self.cache: dict[int, tuple[str, int, int | None]] = {}
+        self.pops: dict[int, int] = {}
+        self.calls: list[tuple[int, int | None]] = []
+        self.stopped_at: int | None = None
+        uc.hook_add(UC_HOOK_CODE, self._on_code)
+        u32 = self._u32
+        for team, other, score, state in ((HOME, AWAY, HOME_SCORE, TSTATE), (AWAY, HOME, AWAY_SCORE, TSTATE + 0x40)):
+            uc.mem_write(team, u32(other))                  # [team+0] = opponent
+            uc.mem_write(team + 8, u32(score))              # [team+8] = score object
+            uc.mem_write(team + 0xC, u32(state))
+            uc.mem_write(score, b"\0" * 0x20)
+            uc.mem_write(score + 0xC, u32(DIR))             # direction object read by the score handlers
+        uc.mem_write(DIR + 4, struct.pack("<f", 1.0))
+        uc.mem_write(ot.HOME_SCORE_PTR, u32(HOME_SCORE))
+        uc.mem_write(ot.AWAY_SCORE_PTR, u32(AWAY_SCORE))
+        uc.mem_write(0x00E602EC, u32(CTX))
+        uc.mem_write(ot.CLOCK_OBJECT_GLOBAL, u32(CLOCK))
+        uc.mem_write(0x00E60268, u32(0))
+        uc.mem_write(0x00B616C0, u32(0))
+        uc.mem_write(KICKOFF_TEAM, u32(HOME))
+        self.set(period=5, home=0, away=0, phase=2, flags=0, mode=4)
+
+    @staticmethod
+    def _u32(value: int) -> bytes:
+        return struct.pack("<I", value & 0xFFFFFFFF)
+
+    def w(self, va: int, value: int) -> None:
+        self.uc.mem_write(va, self._u32(value))
+
+    def r(self, va: int) -> int:
+        return struct.unpack("<I", bytes(self.uc.mem_read(va, 4)))[0]
+
+    def set(self, *, period=None, home=None, away=None, poss=None, phase=None, flags=None, mode=None) -> None:
+        if period is not None:
+            self.w(ot.PERIOD_GLOBAL, period)
+        if home is not None:
+            self.w(HOME_SCORE, home)
+        if away is not None:
+            self.w(AWAY_SCORE, away)
+        if poss is not None:
+            self.w(ot.POSSESSION_GLOBAL, poss)
+            self.w(ot.DEFENSE_GLOBAL, AWAY if poss == HOME else HOME)
+        if phase is not None:
+            self.w(ot.PHASE_GLOBAL, phase)
+        if flags is not None:
+            self.w(ot.STATE_GLOBAL, flags)
+        if mode is not None:
+            self.w(ot.MODE_GLOBAL, mode)
+
+    @property
+    def flags(self) -> int:
+        return self.r(ot.STATE_GLOBAL) & 0xFF
+
+    @property
+    def scores(self) -> tuple[int, int]:
+        return self.r(HOME_SCORE), self.r(AWAY_SCORE)
+
+    @property
+    def poss(self) -> int:
+        return self.r(ot.POSSESSION_GLOBAL)
+
+    @property
+    def phase(self) -> int:
+        return self.r(ot.PHASE_GLOBAL)
+
+    # ---- tracer
+    def _decode(self, address: int):
+        if address not in self.cache:
+            ins = next(self.md.disasm(bytes(self.uc.mem_read(address, 16)), address, count=1))
+            target = int(ins.op_str, 16) if ins.mnemonic == "call" and ins.op_str.startswith("0x") else None
+            self.cache[address] = (ins.mnemonic, ins.size, target)
+        return self.cache[address]
+
+    def _pop(self, target: int) -> int:
+        if target not in self.pops:
+            self.pops[target] = 0
+            for ins in self.md.disasm(bytes(self.uc.mem_read(target, 0x1000)), target):
+                if ins.mnemonic == "ret":
+                    self.pops[target] = int(ins.op_str, 16) if ins.op_str else 0
+                    break
+        return self.pops[target]
+
+    def _on_code(self, uc, address, size, _user) -> None:
+        from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_EIP, UC_X86_REG_ESP
+
+        if address in (ot.PRED_GAME_OVER_VA, ot.PRED_CONTINUE_VA):
+            self.stopped_at = address
+            uc.emu_stop()
+            return
+        if address in (ot.FN_KICK_SETUP, FN_SITUATION_TAIL):   # reached by tail jumps: return to the caller at once
+            esp = uc.reg_read(UC_X86_REG_ESP)
+            uc.reg_write(UC_X86_REG_EIP, self.r(esp))
+            uc.reg_write(UC_X86_REG_ESP, esp + 4)
+            return
+        mnemonic, insn_size, target = self._decode(address)
+        if mnemonic != "call":
+            return
+        self.calls.append((address, target))
+        if target is None or not (target in self.allow or any(target in cave for cave in self.caves)):
+            uc.reg_write(UC_X86_REG_EAX, 0)
+            uc.reg_write(UC_X86_REG_ESP, uc.reg_read(UC_X86_REG_ESP) + (self._pop(target) if target else 0))
+            uc.reg_write(UC_X86_REG_EIP, address + insn_size)
+
+    def run(self, start: int, **regs) -> None:
+        from unicorn import x86_const
+
+        uc = self.uc
+        uc.mem_write(STACK_TOP - 4, self._u32(SENTINEL))
+        uc.reg_write(x86_const.UC_X86_REG_ESP, STACK_TOP - 4)
+        for name, value in regs.items():
+            uc.reg_write(getattr(x86_const, f"UC_X86_REG_{name.upper()}"), value)
+        self.stopped_at = None
+        uc.emu_start(start, SENTINEL, count=200_000)
+
+    # ---- game actions
+    def ot_kickoff(self, kicker: int) -> None:
+        """FUN_001587f0's hooked call with the kicking team in possession: runs the ot_kickoff cave."""
+        self.set(poss=kicker)
+        self.run(ot.cave_labels()["ot_kickoff"], ecx=CTX + 0x40)
+
+    def kick_fielded(self, receiver: int) -> None:
+        """The kick dead-ball evaluator's swap plus the next scrimmage descriptor: receiver in possession, phase 4."""
+        self.set(poss=receiver, phase=4)
+
+    def score(self, kind: int, team: int, next_phase: int) -> None:
+        """Apply a scoring descriptor through the real FUN_0022e4d0: the score dispatch (FUN_0022e2d0 -> the
+        TD / safety / FG / PAT handler, FUN_000e9460 for the kicking team) and the next-play build whose
+        kickoff branch holds the hooked FUN_000e9380 call.  `team` scores; a safety's descriptor names the
+        conceding team as the next possessor (it kicks)."""
+        uc = self.uc
+        uc.mem_write(DESC, b"\0" * 0x100)
+        uc.mem_write(DRIVE, b"\0" * 0x80)
+        self.w(DESC, next_phase)
+        self.w(DESC + 0x14, self.poss if kind != KIND_SAFETY else self.r(team))
+        self.w(DESC + 0x74, kind)
+        self.w(DESC + 0x78, DRIVE)
+        self.w(DESC + 0x7C, team)
+        self.w(DRIVE + 0x38, team)
+        self.run(FN_APPLY_DESCRIPTOR, ecx=DESC, edx=1)
+
+    def evaluate(self) -> str:
+        """The post-play evaluator's overtime block (game state 0xb at entry, esi = 3 as in retail)."""
+        from unicorn.x86_const import UC_X86_REG_EIP
+
+        self.w(GAME_STATE, 0xB)
+        self.run(ot.PRED_SITE_VA, esi=3)
+        assert self.stopped_at in (ot.PRED_GAME_OVER_VA, ot.PRED_CONTINUE_VA), hex(self.uc.reg_read(UC_X86_REG_EIP))
+        return "over" if self.stopped_at == ot.PRED_GAME_OVER_VA else "continue"
+
+    def situation(self, period_index: int, flags_before: int) -> None:
+        """The Situation screen's game seed FUN_0010bd80 (params: +0x18 = period index, 4 -> OT1)."""
+        self.set(flags=flags_before)
+        self.uc.mem_write(PARAMS, b"\0" * 0x60)
+        self.w(PARAMS + 0x18, period_index)
+        self.run(FN_SITUATION, ecx=PARAMS, edx=0)
+
+
+@unittest.skipUnless(RETAIL_XBE.exists() and HAVE_UNICORN and HAVE_CAPSTONE, "retail default.xbe, unicorn and capstone needed")
+class UnicornScenarioTests(unittest.TestCase):
+    """Noah's 2026-09-04 scenario (Situation, OT1 tied 0-0, field goal -> the game ended) and the rulebook
+    cases, replayed through the real code: the overtime kickoff cave, FUN_0022e4d0 with each scoring
+    descriptor (score applied, kicking team set, kickoff built through the hooked call) and then the hooked
+    sudden-death block of FUN_000a11f0 - in that order, which is the order the game runs them in
+    (FUN_000b95f0 applies the descriptor and sets state 0xb; the evaluator switches on that 0xb)."""
+
+    HOME_POSSESSED, AWAY_POSSESSED, HOME_PENDING, AWAY_PENDING = 1, 2, 4, 8
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.patched, _receipt = ot.apply(RETAIL_XBE.read_bytes())
+
+    def _overtime(self, kicker=HOME):
+        """OT1 0-0, `kicker` kicks off, the other team fields it and has run one scrimmage play."""
+        g = _Game(self.patched)
+        receiver = AWAY if kicker == HOME else HOME
+        g.ot_kickoff(kicker)
+        g.kick_fielded(receiver)
+        self.assertEqual(g.evaluate(), "continue")
+        self.assertEqual(g.evaluate(), "continue")
+        return g
+
+    def test_ot_kickoff_marks_the_receiver_pending_only(self) -> None:
+        g = _Game(self.patched)
+        g.set(flags=0x0F)
+        g.ot_kickoff(HOME)
+        self.assertEqual(g.flags, self.AWAY_PENDING, "flags cleared, the receiver pending, nobody has possessed")
+        self.assertEqual(g.poss, HOME)
+        g.kick_fielded(AWAY)
+        self.assertEqual(g.evaluate(), "continue")
+        self.assertEqual(g.flags, self.AWAY_POSSESSED, "the kickoff was played: the receiver has possessed")
+
+    def test_first_possession_field_goal_plays_on_and_the_other_team_receives(self) -> None:
+        g = self._overtime(kicker=HOME)                    # AWAY received
+        g.score(KIND_FG, AWAY, next_phase=2)
+        self.assertEqual(g.scores, (0, 3))
+        self.assertEqual(g.phase, 2, "a kickoff is pending")
+        self.assertEqual(g.poss, AWAY, "the scoring team kicks off")
+        self.assertEqual(g.flags, self.AWAY_POSSESSED | self.HOME_PENDING, "HOME's opportunity is pending, not possessed")
+        self.assertEqual(g.evaluate(), "continue", "the 2026-09-04 bug: retail's 'first score wins' must not fire")
+        self.assertEqual(g.flags, self.AWAY_POSSESSED | self.HOME_PENDING)
+        g.kick_fielded(HOME)
+        self.assertEqual(g.evaluate(), "continue", "HOME trails on its first possession")
+        self.assertEqual(g.flags, self.HOME_POSSESSED | self.AWAY_POSSESSED)
+
+    def test_answering_field_goal_ties_then_sudden_death(self) -> None:
+        g = self._overtime(kicker=HOME)
+        g.score(KIND_FG, AWAY, next_phase=2)
+        self.assertEqual(g.evaluate(), "continue")
+        g.kick_fielded(HOME)
+        self.assertEqual(g.evaluate(), "continue")
+        g.score(KIND_FG, HOME, next_phase=2)
+        self.assertEqual(g.scores, (3, 3))
+        self.assertEqual(g.evaluate(), "continue", "tied after both possessions: play on")
+        g.kick_fielded(AWAY)
+        self.assertEqual(g.evaluate(), "continue")
+        g.score(KIND_FG, AWAY, next_phase=2)
+        self.assertEqual(g.scores, (3, 6))
+        self.assertEqual(g.evaluate(), "over", "sudden death: the next score wins")
+
+    def test_first_possession_field_goal_then_a_stop_ends_the_game(self) -> None:
+        g = self._overtime(kicker=HOME)
+        g.score(KIND_FG, AWAY, next_phase=2)
+        self.assertEqual(g.evaluate(), "continue")
+        g.kick_fielded(HOME)
+        self.assertEqual(g.evaluate(), "continue")
+        g.set(poss=AWAY, phase=4)                          # HOME punts / turns it over
+        self.assertEqual(g.evaluate(), "over", "the leader has the ball and its opponent has possessed")
+
+    def test_first_possession_touchdown_and_pat_play_on(self) -> None:
+        g = self._overtime(kicker=HOME)
+        g.score(KIND_TD, AWAY, next_phase=3)
+        self.assertEqual(g.scores, (0, 6))
+        self.assertEqual(g.phase, 3)
+        self.assertEqual(g.evaluate(), "continue", "a first-possession touchdown does not end the game (2025 rule)")
+        g.score(KIND_PAT, AWAY, next_phase=2)
+        self.assertEqual(g.scores, (0, 7))
+        self.assertEqual(g.flags, self.AWAY_POSSESSED | self.HOME_PENDING)
+        self.assertEqual(g.evaluate(), "continue", "kickoff to HOME")
+        g.kick_fielded(HOME)
+        self.assertEqual(g.evaluate(), "continue")
+        g.score(KIND_TD, HOME, next_phase=3)
+        self.assertEqual(g.evaluate(), "continue", "6-7: HOME still trails, the PAT is played")
+        g.score(KIND_PAT, HOME, next_phase=2)
+        self.assertEqual(g.scores, (7, 7))
+        self.assertEqual(g.evaluate(), "continue", "tied after both possessions")
+
+    def test_answering_touchdown_that_takes_the_lead_ends_the_game_before_the_pat(self) -> None:
+        g = self._overtime(kicker=HOME)
+        g.score(KIND_FG, AWAY, next_phase=2)
+        self.assertEqual(g.evaluate(), "continue")
+        g.kick_fielded(HOME)
+        g.score(KIND_TD, HOME, next_phase=3)
+        self.assertEqual(g.scores, (6, 3))
+        self.assertEqual(g.evaluate(), "over", "HOME leads after both possessions")
+
+    def test_first_possession_safety_ends_the_game(self) -> None:
+        g = self._overtime(kicker=HOME)                    # AWAY is driving
+        g.score(KIND_SAFETY, HOME, next_phase=1)
+        self.assertEqual(g.scores, (2, 0))
+        self.assertEqual(g.phase, 1)
+        self.assertEqual(g.evaluate(), "over", "Art. 3(a): a safety on the first possession wins it")
+
+    def test_onside_recovery_counts_as_the_receivers_opportunity(self) -> None:
+        g = self._overtime(kicker=HOME)
+        g.score(KIND_FG, AWAY, next_phase=2)
+        self.assertEqual(g.evaluate(), "continue")
+        g.set(poss=AWAY, phase=4)                          # AWAY recovers its own kickoff
+        self.assertEqual(g.evaluate(), "over", "Art. 5(c): the receiving team has had its opportunity")
+        self.assertEqual(g.flags, self.HOME_POSSESSED | self.AWAY_POSSESSED)
+
+    def test_situation_seed_clears_stale_flags(self) -> None:
+        g = _Game(self.patched)
+        g.situation(period_index=4, flags_before=0x0F)
+        self.assertEqual(g.r(ot.PERIOD_GLOBAL), 5, "period index 4 seeds OT1")
+        self.assertEqual(g.flags, 0)
+        self.assertEqual(g.poss, HOME, "FUN_000e9460 still ran: possession seeded")
+        self.assertEqual(g.r(ot.DEFENSE_GLOBAL), AWAY)
+        # Noah's exact game from that seed: AWAY kicks, HOME receives, HOME kicks a field goal
+        g.set(poss=AWAY, phase=2)
+        g.kick_fielded(HOME)
+        self.assertEqual(g.evaluate(), "continue")
+        g.score(KIND_FG, HOME, next_phase=2)
+        self.assertEqual(g.scores, (3, 0))
+        self.assertEqual(g.evaluate(), "continue", "play on: AWAY receives the kickoff")
+        g.kick_fielded(AWAY)
+        self.assertEqual(g.evaluate(), "continue")
+        self.assertEqual(g.flags, self.HOME_POSSESSED | self.AWAY_POSSESSED)
+
+    def test_regulation_keeps_the_retail_path(self) -> None:
+        g = _Game(self.patched)
+        g.set(period=4, home=7, away=0, poss=HOME, phase=4, flags=0)
+        g.uc.mem_write(CLOCK + 0x10, struct.pack("<f", 1.0))
+        self.assertEqual(g.evaluate(), "continue", "Q4 with time left: next play")
+        self.assertEqual(g.flags, 0, "no overtime bookkeeping before period 5")
 
 
 if __name__ == "__main__":

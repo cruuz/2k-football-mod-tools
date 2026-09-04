@@ -513,6 +513,13 @@ def serialize_main_menu_inspection_csv(snapshot: dict[str, object]) -> bytes:
 
 
 @dataclass(frozen=True)
+class ExternalBuild:
+    """A disc written outside the texture-project build (Build & Share); only the path matters to Launch."""
+
+    output_xiso: Path
+
+
+@dataclass(frozen=True)
 class StudioOperationResult:
     message: str
     output: Path | None = None
@@ -872,6 +879,20 @@ class Nfl2k5StudioFacade:
     @property
     def can_launch_xemu(self) -> bool:
         return not self.xemu_blocker
+
+    def register_external_build(self, image: Path) -> None:
+        """Make a disc written by Build & Share the build that Launch starts.
+
+        Until now only the texture-project build counted as "the latest build", so a
+        modder who built a patched copy on the Build & Share page saw Launch Latest
+        Build stay tied to an older (or nonexistent) project build. The page's own
+        finished copy is what they want to run."""
+
+        image = Path(image)
+        if not image.is_file() or image.is_symlink():
+            raise ValidationError(f"The built copy is not a regular file: {image}")
+        with self._lock:
+            self._last_build = ExternalBuild(output_xiso=image)
 
     @property
     def xemu_blocker(self) -> str:

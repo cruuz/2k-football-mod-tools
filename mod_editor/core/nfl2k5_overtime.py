@@ -37,8 +37,19 @@ The patch (two caves, both dead functions with no reference anywhere in the imag
 * ``both_possessions``: the sudden-death test becomes "game over when the scores differ AND
   (a safety just happened, or the team in possession leads and its opponent has already had a
   possession)".  Possession flags (one bit per team in the unreferenced BSS dword 0xE602A8)
-  are cleared at the overtime kickoff, set for the receiving team of every kickoff in overtime
-  (opportunity to possess) and for the team in possession at the end of every play.
+  are cleared at the overtime kickoff and set for the team in possession at the end of every
+  play.  A kickoff is the receiving team's opportunity to possess (Art. 5(c)), but the kickoff
+  after a score is built by ``FUN_0022e4d0`` in the same dead-ball pass that applies the score,
+  BEFORE the post-play evaluator judges the scoring play (``FUN_000b95f0`` applies the
+  descriptor, then sets state 0xb; the evaluator runs from the presentation state change and
+  switches on that 0xb).  So the receiving team of every kickoff is only marked *pending*
+  (bits 2/3) when the kickoff is built, and the pending bits become possession bits at the
+  first post-play evaluation whose next play is not a kickoff (phase != 2), i.e. once the
+  kickoff has actually been played.  The 2026-09-04 bug (a first-possession field goal ended
+  the game) was the receiving team being flagged at build time and read as "has possessed" by
+  the evaluator of the field-goal play itself.  The Situation screen (``FUN_0010bd80``) seeds
+  the period, scores, clock and possession directly and never runs the overtime kickoff
+  builder, so its possession store also clears the flags.
 * ``postseason_no_ties``: in modes 5/6 an overtime period that expires with the trailing team
   still on its first possession continues into another period (the retail code only continues
   when tied); regular-season games keep retail's one-period-then-tie rule.
@@ -78,7 +89,10 @@ HOME_SCORE_PTR = 0x00E5FC28         # -> score object ([+0] = points, [+4] = tim
 AWAY_SCORE_PTR = 0x00E5FC68
 NO_TIE_MODES = (5, 6)
 STATE_GLOBAL = 0x00E602A8           # BSS dword with no reference in the image: our state
-STATE_FLAGS = STATE_GLOBAL          # byte: bit0 home has possessed in OT, bit1 away
+STATE_FLAGS = STATE_GLOBAL          # byte: bit0 home has possessed in OT, bit1 away; bit2/bit3 = pending
+                                    #       (receiving team of a kickoff that has not been played yet)
+FLAG_POSSESSED = 1                  # flag_team mask for "has possessed" (home bit; away = mask << 1)
+FLAG_PENDING = 4                    # flag_team mask for "kickoff opportunity pending"
 STATE_SCALED = STATE_GLOBAL + 1     # byte: 1 once the period length has been scaled this game
 STATE_SIM_TIES = STATE_GLOBAL + 2   # byte: 1 when the simulator was told ties are allowed (regular season)
 
@@ -89,6 +103,7 @@ SIM_TIE_ROLL = 0x00A971D4           # retail: 1 when the 1-in-40 roll allows a t
 SIM_SCRATCH_ZEROED = 0x00A971C4     # a sim global zeroed at every sim setup (our reset hook rides it)
 
 FN_KICK_SETUP = 0x000E9380          # builds the kick spot for the kicking team (fastcall ecx = spot)
+FN_SET_POSSESSION = 0x000E9460      # possession := ecx, defense := [ecx] (fastcall ecx = team, edx = direction)
 
 # --- caves --------------------------------------------------------------------------------------
 MAIN_CAVE_VA = 0x001AFDF0           # FUN_001afdf0: dead AI helper, 300 bytes (sibling of the kick-rules cave)
@@ -123,6 +138,8 @@ OT_KICKOFF_SITE_VA = 0x0015885E     # FUN_001587f0: call FUN_000e9380 (overtime 
 RETAIL_OT_KICKOFF = bytes.fromhex("e81d0bf9ff")
 KICKOFF_SITE_VA = 0x0022E588        # FUN_0022e4d0: call FUN_000e9380 (kickoff after a score)
 RETAIL_KICKOFF = bytes.fromhex("e8f3adebff")
+SITUATION_SITE_VA = 0x0010BDD4      # FUN_0010bd80 (Situation screen): call FUN_000e9460 (possession seed)
+RETAIL_SITUATION = bytes.fromhex("e887d6fdff")
 PRED_SITE_VA = 0x000A130F           # FUN_000a11f0: the sudden-death test, 33 bytes to 0xA1330
 RETAIL_PRED = bytes.fromhex("a1c402e60083f8047e158b1528fce5008b0a8b1568fce5003b0a753983f804755e")
 PRED_GAME_OVER_VA = 0x000A1364      # state 10 path
@@ -193,16 +210,17 @@ def _main_code(base: int) -> tuple[bytes, dict[str, int]]:
     a.b("d91d" + _imm(PERIOD_LENGTH_GLOBAL))       # fstp dword [0xE602B0]
     a.b("c705" + _imm(STATE_GLOBAL) + "00000000")  # mov dword [state], 0
     a.b("c3")
-    # ---- flag_team(ecx = team): or [flags], home ? 1 : 2   (only ecx read; flags clobbered)
+    # ---- flag_team(ecx = team, dl = mask): or [flags], home ? mask : mask << 1   (ecx read, dl clobbered)
     a.label("flag_team")
     a.b("85c9")                                     # test ecx, ecx
     a.j8("74", "ft_ret")
     a.b("81f9" + _imm(HOME_TEAM))                   # cmp ecx, home team
     a.j8("75", "ft_away")
-    a.b("800d" + _imm(STATE_FLAGS) + "01")          # or byte [flags], 1
+    a.b("0815" + _imm(STATE_FLAGS))                 # or byte [flags], dl
     a.b("c3")
     a.label("ft_away")
-    a.b("800d" + _imm(STATE_FLAGS) + "02")          # or byte [flags], 2
+    a.b("00d2")                                     # add dl, dl           the away bit
+    a.b("0815" + _imm(STATE_FLAGS))                 # or byte [flags], dl
     a.label("ft_ret")
     a.b("c3")
     # ---- ot_check: eax := period; ZF = 1 iff the overtime rule ends the game now.
@@ -211,10 +229,20 @@ def _main_code(base: int) -> tuple[bytes, dict[str, int]]:
     a.b("a1" + _imm(PERIOD_GLOBAL))                 # mov eax, [period]
     a.b("83f805")                                   # cmp eax, 5
     a.j8("7c", "not_over")                          # jl: not overtime
+    a.b("833d" + _imm(PHASE_GLOBAL) + "02")         # cmp dword [phase], 2  a kickoff is pending (a score
+    a.j8("74", "scores")                            #   was just applied): its receiver has not possessed yet
+    a.b("a0" + _imm(STATE_FLAGS))                   # mov al, [flags]       the kickoff has been played:
+    a.b("8ac8")                                     # mov cl, al              pending bits -> possession bits
+    a.b("c0e902")                                   # shr cl, 2
+    a.b("0ac1")                                     # or al, cl
+    a.b("2403")                                     # and al, 3
+    a.b("a2" + _imm(STATE_FLAGS))                   # mov [flags], al
     a.b("8b0d" + _imm(POSSESSION_GLOBAL))           # mov ecx, [possession]
     a.b("85c9")
     a.j8("74", "not_over")                          # nobody in possession: leave it
+    a.b("b2" + f"{FLAG_POSSESSED:02x}")             # mov dl, 1
     a.j32("e8", "flag_team")                        # this team has possessed the ball
+    a.label("scores")
     a.b("8b15" + _imm(HOME_SCORE_PTR))              # mov edx, [home score obj]
     a.b("8b12")                                     # mov edx, [edx]        home points
     a.b("8b0d" + _imm(AWAY_SCORE_PTR))              # mov ecx, [away score obj]
@@ -315,7 +343,8 @@ def _aux_code(base: int, flag_team_va: int) -> tuple[bytes, dict[str, int]]:
     a.b("894110")                                   # mov [ecx+0x10], eax   clock := period length
     a.b("c605" + _imm(STATE_FLAGS) + "00")          # mov byte [flags], 0
     a.b("8b0d" + _imm(DEFENSE_GLOBAL))              # mov ecx, [receiving team]
-    a.call(flag_team_va)                            # its opportunity to possess
+    a.b("b2" + f"{FLAG_PENDING:02x}")               # mov dl, 4
+    a.call(flag_team_va)                            # its opportunity to possess, pending until played
     a.b("59")                                       # pop ecx
     a.jmp_abs(FN_KICK_SETUP)                        # tail-call the replaced routine
     # ---- kickoff_flag: replaces `call FUN_000e9380` in the kickoff-after-score builder
@@ -324,10 +353,15 @@ def _aux_code(base: int, flag_team_va: int) -> tuple[bytes, dict[str, int]]:
     a.j8("7c", "kf_done")
     a.b("51")
     a.b("8b0d" + _imm(DEFENSE_GLOBAL))
-    a.call(flag_team_va)
+    a.b("b2" + f"{FLAG_PENDING:02x}")               # mov dl, 4             pending, not possessed: the
+    a.call(flag_team_va)                            #   evaluator of the scoring play runs after this build
     a.b("59")
     a.label("kf_done")
     a.jmp_abs(FN_KICK_SETUP)
+    # ---- situation: replaces `call FUN_000e9460` in the Situation screen's game seed (ecx = team, edx = dir)
+    a.label("situation")
+    a.b("c605" + _imm(STATE_FLAGS) + "00")          # mov byte [flags], 0   no overtime kickoff will run
+    a.jmp_abs(FN_SET_POSSESSION)                    # tail-call the replaced routine
     # ---- sim_reset: replaces `mov [0xA971C4], ebx` (ebx == 0) at every simulator setup
     a.label("sim_reset")
     a.b("891d" + _imm(SIM_SCRATCH_ZEROED))          # mov [0xA971C4], ebx
@@ -435,6 +469,8 @@ def _sites(payload: bytes, regular_minutes: float, both_possessions: bool, posts
          _rel32_call(INIT_SITE_VA, labels["init"]) + b"\x90"),
         ("core", "ot_kickoff_hook", _offset(payload, OT_KICKOFF_SITE_VA), RETAIL_OT_KICKOFF,
          _rel32_call(OT_KICKOFF_SITE_VA, labels["ot_kickoff"])),
+        ("core", "situation_hook", _offset(payload, SITUATION_SITE_VA), RETAIL_SITUATION,
+         _rel32_call(SITUATION_SITE_VA, labels["situation"])),
         ("possession", "sudden_death_hook", _offset(payload, PRED_SITE_VA), RETAIL_PRED, pred),
         ("possession", "kickoff_hook", _offset(payload, KICKOFF_SITE_VA), RETAIL_KICKOFF,
          _rel32_call(KICKOFF_SITE_VA, labels["kickoff_flag"])),
@@ -547,6 +583,7 @@ def apply(payload: bytes, regular_minutes: float = 10, both_possessions: bool = 
 
 __all__ = ["OvertimeError", "MAIN_CAVE_VA", "MAIN_CAVE_SIZE", "AUX_CAVE_VA", "AUX_CAVE_SIZE", "RETAIL_MAIN_CAVE",
            "RETAIL_AUX_CAVE", "STATE_GLOBAL", "INIT_SITE_VA", "OT_KICKOFF_SITE_VA", "KICKOFF_SITE_VA", "PRED_SITE_VA",
+           "SITUATION_SITE_VA", "RETAIL_SITUATION", "FN_KICK_SETUP", "FN_SET_POSSESSION", "FLAG_POSSESSED", "FLAG_PENDING",
            "EXPIRY_SITE_VA", "EXPIRY2_SITE_VA", "SIM_RESET_SITE_VA", "SIM_ROLL_SITE_VA", "SIM_TIE_SITE_VA",
            "SIM_PERIOD_SITE_VA", "RETAIL_INIT", "RETAIL_OT_KICKOFF", "RETAIL_KICKOFF", "RETAIL_PRED", "RETAIL_EXPIRY",
            "RETAIL_EXPIRY2", "RETAIL_SIM_RESET", "RETAIL_SIM_ROLL", "RETAIL_SIM_TIE", "RETAIL_SIM_PERIOD", "GROUPS",

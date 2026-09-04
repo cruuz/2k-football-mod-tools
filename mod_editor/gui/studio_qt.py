@@ -1484,6 +1484,7 @@ class StudioMainWindow(QMainWindow):
         self._presentation_panel: PresentationPanel | None = None
         self._commentary_panel: CommentaryPanel | None = None
         self._build_panel: BuildPanel | None = None
+        self._star_players_connected = False
         self._share_panel: SharePanel | None = None
         self._sounds_panel: SoundsPanel | None = None
         self._menus_panel: MenusPanel | None = None
@@ -1596,6 +1597,11 @@ class StudioMainWindow(QMainWindow):
             update_ui.set_automatic_checks_enabled
         )
         help_menu.addSeparator()
+        discord_action = help_menu.addAction("Join the Discord…")
+        discord_action.setToolTip("Opens the community Discord invite in your browser.")
+        discord_action.triggered.connect(
+            lambda: QDesktopServices.openUrl(QUrl(update_check.COMMUNITY_DISCORD))
+        )
         releases_action = help_menu.addAction("Downloads and release notes…")
         releases_action.triggered.connect(
             lambda: QDesktopServices.openUrl(
@@ -2268,6 +2274,7 @@ class StudioMainWindow(QMainWindow):
                     on_status=self._specialized_panel_status,
                     on_refresh=self._specialized_panel_refresh,
                 )
+                self._connect_star_players()
                 roster_tabs = QTabWidget()
                 roster_tabs.setObjectName("rostersPlayersTabs")
                 roster_tabs.setAccessibleName("Rosters and players workspaces")
@@ -2482,6 +2489,7 @@ class StudioMainWindow(QMainWindow):
         layout.addWidget(self.save_project_button)
         layout.addWidget(self.open_source_button)
         self.navigation.currentRowChanged.connect(self._update_header_title)
+        self.navigation.currentRowChanged.connect(self._refresh_action_bar_for_page)
         return header
 
     def _build_welcome_page(self) -> QWidget:
@@ -7695,14 +7703,30 @@ class StudioMainWindow(QMainWindow):
         tabs.setObjectName("buildShareTabs")
         tabs.setAccessibleName("Build and share workspaces")
         self._build_panel = BuildPanel(self.facade)
+        self._connect_star_players()
         tabs.addTab(self._build_panel, "Build")
         # Share: a .2k5patch (byte runs + the modder's own images/audio + recipe)
         # made from a patched copy, applied to somebody else's own disc copy.
         self._share_panel = SharePanel(self.facade)
         tabs.addTab(self._share_panel, "Share")
         self._build_panel.built.connect(self._share_panel.prefill_from_build)
+        self._build_panel.built.connect(self._on_build_tab_built)
         tabs.setCurrentIndex(0)
         return tabs
+
+    def _connect_star_players(self) -> None:
+        """★ Star ticks in Rosters & Players are the Build tab's ``player_tags``.
+
+        Either panel may be built first, so this runs after both and does nothing until the
+        second one exists."""
+
+        panel = getattr(self, "_roster_panel", None)
+        build = getattr(self, "_build_panel", None)
+        if panel is None or build is None or self._star_players_connected:
+            return
+        panel.star_players_changed.connect(build.set_star_players)
+        build.set_star_players(panel.star_players(), panel.star_player_names())
+        self._star_players_connected = True
 
     def _open_create_play_wizard(self) -> None:
         if not bool(getattr(self.facade, "source_ready", False)):
@@ -7749,6 +7773,35 @@ class StudioMainWindow(QMainWindow):
                 and self._playbooks_panel is not None:
             if bool(getattr(self.facade, "source_ready", False)):
                 self._playbooks_panel.refresh()
+
+    def _on_build_tab_built(self, receipt: object) -> None:
+        """A Build & Share copy is the latest build: Launch Latest Build starts it."""
+
+        target = ""
+        if isinstance(receipt, dict):
+            target = str(receipt.get("target") or "")
+        if not target:
+            return
+        try:
+            self.facade.register_external_build(Path(target))
+        except Exception as exc:  # noqa: BLE001 - a missing file only means Launch stays blocked
+            self._set_status(str(exc))
+            return
+        self._refresh_action_states()
+        self._set_status(f"Built {Path(target).name}. Launch Latest Build starts this copy in xemu.")
+
+    def _refresh_action_bar_for_page(self, row: int) -> None:
+        """The bottom bar's texture-project controls make no sense on Build & Share.
+
+        A user built a patched copy there and then stared at a greyed-out
+        "Build Modded XISO" / "Check My Images" (both about staged texture edits)
+        thinking the build had failed. On that page only xemu controls stay."""
+
+        special = row - 1 - len(PRODUCT_CATEGORY_ORDER)
+        on_build_share = special == 2
+        for widget in (self.edit_count, self.undo_button, self.revert_all_button,
+                       self.check_images_button, self.build_button):
+            widget.setVisible(not on_build_share)
 
     def _update_header_title(self, row: int) -> None:
         if row <= 0:

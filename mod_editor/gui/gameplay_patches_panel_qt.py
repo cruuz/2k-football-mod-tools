@@ -85,6 +85,62 @@ PATCHES = (
      "the Standard preset take Far's look-at, lens and offset words, so a profile left on Standard gets the "
      "Far view. Far itself, the kick, replay and other presets are untouched; the fresh-profile default stays "
      "Standard."),
+    ("position_row", "Position on the first page of Edit Player (roster and Franchise)",
+     "Retail: Create Player lets you pick a position, but Edit Player never lists it, in roster mode or in "
+     "Franchise, so a position change means a new player. Patch: the Position row (the game's own picker, "
+     "17 positions, ratings kept, overall recomputed from the new position) sits after Last Name on the first "
+     "page of both Edit Player screens; Franchise opens the same screens. Run Depth Chart -> Auto afterwards. "
+     "Unwitnessed in game."),
+    ("probowl_order", "Pro Bowl Votes in football order",
+     "Retail: the Pro Bowl Votes tabs run QB, HB, FB, WR, TE, C, G, T, then K and P before the defence. Patch: "
+     "the tab list runs offence, defence, then K and P (one pointer list; the vote scanner reads each tab's "
+     "own position, and no other screen uses the list). Unwitnessed in game."),
+    ("penalties", "Penalties at NFL rates + a working Chop Block toggle",
+     "Retail: every penalty slider drives a hidden curve table (a probability per block, a hazard while the ball "
+     "is in flight, a grace window after the release), tuned so the default 50 flags far more holding, face masks "
+     "and clipping than an NFL Sunday, the incidental face mask is still the 2004 five-yard call, and the Chop "
+     "Block On/Off toggle does nothing (chop blocks follow the Clipping slider). Patch: seven curve tables are "
+     "re-knotted in place so the default 50 lands near NFL 2024 per-game rates (0 still means none, 100 keeps the "
+     "retail extreme), the incidental face mask becomes 15 yards, and the Chop Block toggle is wired through a "
+     "10-byte stub so it really silences chop blocks (retail profiles have it Off: switch it On in Penalty "
+     "Settings). The rates are ESTIMATED pending a calibration playtest; illegal formation, illegal contact and "
+     "12 men do not exist in the engine. Unwitnessed in game."),
+    ("uniform_choice", "Home/away jerseys at any stadium",
+     "Retail: the jersey colour is decided once per game load by one rule (home dark, visitor white, except the "
+     "Cowboys wear white at home and navy in Washington and Tennessee); the player only picks the era. Patch: "
+     "the same up/down that picks the era on Controller Assign or Team Select keeps going past the last era to "
+     "flip that side's colour and restart at the first era (15 eras x 2 colours per side; the retail default "
+     "stays the default; both teams may choose white). Practice and Xbox Live keep the retail rule; the Team "
+     "Select preview shows the era art only. Unwitnessed in game."),
+    ("kick_laces", "Laces to the posts on field goals and PATs",
+     "Retail: the holder's animation decides which way the ball faces on a place kick, and the hold clip "
+     "leaves the laces toward the kicker (the kickoff tee is a code constant and already faces the posts). "
+     "Patch: at the one point where every held-ball orientation path joins, a 143-byte cave in a dead routine "
+     "checks that the play is live and the offence's formation is the Field Goal formation (PAT and FG; punts, "
+     "kickoffs and scrimmage carries are not), then turns the ball 180 degrees about its own long axis with "
+     "the game's quaternion product, so the laces face the posts through the hold and the kick. A fake field "
+     "goal carries the rolled ball for that play only. Unwitnessed in game."),
+    ("prospect_names", "Modern draft-prospect names (disc images only)",
+     "Retail: rookies and free agents are named from the 1990 US Census lists (James, Harold, Walter... Smith, "
+     "Garcia, Martinez), drawn independently, so a fifth of every draft class carries a Hispanic-origin name and no "
+     "class ever reads like a 2020s roster. Patch: the 485 first names and 485 surnames in the roster template's "
+     "name pool become the most common names of 2015-2025 NFL players (nflverse-data, CC-BY-4.0), rewritten inside "
+     "the pool's own 13,238 bytes; the 433 surnames the announcer has recorded keep their slot and their call-out, "
+     "the 52 replacements (Diggs, Chubb, Kamara...) and every first name are new, and a 27-byte cave on the "
+     "generator announces players with a replacement surname by jersey number instead of a wrong name. Only "
+     "franchises created from the copy see it. Unwitnessed in game."),
+    ("franchise_practice", "Free Practice inside Franchise",
+     "Retail: Practice lives only under Game Modes on the main menu, it picks two random teams, and there is no "
+     "way into it from a franchise; the Coach's Desk lists Schedule through Quit and its eleven rows end right "
+     "where the descriptor begins, so there is no spare slot. Patch: the desk's 52-byte event-hook list is copied "
+     "into a cave, which frees exactly one 0x34 row slot, and a Practice row is written there (first, above "
+     "Schedule) opening a clone of the Scrimmage Settings screen. The clone's enter hook runs the retail practice "
+     "defaults, then puts the team you coach on BOTH sides at Practice Type = Full Scrimmage, so you get your "
+     "first-team offence against your first-team defence in your away kit against your home kit on the practice "
+     "field, with the live franchise roster (there is only one roster in memory and the franchise load already "
+     "overwrote it). Its START handler pops once instead of twice, so a rep ends back on the Coach's Desk. "
+     "Practice is game mode 1 and the stat, clock and injury paths are gated on mode 4 and up, so a session "
+     "writes no season stats and no injuries; no retail instruction byte is changed. Unwitnessed in game."),
     ("seven_on_seven", "7-on-7 practice mode",
      "Retail Practice offers Special Move, Full Scrimmage, Offense Only and Kickoff. Patch: Practice -> Scrimmage -> "
      "Practice Type gains 7-On-7, which plays as Full Scrimmage with the practice playbook loaded for both teams and "
@@ -92,6 +148,15 @@ PATCHES = (
      "five skill players) with nine pass concepts and two coverage sets (4-3 and Nickel looks) with six coverages. The "
      "engine always fields eleven, so the four linemen of each side stand idle at the sideline by design, and one "
      "parked defender rushes after a 4-second count as the throw timer. Needs a disc image; unwitnessed in game."),
+    ("player_star", "Star decal under the players you tag",
+     "Retail already draws a star at a player's feet and the art is called icon_controller_star: it is a "
+     "world-space decal the game puts under whoever a controller is driving, and one 80-byte routine decides "
+     "who gets one. Patch: that routine is rewritten in place (same 80 bytes, same entry, no cave) so it keeps "
+     "every retail answer and also says yes when the player's roster record carries the studio's star bit, "
+     "refusing once the game's 9-entry star list is full. Tick the players in Text & Rosters (★ Star); with no "
+     "player ticked nothing changes on screen. The same routine gates the on-field name/number indicator, so a "
+     "tagged player gets that too when Player Indicator Text is on. The tags need a disc image and reach "
+     "franchises created from the copy. Unwitnessed in game."),
 )
 
 
@@ -120,6 +185,11 @@ class _Task(QRunnable):
 if not mod_build.SEVEN_ON_SEVEN_RELEASED:
     PATCHES = tuple(entry for entry in PATCHES if entry[0] != "seven_on_seven")
 
+# BuildPlan fields that are profile names rather than booleans: the value a ticked box writes
+STRING_TOGGLES = {"penalties": "nfl", "prospect_names": "modern", "uniform_choice": "choice"}
+# toggles whose other half lives in pack 0: a bare default.xbe cannot take them
+NEEDS_IMAGE = {"prospect_names"}
+
 TEXT_PATCHES = (
     ("edge_rename", "Rename DE to EDGE everywhere",
      "Retail calls the position DE / Defensive End in rosters, depth charts, the draft, the formation "
@@ -131,6 +201,9 @@ TEXT_PATCHES = (
      "chart reads SAM, MIKE, WILL; the 3-4 chart reads EDGE for the outside backers, MIKE and WILL inside, NT in "
      "the middle. Labels only (each scheme has its own slot records); who fills a slot is unchanged."),
 )
+
+
+# BuildPlan fields that are strings: the value a ticked box writes
 
 
 class GameplayPatchesPanel(QWidget):
@@ -216,14 +289,18 @@ class GameplayPatchesPanel(QWidget):
     def apply_state(self, state: dict[str, object]) -> None:
         self._state = state
         self.source_field.setText(str(state.get("path", "")))
+        is_image = state.get("container") == "xiso"
         for key, _label, _e in self._patches:
             value = str(state.get(key))
             check = self.checks[key]
-            check.setEnabled(value == "retail")
+            needs_image = key in NEEDS_IMAGE and not is_image
+            check.setEnabled(value == "retail" and not needs_image)
             check.setChecked(False)
-            check.setToolTip({"applied": "Already applied in this source.",
-                              "foreign": "Bytes at the patch sites are neither retail nor this patch; refusing.",
-                              "retail": ""}.get(value, "Unknown state."))
+            tip = {"applied": "Already applied in this source.",
+                   "foreign": "Bytes at the patch sites are neither retail nor this patch; refusing.",
+                   "partial": "Only one half of this patch is in the source (executable or name pool); refusing.",
+                   "retail": ""}.get(value, "Unknown state.")
+            check.setToolTip("Needs a disc image." if value == "retail" and needs_image else tip)
         self.source_status.setText("Read: " + "; ".join(f"{k}: {state.get(k)}" for k, _l, _e in self._patches) + ".")
         self._refresh()
 
@@ -233,7 +310,8 @@ class GameplayPatchesPanel(QWidget):
             overwrite=Path(self.target_field.text()).exists() if self.target_field.text() else False,
         )
         for key, check in self.checks.items():
-            setattr(plan, key, check.isChecked())
+            on = check.isChecked()
+            setattr(plan, key, (STRING_TOGGLES[key] if on else "") if key in STRING_TOGGLES else on)
         return plan
 
     def _refresh(self) -> None:

@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC81 — Getting Started
+# 2K5 Mod Studio v1.0 RC82 — Getting Started
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -12,6 +12,9 @@ visual and Crib originals, and private audio safety data share the same
 independently verified cache. The app still guards the exact file you selected
 for read-only scans, recovery, and Build, and a built copy keeps that source
 container's actual size.
+
+Community: questions, bug reports and shared patches live on the Discord,
+https://discord.gg/dpMJCnJZD (also under Help > Join the Discord… in both studios).
 
 ## Before you begin
 
@@ -862,6 +865,91 @@ xemu-only: its RSA signature cannot be regenerated, so real hardware rejects it
 (the same rule as Bump strength). `tools/nfl2k5_throw_distance.py` does the
 same from a terminal (`read`, `sliders`, `curves`, `preview`).
 
+**Position on Edit Player, Pro Bowl order** (Gameplay group, every preset): Edit Player's first
+page gains the game's own Position picker after Last Name, in roster mode and inside Franchise
+(the ratings stay, the overall follows the new position; run Depth Chart -> Auto afterwards), and
+the Pro Bowl Votes tabs run offence, defence, then kicker and punter. Both are unwitnessed in game.
+
+**Laces to the posts on field goals and PATs** (Gameplay group, EXPERIMENTAL preset only; opt-in
+elsewhere): the holder's animation decides which way the held ball faces, and the retail hold leaves
+the laces toward the kicker. The patch rolls the ball 180 degrees about its own long axis, every
+frame it is held during a live play from the Field Goal formation, using the game's own quaternion
+product; the kickoff tee already faces the posts and is left alone. What to check in game: FG and PAT
+replays from the kick camera in both drive directions and from both hashes (the laces must face the
+posts through the hold and the kicker's approach, with no pop or spin at the catch); the kickoff tee,
+punts and ball carries unchanged; a fake field goal run carries the rolled ball for that play only.
+If the laces end up sideways instead of backwards, the 90-degree variant is a 16-byte data edit in
+the cave (`nfl2k5_kick_laces.apply(..., roll=ROLL_90)`). Unwitnessed in game.
+
+**Free Practice inside Franchise** (Gameplay group, ADVANCED and EXPERIMENTAL presets; opt-in in
+BASIC until it is witnessed): retail Practice lives only under Game Modes on the main menu and picks
+two random teams, so there is no way to run a rep from inside a franchise. The patch adds a
+**Practice** row to the Coach's Desk, above Schedule. Choosing it opens the Scrimmage Settings
+screen already set to **Full Scrimmage**, with your franchise team on both sides -- your first-team
+offence against your first-team defence, on the practice field, in your away kit against your home
+kit (the away side takes the `a` uniform and the home side the `h`, so the two sides are told
+apart). The players are your live franchise roster: the game keeps one roster in memory and loading
+the franchise already replaced it, so trades, draft picks, depth-chart order and edited ratings are
+all there. Press START and the rep plays; when it ends you are back on the **Coach's Desk**, not the
+main menu. Nothing accrues: a practice session runs in game mode 1, and the stat, clock and injury
+paths are gated on mode 4 and up, so no season stats and no injuries are written, the week and the
+schedule do not move, and the franchise save is still only written when you ask for it. The B button
+backs out of the settings screen to the Coach's Desk, and the Team Select button still works if you
+would rather scrimmage against another team. What to check in game: the desk draws and scrolls with
+the twelfth row and every retail row still works; Practice Type reads Full Scrimmage and both
+uniforms are yours; a traded or drafted player is on the field; START plays a rep and backing out
+lands on the desk; after advancing a week the schedule, the Player Card stats and the injury list
+are unchanged; and main-menu Practice with no franchise loaded is still two random teams on Special
+Move. Unwitnessed in game.
+
+**Star decal under the players you tag** (Gameplay group, advanced and experimental presets; the
+tags need a disc image). The game already owns this star: the art is called `icon_controller_star`
+and the engine draws it flat on the grass under whoever a controller is driving. Open **Text &
+Rosters -> Current Roster Players**, find a player, and tick the **★ Star** column at the end of his
+row (only current primary-roster players can be ticked; the Build tab's Gameplay group lists who is
+ticked). Tick **Star decal under the players you tag** in the same group, build, and that star
+follows those players around the field in every game the copy plays, in the same place and the same
+size the controller star uses. Up to **nine** players wear one at a time -- that is the size of the
+game's own star list, and the patch refuses the tenth rather than corrupting it, so past nine some
+tagged players simply go without a decal that frame. Two things to expect: the tag also turns on the
+on-field name / number text over that player when your **Player Indicator Text** option is on (the
+game decides both with the same test), and the tag lives in the roster, so it reaches **new**
+franchises started from the patched copy, not one you are already playing. With nobody ticked the
+patch changes nothing on screen. What to check in game: tag two or three players on both teams, then
+look for a star under each of them on offence and defence, in Exhibition and in a franchise game;
+your own controller star must still be there and still be your controller's colour; tag nine and
+confirm nothing crashes; untick, rebuild, and the stars are gone. Unwitnessed in game.
+
+**Penalties at NFL rates, Chop Block toggle** (Gameplay group, advanced and experimental presets):
+retail's default 50 on every slider flags far more holding, face masks and clipping than an NFL
+Sunday, the incidental face mask is still the 2004 five-yard call, and the Chop Block On/Off toggle
+does nothing (chop blocks ride the Clipping slider). The patch re-knots seven of the hidden
+slider-to-rate curve tables in place so 50 lands near the NFL 2024 per-team-game rates (0 still
+means none, 100 keeps the retail extreme; every Penalty Settings slider still moves in 40 steps and
+"All Penalties Off" still kills every flag), makes the incidental face mask 15 yards, and wires the
+Chop Block toggle for real. Retail profiles carry Chop Block **Off**: switch it On in Penalty
+Settings if you want chop blocks called. Illegal formation, illegal contact and 12 men do not exist
+in the engine. **The rates are an estimate** (the engine has no calls-per-game number; each slider
+drives a probability per event, a hazard per second or a grace window, and how often those events
+happen is unmeasured). Calibration recipe: on a **retail** copy at default sliders, play or watch
+six CPU-vs-CPU games (coach or demo mode; Practice -> Scrimmage does not count, penalties are off in
+practice) and tally the flags by type from the play log and the referee announcements (holding,
+false start, DPI, roughing, face mask, defensive holding, clipping, late hit, offside/NZI, delay).
+Divide the NFL rate (per team-game: offensive holding 1.30, false start 1.30, DPI 0.58, defensive
+holding 0.34, unnecessary roughness 0.34, delay 0.32, roughing the passer 0.18, face mask 0.17,
+NZI 0.17, ineligible downfield 0.14) by what you counted, scale each table's 50 knot by that
+factor (never above its 100 knot), and send the numbers in: they become the shipped profile.
+Unwitnessed in game.
+
+**Home/away jerseys at any stadium** (Gameplay group, ADVANCED and EXPERIMENTAL): the retail game
+decides the jersey colour once per game load (home dark, visitor white, except the Cowboys wear
+white at home and navy in Washington and Tennessee) and only lets you choose the era. With the
+patch, on Controller Assign or the exhibition Team Select screen, keep pressing up (or down) on a
+side's uniform past its last era: that side's colour flips and the era restarts at the first (or
+last) one, so each side cycles 15 eras x 2 colours on the same input. The retail default is still
+the default, and both teams may choose white. Practice and Xbox Live are not covered, and the
+Team Select preview shows the era art only, not the colour. Unwitnessed in game.
+
 ## If xemu says "insert a disc" or stops at the Xbox logo
 
 Every disc the studio writes is a plain XISO; the changed bytes are inside `default.xbe` and the
@@ -905,13 +993,39 @@ downloaded until you press the button and confirm.
 3. Edit: move vertices, sculpt, proportional-edit. Keep the vertex count and the triangles;
    do not decimate, merge or add geometry (the game's allocation is fixed).
 4. Export from Blender (File → Export → glTF 2.0) and tick **Include → Data → Mesh →
-   Attributes** so the `_NFL_VERTEX_INDEX` lane comes along; `.glb` or `.gltf` both work.
+   Attributes** so the `_NFL_VERTEX_INDEX` and `_NFL_COLOR` lanes come along; `.glb` or
+   `.gltf` both work.
 5. Back in ★ Models, select the same model, choose the edited file and press **Check the
-   edited file**. The report says how the file was matched, how many vertices moved, whether
-   the encodable range was widened, and whether the model still fits its space on the disc.
+   edited file**. The report says how the file was matched, how many vertices moved, how many
+   normals / UVs / vertex colours changed, whether an encodable range (positions or UVs) was
+   widened, and whether the model still fits its space on the disc.
 6. Choose the source image and where to write the copy, then **Write the copy**. The source
    is never touched; a receipt is written beside the copy. Share → Apply can turn that copy
    into a `.2k5patch`.
+
+**UVs (RC82).** Texture coordinates follow the game's own rule: every mesh stores a scale and
+offset in its shape record (`+0x30`), the vertex shaders compute `uv = lane × scale + offset`,
+and there is no V flip. Tiled surfaces (seat rows, crowd, concrete, ad boards; 242 of 282
+stadium meshes, up to 12 repeats) legitimately run past 0..1 in Blender and repeat, and each
+mesh's tiling is listed in the README and in the mesh extras (`nfl2k5_uv_scale`,
+`nfl2k5_uv_offset`). Beta 56 used one fixed formula for every model, which squeezed tiled
+surfaces onto one repeat and mirrored V — the "scrambled stadium textures" people saw in
+Blender. **Write UVs from the file** on import inverts through the same per-mesh constant;
+a UV moved outside a mesh's range widens that mesh's constant for you (one axis at a time)
+when **Widen the range** is ticked. UVs stay off by default on import.
+
+**Vertex colours.** The game's per-vertex colour is baked lighting that multiplies the texture
+in game. The export carries it as the `_NFL_COLOR` attribute (r g b a, 0..1; see it in the
+Spreadsheet or paint it with an Attribute node), so textures show at full brightness in
+Blender. Tick **Bake vertex colours into COLOR_0** in the export box for the darker in-game
+look. Paint `_NFL_COLOR` and it comes back with **Write vertex colours from the file** (on by
+default; an unedited file writes nothing).
+
+**Textures and the Stadiums page.** Every embedded image is named after the material that maps
+it and carries its `nfl2k5_texture_id` (materials and textures carry it too), so a stadium
+exported here, edited in Blender and re-exported can be handed to the Stadiums page's texture
+write-back, and the community Blender add-on's part handles find the same `source_*` extras the
+Stadiums export has. The Stadiums page's own export is still positions only.
 
 What you cannot change (yet): the number of vertices or triangles, bones, weights, animations,
 and the body-type / face morph deltas (their channels are listed in the export). The player
@@ -931,6 +1045,12 @@ dynamic-kickoff line-up. Untick anything you do not want, choose where the
 patched **copy** goes, and Build. The original is never touched; a receipt is
 written beside the copy. The **Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
+
+Modern overtime (in Advanced and Experimental) is the current NFL rule: a 10-minute
+period (scaled from your quarter length), both teams get a possession unless the first
+possession ends in a safety, a first-possession field goal or touchdown is answered by a
+kickoff to the other team, and after both have possessed the next score wins; regular
+season games can still end tied after one period, playoff games play on.
 
 **TEAM column on the Player Card** (Gameplay group, in both Basic and Advanced): the
 franchise Player Card's season-by-season stats gain a TEAM column next to Yr, showing
@@ -959,3 +1079,23 @@ code such as `RAI`, `RAM`, `PHX`, `HOU` for the Oilers up to 1996). Players are 
 name and birth date, then last name and birth date, then name and position; a season is only
 written when the roster has stats for it (the receipt lists every row that could not be used).
 In this cut relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN).
+
+**Modern draft-prospect names** (Build tab and Gameplay Patches, ADVANCED and EXPERIMENTAL; disc
+images only): retail names every generated rookie and free agent from the 1990 US Census lists,
+so draft classes are full of Harolds and Walters, a fifth of them with a Hispanic-origin name, and
+no Jalen, Jordan or Isaiah ever turns up. The toggle rewrites the 485 first names and 485 surnames
+of the roster template's name pool with the most common names of 2015-2025 NFL players
+(nflverse-data, CC-BY-4.0; `data/nfl2k5_modern_names.csv`). The announcer rule: the game calls a
+generated player by a recorded surname bank indexed by pool position, so the 433 surnames the bank
+knows (Smith, Johnson, Jackson...) keep their slot and are still called by name, while the 52 slots
+that held Hispanic-origin or developer names take modern surnames (Diggs, Chubb, Kamara...) and a
+rookie with one of those is announced by jersey number instead of a wrong name (a small executable
+cave decides per surname, so the executable and the disc's roster template must come from the
+same build). Only a franchise CREATED from the copy sees the new names: an existing save carries
+its own roster copy. To use your own list, point the "Prospect names CSV" field at a UTF-8 CSV with
+the columns `first,last` (485 rows in pool order; an `index` column is optional; `#` comment lines
+allowed): ASCII letters plus `' - .`, 1-12 characters each, no empty names, and the whole list must
+fit the pool's 13,238 UTF-16 bytes (the built-in list uses all of them; shorter names buy room). A
+surname equal to the retail one at its index keeps its call-out, any other surname is announced by
+number; the build receipt lists every slot as kept or replaced. Unwitnessed in game: please report
+whether a drafted Smith is called by name and a drafted Diggs by number.

@@ -1,5 +1,219 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC82 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star; overtime and Models UV fixes (2026-09-04)
+
+- **Fixed: modern overtime ended after a first-possession field goal** because the kickoff after
+  a score is built (and its receiving team marked as "has possessed") in the same dead-ball pass
+  that applies the score, before the post-play evaluator judges the scoring play; the evaluator
+  then saw the opponent as already having had its possession and ended the game (Noah, 2026-09-04,
+  Situation OT1 0-0, field goal, "game ended"). The receiving team of a kickoff is now only
+  *pending* until the kickoff has been played, the Situation screen's game seed clears the
+  possession flags (it never runs the overtime kickoff builder), and unicorn tests replay the
+  exact scenario through the real score/kickoff/evaluator code: first-possession FG -> play on
+  and the other team receives, tying FG -> sudden death, second FG -> game over; first-possession
+  TD + PAT -> play on; safety -> game over. Same two caves (`nfl2k5_overtime.py`, 287/300 and
+  216/233 bytes), one new 5-byte hook in `FUN_0010bd80`. Unwitnessed in game.
+- **Position on the first page of Edit Player, in roster mode and in Franchise.** Create Player's own
+  Position picker (17 positions, ratings kept, overall recomputed from the new position's weights)
+  now sits after Last Name on both Edit Player screens; Franchise opens the same screens, so a
+  position change no longer means a new player. Two 28-byte `.rdata` row-list edits
+  (`nfl2k5_position_row.py`). Run Depth Chart -> Auto afterwards. In every preset. Unwitnessed.
+- **Pro Bowl Votes tabs in football order.** Offence, defence, then K and P (retail put the kickers
+  between the linemen and the defence). One 17-pointer list (`nfl2k5_probowl_order.py`); the vote
+  scanner reads each tab's own position and no other screen shares the list. In every preset.
+- `nfl2k5_rdata_sites.py`: the shared retail-pin / status / apply / digest-repin helper those two
+  and future fixed-span `.rdata` patches use.
+- **Penalties at NFL rates + a working Chop Block toggle** (`nfl2k5_penalties.py`, advanced and
+  experimental presets; `BuildPlan.penalties = "nfl"`). Every penalty slider drives a hidden
+  `.rdata` curve table read through the game's interpolator (`FUN_001b0ae0`); seven of the nine are
+  re-knotted in place (offensive/defensive holding, clipping, roughing window, late-hit window, face
+  mask, ineligible downfield; DPI hazard/radius and the NZI zone kept) so the default 50 lands near
+  NFL 2024 per-team-game rates while 0 still means none and 100 keeps the retail extreme. The
+  incidental face mask (idx 25) becomes 15 yards. The Chop Block On/Off toggle, dead in retail
+  because idx 9 and 10 share the Clipping-slider case of the enable pass (`FUN_000b1440`), is wired
+  through a 10-byte stub (`mov eax,[0xE60064]; jmp 0xB1558`) hosted in the dead `FUN_000b4a60`
+  (zero references in the retail image; both cave gates pass) -- note retail profiles carry Chop
+  Block **Off**, so switch it On in Penalty Settings. **The rates are ESTIMATED** pending a
+  calibration playtest (the engine has no calls-per-game number; see the getting-started recipe).
+  Illegal formation, illegal contact and 12 men on the field do not exist in the engine, so no
+  patch can add them. 141 bytes over `.text`/`.rdata`/`.data`; unicorn-proven interpolator and
+  enable-pass runs; unwitnessed in game.
+- **Home/away jerseys at any stadium** (`nfl2k5_uniform_choice.py`, `BuildPlan.uniform_choice`).
+  Retail decides the colour once per game load with one rule (home dark, visitor white; the
+  Cowboys white at home and navy in Washington/Tennessee) and only lets you pick the era. The
+  `choice` form (ADVANCED and EXPERIMENTAL; off in BASIC) rewrites the 97-byte rule block, the four
+  era handlers and the slot reset in place: up/down past the last available era on Controller
+  Assign or Team Select flips that side's colour and restarts at the first era, so each side
+  cycles 15 eras x 2 colours with no new button; the retail default stays the default and both
+  teams may choose white. Two flip words live in the writable `.rdata`/`.data` gap beside the
+  7-on-7 flag and clear with the era slots; no cave. The `rule` form (opt-in) is the same block as
+  `mov esi,0` + NOPs: home always dark everywhere, Cowboys included. Practice, Xbox Live and the
+  Team Select preview art are not covered. Unicorn-proven on the real routines; unwitnessed in game.
+- **Laces to the posts on field goals and PATs** (`nfl2k5_kick_laces.py`, `BuildPlan.kick_laces`;
+  EXPERIMENTAL preset only, opt-in elsewhere until witnessed). The held ball's orientation is not a
+  constant: `FUN_001ccfa0` samples the holder's animation ball track every frame, so the hold clip
+  decides where the laces point (the kickoff tee is a code constant, `.rdata` 0x50D9A0, and already
+  faces the target). The patch hooks the six-byte join point of the three held-ball orientation
+  paths at 0x1CD3FB (`mov edx,[esp+0x14]; mov ecx,[edx]` -> `call cave; nop`) into a 143-byte cave
+  in the dead `FUN_002979f0` (0x2979F0; zero references in the retail image, both cave gates pass):
+  `pushad/pushfd`, live play (`[0xE602B8] == 0xE`) and the offence's chosen formation being the
+  Field Goal formation (the `[[[0xE60280]+0xC]+8]` chain with the -4 sentinel guard, flags bits 8-13
+  == 12, as the kick-rules PAT fixer reads it), then the ball quaternion at transform +0x20 is
+  multiplied in place by a 16-byte roll constant kept in the cave through the game's own
+  `FUN_003ca150` (`q <- q x r`, Hamilton order), default `(0, 0, 0, 1)` = 180 degrees about the
+  ball's long axis (`(w,x,y,z) <- (-z, y, -x, w)`), so the laces swing from the kicker to the posts;
+  `apply(..., roll=ROLL_90)` writes the 90-degree variant into those 16 bytes without touching the
+  code. 78 bytes of code, writes only through `esi`; `popfd/popad`, the two instructions replayed,
+  `ret`. Punts, kickoffs and scrimmage carries are not the Field Goal formation and stay retail; a
+  fake field goal carries the rolled ball for that play only. Unicorn-proven on the real bytes
+  (rolled on live FG, untouched on other formations / dead ball / the -4 sentinel, registers, flags
+  and stack transparent); unwitnessed in game.
+- **Modern draft-prospect names** (`nfl2k5_prospect_names.py`, advanced and experimental presets;
+  `BuildPlan.prospect_names = "modern"` or a CSV path; disc images only). Retail names every
+  generated rookie and free agent from the 1990 US Census lists (James, Harold, Walter... Smith,
+  Garcia, Martinez): two independent uniform draws over a 485 + 485 pool in the roster template
+  (ROST body: entry array 0x72FB4, UTF-16 strings 0x8B7D0..0x8EB86), so a fifth of every class
+  carries a Hispanic-origin name and none reads like a 2020s roster. The pool is rewritten inside
+  its own 13,238 bytes from `data/nfl2k5_modern_names.csv` (nflverse-data 2015-2025 rosters,
+  CC-BY-4.0; `tools/nfl2k5_modern_names_generate.py` reproduces it): the 433 surnames the announcer
+  has recorded stay at their index (the audio id is 9300 + index) and keep their call-out, the 52
+  Hispanic-origin and developer slots take modern surnames (Diggs, Chubb, Kamara...) and every
+  first name goes modern. A 27-byte cave on the generator's audio-id store (hook 0x2BE7B8; host =
+  the tail of the dead `FUN_000b4a60` at 0xB4A70, beside the penalties stub) keeps 9300 + index for
+  surname pointers below the layout's boundary and writes 9100 (no recorded cue: the announcer
+  falls back to the jersey number) for replacements. The boundary is baked from the CSV, so
+  `inspect` reports `applied` only with both halves present and agreeing (`partial` otherwise) and
+  the build refuses a mismatch. Correction to the study: the 272 zero bytes before the pool are the
+  empty names of the 68 spare player records (136 relative pointers land there), not free space, so
+  the budget is the retail span. Custom lists: `first,last`, 485 rows, `index` optional, ASCII up to
+  12 characters, within the byte budget; the receipt logs every slot as kept or replaced. New
+  franchises only (a save carries its own roster copy). Unicorn-proven hook (retained pointer ->
+  9300 + index, replacement -> 9100), both cave gates pass, order-independent with the other
+  executable patches; unwitnessed in game.
+- **Free Practice inside Franchise** (`nfl2k5_franchise_practice.py`, `BuildPlan.franchise_practice`;
+  ADVANCED and EXPERIMENTAL presets, opt-in in BASIC until witnessed). Retail Practice exists only
+  under Game Modes on the main menu, picks two random teams and has no way in from a franchise, and
+  the Coach's Desk (descriptor `.rdata` 0x522190) has no spare row: its eleven rows run Schedule ..
+  Quit and the type-3 terminator at 0x52215C ends exactly where the descriptor begins. The patch
+  relocates the desk's 52-byte event-hook list into a cave (the same six `(event, record)` pairs
+  with event 5 last, since the dispatcher `FUN_0006E4E0` scans for the first matching event), which
+  frees precisely one 0x34 row slot at 0x521EEC, writes a **Practice** row there (type 9, label =
+  the retail UTF-16 `L"Practice"` at 0xE9C3BC, always visible) and moves the descriptor's row
+  pointer back one row, so Practice is the first row and the eleven retail rows follow unchanged.
+  The row's activate stub is the tail of the retail Front Office callback `FUN_00142910` (start the
+  fade, set the deferred next screen `[0xAA2408]`) pointed at a **clone of the Scrimmage Settings
+  descriptor** in the cave -- byte-identical to 0x501834 except its own hook list (Team Select still
+  on event 0xB) and its own START handler. The clone's event-1 stub runs retail `cb_00148AD0`
+  (Practice Type 0, the `s32` practice field) and then `FUN_000C4D70`, the game's own "the team the
+  user coaches" (`[0xE5775C]` -> `FUN_000C4C50`), and puts that team on **both** sides through
+  `FUN_00077AE0` / `FUN_00077B20` at Practice Type = Full Scrimmage via `FUN_000E33F0`, so mode 1
+  fields your first-team offence against your first-team defence in your away kit against your home
+  kit, with the live franchise roster (there is one roster object, `[0xB72918]`, and the franchise
+  load already overwrote it). The START stub is `FUN_00148B50` with **one** pop instead of two,
+  because the franchise entry is one push deep, so a rep ends back on the Coach's Desk. 352-byte
+  cave at 0x1D82D0 (eleven dead type-tag predicates; no branch target and no aligned pointer in any
+  of the 23 sections lands inside), 100 bytes of code, four tables, **no mutable state and not one
+  retail instruction byte changed**; no resource or pack change. Practice is mode 1 and the stat,
+  clock and injury paths are gated on mode >= 4, so a session writes no season stats and no
+  injuries, and the season state is only touched by franchise setters this path never calls.
+  Unicorn-proven on the real bytes (both team globals and both playbook names = the coached team,
+  Practice Type and the mode word set, retail practice untouched with no coached team; the START
+  stub pops once where retail's pops twice); both cave gates pass, order-independent with the other
+  executable patches. **Unwitnessed in game** -- the Coach's Desk has never been seen drawing a
+  twelfth row, and a mode-1 game ending inside a franchise context has never been witnessed.
+
+- **★ Models: texture coordinates now follow the game's own per-mesh rule.** Beta 56
+  decoded every model's UVs with one fixed formula (`u = (n + 1) / 2`, `v = (1 - n) / 2`,
+  "verified on the referee"). The game does not. Every NFL 2K5 vertex shader that routes
+  register 6 to a texture coordinate computes `oT0.xy = v6.xy * c[-89].xy + c[-89].zw`, and
+  `c[-89]` is four floats the draw path loads from each SHAPE record at `+0x30..+0x3C`
+  (Su, Sv, Ou, Ov), right beside the proved position scale/offset at `+0x10`/`+0x20`
+  (`movaps xmm0,[esi+0x30]` at VA 0x245B9 beside `[esi+0x10]` at 0x245FD). The exporter
+  now writes `TEXCOORD_0 = n * S + O` per mesh with **no V flip** (Sv is positive on every
+  shape sampled). 242 of 282 stadium shapes tile (S up to 12), so seat rows, crowd,
+  concrete and ad boards had collapsed onto one repeat and were mirrored: that was the
+  "scrambled stadium textures" report from the community Blender add-on. The referee's own
+  constant is (0.81, 1.24, 0.55, 0.18), so the model the old rule was "verified" on was wrong
+  too; the fixed rule was the S = O = 0.5 special case plus a flip that merely looked
+  plausible on a striped shirt. Import inverts through the same constant (`(uv - O) / S`); a UV
+  edit outside `O ± S` widens that mesh's constant one axis at a time, exactly as positions
+  widen theirs, and the report says so; UVs stay off by default on import. Each mesh's extras
+  carry `nfl2k5_uv_scale` / `nfl2k5_uv_offset` and a `texcoord_decode` block, the file
+  carries `nfl2k5_texcoord_contract`, and the README lists each mesh's tiling.
+- **Models exports speak the Stadium Studio contract.** Every material, texture and image
+  carries `nfl2k5_texture_id` (`nfl2k5.stadium.o3610.c0004.scene4175.texture0002`; the scene
+  number is the resource's position among the disc's SCNE resources, the Stadiums page's own
+  enumeration; other models use their name in place of `stadium`), images are named after the
+  first material that maps them, materials carry `nfl2k5_mapping_status`, and meshes,
+  primitives and nodes carry the `source_*` extras the Stadium Studio and the add-on read
+  (`source_shape_index`, `source_material_index`, `source_material_name`,
+  `source_submesh_index`, `vertex_attribute_descriptors`, `position_decode`). The root node is
+  `nfl2k5_units_centimetre_to_metre` and the file-level `nfl2k5_unit_contract` and
+  `nfl2k5_texture_contract` blocks are written. A stadium exported from ★ Models and edited
+  in Blender is accepted by the Stadiums page's texture write-back. The id format and keys
+  now live in `nfl2k5_models.py`; the Stadium Studio imports them. The Stadiums page's own
+  export is unchanged (positions only, copied byte for byte from the private cache, so no
+  cache re-derive); its contract note now records the proved UV rule and points at the Models
+  export for a UV-bearing file.
+- **Vertex colours no longer darken the export.** The D3DCOLOR lane is the game's baked
+  lighting (mean 155/255; the shaders multiply it into the texture). Written as `COLOR_0`,
+  Blender multiplied it into every material's base colour and textures looked dark and
+  blotchy. The lane is now the custom attribute `_NFL_COLOR` (VEC4 float, r g b a in 0..1),
+  which Blender imports as a FLOAT_COLOR attribute without touching the material, and it
+  comes back through import for exactly matched vertices (an unedited file writes nothing;
+  new checkbox "Write vertex colours from the file", on by default). The export box gains
+  "Bake vertex colours into COLOR_0" for the darker in-game look. A `COLOR_0` coming back
+  from Blender is never read.
+- Export schema `nfl2k5_model_export/v2`. Tests in `tests/mod_editor/test_nfl2k5_models.py`:
+  the shader-rule transform, its exact inverse under real constants, per-axis widening, the
+  D3DCOLOR codec and the contract ids without a disc; with the private extraction, the
+  referee and a stadium scene export `TEXCOORD_0 == n * S + O` against the raw lanes with the
+  full contract, an unchanged export re-imports to the original quantised lanes exactly, a UV
+  pushed out of range widens only U, and a painted vertex colour lands in the lane. Proof
+  renders (Blender 4.0 headless): referee stripes, number patch and hat crest, stadium banner,
+  goal-line numeral, SPORTSCENTER board, crowd and seat rows are right under the per-shape
+  rule and wrong under the fixed one. Unwitnessed in game: no UV or vertex-colour edit has
+  been played back on a console or emulator yet.
+- **Star decal under the players you tag** (`nfl2k5_player_star.py` + `nfl2k5_player_tags.py`,
+  `BuildPlan.player_star` / `BuildPlan.player_tags`; off in BASIC, on in ADVANCED and EXPERIMENTAL
+  because with no player tagged it draws nothing). Retail already draws this star and the art is
+  literally called `icon_controller_star` (`.string_` 0xE6C16C): `FUN_000f8e60` loads it as the
+  models `controller` / `controller100` (`[0xBA28A4]` / `[0xBA28A8]`), `FUN_000f8880` puts an
+  instance at a player's feet as a **world-space decal** (it adds x/z into the instance transform
+  at +0x30 / +0x38 and colours it from the per-user `.rdata` table 0x4ED9A0), `FUN_000f9030` walks
+  the on-field entity list `[0xE60268]` once a frame and appends the players who get one to a list
+  at 0xBA2824, and `FUN_000f9320` draws them. The **only** gate on that append is `FUN_00075d40`,
+  an 80-byte leaf. So nothing is authored: the patch is an **in-place rewrite of that one routine**
+  -- 80 retail bytes out, 80 new bytes in, entry unmoved, **no cave and no hook** -- that keeps every
+  retail answer and adds "or this player's roster record carries the studio's star bit", refusing
+  once the star list is full. The tag is byte **+0x53 bit 0** of the 0x54 roster record: `entity+0x3C`
+  **is** that record (`FUN_000fa270` stores it into the marker queue at 0xFA2CB and the consumers
+  read its +0x14 as the name pointer, its +0x20 bits 3..9 as the jersey number and its +0x35 as the
+  position code -- the studio's own record fields), and +0x53 is the second of the two bytes Bad_AL's
+  NFL2K5Tool calls "padded by 2 zero bytes", zero in all 2,547 retail records. Four earlier
+  candidates were checked and every one is live: +0x27 bit 0 is **contract length** (981 primary
+  records set it; +0x0A/+0x24/+0x26/+0x27 are the contract block and +0x08 the Player Type flags,
+  per the Flying Finn V4 RE), +0x26 bit 0 and +0x08 bit 0 the same way, **+0x23** is bits 24..31 of
+  the live dword at +0x20 (an 8-bit field at bits 22..29 with a getter at `FUN_000be290` and a
+  setter at `FUN_000be2a0`, plus flag bits 30 and 31), and **+0x24 bit 7** is its own copied one-bit
+  field that retail data actually sets. The decisive evidence for +0x53 is the game's own
+  field-by-field player clone at 0xC16CD..0xC1DDB: it names every field of the record from +0x00 to
+  +0x51 and never names +0x52 or +0x53 (a test pins this). The **9-entry clamp is not optional**: the list is 0xC bytes an entry with a byte count at
+  0xBA2821 and `FUN_000f9030` flushes `[0xBA2820, 0xBA2820 + 4 + count*0xC)` at 0xF92E3, which with
+  9 entries ends exactly at the next global (0xBA2890), so the tag path refuses at 9 while retail's
+  own answers are never clamped. The rewrite is a leaf with no push, no pop, no call and no memory
+  write at all (its last act is a tail `jmp` to the pure `FUN_0017ebd0`, whose 0/1 return is the
+  retail answer); both cave gates and the memory-write gate pass, and unicorn runs the real bytes to
+  prove retail-identical answers for untagged records over eleven entity states, 1 for a tagged one,
+  a null record pointer never dereferenced, and the clamp at 9. Tagging is a **★ Star** checkbox
+  column in Text & Rosters -> Current Roster Players (primary pool only: those are the records the
+  on-field entity points at) which the Build tab reads as `player_tags`; the writer rewrites only
+  those pad bytes in the ROST resource of the copy, runs last of the roster passes and leaves the
+  team-history, reclassify, schedule and prospect-name digests intact. Side effect by design: the
+  same predicate gates the on-field name/number indicator in `FUN_00075d90`, so a tagged player gets
+  that too when Player Indicator Text is on. Tags need a disc image and reach franchises **created**
+  from the copy. Unwitnessed in game.
+
 ## v1.0 RC81 — Update now: the studio updates itself on every platform (2026-09-03)
 
 - **Update now.** When a newer release exists the banner and the Help menu's

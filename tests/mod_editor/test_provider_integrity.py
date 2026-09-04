@@ -190,7 +190,7 @@ class ProviderIntegrityTests(unittest.TestCase):
             # formation/play clone writer, fixed-slot audio, the fail-closed
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
-            [82, 9, 8, 9, 8, 9],
+            [83, 9, 8, 9, 8, 9],   # 83 since RC82: nfl2k5_models joined the unified visual closure (per-shape UV)
         )
         for provider in providers:
             entries = [provider.backend_module]

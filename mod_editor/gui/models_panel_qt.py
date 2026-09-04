@@ -40,14 +40,16 @@ MODEL_FILTER = "glTF models (*.gltf *.glb);;All files (*)"
 
 FEASIBILITY = (
     "What Models can do today\n\n"
-    "EXPORT: every 3D model on the disc opens in Blender as glTF 2.0 with its triangles, UVs, vertex "
-    "colours, normals, the embedded textures the game draws it with, and, for players, referees, coaches, "
+    "EXPORT: every 3D model on the disc opens in Blender as glTF 2.0 with its triangles, UVs (each mesh's own "
+    "tiling, the rule the game's vertex shaders use), vertex colours (the _NFL_COLOR attribute; COLOR_0 on "
+    "request), normals, the embedded textures the game draws it with, and, for players, referees, coaches, "
     "hands and every other animated model, a skin with the game's joints. Units are metres (the game "
-    "authors in centimetres; the root node carries the 0.01 scale).\n\n"
+    "authors in centimetres; the root node carries the 0.01 scale). Images carry their nfl2k5_texture_id, so a "
+    "stadium export edited in Blender feeds the Stadiums page's texture write-back.\n\n"
     "IMPORT (same-topology): move vertices freely -- sculpt, proportional edit, reshape -- and bring the file "
     "back. The game's vertex count, triangles, bones, weights and materials are kept exactly; positions "
-    "(and normals / UVs when the file carries them for exactly matched vertices) are re-encoded into the "
-    "game's fixed-point lanes. If an edit leaves the model's retail range the range is widened for you. If "
+    "(and normals / UVs / vertex colours when the file carries them for exactly matched vertices) are re-encoded "
+    "into the game's fixed-point lanes. If an edit leaves the model's retail range the range is widened for you. If "
     "Blender split or re-ordered vertices, the exported vertex-index lane maps them back (tick Include > Data "
     "> Mesh > Attributes when exporting); without it the importer falls back to matching by order or by "
     "nearest vertex and says so.\n\n"
@@ -173,6 +175,11 @@ class ModelsPanel(QWidget):
         self.open_button = QPushButton("Open folder")
         self.open_button.clicked.connect(self._open_export_folder)
         export_layout.addWidget(self.open_button)
+        self.color0_check = QCheckBox("Bake vertex colours into COLOR_0")
+        self.color0_check.setToolTip("Also write the game's baked vertex lighting as COLOR_0, which Blender multiplies into the "
+                                     "texture (the darker in-game look). Off keeps textures at full brightness; the lane is always "
+                                     "carried as the _NFL_COLOR attribute either way.")
+        export_layout.addWidget(self.color0_check)
         right_layout.addWidget(export_box)
 
         import_box = QGroupBox("Import an edited glTF / GLB")
@@ -196,10 +203,18 @@ class ModelsPanel(QWidget):
         self.normals_check.setToolTip("Shading normals for exactly matched vertices; off keeps the game's originals")
         options.addWidget(self.normals_check)
         self.uvs_check = QCheckBox("Write UVs from the file")
-        self.uvs_check.setToolTip("Texture coordinates for exactly matched vertices (off by default: edit textures on the texture tabs)")
+        self.uvs_check.setToolTip("Texture coordinates for exactly matched vertices, inverted through each mesh's own UV scale/offset "
+                                  "(off by default: edit textures on the texture tabs)")
         options.addWidget(self.uvs_check)
+        self.colours_check = QCheckBox("Write vertex colours from the file")
+        self.colours_check.setChecked(True)
+        self.colours_check.setToolTip("The _NFL_COLOR attribute (the game's baked lighting) for exactly matched vertices; "
+                                      "an unedited file writes nothing")
+        options.addWidget(self.colours_check)
         self.rescale_check = QCheckBox("Widen the range if the edit needs it")
         self.rescale_check.setChecked(True)
+        self.rescale_check.setToolTip("Positions outside the mesh's retail range widen its scale/offset; UVs outside O ± S widen the "
+                                      "mesh's UV constant the same way")
         options.addWidget(self.rescale_check)
         options.addStretch(1)
         import_layout.addLayout(options)
@@ -396,10 +411,11 @@ class ModelsPanel(QWidget):
         if key is None or self._source is None:
             return
         source = self._source
+        color0 = self.color0_check.isChecked()
         self.status_label.setText(f"Exporting {destination.name}…")
 
         def operation() -> object:
-            return models.export_model(source, key, destination)
+            return models.export_model(source, key, destination, include_vertex_colors_as_color0=color0)
 
         def done(result: object) -> None:
             assert isinstance(result, models.ExportResult)
@@ -442,11 +458,13 @@ class ModelsPanel(QWidget):
             return
         source = self._source
         normals, uvs, rescale = self.normals_check.isChecked(), self.uvs_check.isChecked(), self.rescale_check.isChecked()
+        colours = self.colours_check.isChecked()
         self._compiled = None
         self.status_label.setText(f"Fitting {edited.name} onto the game's vertices…")
 
         def operation() -> object:
-            return models.compile_import(source, key, edited, write_normals=normals, write_uvs=uvs, allow_rescale=rescale)
+            return models.compile_import(source, key, edited, write_normals=normals, write_uvs=uvs, allow_rescale=rescale,
+                                         write_colours=colours)
 
         def done(result: object) -> None:
             assert isinstance(result, models.CompiledModelImport)
@@ -502,13 +520,13 @@ def describe_model(source: models.ModelSource, key: str) -> str:
     for submesh in scene["submeshes"]:
         submesh_counts[int(submesh["shape_index"])] = submesh_counts.get(int(submesh["shape_index"]), 0) + 1
     for shape in scene["shapes"]:
-        lanes = models._shape_lanes(scene, shape)
+        lanes = models._shape_lanes(scene, shape, decoded)
         parts = [f"{lanes.vertex_count:,} vertices", f"{submesh_counts.get(lanes.index, 0)} submesh(es)",
                  lanes.position_format.lower() + " positions"]
         if lanes.normal:
             parts.append("normals")
         if lanes.texcoord:
-            parts.append("uvs")
+            parts.append(f"uvs (tiling x{lanes.uv_scale[0]:.2f} / x{lanes.uv_scale[1]:.2f})")
         if lanes.colour:
             parts.append("vertex colours")
         if lanes.transform_count > 1:
@@ -527,7 +545,8 @@ def import_report_text(compiled: models.CompiledModelImport) -> str:
     for shape in compiled.shapes:
         lines.append(f"• {shape.name}: matched by {shape.matched_by}; {shape.covered_vertices:,}/{shape.source_vertices:,} "
                      f"game vertices covered by {shape.edited_vertices:,} in the file; {shape.positions_changed:,} moved "
-                     f"(largest move {shape.max_move_cm:.2f} cm), {shape.normals_changed:,} normals, {shape.uvs_changed:,} UVs"
+                     f"(largest move {shape.max_move_cm:.2f} cm), {shape.normals_changed:,} normals, {shape.uvs_changed:,} UVs, "
+                     f"{shape.colours_changed:,} vertex colours"
                      + ("; encodable range widened" if shape.rescaled else ""))
         for note in shape.notes:
             lines.append(f"    - {note}")

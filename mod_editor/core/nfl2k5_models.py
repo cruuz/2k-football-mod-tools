@@ -14,12 +14,31 @@ What is exported (per shape):
 * positions -- ``FLOAT3`` copied, ``NORMSHORT3`` decoded with the shape's
   proved scale/offset (``position = normshort3 * scale + offset``);
 * normals -- register 2 ``NORMPACKED3`` (11/11/10-bit signed);
-* texture coordinates -- register 6 ``NORMSHORT2``, mapped to glTF as
-  ``u = (n + 1) / 2`` and ``v = (1 - n) / 2`` (the game's signed lane spans the
-  whole texture and its v axis points up the decoded image; verified by
-  rendering the referee's striped shirt, whose stripes, number patch and shoes
-  only line up under this mapping);
-* vertex colours -- register 3 ``D3DCOLOR``;
+* texture coordinates -- register 6 ``NORMSHORT2``, un-normalised with the
+  SHAPE's OWN constant: ``uv = normshort2 * (Su, Sv) + (Ou, Ov)``, the four
+  floats at shape record ``+0x30..+0x3C``.  Every NFL 2K5 vertex shader that
+  routes register 6 to a texture coordinate computes exactly
+  ``MAD oT0.xy, v6.xyyy, c[-89].xyyy, c[-89].zwww`` (18 of the 20 programs in
+  the executable; the other two copy v6 through unchanged), and the draw path
+  loads c[-89] from ``[shape + 0x30]`` right beside the proved position
+  constant at ``+0x10``/``+0x20``.  There is no V flip: Sv is positive on
+  every shape sampled.  Beta 56 shipped the fixed rule ``u = (n + 1) / 2``,
+  ``v = (1 - n) / 2``, "verified on the referee" -- that was the special case
+  ``S = O = 0.5`` plus a flip that merely looked plausible on a striped shirt;
+  the referee's real constant is (0.81, 1.24, 0.55, 0.18) and 242 of 282
+  stadium shapes tile (S up to 12), so the fixed rule collapsed every tiled
+  surface onto one repeat and mirrored V everywhere;
+* vertex colours -- register 3 ``D3DCOLOR``, written as the custom attribute
+  ``_NFL_COLOR`` (VEC4 float, r g b a in 0..1).  In game it is baked lighting
+  (``MUL oD0, v3, c[-90]``, mean 155/255) that multiplies the texture; as
+  ``COLOR_0`` Blender would multiply it into the base colour and every texture
+  looks dark and blotchy, so ``COLOR_0`` is only written on request
+  (``include_vertex_colors_as_color0``);
+* the Stadium Studio contract -- ``nfl2k5_texture_id`` on every material,
+  texture and image, images named after the first material that maps them,
+  ``source_*`` extras on meshes, primitives and nodes, and a root node named
+  ``nfl2k5_units_centimetre_to_metre`` -- so the Stadium Studio's texture
+  write-back and the community Blender add-on accept this export unchanged;
 * topology -- the decoded NV2A push streams (triangle strips and quads), one
   glTF primitive per game submesh, each bound to its material;
 * materials and the embedded P8 textures they reference, as PNG images inside
@@ -34,9 +53,11 @@ What is exported (per shape):
 
 What import does: same-topology edits.  The vertex count, triangle
 connectivity and every non-lane byte stay exactly as the game shipped them;
-positions (and normals / UVs when the file carries them) are re-encoded into
-the game's fixed-point lanes.  Edits that push a ``NORMSHORT3`` shape outside
-its retail range are absorbed by widening the shape's scale/offset.  A file
+positions (and normals / UVs / ``_NFL_COLOR`` when the file carries them) are
+re-encoded into the game's fixed-point lanes.  Edits that push a ``NORMSHORT3``
+shape outside its retail range are absorbed by widening the shape's
+scale/offset; a UV edit outside ``O +/- S`` widens the shape's UV constant at
+``+0x30`` the same way, one axis at a time.  A file
 with a different vertex count is fitted by nearest-vertex projection and the
 report says so.  Nothing is added or removed: the compressed resource is
 rebuilt into its retail span with the wrapper byte-identical.
@@ -63,7 +84,15 @@ PACK_FOLDER = Path("extracted/ESPN NFL 2K5 (USA)/vc_53450030")
 ARCHIVE_NAME = "vc_53450030"
 GLTF_UNIT_SCALE = 0.01                      # the game authors in centimetres; glTF is metres
 VERTEX_INDEX_ATTRIBUTE = "_NFL_VERTEX_INDEX"
-SCHEMA_EXPORT = "nfl2k5_model_export/v1"
+COLOUR_ATTRIBUTE = "_NFL_COLOR"             # the D3DCOLOR lane, r g b a as floats 0..1
+UV_CONSTANT_OFFSET = 0x30                   # shape record: Su, Sv, Ou, Ov (four floats) = shader c[-89]
+UV_CONSTANT_FORMAT = "<4f"
+#: The Stadium Studio contract (``nfl2k5_stadium_studio.py`` imports these from here): the
+#: canonical texture id every material/texture/image carries, and the root node's name.
+GLTF_TEXTURE_ID_KEY = "nfl2k5_texture_id"
+GLTF_MATERIAL_INDEX_KEY = "nfl2k5_material_index"
+ROOT_NODE_NAME = "nfl2k5_units_centimetre_to_metre"
+SCHEMA_EXPORT = "nfl2k5_model_export/v2"
 SCHEMA_IMPORT = "nfl2k5_model_import/v1"
 PALETTE_SLOTS = 56
 REMAP_SENTINEL = 0x7F7F
@@ -182,6 +211,39 @@ def _normalise(vector: Sequence[float]) -> tuple[float, float, float]:
     return (vector[0] / length, vector[1] / length, vector[2] / length)
 
 
+def d3dcolor_to_rgba(word: int) -> tuple[int, int, int, int]:
+    """``D3DCOLOR`` (0xAARRGGBB) -> (r, g, b, a) bytes."""
+    return ((word >> 16) & 0xFF, (word >> 8) & 0xFF, word & 0xFF, (word >> 24) & 0xFF)
+
+
+def rgba_to_d3dcolor(r: int, g: int, b: int, a: int) -> int:
+    clamp = [max(0, min(255, int(round(c)))) for c in (r, g, b, a)]
+    return (clamp[3] << 24) | (clamp[0] << 16) | (clamp[1] << 8) | clamp[2]
+
+
+def _float32(value: float) -> float:
+    """``value`` rounded to the nearest binary32, the way the shape record stores it."""
+    return float(struct.unpack("<f", struct.pack("<f", value))[0])
+
+
+# ------------------------------------------------------------------ Stadium Studio contract
+
+def scene_contract_id(scene_name: str, outer_index: int, chunk_index: int, scene_index: int) -> str:
+    """The Stadium Studio's scene id: ``nfl2k5.stadium.o3136.c0006.scene1974`` for a stadium.
+
+    ``scene_index`` is the resource's position among the archive's SCNE resources in inventory
+    order -- the same enumeration the private stadium cache worker uses -- so a stadium exported
+    here carries the very ids the Stadium Studio's texture write-back keys on.  Other scenes
+    use their own (file-safe) name in place of ``stadium``.
+    """
+    return (f"nfl2k5.{safe_file_name(scene_name)}.o{int(outer_index):04d}.c{int(chunk_index):04d}."
+            f"scene{int(scene_index):04d}")
+
+
+def texture_contract_id(scene_id: str, texture_index: int) -> str:
+    return f"{scene_id}.texture{int(texture_index):04d}"
+
+
 # ------------------------------------------------------------------ catalog
 
 # Friendly grouping by scene name. Order matters: the first match wins.
@@ -263,7 +325,13 @@ class ModelSource:
         self._outer = outer
         self._probe = probe
         self.resources = {(r.outer_index, r.chunk_index): r for r in resources if r.kind == "SCNE"}
+        # inventory-order position among the SCNE resources: the Stadium Studio's ``scene_index``
+        self._scene_positions = {identity: position for position, identity in enumerate(self.resources)}
         self._names: dict[tuple[int, int], str] | None = None
+
+    def scene_index(self, resource: Any) -> int:
+        """The resource's position among the archive's SCNE resources (inventory order)."""
+        return int(self._scene_positions[(resource.outer_index, resource.chunk_index)])
 
     # -- names / catalog --------------------------------------------------
     NAME_PREFIX_BYTES = 512        # every shipped scene keeps its name at decoded offset 0x20
@@ -323,6 +391,11 @@ class ModelSource:
     def decode(self, resource: Any) -> tuple[bytes, dict[str, Any]]:
         return self._probe.decode_resource(self.span(resource), resource)
 
+    def decode_span(self, span: bytes, resource: Any) -> bytes:
+        """Decode any span laid out like ``resource`` (e.g. a rebuilt one) to its system bytes."""
+        decoded, _detail = self._probe.decode_resource(bytes(span), resource)
+        return decoded
+
     def parse(self, key: str) -> tuple[Any, bytes, dict[str, Any]]:
         """(resource, decoded bytes, parsed scene dict) for one model key."""
         inventory = _tools_module("nfl_scne_inventory")
@@ -368,9 +441,18 @@ class ShapeLanes:
     selector: tuple[int, int, int] | None
     stream_offsets: tuple[int, ...]
     stream_strides: tuple[int, ...]
+    uv_scale: tuple[float, float] = (1.0, 1.0)       # shape +0x30, +0x34 (shader c[-89].xy)
+    uv_offset: tuple[float, float] = (0.0, 0.0)      # shape +0x38, +0x3C (shader c[-89].zw)
 
 
-def _shape_lanes(scene: Mapping[str, Any], shape: Mapping[str, Any]) -> ShapeLanes:
+def read_uv_constant(decoded: bytes, record_offset: int) -> tuple[tuple[float, float], tuple[float, float]]:
+    """``((Su, Sv), (Ou, Ov))`` from the four floats at shape record ``+0x30``."""
+    su, sv, ou, ov = struct.unpack_from(UV_CONSTANT_FORMAT, decoded, int(record_offset) + UV_CONSTANT_OFFSET)
+    return (float(su), float(sv)), (float(ou), float(ov))
+
+
+def _shape_lanes(scene: Mapping[str, Any], shape: Mapping[str, Any], decoded: bytes | None = None) -> ShapeLanes:
+    """Lane layout of one shape; with ``decoded`` the shape's UV constant is read as well."""
     streams = {int(s["stream_index"]): s for s in shape["vertex_streams"]}
     descriptors = {int(d["register"]): d for d in shape["attribute_descriptors"]}
     position = descriptors.get(0)
@@ -391,7 +473,7 @@ def _shape_lanes(scene: Mapping[str, Any], shape: Mapping[str, Any]) -> ShapeLan
     assert position_stream is not None
     offsets = tuple(int(s["offset"]) for _i, s in sorted(streams.items()))
     strides = tuple(int(s["stride"]) for _i, s in sorted(streams.items()))
-    return ShapeLanes(
+    lanes = ShapeLanes(
         index=int(shape["index"]), name=str(shape["name"]), record_offset=int(shape["record_offset"]),
         vertex_count=int(shape["vertex_count"]), transform_count=int(shape["transform_count"]),
         blend_count=0, submesh_count=int(shape["submesh_count"]), morph_count=int(shape["morph_channel_count"]),
@@ -401,6 +483,9 @@ def _shape_lanes(scene: Mapping[str, Any], shape: Mapping[str, Any]) -> ShapeLan
         normal=lane(2, "NORMPACKED3"), texcoord=lane(6, "NORMSHORT2"), colour=lane(3, "D3DCOLOR"),
         selector=lane(1, "SHORT1"), stream_offsets=offsets, stream_strides=strides,
     )
+    if decoded is not None:
+        lanes.uv_scale, lanes.uv_offset = read_uv_constant(decoded, lanes.record_offset)
+    return lanes
 
 
 def _stream_base(scene: Mapping[str, Any], shape: Mapping[str, Any], stream_index: int) -> int:
@@ -613,38 +698,94 @@ class ExportResult:
 
 
 def _decode_texture_png(decoded: bytes, resource: Any, scene: Mapping[str, Any],
-                        texture: Mapping[str, Any]) -> tuple[bytes, int, int, bool] | None:
-    """(png bytes, width, height, has_alpha) for one embedded texture, or None outside the P8 decoder."""
+                        texture: Mapping[str, Any]) -> dict[str, Any] | None:
+    """PNG bytes plus the provenance the Stadium Studio records, or None outside the P8 decoder.
+
+    Keys: ``png``, ``width``, ``height``, ``has_alpha``, ``rgba_sha256`` (the hash the private
+    stadium cache names its PNGs by) and ``format_name``.
+    """
     inventory = _tools_module("nfl_scne_inventory")
     txtr = _tools_module("nfl_txtr")
     try:
         info = inventory.texture_info(decoded, int(texture["descriptor_offset"]), str(scene["name"]), int(texture["index"]))
         rgba = txtr.texture_to_rgba(decoded, resource.as_chunk(), info)
         has_alpha = any(rgba[i] != 255 for i in range(3, len(rgba), 4))
-        return txtr.encode_rgba_png(info.width, info.height, rgba), int(info.width), int(info.height), has_alpha
+        return {"png": txtr.encode_rgba_png(info.width, info.height, rgba), "width": int(info.width),
+                "height": int(info.height), "has_alpha": has_alpha, "rgba_sha256": _sha256(bytes(rgba)),
+                "format_name": str(info.format_name)}
     except Exception:  # noqa: BLE001 - a texture outside the P8 decoder is skipped, not fatal
         return None
 
 
-def uv_to_gltf(u: int, v: int) -> tuple[float, float]:
-    """Game NORMSHORT2 lane -> glTF texture coordinate (see the module docstring)."""
-    return ((normshort(u) + 1.0) / 2.0, (1.0 - normshort(v)) / 2.0)
+def uv_to_gltf(u: int, v: int, scale: Sequence[float], offset: Sequence[float]) -> tuple[float, float]:
+    """Game NORMSHORT2 lane -> glTF texture coordinate: ``n * S + O`` with the shape's own constant.
+
+    ``scale``/``offset`` are the shape's ``(Su, Sv)`` and ``(Ou, Ov)`` from record ``+0x30``,
+    exactly what the vertex shader does with c[-89] (see the module docstring).  No V flip.
+    """
+    return (normshort(u) * float(scale[0]) + float(offset[0]), normshort(v) * float(scale[1]) + float(offset[1]))
 
 
-def uv_from_gltf(u: float, v: float) -> tuple[int, int]:
-    """glTF texture coordinate -> game NORMSHORT2 lane (inverse of :func:`uv_to_gltf`)."""
-    return (encode_normshort(2.0 * u - 1.0), encode_normshort(1.0 - 2.0 * v))
+def uv_from_gltf(u: float, v: float, scale: Sequence[float], offset: Sequence[float]) -> tuple[int, int]:
+    """glTF texture coordinate -> game NORMSHORT2 lane (inverse of :func:`uv_to_gltf`, clamped to the lane)."""
+    def axis(value: float, s: float, o: float) -> int:
+        if s == 0.0:
+            return 0
+        return encode_normshort(max(-1.0, min(1.0, (float(value) - o) / s)))
+    return (axis(u, float(scale[0]), float(offset[0])), axis(v, float(scale[1]), float(offset[1])))
+
+
+def uv_in_range(value: float, s: float, o: float) -> bool:
+    """True when ``value`` encodes into the NORMSHORT2 lane under (s, o) within half a quantisation step."""
+    if s == 0.0:
+        return abs(float(value) - o) <= 1e-9
+    n = (float(value) - o) / s
+    return -1.0 - 0.5 / 32768.0 <= n <= 1.0 + 0.5 / 32767.0
+
+
+def fit_uv_range(uvs: Sequence[Sequence[float]], scale: Sequence[float], offset: Sequence[float], *,
+                 margin: float = 1.001) -> tuple[tuple[float, float], tuple[float, float], tuple[bool, bool]]:
+    """Widen a shape's UV constant so every ``uvs`` pair encodes; mirrors the NORMSHORT3 position widening.
+
+    Returns ``(scale, offset, widened)``; an axis whose values all fit keeps its retail constant
+    byte for byte, an axis that does not gets ``O = centre`` and ``S = half extent x margin`` of
+    the edited values, both rounded to binary32 as the record stores them.
+    """
+    new_scale = [float(scale[0]), float(scale[1])]
+    new_offset = [float(offset[0]), float(offset[1])]
+    widened = [False, False]
+    for axis in range(2):
+        values = [float(uv[axis]) for uv in uvs]
+        if not values or all(uv_in_range(value, new_scale[axis], new_offset[axis]) for value in values):
+            continue
+        low, high = min(values), max(values)
+        centre = _float32((low + high) / 2.0)
+        half = (high - low) / 2.0
+        if half <= 0.0:
+            half = abs(new_scale[axis]) or 1e-3
+        new_scale[axis] = _float32(half * margin) or new_scale[axis]
+        new_offset[axis] = centre
+        widened[axis] = True
+    return (new_scale[0], new_scale[1]), (new_offset[0], new_offset[1]), (widened[0], widened[1])
 
 
 def export_model(source: ModelSource, key: str, destination: Path, *,
                  include_textures: bool = True, include_skins: bool = True,
+                 include_vertex_colors_as_color0: bool = False,
                  progress: ProgressSink | None = None) -> ExportResult:
-    """Write ``destination`` (.gltf) + sibling .bin + README for one model key."""
+    """Write ``destination`` (.gltf) + sibling .bin + README for one model key.
+
+    ``include_vertex_colors_as_color0`` additionally writes the D3DCOLOR lane as ``COLOR_0`` (the
+    in-game baked look: Blender multiplies it into the base colour).  The lane is always carried
+    as the custom attribute ``_NFL_COLOR`` so it round-trips through import untouched.
+    """
     gltf_tool = _tools_module("nfl_scne_gltf")
     progress = progress or (lambda *_a: None)
     progress("Decoding the model", 0, 3)
     resource, decoded, scene = source.parse(key)
     scene_name = str(scene["name"])
+    scene_id = scene_contract_id(scene_name, int(resource.outer_index), int(resource.chunk_index),
+                                 source.scene_index(resource))
     destination = Path(destination).expanduser()
     if destination.suffix.lower() != ".gltf":
         destination = destination.with_suffix(".gltf")
@@ -658,39 +799,64 @@ def export_model(source: ModelSource, key: str, destination: Path, *,
     for submesh in scene["submeshes"]:
         submeshes_by_shape.setdefault(int(submesh["shape_index"]), []).append(submesh)
 
-    # materials + textures
+    # materials + textures, under the Stadium Studio contract (nfl2k5_stadium_studio._embed_textures):
+    # images are named by the first material that maps them and every material/texture/image carries
+    # the canonical nfl2k5_texture_id, so replace_textures_from_gltf accepts this file unchanged.
     material_index_map: dict[int, int] = {}
     texture_count = 0
+    textured_material_count = 0
+    mapping_rows: list[dict[str, Any]] = []
+    image_bytes = 0
     if include_textures:
         progress("Decoding textures", 1, 3)
+        mapped_names: dict[int, list[str]] = {}
+        for material in scene["materials"]:
+            if material.get("texture_index") is not None:
+                mapped_names.setdefault(int(material["texture_index"]), []).append(str(material.get("name") or ""))
         texture_slots: dict[int, int] = {}
         texture_alpha: dict[int, bool] = {}
         for material_index, material in enumerate(scene["materials"]):
             texture_index = material.get("texture_index")
+            texture_id: str | None = None
             entry: dict[str, Any] = {"name": str(material.get("name") or f"material_{material_index}"),
                                      "pbrMetallicRoughness": {"metallicFactor": 0.0, "roughnessFactor": 1.0},
-                                     "doubleSided": True,
-                                     "extras": {"nfl2k5_material_index": material_index}}
+                                     "doubleSided": True}
             if texture_index is not None:
                 texture_index = int(texture_index)
+                texture_id = texture_contract_id(scene_id, texture_index)
                 if texture_index not in texture_slots:
                     texture = scene["embedded_textures"][texture_index] if texture_index < len(scene["embedded_textures"]) else None
                     png = _decode_texture_png(decoded, resource, scene, texture) if texture is not None else None
                     if png is not None:
-                        png_bytes, width, height, has_alpha = png
-                        texture_alpha[texture_index] = has_alpha
-                        view = builder.view(png_bytes, None)
-                        builder.images.append({"name": f"{scene_name}_texture_{texture_index}", "mimeType": "image/png",
-                                               "bufferView": view,
-                                               "extras": {"nfl2k5_texture_index": texture_index, "width": width, "height": height}})
-                        builder.textures.append({"sampler": 0, "source": len(builder.images) - 1})
+                        texture_alpha[texture_index] = bool(png["has_alpha"])
+                        view = builder.view(png["png"], None)
+                        image_bytes += len(png["png"])
+                        names = [name for name in mapped_names.get(texture_index, []) if name]
+                        image_name = names[0] if names else f"texture{texture_index:04d}"
+                        builder.images.append({"name": image_name, "mimeType": "image/png", "bufferView": view,
+                                               "extras": {GLTF_TEXTURE_ID_KEY: texture_id,
+                                                          "nfl2k5_texture_index": texture_index,
+                                                          "nfl2k5_scene_id": scene_id,
+                                                          "rgba_sha256": png["rgba_sha256"],
+                                                          "width": png["width"], "height": png["height"],
+                                                          "format_name": png["format_name"]}})
+                        builder.textures.append({"name": image_name, "sampler": 0, "source": len(builder.images) - 1,
+                                                 "extras": {GLTF_TEXTURE_ID_KEY: texture_id}})
                         texture_slots[texture_index] = len(builder.textures) - 1
                         texture_count += 1
+                        mapping_rows.append({"texture_id": texture_id, "texture_index": texture_index,
+                                             "image_index": len(builder.images) - 1, "image_name": image_name,
+                                             "width": png["width"], "height": png["height"],
+                                             "mapped_material_names": list(mapped_names.get(texture_index, []))})
                 if texture_index in texture_slots:
-                    entry["pbrMetallicRoughness"]["baseColorTexture"] = {"index": texture_slots[texture_index]}
+                    entry["pbrMetallicRoughness"]["baseColorTexture"] = {"index": texture_slots[texture_index], "texCoord": 0}
+                    textured_material_count += 1
                     if texture_alpha.get(texture_index):
                         entry["alphaMode"] = "MASK"
                         entry["alphaCutoff"] = 0.5
+            entry["extras"] = {GLTF_MATERIAL_INDEX_KEY: material_index,
+                               "nfl2k5_mapping_status": "mapped_embedded_texture" if texture_index is not None else "unmapped",
+                               GLTF_TEXTURE_ID_KEY: texture_id}
             builder.materials.append(entry)
             material_index_map[material_index] = len(builder.materials) - 1
 
@@ -699,9 +865,10 @@ def export_model(source: ModelSource, key: str, destination: Path, *,
     for node in scene["nodes"]:
         for shape_index in node.get("matching_shape_indices", []):
             node_names.setdefault(int(shape_index), str(node.get("name") or ""))
+    material_names = {index: str(material.get("name") or "") for index, material in enumerate(scene["materials"])}
 
     for shape in scene["shapes"]:
-        lanes = _shape_lanes(scene, shape)
+        lanes = _shape_lanes(scene, shape, decoded)
         if lanes.vertex_count <= 0:
             notes.append(f"{lanes.name}: no vertices; skipped")
             continue
@@ -728,18 +895,25 @@ def export_model(source: ModelSource, key: str, destination: Path, *,
             shape_report["normals"] = True
         if lanes.texcoord is not None:
             pairs = read_lane_2h(decoded, shape, lanes.texcoord, lanes.vertex_count)
-            uvs = [uv_to_gltf(u, v) for u, v in pairs]
+            uvs = [uv_to_gltf(u, v, lanes.uv_scale, lanes.uv_offset) for u, v in pairs]
             flat_uv = [c for uv in uvs for c in uv]
             attributes["TEXCOORD_0"] = builder.accessor(builder.view(struct.pack(f"<{len(flat_uv)}f", *flat_uv), 34962),
-                                                        5126, lanes.vertex_count, "VEC2")
+                                                        5126, lanes.vertex_count, "VEC2",
+                                                        minimum=[min(flat_uv[0::2]), min(flat_uv[1::2])],
+                                                        maximum=[max(flat_uv[0::2]), max(flat_uv[1::2])])
             shape_report["uvs"] = True
+            shape_report["uv_scale"] = list(lanes.uv_scale)
+            shape_report["uv_offset"] = list(lanes.uv_offset)
         if lanes.colour is not None:
             words = read_lane_u32(decoded, shape, lanes.colour, lanes.vertex_count)
             rgba = bytearray()
-            for word in words:                  # D3DCOLOR = 0xAARRGGBB
-                rgba.extend(((word >> 16) & 0xFF, (word >> 8) & 0xFF, word & 0xFF, (word >> 24) & 0xFF))
-            attributes["COLOR_0"] = builder.accessor(builder.view(bytes(rgba), 34962), 5121, lanes.vertex_count,
-                                                     "VEC4", normalized=True)
+            for word in words:
+                rgba.extend(d3dcolor_to_rgba(word))
+            floats = struct.pack(f"<{len(rgba)}f", *[c / 255.0 for c in rgba])
+            attributes[COLOUR_ATTRIBUTE] = builder.accessor(builder.view(floats, 34962), 5126, lanes.vertex_count, "VEC4")
+            if include_vertex_colors_as_color0:
+                attributes["COLOR_0"] = builder.accessor(builder.view(bytes(rgba), 34962), 5121, lanes.vertex_count,
+                                                         "VEC4", normalized=True)
             shape_report["colours"] = True
         # the game's own vertex numbering, so an edited file can come back in any order
         index_floats = struct.pack(f"<{lanes.vertex_count}f", *[float(v) for v in range(lanes.vertex_count)])
@@ -789,14 +963,22 @@ def export_model(source: ModelSource, key: str, destination: Path, *,
                 if not indices:
                     continue
                 index_view = builder.view(struct.pack(f"<{len(indices)}H", *indices), 34963)
+                submesh_material = int(submesh["material_index"])
                 primitive: dict[str, Any] = {
                     "attributes": dict(attributes),
                     "indices": builder.accessor(index_view, 5123, len(indices), "SCALAR", minimum=[min(indices)], maximum=[max(indices)]),
                     "mode": gltf_mode,
                     "extras": {"nfl2k5_submesh_index": int(submesh["submesh_index"]),
-                               "nfl2k5_material_index": int(submesh["material_index"])},
+                               GLTF_MATERIAL_INDEX_KEY: submesh_material,
+                               # the Stadium Studio / static exporter names for the same facts
+                               "source_submesh_index": int(submesh["submesh_index"]),
+                               "source_material_index": submesh_material,
+                               "source_material_name": material_names.get(submesh_material, ""),
+                               "source_auxiliary_index": int(submesh.get("auxiliary_index", 0) or 0),
+                               "xbox_primitive_mode": int(xbox_mode),
+                               "topology_conversion": _conversion},
                 }
-                material = material_index_map.get(int(submesh["material_index"]))
+                material = material_index_map.get(submesh_material)
                 if material is not None:
                     primitive["material"] = material
                 primitives.append(primitive)
@@ -804,12 +986,33 @@ def export_model(source: ModelSource, key: str, destination: Path, *,
             notes.append(f"{lanes.name}: no drawable submesh; exported as points")
             primitives.append({"attributes": dict(attributes), "mode": 0})
         channels = morph_channels(decoded, lanes)
+        if lanes.position_format == "NORMSHORT3":
+            position_decode: dict[str, Any] = {
+                "equation": "position.xyz = normshort3(register0.xyz) * scale + offset.xyz",
+                "serialized_scale_field": "+0x10", "serialized_offset_fields": ["+0x20", "+0x24", "+0x28"],
+                "scale": lanes.scale, "offset": list(lanes.offset),
+                "shader_instruction": "MAD r4.xyz, v0.xyzz, c[-88].wwww, c[-88].xyzz"}
+        else:
+            position_decode = {"equation": "position.xyz = little_endian_FLOAT3(register0.xyz)", "identity_decode": True}
         mesh_extras: dict[str, Any] = {"nfl2k5_shape_index": lanes.index, "nfl2k5_vertex_count": lanes.vertex_count,
                                        "nfl2k5_position_format": lanes.position_format,
-                                       "nfl2k5_morph_channels": [c["name"] for c in channels]}
+                                       "nfl2k5_morph_channels": [c["name"] for c in channels],
+                                       "nfl2k5_uv_scale": list(lanes.uv_scale), "nfl2k5_uv_offset": list(lanes.uv_offset),
+                                       # the Stadium Studio / static exporter names for the same facts
+                                       "source_shape_index": lanes.index, "source_record_offset": lanes.record_offset,
+                                       "position_format": lanes.position_format, "position_decode": position_decode,
+                                       "texcoord_decode": {
+                                           "equation": "uv = normshort2(register6.xy) * (Su, Sv) + (Ou, Ov)",
+                                           "serialized_fields": ["+0x30", "+0x34", "+0x38", "+0x3C"],
+                                           "scale": list(lanes.uv_scale), "offset": list(lanes.uv_offset),
+                                           "v_flip": False,
+                                           "shader_instruction": "MAD oT0.xy, v6.xyyy, c[-89].xyyy, c[-89].zwww"},
+                                       "vertex_attribute_descriptors": shape["attribute_descriptors"],
+                                       "transform_record_count": lanes.transform_count,
+                                       "morph_channel_record_count": lanes.morph_count}
         builder.meshes.append({"name": lanes.name, "primitives": primitives, "extras": mesh_extras})
         node: dict[str, Any] = {"name": node_names.get(lanes.index) or lanes.name, "mesh": len(builder.meshes) - 1,
-                                "extras": {"nfl2k5_shape_index": lanes.index}}
+                                "extras": {"nfl2k5_shape_index": lanes.index, "source_shape_index": lanes.index}}
         if skin_index is not None:
             node["skin"] = skin_index
         builder.nodes.append(node)
@@ -822,14 +1025,18 @@ def export_model(source: ModelSource, key: str, destination: Path, *,
     for node in builder.nodes:
         claimed.update(node.get("children", []))
     roots = [i for i in range(len(builder.nodes)) if i not in claimed]
-    builder.nodes.append({"name": f"{scene_name} (NFL 2K5, centimetres to metres)",
-                          "scale": [GLTF_UNIT_SCALE] * 3, "children": roots})
+    builder.nodes.append({"name": ROOT_NODE_NAME, "scale": [GLTF_UNIT_SCALE] * 3, "children": roots,
+                          "extras": {"nfl2k5_scene_name": scene_name}})
     document: dict[str, Any] = {
         "asset": {"version": "2.0", "generator": "2K5 Mod Studio Models",
                   "extras": {"schema": SCHEMA_EXPORT, "model_key": key, "scene_name": scene_name,
                              "source_outer_index": int(resource.outer_index), "source_chunk_index": int(resource.chunk_index),
+                             "source_scene_index": source.scene_index(resource), "nfl2k5_scene_id": scene_id,
                              "decoded_sha256": _sha256(decoded), "unit_scale": GLTF_UNIT_SCALE,
-                             "vertex_index_attribute": VERTEX_INDEX_ATTRIBUTE}},
+                             "vertex_index_attribute": VERTEX_INDEX_ATTRIBUTE, "colour_attribute": COLOUR_ATTRIBUTE,
+                             "source": {"scene_index": source.scene_index(resource), "outer_index": int(resource.outer_index),
+                                        "chunk_index": int(resource.chunk_index), "scene_name": scene_name,
+                                        "decoded_sha256": _sha256(decoded)}}},
         "scene": 0,
         "scenes": [{"name": scene_name, "nodes": [len(builder.nodes) - 1]}],
         "nodes": builder.nodes,
@@ -837,11 +1044,37 @@ def export_model(source: ModelSource, key: str, destination: Path, *,
         "accessors": builder.accessors,
         "bufferViews": builder.buffer_views,
         "buffers": [{"uri": bin_path.name, "byteLength": len(builder.binary)}],
+        "extras": {
+            "nfl2k5_scene_id": scene_id,
+            "nfl2k5_unit_contract": {"authored_unit": "centimetre", "gltf_unit": "metre", "applied_as": "root node scale",
+                                     "scale": GLTF_UNIT_SCALE, "buffer_rewritten": False},
+            "nfl2k5_texcoord_contract": {
+                "equation": "TEXCOORD_0 = normshort2(register 6) * (Su, Sv) + (Ou, Ov); (Su, Sv, Ou, Ov) = shape record +0x30..+0x3C",
+                "v_flip": False,
+                "proof": "every NFL 2K5 vertex shader routing v6 to oT0: MAD oT0.xy, v6.xyyy, c[-89].xyyy, c[-89].zwww; "
+                         "the draw path loads c[-89] from [shape + 0x30] beside the position constant at +0x10/+0x20",
+                "per_mesh_extras": ["nfl2k5_uv_scale", "nfl2k5_uv_offset", "texcoord_decode"]},
+            "nfl2k5_vertex_colour_contract": {
+                "attribute": COLOUR_ATTRIBUTE, "layout": "VEC4 float, r g b a in 0..1, from the D3DCOLOR lane (register 3)",
+                "in_game": "baked lighting multiplied into the texture (MUL oD0, v3, c[-90])",
+                "color0_written": bool(include_vertex_colors_as_color0)},
+        },
     }
     if builder.materials:
         document["materials"] = builder.materials
+        document["extras"]["nfl2k5_texture_contract"] = {
+            "embedded_image_count": len(builder.images), "material_count": len(builder.materials),
+            "textured_material_count": textured_material_count, "geometry_bytes_preserved": False,
+            "image_bytes_appended": image_bytes,
+            "provenance": ("SCNE embedded P8 base levels decoded by tools/nfl_txtr.texture_to_rgba and PNG-encoded by "
+                           "encode_rgba_png at export time; rgba_sha256 on each image is the private stadium cache's PNG key"),
+            "sampler_note": "REPEAT wrap; the tiled UVs above need it. Game sampler state is otherwise unproved",
+            "texcoord_note": "TEXCOORD_0 is bound (per-shape scale/offset from shape +0x30, shader-proved); "
+                             "the Stadium Studio's own export carries positions only",
+            "mapping": mapping_rows}
     if builder.textures:
-        document["samplers"] = [{"magFilter": 9729, "minFilter": 9987, "wrapS": 10497, "wrapT": 10497}]
+        document["samplers"] = [{"name": "nfl2k5_models_preview", "magFilter": 9729, "minFilter": 9987,
+                                 "wrapS": 10497, "wrapT": 10497}]
         document["textures"] = builder.textures
         document["images"] = builder.images
     if builder.skins:
@@ -855,7 +1088,8 @@ def export_model(source: ModelSource, key: str, destination: Path, *,
             with open(path, "wb") as handle:
                 handle.write(blob)
             written.append(path)
-        readme_path.write_text(export_readme(scene_name, shapes_out, notes), encoding="utf-8", newline="\n")
+        readme_path.write_text(export_readme(scene_name, shapes_out, notes, color0=include_vertex_colors_as_color0),
+                               encoding="utf-8", newline="\n")
     except BaseException:
         for path in written:
             path.unlink(missing_ok=True)
@@ -864,21 +1098,36 @@ def export_model(source: ModelSource, key: str, destination: Path, *,
     return ExportResult(key, scene_name, destination, bin_path, readme_path, shapes_out, notes, texture_count)
 
 
-def export_readme(scene_name: str, shapes: Sequence[Mapping[str, Any]], notes: Sequence[str]) -> str:
+def export_readme(scene_name: str, shapes: Sequence[Mapping[str, Any]], notes: Sequence[str], *,
+                  color0: bool = False) -> str:
     lines = [f"NFL 2K5 model export: {scene_name}", "=" * (20 + len(scene_name)), "",
              "Open the .gltf in Blender (File > Import > glTF 2.0). Units are metres; the game authors",
              "in centimetres, so the root node carries a 0.01 scale. Keep that root.", "",
              "What you can change and bring back with Models > Import:",
              "  * vertex POSITIONS (move, sculpt, proportional edit) -- every mesh here",
              "  * NORMALS and UVs where this export carries them (see the mesh list below)",
-             "  * textures: export/import them on the texture tabs, not here", "",
+             "  * VERTEX COLOURS: the _NFL_COLOR attribute (r g b a, 0..1) is the game's baked lighting;",
+             "    in game it multiplies the texture. Paint it in Blender and it comes back (Attributes ticked)",
+             "  * textures: edit the embedded images in Blender and, for a stadium, hand this file to the",
+             "    Stadiums page's texture write-back (every image carries its nfl2k5_texture_id and is named",
+             "    after the material that maps it); or export/import textures on the texture tabs", "",
+             "UVs follow the game's own rule: each mesh stores a scale/offset (shape record +0x30), and",
+             "uv = lane * scale + offset, with no V flip -- so tiled surfaces (seat rows, crowd, concrete,",
+             "ads) legitimately run past 0..1 and repeat; the mesh list gives each mesh's tiling.",
+             "Sampler wrap is REPEAT. A UV edit outside a mesh's range widens that mesh's constant on import.", "",
+             ("COLOR_0 IS included (the baked in-game look): Blender multiplies it into the base colour, so"
+              if color0 else
+              "COLOR_0 is NOT included (textures show at full brightness in Blender); tick 'Bake vertex colours"),
+             ("textures look darker than the texture files themselves. Untick the option to export without it."
+              if color0 else
+              "into COLOR_0' on the Models page to see the darker in-game look instead."), "",
              "What you cannot change (the game's allocation is fixed):",
              "  * the number of vertices or triangles, or which triangles exist",
              "  * bones, weights, animations",
              "  * body-type / face morph deltas (their channels are listed but not editable yet)", "",
              "Blender export settings that make the trip back work (File > Export > glTF 2.0):",
-             "  * Include > Data > Mesh > tick 'Attributes' (keeps the _NFL_VERTEX_INDEX lane; without it",
-             "    the importer falls back to nearest-vertex matching, which still works for small moves)",
+             "  * Include > Data > Mesh > tick 'Attributes' (keeps the _NFL_VERTEX_INDEX and _NFL_COLOR lanes;",
+             "    without it the importer falls back to nearest-vertex matching, which still works for small moves)",
              "  * Include > Data > Mesh > tick 'Apply Modifiers' only if you added none that change topology",
              "  * do not merge or decimate; keep every mesh; keep names", "",
              "Meshes in this file:"]
@@ -888,9 +1137,10 @@ def export_readme(scene_name: str, shapes: Sequence[Mapping[str, Any]], notes: S
         if shape.get("normals"):
             parts.append("normals")
         if shape.get("uvs"):
-            parts.append("uvs")
+            scale = shape.get("uv_scale") or (1.0, 1.0)
+            parts.append(f"uvs (tiling x{float(scale[0]):.2f} / x{float(scale[1]):.2f})")
         if shape.get("colours"):
-            parts.append("vertex colours")
+            parts.append("vertex colours (_NFL_COLOR" + (" + COLOR_0)" if color0 else ")"))
         if shape.get("skin"):
             parts.append(f"skin with {shape['skin']['joints']} joints")
         if shape.get("morph_channels"):
@@ -1051,6 +1301,7 @@ class EditedMesh:
     normals: list[tuple[float, float, float]] | None
     uvs: list[tuple[float, float]] | None
     source_indices: list[int] | None                       # from the _NFL_VERTEX_INDEX lane
+    colours: list[tuple[float, float, float, float]] | None = None   # from the _NFL_COLOR lane, 0..1
 
 
 def read_edited_meshes(gltf: GltfFile) -> list[EditedMesh]:
@@ -1083,7 +1334,8 @@ def read_edited_meshes(gltf: GltfFile) -> list[EditedMesh]:
         normals: list[tuple[float, float, float]] = []
         uvs: list[tuple[float, float]] = []
         indices: list[int] = []
-        have_normals = have_uvs = have_indices = True
+        colours: list[tuple[float, float, float, float]] = []
+        have_normals = have_uvs = have_indices = have_colours = True
         loaded: set[int] = set()
         for primitive in mesh.get("primitives", []):
             attributes = primitive.get("attributes", {})
@@ -1107,12 +1359,20 @@ def read_edited_meshes(gltf: GltfFile) -> list[EditedMesh]:
                 indices.extend(int(round(v[0])) for v in gltf.accessor(int(attributes[VERTEX_INDEX_ATTRIBUTE])))
             else:
                 have_indices = False
+            if COLOUR_ATTRIBUTE in attributes and have_colours:
+                # VEC4 float as exported, or Blender's BYTE_COLOR (normalized u8/u16); a VEC3 gets alpha 1
+                for row in gltf.accessor(int(attributes[COLOUR_ATTRIBUTE])):
+                    padded = (list(row) + [1.0, 1.0, 1.0, 1.0])[:4]
+                    colours.append((float(padded[0]), float(padded[1]), float(padded[2]), float(padded[3])))
+            else:
+                have_colours = False
         if not positions:
             continue
         result.append(EditedMesh(str(mesh.get("name") or f"mesh_{mesh_index}"), str(node.get("name") or ""),
                                  positions, normals if have_normals and len(normals) == len(positions) else None,
                                  uvs if have_uvs and len(uvs) == len(positions) else None,
-                                 indices if have_indices and len(indices) == len(positions) else None))
+                                 indices if have_indices and len(indices) == len(positions) else None,
+                                 colours if have_colours and len(colours) == len(positions) else None))
     return result
 
 
@@ -1169,6 +1429,8 @@ class ImportShapeReport:
     scale_before: float = 0.0
     scale_after: float = 0.0
     notes: list[str] = field(default_factory=list)
+    colours_changed: int = 0
+    uv_rescaled: bool = False                 # the shape's UV constant at +0x30 was widened
 
 
 @dataclass
@@ -1190,12 +1452,17 @@ class CompiledModelImport:
         parts = [f"{self.name}: {moved:,} vertices moved across {len(self.shapes)} mesh(es)"]
         normals = sum(s.normals_changed for s in self.shapes)
         uvs = sum(s.uvs_changed for s in self.shapes)
+        colours = sum(s.colours_changed for s in self.shapes)
         if normals:
             parts.append(f"{normals:,} normals")
         if uvs:
             parts.append(f"{uvs:,} UVs")
+        if colours:
+            parts.append(f"{colours:,} vertex colours")
         if any(s.rescaled for s in self.shapes):
             parts.append("range widened")
+        if any(s.uv_rescaled for s in self.shapes):
+            parts.append("UV range widened")
         return ", ".join(parts) + f"; {self.changed_bytes:,} bytes change on disc"
 
     def report(self) -> dict[str, Any]:
@@ -1208,13 +1475,16 @@ class CompiledModelImport:
 
 
 def compile_import(source: ModelSource, key: str, edited_path: Path, *, write_normals: bool = True,
-                   write_uvs: bool = False, allow_rescale: bool = True,
+                   write_uvs: bool = False, allow_rescale: bool = True, write_colours: bool = True,
                    progress: ProgressSink | None = None) -> CompiledModelImport:
     """Fit an edited glTF/GLB onto the game's own vertices and rebuild the resource in place.
 
-    Normals and UVs are only ever written for vertices matched exactly (the vertex index lane
-    or an identical vertex order); a nearest-vertex fit moves positions only, because seam
-    vertices split by Blender would otherwise carry a neighbour's UV or shading normal back.
+    Normals, UVs and vertex colours are only ever written for vertices matched exactly (the vertex
+    index lane or an identical vertex order); a nearest-vertex fit moves positions only, because
+    seam vertices split by Blender would otherwise carry a neighbour's UV or shading normal back.
+    UVs are inverted through the shape's own constant (``(uv - O) / S``); an edit outside the
+    range widens ``S``/``O`` at record ``+0x30`` per axis when ``allow_rescale`` is on, exactly as
+    positions widen ``+0x10``/``+0x20``.  Vertex colours come from the ``_NFL_COLOR`` attribute only.
     """
     progress = progress or (lambda *_a: None)
     progress("Reading the edited model", 0, 4)
@@ -1262,7 +1532,7 @@ def compile_import(source: ModelSource, key: str, edited_path: Path, *, write_no
 
     progress("Fitting vertices", 2, 4)
     for shape, mesh, how in pairs:
-        lanes = _shape_lanes(scene, shape)
+        lanes = _shape_lanes(scene, shape, decoded)
         original = read_positions(decoded, shape, lanes)
         count = lanes.vertex_count
         report = ImportShapeReport(lanes.index, lanes.name, how, len(mesh.positions), count, 0)
@@ -1348,14 +1618,44 @@ def compile_import(source: ModelSource, key: str, edited_path: Path, *, write_no
                                 + ("" if exact else " (nearest-vertex fit)") + ("" if mesh.normals is not None else "; the file carries none"))
         if write_uvs and exact and mesh.uvs is not None and lanes.texcoord is not None:
             ubase = _stream_base({}, shape, lanes.texcoord[0])
+            raw_uvs = read_lane_2h(decoded, shape, lanes.texcoord, count)
+            wanted: dict[int, tuple[float, float]] = {}
             for source_index, members in groups.items():
                 us = [mesh.uvs[m] for m in members]
-                u, v = us[0] if len(us) == 1 else (sum(x[0] for x in us) / len(us), sum(x[1] for x in us) / len(us))
-                q = uv_from_gltf(u, v)
-                at = ubase + source_index * lanes.texcoord[2] + lanes.texcoord[1]
-                if struct.unpack_from("<2h", output, at) != q:
-                    struct.pack_into("<2h", output, at, *q)
-                    report.uvs_changed += 1
+                wanted[source_index] = us[0] if len(us) == 1 else (sum(x[0] for x in us) / len(us), sum(x[1] for x in us) / len(us))
+            # every vertex keeps its decoded UV unless the file moved it; the whole set must encode
+            targets = [wanted.get(i) or uv_to_gltf(raw_uvs[i][0], raw_uvs[i][1], lanes.uv_scale, lanes.uv_offset)
+                       for i in range(count)]
+            uv_scale, uv_offset, widened = fit_uv_range(targets, lanes.uv_scale, lanes.uv_offset)
+            if any(widened):
+                _require(allow_rescale, f"{lanes.name}: the UV edit leaves the mesh's encodable range and range widening is off")
+                struct.pack_into(UV_CONSTANT_FORMAT, output, lanes.record_offset + UV_CONSTANT_OFFSET,
+                                 uv_scale[0], uv_scale[1], uv_offset[0], uv_offset[1])
+                report.uv_rescaled = True
+                axes = " and ".join(name for name, flag in zip(("U", "V"), widened) if flag)
+                report.notes.append(f"UV range widened on {axes}: scale ({lanes.uv_scale[0]:.4f}, {lanes.uv_scale[1]:.4f}) -> "
+                                    f"({uv_scale[0]:.4f}, {uv_scale[1]:.4f}), offset ({lanes.uv_offset[0]:.4f}, {lanes.uv_offset[1]:.4f}) -> "
+                                    f"({uv_offset[0]:.4f}, {uv_offset[1]:.4f})")
+            for i in range(count):
+                if i not in wanted and not any(widened):
+                    continue                      # untouched vertex, untouched lane bytes
+                qu, qv = uv_from_gltf(targets[i][0], targets[i][1], uv_scale, uv_offset)
+                if i not in wanted:               # re-quantise only the axis whose constant moved
+                    qu = qu if widened[0] else raw_uvs[i][0]
+                    qv = qv if widened[1] else raw_uvs[i][1]
+                if raw_uvs[i] != (qu, qv):
+                    struct.pack_into("<2h", output, ubase + i * lanes.texcoord[2] + lanes.texcoord[1], qu, qv)
+                    if i in wanted:
+                        report.uvs_changed += 1
+        if write_colours and exact and mesh.colours is not None and lanes.colour is not None:
+            cbase = _stream_base({}, shape, lanes.colour[0])
+            for source_index, members in groups.items():
+                cs = [mesh.colours[m] for m in members]
+                word = rgba_to_d3dcolor(*[sum(c[k] for c in cs) / len(cs) * 255.0 for k in range(4)])
+                at = cbase + source_index * lanes.colour[2] + lanes.colour[1]
+                if struct.unpack_from("<I", output, at)[0] != word:
+                    struct.pack_into("<I", output, at, word)
+                    report.colours_changed += 1
         reports.append(report)
         notes.extend(f"{report.name}: {note}" for note in report.notes)
 
@@ -1467,6 +1767,9 @@ __all__ = [
     "GROUP_LABELS", "GROUP_ORDER", "ModelEntry", "safe_file_name", "ModelSource", "ModelsError", "ExportResult",
     "export_model", "export_readme", "group_for_name", "model_key", "parse_model_key",
     "decode_normpacked3", "encode_normpacked3", "normshort", "encode_normshort", "uv_to_gltf", "uv_from_gltf",
+    "uv_in_range", "fit_uv_range", "read_uv_constant", "d3dcolor_to_rgba", "rgba_to_d3dcolor",
+    "scene_contract_id", "texture_contract_id", "GLTF_TEXTURE_ID_KEY", "GLTF_MATERIAL_INDEX_KEY", "ROOT_NODE_NAME",
+    "COLOUR_ATTRIBUTE", "VERTEX_INDEX_ATTRIBUTE", "UV_CONSTANT_OFFSET",
     "GltfFile", "EditedMesh", "read_edited_meshes", "ImportShapeReport", "CompiledModelImport", "compile_import",
     "image_spans", "write_import_copy",
 ]
