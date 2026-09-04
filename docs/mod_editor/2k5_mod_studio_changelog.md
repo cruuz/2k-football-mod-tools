@@ -1,6 +1,6 @@
 # 2K5 Mod Studio — Product Changelog
 
-## v1.0 RC83 — (unreleased)
+## v1.0 RC83 — ★ Rosters (the Flying Finn-parity roster editor), playbook packs, scorebug on every machine, disc identity, body sets, one LB group, TEAM column filled (2026-09-04)
 
 - **Fixed: a refusal now says which disc image you handed it.** One report carried two failures
   on one file: Build & Share -> Advanced died with `pack-0 schedule template is foreign: ROST
