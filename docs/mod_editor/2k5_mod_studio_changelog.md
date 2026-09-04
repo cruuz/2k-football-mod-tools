@@ -2,6 +2,15 @@
 
 ## v1.0 RC84 — (unreleased)
 
+- **★ Rosters opens real Xbox saves.** Every real `SAVEGAME.DAT` stores the roster the way the game keeps
+  it in memory (a version-0 ROST arena with the object 0x20 bytes after its preamble, at file offset 0x320),
+  not the way the disc resource is laid out (version 17, object at +0x40). RC83 only knew the disc layout and
+  refused every genuine save with "no ROST block found" — the save editing it advertised had been proven on a
+  synthetic save built like the disc. The document now reads both layouts through the same field-relative
+  pointers, so a real save gets the whole editor (ratings, names, depth chart, CSV, global edits), round-trips
+  byte-identically when nothing is changed, and re-signs to a copy exactly as before. Found by GPT-6 Astra's
+  review of the two HMAC-verified saves on hand; both load with 2,547 players and 52 teams. Franchise-mode
+  saves are expected to carry the same arena but none has been examined yet.
 - **★ Rosters now reads a patched disc's own position scheme instead of the retail 17.** Two of
   the Build tab's patches change what a position *means*: the **EDGE rename** prints EDGE / Edge
   Rusher wherever the game said Defensive End, and the **one-pool** pass (`position_pools` plus the

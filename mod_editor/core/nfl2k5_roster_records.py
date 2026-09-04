@@ -107,6 +107,10 @@ RESOURCE_HEADER_SIZE = 0x20
 BODY_SIZE = 0x90F60
 RESOURCE_SIZE = RESOURCE_HEADER_SIZE + BODY_SIZE
 OBJ_OFF = 0x40
+# where the roster object sits relative to the ROST preamble, by version: 17 = the disc resource layout (object at
+# +0x40); 0 = the runtime arena the game serialises into SAVEGAME.DAT (object at +0x20; the file-relative wrapper at
+# 0x2E0, preamble at 0x300, object at 0x320, arena of 0x91000 bytes ending at 0x91320 in every real save examined)
+ROST_VERSIONS = {17: 0x40, 0: 0x20}
 PLAYER_SIZE = 0x54
 TEAM_SIZE = 0x1F4
 TEAM_SLOTS = 65
@@ -133,7 +137,8 @@ RETAIL_FREE_AGENT_COUNT = 241
 # sha256 of the retail ROST body (0x90F60 bytes, disc pack 0 outer entry 5 minus its 0x20 wrapper)
 RETAIL_BODY_SHA256 = "b1164eeed262988dc97d840ba59f6274c1f5d4505249474e4cafd4e322d9f7ae"
 
-FRANCHISE_BLOCK_OFFSET = 0x2E0          # where a franchise save keeps the same block
+SAVE_BLOCK_OFFSET = 0x300               # real saves: 0x20-byte wrapper at 0x2E0, ROST preamble (version 0) at 0x300
+FRANCHISE_BLOCK_OFFSET = 0x2E0          # earlier guess for a franchise save; kept as a candidate
 
 # --------------------------------------------------------------------------------------------- signing
 # The 16 bytes Finn's editor carries at file 0x247A88 ("722E...FF80" -- his Delphi string has eight
@@ -1165,14 +1170,21 @@ class RosterDocument:
     def _parse(self) -> None:
         b, base = self.body, self.base
         _require(len(b) >= base + 0x100, "the roster block is truncated")
-        _require(bytes(b[base + 0x0C: base + 0x10]) == b"ROST" and self.u32(base + 0x10) == 17,
-                 "ROST preamble (magic at +0x0C, version 17 at +0x10)")
+        _require(bytes(b[base + 0x0C: base + 0x10]) == b"ROST", "ROST preamble (magic at +0x0C)")
+        self.version = self.u32(base + 0x10)
+        _require(self.version in ROST_VERSIONS, f"ROST version {self.version} (expected 17 for a disc "
+                                                 "resource or 0 for a save arena)")
         root = self.rel(base + 0x14)
-        _require(root == base + OBJ_OFF, f"the roster object should sit at +0x40, found {root}")
+        expected_root = base + ROST_VERSIONS[self.version]
+        _require(root == expected_root, f"the roster object should sit at +0x{ROST_VERSIONS[self.version]:x}, "
+                                        f"found {root}")
+        # every object field below is written as OBJ_OFF + x (the disc layout); a version-0 save arena keeps the
+        # same object 0x20 bytes earlier, so address them through a virtual base instead of the real one
+        ob = self.obj_base = root - OBJ_OFF
         self.players: list[Player] = []
         self.by_offset: dict[int, Player] = {}
         for pool in POOLS:
-            count_field, table_field = base + POOL_FIELDS[pool][0], base + POOL_FIELDS[pool][1]
+            count_field, table_field = ob + POOL_FIELDS[pool][0], ob + POOL_FIELDS[pool][1]
             count = self.u32(count_field)
             table = self.rel(table_field)
             _require(table is not None, f"the {pool} player table pointer is null")
@@ -1186,12 +1198,12 @@ class RosterDocument:
                                                            self.scheme))
                 self.players.append(player)
                 self.by_offset[offset] = player
-        self.primary_table = self.rel(base + POOL_FIELDS["primary"][1])
+        self.primary_table = self.rel(ob + POOL_FIELDS["primary"][1])
         # colleges
         self.colleges: list[str] = []
         self.college_offsets: list[int] = []
-        college_count = self.u32(base + COLLEGE_COUNT_FIELD)
-        college_table = self.rel(base + COLLEGE_TABLE_FIELD)
+        college_count = self.u32(ob + COLLEGE_COUNT_FIELD)
+        college_table = self.rel(ob + COLLEGE_TABLE_FIELD)
         self.college_table = college_table
         self.college_count = college_count
         college_strings: list[int] = []
@@ -1208,8 +1220,8 @@ class RosterDocument:
         self.college_record_index = {offset: i for i, offset in enumerate(self.college_offsets)}
         # teams
         self.teams: list[TeamRecord] = []
-        team_count = self.u32(base + TEAM_COUNT_FIELD)
-        team_table = self.rel(base + TEAM_TABLE_FIELD)
+        team_count = self.u32(ob + TEAM_COUNT_FIELD)
+        team_table = self.rel(ob + TEAM_TABLE_FIELD)
         _require(team_table is not None and 0 < team_count <= 128, "the team table is missing or implausible")
         assert team_table is not None
         self.team_table = team_table
@@ -1234,8 +1246,8 @@ class RosterDocument:
             self.teams.append(team)
         # free agents
         self.free_agents: list[int] = []
-        fa_count = self.u32(base + FREE_AGENT_COUNT_FIELD)
-        fa_list = self.rel(base + FREE_AGENT_LIST_FIELD)
+        fa_count = self.u32(ob + FREE_AGENT_COUNT_FIELD)
+        fa_list = self.rel(ob + FREE_AGENT_LIST_FIELD)
         if fa_list is not None and 0 <= fa_count <= 4000:
             for index in range(fa_count):
                 target = self.rel(fa_list + index * 4)
@@ -1479,14 +1491,14 @@ def _entry(archive) -> Any:
 def find_block_base(payload: bytes) -> int:
     """Where the ROST block starts inside a save arena (0 for a roster save, 0x2E0 for a franchise)."""
 
-    for candidate in (0, FRANCHISE_BLOCK_OFFSET):
+    for candidate in (0, SAVE_BLOCK_OFFSET, FRANCHISE_BLOCK_OFFSET):
         if (len(payload) > candidate + 0x18 and payload[candidate + 0x0C: candidate + 0x10] == b"ROST"
-                and struct.unpack_from("<I", payload, candidate + 0x10)[0] == 17):
+                and struct.unpack_from("<I", payload, candidate + 0x10)[0] in ROST_VERSIONS):
             return candidate
     index = payload.find(b"ROST", 0, 0x10000)
     while index != -1:
         base = index - 0x0C
-        if base >= 0 and struct.unpack_from("<I", payload, base + 0x10)[0] == 17:
+        if base >= 0 and struct.unpack_from("<I", payload, base + 0x10)[0] in ROST_VERSIONS:
             return base
         index = payload.find(b"ROST", index + 1, 0x10000)
     raise RosterRecordError("no ROST block found in this save")

@@ -4,6 +4,9 @@
 
 Source/UI versions are **2K5 RC84** and **APF alpha.84**.
 
+- **★ Rosters opens real Xbox saves.** Real saves keep the roster as a version-0 runtime arena (object at
+  file 0x320), which RC83 refused; the document now reads that layout as well as the disc's, so genuine saves
+  get the full editor and re-sign as before. Verified on the two signed saves on hand; franchise saves untested.
 - **★ Rosters is scheme-aware.** The page no longer shows the retail 17 positions on every roster.
   It detects whether the loaded source is on the retail table, the **EDGE rename** or the
   **one-pool** model (EDGE / LB / interior, OLB retired) — from the disc's own patch states for an

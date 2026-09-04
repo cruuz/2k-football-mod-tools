@@ -1038,7 +1038,8 @@ Leskinen)** and **Bad_AL** (NFL2K5Tool), re-verified byte for byte against the r
 
 1. Open the page and press **Use the loaded XISO** (or **Open a disc…**). An Xbox save works too:
    **Open an Xbox save…** takes an Action Replay `.zip`, an extracted save folder or a loose
-   `SAVEGAME.DAT` with its `EXTRA` beside it. The stored signature is checked on load, and a save
+   `SAVEGAME.DAT` with its `EXTRA` beside it (real saves keep the roster as the game's in-memory arena;
+   the page reads that layout and the disc's). The stored signature is checked on load, and a save
    whose `EXTRA` does not verify is refused rather than quietly re-signed.
 2. **Left** — the 32 clubs, the game's extra squads (Pro Bowl, all-time, the two user teams), then
    Free Agents, the Draft Class and the leftover pools.

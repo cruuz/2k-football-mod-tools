@@ -1270,3 +1270,98 @@ class RetailPositionSchemeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# --------------------------------------------------------------------------------------------- version-0 saves
+def synthetic_save_v0(body: bytes | None = None, *, suffix: bytes = bytes(0x1000)) -> bytes:
+    """The runtime-arena layout every real SAVEGAME.DAT carries (found by GPT-6 Astra, 2026-09-04).
+
+    File-relative: a 0x20-byte wrapper at 0x2E0 (``ROST`` + declared length 0x91020), the ROST preamble at
+    0x300 with version 0 and a relative pointer to the object at 0x320, then the 0x91000-byte arena.  The
+    object is the disc object moved 0x20 bytes closer to the preamble; every pointer inside it is field-
+    relative, so the bytes after the object are the disc body's bytes after ITS object.
+    """
+
+    body = synthetic_body() if body is None else body
+    arena = bytearray(body[rr.OBJ_OFF:]) + bytes(0x91000 - (len(body) - rr.OBJ_OFF))
+    preamble = bytes(12) + b"ROST" + struct.pack("<Ii", 0, 0x20 - 0x14 + 1) + bytes(8)      # 0x20 bytes
+    wrapper = b"ROST" + struct.pack("<I", 0x20 + 0x91000) + bytes(0x18)
+    return bytes(0x2E0) + wrapper + preamble + bytes(arena) + suffix
+
+
+class VersionZeroSaveTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.body = synthetic_body()
+        self.savegame = synthetic_save_v0(self.body)
+
+    def test_find_block_base_lands_on_the_real_save_preamble(self) -> None:
+        self.assertEqual(rr.find_block_base(self.savegame), 0x300)
+        self.assertEqual(rr.find_block_base(self.body + bytes(224)), 0)          # the disc-layout save still works
+
+    def test_the_document_reads_the_arena_like_the_disc_body(self) -> None:
+        document = rr.RosterDocument(self.savegame, base=0x300, source="save")
+        disc = rr.RosterDocument(self.body)
+        self.assertEqual(document.version, 0)
+        self.assertEqual(disc.version, 17)
+        self.assertEqual([(p.first, p.last) for p in document.players], [(p.first, p.last) for p in disc.players])
+        self.assertEqual([t.abbreviation for t in document.teams], [t.abbreviation for t in disc.teams])
+        self.assertEqual(document.to_body(), self.savegame)
+        self.assertEqual(document.diff(), [])
+
+    def test_unknown_versions_are_refused(self) -> None:
+        bad = bytearray(self.savegame)
+        struct.pack_into("<I", bad, 0x310, 3)
+        with self.assertRaisesRegex(rr.RosterRecordError, "version 3"):
+            rr.RosterDocument(bytes(bad), base=0x300)
+        with self.assertRaisesRegex(rr.RosterRecordError, "no ROST block"):
+            rr.find_block_base(bytes(bad))
+
+    def test_edit_rename_and_resign_a_version_zero_save(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            source = Path(td) / "src" / "53450030" / "0001"
+            source.mkdir(parents=True)
+            (source / "SAVEGAME.DAT").write_bytes(self.savegame)
+            (source / "EXTRA").write_bytes(rr.sign_save(self.savegame))
+            (source / "SaveMeta.xbx").write_bytes(b"meta")
+            document = rr.load_save(source.parent.parent)
+            self.assertEqual(document.version, 0)
+            player = document.players[0]
+            player.record.set("speed", 88)
+            document.set_name(player, "last", "Zed")
+            target = Path(td) / "out"
+            receipt = rr.save_document(document, target)
+            self.assertTrue(receipt["signed"])
+            back = rr.load_save(target)
+            self.assertEqual(back.container.verified, True)
+            self.assertEqual((back.players[0].record.values["speed"], back.players[0].last), (88, "Zed"))
+            self.assertEqual((target / "53450030" / "0001" / "SaveMeta.xbx").read_bytes(), b"meta")
+            written = (target / "53450030" / "0001" / "SAVEGAME.DAT").read_bytes()
+            self.assertEqual(len(written), len(self.savegame))
+            self.assertEqual(written[:0x320], self.savegame[:0x320])              # wrapper + preamble untouched
+
+
+REAL_SAVES = Path(os.environ.get("NFL2K5_SAVE_FIXTURES", str(Path.home() / "Desktop" / "2K5-8 Editors" / "save_fixtures")))
+REAL_SAVE_FILES = sorted(REAL_SAVES.glob("*/UDATA/53450030/*/SAVEGAME.DAT")) if REAL_SAVES.is_dir() else []
+
+
+@unittest.skipUnless(REAL_SAVE_FILES, "no real signed saves (set NFL2K5_SAVE_FIXTURES to a folder of <name>/UDATA/...)")
+class RealSaveTests(unittest.TestCase):
+    """Every real HMAC-verified save on this machine loads, round-trips and re-signs (private fixtures)."""
+
+    def test_every_real_save_round_trips_and_resigns(self) -> None:
+        for path in REAL_SAVE_FILES:
+            with self.subTest(save=path.parts[-5]):
+                document = rr.load_save(path, detect=True)
+                self.assertEqual(document.version, 0)
+                self.assertEqual(document.base, 0x300)
+                self.assertGreaterEqual(len(document.players), 2000)
+                self.assertEqual(len(document.teams), 52)
+                self.assertEqual(document.to_body(), path.read_bytes())
+                self.assertEqual(document.diff(), [])
+                player = document.players[0]
+                player.record.set("speed", 88)
+                with tempfile.TemporaryDirectory() as td:
+                    rr.save_document(document, Path(td) / "copy")
+                    back = rr.load_save(Path(td) / "copy")
+                    self.assertTrue(back.container.verified)
+                    self.assertEqual(back.players[0].record.values["speed"], 88)
