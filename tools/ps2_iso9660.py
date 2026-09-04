@@ -1081,28 +1081,42 @@ def _pack_directory(records: Sequence[bytes]) -> bytes:
     return bytes(out)
 
 
-def _build_synthetic_iso(slack: int = 0, sector_size: int = SECTOR_USER_BYTES,
-                         data_offset: int = 0) -> bytes:
+def build_synthetic_iso(slack: int = 0, sector_size: int = SECTOR_USER_BYTES,
+                        data_offset: int = 0, *,
+                        files: "Sequence[Tuple[bytes, bytes]] | None" = None,
+                        sub_name: bytes = b"DATA",
+                        sub_files: "Sequence[Tuple[bytes, bytes]] | None" = None,
+                        ) -> bytes:
     """A minimal but structurally valid PS2-shaped ISO9660 volume.
 
     Layout: 16 blank system blocks, PVD, terminator, path tables, root
     directory, one subdirectory, then file data.
+
+    ``files`` are the root entries and ``sub_files`` the entries of the single
+    subdirectory ``sub_name``, each ``(identifier_with_version, payload)``.
+    The defaults give the fixture the reader's own self-test uses; sibling
+    tools (the disc inventory) pass their own so their self-tests need no game
+    data either.  Payloads may span many blocks.
     """
     root_lba = 20
     sub_lba = 21
     path_table_l_lba = 18
     path_table_m_lba = 19
 
-    files = [
-        (b"SYSTEM.CNF;1", b"BOOT2 = cdrom0:\\SLUS_217.70;1\r\nVER = 1.00\r\n"
-                          b"VMODE = NTSC\r\n"),
-        (b"SLUS_217.70;1", b"ELF" + bytes(4093)),
-        (b"EMPTY.BIN;1", b""),
-    ]
-    sub_files = [
-        (b"FOO.BIN;1", bytes(range(256)) * 12),
-        (b"BAR.DAT;1", b"bar" * 1000),
-    ]
+    if files is None:
+        files = [
+            (b"SYSTEM.CNF;1", b"BOOT2 = cdrom0:\\SLUS_217.70;1\r\nVER = 1.00\r\n"
+                              b"VMODE = NTSC\r\n"),
+            (b"SLUS_217.70;1", b"ELF" + bytes(4093)),
+            (b"EMPTY.BIN;1", b""),
+        ]
+    if sub_files is None:
+        sub_files = [
+            (b"FOO.BIN;1", bytes(range(256)) * 12),
+            (b"BAR.DAT;1", b"bar" * 1000),
+        ]
+    files = list(files)
+    sub_files = list(sub_files)
 
     data_lba = 22
     placed = []
@@ -1126,7 +1140,7 @@ def _build_synthetic_iso(slack: int = 0, sector_size: int = SECTOR_USER_BYTES,
     root_records = [
         _directory_record_bytes(b"\x00", root_lba, 0, True),
         _directory_record_bytes(b"\x01", root_lba, 0, True),
-        _directory_record_bytes(b"DATA", sub_lba, sub_length, True),
+        _directory_record_bytes(sub_name, sub_lba, sub_length, True),
     ] + [child(name) for name, _ in files]
     root_dir = _pack_directory(root_records)
     root_length = len(root_dir)
@@ -1152,7 +1166,7 @@ def _build_synthetic_iso(slack: int = 0, sector_size: int = SECTOR_USER_BYTES,
     def path_table(endian: str) -> bytes:
         table = bytearray()
         for identifier, lba, parent in ((b"\x00", root_lba, 1),
-                                        (b"DATA", sub_lba, 1)):
+                                        (sub_name, sub_lba, 1)):
             table.append(len(identifier))
             table.append(0)
             table.extend(struct.pack(endian + "I", lba))
@@ -1248,6 +1262,10 @@ def _build_synthetic_iso(slack: int = 0, sector_size: int = SECTOR_USER_BYTES,
         out.extend(sector)
     out.extend(bytes(slack))
     return bytes(out)
+
+
+# The self-test and the conformance suite were written against this name.
+_build_synthetic_iso = build_synthetic_iso
 
 
 # --------------------------------------------------------------------------
