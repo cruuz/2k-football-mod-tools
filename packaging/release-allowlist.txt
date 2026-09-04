@@ -272,6 +272,8 @@ mod_editor/core/nfl2k5_prospect_names.py
 mod_editor/core/nfl2k5_seven_on_seven.py
 mod_editor/core/nfl2k5_boot_logo.py
 mod_editor/core/nfl2k5_seven_on_seven_book.py
+mod_editor/core/nfl2k5_player_star.py
+mod_editor/core/nfl2k5_player_tags.py
 mod_editor/core/nfl2k5_widescreen.py
 mod_editor/gui/build_panel_qt.py
 mod_editor/gui/commentary_panel_qt.py

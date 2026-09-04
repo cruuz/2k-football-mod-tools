@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Iterable, Protocol, runtime_checkable
 
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -145,6 +145,24 @@ class CurrentPlayerRow:
     """One player from the current (non-historical) ROST resource."""
 
     player: RosterPlayer
+
+
+#: The ROST pool whose 0x54 records the on-field entity points at (entity+0x3C): the primary table.
+#: ``nfl2k5_player_tags`` writes byte +0x53 bit 0 of the record a tag names, and
+#: ``nfl2k5_player_star`` makes the retail star predicate say yes for it.
+STAR_POOL = "primary_players"
+
+
+def star_tag_for(player: RosterPlayer) -> str | None:
+    """The ``BuildPlan.player_tags`` entry for a player, or None when he cannot be tagged.
+
+    Only the current roster's primary pool can be: those are the records the on-field entity
+    points at.  The tag is the record's index in that table, which is exactly what
+    ``nfl2k5_player_tags.resolve`` reads back."""
+
+    if player.historical or player.pool != STAR_POOL:
+        return None
+    return str(player.player_index)
 
 
 @dataclass(frozen=True)
@@ -751,16 +769,47 @@ class CurrentPlayerTableModel(QAbstractTableModel):
     """Table model for all current primary and secondary roster players."""
 
     HEADERS = (
-        "Resource", "Pool", "Player", "#", "Face shield", "Position", "Status",
+        "Resource", "Pool", "Player", "#", "Face shield", "Position", "Status", "★ Star",
     )
+    STAR_COLUMN = 7
 
     def __init__(
-        self, host: TextRosterPanelHost, catalog: Nfl2k5TextCatalog
+        self, host: TextRosterPanelHost, catalog: Nfl2k5TextCatalog,
+        star_tags: set[str] | None = None,
+        on_star_changed: Callable[[], None] | None = None,
     ) -> None:
         super().__init__()
         self.host = host
         self.catalog = catalog
         self.rows: tuple[CurrentPlayerRow, ...] = ()
+        #: shared with the panel: the ``BuildPlan.player_tags`` entries currently ticked
+        self.star_tags: set[str] = star_tags if star_tags is not None else set()
+        self.on_star_changed = on_star_changed
+
+    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+        base = super().flags(index)
+        if not index.isValid() or index.column() != self.STAR_COLUMN:
+            return base
+        row = self.row_at(index.row())
+        if row is None or star_tag_for(row.player) is None:
+            return base
+        return base | Qt.ItemIsUserCheckable
+
+    def setData(self, index: QModelIndex, value: object, role: int = Qt.EditRole) -> bool:  # noqa: N802
+        if role != Qt.CheckStateRole or not index.isValid() or index.column() != self.STAR_COLUMN:
+            return False
+        row = self.row_at(index.row())
+        tag = star_tag_for(row.player) if row is not None else None
+        if tag is None:
+            return False
+        if int(value) == int(Qt.Checked):
+            self.star_tags.add(tag)
+        else:
+            self.star_tags.discard(tag)
+        self.dataChanged.emit(index, index, [Qt.CheckStateRole])
+        if self.on_star_changed is not None:
+            self.on_star_changed()
+        return True
 
     def set_catalog(self, catalog: Nfl2k5TextCatalog) -> None:
         self.catalog = catalog
@@ -789,6 +838,13 @@ class CurrentPlayerTableModel(QAbstractTableModel):
         player = self.rows[index.row()].player
         if role == Qt.UserRole:
             return player.group_id
+        if role == Qt.CheckStateRole:
+            if index.column() != self.STAR_COLUMN:
+                return None
+            tag = star_tag_for(player)
+            if tag is None:
+                return None
+            return Qt.Checked if tag in self.star_tags else Qt.Unchecked
         if role not in {Qt.DisplayRole, Qt.ForegroundRole, Qt.FontRole}:
             return None
         first = self.catalog.get_asset(player.first_name_asset_id)
@@ -821,6 +877,7 @@ class CurrentPlayerTableModel(QAbstractTableModel):
                     STATUS_EDITABLE: "Editable",
                     STATUS_READ_ONLY: "Read-only",
                 }[status],
+                "" if star_tag_for(player) is not None else "—",
             )[index.column()]
         if role == Qt.ForegroundRole and index.column() == 6:
             return QColor({
@@ -840,6 +897,9 @@ class CurrentPlayerTableModel(QAbstractTableModel):
 
 class TextRosterPanel(QWidget):
     """Universal text browser plus complete current/historical roster editor."""
+
+    #: (tags, display names) whenever the ★ Star ticks change; the Build tab reads it.
+    star_players_changed = pyqtSignal(list, list)
 
     def __init__(
         self,
@@ -862,6 +922,8 @@ class TextRosterPanel(QWidget):
         self.catalog: Nfl2k5TextCatalog | None = None
         self.resources: tuple[HistoricalResource, ...] = ()
         self.current_rows: tuple[CurrentPlayerRow, ...] = ()
+        #: ★ Star: the BuildPlan.player_tags entries ticked in the current-roster table
+        self.star_tags: set[str] = set()
         self.selected_asset: TextAsset | None = None
         self.selected_current_row: CurrentPlayerRow | None = None
         self.selected_historical_row: HistoricalPlayerRow | None = None
@@ -872,6 +934,38 @@ class TextRosterPanel(QWidget):
         self._apply_style()
         self._building = False
         self.reload()
+
+    # -- ★ Star ------------------------------------------------------------------
+    def star_players(self) -> list[str]:
+        """The ticked players as ``BuildPlan.player_tags`` entries, in roster order."""
+
+        return sorted(self.star_tags, key=lambda tag: (len(tag), tag))
+
+    def star_player_names(self) -> list[str]:
+        """Display names for the ticked players, in the same order as :meth:`star_players`."""
+
+        by_tag = {star_tag_for(row.player): row.player.display_name for row in self.current_rows}
+        return [by_tag.get(tag, f"#{tag}") for tag in self.star_players()]
+
+    def set_star_players(self, tags: Iterable[str]) -> None:
+        """Restore a saved selection (a studio project reload, or a test)."""
+
+        self.star_tags.clear()
+        self.star_tags.update(str(tag) for tag in tags if str(tag).strip())
+        if getattr(self, "current_model", None) is not None:
+            self.current_model.layoutChanged.emit()
+        self._star_players_changed()
+
+    def _star_players_changed(self) -> None:
+        tags = self.star_players()
+        store = getattr(self.host, "set_star_players", None)
+        if callable(store):          # persist into the studio session when the facade offers it
+            try:
+                store(list(tags))
+            except Exception:        # noqa: BLE001 - a session that cannot store must not break the tick
+                pass
+        if not self._building:
+            self.star_players_changed.emit(list(tags), self.star_player_names())
 
     def _build_ui(self) -> None:
         layout = QVBoxLayout(self)
@@ -1074,7 +1168,9 @@ class TextRosterPanel(QWidget):
 
         splitter = QSplitter(Qt.Horizontal)
         empty_catalog = Nfl2k5TextCatalog((), (), (), (), ())
-        self.current_model = CurrentPlayerTableModel(self.host, empty_catalog)
+        self.current_model = CurrentPlayerTableModel(
+            self.host, empty_catalog, self.star_tags, self._star_players_changed
+        )
         self.current_table = QTableView()
         self.current_table.setModel(self.current_model)
         self.current_table.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -1089,6 +1185,7 @@ class TextRosterPanel(QWidget):
         header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(6, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(CurrentPlayerTableModel.STAR_COLUMN, QHeaderView.ResizeToContents)
         splitter.addWidget(self.current_table)
         splitter.addWidget(self._build_current_player_editor())
         splitter.setStretchFactor(0, 3)

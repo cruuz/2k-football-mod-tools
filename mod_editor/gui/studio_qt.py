@@ -1484,6 +1484,7 @@ class StudioMainWindow(QMainWindow):
         self._presentation_panel: PresentationPanel | None = None
         self._commentary_panel: CommentaryPanel | None = None
         self._build_panel: BuildPanel | None = None
+        self._star_players_connected = False
         self._share_panel: SharePanel | None = None
         self._sounds_panel: SoundsPanel | None = None
         self._menus_panel: MenusPanel | None = None
@@ -2273,6 +2274,7 @@ class StudioMainWindow(QMainWindow):
                     on_status=self._specialized_panel_status,
                     on_refresh=self._specialized_panel_refresh,
                 )
+                self._connect_star_players()
                 roster_tabs = QTabWidget()
                 roster_tabs.setObjectName("rostersPlayersTabs")
                 roster_tabs.setAccessibleName("Rosters and players workspaces")
@@ -7701,6 +7703,7 @@ class StudioMainWindow(QMainWindow):
         tabs.setObjectName("buildShareTabs")
         tabs.setAccessibleName("Build and share workspaces")
         self._build_panel = BuildPanel(self.facade)
+        self._connect_star_players()
         tabs.addTab(self._build_panel, "Build")
         # Share: a .2k5patch (byte runs + the modder's own images/audio + recipe)
         # made from a patched copy, applied to somebody else's own disc copy.
@@ -7710,6 +7713,20 @@ class StudioMainWindow(QMainWindow):
         self._build_panel.built.connect(self._on_build_tab_built)
         tabs.setCurrentIndex(0)
         return tabs
+
+    def _connect_star_players(self) -> None:
+        """★ Star ticks in Rosters & Players are the Build tab's ``player_tags``.
+
+        Either panel may be built first, so this runs after both and does nothing until the
+        second one exists."""
+
+        panel = getattr(self, "_roster_panel", None)
+        build = getattr(self, "_build_panel", None)
+        if panel is None or build is None or self._star_players_connected:
+            return
+        panel.star_players_changed.connect(build.set_star_players)
+        build.set_star_players(panel.star_players(), panel.star_player_names())
+        self._star_players_connected = True
 
     def _open_create_play_wizard(self) -> None:
         if not bool(getattr(self.facade, "source_ready", False)):
