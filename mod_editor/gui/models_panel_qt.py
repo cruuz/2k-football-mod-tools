@@ -5,7 +5,9 @@ referees, coaches, cheerleaders, crowds, props, the Crib, menus, trophies,
 stadiums), exports the chosen one as a glTF 2.0 file with its textures, skin
 and vertex-index lane, and imports an edited glTF/GLB by fitting it back onto
 the game's own vertices and writing the rebuilt resource into a COPY of the
-disc.  Everything heavy runs on one background thread; the widget stays live.
+disc.  A player body is three scenes (hi_body, lo_body, hi_head), so the
+Player body set box exports and imports all three together into one copy.
+Everything heavy runs on one background thread; the widget stays live.
 """
 
 from __future__ import annotations
@@ -53,6 +55,10 @@ FEASIBILITY = (
     "Blender split or re-ordered vertices, the exported vertex-index lane maps them back (tick Include > Data "
     "> Mesh > Attributes when exporting); without it the importer falls back to matching by order or by "
     "nearest vertex and says so.\n\n"
+    "PLAYER BODY SET: a player is three models -- the high-detail body (hi_body), the low-detail body the game "
+    "swaps in at distance (lo_body) and the head (hi_head). Select any one of them and the Player body set box "
+    "exports all three together; point it back at the folder and all three are fitted and written into ONE copy "
+    "of the disc in one pass. If any one of them no longer fits its space, nothing is written at all.\n\n"
     "NOT YET: adding or removing vertices or triangles, new bones or animations, and body-type / face morph "
     "deltas (their channels are listed in the export). The player body (hi_body) and head (hi_head) are "
     "shared base meshes: editing them changes every player; faces and body types come from per-player morph "
@@ -94,6 +100,7 @@ class ModelsPanel(QWidget):
         self._source_paths: tuple[Path, Path] | None = None
         self._entries: list[models.ModelEntry] = []
         self._compiled: models.CompiledModelImport | None = None
+        self._compiled_set: models.CompiledModelSet | None = None
         self._last_export: models.ExportResult | None = None
         self._busy = False
         self._build()
@@ -242,6 +249,33 @@ class ModelsPanel(QWidget):
         row.addWidget(self.write_button)
         import_layout.addLayout(row)
         right_layout.addWidget(import_box)
+
+        set_box = QGroupBox("Player body set (high-detail body + low-detail body + head)")
+        set_layout = QVBoxLayout(set_box)
+        self.set_label = QLabel("A player is three models. Select one of them to export or import all three at once.")
+        self.set_label.setWordWrap(True)
+        set_layout.addWidget(self.set_label)
+        row = QHBoxLayout()
+        self.export_set_button = QPushButton("Export the body set")
+        self.export_set_button.setToolTip("Writes the high-detail body, the low-detail body and the head into the "
+                                          "export folder above, with a README for the set")
+        self.export_set_button.clicked.connect(self._export_set)
+        row.addWidget(self.export_set_button)
+        row.addWidget(QLabel("Edited folder"))
+        self.set_folder_field = QLineEdit()
+        self.set_folder_field.setPlaceholderText("The folder holding the three edited .gltf / .glb files")
+        self.set_folder_field.textChanged.connect(self._refresh)
+        row.addWidget(self.set_folder_field, 1)
+        choose_set_folder = QPushButton("Choose…")
+        choose_set_folder.clicked.connect(self._choose_set_folder)
+        row.addWidget(choose_set_folder)
+        self.check_set_button = QPushButton("Check the folder")
+        self.check_set_button.setToolTip("Fits all three edited files onto the game's vertices and reports what would "
+                                         "change; writes nothing. If any one of them no longer fits, none is written.")
+        self.check_set_button.clicked.connect(self._check_set)
+        row.addWidget(self.check_set_button)
+        set_layout.addLayout(row)
+        right_layout.addWidget(set_box)
         splitter.addWidget(right)
         splitter.setStretchFactor(0, 2)
         splitter.setStretchFactor(1, 3)
@@ -261,6 +295,12 @@ class ModelsPanel(QWidget):
         items = self.model_list.selectedItems()
         return str(items[0].data(Qt.UserRole)) if items else None
 
+    def current_body_set(self) -> models.BodySet | None:
+        key = self.current_key()
+        if key is None:
+            return None
+        return models.body_set_for_key(self._entries, key)
+
     def _refresh(self) -> None:
         loaded = self._source is not None
         key = self.current_key()
@@ -268,9 +308,21 @@ class ModelsPanel(QWidget):
         self.export_button.setEnabled(not self._busy and loaded and key is not None)
         self.open_button.setEnabled(self._last_export is not None)
         self.check_button.setEnabled(not self._busy and loaded and key is not None and bool(self.edited_field.text().strip()))
+        body_set = self.current_body_set()
+        self.export_set_button.setEnabled(not self._busy and loaded and body_set is not None)
+        self.check_set_button.setEnabled(not self._busy and loaded and body_set is not None
+                                         and bool(self.set_folder_field.text().strip()))
+        if body_set is None:
+            self.set_label.setText("A player is three models (high-detail body, low-detail body, head). Select one of "
+                                   "them (hi_body, lo_body or hi_head) to export or import all three at once.")
+        else:
+            self.set_label.setText("Body set: " + ", ".join(
+                f"{models.BODY_SET_LABELS.get(e.name, e.name)} ({e.name})" for e in body_set.entries)
+                + ". Export writes all three; Check the folder fits all three and writes them into ONE copy of the disc.")
         source = self.source_field.text().strip()
         target = self.target_field.text().strip()
-        self.write_button.setEnabled(not self._busy and self._compiled is not None and bool(source) and bool(target)
+        ready = self._compiled is not None or self._compiled_set is not None
+        self.write_button.setEnabled(not self._busy and ready and bool(source) and bool(target)
                                      and Path(source) != Path(target))
 
     def _facade_paths(self) -> tuple[Path, Path] | None:
@@ -375,6 +427,7 @@ class ModelsPanel(QWidget):
 
     def _selected(self) -> None:
         self._compiled = None
+        self._compiled_set = None
         key = self.current_key()
         self._refresh()
         if key is None or self._source is None:
@@ -459,7 +512,7 @@ class ModelsPanel(QWidget):
         source = self._source
         normals, uvs, rescale = self.normals_check.isChecked(), self.uvs_check.isChecked(), self.rescale_check.isChecked()
         colours = self.colours_check.isChecked()
-        self._compiled = None
+        self._compiled = self._compiled_set = None
         self.status_label.setText(f"Fitting {edited.name} onto the game's vertices…")
 
         def operation() -> object:
@@ -486,13 +539,74 @@ class ModelsPanel(QWidget):
                 return
         self.write_copy(source, target)
 
-    def write_copy(self, source_image: Path, target_image: Path) -> None:
-        compiled, source = self._compiled, self._source
-        if compiled is None or source is None:
+    def _choose_set_folder(self) -> None:
+        start = self.set_folder_field.text().strip() or self.export_dir.text().strip() or str(Path.home())
+        chosen = QFileDialog.getExistingDirectory(self, "Folder holding the edited body set", start)
+        if chosen:
+            self.set_folder_field.setText(chosen)
+
+    def _export_set(self) -> None:
+        body_set, source = self.current_body_set(), self._source
+        if body_set is None or source is None:
             return
-        self.status_label.setText(f"Copying the disc and writing {compiled.name}…")
+        folder = Path(self.export_dir.text().strip() or str(Path.home() / "2K5 Models")).expanduser()
+        color0 = self.color0_check.isChecked()
+        self.status_label.setText(f"Exporting the body set into {folder}…")
 
         def operation() -> object:
+            return models.export_body_set(source, body_set, folder, include_vertex_colors_as_color0=color0)
+
+        def done(result: object) -> None:
+            results = list(result)  # type: ignore[arg-type]
+            self._last_export = results[0] if results else None
+            if not self.set_folder_field.text().strip():
+                self.set_folder_field.setText(str(folder))
+            self.status_label.setText(f"Body set exported to {folder}: " + ", ".join(r.gltf_path.name for r in results))
+            self.details.setPlainText((folder / "player-body-set-README.txt").read_text(encoding="utf-8"))
+            self._refresh()
+
+        self._run(operation, done)
+
+    def _check_set(self) -> None:
+        folder = self.set_folder_field.text().strip()
+        if folder:
+            self.compile_body_set(Path(folder))
+
+    def compile_body_set(self, folder: Path) -> None:
+        body_set, source = self.current_body_set(), self._source
+        if body_set is None or source is None:
+            return
+        normals, uvs, rescale = self.normals_check.isChecked(), self.uvs_check.isChecked(), self.rescale_check.isChecked()
+        colours = self.colours_check.isChecked()
+        self._compiled = self._compiled_set = None
+        self.status_label.setText(f"Fitting the body set in {folder}…")
+
+        def operation() -> object:
+            return models.compile_body_set_import(source, body_set, folder, write_normals=normals, write_uvs=uvs,
+                                                  allow_rescale=rescale, write_colours=colours)
+
+        def done(result: object) -> None:
+            assert isinstance(result, models.CompiledModelSet)
+            self._compiled_set = result
+            self.details.setPlainText(set_report_text(result))
+            self.status_label.setText(f"Ready to write: {result.summary()}")
+            self._refresh()
+
+        self._run(operation, done)
+
+    def write_copy(self, source_image: Path, target_image: Path) -> None:
+        source = self._source
+        compiled, compiled_set = self._compiled, self._compiled_set
+        if source is None or (compiled is None and compiled_set is None):
+            return
+        subject = compiled_set if compiled_set is not None else compiled
+        assert subject is not None
+        self.status_label.setText(f"Copying the disc and writing {subject.summary()}…")
+
+        def operation() -> object:
+            if compiled_set is not None:
+                return models.write_import_set_copy(source, compiled_set, source_image, target_image, overwrite=True)
+            assert compiled is not None
             return models.write_import_copy(source, compiled, source_image, target_image, overwrite=True)
 
         def done(result: object) -> None:
@@ -500,7 +614,7 @@ class ModelsPanel(QWidget):
             self.status_label.setText(f"Written: {target_image} (receipt: {result.get('receipt_path')})")
             if self.isVisible():
                 QMessageBox.information(self, "Models copy written",
-                                        f"{target_image}\n\n{compiled.summary()}\n\nReceipt: {result.get('receipt_path')}")
+                                        f"{target_image}\n\n{subject.summary()}\n\nReceipt: {result.get('receipt_path')}")
 
         self._run(operation, done)
 
@@ -557,4 +671,24 @@ def import_report_text(compiled: models.CompiledModelImport) -> str:
     return "\n".join(lines)
 
 
-__all__ = ["ModelsPanel", "describe_model", "import_report_text", "FEASIBILITY"]
+def set_report_text(compiled: models.CompiledModelSet) -> str:
+    lines = [f"Body set check: {compiled.summary()}", ""]
+    for member in compiled.members:
+        lines.append(f"{member.name}  ({Path(compiled.files.get(member.key, '')).name})")
+        lines.append("  " + import_report_text(member).split("\n\n", 1)[0])
+        for shape in member.shapes:
+            lines.append(f"    • {shape.name}: {shape.positions_changed:,} moved (largest {shape.max_move_cm:.2f} cm), "
+                         f"{shape.normals_changed:,} normals, {shape.uvs_changed:,} UVs, {shape.colours_changed:,} colours")
+        for note in member.notes:
+            lines.append(f"    - {note}")
+        lines.append("")
+    if compiled.notes:
+        lines.extend(f"- {note}" for note in compiled.notes)
+        lines.append("")
+    lines += ["Nothing has been written yet. All three go into ONE copy of the disc: choose the source image and",
+              "where to write the copy, then Write the copy. If any member could not fit, this check would have",
+              "refused the whole set instead."]
+    return "\n".join(lines)
+
+
+__all__ = ["ModelsPanel", "describe_model", "import_report_text", "set_report_text", "FEASIBILITY"]

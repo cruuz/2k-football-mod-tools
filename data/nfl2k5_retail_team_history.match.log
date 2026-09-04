@@ -1,6 +1,14 @@
 # match log for nfl2k5_retail_team_history.csv (nflverse-data (https://github.com/nflverse/nflverse-data), CC-BY-4.0)
 # players with game seasons: 1325; exact: 835; last name + DOB: 313; ambiguous: 5; none: 172
 # season rows: 5068 of 5867 have a team; per year: 1982: 1/1, 1983: 1/1, 1984: 1/1, 1985: 3/3, 1986: 4/4, 1987: 6/7, 1988: 10/12, 1989: 11/12, 1990: 15/17, 1991: 27/29, 1992: 40/44, 1993: 59/70, 1994: 94/109, 1995: 142/163, 1996: 216/243, 1997: 291/327, 1998: 376/421, 1999: 459/531, 2000: 580/678, 2001: 751/876, 2002: 929/1076, 2003: 1052/1242
+# 2026-09-04 (studio v1.0 RC83): the writer no longer stops at this CSV.  Every season the card can
+#   show a row for and this CSV does not cover is filled with the player's OWN 2004 club, read from
+#   the roster's 32 team records, and counted as "inferred" in the build receipt.  On the retail
+#   roster that is 704 seasons over 185 players on top of the 5042 this CSV places, so 5746 of the
+#   5838 seasons the card can show carry a team; the remaining 92 (41 players) are 2004 free agents
+#   who are on no club, and 29 further seasons are older than the card's 15-row window and draw no
+#   row at all.  A CSV row always wins over the fill, so adding a line here corrects any inferred
+#   season.  The per-player lines below are this CSV's own coverage and are unchanged.
    0 Duane Starks 1974-05-23: exact 00-0015577; covered [1998, 1999, 2000, 2001, 2002]; missing []
    1 Renaldo Hill 1978-11-12: exact 00-0020301; covered [2001, 2002, 2003]; missing []
    2 David Macklin 1978-07-14: exact 00-0019563; covered [2000, 2001, 2002, 2003]; missing []

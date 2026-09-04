@@ -362,13 +362,15 @@ class RetailRosterTests(unittest.TestCase):
 
     def test_round_trip_on_the_retail_roster(self) -> None:
         receipt = self.receipt
+        matches = receipt["matches"]
         self.assertEqual(receipt["pool_used_before"], 36866)
-        self.assertEqual(receipt["pool_used_after"], 36866 + receipt["matches"]["seasons_written"])
+        self.assertEqual(receipt["pool_used_after"],
+                         36866 + matches["seasons_written"] + matches["seasons_inferred"])
         self.assertLessEqual(receipt["pool_used_after"], th.POOL_CAPACITY)
-        self.assertEqual(receipt["matches"]["none"], 0)
-        self.assertEqual(receipt["matches"]["ambiguous"], 0)
-        self.assertEqual(receipt["matches"]["would_not_show"], 0)
-        self.assertGreater(receipt["matches"]["seasons_written"], 5000)
+        self.assertEqual(matches["none"], 0)
+        self.assertEqual(matches["ambiguous"], 0)
+        self.assertEqual(matches["would_not_show"], 0)
+        self.assertGreater(matches["seasons_written"], 5000)
         self.assertEqual(th.body_status(self.patched), "applied")
         self.assertEqual(th.pool_digest(self.after), th.SHIPPED_POOL_SHA256)
         by_index = {p.index: p for p in self.after.players}
@@ -394,6 +396,53 @@ class RetailRosterTests(unittest.TestCase):
         again, receipt2 = th.apply_body(self.patched, self.rows)
         self.assertEqual(again, self.patched)
         self.assertEqual(receipt2["matches"]["seasons_written"], 0)
+        self.assertEqual(receipt2["matches"]["seasons_inferred"], 0)
+
+    def test_every_shown_season_gets_a_team_except_the_free_agents(self) -> None:
+        """The TEAM column is consistent: the CSV where it matched, the 2004 club everywhere else."""
+
+        receipt, matches = self.receipt, self.receipt["matches"]
+        self.assertEqual(matches["displayable_seasons"], 5838)          # 5,867 games entries, 29 past the 15-row window
+        self.assertEqual(matches["seasons_written"], 5042)              # the shipped nflverse CSV
+        self.assertEqual(matches["seasons_inferred"], 704)              # filled with the player's own 2004 club
+        self.assertEqual(matches["players_inferred"], 185)
+        self.assertEqual(matches["seasons_no_team"], 92)                # 2004 free agents: on no club, nothing to infer
+        self.assertEqual(matches["players_no_team"], 41)
+        self.assertEqual(receipt["seasons_with_a_team"], 5746)
+        self.assertEqual(receipt["seasons_without_a_team"], 92)
+        self.assertEqual(th.summary(self.patched)["team_entries"], 5746)
+        self.assertTrue(receipt["infer_current_team"])
+        self.assertTrue(any("inferred" in line for line in receipt["log"]))
+        self.assertTrue(any("keep \"--\"" in line for line in receipt["log"]))
+        # every displayable season of a player who has a 2004 club now carries a team
+        after = {p.index: p for p in self.after.players}
+        for before in self.roster.players:
+            shown = {s for s in before.games_slots() if 1 <= s < before.count and before.count - s <= th.MAX_DISPLAY_AGE}
+            if self.roster.current_team.get(before.index) is None:
+                continue
+            self.assertEqual(after[before.index].team_slots(), shown, before.index)
+        # and an inferred entry names the player's own 2004 club
+        club = self.roster.current_team
+        for index, player in after.items():
+            for word in player.entries:
+                if ((word >> 16) & 0x7F) == tc.TEAM_FIELD:
+                    self.assertLess((word & 0xFFFF) - 1, th.NFL_TEAM_COUNT, index)
+        self.assertIn(512, club)
+
+    def test_the_fill_can_be_turned_off(self) -> None:
+        out, receipt = th.apply_body(self.body, self.rows, infer_current_team=False)
+        self.assertEqual(receipt["matches"]["seasons_inferred"], 0)
+        self.assertEqual(receipt["matches"]["seasons_no_team"], 0)
+        self.assertEqual(receipt["pool_used_after"], 36866 + receipt["matches"]["seasons_written"])
+        self.assertEqual(th.summary(out)["team_entries"], receipt["matches"]["seasons_written"])
+
+    def test_the_roster_knows_every_players_2004_club(self) -> None:
+        club = self.roster.current_team
+        self.assertEqual(len(club), 1696)                     # every player listed by one of the 32 club records
+        self.assertTrue(all(0 <= k < th.NFL_TEAM_COUNT for k in club.values()))
+        self.assertEqual(self.roster.teams[club[512]], "DET")  # Joey Harrington, Detroit in 2004
+        with_games = {p.index for p in self.roster.players if p.games_slots()}
+        self.assertEqual(len(with_games - set(club)), 170)     # the retail free agents
 
     def test_digest_gate_order_with_the_reclassify_and_schedule_passes(self) -> None:
         import nfl2k5_franchise_schedule as fs
@@ -468,7 +517,7 @@ class RetailRosterTests(unittest.TestCase):
             csv_path.write_text(CSV_HEAD + "Harrington,Joey,1978-10-21,2002,HOU,,\n", encoding="utf-8")
             rows, provenance = th.load_rows(csv_path)
             self.assertEqual(provenance["source"], "custom")
-            out, receipt = th.apply_body(self.body, rows)
+            out, receipt = th.apply_body(self.body, rows, infer_current_team=False)
             self.assertEqual(receipt["matches"]["seasons_written"], 1)
             h = th.parse_body(out).players[512]
             self.assertEqual({(w & 0xFFFF) - 1 for w in h.entries if ((w >> 16) & 0x7F) == tc.TEAM_FIELD}, {29})

@@ -61,6 +61,19 @@ scale/offset; a UV edit outside ``O +/- S`` widens the shape's UV constant at
 with a different vertex count is fitted by nearest-vertex projection and the
 report says so.  Nothing is added or removed: the compressed resource is
 rebuilt into its retail span with the wrapper byte-identical.
+
+The player body set: a player is three scenes -- ``hi_body`` (drawn close up),
+``lo_body`` (swapped in at distance) and ``hi_head`` -- so editing one alone
+makes the player change shape when the camera pulls back.  ``body_sets`` finds
+them (the three SCNE of one pack entry carrying those names; on the retail disc
+that is outer 3, chunks 114 / 113 / 115, and no other entry holds any of the
+names), ``export_body_set`` writes all three plus a set README, and
+``compile_body_set_import`` + ``write_import_set_copy`` fit a folder of edited
+files and write them into ONE copy of the disc in one pass.  Every member is
+compiled -- which is where "does it still fit its space on the disc" is answered
+-- before the disc is copied, and every member's spans are located and checked
+before the first byte moves, so a set is never half-applied.  Single-model
+export and import are unchanged.
 """
 
 from __future__ import annotations
@@ -102,6 +115,14 @@ ProgressSink = Callable[[str, int, int], None]
 
 class ModelsError(ValueError):
     """A models export/import refusal with a user-facing message."""
+
+
+class UnchangedModelError(ModelsError):
+    """The edited file is identical to the game's model, so there is nothing to write.
+
+    Its own type because a body-set import has to tell "you exported three files and only edited
+    one of them" (fine: the other two are left alone) from a real refusal.
+    """
 
 
 def _require(condition: bool, message: str) -> None:
@@ -270,6 +291,17 @@ GROUP_LABELS["other"] = "Other"
 GROUP_ORDER = ("players", "helmets", "field", "officials", "crowd", "props", "stadiums",
                "trophies", "cutscenes", "crib", "menus", "other")
 
+#: A player body is three scenes, not one: the high-resolution body the game draws close up, the
+#: low-resolution body it swaps in at distance, and the head.  On the retail disc they are the three
+#: consecutive SCNE resources of one pack entry -- ``lo_body`` (outer 3, chunk 113), ``hi_body``
+#: (chunk 114) and ``hi_head`` (chunk 115) -- and no other pack entry holds any of those names, so a
+#: "body set" is exactly "the scenes of one archive entry named hi_body / lo_body / hi_head".  Roles
+#: are listed in export order: the body first, then its low-detail twin, then the head.
+BODY_SET_ROLES: tuple[str, ...] = ("hi_body", "lo_body", "hi_head")
+BODY_SET_LABELS: Mapping[str, str] = {"hi_body": "High-detail body", "lo_body": "Low-detail body",
+                                      "hi_head": "Head"}
+SCHEMA_SET_IMPORT = "nfl2k5_model_set_import/v1"
+
 
 def safe_file_name(name: str) -> str:
     cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", name).strip("._")
@@ -300,6 +332,57 @@ class ModelEntry:
 
 def model_key(outer_index: int, chunk_index: int) -> str:
     return f"o{int(outer_index)}c{int(chunk_index)}"
+
+
+@dataclass(frozen=True)
+class BodySet:
+    """One player body: the three related scenes of a single pack entry, keyed by role."""
+
+    outer_index: int
+    entries: tuple[ModelEntry, ...]          # in BODY_SET_ROLES order
+
+    @property
+    def keys(self) -> tuple[str, ...]:
+        return tuple(entry.key for entry in self.entries)
+
+    @property
+    def label(self) -> str:
+        return f"Player body set (outer {self.outer_index}): " + ", ".join(e.name for e in self.entries)
+
+    def entry_for(self, role: str) -> ModelEntry:
+        for entry in self.entries:
+            if entry.name == role:
+                return entry
+        raise ModelsError(f"this body set has no {role}")
+
+
+def body_sets(entries: Iterable[ModelEntry]) -> list[BodySet]:
+    """Every complete player body in a catalog: one pack entry holding all of BODY_SET_ROLES.
+
+    An archive entry that carries only some of the three (a modded disc, a partial extraction) is
+    not a set: the convenience exists to keep the three in step, so it refuses to guess.
+    """
+
+    by_outer: dict[int, dict[str, ModelEntry]] = {}
+    for entry in entries:
+        if entry.name in BODY_SET_ROLES:
+            by_outer.setdefault(int(entry.outer_index), {})[entry.name] = entry
+    sets: list[BodySet] = []
+    for outer_index in sorted(by_outer):
+        found = by_outer[outer_index]
+        if all(role in found for role in BODY_SET_ROLES):
+            sets.append(BodySet(outer_index, tuple(found[role] for role in BODY_SET_ROLES)))
+    return sets
+
+
+def body_set_for_key(entries: Iterable[ModelEntry], key: str) -> BodySet | None:
+    """The body set the given model key belongs to, or None when it is not part of one."""
+
+    entries = list(entries)
+    for candidate in body_sets(entries):
+        if key in candidate.keys:
+            return candidate
+    return None
 
 
 def parse_model_key(key: str) -> tuple[int, int]:
@@ -1660,7 +1743,8 @@ def compile_import(source: ModelSource, key: str, edited_path: Path, *, write_no
         notes.extend(f"{report.name}: {note}" for note in report.notes)
 
     changed = sum(1 for a, b in zip(decoded, output) if a != b)
-    _require(changed > 0, "The edited file does not change any vertex of this model")
+    if not changed:
+        raise UnchangedModelError(f"{scene_name}: the edited file does not change any vertex of this model")
     progress("Rebuilding the compressed resource", 3, 4)
     fill = _tools_module("nfl_vc_lz_fill")
     try:
@@ -1709,17 +1793,53 @@ def image_spans(source: ModelSource, compiled: CompiledModelImport, descriptor: 
     return spans
 
 
+def _prepare_copy(source_image: Path, target_image: Path, overwrite: bool) -> tuple[Path, Path]:
+    source_image, target_image = Path(source_image), Path(target_image)
+    _require(source_image.is_file(), f"source image is not a file: {source_image}")
+    _require(not _same_file(source_image, target_image), "The copy must not be the source image")
+    _require(overwrite or not target_image.exists(), f"{target_image} already exists")
+    return source_image, target_image
+
+
+def _plan_write(source: ModelSource, compiled: CompiledModelImport, descriptor: int,
+                size: int) -> tuple[list[tuple[int, int, int]], list[str]]:
+    """Locate one compiled model on the open disc copy and say what each span currently holds.
+
+    Raises before anything is written when a span is neither the retail bytes nor this same edit.
+    """
+    template_span = source.span(source.resource(compiled.key))
+    _require(_sha256(template_span) == compiled.template_span_sha256,
+             f"{compiled.name}: the model source changed since the import was compiled")
+    spans = image_spans(source, compiled, descriptor, size)
+    state: list[str] = []
+    for absolute, inner, length in spans:
+        current = platform_compat.pread(descriptor, length, absolute)
+        if current == template_span[inner: inner + length]:
+            state.append("retail")
+        elif current == compiled.rebuilt_span[inner: inner + length]:
+            state.append("applied")
+        else:
+            raise ModelsError(f"This disc's copy of {compiled.name} is neither the original nor this edit; "
+                              "refusing to write over it")
+    return spans, state
+
+
+def _write_planned(descriptor: int, compiled: CompiledModelImport, spans: Sequence[tuple[int, int, int]]) -> None:
+    for absolute, inner, length in spans:
+        written = platform_compat.pwrite(descriptor, compiled.rebuilt_span[inner: inner + length], absolute)
+        _require(written == length, "short write into the disc copy")
+        _require(platform_compat.pread(descriptor, length, absolute) == compiled.rebuilt_span[inner: inner + length],
+                 "read-back differs after the write")
+
+
 def write_import_copy(source: ModelSource, compiled: CompiledModelImport, source_image: Path, target_image: Path,
                       *, overwrite: bool = False, progress: ProgressSink | None = None) -> dict[str, Any]:
     """Copy ``source_image`` to ``target_image`` and write the rebuilt resource into the copy."""
     import shutil
     progress = progress or (lambda *_a: None)
-    source_image, target_image = Path(source_image), Path(target_image)
-    _require(source_image.is_file(), f"source image is not a file: {source_image}")
-    _require(not _same_file(source_image, target_image), "The copy must not be the source image")
-    _require(overwrite or not target_image.exists(), f"{target_image} already exists")
-    template_span = source.span(source.resource(compiled.key))
-    _require(_sha256(template_span) == compiled.template_span_sha256, "The model source changed since the import was compiled")
+    source_image, target_image = _prepare_copy(source_image, target_image, overwrite)
+    _require(_sha256(source.span(source.resource(compiled.key))) == compiled.template_span_sha256,
+             "The model source changed since the import was compiled")
     progress("Copying the disc image", 0, 3)
     shutil.copyfile(source_image, target_image)
     flags = os.O_RDWR | getattr(os, "O_BINARY", 0)
@@ -1728,22 +1848,9 @@ def write_import_copy(source: ModelSource, compiled: CompiledModelImport, source
     try:
         size = os.fstat(descriptor).st_size
         progress("Locating the resource on the disc", 1, 3)
-        spans = image_spans(source, compiled, descriptor, size)
-        state = []
-        for absolute, inner, length in spans:
-            current = platform_compat.pread(descriptor, length, absolute)
-            if current == template_span[inner: inner + length]:
-                state.append("retail")
-            elif current == compiled.rebuilt_span[inner: inner + length]:
-                state.append("applied")
-            else:
-                raise ModelsError("This disc's copy of the model is neither the original nor this edit; refusing to write over it")
+        spans, state = _plan_write(source, compiled, descriptor, size)
         progress("Writing the edited model", 2, 3)
-        for absolute, inner, length in spans:
-            written = platform_compat.pwrite(descriptor, compiled.rebuilt_span[inner: inner + length], absolute)
-            _require(written == length, "short write into the disc copy")
-            _require(platform_compat.pread(descriptor, length, absolute) == compiled.rebuilt_span[inner: inner + length],
-                     "read-back differs after the write")
+        _write_planned(descriptor, compiled, spans)
         os.fsync(descriptor)
         receipt = {"schema": SCHEMA_IMPORT + "-receipt", "source_image": str(source_image), "target_image": str(target_image),
                    "spans": [{"image_offset": a, "length": n, "was": s} for (a, _i, n), s in zip(spans, state)],
@@ -1754,6 +1861,211 @@ def write_import_copy(source: ModelSource, compiled: CompiledModelImport, source
     receipt_path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8", newline="\n")
     receipt["receipt_path"] = str(receipt_path)
     progress("Edited model written", 3, 3)
+    return receipt
+
+
+# ------------------------------------------------------------------ the player body set
+
+def body_set_file_name(entry: ModelEntry, suffix: str = ".gltf") -> str:
+    """The file name ``export_body_set`` writes for one member (and the one the import looks for)."""
+
+    return f"{safe_file_name(entry.name)}_{entry.key}{suffix}"
+
+
+def export_body_set(source: ModelSource, body_set: BodySet, folder: Path, *,
+                    include_vertex_colors_as_color0: bool = False,
+                    progress: ProgressSink | None = None) -> list[ExportResult]:
+    """Export all three scenes of one player body into ``folder``, plus a set README.
+
+    Each member lands as ``<name>_<key>.gltf`` + ``.bin`` + its own README, exactly as a single
+    export would; the extra ``player-body-set-README.txt`` explains that the three must come back
+    together to stay in step.
+    """
+    progress = progress or (lambda *_a: None)
+    folder = Path(folder).expanduser()
+    folder.mkdir(parents=True, exist_ok=True)
+    results: list[ExportResult] = []
+    total = len(body_set.entries) + 1
+    for done, entry in enumerate(body_set.entries):
+        progress(f"Exporting {entry.name}", done, total)
+        results.append(export_model(source, entry.key, folder / body_set_file_name(entry),
+                                    include_vertex_colors_as_color0=include_vertex_colors_as_color0))
+    (folder / "player-body-set-README.txt").write_text(body_set_readme(body_set, results),
+                                                       encoding="utf-8", newline="\n")
+    progress("Body set exported", total, total)
+    return results
+
+
+def body_set_readme(body_set: BodySet, results: Sequence[ExportResult]) -> str:
+    lines = [f"NFL 2K5 player body set (pack entry {body_set.outer_index})",
+             "=" * 44, "",
+             "A player is not one model. The game draws the high-detail body up close, swaps in the",
+             "low-detail body at distance, and draws the head as its own scene. Edit only one and the",
+             "player changes shape when the camera pulls back, so the three are exported and imported",
+             "together.", "", "In this folder:"]
+    for entry, result in zip(body_set.entries, results):
+        lines.append(f"  - {BODY_SET_LABELS.get(entry.name, entry.name)}: {result.gltf_path.name}"
+                     f"  ({result.summary()})")
+    lines += ["", "Edit them in Blender the same way as any other model (keep the vertex count and the",
+              "triangles; tick Include > Data > Mesh > Attributes when you export). Make the SAME change",
+              "to the high- and low-detail body: they are different meshes with different vertex counts,",
+              "so a shape edit has to be made on both (proportional edit or a lattice/shrinkwrap over both",
+              "at once is the usual way).", "",
+              "Bring them back with Models > Player body set > Check the folder: keep the file names above",
+              "(the '_o<pack>c<chunk>' tail is how each file is matched back to its scene), point the page",
+              "at this folder, and all three are written into ONE copy of your disc in one pass. A file you",
+              "did not touch is skipped and named in the report, so editing only the head (or only the two",
+              "bodies) is fine. If any one of them no longer fits its space on the disc, nothing is written",
+              "at all.", ""]
+    return "\n".join(lines)
+
+
+def find_body_set_files(body_set: BodySet, folder: Path) -> dict[str, Path]:
+    """Match the edited files in ``folder`` to the set's scenes: by model key, else by scene name.
+
+    Returns ``{model key: path}`` for every member found; the caller decides what a partial set means.
+    """
+    folder = Path(folder).expanduser()
+    _require(folder.is_dir(), f"not a folder: {folder}")
+    candidates = sorted(path for path in folder.iterdir()
+                        if path.is_file() and path.suffix.lower() in (".gltf", ".glb"))
+    found: dict[str, Path] = {}
+    for entry in body_set.entries:
+        keyed = [path for path in candidates if entry.key in path.stem]
+        named = [path for path in candidates if _strip_blender_suffix(path.stem).startswith(entry.name)]
+        chosen = keyed or named
+        if not chosen:
+            continue
+        _require(len(chosen) == 1,
+                 f"{entry.name}: {len(chosen)} files in that folder could be it ("
+                 + ", ".join(path.name for path in chosen[:4])
+                 + "). Keep one, or rename it to " + body_set_file_name(entry) + ".")
+        found[entry.key] = chosen[0]
+    _require(len(set(found.values())) == len(found), "one file in that folder matches two of the set's scenes")
+    return found
+
+
+@dataclass
+class CompiledModelSet:
+    """Three compiled member imports that will be written into one copy of the disc, or none."""
+
+    outer_index: int
+    members: list[CompiledModelImport] = field(default_factory=list)
+    files: dict[str, str] = field(default_factory=dict)          # model key -> edited file
+    notes: list[str] = field(default_factory=list)
+
+    @property
+    def changed_bytes(self) -> int:
+        return sum(member.changed_bytes for member in self.members)
+
+    def summary(self) -> str:
+        moved = sum(sum(s.positions_changed for s in m.shapes) for m in self.members)
+        names = ", ".join(m.name for m in self.members)
+        return (f"player body set ({names}): {moved:,} vertices moved across "
+                f"{sum(len(m.shapes) for m in self.members)} mesh(es); {self.changed_bytes:,} bytes change on disc")
+
+    def report(self) -> dict[str, Any]:
+        return {"schema": SCHEMA_SET_IMPORT, "outer_index": self.outer_index,
+                "edited_files": dict(self.files), "notes": list(self.notes),
+                "models": [member.report() for member in self.members]}
+
+
+def compile_body_set_import(source: ModelSource, body_set: BodySet, folder: Path, *, write_normals: bool = True,
+                            write_uvs: bool = False, allow_rescale: bool = True, write_colours: bool = True,
+                            require_all: bool = True,
+                            progress: ProgressSink | None = None) -> CompiledModelSet:
+    """Fit every edited member of one body set, refusing the whole set if any one of them fails.
+
+    Nothing is written here: every member is compiled (which is also where "does it still fit the
+    space the disc reserves for it" is decided), so a set that cannot be written is rejected before
+    the disc is copied.  A member whose file is byte-for-byte the game's own model is skipped and
+    named in the notes -- exporting the set writes all three files and editing only one of them is
+    normal -- but a member whose file is present and does not fit is always fatal, and a folder
+    where nothing changed is refused.  With ``require_all`` off, members with no edited file in the
+    folder are skipped and named in the notes as well.
+    """
+    progress = progress or (lambda *_a: None)
+    files = find_body_set_files(body_set, folder)
+    missing = [entry for entry in body_set.entries if entry.key not in files]
+    if require_all:
+        _require(not missing, "The folder is missing " + ", ".join(f"{e.name} ({body_set_file_name(e)})" for e in missing)
+                 + ". Export the body set first, edit those files, and keep their names.")
+    _require(len(files) > 0, "No edited .gltf/.glb in that folder matches this body set")
+    compiled_set = CompiledModelSet(body_set.outer_index)
+    total = len(files)
+    for done, entry in enumerate(body_set.entries):
+        path = files.get(entry.key)
+        if path is None:
+            compiled_set.notes.append(f"{entry.name}: no edited file in the folder, left as the game shipped it")
+            continue
+        progress(f"Fitting {entry.name}", done, total)
+        try:
+            compiled = compile_import(source, entry.key, path, write_normals=write_normals, write_uvs=write_uvs,
+                                      allow_rescale=allow_rescale, write_colours=write_colours)
+        except UnchangedModelError:
+            # exporting the set writes all three files; editing only one of them is normal
+            compiled_set.notes.append(f"{entry.name}: {path.name} is unedited, left as the game shipped it")
+            continue
+        compiled_set.members.append(compiled)
+        compiled_set.files[entry.key] = str(path)
+    _require(bool(compiled_set.members),
+             "None of the files in that folder changes anything. Edit at least one of the three in Blender "
+             "and export it again (Include > Data > Mesh > Attributes).")
+    progress("Body set ready to write", total, total)
+    return compiled_set
+
+
+def write_import_set_copy(source: ModelSource, compiled_set: CompiledModelSet, source_image: Path,
+                          target_image: Path, *, overwrite: bool = False,
+                          progress: ProgressSink | None = None) -> dict[str, Any]:
+    """Copy the disc once and write every member of the set into that one copy.
+
+    Every member's spans are located and checked FIRST; only when all of them are writable does any
+    byte move, so a set never lands half-applied.
+    """
+    import shutil
+    progress = progress or (lambda *_a: None)
+    _require(bool(compiled_set.members), "Nothing to write: the body set compiled to no models")
+    source_image, target_image = _prepare_copy(source_image, target_image, overwrite)
+    for member in compiled_set.members:
+        _require(_sha256(source.span(source.resource(member.key))) == member.template_span_sha256,
+                 f"{member.name}: the model source changed since the import was compiled")
+    steps = 2 + len(compiled_set.members)
+    progress("Copying the disc image", 0, steps)
+    shutil.copyfile(source_image, target_image)
+    flags = os.O_RDWR | getattr(os, "O_BINARY", 0)
+    descriptor = os.open(target_image, flags)
+    receipt: dict[str, Any]
+    try:
+        size = os.fstat(descriptor).st_size
+        progress("Locating the models on the disc", 1, steps)
+        located = [(member, image_spans(source, member, descriptor, size)) for member in compiled_set.members]
+        claimed: list[tuple[int, int]] = []
+        for _member, spans in located:
+            for absolute, _inner, length in spans:
+                for start, end in claimed:
+                    _require(absolute >= end or absolute + length <= start,
+                             "two models of this set claim the same bytes on the disc")
+                claimed.append((absolute, absolute + length))
+        planned: list[tuple[CompiledModelImport, list[tuple[int, int, int]], list[str]]] = []
+        for member, _spans in located:
+            spans, state = _plan_write(source, member, descriptor, size)
+            planned.append((member, spans, state))
+        for done, (member, spans, _state) in enumerate(planned):
+            progress(f"Writing {member.name}", 2 + done, steps)
+            _write_planned(descriptor, member, spans)
+        os.fsync(descriptor)
+        receipt = {**compiled_set.report(),
+                   "schema": SCHEMA_SET_IMPORT + "-receipt", "source_image": str(source_image),
+                   "target_image": str(target_image), "changed_bytes": compiled_set.changed_bytes,
+                   "spans": [{"model": member.name, "image_offset": a, "length": n, "was": s}
+                             for member, spans, state in planned for (a, _i, n), s in zip(spans, state)]}
+    finally:
+        os.close(descriptor)
+    receipt_path = target_image.with_name(target_image.name.split(".")[0] + ".player-body-set.models-receipt.json")
+    receipt_path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8", newline="\n")
+    receipt["receipt_path"] = str(receipt_path)
+    progress("Body set written", steps, steps)
     return receipt
 
 
@@ -1771,5 +2083,9 @@ __all__ = [
     "scene_contract_id", "texture_contract_id", "GLTF_TEXTURE_ID_KEY", "GLTF_MATERIAL_INDEX_KEY", "ROOT_NODE_NAME",
     "COLOUR_ATTRIBUTE", "VERTEX_INDEX_ATTRIBUTE", "UV_CONSTANT_OFFSET",
     "GltfFile", "EditedMesh", "read_edited_meshes", "ImportShapeReport", "CompiledModelImport", "compile_import",
+    "UnchangedModelError",
     "image_spans", "write_import_copy",
+    "BODY_SET_ROLES", "BODY_SET_LABELS", "BodySet", "body_sets", "body_set_for_key", "body_set_file_name",
+    "body_set_readme", "export_body_set", "find_body_set_files", "CompiledModelSet", "compile_body_set_import",
+    "write_import_set_copy", "SCHEMA_SET_IMPORT",
 ]

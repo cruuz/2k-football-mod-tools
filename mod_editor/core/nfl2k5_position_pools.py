@@ -12,8 +12,9 @@ four enums:
 * ``16 = EDGE``  - 4-3 ends and 3-4 outside backers (the EDGE rename already labels the enum);
 * ``15 = DT``    - every interior lineman (4-3 tackles, the 3-4 nose and the 3-4 ends);
 * ``11 = LB``    - every off-ball linebacker (4-3 SAM/MIKE/WILL, 3-4 inside backers);
-* ``10 = OLB``   - retired to an alias: it is labelled ``LB``, feeds the LB on-field lists, has a
-  roster target of 0 and no stock roster player carries it after the ROST pass.
+* ``10 = OLB``   - retired to an alias: it feeds the LB on-field lists, has a roster target of 0
+  and no stock roster player carries it after the ROST pass.  It keeps its retail *name* (``OLB`` /
+  ``Outside Linebacker(s)``) everywhere the game shows a roster position, see "One LB row" below.
 
 This module is the XBE half.  The disc halves are ``tools/nfl2k5_playbook_position_recode.py``
 (the category codes of the 37 stock playbooks) and ``tools/nfl2k5_roster_reclassify.py`` (the
@@ -32,9 +33,9 @@ kind->enum byte for the OLB kind           0x5101FF    enum 10 -> 11: an OLB-kin
 OLB-kind list pair (``FUN_000e7530``)      0x4F59A8    lists (15, 16) -> (17, 18): OLB-kind codes read the LB lists
 roster targets (``FUN_002bd410``)          0x521C68    OLB 3 / ILB 2 / DT 2 / DE 2 -> 0 / 5 / 4 / 4
 roster maxima (``FUN_002bd400``)           0x521C20    OLB 5 / ILB 4 / DT 4 / DE 4 -> 0 / 7 / 6 / 6
-enum abbreviation entries 10 and 11        0x4F26F8    -> the existing ``LB`` string at 0xE69C30 (both)
-long names (shrunk in place)               0xE69D40    ``Outside Linebacker`` -> ``Linebacker``; 0xE69D68 ``Inside Linebacker`` -> ``Linebacker``
-plurals (shrunk in place)                  0xE69EE8    ``Outside Linebackers`` -> ``Linebackers``; 0xE69F10 likewise
+enum abbreviation entry 11 (ILB)           0x4F26FC    -> the existing ``LB`` string at 0xE69C30 (entry 10 keeps ``OLB``)
+long name (shrunk in place)                0xE69D68    ``Inside Linebacker`` -> ``Linebacker`` (0xE69D40 keeps ``Outside Linebacker``)
+plural (shrunk in place)                   0xE69F10    ``Inside Linebackers`` -> ``Linebackers`` (0xE69EE8 keeps ``Outside Linebackers``)
 HUD kind labels 14 / 15                    0xE6C2A0    ``ILB`` -> ``LB``; 0xE6C2A8 ``OLB`` -> ``LB``
 franchise kind labels 14 / 15              0xE87EE0    ``ILB`` -> ``LB``; 0xE87EE8 ``OLB`` -> ``LB``
 package legends                            0xE67820    ``|CIRCLE|SWAP ILB`` -> ``|CIRCLE|SWAP LB``; 0xE6779C ``|SQUARE|SWAP OLB`` -> ``|SQUARE|SWAP LB2``
@@ -97,10 +98,46 @@ playtest: "defense is 19, overall 60, offense 80 for the Falcons, and most teams
   of the SAM / third-lineman column asks for a row past the pool and renders as a blank player.  The
   count code at 0x243D50..0x243E0E is rewritten in place (same KR/PR sum, minus ``chain >> 1`` for the
   shifted records) when ``depth_chart_third_starter`` is on.
-* Roster / draft / free-agency position filters ("Inside Linebackers" / "Outside Linebackers" on the
-  home-screen Team Rosters): the fifteen ``.string_`` copies read ``Linebackers`` and the fourteen
-  ``Outside Linebackers`` filter records draw enum 11 instead of the empty enum 10 (a duplicate
-  ``Linebackers`` entry is the price of not restructuring the 0x120/0xC8-byte record arrays).
+* Roster / draft / free-agency position filters: the thirteen ``Inside Linebackers`` ``.string_``
+  copies read ``Linebackers``.  The ``Outside Linebackers`` rows are left exactly as retail, see
+  "One LB row" below.
+
+One LB row (2026-09-04, a user's report: "the roster view lists linebackers twice in a row")
+--------------------------------------------------------------------------------------------
+The home screen's Rosters -> Team Rosters, the draft, free agency, the trade block and scouting each
+own a **position-filter record array** in ``.rdata``: 17-19 records of 0xB0 / 0xC8 / 0x110 / 0x118 /
+0x120 / 0x128 bytes, one per roster position in football order (Quarterbacks, Halfbacks, Fullbacks,
+Wide Receivers, Tight Ends, Centers, Guards, Tackles, Kickers, Punters, Defensive Tackles, Defensive
+Ends, **Outside Linebackers, Inside Linebackers**, Cornerbacks, Free Safeties, Strong Safeties, and on
+eight of the fifteen screens All Positions).  A record is ``{class ptr, flags, UTF-16 name ptr, ...,
+roster enum at +0x18, ...}``; the count handler is ``FUN_0031AB20`` -> ``FUN_000C3CB0(team, position)``,
+which counts players whose ``player+0x35`` equals the record's enum (17 = every player).  The
+``Outside Linebackers`` record is always the one immediately before ``Inside Linebackers``: fifteen
+arrays at 0x539520/0x5395E8, 0x53A1F8/0x53A2A8, 0x53AF90/0x53B058, 0x53DEF0/0x53E008,
+0x53FBF0/0x53FD18, 0x5498E8/0x549998, 0x550F68/0x551078, 0x552798/0x5528B0, 0x5545E8/0x554700,
+0x559450/0x559578, 0x55EFB0/0x55F078, 0x570D30/0x570E50, 0x57FD70/0x57FE90, 0x582658/0x582778,
+0x588060/0x588178.
+
+Beta 58 renamed **both** rows to ``Linebackers`` and pointed the OLB row's enum at 11, so every one of
+those screens listed "Linebackers" twice in a row.  Removing a row is not a rename: the arrays have no
+count word (they end at a record whose class pointer is NULL) and they abut each other in ``.rdata``,
+so dropping an entry means moving every following record up one stride, re-terminating, and proving
+that no screen indexes its array - fifteen arrays, four strides, and nothing in the image references a
+record by address, so the shape can only be confirmed by running the game.  With one filter row per
+roster enum being an invariant we cannot change safely, the duplicate is removed the other way: the
+**retired enum 10 keeps its retail identity everywhere the game prints a roster position** - the
+abbreviation table entry (``OLB``), the long name and plural (``Outside Linebacker(s)``), and the
+fourteen filter records with their twelve ``Outside Linebackers`` string copies.  Enum 11 is the only
+row named ``Linebackers``.  On a disc built with ``tools/nfl2k5_roster_reclassify.py`` (every preset
+that turns pools on) no player carries enum 10, so the ``Outside Linebackers`` row lists nobody -
+exactly what "Fullbacks" does for a team with no fullback - and on a custom roster that still carries
+OLB players it lists them under their own name instead of hiding them inside a second "Linebackers".
+The behaviour half of the merge (kind mapping, on-field lists, roster targets, the package swap, the
+depth-chart pools, the rating tables) is unchanged: enum 10 still behaves exactly like an LB.
+(Beta 58's OLB lists were also one short: the fifteenth record, 0x55EFB0 in the draft-board array, has
+the retail typo ``outside Linebackers`` at 0xEAE8CC and never matched the exact-text search, so that
+one screen kept a stray ``outside Linebackers`` next to ``Linebackers``.  Leaving every OLB row retail
+makes the whole set consistent again.)
 
 Not written here: the draft-value table of the draft-AI cave (``VALUE[OLB]``).  After the ROST pass no
 stock player carries enum 10 and the class generator conserves positions, so the draft scorer never
@@ -163,9 +200,7 @@ def package_word(code: int, alt: int, low: int = 2, flags: int = 0xC0000000) -> 
 # ---------------------------------------------------------------------------------------------
 # .string_ slots (UTF-16, NUL-terminated, 4-byte aligned; shrink in place only)
 STRING_SITES: tuple[tuple[str, int, int, str, str], ...] = (
-    ("long_olb", 0x00E69D40, 40, "Outside Linebacker", "Linebacker"),
     ("long_ilb", 0x00E69D68, 36, "Inside Linebacker", "Linebacker"),
-    ("plural_olb", 0x00E69EE8, 40, "Outside Linebackers", "Linebackers"),
     ("plural_ilb", 0x00E69F10, 40, "Inside Linebackers", "Linebackers"),
     ("hud_ilb", 0x00E6C2A0, 8, "ILB", "LB"),
     ("hud_olb", 0x00E6C2A8, 8, "OLB", "LB"),
@@ -173,6 +208,17 @@ STRING_SITES: tuple[tuple[str, int, int, str, str], ...] = (
     ("franchise_olb", 0x00E87EE8, 8, "OLB", "LB"),
     ("legend_swap_ilb", 0x00E67820, 36, "|CIRCLE|SWAP ILB", "|CIRCLE|SWAP LB"),
     ("legend_swap_olb", 0x00E6779C, 36, "|SQUARE|SWAP OLB", "|SQUARE|SWAP LB2"),
+)
+
+# The retired enum 10 keeps its retail name everywhere the game prints a roster position, so no
+# screen shows two rows called "Linebackers" (see "One LB row" in the module docstring).  These are
+# the sites this patch deliberately does NOT write; they are listed so the choice is greppable and
+# so ``retail_olb_identity`` can assert it on a patched image.
+# (label, VA, byte length, retail text or pointer target)
+RETAINED_OLB_IDENTITY: tuple[tuple[str, int, int, object], ...] = (
+    ("abbrev_enum_olb", ABBREV_TABLE_VA + 4 * ENUM_OLB, 4, STRING_OLB_VA),   # 0x4F26F8 -> "OLB" 0xE69C54
+    ("long_olb", 0x00E69D40, 40, "Outside Linebacker"),
+    ("plural_olb", 0x00E69EE8, 40, "Outside Linebackers"),
 )
 
 # ---------------------------------------------------------------------------------------------
@@ -260,18 +306,24 @@ RECORD_POSITION_VA = 0x00514118    # 0x5140D8 + 0x40, indexed by (unit * 11 + sl
 RECORD_CHAIN_VA = 0x0051411C
 
 # ---------------------------------------------------------------------------------------------
-# position-filter lists (home-screen Team Rosters, draft, free agency, trade...): the 0xC8 / 0x120-byte
-# records hold a string pointer at +0 and the roster enum at +0x18
+# position-filter lists (home-screen Team Rosters, draft, free agency, trade...): the 0xB0 / 0xC8 /
+# 0x110 / 0x118 / 0x120 / 0x128-byte records hold a string pointer at +0 and the roster enum at +0x18.
+# The ILB records are renamed to "Linebackers"; the OLB records and their strings are listed only so
+# ``filter_rows`` can read them back and prove they stay retail (see "One LB row" in the docstring).
 FILTER_ILB_RECORDS = (0x5395E8, 0x53A2A8, 0x53B058, 0x53E008, 0x53FD18, 0x549998, 0x551078, 0x5528B0, 0x554700,
                       0x559578, 0x55F078, 0x570E50, 0x57FE90, 0x582778, 0x588178)
+#: One per ILB record and always one stride ahead of it.  0x55EFB0 carries the retail typo
+#: ``outside Linebackers`` (lower-case o) at 0xEAE8CC, which is why beta 58's exact-text sweep found
+#: only fourteen.
 FILTER_OLB_RECORDS = (0x539520, 0x53A1F8, 0x53AF90, 0x53DEF0, 0x53FBF0, 0x5498E8, 0x550F68, 0x552798, 0x5545E8,
-                      0x559450, 0x570D30, 0x57FD70, 0x582658, 0x588060)
+                      0x559450, 0x55EFB0, 0x570D30, 0x57FD70, 0x582658, 0x588060)
 FILTER_ILB_STRINGS = (0xEA4134, 0xEA4528, 0xEA4768, 0xEA9BA8, 0xEAB460, 0xEAB674, 0xEABA00, 0xEADA84, 0xEAE8F4,
                       0xEAF584, 0xEB3B04, 0xEB5860, 0xEBC000)
-FILTER_OLB_STRINGS = (0xEA410C, 0xEA4500, 0xEA4740, 0xEA9B80, 0xEAB438, 0xEAB64C, 0xEAB9D8, 0xEADA5C, 0xEAF55C,
-                      0xEB3ADC, 0xEB5838, 0xEBBFD8)
+FILTER_OLB_STRINGS = (0xEA410C, 0xEA4500, 0xEA4740, 0xEA9B80, 0xEAB438, 0xEAB64C, 0xEAB9D8, 0xEADA5C, 0xEAE8CC,
+                      0xEAF55C, 0xEB3ADC, 0xEB5838, 0xEBBFD8)
 FILTER_STRING_SLOT = 40
 FILTER_ENUM_OFFSET = 0x18
+FILTER_OLB_RETAIL_TEXTS = ("Outside Linebackers", "outside Linebackers")
 
 
 class PositionPoolsError(ValueError):
@@ -448,7 +500,6 @@ def _sites(linebacker_penalty_fix: bool, depth_chart_third_starter: bool) -> lis
     add("olb_kind_lists", KIND_LIST_PAIRS_VA + 8 * KIND_OLB, struct.pack("<II", 15, 16), struct.pack("<II", *LB_LIST_PAIR))
     add("roster_targets", ROSTER_TARGETS_VA, struct.pack("<17I", *RETAIL_TARGETS), struct.pack("<17I", *new_targets()))
     add("roster_maxima", ROSTER_MAXIMA_VA, struct.pack("<17I", *RETAIL_MAXIMA), struct.pack("<17I", *new_maxima()))
-    add("abbrev_enum_olb", ABBREV_TABLE_VA + 4 * ENUM_OLB, struct.pack("<I", STRING_OLB_VA), struct.pack("<I", STRING_LB_VA))
     add("abbrev_enum_ilb", ABBREV_TABLE_VA + 4 * ENUM_ILB, struct.pack("<I", STRING_ILB_VA), struct.pack("<I", STRING_LB_VA))
     add("package_swap_olb", PACKAGE_SWAP_OLB_VA, struct.pack("<I", RETAIL_PACKAGE_SWAP_OLB), struct.pack("<I", NEW_PACKAGE_SWAP_OLB))
     for label, va, slot, old, new in STRING_SITES:
@@ -469,10 +520,9 @@ def _sites(linebacker_penalty_fix: bool, depth_chart_third_starter: bool) -> lis
     add("consistency_defense", CONSISTENCY_DEF_VA, RETAIL_CONSISTENCY_DEF, NEW_CONSISTENCY_DEF, "ratings")
     for i, va in enumerate(FILTER_ILB_STRINGS):
         add(f"filter_ilb_string_{i}", va, _utf16("Inside Linebackers", FILTER_STRING_SLOT), _utf16("Linebackers", FILTER_STRING_SLOT), "filters")
-    for i, va in enumerate(FILTER_OLB_STRINGS):
-        add(f"filter_olb_string_{i}", va, _utf16("Outside Linebackers", FILTER_STRING_SLOT), _utf16("Linebackers", FILTER_STRING_SLOT), "filters")
-    for i, va in enumerate(FILTER_OLB_RECORDS):
-        add(f"filter_olb_enum_{i}", va + FILTER_ENUM_OFFSET, struct.pack("<I", ENUM_OLB), struct.pack("<I", ENUM_ILB), "filters")
+    # The Outside Linebackers rows (FILTER_OLB_RECORDS / FILTER_OLB_STRINGS) are NOT written: one
+    # row per roster enum is the arrays' invariant, so renaming them too is what put two
+    # "Linebackers" rows next to each other on every roster screen.
     if linebacker_penalty_fix:
         add("linebacker_penalty_jne", PENALTY_JNE_VA, RETAIL_PENALTY_BYTES, FIXED_PENALTY_BYTES, "penalty")
     if depth_chart_third_starter:
@@ -535,22 +585,66 @@ def read_tables(payload: bytes) -> dict[str, object]:
     abbrev_ptrs = struct.unpack_from("<17I", payload, _offset(payload, ABBREV_TABLE_VA))
     packages = struct.unpack_from("<13I", payload, _offset(payload, PACKAGES_VA))
 
-    def string_at(va: int) -> str:
-        off = _offset(payload, va)
-        end = off
-        while payload[end: end + 2] != b"\0\0":
-            end += 2
-        return payload[off: end].decode("utf-16le", "replace")
-
     return {
         "enum_to_kind": list(e2k), "kind_to_enum": list(k2e), "kind_list_pairs": [tuple(p) for p in pairs],
         "roster_targets": dict(zip(POSITIONS, targets)), "roster_maxima": dict(zip(POSITIONS, maxima)),
-        "abbreviations": [string_at(p) for p in abbrev_ptrs],
+        "abbreviations": [_string_at(payload, p) for p in abbrev_ptrs],
         "packages": [f"0x{w:08x}" for w in packages],
         "package_swap_olb": {"code": (packages[8] >> 2) & 0xFF, "alt": (packages[8] >> 10) & 0xFF},
         "records": {label: modern.read_record(payload, unit, slot)
                     for label, unit, slot, *_ in POOL_RECORDS + tuple((l, u, s, p) for l, u, s, p in ASSERTED_RECORDS)},
     }
+
+
+def _string_at(payload: bytes, va: int) -> str:
+    off = _offset(payload, va)
+    end = off
+    while payload[end: end + 2] != b"\0\0":
+        end += 2
+    return payload[off: end].decode("utf-16le", "replace")
+
+
+def filter_rows(payload: bytes) -> list[dict[str, object]]:
+    """The two linebacker rows of every position-filter array, as a screen would print them.
+
+    Fifteen screens, one ``Outside Linebackers`` record immediately followed by one
+    ``Inside Linebackers`` record.  After ``apply`` the second reads ``Linebackers`` and the first is
+    untouched, so no screen shows the same row name twice.
+    """
+
+    rows: list[dict[str, object]] = []
+    for olb_va, ilb_va in zip(FILTER_OLB_RECORDS, FILTER_ILB_RECORDS):
+        entry: dict[str, object] = {"olb_record": f"0x{olb_va:x}", "ilb_record": f"0x{ilb_va:x}"}
+        for key, va in (("olb", olb_va), ("ilb", ilb_va)):
+            off = _offset(payload, va)
+            pointer, enum = struct.unpack_from("<I", payload, off)[0], struct.unpack_from("<I", payload, off + FILTER_ENUM_OFFSET)[0]
+            entry[f"{key}_name"] = _string_at(payload, pointer)
+            entry[f"{key}_enum"] = enum
+        entry["duplicate"] = entry["olb_name"] == entry["ilb_name"]
+        rows.append(entry)
+    return rows
+
+
+def retail_olb_identity(payload: bytes) -> bool:
+    """True when every place the game prints the retired enum 10 still reads its retail name."""
+
+    try:
+        for _label, va, size, expected in RETAINED_OLB_IDENTITY:
+            off = _offset(payload, va)
+            if isinstance(expected, int):
+                if struct.unpack_from("<I", payload, off)[0] != expected:
+                    return False
+            elif payload[off: off + size] != _utf16(str(expected), size):
+                return False
+        for va in FILTER_OLB_STRINGS:
+            if _string_at(payload, va) not in FILTER_OLB_RETAIL_TEXTS:
+                return False
+        for va in FILTER_OLB_RECORDS:
+            if struct.unpack_from("<I", payload, _offset(payload, va) + FILTER_ENUM_OFFSET)[0] != ENUM_OLB:
+                return False
+    except (PositionPoolsError, ValueError, struct.error):
+        return False
+    return True
 
 
 def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
@@ -589,7 +683,9 @@ def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
                      "depth_chart_third_starter": depth_chart_third_starter,
                      "cave_va": f"0x{CAVE_VA:x}" if depth_chart_third_starter else None,
                      "tables": read_tables(patched), "units": modern.read_units(patched),
-                     "rating_tables": {name: rating_table_rows(patched, name) for name in RATING_TABLES}}
+                     "rating_tables": {name: rating_table_rows(patched, name) for name in RATING_TABLES},
+                     "filter_rows": filter_rows(patched),
+                     "retail_olb_identity": retail_olb_identity(patched)}
 
 
 __all__ = [
@@ -597,6 +693,7 @@ __all__ = [
     "KIND_TO_ENUM_VA", "NEW_PACKAGE_SWAP_OLB", "PACKAGES_VA", "PENALTY_JNE_VA", "POOL_RECORDS", "POSITIONS",
     "PositionPoolsError", "RETAIL_CAVE_HELPER", "RETAIL_ENUM_TO_KIND", "RETAIL_KIND_TO_ENUM", "RETAIL_MAXIMA",
     "RETAIL_PACKAGE_SWAP_OLB", "RETAIL_PENALTY_BYTES", "RETAIL_ROW_LOOKUP_PROLOGUE", "RETAIL_TARGETS",
+    "RETAINED_OLB_IDENTITY", "FILTER_OLB_RETAIL_TEXTS", "filter_rows", "retail_olb_identity",
     "ROSTER_MAXIMA_VA", "ROSTER_TARGETS_VA", "ROW_LOOKUP_RESUME_VA", "ROW_LOOKUP_SITE_VA", "STRING_LB_VA",
     "STRING_SITES", "Site", "apply", "cave_bytes", "new_maxima", "new_targets", "package_word", "read_tables",
     "row_lookup_hook_bytes", "site_states", "status",
