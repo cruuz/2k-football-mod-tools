@@ -13,6 +13,9 @@ independently verified cache. The app still guards the exact file you selected
 for read-only scans, recovery, and Build, and a built copy keeps that source
 container's actual size.
 
+Community: questions, bug reports and shared patches live on the Discord,
+https://discord.gg/dpMJCnJZD (also under Help > Join the Discord… in both studios).
+
 ## Before you begin
 
 You need:

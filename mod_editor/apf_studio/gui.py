@@ -20032,6 +20032,11 @@ class ApfStudioMainWindow(QMainWindow):
             update_ui.set_automatic_checks_enabled
         )
         help_menu.addSeparator()
+        discord_action = help_menu.addAction("Join the Discord…")
+        discord_action.setToolTip("Opens the community Discord invite in your browser.")
+        discord_action.triggered.connect(
+            lambda: QDesktopServices.openUrl(QUrl(update_check.COMMUNITY_DISCORD))
+        )
         releases_action = help_menu.addAction("Downloads and release notes…")
         releases_action.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl(update_check.RELEASES_PAGE))
