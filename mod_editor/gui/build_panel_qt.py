@@ -186,6 +186,20 @@ class BuildPanel(QWidget):
         self.team_history_button = QPushButton("Choose…")
         self.team_history_button.clicked.connect(self._choose_team_history)
         history_row.addWidget(self.team_history_button)
+        self.career_stats_check = QCheckBox("Career stats from your CSV: real per-season passing / rushing / receiving / defence / kicking counters for the roster's past seasons (imports only the rows you supply; disc images only)")
+        self.career_stats_check.setToolTip("Rewrites the historical counters the Player Card shows for seasons up to 2003 from a CSV you provide "
+                                           "(columns and identity pins in docs/mod_editor/career_stats.md). Export the roster's own counters first with "
+                                           "tools/nfl2k5_career_stats.py to get the pins, edit values, import. Half sacks are kept, field goals go by distance "
+                                           "bucket, and nothing is invented: a season the CSV does not name is left exactly as the roster has it. Runs right "
+                                           "after the team history and refuses to grow past the stat pool.")
+        career_row = QHBoxLayout()
+        career_row.addWidget(QLabel("Career stats CSV (required when ticked)"))
+        self.career_stats_field = QLineEdit()
+        self.career_stats_field.setPlaceholderText("first_name,last_name,birth_date,season,stat,value,source,source_sha256,…")
+        career_row.addWidget(self.career_stats_field, 1)
+        self.career_stats_button = QPushButton("Choose…")
+        self.career_stats_button.clicked.connect(self._choose_career_stats)
+        career_row.addWidget(self.career_stats_button)
         self.prospect_names_check = QCheckBox("Modern draft-prospect names: 485 first names and 52 surnames from 2015-2025 NFL rosters in the generated-player pool (recorded surnames keep their call-outs, new ones are announced by number; new franchises; disc images only)")
         self.prospect_names_check.setToolTip("Rewrites the 485 first names and 485 surnames the game draws for rookies and free agents (the 1990 Census lists in retail) "
                                              "inside the roster template's own 13,238 bytes and hooks the generator's audio id: the 433 surnames the announcer has "
@@ -226,7 +240,7 @@ class BuildPanel(QWidget):
         self.franchise_practice_check = QCheckBox("Free Practice inside Franchise: a Practice row on the Coach's Desk runs a full scrimmage with your franchise roster, your away kit vs your home kit, and returns to the desk (no stats or injuries; unwitnessed)")
         self.seven_on_seven_check = QCheckBox("7-on-7 practice mode: Practice Type 7-On-7 + 7-on-7 sets in the practice playbook (linemen idle at the sideline, 4-second timer rusher; disc images only; unwitnessed)")
         self.player_star_check = QCheckBox("Star decal under the players you tag: the retail controller star follows every player ticked ★ Star in Text & Rosters, up to 9 at once (nothing changes with no tags; unwitnessed)")
-        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.prospect_names_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.franchise_practice_check, self.player_star_check, self.seven_on_seven_check, self.roster_edits_check):
+        for box in (self.catch_check, self.accel_check, self.draft_check, self.returner_check, self.progression_check, self.team_column_check, self.team_history_check, self.career_stats_check, self.prospect_names_check, self.kick_rules_check, self.kick_power_check, self.kickoff_alignment_check, self.overtime_check, self.season_check, self.position_row_check, self.probowl_order_check, self.penalties_check, self.uniform_choice_check, self.kick_laces_check, self.franchise_practice_check, self.player_star_check, self.seven_on_seven_check, self.roster_edits_check):
             g.addWidget(box)
         if not mod_build.SEVEN_ON_SEVEN_RELEASED:
             self.seven_on_seven_check.hide()
@@ -235,6 +249,7 @@ class BuildPanel(QWidget):
         self.star_players_label.setWordWrap(True)
         g.addWidget(self.star_players_label)
         g.addLayout(history_row)
+        g.addLayout(career_row)
         g.addLayout(names_row)
         g.addLayout(edits_row)
         root.addWidget(gameplay)
@@ -311,7 +326,7 @@ class BuildPanel(QWidget):
         if isinstance(settings, tt.TuningSettings):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
-                           ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("prospect_names", "prospect names"),
+                           ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
                            ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("franchise_practice", "Franchise practice"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"),
@@ -349,6 +364,7 @@ class BuildPanel(QWidget):
         gate(self.progression_check, "progression")
         gate(self.team_column_check, "team_column")
         gate(self.team_history_check, "team_history", needs_image=True)
+        gate(self.career_stats_check, "career_stats", needs_image=True)
         gate(self.prospect_names_check, "prospect_names", needs_image=True)
         # an already-edited roster can take more edits: gate on availability and the container only
         self.roster_edits_check.setEnabled(self._available.get("roster_edits", True) and is_image)
@@ -390,7 +406,7 @@ class BuildPanel(QWidget):
             "position_pools": self.position_pools_check,
             "kickoff_alignment": self.kickoff_alignment_check,
             "season_2026": self.season_check, "widescreen": self.widescreen_check, "overtime": self.overtime_check,
-            "team_column": self.team_column_check, "team_history": self.team_history_check,
+            "team_column": self.team_column_check, "team_history": self.team_history_check, "career_stats": self.career_stats_check,
             "prospect_names": self.prospect_names_check,
             "seven_on_seven": self.seven_on_seven_check, "position_row": self.position_row_check, "probowl_order": self.probowl_order_check,
             "penalties": self.penalties_check,
@@ -461,6 +477,7 @@ class BuildPanel(QWidget):
             franchise_practice=self.franchise_practice_check.isChecked(),
             player_star=self.player_star_check.isChecked(), player_tags=list(self.star_players),
             team_history=((self.team_history_field.text().strip() or "retail") if self.team_history_check.isChecked() else ""),
+            career_stats=(self.career_stats_field.text().strip() if self.career_stats_check.isChecked() else ""),
             prospect_names=((self.prospect_names_field.text().strip() or "modern") if self.prospect_names_check.isChecked() else ""),
             roster_edits=(self.roster_edits_field.text().strip() if self.roster_edits_check.isChecked() else ""),
             scorebug=self.scorebug_check.isChecked(), commentary=list(self.commentary),
@@ -470,7 +487,7 @@ class BuildPanel(QWidget):
         p = self.plan()
         return bool(p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression
                     or p.edge_rename or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools
-                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.commentary)
+                    or p.kickoff_alignment or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.penalties or p.uniform_choice or p.kick_laces or p.franchise_practice or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.commentary)
 
     def _refresh(self) -> None:
         self.ceiling_spin.setEnabled(self.throw_check.isChecked())
@@ -501,6 +518,13 @@ class BuildPanel(QWidget):
         self.roster_edits_field.setText(path)
         self.roster_edits_check.setChecked(bool(path) and self.roster_edits_check.isEnabled())
         self._refresh()
+
+    def _choose_career_stats(self) -> None:
+        chosen, _f = QFileDialog.getOpenFileName(self, "Choose a career stats CSV", str(Path.home()), "CSV (*.csv);;All files (*)")
+        if chosen:
+            self.career_stats_field.setText(chosen)
+            self.career_stats_check.setChecked(True)
+            self._refresh()
 
     def _choose_team_history(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose a team history CSV", str(Path.home()), "CSV (*.csv);;All files (*)")

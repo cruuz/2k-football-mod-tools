@@ -23,6 +23,7 @@ from typing import Iterable
 
 from . import nfl2k5_save_rost as rost
 from . import nfl2k5_roster_records as records
+from . import nfl2k5_team_history as _history
 
 
 class CareerStatsError(ValueError):
@@ -410,3 +411,44 @@ def apply_body(body: bytes, rows: Iterable[Row], *, base_year: int = 2004,
                     'used_before': document.pool_used, 'used_after': new_used, 'free_after': usable - new_used,
                     'added': added, 'replaced': replaced, 'unchanged': unchanged, 'source_missing': missing,
                     'rows': log, 'no_xbe_change': True, 'roundtrip_verified': True}
+
+
+def load_rows(csv_path) -> tuple[list[Row], dict[str, object]]:
+    """A user CSV (utf-8, BOM tolerated) plus its provenance."""
+
+    from pathlib import Path as _Path
+    path = _Path(csv_path).expanduser()
+    _require(path.is_file(), f'career stats CSV not found: {path}')
+    data = path.read_bytes()
+    return read_csv(data.decode('utf-8-sig')), {'source_csv': str(path), 'source_csv_sha256': hashlib.sha256(data).hexdigest()}
+
+
+def apply(path, csv_path, *, base_year: int = 2004, reserved_tail_words: int = 0, progress=None) -> dict[str, object]:
+    """Import a career-stats CSV into the main roster of the disc image (or pack folder) at ``path`` -- a COPY.
+
+    Runs on the disc's version-17 resource, after the team-history pass when that is on (both rebuild the
+    stat pool and the ``+0x2C`` pointers; this one only changes the counters the CSV names and refuses to
+    grow past the pool or into a caller-reserved tail).  Not idempotent by design: re-applying the same CSV
+    is a no-op (every counter already holds its value), a different CSV changes exactly the rows it names.
+    """
+
+    say = progress or (lambda _m: None)
+    rows, provenance = load_rows(csv_path)
+    with _history._outer_image()(path, writable=True) as archive:
+        entry = _history._entry(archive)
+        before = archive.read(entry.virtual_offset, entry.size)
+        header, body = before[:_history.RESOURCE_HEADER_SIZE], before[_history.RESOURCE_HEADER_SIZE:]
+        _require(header[:4] == b'ROST' and len(body) == records.BODY_SIZE, 'the roster resource is foreign')
+        say(f'Matching {len(rows)} career-stat rows to the roster')
+        new_body, receipt = apply_body(body, rows, base_year=base_year, reserved_tail_words=reserved_tail_words)
+        if new_body == body:
+            return {'status': 'unchanged', 'outer_index': _history.ROST_OUTER_INDEX, **provenance,
+                    **{k: v for k, v in receipt.items() if k != 'rows'}, 'rows_logged': len(receipt['rows'])}
+        replacement = header + new_body
+        say('Writing the roster\'s stat pool')
+        count = archive.write(entry.virtual_offset, replacement)
+        _require(count == len(replacement), 'short write of the roster resource')
+        check = archive.read(entry.virtual_offset, entry.size)
+        _require(check == replacement, 'read-back of the roster resource differs')
+    return {'status': 'applied', 'outer_index': _history.ROST_OUTER_INDEX, 'virtual_offset': f'0x{entry.virtual_offset:x}',
+            **provenance, **{k: v for k, v in receipt.items() if k != 'rows'}, 'rows_logged': len(receipt['rows'])}

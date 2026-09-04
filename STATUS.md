@@ -4,6 +4,9 @@
 
 Source/UI versions are **2K5 RC84** and **APF alpha.84**.
 
+- **Career stats CSV import (opt-in).** Build tab pass after the team history: real per-season counters for
+  ≤2003 seasons from a user CSV, 31 verified fields, export-then-import with identity pins, pool-bounded.
+  Built by GPT-6 Astra; release staging now normalises file modes and the H7A encoder explains refusals.
 - **★ Rosters opens real Xbox saves.** Real saves keep the roster as a version-0 runtime arena (object at
   file 0x320), which RC83 refused; the document now reads that layout as well as the disc's, so genuine saves
   get the full editor and re-sign as before. Verified on the two signed saves on hand; franchise saves untested.

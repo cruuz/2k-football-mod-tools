@@ -2,6 +2,17 @@
 
 ## v1.0 RC84 — (unreleased)
 
+- **Career stats from your own CSV (Build tab, opt-in).** A new pass, built by GPT-6 Astra and wired here,
+  imports real per-season counters for the roster's past seasons — passing, rushing, receiving, defence and
+  kicking, 31 fields whose IDs were read off the game's own display-selector table (`0xA8A51C + 28·selector`);
+  sacks keep their half units and field goals go by distance bucket, the way the game stores them. Export the
+  roster's counters first with `tools/nfl2k5_career_stats.py` (the export carries the identity and raw-word
+  pins the import demands: retail already holds 5,867 real player-seasons back to 1982, and a few keys are
+  duplicated), edit values, import: nothing is invented, a season the CSV does not name is untouched, every
+  written value is decoded back, and the pass refuses to grow past the stat pool. Runs right after the team
+  history. The same delivery adds a lossless version-0 / version-17 ROST codec module used as the framing
+  oracle for the save work above, stages release files as 0755 / 0644 (a group-writable checkout made the
+  reviewed H7A encoder refuse itself silently), and says why when that encoder is refused.
 - **★ Rosters opens real Xbox saves.** Every real `SAVEGAME.DAT` stores the roster the way the game keeps
   it in memory (a version-0 ROST arena with the object 0x20 bytes after its preamble, at file offset 0x320),
   not the way the disc resource is laid out (version 17, object at +0x40). RC83 only knew the disc layout and

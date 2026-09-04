@@ -130,6 +130,11 @@ class BuildPlan:
     # Seasons the CSV does not cover are filled with the player's own 2004 club (receipt: "seasons_inferred"), so
     # 5,746 of the 5,838 rows the card can show name a team; only the 2004 free agents still read "--".
     team_history: str = ""
+    # real per-season career counters for the roster's past seasons (passing / rushing / receiving / defence /
+    # kicking) from a user CSV (schema in docs/mod_editor/career_stats.md; export the roster's own counters first
+    # with tools/nfl2k5_career_stats.py to get the identity pins); "" = off; disc images only; runs right after
+    # the team history because both rebuild the stat pool; refuses to overrun the pool or invent counters
+    career_stats: str = ""
     # Position row on the first page of Edit Player (roster mode and Franchise); the descriptor exists for
     # Create Player, the Edit Player lists just never listed it. Depth Chart -> Auto after a change.
     position_row: bool = False
@@ -213,7 +218,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False,
         "edge_rename": False, "scorebug": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False,
-        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "prospect_names": "", "player_star": False,
+        "position_pools": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "kick_laces": False, "franchise_practice": False, "prospect_names": "", "player_star": False,
     },
     # ADVANCED = basic + everything that modernises the game (Noah's tweaks and breakthroughs).
     "softdrink_advanced": {
@@ -221,7 +226,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False,
-        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": False, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
     },
     # EXPERIMENTAL = advanced + widescreen and anything still rough (dynamic-kickoff line-up).
     "softdrink_experimental": {
@@ -229,7 +234,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True,
-        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "choice", "kick_laces": True, "franchise_practice": True, "prospect_names": "modern", "player_star": True,
     },
 }
 PRESET_TITLES = {"softdrink_basic": "SOFTDRINK patch: basic (2004 game, just the 2K5 fixes)",
@@ -265,6 +270,7 @@ def availability() -> dict[str, bool]:
         "overtime": _core_module("nfl2k5_overtime") is not None,
         "team_history": (_core_module("nfl2k5_team_history") is not None
                          and (ROOT / "data" / "nfl2k5_retail_team_history.csv").exists()),
+        "career_stats": _core_module("nfl2k5_career_stats") is not None,
         "team_column": _core_module("nfl2k5_team_column") is not None,
         "position_row": _core_module("nfl2k5_position_row") is not None,
         "probowl_order": _core_module("nfl2k5_probowl_order") is not None,
@@ -536,6 +542,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         raise ValueError("7-on-7 practice needs a disc image (the 7-on-7 sets live in the practice playbook)")
     if plan.team_history and not is_image:
         raise ValueError("the team history needs a disc image (the roster template lives in pack 0)")
+    if plan.career_stats and not is_image:
+        raise ValueError("career stats need a disc image (the roster template lives in pack 0)")
     if plan.prospect_names and not is_image:
         raise ValueError("modern prospect names need a disc image (the name pool lives in the roster template in pack 0)")
     if plan.player_tags and not is_image:
@@ -708,6 +716,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, A
         history_receipt = history.apply(target, plan.team_history, progress=lambda msg: progress(msg, 0, 0))
         receipt["steps"].append({"step": "team_history", **{k: v for k, v in history_receipt.items() if k != "log"},
                                  "log_lines": len(history_receipt.get("log", []))})
+    if plan.career_stats:
+        # right after the team history: both rebuild the stat pool and the +0x2C pointers. This pass only
+        # changes the counters a user CSV names (and inserts the season words it needs), decodes every
+        # written value back, and refuses to grow past the pool; the later passes leave the pool alone.
+        career = _core_module("nfl2k5_career_stats")
+        if career is None:
+            raise RuntimeError("the career stats module is not available in this build")
+        progress("Importing the career stats CSV into the roster template", 0, 0)
+        career_receipt = career.apply(target, plan.career_stats, progress=lambda msg: progress(msg, 0, 0))
+        receipt["steps"].append({"step": "career_stats", **career_receipt})
     if plan.prospect_names:
         # after every other roster pass: the name pool (entry array + string span) is outside what the
         # reclassify, schedule and team-history gates hash, and none of them writes it. The executable half
