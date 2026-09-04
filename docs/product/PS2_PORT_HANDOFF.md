@@ -47,16 +47,21 @@ ISO9660 writer (below) is the route back, with a GS codec behind it.
 2. **Emulator: PenguinScreen2** (`/mnt/c/GitHub/pcsx2-VR`). It owns the
    replacement subsystem, so hash stability is in-house. **Pin the build.**
 3. **Do not hard-fork.** Upstream merges this fork's PS2 PRs same-day and the
-   real gap from the base ref is **6 commits**, not the 572 measured from the
-   fork's stale `main`. Rebase onto `upstream/main` and keep PR-ing. Use the
+   real gap from the base ref is **8 commits** (`cc7bb92..upstream/main`,
+   measured 2026-09-04 after Beta 59), not the 573 measured from the fork's
+   stale `main`. Re-measure before branching; upstream ships ~daily. Rebase onto `upstream/main` and keep PR-ing. Use the
    owner's fork approval for **release cadence only** — cut PS2 preview builds
    from the fork while staying rebased.
 4. **ISO9660 splits.** Reader lands (it has a consumer). Writer + verifier
    (~2,560 lines) stay on branch `ps2-iso9660`, reserved for the EA suite.
    GS texture codec stays dropped. See TODO 5.
 5. **The correspondence is a name join,** not pixel matching: 24,187 shared
-   disc resource keys, 99.6% of all Xbox keys. Both platforms are ~8-bit
-   palettized, so the format hazard never existed.
+   disc resource keys, 99.60% of 24,285 Xbox keys (verified exactly). The
+   quantization hazard is dismissed — **but for the right reason**: PCSX2
+   replacements are RGBA PNGs with no re-encode, so the source format is
+   irrelevant. *Not* because "both platforms are palettized": 9,174 Xbox
+   textures (6.5%) are not, and 9,293 shared rows pair Xbox P8 (256 colours)
+   with PS2 PSMT4 (16 colours).
 
 ## First slice
 
@@ -73,6 +78,34 @@ risk to user data, it needs no writer and no GS decoder, and it is the
 prerequisite for the mapping manifest. (PS2 *ratings* editing is not a
 candidate — ROST ratings are `PORTME` even on Xbox.)
 
+### The row is not complete until it carries all of this
+
+`validate_registry.py:173-269` rejects a row missing any of these. The
+classification is right — `read-only-mapped` matches
+`classification_definitions`, and `:257-265` then **forces**
+`backend.operation: "inspect"` and `gui.mode: "view"`.
+
+- **`validation_command`** — mandatory for every non-deferred row (`:211`),
+  must invoke `bash` or `python3` (`validate_all_mod_editor_capabilities.py:60`)
+  and must resolve to a real file (`:213-216`).
+  ⚠ **`tools/validate_nfl2k5_ps2_disc_inventory.sh` does not exist. Write it
+  and allowlist it as part of commit 5a** — this was missing from the plan.
+- **`backend.command`** must contain the exact `backend.module` token (`:206`).
+- `portme` ≥ 1 entry · `input_constraints` ≥ 1 · `selectors.notes` ·
+  `gui.reason` · `runtime.scope` + `runtime.status`
+  (`"not-applicable"` is the idiomatic status for a read-only row).
+- `evidence` paths must **exist as files**. Use the committed disc-inventory
+  evidence JSON and the name-join TSV from commit 4 — do not cite anything
+  under gitignored `docs/research/`.
+- `registry.v1.json` must stay **canonically sorted JSON** (`:291`).
+
+### Discovery — the row is invisible without this
+
+`mod_editor/core/product_catalog.py:301` filters on `game != NFL2K5`, so a
+`nfl2k5_ps2` row **never reaches the sidebar**. Commit 5b must widen that
+filter, or the capability ships unreachable and the single menu entry is the
+entire discoverable surface.
+
 ## Landing order — 5 commits
 
 Branch from **`upstream/main`**, not `cc7bb92`. Commit the two `/tmp` worktrees
@@ -82,18 +115,82 @@ to their branches first — **nothing is currently committed.**
 |---|---|---|
 | 1 | `docs/product/PS2_PORT_HANDOFF.md` (this file) | no — unshipped |
 | 2 | Audit-tool fixes + 23 tests (`nfl2k5_ps2_replacement_pack_audit.py`) | no — unallowlisted |
-| 3 | `tools/ps2_iso9660.py` reader + 27 synthetic tests. **Fix `SLUS-209.19` → `SLUS-20919`** in `boot_identity()` first, or it will not join against `SERIAL`. Swap the Madden disc tests for a skip-guarded SLUS-20919 identity test | no — unshipped until #5 |
-| 4 | `tools/nfl2k5_ps2_disc_inventory.py` (productized `ps2_vc_inventory.py`) + synthetic selftest + evidence JSON at `reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json` + a **~1 MB name-join TSV**, not the 70 MB dumps | no |
-| 5a | Registry row + `SURFACE_GAMES["textures"] = ("nfl2k5_ps2", "nfl2k5_xbox")` + the **9 count pins** 70→71 + allowlist entries + closure list at `check_2k5…:1698` + changelog RC83 + `registry.schema.json` `games.maxItems` → 3 | **2K5 re-seal**; APF literal only |
+| 3 | `tools/ps2_iso9660.py` reader + 27 synthetic tests. **Fix `SLUS-209.19` → `SLUS-20919`** in `boot_identity()` (confirmed at `:914`) or it will not join against `SERIAL`. **Move the test file to `tests/mod_editor/`** or CI never runs it. Swap the Madden disc tests for a skip-guarded SLUS-20919 identity test | no — unshipped until #5 |
+| 4 | `tools/nfl2k5_ps2_disc_inventory.py` (productized `ps2_vc_inventory.py`) + synthetic selftest + evidence JSON at `reports/gameplay_tuning/nfl2k5_ps2_disc_inventory.v1.json` + a **~1 MB name-join as `.csv`** (not `.tsv` — see landing mechanics), not the 70 MB dumps | no |
+| 5a | Registry row (complete per the field list above) + `validate_nfl2k5_ps2_disc_inventory.sh` + `SURFACE_GAMES["textures"] = ("nfl2k5_ps2", "nfl2k5_xbox")` + the **13 count pins** 70→71 + allowlist entries + closure list at `check_2k5…:1698` + changelog **RC84** (RC83 is taken — Beta 59 shipped 2026-09-04) + the **4-edit** schema fix | **2K5 re-seal**; APF literal only |
 | 5b | `ps2_disc_service.py` (Qt-free) + `ps2_disc_dialog_qt.py` + `studio_qt.py` menu entry + `--ps2-disc`, `repin.py --apply` | same release |
 
-**The 9 count-pin sites** (7 files): `check_2k5_mod_studio_runtime.py:1775`
-and `:2182`, `check_apf2k8_mod_studio_runtime.py:1185`,
-`getting_started.md:330`, `STATUS.md:2624`,
-`test_apf_studio_installer.py:360`, `test_phase1_packaging.py:69` and `:454`,
-`tools/validate_all_mod_editor_capabilities.py:61`. Re-pinning is routine —
-5 precedents, and `af8ae63` is this exact change at 65→66. Must move in the
-same commit because the APF gate runs in CI.
+**The 13 count-pin sites (9 files).** ⚠ **Do not trust any line number in
+this document for these sites.** Two audits hours apart on 2026-09-04 reported
+*different* drifted positions on `upstream/main` (e.g. `STATUS.md` 2737 vs
+2755; `check_2k5` 1793 vs 1798) because upstream ships daily. **Re-locate every
+site by content** — grep for the literal `70`, `EXPECTED_COVERED_CAPABILITIES`,
+`EXPECTED_UNIQUE_VALIDATORS`, and the prose strings named below.
+
+**Two are prose, not numbers, and are asserted by tests:** `STATUS.md` says
+"1 NFL 2K5 PS2 save-import row" and `getting_started.md` says "separate PS2
+save-import bridge" — `test_phase1_packaging.py:69` asserts that text. A second
+PS2 row invalidates both sentences.
+
+- `packaging/check_2k5_mod_studio_runtime.py` — two sites (the assertion and
+  the summary string)
+- `packaging/check_apf2k8_mod_studio_runtime.py:1185`
+- `docs/mod_editor/2k5_mod_studio_getting_started.md`
+- `STATUS.md`
+- `tests/mod_editor/test_apf_studio_installer.py:360`
+- `tests/mod_editor/test_phase1_packaging.py:69` and `:454`
+- `tools/validate_all_mod_editor_capabilities.py:61`, **plus `:62`
+  `EXPECTED_COVERED_CAPABILITIES` 65→66 and `:64` `EXPECTED_UNIQUE_VALIDATORS`
+  52→53** (enforced at `:1503`/`:1511` and by
+  `test_validate_all_capabilities.py:157,159`) — the new row brings a new
+  validator, so both counters move
+- `APF2K8-README.md:594` and `docs/mod_editor/APF2K8_STATUS.md:750`
+
+Must move in the same commit because the APF gate runs in CI. Re-pinning is
+routine — 5 precedents (`aa4b92e`, `ed575f0`, `af8ae63`, `66f26b5`, `93e1f6a`).
+**Use `93e1f6a` (67→70, 13 sites) as the template.** ⚠ Do **not** copy
+`af8ae63`: it bumped `EXPECTED_CAPABILITIES` but **left
+`EXPECTED_COVERED_CAPABILITIES` at 60** — following it verbatim reproduces the
+exact CI failure two independent audits flagged as the most likely breaker of
+the first PS2 commit.
+
+**⚠ 5a re-seals APF too — not "literal only".** `registry.v1.json`,
+`registry.schema.json`, `validate_registry.py` and `check_apf2k8_…runtime.py`
+are all in `packaging/apf2k8-release-allowlist.txt`. Any edit to them changes
+the APF archive bytes. Plan for **both** products to re-seal on 5a.
+
+**The schema fix is 5 edits, not one.** `registry.schema.json`: `games.minItems`
+**and** `maxItems` 2→3; `surfaces.minItems`/`maxItems` 20→21; and `textures`
+added to **both** surface enums — the row's own `surface: "textures"` is
+**illegal under the published schema today**. (Currently inert: no JSON Schema
+is ever applied, only the `$id` is checked at `validate_registry.py:326`. Fix
+it anyway; a stock validator would reject the file.)
+
+### Landing mechanics that will bite
+
+- **Rebase or cherry-pick onto `upstream/main` — never `git merge`.** A
+  full-branch merge conflicts in `check_2k5_mod_studio_runtime.py` because of
+  pre-squash history. All three existing commits **cherry-pick cleanly** onto
+  `7f1f3b3` (Beta 59). Verified: zero test regressions after applying all three
+  (Python 3.9.25 baseline 21 pass / 264 fail — 201 `datetime.UTC`, 56 missing
+  PyQt5, 7 other — identical set with our changes).
+- **⚠ CI never runs `tests/test_ps2_iso9660.py`.** `ci.yml:217` globs only
+  `tests/mod_editor/test_*.py`. **Move it to `tests/mod_editor/` in commit 3**
+  or the 56 tests (27 reader + 23 writer/verifier + 6 disc-gated) silently
+  never execute.
+- **Ship evidence as `.csv` or `.txt`, not `.tsv`.** `.tsv` is not in the
+  release checker's `ALLOWED_SUFFIXES` (`.csv` is); a shipped `.tsv` raises in
+  `check_2k5_mod_studio_release.py`. Size is fine (8 MiB cap).
+- **Every new `tools/*.py` must pass `test_shipped_tools_are_self_sufficient.py`**
+  — importable with only its own directory on `sys.path`.
+- **Allowlist entries needed** (`packaging/release-allowlist.txt` only — none
+  for APF): `tools/nfl2k5_ps2_disc_inventory.py`, `tools/ps2_iso9660.py` (when
+  5b imports it), `tools/validate_nfl2k5_ps2_disc_inventory.sh` **and `.bat`**,
+  `mod_editor/core/ps2_disc_service.py`, `mod_editor/gui/ps2_disc_dialog_qt.py`.
+  The evidence JSON needs none.
+- `630c4cc` (upstream PR #5) is **byte-identical** to the base tree —
+  `git diff cc7bb92 630c4cc` is empty — so the fork's PS2 history is fully
+  upstream already.
 
 **Follow the separate-workspace pattern** (`ps2_save_dialog_qt.py` +
 Qt-free service). Do **not** retrofit `GameId` gating into
@@ -102,9 +199,18 @@ Qt-free service). Do **not** retrofit `GameId` gating into
 
 ## Effort
 
-Commits 1–4 ≈ **1–1.5 days**. Slice 1 complete (through 5b) ≈ **3–5 days**.
-Backend to M1 (a proven uniform replacement rendering in-game) ≈ **6–9 days**,
-plus **4–7 days** for the GUI workspace.
+Commits 1–4 ≈ **1–1.5 days** (plausible — the code is committed). Slice 1
+complete through 5b ≈ **7–10 days** — an earlier "3–5" was unfounded because
+**5b *is* the GUI workspace** (floor 5.5 d). The GUI figure itself was priced
+off a 966-line name editor; a 550K-row browser needs a **virtualized model**,
+never previously mentioned. Manifest: 2 d + 1 d set-level join + ½ d layout
+fix, full coverage 5–6 d — the best-founded numbers here, backed by the
+13,431/15,104 measurement. Comparable precedent: the PS2 save lane was
+3,782 lines / ~16 commits / **4 calendar days**.
+
+Phase 2 estimates are weaker: stadiums (port) plausible; text optimistic
+(716 disc banks ≠ one ROST arena); **playbooks and audio unfounded** — both are
+unstarted reverse-engineering.
 
 ## ✅ RESOLVED — the hash IS computable offline (proven 2026-09-04)
 
@@ -119,13 +225,30 @@ pack's 15,104 canonical identities.
 
 | result | count | share |
 |---|---|---|
-| identities reproducing exactly (64-bit) | **13,431 / 15,104** | **88.9%** |
-| …with **both** TEX0Hash and CLUTHash | 12,958 | 85.8% |
-| `bits` field consistent on every hit | — | **100%** |
+| **full filename identity** — TEX0Hash **and** CLUTHash both reproduce | **12,958 / 15,104** | **85.8%** ← *the honest headline* |
+| TEX0Hash reproduces (473 of these are TEX0-only, palette unproven) | 13,431 | 88.9% |
+| `bits` field consistent on every hit | 0 mismatches / 192,276 | **100%** |
 | unexplained | 1,673 | 11.1% |
 
+Independent recomputation from `hop1_v5_results.jsonl.gz` confirms every
+count exactly. The method is faithful: `xxhash.h` is md5-identical to
+pcsx2-VR's, `GSXXH3_64bits` is dispatch-only over `XXH3_64bits(seed 0)`,
+`bits = PSM | TW<<6 | TH<<10 | TCC<<14`, TEXA zeroed for `psm.pal>0`, and
+`fmsk == 0xFFFFFFFF` for PSMT8/4 so the block path is correct.
+**Unverifiable from preserved artifacts:** the 7 s runtime (no timing log), and
+the pack denominator (scripts hardcode "of 19052") — though the 15,104 corpus
+was verified live on the rig, see below.
+
+**Corpus completeness — verified, the plan's riskiest assumption holds.** A
+stress-test asked whether 15,104 was the whole pack or only the narrow-regex
+subset (which would have meant ~65% real coverage, not 88.9%). Measured on the
+rig: 17,101 unique PNG basenames; **13,245** unique canonical under the old
+narrow regex; **15,104** under the widened one — an exact match. The corpus
+was built with the widened regex, so 88.9% stands and the manifest does **not**
+need re-deriving after commit 2.
+
 The unexplained are concentrated (1,635) in `replacements/Team` at 256×128 /
-128×128 — probably runtime-composited jersey/number textures, unconfirmed.
+128×128 — see the final-tally correction below for what they actually are.
 
 **Inputs the hash needs**, all present on disc: PSM/TW/TH from TEX0, L0 pixels,
 CLUT. Absent but irrelevant: TEXA (zeroed for palettized), CLAMP region (the
@@ -135,9 +258,14 @@ zero chain or base-shift hits).
 **Three verified disc layouts** — implementers need all three:
 - `mips=1` → linear rows → `columnTable8` 16×16 block swizzle, row-major
   blocks, XXH3 (PSMT4 uses `columnTable4`, low nibble first)
-- `mips>1` → a pre-swizzled one-shot PSMCT32 upload **64 px wide (8 KB = one
-  page)**; build the VRAM image via `blockTable32`/`columnTable32`, then read
-  PSMT8 blocks via `blockTable8` + TBW
+- `mips>1` → ⚠ **the earlier rule "always pre-swizzled PSMCT32" is WRONG.**
+  482 PNGs at mips 5/6/7 are proved *only* by the linear path, and the c32
+  path never hits at mips=1 or 7. **Correct rule: try both layouts** — linear
+  (`columnTable8`) first, then the c32 route (a one-shot PSMCT32 upload 64 px
+  wide = one 8 KB page; rebuild VRAM via `blockTable32`/`columnTable32`, read
+  PSMT8 blocks via `blockTable8` + TBW). Note the CLUT base differs per path:
+  linear uses `img_off + CBP·256`, c32 uses `CBP·256` into the rebuilt VRAM
+  image.
 - CLUT → 1024 bytes at descriptor `+0x28` override (TSET siblings), else
   CBP·256; linear layout swaps CSM1 bits 3↔4, c32 layout uses the PSMCT32 VRAM
   read permutation; PSMT4 CLUT raw
@@ -158,28 +286,44 @@ have at least one fully-proved (TEX0 + CLUT + Xbox id) row — but only
 **4,297 resolve to exactly one Xbox id**. **7,739 fan out to 8+ same-name
 Xbox rows** (6.25M pairs — not shippable as-is).
 
-⚠ **The fan-out is entirely `tset:` children, and it needs a set-level join.**
-Uniform part names (`ARM_00_00`, `SLEEVE…`) recur across hundreds of Xbox
-TSETs, one per team/era/side. The **PS2 side is not ambiguous** (median 2 PS2
-records per PNG), so hop 3 for TSET children must join at the *set* level:
-PS2 TSET chunk → its owning uniform-set name (`Unif`/`NAME` objects, **634 on
-both discs**) → Xbox TSET → child by index/name. The inventories already carry
-everything needed; **this is not implemented**. `p8:` and scene rows join
-cleanly and need none of it. **Add ~1 day.**
+⚠ **The fan-out is NOT confined to `tset:` — that claim was wrong and would
+have broken the first manifest slice.** Of the 7,739 fanned-out PNGs:
+**3,866 all-`tset`, 2,099 all-`p8`, 1,768 all-scene**, 6 mixed. Half carry no
+`tset:` id at all. The earlier statement that "`p8:` and scene rows join
+cleanly" is **false** — their own row totals (1,155,613 `p8` + 1,044,488 scene
+rows over ≤12,706 PNGs) prove it. **There is no clean 2-day `p8:`/scene-only
+slice.** Every namespace needs disambiguation.
 
-✅ **The 1,673 misses do NOT need a rig campaign.** An earlier guess that they
-were runtime-composited jersey numbers was **wrong**. They are disc assets
-hitting one more unmodelled layout variant (TSET region boundary / transfer
-width for TBW=4 sets): cheerleader TSET 256×128 mip textures (652), 1024×32
-nameplate strips (634), Crib posters/paintings 128×256 (~250). **Offline fix,
-~½ day.** Only ~100 miscellaneous Broadcast/Menu PNGs remain unexplained after
-it.
+⚠ **The proposed set-level join via `Unif`/`NAME` cannot be built as written.**
+All 12,814 PS2 and 10,774 Xbox TSET containers are **unnamed**, so no
+TSET-name join exists; 634 `Unif` objects cannot address ~12K TSETs; and PS2
+has 19% more TSETs than Xbox, so there is no bijection to find. **The viable
+route is a shared `(id, chunk)` key**, which resolves **9,917 of 12,814 PS2
+TSETs (77%)** — 512 of 1,826 ids disagree and need adjudication. The PS2 side
+remains unambiguous (median 2 records per PNG, mean 6.32, max 2,040); the
+ambiguity is entirely on the Xbox side. **This is design work, not a 1-day
+add-on; budget 2–3 days and expect a policy decision on the 23%.**
 
-**Revised effort:** shippable manifest slice (Broadcast + Menu + Crib, ~200
-rows, all offline-proved, `p8:`/scene joins only) **2 days**; the TSET
-set-level join **+1 day**; the layout-variant fix **+½ day**; full coverage
-(~13.4K identities, duplicate policy, scene ids, validator hookup)
-**5–6 days, entirely offline**.
+⚠ **The 1,673 misses are UNEXPLAINED — both prior explanations were guesses.**
+The first ("runtime-composited jersey numbers") was retracted. The second
+("cheerleaders 652 + nameplates 634 + Crib posters ~250, a ½-day TBW=4 fix") is
+**also unevidenced**: those counts come from a hardcoded shape whitelist over
+PS2 *records* with no hit — 1,541 picked out of **55,671 no-hit PS2 records
+(46% of the corpus)** — and **nothing joins them to the 1,673 unexplained PNG
+names**. No artifact shows the proposed TBW=4/region variant reproducing even
+one missing hash. Treat the 1,673 as **open**, budget it as unknown, and do not
+promise them in any slice until a fix reproduces real hashes.
+
+**Revised effort (after the technical fact-check):** the manifest is still an
+offline computation, but the previous slice plan was built on two false
+premises (clean `p8:`/scene joins; a buildable `Unif` set-join). Re-scoped:
+**first shippable slice = the 4,297 PNGs that already resolve to exactly one
+Xbox id**, all namespaces, all `offline-writer-proved` — **~2 days** including
+validator hookup. **Disambiguation of the 7,739 fan-out** via the `(id, chunk)`
+key + a duplicate policy: **2–3 days**, yielding roughly 77% of the remainder.
+**The 1,673 unexplained: unbudgeted** until a fix reproduces real hashes.
+Realistic full-coverage figure: **6–8 days offline, with ~23% of TSETs plus the
+1,673 needing adjudication or left out.** Nothing here needs the rig.
 
 **Artifacts** (hashes only, no pixels): `scratchpad/hop1/{gscommon,hop1_v5,
 final_tally}.py`, `hop1_v5_results.jsonl`, `hits_v5.tsv`,
@@ -224,11 +368,18 @@ free and the hard part (bounded, topology-refusing geometry editing) already
 exists on the Xbox side, so it is a port rather than research. Audio last — it
 is the only surface needing genuine new codec work.
 
-**Hard gate: do not start Phase 2 until Slice 1 ships and a texture is
-*witnessed* rendering in PenguinScreen2.** Every surface above depends on the
-disc-writing path being real, and that path has never been exercised
-end-to-end on PS2. Proving the cheap lane first keeps the expensive ones
-honest.
+**Hard gate: do not start Phase 2 until M1 is reached — a texture *witnessed*
+rendering in PenguinScreen2.** An earlier version gated on "Slice 1", which is
+logically impossible: slice 1 is `read-only-mapped`/`view` with no writer and no
+exporter, so it can never produce a render. The gate names **M1**. Every
+Phase-2 surface depends on the disc-writing path being real, and that path has
+never been exercised end-to-end on PS2. Proving the cheap lane first keeps the
+expensive ones honest.
+
+**Parallelism corrections:** the manifest is proven pure-offline and depends
+only on ISO + pack — **run it in parallel with commits 1–4**, not after slice 1.
+Capability triage is a *prerequisite* of 5a (it decides the `SURFACE_GAMES`
+staging 5a hard-codes), not parallel to it.
 
 ## Out of scope, deliberately
 
@@ -237,6 +388,38 @@ geometry, text, menus and playbooks · real-hardware PS2 mods · NCAA 12 PS2
 (**no PS2 release exists** — NCAA 11 is the last).
 
 ---
+
+# APPENDIX — session history (SUPERSEDED where it conflicts with the plan above)
+
+**Read this section as an audit trail, not as instructions.** It is the
+accreted record of one long working session, kept because it shows what was
+measured and how conclusions changed. Where anything below disagrees with the
+IMPLEMENTATION PLAN, **the plan wins, without exception.** Known conflicts an
+implementer will hit reading top-to-bottom, with the live statement:
+
+| appears below | live statement (plan) |
+|---|---|
+| ISO9660 writer "shelved for the EA suite" (TODO 5) | **sequenced**, un-shelved in Phase 2 |
+| the hash↔asset bridge "must be established empirically from GS dumps" (TODO 2, "the actual core problem") | **proven offline**, 88.9% |
+| 148 of 299 evidence paths missing | **144 of 293** |
+| the evidence gate blocks CI | **CI passes `--skip-file-checks`**; local nuisance only |
+| upstream 5 / 6 / 7 / 572 commits ahead | **8** from base (2026-09-04) |
+| "nothing is committed" | **all three branches carry one commit each** |
+| `af8ae63` as the re-pin precedent | **`93e1f6a`** (13 sites) |
+| 8 count-pin sites / 7 files | **13 / 9** |
+| `ps2_save_dialog_qt.py` ~800 lines | **966** |
+| a second "Phase 2" = texture dump + manifest | the plan's **Phase 2 = on-disc surfaces** |
+| Phase 2 gated on "Slice 1" | gated on **M1** |
+| "88.9% reproduce exactly" as the headline | **85.8%** full filename identity (12,958); 88.9% is TEX0-only |
+| fan-out "entirely `tset:` children"; "`p8:`/scene join cleanly" | **half the fan-out is `p8:`/scene**; no clean 2-day slice exists |
+| set-level join via `Unif`/`NAME` objects | **TSETs are unnamed on both discs**; use the `(id, chunk)` key — 77% |
+| 1,673 misses = cheerleaders + nameplates + posters, "½-day fix" | **unexplained and unbudgeted** — both explanations were guesses |
+| `mips>1` → pre-swizzled PSMCT32 | **try both layouts**; 482 PNGs at mips 5–7 are linear-only |
+| quantization risk dismissed because "both are palettized" | dismissed because **replacements are RGBA PNGs, no re-encode** |
+| "APF literal only" on 5a | **5a re-seals APF too** (4 files in its allowlist) |
+| `.tsv` evidence | **`.csv`** — `.tsv` is not an allowed release suffix |
+
+Item numbering is not unique across the lists below; refer to items by name.
 
 ## ⚠ CORRECTIONS — independent audit, 2026-09-04
 
