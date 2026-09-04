@@ -97,6 +97,9 @@ class PatchWriteTests(unittest.TestCase):
         flags = {name: True for name in ("catch_slider", "accel_ramp", "draft_ai", "edge_rename", "returner_fix", "progression",
                                           "scheme_labels", "camera", "kick_rules", "widescreen", "overtime", "team_column", "seven_on_seven")}
         cls.patched, cls.receipt = tt._apply_all(cls.retail, None, **flags, arc_table=False, kick_power=False, penalties="nfl", uniform_choice="choice", kick_laces=True, franchise_practice=True, prospect_names="modern", player_star=True)
+        # Applied separately until the beta-60 coordinator wires the protected _apply_all.
+        from mod_editor.core import nfl2k5_dynamic_kickoff
+        cls.patched, cls.receipt["dynamic_kickoff"] = nfl2k5_dynamic_kickoff.apply(cls.patched)
         cls.md = Cs(CS_ARCH_X86, CS_MODE_32)
         cls.md.detail = True
 
