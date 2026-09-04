@@ -1,5 +1,46 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC83 — (unreleased)
+
+- **Fixed: "made the patch and didn't get the new scorebug at the bottom."** The ESPN scorebug
+  was the one Build step that could only run on the machine it was written on. Its inputs are
+  the retail score_bug scene and three retail P8 atlases, plus our repaints of those atlases —
+  and a repaint that keeps the retail alpha silhouette, the retail letter mask and one retail
+  glyph cell is retail-derived, so none of it could ship under the retail-free release rule.
+  The Build tab therefore showed "Not available in this build" and **Advanced silently skipped
+  the scorebug**; only the published `.2k5patch` files carried those bytes. Nothing has to ship:
+  every input is now read out of **your own disc image** at build time. The scene span and the
+  three atlas spans are read at pinned pack-relative offsets — the pack resolved through your
+  image's own file table — and checked against the audited retail SHA-256 first; the
+  retail atlases are decoded to PNGs and the modern art is regenerated from them by the
+  generator that has always shipped (`tools/nfl2k5_scorebug_espn_art.py`), then cached beside
+  the model index in the private, disc-derived cache so a second build does no work. The result
+  is byte-for-byte what this workstation builds: on the retail image, the re-laid mesh span, the
+  `score_buga`, `shield_espn` and `digital_font` spans and the whole patched `default.xbe` are
+  identical to a build made with the developer files present
+  (`tests/mod_editor/test_nfl2k5_scorebug_source_art.py`, including a full write over a real
+  disc copy).
+  `availability()["scorebug"]` is now about what this build can DO, not about files on one
+  person's disk, and the Presentation tab draws its planned-look mockup from your disc instead
+  of saying "mockup not shipped in this build".
+  - The shared **digit sheet** (`digital_font`) is drawn with DejaVu Sans Bold. Where that face
+    is not installed the sheet is skipped and named in the receipt rather than silently redrawn
+    in a fallback font; the bar itself never depends on it.
+  - The **ticker-band atlas** (`NAVTEXTURE`, the Bottom Line strip under the bar) was hand
+    painted and has no generator, so it stays out of a release build and your ticker keeps its
+    retail art. The receipt says so. The published `SOFTDRINK patch advanced` `.2k5patch` still
+    carries it — Share → Apply.
+  - Every receipt now records where each PNG came from (`art_origin`), whether it matched the
+    reference art the published patches were built with (`art_reference_match`), and anything
+    that was skipped and why (`art_skipped`).
+- The scorebug's texture writer and the field-pack texture writer no longer need an extracted
+  copy of `vc_53450030/0` (a developer artefact that was never in a release, and whose absence
+  made the step fail even here unless `NFL2K5_RETAIL_INDEX` happened to be set). Both read the
+  retail template out of the image they are writing, at a pinned offset with a pinned digest, and
+  fall back to the extracted archive only to tell "already imported" from "foreign bytes".
+- The scorebug mockup's triangle strips are decoded from the retail scene's own command blocks
+  instead of an intermediate glTF research export; the export is no longer needed anywhere.
+
 ## v1.0 RC82 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star; overtime and Models UV fixes (2026-09-04)
 
 - **Fixed: modern overtime ended after a first-possession field goal** because the kickoff after

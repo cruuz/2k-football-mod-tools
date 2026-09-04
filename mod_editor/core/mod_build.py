@@ -50,6 +50,16 @@ def _core_module(name: str):
         return None
 
 
+def _scorebug_art_available() -> bool:
+    module = _core_module("nfl2k5_scorebug_source_art")
+    if module is None:
+        return False
+    try:
+        return bool(module.available())
+    except Exception:  # noqa: BLE001
+        return False
+
+
 UNIFORM_CHOICE_MODES = ("", "rule", "choice")
 
 
@@ -261,9 +271,16 @@ def availability() -> dict[str, bool]:
         "position_pools": (_core_module("nfl2k5_position_pools") is not None
                            and _tools_module("nfl2k5_playbook_position_recode") is not None
                            and _tools_module("nfl2k5_roster_reclassify") is not None),
+        # The scorebug used to be gated on two developer-only files (our repaint of the ESPN
+        # mark, and an intermediate glTF that only the CLI mockup ever reads), so every install
+        # but this workstation reported "Not available in this build" and the ADVANCED preset
+        # skipped it silently.  Both retail-derived inputs and the derived art now come from
+        # the user's own disc image at build time (nfl2k5_scorebug_source_art), so the step is
+        # available whenever the writer and the generator are: the source is checked when the
+        # build runs, where a non-image source is already refused with its own message.
         "scorebug": (_tools_module("nfl2k5_scorebug_layout") is not None
-                     and (ROOT / "mod_editor" / "assets" / "nfl2k5_scorebug_espn" / "shield_espn_modern.png").exists()
-                     and (ROOT / "assets" / "intermediate" / "nfl2k5" / "models" / "0346_0078_score_bug.gltf").exists()),
+                     and _core_module("nfl2k5_scorebug_source_art") is not None
+                     and _scorebug_art_available()),
         "edge_rename": _core_module("nfl2k5_edge_rename") is not None,
         "commentary": _tools_module("nfl2k5_commentary_swap") is not None,
     }
@@ -476,8 +493,14 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None) -> dict[str, An
         if sbl is None:
             raise RuntimeError("scorebug layout tool is not available in this build")
         progress("Re-laying the scorebug (mesh, placement, textures)", 0, 0)
-        rec = sbl.apply_in_place(target)
-        receipt["steps"].append({"step": "scorebug", **{k: rec.get(k) for k in ("filled_bytes", "padding_bytes", "wrapper_identical", "root", "textures", "text_colours", "persistent", "hud_layout", "layout")}})
+        try:
+            rec = sbl.apply_in_place(target)
+        except SystemExit as exc:
+            # the layout writer reports refusals as SystemExit (it is also a CLI). A build runs on
+            # a Qt worker thread whose runner catches Exception, so a SystemExit there would kill
+            # the thread silently and leave the panel waiting for a result that never comes.
+            raise RuntimeError(f"the ESPN scorebug could not be written: {exc}") from exc
+        receipt["steps"].append({"step": "scorebug", **{k: rec.get(k) for k in ("filled_bytes", "padding_bytes", "wrapper_identical", "root", "textures", "text_colours", "persistent", "hud_layout", "layout", "art_origin", "art_reference_match", "art_skipped")}})
     if plan.position_pools:
         pools = _core_module("nfl2k5_position_pools")
         recode = _tools_module("nfl2k5_playbook_position_recode")

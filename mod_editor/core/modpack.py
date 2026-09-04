@@ -740,6 +740,24 @@ def _scorebug_assets_dir() -> Path:
     return Path(__file__).resolve().parents[1] / "assets" / "nfl2k5_scorebug_espn"
 
 
+def _scorebug_asset_dirs() -> tuple[Path, ...]:
+    """Where the scorebug's replacement PNGs may live, best first.
+
+    The developer asset folder is not in a release; on an install the art is generated from
+    the user's own disc into the private cache, and a pack exported there must bundle the
+    files the build actually used, not silently drop them.
+    """
+
+    folders = [_scorebug_assets_dir()]
+    try:
+        from mod_editor.core import nfl2k5_scorebug_source_art as _art
+
+        folders.append(_art.cache_dir())
+    except Exception:  # noqa: BLE001 - no cache in this build
+        pass
+    return tuple(folders)
+
+
 SCOREBUG_TEXTURE_ROLES = (
     ("score_buga", "score_buga_modern.png"),
     ("shield_espn", "shield_espn_modern.png"),
@@ -841,9 +859,10 @@ def recognise_recipe(base_fd: int, patched_fd: int, size: int, base_path: Path, 
             detected["scorebug_layout"] = {"base": before, "patched": after, "layout_version": version}
             if after == "applied":
                 textures: dict[str, str | None] = {}
-                folder = _scorebug_assets_dir()
+                folders = _scorebug_asset_dirs()
                 for role, file_name in SCOREBUG_TEXTURE_ROLES:
-                    candidate = folder / file_name
+                    candidate = next((f / file_name for f in folders if (f / file_name).is_file()),
+                                     folders[0] / file_name)
                     if candidate.is_file():
                         member = f"{ASSET_ROOT}/texture/{file_name}"
                         textures[role] = member

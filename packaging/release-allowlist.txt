@@ -79,6 +79,7 @@ mod_editor/core/playbook_package_rule_spike.py
 mod_editor/core/ps2_save_service.py
 mod_editor/core/nfl2k5_safe_text_banks.py
 mod_editor/core/nfl2k5_save_writer.py
+mod_editor/core/nfl2k5_scorebug_source_art.py
 mod_editor/core/nfl2k5_scorebug_unified_adapter.py
 mod_editor/core/nfl2k5_source_cache.py
 mod_editor/core/nfl2k5_stadium_cache.py

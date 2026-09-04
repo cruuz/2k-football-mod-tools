@@ -86,14 +86,7 @@ class PresentationPanel(QWidget):
         preview_layout = QVBoxLayout(preview_box)
         self.preview = QLabel()
         self.preview.setAlignment(Qt.AlignCenter)
-        mockup = Path(__file__).resolve().parents[1] / "assets" / "nfl2k5_scorebug_espn" / "preview_espn.png"
-        if mockup.exists():
-            pix = QPixmap(str(mockup))
-            # the mockup is a whole 640x480 frame; show the bottom quarter where the bar and ticker band live
-            band = pix.copy(0, int(pix.height() * 0.78), pix.width(), int(pix.height() * 0.22))
-            self.preview.setPixmap(band.scaledToWidth(1100, Qt.SmoothTransformation))
-        else:
-            self.preview.setText("mockup not shipped in this build")
+        self._show_mockup(None)
         preview_layout.addWidget(self.preview)
         layout.addWidget(preview_box)
 
@@ -133,6 +126,29 @@ class PresentationPanel(QWidget):
         layout.addWidget(self.status_label)
         layout.addStretch(1)
 
+    def _show_mockup(self, source: Path | None) -> None:
+        """Draw the planned-look mockup, rendering it from ``source`` the first time.
+
+        A release has no picture to ship (it is a render of retail geometry), so the panel
+        used to show "mockup not shipped in this build" forever.  It is drawn from the user's
+        own disc as soon as one is chosen, and cached beside the rest of the derived art.
+        """
+
+        mockup: Path | None = None
+        try:
+            from mod_editor.core import nfl2k5_scorebug_source_art as art
+
+            mockup = art.preview_mockup(source)
+        except Exception:  # noqa: BLE001 - the panel works without a picture
+            mockup = None
+        if mockup is not None and mockup.is_file():
+            pix = QPixmap(str(mockup))
+            # the mockup is a whole 640x480 frame; show the bottom quarter where the bar and ticker band live
+            band = pix.copy(0, int(pix.height() * 0.78), pix.width(), int(pix.height() * 0.22))
+            self.preview.setPixmap(band.scaledToWidth(1100, Qt.SmoothTransformation))
+        else:
+            self.preview.setText("Choose a disc image to draw the planned look.")
+
     # ------------------------------------------------------------------ state
     def apply_state(self, path: Path, state: str) -> None:
         """Populate from a known layout state (also used by tests)."""
@@ -146,6 +162,8 @@ class PresentationPanel(QWidget):
             "n/a": "Not a disc image.",
         }[state]
         self.source_status.setText(text)
+        if state in ("retail", "applied"):
+            self._show_mockup(path)
         self._refresh()
 
     def _refresh(self) -> None:

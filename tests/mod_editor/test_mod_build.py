@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -56,13 +57,27 @@ class ModBuildTests(unittest.TestCase):
     def test_availability_reports_optional_modules(self) -> None:
         avail = mod_build.availability()
         self.assertTrue(avail["throw"] and avail["catch_slider"])
-        # the ESPN scorebug needs its repainted art and the retail mesh, which developer trees have and
-        # release trees / CI checkouts deliberately do not: availability must say so, never fail later
-        scorebug_inputs = ((mod_build.ROOT / "mod_editor" / "assets" / "nfl2k5_scorebug_espn" / "shield_espn_modern.png").exists()
-                           and (mod_build.ROOT / "assets" / "intermediate" / "nfl2k5" / "models" / "0346_0078_score_bug.gltf").exists())
-        self.assertEqual(avail["scorebug"], scorebug_inputs)
+        # The ESPN scorebug used to be gated on two developer-only files, so every install but
+        # the maintainer's said "Not available in this build" and the ADVANCED preset skipped
+        # it.  Its retail inputs and its derived art now come from the user's own disc image,
+        # so availability is true in a release tree too: what it reports is whether this build
+        # can DO the work, and the source is judged when the build runs.
+        self.assertTrue(avail["scorebug"])
         self.assertIn("edge_rename", avail)
         self.assertIn("commentary", avail)
+
+    def test_scorebug_availability_follows_the_generator_not_local_assets(self) -> None:
+        """True without the developer asset folder; false when the generator cannot run."""
+
+        from mod_editor.core import nfl2k5_scorebug_source_art as art
+
+        missing = Path(tempfile.gettempdir()) / "definitely-not-a-scorebug-asset-folder"
+        with mock.patch.object(art, "DEVELOPER_ASSETS", missing):
+            self.assertTrue(art.available())
+            self.assertTrue(mod_build.availability()["scorebug"])
+        with mock.patch.object(art, "AUDIT", missing / "audit.json"):
+            self.assertFalse(art.available())
+            self.assertFalse(mod_build.availability()["scorebug"])
 
 
 if __name__ == "__main__":

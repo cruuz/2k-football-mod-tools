@@ -163,6 +163,36 @@ def validate_texture(decoded: bytes, target: dict[str, Any], scratch: int) -> ob
     return texture
 
 
+def validate_template(span: bytes, target: dict[str, Any]) \
+        -> tuple[bytes, bytes, object, int]:
+    """The retail TXTR span's own identity checks, wherever the bytes came from.
+
+    ``read_template`` reads them out of an extracted pack archive (developer machines).
+    A user only ever has the disc image, and the span sits at a pinned pack-relative
+    offset inside it, so ``build_import(template_span=...)`` hands the same bytes here
+    instead.  Every check below is on the span itself -- digest, TXTR wrapper, VC-LZ
+    decode identity, texture descriptor -- so the two routes are equally fail-closed;
+    the archive route additionally proves which outer package the span was cut from,
+    which is exactly what a caller reading the image at that offset already knows.
+    """
+
+    require(digest(span) == target["span_sha256"], "retail TXTR span changed")
+    header = HEADER.unpack_from(span)
+    require(header[0] == b"TXTR" and header[1] == int(target["stored_size"]) and
+            header[2] == 128 and header[3] == int(target["video_bytes"]) and
+            header[4] == COMPRESSED_SENTINEL and header[6:] == (0, 0),
+            "retail TXTR wrapper changed")
+    scratch = int(header[5])
+    decoded, decode_info = decode_chunk(span, chunk_for(target, scratch))
+    require(decode_info is not None and digest(decoded) == target["decoded_sha256"] and
+            decode_info.stream_tag == int(target["lz_stream_tag"]) and
+            decode_info.offset_bits == int(target["lz_offset_bits"]) and
+            decode_info.consumed_bytes == int(target["lz_consumed_bytes"]),
+            "retail TXTR decode identity changed")
+    validate_texture(decoded, target, scratch)
+    return span, decoded, decode_info, scratch
+
+
 def read_template(index_path: Path, target: dict[str, Any]) \
         -> tuple[Path, bytes, bytes, object, int]:
     supplied = index_path.lstat()
@@ -184,20 +214,7 @@ def read_template(index_path: Path, target: dict[str, Any]) \
             "scorebug outer package identity changed")
     span = read_entry_range(archive, entry, int(target["chunk_offset"]),
                             int(target["span_size"]))
-    require(digest(span) == target["span_sha256"], "retail TXTR span changed")
-    header = HEADER.unpack_from(span)
-    require(header[0] == b"TXTR" and header[1] == int(target["stored_size"]) and
-            header[2] == 128 and header[3] == int(target["video_bytes"]) and
-            header[4] == COMPRESSED_SENTINEL and header[6:] == (0, 0),
-            "retail TXTR wrapper changed")
-    scratch = int(header[5])
-    decoded, decode_info = decode_chunk(span, chunk_for(target, scratch))
-    require(decode_info is not None and digest(decoded) == target["decoded_sha256"] and
-            decode_info.stream_tag == int(target["lz_stream_tag"]) and
-            decode_info.offset_bits == int(target["lz_offset_bits"]) and
-            decode_info.consumed_bytes == int(target["lz_consumed_bytes"]),
-            "retail TXTR decode identity changed")
-    validate_texture(decoded, target, scratch)
+    span, decoded, decode_info, scratch = validate_template(span, target)
     return index, span, decoded, decode_info, scratch
 
 
@@ -224,12 +241,30 @@ def difference_runs(before: bytes, after: bytes) -> list[list[int]]:
     return result
 
 
-def build_import(index_path: Path, audit_path: Path, target_name: str,
-                 png_path: Path) -> tuple[bytes, bytes, dict[str, Any]]:
+def build_import(index_path: Path | None, audit_path: Path, target_name: str,
+                 png_path: Path, *, template_span: bytes | None = None
+                 ) -> tuple[bytes, bytes, dict[str, Any]]:
+    """Build one replacement span.
+
+    ``template_span`` is the retail span read straight out of the user's disc image (the
+    only route available on an install: the extracted pack archive at ``index_path`` is a
+    developer artefact and is never shipped).  When it is given, ``index_path`` is not
+    touched at all; when it is not, the span is cut out of the extracted archive exactly
+    as before.  Both routes run the same span validation, so a replacement built either
+    way is byte-for-byte the same.
+    """
+
     audit_file, audit_payload, audit = load_audit(audit_path)
     target = select_target(audit, target_name)
-    index, template_span, template_decoded, template_info, scratch = read_template(
-        index_path, target)
+    if template_span is not None:
+        index = None
+        template_span, template_decoded, template_info, scratch = validate_template(
+            bytes(template_span), target)
+    else:
+        require(index_path is not None, "no retail template: neither a span nor an index")
+        assert index_path is not None
+        index, template_span, template_decoded, template_info, scratch = read_template(
+            index_path, target)
     width, height = int(target["width"]), int(target["height"])
     png, png_payload, rgba = read_png(png_path, width, height)
     source_level = palette_tools.MipLevel(0, width, height, rgba)
@@ -296,8 +331,15 @@ def build_import(index_path: Path, audit_path: Path, target_name: str,
     changed = sum(last - first + 1 for first, last in runs)
     report: dict[str, Any] = {
         "schema": SCHEMA,
-        "canonical_index": {"path": str(index), "size": INDEX_SIZE,
-                            "sha256": INDEX_SHA256},
+        # Which retail archive this replacement was cut against.  Either the extracted pack
+        # was opened and hashed (developer route), or the span itself came from the user's
+        # image and matched the audited digest of that pack's span (install route) -- so the
+        # pack identity is proved either way, but only the first route touched a file.
+        "canonical_index": ({"path": str(index), "size": INDEX_SIZE, "sha256": INDEX_SHA256,
+                             "source": "extracted pack archive"} if index is not None else
+                            {"path": None, "size": INDEX_SIZE, "sha256": INDEX_SHA256,
+                             "source": "retail span read from the disc image being written",
+                             "pack_file_opened": False}),
         "audit": {"path": str(audit_file), "sha256": digest(audit_payload)},
         "target": target,
         "input_png": {"path": str(png), "file_name": png.name,

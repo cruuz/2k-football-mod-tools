@@ -1063,6 +1063,22 @@ read "--", and a player traded mid-season shows the season-end team. Saves stay
 loadable with or without the patch. Unwitnessed in game so far: it is executed under
 an emulator in the test suite, so please report what you see.
 
+**The ESPN scorebug** (Build tab and Presentation, ADVANCED and EXPERIMENTAL; disc images
+only): one horizontal ESPN-style bar at the bottom centre that never swaps sides — ESPN mark,
+both abbreviations and scores, down & distance, quarter, clock, play clock — replacing the
+retail two-row bug, its drive-direction side swap and the drop-box animations. It is built
+entirely from your own disc: the retail scorebug scene and the frame, mark and digit atlases
+are read out of your image (each checked against its known retail SHA-256 first), the modern
+art is generated from them, and both are kept in the studio's private cache so later builds
+are instant. Nothing retail travels in the download, which is why the studio needs your image
+here and cannot do this step from a loose `default.xbe`.
+
+Two things to expect. The shared digit sheet is drawn with the DejaVu Sans Bold font; if your
+system does not have it the digits are left retail and the receipt says so. And the ticker
+band under the bar (the "Bottom Line" strip) keeps its retail art in a build — that one atlas
+was hand painted and there is no way to regenerate it from your disc. If you want it, apply the
+published `SOFTDRINK patch advanced` `.2k5patch` from **Share** instead, which carries it.
+
 **Real team history** (Build tab, ADVANCED and EXPERIMENTAL; disc images only): the retail
 roster already carries season-by-season stats for 1,325 players back to 1982, and the TEAM
 column above can only learn teams from the seasons a patched disc plays. This toggle writes

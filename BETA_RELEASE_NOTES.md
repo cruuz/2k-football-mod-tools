@@ -216,6 +216,8 @@ stored line for your own recording. Both verified statically; witness in game.
   repainted art and the retail scorebug mesh are not shipped (retail-free release rule); the
   Advanced preset skips it and says so. The full Advanced experience, scorebug included, is the
   `SOFTDRINK patch advanced` `.2k5patch` published with this release: Share → Apply it to your own copy.
+  *(Fixed after beta-58: the scorebug now builds on any install, from your own disc image. Only
+  the ticker-band atlas still needs the published patch.)*
 
 - Dynamic kickoff phase 2 (players hold until the ball lands, CPU kicker range)
   is not built; the alignment toggle may draw a kickoff flag — report it.

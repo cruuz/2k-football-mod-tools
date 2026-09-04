@@ -7,6 +7,13 @@ quantizes to P8 and refits the fixed VC-LZ span) but writes the resulting span i
 whose target span still holds the retail bytes, in place.  Targets: score_buga (64x64 frame
 atlas), shield_espn (128x64 ESPN strip), digital_font (128x128 shared digits).
 
+Where the retail template comes from: the target image itself.  Each span sits at a pinned
+pack-relative offset, the pack is resolved through THIS image's XDVDFS directory, and the
+bytes read there are checked against the audited retail SHA-256 before they are used -- so a
+user with nothing but their own disc gets exactly the replacement this workstation builds.
+The extracted pack archive (`--index`, developer machines only) is used only when the image
+no longer holds the retail span, to tell "already imported" apart from "foreign bytes".
+
 usage: nfl2k5_scorebug_textures_into_xiso.py XISO --score-buga PNG --shield-espn PNG [--index INDEX] [--audit AUDIT]
 """
 from __future__ import annotations
@@ -49,7 +56,8 @@ if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
 import nfl_uniform_color_xiso_direct_patch as xc  # noqa: E402
-from nfl_scorebug_png_import import DEFAULT_AUDIT, build_import  # noqa: E402
+from nfl_scorebug_png_import import (DEFAULT_AUDIT, build_import, load_audit,  # noqa: E402
+                                     select_target)
 
 DEFAULT_INDEX = Path(os.environ.get("NFL2K5_RETAIL_INDEX", "retail-packs/0"))   # extracted pack index, developer machines only
 
@@ -72,13 +80,15 @@ def main() -> int:
     if not jobs:
         raise SystemExit("nothing to do")
     receipts = []
+    audit_path = Path(args.audit)
+    _audit_file, _audit_payload, audit = load_audit(audit_path)
+    index_path = Path(args.index)
     fd = os.open(args.xiso, os.O_RDWR | getattr(os, "O_BINARY", 0))
     try:
         image_size = os.fstat(fd).st_size
         pack_extents: dict[str, tuple[int, int]] = {}
         for name, png in jobs:
-            replacement, _preview, value = build_import(Path(args.index), Path(args.audit), name, Path(png))
-            target = value["target"]
+            target = select_target(audit, name)
             # The audit's xiso_absolute_span_offset is where the span sat in the rip the audit was
             # taken on.  This image may lay its packs out differently, so the pack is resolved
             # through ITS directory and only the pack-relative offset is trusted.
@@ -91,15 +101,27 @@ def main() -> int:
                 raise SystemExit(f"{name}: {pack_path} in {args.xiso} is {pack_size} bytes, "
                                  f"not the audited {audited_size}")
             absolute = pack_offset + int(target["pack_offset"])
-            current = _pread(fd, len(replacement), absolute)
+            current = _pread(fd, int(target["span_size"]), absolute)
             # Keep the wrapper retail: refill the stream to the stored body instead of raising the
             # in-place scratch word (the loader hangs on large raised values; see nfl_vc_lz_fill).
             import nfl_txtr
             import nfl_vc_lz_fill
             if sha(current) == target["span_sha256"]:
+                # The user's own image is the retail template.
+                replacement, _preview, value = build_import(
+                    None, audit_path, name, Path(png), template_span=current)
                 template = current
-            else:
+                source = "image"
+            elif index_path.exists():
+                # Developer fallback: the image is no longer retail here, so the only way to say
+                # whether it already holds this replacement is to build it from the archive.
+                replacement, _preview, value = build_import(index_path, audit_path, name, Path(png))
                 template = None
+                source = "index"
+            else:
+                raise SystemExit(
+                    f"{name}: the span at {absolute:#x} is not the retail texture "
+                    "(this image's scorebug textures were already changed)")
             chunk = nfl_txtr.parse_chunks(replacement, allow_trailing=True)[0]
             decoded, _ = nfl_txtr.decode_chunk(replacement, chunk)
             if template is not None:
@@ -116,7 +138,7 @@ def main() -> int:
                 if _pread(fd, len(replacement), absolute) != replacement:
                     raise SystemExit(f"{name}: readback failed")
             receipts.append({"target": name, "png": str(png), "absolute": absolute, "pack_byte_offset": pack_offset,
-                             "span_size": len(replacement),
+                             "span_size": len(replacement), "template": source,
                              "state_before": state, "span_sha256_after": sha(replacement),
                              "quantization": value.get("quantization") or value.get("import", {}).get("quantization")})
         os.fsync(fd)
