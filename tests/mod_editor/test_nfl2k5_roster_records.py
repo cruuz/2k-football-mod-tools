@@ -809,6 +809,58 @@ class MembershipTests(unittest.TestCase):
         self.assertEqual(reloaded.by_offset[reloaded.free_agents[-1]].display, player.display)
 
 
+# ------------------------------------------------------------------------------------------- pickers
+class PickerIndexTests(unittest.TestCase):
+    def test_the_play_by_play_index_comes_from_the_roster_and_the_two_proved_ranges(self) -> None:
+        document = rr.load_body(synthetic_body())
+        index = rr.pbp_name_index(document)
+        self.assertEqual(index[1000], "Manning, Peyton")
+        self.assertEqual(index[1003], "Vick, Michael")
+        self.assertEqual(index[9000], "#00 (jersey-number call-out)")
+        self.assertEqual(index[9099], "#99 (jersey-number call-out)")
+        self.assertEqual(index[9100], "(announce the jersey number)")
+        self.assertEqual(index[9300], "Smith (recorded surname bank)")
+        self.assertEqual(index[9300 + 484], index[9784])
+        self.assertNotIn(9785, index)
+        self.assertEqual(list(index), sorted(index))
+        document.players[1].record.set("pbp_id", 1000)
+        self.assertEqual(rr.pbp_name_index(document)[1000], "Manning, Peyton / Harrison, Marvin")
+        self.assertIn(9300, rr.pbp_name_index(None))
+
+    def test_the_portrait_index_reads_the_shipped_catalogue_or_says_why_not(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            missing = Path(td) / "nope.json"
+            entries, meta = rr.portrait_index(None, missing)
+            self.assertEqual(entries, {})
+            self.assertIn("not present", meta["reason"])
+            report = Path(td) / "portraits.json"
+            report.write_text(json.dumps({
+                "targets": [{"name": "0124"}, {"name": "5015"}, {"name": "0007"}, {"name": "junk"}],
+                "roster_selector_mapping": [
+                    {"portrait_present": True, "portrait_resource_name": "0124", "first_name": "Duane", "last_name": "Starks"},
+                    {"portrait_present": True, "portrait_resource_name": "5015", "first_name": "Anthony", "last_name": "Adams"},
+                    {"portrait_present": False, "portrait_resource_name": "0007", "first_name": "No", "last_name": "Body"},
+                ]}), encoding="utf-8")
+            document = rr.load_body(synthetic_body())
+            document.players[0].record.set("photo_id", 124)
+            entries, meta = rr.portrait_index(document, report)
+            self.assertEqual(meta["count"], 3)
+            self.assertEqual(entries[124], "Duane Starks · Peyton Manning")
+            self.assertEqual(entries[5015], "Anthony Adams")
+            self.assertEqual(entries[7], "(no roster record selects it)")
+            self.assertNotIn("junk", entries)
+            report.write_text("{not json", encoding="utf-8")
+            entries, meta = rr.portrait_index(None, report)
+            self.assertEqual(entries, {})
+            self.assertIn("could not be read", meta["reason"])
+
+    @unittest.skipUnless(rr.PORTRAIT_REPORT.is_file(), "shipped portrait catalogue not present in this checkout")
+    def test_the_shipped_catalogue_lists_the_discs_4303_portraits(self) -> None:
+        entries, meta = rr.portrait_index(None)
+        self.assertEqual(meta["count"], 4303)
+        self.assertEqual(entries[5015], "Anthony Adams")
+
+
 # ----------------------------------------------------------------------------------------- templates
 class TemplateTests(unittest.TestCase):
     """The game's create-a-player templates, applied the way FUN_00343460 applies them."""

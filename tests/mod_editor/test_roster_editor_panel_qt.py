@@ -30,6 +30,7 @@ from mod_editor.gui.roster_editor_panel_qt import (  # noqa: E402
     AttributeCard,
     UndoEntry,
     GlobalEditDialog,
+    IdPickerDialog,
     RosterEditorPanel,
     SwapPlayerDialog,
     UndoStack,
@@ -332,6 +333,40 @@ class RosterEditorPanelTests(unittest.TestCase):
         self.assertEqual(self.panel.document.players[0].record.values["jersey"], 12)
         self.panel.undo()
         self.assertEqual(self.panel.document.players[0].record.values["jersey"], 18)
+
+    def test_the_play_by_play_and_portrait_cards_carry_a_searchable_picker(self) -> None:
+        player = self.panel.selected_player()
+        assert player is not None
+        for name in ("pbp_id", "photo_id"):
+            self.assertIsNotNone(self.panel.cards[name].pick_button, name)
+        self.assertIsNone(self.panel.cards["jersey"].pick_button)
+        entries, note = self.panel.picker_entries("pbp_id")
+        self.assertEqual(entries[1000], "Manning, Peyton")
+        self.assertIn("recorded surname bank", note)
+        dialog = IdPickerDialog("Play-by-play name", entries, player.record.values["pbp_id"], self.panel, note=note)
+        self.assertEqual(dialog.chosen(), 1000)
+        self.assertEqual(dialog.list.currentRow(), 0)
+        dialog.search.setText("vick")
+        self.assertEqual(dialog.list.count(), 1)
+        self.assertEqual(dialog.count_label.text().split(" of ")[0], "1")
+        dialog.list.setCurrentRow(0)
+        self.assertEqual(dialog.chosen(), 1003)
+        dialog.search.setText("9300")
+        self.assertEqual(dialog.list.item(0).text().strip(), "9300 · Smith (recorded surname bank)")
+        dialog.spin.setValue(4242)                                      # any id can still be typed
+        self.assertEqual(dialog.chosen(), 4242)
+        self.panel.set_field(player, "pbp_id", dialog.chosen())
+        self.assertEqual(player.record.values["pbp_id"], 4242)
+        self.assertEqual(self.panel.cards["pbp_id"].value(), 4242)
+        self.panel.undo()
+        self.assertEqual(player.record.values["pbp_id"], 1000)
+        entries, note = self.panel.picker_entries("photo_id")
+        if rr.PORTRAIT_REPORT.is_file():
+            self.assertEqual(len(entries), 4303)
+            self.assertIn("4303 portraits", note)
+        else:
+            self.assertEqual(entries, {})
+            self.assertIn("not listed", note)
 
     def test_templates_offer_the_positions_three_first_and_apply_with_undo(self) -> None:
         player = self.panel.selected_player()

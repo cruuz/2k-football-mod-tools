@@ -2823,6 +2823,97 @@ def _apply_csv_team(document: RosterDocument, player: Player, value: str) -> tup
     return 1, f"moved {current_text} -> {document.teams[target].abbreviation}"
 
 
+# -------------------------------------------------------------------------------------------- pickers
+# The play-by-play id (+0x04) and the portrait id (+0x06) are indexes into two banks the disc carries
+# but never labels in the roster.  Finn shipped ENFNameIndex.txt (10,158 names) and ENFPhotoIndex.txt
+# from his install; the studio builds what it can from the disc's own data instead:
+#
+# * **Play-by-play**: the loaded roster's own records (id -> the name(s) that carry it; 2,479 real
+#   players in retail), the 485-entry recorded surname bank (9300 + i = RETAIL_LASTS[i], proved by
+#   the class generator's ``add edx,0x2454`` at 0x2BE7B8), the jersey call-outs 9000..9099 (the
+#   create-player path at 0x343C00 writes ``9000 + jersey % 100`` for any id >= 9000) and 9100, the
+#   "announce the number" fallback.  Ids the roster does not use stay typeable; the wider audio bank
+#   index (Finn's 10,158 rows) lives in the commentary AUSB descriptors and is not decoded here.
+# * **Portraits**: the disc's portrait bank is catalogued in ``reports/assets/nfl2k5_player_portrait_
+#   compatibility.json`` (shipped): 4,303 P8 portraits named by their 4-digit id, plus the roster
+#   records of every ROST resource that select them.  When the report is present the picker lists
+#   every id that has a portrait with the retail owner's name; when it is absent the spin box stays
+#   and the reason is stated.
+PORTRAIT_REPORT = ROOT / "reports" / "assets" / "nfl2k5_player_portrait_compatibility.json"
+PBP_NUMBER_BASE = 9000               # 9000 + NN: the jersey-number call-outs
+PBP_NUMBER_FALLBACK = 9100           # no recorded cue: the resolver announces the number
+
+
+def pbp_name_index(document: RosterDocument | None = None) -> dict[int, str]:
+    """play-by-play id -> label, from the roster's own records plus the two proved id ranges."""
+
+    from .nfl2k5_prospect_names import RETAIL_AUDIO_BASE, RETAIL_LASTS
+
+    out: dict[int, str] = {}
+    if document is not None:
+        names: dict[int, list[str]] = {}
+        for player in document.players:
+            if player.pool != "primary" or not (player.first or player.last):
+                continue
+            label = f"{player.last}, {player.first}".strip(", ")
+            bucket = names.setdefault(player.record.values["pbp_id"], [])
+            if label not in bucket:
+                bucket.append(label)
+        for pbp, labels in names.items():
+            out[pbp] = " / ".join(labels[:4]) + (f" (+{len(labels) - 4})" if len(labels) > 4 else "")
+    for number in range(100):
+        out.setdefault(PBP_NUMBER_BASE + number, f"#{number:02d} (jersey-number call-out)")
+    out.setdefault(PBP_NUMBER_FALLBACK, "(announce the jersey number)")
+    for index, surname in enumerate(RETAIL_LASTS):
+        out.setdefault(RETAIL_AUDIO_BASE + index, f"{surname} (recorded surname bank)")
+    return dict(sorted(out.items()))
+
+
+def portrait_index(document: RosterDocument | None = None,
+                   report_path: Path | str | None = None) -> tuple[dict[int, str], dict[str, Any]]:
+    """portrait id -> owner label for every portrait on the disc, and how the list was built.
+
+    Returns ``({}, meta)`` with ``meta["reason"]`` when the shipped portrait report is absent."""
+
+    path = Path(report_path) if report_path is not None else PORTRAIT_REPORT
+    meta: dict[str, Any] = {"source": str(path), "count": 0, "reason": ""}
+    if not path.is_file():
+        meta["reason"] = (f"the portrait catalogue {path.name} is not present, so the bank cannot be "
+                          "listed; type the id")
+        return {}, meta
+    try:
+        report = json.loads(path.read_text(encoding="utf-8"))
+        targets = report.get("targets") or []
+        rows = report.get("roster_selector_mapping") or []
+        _require(isinstance(targets, list) and isinstance(rows, list), "unexpected report shape")
+    except (OSError, ValueError, RosterRecordError) as exc:
+        meta["reason"] = f"the portrait catalogue could not be read ({type(exc).__name__}: {exc}); type the id"
+        return {}, meta
+    owners: dict[int, list[str]] = {}
+    for row in rows:
+        if not isinstance(row, dict) or row.get("portrait_present") is not True:
+            continue
+        name = str(row.get("portrait_resource_name", ""))
+        if not name.isdigit():
+            continue
+        label = " ".join(str(row.get(key, "") or "").strip() for key in ("first_name", "last_name")).strip()
+        if label and label not in owners.setdefault(int(name), []):
+            owners[int(name)].append(label)
+    out: dict[int, str] = {}
+    for target in targets:
+        name = str(target.get("name", "")) if isinstance(target, dict) else ""
+        if name.isdigit():
+            who = owners.get(int(name), [])
+            out[int(name)] = " / ".join(who[:3]) + (f" (+{len(who) - 3})" if len(who) > 3 else "") if who else "(no roster record selects it)"
+    if document is not None:
+        for player in document.players:
+            photo = player.record.values["photo_id"]
+            if photo in out and player.display and player.display not in out[photo]:
+                out[photo] = (out[photo] + f" · {player.display}") if not out[photo].startswith("(no") else player.display
+    meta["count"] = len(out)
+    return dict(sorted(out.items())), meta
+
+
 # ------------------------------------------------------------------------------------------ templates
 @dataclass(frozen=True)
 class CreatePlayerTemplate:
@@ -3416,6 +3507,7 @@ __all__ = [
     "CreatePlayerTemplate", "CREATE_PLAYER_TEMPLATE_SLOTS", "CREATE_PLAYER_TEMPLATE_SLOT_OFFSETS",
     "CREATE_PLAYER_TEMPLATE_DEFAULT", "CREATE_PLAYER_TEMPLATE_MAX", "RETAIL_CREATE_PLAYER_TEMPLATES",
     "apply_template", "create_player_templates", "read_templates", "templates_for_position",
+    "PORTRAIT_REPORT", "PBP_NUMBER_BASE", "PBP_NUMBER_FALLBACK", "pbp_name_index", "portrait_index",
     "advance_years_pro", "apply", "apply_body",
     "copy_player", "decode_record", "edits_document", "encode_record", "encoded_size",
     "export_csv", "field_coverage", "find_block_base", "global_edit_apply", "global_edit_preview",

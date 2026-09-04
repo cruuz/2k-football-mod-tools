@@ -248,12 +248,14 @@ class AttributeCard(QWidget):
 
     def __init__(self, name: str, caption: str, minimum: int, maximum: int,
                  choices: Sequence[str] | None = None, parent: QWidget | None = None, *,
-                 segmented: bool = False, presets: Sequence[tuple[str, int]] = ()) -> None:
+                 segmented: bool = False, presets: Sequence[tuple[str, int]] = (),
+                 picker: Callable[[str], Any] | None = None) -> None:
         super().__init__(parent)
         self.name = name
         self._quiet = False
         self.segments: list[QToolButton] = []
         self._presets: list[QToolButton] = []
+        self.pick_button: QToolButton | None = None
         self.setObjectName("attributeCard")
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 6, 8, 6)
@@ -297,7 +299,19 @@ class AttributeCard(QWidget):
             self.spin.setRange(minimum, maximum)
             self.spin.setAccessibleName(caption)
             self.spin.valueChanged.connect(self._spin_changed)
-            layout.addWidget(self.spin)
+            if picker is not None:
+                spin_row = QHBoxLayout()
+                spin_row.setSpacing(2)
+                spin_row.addWidget(self.spin, 1)
+                self.pick_button = QToolButton()
+                self.pick_button.setText("…")
+                self.pick_button.setAccessibleName(f"{caption}: pick from the list")
+                self.pick_button.setToolTip("Pick from a searchable list")
+                self.pick_button.clicked.connect(lambda _c=False: picker(self.name))
+                spin_row.addWidget(self.pick_button)
+                layout.addLayout(spin_row)
+            else:
+                layout.addWidget(self.spin)
             self.bar = ValueBar(minimum, maximum)
             self.bar.valueChanged.connect(self._bar_changed)
             self.bar.focusMoved.connect(lambda step: self.focusMoved.emit(self.name, step))
@@ -580,6 +594,77 @@ class GlobalEditDialog(QDialog):
         count = self._panel.apply_global_edit(self.preview_rows, str(self.attribute.currentData()))
         self.preview.setPlainText(f"Applied to {count} players.")
         self.preview_rows = []
+
+
+# ------------------------------------------------------------------------------------------- pickers
+class IdPickerDialog(QDialog):
+    """A searchable id list (play-by-play names, portraits) with a spin box for any id the list lacks."""
+
+    def __init__(self, title: str, entries: Mapping[int, str], current: int, parent: QWidget | None = None,
+                 *, note: str = "", maximum: int = 65535) -> None:
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self._entries = list(entries.items())
+        self._shown: list[int] = []
+        layout = QVBoxLayout(self)
+        if note:
+            caption = QLabel(note)
+            caption.setWordWrap(True)
+            layout.addWidget(caption)
+        self.search = QLineEdit()
+        self.search.setPlaceholderText("Search by name or id")
+        self.search.setAccessibleName(f"{title}: search")
+        self.search.textChanged.connect(self._filter)
+        layout.addWidget(self.search)
+        self.list = QListWidget()
+        self.list.setAccessibleName(f"{title}: choices")
+        self.list.currentRowChanged.connect(self._row_changed)
+        self.list.itemDoubleClicked.connect(lambda _i: self.accept())
+        layout.addWidget(self.list, 1)
+        row = QHBoxLayout()
+        row.addWidget(QLabel("Id"))
+        self.spin = QSpinBox()
+        self.spin.setRange(0, maximum)
+        self.spin.setValue(int(current))
+        self.spin.setAccessibleName(f"{title}: id")
+        row.addWidget(self.spin)
+        self.count_label = QLabel("")
+        row.addWidget(self.count_label, 1)
+        layout.addLayout(row)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+        self.resize(460, 520)
+        self._filter("")
+        self.select_id(int(current))
+
+    def _filter(self, text: str) -> None:
+        needle = text.strip().casefold()
+        self.list.blockSignals(True)
+        self.list.clear()
+        self._shown = []
+        for number, label in self._entries:
+            if needle and needle not in label.casefold() and needle not in str(number):
+                continue
+            self.list.addItem(f"{number:5d} · {label}")
+            self._shown.append(number)
+        self.list.blockSignals(False)
+        self.count_label.setText(f"{len(self._shown)} of {len(self._entries)} listed")
+
+    def _row_changed(self, row: int) -> None:
+        if 0 <= row < len(self._shown):
+            self.spin.setValue(self._shown[row])
+
+    def select_id(self, number: int) -> bool:
+        for row, candidate in enumerate(self._shown):
+            if candidate == number:
+                self.list.setCurrentRow(row)
+                return True
+        return False
+
+    def chosen(self) -> int:
+        return int(self.spin.value())
 
 
 # --------------------------------------------------------------------------------------------- swap
@@ -1017,7 +1102,8 @@ class RosterEditorPanel(QWidget):
                                  segmented=name in rr.VIRTUAL_FIELDS or name == "hand")
         else:
             low, high = rr.NUMERIC_LIMITS.get(name, (0, 255))
-            card = AttributeCard(name, caption, low, high)
+            card = AttributeCard(name, caption, low, high,
+                                 picker=self.open_picker if name in ("pbp_id", "photo_id") else None)
         tooltip = self.STYLE_TOOLTIPS.get(name) or (
             rr.FIELD_BY_NAME[name].note if name in rr.FIELD_BY_NAME else "")
         if tooltip:
@@ -1921,6 +2007,35 @@ class RosterEditorPanel(QWidget):
             self._after_edit(player)
         return len(scope)
 
+    # ------------------------------------------------------------------ pickers
+    def picker_entries(self, name: str) -> tuple[dict[int, str], str]:
+        """The list a picker shows and the note above it (what the list is built from)."""
+
+        if name == "pbp_id":
+            entries = rr.pbp_name_index(self.document)
+            note = (f"Play-by-play name ids this roster uses ({sum(1 for k in entries if k < rr.PBP_NUMBER_BASE)}), "
+                    "the jersey-number call-outs 9000-9099 and the 485-name recorded surname bank at 9300+. "
+                    "Any other id can be typed; the wider audio bank is not decoded.")
+            return entries, note
+        entries, meta = rr.portrait_index(self.document)
+        if entries:
+            note = (f"{meta['count']} portraits on the disc, by id, with the roster records that select them "
+                    "(from the shipped portrait catalogue). An id with no portrait shows the game's 'no photo' image.")
+        else:
+            note = f"Portrait bank not listed: {meta['reason']}."
+        return entries, note
+
+    def open_picker(self, name: str) -> IdPickerDialog | None:
+        player = self.selected_player()
+        if player is None or self.document is None:
+            return None
+        entries, note = self.picker_entries(name)
+        title = "Play-by-play name" if name == "pbp_id" else "Portrait"
+        dialog = IdPickerDialog(title, entries, player.record.values[name], self, note=note)
+        if dialog.exec_() == QDialog.Accepted:
+            self.set_field(player, name, dialog.chosen())
+        return dialog
+
     # ------------------------------------------------------------------ templates
     def _load_templates(self, disc: Path | None) -> None:
         """The loaded disc's own template table when there is one, else the retail table."""
@@ -2292,5 +2407,5 @@ class RosterEditorPanel(QWidget):
         self.status_label.setText(text)
 
 
-__all__ = ["AttributeCard", "GlobalEditDialog", "RosterEditorPanel", "SwapPlayerDialog", "UndoEntry",
-           "UndoStack", "ValueBar"]
+__all__ = ["AttributeCard", "GlobalEditDialog", "IdPickerDialog", "RosterEditorPanel", "SwapPlayerDialog",
+           "UndoEntry", "UndoStack", "ValueBar"]
