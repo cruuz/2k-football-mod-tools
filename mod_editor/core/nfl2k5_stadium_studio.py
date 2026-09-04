@@ -30,6 +30,12 @@ from typing import Protocol
 from uuid import uuid4
 
 from .errors import ActionNotImplementedError, ValidationError
+from .nfl2k5_models import (
+    GLTF_MATERIAL_INDEX_KEY,
+    GLTF_TEXTURE_ID_KEY,
+    scene_contract_id,
+    texture_contract_id,
+)
 from .json_stream import (
     file_contains_bytes,
     iter_top_level_array,
@@ -55,8 +61,10 @@ GLTF_UNIT_SCALE = 0.01
 #: glTF extras keys that carry the game-side identity of an export.  The
 #: texture write-back (:meth:`Nfl2k5StadiumStudio.replace_textures_from_gltf`)
 #: maps Blender-edited image slots back to stadium texture slots through them.
-GLTF_TEXTURE_ID_KEY = "nfl2k5_texture_id"
-GLTF_MATERIAL_INDEX_KEY = "nfl2k5_material_index"
+#: The Models page export (``nfl2k5_models.export_model``) writes the same
+#: contract, so the keys and the id format live there (imported above) and are
+#: shared: ``GLTF_TEXTURE_ID_KEY``, ``GLTF_MATERIAL_INDEX_KEY``,
+#: ``scene_contract_id``, ``texture_contract_id``.
 
 #: Flat preview factors for stadium materials, matching the bounded single-shape
 #: exporter.  The game's real shader parameters are not proved, so the preview
@@ -251,14 +259,11 @@ def _text(value: object, label: str) -> str:
 
 
 def _scene_id(outer_index: int, chunk_index: int, scene_index: int) -> str:
-    return (
-        f"nfl2k5.stadium.o{outer_index:04d}.c{chunk_index:04d}."
-        f"scene{scene_index:04d}"
-    )
+    return scene_contract_id("stadium", outer_index, chunk_index, scene_index)
 
 
 def _texture_id(scene_id: str, texture_index: int) -> str:
-    return f"{scene_id}.texture{texture_index:04d}"
+    return texture_contract_id(scene_id, texture_index)
 
 
 def _sha256(path: Path) -> str:
@@ -1056,9 +1061,13 @@ class Nfl2k5StadiumStudio:
                 "sampler_note": (
                     "wrap modes are preview defaults; game sampler state is unproved"
                 ),
-                "portme": (
-                    "PORTME: TEXCOORD semantics remain unproved, so UVs stay in "
-                    "extras; previews are material-level until UVs are bound"
+                "texcoord_note": (
+                    "This export copies the cached geometry byte for byte and so "
+                    "carries no TEXCOORD_0. The UV rule is proved (uv = normshort2 * "
+                    "(Su, Sv) + (Ou, Ov) from shape record +0x30, the vertex shaders' "
+                    "c[-89]); the Models page exports this scene with TEXCOORD_0 bound "
+                    "and the same nfl2k5_texture_id contract, and that file is accepted "
+                    "by replace_textures_from_gltf"
                 ),
                 "mapping": mapping_rows,
             }

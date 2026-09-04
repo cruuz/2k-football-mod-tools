@@ -908,13 +908,39 @@ downloaded until you press the button and confirm.
 3. Edit: move vertices, sculpt, proportional-edit. Keep the vertex count and the triangles;
    do not decimate, merge or add geometry (the game's allocation is fixed).
 4. Export from Blender (File → Export → glTF 2.0) and tick **Include → Data → Mesh →
-   Attributes** so the `_NFL_VERTEX_INDEX` lane comes along; `.glb` or `.gltf` both work.
+   Attributes** so the `_NFL_VERTEX_INDEX` and `_NFL_COLOR` lanes come along; `.glb` or
+   `.gltf` both work.
 5. Back in ★ Models, select the same model, choose the edited file and press **Check the
-   edited file**. The report says how the file was matched, how many vertices moved, whether
-   the encodable range was widened, and whether the model still fits its space on the disc.
+   edited file**. The report says how the file was matched, how many vertices moved, how many
+   normals / UVs / vertex colours changed, whether an encodable range (positions or UVs) was
+   widened, and whether the model still fits its space on the disc.
 6. Choose the source image and where to write the copy, then **Write the copy**. The source
    is never touched; a receipt is written beside the copy. Share → Apply can turn that copy
    into a `.2k5patch`.
+
+**UVs (RC82).** Texture coordinates follow the game's own rule: every mesh stores a scale and
+offset in its shape record (`+0x30`), the vertex shaders compute `uv = lane × scale + offset`,
+and there is no V flip. Tiled surfaces (seat rows, crowd, concrete, ad boards; 242 of 282
+stadium meshes, up to 12 repeats) legitimately run past 0..1 in Blender and repeat, and each
+mesh's tiling is listed in the README and in the mesh extras (`nfl2k5_uv_scale`,
+`nfl2k5_uv_offset`). Beta 56 used one fixed formula for every model, which squeezed tiled
+surfaces onto one repeat and mirrored V — the "scrambled stadium textures" people saw in
+Blender. **Write UVs from the file** on import inverts through the same per-mesh constant;
+a UV moved outside a mesh's range widens that mesh's constant for you (one axis at a time)
+when **Widen the range** is ticked. UVs stay off by default on import.
+
+**Vertex colours.** The game's per-vertex colour is baked lighting that multiplies the texture
+in game. The export carries it as the `_NFL_COLOR` attribute (r g b a, 0..1; see it in the
+Spreadsheet or paint it with an Attribute node), so textures show at full brightness in
+Blender. Tick **Bake vertex colours into COLOR_0** in the export box for the darker in-game
+look. Paint `_NFL_COLOR` and it comes back with **Write vertex colours from the file** (on by
+default; an unedited file writes nothing).
+
+**Textures and the Stadiums page.** Every embedded image is named after the material that maps
+it and carries its `nfl2k5_texture_id` (materials and textures carry it too), so a stadium
+exported here, edited in Blender and re-exported can be handed to the Stadiums page's texture
+write-back, and the community Blender add-on's part handles find the same `source_*` extras the
+Stadiums export has. The Stadiums page's own export is still positions only.
 
 What you cannot change (yet): the number of vertices or triangles, bones, weights, animations,
 and the body-type / face morph deltas (their channels are listed in the export). The player

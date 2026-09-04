@@ -1,5 +1,60 @@
 # 2K5 Mod Studio — Product Changelog
 
+## v1.0 RC82 — (unreleased)
+
+- **★ Models: texture coordinates now follow the game's own per-mesh rule.** Beta 56
+  decoded every model's UVs with one fixed formula (`u = (n + 1) / 2`, `v = (1 - n) / 2`,
+  "verified on the referee"). The game does not. Every NFL 2K5 vertex shader that routes
+  register 6 to a texture coordinate computes `oT0.xy = v6.xy * c[-89].xy + c[-89].zw`, and
+  `c[-89]` is four floats the draw path loads from each SHAPE record at `+0x30..+0x3C`
+  (Su, Sv, Ou, Ov), right beside the proved position scale/offset at `+0x10`/`+0x20`
+  (`movaps xmm0,[esi+0x30]` at VA 0x245B9 beside `[esi+0x10]` at 0x245FD). The exporter
+  now writes `TEXCOORD_0 = n * S + O` per mesh with **no V flip** (Sv is positive on every
+  shape sampled). 242 of 282 stadium shapes tile (S up to 12), so seat rows, crowd,
+  concrete and ad boards had collapsed onto one repeat and were mirrored: that was the
+  "scrambled stadium textures" report from the community Blender add-on. The referee's own
+  constant is (0.81, 1.24, 0.55, 0.18), so the model the old rule was "verified" on was wrong
+  too; the fixed rule was the S = O = 0.5 special case plus a flip that merely looked
+  plausible on a striped shirt. Import inverts through the same constant (`(uv - O) / S`); a UV
+  edit outside `O ± S` widens that mesh's constant one axis at a time, exactly as positions
+  widen theirs, and the report says so; UVs stay off by default on import. Each mesh's extras
+  carry `nfl2k5_uv_scale` / `nfl2k5_uv_offset` and a `texcoord_decode` block, the file
+  carries `nfl2k5_texcoord_contract`, and the README lists each mesh's tiling.
+- **Models exports speak the Stadium Studio contract.** Every material, texture and image
+  carries `nfl2k5_texture_id` (`nfl2k5.stadium.o3610.c0004.scene4175.texture0002`; the scene
+  number is the resource's position among the disc's SCNE resources, the Stadiums page's own
+  enumeration; other models use their name in place of `stadium`), images are named after the
+  first material that maps them, materials carry `nfl2k5_mapping_status`, and meshes,
+  primitives and nodes carry the `source_*` extras the Stadium Studio and the add-on read
+  (`source_shape_index`, `source_material_index`, `source_material_name`,
+  `source_submesh_index`, `vertex_attribute_descriptors`, `position_decode`). The root node is
+  `nfl2k5_units_centimetre_to_metre` and the file-level `nfl2k5_unit_contract` and
+  `nfl2k5_texture_contract` blocks are written. A stadium exported from ★ Models and edited
+  in Blender is accepted by the Stadiums page's texture write-back. The id format and keys
+  now live in `nfl2k5_models.py`; the Stadium Studio imports them. The Stadiums page's own
+  export is unchanged (positions only, copied byte for byte from the private cache, so no
+  cache re-derive); its contract note now records the proved UV rule and points at the Models
+  export for a UV-bearing file.
+- **Vertex colours no longer darken the export.** The D3DCOLOR lane is the game's baked
+  lighting (mean 155/255; the shaders multiply it into the texture). Written as `COLOR_0`,
+  Blender multiplied it into every material's base colour and textures looked dark and
+  blotchy. The lane is now the custom attribute `_NFL_COLOR` (VEC4 float, r g b a in 0..1),
+  which Blender imports as a FLOAT_COLOR attribute without touching the material, and it
+  comes back through import for exactly matched vertices (an unedited file writes nothing;
+  new checkbox "Write vertex colours from the file", on by default). The export box gains
+  "Bake vertex colours into COLOR_0" for the darker in-game look. A `COLOR_0` coming back
+  from Blender is never read.
+- Export schema `nfl2k5_model_export/v2`. Tests in `tests/mod_editor/test_nfl2k5_models.py`:
+  the shader-rule transform, its exact inverse under real constants, per-axis widening, the
+  D3DCOLOR codec and the contract ids without a disc; with the private extraction, the
+  referee and a stadium scene export `TEXCOORD_0 == n * S + O` against the raw lanes with the
+  full contract, an unchanged export re-imports to the original quantised lanes exactly, a UV
+  pushed out of range widens only U, and a painted vertex colour lands in the lane. Proof
+  renders (Blender 4.0 headless): referee stripes, number patch and hat crest, stadium banner,
+  goal-line numeral, SPORTSCENTER board, crowd and seat rows are right under the per-shape
+  rule and wrong under the fixed one. Unwitnessed in game: no UV or vertex-colour edit has
+  been played back on a console or emulator yet.
+
 ## v1.0 RC81 — Update now: the studio updates itself on every platform (2026-09-03)
 
 - **Update now.** When a newer release exists the banner and the Help menu's
