@@ -21,7 +21,7 @@ Source/UI versions are **2K5 RC83** and **APF alpha.84**.
 ## Beta 58 — the community list: Free Practice in Franchise, Position on Edit Player, jerseys anywhere, penalties, prospect names, Pro Bowl order, laces, the star (2026-09-04)
 
 Source/UI versions are **2K5 RC82** and **APF alpha.84**; both use updater tag
-`beta-58`.
+`beta-59`.
 
 - **Free Practice inside Franchise:** a Practice row on the Coach's Desk starts a
   Scrimmage of your team against itself with the live franchise roster and
